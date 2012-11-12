@@ -1,0 +1,105 @@
+[Fillform]: Èç¹ûÄúÉÐÎ´Í¨¹ýÉí·ÝÈ·ÈÏ, ÓÖÃ»ÓÐÈÎºÎ E-mail, ¿ÉÔÚ´ËÌîÐ´×¢²áµ¥¡£
+            µÈÕ¾³¤ºË×¼ºó¼´¿ÉÌáÉýÄúÔÚ±¾Õ¾µÄÊ¹ÓÃÈ¨ÏÞ¡£
+
+[Info]: ÔÚÕâÀïÄú¿ÉÒÔÐÞ¸ÄÄúµÄ¸öÈË×ÊÁÏ¡£ Èç¹û×ÊÁÏÓÐ±ä¸ü»òÔÚ½øÕ¾»­ÃæÊ±Ìî´íÓû
+        ÐÞ¸Ä, ¿ÉÒÔµ½´ËÀ´½øÐÐÐÞ¸Ä¹¤×÷¡£
+
+[WriteFiles]: ÔÚ´Ë, Äú¿ÉÒÔ±àÐÞÄú¸öÈËµÄ:
+
+                [1] ËµÃ÷µµ (query file)
+                [2] Ç©Ãûµµ (signature file)
+                [3] ±¸ÍüÂ¼ (memorandum)
+                [4] ÀëÕ¾µÄ»­Ãæ (exit screen)
+
+              ËµÃ÷µµ×î¶à¿ÉÒÔÐ´ [1m16[0m ÐÐ, ³¬¹ý 16 ÐÐµÄ½«²»»á±»ÏÔÊ¾¡£
+
+              Ç©Ãûµµ¿ÉÒÔÓÐºÃ¼¸¸ö, Ã¿ [1m6[0m ÐÐÎªÒ»¸ö¶ÀÁ¢Ç©Ãûµµ¡£
+
+[Override]: ¸ú talk ÀïÃæµÄ Override ÊÇÒ»ÑùµÄ, ÓÃÀ´Éè¶¨ºÃÓÑÃûµ¥¡£
+
+[UserDefine]: ÔÚ´Ë, Äú¿ÉÒÔÉè¶¨ÄúµÄÏÂÁÐ¸öÈËÉè¶¨:
+
+                A. ºô½ÐÆ÷¹Ø±ÕÊ±¿ÉÈÃºÃÓÑºô½Ð
+                B. ½ÓÊÜËùÓÐÈËµÄÑ¶Ï¢             
+                C. ½ÓÊÜºÃÓÑµÄÑ¶Ï¢                
+                D. ÊÕµ½Ñ¶Ï¢·¢³öÉùÒô              
+                E. Ê¹ÓÃ²ÊÉ«                      
+                F. ÏÔÊ¾»î¶¯¿´°æ                  
+                G. ÏÔÊ¾Ñ¡µ¥µÄÑ¶Ï¢À¸              
+                H. ±à¼­Ê±ÏÔÊ¾×´Ì¬À¸              
+                I. Ñ¶Ï¢À¸²ÉÓÃÒ»°ã/¾«¼òÄ£Ê½............. (×¢ 1)
+                J. Ñ¡µ¥²ÉÓÃÒ»°ã/¾«¼òÄ£Ê½............... (×¢ 2)
+                K. ·ÖÀàÌÖÂÛÇøÒÔ New ÏÔÊ¾         
+                L. ÔÄ¶ÁÎÄÕÂÊÇ·ñÊ¹ÓÃÈÆ¾íÑ¡Ôñ      
+                M. ÔÄ¶ÁÎÄÕÂÓÎ±êÍ£ÓÚµÚÒ»ÆªÎ´¶Á    
+                N. ½øÕ¾Ê±ÏÔÊ¾ºÃÓÑÃûµ¥            
+                O. ½øÕ¾Ê±ÏÔÊ¾±¸ÍüÂ¼              
+                P. ÀëÕ¾Ê±ÏÔÊ¾±¸ÍüÂ¼              
+                Q. ÀëÕ¾Ê±¼Ä»ØËùÓÐÑ¶Ï¢
+                R. Ê¹ÓÃ×Ô¼ºµÄÀëÕ¾»­Ãæ
+                S. ÎÒÊÇ´óÂíÂÃÌ¨Ö®Ñ§Éú.................. (×¢ 3)
+
+[Pager]: ¸ú talk ÀïÃæµÄ Pager ÊÇÒ»ÑùµÄ, ÓÃÀ´Éè¶¨ºô½ÐÆ÷¿ª¹Ø¡£
+
+[Alarm]: Éè¶¨Ê±¼äÏÔÊ¾±¸ÍüÂ¼¡£
+
+[LockScreen]: ÏëÒªÔÝÊ±Àë¿ªÒ»ÏÂ? Äú¿ÉÓÃ´Ë¹¦ÄÜ½«Ó©Ä»ÔÝÊ±ËøÖø, µÈÄú»ØÀ´ÔÙ½âËø¡£
+
+[Cloak]: ¸ú talk ÀïÃæµÄ Cloak ÊÇÒ»ÑùµÄ, ÓÃÀ´ÇÐ»»ÒþÉíÊõ¡£
+
+[Suicide]: Ïë·ÅÆúÊ¹ÓÃ´ËÕÊºÅÊ±ÓÃµÄ¡£ Ã»ÊÂÇëÎðÑ¡Ôñ´ËÏî¡£ Í¬Ê±ÄúÒ»µ©¡¸×ÔÉ±¡¹¾Í
+           ±íÊ¾Äú½«ÄúÔÚÕâÀïµÄÒ»ÇÐ½»»¹¸ø±¾Õ¾¹ÜÀíÕß, °üÀ¨¸öÈË×ÊÁÏ¡¢ÐÅ¼þµÈ,
+           ¹ÜÀíÕßÈôÓÐ±ØÒª¿ÉÒÔËæÊ±¹«¿ªÕâÐ©×ÊÁÏà¸!!
+
+[Help]: ¸úÖ÷»­ÃæµÄ Help ÊÇÒ»ÑùµÄ, ÓÃÀ´Éè¶¨ÊÇ·ñÒªÑ¡µ¥Ê½Ñ¡ÔñÄ£Ê½¡£
+
+
+×¢ 1:
+
+´ËÎªÒ»°ãµÄÑ¶Ï¢À¸:
+[1;33;44mTIME:[[36mFri Apr 19 01:31[33m] ONLINE/FRIEND:[[36m 34/  3[33m] MODE:[[36mPOMFHc[33m] USER:[[36mSYSOP[33m]    [0m
+
+´ËÎª¾«¼òÊ½Ñ¶Ï¢À¸:
+[1;33;44m TIME:[[36mFri Apr 19 01:33:39[33m]  MODE:[[36mPOMFHc[33m]  USER:[[36mSYSOP[33m]        STAY:[[36m  0: 2[33m] [0m
+
+
+×¢ 2:
+
+´ËÎªÒ»°ãµÄÑ¡µ¥:
+©°¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©´
+©¦   (0)Digest     ¾«»ª¹«²¼À¸       ©¦
+©¦   (1)BoardMenu  ÌÖÂÛÇøÑ¡µ¥       ©¦
+©¦   (E)Group      ·ÖÀàÌÖÂÛÇø       ©¦
+©¦   (B)oards      ÔÄÀÀÌÖÂÛÇø       ©¦
+©¦   (M)ail        ´¦ÀíÐÅ¼ã         ©¦
+©¦   (T)alk        Ì¸ÌìËµµØ         ©¦
+©¦   (S)ervice     ÌØ±ð·þÎñ         ©¦
+©¦   (I)nfoEdit    ¹¤¾ßÏä           ©¦
+©¦   (C)onfig      ÏµÍ³×ÊÑ¶         ©¦
+©¦   (H)elp        ¸¨Öú»­ÃæÉè¶¨     ©¦
+©¦   (A)dmin       ÏµÍ³¹ÜÀí¹¦ÄÜ±í   ©¦
+©¦   (G)oodBye     ²»Òª¿Þ£¬ÎÒ×ßÁË!! ©¦
+©¸¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©¼     
+
+´ËÎª¾«¼òÊ½Ñ¡µ¥:
+©°¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©´
+©¦   (0)Digest      ¾«»ª¹«²¼À¸      ©¦
+©¦   (N)ew          ÔÄ¶ÁÐÂÎÄÕÂ      ©¦
+©¦   (U)sers        »·¹ËËÄ·½        ©¦
+©¦   (1)Chat        ÁÄÌìÊÒ          ©¦
+©¦   (P)ager        Éè¶¨ºô½ÐÆ÷      ©¦
+©¦   (R)eadMail     ÀÀÔÄÈ«²¿ÐÅ¼ã    ©¦
+©¦   (S)endMail     Í¶µÝÕ¾ÄÚÐÅ¼þ    ©¦
+©¦   (D)efine       ¸öÈË²ÎÊýÉè¶¨    ©¦
+©¦   (W)riteFiles   ±àÐÞ¸öÈËµµ°¸    ©¦
+©¦   (L)istUsers    ±¾Õ¾Ê¹ÓÃÕßÁÐ±í  ©¦
+©¦   (A)dmin        ÏµÍ³¹ÜÀí¹¦ÄÜ±í  ©¦
+©¦   (G)oodbye      ²»Òª¿Þ£¬ÎÒ×ßÁË!!©¦
+©¸¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©¼   
+
+
+×¢ 3:
+
+   Í¬Ñ§»áÄÜÍ¸¹ý±¾Õ¾½«»áÎñÓëÑ¶Ï¢·¢ËÍ¸øÃ¿Ò»¸öÓÐÉÏÕ¾µÄ»áÔ±¡£ ÈôÄú²»Ïë½ÓÊÕ
+´ËÀàÑ¶Ï¢, ¿ÉÒÔ°ÑÕâÒ»Ïî Off µô¡£
+

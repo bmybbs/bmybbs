@@ -1,0 +1,352 @@
+#!/usr/local/bin/perl
+#
+# bntplink
+
+($bbshome) = @ARGV;
+if( ! $bbshome ) {
+    print "Usage: bntplink bbs_home\n";
+    exit( 0 );
+}
+
+$logfile     = "$bbshome/bbslog";
+# $echomail  = "$bbshome/echomail.log";
+$outgoing    = "$bbshome/out.going";
+$cancelpost  = "$bbshome/cancelpost.lst";
+$inndhome    = "$bbshome/inndlog";
+$inndbinhome = "$bbshome/innd";
+$poster      = "$inndbinhome/bbspost";
+$INC[ @INC ] = "$inndhome";
+
+require "tcp.pl";
+require "bbslib.pl";
+
+&bntplink();
+
+sub show_usage
+{
+    print "bntplink initial failure !!\
+本程式要正常执行必须将以下档案置于 $inndbinhome/ 下:\
+  bbsname.bbs   设定贵站的 BBS ID (请尽量简短)\
+  nodelist.bbs  设定网路各 BBS 站的 ID, Address 和 fullname\
+  newsfeeds.bbs 设定网路信件的 newsgroup board nodelist ...\
+\
+                - by: wolfchen 交大资工  Mar  1\n";
+    exit( 0 );
+}
+
+sub read_article
+{
+    local       ($filename) = @_;
+    local       (@filestat);
+
+    @filestat = stat( $filepath );
+    $mtime = $filestat[ 9 ];
+
+    open( FN, $filename );
+    while( <FN> ) {
+        chop $_;
+        if( $_ eq "" ) { last; }
+        if( index( $_, $userid ) > 0 ) {
+            $m = index( $_, "(" );
+            $n = rindex( $_, ")" );
+            $nickname = substr( $_, $m+1, $n-$m-1 );
+            if( ($n = index( $nickname, "\r" )) > 0 ) {
+                $nickname = substr( $nickname, 0, $n );
+            }
+        } elsif( index( $_, "Date:      " ) == 0 ) {
+            $date = substr( $_, 11, 99 );
+        } elsif( index( $_, "日  期: " ) == 0 ) {
+        $date = substr( $_, 8, 99 );
+        } elsif( index( $_, "发信站: " ) == 0 ) {
+            $m = rindex( $_, "(" );
+            $n = rindex( $_, ")" );
+            $date = substr( $_, $m+1, $n-$m-1 );
+        }
+        elsif( index( $_, "出  处: " ) == 0 )
+        {
+            $origin = substr( $_, 8, 99 );
+
+        }
+    }
+    @BODY = <FN>;
+    close( FN );
+}
+
+sub save_article
+{
+    local       ($target) = @_;
+
+    open( FN, $target );
+    print FN "发信人: $poster, 信区: $board\n";
+    print FN "标  题: $subject\n";
+    print FN "发信站: $mysite ($date)\n";
+    print FN "转信站: $path\n";
+if($origin)
+{
+    print FN "出  处: $origin\n";
+}
+    print FN "\n";
+    print FN @BODY;
+    close( FN );
+}
+
+sub save_outgoing
+{
+    $from = $poster;
+    $from =~ s/\@$mybbsid/.bbs\@$myaddr/;
+    $path = $mybbsid;
+    ($group, $server) = &search_board( $board );
+    if( $server ) {
+        ($serveraddr, $servername) = &search_nodelist( $server );
+    } else {
+        $path = "$mybbsid (local)";
+        $serveraddr = "";
+    }
+    if( $serveraddr ) {
+        open( LINK, ">> $outgoing/$serveraddr.link" );
+        print LINK "$board\t$filename\t$group\t$mtime\t$from\t$subject\n";
+        close( LINK );
+    }
+}
+
+sub process_article
+{
+    local       ($board, $filename, $userid, $subject) = @_;
+
+    if( ! $userid ) {
+        return;
+    } elsif( ! $subject ) {
+        $subject = "(none)";
+    }
+    if( ($n = index( $subject, "\r" )) > 0 ) {
+        $subject = substr( $subject, 0, $n );
+    }
+    $filepath = "$bbshome/boards/$board/$filename";
+    if( -f $filepath ) {
+#       &bbslog( "Read File: $filepath\n" );
+        &read_article( $filepath );
+        $poster = "$userid\@$mybbsid ($nickname)";
+        &save_outgoing();
+        &save_article( "> $filepath" );
+    }
+}
+
+sub process_cancel
+{
+    local       ($board, $filename, $userid, $poster, $path) = @_;
+
+    if( ! $userid || ! $poster || $path ne $mybbsid ) {
+        return;
+    }
+    $mtime = -1;
+    $subject = "Article cancelled by $userid\@$mybbsid within bbs [v2.0]";
+    &save_outgoing();
+}
+
+sub tcpcommand
+{
+    local       ($msg) = @_;
+
+    print NNTP "$msg\r\n";
+    $_ = <NNTP>;
+    chop; chop;
+    return $_;
+}
+
+sub baseN
+{
+    local       ($val, $base, $len) = @_;
+    local       ($str, $n, $ans);
+
+    while( length( $str ) < $len ) {
+        $n = $val % $base;
+        $val /= $base;
+        if( $n < 10 ) { $n += ord( '0' ); }
+        elsif( $n < 36 ) { $n += ord( 'A' ) - 10; }
+        elsif( $n < 62 ) { $n += ord( 'a' ) - 36; }
+        else { $n = ord( '_' ); }
+        $str = pack( "c", $n ) . $str;
+    }
+    return $str;
+}
+
+sub hash_value
+{
+    local       ($str) = @_;
+    local       ($val, $n);
+
+    $val = 0;
+    while( $str ) {
+        $n = ord( chop $str );
+        $val = ($val + $n * 0x100) ^ $n;
+    }
+    return &baseN( $val, 64, 3 );
+}
+
+sub read_outgoing
+{
+    $hash = &hash_value( "$filename.$board" );
+    $times = &baseN( substr( $filename, 2 ), 48, 6 );
+    $msgid = $times . "\$" . $hash . "@" . $myaddr;
+    if( $mtime == -1 ) {
+        @BODY = ( "$subject\r\n" );
+        $subject = "cmsg cancel <$msgid>";
+        $control = "cancel <$msgid>";
+        $msgid =  "$$.$msgid";
+        $date = &ascii_date( time() );
+    } else {
+        $control = "";
+        $date = &ascii_date( $mtime );
+        if( $echomail ) {
+            open( FN, ">> $echomail" );
+            print FN "\n";
+            print FN "发信人: $from, 信区: $group\n";
+            print FN "标  题: $subject\n";
+            print FN "发信站: $mysite ($date)\n";
+            print FN "转信站: $mybbsid\n";
+if($origin)
+{
+            print FN "出  处: $origin\n";
+}
+            close( FN );
+        }
+
+        @BODY = ();
+        open( FN, "$bbshome/boards/$board/$filename" );
+        while( <FN> ) {
+            if( $_ eq "\n" ) { last; }
+        }
+        while( <FN> ) {
+            chop;
+            if( $_ eq "." ) { $_ = ".."; }
+            $BODY[ @BODY ] = "$_\r\n";
+        }
+        close( FN );
+    }
+}
+
+sub post_article
+{
+    local       ($filepath) = @_;
+
+    print NNTP "Path: $mybbsid\r\n";
+    print NNTP "From: $from\r\n";
+    print NNTP "Newsgroups: $group\r\n";
+    print NNTP "Subject: $subject\r\n";
+    print NNTP "Date: $date\r\n";
+    print NNTP "Organization: $mysite\r\n";
+    print NNTP "Message-ID: <$msgid>\r\n";
+    print NNTP "X-Filename: $board/$filename\r\n";
+    print NNTP "NNTP-Posting-Host: bbs.cs.ccu.edu.tw\r\n";
+    if( $control ) {
+        print NNTP "Control: $control\r\n";
+    }
+    print NNTP "\r\n";
+    print NNTP @BODY;
+
+    $status = &tcpcommand( "." );
+    if( $status == 235 ) {
+        &bbslog( "Sendout <$msgid> from $board/$filename\n" );
+    } elsif( $status == 437 ) {
+        &bbslog( ":Warn: $status <$msgid>\n" );
+    } else {
+        &bbslog( ":Err: $status of <$msgid>\n" );
+        open( LINK, ">> $hostname.link" );
+        print LINK "$textline\n";
+        close( LINK );
+    }
+}
+
+sub send_nntplink
+{
+    local       ($hostname, $overview) = @_;
+
+    &tcpinetclient( NNTP, $hostname, nntp );
+    $status = <NNTP>;
+    if( $status != 200 ) {
+        &bbslog( ":Err: server error: $status" );
+        exit( 0 );
+    }
+    open( POSTS, $overview );
+    while( $textline = <POSTS> ) {
+        chop( $textline );
+        ($board, $filename, $group, $mtime, $from, $subject)
+                = split( "\t", $textline );
+        &read_outgoing();
+        if( @BODY > 0 ) {
+            $status = &tcpcommand( "IHAVE <$msgid>" );
+            if( $status == 335 ) {
+                &post_article( $filepath );
+            } elsif( $status == 435 ) {
+                &bbslog( ":Warn: $status, IHAVE <$msgid>\n" );
+            } else {
+                &bbslog( ":Err: $status, IHAVE <$msgid>\n" );
+                open( LINK, ">> $hostname.link" );
+                print LINK "$textline\n";
+                close( LINK );
+            }
+        }
+    }
+    close( POSTS );
+    $status = &tcpcommand( "QUIT" );
+    if( $status != 205 ) {
+        &bbslog( ":Err: Cannot quit message '$status'\n" );
+    }
+    close( NNTP );
+    unlink( $overview );
+}
+
+sub send_article
+{
+    local       ($node, $site, $addr );
+
+    chdir( $outgoing );
+    foreach $node ( @NODELIST ) {
+        ($site, $nntphost) = split( /\s+/, $node );
+        $linkfile = "$nntphost.link";
+        $sendfile = "$nntphost.sending";
+        if( -f $sendfile ) {
+            &send_nntplink( $nntphost, $sendfile );
+        }
+        if( -f $linkfile ) {
+            rename( $linkfile, $sendfile );
+            &send_nntplink( $nntphost, $sendfile );
+        }
+    }
+}
+
+sub bntplink
+{
+    if( &initial_bbs() == 0 ) {
+        &show_usage();
+    }
+    ($myaddr, $mysite) = &search_nodelist( $mybbsid );
+    if( ! -d $outgoing ) {
+        mkdir( $outgoing, 0750 );
+    }
+
+    open( NEWPOST, "$poster visit $bbshome |" );
+    $result = <NEWPOST>;
+    if( $result eq "New article listed:\n" ) {
+        while( <NEWPOST> ) {
+            chop( $_ );
+            &process_article( split( "\t", $_ ) );
+        }
+    }
+    close( NEWPOST );
+
+    if( -f $cancelpost ) {
+        $cancelfile = "$cancelpost.$$";
+        rename( $cancelpost, $cancelfile );
+        open( CANCELFILE, $cancelfile );
+        while( <CANCELFILE> ) {
+            chop( $_ );
+            &process_cancel( split( "\t", $_ ) );
+        }
+        close( CANCELFILE );
+        unlink( $cancelfile );
+    }
+
+    &send_article();
+}
+

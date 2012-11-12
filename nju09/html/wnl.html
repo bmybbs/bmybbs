@@ -1,0 +1,1125 @@
+
+<HTML><HEAD><TITLE>万年历</TITLE>
+<META 
+content="世界时间; 农历; 阳历; 月历; 节日; 节气; 干支; 生肖; world time clock; gregorian solar; chinese lunar; calendar;" 
+name=keywords>
+<META content=All name=robots>
+<META content="gregorian solar calendar and chinese lunar calendar" 
+name=description>
+<META content="text/html; charset=gb2312" http-equiv=Content-Type>
+<SCRIPT language=JScript>
+<!--
+/*****************************************************************************
+                                   个人偏好设定
+*****************************************************************************/
+
+var conWeekend = 3;  // 星期六颜色显示: 1=黑色, 2=绿色, 3=红色, 4=隔周休
+
+
+/*****************************************************************************
+                                   日期资料
+*****************************************************************************/
+
+var lunarInfo=new Array(
+0x04bd8,0x04ae0,0x0a570,0x054d5,0x0d260,0x0d950,0x16554,0x056a0,0x09ad0,0x055d2,
+0x04ae0,0x0a5b6,0x0a4d0,0x0d250,0x1d255,0x0b540,0x0d6a0,0x0ada2,0x095b0,0x14977,
+0x04970,0x0a4b0,0x0b4b5,0x06a50,0x06d40,0x1ab54,0x02b60,0x09570,0x052f2,0x04970,
+0x06566,0x0d4a0,0x0ea50,0x06e95,0x05ad0,0x02b60,0x186e3,0x092e0,0x1c8d7,0x0c950,
+0x0d4a0,0x1d8a6,0x0b550,0x056a0,0x1a5b4,0x025d0,0x092d0,0x0d2b2,0x0a950,0x0b557,
+0x06ca0,0x0b550,0x15355,0x04da0,0x0a5d0,0x14573,0x052b0,0x0a9a8,0x0e950,0x06aa0,
+0x0aea6,0x0ab50,0x04b60,0x0aae4,0x0a570,0x05260,0x0f263,0x0d950,0x05b57,0x056a0,
+0x096d0,0x04dd5,0x04ad0,0x0a4d0,0x0d4d4,0x0d250,0x0d558,0x0b540,0x0b5a0,0x195a6,
+0x095b0,0x049b0,0x0a974,0x0a4b0,0x0b27a,0x06a50,0x06d40,0x0af46,0x0ab60,0x09570,
+0x04af5,0x04970,0x064b0,0x074a3,0x0ea50,0x06b58,0x055c0,0x0ab60,0x096d5,0x092e0,
+0x0c960,0x0d954,0x0d4a0,0x0da50,0x07552,0x056a0,0x0abb7,0x025d0,0x092d0,0x0cab5,
+0x0a950,0x0b4a0,0x0baa4,0x0ad50,0x055d9,0x04ba0,0x0a5b0,0x15176,0x052b0,0x0a930,
+0x07954,0x06aa0,0x0ad50,0x05b52,0x04b60,0x0a6e6,0x0a4e0,0x0d260,0x0ea65,0x0d530,
+0x05aa0,0x076a3,0x096d0,0x04bd7,0x04ad0,0x0a4d0,0x1d0b6,0x0d250,0x0d520,0x0dd45,
+0x0b5a0,0x056d0,0x055b2,0x049b0,0x0a577,0x0a4b0,0x0aa50,0x1b255,0x06d20,0x0ada0,
+0x14b63);
+
+var solarMonth=new Array(31,28,31,30,31,30,31,31,30,31,30,31);
+var Gan=new Array("甲","乙","丙","丁","戊","己","庚","辛","壬","癸");
+var Zhi=new Array("子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥");
+var Animals=new Array("鼠","牛","虎","兔","龙","蛇","马","羊","猴","鸡","狗","猪");
+var solarTerm = new Array("小寒","大寒","立春","雨水","惊蛰","春分","清明","谷雨","立夏","小满","芒种","夏至","小暑","大暑","立秋","处暑","白露","秋分","寒露","霜降","立冬","小雪","大雪","冬至");
+var sTermInfo = new Array(0,21208,42467,63836,85337,107014,128867,150921,173149,195551,218072,240693,263343,285989,308563,331033,353350,375494,397447,419210,440795,462224,483532,504758);
+var nStr1 = new Array('日','一','二','三','四','五','六','七','八','九','十');
+var nStr2 = new Array('初','十','廿','卅','□');
+var monthName = new Array("JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC");
+
+var sFtv = new Array(
+"0101*元旦",
+"0214 情人节",
+"0308 妇女节",
+"0501 劳动节",
+"0504 青年节",
+"0601 儿童节",
+"0701 建党节 香港回归纪念",
+"0801 建军节",
+"1001*国庆节");
+
+//农历节日 *表示放假日
+var lFtv = new Array(
+"0101*春节",
+"0115 元宵节",
+"0505 端午节",
+"0815 中秋节",
+"0909 重阳节",
+"1224 小年",
+"0100*除夕");
+
+//某月的第几个星期几。 5,6,7,8 表示到数第 1,2,3,4 个星期几
+var wFtv = new Array(
+"0520 母亲节 Mother's Day",
+"0630 父亲节 Father's Day",
+"1144 感恩节 Thanksgiving Day");
+
+
+
+//世界时间资料
+var timeData = {
+"Asia               亚洲": {   //----------------------------------------------
+"China              中国    ":["+0800","","北京、重庆、乌鲁木齐"],
+"Brunei             汶莱    ":["+0800","","斯里巴加万港"],
+"Burma              缅甸    ":["+0630","","仰光"],
+"Khmer              柬埔寨  ":["+0700","","金边"],
+"Hong kong          香港    ":["+0800","","九龙"],
+"Indonesian         印尼    ":["+0700","","耶加达"],
+"Japan              日本    ":["+0900","","东京、大阪、札幌"],
+"Korea              韩国    ":["+0900","","汉城"],
+"Laos               寮国    ":["+0700","","永珍"],
+"Malaysian          马来西亚":["+0800","","吉隆坡"],
+"Mongolia           蒙古    ":["+0800","03L03|09L03","库伦"],
+"Philippines        菲律宾  ":["+0800","04F53|10F53","马尼拉"],
+"Russia(Anadyr)     俄罗斯  ":["+1300","03L03|10L03","阿那底河"],
+"Russia(Kamchatka)  俄罗斯  ":["+1200","03L03|10L03","堪察加半岛"],
+"Russia(Magadan)    俄罗斯  ":["+1100","03L03|10L03","马加丹"],
+"Russia(Vladivostok)俄罗斯  ":["+1000","03L03|10L03","海参威"],
+"Russia(Yakutsk)    俄罗斯  ":["+0900","03L03|10L03","雅库次克"],
+"Singapore          新加坡  ":["+0800","","新加坡"],
+"China              北京、重庆、乌鲁木齐    ":["+0800","","北京、重庆、乌鲁木齐"],
+"Thailand           泰国    ":["+0700","","曼谷"],
+"Vietnam            越南    ":["+0700","","河内"]
+},
+"ME, India pen.     中东、印度半岛": {   //------------------------------------
+"Afghanistan        阿富汗  ":["+0430","","喀布尔"],
+"Arab Emirates      阿拉伯联合大公国":["+0400","","阿布达比"],
+"Bahrain            巴林    ":["+0300","","麦纳玛"],
+"Bangladesh         孟加拉  ":["+0600","","达卡"],
+"Bhutan             不丹    ":["+0600","","辛布"],
+"Cyprus             赛普勒斯":["+0200","","尼古西亚"],
+"Georgia            乔治亚  ":["+0500","","第比利斯"],
+"India              印度    ":["+0530","","新德里、孟买、加尔各答"],
+"Iran               伊朗    ":["+0330","04 13|10 13","德黑兰"],
+"Iraq               伊拉克  ":["+0300","04 13|10 13","巴格达"],
+"Israel             以色列  ":["+0200","04F53|09F53","耶路撒冷"],
+"Jordan             约旦    ":["+0200","","安曼"],
+"Kuwait             科威特  ":["+0300","","科威特市"],
+"Lebanon            黎巴嫩  ":["+0200","03L03|10L03","贝鲁特"],
+"Maldives           马尔地夫":["+0500","","玛律"],
+"Nepal              尼泊尔  ":["+0545","","加德满都"],
+"Oman               阿曼    ":["+0400","","马斯喀特"],
+"Pakistan           巴基斯坦":["+0500","","喀拉蚩、伊斯兰堡"],
+"Qatar              卡达    ":["+0300","","杜哈"],
+"Saudi Arabia       沙乌地阿拉伯":["+0300","","利雅德"],
+"Sri Lanka          斯里兰卡":["+0600","","可伦坡"],
+"Syria              叙利亚  ":["+0200","04 13|10 13","大马士革"],
+"Tajikistan         塔吉克  ":["+0500","","杜桑贝"],
+"Turkey             土耳其  ":["+0200","","伊斯坦堡"],
+"Turkmenistan       土库曼  ":["+0500","","阿什哈巴德"],
+"Uzbekistan         乌兹别克斯坦":["+0500","","塔什干"],
+"Yemen              叶门    ":["+0300","","沙那"]
+},
+"North Europe       北欧": {   //----------------------------------------------
+"Denmark            丹麦":["+0100","04F03|10L03","哥本哈根"],
+"Finland            芬兰":["+0200","03L01|10L01","赫尔辛基"],
+"Iceland            冰岛":["+0000","","雷克雅未克"],
+"Norwegian          挪威":["+0100","","奥斯陆"],
+"Sweden             瑞典":["+0100","03L01|10L01","斯德哥尔摩"]
+},
+"Eastern Europe     中欧、东欧": {   //----------------------------------------
+"Armenia            亚美尼亚":["+0400","","叶里温"],
+"Austria            奥地利  ":["+0100","03L01|10L01","维也纳"],
+"Azerbaijan         亚塞拜然":["+0400","","巴库"],
+"Czech              捷克    ":["+0100","","布拉格"],
+"Estonia            爱沙尼亚":["+0200","","塔林"],
+"Germany            德国    ":["+0100","03L01|10L01","柏林"],
+"Hungarian          匈牙利  ":["+0100","","布达佩斯"],
+"Kazakhstan(Almaty) 哈萨克  ":["+0600","","Almaty"],
+"Kazakhstan(Aqtobe) 哈萨克  ":["+0500","","Aqtobe"],
+"Kazakhstan(Aqtau)  哈萨克  ":["+0400","","Aqtau"],
+"Kirghizia          吉尔吉斯":["+0500","","比斯凯克"],
+"Latvia             拉脱维亚":["+0200","","里加"],
+"Lithuania          立陶宛  ":["+0200","","维尔纽斯"],
+"Moldova            摩尔多瓦":["+0200","","基希涅夫"],
+"Poland             波兰    ":["+0100","","华沙"],
+"Rumania            罗马尼亚":["+0200","","布加勒斯特"],
+"Russia(Moscow)     俄罗斯  ":["+0300","03L03|10L03","莫斯科"],
+"Russia(Volgograd)  俄罗斯  ":["+0300","03L03|10L03","伏尔哥格勒"],
+"Slovakia           斯洛伐克":["+0100","","布拉提斯拉瓦"],
+"Switzerland        瑞士    ":["+0100","","苏黎世"],
+"Ukraine            乌克兰  ":["+0200","","基辅"],
+"Ukraine(Simferopol)乌克兰  ":["+0300","","Simferopol"],
+"Belarus            白俄罗斯":["+0200","03L03|10L03","明斯克"]
+},
+"Western Europe     西欧": {   //----------------------------------------------
+"Belgium            比利时 ":["+0100","03L01|10L01","布鲁塞尔"],
+"France             法国   ":["+0100","03L01|10L01","巴黎"],
+"Ireland            爱尔兰 ":["+0000","03L01|10L01","都柏林"],
+"Monaco             摩纳哥 ":["+0100","","摩纳哥市"],
+"Netherlands        荷兰   ":["+0100","03L01|10L01","阿姆斯特丹"],
+"Luxembourg         卢森堡 ":["+0100","03L01|10L01","卢森堡市"],
+"United Kingdom     英国   ":["+0000","03L01|10L01","伦敦、爱丁堡"]
+},
+"South Europe       南欧": { //------------------------------------------------
+"Albania            阿尔巴尼亚":["+0100","","地拉那"],
+"Bulgaria           保加利亚":["+0200","","索菲亚"],
+"Greece             希腊    ":["+0200","03L01|10L01","雅典"],
+"Holy See           教廷    ":["+0100","","梵蒂冈"],
+"Italy              义大利  ":["+0100","03L01|10L01","罗马"],
+"Malta              马尔他  ":["+0100","","瓦勒他"],
+"Portugal           葡萄牙  ":["+0000","03L01|10L01","里斯本"],
+"San Marino         圣马利诺":["+0100","","圣马利诺"],
+"Span               西班牙  ":["+0100","03L01|10L01","马德里"],
+"Slovenia           斯洛维尼亚":["+0100","","卢布尔雅那"],
+"Serbia(前南斯拉夫) 塞尔维亚":["+0100","","贝尔格勒"]
+},
+"North America      北美洲": {   //--------------------------------------------
+"Canada(NST)        加拿大":["-0330","04F02|10L02","纽芬兰、St. John's,Goose Bay"],
+"Canada(AST)        加拿大":["-0400","04F02|10L02","Pangnirtung, Glace Bay"],
+"Canada(EST)        加拿大":["-0500","04F02|10L02","蒙特娄"],
+"Canada(CST)        加拿大":["-0600","04F02|10L02","Swift Current, Regina, Rainy River"],
+"Canada(MST)        加拿大":["-0700","04F02|10L02","Inuvik, Edmonton, Dawson Creek"],
+"Canada(PST)        加拿大":["-0800","04F02|10L02","温哥华"],
+"US(Eastern)        美国(东岸)":["-0500","04F02|10L02","纽约"],
+"US(Indiana)        美国      ":["-0500","","印第安纳"],
+"US(Central)        美国(中部)":["-0600","04F02|10L02","芝加哥"],
+"US(Mountain)       美国(山区)":["-0700","04F02|10L02","丹佛"],
+"US(Arizona)        美国      ":["-0700","","亚历桑那"],
+"US(Pacific)        美国(西岸)":["-0800","04F02|10L02","旧金山、洛杉矶"],
+"US(Alaska)         美国      ":["-0900","","朱诺"]
+},
+"South America      中南美洲": {   //------------------------------------------
+"Argentina          阿根廷  ":["-0300","","布宜诺斯艾利斯"],
+"Bahamas            巴哈马  ":["-0500","","拿索"],
+"Belize             贝里斯  ":["-0600","","贝尔墨邦"],
+"Bolivia            玻利维亚":["-0400","","拉巴斯"],
+"Brazil(FST)        巴西    ":["-0200","10F03|02L03","Noronha"],
+"Brazil(EST)        巴西    ":["-0300","10F03|02L03","里约热内卢、巴西利亚"],
+"Brazil(WST)        巴西    ":["-0400","10F03|02L03","Cuiaba"],
+"Brazil(AST)        巴西    ":["-0500","10F03|02L03","Porto Acre"],
+"Chilean            智利    ":["-0500","10F03|03F03","Hanga Roa"],
+"Chilean            智利    ":["-0300","10F03|03F03","圣地牙哥"],
+"Colombia           哥伦比亚":["-0500","","波哥大"],
+"Costa Rica         哥斯大黎加":["-0600","","圣约瑟"],
+"Cuba               古巴    ":["-0500","04 13|10L03","哈瓦那"],
+"Dominican          多明尼加":["-0400","","圣多明哥"],
+"Ecuador            厄瓜多  ":["-0500","","基多"],
+"El Salvador        萨尔瓦多":["-0600","","圣萨尔瓦多"],
+"Falklands          福克兰群岛":["-0300","09F03|04F03","史坦利"],
+"Guatemala          瓜地马拉":["-0600","","瓜地马拉城"],
+"Haiti              海地    ":["-0500","","太子港"],
+"Honduras           宏都拉斯":["-0600","","德古斯加巴"],
+"Jamaica            牙买加  ":["-0500","","京斯敦"],
+"Mexico(首都)       墨西哥  ":["-0600","","墨西哥城"],
+"Mexico(Mazatlan)   墨西哥  ":["-0700","","Mazatlan"],
+"Mexico(蒂娃娜)     墨西哥  ":["-0800","","蒂娃娜"],
+"Nicaragua          尼加拉瓜":["-0500","","马纳瓜"],
+"Panama             巴拿马  ":["-0500","","巴拿马市"],
+"Paraguay           巴拉圭  ":["-0300","10F03|02L03","亚松森"],
+"Peru               秘鲁    ":["-0500","","利马"],
+"Trinidad & Tobago  千里达及托巴哥":["-0400","","西班牙港"],
+"Uruguay            乌拉圭  ":["-0300","","蒙特维多"],
+"Venezuela          委内瑞拉":["-0400","","卡拉卡斯"]
+},
+"Africa             非洲": {   //----------------------------------------------
+"Algeria            阿尔及利亚":["+0100","","阿尔及尔"],
+"Angola             安哥拉  ":["+0100","","鲁安达"],
+"Benin              贝南    ":["+0100","","新港"],
+"Botswana           波札那  ":["+0200","","嘉伯隆里"],
+"Burundi            蒲隆地  ":["+0200","","布松布拉"],
+"Cameroon           喀麦隆  ":["+0100","","雅恩德"],
+"Cape Verde         维德角  ":["-0100","","培亚"],
+"Central African    中非共和国":["+0100","","班基"],
+"Chad               查德    ":["+0100","","恩加美纳"],
+"Congo              刚果    ":["+0100","","布拉萨市"],
+"Djibouti           吉布地  ":["+0300","","吉布地"],
+"Egypt              埃及    ":["+0200","04L53|09L43","开罗"],
+"Equatorial Guinea  赤道几内亚":["+0100","","马拉博"],
+"Ethiopia           衣索比亚":["+0300","","阿迪斯阿贝巴"],
+"Gabon              加彭    ":["+0100","","自由市"],
+"Gambia             甘比亚  ":["+0000","","班竹"],
+"Ghana              迦纳    ":["+0000","","阿克拉"],
+"Guinea             几内亚  ":["+0000","","柯那克里"],
+"Ivory Coast        象牙海岸":["+0000","","雅穆索戈"],
+"Kenya              肯亚    ":["+0300","","奈洛比"],
+"Lesotho            赖索托  ":["+0200","","马赛鲁"],
+"Liberia            赖比瑞亚":["+0000","","蒙罗维亚"],
+"Madagascar         马达加斯加":["+0300","","安塔那那利佛"],
+"Malawi             马拉威  ":["+0200","","里朗威"],
+"Mali               马利    ":["+0000","","巴马科"],
+"Mauritania         茅利塔尼亚":["+0000","","诺克少"],
+"Mauritius          模里西斯":["+0400","","路易士港"],
+"Morocco            摩洛哥  ":["+0000","","卡萨布兰卡"],
+"Mozambique         莫三比克":["+0200","","马布多"],
+"Namibia            纳米比亚":["+0200","09F03|04F03","温吐克"],
+"Niger              尼日    ":["+0100","","尼阿美"],
+"Nigeria            奈及利亚":["+0100","","阿布札"],
+"Rwanda             卢安达  ":["+0200","","吉佳利"],
+"Sao Tome           圣多美  ":["+0000","","圣多美"],
+"Senegal            塞内加尔":["+0000","","达卡"],
+"Sierra Leone       狮子山国":["+0000","","自由城"],
+"Somalia            索马利亚":["+0300","","摩加迪休"],
+"South Africa       南非    ":["+0200","","普利托里亚"],
+"Sudan              苏丹    ":["+0200","","卡土穆"],
+"Tanzania           坦尚尼亚":["+0300","","杜笃玛"],
+"Togo               多哥    ":["+0000","","洛梅"],
+"Tunisia            突尼西亚":["+0100","","突尼斯"],
+"Uganda             乌干达  ":["+0300","","坎帕拉"],
+"Zaire              萨伊    ":["+0100","","金夏沙"],
+"Zambia             尚比亚  ":["+0200","","路沙卡"],
+"Zimbabwe           辛巴威  ":["+0200","","哈拉雷"]
+},
+"Oceania            大洋洲": { //----------------------------------------------
+"Aus.(Adelaide)     澳大利亚  ":["+0930","10L03|03L03","阿德莱德"],
+"Aus.(Brisbane)     澳大利亚  ":["+1000","10L03|03L03","布利斯班"],
+"Aus.(Darwin)       澳大利亚  ":["+0930","10L03|03L03","达尔文"],
+"Aus.(Hobart)       澳大利亚  ":["+1000","10L03|03L03","荷伯特"],
+"Aus.(Perth)        澳大利亚  ":["+0800","10L03|03L03","伯斯"],
+"Aus.(Sydney)       澳大利亚  ":["+1000","10L03|03L03","雪梨"],
+"Eniwetok           安尼威托克岛":["-1200","","安尼威托克岛"],
+"Fiji               斐济      ":["+1200","11F03|02L03","苏瓦"],
+"Guam               关岛      ":["+1000","","阿加纳"],
+"Hawaii(US)         夏威夷(美)":["-1000","","檀香山"],
+//"Mariana Islands    塞班岛    ":["","","塞班岛"],
+"Marshall Is.       马绍尔群岛":["+1200","","Majuro"],
+"Midway Is.(US)     中途岛(美)":["-1100","","中途岛"],
+"Nauru Rep.         诺鲁共和国":["+1200","","雅连"],
+"New Calednia       新克里多尼亚":["+1100","","Noumea"],
+"New Guined         新畿内亚  ":["+1000","","莫勒斯比港"],
+"New Zealand        纽西兰    ":["+1300","10F03|04F63","奥克兰"],
+"New Zealand(CHADT) 纽西兰    ":["+1345","10F03|04F63","Waitaing"],
+"Solomon Is.        索罗门群岛":["+1100","","荷尼阿拉"],
+"Tahiti             大溪地    ":["-1000","","大溪地"],
+"Tonga              东加      ":["+1300","10F63|04F63","努瓜娄发"],
+"Tuvalu             吐瓦鲁    ":["+1200","","富那富提"],
+"Western Samoa      西萨摩亚  ":["-1100","","阿庇亚"],
+"国际换日线                   ":["-1200","","国际换日线"]
+}
+};
+
+
+
+/*****************************************************************************
+                                      日期计算
+*****************************************************************************/
+
+//====================================== 传回农历 y年的总天数
+function lYearDays(y) {
+   var i, sum = 348;
+   for(i=0x8000; i>0x8; i>>=1) sum += (lunarInfo[y-1900] & i)? 1: 0;
+   return(sum+leapDays(y));
+}
+
+//====================================== 传回农历 y年闰月的天数
+function leapDays(y) {
+   if(leapMonth(y))  return((lunarInfo[y-1900] & 0x10000)? 30: 29);
+   else return(0);
+}
+
+//====================================== 传回农历 y年闰哪个月 1-12 , 没闰传回 0
+function leapMonth(y) {
+   return(lunarInfo[y-1900] & 0xf);
+}
+
+//====================================== 传回农历 y年m月的总天数
+function monthDays(y,m) {
+   return( (lunarInfo[y-1900] & (0x10000>>m))? 30: 29 );
+}
+
+
+//====================================== 算出农历, 传入日期物件, 传回农历日期物件
+//                                       该物件属性有 .year .month .day .isLeap
+function Lunar(objDate) {
+
+   var i, leap=0, temp=0;
+   var offset   = (Date.UTC(objDate.getFullYear(),objDate.getMonth(),objDate.getDate()) - Date.UTC(1900,0,31))/86400000;
+
+   for(i=1900; i<2050 && offset>0; i++) { temp=lYearDays(i); offset-=temp; }
+
+   if(offset<0) { offset+=temp; i--; }
+
+   this.year = i;
+
+   leap = leapMonth(i); //闰哪个月
+   this.isLeap = false;
+
+   for(i=1; i<13 && offset>0; i++) {
+      //闰月
+      if(leap>0 && i==(leap+1) && this.isLeap==false)
+         { --i; this.isLeap = true; temp = leapDays(this.year); }
+      else
+         { temp = monthDays(this.year, i); }
+
+      //解除闰月
+      if(this.isLeap==true && i==(leap+1)) this.isLeap = false;
+
+      offset -= temp;
+   }
+
+   if(offset==0 && leap>0 && i==leap+1)
+      if(this.isLeap)
+         { this.isLeap = false; }
+      else
+         { this.isLeap = true; --i; }
+
+   if(offset<0){ offset += temp; --i; }
+
+   this.month = i;
+   this.day = offset + 1;
+}
+
+//==============================传回国历 y年某m+1月的天数
+function solarDays(y,m) {
+   if(m==1)
+      return(((y%4 == 0) && (y%100 != 0) || (y%400 == 0))? 29: 28);
+   else
+      return(solarMonth[m]);
+}
+//============================== 传入 offset 传回干支, 0=甲子
+function cyclical(num) {
+   return(Gan[num%10]+Zhi[num%12]);
+}
+
+//============================== 月历属性
+function calElement(sYear,sMonth,sDay,week,lYear,lMonth,lDay,isLeap,cYear,cMonth,cDay) {
+
+      this.isToday    = false;
+      //国历
+      this.sYear      = sYear;   //西元年4位数字
+      this.sMonth     = sMonth;  //西元月数字
+      this.sDay       = sDay;    //西元日数字
+      this.week       = week;    //星期, 1个中文
+      //农历
+      this.lYear      = lYear;   //西元年4位数字
+      this.lMonth     = lMonth;  //农历月数字
+      this.lDay       = lDay;    //农历日数字
+      this.isLeap     = isLeap;  //是否为农历闰月?
+      //八字
+      this.cYear      = cYear;   //年柱, 2个中文
+      this.cMonth     = cMonth;  //月柱, 2个中文
+      this.cDay       = cDay;    //日柱, 2个中文
+
+      this.color      = '';
+
+      this.lunarFestival = ''; //农历节日
+      this.solarFestival = ''; //国历节日
+      this.solarTerms    = ''; //节气
+}
+
+//===== 某年的第n个节气为几日(从0小寒起算)
+function sTerm(y,n) {
+   var offDate = new Date( ( 31556925974.7*(y-1900) + sTermInfo[n]*60000  ) + Date.UTC(1900,0,6,2,5) );
+   return(offDate.getUTCDate());
+}
+
+
+
+
+//============================== 传回月历物件 (y年,m+1月)
+/*
+功能说明: 传回整个月的日期资料物件
+
+使用方式: OBJ = new calendar(年,零起算月);
+
+  OBJ.length      传回当月最大日
+  OBJ.firstWeek   传回当月一日星期
+
+  由 OBJ[日期].属性名称 即可取得各项值
+
+  OBJ[日期].isToday  传回是否为今日 true 或 false
+
+  其他 OBJ[日期] 属性参见 calElement() 中的注解
+*/
+function calendar(y,m) {
+
+   var sDObj, lDObj, lY, lM, lD=1, lL, lX=0, tmp1, tmp2, tmp3;
+   var cY, cM, cD; //年柱,月柱,日柱
+   var lDPOS = new Array(3);
+   var n = 0;
+   var firstLM = 0;
+
+   sDObj = new Date(y,m,1,0,0,0,0);    //当月一日日期
+
+   this.length    = solarDays(y,m);    //国历当月天数
+   this.firstWeek = sDObj.getDay();    //国历当月1日星期几
+
+   ////////年柱 1900年春分后为庚子年(60进制36)
+   if(m<2) cY=cyclical(y-1900+36-1);
+   else cY=cyclical(y-1900+36);
+   var term2=sTerm(y,2); //立春日期
+
+   ////////月柱 1900年1月小寒以前为 丙子月(60进制12)
+   var firstNode = sTerm(y,m*2) //传回当月「节」为几日开始
+   cM = cyclical((y-1900)*12+m+12);
+
+   //当月一日与 1900/1/1 相差天数
+   //1900/1/1与 1970/1/1 相差25567日, 1900/1/1 日柱为甲戌日(60进制10)
+   var dayCyclical = Date.UTC(y,m,1,0,0,0,0)/86400000+25567+10;
+
+   for(var i=0;i<this.length;i++) {
+
+      if(lD>lX) {
+         sDObj = new Date(y,m,i+1);    //当月一日日期
+         lDObj = new Lunar(sDObj);     //农历
+         lY    = lDObj.year;           //农历年
+         lM    = lDObj.month;          //农历月
+         lD    = lDObj.day;            //农历日
+         lL    = lDObj.isLeap;         //农历是否闰月
+         lX    = lL? leapDays(lY): monthDays(lY,lM); //农历当月最后一天
+
+         if(n==0) firstLM = lM;
+         lDPOS[n++] = i-lD+1;
+      }
+
+      //依节气调整二月分的年柱, 以春分为界
+      if(m==1 && (i+1)==term2) cY=cyclical(y-1900+36);
+      //依节气月柱, 以「节」为界
+      if((i+1)==firstNode) cM = cyclical((y-1900)*12+m+13);
+      //日柱
+      cD = cyclical(dayCyclical+i);
+
+      //sYear,sMonth,sDay,week,
+      //lYear,lMonth,lDay,isLeap,
+      //cYear,cMonth,cDay
+      this[i] = new calElement(y, m+1, i+1, nStr1[(i+this.firstWeek)%7],
+                               lY, lM, lD++, lL,
+                               cY ,cM, cD );
+
+
+
+   }
+
+
+   //节气
+   tmp1=sTerm(y,m*2  )-1;
+   tmp2=sTerm(y,m*2+1)-1;
+   this[tmp1].solarTerms = solarTerm[m*2];
+   this[tmp2].solarTerms = solarTerm[m*2+1];
+   if(m==3) this[tmp1].color = 'red'; //清明颜色
+
+   //国历节日
+   for(i in sFtv)
+      if(sFtv[i].match(/^(\d{2})(\d{2})([\s\*])(.+)$/))
+         if(Number(RegExp.$1)==(m+1)) {
+            this[Number(RegExp.$2)-1].solarFestival += RegExp.$4 + ' ';
+            if(RegExp.$3=='*') this[Number(RegExp.$2)-1].color = 'red';
+         }
+
+   //月周节日
+   for(i in wFtv)
+      if(wFtv[i].match(/^(\d{2})(\d)(\d)([\s\*])(.+)$/))
+         if(Number(RegExp.$1)==(m+1)) {
+            tmp1=Number(RegExp.$2);
+            tmp2=Number(RegExp.$3);
+            if(tmp1<5)
+               this[((this.firstWeek>tmp2)?7:0) + 7*(tmp1-1) + tmp2 - this.firstWeek].solarFestival += RegExp.$5 + ' ';
+            else {
+               tmp1 -= 5;
+               tmp3 = (this.firstWeek+this.length-1)%7; //当月最后一天星期?
+               this[this.length - tmp3 - 7*tmp1 + tmp2 - (tmp2>tmp3?7:0) - 1 ].solarFestival += RegExp.$5 + ' ';
+            }
+         }
+
+   //农历节日
+   for(i in lFtv)
+      if(lFtv[i].match(/^(\d{2})(.{2})([\s\*])(.+)$/)) {
+         tmp1=Number(RegExp.$1)-firstLM;
+         if(tmp1==-11) tmp1=1;
+         if(tmp1 >=0 && tmp1<n) {
+            tmp2 = lDPOS[tmp1] + Number(RegExp.$2) -1;
+            if( tmp2 >= 0 && tmp2<this.length && this[tmp2].isLeap!=true) {
+               this[tmp2].lunarFestival += RegExp.$4 + ' ';
+               if(RegExp.$3=='*') this[tmp2].color = 'red';
+            }
+         }
+      }
+
+
+   //复活节只出现在3或4月
+   if(m==2 || m==3) {
+      var estDay = new easter(y);
+      if(m == estDay.m)
+         this[estDay.d-1].solarFestival = this[estDay.d-1].solarFestival+' 复活节 Easter Sunday';
+   }
+
+
+   //if(m==2) this[20].solarFestival = this[20].solarFestival+unescape('%20%u6D35%u8CE2%u751F%u65E5');
+   
+   //黑色星期五
+   if((this.firstWeek+12)%7==5)
+      this[12].solarFestival += '黑色星期五 ';
+   
+   //今日
+   if(y==tY && m==tM) this[tD-1].isToday = true;
+}
+
+//======================================= 传回该年的复活节(春分后第一次满月周后的第一主日)
+function easter(y) {
+
+   var term2=sTerm(y,5); //取得春分日期
+   var dayTerm2 = new Date(Date.UTC(y,2,term2,0,0,0,0)); //取得春分的国历日期物件(春分一定出现在3月)
+   var lDayTerm2 = new Lunar(dayTerm2); //取得取得春分农历
+
+   if(lDayTerm2.day<15) //取得下个月圆的相差天数
+      var lMlen= 15-lDayTerm2.day;
+   else
+      var lMlen= (lDayTerm2.isLeap? leapDays(y): monthDays(y,lDayTerm2.month)) - lDayTerm2.day + 15;
+
+   //一天等于 1000*60*60*24 = 86400000 毫秒
+   var l15 = new Date(dayTerm2.getTime() + 86400000*lMlen ); //求出第一次月圆为国历几日
+   var dayEaster = new Date(l15.getTime() + 86400000*( 7-l15.getUTCDay() ) ); //求出下个周日
+
+   this.m = dayEaster.getUTCMonth();
+   this.d = dayEaster.getUTCDate();
+
+}
+
+//====================== 中文日期
+function cDay(d){
+   var s;
+
+   switch (d) {
+      case 10:
+         s = '初十'; break;
+      case 20:
+         s = '二十'; break;
+         break;
+      case 30:
+         s = '三十'; break;
+         break;
+      default :
+         s = nStr2[Math.floor(d/10)];
+         s += nStr1[d%10];
+   }
+   return(s);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+var cld;
+
+function drawCld(SY,SM) {
+   var i,sD,s,size;
+   cld = new calendar(SY,SM);
+
+   if(SY>1874 && SY<1909) yDisplay = '光绪' + (((SY-1874)==1)?'元':SY-1874);
+   if(SY>1908 && SY<1912) yDisplay = '宣统' + (((SY-1908)==1)?'元':SY-1908);
+   if(SY>1949) yDisplay = '共和国' + (((SY-1949)==1)?'元':SY-1949);
+
+   GZ.innerHTML = yDisplay +'年 农历' + cyclical(SY-1900+36) + '年 【'+Animals[(SY-4)%12]+'】';
+
+   YMBG.innerHTML = "&nbsp;" + SY + "<BR>&nbsp;" + monthName[SM];
+
+   for(i=0;i<42;i++) {
+
+      sObj=eval('SD'+ i);
+      lObj=eval('LD'+ i);
+
+      sObj.className = '';
+
+      sD = i - cld.firstWeek;
+
+      if(sD>-1 && sD<cld.length) { //日期内
+         sObj.innerHTML = sD+1;
+
+         if(cld[sD].isToday) sObj.className = 'todyaColor'; //今日颜色
+
+         sObj.style.color = cld[sD].color; //国定假日颜色
+
+         if(cld[sD].lDay==1) //显示农历月
+            lObj.innerHTML = '<b>'+(cld[sD].isLeap?'闰':'') + cld[sD].lMonth + '月' + (monthDays(cld[sD].lYear,cld[sD].lMonth)==29?'小':'大')+'</b>';
+         else //显示农历日
+            lObj.innerHTML = cDay(cld[sD].lDay);
+
+         s=cld[sD].lunarFestival;
+         if(s.length>0) { //农历节日
+            if(s.length>6) s = s.substr(0, 4)+'...';
+            s = s.fontcolor('red');
+         }
+         else { //国历节日
+            s=cld[sD].solarFestival;
+            if(s.length>0) {
+               size = (s.charCodeAt(0)>0 && s.charCodeAt(0)<128)?8:4;
+               if(s.length>size+2) s = s.substr(0, size)+'...';
+               s = s.fontcolor('blue');
+            }
+            else { //廿四节气
+               s=cld[sD].solarTerms;
+               if(s.length>0) s = s.fontcolor('limegreen');
+            }
+         }
+         if(s.length>0) lObj.innerHTML = s;
+
+      }
+      else { //非日期
+         sObj.innerHTML = '';
+         lObj.innerHTML = '';
+      }
+   }
+}
+
+
+function changeCld() {
+   var y,m;
+   y=CLD.SY.selectedIndex+1900;
+   m=CLD.SM.selectedIndex;
+   drawCld(y,m);
+}
+
+function pushBtm(K) {
+   switch (K){
+      case 'YU' :
+         if(CLD.SY.selectedIndex>0) CLD.SY.selectedIndex--;
+         break;
+      case 'YD' :
+         if(CLD.SY.selectedIndex<150) CLD.SY.selectedIndex++;
+         break;
+      case 'MU' :
+         if(CLD.SM.selectedIndex>0) {
+            CLD.SM.selectedIndex--;
+         }
+         else {
+            CLD.SM.selectedIndex=11;
+            if(CLD.SY.selectedIndex>0) CLD.SY.selectedIndex--;
+         }
+         break;
+      case 'MD' :
+         if(CLD.SM.selectedIndex<11) {
+            CLD.SM.selectedIndex++;
+         }
+         else {
+            CLD.SM.selectedIndex=0;
+            if(CLD.SY.selectedIndex<150) CLD.SY.selectedIndex++;
+         }
+         break;
+      default :
+         CLD.SY.selectedIndex=tY-1900;
+         CLD.SM.selectedIndex=tM;
+   }
+   changeCld();
+}
+
+var Today = new Date();
+var tY = Today.getFullYear();
+var tM = Today.getMonth();
+var tD = Today.getDate();
+//////////////////////////////////////////////////////////////////////////////
+
+var width = "130";
+var offsetx = 2;
+var offsety = 8;
+
+var x = 0;
+var y = 0;
+var snow = 0;
+var sw = 0;
+var cnt = 0;
+
+var dStyle;
+document.onmousemove = mEvn;
+
+//显示详细日期资料
+function mOvr(v) {
+   var s,festival;
+   var sObj=eval('SD'+ v);
+   var d=sObj.innerHTML-1;
+
+      //sYear,sMonth,sDay,week,
+      //lYear,lMonth,lDay,isLeap,
+      //cYear,cMonth,cDay
+
+   if(sObj.innerHTML!='') {
+
+      sObj.style.cursor = 's-resize';
+
+      if(cld[d].solarTerms == '' && cld[d].solarFestival == '' && cld[d].lunarFestival == '')
+         festival = '';
+      else
+         festival = '<TABLE WIDTH=100% BORDER=0 CELLPADDING=2 CELLSPACING=0 BGCOLOR="#CCFFCC"><TR><TD>'+
+         '<FONT COLOR="#000000" STYLE="font-size:9pt;">'+cld[d].solarTerms + ' ' + cld[d].solarFestival + ' ' + cld[d].lunarFestival+'</FONT></TD>'+
+         '</TR></TABLE>';
+
+      s= '<TABLE WIDTH="130" BORDER=0 CELLPADDING="2" CELLSPACING=0 BGCOLOR="#000066" style="filter:Alpha(opacity=80)"><TR><TD>' +
+         '<TABLE WIDTH=100% BORDER=0 CELLPADDING=0 CELLSPACING=0><TR><TD ALIGN="right"><FONT COLOR="#ffffff" STYLE="font-size:9pt;">'+
+         cld[d].sYear+' 年 '+cld[d].sMonth+' 月 '+cld[d].sDay+' 日<br>星期'+cld[d].week+'<br>'+
+         '<font color="violet">农历'+(cld[d].isLeap?'闰 ':' ')+cld[d].lMonth+' 月 '+cld[d].lDay+' 日</font><br>'+
+         '<font color="yellow">'+cld[d].cYear+'年 '+cld[d].cMonth+'月 '+cld[d].cDay + '日</font>'+
+         '</FONT></TD></TR></TABLE>'+ festival +'</TD></TR></TABLE>';
+
+      document.all["detail"].innerHTML = s;
+
+      if (snow == 0) {
+         dStyle.left = x+offsetx-(width/2);
+         dStyle.top = y+offsety;
+         dStyle.visibility = "visible";
+         snow = 1;
+      }
+   }
+}
+
+//清除详细日期资料
+function mOut() {
+   if ( cnt >= 1 ) { sw = 0; }
+   if ( sw == 0 ) { snow = 0; dStyle.visibility = "hidden";}
+   else cnt++;
+}
+
+//取得位置
+function mEvn() {
+   x=event.x;
+   y=event.y;
+   if (document.body.scrollLeft)
+      {x=event.x+document.body.scrollLeft; y=event.y+document.body.scrollTop;}
+   if (snow){
+      dStyle.left = x+offsetx-(width/2);
+      dStyle.top = y+offsety;
+   }
+}
+
+/*****************************************************************************
+                                  世界时间计算
+*****************************************************************************/
+var OneHour = 60*60*1000;
+var OneDay = OneHour*24;
+
+function showUTC(objD) {
+   var dn,s;
+   var hh = objD.getUTCHours();
+   var mm = objD.getUTCMinutes();
+   var ss = objD.getUTCSeconds();
+   s = objD.getUTCFullYear() + "年" + (objD.getUTCMonth() + 1) + "月" + objD.getUTCDate() +"日 ("+ nStr1[objD.getUTCDay()] +")";
+
+   if(hh>12) { hh = hh-12; dn = '下午'; }
+   else dn = '上午';
+
+   if(hh<10) hh = '0' + hh;
+   if(mm<10) mm = '0' + mm;
+   if(ss<10) ss = '0' + ss;
+
+   s += " " + dn + ' ' + hh + ":" + mm + ":" + ss;
+   return(s);
+}
+
+function showLocale(objD) {
+   var dn,s;
+   var hh = objD.getHours();
+   var mm = objD.getMinutes();
+   var ss = objD.getSeconds();
+   s = objD.getFullYear() + "年" + (objD.getMonth() + 1) + "月" + objD.getDate() +"日 ("+ nStr1[objD.getDay()] +")";
+
+   if(hh>12) { hh = hh-12; dn = '下午'; }
+   else dn = '上午';
+
+   if(hh<10) hh = '0' + hh;
+   if(mm<10) mm = '0' + mm;
+   if(ss<10) ss = '0' + ss;
+
+   s += " " + dn + ' ' + hh + ":" + mm + ":" + ss;
+   return(s);
+}
+
+//传入时差字串, 传回偏移之正负毫秒
+function parseOffset(s) {
+   var sign,hh,mm,v;
+   sign = s.substr(0,1)=='-'?-1:1;
+   hh = Math.floor(s.substr(1,2));
+   mm = Math.floor(s.substr(3,2));
+   v = sign*(hh*60+mm)*60*1000;
+   return(v);
+}
+
+//传回UTC日期物件 (年,月-1,第几个星期几,几点)
+function getWeekDay(y,m,nd,w,h){
+   var d,d2,w1;
+   if(nd>0){
+      d = new Date(Date.UTC(y, m, 1));
+      w1 = d.getUTCDay();
+      d2 = new Date( d.getTime() + ((w<w1? w+7-w1 : w-w1 )+(nd-1)*7   )*OneDay + h*OneHour);
+   }
+   else {
+      nd = Math.abs(nd);
+      d = new Date( Date.UTC(y, m+1, 1)  - OneDay );
+      w1 = d.getUTCDay();
+      d2 = new Date( d.getTime() + (  (w>w1? w-7-w1 : w-w1 )-(nd-1)*7   )*OneDay + h*OneHour);
+   }
+   return(d2);
+}
+
+//传入某时间值, 日光节约字串 传回 true 或 false
+function isDaylightSaving(d,strDS) {
+
+   if(strDS == '') return(false);
+
+   var m1,n1,w1,t1;
+   var m2,n2,w2,t2;
+   with (Math){
+      m1 = floor(strDS.substr(0,2))-1;
+      w1 = floor(strDS.substr(3,1));
+      t1 = floor(strDS.substr(4,1));
+      m2 = floor(strDS.substr(6,2))-1;
+      w2 = floor(strDS.substr(9,1));
+      t2 = floor(strDS.substr(10,1));
+   }
+
+   switch(strDS.substr(2,1)){
+      case 'F': n1=1; break;
+      case 'L': n1=-1; break;
+      default : n1=0; break;
+   }
+
+   switch(strDS.substr(8,1)){
+      case 'F': n2=1; break;
+      case 'L': n2=-1; break;
+      default : n2=0; break;
+   }
+
+
+   var d1, d2, re;
+
+   if(n1==0)
+      d1 = new Date(Date.UTC(d.getUTCFullYear(), m1, Math.floor(strDS.substr(2,2)),t1));
+   else
+      d1 = getWeekDay(d.getUTCFullYear(),m1,n1,w1,t1);
+
+   if(n2==0)
+      d2 = new Date(Date.UTC(d.getUTCFullYear(), m2, Math.floor(strDS.substr(8,2)),t2));
+   else
+      d2 = getWeekDay(d.getUTCFullYear(),m2,n2,w2,t2);
+
+   if(d2>d1)
+      re = (d>d1 && d<d2)? true: false;
+   else
+      re = (d>d1 && d<d2)? false: true;
+
+   return(re);
+}
+
+var isDS = false;
+
+//计算全球时间
+function getGlobeTime() {
+   var d,s;
+   d = new Date();
+   d.setTime(d.getTime()+parseOffset(objTimeZone[0]));
+   isDS=isDaylightSaving(d,objTimeZone[1]);
+   if(isDS) d.setTime(d.getTime()+OneHour);
+
+   return(showUTC(d));
+}
+
+var objTimeZone;
+var objContinentMenu;
+var objCountryMenu;
+
+function tick() {
+   var today;
+   today = new Date();
+   LocalTime.innerHTML = showLocale(today);
+   GlobeTime.innerHTML = getGlobeTime();
+   window.setTimeout("tick()", 1000);
+}
+
+//指定自定索引时区
+function setTZ(a,c){
+   objContinentMenu.options[a].selected=true;
+   chContinent();
+   objCountryMenu.options[c].selected=true;
+   chCountry();
+}
+
+//变更区域
+function chContinent() {
+   var key,i;
+   continent = objContinentMenu.options[objContinentMenu.selectedIndex].text;
+   for (var i = objCountryMenu.options.length-1; i >= 0; i--)
+      objCountryMenu[0]=null;
+   for (key in timeData[continent])
+      objCountryMenu.options[objCountryMenu.options.length]=new Option(key);
+   objCountryMenu.options[0].selected=true;
+   chCountry();
+}
+
+//变更国家
+function chCountry() {
+   var txtContinent = objContinentMenu.options[objContinentMenu.selectedIndex].text;
+   var txtCountry = objCountryMenu.options[objCountryMenu.selectedIndex].text;
+
+   objTimeZone = timeData[txtContinent][txtCountry];
+
+   getGlobeTime();
+
+   //地图位移
+   City.innerHTML = (isDS==true?"<SPAN STYLE='font-size:12pt;font-family:Wingdings; color:Red;'>R</span> ":'') + objTimeZone[2]; //首都
+   var pos = Math.floor(objTimeZone[0].substr(0,3));
+   if(pos<0) pos+=24;
+   pos*=-10;
+   world.style.left = pos;
+
+}
+
+///////////////////////////////////////////////////////////////////////////
+
+function initialize() {
+   var key;
+
+   //时间
+   map.filters.Light.Clear();
+   map.filters.Light.addAmbient(255,255,255,60);
+   map.filters.Light.addCone(120, 60, 80, 120, 60, 255,255,255,120,60);
+
+   objContinentMenu=document.WorldClock.continentMenu;
+   objCountryMenu=document.WorldClock.countryMenu;
+
+   for (key in timeData)
+      objContinentMenu[objContinentMenu.length]=new Option(key);
+
+   setTZ(0,18);
+
+   tick();
+
+
+   //月历
+   dStyle = detail.style;
+   CLD.SY.selectedIndex=tY-1900;
+   CLD.SM.selectedIndex=tM;
+   drawCld(tY,tM);
+
+}
+
+//-->
+</SCRIPT>
+
+<STYLE>.todyaColor {
+	BACKGROUND-COLOR: aqua
+}
+</STYLE>
+
+<BODY oncontextmenu=self.event.returnValue=false onload=initialize()>
+<SCRIPT language=JavaScript><!--
+   if(navigator.appName == "Netscape" || parseInt(navigator.appVersion) < 4)
+   document.write("<h1>你的浏览器无法执行此程式。</h1>此程式需在 IE4 以后的版本才能执行!!")
+//--></SCRIPT>
+
+<DIV id=detail 
+style="FILTER: shadow(color=#333333,direction=135); HEIGHT: 120px; POSITION: absolute; WIDTH: 140px; Z-INDEX: 3"></DIV>
+<CENTER>
+<TABLE border=0>
+  <TBODY>
+  <TR><!------------------------------ 世界时间 ----------------------------------->
+    <FORM name=WorldClock>
+    <TD align=middle height=340 vAlign=top width=240><FONT size=2 
+      style="FONT-SIZE: 9pt"><B>本地时间</B></FONT><BR><SPAN id=LocalTime 
+      style="COLOR: #000080; FONT-FAMILY: Arial; FONT-SIZE: 9pt">0000年0月0日 (　) 
+      　午 00:00:00</SPAN> 
+      <P><SPAN id=City style="FONT-SIZE: 9pt; WIDTH: 150px">中国</SPAN> <BR><SPAN 
+      id=GlobeTime 
+      style="COLOR: #000080; FONT-FAMILY: Arial; FONT-SIZE: 9pt">0000年0月0日 (　) 
+      　午 00:00:00</SPAN><BR>
+      <TABLE style="FONT-FAMILY: Wingdings; FONT-SIZE: 10pt">
+        <TBODY>
+        <TR>
+          <TD align=middle>&Uacute; 
+            <DIV id=map 
+            style="BACKGROUND-COLOR: mediumblue; FILTER: Light; HEIGHT: 120px; OVERFLOW: hidden; WIDTH: 240px"><FONT 
+            id=world 
+            style="COLOR: green; FONT-FAMILY: Webdings; FONT-SIZE: 185px; LEFT: 0px; POSITION: relative; TOP: -26px">&ucirc;&ucirc;</FONT> 
+            </DIV>&Ugrave; </TD></TR></TBODY></TABLE><BR><SELECT name=continentMenu 
+      onchange=chContinent() 
+      style="BACKGROUND-COLOR: #bcc496; FONT-SIZE: 9pt; FONT-STYLE: normal; FONT-VARIANT: normal; FONT-WEIGHT: normal; LINE-HEIGHT: normal; WIDTH: 240px"></SELECT><BR><SELECT 
+      name=countryMenu onchange=chCountry() 
+      style="BACKGROUND-COLOR: #bcc496; FONT-SIZE: 9pt; FONT-STYLE: normal; FONT-VARIANT: normal; FONT-WEIGHT: normal; LINE-HEIGHT: normal; WIDTH: 240px"></SELECT></P></TD></FORM><!------------------------------ 万年历 ----------------------------------->
+    <FORM name=CLD>
+    <TD align=middle height=340>
+      <DIV style="POSITION: absolute; TOP: 30px; Z-INDEX: -1"><FONT id=YMBG 
+      style="COLOR: #f0f0f0; FONT-FAMILY: 'Arial Black'; FONT-SIZE: 100pt">&nbsp;0000<BR>&nbsp;JUN</FONT> 
+      </DIV>
+      <TABLE border=0>
+        <TBODY>
+        <TR>
+          <TD bgColor=#000080 colSpan=7><FONT color=#ffffff size=2 
+            style="FONT-SIZE: 9pt">西历<SELECT name=SY onchange=changeCld() 
+            style="FONT-SIZE: 9pt"> 
+              <SCRIPT language=JavaScript><!-- 
+            for(i=1900;i<2051;i++) document.write('<option>'+i)
+            //--></SCRIPT>
+            </SELECT>年<SELECT name=SM onchange=changeCld() 
+            style="FONT-SIZE: 9pt"> 
+              <SCRIPT language=JavaScript><!-- 
+            for(i=1;i<13;i++) document.write('<option>'+i)
+            //--></SCRIPT>
+            </SELECT>月</FONT> <FONT color=#ffff00 id=GZ size=4></FONT><BR></TD></TR>
+        <TR align=middle bgColor=#ccccff>
+          <TD width=54>日</TD>
+          <TD width=54>一</TD>
+          <TD width=54>二</TD>
+          <TD width=50>三</TD>
+          <TD width=54>四</TD>
+          <TD width=54>五</TD>
+          <TD width=54>六</TD></TR>
+        <SCRIPT language=JavaScript><!--
+            var gNum, color1, color2;
+
+            // 星期六颜色
+            switch (conWeekend) {
+            case 1:
+               color1 = 'black';
+               color2 = color1;
+               break;
+            case 2:
+               color1 = 'green';
+               color2 = color1;
+               break;
+            case 3:
+               color1 = 'red';
+               color2 = color1;
+               break;
+            default :
+               color1 = 'green';
+               color2 = 'red';
+            }
+
+            for(i=0;i<6;i++) {
+               document.write('<tr align=center>')
+               for(j=0;j<7;j++) {
+                  gNum = i*7+j
+                  document.write('<td id="GD' + gNum +'" onMouseOver="mOvr(' + gNum +')" onMouseOut="mOut()"><font id="SD' + gNum +'" size=5 face="Arial Black"')
+                  if(j == 0) document.write(' color=red')
+                  if(j == 6) {
+                     if(i%2==1) document.write(' color='+color2)
+                        else document.write(' color='+color1)
+                  }
+                  document.write(' TITLE=""> </font><br><font id="LD' + gNum + '" size=2 style="font-size:9pt"> </font></td>')
+               }
+               document.write('</tr>')
+            }
+            //--></SCRIPT>
+        </TBODY></TABLE></TD>
+    <TD align=middle height=340 vAlign=top width=40><BR><BR><BR>年<BR><BUTTON 
+      onclick="pushBtm('YD')" style="FONT-SIZE: 9pt">▲</BUTTON><BR><BUTTON 
+      onclick="pushBtm('YU')" style="FONT-SIZE: 9pt">◆</BUTTON> 
+      <P>月<BR><BUTTON onclick="pushBtm('MD')" 
+      style="FONT-SIZE: 9pt">▲</BUTTON><BR><BUTTON onclick="pushBtm('MU')" 
+      style="FONT-SIZE: 9pt">◆</BUTTON> 
+      <P><BUTTON onclick="pushBtm('')" style="FONT-SIZE: 9pt">当<BR>月</BUTTON> 
+      <P></P></TD></FORM></TR></TBODY></TABLE></CENTER>
+<P align=center class=MsoNormal 
+style="TEXT-JUSTIFY: inter-ideograph; VERTICAL-ALIGN: bottom; mso-pagination: widow-orphan"><B><SPAN 
+style="LETTER-SPACING: -1pt; mso-bidi-font-size: 10.0pt"><FONT color=#3333ff 
+size=4>日上时起法：甲己还加甲；乙庚丙作初；丙辛从戊起；丁壬庚子居；戊癸壬子行<B 
+style="LETTER-SPACING: -1pt; mso-bidi-font-size: 10.0pt">。</B></FONT></SPAN></B><SPAN 
+lang=EN-US 
+style="FONT-SIZE: 16pt; LETTER-SPACING: -1pt; mso-bidi-font-size: 10.0pt"><B 
+style="mso-bidi-font-weight: normal"><O:P></O:P><BR></B></SPAN></P></BODY></HTML>
+

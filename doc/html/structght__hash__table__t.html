@@ -1,0 +1,181 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<title>BMY: ght_hash_table_t结构参考</title>
+<link href="doxygen.css" rel="stylesheet" type="text/css">
+<link href="tabs.css" rel="stylesheet" type="text/css">
+</head><body>
+<!-- 制作者 Doxygen 1.5.5 -->
+<script type="text/javascript">
+<!--
+function changeDisplayState (e){
+  var num=this.id.replace(/[^[0-9]/g,'');
+  var button=this.firstChild;
+  var sectionDiv=document.getElementById('dynsection'+num);
+  if (sectionDiv.style.display=='none'||sectionDiv.style.display==''){
+    sectionDiv.style.display='block';
+    button.src='open.gif';
+  }else{
+    sectionDiv.style.display='none';
+    button.src='closed.gif';
+  }
+}
+function initDynSections(){
+  var divs=document.getElementsByTagName('div');
+  var sectionCounter=1;
+  for(var i=0;i<divs.length-1;i++){
+    if(divs[i].className=='dynheader'&&divs[i+1].className=='dynsection'){
+      var header=divs[i];
+      var section=divs[i+1];
+      var button=header.firstChild;
+      if (button!='IMG'){
+        divs[i].insertBefore(document.createTextNode(' '),divs[i].firstChild);
+        button=document.createElement('img');
+        divs[i].insertBefore(button,divs[i].firstChild);
+      }
+      header.style.cursor='pointer';
+      header.onclick=changeDisplayState;
+      header.id='dynheader'+sectionCounter;
+      button.src='closed.gif';
+      section.id='dynsection'+sectionCounter;
+      section.style.display='none';
+      section.style.marginLeft='14px';
+      sectionCounter++;
+    }
+  }
+}
+window.onload = initDynSections;
+-->
+</script>
+<div class="navigation" id="top">
+  <div class="tabs">
+    <ul>
+      <li><a href="index.html"><span>首页</span></a></li>
+      <li class="current"><a href="annotated.html"><span>数据结构</span></a></li>
+      <li><a href="files.html"><span>文件</span></a></li>
+    </ul>
+  </div>
+  <div class="tabs">
+    <ul>
+      <li><a href="annotated.html"><span>数据结构</span></a></li>
+      <li><a href="functions.html"><span>数据字段</span></a></li>
+    </ul>
+  </div>
+</div>
+<div class="contents">
+<h1>ght_hash_table_t结构参考</h1><!-- doxytag: class="ght_hash_table_t" --><code>#include &lt;<a class="el" href="ght__hash__table_8h-source.html">ght_hash_table.h</a>&gt;</code>
+<p>
+<div class="dynheader">
+ght_hash_table_t合作图：</div>
+<div class="dynsection">
+<p><center><img src="structght__hash__table__t__coll__graph.png" border="0" usemap="#ght__hash__table__t__coll__map" alt="Collaboration graph"></center>
+<map name="ght__hash__table__t__coll__map">
+<area shape="rect" href="structght__hash__key__t.html" title="ght_hash_key_t" alt="" coords="9,6,121,30"></map>
+<center><font size="2">[<a href="graph_legend.html">图例</a>]</font></center></div>
+<table border="0" cellpadding="0" cellspacing="0">
+<tr><td></td></tr>
+<tr><td colspan="2"><br><h2>数据成员</h2></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="structght__hash__table__t.html#e21004a4cef89bc7ee7228a63c325a4d">i_items</a></td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="structght__hash__table__t.html#0206018ea01bfdc36c294b53e18d132d">i_size</a></td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="ght__hash__table_8h.html#7ccccf2ebc8bef8004d3899ac5c620fa">ght_fn_hash_t</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="structght__hash__table__t.html#cf0d5664cb73c84a9e3c5528fd100f13">fn_hash</a></td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="structght__hash__table__t.html#98dbb1fcfb555bb138aa5406bb72208b">i_heuristics</a></td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="structght__hash__table__t.html#f9bbf13e3c9cd39bf6fad12bb0318e87">i_automatic_rehash</a></td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="anchor" name="a9d96a07b6cc949719beaced923121c1"></a><!-- doxytag: member="ght_hash_table_t::pp_entries" ref="a9d96a07b6cc949719beaced923121c1" args="" -->
+ght_hash_entry_t **&nbsp;</td><td class="memItemRight" valign="bottom"><b>pp_entries</b></td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="anchor" name="b0b506623a1b32fa3ff727e754199826"></a><!-- doxytag: member="ght_hash_table_t::p_nr" ref="b0b506623a1b32fa3ff727e754199826" args="" -->
+int *&nbsp;</td><td class="memItemRight" valign="bottom"><b>p_nr</b></td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="anchor" name="dfec64cfd45074609cec0dc897b6c235"></a><!-- doxytag: member="ght_hash_table_t::i_size_mask" ref="dfec64cfd45074609cec0dc897b6c235" args="" -->
+int&nbsp;</td><td class="memItemRight" valign="bottom"><b>i_size_mask</b></td></tr>
+
+</table>
+<hr><a name="_details"></a><h2>详细描述</h2>
+The hash table structure. <hr><h2>字段文档</h2>
+<a class="anchor" name="e21004a4cef89bc7ee7228a63c325a4d"></a><!-- doxytag: member="ght_hash_table_t::i_items" ref="e21004a4cef89bc7ee7228a63c325a4d" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned int <a class="el" href="structght__hash__table__t.html#e21004a4cef89bc7ee7228a63c325a4d">i_items</a>          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+The current number of items in the table 
+</div>
+</div><p>
+<a class="anchor" name="0206018ea01bfdc36c294b53e18d132d"></a><!-- doxytag: member="ght_hash_table_t::i_size" ref="0206018ea01bfdc36c294b53e18d132d" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned int <a class="el" href="structght__hash__table__t.html#0206018ea01bfdc36c294b53e18d132d">i_size</a>          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+The number of buckets 
+</div>
+</div><p>
+<a class="anchor" name="cf0d5664cb73c84a9e3c5528fd100f13"></a><!-- doxytag: member="ght_hash_table_t::fn_hash" ref="cf0d5664cb73c84a9e3c5528fd100f13" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="ght__hash__table_8h.html#7ccccf2ebc8bef8004d3899ac5c620fa">ght_fn_hash_t</a> <a class="el" href="structght__hash__table__t.html#cf0d5664cb73c84a9e3c5528fd100f13">fn_hash</a>          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+The hash function used 
+</div>
+</div><p>
+<a class="anchor" name="98dbb1fcfb555bb138aa5406bb72208b"></a><!-- doxytag: member="ght_hash_table_t::i_heuristics" ref="98dbb1fcfb555bb138aa5406bb72208b" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="structght__hash__table__t.html#98dbb1fcfb555bb138aa5406bb72208b">i_heuristics</a>          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+The type of heuristics used 
+</div>
+</div><p>
+<a class="anchor" name="f9bbf13e3c9cd39bf6fad12bb0318e87"></a><!-- doxytag: member="ght_hash_table_t::i_automatic_rehash" ref="f9bbf13e3c9cd39bf6fad12bb0318e87" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="structght__hash__table__t.html#f9bbf13e3c9cd39bf6fad12bb0318e87">i_automatic_rehash</a>          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+TRUE if automatic rehashing is used 
+</div>
+</div><p>
+<hr>该结构的文档由以下文件生成：<ul>
+<li><a class="el" href="ght__hash__table_8h-source.html">ght_hash_table.h</a></ul>
+</div>
+<hr size="1"><address style="text-align: right;"><small>Generated at Fri Aug 29 10:29:24 2008 for BMY by&nbsp;
+<a href="http://www.doxygen.org/index.html">
+<img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.5 </small></address>
+</body>
+</html>

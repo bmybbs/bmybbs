@@ -1,0 +1,37 @@
+Support for secure RPC, secure NFS, and NIS_PLUS Andy Polyakov
+<appro@fy.chalmers.se>
+
+- Provides support for secure RPC on systems with keyserv version 1-2.
+  Autoconfigured and tested on Solaris 2.5.1 and HP-UX 10.20 boxes.
+  It's also possible now to hire keyserv for generating passphrase for
+  private key encryption/decryption. If you try to encrypt your key
+  with SUN-DES-1 passphrase, ssh-keygen will substitute it with a
+  64-bit phrase crypted with your secret RPC key. It's functional
+  replacement for ssh-agent. Proc and cons:
+  - you use the only password (your login password) to get things
+    working;
+  - it's invariant to login password as secret key is not changed when
+    login password is changed, just reencrypted with new password;
+  - if you have your secret key is registered in keyserv, anybody who
+    runs under your uid can decrypt your private key (well, same as
+    when you keep it in ssh-agent). so it's important to run keylogout
+    when you logout or leave and for example lock the screen (i have
+    modified version of xlock that keylogout at start and keylogin when
+    unlock the screen with your password:-);
+
+- Provides support for secure NFS, autoconfigured and tested on
+  Solaris 2.5.1;
+
+- Provides support for NIS+, autoconfigured and tested on Solaris
+  2.5.1. Support is forced so that you don't have to recompile if you
+  suddenly choose to move to NIS+;
+
+- Ensures that user shell is listed in /etc/shells on systems that
+  support getusershell(). The option has to be enabled manually with
+  #define CHECK_ETC_SHELLS and tested on Solaris 2.5.1 machine;
+
+- Provides support for password aging on systems with /etc/shadow.
+  Tested on Solaris 2.5.1 and IRIX 5.3 machines. /etc/shadow support is
+  forced for SGI machines, so that you don't have to recompile if you
+  choose to convert it to /etc/shadow.
+

@@ -1,0 +1,3 @@
+#!/bin/sh
+#/usr/local/bin/hc -m g2b -t /usr/local/lib/chinese/hc3/hc.tab /usr/local/lib/chinese/hc3/unicode-hc.tab /usr/local/lib/chinese/hc3/unhc1.tab
+/usr/local/bin/hc -m g2b -t /usr/local/lib/chinese/hc3/hc.tab /usr/local/lib/chinese/hc3/jap-supp.tab /usr/local/lib/chinese/hc3/in-corr.tab /usr/local/lib/chinese/hc3/sym-supp.tab

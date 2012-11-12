@@ -1,0 +1,36 @@
+{TEXT-DECORATION: none;}
+A:HOVER {COLOR: #ff0000;}
+A:VISITED {text-decoration: none;}
+A:LINK {text-decoration: none;}
+.red {color: red;}
+.blk {color: black;}
+.blu {color: blue;}
+.tea {color: teal;}
+.gry {color: gray;}
+.sil {color: silver;}
+.pur {color: purple;}
+.mar {color: maroon;}
+.oli {color: olive;}
+.gre {color: green;}
+.lim {color: lime;}
+.whi {color: white;}
+.aqu {color: aqua;}
+.fuc {color: fuchsia;}
+.nav {color: navy;}
+.yel {color: yellow;}
+TABLE.BODY {BORDER: 2px solid; BORDER-COLOR: #d0f0c0;}
+body {BACKGROUND-COLOR: #f8f5ff; FONT-SIZE: 12px;}
+DIV,TABLE,TH,TD,P,INPUT,TEXTAREA,SELECT {FONT-SIZE: 12px;}
+.f3{font-size: medium}
+.f2{font-size: small}
+.tb2_blk {BACKGROUND-COLOR: #abc8f2; COLOR: black }
+.star { COLOR: yellow }
+.c30 {COLOR: #000000;}
+.c31 {COLOR: #e00000;}
+.c32 {COLOR: #008000;}
+.c33 {COLOR: #808000;}
+.c34 {COLOR: #0000ff;}
+.c35 {COLOR: #d000d0;}
+.c36 {COLOR: #33a0a0;}
+.c37 {COLOR: #000000;}
+.cwhite {COLOR: #f0f0f0;}

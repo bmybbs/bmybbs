@@ -1,0 +1,11 @@
+#
+# Title=闲人免进区 - 限站长进入               (BM: SYSOPS)
+#
+Name=Firebird BBS 2.5M 手册                 SYSOP 
+Path=~/Firebird-25M
+Numb=1
+#
+Name=本站管理者手册                         SYSOP 
+Path=~/admin-manual
+Numb=2
+#

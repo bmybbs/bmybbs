@@ -1,0 +1,27 @@
+
+
+   要离开了吗?  离站前您可以写信给站长, 或者是写写留言板喔!!
+
+   别忘了你也可以在 InfoEdit->WriteFile 中编辑自己的离站画面喔!!
+
+   离站画面的编辑法如下：
+                参数名称        解说
+                $userid         使用者代号
+                $username       使用者昵称
+                $realname       真实姓名
+                $address        使用者住址
+                $email          使用者的 E-mail
+                $termtype       萤幕型态
+                $log            上站次数
+                $pst            POST 数
+                $lastlogin      最近上站日期
+                $lasthost       从哪里上站
+                $now            目前时刻
+                $bbsname        站名
+                $stay           上站几分钟
+                $alltime        总上站累积时间
+                $exp            经验值
+                $cexp           中文经验值
+                $perf           表现值
+                $cperf          中文表现值
+

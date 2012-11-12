@@ -1,0 +1,123 @@
+#!/usr/local/bin/perl
+# 参数说明:
+#       in.bntpd /home/bbs
+# 设定方法:
+# 1. 将 port number 加入 /etc/services 中.
+#    (有设定 yp 请到 yp server 设定)
+#    bbsinnd    ????/tcp        # For BBS innd. (????: port number)
+# 2. 将 bbsinnd 加入 /etc/inetd.conf 中.
+#    bbsinnd  stream tcp nowait  bbs   /usr/etc/tcpd
+#    (续上行 ...)  /home/bbs/innd/in.bntpd /home/bbs
+
+select(STDOUT);
+$| = 1;
+($bbshome) = @ARGV;
+if( ! $bbshome ) {
+    print "Usage: bbsinnd bbs_home\n";
+    exit( 0 );
+}
+
+$logfile     = "$bbshome/bbslog";
+$inndhome    = "$bbshome/inndlog";
+$inndbinhome = "$bbshome/innd";
+$inntobbs    = "$inndbinhome/inntobbs";
+$nodelist    = "$inndhome/nodelist.bbs";
+@INC = ($inndhome);
+
+require "tcp.pl";
+require "rfc931.pl";
+
+&bbsinnd( STDIN, STDOUT );
+
+sub logit
+{
+    if( $logfile ) {
+	open( FN, ">> $logfile" );
+	print FN @_;
+	close( FN );
+#    } else {
+#	print @_;
+    }
+}
+
+sub wport
+{
+    local	($msg) = @_;
+
+    print OUTD "$msg\r\n";
+}
+
+sub readlines
+{
+    while( <INND> ) {
+	while( rindex( $_, "\n" ) >= 0 || rindex( $_, "\r" ) >= 0 ) {
+	    chop( $_ );
+	}
+	if( $_ eq "." ) { return; }
+	$Lines[ @Lines ] = "$_\n";
+    }
+}
+
+sub ihavefunc
+{
+    local	(@Lines);
+    local	($mode);
+
+    &readlines();
+    open( FN, "| $inntobbs $bbshome" );
+    print FN "NNTP-Host: $username\@$hostname\n";
+    print FN @Lines;
+    close( FN );
+}
+
+sub valid_host
+{
+    local	($host) = @_;
+
+    open( FN, $nodelist );
+    while( <FN> ) {
+	($id, $hostname) = split( /\s+/, $_ );
+	if( ord( $_ ) != ord( "#" ) && $host eq $hostname ) {
+	    return 1;
+	}
+    }
+    close( FN );
+    return 0;
+}
+
+sub bbsinnd {
+    local	(*INND, *OUTD) = @_;
+
+    $hostname = &remotehostname( INND );
+    $username = &rfc931_name( getpeername( INND ), getsockname( INND ) );
+    if( ! $username ) {
+	$username = "nobody";
+    }
+    $identstr = "$username\@$hostname";
+    if( &valid_host( $hostname ) == 0 ) {
+	&logit( ":Err: invalid connection ($identstr).\n" );
+	&wport( "502 You are not in my access file. ($identstr)" );
+	return;
+    }
+    &logit( "Connection established ($identstr).\n" );
+    &wport( "200 BBS InterNetNews NNRP server 3/1 95' ($identstr)." );
+    while (<INND>) {
+	while( rindex( $_, "\n" ) >= 0 || rindex( $_, "\r" ) >= 0 ) {
+	    chop( $_ );
+	}
+#	print "$_\n";
+	if( index( $_, "QUIT" ) == 0 || index( $_, "quit" ) == 0 ) {
+	    &wport( "205" );
+	    last;
+	} elsif( index( $_, "IHAVE" ) == 0 || index( $_, "ihave" ) == 0 ) {
+	    &wport( "335" );
+	    &ihavefunc();
+	    &wport( "235" );
+	} else {
+	    &logit( "Bad cmd ($identstr) $_\n" );
+	    &wport( "500 Syntax error or bad command" );
+	}
+    }
+    &logit( "Connection closed ($identstr).\n" );
+}
+

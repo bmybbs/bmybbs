@@ -1,0 +1,23 @@
+<html>
+<head>
+<meta http-equiv='Content-Type' content='text/html; charset=gb2312'>
+<ytht cur_css()>
+<style type=text/css>A {color: #0000f0}</style>
+</head>
+<body topmargin=0 leftMargin=1 MARGINWIDTH='1' MARGINHEIGHT='0'>
+<center>
+<ytht board_class()>
+<img src=/ytht.gif>
+<table width=100%>
+<td valign=top><center>
+<ytht show_excellent(class,all)>
+</td>
+<td valign=top width=40%>
+<ytht show_content(focus,焦点·热点,red);show_content(personal,网友文集 每日推荐,blk)>
+</td>
+</table>
+<hr><center>
+<ytht show_last_mark(all)>
+<ytht show_content(news,系统公告,blk)>
+</body>
+</html>

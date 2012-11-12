@@ -1,0 +1,12 @@
+diff -ur apache_1.3.26/src/include/httpd.h apache_1.3.26-p/src/include/httpd.h
+--- apache_1.3.26/src/include/httpd.h	Thu Nov 14 20:00:01 2002
++++ apache_1.3.26-p/src/include/httpd.h	Thu Nov 14 20:01:07 2002
+@@ -322,7 +322,7 @@
+ #elif defined(NETWARE)
+ #define HARD_SERVER_LIMIT 2048
+ #else
+-#define HARD_SERVER_LIMIT 256
++#define HARD_SERVER_LIMIT 1024
+ #endif
+ #endif
+ 

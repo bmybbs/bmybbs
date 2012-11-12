@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="GB2312"?>
+<job id="MakeHHP">
+   <runtime>
+     <named
+       name="d"
+       helpstring="需要处理的目录，不能和/z参数同时使用。"
+       type="string"
+       required="false"
+     />
+     <named
+       name="z"
+       helpstring="需要处理的tgz文件，不能和/d参数同时使用，需要tar和gzip支持。"
+       type="string"
+       required="false"
+     />
+     <named
+       name="cygwin"
+       helpstring="tar和gzip来自cygwin。"
+       type="string"
+       required="false"
+     />
+     <named
+       name="l"
+       helpstring="输出详细信息。使用时建议和cscript配合。"
+       type="simple"
+       required="false"
+     />
+     <named
+       name="i"
+       helpstring="自动生成生成索引。"
+       type="simple"
+       required="false"
+     />
+     <named
+       name="f"
+       helpstring="生成全文检索(会大大增加chm文件大小)。"
+       type="simple"
+       required="false"
+     />
+     <named
+       name="c"
+       helpstring="在生成project后自动编译，需要Microsoft HTML Help Workshop支持。"
+       type="simple"
+       required="false"
+     />
+     <named
+       name="e"
+       helpstring="在编译完成后自动删除源文件(project和需要处理的目录)，只能与/c参数共同使用。"
+       type="simple"
+       required="false"
+     />
+     <description>
+SMTH Html Help Project Maker v1.0
+
+本软件由KirbyZhou编写，其散播遵循GPL协议。GPL协议可以在GNU中国站上查阅。  
+kirbyzhou@263.net/smth bbs 上的kirbyzhou。  
+Jan 30 2002 
+
+本软件用于自动生成编译“水木清华”BBS精华区chm文件所需的Html Help Project文件。本软件一次可以处理精华区的一个版块，或者某版块下的一个子目录。本软件生成的.hhp文件需要由Microsoft HTML Help Workshop编译。如果您安装了该软件，可以指定/c参数。这样可以在生成project文件后自动编译。若您安装了可用的tar和gzip（可以在cygwin套件中找到），本软件也可以自动解压缩tgz文件加以处理。       
+
+注意：由于这是一个需要操作本地文件的脚本程序，反病毒程序和防火墙可能把本软件认作未知的恶意脚本。虽然本软件不含有任何故意的恶意代码，但也不对本软件对用户造成的任何可能的损害负责。传播过程中，他人在本软件中加入的任何代码对用户造成的损害，与原作者无关。  
+
+基于本程序代码的进一步开发，由GPL协议，是免费的和自由的，但是请保留原作者的署名。  
+
+本软件在Microsoft Windows Script Host 5.6，Microsoft Html Help Workshop 1.3下测试通过。  
+     </description>
+     <example>
+例如：
+     makehhp /d:d:\smth\sf
+     cscript makehhp /z:d:\smth\sf.html.tgz /c /i /e /cygwin
+     </example>
+   </runtime>
+   
+   <reference object="Scripting.FileSystemObject"/>
+   <reference guid="{EAB22AC0-30C1-11CF-A7EB-0000C05BAE0B}"/>
+   
+   <script language="JScript" src = "makehhp_.js"/>
+   
+   <resource id="hhp_file"><![CDATA[
+[OPTIONS]
+Binary Index=Yes
+Binary TOC=Yes
+Compatibility=1.1 or later
+Compiled file=e:\ytht\dest\%d.chm
+Contents file=%d.hhc
+Default Window=main
+Default topic=index.html
+Display compile progress=Yes
+Enhanced decompilation=Yes
+Index file=
+Language=0x804 中文(中国)
+Title=%t
+
+[WINDOWS]
+main=,"%d.hhc",,"index.html",,,,,,0x3120,,0x387e,,,,,,,,0
+
+[FILES]
+index.html
+%d.hhp
+%d.hhc
+
+[INFOTYPES]
+   ]]></resource>
+
+   <resource id="hhp_file_i"><![CDATA[
+[OPTIONS]
+Binary Index=Yes
+Binary TOC=Yes
+Compatibility=1.1 or later
+Compiled file=e:\ytht\dest\%d.chm
+Contents file=%d.hhc
+Default Window=main
+Default topic=index.html
+Display compile progress=Yes
+Enhanced decompilation=Yes
+Index file=%d.hhk
+Language=0x804 中文(中国)
+Title=%t
+
+[WINDOWS]
+main=,"%d.hhc","%d.hhk","index.html",,,,,,0x3120,,0x387e,,,,,,,,0
+
+[FILES]
+index.html
+%d.hhp
+%d.hhc
+%d.hhk
+
+[INFOTYPES]
+   ]]></resource>
+   
+   <resource id="hhp_file_f"><![CDATA[
+[OPTIONS]
+Binary Index=Yes
+Binary TOC=Yes
+Compatibility=1.1 or later
+Compiled file=e:\ytht\dest\%d.chm
+Contents file=%d.hhc
+Default Window=main
+Default topic=index.html
+Display compile progress=Yes
+Enhanced decompilation=Yes
+Full-text search=Yes
+Index file=
+Language=0x804 中文(中国)
+Title=%t
+
+[WINDOWS]
+main=,"%d.hhc",,"index.html",,,,,,0x3520,,0x387e,,,,,,,,0
+
+[FILES]
+index.html
+%d.hhp
+%d.hhc
+
+[INFOTYPES]
+   ]]></resource>
+   
+   <resource id="hhp_file_if"><![CDATA[
+[OPTIONS]
+Binary Index=Yes
+Binary TOC=Yes
+Compatibility=1.1 or later
+Compiled file=e:\ytht\dest\%d.chm
+Contents file=%d.hhc
+Default Window=main
+Default topic=index.html
+Display compile progress=Yes
+Enhanced decompilation=Yes
+Full-text search=Yes
+Index file=%d.hhk
+Language=0x804 中文(中国)
+Title=%t
+
+[WINDOWS]
+main=,"%d.hhc","%d.hhk","index.html",,,,,,0x3520,,0x387e,,,,,,,,0
+
+[FILES]
+index.html
+%d.hhp
+%d.hhc
+%d.hhk
+
+[INFOTYPES]
+   ]]></resource>
+   
+   <resource id="hhc_head"><![CDATA[
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.1">
+<!-- Sitemap 1.0 -->
+</HEAD><BODY>
+<OBJECT type="text/site properties">
+	<param name="ImageType" value="Folder">
+</OBJECT>
+   ]]></resource>
+   
+   <resource id="hhc_object"><![CDATA[
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="%t">
+		<param name="Local" value="%f">
+		</OBJECT>
+   ]]></resource>
+   
+   <resource id="hhc_folderhead"><![CDATA[
+<UL>
+   ]]></resource>
+   
+   <resource id="hhc_folderend"><![CDATA[
+</UL>
+   ]]></resource>
+   
+   <resource id="hhc_end"><![CDATA[
+</BODY></HTML>
+   ]]></resource>
+   
+   <resource id="hhk_file"><![CDATA[
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.1">
+<!-- Sitemap 1.0 -->
+</HEAD><BODY>
+<UL>
+</UL>
+</BODY></HTML>
+   ]]></resource>
+   
+   <resource id="hhk_head"><![CDATA[
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.1">
+<!-- Sitemap 1.0 -->
+</HEAD><BODY>
+<UL>
+   ]]></resource>
+
+   <resource id="hhk_end"><![CDATA[
+</UL>
+</BODY></HTML>
+   ]]></resource>
+
+   <resource id="hhk_objecthead"><![CDATA[
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="%t">
+   ]]></resource>
+
+   <resource id="hhk_objectend"><![CDATA[
+		</OBJECT>
+   ]]></resource>
+   
+   <resource id="hhk_objectitem"><![CDATA[
+		<param name="Name" value="%t">
+		<param name="Local" value="%f">
+   ]]></resource>
+  
+   <resource id="application.name">HtmlHelp Project Automake</resource>
+   
+   <object id="fso" progid="Scripting.FileSystemObject"/>
+   <object id="shell" progid="WScript.Shell"/>
+   
+</job>

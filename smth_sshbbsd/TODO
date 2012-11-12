@@ -1,0 +1,89 @@
+The first part of README is too long.
+
+Merge rdist into the ssh distribution. -> ssh-1.4.x
+  - patch for stdin/stdout
+  - -P arguments
+  - configure/makefile
+
+Update protocol to send information about the accepted authentication
+methods for the particular user after the user has been identified.
+-> ssh-2.x?
+
+Update protocol to send real client host name.  Add server
+configuration options to specify firewall names, and disable Rhosts
+authentication and trust the supplied name (with RSA, of course) if
+the connection appears to be coming from the firewall.
+-> ssh-2.x?
+
+Update protocol to include session id to both sides of session key.
+Change all encryption methods to use different keys for each direction.
+-> protocol version 2?
+
+Update protocol to use stronger MACs.
+-> protocol version 2?
+
+Extend protocol to easily permit ip-forwarding only servers without
+authentication.
+
+Update protocol to negotiate 16-bit packet size fields and string size fields.
+-> ??
+
+Some kind of access control for forwarded sockets (e.g., localhost only).
+
+Check X11 authentication sometimes fails (particularly on HPUX).
+
+npasswd-style checking for passphrases. mcduff@physics.uq.oz.au.
+
+Check whether Kocher's timing attack is applicable to ssh.
+Should ssh sleep a random time after each RSA computation?
+--> should blind, in 1.3.1?
+
+Add escape ~% to print out compression statistics.  Also, show
+information about encryption status.
+
+Host key fingerprints (ssh-keygen, shown when mismatch or new).
+Thomas.Koenig@ciw.uni-karlsruhe.de.
+
+Consider using snprintf instead of sprintf.
+
+debug() should append \r\n when in raw mode.
+
+servconf.c: log an error if unrecognized option/argument (but don't exit).
+
+Some kind of "ftp" on top of ssh.
+
+Add client option Verbose (same as -v option).
+
+Fix (note not always the suggested fix):
+> rfc-pg.c:56:exit used without including <stdlib.h>
+> remove.c:5:unlink used without including <unistd.h>
+> scp.c:265:tolocal begins with to, which is reserved for <ctype.h>
+> scp.c:266:toremote begins with to, which is reserved for <ctype.h>
+
+Store IP-address in utmp if host name too long?
+From: Holger Trapp <Holger.Trapp@Informatik.TU-Chemnitz.DE>
+
+Makefile.in: Warn if installing as non-root
+
+RSAPrivateDecrypt sometimes fails on Alpha (keys < 1024 bytes).
+Brad Karp <karp@eecs.harvard.edu>
+
+/etc/issue or equivalent.
+
+Check operation with RSAREF on alpha.
+
+Test compiling with Solaris 2.4 native compiler (v 3.0).
+
+Provide step-by-step instructions for using RSA authentication.
+
+Check all uses of getpwuid, and see if they could be replaced by
+getpwnam.  Now ssh may check the wrong home directory when there are
+several accounts with the same uid.
+
+Check that log messages from tcp_wrappers with ssh get logged.
+
+Change userfile_gets to allow arbitrary long input lines. 
+
+Add --with-system-gmp option to configure.
+
+Add --with-system-zlib option to configure.

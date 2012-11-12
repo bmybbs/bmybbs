@@ -1,0 +1,5 @@
+#!/bin/sh
+umask 077
+/bin/cat >> /home/bbs/bm/$1
+/bin/chown bbs.bbs /home/bbs/bm/$1
+# END

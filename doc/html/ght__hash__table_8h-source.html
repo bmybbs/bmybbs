@@ -1,0 +1,189 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<title>BMY: ght_hash_table.h源文件</title>
+<link href="doxygen.css" rel="stylesheet" type="text/css">
+<link href="tabs.css" rel="stylesheet" type="text/css">
+</head><body>
+<!-- 制作者 Doxygen 1.5.5 -->
+<script type="text/javascript">
+<!--
+function changeDisplayState (e){
+  var num=this.id.replace(/[^[0-9]/g,'');
+  var button=this.firstChild;
+  var sectionDiv=document.getElementById('dynsection'+num);
+  if (sectionDiv.style.display=='none'||sectionDiv.style.display==''){
+    sectionDiv.style.display='block';
+    button.src='open.gif';
+  }else{
+    sectionDiv.style.display='none';
+    button.src='closed.gif';
+  }
+}
+function initDynSections(){
+  var divs=document.getElementsByTagName('div');
+  var sectionCounter=1;
+  for(var i=0;i<divs.length-1;i++){
+    if(divs[i].className=='dynheader'&&divs[i+1].className=='dynsection'){
+      var header=divs[i];
+      var section=divs[i+1];
+      var button=header.firstChild;
+      if (button!='IMG'){
+        divs[i].insertBefore(document.createTextNode(' '),divs[i].firstChild);
+        button=document.createElement('img');
+        divs[i].insertBefore(button,divs[i].firstChild);
+      }
+      header.style.cursor='pointer';
+      header.onclick=changeDisplayState;
+      header.id='dynheader'+sectionCounter;
+      button.src='closed.gif';
+      section.id='dynsection'+sectionCounter;
+      section.style.display='none';
+      section.style.marginLeft='14px';
+      sectionCounter++;
+    }
+  }
+}
+window.onload = initDynSections;
+-->
+</script>
+<div class="navigation" id="top">
+  <div class="tabs">
+    <ul>
+      <li><a href="index.html"><span>首页</span></a></li>
+      <li><a href="annotated.html"><span>数据结构</span></a></li>
+      <li class="current"><a href="files.html"><span>文件</span></a></li>
+    </ul>
+  </div>
+<h1>ght_hash_table.h</h1><a href="ght__hash__table_8h.html">浏览该文件的文档。</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
+<a name="l00002"></a>00002 <span class="comment"> * Copyright (C) 2001-2002,  Simon Kagstrom</span>
+<a name="l00003"></a>00003 <span class="comment"> *</span>
+<a name="l00004"></a>00004 <span class="comment"> * Filename:      ght_hash_table.h.in</span>
+<a name="l00005"></a>00005 <span class="comment"> * Description:   The definitions used in the hash table.</span>
+<a name="l00006"></a>00006 <span class="comment"> *</span>
+<a name="l00007"></a>00007 <span class="comment"> * This program is free software; you can redistribute it and/or</span>
+<a name="l00008"></a>00008 <span class="comment"> * modify it under the terms of the GNU Library General Public License</span>
+<a name="l00009"></a>00009 <span class="comment"> * as published by the Free Software Foundation; either version 2</span>
+<a name="l00010"></a>00010 <span class="comment"> * of the License, or (at your option) any later version.</span>
+<a name="l00011"></a>00011 <span class="comment"> *</span>
+<a name="l00012"></a>00012 <span class="comment"> * This program is distributed in the hope that it will be useful,</span>
+<a name="l00013"></a>00013 <span class="comment"> * but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<a name="l00014"></a>00014 <span class="comment"> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<a name="l00015"></a>00015 <span class="comment"> * GNU General Public License for more details.</span>
+<a name="l00016"></a>00016 <span class="comment"> *</span>
+<a name="l00017"></a>00017 <span class="comment"> * You should have received a copy of the GNU Library General Public</span>
+<a name="l00018"></a>00018 <span class="comment"> * License along with this program; if not, write to the Free Software</span>
+<a name="l00019"></a>00019 <span class="comment"> * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA</span>
+<a name="l00020"></a>00020 <span class="comment"> * 02111-1307, USA.</span>
+<a name="l00021"></a>00021 <span class="comment"> *</span>
+<a name="l00022"></a>00022 <span class="comment"> * $Log: ght_hash_table.h,v $</span>
+<a name="l00023"></a>00023 <span class="comment"> * Revision 1.2  2002/02/27 15:05:43  simon</span>
+<a name="l00024"></a>00024 <span class="comment"> * Updated documentation, size is unsigned</span>
+<a name="l00025"></a>00025 <span class="comment"> *</span>
+<a name="l00026"></a>00026 <span class="comment"> * Revision 1.1.1.1  2002/02/26 18:21:25  simon</span>
+<a name="l00027"></a>00027 <span class="comment"> * libghthash MK2</span>
+<a name="l00028"></a>00028 <span class="comment"> *</span>
+<a name="l00029"></a>00029 <span class="comment"> */</span>
+<a name="l00030"></a>00030 
+<a name="l00067"></a>00067 <span class="preprocessor">#ifndef GHT_HASH_TABLE_H</span>
+<a name="l00068"></a>00068 <span class="preprocessor"></span><span class="preprocessor">#define GHT_HASH_TABLE_H</span>
+<a name="l00069"></a>00069 <span class="preprocessor"></span>
+<a name="l00070"></a>00070 <span class="preprocessor">#define GHT_HEURISTICS_NONE          0</span>
+<a name="l00071"></a>00071 <span class="preprocessor"></span><span class="preprocessor">#define GHT_HEURISTICS_TRANSPOSE     1</span>
+<a name="l00072"></a>00072 <span class="preprocessor"></span><span class="preprocessor">#define GHT_HEURISTICS_MOVE_TO_FRONT 2</span>
+<a name="l00073"></a>00073 <span class="preprocessor"></span><span class="preprocessor">#define GHT_AUTOMATIC_REHASH         4</span>
+<a name="l00074"></a>00074 <span class="preprocessor"></span>
+<a name="l00075"></a>00075 <span class="preprocessor">#ifndef TRUE</span>
+<a name="l00076"></a>00076 <span class="preprocessor"></span><span class="preprocessor">#define TRUE 1</span>
+<a name="l00077"></a>00077 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00078"></a>00078 <span class="preprocessor"></span>
+<a name="l00079"></a>00079 <span class="preprocessor">#ifndef FALSE</span>
+<a name="l00080"></a>00080 <span class="preprocessor"></span><span class="preprocessor">#define FALSE 0</span>
+<a name="l00081"></a>00081 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00082"></a>00082 <span class="preprocessor"></span>
+<a name="l00084"></a><a class="code" href="ght__hash__table_8h.html#8255dcd8ac683bedac3f1623b406c4cc">00084</a> <span class="keyword">typedef</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code" href="ght__hash__table_8h.html#8255dcd8ac683bedac3f1623b406c4cc">ght_uint32_t</a>;
+<a name="l00085"></a>00085 
+<a name="l00090"></a><a class="code" href="structght__hash__key__t.html">00090</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>s_hash_key
+<a name="l00091"></a>00091 {
+<a name="l00092"></a><a class="code" href="structght__hash__key__t.html#0206018ea01bfdc36c294b53e18d132d">00092</a>   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i_size;       
+<a name="l00093"></a><a class="code" href="structght__hash__key__t.html#91df56270e4334ab8bd4418a2be6be53">00093</a>   <span class="keywordtype">void</span> *p_key;               
+<a name="l00094"></a>00094 } <a class="code" href="structght__hash__key__t.html">ght_hash_key_t</a>;
+<a name="l00095"></a>00095 
+<a name="l00096"></a>00096 <span class="comment">/*</span>
+<a name="l00097"></a>00097 <span class="comment"> * The structure for hash entries.</span>
+<a name="l00098"></a>00098 <span class="comment"> */</span>
+<a name="l00099"></a>00099 <span class="keyword">typedef</span> <span class="keyword">struct </span>s_hash_entry
+<a name="l00100"></a>00100 {
+<a name="l00101"></a>00101   <span class="keywordtype">void</span> *p_data;
+<a name="l00102"></a>00102   <a class="code" href="structght__hash__key__t.html">ght_hash_key_t</a> *p_key;
+<a name="l00103"></a>00103 
+<a name="l00104"></a>00104   <span class="keyword">struct </span>s_hash_entry *p_next;
+<a name="l00105"></a>00105   <span class="keyword">struct </span>s_hash_entry *p_prev;
+<a name="l00106"></a>00106   <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> i_flags;
+<a name="l00107"></a>00107 } ght_hash_entry_t;
+<a name="l00108"></a>00108 
+<a name="l00109"></a>00109 <span class="comment">/*</span>
+<a name="l00110"></a>00110 <span class="comment"> * The structure used in iterations. You should not care about the</span>
+<a name="l00111"></a>00111 <span class="comment"> * contents of this, it will be filled and updated by ght_first() and</span>
+<a name="l00112"></a>00112 <span class="comment"> * ght_next().</span>
+<a name="l00113"></a>00113 <span class="comment"> */</span>
+<a name="l00114"></a>00114 <span class="keyword">typedef</span> <span class="keyword">struct</span>
+<a name="l00115"></a>00115 {
+<a name="l00116"></a>00116   <span class="keywordtype">int</span> i_curr_bucket;         <span class="comment">/* The current bucket */</span>
+<a name="l00117"></a>00117   ght_hash_entry_t *p_entry; <span class="comment">/* The current entry */</span>
+<a name="l00118"></a>00118 } ght_iterator_t;
+<a name="l00119"></a>00119 
+<a name="l00132"></a><a class="code" href="ght__hash__table_8h.html#7ccccf2ebc8bef8004d3899ac5c620fa">00132</a> <span class="keyword">typedef</span> <a class="code" href="ght__hash__table_8h.html#8255dcd8ac683bedac3f1623b406c4cc">ght_uint32_t</a> (*<a class="code" href="ght__hash__table_8h.html#7ccccf2ebc8bef8004d3899ac5c620fa">ght_fn_hash_t</a>)(<a class="code" href="structght__hash__key__t.html">ght_hash_key_t</a> *p_key);
+<a name="l00133"></a>00133 
+<a name="l00137"></a><a class="code" href="structght__hash__table__t.html">00137</a> <span class="keyword">typedef</span> <span class="keyword">struct</span>
+<a name="l00138"></a>00138 {
+<a name="l00139"></a><a class="code" href="structght__hash__table__t.html#e21004a4cef89bc7ee7228a63c325a4d">00139</a>   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i_items;              
+<a name="l00140"></a><a class="code" href="structght__hash__table__t.html#0206018ea01bfdc36c294b53e18d132d">00140</a>   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i_size;               
+<a name="l00141"></a><a class="code" href="structght__hash__table__t.html#cf0d5664cb73c84a9e3c5528fd100f13">00141</a>   <a class="code" href="ght__hash__table_8h.html#7ccccf2ebc8bef8004d3899ac5c620fa">ght_fn_hash_t</a> fn_hash;             
+<a name="l00142"></a><a class="code" href="structght__hash__table__t.html#98dbb1fcfb555bb138aa5406bb72208b">00142</a>   <span class="keywordtype">int</span> i_heuristics;                  
+<a name="l00143"></a><a class="code" href="structght__hash__table__t.html#f9bbf13e3c9cd39bf6fad12bb0318e87">00143</a>   <span class="keywordtype">int</span> i_automatic_rehash;            
+<a name="l00145"></a>00145   <span class="comment">/* private: */</span>
+<a name="l00146"></a>00146   ght_hash_entry_t **pp_entries;
+<a name="l00147"></a>00147   <span class="keywordtype">int</span> *p_nr;                         <span class="comment">/* The number of entries in each bucket */</span>
+<a name="l00148"></a>00148   <span class="keywordtype">int</span> i_size_mask;                   <span class="comment">/* The number of bits used in the size */</span>
+<a name="l00149"></a>00149 } <a class="code" href="structght__hash__table__t.html">ght_hash_table_t</a>;
+<a name="l00150"></a>00150 
+<a name="l00186"></a>00186 <a class="code" href="structght__hash__table__t.html">ght_hash_table_t</a> *<a class="code" href="ght__hash__table_8h.html#e9f9dab962224d98f71e431d0929b5da">ght_create</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i_size, <a class="code" href="ght__hash__table_8h.html#7ccccf2ebc8bef8004d3899ac5c620fa">ght_fn_hash_t</a> fn_hash, <span class="keywordtype">int</span> i_flags);
+<a name="l00187"></a>00187 
+<a name="l00220"></a>00220 <span class="keywordtype">int</span> <a class="code" href="ght__hash__table_8h.html#dc4d38a6d414b9deed1f14baba6745f3">ght_insert</a>(<a class="code" href="structght__hash__table__t.html">ght_hash_table_t</a> *p_ht,
+<a name="l00221"></a>00221                <span class="keywordtype">void</span> *p_entry_data,
+<a name="l00222"></a>00222                <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i_key_size, <span class="keywordtype">void</span> *p_key_data);
+<a name="l00223"></a>00223 
+<a name="l00234"></a>00234 <span class="keywordtype">void</span> *<a class="code" href="ght__hash__table_8h.html#d387f46318074aaa9022e6038a8bd995">ght_get</a>(<a class="code" href="structght__hash__table__t.html">ght_hash_table_t</a> *p_ht,
+<a name="l00235"></a>00235               <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i_key_size, <span class="keywordtype">void</span> *p_key_data);
+<a name="l00236"></a>00236 
+<a name="l00247"></a>00247 <span class="keywordtype">void</span> *<a class="code" href="ght__hash__table_8h.html#986bbd26b7afd2461d0489f185353857">ght_remove</a>(<a class="code" href="structght__hash__table__t.html">ght_hash_table_t</a> *p_ht,
+<a name="l00248"></a>00248                  <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i_key_size, <span class="keywordtype">void</span> *p_key_data);
+<a name="l00249"></a>00249 
+<a name="l00286"></a>00286 <span class="keywordtype">void</span> *<a class="code" href="ght__hash__table_8h.html#7ef5668248de379e1d1c1818e1482078">ght_first</a>(<a class="code" href="structght__hash__table__t.html">ght_hash_table_t</a> *p_ht, ght_iterator_t *p_iterator);
+<a name="l00287"></a>00287 
+<a name="l00305"></a>00305 <span class="keywordtype">void</span> *<a class="code" href="ght__hash__table_8h.html#0a3876a4c069c754e1317d6327888074">ght_next</a>(<a class="code" href="structght__hash__table__t.html">ght_hash_table_t</a> *p_ht, ght_iterator_t *p_iterator);
+<a name="l00306"></a>00306 
+<a name="l00323"></a>00323 <span class="keywordtype">void</span> <a class="code" href="ght__hash__table_8h.html#56b5a79427c6f61546a187904eb83d20">ght_rehash</a>(<a class="code" href="structght__hash__table__t.html">ght_hash_table_t</a> *p_ht, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i_size);
+<a name="l00324"></a>00324 
+<a name="l00346"></a>00346 <span class="keywordtype">void</span> <a class="code" href="ght__hash__table_8h.html#2ed7c1800f34c9db08c25b1aea52d157">ght_finalize</a>(<a class="code" href="structght__hash__table__t.html">ght_hash_table_t</a> *p_ht);
+<a name="l00347"></a>00347 
+<a name="l00348"></a>00348 <span class="comment">/* exported hash functions */</span>
+<a name="l00349"></a>00349 
+<a name="l00362"></a>00362 <a class="code" href="ght__hash__table_8h.html#8255dcd8ac683bedac3f1623b406c4cc">ght_uint32_t</a> <a class="code" href="ght__hash__table_8h.html#9779b2a98b420e153eb53a12c1702751">ght_one_at_a_time_hash</a>(<a class="code" href="structght__hash__key__t.html">ght_hash_key_t</a> *p_key);
+<a name="l00363"></a>00363 
+<a name="l00374"></a>00374 <a class="code" href="ght__hash__table_8h.html#8255dcd8ac683bedac3f1623b406c4cc">ght_uint32_t</a> <a class="code" href="ght__hash__table_8h.html#3b82225a954364929c62ac241f417420">ght_rotating_hash</a>(<a class="code" href="structght__hash__key__t.html">ght_hash_key_t</a> *p_key);
+<a name="l00375"></a>00375 
+<a name="l00386"></a>00386 <a class="code" href="ght__hash__table_8h.html#8255dcd8ac683bedac3f1623b406c4cc">ght_uint32_t</a> <a class="code" href="ght__hash__table_8h.html#9450c892d6480f6bf6ed558945a5da37">ght_crc_hash</a>(<a class="code" href="structght__hash__key__t.html">ght_hash_key_t</a> *p_key);
+<a name="l00387"></a>00387 
+<a name="l00388"></a>00388 <span class="preprocessor">#ifdef USE_PROFILING</span>
+<a name="l00389"></a>00389 <span class="preprocessor"></span>
+<a name="l00393"></a>00393 <span class="keywordtype">void</span> ght_print(<a class="code" href="structght__hash__table__t.html">ght_hash_table_t</a> *p_ht);
+<a name="l00394"></a>00394 <span class="preprocessor">#endif</span>
+<a name="l00395"></a>00395 <span class="preprocessor"></span>
+<a name="l00396"></a>00396 <span class="preprocessor">#endif </span><span class="comment">/* GHT_HASH_TABLE_H */</span>
+</pre></div></div>
+<hr size="1"><address style="text-align: right;"><small>Generated at Fri Aug 29 10:29:24 2008 for BMY by&nbsp;
+<a href="http://www.doxygen.org/index.html">
+<img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.5 </small></address>
+</body>
+</html>

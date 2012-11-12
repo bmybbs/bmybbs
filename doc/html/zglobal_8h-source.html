@@ -1,0 +1,315 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<title>BMY: zglobal.h源文件</title>
+<link href="doxygen.css" rel="stylesheet" type="text/css">
+<link href="tabs.css" rel="stylesheet" type="text/css">
+</head><body>
+<!-- 制作者 Doxygen 1.5.5 -->
+<script type="text/javascript">
+<!--
+function changeDisplayState (e){
+  var num=this.id.replace(/[^[0-9]/g,'');
+  var button=this.firstChild;
+  var sectionDiv=document.getElementById('dynsection'+num);
+  if (sectionDiv.style.display=='none'||sectionDiv.style.display==''){
+    sectionDiv.style.display='block';
+    button.src='open.gif';
+  }else{
+    sectionDiv.style.display='none';
+    button.src='closed.gif';
+  }
+}
+function initDynSections(){
+  var divs=document.getElementsByTagName('div');
+  var sectionCounter=1;
+  for(var i=0;i<divs.length-1;i++){
+    if(divs[i].className=='dynheader'&&divs[i+1].className=='dynsection'){
+      var header=divs[i];
+      var section=divs[i+1];
+      var button=header.firstChild;
+      if (button!='IMG'){
+        divs[i].insertBefore(document.createTextNode(' '),divs[i].firstChild);
+        button=document.createElement('img');
+        divs[i].insertBefore(button,divs[i].firstChild);
+      }
+      header.style.cursor='pointer';
+      header.onclick=changeDisplayState;
+      header.id='dynheader'+sectionCounter;
+      button.src='closed.gif';
+      section.id='dynsection'+sectionCounter;
+      section.style.display='none';
+      section.style.marginLeft='14px';
+      sectionCounter++;
+    }
+  }
+}
+window.onload = initDynSections;
+-->
+</script>
+<div class="navigation" id="top">
+  <div class="tabs">
+    <ul>
+      <li><a href="index.html"><span>首页</span></a></li>
+      <li><a href="annotated.html"><span>数据结构</span></a></li>
+      <li class="current"><a href="files.html"><span>文件</span></a></li>
+    </ul>
+  </div>
+<h1>zglobal.h</h1><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="preprocessor">#ifndef ZMODEM_GLOBAL_H</span>
+<a name="l00002"></a>00002 <span class="preprocessor"></span><span class="preprocessor">#define ZMODEM_GLOBAL_H</span>
+<a name="l00003"></a>00003 <span class="preprocessor"></span>
+<a name="l00004"></a>00004 <span class="comment">/* zglobal.h - prototypes etcetera for lrzsz</span>
+<a name="l00005"></a>00005 <span class="comment"></span>
+<a name="l00006"></a>00006 <span class="comment">  Copyright (C) until 1998 Chuck Forsberg (OMEN Technology Inc)</span>
+<a name="l00007"></a>00007 <span class="comment">  Copyright (C) 1994 Matt Porter</span>
+<a name="l00008"></a>00008 <span class="comment">  Copyright (C) 1996, 1997 Uwe Ohse</span>
+<a name="l00009"></a>00009 <span class="comment"></span>
+<a name="l00010"></a>00010 <span class="comment">  This program is free software; you can redistribute it and/or modify</span>
+<a name="l00011"></a>00011 <span class="comment">  it under the terms of the GNU General Public License as published by</span>
+<a name="l00012"></a>00012 <span class="comment">  the Free Software Foundation; either version 2, or (at your option)</span>
+<a name="l00013"></a>00013 <span class="comment">  any later version.</span>
+<a name="l00014"></a>00014 <span class="comment"></span>
+<a name="l00015"></a>00015 <span class="comment">  This program is distributed in the hope that it will be useful,</span>
+<a name="l00016"></a>00016 <span class="comment">  but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<a name="l00017"></a>00017 <span class="comment">  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<a name="l00018"></a>00018 <span class="comment">  GNU General Public License for more details.</span>
+<a name="l00019"></a>00019 <span class="comment"></span>
+<a name="l00020"></a>00020 <span class="comment">  You should have received a copy of the GNU General Public License</span>
+<a name="l00021"></a>00021 <span class="comment">  along with this program; if not, write to the Free Software</span>
+<a name="l00022"></a>00022 <span class="comment">  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA</span>
+<a name="l00023"></a>00023 <span class="comment">  02111-1307, USA.</span>
+<a name="l00024"></a>00024 <span class="comment">*/</span>
+<a name="l00025"></a>00025 
+<a name="l00026"></a>00026 <span class="preprocessor">#include &lt;sys/types.h&gt;</span>
+<a name="l00027"></a>00027 <span class="preprocessor">#include &lt;limits.h&gt;</span>
+<a name="l00028"></a>00028 <span class="preprocessor">#include &lt;stdarg.h&gt;</span>
+<a name="l00029"></a>00029 <span class="preprocessor">#include &lt;unistd.h&gt;</span>
+<a name="l00030"></a>00030 <span class="preprocessor">#include &lt;stdlib.h&gt;</span>
+<a name="l00031"></a>00031 <span class="comment">/*#include &lt;mpatrol.h&gt;*/</span>
+<a name="l00032"></a>00032 
+<a name="l00033"></a>00033 <span class="preprocessor">#include &lt;setjmp.h&gt;</span>
+<a name="l00034"></a>00034 
+<a name="l00035"></a>00035 <span class="keyword">extern</span> jmp_buf zmodemjmp;
+<a name="l00036"></a>00036 
+<a name="l00037"></a>00037 <span class="preprocessor">#include &lt;time.h&gt;</span>
+<a name="l00038"></a>00038 
+<a name="l00039"></a>00039 <span class="preprocessor">#include &lt;string.h&gt;</span>
+<a name="l00040"></a>00040 <span class="preprocessor">#include &lt;sys/stat.h&gt;</span>
+<a name="l00041"></a>00041 
+<a name="l00042"></a>00042 <span class="preprocessor">#ifdef HAVE_LIMITS_H</span>
+<a name="l00043"></a>00043 <span class="preprocessor"></span><span class="preprocessor">#include &lt;limits.h&gt;</span>
+<a name="l00044"></a>00044 <span class="preprocessor">#endif</span>
+<a name="l00045"></a>00045 <span class="preprocessor"></span>
+<a name="l00046"></a>00046 <span class="comment">/* we need to decide whether readcheck is possible */</span>
+<a name="l00047"></a>00047 <span class="preprocessor">#if 0</span>
+<a name="l00048"></a>00048 <span class="preprocessor"></span><span class="comment">/* used to use #elif, but native braindead hpux 9.00 c compiler didn't </span>
+<a name="l00049"></a>00049 <span class="comment"> * understand it */</span>
+<a name="l00050"></a>00050 <span class="preprocessor">#ifdef HAVE_TERMIOS_H</span>
+<a name="l00051"></a>00051 <span class="preprocessor"></span><span class="comment">/* get rid of warnings on SCO ODT 3.2 */</span>
+<a name="l00052"></a>00052 <span class="keyword">struct </span>termios;
+<a name="l00053"></a>00053 
+<a name="l00054"></a>00054 <span class="preprocessor"># include &lt;termios.h&gt;</span>
+<a name="l00055"></a>00055 <span class="preprocessor"># define USE_TERMIOS</span>
+<a name="l00056"></a>00056 <span class="preprocessor"></span><span class="preprocessor">#else</span>
+<a name="l00057"></a>00057 <span class="preprocessor"></span><span class="preprocessor"># if defined(HAVE_SYS_TERMIOS_H)</span>
+<a name="l00058"></a>00058 <span class="preprocessor"></span><span class="preprocessor">#  include &lt;sys/termios.h&gt;</span>
+<a name="l00059"></a>00059 <span class="preprocessor">#  define USE_TERMIOS</span>
+<a name="l00060"></a>00060 <span class="preprocessor"></span><span class="preprocessor"># else</span>
+<a name="l00061"></a>00061 <span class="preprocessor"></span><span class="preprocessor">#  if defined(HAVE_TERMIO_H)</span>
+<a name="l00062"></a>00062 <span class="preprocessor"></span><span class="preprocessor">#   include &lt;termio.h&gt;</span>
+<a name="l00063"></a>00063 <span class="preprocessor">#   define USE_TERMIO</span>
+<a name="l00064"></a>00064 <span class="preprocessor"></span><span class="preprocessor">#  else</span>
+<a name="l00065"></a>00065 <span class="preprocessor"></span><span class="preprocessor">#   if defined(HAVE_SYS_TERMIO_H)</span>
+<a name="l00066"></a>00066 <span class="preprocessor"></span><span class="preprocessor">#    include &lt;sys/termio.h&gt;</span>
+<a name="l00067"></a>00067 <span class="preprocessor">#    define USE_TERMIO</span>
+<a name="l00068"></a>00068 <span class="preprocessor"></span><span class="preprocessor">#   else</span>
+<a name="l00069"></a>00069 <span class="preprocessor"></span><span class="preprocessor">#    if defined(HAVE_SGTTY_H)</span>
+<a name="l00070"></a>00070 <span class="preprocessor"></span><span class="preprocessor">#     include &lt;sgtty.h&gt;</span>
+<a name="l00071"></a>00071 <span class="preprocessor">#     define USE_SGTTY</span>
+<a name="l00072"></a>00072 <span class="preprocessor"></span><span class="preprocessor">#     ifdef LLITOUT</span>
+<a name="l00073"></a>00073 <span class="preprocessor"></span><span class="keyword">extern</span> <span class="keywordtype">long</span> Locmode;            <span class="comment">/* Saved "local mode" for 4.x BSD "new driver" */</span>
+<a name="l00074"></a>00074 <span class="keyword">extern</span> <span class="keywordtype">long</span> Locbit;             <span class="comment">/* Bit SUPPOSED to disable output translations */</span>
+<a name="l00075"></a>00075 <span class="preprocessor">#     endif</span>
+<a name="l00076"></a>00076 <span class="preprocessor"></span><span class="preprocessor">#    else</span>
+<a name="l00077"></a>00077 <span class="preprocessor"></span><span class="preprocessor">#     error neither termio.h nor sgtty.h found. Cannot continue.</span>
+<a name="l00078"></a>00078 <span class="preprocessor"></span><span class="preprocessor">#    endif</span>
+<a name="l00079"></a>00079 <span class="preprocessor"></span><span class="preprocessor">#   endif</span>
+<a name="l00080"></a>00080 <span class="preprocessor"></span><span class="preprocessor">#  endif</span>
+<a name="l00081"></a>00081 <span class="preprocessor"></span><span class="preprocessor"># endif</span>
+<a name="l00082"></a>00082 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00083"></a>00083 <span class="preprocessor"></span>
+<a name="l00084"></a>00084 <span class="preprocessor">#ifdef USE_SGTTY</span>
+<a name="l00085"></a>00085 <span class="preprocessor"></span><span class="preprocessor">#  ifdef TIOCSBRK</span>
+<a name="l00086"></a>00086 <span class="preprocessor"></span><span class="preprocessor">#    define CANBREAK</span>
+<a name="l00087"></a>00087 <span class="preprocessor"></span><span class="preprocessor">#  endif</span>
+<a name="l00088"></a>00088 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00089"></a>00089 <span class="preprocessor"></span><span class="preprocessor">#ifdef USE_TERMIO</span>
+<a name="l00090"></a>00090 <span class="preprocessor"></span><span class="preprocessor">#  define CANBREAK</span>
+<a name="l00091"></a>00091 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00092"></a>00092 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00093"></a>00093 <span class="preprocessor"></span><span class="preprocessor">#include &lt;unistd.h&gt;</span>
+<a name="l00094"></a>00094 
+<a name="l00095"></a>00095 <span class="preprocessor">#ifndef _POSIX_PATH_MAX</span>
+<a name="l00096"></a>00096 <span class="preprocessor"></span><span class="preprocessor"># define _POSIX_PATH_MAX 255</span>
+<a name="l00097"></a>00097 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00098"></a>00098 <span class="preprocessor"></span>
+<a name="l00099"></a>00099 <span class="preprocessor">#if !defined(PATH_MAX) &amp;&amp; defined(_PC_PATH_MAX)</span>
+<a name="l00100"></a>00100 <span class="preprocessor"></span><span class="preprocessor"># define PATH_MAX (pathconf ("/", _PC_PATH_MAX) &lt; 1 ? 1024 : pathconf ("/", _PC_PATH_MAX))</span>
+<a name="l00101"></a>00101 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00102"></a>00102 <span class="preprocessor"></span>
+<a name="l00103"></a>00103 <span class="comment">/* Don't include sys/param.h if it already has been.  */</span>
+<a name="l00104"></a>00104 <span class="preprocessor">#if defined(HAVE_SYS_PARAM_H) &amp;&amp; !defined(PATH_MAX) &amp;&amp; !defined(MAXPATHLEN)</span>
+<a name="l00105"></a>00105 <span class="preprocessor"></span><span class="preprocessor"># include &lt;sys/param.h&gt;</span>
+<a name="l00106"></a>00106 <span class="preprocessor">#endif</span>
+<a name="l00107"></a>00107 <span class="preprocessor"></span>
+<a name="l00108"></a>00108 <span class="preprocessor">#if !defined(PATH_MAX) &amp;&amp; defined(MAXPATHLEN)</span>
+<a name="l00109"></a>00109 <span class="preprocessor"></span><span class="preprocessor"># define PATH_MAX MAXPATHLEN</span>
+<a name="l00110"></a>00110 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00111"></a>00111 <span class="preprocessor"></span>
+<a name="l00112"></a>00112 <span class="preprocessor">#ifndef PATH_MAX</span>
+<a name="l00113"></a>00113 <span class="preprocessor"></span><span class="preprocessor"># define PATH_MAX _POSIX_PATH_MAX</span>
+<a name="l00114"></a>00114 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00115"></a>00115 <span class="preprocessor"></span>
+<a name="l00116"></a>00116 <span class="preprocessor">#define OK 0</span>
+<a name="l00117"></a>00117 <span class="preprocessor"></span><span class="preprocessor">#define FALSE 0</span>
+<a name="l00118"></a>00118 <span class="preprocessor"></span><span class="preprocessor">#define TRUE 1</span>
+<a name="l00119"></a>00119 <span class="preprocessor"></span><span class="preprocessor">#define ERROR (-1)</span>
+<a name="l00120"></a>00120 <span class="preprocessor"></span>
+<a name="l00121"></a>00121 <span class="comment">/* Ward Christensen / CP/M parameters - Don't change these! */</span>
+<a name="l00122"></a>00122 <span class="preprocessor">#define ENQ 005</span>
+<a name="l00123"></a>00123 <span class="preprocessor"></span><span class="preprocessor">#define CAN ('X'&amp;037)</span>
+<a name="l00124"></a>00124 <span class="preprocessor"></span><span class="preprocessor">#define XOFF ('s'&amp;037)</span>
+<a name="l00125"></a>00125 <span class="preprocessor"></span><span class="preprocessor">#define XON ('q'&amp;037)</span>
+<a name="l00126"></a>00126 <span class="preprocessor"></span><span class="preprocessor">#define SOH 1</span>
+<a name="l00127"></a>00127 <span class="preprocessor"></span><span class="preprocessor">#define STX 2</span>
+<a name="l00128"></a>00128 <span class="preprocessor"></span><span class="preprocessor">#define EOT 4</span>
+<a name="l00129"></a>00129 <span class="preprocessor"></span><span class="preprocessor">#define ACK 6</span>
+<a name="l00130"></a>00130 <span class="preprocessor"></span><span class="preprocessor">#define NAK 025</span>
+<a name="l00131"></a>00131 <span class="preprocessor"></span><span class="preprocessor">#define CPMEOF 032</span>
+<a name="l00132"></a>00132 <span class="preprocessor"></span><span class="preprocessor">#define WANTCRC 0103            </span><span class="comment">/* send C not NAK to get crc not checksum */</span>
+<a name="l00133"></a>00133 <span class="preprocessor">#define WANTG 0107              </span><span class="comment">/* Send G not NAK to get nonstop batch xmsn */</span>
+<a name="l00134"></a>00134 <span class="preprocessor">#define TIMEOUT (-2)</span>
+<a name="l00135"></a>00135 <span class="preprocessor"></span><span class="preprocessor">#define RCDO (-3)</span>
+<a name="l00136"></a>00136 <span class="preprocessor"></span><span class="preprocessor">#define WCEOT (-10)</span>
+<a name="l00137"></a>00137 <span class="preprocessor"></span>
+<a name="l00138"></a>00138 <span class="preprocessor">#define RETRYMAX 10</span>
+<a name="l00139"></a>00139 <span class="preprocessor"></span>
+<a name="l00140"></a>00140 <span class="preprocessor">#define UNIXFILE 0xF000         </span><span class="comment">/* The S_IFMT file mask bit for stat */</span>
+<a name="l00141"></a>00141 
+<a name="l00142"></a>00142 <span class="preprocessor">#define DEFBYTL 2000000000L     </span><span class="comment">/* default rx file size */</span>
+<a name="l00143"></a>00143 
+<a name="l00144"></a>00144 <span class="keyword">enum</span> zm_type_enum {
+<a name="l00145"></a>00145         ZM_XMODEM,
+<a name="l00146"></a>00146         ZM_YMODEM,
+<a name="l00147"></a>00147         ZM_ZMODEM
+<a name="l00148"></a>00148 };
+<a name="l00149"></a>00149 
+<a name="l00150"></a>00150 <span class="keyword">struct </span>zm_fileinfo {
+<a name="l00151"></a>00151         <span class="keywordtype">char</span> *fname;
+<a name="l00152"></a>00152         time_t modtime;
+<a name="l00153"></a>00153         mode_t mode;
+<a name="l00154"></a>00154         <span class="keywordtype">size_t</span> bytes_total;
+<a name="l00155"></a>00155         <span class="keywordtype">size_t</span> bytes_sent;
+<a name="l00156"></a>00156         <span class="keywordtype">size_t</span> bytes_received;
+<a name="l00157"></a>00157         <span class="keywordtype">size_t</span> bytes_skipped;   <span class="comment">/* crash recovery */</span>
+<a name="l00158"></a>00158         <span class="keywordtype">int</span> eof_seen;
+<a name="l00159"></a>00159 };
+<a name="l00160"></a>00160 
+<a name="l00161"></a>00161 <span class="preprocessor">#define R_BYTESLEFT(x) ((x)-&gt;bytes_total-(x)-&gt;bytes_received)</span>
+<a name="l00162"></a>00162 <span class="preprocessor"></span>
+<a name="l00163"></a>00163 <span class="keyword">extern</span> <span class="keyword">enum</span> zm_type_enum protocol;
+<a name="l00164"></a>00164 
+<a name="l00165"></a>00165 <span class="keyword">extern</span> <span class="keyword">const</span> <span class="keywordtype">char</span> *program_name;        <span class="comment">/* the name by which we were called */</span>
+<a name="l00166"></a>00166 <span class="keyword">extern</span> <span class="keywordtype">int</span> errors;
+<a name="l00167"></a>00167 <span class="keyword">extern</span> <span class="keywordtype">int</span> no_timeout;
+<a name="l00168"></a>00168 <span class="keyword">extern</span> <span class="keywordtype">int</span> Zctlesc;             <span class="comment">/* Encode control characters */</span>
+<a name="l00169"></a>00169 
+<a name="l00170"></a>00170 <span class="keywordtype">void</span> bibi(<span class="keywordtype">int</span> n, <span class="keywordtype">int</span> *func_write(<span class="keywordtype">int</span>, <span class="keywordtype">char</span> *, <span class="keywordtype">int</span>), <span class="keywordtype">void</span> *func_oflush(<span class="keywordtype">void</span>));
+<a name="l00171"></a>00171 
+<a name="l00172"></a>00172 <span class="preprocessor">#define sendline(c, f) raw_ochar((c) &amp; 0377, f)</span>
+<a name="l00173"></a>00173 <span class="preprocessor"></span><span class="preprocessor">#define xsendline(c, f) raw_ochar(c, f)</span>
+<a name="l00174"></a>00174 <span class="preprocessor"></span>
+<a name="l00175"></a>00175 <span class="comment">/* zreadline.c */</span>
+<a name="l00176"></a>00176 <span class="keyword">extern</span> <span class="keywordtype">char</span> *readline_ptr;      <span class="comment">/* pointer for removing chars from linbuf */</span>
+<a name="l00177"></a>00177 <span class="keyword">extern</span> <span class="keywordtype">int</span> readline_left;       <span class="comment">/* number of buffered chars left to read */</span>
+<a name="l00178"></a>00178 
+<a name="l00179"></a>00179 <span class="preprocessor">#define READLINE_PF(timeout,f) \</span>
+<a name="l00180"></a>00180 <span class="preprocessor">    (--readline_left &gt;= 0? (*readline_ptr++ &amp; 0377) : readline_internal(timeout,f))</span>
+<a name="l00181"></a>00181 <span class="preprocessor"></span>
+<a name="l00182"></a>00182 <span class="keywordtype">int</span> readline_internal(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> timeout, <span class="keywordtype">int</span> *func_read(<span class="keywordtype">int</span>, <span class="keywordtype">char</span> *, <span class="keywordtype">int</span>));
+<a name="l00183"></a>00183 <span class="keywordtype">void</span> readline_purge(<span class="keywordtype">void</span>);
+<a name="l00184"></a>00184 <span class="keywordtype">void</span> readline_setup(<span class="keywordtype">int</span> fd, <span class="keywordtype">size_t</span> readnum, <span class="keywordtype">size_t</span> buffer_size);
+<a name="l00185"></a>00185 <span class="keywordtype">void</span> readline_clean(<span class="keywordtype">void</span>);
+<a name="l00186"></a>00186 
+<a name="l00187"></a>00187 <span class="comment">/* rbsb.c */</span>
+<a name="l00188"></a>00188 <span class="keyword">extern</span> <span class="keywordtype">int</span> Twostop;
+<a name="l00189"></a>00189 
+<a name="l00190"></a>00190 <span class="preprocessor">#ifdef READCHECK_READS</span>
+<a name="l00191"></a>00191 <span class="preprocessor"></span><span class="keyword">extern</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> checked;
+<a name="l00192"></a>00192 <span class="preprocessor">#endif</span>
+<a name="l00193"></a>00193 <span class="preprocessor"></span><span class="keyword">extern</span> <span class="keywordtype">int</span> iofd;
+<a name="l00194"></a>00194 <span class="keyword">extern</span> <span class="keywordtype">unsigned</span> Baudrate;
+<a name="l00195"></a>00195 
+<a name="l00196"></a>00196 <span class="comment">/* rbsb.c */</span>
+<a name="l00197"></a>00197 <span class="keywordtype">int</span> rdchk(<span class="keywordtype">int</span> fd);
+<a name="l00198"></a>00198 <span class="keywordtype">int</span> io_mode(<span class="keywordtype">int</span> fd, <span class="keywordtype">int</span> n);
+<a name="l00199"></a>00199 <span class="keywordtype">void</span> sendbrk(<span class="keywordtype">int</span> fd);
+<a name="l00200"></a>00200 
+<a name="l00201"></a>00201 <span class="preprocessor">#define flushmo() (*func_oflush)()</span>
+<a name="l00202"></a>00202 <span class="preprocessor"></span><span class="keywordtype">void</span> purgeline(<span class="keywordtype">int</span> fd);
+<a name="l00203"></a>00203 <span class="keywordtype">void</span> canit(<span class="keywordtype">int</span> fd, <span class="keywordtype">int</span> *func_write(<span class="keywordtype">int</span>, <span class="keywordtype">char</span> *, <span class="keywordtype">int</span>));
+<a name="l00204"></a>00204 
+<a name="l00205"></a>00205 <span class="comment">/* error.c */</span>
+<a name="l00206"></a>00206 
+<a name="l00207"></a>00207 <span class="keyword">extern</span> <span class="keywordtype">void</span> zmodem_error(<span class="keywordtype">int</span> status, <span class="keywordtype">int</span> errnum, <span class="keyword">const</span> <span class="keywordtype">char</span> *format, ...);
+<a name="l00208"></a>00208 
+<a name="l00209"></a>00209 <span class="comment">/* crctab.c */</span>
+<a name="l00210"></a>00210 <span class="keyword">extern</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">short</span> crctab[256];
+<a name="l00211"></a>00211 
+<a name="l00212"></a>00212 <span class="preprocessor">#define updcrc(cp, crc) ( crctab[((crc &gt;&gt; 8) &amp; 255)] ^ (crc &lt;&lt; 8) ^ cp)</span>
+<a name="l00213"></a>00213 <span class="preprocessor"></span><span class="keyword">extern</span> <span class="keywordtype">long</span> cr3tab[];
+<a name="l00214"></a>00214 
+<a name="l00215"></a>00215 <span class="preprocessor">#define UPDC32(b, c) (cr3tab[((int)c ^ b) &amp; 0xff] ^ ((c &gt;&gt; 8) &amp; 0x00FFFFFF))</span>
+<a name="l00216"></a>00216 <span class="preprocessor"></span>
+<a name="l00217"></a>00217 <span class="comment">/* zm.c */</span>
+<a name="l00218"></a>00218 <span class="preprocessor">#include "zmodem.h"</span>
+<a name="l00219"></a>00219 <span class="keyword">extern</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> Rxtimeout;  <span class="comment">/* Tenths of seconds to wait for something */</span>
+<a name="l00220"></a>00220 <span class="keyword">extern</span> <span class="keywordtype">int</span> bytes_per_error;     <span class="comment">/* generate one error around every x bytes */</span>
+<a name="l00221"></a>00221 
+<a name="l00222"></a>00222 <span class="comment">/* Globals used by ZMODEM functions */</span>
+<a name="l00223"></a>00223 <span class="keyword">extern</span> <span class="keywordtype">int</span> Rxframeind;          <span class="comment">/* ZBIN ZBIN32, or ZHEX type of frame received */</span>
+<a name="l00224"></a>00224 <span class="keyword">extern</span> <span class="keywordtype">int</span> Rxtype;              <span class="comment">/* Type of header received */</span>
+<a name="l00225"></a>00225 <span class="keyword">extern</span> <span class="keywordtype">int</span> Zrwindow;            <span class="comment">/* RX window size (controls garbage count) */</span>
+<a name="l00226"></a>00226 
+<a name="l00227"></a>00227 <span class="comment">/* extern int Rxcount; */</span><span class="comment">/* Count of data bytes received */</span>
+<a name="l00228"></a>00228 <span class="keyword">extern</span> <span class="keywordtype">char</span> Rxhdr[4];           <span class="comment">/* Received header */</span>
+<a name="l00229"></a>00229 <span class="keyword">extern</span> <span class="keywordtype">char</span> Txhdr[4];           <span class="comment">/* Transmitted header */</span>
+<a name="l00230"></a>00230 <span class="keyword">extern</span> <span class="keywordtype">long</span> Txpos;              <span class="comment">/* Transmitted file position */</span>
+<a name="l00231"></a>00231 <span class="keyword">extern</span> <span class="keywordtype">int</span> Txfcs32;             <span class="comment">/* TURE means send binary frames with 32 bit FCS */</span>
+<a name="l00232"></a>00232 <span class="keyword">extern</span> <span class="keywordtype">int</span> Crc32t;              <span class="comment">/* Display flag indicating 32 bit CRC being sent */</span>
+<a name="l00233"></a>00233 <span class="keyword">extern</span> <span class="keywordtype">int</span> Crc32;               <span class="comment">/* Display flag indicating 32 bit CRC being received */</span>
+<a name="l00234"></a>00234 <span class="keyword">extern</span> <span class="keywordtype">int</span> Znulls;              <span class="comment">/* Number of nulls to send at beginning of ZDATA hdr */</span>
+<a name="l00235"></a>00235 <span class="keyword">extern</span> <span class="keywordtype">char</span> Attn[ZATTNLEN + 1]; <span class="comment">/* Attention string rx sends to tx on err */</span>
+<a name="l00236"></a>00236 
+<a name="l00237"></a>00237 <span class="keyword">extern</span> <span class="keywordtype">void</span> zsendline(<span class="keywordtype">int</span> c, <span class="keywordtype">int</span> *func_write(<span class="keywordtype">int</span>, <span class="keywordtype">char</span> *, <span class="keywordtype">int</span>));
+<a name="l00238"></a>00238 <span class="keyword">extern</span> <span class="keywordtype">void</span> zsendline_init(<span class="keywordtype">void</span>);
+<a name="l00239"></a>00239 <span class="keywordtype">void</span> zsbhdr(<span class="keywordtype">int</span> type, <span class="keywordtype">char</span> *hdr, <span class="keywordtype">int</span> *func_write(<span class="keywordtype">int</span>, <span class="keywordtype">char</span> *, <span class="keywordtype">int</span>),
+<a name="l00240"></a>00240             <span class="keywordtype">void</span> *func_oflush(<span class="keywordtype">void</span>));
+<a name="l00241"></a>00241 <span class="keywordtype">void</span> zshhdr(<span class="keywordtype">int</span> type, <span class="keywordtype">char</span> *hdr, <span class="keywordtype">int</span> *func_write(<span class="keywordtype">int</span>, <span class="keywordtype">char</span> *, <span class="keywordtype">int</span>),
+<a name="l00242"></a>00242             <span class="keywordtype">void</span> *func_oflush(<span class="keywordtype">void</span>));
+<a name="l00243"></a>00243 <span class="keywordtype">void</span> zsdata(<span class="keyword">const</span> <span class="keywordtype">char</span> *buf, <span class="keywordtype">size_t</span> length, <span class="keywordtype">int</span> frameend,
+<a name="l00244"></a>00244             <span class="keywordtype">int</span> *func_write(<span class="keywordtype">int</span>, <span class="keywordtype">char</span> *, <span class="keywordtype">int</span>), <span class="keywordtype">void</span> *func_oflush(<span class="keywordtype">void</span>));
+<a name="l00245"></a>00245 <span class="keywordtype">void</span> zsda32(<span class="keyword">const</span> <span class="keywordtype">char</span> *buf, <span class="keywordtype">size_t</span> length, <span class="keywordtype">int</span> frameend,
+<a name="l00246"></a>00246             <span class="keywordtype">int</span> *func_write(<span class="keywordtype">int</span>, <span class="keywordtype">char</span> *, <span class="keywordtype">int</span>), <span class="keywordtype">void</span> *func_oflush(<span class="keywordtype">void</span>));
+<a name="l00247"></a>00247 <span class="keywordtype">int</span> zrdata(<span class="keywordtype">char</span> *buf, <span class="keywordtype">int</span> length, <span class="keywordtype">size_t</span> * received,
+<a name="l00248"></a>00248            <span class="keywordtype">int</span> *func_read(<span class="keywordtype">int</span>, <span class="keywordtype">char</span> *, <span class="keywordtype">int</span>));
+<a name="l00249"></a>00249 <span class="keywordtype">int</span> zgethdr(<span class="keywordtype">char</span> *hdr, <span class="keywordtype">int</span> eflag, <span class="keywordtype">size_t</span> *, <span class="keywordtype">int</span> *func_read(<span class="keywordtype">int</span>, <span class="keywordtype">char</span> *, <span class="keywordtype">int</span>));
+<a name="l00250"></a>00250 <span class="keywordtype">void</span> stohdr(<span class="keywordtype">size_t</span> pos);
+<a name="l00251"></a>00251 <span class="keywordtype">long</span> rclhdr(<span class="keywordtype">char</span> *hdr);
+<a name="l00252"></a>00252 <span class="keywordtype">void</span> raw_ochar(<span class="keywordtype">char</span> c, <span class="keywordtype">int</span> *func_write(<span class="keywordtype">int</span>, <span class="keywordtype">char</span> *, <span class="keywordtype">int</span>));
+<a name="l00253"></a>00253 <span class="preprocessor">#endif</span>
+</pre></div></div>
+<hr size="1"><address style="text-align: right;"><small>Generated at Fri Aug 29 10:29:24 2008 for BMY by&nbsp;
+<a href="http://www.doxygen.org/index.html">
+<img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.5 </small></address>
+</body>
+</html>

@@ -1,0 +1,5 @@
+#!/usr/bin/perl
+$bbsuid=@BBS_UID@;
+$bbsgid=@BBS_GID@;
+$bbshome="@BBS_HOME@";
+require $bbshome."/bin/bbsmail"

@@ -1,0 +1,18 @@
+                      QKMJ server 简单使用说明
+
+执行方式:
+
+     mjgps <port_number> &  
+     ( & 代表放到背景中执行)
+
+相关档案:
+
+     qkmj.rec : qkmj 的计录档
+     news.txt : 一开始进去时的公布事项
+    server.lst: 人数超过上限时所列出的 server 选项 (上限为 100 人)
+   baduser.txt: 限制使用者进入之列表
+                example: 
+                    sywu@ccsun3.csie.nctu.edu.tw   <--- 限制此机器此使用者进入
+                    guest   <--- 限制所有 username 为 guest 的人进入
+   
+   

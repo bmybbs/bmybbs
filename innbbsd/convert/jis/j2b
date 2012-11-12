@@ -1,0 +1,15 @@
+#!/usr/local/bin/perl
+$tmpjisfile = "/tmp/jisgate$$";
+$tmpeucfile = "/tmp/jisgate$$.euc";
+$jis='/usr/local/bin/jis';
+$e2b='/usr/local/bin/sinocode';
+
+open(TMP,"> $tmpjisfile") || die "can't write $tmpjisfile $!\n";
+while (<>) {
+	print TMP $_;
+}
+close(TMP);
+system("$jis -e $tmpjisfile $tmpeucfile");
+system("$e2b -jis $tmpeucfile -big -");
+unlink($tmpjisfile);
+unlink($tmpeucfile);

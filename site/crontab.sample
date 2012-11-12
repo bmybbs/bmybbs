@@ -1,0 +1,13 @@
+#to use this, your bbs user's home dir must be your bbs_home dir
+TERM=ansi
+*/5 * * * * upnew >> reclog/uptime.log
+56 * * * * averun reclog/uptime.log;/bin/rm  reclog/uptime.log
+5 00 * * * /bin/cp 0Announce/bbslist/countusr 0Announce/bbslist/countusr.last
+5 00 * * * /bin/cp 0Announce/bbslist/board2 0Announce/bbslist/board2.last
+5 00 * * * /bin/cp -af 0Announce/bbslist/today 0Announce/bbslist/yesterday;/bin/rm reclog/ave.src
+10 * * * * newtop10 -a &> /dev/null
+*/20 * * * * save_brc &>/dev/null
+30 23 * * * newboards
+58 * * * * nbstat b 1
+1 0 * * * nbstat s 7
+10,30,50 * * * * bbsstatlog

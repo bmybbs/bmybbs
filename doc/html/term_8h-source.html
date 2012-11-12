@@ -1,0 +1,721 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<title>BMY: term.h源文件</title>
+<link href="doxygen.css" rel="stylesheet" type="text/css">
+<link href="tabs.css" rel="stylesheet" type="text/css">
+</head><body>
+<!-- 制作者 Doxygen 1.5.5 -->
+<script type="text/javascript">
+<!--
+function changeDisplayState (e){
+  var num=this.id.replace(/[^[0-9]/g,'');
+  var button=this.firstChild;
+  var sectionDiv=document.getElementById('dynsection'+num);
+  if (sectionDiv.style.display=='none'||sectionDiv.style.display==''){
+    sectionDiv.style.display='block';
+    button.src='open.gif';
+  }else{
+    sectionDiv.style.display='none';
+    button.src='closed.gif';
+  }
+}
+function initDynSections(){
+  var divs=document.getElementsByTagName('div');
+  var sectionCounter=1;
+  for(var i=0;i<divs.length-1;i++){
+    if(divs[i].className=='dynheader'&&divs[i+1].className=='dynsection'){
+      var header=divs[i];
+      var section=divs[i+1];
+      var button=header.firstChild;
+      if (button!='IMG'){
+        divs[i].insertBefore(document.createTextNode(' '),divs[i].firstChild);
+        button=document.createElement('img');
+        divs[i].insertBefore(button,divs[i].firstChild);
+      }
+      header.style.cursor='pointer';
+      header.onclick=changeDisplayState;
+      header.id='dynheader'+sectionCounter;
+      button.src='closed.gif';
+      section.id='dynsection'+sectionCounter;
+      section.style.display='none';
+      section.style.marginLeft='14px';
+      sectionCounter++;
+    }
+  }
+}
+window.onload = initDynSections;
+-->
+</script>
+<div class="navigation" id="top">
+  <div class="tabs">
+    <ul>
+      <li><a href="index.html"><span>首页</span></a></li>
+      <li><a href="annotated.html"><span>数据结构</span></a></li>
+      <li class="current"><a href="files.html"><span>文件</span></a></li>
+    </ul>
+  </div>
+<h1>term.h</h1><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/***************************************************************************</span>
+<a name="l00002"></a>00002 <span class="comment">*                            COPYRIGHT NOTICE                              *</span>
+<a name="l00003"></a>00003 <span class="comment">****************************************************************************</span>
+<a name="l00004"></a>00004 <span class="comment">*                ncurses is copyright (C) 1992-1995                        *</span>
+<a name="l00005"></a>00005 <span class="comment">*                          Zeyd M. Ben-Halim                               *</span>
+<a name="l00006"></a>00006 <span class="comment">*                          zmbenhal@netcom.com                             *</span>
+<a name="l00007"></a>00007 <span class="comment">*                          Eric S. Raymond                                 *</span>
+<a name="l00008"></a>00008 <span class="comment">*                          esr@snark.thyrsus.com                           *</span>
+<a name="l00009"></a>00009 <span class="comment">*                                                                          *</span>
+<a name="l00010"></a>00010 <span class="comment">*        Permission is hereby granted to reproduce and distribute ncurses  *</span>
+<a name="l00011"></a>00011 <span class="comment">*        by any means and for any fee, whether alone or as part of a       *</span>
+<a name="l00012"></a>00012 <span class="comment">*        larger distribution, in source or in binary form, PROVIDED        *</span>
+<a name="l00013"></a>00013 <span class="comment">*        this notice is included with any such distribution, and is not    *</span>
+<a name="l00014"></a>00014 <span class="comment">*        removed from any of its header files. Mention of ncurses in any   *</span>
+<a name="l00015"></a>00015 <span class="comment">*        applications linked with it is highly appreciated.                *</span>
+<a name="l00016"></a>00016 <span class="comment">*                                                                          *</span>
+<a name="l00017"></a>00017 <span class="comment">*        ncurses comes AS IS with no warranty, implied or expressed.       *</span>
+<a name="l00018"></a>00018 <span class="comment">*                                                                          *</span>
+<a name="l00019"></a>00019 <span class="comment">***************************************************************************/</span>
+<a name="l00020"></a>00020 
+<a name="l00021"></a>00021 
+<a name="l00022"></a>00022 <span class="comment">/*</span>
+<a name="l00023"></a>00023 <span class="comment">**      term.h -- Definition of struct term</span>
+<a name="l00024"></a>00024 <span class="comment">*/</span>
+<a name="l00025"></a>00025 
+<a name="l00026"></a>00026 <span class="preprocessor">#ifndef _TERM_H</span>
+<a name="l00027"></a>00027 <span class="preprocessor"></span><span class="preprocessor">#define _TERM_H</span>
+<a name="l00028"></a>00028 <span class="preprocessor"></span><span class="preprocessor">#define NCURSES_VERSION "1.9.9e"</span>
+<a name="l00029"></a>00029 <span class="preprocessor"></span>
+<a name="l00030"></a>00030 <span class="comment">/* Make this file self-contained by providing defaults for the HAVE_TERMIOS_H</span>
+<a name="l00031"></a>00031 <span class="comment"> * and BROKEN_LINKER definition (based on the system for which this was configured).</span>
+<a name="l00032"></a>00032 <span class="comment"> */</span>
+<a name="l00033"></a>00033 
+<a name="l00034"></a>00034 <span class="preprocessor">#ifndef HAVE_TERMIOS_H</span>
+<a name="l00035"></a>00035 <span class="preprocessor"></span><span class="preprocessor">#define HAVE_TERMIOS_H 1</span>
+<a name="l00036"></a>00036 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00037"></a>00037 <span class="preprocessor"></span>
+<a name="l00038"></a>00038 <span class="preprocessor">#ifndef BROKEN_LINKER</span>
+<a name="l00039"></a>00039 <span class="preprocessor"></span><span class="preprocessor">#define BROKEN_LINKER 0</span>
+<a name="l00040"></a>00040 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00041"></a>00041 <span class="preprocessor"></span>
+<a name="l00042"></a>00042 
+<a name="l00043"></a>00043 <span class="preprocessor">#if HAVE_TERMIOS_H</span>
+<a name="l00044"></a>00044 <span class="preprocessor"></span><span class="preprocessor">#ifndef TERMIOS</span>
+<a name="l00045"></a>00045 <span class="preprocessor"></span><span class="preprocessor">#define TERMIOS 1</span>
+<a name="l00046"></a>00046 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00047"></a>00047 <span class="preprocessor"></span><span class="preprocessor">#include &lt;termios.h&gt;</span>
+<a name="l00048"></a>00048 <span class="preprocessor">#define TTY struct termios</span>
+<a name="l00049"></a>00049 <span class="preprocessor"></span>
+<a name="l00050"></a>00050 <span class="preprocessor">#else</span>
+<a name="l00051"></a>00051 <span class="preprocessor"></span>
+<a name="l00052"></a>00052 <span class="preprocessor">#undef TERMIOS</span>
+<a name="l00053"></a>00053 <span class="preprocessor"></span><span class="preprocessor">#include &lt;sgtty.h&gt;</span>
+<a name="l00054"></a>00054 <span class="preprocessor">#include &lt;sys/ioctl.h&gt;</span>
+<a name="l00055"></a>00055 <span class="preprocessor">#define TTY struct sgttyb</span>
+<a name="l00056"></a>00056 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00057"></a>00057 <span class="preprocessor"></span>
+<a name="l00058"></a>00058 <span class="keyword">extern</span> <span class="keywordtype">char</span> ttytype[];
+<a name="l00059"></a>00059 <span class="preprocessor">#define NAMESIZE 256</span>
+<a name="l00060"></a>00060 <span class="preprocessor"></span>
+<a name="l00061"></a>00061 <span class="preprocessor">#define CUR cur_term-&gt;type.</span>
+<a name="l00062"></a>00062 <span class="preprocessor"></span>
+<a name="l00063"></a>00063 <span class="preprocessor">#define auto_left_margin               CUR Booleans[0]</span>
+<a name="l00064"></a>00064 <span class="preprocessor"></span><span class="preprocessor">#define auto_right_margin              CUR Booleans[1]</span>
+<a name="l00065"></a>00065 <span class="preprocessor"></span><span class="preprocessor">#define no_esc_ctlc                    CUR Booleans[2]</span>
+<a name="l00066"></a>00066 <span class="preprocessor"></span><span class="preprocessor">#define ceol_standout_glitch           CUR Booleans[3]</span>
+<a name="l00067"></a>00067 <span class="preprocessor"></span><span class="preprocessor">#define eat_newline_glitch             CUR Booleans[4]</span>
+<a name="l00068"></a>00068 <span class="preprocessor"></span><span class="preprocessor">#define erase_overstrike               CUR Booleans[5]</span>
+<a name="l00069"></a>00069 <span class="preprocessor"></span><span class="preprocessor">#define generic_type                   CUR Booleans[6]</span>
+<a name="l00070"></a>00070 <span class="preprocessor"></span><span class="preprocessor">#define hard_copy                      CUR Booleans[7]</span>
+<a name="l00071"></a>00071 <span class="preprocessor"></span><span class="preprocessor">#define has_meta_key                   CUR Booleans[8]</span>
+<a name="l00072"></a>00072 <span class="preprocessor"></span><span class="preprocessor">#define has_status_line                CUR Booleans[9]</span>
+<a name="l00073"></a>00073 <span class="preprocessor"></span><span class="preprocessor">#define insert_null_glitch             CUR Booleans[10]</span>
+<a name="l00074"></a>00074 <span class="preprocessor"></span><span class="preprocessor">#define memory_above                   CUR Booleans[11]</span>
+<a name="l00075"></a>00075 <span class="preprocessor"></span><span class="preprocessor">#define memory_below                   CUR Booleans[12]</span>
+<a name="l00076"></a>00076 <span class="preprocessor"></span><span class="preprocessor">#define move_insert_mode               CUR Booleans[13]</span>
+<a name="l00077"></a>00077 <span class="preprocessor"></span><span class="preprocessor">#define move_standout_mode             CUR Booleans[14]</span>
+<a name="l00078"></a>00078 <span class="preprocessor"></span><span class="preprocessor">#define over_strike                    CUR Booleans[15]</span>
+<a name="l00079"></a>00079 <span class="preprocessor"></span><span class="preprocessor">#define status_line_esc_ok             CUR Booleans[16]</span>
+<a name="l00080"></a>00080 <span class="preprocessor"></span><span class="preprocessor">#define dest_tabs_magic_smso           CUR Booleans[17]</span>
+<a name="l00081"></a>00081 <span class="preprocessor"></span><span class="preprocessor">#define tilde_glitch                   CUR Booleans[18]</span>
+<a name="l00082"></a>00082 <span class="preprocessor"></span><span class="preprocessor">#define transparent_underline          CUR Booleans[19]</span>
+<a name="l00083"></a>00083 <span class="preprocessor"></span><span class="preprocessor">#define xon_xoff                       CUR Booleans[20]</span>
+<a name="l00084"></a>00084 <span class="preprocessor"></span><span class="preprocessor">#define needs_xon_xoff                 CUR Booleans[21]</span>
+<a name="l00085"></a>00085 <span class="preprocessor"></span><span class="preprocessor">#define prtr_silent                    CUR Booleans[22]</span>
+<a name="l00086"></a>00086 <span class="preprocessor"></span><span class="preprocessor">#define hard_cursor                    CUR Booleans[23]</span>
+<a name="l00087"></a>00087 <span class="preprocessor"></span><span class="preprocessor">#define non_rev_rmcup                  CUR Booleans[24]</span>
+<a name="l00088"></a>00088 <span class="preprocessor"></span><span class="preprocessor">#define no_pad_char                    CUR Booleans[25]</span>
+<a name="l00089"></a>00089 <span class="preprocessor"></span><span class="preprocessor">#define non_dest_scroll_region         CUR Booleans[26]</span>
+<a name="l00090"></a>00090 <span class="preprocessor"></span><span class="preprocessor">#define can_change                     CUR Booleans[27]</span>
+<a name="l00091"></a>00091 <span class="preprocessor"></span><span class="preprocessor">#define back_color_erase               CUR Booleans[28]</span>
+<a name="l00092"></a>00092 <span class="preprocessor"></span><span class="preprocessor">#define hue_lightness_saturation       CUR Booleans[29]</span>
+<a name="l00093"></a>00093 <span class="preprocessor"></span><span class="preprocessor">#define col_addr_glitch                CUR Booleans[30]</span>
+<a name="l00094"></a>00094 <span class="preprocessor"></span><span class="preprocessor">#define cr_cancels_micro_mode          CUR Booleans[31]</span>
+<a name="l00095"></a>00095 <span class="preprocessor"></span><span class="preprocessor">#define has_print_wheel                CUR Booleans[32]</span>
+<a name="l00096"></a>00096 <span class="preprocessor"></span><span class="preprocessor">#define row_addr_glitch                CUR Booleans[33]</span>
+<a name="l00097"></a>00097 <span class="preprocessor"></span><span class="preprocessor">#define semi_auto_right_margin         CUR Booleans[34]</span>
+<a name="l00098"></a>00098 <span class="preprocessor"></span><span class="preprocessor">#define cpi_changes_res                CUR Booleans[35]</span>
+<a name="l00099"></a>00099 <span class="preprocessor"></span><span class="preprocessor">#define lpi_changes_res                CUR Booleans[36]</span>
+<a name="l00100"></a>00100 <span class="preprocessor"></span><span class="preprocessor">#define columns                        CUR Numbers[0]</span>
+<a name="l00101"></a>00101 <span class="preprocessor"></span><span class="preprocessor">#define init_tabs                      CUR Numbers[1]</span>
+<a name="l00102"></a>00102 <span class="preprocessor"></span><span class="preprocessor">#define lines                          CUR Numbers[2]</span>
+<a name="l00103"></a>00103 <span class="preprocessor"></span><span class="preprocessor">#define lines_of_memory                CUR Numbers[3]</span>
+<a name="l00104"></a>00104 <span class="preprocessor"></span><span class="preprocessor">#define magic_cookie_glitch            CUR Numbers[4]</span>
+<a name="l00105"></a>00105 <span class="preprocessor"></span><span class="preprocessor">#define padding_baud_rate              CUR Numbers[5]</span>
+<a name="l00106"></a>00106 <span class="preprocessor"></span><span class="preprocessor">#define virtual_terminal               CUR Numbers[6]</span>
+<a name="l00107"></a>00107 <span class="preprocessor"></span><span class="preprocessor">#define width_status_line              CUR Numbers[7]</span>
+<a name="l00108"></a>00108 <span class="preprocessor"></span><span class="preprocessor">#define num_labels                     CUR Numbers[8]</span>
+<a name="l00109"></a>00109 <span class="preprocessor"></span><span class="preprocessor">#define label_height                   CUR Numbers[9]</span>
+<a name="l00110"></a>00110 <span class="preprocessor"></span><span class="preprocessor">#define label_width                    CUR Numbers[10]</span>
+<a name="l00111"></a>00111 <span class="preprocessor"></span><span class="preprocessor">#define max_attributes                 CUR Numbers[11]</span>
+<a name="l00112"></a>00112 <span class="preprocessor"></span><span class="preprocessor">#define maximum_windows                CUR Numbers[12]</span>
+<a name="l00113"></a>00113 <span class="preprocessor"></span><span class="preprocessor">#define max_colors                     CUR Numbers[13]</span>
+<a name="l00114"></a>00114 <span class="preprocessor"></span><span class="preprocessor">#define max_pairs                      CUR Numbers[14]</span>
+<a name="l00115"></a>00115 <span class="preprocessor"></span><span class="preprocessor">#define no_color_video                 CUR Numbers[15]</span>
+<a name="l00116"></a>00116 <span class="preprocessor"></span><span class="preprocessor">#define buffer_capacity                CUR Numbers[16]</span>
+<a name="l00117"></a>00117 <span class="preprocessor"></span><span class="preprocessor">#define dot_vert_spacing               CUR Numbers[17]</span>
+<a name="l00118"></a>00118 <span class="preprocessor"></span><span class="preprocessor">#define dot_horz_spacing               CUR Numbers[18]</span>
+<a name="l00119"></a>00119 <span class="preprocessor"></span><span class="preprocessor">#define max_micro_address              CUR Numbers[19]</span>
+<a name="l00120"></a>00120 <span class="preprocessor"></span><span class="preprocessor">#define max_micro_jump                 CUR Numbers[20]</span>
+<a name="l00121"></a>00121 <span class="preprocessor"></span><span class="preprocessor">#define micro_char_size                CUR Numbers[21]</span>
+<a name="l00122"></a>00122 <span class="preprocessor"></span><span class="preprocessor">#define micro_line_size                CUR Numbers[22]</span>
+<a name="l00123"></a>00123 <span class="preprocessor"></span><span class="preprocessor">#define number_of_pins                 CUR Numbers[23]</span>
+<a name="l00124"></a>00124 <span class="preprocessor"></span><span class="preprocessor">#define output_res_char                CUR Numbers[24]</span>
+<a name="l00125"></a>00125 <span class="preprocessor"></span><span class="preprocessor">#define output_res_line                CUR Numbers[25]</span>
+<a name="l00126"></a>00126 <span class="preprocessor"></span><span class="preprocessor">#define output_res_horz_inch           CUR Numbers[26]</span>
+<a name="l00127"></a>00127 <span class="preprocessor"></span><span class="preprocessor">#define output_res_vert_inch           CUR Numbers[27]</span>
+<a name="l00128"></a>00128 <span class="preprocessor"></span><span class="preprocessor">#define print_rate                     CUR Numbers[28]</span>
+<a name="l00129"></a>00129 <span class="preprocessor"></span><span class="preprocessor">#define wide_char_size                 CUR Numbers[29]</span>
+<a name="l00130"></a>00130 <span class="preprocessor"></span><span class="preprocessor">#define buttons                        CUR Numbers[30]</span>
+<a name="l00131"></a>00131 <span class="preprocessor"></span><span class="preprocessor">#define bit_image_entwining            CUR Numbers[31]</span>
+<a name="l00132"></a>00132 <span class="preprocessor"></span><span class="preprocessor">#define bit_image_type                 CUR Numbers[32]</span>
+<a name="l00133"></a>00133 <span class="preprocessor"></span><span class="preprocessor">#define back_tab                       CUR Strings[0]</span>
+<a name="l00134"></a>00134 <span class="preprocessor"></span><span class="preprocessor">#define bell                           CUR Strings[1]</span>
+<a name="l00135"></a>00135 <span class="preprocessor"></span><span class="preprocessor">#define carriage_return                CUR Strings[2]</span>
+<a name="l00136"></a>00136 <span class="preprocessor"></span><span class="preprocessor">#define change_scroll_region           CUR Strings[3]</span>
+<a name="l00137"></a>00137 <span class="preprocessor"></span><span class="preprocessor">#define clear_all_tabs                 CUR Strings[4]</span>
+<a name="l00138"></a>00138 <span class="preprocessor"></span><span class="preprocessor">#define clear_screen                   CUR Strings[5]</span>
+<a name="l00139"></a>00139 <span class="preprocessor"></span><span class="preprocessor">#define clr_eol                        CUR Strings[6]</span>
+<a name="l00140"></a>00140 <span class="preprocessor"></span><span class="preprocessor">#define clr_eos                        CUR Strings[7]</span>
+<a name="l00141"></a>00141 <span class="preprocessor"></span><span class="preprocessor">#define column_address                 CUR Strings[8]</span>
+<a name="l00142"></a>00142 <span class="preprocessor"></span><span class="preprocessor">#define command_character              CUR Strings[9]</span>
+<a name="l00143"></a>00143 <span class="preprocessor"></span><span class="preprocessor">#define cursor_address                 CUR Strings[10]</span>
+<a name="l00144"></a>00144 <span class="preprocessor"></span><span class="preprocessor">#define cursor_down                    CUR Strings[11]</span>
+<a name="l00145"></a>00145 <span class="preprocessor"></span><span class="preprocessor">#define cursor_home                    CUR Strings[12]</span>
+<a name="l00146"></a>00146 <span class="preprocessor"></span><span class="preprocessor">#define cursor_invisible               CUR Strings[13]</span>
+<a name="l00147"></a>00147 <span class="preprocessor"></span><span class="preprocessor">#define cursor_left                    CUR Strings[14]</span>
+<a name="l00148"></a>00148 <span class="preprocessor"></span><span class="preprocessor">#define cursor_mem_address             CUR Strings[15]</span>
+<a name="l00149"></a>00149 <span class="preprocessor"></span><span class="preprocessor">#define cursor_normal                  CUR Strings[16]</span>
+<a name="l00150"></a>00150 <span class="preprocessor"></span><span class="preprocessor">#define cursor_right                   CUR Strings[17]</span>
+<a name="l00151"></a>00151 <span class="preprocessor"></span><span class="preprocessor">#define cursor_to_ll                   CUR Strings[18]</span>
+<a name="l00152"></a>00152 <span class="preprocessor"></span><span class="preprocessor">#define cursor_up                      CUR Strings[19]</span>
+<a name="l00153"></a>00153 <span class="preprocessor"></span><span class="preprocessor">#define cursor_visible                 CUR Strings[20]</span>
+<a name="l00154"></a>00154 <span class="preprocessor"></span><span class="preprocessor">#define delete_character               CUR Strings[21]</span>
+<a name="l00155"></a>00155 <span class="preprocessor"></span><span class="preprocessor">#define delete_line                    CUR Strings[22]</span>
+<a name="l00156"></a>00156 <span class="preprocessor"></span><span class="preprocessor">#define dis_status_line                CUR Strings[23]</span>
+<a name="l00157"></a>00157 <span class="preprocessor"></span><span class="preprocessor">#define down_half_line                 CUR Strings[24]</span>
+<a name="l00158"></a>00158 <span class="preprocessor"></span><span class="preprocessor">#define enter_alt_charset_mode         CUR Strings[25]</span>
+<a name="l00159"></a>00159 <span class="preprocessor"></span><span class="preprocessor">#define enter_blink_mode               CUR Strings[26]</span>
+<a name="l00160"></a>00160 <span class="preprocessor"></span><span class="preprocessor">#define enter_bold_mode                CUR Strings[27]</span>
+<a name="l00161"></a>00161 <span class="preprocessor"></span><span class="preprocessor">#define enter_ca_mode                  CUR Strings[28]</span>
+<a name="l00162"></a>00162 <span class="preprocessor"></span><span class="preprocessor">#define enter_delete_mode              CUR Strings[29]</span>
+<a name="l00163"></a>00163 <span class="preprocessor"></span><span class="preprocessor">#define enter_dim_mode                 CUR Strings[30]</span>
+<a name="l00164"></a>00164 <span class="preprocessor"></span><span class="preprocessor">#define enter_insert_mode              CUR Strings[31]</span>
+<a name="l00165"></a>00165 <span class="preprocessor"></span><span class="preprocessor">#define enter_secure_mode              CUR Strings[32]</span>
+<a name="l00166"></a>00166 <span class="preprocessor"></span><span class="preprocessor">#define enter_protected_mode           CUR Strings[33]</span>
+<a name="l00167"></a>00167 <span class="preprocessor"></span><span class="preprocessor">#define enter_reverse_mode             CUR Strings[34]</span>
+<a name="l00168"></a>00168 <span class="preprocessor"></span><span class="preprocessor">#define enter_standout_mode            CUR Strings[35]</span>
+<a name="l00169"></a>00169 <span class="preprocessor"></span><span class="preprocessor">#define enter_underline_mode           CUR Strings[36]</span>
+<a name="l00170"></a>00170 <span class="preprocessor"></span><span class="preprocessor">#define erase_chars                    CUR Strings[37]</span>
+<a name="l00171"></a>00171 <span class="preprocessor"></span><span class="preprocessor">#define exit_alt_charset_mode          CUR Strings[38]</span>
+<a name="l00172"></a>00172 <span class="preprocessor"></span><span class="preprocessor">#define exit_attribute_mode            CUR Strings[39]</span>
+<a name="l00173"></a>00173 <span class="preprocessor"></span><span class="preprocessor">#define exit_ca_mode                   CUR Strings[40]</span>
+<a name="l00174"></a>00174 <span class="preprocessor"></span><span class="preprocessor">#define exit_delete_mode               CUR Strings[41]</span>
+<a name="l00175"></a>00175 <span class="preprocessor"></span><span class="preprocessor">#define exit_insert_mode               CUR Strings[42]</span>
+<a name="l00176"></a>00176 <span class="preprocessor"></span><span class="preprocessor">#define exit_standout_mode             CUR Strings[43]</span>
+<a name="l00177"></a>00177 <span class="preprocessor"></span><span class="preprocessor">#define exit_underline_mode            CUR Strings[44]</span>
+<a name="l00178"></a>00178 <span class="preprocessor"></span><span class="preprocessor">#define flash_screen                   CUR Strings[45]</span>
+<a name="l00179"></a>00179 <span class="preprocessor"></span><span class="preprocessor">#define form_feed                      CUR Strings[46]</span>
+<a name="l00180"></a>00180 <span class="preprocessor"></span><span class="preprocessor">#define from_status_line               CUR Strings[47]</span>
+<a name="l00181"></a>00181 <span class="preprocessor"></span><span class="preprocessor">#define init_1string                   CUR Strings[48]</span>
+<a name="l00182"></a>00182 <span class="preprocessor"></span><span class="preprocessor">#define init_2string                   CUR Strings[49]</span>
+<a name="l00183"></a>00183 <span class="preprocessor"></span><span class="preprocessor">#define init_3string                   CUR Strings[50]</span>
+<a name="l00184"></a>00184 <span class="preprocessor"></span><span class="preprocessor">#define init_file                      CUR Strings[51]</span>
+<a name="l00185"></a>00185 <span class="preprocessor"></span><span class="preprocessor">#define insert_character               CUR Strings[52]</span>
+<a name="l00186"></a>00186 <span class="preprocessor"></span><span class="preprocessor">#define insert_line                    CUR Strings[53]</span>
+<a name="l00187"></a>00187 <span class="preprocessor"></span><span class="preprocessor">#define insert_padding                 CUR Strings[54]</span>
+<a name="l00188"></a>00188 <span class="preprocessor"></span><span class="preprocessor">#define key_backspace                  CUR Strings[55]</span>
+<a name="l00189"></a>00189 <span class="preprocessor"></span><span class="preprocessor">#define key_catab                      CUR Strings[56]</span>
+<a name="l00190"></a>00190 <span class="preprocessor"></span><span class="preprocessor">#define key_clear                      CUR Strings[57]</span>
+<a name="l00191"></a>00191 <span class="preprocessor"></span><span class="preprocessor">#define key_ctab                       CUR Strings[58]</span>
+<a name="l00192"></a>00192 <span class="preprocessor"></span><span class="preprocessor">#define key_dc                         CUR Strings[59]</span>
+<a name="l00193"></a>00193 <span class="preprocessor"></span><span class="preprocessor">#define key_dl                         CUR Strings[60]</span>
+<a name="l00194"></a>00194 <span class="preprocessor"></span><span class="preprocessor">#define key_down                       CUR Strings[61]</span>
+<a name="l00195"></a>00195 <span class="preprocessor"></span><span class="preprocessor">#define key_eic                        CUR Strings[62]</span>
+<a name="l00196"></a>00196 <span class="preprocessor"></span><span class="preprocessor">#define key_eol                        CUR Strings[63]</span>
+<a name="l00197"></a>00197 <span class="preprocessor"></span><span class="preprocessor">#define key_eos                        CUR Strings[64]</span>
+<a name="l00198"></a>00198 <span class="preprocessor"></span><span class="preprocessor">#define key_f0                         CUR Strings[65]</span>
+<a name="l00199"></a>00199 <span class="preprocessor"></span><span class="preprocessor">#define key_f1                         CUR Strings[66]</span>
+<a name="l00200"></a>00200 <span class="preprocessor"></span><span class="preprocessor">#define key_f10                        CUR Strings[67]</span>
+<a name="l00201"></a>00201 <span class="preprocessor"></span><span class="preprocessor">#define key_f2                         CUR Strings[68]</span>
+<a name="l00202"></a>00202 <span class="preprocessor"></span><span class="preprocessor">#define key_f3                         CUR Strings[69]</span>
+<a name="l00203"></a>00203 <span class="preprocessor"></span><span class="preprocessor">#define key_f4                         CUR Strings[70]</span>
+<a name="l00204"></a>00204 <span class="preprocessor"></span><span class="preprocessor">#define key_f5                         CUR Strings[71]</span>
+<a name="l00205"></a>00205 <span class="preprocessor"></span><span class="preprocessor">#define key_f6                         CUR Strings[72]</span>
+<a name="l00206"></a>00206 <span class="preprocessor"></span><span class="preprocessor">#define key_f7                         CUR Strings[73]</span>
+<a name="l00207"></a>00207 <span class="preprocessor"></span><span class="preprocessor">#define key_f8                         CUR Strings[74]</span>
+<a name="l00208"></a>00208 <span class="preprocessor"></span><span class="preprocessor">#define key_f9                         CUR Strings[75]</span>
+<a name="l00209"></a>00209 <span class="preprocessor"></span><span class="preprocessor">#define key_home                       CUR Strings[76]</span>
+<a name="l00210"></a>00210 <span class="preprocessor"></span><span class="preprocessor">#define key_ic                         CUR Strings[77]</span>
+<a name="l00211"></a>00211 <span class="preprocessor"></span><span class="preprocessor">#define key_il                         CUR Strings[78]</span>
+<a name="l00212"></a>00212 <span class="preprocessor"></span><span class="preprocessor">#define key_left                       CUR Strings[79]</span>
+<a name="l00213"></a>00213 <span class="preprocessor"></span><span class="preprocessor">#define key_ll                         CUR Strings[80]</span>
+<a name="l00214"></a>00214 <span class="preprocessor"></span><span class="preprocessor">#define key_npage                      CUR Strings[81]</span>
+<a name="l00215"></a>00215 <span class="preprocessor"></span><span class="preprocessor">#define key_ppage                      CUR Strings[82]</span>
+<a name="l00216"></a>00216 <span class="preprocessor"></span><span class="preprocessor">#define key_right                      CUR Strings[83]</span>
+<a name="l00217"></a>00217 <span class="preprocessor"></span><span class="preprocessor">#define key_sf                         CUR Strings[84]</span>
+<a name="l00218"></a>00218 <span class="preprocessor"></span><span class="preprocessor">#define key_sr                         CUR Strings[85]</span>
+<a name="l00219"></a>00219 <span class="preprocessor"></span><span class="preprocessor">#define key_stab                       CUR Strings[86]</span>
+<a name="l00220"></a>00220 <span class="preprocessor"></span><span class="preprocessor">#define key_up                         CUR Strings[87]</span>
+<a name="l00221"></a>00221 <span class="preprocessor"></span><span class="preprocessor">#define keypad_local                   CUR Strings[88]</span>
+<a name="l00222"></a>00222 <span class="preprocessor"></span><span class="preprocessor">#define keypad_xmit                    CUR Strings[89]</span>
+<a name="l00223"></a>00223 <span class="preprocessor"></span><span class="preprocessor">#define lab_f0                         CUR Strings[90]</span>
+<a name="l00224"></a>00224 <span class="preprocessor"></span><span class="preprocessor">#define lab_f1                         CUR Strings[91]</span>
+<a name="l00225"></a>00225 <span class="preprocessor"></span><span class="preprocessor">#define lab_f10                        CUR Strings[92]</span>
+<a name="l00226"></a>00226 <span class="preprocessor"></span><span class="preprocessor">#define lab_f2                         CUR Strings[93]</span>
+<a name="l00227"></a>00227 <span class="preprocessor"></span><span class="preprocessor">#define lab_f3                         CUR Strings[94]</span>
+<a name="l00228"></a>00228 <span class="preprocessor"></span><span class="preprocessor">#define lab_f4                         CUR Strings[95]</span>
+<a name="l00229"></a>00229 <span class="preprocessor"></span><span class="preprocessor">#define lab_f5                         CUR Strings[96]</span>
+<a name="l00230"></a>00230 <span class="preprocessor"></span><span class="preprocessor">#define lab_f6                         CUR Strings[97]</span>
+<a name="l00231"></a>00231 <span class="preprocessor"></span><span class="preprocessor">#define lab_f7                         CUR Strings[98]</span>
+<a name="l00232"></a>00232 <span class="preprocessor"></span><span class="preprocessor">#define lab_f8                         CUR Strings[99]</span>
+<a name="l00233"></a>00233 <span class="preprocessor"></span><span class="preprocessor">#define lab_f9                         CUR Strings[100]</span>
+<a name="l00234"></a>00234 <span class="preprocessor"></span><span class="preprocessor">#define meta_off                       CUR Strings[101]</span>
+<a name="l00235"></a>00235 <span class="preprocessor"></span><span class="preprocessor">#define meta_on                        CUR Strings[102]</span>
+<a name="l00236"></a>00236 <span class="preprocessor"></span><span class="preprocessor">#define newline                        CUR Strings[103]</span>
+<a name="l00237"></a>00237 <span class="preprocessor"></span><span class="preprocessor">#define pad_char                       CUR Strings[104]</span>
+<a name="l00238"></a>00238 <span class="preprocessor"></span><span class="preprocessor">#define parm_dch                       CUR Strings[105]</span>
+<a name="l00239"></a>00239 <span class="preprocessor"></span><span class="preprocessor">#define parm_delete_line               CUR Strings[106]</span>
+<a name="l00240"></a>00240 <span class="preprocessor"></span><span class="preprocessor">#define parm_down_cursor               CUR Strings[107]</span>
+<a name="l00241"></a>00241 <span class="preprocessor"></span><span class="preprocessor">#define parm_ich                       CUR Strings[108]</span>
+<a name="l00242"></a>00242 <span class="preprocessor"></span><span class="preprocessor">#define parm_index                     CUR Strings[109]</span>
+<a name="l00243"></a>00243 <span class="preprocessor"></span><span class="preprocessor">#define parm_insert_line               CUR Strings[110]</span>
+<a name="l00244"></a>00244 <span class="preprocessor"></span><span class="preprocessor">#define parm_left_cursor               CUR Strings[111]</span>
+<a name="l00245"></a>00245 <span class="preprocessor"></span><span class="preprocessor">#define parm_right_cursor              CUR Strings[112]</span>
+<a name="l00246"></a>00246 <span class="preprocessor"></span><span class="preprocessor">#define parm_rindex                    CUR Strings[113]</span>
+<a name="l00247"></a>00247 <span class="preprocessor"></span><span class="preprocessor">#define parm_up_cursor                 CUR Strings[114]</span>
+<a name="l00248"></a>00248 <span class="preprocessor"></span><span class="preprocessor">#define pkey_key                       CUR Strings[115]</span>
+<a name="l00249"></a>00249 <span class="preprocessor"></span><span class="preprocessor">#define pkey_local                     CUR Strings[116]</span>
+<a name="l00250"></a>00250 <span class="preprocessor"></span><span class="preprocessor">#define pkey_xmit                      CUR Strings[117]</span>
+<a name="l00251"></a>00251 <span class="preprocessor"></span><span class="preprocessor">#define print_screen                   CUR Strings[118]</span>
+<a name="l00252"></a>00252 <span class="preprocessor"></span><span class="preprocessor">#define prtr_off                       CUR Strings[119]</span>
+<a name="l00253"></a>00253 <span class="preprocessor"></span><span class="preprocessor">#define prtr_on                        CUR Strings[120]</span>
+<a name="l00254"></a>00254 <span class="preprocessor"></span><span class="preprocessor">#define repeat_char                    CUR Strings[121]</span>
+<a name="l00255"></a>00255 <span class="preprocessor"></span><span class="preprocessor">#define reset_1string                  CUR Strings[122]</span>
+<a name="l00256"></a>00256 <span class="preprocessor"></span><span class="preprocessor">#define reset_2string                  CUR Strings[123]</span>
+<a name="l00257"></a>00257 <span class="preprocessor"></span><span class="preprocessor">#define reset_3string                  CUR Strings[124]</span>
+<a name="l00258"></a>00258 <span class="preprocessor"></span><span class="preprocessor">#define reset_file                     CUR Strings[125]</span>
+<a name="l00259"></a>00259 <span class="preprocessor"></span><span class="preprocessor">#define restore_cursor                 CUR Strings[126]</span>
+<a name="l00260"></a>00260 <span class="preprocessor"></span><span class="preprocessor">#define row_address                    CUR Strings[127]</span>
+<a name="l00261"></a>00261 <span class="preprocessor"></span><span class="preprocessor">#define save_cursor                    CUR Strings[128]</span>
+<a name="l00262"></a>00262 <span class="preprocessor"></span><span class="preprocessor">#define scroll_forward                 CUR Strings[129]</span>
+<a name="l00263"></a>00263 <span class="preprocessor"></span><span class="preprocessor">#define scroll_reverse                 CUR Strings[130]</span>
+<a name="l00264"></a>00264 <span class="preprocessor"></span><span class="preprocessor">#define set_attributes                 CUR Strings[131]</span>
+<a name="l00265"></a>00265 <span class="preprocessor"></span><span class="preprocessor">#define set_tab                        CUR Strings[132]</span>
+<a name="l00266"></a>00266 <span class="preprocessor"></span><span class="preprocessor">#define set_window                     CUR Strings[133]</span>
+<a name="l00267"></a>00267 <span class="preprocessor"></span><span class="preprocessor">#define tab                            CUR Strings[134]</span>
+<a name="l00268"></a>00268 <span class="preprocessor"></span><span class="preprocessor">#define to_status_line                 CUR Strings[135]</span>
+<a name="l00269"></a>00269 <span class="preprocessor"></span><span class="preprocessor">#define underline_char                 CUR Strings[136]</span>
+<a name="l00270"></a>00270 <span class="preprocessor"></span><span class="preprocessor">#define up_half_line                   CUR Strings[137]</span>
+<a name="l00271"></a>00271 <span class="preprocessor"></span><span class="preprocessor">#define init_prog                      CUR Strings[138]</span>
+<a name="l00272"></a>00272 <span class="preprocessor"></span><span class="preprocessor">#define key_a1                         CUR Strings[139]</span>
+<a name="l00273"></a>00273 <span class="preprocessor"></span><span class="preprocessor">#define key_a3                         CUR Strings[140]</span>
+<a name="l00274"></a>00274 <span class="preprocessor"></span><span class="preprocessor">#define key_b2                         CUR Strings[141]</span>
+<a name="l00275"></a>00275 <span class="preprocessor"></span><span class="preprocessor">#define key_c1                         CUR Strings[142]</span>
+<a name="l00276"></a>00276 <span class="preprocessor"></span><span class="preprocessor">#define key_c3                         CUR Strings[143]</span>
+<a name="l00277"></a>00277 <span class="preprocessor"></span><span class="preprocessor">#define prtr_non                       CUR Strings[144]</span>
+<a name="l00278"></a>00278 <span class="preprocessor"></span><span class="preprocessor">#define char_padding                   CUR Strings[145]</span>
+<a name="l00279"></a>00279 <span class="preprocessor"></span><span class="preprocessor">#define acs_chars                      CUR Strings[146]</span>
+<a name="l00280"></a>00280 <span class="preprocessor"></span><span class="preprocessor">#define plab_norm                      CUR Strings[147]</span>
+<a name="l00281"></a>00281 <span class="preprocessor"></span><span class="preprocessor">#define key_btab                       CUR Strings[148]</span>
+<a name="l00282"></a>00282 <span class="preprocessor"></span><span class="preprocessor">#define enter_xon_mode                 CUR Strings[149]</span>
+<a name="l00283"></a>00283 <span class="preprocessor"></span><span class="preprocessor">#define exit_xon_mode                  CUR Strings[150]</span>
+<a name="l00284"></a>00284 <span class="preprocessor"></span><span class="preprocessor">#define enter_am_mode                  CUR Strings[151]</span>
+<a name="l00285"></a>00285 <span class="preprocessor"></span><span class="preprocessor">#define exit_am_mode                   CUR Strings[152]</span>
+<a name="l00286"></a>00286 <span class="preprocessor"></span><span class="preprocessor">#define xon_character                  CUR Strings[153]</span>
+<a name="l00287"></a>00287 <span class="preprocessor"></span><span class="preprocessor">#define xoff_character                 CUR Strings[154]</span>
+<a name="l00288"></a>00288 <span class="preprocessor"></span><span class="preprocessor">#define ena_acs                        CUR Strings[155]</span>
+<a name="l00289"></a>00289 <span class="preprocessor"></span><span class="preprocessor">#define label_on                       CUR Strings[156]</span>
+<a name="l00290"></a>00290 <span class="preprocessor"></span><span class="preprocessor">#define label_off                      CUR Strings[157]</span>
+<a name="l00291"></a>00291 <span class="preprocessor"></span><span class="preprocessor">#define key_beg                        CUR Strings[158]</span>
+<a name="l00292"></a>00292 <span class="preprocessor"></span><span class="preprocessor">#define key_cancel                     CUR Strings[159]</span>
+<a name="l00293"></a>00293 <span class="preprocessor"></span><span class="preprocessor">#define key_close                      CUR Strings[160]</span>
+<a name="l00294"></a>00294 <span class="preprocessor"></span><span class="preprocessor">#define key_command                    CUR Strings[161]</span>
+<a name="l00295"></a>00295 <span class="preprocessor"></span><span class="preprocessor">#define key_copy                       CUR Strings[162]</span>
+<a name="l00296"></a>00296 <span class="preprocessor"></span><span class="preprocessor">#define key_create                     CUR Strings[163]</span>
+<a name="l00297"></a>00297 <span class="preprocessor"></span><span class="preprocessor">#define key_end                        CUR Strings[164]</span>
+<a name="l00298"></a>00298 <span class="preprocessor"></span><span class="preprocessor">#define key_enter                      CUR Strings[165]</span>
+<a name="l00299"></a>00299 <span class="preprocessor"></span><span class="preprocessor">#define key_exit                       CUR Strings[166]</span>
+<a name="l00300"></a>00300 <span class="preprocessor"></span><span class="preprocessor">#define key_find                       CUR Strings[167]</span>
+<a name="l00301"></a>00301 <span class="preprocessor"></span><span class="preprocessor">#define key_help                       CUR Strings[168]</span>
+<a name="l00302"></a>00302 <span class="preprocessor"></span><span class="preprocessor">#define key_mark                       CUR Strings[169]</span>
+<a name="l00303"></a>00303 <span class="preprocessor"></span><span class="preprocessor">#define key_message                    CUR Strings[170]</span>
+<a name="l00304"></a>00304 <span class="preprocessor"></span><span class="preprocessor">#define key_move                       CUR Strings[171]</span>
+<a name="l00305"></a>00305 <span class="preprocessor"></span><span class="preprocessor">#define key_next                       CUR Strings[172]</span>
+<a name="l00306"></a>00306 <span class="preprocessor"></span><span class="preprocessor">#define key_open                       CUR Strings[173]</span>
+<a name="l00307"></a>00307 <span class="preprocessor"></span><span class="preprocessor">#define key_options                    CUR Strings[174]</span>
+<a name="l00308"></a>00308 <span class="preprocessor"></span><span class="preprocessor">#define key_previous                   CUR Strings[175]</span>
+<a name="l00309"></a>00309 <span class="preprocessor"></span><span class="preprocessor">#define key_print                      CUR Strings[176]</span>
+<a name="l00310"></a>00310 <span class="preprocessor"></span><span class="preprocessor">#define key_redo                       CUR Strings[177]</span>
+<a name="l00311"></a>00311 <span class="preprocessor"></span><span class="preprocessor">#define key_reference                  CUR Strings[178]</span>
+<a name="l00312"></a>00312 <span class="preprocessor"></span><span class="preprocessor">#define key_refresh                    CUR Strings[179]</span>
+<a name="l00313"></a>00313 <span class="preprocessor"></span><span class="preprocessor">#define key_replace                    CUR Strings[180]</span>
+<a name="l00314"></a>00314 <span class="preprocessor"></span><span class="preprocessor">#define key_restart                    CUR Strings[181]</span>
+<a name="l00315"></a>00315 <span class="preprocessor"></span><span class="preprocessor">#define key_resume                     CUR Strings[182]</span>
+<a name="l00316"></a>00316 <span class="preprocessor"></span><span class="preprocessor">#define key_save                       CUR Strings[183]</span>
+<a name="l00317"></a>00317 <span class="preprocessor"></span><span class="preprocessor">#define key_suspend                    CUR Strings[184]</span>
+<a name="l00318"></a>00318 <span class="preprocessor"></span><span class="preprocessor">#define key_undo                       CUR Strings[185]</span>
+<a name="l00319"></a>00319 <span class="preprocessor"></span><span class="preprocessor">#define key_sbeg                       CUR Strings[186]</span>
+<a name="l00320"></a>00320 <span class="preprocessor"></span><span class="preprocessor">#define key_scancel                    CUR Strings[187]</span>
+<a name="l00321"></a>00321 <span class="preprocessor"></span><span class="preprocessor">#define key_scommand                   CUR Strings[188]</span>
+<a name="l00322"></a>00322 <span class="preprocessor"></span><span class="preprocessor">#define key_scopy                      CUR Strings[189]</span>
+<a name="l00323"></a>00323 <span class="preprocessor"></span><span class="preprocessor">#define key_screate                    CUR Strings[190]</span>
+<a name="l00324"></a>00324 <span class="preprocessor"></span><span class="preprocessor">#define key_sdc                        CUR Strings[191]</span>
+<a name="l00325"></a>00325 <span class="preprocessor"></span><span class="preprocessor">#define key_sdl                        CUR Strings[192]</span>
+<a name="l00326"></a>00326 <span class="preprocessor"></span><span class="preprocessor">#define key_select                     CUR Strings[193]</span>
+<a name="l00327"></a>00327 <span class="preprocessor"></span><span class="preprocessor">#define key_send                       CUR Strings[194]</span>
+<a name="l00328"></a>00328 <span class="preprocessor"></span><span class="preprocessor">#define key_seol                       CUR Strings[195]</span>
+<a name="l00329"></a>00329 <span class="preprocessor"></span><span class="preprocessor">#define key_sexit                      CUR Strings[196]</span>
+<a name="l00330"></a>00330 <span class="preprocessor"></span><span class="preprocessor">#define key_sfind                      CUR Strings[197]</span>
+<a name="l00331"></a>00331 <span class="preprocessor"></span><span class="preprocessor">#define key_shelp                      CUR Strings[198]</span>
+<a name="l00332"></a>00332 <span class="preprocessor"></span><span class="preprocessor">#define key_shome                      CUR Strings[199]</span>
+<a name="l00333"></a>00333 <span class="preprocessor"></span><span class="preprocessor">#define key_sic                        CUR Strings[200]</span>
+<a name="l00334"></a>00334 <span class="preprocessor"></span><span class="preprocessor">#define key_sleft                      CUR Strings[201]</span>
+<a name="l00335"></a>00335 <span class="preprocessor"></span><span class="preprocessor">#define key_smessage                   CUR Strings[202]</span>
+<a name="l00336"></a>00336 <span class="preprocessor"></span><span class="preprocessor">#define key_smove                      CUR Strings[203]</span>
+<a name="l00337"></a>00337 <span class="preprocessor"></span><span class="preprocessor">#define key_snext                      CUR Strings[204]</span>
+<a name="l00338"></a>00338 <span class="preprocessor"></span><span class="preprocessor">#define key_soptions                   CUR Strings[205]</span>
+<a name="l00339"></a>00339 <span class="preprocessor"></span><span class="preprocessor">#define key_sprevious                  CUR Strings[206]</span>
+<a name="l00340"></a>00340 <span class="preprocessor"></span><span class="preprocessor">#define key_sprint                     CUR Strings[207]</span>
+<a name="l00341"></a>00341 <span class="preprocessor"></span><span class="preprocessor">#define key_sredo                      CUR Strings[208]</span>
+<a name="l00342"></a>00342 <span class="preprocessor"></span><span class="preprocessor">#define key_sreplace                   CUR Strings[209]</span>
+<a name="l00343"></a>00343 <span class="preprocessor"></span><span class="preprocessor">#define key_sright                     CUR Strings[210]</span>
+<a name="l00344"></a>00344 <span class="preprocessor"></span><span class="preprocessor">#define key_srsume                     CUR Strings[211]</span>
+<a name="l00345"></a>00345 <span class="preprocessor"></span><span class="preprocessor">#define key_ssave                      CUR Strings[212]</span>
+<a name="l00346"></a>00346 <span class="preprocessor"></span><span class="preprocessor">#define key_ssuspend                   CUR Strings[213]</span>
+<a name="l00347"></a>00347 <span class="preprocessor"></span><span class="preprocessor">#define key_sundo                      CUR Strings[214]</span>
+<a name="l00348"></a>00348 <span class="preprocessor"></span><span class="preprocessor">#define req_for_input                  CUR Strings[215]</span>
+<a name="l00349"></a>00349 <span class="preprocessor"></span><span class="preprocessor">#define key_f11                        CUR Strings[216]</span>
+<a name="l00350"></a>00350 <span class="preprocessor"></span><span class="preprocessor">#define key_f12                        CUR Strings[217]</span>
+<a name="l00351"></a>00351 <span class="preprocessor"></span><span class="preprocessor">#define key_f13                        CUR Strings[218]</span>
+<a name="l00352"></a>00352 <span class="preprocessor"></span><span class="preprocessor">#define key_f14                        CUR Strings[219]</span>
+<a name="l00353"></a>00353 <span class="preprocessor"></span><span class="preprocessor">#define key_f15                        CUR Strings[220]</span>
+<a name="l00354"></a>00354 <span class="preprocessor"></span><span class="preprocessor">#define key_f16                        CUR Strings[221]</span>
+<a name="l00355"></a>00355 <span class="preprocessor"></span><span class="preprocessor">#define key_f17                        CUR Strings[222]</span>
+<a name="l00356"></a>00356 <span class="preprocessor"></span><span class="preprocessor">#define key_f18                        CUR Strings[223]</span>
+<a name="l00357"></a>00357 <span class="preprocessor"></span><span class="preprocessor">#define key_f19                        CUR Strings[224]</span>
+<a name="l00358"></a>00358 <span class="preprocessor"></span><span class="preprocessor">#define key_f20                        CUR Strings[225]</span>
+<a name="l00359"></a>00359 <span class="preprocessor"></span><span class="preprocessor">#define key_f21                        CUR Strings[226]</span>
+<a name="l00360"></a>00360 <span class="preprocessor"></span><span class="preprocessor">#define key_f22                        CUR Strings[227]</span>
+<a name="l00361"></a>00361 <span class="preprocessor"></span><span class="preprocessor">#define key_f23                        CUR Strings[228]</span>
+<a name="l00362"></a>00362 <span class="preprocessor"></span><span class="preprocessor">#define key_f24                        CUR Strings[229]</span>
+<a name="l00363"></a>00363 <span class="preprocessor"></span><span class="preprocessor">#define key_f25                        CUR Strings[230]</span>
+<a name="l00364"></a>00364 <span class="preprocessor"></span><span class="preprocessor">#define key_f26                        CUR Strings[231]</span>
+<a name="l00365"></a>00365 <span class="preprocessor"></span><span class="preprocessor">#define key_f27                        CUR Strings[232]</span>
+<a name="l00366"></a>00366 <span class="preprocessor"></span><span class="preprocessor">#define key_f28                        CUR Strings[233]</span>
+<a name="l00367"></a>00367 <span class="preprocessor"></span><span class="preprocessor">#define key_f29                        CUR Strings[234]</span>
+<a name="l00368"></a>00368 <span class="preprocessor"></span><span class="preprocessor">#define key_f30                        CUR Strings[235]</span>
+<a name="l00369"></a>00369 <span class="preprocessor"></span><span class="preprocessor">#define key_f31                        CUR Strings[236]</span>
+<a name="l00370"></a>00370 <span class="preprocessor"></span><span class="preprocessor">#define key_f32                        CUR Strings[237]</span>
+<a name="l00371"></a>00371 <span class="preprocessor"></span><span class="preprocessor">#define key_f33                        CUR Strings[238]</span>
+<a name="l00372"></a>00372 <span class="preprocessor"></span><span class="preprocessor">#define key_f34                        CUR Strings[239]</span>
+<a name="l00373"></a>00373 <span class="preprocessor"></span><span class="preprocessor">#define key_f35                        CUR Strings[240]</span>
+<a name="l00374"></a>00374 <span class="preprocessor"></span><span class="preprocessor">#define key_f36                        CUR Strings[241]</span>
+<a name="l00375"></a>00375 <span class="preprocessor"></span><span class="preprocessor">#define key_f37                        CUR Strings[242]</span>
+<a name="l00376"></a>00376 <span class="preprocessor"></span><span class="preprocessor">#define key_f38                        CUR Strings[243]</span>
+<a name="l00377"></a>00377 <span class="preprocessor"></span><span class="preprocessor">#define key_f39                        CUR Strings[244]</span>
+<a name="l00378"></a>00378 <span class="preprocessor"></span><span class="preprocessor">#define key_f40                        CUR Strings[245]</span>
+<a name="l00379"></a>00379 <span class="preprocessor"></span><span class="preprocessor">#define key_f41                        CUR Strings[246]</span>
+<a name="l00380"></a>00380 <span class="preprocessor"></span><span class="preprocessor">#define key_f42                        CUR Strings[247]</span>
+<a name="l00381"></a>00381 <span class="preprocessor"></span><span class="preprocessor">#define key_f43                        CUR Strings[248]</span>
+<a name="l00382"></a>00382 <span class="preprocessor"></span><span class="preprocessor">#define key_f44                        CUR Strings[249]</span>
+<a name="l00383"></a>00383 <span class="preprocessor"></span><span class="preprocessor">#define key_f45                        CUR Strings[250]</span>
+<a name="l00384"></a>00384 <span class="preprocessor"></span><span class="preprocessor">#define key_f46                        CUR Strings[251]</span>
+<a name="l00385"></a>00385 <span class="preprocessor"></span><span class="preprocessor">#define key_f47                        CUR Strings[252]</span>
+<a name="l00386"></a>00386 <span class="preprocessor"></span><span class="preprocessor">#define key_f48                        CUR Strings[253]</span>
+<a name="l00387"></a>00387 <span class="preprocessor"></span><span class="preprocessor">#define key_f49                        CUR Strings[254]</span>
+<a name="l00388"></a>00388 <span class="preprocessor"></span><span class="preprocessor">#define key_f50                        CUR Strings[255]</span>
+<a name="l00389"></a>00389 <span class="preprocessor"></span><span class="preprocessor">#define key_f51                        CUR Strings[256]</span>
+<a name="l00390"></a>00390 <span class="preprocessor"></span><span class="preprocessor">#define key_f52                        CUR Strings[257]</span>
+<a name="l00391"></a>00391 <span class="preprocessor"></span><span class="preprocessor">#define key_f53                        CUR Strings[258]</span>
+<a name="l00392"></a>00392 <span class="preprocessor"></span><span class="preprocessor">#define key_f54                        CUR Strings[259]</span>
+<a name="l00393"></a>00393 <span class="preprocessor"></span><span class="preprocessor">#define key_f55                        CUR Strings[260]</span>
+<a name="l00394"></a>00394 <span class="preprocessor"></span><span class="preprocessor">#define key_f56                        CUR Strings[261]</span>
+<a name="l00395"></a>00395 <span class="preprocessor"></span><span class="preprocessor">#define key_f57                        CUR Strings[262]</span>
+<a name="l00396"></a>00396 <span class="preprocessor"></span><span class="preprocessor">#define key_f58                        CUR Strings[263]</span>
+<a name="l00397"></a>00397 <span class="preprocessor"></span><span class="preprocessor">#define key_f59                        CUR Strings[264]</span>
+<a name="l00398"></a>00398 <span class="preprocessor"></span><span class="preprocessor">#define key_f60                        CUR Strings[265]</span>
+<a name="l00399"></a>00399 <span class="preprocessor"></span><span class="preprocessor">#define key_f61                        CUR Strings[266]</span>
+<a name="l00400"></a>00400 <span class="preprocessor"></span><span class="preprocessor">#define key_f62                        CUR Strings[267]</span>
+<a name="l00401"></a>00401 <span class="preprocessor"></span><span class="preprocessor">#define key_f63                        CUR Strings[268]</span>
+<a name="l00402"></a>00402 <span class="preprocessor"></span><span class="preprocessor">#define clr_bol                        CUR Strings[269]</span>
+<a name="l00403"></a>00403 <span class="preprocessor"></span><span class="preprocessor">#define clear_margins                  CUR Strings[270]</span>
+<a name="l00404"></a>00404 <span class="preprocessor"></span><span class="preprocessor">#define set_left_margin                CUR Strings[271]</span>
+<a name="l00405"></a>00405 <span class="preprocessor"></span><span class="preprocessor">#define set_right_margin               CUR Strings[272]</span>
+<a name="l00406"></a>00406 <span class="preprocessor"></span><span class="preprocessor">#define label_format                   CUR Strings[273]</span>
+<a name="l00407"></a>00407 <span class="preprocessor"></span><span class="preprocessor">#define set_clock                      CUR Strings[274]</span>
+<a name="l00408"></a>00408 <span class="preprocessor"></span><span class="preprocessor">#define display_clock                  CUR Strings[275]</span>
+<a name="l00409"></a>00409 <span class="preprocessor"></span><span class="preprocessor">#define remove_clock                   CUR Strings[276]</span>
+<a name="l00410"></a>00410 <span class="preprocessor"></span><span class="preprocessor">#define create_window                  CUR Strings[277]</span>
+<a name="l00411"></a>00411 <span class="preprocessor"></span><span class="preprocessor">#define goto_window                    CUR Strings[278]</span>
+<a name="l00412"></a>00412 <span class="preprocessor"></span><span class="preprocessor">#define hangup                         CUR Strings[279]</span>
+<a name="l00413"></a>00413 <span class="preprocessor"></span><span class="preprocessor">#define dial_phone                     CUR Strings[280]</span>
+<a name="l00414"></a>00414 <span class="preprocessor"></span><span class="preprocessor">#define quick_dial                     CUR Strings[281]</span>
+<a name="l00415"></a>00415 <span class="preprocessor"></span><span class="preprocessor">#define tone                           CUR Strings[282]</span>
+<a name="l00416"></a>00416 <span class="preprocessor"></span><span class="preprocessor">#define pulse                          CUR Strings[283]</span>
+<a name="l00417"></a>00417 <span class="preprocessor"></span><span class="preprocessor">#define flash_hook                     CUR Strings[284]</span>
+<a name="l00418"></a>00418 <span class="preprocessor"></span><span class="preprocessor">#define fixed_pause                    CUR Strings[285]</span>
+<a name="l00419"></a>00419 <span class="preprocessor"></span><span class="preprocessor">#define wait_tone                      CUR Strings[286]</span>
+<a name="l00420"></a>00420 <span class="preprocessor"></span><span class="preprocessor">#define user0                          CUR Strings[287]</span>
+<a name="l00421"></a>00421 <span class="preprocessor"></span><span class="preprocessor">#define user1                          CUR Strings[288]</span>
+<a name="l00422"></a>00422 <span class="preprocessor"></span><span class="preprocessor">#define user2                          CUR Strings[289]</span>
+<a name="l00423"></a>00423 <span class="preprocessor"></span><span class="preprocessor">#define user3                          CUR Strings[290]</span>
+<a name="l00424"></a>00424 <span class="preprocessor"></span><span class="preprocessor">#define user4                          CUR Strings[291]</span>
+<a name="l00425"></a>00425 <span class="preprocessor"></span><span class="preprocessor">#define user5                          CUR Strings[292]</span>
+<a name="l00426"></a>00426 <span class="preprocessor"></span><span class="preprocessor">#define user6                          CUR Strings[293]</span>
+<a name="l00427"></a>00427 <span class="preprocessor"></span><span class="preprocessor">#define user7                          CUR Strings[294]</span>
+<a name="l00428"></a>00428 <span class="preprocessor"></span><span class="preprocessor">#define user8                          CUR Strings[295]</span>
+<a name="l00429"></a>00429 <span class="preprocessor"></span><span class="preprocessor">#define user9                          CUR Strings[296]</span>
+<a name="l00430"></a>00430 <span class="preprocessor"></span><span class="preprocessor">#define orig_pair                      CUR Strings[297]</span>
+<a name="l00431"></a>00431 <span class="preprocessor"></span><span class="preprocessor">#define orig_colors                    CUR Strings[298]</span>
+<a name="l00432"></a>00432 <span class="preprocessor"></span><span class="preprocessor">#define initialize_color               CUR Strings[299]</span>
+<a name="l00433"></a>00433 <span class="preprocessor"></span><span class="preprocessor">#define initialize_pair                CUR Strings[300]</span>
+<a name="l00434"></a>00434 <span class="preprocessor"></span><span class="preprocessor">#define set_color_pair                 CUR Strings[301]</span>
+<a name="l00435"></a>00435 <span class="preprocessor"></span><span class="preprocessor">#define set_foreground                 CUR Strings[302]</span>
+<a name="l00436"></a>00436 <span class="preprocessor"></span><span class="preprocessor">#define set_background                 CUR Strings[303]</span>
+<a name="l00437"></a>00437 <span class="preprocessor"></span><span class="preprocessor">#define change_char_pitch              CUR Strings[304]</span>
+<a name="l00438"></a>00438 <span class="preprocessor"></span><span class="preprocessor">#define change_line_pitch              CUR Strings[305]</span>
+<a name="l00439"></a>00439 <span class="preprocessor"></span><span class="preprocessor">#define change_res_horz                CUR Strings[306]</span>
+<a name="l00440"></a>00440 <span class="preprocessor"></span><span class="preprocessor">#define change_res_vert                CUR Strings[307]</span>
+<a name="l00441"></a>00441 <span class="preprocessor"></span><span class="preprocessor">#define define_char                    CUR Strings[308]</span>
+<a name="l00442"></a>00442 <span class="preprocessor"></span><span class="preprocessor">#define enter_doublewide_mode          CUR Strings[309]</span>
+<a name="l00443"></a>00443 <span class="preprocessor"></span><span class="preprocessor">#define enter_draft_quality            CUR Strings[310]</span>
+<a name="l00444"></a>00444 <span class="preprocessor"></span><span class="preprocessor">#define enter_italics_mode             CUR Strings[311]</span>
+<a name="l00445"></a>00445 <span class="preprocessor"></span><span class="preprocessor">#define enter_leftward_mode            CUR Strings[312]</span>
+<a name="l00446"></a>00446 <span class="preprocessor"></span><span class="preprocessor">#define enter_micro_mode               CUR Strings[313]</span>
+<a name="l00447"></a>00447 <span class="preprocessor"></span><span class="preprocessor">#define enter_near_letter_quality      CUR Strings[314]</span>
+<a name="l00448"></a>00448 <span class="preprocessor"></span><span class="preprocessor">#define enter_normal_quality           CUR Strings[315]</span>
+<a name="l00449"></a>00449 <span class="preprocessor"></span><span class="preprocessor">#define enter_shadow_mode              CUR Strings[316]</span>
+<a name="l00450"></a>00450 <span class="preprocessor"></span><span class="preprocessor">#define enter_subscript_mode           CUR Strings[317]</span>
+<a name="l00451"></a>00451 <span class="preprocessor"></span><span class="preprocessor">#define enter_superscript_mode         CUR Strings[318]</span>
+<a name="l00452"></a>00452 <span class="preprocessor"></span><span class="preprocessor">#define enter_upward_mode              CUR Strings[319]</span>
+<a name="l00453"></a>00453 <span class="preprocessor"></span><span class="preprocessor">#define exit_doublewide_mode           CUR Strings[320]</span>
+<a name="l00454"></a>00454 <span class="preprocessor"></span><span class="preprocessor">#define exit_italics_mode              CUR Strings[321]</span>
+<a name="l00455"></a>00455 <span class="preprocessor"></span><span class="preprocessor">#define exit_leftward_mode             CUR Strings[322]</span>
+<a name="l00456"></a>00456 <span class="preprocessor"></span><span class="preprocessor">#define exit_micro_mode                CUR Strings[323]</span>
+<a name="l00457"></a>00457 <span class="preprocessor"></span><span class="preprocessor">#define exit_shadow_mode               CUR Strings[324]</span>
+<a name="l00458"></a>00458 <span class="preprocessor"></span><span class="preprocessor">#define exit_subscript_mode            CUR Strings[325]</span>
+<a name="l00459"></a>00459 <span class="preprocessor"></span><span class="preprocessor">#define exit_superscript_mode          CUR Strings[326]</span>
+<a name="l00460"></a>00460 <span class="preprocessor"></span><span class="preprocessor">#define exit_upward_mode               CUR Strings[327]</span>
+<a name="l00461"></a>00461 <span class="preprocessor"></span><span class="preprocessor">#define micro_column_address           CUR Strings[328]</span>
+<a name="l00462"></a>00462 <span class="preprocessor"></span><span class="preprocessor">#define micro_down                     CUR Strings[329]</span>
+<a name="l00463"></a>00463 <span class="preprocessor"></span><span class="preprocessor">#define micro_left                     CUR Strings[330]</span>
+<a name="l00464"></a>00464 <span class="preprocessor"></span><span class="preprocessor">#define micro_right                    CUR Strings[331]</span>
+<a name="l00465"></a>00465 <span class="preprocessor"></span><span class="preprocessor">#define micro_row_address              CUR Strings[332]</span>
+<a name="l00466"></a>00466 <span class="preprocessor"></span><span class="preprocessor">#define micro_up                       CUR Strings[333]</span>
+<a name="l00467"></a>00467 <span class="preprocessor"></span><span class="preprocessor">#define order_of_pins                  CUR Strings[334]</span>
+<a name="l00468"></a>00468 <span class="preprocessor"></span><span class="preprocessor">#define parm_down_micro                CUR Strings[335]</span>
+<a name="l00469"></a>00469 <span class="preprocessor"></span><span class="preprocessor">#define parm_left_micro                CUR Strings[336]</span>
+<a name="l00470"></a>00470 <span class="preprocessor"></span><span class="preprocessor">#define parm_right_micro               CUR Strings[337]</span>
+<a name="l00471"></a>00471 <span class="preprocessor"></span><span class="preprocessor">#define parm_up_micro                  CUR Strings[338]</span>
+<a name="l00472"></a>00472 <span class="preprocessor"></span><span class="preprocessor">#define select_char_set                CUR Strings[339]</span>
+<a name="l00473"></a>00473 <span class="preprocessor"></span><span class="preprocessor">#define set_bottom_margin              CUR Strings[340]</span>
+<a name="l00474"></a>00474 <span class="preprocessor"></span><span class="preprocessor">#define set_bottom_margin_parm         CUR Strings[341]</span>
+<a name="l00475"></a>00475 <span class="preprocessor"></span><span class="preprocessor">#define set_left_margin_parm           CUR Strings[342]</span>
+<a name="l00476"></a>00476 <span class="preprocessor"></span><span class="preprocessor">#define set_right_margin_parm          CUR Strings[343]</span>
+<a name="l00477"></a>00477 <span class="preprocessor"></span><span class="preprocessor">#define set_top_margin                 CUR Strings[344]</span>
+<a name="l00478"></a>00478 <span class="preprocessor"></span><span class="preprocessor">#define set_top_margin_parm            CUR Strings[345]</span>
+<a name="l00479"></a>00479 <span class="preprocessor"></span><span class="preprocessor">#define start_bit_image                CUR Strings[346]</span>
+<a name="l00480"></a>00480 <span class="preprocessor"></span><span class="preprocessor">#define start_char_set_def             CUR Strings[347]</span>
+<a name="l00481"></a>00481 <span class="preprocessor"></span><span class="preprocessor">#define stop_bit_image                 CUR Strings[348]</span>
+<a name="l00482"></a>00482 <span class="preprocessor"></span><span class="preprocessor">#define stop_char_set_def              CUR Strings[349]</span>
+<a name="l00483"></a>00483 <span class="preprocessor"></span><span class="preprocessor">#define subscript_characters           CUR Strings[350]</span>
+<a name="l00484"></a>00484 <span class="preprocessor"></span><span class="preprocessor">#define superscript_characters         CUR Strings[351]</span>
+<a name="l00485"></a>00485 <span class="preprocessor"></span><span class="preprocessor">#define these_cause_cr                 CUR Strings[352]</span>
+<a name="l00486"></a>00486 <span class="preprocessor"></span><span class="preprocessor">#define zero_motion                    CUR Strings[353]</span>
+<a name="l00487"></a>00487 <span class="preprocessor"></span><span class="preprocessor">#define char_set_names                 CUR Strings[354]</span>
+<a name="l00488"></a>00488 <span class="preprocessor"></span><span class="preprocessor">#define key_mouse                      CUR Strings[355]</span>
+<a name="l00489"></a>00489 <span class="preprocessor"></span><span class="preprocessor">#define mouse_info                     CUR Strings[356]</span>
+<a name="l00490"></a>00490 <span class="preprocessor"></span><span class="preprocessor">#define req_mouse_pos                  CUR Strings[357]</span>
+<a name="l00491"></a>00491 <span class="preprocessor"></span><span class="preprocessor">#define get_mouse                      CUR Strings[358]</span>
+<a name="l00492"></a>00492 <span class="preprocessor"></span><span class="preprocessor">#define set_a_foreground               CUR Strings[359]</span>
+<a name="l00493"></a>00493 <span class="preprocessor"></span><span class="preprocessor">#define set_a_background               CUR Strings[360]</span>
+<a name="l00494"></a>00494 <span class="preprocessor"></span><span class="preprocessor">#define pkey_plab                      CUR Strings[361]</span>
+<a name="l00495"></a>00495 <span class="preprocessor"></span><span class="preprocessor">#define device_type                    CUR Strings[362]</span>
+<a name="l00496"></a>00496 <span class="preprocessor"></span><span class="preprocessor">#define code_set_init                  CUR Strings[363]</span>
+<a name="l00497"></a>00497 <span class="preprocessor"></span><span class="preprocessor">#define set0_des_seq                   CUR Strings[364]</span>
+<a name="l00498"></a>00498 <span class="preprocessor"></span><span class="preprocessor">#define set1_des_seq                   CUR Strings[365]</span>
+<a name="l00499"></a>00499 <span class="preprocessor"></span><span class="preprocessor">#define set2_des_seq                   CUR Strings[366]</span>
+<a name="l00500"></a>00500 <span class="preprocessor"></span><span class="preprocessor">#define set3_des_seq                   CUR Strings[367]</span>
+<a name="l00501"></a>00501 <span class="preprocessor"></span><span class="preprocessor">#define set_lr_margin                  CUR Strings[368]</span>
+<a name="l00502"></a>00502 <span class="preprocessor"></span><span class="preprocessor">#define set_tb_margin                  CUR Strings[369]</span>
+<a name="l00503"></a>00503 <span class="preprocessor"></span><span class="preprocessor">#define bit_image_repeat               CUR Strings[370]</span>
+<a name="l00504"></a>00504 <span class="preprocessor"></span><span class="preprocessor">#define bit_image_newline              CUR Strings[371]</span>
+<a name="l00505"></a>00505 <span class="preprocessor"></span><span class="preprocessor">#define bit_image_carriage_return      CUR Strings[372]</span>
+<a name="l00506"></a>00506 <span class="preprocessor"></span><span class="preprocessor">#define color_names                    CUR Strings[373]</span>
+<a name="l00507"></a>00507 <span class="preprocessor"></span><span class="preprocessor">#define define_bit_image_region        CUR Strings[374]</span>
+<a name="l00508"></a>00508 <span class="preprocessor"></span><span class="preprocessor">#define end_bit_image_region           CUR Strings[375]</span>
+<a name="l00509"></a>00509 <span class="preprocessor"></span><span class="preprocessor">#define set_color_band                 CUR Strings[376]</span>
+<a name="l00510"></a>00510 <span class="preprocessor"></span><span class="preprocessor">#define set_page_length                CUR Strings[377]</span>
+<a name="l00511"></a>00511 <span class="preprocessor"></span><span class="preprocessor">#define display_pc_char                CUR Strings[378]</span>
+<a name="l00512"></a>00512 <span class="preprocessor"></span><span class="preprocessor">#define enter_pc_charset_mode          CUR Strings[379]</span>
+<a name="l00513"></a>00513 <span class="preprocessor"></span><span class="preprocessor">#define exit_pc_charset_mode           CUR Strings[380]</span>
+<a name="l00514"></a>00514 <span class="preprocessor"></span><span class="preprocessor">#define enter_scancode_mode            CUR Strings[381]</span>
+<a name="l00515"></a>00515 <span class="preprocessor"></span><span class="preprocessor">#define exit_scancode_mode             CUR Strings[382]</span>
+<a name="l00516"></a>00516 <span class="preprocessor"></span><span class="preprocessor">#define pc_term_options                CUR Strings[383]</span>
+<a name="l00517"></a>00517 <span class="preprocessor"></span><span class="preprocessor">#define scancode_escape                CUR Strings[384]</span>
+<a name="l00518"></a>00518 <span class="preprocessor"></span><span class="preprocessor">#define alt_scancode_esc               CUR Strings[385]</span>
+<a name="l00519"></a>00519 <span class="preprocessor"></span><span class="preprocessor">#define enter_horizontal_hl_mode       CUR Strings[386]</span>
+<a name="l00520"></a>00520 <span class="preprocessor"></span><span class="preprocessor">#define enter_left_hl_mode             CUR Strings[387]</span>
+<a name="l00521"></a>00521 <span class="preprocessor"></span><span class="preprocessor">#define enter_low_hl_mode              CUR Strings[388]</span>
+<a name="l00522"></a>00522 <span class="preprocessor"></span><span class="preprocessor">#define enter_right_hl_mode            CUR Strings[389]</span>
+<a name="l00523"></a>00523 <span class="preprocessor"></span><span class="preprocessor">#define enter_top_hl_mode              CUR Strings[390]</span>
+<a name="l00524"></a>00524 <span class="preprocessor"></span><span class="preprocessor">#define enter_vertical_hl_mode         CUR Strings[391]</span>
+<a name="l00525"></a>00525 <span class="preprocessor"></span>
+<a name="l00526"></a>00526 <span class="preprocessor">#define BOOLWRITE 37</span>
+<a name="l00527"></a>00527 <span class="preprocessor"></span><span class="preprocessor">#define NUMWRITE  33</span>
+<a name="l00528"></a>00528 <span class="preprocessor"></span><span class="preprocessor">#define STRWRITE  392</span>
+<a name="l00529"></a>00529 <span class="preprocessor"></span>
+<a name="l00530"></a>00530 <span class="comment">/* older synonyms for some booleans */</span>
+<a name="l00531"></a>00531 <span class="preprocessor">#define beehive_glitch  no_esc_ctlc</span>
+<a name="l00532"></a>00532 <span class="preprocessor"></span><span class="preprocessor">#define teleray_glitch  dest_tabs_magic_smso</span>
+<a name="l00533"></a>00533 <span class="preprocessor"></span><span class="preprocessor">#define micro_col_size  micro_char_size</span>
+<a name="l00534"></a>00534 <span class="preprocessor"></span>
+<a name="l00535"></a>00535 <span class="preprocessor">#ifdef __INTERNAL_CAPS_VISIBLE</span>
+<a name="l00536"></a>00536 <span class="preprocessor"></span><span class="preprocessor">#define termcap_init2                  CUR Strings[392]</span>
+<a name="l00537"></a>00537 <span class="preprocessor"></span><span class="preprocessor">#define termcap_reset                  CUR Strings[393]</span>
+<a name="l00538"></a>00538 <span class="preprocessor"></span><span class="preprocessor">#define magic_cookie_glitch_ul         CUR Numbers[33]</span>
+<a name="l00539"></a>00539 <span class="preprocessor"></span><span class="preprocessor">#define backspaces_with_bs             CUR Booleans[37]</span>
+<a name="l00540"></a>00540 <span class="preprocessor"></span><span class="preprocessor">#define crt_no_scrolling               CUR Booleans[38]</span>
+<a name="l00541"></a>00541 <span class="preprocessor"></span><span class="preprocessor">#define no_correctly_working_cr        CUR Booleans[39]</span>
+<a name="l00542"></a>00542 <span class="preprocessor"></span><span class="preprocessor">#define carriage_return_delay          CUR Numbers[34]</span>
+<a name="l00543"></a>00543 <span class="preprocessor"></span><span class="preprocessor">#define new_line_delay                 CUR Numbers[35]</span>
+<a name="l00544"></a>00544 <span class="preprocessor"></span><span class="preprocessor">#define linefeed_if_not_lf             CUR Strings[394]</span>
+<a name="l00545"></a>00545 <span class="preprocessor"></span><span class="preprocessor">#define backspace_if_not_bs            CUR Strings[395]</span>
+<a name="l00546"></a>00546 <span class="preprocessor"></span><span class="preprocessor">#define gnu_has_meta_key               CUR Booleans[40]</span>
+<a name="l00547"></a>00547 <span class="preprocessor"></span><span class="preprocessor">#define linefeed_is_newline            CUR Booleans[41]</span>
+<a name="l00548"></a>00548 <span class="preprocessor"></span><span class="preprocessor">#define backspace_delay                CUR Numbers[36]</span>
+<a name="l00549"></a>00549 <span class="preprocessor"></span><span class="preprocessor">#define horizontal_tab_delay           CUR Numbers[37]</span>
+<a name="l00550"></a>00550 <span class="preprocessor"></span><span class="preprocessor">#define number_of_function_keys        CUR Numbers[38]</span>
+<a name="l00551"></a>00551 <span class="preprocessor"></span><span class="preprocessor">#define other_non_function_keys        CUR Strings[396]</span>
+<a name="l00552"></a>00552 <span class="preprocessor"></span><span class="preprocessor">#define arrow_key_map                  CUR Strings[397]</span>
+<a name="l00553"></a>00553 <span class="preprocessor"></span><span class="preprocessor">#define has_hardware_tabs              CUR Booleans[42]</span>
+<a name="l00554"></a>00554 <span class="preprocessor"></span><span class="preprocessor">#define return_does_clr_eol            CUR Booleans[43]</span>
+<a name="l00555"></a>00555 <span class="preprocessor"></span><span class="preprocessor">#define acs_ulcorner                   CUR Strings[398]</span>
+<a name="l00556"></a>00556 <span class="preprocessor"></span><span class="preprocessor">#define acs_llcorner                   CUR Strings[399]</span>
+<a name="l00557"></a>00557 <span class="preprocessor"></span><span class="preprocessor">#define acs_urcorner                   CUR Strings[400]</span>
+<a name="l00558"></a>00558 <span class="preprocessor"></span><span class="preprocessor">#define acs_lrcorner                   CUR Strings[401]</span>
+<a name="l00559"></a>00559 <span class="preprocessor"></span><span class="preprocessor">#define acs_ltee                       CUR Strings[402]</span>
+<a name="l00560"></a>00560 <span class="preprocessor"></span><span class="preprocessor">#define acs_rtee                       CUR Strings[403]</span>
+<a name="l00561"></a>00561 <span class="preprocessor"></span><span class="preprocessor">#define acs_btee                       CUR Strings[404]</span>
+<a name="l00562"></a>00562 <span class="preprocessor"></span><span class="preprocessor">#define acs_ttee                       CUR Strings[405]</span>
+<a name="l00563"></a>00563 <span class="preprocessor"></span><span class="preprocessor">#define acs_hline                      CUR Strings[406]</span>
+<a name="l00564"></a>00564 <span class="preprocessor"></span><span class="preprocessor">#define acs_vline                      CUR Strings[407]</span>
+<a name="l00565"></a>00565 <span class="preprocessor"></span><span class="preprocessor">#define acs_plus                       CUR Strings[408]</span>
+<a name="l00566"></a>00566 <span class="preprocessor"></span><span class="preprocessor">#define memory_lock                    CUR Strings[409]</span>
+<a name="l00567"></a>00567 <span class="preprocessor"></span><span class="preprocessor">#define memory_unlock                  CUR Strings[410]</span>
+<a name="l00568"></a>00568 <span class="preprocessor"></span><span class="preprocessor">#define box_chars_1                    CUR Strings[411]</span>
+<a name="l00569"></a>00569 <span class="preprocessor"></span><span class="preprocessor">#endif </span><span class="comment">/* __INTERNAL_CAPS_VISIBLE */</span>
+<a name="l00570"></a>00570 
+<a name="l00571"></a>00571 
+<a name="l00572"></a>00572 <span class="preprocessor">#define BOOLCOUNT 44</span>
+<a name="l00573"></a>00573 <span class="preprocessor"></span><span class="preprocessor">#define NUMCOUNT  39</span>
+<a name="l00574"></a>00574 <span class="preprocessor"></span><span class="preprocessor">#define STRCOUNT  412</span>
+<a name="l00575"></a>00575 <span class="preprocessor"></span>
+<a name="l00576"></a>00576 <span class="keyword">typedef</span> <span class="keyword">struct </span>termtype {       <span class="comment">/* in-core form of terminfo data */</span>
+<a name="l00577"></a>00577     <span class="keywordtype">char</span>  *term_names;          <span class="comment">/* str_table offset of term names */</span>
+<a name="l00578"></a>00578     <span class="keywordtype">char</span>  *str_table;           <span class="comment">/* pointer to string table */</span>
+<a name="l00579"></a>00579     <span class="keywordtype">char</span>  Booleans[BOOLCOUNT];  <span class="comment">/* array of values */</span>
+<a name="l00580"></a>00580     <span class="keywordtype">short</span> Numbers[NUMCOUNT];    <span class="comment">/* array of values */</span>
+<a name="l00581"></a>00581     <span class="keywordtype">char</span>  *Strings[STRCOUNT];   <span class="comment">/* array of string offsets */</span>
+<a name="l00582"></a>00582 } TERMTYPE;
+<a name="l00583"></a>00583 
+<a name="l00584"></a>00584 <span class="keyword">typedef</span> <span class="keyword">struct </span>term {           <span class="comment">/* describe an actual terminal */</span>
+<a name="l00585"></a>00585     TERMTYPE    type;           <span class="comment">/* terminal type description */</span>
+<a name="l00586"></a>00586     <span class="keywordtype">short</span>       Filedes;        <span class="comment">/* file description being written to */</span>
+<a name="l00587"></a>00587     TTY          Ottyb,         <span class="comment">/* original state of the terminal */</span>
+<a name="l00588"></a>00588                  Nttyb;         <span class="comment">/* current state of the terminal */</span>
+<a name="l00589"></a>00589 } TERMINAL;
+<a name="l00590"></a>00590 
+<a name="l00591"></a>00591 <span class="keyword">extern</span> TERMINAL *cur_term;
+<a name="l00592"></a>00592 
+<a name="l00593"></a>00593 
+<a name="l00594"></a>00594 <span class="preprocessor">#ifdef __cplusplus</span>
+<a name="l00595"></a>00595 <span class="preprocessor"></span><span class="keyword">extern</span> <span class="stringliteral">"C"</span> {
+<a name="l00596"></a>00596 <span class="preprocessor">#endif</span>
+<a name="l00597"></a>00597 <span class="preprocessor"></span>
+<a name="l00598"></a>00598 <span class="preprocessor">#if BROKEN_LINKER</span>
+<a name="l00599"></a>00599 <span class="preprocessor"></span><span class="preprocessor">#define boolnames  _nc_boolnames()</span>
+<a name="l00600"></a>00600 <span class="preprocessor"></span><span class="preprocessor">#define boolcodes  _nc_boolcodes()</span>
+<a name="l00601"></a>00601 <span class="preprocessor"></span><span class="preprocessor">#define boolfnames _nc_boolfnames()</span>
+<a name="l00602"></a>00602 <span class="preprocessor"></span><span class="preprocessor">#define numnames   _nc_numnames()</span>
+<a name="l00603"></a>00603 <span class="preprocessor"></span><span class="preprocessor">#define numcodes   _nc_numcodes()</span>
+<a name="l00604"></a>00604 <span class="preprocessor"></span><span class="preprocessor">#define numfnames  _nc_numfnames()</span>
+<a name="l00605"></a>00605 <span class="preprocessor"></span><span class="preprocessor">#define strnames   _nc_strnames()</span>
+<a name="l00606"></a>00606 <span class="preprocessor"></span><span class="preprocessor">#define strcodes   _nc_strcodes()</span>
+<a name="l00607"></a>00607 <span class="preprocessor"></span><span class="preprocessor">#define strfnames  _nc_strfnames()</span>
+<a name="l00608"></a>00608 <span class="preprocessor"></span>
+<a name="l00609"></a>00609 <span class="keyword">extern</span> <span class="keywordtype">char</span> * <span class="keyword">const</span> *_nc_boolnames(<span class="keywordtype">void</span>);
+<a name="l00610"></a>00610 <span class="keyword">extern</span> <span class="keywordtype">char</span> * <span class="keyword">const</span> *_nc_boolcodes(<span class="keywordtype">void</span>);
+<a name="l00611"></a>00611 <span class="keyword">extern</span> <span class="keywordtype">char</span> * <span class="keyword">const</span> *_nc_boolfnames(<span class="keywordtype">void</span>);
+<a name="l00612"></a>00612 <span class="keyword">extern</span> <span class="keywordtype">char</span> * <span class="keyword">const</span> *_nc_numnames(<span class="keywordtype">void</span>);
+<a name="l00613"></a>00613 <span class="keyword">extern</span> <span class="keywordtype">char</span> * <span class="keyword">const</span> *_nc_numcodes(<span class="keywordtype">void</span>);
+<a name="l00614"></a>00614 <span class="keyword">extern</span> <span class="keywordtype">char</span> * <span class="keyword">const</span> *_nc_numfnames(<span class="keywordtype">void</span>);
+<a name="l00615"></a>00615 <span class="keyword">extern</span> <span class="keywordtype">char</span> * <span class="keyword">const</span> *_nc_strnames(<span class="keywordtype">void</span>);
+<a name="l00616"></a>00616 <span class="keyword">extern</span> <span class="keywordtype">char</span> * <span class="keyword">const</span> *_nc_strcodes(<span class="keywordtype">void</span>);
+<a name="l00617"></a>00617 <span class="keyword">extern</span> <span class="keywordtype">char</span> * <span class="keyword">const</span> *_nc_strfnames(<span class="keywordtype">void</span>);
+<a name="l00618"></a>00618 
+<a name="l00619"></a>00619 <span class="preprocessor">#else</span>
+<a name="l00620"></a>00620 <span class="preprocessor"></span>
+<a name="l00621"></a>00621 <span class="keyword">extern</span> <span class="keywordtype">char</span> *boolnames[], *boolcodes[], *boolfnames[],
+<a name="l00622"></a>00622             *numnames[], *numcodes[], *numfnames[],
+<a name="l00623"></a>00623             *strnames[], *strcodes[], *strfnames[];
+<a name="l00624"></a>00624 
+<a name="l00625"></a>00625 <span class="preprocessor">#endif</span>
+<a name="l00626"></a>00626 <span class="preprocessor"></span>
+<a name="l00627"></a>00627 <span class="comment">/* internals */</span>
+<a name="l00628"></a>00628 <span class="keyword">extern</span> <span class="keywordtype">int</span> _nc_read_entry(<span class="keyword">const</span> <span class="keywordtype">char</span> * <span class="keyword">const</span>, <span class="keywordtype">char</span> * <span class="keyword">const</span>, TERMTYPE *<span class="keyword">const</span>);
+<a name="l00629"></a>00629 <span class="keyword">extern</span> <span class="keywordtype">int</span> _nc_read_file_entry(<span class="keyword">const</span> <span class="keywordtype">char</span> *<span class="keyword">const</span>, TERMTYPE *);
+<a name="l00630"></a>00630 <span class="keyword">extern</span> <span class="keywordtype">char</span> *_nc_first_name(<span class="keyword">const</span> <span class="keywordtype">char</span> *<span class="keyword">const</span>);
+<a name="l00631"></a>00631 <span class="keyword">extern</span> <span class="keywordtype">int</span> _nc_name_match(<span class="keywordtype">char</span> *<span class="keyword">const</span>, <span class="keyword">const</span> <span class="keywordtype">char</span> *<span class="keyword">const</span>, <span class="keyword">const</span> <span class="keywordtype">char</span> *<span class="keyword">const</span>);
+<a name="l00632"></a>00632 <span class="keyword">extern</span> <span class="keywordtype">int</span> _nc_read_termcap_entry(<span class="keyword">const</span> <span class="keywordtype">char</span> *<span class="keyword">const</span>, TERMTYPE *<span class="keyword">const</span>);
+<a name="l00633"></a>00633 <span class="keyword">extern</span> <span class="keyword">const</span> TERMTYPE *_nc_fallback(<span class="keyword">const</span> <span class="keywordtype">char</span> *);
+<a name="l00634"></a>00634 
+<a name="l00635"></a>00635 <span class="comment">/* entry points */</span>
+<a name="l00636"></a>00636 <span class="keyword">extern</span> TERMINAL *set_curterm(TERMINAL *);
+<a name="l00637"></a>00637 <span class="keyword">extern</span> <span class="keywordtype">int</span> del_curterm(TERMINAL *);
+<a name="l00638"></a>00638 
+<a name="l00639"></a>00639 <span class="comment">/* entry points */</span>
+<a name="l00640"></a>00640 <span class="keyword">extern</span> <span class="keywordtype">int</span> putp(<span class="keyword">const</span> <span class="keywordtype">char</span> *);
+<a name="l00641"></a>00641 <span class="keyword">extern</span> <span class="keywordtype">int</span> restartterm(<span class="keyword">const</span> <span class="keywordtype">char</span> *, <span class="keywordtype">int</span>, <span class="keywordtype">int</span> *);
+<a name="l00642"></a>00642 <span class="keyword">extern</span> <span class="keywordtype">int</span> setupterm(<span class="keyword">const</span> <span class="keywordtype">char</span> *,<span class="keywordtype">int</span>,<span class="keywordtype">int</span> *);
+<a name="l00643"></a>00643 <span class="keyword">extern</span> <span class="keywordtype">int</span> tgetent(<span class="keywordtype">char</span> *, <span class="keyword">const</span> <span class="keywordtype">char</span> *);
+<a name="l00644"></a>00644 <span class="keyword">extern</span> <span class="keywordtype">int</span> tgetflag(<span class="keyword">const</span> <span class="keywordtype">char</span> *);
+<a name="l00645"></a>00645 <span class="keyword">extern</span> <span class="keywordtype">int</span> tgetnum(<span class="keyword">const</span> <span class="keywordtype">char</span> *);
+<a name="l00646"></a>00646 <span class="keyword">extern</span> <span class="keywordtype">char</span> *tgetstr(<span class="keyword">const</span> <span class="keywordtype">char</span> *, <span class="keywordtype">char</span> **);
+<a name="l00647"></a>00647 <span class="keyword">extern</span> <span class="keywordtype">char</span> *tgoto(<span class="keyword">const</span> <span class="keywordtype">char</span> *, <span class="keywordtype">int</span>, <span class="keywordtype">int</span>);
+<a name="l00648"></a>00648 <span class="keyword">extern</span> <span class="keywordtype">int</span> tigetflag(<span class="keyword">const</span> <span class="keywordtype">char</span> *);
+<a name="l00649"></a>00649 <span class="keyword">extern</span> <span class="keywordtype">int</span> tigetnum(<span class="keyword">const</span> <span class="keywordtype">char</span> *);
+<a name="l00650"></a>00650 <span class="keyword">extern</span> <span class="keywordtype">char</span> *tigetstr(<span class="keyword">const</span> <span class="keywordtype">char</span> *);
+<a name="l00651"></a>00651 <span class="keyword">extern</span> <span class="keywordtype">char</span> *tparm(<span class="keyword">const</span> <span class="keywordtype">char</span> *, ...);
+<a name="l00652"></a>00652 <span class="keyword">extern</span> <span class="keywordtype">char</span> *tparam(<span class="keyword">const</span> <span class="keywordtype">char</span> *, <span class="keywordtype">char</span> *, <span class="keywordtype">int</span>, ...);
+<a name="l00653"></a>00653 <span class="keyword">extern</span> <span class="keywordtype">int</span> tputs(<span class="keyword">const</span> <span class="keywordtype">char</span> *, <span class="keywordtype">int</span>, <span class="keywordtype">int</span> (*)(<span class="keywordtype">int</span>));
+<a name="l00654"></a>00654 
+<a name="l00655"></a>00655 <span class="preprocessor">#ifdef __cplusplus</span>
+<a name="l00656"></a>00656 <span class="preprocessor"></span>}
+<a name="l00657"></a>00657 <span class="preprocessor">#endif</span>
+<a name="l00658"></a>00658 <span class="preprocessor"></span>
+<a name="l00659"></a>00659 <span class="preprocessor">#endif </span><span class="comment">/* TERM_H */</span>
+</pre></div></div>
+<hr size="1"><address style="text-align: right;"><small>Generated at Fri Aug 29 10:29:24 2008 for BMY by&nbsp;
+<a href="http://www.doxygen.org/index.html">
+<img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.5 </small></address>
+</body>
+</html>

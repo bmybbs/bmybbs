@@ -1,0 +1,12 @@
+﻿#container { position:relative; height:400px; width:770px; }
+
+#container a { float:left; position:absolute; }
+
+#container a img { border:none; }
+
+#container a.show { z-index:500; }
+
+div#nav { margin:0 auto;}
+div#nav a {margin-left: 5px; height: 10px; width: 10px; float: left; border: 1px solid #FF6600; color: #B8C4CF; font-size:0px}
+
+.nav-active { background-color: #FF6600; color: #FFF; }

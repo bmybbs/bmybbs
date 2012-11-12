@@ -1,0 +1,67 @@
+#
+# Title=本站各类数据统计                    
+#
+Name=今天平均负载人数统计表                 BBS系统 
+Path=~/today
+Numb=1
+#
+Name=今天到访人次统计表                     BBS系统
+Path=~/countusr
+Numb=2
+#
+Name=今天新增人口统计表                     BBS系统
+Path=~/newacct.today
+Numb=3
+#
+Name=昨天平均负载人数统计表                 BBS系统 
+Path=~/yesterday
+Numb=4
+#
+Name=昨天到访人次统计表                     BBS系统 
+Path=~/countusr.last
+Numb=5
+#
+Name=昨天新增人口统计表                     BBS系统
+Path=~/newacct.last
+Numb=6
+#
+Name=本站各讨论区排行榜〔文字〕             BBS系统
+Path=~/board2
+Numb=7
+#
+Name=本站各讨论区排行榜〔图表〕             BBS系统 
+Path=~/board1
+Numb=8
+#
+Name=上站次数排行榜                         BBS系统
+Path=~/toplogin
+Numb=9
+#
+Name=讨论次数排行榜                         BBS系统 
+Path=~/toppost
+Numb=10
+#
+Name=上站总时数排行榜                       BBS系统 
+Path=~/topstay
+Numb=11
+#
+Name=总表现值排行榜                         BBS系统 
+Path=~/topall
+Numb=12
+#
+Name=本日十大热门话题                       BBS系统
+Path=~/day
+Numb=13
+#
+Name=本周五十大热门话题                     BBS系统
+Path=~/week
+Numb=14
+#
+Name=本月一百大热门话题                     BBS系统
+Path=~/month
+Numb=15
+#
+Name=本年度百五大热门话题                   BBS系统
+Path=~/year
+Numb=16
+#

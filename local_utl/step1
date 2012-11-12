@@ -1,0 +1,6 @@
+cd /home/bbs/0Announce/bbslist/
+ln -s /home/bbs/etc/posts/day day
+ln -s /home/bbs/etc/posts/month month
+ln -s /home/bbs/etc/posts/year year
+ln -s /home/bbs/etc/posts/week week
+/home/bbs/bin/newtop10 -a

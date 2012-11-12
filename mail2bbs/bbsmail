@@ -1,0 +1,194 @@
+#!/usr/bin/perl -w
+sub parse_header {
+	my ($start) = @_;
+	my ($index,$i);
+	undef %Header;
+	for ($index=$start; $index <= $#MAIL; $index++) {
+		$_ = $MAIL[ $index ];
+		last if ($_ eq "\n" or $_ eq "\r\n" );
+		chomp;
+		if (/^(\S+): (.*)$/) {
+			$hname=$1;
+			$hcontent=$2;
+			if($hname =~ /^[cs].*$/i){
+				$hname=lc($hname);
+			}
+			$lh=$hname;
+			$hhh = $Header{$hname};
+			if ( $hname eq "Received" && $hhh ) {
+				$tmp = "$hcontent";
+				if ( $tmp =~ /localhost/ ) {
+					$Header{$hname} = $hhh;
+				} else {
+					$Header{$hname} = $tmp;
+				}
+			} else {
+				$Header{$hname} = $hcontent;
+			}
+		} elsif (defined($lh)) {
+			$Header{$lh}=$Header{$lh}." ".$_;
+		}
+	}
+	$_[0] = $index+1;
+	if(defined($Header{"Return-Path"}) and $Header{"Return-Path"} =~ /([^<\s]+@[^>\s]+)/){
+		$fromaddr=$1;
+	}
+	if(defined($Header{"From"})){
+		if($Header{"From"} =~ /^"?([^"\s]+)?"?\s*<\s*(\S+@\S+)?\s*>/){
+			$fromaddr2=$2;
+			$fromname=$1;
+		} elsif ($Header{"From"} =~ /([^<\s]+@[^>\s]+)/){
+			$fromaddr2=$1;
+			$fromname="";
+		} else {
+			$fromname=$Header{"From"};
+			$fromaddr2="";
+		}
+	}
+	if(not defined($fromaddr)){
+		$fromaddr=$fromaddr2;
+	}
+	if (not defined($Header{"content-transfer-encoding"})){
+		$Header{"content-transfer-encoding"}="8bit";
+	}
+	$Header{"content-transfer-encoding"}=lc($Header{"content-transfer-encoding"});
+	foreach $i ("content-type","content-disposition") {
+		if( defined($Header{$i})){
+			@content=split /;/,$Header{$i};
+			undef $Header{$i};
+			foreach $index (@content) {
+				if ($index =~ /^\s*(\w+)=\"?([^\"\s]+)\"?\s*$/){
+					$Header{$i}{lc($1)}=$2;
+				}
+				else {
+					$Header{$i}{"type"}=lc($index);
+				}
+			}
+		}
+	}
+	if(defined($Header{"content-type"}{"boundary"})) {
+		$blen=length($Header{"content-type"}{"boundary"})+2;
+#		print $Header{"content-type"}{"boundary"}."\n";
+		for ($index=$_[0];$index <= $#MAIL; $index++){
+#			print substr($MAIL[$index],0,$blen)."\n";
+			if ( substr($MAIL[$index],0,$blen) eq "--".$Header{"content-type"}{"boundary"}){
+				last;
+			}
+		}
+		$_[0]=$index+1;
+		push @boundary,$Header{"content-type"}{"boundary"};
+	}
+	if(defined($Header{"content-type"}{"name"})){
+		$filename=$Header{"content-type"}{"name"};
+	} elsif (defined($Header{"content-dispositon"}{"filename"})){
+		$filename=$Header{"content-dispostion"}{"filename"};
+	} elsif (defined($Header{"content-type"}{"type"}) and $Header{"content-type"}{"type"} eq "text/html" ) {
+		$filename="part".(++$partcount).".html";
+	} elsif (defined($Header{"content-type"}{"type"}) and $Header{"content-type"}{"type"} ne "text/plain" ) {
+		$filename="part".(++$partcount).".bin";
+	} else {
+		$filename="";
+	}
+}
+
+$)=$bbsgid;
+$(=$bbsgid;
+$<=$bbsuid;
+$>=$bbsuid;
+if ($#ARGV!=1){
+	die "Error argument!\n";
+}
+$normaluser = $ARGV[0];
+if ($normaluser =~ /.*\n.*/){
+	die "Strange username!\n";
+}
+$realfrom = $ARGV[1];
+#$mail2bbs="cat > debug-out.txt";
+$mail2bbs=$bbshome."/bin/mail2bbs";
+$logdir=$bbshome;
+mkdir($logdir,0700) unless -d $logdir;
+open(LOG,">> $logdir/mail-log") || warn "can't open warn file $!\n";
+print LOG "\n";
+foreach $i (STDOUT,LOG) {
+	print $i "\nMail to $normaluser \n";
+}
+@MAIL = <STDIN>;
+$index=0;
+$partcount=0;
+&parse_header ($index);
+print LOG "$mail2bbs \'$Header{'From'}\' \'$normaluser\'  \'$Header{'subject'}\' \'$Header{'Received'}\'\n";
+print LOG "realfrom is $realfrom\n";
+for ($n=0; $n < $index; $n++) {
+        print LOG $MAIL[$n];
+}
+if( $fromaddr eq "") {
+	close(LOG);
+	die "Invalid From!\n";
+}
+if($fromname ne "") {
+	$fromaddr=$fromaddr." ".$fromname;
+}
+if( not defined $Header{'Received'} or $Header{'Received'} eq ""){
+	$Header{'Received'}="²»Ïê";
+}
+if( not defined $Header{'subject'} or $Header{'subject'} eq ""){
+	$Header{'subject'}="ÎÞÌâ";
+}
+open(BBSGATE,"| $mail2bbs");
+printf BBSGATE "%.254s\n", $fromaddr;
+printf BBSGATE "%.254s\n",$normaluser;
+printf BBSGATE "%.254s\n",$Header{'subject'};
+printf BBSGATE "%.254s\n",$Header{'Received'};
+
+if( scalar @boundary ){
+	while( scalar @boundary ) {
+		&parse_header( $index );
+		while (defined($Header{"content-type"}{"boundary"})){
+			&parse_header( $index );
+		}
+		printf BBSGATE "%.254s\n",$filename;
+		printf BBSGATE "%.254s\n",$Header{"content-transfer-encoding"};
+		$thisb=pop @boundary;
+		$thisblen=length($thisb)+2;
+		while( $index <= $#MAIL ){
+			if (substr($MAIL[$index],0,$thisblen) eq "--".$thisb ){
+				if(substr($MAIL[$index],$thisblen,2) ne "--"){
+					push @boundary,$thisb;
+				}
+				print BBSGATE "\0\n";
+				$index++;
+				last;
+			}
+			print BBSGATE $MAIL[$index];
+			$index++;
+		}
+	}
+} else {
+	printf BBSGATE "%.254s\n",$filename;
+	printf BBSGATE "%.254s\n",$Header{"content-transfer-encoding"};
+	while ($index <= $#MAIL ){
+		print BBSGATE $MAIL[$index++];
+	}
+	print BBSGATE "\0\n";
+}
+
+close(BBSGATE);
+if ($? ==0 ) {
+	foreach $i (STDOUT,LOG) {
+ 		print $i "$fromaddr mail to $normaluser successfully\n";
+	}
+} elsif ($? ==65024 ) {
+	foreach $i (STDOUT,LOG) {
+		print $i "$fromaddr mail to $normaluser failed, return code $?\n";
+	}
+	close(LOG);
+	die "Service unavailable\n";
+} else {
+	foreach $i (STDOUT,LOG) {
+		print $i "$fromaddr mail to $normaluser failed, return code $?\n";
+	}
+	close(LOG);
+	die "BBS user $normaluser unknown\n";
+}
+close(LOG);
+1;

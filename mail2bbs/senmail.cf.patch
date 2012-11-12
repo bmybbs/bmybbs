@@ -1,0 +1,27 @@
+--- sendmail.cf.orig	Tue Mar 25 16:03:43 2003
++++ sendmail.cf.new	Mon Mar 31 01:24:38 2003
+@@ -764,6 +764,7 @@
+ # short circuit local delivery so forwarded email works
+ 
+ 
++R$-.bbs < @ $=w . >	$#bbsmail $: $1			bbs mail gateway
+ R$=L < @ $=w . >	$#local $: @ $1			special local names
+ R$+ < @ $=w . >		$#local $: $1			regular local name
+ 
+@@ -787,6 +788,7 @@
+ R$* < @$* > $*		$#esmtp $@ $2 $: $1 < @ $2 > $3	user@host.domain
+ 
+ # handle locally delivered names
++R$-.bbs		$#bbsmail $:$1			bbs mail gateway
+ R$=L			$#local $: @ $1		special local names
+ R$+			$#local $: $1			regular local names
+ 
+@@ -1422,6 +1424,8 @@
+ Mrelay,		P=[IPC], F=mDFMuXa8, S=EnvFromSMTP/HdrFromSMTP, R=MasqSMTP, E=\r\n, L=2040,
+ 		T=DNS/RFC822/SMTP,
+ 		A=TCP $h
++Mbbsmail,	P=/home/bbs/bin/bbsmail_wrap, F=lsSDFMuhP, S=10, R=20, U=bbs,
++		A=bbsmail_wrap $u $s
+ 
+ 
+ ######################*****##############

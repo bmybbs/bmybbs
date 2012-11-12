@@ -1,0 +1,6 @@
+
+           [ 此为新帐号统计档, 由 newacct 程式自动产生 ]
+
+    [ 请参考相关说明文件, 编辑 local_utl 下的相关程式, 并把 crontab 设好 ]
+
+          [ crontab 的编写可参考 samples 目录下的参考档 ]

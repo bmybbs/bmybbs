@@ -1,0 +1,71 @@
+Notes on the integration of SecurID into ssh
+
+To enable ssh to allow users to authenticate themselves using SecurID
+cards, you have to come up with some mechanism to determine which users
+have such cards and which don't. The mechanism I have adopted is a
+simple one: a file /etc/securid.users that lists all the users with
+cards, one on each line.
+
+To run sshd with support for SecurID cards, you first of all need
+to have Security Dynamics' server software installed on the system
+(quelle surprise). To compile it you will also need the Security
+Dynamics authentication API, which consists of several .h files and the
+sdiclient.a library. When you run configure, you must then use the
+option --with-securid=/your/ace/dir, which will set all the appropriate
+flags in the Makefile.
+
+When all of this has been compiled and installed and a SecurID user
+signs in, they should request password authentication, not RSA. They
+will be given the Password: prompt like everyone else, however their
+response will be sent to the SecurID server, rather than being checked
+locally against the password file. It would be nice if we could change
+the prompt, but this would involve changing the dialog between the
+server and the client (since it the server that knows the user's
+authentication protocol, but the client which does the prompt). Maybe
+next time.
+
+A more significant issue is the /etc/securid.users file. Security
+Dynamics has its own approach to this issue, which is very different and
+incompatible with this one. Security Dynamics distributes a replacement
+for the user's login shell called sdshell, which simply prompts for
+the user's pass code, and then invokes the user's real shell, which is
+stored elsewhere. They also distribute an ftpd, which relies on the user
+having sdshell as their login shell to determine which users are SecurID
+users.
+
+I have philosophical problems with this approach (I don't think it is
+the business of the user's shell to perform the authenticationn check,
+that should be done by /bin/login instead). But that's not the reason I
+chose a different approach here. I tried to make it work with sdshell
+as the login shell, and it just has one big problem. Everything is
+fine for non-interactive sessions, the user gets prompted, enters his
+passcode and everything goes. But in an interactive session, the user
+connects, is prompted for his password, enters his passcode, and only
+then does ssh tell sshd that this is an interactive session! So sshd
+starts up the user's shell, i.e. sdshell, which promptly demands the
+user's passcode all over again! And what is really a nuisance is that
+Security Dynamics of course won't let you use the same passcode twice
+(for obvious reasons), so you have to wait for the next code to come up
+on the card, i.e. up to sixty seconds, before you can finish signing on!
+And I can see no way to avoid the double prompt.
+
+So that's why /etc/securid.users.  Unfortunately, this means that you
+can either use ssh, scp and slogin with SecurID support, or you can
+use Security Dynamics' sdshell and ftpd. Not both (unless you are
+prepared to live with the double passcode prompt).
+
+One last issue and I'm done. This implementation handles only the two
+return codes ACM_OK and ACM_ACCESS_DENIED. It does not attempt to handle
+any of the other codes that can arise such as ACM_NEW_PIN_REQUIRED,
+ACM_NEXT_CODE_REQUIRED and so on. Again, this would involve significant
+changes to the ssh client/server dialog.
+
+If you have any comments about this implementation, or better yet, would
+like to contribute to it(!), please feel free to send me some e-mail at
+dmckilli@qc.bell.ca.
+
+Regards,
+--------------------------------------------------------------------
+Donald McKillican                                Tel: (514) 870-3905
+Bell Canada Corporate Security           E-Mail: dmckilli@QC.Bell.CA
+Montreal, Canada      WWW: http://libertel.montreal.qc.ca/~dmckilli/

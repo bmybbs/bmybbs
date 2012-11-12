@@ -1,0 +1,229 @@
+#!/usr/local/bin/perl
+#
+# inntobbs
+
+($bbshome) = @ARGV;
+if( ! $bbshome )  {
+    print "Usage: inntobbs bbs_home < article_from_news\n";
+    exit( 0 );
+}
+
+$tmpfile     = "/tmp/inntobbs.$$";
+$logfile     = "$bbshome/bbslog";
+# $mailbox     = "$bbshome/mailbox";
+# $echomail    = "$bbshome/echomail.log";
+$history     = "$bbshome/usr/tmp/history";
+$inndhome    = "$bbshome/inndlog";
+$inndbinhome = "$bbshome/innd";
+$poster      = "$inndbinhome/bbspost";
+$parsedate   = "$inndbinhome/parsedate";
+$INC[ @INC ] = "$inndhome";
+
+require "bbslib.pl";
+
+%SITELIST = (
+"Computer Science & Information Engineering NCTU",
+        "交大资工 News Server",
+"Dep. Computer Sci. & Information Eng., Chiao Tung Univ., Taiwan, R.O.C",
+        "交大资工 News Server",
+"",     "(Unknown)"
+);
+
+&news_article();
+
+sub read_article
+{
+    local       (%HEADER);
+
+    while( <STDIN> ) {
+        if( $_ eq "\n" ) { last; }
+        $HEAD[ @HEAD ] = $_;
+        $n = index( $_, ": " );
+        if( $n > 0 ) {
+            $name = substr( $_, 0, $n );
+            if( ! $HEADER{ $name } ) {
+                chop $_;
+                $HEADER{ $name } = substr( $_, $n + 2, 9999 );
+            }
+        }
+    }
+    @BODY = <STDIN>;
+    if( $mailbox ) {
+        open( FN, ">> $mailbox" );
+        print FN @HEAD;
+        print FN "\n";
+        print FN @BODY;
+        close( FN );
+    }
+    $nntphost = $HEADER{ "NNTP-Host" };
+    $path     = $HEADER{ "Path" };
+    $from     = $HEADER{ "From" };
+    $groups   = $HEADER{ "Newsgroups" };
+    $subject  = $HEADER{ "Subject" };
+    $date     = $HEADER{ "Date" };
+    $site     = $HEADER{ "Organization" };
+    $msgid    = $HEADER{ "Message-ID" };
+    $control  = $HEADER{ "Control" };
+    $posthost = $HEADER{ "NNTP-Posting-Host" };
+
+    $path =~ s/.edu.tw//g;
+    $from =~ s/.edu.tw//;
+}
+
+sub receive_article
+{
+    ($userid) = split( "\@", $from );
+    ($userid) = split( /\./, $userid );
+    if( ! $userid ) {
+        &bbslog( ":Err: article without userid $msgid\n" );
+        return;
+    }
+    ($xdate) = split( "\n", `echo '$date' | $parsedate` );
+    if( $xdate )  { $date = $xdate; }
+    $xsite = $SITELIST{ $site };
+    if( $xsite )  { $site = $xsite; }
+    $site = substr( $site, 0, 40 );
+    $xpath = substr( "$mybbsid!$path", 0, 70 );
+    if( $echomail ) {
+        open( FN, ">> $echomail" );
+        print FN "\n";
+        print FN "发信人: $from, 信区: $groups\n";
+        print FN "标  题: $subject\n";
+        print FN "发信站: $site ($date)\n";
+        print FN "转信站: $xpath ($nntphost)\n";
+    if($posthost){
+        print FN "出  处: $posthost\n";
+    }
+        close( FN );
+    }
+    $filelist = "";
+    foreach $newsgroup ( split( ",", $groups ) ) {
+        ($board, $server) = &search_group( $newsgroup );
+        $boardhome = "$bbshome/boards/$board";
+        if( ! $board ) {
+            if( index( $newsgroup, "tw.bbs" ) >= 0 ) {
+                &bbslog( ":Warn: unknown '$newsgroup' in $groups\n" );
+            }
+        } elsif( ! $server ) {
+#           &bbslog( ":Warn: $newsgroup --X--> local board '$board'\n" );
+        } elsif( index( $path, $server ) == 0 ) {
+            &bbslog( ":Err: $newsgroup --X--> Path: $path\n" );
+        } elsif( ! -d $boardhome ) {
+            &bbslog( ":Err: unable to write $boardhome\n" );
+        } else {
+            open( FN, "| $poster post $boardhome > $tmpfile" );
+            print FN "${userid}.\n";
+            print FN "$subject\n";
+            print FN "发信人: $from, 信区: $board\n";
+            print FN "标  题: $subject\n";
+            print FN "发信站: $site ($date)\n";
+            print FN "转信站: $xpath\n";
+     if($posthost){
+            print FN "出  处: $posthost\n";
+     }
+            print FN "\n";
+            print FN @BODY;
+            close( FN );
+            $result = &get_tmpfile();
+            if( index( $result, "post to " ) == 0 ) {
+                chop( $result );
+                $n = rindex( $result, "/" );
+                $name = substr( $result, $n + 1 );
+                $filelist .= "$board/$name ";
+            } else {
+                &bbslog( $result );
+            }
+        }
+    }
+    if( $filelist ) {
+        chop( $filelist );
+        &bbslog( "Receive $msgid to $filelist\n" );
+        &add_history( $msgid, $filelist );
+    }
+}
+
+sub cancel_article
+{
+    local       ($msgid) = @_;
+
+    $filelist = &find_history( $msgid );
+    if( ! $filelist ) {
+        return;
+    }
+    foreach $file ( split( " ", $filelist ) ) {
+        $filename = "$bbshome/boards/$file";
+        @HEAD = ();
+        if( -f $filename ) {
+            open( FN, $filename );
+            while( <FN> ) {
+                if( $_ eq "\n" ) { last; }
+                $HEAD[ @HEAD ] = $_;
+                chop;
+                $head = substr( $_, 0, 8 );
+                if( $head eq "发信人: " ) {
+                    $n = rindex( $_, "," );
+                    $xfrom = substr( $_, 8, $n - 8 );
+                } elsif( $head eq "转信站: " ) {
+                    $xpath = substr( $_, 8 );
+                }
+            }
+            $path = substr( "$mybbsid!$path", 0, 70 );
+            close( FN );
+#           if( $from ne $xfrom || $path ne $xpath ) {
+            if( $from ne $xfrom ) {
+                &bbslog( "Invalid cancel $from, path: $path\n" );
+                return;
+            }
+            &bbslog( "cancel post $filename\n" );
+            $boardhome = "$bbshome/boards/deleted";
+            if( -d $boardhome ) {
+                open( FN, "| $poster post $boardhome > $tmpfile" );
+                print FN "$from\n";
+                print FN "$BODY[0]";
+                open( FIN, $filename );
+                print FN <FIN>;
+                close( FIN );
+                close( FN );
+            }
+            open( FN, "> $filename" );
+            print FN @HEAD;
+            print FN "\n";
+            if( $posthost ) {
+                print FN "NNTP-Posting-Host: $posthost\n";
+            }
+            print FN @BODY;
+            close( FN );
+            ($xboard, $xfile) = split( "/", $file );
+            system( "$poster cancel $bbshome $xboard $xfile" );
+        }
+    }
+}
+
+sub news_article
+{
+    local       (@HEAD, @BODY);
+
+    if( &initial_bbs() == 0 ) {
+        &bbslog( ":Err: BBS initial failure!!\n" );
+        return;
+    }
+    &read_article();
+    $news_flag = ($from && $groups && $subject && $date && $site );
+    if( $control ) {
+        &bbslog( "Control: $control\n" );
+        if( index( $control, "cancel " ) == 0 ) {
+            &cancel_article( substr( $control, 7 ) );
+        }
+    } elsif( ! $path ) {
+        &bbslog( ":Err: article without path\n" );
+    } elsif( ! $news_flag ) {
+        &bbslog( ":Err: incomplete article header\n" );
+    } elsif( index( "!$path!", "!$mybbsid!" ) >= 0 ) {
+        &bbslog( ":Warn: Loop back article: $mybbsid!$path\n" );
+    } elsif( @BODY == 0 ) {
+        &bbslog( ":Err: empty article $msgid\n" );
+    } else {
+        &receive_article();
+    }
+}
+

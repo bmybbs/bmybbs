@@ -1,0 +1,97 @@
+BLOWFISH
+========
+
+Bruce Schneier's block cipher that was designed to be a fast and free
+alternative to existing encryption algorithms. It is unpatented and
+license-free. SSH version uses a 128-bit key for Blowfish (the
+algorithm allows anything from 32 to 448 bits).
+
+Performance on a pentium machine is about 88% of "none" encryption.
+
+You can disable it by giving the --without-blowfish option to
+configure. It is ON by default.
+
+
+ARCFOUR
+=======
+
+Arcfour is a stream cipher that supports variable length keys (SSH
+uses it with 128 bit keys). Arcfour is compatible with the RC4 cipher
+(RC4 is a trademark of RSA Data Security). Arcfour is quite fast.
+
+There are some problems in the way arcfour is used in SSH 1.x. Because
+of this, it is disabled by default. Arcfour can be enabled by giving
+--with-arcfour to configure; however, this will introduce security
+problems if the attacker can perform active network-level attacks. The
+problems are fixed in SSH 2.x.
+
+Performance on a pentium machine is about 91% of "none" encryption.
+
+The SSH client automatically switches to blowfish, if arcfour is
+requested but not supported. This allows old scripts and config files
+to work even now that arcfour is disabled by default. A warning is
+printed when this happens.
+
+
+IDEA
+====
+
+A 128-bit block cipher. Faster than 3DES, but slower than Arcfour and
+Blowfish. The IDEA algorithm is patented in many countries, and the
+patent holder disallows commercial use (their definition of
+commercial use include connections from one corporation to another
+corporation).
+
+Performance on a pentium machine is about 64% of "none" encryption.
+
+You can disable IDEA by giving the --without-idea option to configure. It is
+ON by default.
+
+
+DES
+===
+
+A 56-bit block cipher. About three times faster than 3DES, but slower
+than Arcfour and Blowfish. The 56-bit key length is too small for real
+security, so you should not enable this unless it is crucial for you
+to support DES (e.g. due to company policy).
+
+Performance on a pentium machine is about 71% of "none" encryption.
+
+You can enable DES by giving the --with-des option to configure. It is OFF
+by default.
+
+
+3DES
+====
+
+Three-key triple-DES (effective key length of about 112 bits) in inner
+CBC-mode. This is the default fall back cipher that is used if the
+client asks for a cipher that isn't supported by the server.
+
+RSA private key files are encrypted by 3DES by default. (Some older
+versions encrypted private key files with IDEA, and such key files may
+still be around.)
+
+Performance on a pentium machine is about 45% of "none" encryption.
+
+You cannot disable it, because the it is mandatory cipher. 
+
+
+NONE
+====
+
+No encryption at all. This cipher is intended only for testing, and
+should not be enabled for normal use. Using no encryption makes SSH
+vulnerable to network-level attacks (such as connection hijacking).
+There are also more subtle ways to exploit using no encryption, and
+servers should not allow such connections at all except when testing
+the protocol.
+
+Using no encryption is used as the reference value for the performance
+results indicated for other algorithms (and is represented by the
+value 100%). Note that performance depends also on compression,
+processor types, network speed, etc.
+
+You can allow "none" encryption by giving the --with-none option to
+configure. Using no encryption is not allowed by default.

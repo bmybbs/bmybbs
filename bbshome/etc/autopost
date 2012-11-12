@@ -1,0 +1,8 @@
+0Announce/bbslist/countusr.last   bbslists  本站的上站人次统计图
+0Announce/bbslist/yesterday       bbslists  本站的平均上站人数图
+0Announce/bbslist/newacct.last    bbslists  本站新帐号申请人数图
+0Announce/bbslist/board2.last     bbslists  本站各讨论区排行榜
+0Announce/bbslist/toppost         bbslists  发表文章数排行榜
+0Announce/bbslist/boardscore      bbslists  本站各讨论区人气榜
+etc/posts/day.last                bbslists  十大热门话题
+etc/posts/good                    bbslists  精彩话题回顾

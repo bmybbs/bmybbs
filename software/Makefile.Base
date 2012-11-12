@@ -1,0 +1,3 @@
+# url:=http://ytht.org/software
+# %.tgz %.tar.gz %.tar.bz2 %.tar %.c %.src.rpm:
+# 	wget $(url)/$@

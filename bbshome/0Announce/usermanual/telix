@@ -1,0 +1,44 @@
+
+   一.如何将 BBS上的 POST 存下来?
+
+      1. 设定好 你想要抓回资料的 档案名称:
+
+         Alt-O:
+               设定  (F)ilenames and paths 里面的
+                        Image file 及 Capture file 的预设档名.
+
+      2. 连线到你要去的BBS 站,开始抓资料
+
+         Alt-I: 只能抓你现在看到的萤幕画面.
+         Alt-L: 一直抓到下一个 Alt-L 按键为止.
+
+         注意: 如果 Alt-L 抓到的资料含有控制码,
+               可用文书软体的 搜寻／取代 去掉.
+
+   二. 如何将一篇用 pe2 写好的 post 用 email 寄出去？
+
+           例如:C:\PE2\test.txt
+
+         ALT-S: 选择ASCII,再输入档名 c:\pe2\test.txt
+
+           信件标头一定要如下:
+            ┌———————————————┐
+            │Subject: email weapon message │
+            │#name: officer                │←你在 bbs 的id
+            │#password: 9999               │←你在 bbs 的密码
+            │#board: weapon                │←你要放post的board
+            │#title: 介绍新型武器ＳＭＡＷ  │  注意英文字母
+            │ (以下就是你的内容)           │  大小写是不同的
+            │                              │
+            └———————————————┘
+
+             注意:1.# 号一定要在第一个字.
+                  2.该bbs 要能接受 email post ,否则无效.
+
+    三.如何设定modem的传送速率? (针对 14400 modem )
+
+          以下三种都可以,
+
+          Alt-D: 在电话簿中编辑选项选 14400 bps
+          ALT-O: 将数据机设定为 14000bps
+          Alt-P: 将数据机设定成 19200 bps

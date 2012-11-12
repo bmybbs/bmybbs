@@ -1,0 +1,211 @@
+#!/usr/bin/perl
+#
+# mailpost
+
+($bbshome) = @ARGV;
+if( ! $bbshome )  {
+    print "Usage: mailpost bbs_home < article_from_user_mail\n";
+    exit( 0 );
+}
+
+$tmpfile     = "/tmp/mailpost.$$";
+$logfile     = "$bbshome/bbslog";
+# $mailbox     = "$bbshome/mailbox";
+$inndhome    = "$bbshome/inndlog";
+$inndbinhome = "$bbshome/innd";
+$poster      = "$inndbinhome/bbspost";
+$parsedate   = "$inndbinhome/parsedate";
+$denyfile    = "$inndhome/email.deny";
+$INC[ @INC ] = "$inndhome";
+
+&mail_article();
+
+sub logit
+{
+    if( $logfile ) {
+        open( FN, ">> $logfile" );
+        print FN @_;
+        close( FN );
+    } else {
+        print @_;
+    }
+}
+
+sub log_tmpfile
+{
+    open( FN, $tmpfile );
+    $result = <FN>;
+    close( FN );
+    unlink( $tmpfile );
+    &logit( $result );
+}
+
+sub junk_mail
+{
+    local       ($msg) = @_;
+
+    &logit( "unknown mail $msg\n" );
+    if( ! $name ) {
+        $name = "Mail-Daemon";
+    }
+    if( ! $subject ) {
+        $subject = "<Unknown>: $msg";
+    }
+    open( FN, "| $poster post $bbshome/boards/junk > $tmpfile" );
+    print FN "$name\n";
+    print FN "$subject\n";
+    print FN @MAIL;
+    close( FN );
+    &log_tmpfile();
+    exit( 0 );
+}
+
+sub uudecode
+{
+    local       ($begin) = @_;
+
+    $line = $MAIL[ $begin + 1 ];
+    if( substr( $line, 0, 1 ) ne "M" ) {
+        return;
+    }
+    $tmpfile = "/tmp/decode.$$";
+    open( FN, "| /usr/bin/uudecode" );
+    print FN "begin 644 $tmpfile\n";
+    foreach $n ($begin + 1 .. $#MAIL) {
+        print FN $MAIL[ $n ];
+    }
+    close( FN );
+    $#MAIL = $begin - 1;
+    open( FN, $tmpfile );
+    while( <FN> ) {
+        $MAIL[ @MAIL ] = $_;
+    }
+    close( FN );
+    unlink( $tmpfile );
+}
+
+sub decode_mail
+{
+    foreach $n (0 .. $#MAIL) {
+        $line = $MAIL[ $n ];
+        if( substr( $line, 0, 6 ) eq "begin " ) {
+            if( $line =~ /^begin \d+ \w/ ) {
+                &uudecode( $n );
+                return;
+            }
+        }
+    }
+}
+
+sub parse_header
+{
+    $header = 1;
+    $line = 0;
+    while( !($name && $password && $board && $title && $local) ) {
+        if( $line > $#MAIL ) {
+            &junk_mail( "from $realfrom" );
+        }
+        if($name && $password && $board && $title )
+        {
+                if(! $local )
+                {
+                        $local="globalpost";
+                }
+        }
+        $_ = $MAIL[ $line++ ];
+        chop;
+        if( $_ eq "" ) {
+            $header = "";
+        }
+        $n = index( $_, "#" );
+        if( $n >= 0 ) {
+            $str = substr( $_, $n + 1, 9999 );
+            $str =~ /^(\w+)[\s:]+?\s*(.*)$/;
+            $head = $1;
+            $str = $2;
+            $head =~ tr/A-Z/a-z/;
+            $str =~ /^(\w+)/;
+            if( $head eq "name" || $head eq "userid" ) {
+                $name = $1;
+            } elsif( $head eq "password" || $head eq "passwd" ||
+                     $head eq "pass" ) {
+                $password = $str;
+            } elsif( $head eq "board" ) {
+                $board = $1;
+            } elsif( $head eq "title" || $head eq "subject" ) {
+                $title = $str;
+            } elsif( $head eq "localpost") {
+                $local="localpost";
+            }
+        } elsif( $header ) {
+            if( index( $_, "From: " ) == 0 ) {
+                $from = substr( $_, 6, 99 );
+                ($name) = split( "\@", $from );
+            } elsif( index( $_, "Subject: " ) == 0 ) {
+                $subject = substr( $_, 9, 99 );
+            }
+        }
+    }
+    if( $header ) {
+        while( $line <= $#MAIL && $MAIL[ $line ] ne "\n" ) {
+            $line++;
+        }
+    }
+    while( $line <= $#MAIL && $MAIL[ $line ] eq "\n" ) {
+        $line++;
+    }
+    if( 0 ) {
+        print "realfrom = $realfrom\n";
+        print "name = $name\n";
+        print "password = $password\n";
+        print "board = $board\n";
+        print "title = $title\n";
+    }
+}
+
+sub mail_article
+{
+    chdir( $bbshome );
+    @MAIL = <STDIN>;
+    if( $mailbox ) {
+        open( FN, ">> $mailbox" );
+        print FN @MAIL;
+        close( FN );
+    }
+    if( $MAIL[ 0 ] =~ /^From (\S+) / ) {
+        $realfrom = $1;
+    } else {
+        &junk_mail( "format (without From)" );
+    }
+    if( -f $denyfile ) {
+        open( FN, $denyfile );
+        while( <FN> ) {
+            ($deny) = split( /\s+/, $_ );
+            if( $realfrom eq $deny ) {
+                &junk_mail( "Denyaddr $realfrom" );
+            }
+        }
+        close( FN );
+    }
+#    &decode_mail();
+    &parse_header();
+    $boardpath = "$bbshome/boards/$board";
+    if( ! -d $boardpath ) {
+        &junk_mail( "board `$board' from $realfrom." );
+    } else {
+        $title =~ s//^[/g;
+        open( FN, "| $poster mail $boardpath > $tmpfile" );
+#       open( FN, "| cat" );
+        print FN "$name\n";
+        print FN "$title\n";
+        print FN "$password\n";
+        print FN "$realfrom\n";
+        print FN "$local\n";
+        foreach $n ($line .. $#MAIL) {
+            print FN $MAIL[ $n ];
+        }
+        close( FN );
+        &log_tmpfile();
+    }
+}
+

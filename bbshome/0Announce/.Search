@@ -1,0 +1,7 @@
+bbslists: groups/GROUP_0/bbslists
+newcomers: groups/GROUP_0/newcomers
+notepad: groups/GROUP_7/notepad
+junk: sysops/groups/junk
+sysop: groups/GROUP_0/sysop
+syssecurity: sysop/groups/syssecurity
+vote: groups/GROUP_0/vote

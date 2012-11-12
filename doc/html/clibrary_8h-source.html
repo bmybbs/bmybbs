@@ -1,0 +1,193 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<title>BMY: clibrary.h源文件</title>
+<link href="doxygen.css" rel="stylesheet" type="text/css">
+<link href="tabs.css" rel="stylesheet" type="text/css">
+</head><body>
+<!-- 制作者 Doxygen 1.5.5 -->
+<script type="text/javascript">
+<!--
+function changeDisplayState (e){
+  var num=this.id.replace(/[^[0-9]/g,'');
+  var button=this.firstChild;
+  var sectionDiv=document.getElementById('dynsection'+num);
+  if (sectionDiv.style.display=='none'||sectionDiv.style.display==''){
+    sectionDiv.style.display='block';
+    button.src='open.gif';
+  }else{
+    sectionDiv.style.display='none';
+    button.src='closed.gif';
+  }
+}
+function initDynSections(){
+  var divs=document.getElementsByTagName('div');
+  var sectionCounter=1;
+  for(var i=0;i<divs.length-1;i++){
+    if(divs[i].className=='dynheader'&&divs[i+1].className=='dynsection'){
+      var header=divs[i];
+      var section=divs[i+1];
+      var button=header.firstChild;
+      if (button!='IMG'){
+        divs[i].insertBefore(document.createTextNode(' '),divs[i].firstChild);
+        button=document.createElement('img');
+        divs[i].insertBefore(button,divs[i].firstChild);
+      }
+      header.style.cursor='pointer';
+      header.onclick=changeDisplayState;
+      header.id='dynheader'+sectionCounter;
+      button.src='closed.gif';
+      section.id='dynsection'+sectionCounter;
+      section.style.display='none';
+      section.style.marginLeft='14px';
+      sectionCounter++;
+    }
+  }
+}
+window.onload = initDynSections;
+-->
+</script>
+<div class="navigation" id="top">
+  <div class="tabs">
+    <ul>
+      <li><a href="index.html"><span>首页</span></a></li>
+      <li><a href="annotated.html"><span>数据结构</span></a></li>
+      <li class="current"><a href="files.html"><span>文件</span></a></li>
+    </ul>
+  </div>
+<h1>clibrary.h</h1><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*  $Revision: 1.1.1.1 $</span>
+<a name="l00002"></a>00002 <span class="comment">**</span>
+<a name="l00003"></a>00003 <span class="comment">**  Here be declarations of routines and variables in the C library.</span>
+<a name="l00004"></a>00004 <span class="comment">**  You must #include &lt;sys/types.h&gt; and &lt;stdio.h&gt; before this file.</span>
+<a name="l00005"></a>00005 <span class="comment">*/</span>
+<a name="l00006"></a>00006 
+<a name="l00007"></a>00007 <span class="preprocessor">#if     defined(DO_HAVE_UNISTD)</span>
+<a name="l00008"></a>00008 <span class="preprocessor"></span><span class="preprocessor">#include &lt;unistd.h&gt;</span>
+<a name="l00009"></a>00009 <span class="preprocessor">#endif  </span><span class="comment">/* defined(DO_HAVE_UNISTD) */</span>
+<a name="l00010"></a>00010 
+<a name="l00011"></a>00011 <span class="preprocessor">#if     defined(DO_HAVE_VFORK)</span>
+<a name="l00012"></a>00012 <span class="preprocessor"></span><span class="preprocessor">#include &lt;vfork.h&gt;</span>
+<a name="l00013"></a>00013 <span class="preprocessor">#endif  </span><span class="comment">/* defined(DO_HAVE_VFORK) */</span>
+<a name="l00014"></a>00014 
+<a name="l00015"></a>00015     <span class="comment">/* Generic pointer, used by memcpy, malloc, etc. */</span>
+<a name="l00016"></a>00016     <span class="comment">/* =()&lt;typedef @&lt;POINTER&gt;@ *POINTER;&gt;()= */</span>
+<a name="l00017"></a>00017 <span class="keyword">typedef</span> <span class="keywordtype">char</span> *POINTER;
+<a name="l00018"></a>00018     <span class="comment">/* What is a file offset?  Will not work unless long! */</span>
+<a name="l00019"></a>00019     <span class="comment">/* =()&lt;typedef @&lt;OFFSET_T&gt;@ OFFSET_T;&gt;()= */</span>
+<a name="l00020"></a>00020 <span class="keyword">typedef</span> <span class="keywordtype">long</span> OFFSET_T;
+<a name="l00021"></a>00021     <span class="comment">/* What is the type of an object size? */</span>
+<a name="l00022"></a>00022     <span class="comment">/* =()&lt;typedef @&lt;SIZE_T&gt;@ SIZE_T;&gt;()= */</span>
+<a name="l00023"></a>00023 <span class="keyword">typedef</span> <span class="keywordtype">int</span> SIZE_T;
+<a name="l00024"></a>00024     <span class="comment">/* What is the type of a passwd uid and gid, for use in chown(2)? */</span>
+<a name="l00025"></a>00025     <span class="comment">/* =()&lt;typedef @&lt;UID_T&gt;@ UID_T;&gt;()= */</span>
+<a name="l00026"></a>00026 <span class="keyword">typedef</span> <span class="keywordtype">int</span> UID_T;
+<a name="l00027"></a>00027     <span class="comment">/* =()&lt;typedef @&lt;GID_T&gt;@ GID_T;&gt;()= */</span>
+<a name="l00028"></a>00028 <span class="keyword">typedef</span> <span class="keywordtype">int</span> GID_T;
+<a name="l00029"></a>00029     <span class="comment">/* =()&lt;typedef @&lt;PID_T&gt;@ PID_T;&gt;()= */</span>
+<a name="l00030"></a>00030 <span class="keyword">typedef</span> <span class="keywordtype">int</span> PID_T;
+<a name="l00031"></a>00031     <span class="comment">/* What should a signal handler return? */</span>
+<a name="l00032"></a>00032     <span class="comment">/* =()&lt;#define SIGHANDLER   @&lt;SIGHANDLER&gt;@&gt;()= */</span>
+<a name="l00033"></a>00033 <span class="preprocessor">#define SIGHANDLER      void</span>
+<a name="l00034"></a>00034 <span class="preprocessor"></span>
+<a name="l00035"></a>00035 <span class="preprocessor">#if     defined(SIG_DFL)</span>
+<a name="l00036"></a>00036 <span class="preprocessor"></span>    <span class="comment">/* What types of variables can be modified in a signal handler? */</span>
+<a name="l00037"></a>00037     <span class="comment">/* =()&lt;typedef @&lt;SIGVAR&gt;@ SIGVAR;&gt;()= */</span>
+<a name="l00038"></a>00038 <span class="keyword">typedef</span> <span class="keywordtype">int</span> SIGVAR;
+<a name="l00039"></a>00039 <span class="preprocessor">#endif  </span><span class="comment">/* defined(SIG_DFL) */</span>
+<a name="l00040"></a>00040 
+<a name="l00041"></a>00041 <span class="comment">/* =()&lt;#include @&lt;STR_HEADER&gt;@&gt;()= */</span>
+<a name="l00042"></a>00042 <span class="preprocessor">#include &lt;string.h&gt;</span>
+<a name="l00043"></a>00043 <span class="comment">/* =()&lt;#include @&lt;MEM_HEADER&gt;@&gt;()= */</span>
+<a name="l00044"></a>00044 <span class="preprocessor">#include &lt;memory.h&gt;</span>
+<a name="l00045"></a>00045 
+<a name="l00046"></a>00046 
+<a name="l00047"></a>00047 <span class="comment">/*</span>
+<a name="l00048"></a>00048 <span class="comment">**  It's a pity we have to go through these contortions, for broken</span>
+<a name="l00049"></a>00049 <span class="comment">**  systems that have fd_set but not the FD_SET.</span>
+<a name="l00050"></a>00050 <span class="comment">*/</span>
+<a name="l00051"></a>00051 <span class="preprocessor">#if     defined(FD_SETSIZE)</span>
+<a name="l00052"></a>00052 <span class="preprocessor"></span><span class="preprocessor">#define FDSET           fd_set</span>
+<a name="l00053"></a>00053 <span class="preprocessor"></span><span class="preprocessor">#else</span>
+<a name="l00054"></a>00054 <span class="preprocessor"></span><span class="preprocessor">#include &lt;sys/param.h&gt;</span>
+<a name="l00055"></a>00055 <span class="preprocessor">#if     !defined(NOFILE)</span>
+<a name="l00056"></a>00056 <span class="preprocessor"></span>        error -- #define NOFILE to the number of files allowed on your machine!
+<a name="l00057"></a>00057 <span class="preprocessor">#endif  </span><span class="comment">/* !defined(NOFILE) */</span>
+<a name="l00058"></a>00058 <span class="preprocessor">#if     !defined(howmany)</span>
+<a name="l00059"></a>00059 <span class="preprocessor"></span><span class="preprocessor">#define howmany(x, y)   (((x) + ((y) - 1)) / (y))</span>
+<a name="l00060"></a>00060 <span class="preprocessor"></span><span class="preprocessor">#endif  </span><span class="comment">/* !defined(howmany) */</span>
+<a name="l00061"></a>00061 <span class="preprocessor">#define FD_SETSIZE      NOFILE</span>
+<a name="l00062"></a>00062 <span class="preprocessor"></span><span class="preprocessor">#define NFDBITS         (sizeof (long) * 8)</span>
+<a name="l00063"></a>00063 <span class="preprocessor"></span><span class="keyword">typedef</span> <span class="keyword">struct </span>_FDSET {
+<a name="l00064"></a>00064     <span class="keywordtype">long</span>        fds_bits[howmany(FD_SETSIZE, NFDBITS)];
+<a name="l00065"></a>00065 } FDSET;
+<a name="l00066"></a>00066 <span class="preprocessor">#define FD_SET(n, p)    (p)-&gt;fds_bits[(n) / NFDBITS] |= (1 &lt;&lt; ((n) % NFDBITS))</span>
+<a name="l00067"></a>00067 <span class="preprocessor"></span><span class="preprocessor">#define FD_CLR(n, p)    (p)-&gt;fds_bits[(n) / NFDBITS] &amp;= ~(1 &lt;&lt; ((n) % NFDBITS))</span>
+<a name="l00068"></a>00068 <span class="preprocessor"></span><span class="preprocessor">#define FD_ISSET(n, p)  ((p)-&gt;fds_bits[(n) / NFDBITS] &amp; (1 &lt;&lt; ((n) % NFDBITS)))</span>
+<a name="l00069"></a>00069 <span class="preprocessor"></span><span class="preprocessor">#define FD_ZERO(p)      (void)memset((POINTER)(p), 0, sizeof *(p))</span>
+<a name="l00070"></a>00070 <span class="preprocessor"></span><span class="preprocessor">#endif  </span><span class="comment">/* defined(FD_SETSIZE) */</span>
+<a name="l00071"></a>00071 
+<a name="l00072"></a>00072 
+<a name="l00073"></a>00073 <span class="preprocessor">#if     !defined(SEEK_SET)</span>
+<a name="l00074"></a>00074 <span class="preprocessor"></span><span class="preprocessor">#define SEEK_SET        0</span>
+<a name="l00075"></a>00075 <span class="preprocessor"></span><span class="preprocessor">#endif  </span><span class="comment">/* !defined(SEEK_SET) */</span>
+<a name="l00076"></a>00076 <span class="preprocessor">#if     !defined(SEEK_END)</span>
+<a name="l00077"></a>00077 <span class="preprocessor"></span><span class="preprocessor">#define SEEK_END        2</span>
+<a name="l00078"></a>00078 <span class="preprocessor"></span><span class="preprocessor">#endif  </span><span class="comment">/* !defined(SEEK_END) */</span>
+<a name="l00079"></a>00079 
+<a name="l00080"></a>00080 <span class="comment">/*</span>
+<a name="l00081"></a>00081 <span class="comment">**  We must use #define to set FREEVAL, since "typedef void FREEVAL;" doesn't</span>
+<a name="l00082"></a>00082 <span class="comment">**  work on some broken compilers, sigh.</span>
+<a name="l00083"></a>00083 <span class="comment">*/</span>
+<a name="l00084"></a>00084 <span class="comment">/* =()&lt;#define FREEVAL @&lt;FREEVAL&gt;@&gt;()= */</span>
+<a name="l00085"></a>00085 <span class="preprocessor">#define FREEVAL int</span>
+<a name="l00086"></a>00086 <span class="preprocessor"></span>
+<a name="l00087"></a>00087 <span class="keyword">extern</span> <span class="keywordtype">int</span>              optind;
+<a name="l00088"></a>00088 <span class="keyword">extern</span> <span class="keywordtype">char</span>             *optarg;
+<a name="l00089"></a>00089 <span class="preprocessor">#if     !defined(__STDC__)</span>
+<a name="l00090"></a>00090 <span class="preprocessor"></span><span class="keyword">extern</span> <span class="keywordtype">int</span>              errno;
+<a name="l00091"></a>00091 <span class="preprocessor">#endif  </span><span class="comment">/* !defined(__STDC__) */</span>
+<a name="l00092"></a>00092 
+<a name="l00093"></a>00093 <span class="keyword">extern</span> <span class="keywordtype">char</span>             *getenv();
+<a name="l00094"></a>00094 <span class="keyword">extern</span> <span class="keywordtype">char</span>             *inet_ntoa();
+<a name="l00095"></a>00095 <span class="keyword">extern</span> <span class="keywordtype">char</span>             *mktemp();
+<a name="l00096"></a>00096 <span class="preprocessor">#if     !defined(strerror)</span>
+<a name="l00097"></a>00097 <span class="preprocessor"></span><span class="keyword">extern</span> <span class="keywordtype">char</span>             *strerror();
+<a name="l00098"></a>00098 <span class="preprocessor">#endif  </span><span class="comment">/* !defined(strerror) */</span>
+<a name="l00099"></a>00099 <span class="keyword">extern</span> <span class="keywordtype">long</span>             atol();
+<a name="l00100"></a>00100 <span class="keyword">extern</span> time_t           time();
+<a name="l00101"></a>00101 <span class="keyword">extern</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span>    inet_addr();
+<a name="l00102"></a>00102 <span class="keyword">extern</span> FREEVAL          free();
+<a name="l00103"></a>00103 <span class="keyword">extern</span> POINTER          malloc();
+<a name="l00104"></a>00104 <span class="keyword">extern</span> POINTER          realloc();
+<a name="l00105"></a>00105 <span class="preprocessor">#if     defined(ACT_MMAP)</span>
+<a name="l00106"></a>00106 <span class="preprocessor"></span><span class="keyword">extern</span> <span class="keywordtype">char</span>             *mmap();
+<a name="l00107"></a>00107 <span class="preprocessor">#endif  </span><span class="comment">/* defined(ACT_MMAP) */</span>
+<a name="l00108"></a>00108 
+<a name="l00109"></a>00109 <span class="comment">/* Some backward systems need this. */</span>
+<a name="l00110"></a>00110 <span class="keyword">extern</span> FILE     *popen();
+<a name="l00111"></a>00111 
+<a name="l00112"></a>00112 <span class="comment">/* This is in &lt;mystring.h&gt;, but not in some system string headers,</span>
+<a name="l00113"></a>00113 <span class="comment"> * so we put it here just in case. */</span>
+<a name="l00114"></a>00114 <span class="keyword">extern</span> <span class="keywordtype">int</span>      strncasecmp();
+<a name="l00115"></a>00115 
+<a name="l00116"></a>00116 <span class="comment">/* =()&lt;extern @&lt;ABORTVAL&gt;@      abort();&gt;()= */</span>
+<a name="l00117"></a>00117 <span class="keyword">extern</span> <span class="keywordtype">int</span>      abort();
+<a name="l00118"></a>00118 <span class="comment">/* =()&lt;extern @&lt;ALARMVAL&gt;@      alarm();&gt;()= */</span>
+<a name="l00119"></a>00119 <span class="keyword">extern</span> <span class="keywordtype">int</span>      alarm();
+<a name="l00120"></a>00120 <span class="comment">/* =()&lt;extern @&lt;EXITVAL&gt;@       exit();&gt;()= */</span>
+<a name="l00121"></a>00121 <span class="keyword">extern</span> <span class="keywordtype">void</span>     exit();
+<a name="l00122"></a>00122 <span class="comment">/* =()&lt;extern @&lt;GETPIDVAL&gt;@     getpid();&gt;()= */</span>
+<a name="l00123"></a>00123 <span class="keyword">extern</span> <span class="keywordtype">int</span>      getpid();
+<a name="l00124"></a>00124 <span class="comment">/* =()&lt;extern @&lt;LSEEKVAL&gt;@      lseek();&gt;()= */</span>
+<a name="l00125"></a>00125 <span class="keyword">extern</span> off_t    lseek();
+<a name="l00126"></a>00126 <span class="comment">/* =()&lt;extern @&lt;QSORTVAL&gt;@      qsort();&gt;()= */</span>
+<a name="l00127"></a>00127 <span class="keyword">extern</span> <span class="keywordtype">int</span>      qsort();
+<a name="l00128"></a>00128 <span class="comment">/* =()&lt;extern @&lt;SLEEPVAL&gt;@      sleep();&gt;()= */</span>
+<a name="l00129"></a>00129 <span class="keyword">extern</span> <span class="keywordtype">int</span>      sleep();
+<a name="l00130"></a>00130 <span class="comment">/* =()&lt;extern @&lt;_EXITVAL&gt;@      _exit();&gt;()= */</span>
+<a name="l00131"></a>00131 <span class="keyword">extern</span> <span class="keywordtype">int</span>      _exit();
+</pre></div></div>
+<hr size="1"><address style="text-align: right;"><small>Generated at Fri Aug 29 10:29:24 2008 for BMY by&nbsp;
+<a href="http://www.doxygen.org/index.html">
+<img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.5 </small></address>
+</body>
+</html>

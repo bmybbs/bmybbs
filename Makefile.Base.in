@@ -1,0 +1,71 @@
+#################################################################
+# Makefile for FIREBIRD BBS v3.0K                               #
+#################################################################
+# 1. This package is derived from Firebird BBS 1.5, which was 
+#    developed by the Department of Computer Science & Information
+#    Engineering, Chung Chen University of Taiwan, ROC.
+#    This package is developed by the Board of System Administrators,
+#    Malaysian Students' Association In Taiwan.
+#
+# 2. Our BBS location is at MSIA.pine.ncu.edu.tw (140.115.210.77)
+#
+# 3. The developers of this package can be reached by
+#    SYSOP.bbs@MSIA.pine.ncu.edu.tw
+#
+# 4. This Makefile is for "@systype@"
+
+#############################################################
+####   Setup the following site-specific information     ####
+#############################################################
+.PHONY:1st
+
+# The home directory for user 'bbs'
+BBSHOME=@BBS_HOME@
+
+# The uid/gid info for user 'bbs'
+BBSUID=@BBS_UID@
+BBSGRP=@BBS_GID@
+
+OS_DEF   = @OS_DEF@
+CC       = @CC@
+CFLAGS   = -Wall @CFLAGS@ -I$(BASEPATH)/include -I$(BASEPATH)/ythtlib -I$(BASEPATH)/libythtbbs
+CPPFLAGS = @CPPFLAGS@
+CFLAGSTEST   = -Wall @CTESTFLAGS@ -I$(BASEPATH)/include -I$(BASEPATH)/ythtlib -I$(BASEPATH)/libythtbbs -g
+#CFLAGSTEST   = @CTESTFLAGS@ -I$(BASEPATH)/include -I$(BASEPATH)/ythtlib -I$(BASEPATH)/libythtbbs -g -pg -static 
+BBSLIB = -L$(BBSHOME)/bin -lythtbbs -lytht
+LIBS     = @LIBS@
+LIBSTEST = @LIBS@
+LIBSQL = @LIBSQL@
+CGIPATH = @CGIPATH@
+HTMPATH = @HTMPATH@
+WWW_LIBS = @WWW_LIBS@
+WWW_CPPFLAGS= @WWW_CPPFLAGS@
+INSTALL  = @INSTALL@
+
+CSIE_DEF = @CSIE_DEF@
+
+$(BBSHOME)/bin/%:%
+	cp $< $@.new
+	-rm -f $@.old
+	-mv $@ $@.old
+	mv $@.new $@
+
+1st:all
+
+bbsconfig:=$(shell if test -f $(BASEPATH)/site/bbsconfig;then echo $(BASEPATH)/site/bbsconfig;else echo $(BASEPATH)/bbsconfig;fi)
+$(BASEPATH)/Makefile.Base: $(BASEPATH)/Makefile.Base.in $(BASEPATH)/configure $(bbsconfig)
+	@echo $(BASEPATH)/Makefile.Base is newer than $(BASEPATH)/Makefile or $(BASEPATH)/configure or $(bbsconfig), run $(BASEPATH)/configure first.
+	@false
+
+$(BASEPATH)/Makefile: $(BASEPATH)/Makefile.in $(BASEPATH)/configure
+	@echo $(BASEPATH)/Makefile is older than $(BASEPATH)/Makefile.in or $(BASEPATH)/configure, run $(BASEPATH)/configure first.
+	@false
+
+$(BASEPATH)/configure: $(BASEPATH)/configure.in $(BASEPATH)/makedist.sh
+	@echo $(BASEPATH)/configure is older than $(BASEPATH)/configure.in or $(BASEPATH)/makedist.sh, run $(BASEPATH)/makedist.sh first.
+	@false
+
+$(BASEPATH)/include/config.h: $(BASEPATH)/include/config.h.in $(BASEPATH)/configure
+	@echo $(BASEPATH)/include/config.h is older than $(BASEPATH)/include/config.h.in or $(BASEPATH)/configure, run configure first.
+	@false
+

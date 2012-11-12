@@ -1,0 +1,10 @@
+body {  font-family: "宋体"; font-size: 9pt; line-height: 12pt;BACKGROUND-COLOR: #D0DCE0}
+td {  font-family: "宋体"; font-size: 9pt; line-height: 12pt}
+th {  font-family: "宋体"; font-size: 9pt; line-height: 12pt}
+a {  color: #0066CC; text-decoration: none}
+a:hover {  color: black; text-decoration: none}
+.text {  font-family: "宋体"; font-size: 9pt}
+.border1 {  font-family: "宋体"; font-size: 9pt; border-style: solid; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px; background-color: #CDCD69}
+.line {  line-height: 15pt}
+.form0 {  height: 0px; width: 0px; margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px}
+.pic {  border: #EEEECC; border-style: solid; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px}

@@ -1,0 +1,5 @@
+#!/usr/bin/perl
+$bbsuid=999;
+$bbsgid=999;
+$bbshome="/home/bbs";
+require $bbshome."/bin/bbsmail"

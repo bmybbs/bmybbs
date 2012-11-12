@@ -1,0 +1,18 @@
+#!/usr/local/bin/perl
+$tmpjisfile = "/tmp/jisgate$$.sjs";
+$tmpeucfile = "/tmp/jisgate$$";
+$jis='/usr/local/bin/jis';
+$e2b='/usr/local/bin/sinocode';
+
+open(SINO,"| $e2b -big - -jis $tmpeucfile") || die "can't open pipe to $e2b $!\n";
+while (<>){
+	print SINO $_;
+}
+close(SINO);
+chdir('/tmp');
+system("$jis -j $tmpeucfile");
+open(TMP,$tmpjisfile) || die "can't read $tmpjisfile $!\n";
+print <TMP>;
+close(TMP);
+unlink($tmpjisfile);
+unlink($tmpeucfile);

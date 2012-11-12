@@ -1,0 +1,590 @@
+/*
+create:	flyinsea@bmy
+date:	11/25/2004
+email:	byron@gpbrand.com
+*/
+/*
+说明:提供大小/颜色方案更换
+filename	color	font
+--------------------------
+orab.css	orange	big
+oras.css	orange	small
+blub.css	blue	big
+blus.css	blue	small
+greb.css	green	big
+gres.css	green	small
+blab.css	black	big
+blas.css	black	small
+
+字体(功能性链接字体不变)
+--------------------------
+small	11px/12px
+big		13px
+
+配色方案
+--------------------------
+orange	#ff6600
+blue	#3333aa
+green	#669900
+black	#000000
+*/
+/******************************begin:基础部分,无须修改***************************/
+BODY,TD,DIV,PRE {
+    font-size: 12px;/*!important;*/
+    /*font-size: 11px;*/
+    font-family: "Verdana", "Lucida Grande", "Arial", "Helvetica", "宋体", sans-serif;
+    color: #222;
+	line-height:180%!important;
+}
+BODY {
+    margin: 0px;
+    padding: 0px;
+}
+INPUT {
+    font-size: 12px!important;
+    font-size: 11px;
+    font-family: "Verdana", "Lucida Grande", "Arial", "Helvetica", "宋体", sans-serif;
+}
+/* 链接样式统一,不支持主题 */
+A:link,A:visited { /* 蓝色 */
+    color: #369;
+    text-decoration: none;
+}
+A:hover { /* 灰色下划线 */
+    color: #333;
+    text-decoration: underline;
+}
+A:active { /* 浅灰色 */
+    color: #999;
+}
+/* 兵马俑题词 */
+#bmy {
+    display: block;
+    width: 160px;
+    height: 60px;
+	padding: 0px;
+	margin: 0px;
+    background: url(bmy.gif) transparent no-repeat left top;
+}
+/* 盛放小箭头的区域 arrowdiv */
+.arrowdiv {
+    display: block;
+    float: left;
+    margin: 0px 1px 0px 4px!important;
+    margin: 1px -2px 0px 2px;
+    padding: 0px;
+    background: url(bmy_arrow_black.gif) transparent no-repeat left top;
+    width: 5px;
+    height: 5px;
+}
+/* bbsfoot页面层 #footdiv */
+#bbsfoot {
+    height: 18px;
+	font-size: 12px!important;
+	line-height: 16px!important;
+	vertical-align: top;
+}
+.hidden {
+    display: none;
+}
+/* boa页面中切换显示的层 */
+#layer1,#layer2,#layer3 {
+    overflow: hidden;
+}
+/******************************end:基础部分,无须修改***************************/
+/******************************begin:配色部分***************************/
+/* 底层色 */
+BODY,.level1 {
+    background: #fff;
+	 line-height:150%;
+	 margin:0px;
+}
+/* 中层色 */
+BODY.left,.level2 {
+    background: #efefef;
+}
+/* 上层色 */
+.level3 {
+    background: #ccc;
+}
+/******************************end:配色部分***************************/
+/******************************begin:定义菜单部分***************************/
+/* home上方导航栏 menu */
+.menu {
+    border-bottom: #333 1px solid;
+    padding: 0px;
+    display: block;
+    height: 20px;
+}
+#topmenu_b{
+	font-weight:bold;
+	color:#f60
+}
+/* 当前按钮 btncurrent */
+.btncurrent {
+    padding: 2px 5px 0 5px;
+    height: 17px!important;
+    height: 18px;
+    border: #555 1px solid;
+    display: block;
+    font-weight: bold;
+    font-family: Arial, Verdana, Helvetica, Sans-serif;
+    float: left;
+    color: #f60;
+    background-color: #fff;
+    border-bottom: #fff 1px solid!important;
+    margin: -1px 1px 0px 1px!important;
+    margin: 1px 1px 0px 1px;
+}
+/* 链接类按钮:不支持主题,灰色 btnlinkgrey */
+A.btnlinkgrey:link,
+A.btnlinkgrey:visited
+ {
+    padding: 2px 5px 0 5px;
+    height: 17px!important;
+    height: 18px;
+    display: block;
+    font-weight: bold;
+    font-family: Arial, Verdana, Helvetica, Sans-serif;
+    float: left;
+    margin: 0px 1px 1px 0px!important;
+    margin: 1px 1px 0px 0px;
+    color: #fff;
+    background-color: #aaa;
+}
+A.btnlinkgrey:hover,
+A.btnlinkgrey:active {
+    background-color: #f60;
+    text-decoration:none;
+}
+/* 功能类按钮,不支持主题 btnfunc */
+A.btnfunc:link,A.btnfunc:visited {
+	 padding: 3px 5px 0 5px;
+	 margin: -1px 1px 0 1px!important;
+    margin: 0px 1px 0px 1px;
+    height: 17px!important;
+    height: 18px;
+    display: block;
+    float: left;
+    font-family: Arial, Verdana, Helvetica, Sans-serif;
+    color: #111
+}
+A.btnfunc:hover,A.btnfunc:active{
+	border: #f60 1px solid;
+	background:#fff;
+	margin: -1px 1px 0px 1px!important;
+   margin: 0px 1px 0px 1px;
+	text-decoration:none;
+}
+
+/* 链接类按钮:支持主题 btnlinktheme */
+A.btnlinktheme:link,
+A.btnlinktheme:visited {
+    padding: 2px 5px 0px 5px;
+    height: 17px!important;
+    height: 18px;
+    display: block;
+    font-weight: bold;
+    font-family: "Arial", "Verdana", "Helvetica", "Sans-serif";
+    float: left;
+    margin: 0px 1px 1px 0px!important;
+    margin: 1px 1px 0px 0px;
+    color: #fff;
+    background-color: #f60;
+}
+A.btnlinktheme:hover,
+A.btnlinktheme:active {
+    background-color: #aaa;
+    text-decoration:none;
+}
+/* 提交类按钮:支持主题 btnsubmittheme */
+A.btnsubmittheme:link,
+A.btnsubmittheme:visited {
+	 font-size: 12px;
+    padding: 3px 5px 3px 5px;
+	 font-family:sans-serif;
+	 margin-right:10px;
+    font-weight:bold;
+    border: #111 1px solid;
+    display: block;
+    float: left;
+    color: #111;
+    background-color: #fff;
+    text-decoration: none;
+}
+A.btnsubmittheme:hover,
+A.btnsubmittheme:active {
+    border: #f60 1px solid;
+    color: #f60;
+}
+/******************************end:定义菜单部分***************************/
+/******************************begin:辅助部分****************************/
+/* 首页链接:不支持主题 linkindex */
+A.linkindex:link,
+A.linkindex:visited {
+    color: #aaa;
+    text-decoration:none;
+}
+A.linkindex:hover,
+A.linkindex:active  {
+    color: #f60;
+    text-decoration:none;
+}
+
+/* 导读页版面链接:支持主题 linkboardtheme */
+A.linkboardtheme:link,
+A.linkboardtheme:visited {
+    padding: 3px;
+    display: block;
+    float: left;
+    margin: 0px;
+    color: #f60;
+    background-color: #fff;
+    border-width: 0px 1px 0px 1px;
+    border-color: #ccc;
+    border-style: solid;
+}
+A.linkboardtheme:hover,
+A.linkboardtheme:active {
+    background-color: #f60;
+    color: #fff;
+    text-decoration: none;
+}
+/* 辅助性链接:如日期/版面等,小字体,支持主题 linkdatetheme */
+A.linkdatetheme:link,
+A.linkdatetheme:visited {
+    color: #999;
+    font-size: 9px;
+    text-decoration:none;
+}
+A.linkdatetheme:hover,
+A.linkdatetheme:active {
+    color: #f60;
+    text-decoration:underline;
+}
+/* bbsfoot页面上小字体链接,支持主题 smalllink */
+A.smalllink:link,
+A.smalllink:visited {
+    color: #f60;
+    font-size: 10px;
+    text-decoration:none;
+}
+A.smalllink:hover,
+A.smalllink:active {
+    color: #999;
+    text-decoration:underline;
+}
+/* bbsfoot页面上小字体,支持主题 smalltext */
+.smalltext {
+    font-size: 10px;
+    color: #999;
+}
+/* 主题色字体 themetext */
+.themetext {
+    color: #f60;
+    font-weight:bold;
+}
+/* bbsleft页面菜单链接,不支持主题 linkleft */
+A.linkleft:link,
+A.linkleft:visited {
+    color: #111;
+    text-decoration:none;
+    line-height: 18px;
+}
+A.linkleft:hover,
+A.linkleft:active {
+    color: #111;
+    text-decoration:underline;
+}
+/* 阅读文章页面表格题头链接,不支持主题 linkwhite */
+A.linkwhite:link,
+A.linkwhite:visited {
+    color: #fff;
+    text-decoration:underline;
+}
+A.linkwhite:hover,
+A.linkwhite:active {
+    text-decoration:none;
+}
+/* go top 链接,支持主题 toptheme */
+A.toptheme:link,
+A.toptheme:visited {
+    color: #f60;
+    font-size: 10px;
+    line-height: 20px;
+}
+A.toptheme:hover,
+A.toptheme:active {
+    color: #999;
+}
+/* go top 链接,不支持主题 topgrey */
+A.topgrey:link,
+A.topgrey:visited {
+    color: #aaa;
+    font-size: 10px;
+    line-height: 20px;
+}
+A.topgrey:hover,
+A.topgrey:active {
+    color: #999;
+}
+/* 区链接:大字体,支持主题 linkbigtheme */
+A.linkbigtheme:link,
+A.linkbigtheme:visited {
+    color: #efefef;
+    font-size: 40px;
+    font-family: "Arial Black", "Verdana", "Tahoma", "宋体","sans-serif";
+    font-weight: normal;
+    text-decoration:none;
+}
+A.linkbigtheme:hover,
+A.linkbigtheme:active {
+    color: #f60;
+}
+/* 主题颜色链接:支持主题 linktheme */
+A.linktheme:link,
+A.linktheme:visited {
+    color: #f60;
+    text-decoration:none;
+}
+A.linktheme:hover,
+A.linktheme:active {
+    color: #111;
+    text-decoration:none;
+}
+/******************************end:辅助部分****************************/
+/******************************begin:图形部分****************************/
+/* 导读页面上区分讨论区版面灰色横线 linediv */
+.linediv {
+    display: block;
+    margin: 1em 0 0 0;
+    width: 100%;
+    border-top: 1px #ccc solid;
+}
+/* 横线一条 linehr */
+.linehr {
+    display: block;
+    margin: 1em 0;
+    width: 100%;
+    border-top: 1px #ccc solid;
+}
+/* 导读页面上表格题头边框,支持主题 bordertheme */
+.bordertheme {
+    border: 1px solid #f60;
+}
+/* 导读页面上表格题头边框,不支持主题 bordergrey */
+.bordergrey {
+    border: 1px solid #aaa;
+}
+/* 导读页面上灰色表格边框 bordergrey */
+.bordergrey2 {
+    border-left: 1px solid #aaa;
+}
+/* 全部展开页面表格题头,背景色为主题色,支持主题 tdtitletheme */
+.tdtitletheme {
+    color: #fff;
+    background: #f60;
+}
+/* 全部展开页面表格题头,背景色为灰色,不支持主题 tdtitlegrey */
+.tdtitlegrey {
+    color: #fff;
+    background: #aaa;
+}
+/* 表格题头行辅助线,支持主题 tdtitle */
+.tdtitle {
+    color: #f60;
+    border-bottom: #555 1px solid;
+    height: 30px;
+}
+/* 表格内容行辅助线,不支持主题 tdborder */
+.tdborder {
+    border-bottom: 1px solid #555;
+}
+tr.d0 td{
+	background-color: #FFF6ED;
+}
+.doctop td{
+	background: #FFF6ED;
+	border-top: 1px solid #555;
+	border-bottom: 1px solid #555;
+	font-weight: bolder;
+}
+.doctopword{
+	/*font-weight: bolder;*/
+}
+/* 表格作者列边框,不支持主题 tduser */
+.tduser {
+    color: #333;
+    padding: 4px;
+    border: #555 1px solid;
+    border-top: 0;
+    font-weight: bold;
+}
+/******************************end:图形部分****************************/
+/******************************begin:表单部分****************************/
+/* 短提交按钮:支持主题 sumbitshort */
+.sumbitshort {
+    color: #fff;
+	 font-size:12px;
+    background-color: #f60;
+    margin: 0px;
+    height: 18px;
+    border: 0px;
+    font-size: 12px;
+    text-align: center;
+    padding:1px 6px 3px 6px!important;
+	 padding:3px 5px 2px 5px
+}
+/* 长提交按钮:支持主题 sumbitlong */
+.sumbitlong {
+    color: #f60;
+    margin: 0;
+    font-size: 12px;
+    background-color: #fff;
+    height: 18px;
+    vertical-align: middle;
+    border: 1px solid #fff;
+}
+/* 短重置按钮:支持主题 resetshort */
+.resetshort {
+    color: #f60;
+    background-color: #fff;
+    margin: 0px;
+    font-size: 12px;
+    height: 18px;
+    border: 1px solid #f60;
+    width: 38px;
+    text-align: center;
+    padding:0px 6px 3px 6px!important;
+	 padding:2px 5px 2px 5px
+}
+/* 长重置按钮:支持主题 resetlong */
+.resetlong {
+    color: #fff;
+    background-color: #f60;
+    margin: 0px;
+	 padding-top:1px;
+	 padding-bottom:2px!important;
+    font-size: 12px;
+    height: 20px;
+    border: 1px solid #f60;
+	 vertical-align: middle;
+}
+/* 灰色提交按钮:不支持主题 sumbitgrey */
+.sumbitgrey {
+    color: #fff;
+    background-color: #aaa;
+    margin-left: 5px;
+    font-size: 12px;
+    border: 1px solid #aaa;
+}
+/* 用户名输入框:不支持主题 inputuser */
+.inputuser {
+    font-family: "Verdana", "Arial", "宋体", "sans-serif";
+    font-size: 11px;
+    color: #111;
+    background-image: url(input_idbg.gif);
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-position: 0px 0px;
+    background-color: #fff!important;
+    background-color: #ccc;
+    margin: 0px 0px 1px 0px!important;
+    margin: 0px;
+    height: 18px;
+    border: 1px solid #999!important;
+	border: 0;
+    width: 80px;
+    padding: 3px 0px 1px 4px;
+	vertical-align: middle;
+}
+/* 密码输入框:不支持主题 inputpwd */
+.inputpwd {
+    font-family: "Verdana", "Arial", "宋体", "sans-serif";
+    font-size: 11px;
+    color: #111;
+    background-image: url("input_pwdbg.gif");
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-position: 0px 0px;
+    background-color: #fff!important;
+    background-color: #CCC;
+    margin: 0px 0px 3px 0px!important;
+    margin: 0px;
+    height: 18px;
+	 height:17px!important;
+    border: 1px solid #999!important;
+    border: 0px solid #999;
+    width: 80px;
+    vertical-align: middle;
+    padding: 2px 0px 2px 4px;
+}
+/* 控制台输入框:不支持主题 inputconsole */
+.inputconsole {
+    font-family: "Verdana", "Lucida Grande", "Arial", "Helvetica", "宋体", "sans-serif";
+    font-size: 10px;
+    color: #111;
+    text-decoration: none;
+    background-image: url(input_conbg.gif);
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-position: 0px 0px;
+    background-color: #CCCCCC;
+    margin-top: 0px;
+    margin-left: 0px;
+    height: 20px;
+    border: 0 solid;
+    width: 110px;
+    text-align: left;
+    text-indent: 0pt;
+    vertical-align: middle;
+    padding-top: 3px;
+    padding-left: 45px;
+}
+.inputsearch{
+	width: 120px;
+	font-size:12px;
+	font-family:verdana,sans-serif;
+	padding:2px
+}
+.inputtext{
+	color:#f60;
+	font-size:12px;
+	padding-left:1px
+}
+.inputtitle{
+	font-size:12px;
+	padding-left:1px
+}
+/******************************end:表单部分****************************/
+/******************************start:特殊字体**************************/
+.warn{
+	color:red
+}
+.c37{color:#c30;}
+.c30 {COLOR: #000000;}
+.c31 {COLOR: #e00000;}
+.c32 {COLOR: #008000;}
+.c33 {COLOR: #808000;}
+.c34 {COLOR: #0000ff;}
+.c35 {COLOR: #d000d0;}
+.c36 {COLOR: #33a0a0;}
+.c37 {COLOR: #000000;}
+.cwhite {COLOR: #f0f0f0;}
+.b40{background-color:#ffffff;}
+.b41{background-color:#e00000;}
+.b42{background-color:#008000;}
+.b43{background-color:#808000;}
+.b44{background-color:#0000ff;}
+.b45{background-color:#d000d0;}
+.b46{background-color:#33a0a0;}
+.b47{background-color:#f0f0f0;}
+.h30{color:#666666;}
+.h31{color:#ff0000;}
+.h32{color:#00c957;}
+.h33{color:#ffd700;}
+.h34{color:#0000ff;}
+.h35{color:#ff00ff;}
+.h36{color:#40e0d0;}
+.h37{color:#000000;}
+

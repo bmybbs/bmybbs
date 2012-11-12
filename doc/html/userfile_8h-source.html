@@ -1,0 +1,220 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<title>BMY: userfile.hÊ∫êÊñá‰ª∂</title>
+<link href="doxygen.css" rel="stylesheet" type="text/css">
+<link href="tabs.css" rel="stylesheet" type="text/css">
+</head><body>
+<!-- Âà∂‰ΩúËÄÖ Doxygen 1.5.5 -->
+<script type="text/javascript">
+<!--
+function changeDisplayState (e){
+  var num=this.id.replace(/[^[0-9]/g,'');
+  var button=this.firstChild;
+  var sectionDiv=document.getElementById('dynsection'+num);
+  if (sectionDiv.style.display=='none'||sectionDiv.style.display==''){
+    sectionDiv.style.display='block';
+    button.src='open.gif';
+  }else{
+    sectionDiv.style.display='none';
+    button.src='closed.gif';
+  }
+}
+function initDynSections(){
+  var divs=document.getElementsByTagName('div');
+  var sectionCounter=1;
+  for(var i=0;i<divs.length-1;i++){
+    if(divs[i].className=='dynheader'&&divs[i+1].className=='dynsection'){
+      var header=divs[i];
+      var section=divs[i+1];
+      var button=header.firstChild;
+      if (button!='IMG'){
+        divs[i].insertBefore(document.createTextNode(' '),divs[i].firstChild);
+        button=document.createElement('img');
+        divs[i].insertBefore(button,divs[i].firstChild);
+      }
+      header.style.cursor='pointer';
+      header.onclick=changeDisplayState;
+      header.id='dynheader'+sectionCounter;
+      button.src='closed.gif';
+      section.id='dynsection'+sectionCounter;
+      section.style.display='none';
+      section.style.marginLeft='14px';
+      sectionCounter++;
+    }
+  }
+}
+window.onload = initDynSections;
+-->
+</script>
+<div class="navigation" id="top">
+  <div class="tabs">
+    <ul>
+      <li><a href="index.html"><span>È¶ñÈ°µ</span></a></li>
+      <li><a href="annotated.html"><span>Êï∞ÊçÆÁªìÊûÑ</span></a></li>
+      <li class="current"><a href="files.html"><span>Êñá‰ª∂</span></a></li>
+    </ul>
+  </div>
+<h1>userfile.h</h1><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
+<a name="l00002"></a>00002 <span class="comment"></span>
+<a name="l00003"></a>00003 <span class="comment">userfile.h</span>
+<a name="l00004"></a>00004 <span class="comment"></span>
+<a name="l00005"></a>00005 <span class="comment">Author: Tatu Ylonen &lt;ylo@cs.hut.fi&gt;</span>
+<a name="l00006"></a>00006 <span class="comment"></span>
+<a name="l00007"></a>00007 <span class="comment">Copyright (c) 1995 Tatu Ylonen &lt;ylo@cs.hut.fi&gt;, Espoo, Finland</span>
+<a name="l00008"></a>00008 <span class="comment">                   All rights reserved</span>
+<a name="l00009"></a>00009 <span class="comment"></span>
+<a name="l00010"></a>00010 <span class="comment">Created: Wed Jan 24 19:53:02 1996 ylo</span>
+<a name="l00011"></a>00011 <span class="comment"></span>
+<a name="l00012"></a>00012 <span class="comment">Functions for reading files as the real user from a program running as root.</span>
+<a name="l00013"></a>00013 <span class="comment"></span>
+<a name="l00014"></a>00014 <span class="comment">This works by forking a separate process to do the reading.</span>
+<a name="l00015"></a>00015 <span class="comment"></span>
+<a name="l00016"></a>00016 <span class="comment">*/</span>
+<a name="l00017"></a>00017 
+<a name="l00018"></a>00018 <span class="comment">/*</span>
+<a name="l00019"></a>00019 <span class="comment"> * $Log: userfile.h,v $</span>
+<a name="l00020"></a>00020 <span class="comment"> * Revision 1.1.1.1  2002/10/01 09:42:06  clearboy</span>
+<a name="l00021"></a>00021 <span class="comment"> * update on 20051031</span>
+<a name="l00022"></a>00022 <span class="comment"> * by clearboy </span>
+<a name="l00023"></a>00023 <span class="comment"> * for transfering the source codes from main site to the experimental site </span>
+<a name="l00024"></a>00024 <span class="comment"> * for the first time.</span>
+<a name="l00025"></a>00025 <span class="comment"> *</span>
+<a name="l00026"></a>00026 <span class="comment"> *</span>
+<a name="l00027"></a>00027 <span class="comment"> * Revision 1.1.1.1  2002/10/01 09:42:06  ylsdd</span>
+<a name="l00028"></a>00028 <span class="comment"> * ÀÆƒæµ◊sshbbsdµº»Î</span>
+<a name="l00029"></a>00029 <span class="comment"> * »ª∫Û¬˝¬˝∏ƒ∞…</span>
+<a name="l00030"></a>00030 <span class="comment"> *</span>
+<a name="l00031"></a>00031 <span class="comment"> * Revision 1.3  2002/08/04 11:39:44  kcn</span>
+<a name="l00032"></a>00032 <span class="comment"> * format c</span>
+<a name="l00033"></a>00033 <span class="comment"> *</span>
+<a name="l00034"></a>00034 <span class="comment"> * Revision 1.2  2002/08/04 11:08:49  kcn</span>
+<a name="l00035"></a>00035 <span class="comment"> * format C</span>
+<a name="l00036"></a>00036 <span class="comment"> *</span>
+<a name="l00037"></a>00037 <span class="comment"> * Revision 1.1.1.1  2002/04/27 05:47:26  kxn</span>
+<a name="l00038"></a>00038 <span class="comment"> * no message</span>
+<a name="l00039"></a>00039 <span class="comment"> *</span>
+<a name="l00040"></a>00040 <span class="comment"> * Revision 1.1  2001/07/04 06:07:13  bbsdev</span>
+<a name="l00041"></a>00041 <span class="comment"> * bbs sshd</span>
+<a name="l00042"></a>00042 <span class="comment"> *</span>
+<a name="l00043"></a>00043 <span class="comment"> * Revision 1.9  1997/03/26 05:36:21  kivinen</span>
+<a name="l00044"></a>00044 <span class="comment"> *      Fixed prototypes.</span>
+<a name="l00045"></a>00045 <span class="comment"> *</span>
+<a name="l00046"></a>00046 <span class="comment"> * Revision 1.8  1997/03/19 17:53:56  kivinen</span>
+<a name="l00047"></a>00047 <span class="comment"> *      Added USERFILE_GET_DES_1_MAGIC_PHRASE.</span>
+<a name="l00048"></a>00048 <span class="comment"> *</span>
+<a name="l00049"></a>00049 <span class="comment"> * Revision 1.7  1996/10/29 22:48:43  kivinen</span>
+<a name="l00050"></a>00050 <span class="comment"> *      Removed userfile_local_socket_connect and userfile_send</span>
+<a name="l00051"></a>00051 <span class="comment"> *      prototypes.</span>
+<a name="l00052"></a>00052 <span class="comment"> *</span>
+<a name="l00053"></a>00053 <span class="comment"> * Revision 1.6  1996/09/08 17:21:07  ttsalo</span>
+<a name="l00054"></a>00054 <span class="comment"> *      A lot of changes in agent-socket handling</span>
+<a name="l00055"></a>00055 <span class="comment"> *</span>
+<a name="l00056"></a>00056 <span class="comment"> * Revision 1.5  1996/09/04 12:40:00  ttsalo</span>
+<a name="l00057"></a>00057 <span class="comment"> *      Added connecting to unix-domain socket</span>
+<a name="l00058"></a>00058 <span class="comment"> *</span>
+<a name="l00059"></a>00059 <span class="comment"> * Revision 1.4  1996/08/13 09:04:20  ttsalo</span>
+<a name="l00060"></a>00060 <span class="comment"> *      Home directory, .ssh and .ssh/authorized_keys are now</span>
+<a name="l00061"></a>00061 <span class="comment"> *      checked for wrong owner and group &amp; world writeability.</span>
+<a name="l00062"></a>00062 <span class="comment"> *</span>
+<a name="l00063"></a>00063 <span class="comment"> * Revision 1.3  1996/05/29 07:42:02  ylo</span>
+<a name="l00064"></a>00064 <span class="comment"> *      Updated prototype of userfile_init.</span>
+<a name="l00065"></a>00065 <span class="comment"> *</span>
+<a name="l00066"></a>00066 <span class="comment"> * Revision 1.2  1996/02/18 21:49:10  ylo</span>
+<a name="l00067"></a>00067 <span class="comment"> *      Added userfile_close_pipes.</span>
+<a name="l00068"></a>00068 <span class="comment"> *</span>
+<a name="l00069"></a>00069 <span class="comment"> * Revision 1.1.1.1  1996/02/18 21:38:10  ylo</span>
+<a name="l00070"></a>00070 <span class="comment"> *      Imported ssh-1.2.13.</span>
+<a name="l00071"></a>00071 <span class="comment"> *</span>
+<a name="l00072"></a>00072 <span class="comment"> * $EndLog$</span>
+<a name="l00073"></a>00073 <span class="comment"> */</span>
+<a name="l00074"></a>00074 
+<a name="l00075"></a>00075 <span class="preprocessor">#ifndef USERFILE_H</span>
+<a name="l00076"></a>00076 <span class="preprocessor"></span><span class="preprocessor">#define USERFILE_H</span>
+<a name="l00077"></a>00077 <span class="preprocessor"></span>
+<a name="l00078"></a>00078 <span class="keyword">typedef</span> <span class="keyword">struct </span>UserFile *UserFile;
+<a name="l00079"></a>00079 
+<a name="l00080"></a>00080 <span class="comment">/* Initializes reading as a user.  Before calling this, I/O may only be</span>
+<a name="l00081"></a>00081 <span class="comment">   performed as the user that is running the current program (current</span>
+<a name="l00082"></a>00082 <span class="comment">   effective uid).  SIGPIPE should be set to ignored before this call.</span>
+<a name="l00083"></a>00083 <span class="comment">   The cleanup callback will be called in the child before switching to the</span>
+<a name="l00084"></a>00084 <span class="comment">   user's uid.  The callback may be NULL. */</span>
+<a name="l00085"></a>00085 <span class="keywordtype">void</span> userfile_init(<span class="keyword">const</span> <span class="keywordtype">char</span> *username, uid_t uid, gid_t gid, <span class="keywordtype">void</span> (*cleanup_callback) (<span class="keywordtype">void</span> *), <span class="keywordtype">void</span> *context);
+<a name="l00086"></a>00086 
+<a name="l00087"></a>00087 <span class="comment">/* Stops reading files as an ordinary user.  It is not an error to call this</span>
+<a name="l00088"></a>00088 <span class="comment">   even if userfile_init has not been called. */</span>
+<a name="l00089"></a>00089 <span class="keywordtype">void</span> userfile_uninit(<span class="keywordtype">void</span>);
+<a name="l00090"></a>00090 
+<a name="l00091"></a>00091 <span class="comment">/* Closes any pipes the userfile might have open.  This should be called after</span>
+<a name="l00092"></a>00092 <span class="comment">   every fork. */</span>
+<a name="l00093"></a>00093 <span class="keywordtype">void</span> userfile_close_pipes(<span class="keywordtype">void</span>);
+<a name="l00094"></a>00094 
+<a name="l00095"></a>00095 <span class="comment">/* Opens a file using the given uid.  The uid must be either the current</span>
+<a name="l00096"></a>00096 <span class="comment">   effective uid (in which case userfile_init need not have been called) or</span>
+<a name="l00097"></a>00097 <span class="comment">   the uid passed to a previous call to userfile_init.  Returns a pointer</span>
+<a name="l00098"></a>00098 <span class="comment">   to a structure, or NULL if an error occurred.  The flags and mode arguments</span>
+<a name="l00099"></a>00099 <span class="comment">   are identical to open(). */</span>
+<a name="l00100"></a>00100 UserFile userfile_open(uid_t uid, <span class="keyword">const</span> <span class="keywordtype">char</span> *path, <span class="keywordtype">int</span> flags, mode_t mode);
+<a name="l00101"></a>00101 
+<a name="l00102"></a>00102 <span class="comment">/* Closes the userfile handle.  Returns &gt;= 0 on success, and &lt; 0 on error. */</span>
+<a name="l00103"></a>00103 <span class="keywordtype">int</span> userfile_close(UserFile f);
+<a name="l00104"></a>00104 
+<a name="l00105"></a>00105 <span class="comment">/* Returns the next character from the file (as an unsigned integer) or -1</span>
+<a name="l00106"></a>00106 <span class="comment">   if an error is encountered. */</span>
+<a name="l00107"></a>00107 <span class="keywordtype">int</span> userfile_getc(UserFile f);
+<a name="l00108"></a>00108 
+<a name="l00109"></a>00109 <span class="comment">/* Reads data from the file.  Returns as much data as is the buffer</span>
+<a name="l00110"></a>00110 <span class="comment">   size, unless end of file is encountered.  Returns the number of bytes</span>
+<a name="l00111"></a>00111 <span class="comment">   read, 0 on EOF, and -1 on error. */</span>
+<a name="l00112"></a>00112 <span class="keywordtype">int</span> userfile_read(UserFile f, <span class="keywordtype">void</span> *buf, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> len);
+<a name="l00113"></a>00113 
+<a name="l00114"></a>00114 <span class="comment">/* Writes data to the file.  Writes all data, unless an error is encountered.</span>
+<a name="l00115"></a>00115 <span class="comment">   Returns the number of bytes actually written; -1 indicates error. */</span>
+<a name="l00116"></a>00116 <span class="keywordtype">int</span> userfile_write(UserFile f, <span class="keyword">const</span> <span class="keywordtype">void</span> *buf, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> len);
+<a name="l00117"></a>00117 
+<a name="l00118"></a>00118 <span class="comment">/* Reads a line from the file.  The line will be null-terminated, and</span>
+<a name="l00119"></a>00119 <span class="comment">   will include the newline.  Returns a pointer to the given buffer,</span>
+<a name="l00120"></a>00120 <span class="comment">   or NULL if no more data was available.  If a line is too long,</span>
+<a name="l00121"></a>00121 <span class="comment">   reads as much as the buffer can accommodate (and null-terminates</span>
+<a name="l00122"></a>00122 <span class="comment">   it).  If the last line of the file does not terminate with a</span>
+<a name="l00123"></a>00123 <span class="comment">   newline, returns the line, null-terminated, but without a</span>
+<a name="l00124"></a>00124 <span class="comment">   newline. */</span>
+<a name="l00125"></a>00125 <span class="keywordtype">char</span> *userfile_gets(<span class="keywordtype">char</span> *buf, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> size, UserFile f);
+<a name="l00126"></a>00126 
+<a name="l00127"></a>00127 <span class="comment">/* Performs lseek() on the given file. */</span>
+<a name="l00128"></a>00128 off_t userfile_lseek(UserFile uf, off_t offset, <span class="keywordtype">int</span> whence);
+<a name="l00129"></a>00129 
+<a name="l00130"></a>00130 <span class="comment">/* Creates a directory using the given uid. */</span>
+<a name="l00131"></a>00131 <span class="keywordtype">int</span> userfile_mkdir(uid_t uid, <span class="keyword">const</span> <span class="keywordtype">char</span> *path, mode_t mode);
+<a name="l00132"></a>00132 
+<a name="l00133"></a>00133 <span class="comment">/* Performs stat() using the given uid. */</span>
+<a name="l00134"></a>00134 <span class="keywordtype">int</span> userfile_stat(uid_t uid, <span class="keyword">const</span> <span class="keywordtype">char</span> *path, <span class="keyword">struct</span> stat *st);
+<a name="l00135"></a>00135 
+<a name="l00136"></a>00136 <span class="comment">/* Performs remove() using the given uid. */</span>
+<a name="l00137"></a>00137 <span class="keywordtype">int</span> userfile_remove(uid_t uid, <span class="keyword">const</span> <span class="keywordtype">char</span> *path);
+<a name="l00138"></a>00138 
+<a name="l00139"></a>00139 <span class="comment">/* Performs popen() on the given uid; returns a file from where the output</span>
+<a name="l00140"></a>00140 <span class="comment">   of the command can be read (type == "r") or to where data can be written</span>
+<a name="l00141"></a>00141 <span class="comment">   (type == "w"). */</span>
+<a name="l00142"></a>00142 UserFile userfile_popen(uid_t uid, <span class="keyword">const</span> <span class="keywordtype">char</span> *command, <span class="keyword">const</span> <span class="keywordtype">char</span> *type);
+<a name="l00143"></a>00143 
+<a name="l00144"></a>00144 <span class="comment">/* Performs pclose() on the given uid.  Returns &lt;0 if an error occurs. */</span>
+<a name="l00145"></a>00145 <span class="keywordtype">int</span> userfile_pclose(UserFile uf);
+<a name="l00146"></a>00146 
+<a name="l00147"></a>00147 <span class="comment">/* Check owner and permissions of a given file/directory.</span>
+<a name="l00148"></a>00148 <span class="comment">   Permissions ----w--w- must not exist and owner must be either</span>
+<a name="l00149"></a>00149 <span class="comment">   pw-&gt;pw_uid or root. Return value: 0 = not ok, 1 = ok */</span>
+<a name="l00150"></a>00150 <span class="keywordtype">int</span> userfile_check_owner_permissions(<span class="keyword">struct</span> passwd *pw, <span class="keyword">const</span> <span class="keywordtype">char</span> *path);
+<a name="l00151"></a>00151 
+<a name="l00152"></a>00152 <span class="comment">/* Encapsulate a normal file descriptor inside a struct UserFile */</span>
+<a name="l00153"></a>00153 UserFile userfile_encapsulate_fd(<span class="keywordtype">int</span> fd);
+<a name="l00154"></a>00154 
+<a name="l00155"></a>00155 <span class="comment">/* Get sun des 1 magic phrase, return NULL if not found */</span>
+<a name="l00156"></a>00156 <span class="keywordtype">char</span> *userfile_get_des_1_magic_phrase(uid_t uid);
+<a name="l00157"></a>00157 
+<a name="l00158"></a>00158 <span class="preprocessor">#endif                          </span><span class="comment">/* USERFILE_H */</span>
+</pre></div></div>
+<hr size="1"><address style="text-align: right;"><small>Generated at Fri Aug 29 10:29:24 2008 for BMY by&nbsp;
+<a href="http://www.doxygen.org/index.html">
+<img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.5 </small></address>
+</body>
+</html>

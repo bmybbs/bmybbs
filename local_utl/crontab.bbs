@@ -1,0 +1,30 @@
+TERM=ansi                                                                       
+3 */2 * * * /home/bbs/bin/autoundeny> /home/bbs/0Announce/bbslist/autoundeny
+*/5 * * * * /home/bbs/bin/upnew >> /home/bbs/reclog/uptime.log
+56 * * * * /home/bbs/bin/averun /home/bbs/reclog/uptime.log;/bin/rm /home/bbs/reclog/uptime.log
+5 00 * * * /bin/cp /home/bbs/0Announce/bbslist/countusr /home/bbs/0Announce/bbslist/countusr.last
+5 00 * * * /bin/cp /home/bbs/0Announce/bbslist/board2 /home/bbs/0Announce/bbslist/board2.last
+5 00 * * * /bin/cp -af /home/bbs/0Announce/bbslist/today /home/bbs/0Announce/bbslist/yesterday;/bin/rm /home/bbs/reclog/ave.src
+0 0 * * * (/home/bbs/bin/bbstop /home/bbs 50 1 > /home/bbs/0Announce/bbslist/toplogin)
+0 0 * * * (/home/bbs/bin/bbstop /home/bbs 50 2 > /home/bbs/0Announce/bbslist/toppost)
+0 0 * * * (/home/bbs/bin/bbstop /home/bbs 50 3 > /home/bbs/0Announce/bbslist/topstay)
+0 0 * * * (/home/bbs/bin/bbstop /home/bbs 50 4 > /home/bbs/0Announce/bbslist/topall)
+10 * * * * (/home/bbs/bin/poststat /home/bbs)
+# 15 * * * * (/home/bbs/bin/usage 0 ; /home/bbs/bin/usage 1)
+# 0 * * * * /home/bbs/bin/newacct
+59 23 * * * /bin/mv /home/bbs/0Announce/bbslist/newacct.today /home/bbs/0Announce/bbslist/newacct.last
+10 * * * * /home/bbs/bin/newtop10 -a &> /dev/null
+53 9 * * * /home/bbs/bin/clear_attach
+*/20 * * * * /home/bbs/bin/save_brc &>/dev/null
+*/20 * * * * /home/bbs/bin/bbsstatlog &> /dev/null
+30 23 * * * /home/bbs/bin/newboards
+0 12 * * * /home/bbs/bin/nbstat b 1
+0 12 * * mon /home/bbs/bin/nbstat m 7
+0 12 * * * /home/bbs/bin/nbstat u 1
+0 12 * * * /home/bbs/bin/nbstat s 7
+# 0,15,30,45 * * * * /home/bbs/innd/bbsnnrp news.zixia.net /home/bbs/inndlog/cnnews.active>/dev/null 2>&1
+* * * * * /home/bbs/innd/bbslink /home/bbs >/home/bbs/tmp/portnum
+5 * * * * (/home/bbs/bin/newsday.sh)
+0 3 * * * /home/bbs/bin/auto_rm_junk &>/dev/null; /home/bbs/bin/find_rm_lost &>/dev/null
+0 3 * * 1 (/home/bbs/bin/annIndex)
+0 3 * * 3 (/home/bbs/bin/anall)

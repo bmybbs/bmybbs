@@ -1,0 +1,6 @@
+to install softwares:
+modify Makefile, change CPU type from pentium3 to your CPU type (maybe i686 or i386 ?)
+make installhttpd
+make installfcgidev
+make installnewt
+make installghthash 

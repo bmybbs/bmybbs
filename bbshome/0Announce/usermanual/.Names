@@ -1,0 +1,67 @@
+#
+# Title=本站使用者手册
+#
+Name=老鸟的忠告．．．                       SYSOP 
+Path=~/advice
+Numb=1
+#
+Name=如何完成本站的电子信箱验证手续         SYSOP 
+Path=~/register
+Numb=2
+#
+Name=本站三个数字的意义                     SYSOP 
+Path=~/value
+Numb=3
+#
+Name=[MODEM] Telix 上 BBS 常见问题解答      SYSOP 
+Path=~/telix
+Numb=4
+#
+Name=步入 The Hibiscus Realm 的世界         SYSOP 
+Path=~/enterbbs
+Numb=5
+#
+Name=0Digest - 本站精华所在                 SYSOP 
+Path=~/Digest
+Numb=6
+#
+Name=1BoardMenu - 传统的讨论区选单          SYSOP 
+Path=~/boardmenu
+Numb=7
+#
+Name=EGroup - 分类讨论区                    SYSOP 
+Path=~/EGroup
+Numb=8
+#
+Name=Boards - 阅览讨论区                    SYSOP 
+Path=~/Boards
+Numb=9
+#
+Name=Mail - 您处理私人信件的地方            SYSOP 
+Path=~/Mail
+Numb=10
+#
+Name=Talk - 谈天说地.....                   SYSOP 
+Path=~/Talk
+Numb=11
+#
+Name=Service - 特别服务                     SYSOP 
+Path=~/Service
+Numb=12
+#
+Name=InfoEdit - 您的个人工具箱              SYSOP 
+Path=~/InfoEdit
+Numb=13
+#
+Name=Config - 有关本站的资讯                SYSOP 
+Path=~/Config
+Numb=14
+#
+Name=Help - 辅助画面设定                    SYSOP 
+Path=~/Help
+Numb=15
+#
+Name=Goodbye - 离开本站                     SYSOP 
+Path=~/Goodbye
+Numb=16
+#

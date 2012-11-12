@@ -1,0 +1,21 @@
+BODY {FONT-SIZE: 14px;}
+A {TEXT-DECORATION: none;}
+A:HOVER {COLOR: #ff0000;}
+TABLE.BODY {BORDER: 2px solid; BORDER-COLOR: d0f0c0;}
+BODY {BACKGROUND-COLOR: #000000; FONT-SIZE: 14px;}
+TABLE,TH,TD,P,INPUT,TEXTAREA,SELECT {FONT-SIZE: 14px;}
+
+FONT.c30 {font-size: 14px; COLOR: 000000;}
+FONT.c31 {font-size: 14px; COLOR: f03030;}
+FONT.c32 {font-size: 14px; COLOR: 30f030;}
+FONT.c33 {font-size: 14px; COLOR: d0d000;}
+FONT.c34 {font-size: 14px; COLOR: 3030f0;}
+FONT.c35 {font-size: 14px; COLOR: d000d0;}
+FONT.c36 {font-size: 14px; COLOR: 66d0d0;}
+FONT.c37 {font-size: 14px; COLOR: d0d0d0;}
+FONT.c99 {font-size: 42px;}
+
+HIDE1 {DISPLAY: none;}
+HIDE0 {DISPLAY: block;}
+
+FONT.p12 {FONT-SIZE: 12px}

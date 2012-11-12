@@ -1,0 +1,19 @@
+#
+# Title=一塌糊涂 BBS 精华区公布栏
+#
+Name=本站使用者手册
+Path=~/usermanual
+Numb=1
+#
+Name=讨论区精华
+Path=~/groups
+Numb=2
+#
+Name=本站各类数据统计
+Path=~/bbslist
+Numb=3
+#
+Name=闲人免进区 - 限站长进入               (BM: SYSOPS)
+Path=~/sysops
+Numb=4
+#

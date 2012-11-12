@@ -1,0 +1,55 @@
+#!/usr/local/bin/perl
+#
+# expirepost
+
+($bbshome, $sysdays, $maxp, $minp) = @ARGV;
+
+$inndhome    = "$bbshome/inndlog";
+$inndbinhome = "$bbshome/innd";
+$bbspost     = "$inndbinhome/bbspost";
+
+if( $sysdays < 2 ) {
+    print "Usage: expirepost bbs-path days max-posts min-posts\n";
+} elsif( ! -d "$bbshome/boards" ) {
+    print "Invalid bbs-path: $bbshome\n";
+} else {
+    &expire();
+}
+
+sub expire
+{
+    open( FN, "$inndhome/expire.ctl" );
+    while( <FN> ) {
+	($brd, $days, $max, $min) = split( /\s+/, $_ );
+	if( $days >= 2 ) {
+	    $expire{ $brd } = "$days $max $min";
+	}
+    }
+    close( FN );
+    opendir( BRD, "$bbshome/boards" );
+    while( $board = readdir( BRD ) ) {
+	if( -f "$bbshome/boards/$board/.DIR" ) {
+	    ($days, $max, $min) = split( " ", $expire{ $board } );
+	    if( $days < 2 ) {
+		$days = $sysdays;
+	    }
+	    if( !$max ) {  $max = $maxp; }
+	    if( !$min ) {  $min = $minp; }
+	    open( FN, "$bbspost expire $bbshome $board $days $max $min |" );
+	    while( <FN> ) {
+		chop;
+		if( index( $_, "Unlink " ) == 0 ) {
+		    $filename = substr( $_, 7 );
+		    $filepath = "$bbshome/boards/$board/$filename";
+		    unlink( $filepath );
+		    print "remove $board\t$filename\n";
+		} else {
+		    print "$_\n";
+		}
+	    }
+	    close( FN );
+	}
+    }
+    closedir( BOARD );
+}
+

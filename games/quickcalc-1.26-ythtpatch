@@ -1,0 +1,100 @@
+diff -c quickcalc-1.26/parse.l quickcalc-1.26-ylsdd/parse.l
+*** quickcalc-1.26/parse.l	Thu Aug 24 22:18:41 2000
+--- quickcalc-1.26-ylsdd/parse.l	Fri Oct 18 18:35:41 2002
+***************
+*** 32,37 ****
+--- 32,38 ----
+  {OPF}[ \t]*")"			|
+  "("[ \t]*{OPN}			|
+  {OPF}[ \t]*{OPN}+		|
++ [0-9a-z]+(([ \t])+)[0-9a-z%]+     | 
+  [0-9.e]+(([ \t])+)[0-9a-z]+	| 
+  "!"([ \t])*[0-9a-z"("]+	{
+    Error( ERSYNTAX );
+diff -c quickcalc-1.26/qc.c quickcalc-1.26-ylsdd/qc.c
+*** quickcalc-1.26/qc.c	Thu Aug 24 22:18:06 2000
+--- quickcalc-1.26-ylsdd/qc.c	Fri Oct 18 19:00:32 2002
+***************
+*** 1,5 ****
+  /*  
+!     Quick Calc: A calculator that takes long commands, ex: 5+5*6/32
+      Copyright (C) 1996 Robert Palmbos
+  
+      This program is free software; you can redistribute it and/or modify
+--- 1,5 ----
+  /*  
+!     Quick Calc: A calculator that takes long commands, ex : 5+5*6/32
+      Copyright (C) 1996 Robert Palmbos
+  
+      This program is free software; you can redistribute it and/or modify
+***************
+*** 371,378 ****
+  
+  void help( void )
+  {
+! 	char choice[25];
+! 	int len;
+  	
+  	puts("***********This help is very brief!**************");
+  	puts("These topics are available:                      ");
+--- 371,377 ----
+  
+  void help( void )
+  {
+! 	char *choice;
+  	
+  	puts("***********This help is very brief!**************");
+  	puts("These topics are available:                      ");
+***************
+*** 395,404 ****
+  	puts("      set       : setting operating parameters   ");
+  	puts("      edit      : command line editing           ");
+  	puts("Typing quit or exit will leave the program.      ");
+! 	fputs( "help topic: ", stdout );
+! 	fgets( choice, 25, stdin );
+! 	len = strlen( choice );
+! 	choice[--len] = '\0';
+  	if( strstr( choice, "op" ) )
+  	{
+  		puts(" x + y : add two numbers       ");
+--- 394,405 ----
+  	puts("      set       : setting operating parameters   ");
+  	puts("      edit      : command line editing           ");
+  	puts("Typing quit or exit will leave the program.      ");
+! 	fflush(stdout);
+! 	choice = readline("help topic: ");
+! 	if(!choice)
+! 		exit(0);
+! 	if(strlen(choice)>2)
+! 		choice[2]=0;
+  	if( strstr( choice, "op" ) )
+  	{
+  		puts(" x + y : add two numbers       ");
+***************
+*** 469,476 ****
+  	{
+  		puts(" There are only currently two builtin constants, email ");
+  		puts(" me if you have other suggestions.                     ");
+! 		puts(" %pi : 3.141592...                                     ");
+! 		puts(" %e : 2.7182818...                                     ");
+  	}
+  	if( strstr( choice, "set" ) )
+  	{
+--- 470,477 ----
+  	{
+  		puts(" There are only currently two builtin constants, email ");
+  		puts(" me if you have other suggestions.                     ");
+! 		puts(" %%pi : 3.141592...                                     ");
+! 		puts(" %%e : 2.7182818...                                     ");
+  	}
+  	if( strstr( choice, "set" ) )
+  	{
+***************
+*** 487,491 ****
+--- 488,493 ----
+  		puts(" next.  Multiple commands can be separated with a ';' and");
+  		puts(" lines can be continued with an '\\'.                    ");
+  	}
++ 	free( choice );
+  }
+  
