@@ -1,0 +1,31 @@
+1.一连接上之后就断线退出
+	
+    1.1 如果系统上可以找到mysql的支持环境,缺省情形下系统会编译进文章评价功能的代码.
+请使用命令ldd bbs查看是否能找到mysqlclient这个动态库.如果不能找到,请编辑/etc/ld.so.conf
+加上mysql的库目录,然后运行ldconfig
+    1.2 如果系统以前安装运行过bbs,确认以前的shm已经清理干净了,如果使用bash,可以用以
+下命令清除所有属主为bbs的shm
+	for i in `ipcs|grep bbs|awk '{print $2}'`;do ipcrm shm $i;done
+
+2.到注册用户,输入密码后就断线退出
+
+    确认系统安装了支持des的crypt库.有些系统,比如slackware,如果在安装时候没有选择des加密
+库,就会发生这个情况.
+
+3.编译时候报告不能 -lmysql
+
+   确认系统安装了MySQL的开发包,如果是使用rpm安装,确保安装了以下rpm:
+   MySQL-client-3.xx..
+   MySQL-3.xx..
+   MySQL-shared-3.xx..
+   MySQL-devel-3.xx..
+
+4.www一连接报告uid gid error.
+   
+   可以直接修改apache的配置文件,让apache以bbs用户的身份运行
+   或者chown bbs.nobody www;chmod 4755 www
+
+5.编译时报告找不到cproto
+
+    确认系统安装了cproto,如果是使用rpm安装,确保安装了以下rpm:
+    cproto-4.xx..

@@ -1,0 +1,65 @@
+
+README
+------
+
+This the quick installation guide for Firebird BBS ytht version
+
+The installation document and administration guide is in
+doc
+
+This BBS has been tested on x86 machine running redhat linux 6.2.
+It should run on any linux system.
+It perhaps will run on other Unix system.
+
+For impatient users,
+
+1. add a user named bbs on your system
+	
+   on redhat linux,just run: adduser bbs 	
+
+2. edit /etc/passwd,change the uid and gid of the user bbs to 9999 and 99
+
+   now your passwd file looks like this:
+
+   bbs:x:9999:99::/home/bbs:/bin/bash
+
+   after this,you can run: chown 9999.99 /home/bbs -R 
+
+3. Set the password for "bbs"
+
+3.5
+   edit site/bbsconfig.sample and save it as site/bbsconfig
+   edit site/seclist.txt.sample and save it as site/seclist.txt
+   if you don't know what these mean,you can just copy bbsconfig.sample to bbsconfig...
+
+3.6
+   if you get souce code from our cvs
+   you should run ./makedist.sh
+   if it complain can't find the directory of autoconf or automake
+   you can link your auto* program to the name automake or autoconf
+
+4. Run the following commands to install bbs
+
+   ./configure --with-defaults  #if you don't want to change the default value
+   make
+   make install
+
+5. Run the standlone bbs daemon
+
+   /home/bbs/bin/bbsd
+
+6. try it
+ 
+   telnet localhost
+
+7. It is hoped that you could see the BBS 'welcome' message then. Login as
+   'new' and create the 'SYSOP' account (case sensitive). This account will
+   acquire full permissions in your BBS.
+
+
+8. Login as 'new' and  Create the 'guest' account. Or if you want to disable 'guest', add
+   'guest' to the list of ~bbs/.badname
+
+
+9. The web interface code is in nju directory.you can run it as fastcgi or as normal cgi
+   In both cases you must edit your httpd.conf let it support url_rewrite
