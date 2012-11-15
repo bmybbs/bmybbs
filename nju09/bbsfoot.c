@@ -1,6 +1,7 @@
 #include "bbslib.h"
 
 
+
 struct user_info *
 query_f(int uid)
 {
@@ -27,29 +28,66 @@ query_f(int uid)
 	}
 	return 0;
 }
-//Add by liuche 20120616
 
+//Add by liuche 20120616
 void footInfo(){
 	char buf[1030],buf2[1030];
 	FILE *fp2;
-
+	char *id = "guest";
+	char initial[2] = "G/"; //tou wen zi :)
+	char path[200];     //path of GoodWish
+    	if (loginok) {
+		id = currentuser.userid;
+	}
+	initial[0] = id[0];
+	if(initial[0]>='a' && initial[0]<='z')
+		initial[0] += 'A'-'a';
+	path[0] = 0;
+	strcat(path,MY_BBS_HOME "/home/");
+	strcat(path,initial);
+	strcat(path,id);
+	strcat(path,"/GoodWish");
 	printf("<span id=\'foot_msg\' style=\"position:fixed;padding:0; margin-left:5px;overflow:hidden;\">\n");
-	printf("    <MARQUEE scrollAmount=1 scrollDelay=180 direction=up  height=17 onmouseover= \"this.stop(); \"   onmouseout= \"this.start()\";>\n");
-	printf("    <align=left>\n");
+	printf("    <font style=\"font-size:12px\" color=#ff6600>\n");
+	printf("    <ul id=\"msg_contain\" style=\"padding:0;margin-top:0px; height:18px;overflow:hidden; \">\n");
+	
 	fp2 = fopen(MY_BBS_HOME "/etc/endline", "r");
 	if (fp2 != 0) 
 	{
 		while(fgets(buf, 1030, fp2) != NULL)
 		{
 			buf[strlen(buf) - 1] = 0;
-			hsprintf(buf2,buf);
-			printf("    %s<BR><BR>\n",buf2);
+			NHsprintf(buf2,buf);
+			printf("    <li>[BMY信息]: %s</li>\n",buf2);
 		}
 		fclose(fp2);
 	}
-	printf("    </MARQUEE>\n");
-	printf("</span>\n");
+	fp2 = fopen(path,"r");
+	//printf("    <li>[GoodWishes]: %s</li>\n",path); for debug
+	if (fp2 != 0) 
+	{
+		while(fgets(buf, 1030, fp2) != NULL)
+		{
+			buf[strlen(buf) - 1] = 0;
+			NHsprintf(buf2,buf);
+			printf("    <li>[给你的祝福]: %s</li>\n",buf2);
+		}
+		fclose(fp2);
+	}
 
+	printf("    </ul>\n");
+	printf("    </font>\n");
+	printf("</span>\n");
+	printf("<SCRIPT Language=\"JavaScript\">\n");
+	printf("function changeMsg(){\n");
+	printf("    var container = document.getElementById(\"msg_contain\");\n");
+	printf("    var now = new Date()\n");
+	printf("    var repeat = now.getSeconds()%5;\n");
+	printf("    while(repeat--)\n");
+	printf("        container.insertBefore(container.lastChild,container.firstChild);\n");
+	printf("}\n");
+	printf("setInterval(\"changeMsg()\",10000);\n");
+	printf("</SCRIPT>\n");
 }
 
 int
