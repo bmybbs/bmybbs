@@ -3230,3 +3230,133 @@ char to_hex(char code) {
   return hex[code & 15];
 }
 
+//not high light Add by liuche 20121112
+void
+NHsprintf(char *s, char *s0)
+{
+	char ansibuf[80], buf2[80];
+	char *tmp;
+	int c, bold, m, i, len, lsp = -1;
+	len = 0;
+	bold = 0;
+	for (i = 0; (c = s0[i]); i++) {
+		switch (c) {
+		case '\\':
+			if (quote_quote)
+				strnncpy2(s, &len, "\\\\", 2);
+			else
+				s[len++] = c;
+			break;
+		case '$':
+			/*errlog("usingMath=%d withinMath=%d", usingMath, withinMath);*/
+			if (usingMath && !withinMath) {
+				strnncpy2(s, &len, "<span class=math>", 17);
+				withinMath = 1;
+			} else if (usingMath && withinMath == 1) {
+				strnncpy2(s, &len, "</span>", 7);
+				withinMath = 0;
+			} else 
+				s[len++] = c;
+			break;
+		case '"':
+			if (usingMath && !withinMath && s0[i + 1] == '[') {
+				strnncpy2(s, &len, "<div class=math>", 16); 
+				i++;
+				withinMath = 2;
+			} else if (usingMath && withinMath == 2 && s0[i + 1] == ']') {
+				strnncpy2(s, &len, "</div>", 6);
+				i++;
+				withinMath = 0;
+			} else if (usingMath && s0[i + 1] == '$') {
+				s[len++] = '$';
+				i++;
+			} else if (quote_quote)
+				strnncpy2(s, &len, "\\\"", 2);
+			else
+				s[len++] = c;
+			break;
+		case '&':
+			strnncpy2(s, &len, "&amp;", 5);
+			break;
+		case '<':
+			strnncpy2(s, &len, "&lt;", 4);
+			break;
+		case '>':
+			strnncpy2(s, &len, "&gt;", 4);
+			break;
+		case ' ':
+			if (lsp != i - 1) {
+				s[len++] = c;
+				lsp = i;
+			} else {
+				strnncpy2(s, &len, "&nbsp;", 6);
+			}
+			break;
+		case '\r':
+			break;
+		case '\n':
+			if (withinMath) {
+				s[len++]=' ';
+				break;
+			}
+			if (quote_quote)
+				strnncpy2(s, &len, " \\\n<br>", 7);
+			else if (!istitle)
+				strnncpy2(s, &len, "\n<br>", 5);
+			break;
+		case '\033':
+			if (s0[i + 1] != '[')
+				continue;
+			for (m = i + 2; s0[m] && m < i + 24; m++)
+				if (strchr("0123456789;", s0[m]) == 0)
+					break;
+			strsncpy(ansibuf, &s0[i + 2], m - (i + 2) + 1);
+			i = m;
+			if (s0[i] != 'm')
+				continue;
+			if (strlen(ansibuf) == 0) {
+				bold = 0;
+				//strnncpy2(s, &len, "</font><font class=b40><font class=c37>",
+					  //39);//23
+			}
+			tmp = strtok(ansibuf, ";");
+			while (tmp) {
+				c = atoi(tmp);
+				tmp = strtok(0, ";");
+				if (c == 1)
+					bold = 1;
+				if (c == 0) {
+					//strnncpy2(s, &len,
+						  //"</font><font class=b40><font class=c37>",
+						  //39);//23
+					bold = 0;
+				}
+				if (c >= 30 && c <= 37) {
+					if (bold == 1) {
+						//sprintf(buf2,
+							//"<font class=h%d>",
+							//c);//</font>
+						//strnncpy2(s, &len, buf2, 16);//23
+					}
+					if (bold == 0) {
+						//sprintf(buf2,
+							//"<font class=c%d>",
+							//c);//</font>
+						//strnncpy2(s, &len, buf2, 16);//23
+					}
+				}
+				if (c >= 40 && c <= 47){
+					//sprintf(buf2,
+						//"<font class=b%d>",
+						//c);//</font>
+					//strnncpy2(s, &len, buf2, 16);//23
+				}
+			}
+			break;
+		default:
+			s[len++] = c;
+		}
+	}
+	s[len] = 0;
+}
+

@@ -224,3 +224,5 @@ void json_header();
 void sstrcat(char *s, const char *format, ...);
 
 char* showByDefMode();
+//not high light Add by liuche 20121112
+void NHsprintf(char *s, char *s0);
