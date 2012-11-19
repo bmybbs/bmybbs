@@ -36,7 +36,8 @@ bbspst_main()
 	html_header(1);
 	check_msg();
 	strsncpy(board, getparm("B"), 32);
-	if(strcmp(board, "welcome")){	///modify by mintbaggio 040614 for guest post at board "welcome"
+	if(strcmp(board, "welcome")  &&
+	   strcmp(board, "kaoyan")){	///modify by mintbaggio 040614 for guest post at board "welcome" + "kaoyan"(by wsf)
 		if (!loginok) {
 			printf("<script src=/function.js></script>\n");
 			printf("匆匆过客不能发表文章，请先登录!<br><br>");
@@ -99,7 +100,8 @@ bbspst_main()
 	}
 	if (noadm4political(board))
 		http_fatal("对不起,因为没有版面管理人员在线,本版暂时封闭.");
-	if(strcmp(board, "welcome")){	//add by mintbaggio 040614 for guest post at "welcome"
+	if(strcmp(board, "welcome") &&
+	   strcmp(board, "kaoyan")){	//add by mintbaggio 040614 for guest post at "welcome" + "kaoyan"(by wsf)
 		if (isguest && !guestre) {
 			printf("<script src=/function.js></script>\n");
 			printf("匆匆过客不能发表文章，请先登录!<br><br>");

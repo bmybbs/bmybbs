@@ -1943,7 +1943,9 @@ post_article(struct fileheader *sfh)
 			mailback = 1;
 	}
 	modify_user_mode(POSTING);
-	if (! ((strcmp(currboard, "welcome") == 0) && (strcmp(currentuser.userid, "guest") == 0)))
+	if (! ((strcmp(currboard, "welcome") == 0) 
+	    || (strcmp(currboard, "kaoyan") == 0) 
+		&& (strcmp(currentuser.userid, "guest") == 0)))
 	{
 		if (!haspostperm(currboard))
 		{
@@ -1990,7 +1992,7 @@ post_article(struct fileheader *sfh)
 		}
 		if (deny_me_global()
 				&& strcmp(currboard, "sysop") && strcmp(currboard, "committee")
-				&& strcmp(currboard, "welcome")
+				&& strcmp(currboard, "welcome") && strcmp(currboard, "kaoyan")
 				&& strcmp(currboard, "Appeal") && !HAS_PERM(PERM_SYSOP))
 		{
 			move(3, 0);
