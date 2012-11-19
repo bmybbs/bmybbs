@@ -123,6 +123,19 @@ bbsleft_main()
 	//by bjgyt printf
 	/*printf("<tr><td align=right valign=top> <img src=\"/images/bmy_arrowblank.gif\" width=6 height=5></td>\n
 		<td><a target=f3 href=\"bbsshownav?a1=class&a2=all\" class=1100>近日精彩话题</a></td></tr>\n");*/
+
+	//Add by liuche 20121119 order by oOIOo ^_^
+	printdiv(&div, "推荐版面");
+	printf("&nbsp;&nbsp;<a target=f3 href=gdoc?B=AcdemicClub class=linkleft>讲座信息</a><br>\n");
+	printf("&nbsp;&nbsp;<a target=f3 href=gdoc?B=Activity class=linkleft>社团活动</a><br>\n");
+	printf("&nbsp;&nbsp;<a class=linkleft href=\"%sBBShelp\" target=f3>用户帮助</a><br>\n"
+		, showByDefMode() );
+	printf("&nbsp;&nbsp;<a class=linkleft href=\"%sBMY_Dev\" target=f3>加入程序组</a><br>\n"
+		, showByDefMode() );
+	printf("&nbsp;&nbsp;<a class=linkleft href=\"%sArtDesign\" target=f3>加入美工组</a><br>\n"
+		, showByDefMode() );	
+	printf("</div></td></tr>\n");
+	
 	if (loginok && !isguest) {
 		char *ptr, buf[10];
 		struct boardmem *x1;
@@ -279,15 +292,7 @@ bbsleft_main()
 	printf("</div></td></tr>\n");
 //lanboy add ads here
 //        printf("<br><a href='http://cn.rd.yahoo.com/auct/promo/bmy/200501/hp/evt=29631/*http://cn.auctions.yahoo.com/?refcode=bmy-hp' target=_BLANK>　<IMG src=/pic80x60.gif width=90 height=180 border=0></a>");
-	printf("<tr><td align=right> <img src=\"/images/list2.gif\"></td>\n"
-		"<td><a class=linkleft href=\"%sBBShelp\" target=f3>用户帮助</a>\n"
-		"</td></tr>\n", showByDefMode() );
-	printf("<tr><td align=right> <img src=\"/images/list2.gif\"></td>\n"
-		"<td><a class=linkleft href=\"%sBMY_Dev\" target=f3>加入程序组</a>\n"
-		"</td></tr>\n", showByDefMode() );
-	printf("<tr><td align=right> <img src=\"/images/list2.gif\"></td>\n"
-		"<td><a class=linkleft href=\"%sArtDesign\" target=f3>加入美工组</a>\n"
-		"</td></tr>\n", showByDefMode() );
+
 	printf("<tr><td align=right> <img src=\"/images/list2.gif\"></td>\n"
 		"<td><a class=linkleft href=\"bbspstmail?userid=SYSOP\" target=f3>发信给站长</a>\n"
 		"</td></tr>\n");

@@ -18,7 +18,7 @@ bbstop10_main()
 	html_header(1);
 	check_msg();
 //main frame
-	printf("<div style=\"width=100%\">");
+	printf("<div style=\"width=100%; min-height:350px;\">");
 	//<!--No.1 Top 10 -->	
 	showTop10Table();
 	printf("</div>");
@@ -62,16 +62,16 @@ void showCommend(int kind){
 	char allcanre[256];
 	char *head[3];
 	int i;//, total;
+	head[1]="今日美文推荐";
+	head[2]="今日通知公告";
+	printf("	<body><center><div class=rhead>兵马俑 BBS --<span class=h11> %s</span></div>",head[kind]);
+	printf("	<hr>");
 	if(1==kind)
 		fp=fopen(COMMENDFILE,"r");
 	else if(2==kind)
 		fp=fopen(COMMENDFILE2,"r");
 	if (!fp)
-		 http_fatal("目前没有任何推荐文章");
-	head[1]="今日美文推荐";
-	head[2]="今日通知公告";
-	printf("	<body><center><div class=rhead>兵马俑 BBS --<span class=h11> %s</span></div>",head[kind]);
-	printf("	<hr>");
+		 http_fatal("目前没有任何推荐文章");	
 	printf("	<table border=1>");
 	printf("	<tr><td>No.</td><td>Board</td><td>Title</td><td>Author</td></tr>");
 	fseek(fp, -20*sizeof(struct commend), SEEK_END);	

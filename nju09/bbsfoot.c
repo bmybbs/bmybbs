@@ -82,7 +82,7 @@ void footInfo(){
 	printf("function changeMsg(){\n");
 	printf("    var container = document.getElementById(\"msg_contain\");\n");
 	printf("    var now = new Date()\n");
-	printf("    var repeat = now.getSeconds()%5;\n");
+	printf("    var repeat = now.getSeconds()%4+1;\n");
 	printf("    while(repeat--)\n");
 	printf("        container.insertBefore(container.lastChild,container.firstChild);\n");
 	printf("}\n");
