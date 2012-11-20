@@ -92,7 +92,7 @@ bbssnd_main()
 		thread = -1;
 	}
 	if(strcmp(board, "welcome") &&
-	   strcmp(board, "kaoyan")){	//add by mintbaggio 040614 for post at "welcome" + "kaoyan"(by wsf)
+	   strcmp(board, "KaoYan")){	//add by mintbaggio 040614 for post at "welcome" + "KaoYan"(by wsf)
 		if (!loginok || (isguest && !guestre))
 			http_fatal("匆匆过客不能发表文章，请先登录");
 	}
@@ -125,8 +125,8 @@ bbssnd_main()
 		mark |= FH_MAILREPLY;
 	if (title[0] == 0)
 		http_fatal("文章必须要有标题");
-	if(strcmp(board, "welcome")
-	   strcmp(board, "kaoyan")){   //add by mintbaggio 040614 for post at "welcome" + "kaoyan"(by wsf)
+	if(strcmp(board, "welcome") &&
+	   strcmp(board, "KaoYan")){   //add by mintbaggio 040614 for post at "welcome" + "KaoYan"(by wsf)
 		if (!has_post_perm(&currentuser, brd) && !guestre)
 			http_fatal("此讨论区是唯读的, 或是您尚无权限在此发表文章.");
 	}

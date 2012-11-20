@@ -1474,7 +1474,7 @@ int lastlevel, lastbmonly;
 					&& strcmp(bname, "sysop") 
 					&& strcmp(bname,"committee")
 					&& strcmp(bname, "welcome")
-					&& strcmp(bname, "kaoyan")
+					&& strcmp(bname, "KaoYan")
 					&& strcmp(bname, "Appeal") 
 				       && !HAS_PERM(PERM_SYSOP)) {
 					move(5, 0);
