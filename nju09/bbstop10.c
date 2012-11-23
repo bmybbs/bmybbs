@@ -73,7 +73,7 @@ void showCommend(int kind){
 	if (!fp)
 		 http_fatal("目前没有任何推荐文章");	
 	printf("	<table border=1>");
-	printf("	<tr><td>No.</td><td>Board</td><td>Title</td><td>Author</td></tr>");
+	printf("	<tr><td>No.</td><td>讨论区</td><td>标题</td><td>作者</td></tr>");
 	fseek(fp, -20*sizeof(struct commend), SEEK_END);	
 	for(i=20; i>0; i--) {
 		strcpy(allcanre, "");
