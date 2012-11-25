@@ -130,11 +130,11 @@ bbsleft_main()
 	printf("&nbsp;&nbsp;<a target=f3 href=gdoc?B=Activity class=linkleft>校园活动</a><br>\n");
 	printf("&nbsp;&nbsp;<a class=linkleft href=\"%sLost_Found\" target=f3>失物招领</a><br>\n"
 		, showByDefMode() );
-	printf("&nbsp;&nbsp;<a class=linkleft href=\"%sBMY_Focus\" target=f3>兵马俑关注</a><br>\n"
-		, showByDefMode() )		
-	printf("&nbsp;&nbsp;<a class=linkleft href=\"%sBMY_Dev\" target=f3>加入程序组</a><br>\n"
+	printf("&nbsp;&nbsp;<a class=linkleft href=\"%sBoardHome\" target=f3>我要当版主</a><br>\n"
+		, showByDefMode() );			
+	printf("&nbsp;&nbsp;<a class=linkleft href=\"%sBMY_Dev\" target=f3>程序与报错</a><br>\n"
 		, showByDefMode() );
-	printf("&nbsp;&nbsp;<a class=linkleft href=\"%sArtDesign\" target=f3>加入美工组</a><br>\n"
+	printf("&nbsp;&nbsp;<a class=linkleft href=\"%sArtDesign\" target=f3>美工与进站</a><br>\n"
 		, showByDefMode() );	
 	printf("</div></td></tr>\n");
 	
