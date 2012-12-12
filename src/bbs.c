@@ -4382,7 +4382,10 @@ int commend_article(char* board, struct fileheader* fileinfo)
 			pressreturn();
 		}
 		else{
+			char fname[STRLEN];
 			do_commend(board, fileinfo);
+			setbfile(fname, currboard, fh2fname(fileinfo));
+			postfile(fname, "Commend", fileinfo->title, 0);
 		}
 	}
 	free(x);
@@ -4515,7 +4518,11 @@ int commend_article2(char* board, struct fileheader* fileinfo)
 			pressreturn();
 		}
 		else{
-			do_commend2(board, fileinfo);
+			char fname[STRLEN];
+                        do_commend2(board, fileinfo);
+                        setbfile(fname, currboard, fh2fname(fileinfo));
+                        postfile(fname, "Commend", fileinfo->title, 0);
+//			do_commend2(board, fileinfo);
 		}
 	}
 	free(x);
