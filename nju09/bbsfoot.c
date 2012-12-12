@@ -1,5 +1,102 @@
 #include "bbslib.h"
 
+typedef struct {
+        char *match;
+        char *replace;
+} tag_logout;
+
+
+void
+processdollar(buf, ret)
+char buf[256];
+{
+	extern time_t login_start_time;
+	int frg, i, matchfrg, strlength, cnt, tmpnum;
+	static char numlogins[10], numposts[10], rgtday[35], lasttime[35],
+	    thistime[35], lastlogout[35], stay[10], alltime[20], ccperf[20],
+	    perf[10], exp[10], ccexp[20];
+	char buf2[STRLEN], *ptr, *ptr2;
+	time_t now;
+
+	static const tag_logout loglst[] = {
+		{"userid", currentuser.userid},
+		{"username", currentuser.username},
+		//{"realname",     currentuser.realname},
+		{"address", currentuser.address},
+		{"email", currentuser.email},
+		{"ip", currentuser.ip},
+		{"realemail", currentuser.realmail},
+		//{"ident",        currentuser.ident},
+		{"rgtday", rgtday},
+		{"log", numlogins},
+		{"pst", numposts},
+		{"lastlogin", lasttime},
+		{"lasthost", currentuser.lasthost},
+		{"lastlogout", lastlogout},
+		{"now", thistime},
+		{"bbsname", MY_BBS_NAME},
+		{"stay", stay},
+		{"alltime", alltime},
+		{"exp", exp},
+		{"cexp", ccexp},
+		{"perf", perf},
+		{"cperf", ccperf},
+		{NULL, NULL}
+	};
+	if (!strchr(buf, '$')) {
+		strcpy(ret, buf);
+		return;
+	}
+	strcpy(ret, "");
+	now = time(0);
+	tmpnum = countexp(&currentuser);
+	sprintf(exp, "%d", tmpnum);
+	strcpy(ccexp, cexp(tmpnum));
+	tmpnum = countperf(&currentuser);
+	sprintf(perf, "%d", tmpnum);
+	strcpy(ccperf, cperf(tmpnum));
+	sprintf(alltime, "%ldHr%ldMin", (long int) (currentuser.stay / 3600),
+		(long int) ((currentuser.stay / 60) % 60));
+	sprintf(rgtday, "%24.24s", ctime(&currentuser.firstlogin));
+	sprintf(lasttime, "%24.24s", ctime(&currentuser.lastlogin));
+	sprintf(lastlogout, "%24.24s", ctime(&currentuser.lastlogout));
+	sprintf(thistime, "%24.24s", ctime(&now));
+	sprintf(numlogins, "%d", currentuser.numlogins);
+	sprintf(numposts, "%d", currentuser.numposts);
+
+	frg = 1;
+	ptr2 = buf;
+	do {
+		if ((ptr = strchr(ptr2, '$'))) {
+			matchfrg = 0;
+			*ptr = '\0';
+			strcat(ret, ptr2);
+			ptr += 1;
+			for (i = 0; loglst[i].match != NULL; i++) {
+				if (strstr(ptr, loglst[i].match) ) {
+					strlength = strlen(loglst[i].match);
+					ptr2 = ptr + strlength;
+					for (cnt = 0; *(ptr2 + cnt) == ' '; cnt++);
+					sprintf(buf2, "%-*.*s",	cnt ? strlength+cnt : strlength + 1, strlength + cnt, loglst[i].replace);
+	//				strcat(ret, "+");
+					strcat(ret, buf2);
+					ptr2 += (cnt ? (cnt - 1) : cnt);
+					matchfrg = 1;
+					break;
+				}
+			}
+			if (!matchfrg) {
+				strcat(ret, "$");
+				ptr2 = ptr;
+			}
+		} else {
+			strcat(ret, ptr2);
+			frg = 0;
+		}
+	}
+	while (frg);
+	return;
+}
 
 
 struct user_info *
@@ -36,6 +133,7 @@ void footInfo(){
 	char *id = "guest";
 	char initial[2] = "G/"; //tou wen zi :)
 	char path[200];     //path of GoodWish
+	char ret[2048];
     	if (loginok) {
 		id = currentuser.userid;
 	}
@@ -43,10 +141,13 @@ void footInfo(){
 	if(initial[0]>='a' && initial[0]<='z')
 		initial[0] += 'A'-'a';
 	path[0] = 0;
+	/*
 	strcat(path,MY_BBS_HOME "/home/");
 	strcat(path,initial);
 	strcat(path,id);
 	strcat(path,"/GoodWish");
+	*/
+	sethomefile(path, id, "GoodWish");
 	printf("<span id=\'foot_msg\' style=\"position:fixed;padding:0; margin-left:5px;overflow:hidden;\">\n");
 	printf("    <font style=\"font-size:12px\" color=#ff6600>\n");
 	printf("    <ul id=\"msg_contain\" style=\"padding:0;margin-top:0px; height:18px;overflow:hidden; \">\n");
@@ -58,19 +159,21 @@ void footInfo(){
 		{
 			buf[strlen(buf) - 1] = 0;
 			NHsprintf(buf2,buf);
-			printf("    <li>[BMY信息]: %s</li>\n",buf2);
+			processdollar(buf2, ret);
+			printf("    <li>[BMY信息]: %s</li>\n",ret);
 		}
 		fclose(fp2);
 	}
 	fp2 = fopen(path,"r");
-	//printf("    <li>[GoodWishes]: %s</li>\n",path); for debug
+	// printf("    <li>[GoodWishes]: %s</li>\n",path); for debug
 	if (fp2 != 0) 
 	{
 		while(fgets(buf, 1030, fp2) != NULL)
 		{
 			buf[strlen(buf) - 1] = 0;
 			NHsprintf(buf2,buf);
-			printf("    <li>[给你的祝福]: %s</li>\n",buf2);
+			processdollar(buf2, ret);
+			printf("    <li>[给你的祝福]: %s</li>\n", ret);
 		}
 		fclose(fp2);
 	}
