@@ -548,19 +548,31 @@ show_commend()
 
 	fseek(fp, -20*sizeof(struct commend), SEEK_END);
 	
-	for(i=20; i>15; i--) {
+	char* commends[20];	
+	int count=0;
+	for(i=0; i<20; i++) {
 //		fseek(fp, sizeof(struct commend)*i, SEEK_SET);
 		strcpy(allcanre, "");
 		if(fread(&x, sizeof(struct commend), 1, fp)<=0) break;
+		commends[i]=malloc(1024);
 		if(x.accessed & FH_ALLREPLY)
  			strcpy(allcanre," style='color:red;' ");
-		printf("<tr><td></td>\n");
-		printf("<td><a href=con?B=%s&F=%s%s>%-30s</a> / <a href=qry?U=%s class=linkdatetheme>%-12s</a>" 
+		sprintf(commends[i], "<tr><td></td>\n");
+		char temp[1024];
+		sprintf(temp, "<td><a href=con?B=%s&F=%s%s>%-30s</a> / <a href=qry?U=%s class=linkdatetheme>%-12s</a>" 
 			"/<a href=\"%s%s\" class=linkdatetheme>%-13s</a></td></tr>\n",
 			x.board, x.filename, allcanre, x.title,x.userid,  x.userid, showByDefMode(), x.board, x.board);
 /*			printf("<td><a href=con?B=%s&F=%s N=%dT=0>%s</a> ",x.board, x.filename,no,x.title);
 			printf("<td>[<a href=%s%s>%s</a>] ", showByDefMode(), x.board, x.board);
 			printf("<td><a href=qry?U=%s>%s</a>", x.userid,x.userid);*/
+		strcat(commends[i], temp);
+		++count;
+	}
+	int index;
+	for (index=count; index>count-10; --index) {
+		if (index<1) break;
+		printf(commends[index-1]);
+		free(commends[index-1]);
 	}
 	fclose(fp);
 	return 0; 
@@ -601,17 +613,29 @@ show_commend2()
 
 
 	fseek(fp, -20*sizeof(struct commend), SEEK_END);
-	for(i=20; i>10; i--) {
+	char* commends[20];
+	int count=0;
+	for(i=0; i<20; i++) {
 		strcpy(allcanre, "");
 		if(fread(&x, sizeof(struct commend), 1, fp)<=0) break;
+		commends[i]=malloc(1024);
 		if(x.accessed & FH_ALLREPLY)
  			strcpy(allcanre," style='color:red;' ");
-		printf("<tr><td></td>\n");
-		printf("<td><a href=con?B=%s&F=%s%s>%-30s</a> / <a href=qry?U=%s class=linkdatetheme>%-12s</a>" 
+		sprintf(commends[i], "<tr><td></td>\n");
+		char temp[1024];
+		sprintf(temp, "<td><a href=con?B=%s&F=%s%s>%-30s</a> / <a href=qry?U=%s class=linkdatetheme>%-12s</a>" 
 			"/<a href=\"%s%s\" class=linkdatetheme>%-13s</a></td></tr>\n",
 			x.board, x.filename, allcanre, x.title,x.userid,  x.userid, showByDefMode(), x.board, x.board);
-
+		strcat(commends[i], temp);
+		++count;
 	}
+	int index;
+        for (index=count; index>count-10; --index) {
+                if (index<1) break;
+                printf(commends[index-1]);
+                free(commends[index-1]);
+        }
+	
 	fclose(fp);
 	return 0; 
 
