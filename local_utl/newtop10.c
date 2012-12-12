@@ -1,4 +1,6 @@
 #include "bbs.h"
+#include "ythtbbs.h"
+#include <time.h>
 #include <sys/types.h>
 #include <sys/mman.h>
 #include <ght_hash_table.h>
@@ -494,6 +496,12 @@ main(int argc, char **argv)
 		html_topten(1, "wwwtmp/ctopten");
 		index_topten(0, "wwwtmp/indextopten");
         index_topten(1, "wwwtmp/cindextopten");
+		time_t tt=time(0);
+		char title[128];
+		strcpy(title,  asctime(localtime(&tt)));
+		char* p=strchr(title, '\n');
+		*p='\0';
+		postfile("/home/bbs/etc/posts/day", "XJTU-XANET", "TopTen", title);
 		//要exit了，我就不free了，呵呵
 	}
 	return 0;
