@@ -159,7 +159,7 @@ newsec: newsec.o
 	$(CC) $(CFLAGS) -o $@ $^ $(BBSLIB)
 finddf: finddf.o
 	$(CC) $(CFLAGS) -o $@ $^ $(BBSLIB)
-newtop10: newtop10.o
+newtop10: newtop10.o sysrecord.o
 	$(CC) $(CFLAGS) -o $@ $^ $(BBSLIB) -lghthash
 
 newboards: newboards.o
