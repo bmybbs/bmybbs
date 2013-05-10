@@ -748,6 +748,7 @@ endbanner:
 	//"</td>\n</form></tr></table></td>\n"
 	"<td align=right width=25>&nbsp;</td></tr></table>\n"
 	"</td></tr></table>\n");
+	printf("<table border='0'><tr> <style type='text/css'> p.near {line-height:1} </style> <td rowspan='2'><a href=\"#ac0\"><p class='near'>本站 |<br>系统 |</p></a> </td><td rowspan='2'> <a href=\"#ac1\"><p class='near'>交通 |<br>大学 |</p></a> </td><td rowspan='2' > <a href=\"#ac2\"><p class='near'>开发 |<br>技>术 |</p></a> </td><td rowspan='2' > <a href=\"#ac3\"><p class='near'>电脑 |<br>应用 |</p></a> </td><td rowspan='2'> <a href=\"#ac4\"><p class='near'>学术 |<br>科学 |</p></a> </td><td rowspan='2' > <a href=\"#ac5\"><p class='near'>社会 |<br>科学 |</p></a> </td><td rowspan='2'> <a href=\"#ac6\"><p class='near'>文学 |<br>艺术 |</p></a> </td><td rowspan='2'> <a href=\"#ac7\"><p class='near'>知性 |<br>感性 |</p></a> </td><td rowspan='2' > <a href=\"#ac8\"><p class='near'>体育 |<br>运动 |</p></a> </td><td rowspan='2'> <a href=\"#ac9\"><p class='near'>休闲 |<br>音乐 |</p></a> </td><td rowspan='2' > <a href=\"#acG\"><p class='near'>游戏  |<br>天地 |</p></a> </td><td rowspan='2'> <a href=\"#acN\"><p class='near'>新闻 |<br>信息 |</p></a> </td><td rowspan='2' > <a href=\"#acH\"><p class='near'>乡音 |<br>乡情 |</p></a> </td><td rowspan='2'> <a href=\"#acA\"><p class='near'>校务 |<br>信息 |</p></a> </td><td rowspan='2'> <a href=\"#acC\"><p class='near'>>俱乐 |<br>部区 |</p></a> </td><td rowspan='2' > <a href=\"boa?secstr=NB\"><p class='near'>交易 |<br>市场 |</p></a> </td><td rowspan='2' > <a href=\"boa?secstr=0C\"><p class='near'>已关 |<br>版面 |</p></a> </td> </tr></table> ");
 	return;
 }
 
@@ -1101,8 +1102,7 @@ void show_sec_by_name(char secid){
 	struct sectree *sec;
 	sec = getsectree(&secid);
 	printf("<tr>");
-	printf("<td><div class=\"linediv\"><a href=boa?secstr=%s class=linkboardtheme>"
-		       "%s</a></div></td>\n", sec->basestr, nohtml(sec->title));
+	printf("<td><div class=\"linediv\"><a name='ac%s' href=boa?secstr=%s class=linkboardtheme>%s</a></div></td>\n", sec->basestr, sec->basestr, nohtml(sec->title)); 
 	printf("<td rowspan=2 align=right valign=bottom width=45><a href=boa?secstr=%s class=linkbigtheme>%s</a></td></tr>\n",
 				sec->basestr, sec->basestr);
 	show_boards(sec->basestr);
