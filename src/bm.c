@@ -393,7 +393,15 @@ clubmember()
 						currboard);
 					sprintf(repbuf,	
 						"%s%s%s", titlebuf, buf[0] ? "\n\n原因：":"", buf);
-					securityreport(titlebuf, buf);
+					if(!strcmp(currboard, "Beggar")
+							|| !strcmp(currboard, "killer")
+							|| !strcmp(currboard, "Rober")
+							|| !strcmp(currboard, "Police")) {
+						millionairesrec(titlebuf, buf, "成员变更");
+					} else {
+						securityreport(titlebuf, buf);
+					}
+					
 					deliverreport(titlebuf, repbuf);
 					mail_buf(repbuf, uident, titlebuf);
 				}
@@ -414,7 +422,15 @@ clubmember()
 							uident, currentuser.userid, currboard);
 						sprintf(repbuf,	
 							"%s%s%s", titlebuf, buf[0] ? "\n\n原因：":"", buf);
-						securityreport(titlebuf, buf);
+						if(!strcmp(currboard, "Beggar")
+								|| !strcmp(currboard, "killer")
+								|| !strcmp(currboard, "Rober")
+								|| !strcmp(currboard, "Police")) {
+							millionairesrec(titlebuf, buf, "成员变更");
+						} else {
+							securityreport(titlebuf, buf);
+						}
+						
 						deliverreport(titlebuf, repbuf);
 						mail_buf(repbuf, uident, titlebuf);
 					}
