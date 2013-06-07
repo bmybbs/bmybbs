@@ -4,8 +4,16 @@ void
 printdiv(int *n, char *str)
 {//modify by mintbaggio 040411 for new www, modify 041225
 	printf("<tr><td align=right><img id=img%d src=\"/images/plus.gif\"></td>\n"
-                "<td><DIV class=r id=div%da> <a class=linkleft href=\"javascript:;\" onClick=\"changemn('%d');\">%s</a>", 
+                "<td><DIV class=r id=div%da> <a class=linkleft href=\"javascript:;\" id=menu onClick=\"changemn('%d');\">%s</a>", 
 		*n, *n, *n, str);
+	printf("<script type=\"text/javascript\">"
+	"function clickRadio()"
+	"  {"
+		"document.getElementById('menu').click()\n"
+	"  }"
+	"</script>"
+		, *n);
+
 	if(!strcmp(str, "分类讨论区")){
 		//modify: \"_bbsall.htm\" to: bbssecfly by: flyinsea
 		printf("<a href=bbssecfly target=f3 style=\"font-size:8px;\"> &gt;&gt;</a> ");
@@ -67,7 +75,7 @@ bbsleft_main()
 		"\t	}\n"
 		"-->\n"
 		"</script>\n</head>\n"
-		"<body class=\"level2\" leftmargin=0 topmargin=0 onMouseOver='doMouseOver()' onMouseEnter='doMouseOver()' onMouseOut='doMouseOut()'>\n");
+		"<body class=\"level2\" leftmargin=0 topmargin=0 onMouseOver='doMouseOver()' onMouseEnter='doMouseOver()' onMouseOut='doMouseOut()' onload=\"clickRadio()\">\n");
 		//" onLoad='MM_preloadImages(\"/images/minus.gif\");document.loginform.id.focus();'>\n");
 	printf("<table width=100%% border=0 cellpadding=0 cellspacing=0>\n"
                         "<tr><td width=100%% height=14></td></tr>\n"
@@ -123,7 +131,6 @@ bbsleft_main()
 	//by bjgyt printf
 	/*printf("<tr><td align=right valign=top> <img src=\"/images/bmy_arrowblank.gif\" width=6 height=5></td>\n
 		<td><a target=f3 href=\"bbsshownav?a1=class&a2=all\" class=1100>近日精彩话题</a></td></tr>\n");*/
-
 	//Add by liuche 20121119 order by oOIOo ^_^
 	printdiv(&div, "BMY告示墙");
 	printf("&nbsp;&nbsp;<a target=f3 href=gdoc?B=AcdemicClub class=linkleft>讲座信息</a><br>\n");
@@ -264,9 +271,9 @@ bbsleft_main()
                 "</td></tr>\n");
 //	printf("&nbsp;&nbsp;<a target=f3 href=bbsall>所有讨论区</a><br>\n");
 //	printf("<hr>");
-       printf("<tr><form action=bbssbs target=f3><td colspan=2>\n" 
-              "&nbsp;&nbsp;&nbsp;&nbsp;<input type=text name=keyword maxlength=20 " 
-              "size=9 onclick=\"this.select()\" value=选择讨论区><input type=submit class=sumbitgrey value=go></td></form></tr>\n"); 
+	printf("<tr><form action=bbssbs target=f3><td colspan=2>\n"
+	       "&nbsp;&nbsp;&nbsp;&nbsp;<input type=text name=keyword maxlength=20 "
+	       "size=9 onclick=\"this.select()\" value=选择讨论区><input type=submit class=sumbitgrey value=go></td></form></tr>\n");
 //	printf("&nbsp;&nbsp;<a href='telnet:%s'>Telnet登录</a>\n", BBSHOST);
 /*	if (!loginok || isguest)
 		printf
