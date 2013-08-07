@@ -424,7 +424,7 @@ int is_article_area_top(char *boardname, int thread) {
 	struct boardmem *bm = getboardbyname(boardname);
 
 	char area_top_filename[20];
-	sprintf(area_top_filename, "etc/Area_Dir/%s", bm->header.secnumber1);
+	sprintf(area_top_filename, "etc/Area_Dir/%c", bm->header.secnumber1);
 
 	return is_article_link_in_file(boardname, thread, area_top_filename);
 }
@@ -441,7 +441,7 @@ int update_article_area_top_link(char *boardname, int oldthread, int newfiletime
 	struct boardmem *bm = getboardbyname(boardname);
 
 	char area_top_filename[20];
-	sprint(area_top_filename, "etc/Area_Dir/%s", bm->header.secnumber1);
+	sprintf(area_top_filename, "etc/Area_Dir/%c", bm->header.secnumber1);
 
 	return update_article_link_in_file(boardname, oldthread, newfiletime, newtitle, area_top_filename);
 }
@@ -484,7 +484,7 @@ int update_article_site_top_link(char *boardname, int oldthread, int newfiletime
  * @return 如果文件中存在该篇文章主题，则返回1，不存在返回0，出错返回-1
  */
 static int is_article_link_in_file(char *boardname, int thread, char *filename) {
-	xmlDocPtr doc = xmlReadFile(filename, "GBK", XML_PARSE_IGNORE_ENC);
+	xmlDocPtr doc = xmlReadFile(filename, "GBK", XML_PARSE_NOERROR);
 	if(doc == NULL) {
 		return -1;
 	}
@@ -520,7 +520,7 @@ static int is_article_link_in_file(char *boardname, int thread, char *filename) 
  * @return 若文件已更新，则返回1
  */
 static int update_article_link_in_file(char *boardname, int oldthread, int newfiletime, char *newtitle, char *filename) {
-	xmlDocPtr doc = xmlReadFile(filename, "GBK", XML_PARSE_IGNORE_ENC);
+	xmlDocPtr doc = xmlReadFile(filename, "GBK", XML_PARSE_NOERROR);
 	if(doc == NULL) {
 		return -1;
 	}
