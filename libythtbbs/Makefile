@@ -2,7 +2,7 @@ BASEPATH = ..
 include $(BASEPATH)/Makefile.Base
 CFILE	:=boardrc.c misc.c record.c user.c article.c modetype.c docutil.c msg.c politics.c goodgbid.c binaryattach.c permissions.c bbseva.c attach.c regform.c announce.c board.c sectree.c sectreeop.c libiden.c
 COBJS	:=$(CFILE:.c=.o)
-.c.o:	;  $(CC) -c $*.c -D_GNU_SOURCE $(CFLAGS) $(OS_DEF) -g -L/usr/lib/mysql -lmysqlclient -lxml2
+.c.o:	;  $(CC) -c $*.c -D_GNU_SOURCE $(CFLAGS) $(OS_DEF) -g -L/usr/lib/mysql -lmysqlclient -lxml2 -I/usr/include/libxml2
 all: libythtbbs.a
 
 ifeq (.depend,$(wildcard .depend))
