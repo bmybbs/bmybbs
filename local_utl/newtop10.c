@@ -264,10 +264,10 @@ _topn(struct boardheader *bh)
 			continue;
 		if (k == 0) {
 			//fprintf(fp, "<table width=80%%>");
-			fprintf(fp, "<table width=80%% align=\"center\" > ");
+			fprintf(fp, "<table width='80%%' align=\"center\" > ");
 		}
 		k++;
-		fprintf(fp, "<tr><td><font color=red>HOT</font></td><td><a href=tfind?B=%s&th=%d&T=%s>%s", bh->filename, bt1->thread, encode_url(bt1->title), nohtml(bt1->title));
+		fprintf(fp, "<tr><td><font color='red'>HOT</font></td><td><a href='tfind?B=%s&amp;th=%d'>%s", bh->filename, bt1->thread, nohtml(bt1->title));
 		fprintf(fp, "</a></td><td>[讨论人数:%d] </td></tr>\n ", bt1->unum);
 	}
 	if (k)
@@ -301,20 +301,19 @@ html_topten(int mode, char *file)
 		errlog("topten write error");
 		exit(1);
 	}
-	fprintf(fp, "<body><center><div class=rhead>%s --<span class=h11> 今日十大热门话题</span></div>\n<hr>\n",
+	fprintf(fp, "<body><center><div class='rhead'>%s --<span class='h11'> 今日十大热门话题</span></div>\n<hr>\n",
 		MY_BBS_NAME);
-	fprintf(fp, "<table border=1>\n");
+	fprintf(fp, "<table border='1'>\n");
 	fprintf
 	    (fp,
 	     "<tr><td>名次</td><td>讨论区</td><td>标题</td><td>人数</td></tr>\n");
 	for (j = 0; j < 10 && bt->unum != 0; j++, bt++) {
 		fprintf
 		    (fp,
-		     "<tr><td>第 %d 名</td><td><a href=tdoc?board=%s>%s</a></td><td><a href='bbstfind?board=%s&th=%d&title=%s'>%42.42s</a></td><td>%d</td></tr>\n",
-		     j + 1, bt->board, bt->board, bt->board, bt->thread,
-		     encode_url(bt->title), void1(nohtml(bt->title)),bt->unum);
+		     "<tr><td>第 %d 名</td><td><a href='tdoc?board=%s'>%s</a></td><td><a href='tfind?board=%s&amp;th=%d'>%42.42s</a></td><td>%d</td></tr>\n",
+		     j + 1, bt->board, bt->board, bt->board, bt->thread, void1(nohtml(bt->title)),bt->unum);
 	}
-	fprintf(fp, "</table><center></body>");
+	fprintf(fp, "</table></center></body>");
 	fclose(fp);
 	rename("wwwtmp/topten.tmp", file);
 
@@ -332,11 +331,11 @@ html_topten(int mode, char *file)
 		char path[256];
 		sprintf(path, AREA_DIR "/%c", area[i]);
 		fp = fopen(path, "w");
-		fprintf(fp, "<table width=90%>");
+		fprintf(fp, "<table width='90%'>");
 		for (j = 0; j < AREA_TOP_CNT && bt->unum != 0; j++, bt++) 
 		{
-			fprintf(fp, "<tr><td width=120px>[<a href=tdoc?board=%s>%s</a>]</td><td><a href='bbstfind?board=%s&th=%d&title=%s'>%42.42s</a></td><td width=20px>(%d)</td></tr>", 
-				bt->board, bt->board, bt->board, bt->thread, encode_url(bt->title), void1(nohtml(bt->title)),bt->unum);
+			fprintf(fp, "<tr><td width='120px'>[<a href='tdoc?board=%s'>%s</a>]</td><td><a href='tfind?board=%s&amp;th=%d'>%42.42s</a></td><td width='20px'>(%d)</td></tr>",
+				bt->board, bt->board, bt->board, bt->thread, void1(nohtml(bt->title)),bt->unum);
 		}
 		fprintf(fp, "</table>");
 		fclose(fp);
@@ -363,7 +362,7 @@ index_topten(int mode, char *file)
         for (j = 0; j < 10 && bt->unum != 0; j++, bt++) {
                 fprintf
                     (fp,
-		     "<tr><td><span class=\"smalltext\">%d</span></td><td><a href='bbstfind?board=%s&th=%d&title=%s'>%42.42s</a></td></tr>\n",	
+		     "<tr><td><span class=\"smalltext\">%d</span></td><td><a href='tfind?board=%s&th=%d&title=%s'>%42.42s</a></td></tr>\n",
                      j + 1, bt->board, bt->thread,
                      encode_url(bt->title), void1(nohtml(bt->title)));
         }

@@ -112,3 +112,18 @@ fillmboard(struct boardheader *bh, struct myparam1 *mp)
 	(mp->bid)++;
 	return 0;
 }
+
+
+struct boardmem * getboardbyname(char *board_name) {
+	int i;
+	if (board_name[0])
+		return NULL;
+
+	// ¥” shm_bcache ÷–µ›πÈ≤È’“
+	for (i=0; i<MAXBOARD && i<shm_bcache->number; ++i) {
+		if(!strcasecmp(board_name, shm_bcache->bcache[i].header.filename))
+			return &shm_bcache->bcache[i];
+	}
+
+	return NULL;
+}

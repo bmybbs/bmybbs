@@ -1852,7 +1852,7 @@ int dangerous;
 		}
 		pressreturn();
 		clear();
-		return 1;
+		return (int)now; // return filetime instead of 1 by IronBlood 20130807
 	}
 	outgo_post(&postfile, bname, currentuser.userid, currentuser.username);
 	updatelastpost(bname);
@@ -1862,7 +1862,7 @@ int dangerous;
 			currentuser.userid, bname, postfile.title);
 		newtrace(buf);
 	}
-	return 1;
+	return (int)now;  // return filetime instead of 1 by IronBlood 20130807
 }
 
 void

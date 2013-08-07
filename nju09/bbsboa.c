@@ -54,7 +54,7 @@ bbsboa_main()
 	check_msg();
 	//printf("<style type=text/css>A {color: #0000f0}</style>");
 	changemode(SELECT);
-	if (secstr[0] == '*') {
+	if (secstr[0] == '*') {  // 预定讨论区
 		readmybrd(currentuser.userid);
 		for (i = 0; i < MAXBOARD && i < shm_bcache->number; i++) {
 			x = &(shm_bcache->bcache[i]);
@@ -75,7 +75,7 @@ bbsboa_main()
 		printf("<hr>");
 		return 0;
 	}
-	if(!strcmp(secstr,"?")){
+	if(!strcmp(secstr,"?")){ // 导读
 		printf("<script src=\"/inc/tog.js\"></script></head><body leftmargin=0 topmargin=0>\n");
 		show_banner();
 		show_content();

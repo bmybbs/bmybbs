@@ -643,6 +643,7 @@ char *pnt;
 	case '\r':
 	case KEY_RIGHT:
 		ch = 'r';
+		break;
 		/* lookup command table */
 	default:
 		for (i = 0; rcmdlist[i].fptr != NULL; i++) {
@@ -803,7 +804,6 @@ char *direct;
 	}
 	//end
 
-//	strcpy(buf, "相同主题 (0)取消 ");			mint
 	//add by mintbaggio for BMfunc 'b'
 	sprintf(buf, "%s (0)取消", subBMitems[dotype-1]);
 	saveline(t_lines - 2, 0, NULL);
@@ -864,8 +864,14 @@ char *direct;
 		else    strcpy(title, fileinfo->owner);
 		sprintf(title_combine, "【合集】%s", title);
 		sprintf(buf, "tmp/%s.combine", currentuser.userid);
-		postfile(buf, currboard, title_combine, 2);
+		int newFiletime = postfile(buf, currboard, title_combine, 2);
 		unlink(buf);
+
+		// 更新www导读下的链接 by IronBlood 20130805
+		if(is_article_area_top(currboard, fileinfo->thread))
+			update_article_area_top_link(currboard, fileinfo->thread, newFiletime, title_combine);
+		if(is_article_site_top(currboard, fileinfo->thread))
+			update_article_site_top_link(currboard, fileinfo->thread, newFiletime, title_combine);
 	}
 	snprintf(genbuf, 256, "%s sametitle %s %s", currentuser.userid,
 		 currboard, fileinfo->title);

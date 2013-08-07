@@ -2,6 +2,18 @@
 #include <errno.h>
 #include "ythtbbs.h"
 
+// 为了编辑 html/xml/xhtml 文件引入库 libxml2 by IronBlood 20130805
+#include <libxml/HTMLparser.h>
+#include <libxml/HTMLtree.h>
+#include <libxml/xpath.h>
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+#include <libxml/xmlmemory.h>   // 编辑xml内容
+#include <libxml/xmlsave.h>
+
+static int is_article_link_in_file(char *boardname, int thread, char *filename);
+static int update_article_link_in_file(char *boardname, int oldthread, int newfiletime, char *newtitle, char *filename);
+
 char *
 fh2fname(struct fileheader *fh)
 {
@@ -400,4 +412,150 @@ add_edit_mark(char *fname, char *userid, time_t now_t, char *fromhost)
                 userid, ctime(&now_t) + 4, fromhost);
         fclose(fp);
         return 0;
+}
+
+/**
+ * 检查主题是否存在与所在讨论区热门话题中
+ * @param boardname 版面名称
+ * @param thread 主题id
+ * @return 存在返回1
+ */
+int is_article_area_top(char *boardname, int thread) {
+	struct boardmem *bm = getboardbyname(boardname);
+
+	char area_top_filename[20];
+	sprintf(area_top_filename, "etc/Area_Dir/%s", bm->header.secnumber1);
+
+	return is_article_link_in_file(boardname, thread, area_top_filename);
+}
+
+/**
+ * 在主题所在讨论区中更新链接
+ * @param boardname 版面名称
+ * @param oldthread 原主题id
+ * @param newfiletime 对应新的合集文章的 filetime
+ * @param newtitle 对应新的合集文章的标题，e.g. "【合集】 "
+ * @return 更新成功返回1
+ */
+int update_article_area_top_link(char *boardname, int oldthread, int newfiletime, char *newtitle) {
+	struct boardmem *bm = getboardbyname(boardname);
+
+	char area_top_filename[20];
+	sprint(area_top_filename, "etc/Area_Dir/%s", bm->header.secnumber1);
+
+	return update_article_link_in_file(boardname, oldthread, newfiletime, newtitle, area_top_filename);
+}
+
+/**
+ * 判断是否十大。
+ * @warning 仅需要检查一个文件。
+ * @param boardname 版面名称
+ * @param thread 主题id
+ * @return 存在返回1
+ */
+int is_article_site_top(char *boardname, int thread) {
+	char *site_top_file1 = "wwwtmp/topten";
+
+	return is_article_link_in_file(boardname, thread, site_top_file1);
+}
+
+/**
+ * 更新十大链接。
+ * @warning 需要更新两个文件。
+ * @param boardname 版面名称
+ * @param oldthread 原主题id
+ * @param newfiletime 对应新的合集文章的 filetime
+ * @param newtitle 对应新的合集文章的标题，e.g. "【合集】 "
+ * @return 更新成功返回1
+ */
+int update_article_site_top_link(char *boardname, int oldthread, int newfiletime, char *newtitle) {
+	char *site_top_file1 = "wwwtmp/topten";
+	char *site_top_file2 = "wwwtmp/indextopten";
+
+	return update_article_link_in_file(boardname, oldthread, newfiletime, newtitle, site_top_file1)
+			&& update_article_link_in_file(boardname, oldthread, newfiletime, newtitle, site_top_file2);
+}
+
+/**
+ * 判断文章主题链接是否存在于文件中
+ * @param boardname 版面名称
+ * @param thread 原主题id
+ * @param filename 需要判断的文件路径
+ * @return 如果文件中存在该篇文章主题，则返回1，不存在返回0，出错返回-1
+ */
+static int is_article_link_in_file(char *boardname, int thread, char *filename) {
+	xmlDocPtr doc = xmlReadFile(filename, "GBK", XML_PARSE_IGNORE_ENC);
+	if(doc == NULL) {
+		return -1;
+	}
+
+	xmlNodePtr pRoot = xmlDocGetRootElement(doc);
+	if(pRoot == NULL) {
+		xmlFreeDoc(doc);
+		return -1;
+	}
+
+	char xpath[80];
+	sprintf(xpath, "//a[@href='tfind?board=%s&th=%d']", boardname, thread);
+
+	xmlXPathContextPtr ctx = xmlXPathNewContext(doc);
+	xmlXPathObjectPtr result = xmlXPathEvalExpression((const xmlChar *)xpath, ctx);
+
+	int r = (result->nodesetval->nodeNr == 1);
+
+	xmlXPathFreeObject(result);
+	xmlXPathFreeContext(ctx);
+	xmlFreeDoc(doc);
+
+	return r;
+}
+
+/**
+ * 更新文件中文章的链接
+ * @param boardname 版面名称
+ * @param oldthread 原主题id
+ * @param newfiletime 对应新文章的 filetime
+ * @param newtitle 新文章的标题，e.g. "【合集】 "
+ * @param filename 需要更新的文件路径
+ * @return 若文件已更新，则返回1
+ */
+static int update_article_link_in_file(char *boardname, int oldthread, int newfiletime, char *newtitle, char *filename) {
+	xmlDocPtr doc = xmlReadFile(filename, "GBK", XML_PARSE_IGNORE_ENC);
+	if(doc == NULL) {
+		return -1;
+	}
+
+	xmlNodePtr pRoot = xmlDocGetRootElement(doc);
+	if(pRoot == NULL) {
+		xmlFreeDoc(doc);
+		return -1;
+	}
+
+	char xpath[80];
+	sprintf(xpath, "//a[@href='tfind?board=%s&th=%d']", boardname, oldthread);
+
+	xmlXPathContextPtr ctx = xmlXPathNewContext(doc);
+	xmlXPathObjectPtr result = xmlXPathEvalExpression((const xmlChar*)xpath, ctx);
+
+	// 文件中有且仅有一个链接时才会执行更新链接的操作
+	int r=0;
+	if((r=result->nodesetval->nodeNr) == 1){
+		char new_href[80];
+		sprintf(new_href, "con?B=%s&F=M.%d.A", boardname, newfiletime); //新链接采用一般阅读模式
+
+		xmlNodePtr cur = result->nodesetval->nodeTab[0];
+		xmlSetProp(cur, (const xmlChar*)"href", (const xmlChar*)new_href); // 更新链接
+		xmlNodeSetContent(cur, (const xmlChar*)newtitle); // 更新链接文字
+
+		char newFilename[80];
+		sprintf(newFilename, "%s.new", filename);
+		xmlSaveFileEnc(newFilename, doc, "GBK");
+		rename(newFilename, filename);
+	}
+
+	xmlXPathFreeObject(result);
+	xmlXPathFreeContext(ctx);
+	xmlFreeDoc(doc);
+
+	return r;
 }

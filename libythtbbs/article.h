@@ -89,4 +89,8 @@ int cmp_title(char *title, struct fileheader *fh1);
 int fh_find_thread(struct fileheader *fh, char *board);
 int Search_Bin(char *ptr, int key, int start, int end);	
 int add_edit_mark(char *fname, char *userid, time_t now_t, char *fromhost);
+int is_article_area_top(char *boardname, int thread);
+int update_article_area_top_link(char *boardname, int oldthread, int newfiletime, char *newtitle);
+int is_article_site_top(char *boardname, int thread);
+int update_article_site_top_link(char *boardname, int oldthread, int newfiletime, char *newtitle);
 #endif

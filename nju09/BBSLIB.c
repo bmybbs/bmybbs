@@ -1881,6 +1881,10 @@ getbcache(char *board)
 }
 #endif
 
+/**
+ * 依据版面名称获取 boardmem 对象，应逐渐采用 libythtbbs 库函数。
+ * @see struct boardmem *getboardbyname(char *board_name)
+ */
 struct boardmem *
 getboard(char board[80])
 {
