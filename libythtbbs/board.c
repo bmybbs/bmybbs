@@ -1,4 +1,5 @@
 #include "ythtbbs.h"
+#include "bbs.h"
 
 char *
 bm2str(buf, bh)
@@ -119,6 +120,7 @@ struct boardmem * getboardbyname(char *board_name) {
 	if (board_name[0])
 		return NULL;
 
+	struct BCACHE * shm_bcache = (struct BCACHE *) get_old_shm(BCACHE_SHMKEY, sizeof (struct BCACHE));
 	// ¥” shm_bcache ÷–µ›πÈ≤È’“
 	for (i=0; i<MAXBOARD && i<shm_bcache->number; ++i) {
 		if(!strcasecmp(board_name, shm_bcache->bcache[i].header.filename))
