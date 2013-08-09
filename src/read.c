@@ -643,7 +643,6 @@ char *pnt;
 	case '\r':
 	case KEY_RIGHT:
 		ch = 'r';
-		break;
 		/* lookup command table */
 	default:
 		for (i = 0; rcmdlist[i].fptr != NULL; i++) {
