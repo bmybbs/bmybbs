@@ -422,6 +422,8 @@ add_edit_mark(char *fname, char *userid, time_t now_t, char *fromhost)
  */
 int is_article_area_top(char *boardname, int thread) {
 	struct boardmem *bm = getboardbyname(boardname);
+    if(bm==NULL)
+		return 0;
 
 	char area_top_filename[20];
 	sprintf(area_top_filename, "etc/Area_Dir/%c", bm->header.secnumber1);
@@ -439,6 +441,8 @@ int is_article_area_top(char *boardname, int thread) {
  */
 int update_article_area_top_link(char *boardname, int oldthread, int newfiletime, char *newtitle) {
 	struct boardmem *bm = getboardbyname(boardname);
+    if(bm==NULL)
+		return 0;
 
 	char area_top_filename[20];
 	sprintf(area_top_filename, "etc/Area_Dir/%c", bm->header.secnumber1);
