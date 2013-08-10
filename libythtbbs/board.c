@@ -117,7 +117,7 @@ fillmboard(struct boardheader *bh, struct myparam1 *mp)
 
 struct boardmem * getboardbyname(char *board_name) {
 	int i;
-	if (board_name[0])
+	if (board_name[0] == 0)
 		return NULL;
 
 	struct BCACHE * shm_bcache = (struct BCACHE *) get_old_shm(BCACHE_SHMKEY, sizeof (struct BCACHE));
