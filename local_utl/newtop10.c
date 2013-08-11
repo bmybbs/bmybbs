@@ -362,9 +362,8 @@ index_topten(int mode, char *file)
         for (j = 0; j < 10 && bt->unum != 0; j++, bt++) {
                 fprintf
                     (fp,
-		     "<tr><td><span class=\"smalltext\">%d</span></td><td><a href='tfind?board=%s&th=%d&title=%s'>%42.42s</a></td></tr>\n",
-                     j + 1, bt->board, bt->thread,
-                     encode_url(bt->title), void1(nohtml(bt->title)));
+		     "<tr><td><span class=\"smalltext\">%d</span></td><td><a href='tfind?board=%s&th=%d'>%42.42s</a></td></tr>\n",
+                     j + 1, bt->board, bt->thread, void1(nohtml(bt->title)));
         }
         fclose(fp);
         rename("wwwtmp/indextopten.tmp", file);
