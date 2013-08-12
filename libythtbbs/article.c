@@ -549,7 +549,7 @@ static int update_article_link_in_file(char *boardname, int oldthread, int newfi
 
 		xmlNodePtr cur = result->nodesetval->nodeTab[0];
 		xmlSetProp(cur, (const xmlChar*)"href", (const xmlChar*)new_href); // 更新链接
-		xmlNodeSetContent(cur, (const xmlChar*)newtitle); // 更新链接文字
+//		xmlNodeSetContent(cur, (const xmlChar*)newtitle); // 更新链接文字
 
 		char newFilename[80];
 		sprintf(newFilename, "%s.new", filename);
