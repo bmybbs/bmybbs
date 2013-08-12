@@ -465,7 +465,7 @@ int is_article_site_top(char *boardname, int thread) {
 
 /**
  * 更新十大链接。
- * @warning 需要更新两个文件。
+ * @warning 需要更新四个文件。
  * @param boardname 版面名称
  * @param oldthread 原主题id
  * @param newfiletime 对应新的合集文章的 filetime
@@ -475,9 +475,13 @@ int is_article_site_top(char *boardname, int thread) {
 int update_article_site_top_link(char *boardname, int oldthread, int newfiletime, char *newtitle) {
 	char *site_top_file1 = "wwwtmp/topten";
 	char *site_top_file2 = "wwwtmp/indextopten";
+	char *site_top_file3 = "wwwtmp/ctopten";
+	char *site_top_file4 = "wwwtmp/cindextopten";
 
 	return update_article_link_in_file(boardname, oldthread, newfiletime, newtitle, site_top_file1)
-			&& update_article_link_in_file(boardname, oldthread, newfiletime, newtitle, site_top_file2);
+			&& update_article_link_in_file(boardname, oldthread, newfiletime, newtitle, site_top_file2)
+			&& update_article_link_in_file(boardname, oldthread, newfiletime, newtitle, site_top_file3)
+			&& update_article_link_in_file(boardname, oldthread, newfiletime, newtitle, site_top_file4);
 }
 
 /**
@@ -488,7 +492,7 @@ int update_article_site_top_link(char *boardname, int oldthread, int newfiletime
  * @return 如果文件中存在该篇文章主题，则返回1，不存在返回0，出错返回-1
  */
 static int is_article_link_in_file(char *boardname, int thread, char *filename) {
-	xmlDocPtr doc = xmlReadFile(filename, "GBK", XML_PARSE_NOERROR);
+	htmlDocPtr doc = htmlParseFile(filename, "GBK");
 	if(doc == NULL) {
 		return -1;
 	}
@@ -524,7 +528,7 @@ static int is_article_link_in_file(char *boardname, int thread, char *filename) 
  * @return 若文件已更新，则返回1
  */
 static int update_article_link_in_file(char *boardname, int oldthread, int newfiletime, char *newtitle, char *filename) {
-	xmlDocPtr doc = xmlReadFile(filename, "GBK", XML_PARSE_NOERROR);
+	htmlDocPtr doc = htmlParseFile(filename, "GBK");
 	if(doc == NULL) {
 		return -1;
 	}
@@ -553,7 +557,7 @@ static int update_article_link_in_file(char *boardname, int oldthread, int newfi
 
 		char newFilename[80];
 		sprintf(newFilename, "%s.new", filename);
-		xmlSaveFileEnc(newFilename, doc, "GBK");
+		htmlSaveFileEnc(newFilename, doc, "GBK");	
 		rename(newFilename, filename);
 	}
 
