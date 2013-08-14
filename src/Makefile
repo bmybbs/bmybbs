@@ -36,7 +36,7 @@ CFILE    = bbs.c record.c delete.c main.c stuff.c mail.c register.c \
 
 COBJS    :=$(CFILE:.c=.o)
 
-COBJSTEST:=$(CFILE:.c=.t)
+#COBJSTEST:=$(CFILE:.c=.t)
 
 OTHERS   = 
 
@@ -45,15 +45,15 @@ GARBAGE  = a.out core installchatd bbs.chatd bbsd thread
 # The -DINVISIBLE makes bbs users invisible to 'finger' and 'who'.
 # Simply remove it if you don't want this feature.
 
-SITE_DEF = -DBBSHOME='"$(BBSHOME)"' -DBBSUID=$(BBSUID) -DBBSGID=$(BBSGRP)
+#SITE_DEF = -DBBSHOME='"$(BBSHOME)"' -DBBSUID=$(BBSUID) -DBBSGID=$(BBSGRP)
 
-DEFINES	=  -DBBSMAIN $(CSIE_DEF) $(OS_DEF)
+#DEFINES	=  -DBBSMAIN $(CSIE_DEF) $(OS_DEF)
 
 .SUFFIXES: .o .c .ln .t
 
-.c.o:   ;   $(CC) -D_GNU_SOURCE $(CFLAGS) $(CPPFLAGS) $(DEFINES) -DBACK_DELETE_RANGE -include proto.h -c $*.c
+.c.o:   ;   $(CC) $(CFLAGS) -include proto.h -c $*.c
 
-.c.t:   ;   $(CC) -D_GNU_SOURCE $(CFLAGSTEST) $(CPPFLAGS) $(DEFINES) -DBACK_DELETE_RANGE -include proto.h -c $*.c -o $*.t
+#.c.t:   ;   $(CC) -D_GNU_SOURCE $(CFLAGSTEST) $(CPPFLAGS) $(DEFINES) -DBACK_DELETE_RANGE -include proto.h -c $*.c -o $*.t
 
 #--------------------- Dependency starts here -------------------
 all: $(PROGNAME) bbs.chatd bbsd telnet thread 
@@ -67,23 +67,23 @@ endif
 #	@false
 
 depend dep .depend:
-	gcc $(CFLAGS) -M *.c >.depend
-	gcc $(CFLAGSTEST) -M *.c |sed -es/"o:"/"t:"/ >>.depend
+	gcc $(CFLAGS) -MM *.c >.depend
+	#gcc $(CFLAGSTEST) -M *.c |sed -es/"o:"/"t:"/ >>.depend
 
 proto proto.h:
 	echo '#include "bbs.h"' > proto.h
-	cproto $(CFILE) $(DEFINES) -DBACK_DELETE_RANG -I $(BASEPATH)/include -I $(BASEPATH)/ythtlib -I $(BASEPATH)/libythtbbs >> proto.h
+	cproto $(CFILE) -I $(BASEPATH)/include -I $(BASEPATH)/ythtlib -I $(BASEPATH)/libythtbbs >> proto.h
 
 $(COBJS) $(COBJSTEST): .depend proto.h
 
 $(PROGNAME): $(COBJS) $(OTHERS)
-	$(CC) -o $(PROGNAME) $(CFLAGS) $(COBJS) $(LIBS)   $(BBSLIB) 
+	$(CC) $(COBJS) $(LIBS) $(BBSLIB) $(LDFLAGS) -o $(PROGNAME)
 
-bbstest: $(COBJSTEST) $(OTHERS)
-	$(CC) -o bbstest $(CFLAGSTEST) $(COBJSTEST) $(LIBSTEST)  $(BBSLIB)
+#bbstest: $(COBJSTEST) $(OTHERS)
+#	$(CC) -o bbstest $(CFLAGSTEST) $(COBJSTEST) $(LIBSTEST)  $(BBSLIB)
 
 bbsd: bbsd.c
-	$(CC) $(CFLAGS) -o bbsd $(OS_DEF) bbsd.c  $(BBSLIB)
+	$(CC) $(CFLAGS) -o bbsd bbsd.c  $(BBSLIB)
 
 bbsnet: bbsnet.c
 	$(CC) bbsnet.c -o bbsnet
@@ -92,7 +92,7 @@ telnet: telnet0.c
 	$(CC) -g telnet0.c -o telnet
 
 bbs.chatd: station.c
-	$(CC) $(CFLAGS) -o bbs.chatd $(OS_DEF) station.c
+	$(CC) $(CFLAGS) -o bbs.chatd station.c
 
 thread: thread.c record.c
 	$(CC) $(CFLAGS) -include $(BASEPATH)/ythtlib/ythtlib.h -include $(BASEPATH)/libythtbbs/ythtbbs.h -DEXT_UTL -o thread record.c thread.c -L$(BBSHOME)/bin -lytht -lythtbbs
