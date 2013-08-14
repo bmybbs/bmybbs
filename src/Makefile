@@ -83,7 +83,7 @@ $(PROGNAME): $(COBJS) $(OTHERS)
 #	$(CC) -o bbstest $(CFLAGSTEST) $(COBJSTEST) $(LIBSTEST)  $(BBSLIB)
 
 bbsd: bbsd.c
-	$(CC) $(CFLAGS) -o bbsd bbsd.c  $(BBSLIB)
+	$(CC) $(CFLAGS) -o bbsd bbsd.c $(LDFLAGS) $(BBSLIB)
 
 bbsnet: bbsnet.c
 	$(CC) bbsnet.c -o bbsnet
