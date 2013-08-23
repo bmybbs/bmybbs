@@ -128,3 +128,29 @@ keepoldheader(FILE * fp, int dowhat)
 	}
 	return -3;
 }
+
+int copyheadertofile(FILE *from_fp, FILE *to_fp) {
+	char (*tmpbuf)[STRLEN]=NULL;
+	int i=0;
+	int j;
+
+	tmpbuf = malloc(5*STRLEN);
+	if(tmpbuf == NULL)
+		return -1;
+
+	// 开始读取文件头到 tmpbuf 中
+	while(fgets(tmpbuf[i], STRLEN, from_fp)) {
+		++i;
+		if( !strcmp(tmpbuf[i-1], "\n")
+		    || !strcmp(tmpbuf[i-1], "\r\n")
+		    || i>4 )
+			break;
+	}
+
+	for(j=0;j<i;++j) {
+		fputs(tmpbuf[j], to_fp);
+	}
+
+	free(tmpbuf);
+	return 0;
+}

@@ -228,8 +228,8 @@ char text[256];
 int
 update_form(char *board, char *file, char *title)
 {
-	FILE *fp;
-	char *buf = getparm("text"), path[80];
+	FILE *fp, fp_old;
+	char *buf = getparm("text"), path[80], path_new[80];
 	int num = 0, filetime;
 	int usemath, useattach, nore;
 	char dir[STRLEN];
@@ -272,10 +272,18 @@ update_form(char *board, char *file, char *title)
 	sprintf(filename, "bbstmpfs/tmp/%d.tmp", thispid);
 	useattach = (insertattachments(filename, buf, currentuser.userid));
 	sprintf(path, "boards/%s/%s", board, file);
-	fp = fopen(path, "r+");
-	if (fp == 0)
+	sprintf(path_new, "%s.new", path); // 编辑后的文件放置在新的文件中
+	fp_old = fopen(path, "r+");
+	fp = fopen(path_new, "w+");
+	if (fp == 0) {
 		http_fatal("无法存盘");
-	keepoldheader(FCGI_ToFILE(fp), SKIPHEADER);
+	}
+	if (fp_old == 0) {
+		fclose(fp);
+		http_fatal("无法存盘");
+	}
+	copyheadertofile(fp_old, fp);
+	fclose(fp_old);
 	/*
 	   i = 0;
 	   while (buf[i]) {
@@ -293,6 +301,7 @@ update_form(char *board, char *file, char *title)
 	unlink(filename);
 	fclose(fp);
 	add_edit_mark(path, currentuser.userid, now_t, fromhost);
+	rename(path_new, path); // 替换原来的文件
 	sprintf(dir, "boards/%s/.DIR", board);
 	fp = fopen(dir, "r");
 	if (fp == 0)

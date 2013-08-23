@@ -10,4 +10,5 @@ enum {
 	SKIPHEADER
 };
 int keepoldheader(FILE * fp, int dowhat);
+int copyheadertofile(FILE *from_fp, FILE *to_fp);
 #endif
