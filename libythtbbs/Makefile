@@ -1,6 +1,6 @@
 BASEPATH = ..
 include $(BASEPATH)/Makefile.Base
-CFILE	:=boardrc.c misc.c record.c user.c article.c modetype.c docutil.c msg.c politics.c goodgbid.c binaryattach.c permissions.c bbseva.c attach.c regform.c announce.c board.c sectree.c sectreeop.c libiden.c logging.c
+CFILE	:=boardrc.c misc.c record.c user.c article.c modetype.c docutil.c msg.c politics.c goodgbid.c binaryattach.c permissions.c bbseva.c attach.c regform.c announce.c board.c sectree.c sectreeop.c libiden.c
 COBJS	:=$(CFILE:.c=.o)
 .c.o:	;  $(CC) $(CFLAGS) -c $*.c
 all: libythtbbs.a
