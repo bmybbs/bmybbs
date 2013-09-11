@@ -32,4 +32,5 @@
 #include "announce.h"
 #include "board.h"
 #include "sectree.h"
+#include "notification.h"
 #endif
