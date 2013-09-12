@@ -43,7 +43,7 @@ int add_post_notification(char * to_userid, char * from_userid, char * board,
 
 	// 暂未判断磁盘写不下的情况，姑且认为 bmy 硬盘永远足够 IronBlood@bmy 20130912
 	xmlSaveFileEnc(notify_file_path, doc, "UTF8");
-
+	xmlFreeDoc(doc);
 	userunlock(to_userid, ulock);
 
 	return 0;
