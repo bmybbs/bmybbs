@@ -9,7 +9,7 @@
 
 #include "ythtbbs.h"
 
-const char *NOTIFILE = "Notification";
+#define NOTIFILE "Notification"
 
 struct NotifyItem {
 	char from_userid[16];
@@ -24,7 +24,10 @@ static void addItemtoList(NotifyItemList *List, struct NotifyItem *Item);
 
 int add_post_notification(char * to_userid, char * from_userid, char * board,
 						  int article_id, char * title_gbk) {
-	char * title_utf8 = malloc(2*strlen(title_gbk));
+	char noti_type[8];
+	sprintf(noti_type, "%d", NOTIFY_TYPE_POST);
+
+	char * title_utf8 = (char *)malloc(2*strlen(title_gbk));
 	if(title_utf8 == NULL)
 		return -1;
 
@@ -40,7 +43,7 @@ int add_post_notification(char * to_userid, char * from_userid, char * board,
 	const char *empty_doc_string = "<Notify />";
 	xmlDocPtr empty_doc = xmlParseMemory(empty_doc_string, strlen(empty_doc_string));
 
-	if(access(notify_file_path, F_OK)) { // file exists
+	if(access(notify_file_path, F_OK) != -1) { // file exists
 		doc = xmlParseFile(notify_file_path);
 		if(doc == NULL) { // 文件解析出错
 			doc = empty_doc;
@@ -57,7 +60,7 @@ int add_post_notification(char * to_userid, char * from_userid, char * board,
 	root = xmlDocGetRootElement(doc);
 
 	xmlNodePtr notify_item = xmlNewChild(root, NULL, (const xmlChar*)"Item", NULL);
-	xmlNewProp(notify_item, (const xmlChar*)"type", (const xmlChar*)NOTIFY_TYPE_POST);
+	xmlNewProp(notify_item, (const xmlChar*)"type", (const xmlChar*)noti_type);
 	xmlNewProp(notify_item, (const xmlChar*)"board", (const xmlChar*)board);
 	xmlNewProp(notify_item, (const xmlChar*)"aid", (const xmlChar*)article_id_str);
 	xmlNewProp(notify_item, (const xmlChar*)"uid", (const xmlChar*)from_userid);

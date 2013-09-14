@@ -3,7 +3,7 @@
 #define __NOTIFICATION_H
 
 enum {
-	NOTIFY_TYPE_POST = '0'
+	NOTIFY_TYPE_POST = 0
 };
 
 extern struct NotifyItem;
