@@ -230,19 +230,19 @@ static struct NotifyItem * parse_to_item(xmlNodePtr xmlItem) {
 	memset(item, 0, sizeof(struct NotifyItem));
 
 	// these vars need to be free!!!
-	xmlChar *xml_str_type = xmlGetProp(xmlItem, "type");
+	xmlChar *xml_str_type = xmlGetProp(xmlItem, (const xmlChar *)"type");
 	item->type = atoi((char *)xml_str_type);
 	xmlFree(xml_str_type);
 
-	xmlChar *xml_str_userid = xmlGetProp(xmlItem, "uid")
+	xmlChar *xml_str_userid = xmlGetProp(xmlItem, (const xmlChar *)"uid")
 	memcpy(item->from_userid, (char *)xml_str_userid, 16);
 	xmlFree(xml_str_userid);
 
-	xmlChar *xml_str_timestamp = xmlGetProp(xmlItem, "aid");
+	xmlChar *xml_str_timestamp = xmlGetProp(xmlItem, (const xmlChar *)"aid");
 	item->noti_time = (time_t) atoi((char *)xml_str_timestamp);
 	xmlFree(xml_str_timestamp);
 
-	xmlChar * xml_str_title_utf8 = xmlGetProp(xmlItem, "title");
+	xmlChar * xml_str_title_utf8 = xmlGetProp(xmlItem, (const xmlChar *)"title");
 	size_t title_len = strlen((char *)xml_str_title_utf8);
 	item->title_gbk = malloc(title_len);  //gbk长度<utf8
 	if(item->title_gbk == NULL) { //内存分配失败
