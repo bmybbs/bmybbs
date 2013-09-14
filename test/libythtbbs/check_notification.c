@@ -25,7 +25,7 @@ START_TEST(send_post_notification_and_delete_it)
 	add_post_notification("IronBlood", "SYSOP", "sysop", 1234, "ªÿ¿¥≥‘∑π");
 	ck_assert(count_notification_num("IronBlood") == 1);
 	ck_assert(is_post_in_notification("IronBlood", "sysop", 1234) == 1);
-	ck_assert(is_post_in_notifacation("IronBlood", "sysop", 12) == 0);
+	ck_assert(is_post_in_notification("IronBlood", "sysop", 12) == 0);
 
 	// re delete
 	del_post_notification("IronBlood", "sysop", 1234);
