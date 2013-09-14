@@ -2,14 +2,17 @@
 #ifndef __NOTIFICATION_H
 #define __NOTIFICATION_H
 
+const char *NOTIFILE = "Notification";
+
 enum {
 	NOTIFY_TYPE_POST = '0'
 };
 
 struct NotifyItem {
 	char from_userid[16];
-	char time_str[32];		 // e.g. Thu Sep 12 18:28:57 2013
-	char *link_gbk;
+	char *title_gbk;
+	time_t noti_time;
+	int type;
 	struct NotifyItem * next;
 };
 
@@ -39,15 +42,22 @@ int add_post_notification(char * to_userid,
  */
 NotifyItemList parse_notification(char *userid);
 
-/** 计算用户的通知条数
+/** 释放 NotifyItemList 内存
  *
+ * @param niList
+ */
+void free_notification(NotifyItemList niList);
+
+/** 计算用户的通知条数
+ * 该方法使用 libxml2 解析 '/Notify/Item' 的个数。
  * @param userid 用户 id
  * @return 通知条数，该值 >= 0
  */
 int count_notification_num(char *userid);
 
 /** 检验某篇文章是否在消息列表中
- * 该方法不确定是否需要。
+ * 该方法不使用 libxml2 的方法，仅用于快速判断特征字符串是否存在于通知文件中。
+ * @warn 可能存在误判。
  * @param userid 用户 id
  * @param board 版面名称
  * @param article_id 帖子id
