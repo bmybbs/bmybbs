@@ -24,7 +24,7 @@ typedef struct NotifyItem* NotifyItemList;
  * @param from_userid 通知来自的id
  * @param board 回帖所在的版面
  * @param article_id 回帖的时间戳
- * @param title_utf8 帖子的标题 @warning utf8编码，否则 libxml2 处理中会出错
+ * @param title_gbk 帖子的标题 @warning gbk 编码，方便调用，内部处理的时候会转为 utf-8 编码
  * @return 添加成功返回0
  * @see is_post_in_notification(char * userid, char * board, int article_id)
  * @see del_post_notification(char * userid, char * board, int article_id)
@@ -33,7 +33,7 @@ int add_post_notification(char * to_userid,
 						  char * from_userid,
 						  char * board,
 						  int article_id,
-						  char * title_utf8);
+						  char * title_gbk);
 
 /** 将通知解析到内存中
  *
