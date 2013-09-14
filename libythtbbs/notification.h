@@ -2,8 +2,6 @@
 #ifndef __NOTIFICATION_H
 #define __NOTIFICATION_H
 
-extern const char *NOTIFILE;
-
 enum {
 	NOTIFY_TYPE_POST = '0'
 };
