@@ -219,7 +219,6 @@ int del_post_notification(char * userid, char * board, int article_id) {
 }
 
 static struct NotifyItem * parse_to_item(xmlNodePtr xmlItem) {
-	char buf[8];
 	if(xmlItem == NULL)
 		return NULL;
 
@@ -234,7 +233,7 @@ static struct NotifyItem * parse_to_item(xmlNodePtr xmlItem) {
 	item->type = atoi((char *)xml_str_type);
 	xmlFree(xml_str_type);
 
-	xmlChar *xml_str_userid = xmlGetProp(xmlItem, (const xmlChar *)"uid")
+	xmlChar *xml_str_userid = xmlGetProp(xmlItem, (const xmlChar *)"uid");
 	memcpy(item->from_userid, (char *)xml_str_userid, 16);
 	xmlFree(xml_str_userid);
 
@@ -263,7 +262,7 @@ static void addItemtoList(NotifyItemList *List, struct NotifyItem *Item) {
 	if(*List == NULL)
 		*List = Item;
 	else {
-		struct NotifyItem * cur = List->next;
+		struct NotifyItem * cur = (struct NotifyItem *)*List;
 
 		while(cur->next)
 			cur = cur->next;
