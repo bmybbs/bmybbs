@@ -2,19 +2,13 @@
 #ifndef __NOTIFICATION_H
 #define __NOTIFICATION_H
 
-const char *NOTIFILE = "Notification";
+extern const char *NOTIFILE;
 
 enum {
 	NOTIFY_TYPE_POST = '0'
 };
 
-struct NotifyItem {
-	char from_userid[16];
-	char *title_gbk;
-	time_t noti_time;
-	int type;
-	struct NotifyItem * next;
-};
+extern struct NotifyItem;
 
 typedef struct NotifyItem* NotifyItemList;
 
