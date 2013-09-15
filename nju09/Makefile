@@ -31,9 +31,10 @@ CFILE	= bbsmain.c bbstop10.c bbsdoc.c bbscon.c bbsbrdadd.c bbsboa.c bbsall.c bbs
 	bbshome.c bbsindex.c bbssechand.c bbsupload.c bbslform.c regreq.c \
 	bbsselstyle.c bbscon1.c bbsattach.c bbskick.c \
 	bbsscanreg.c bbsshowfile.c bbst.c bbsdt.c bbslt.c bbsincon.c bbssetscript.c \
-	bbscccmail.c bbsfwdmail.c bbstmpl.c bbsrss.c bbsucss.c bbsdefcss.c bbssecfly.c bbssbs.c bbseditmail.c  bbsfindpass.c bbsresetpass.c bbsfindacc.c
-	 CFILEBACKUP = bbsdmulan.c bbsdt.c bbsjs.c bbslt.c bbsmovie.c bbsnewleft.c bbssel.c bbst.c bbstty.c bbschat.c \
-	      ytml.c ytml_func.c bclass.c bbsusr.c bbsalluser.c bbsnotify.c
+	bbscccmail.c bbsfwdmail.c bbstmpl.c bbsrss.c bbsucss.c bbsdefcss.c bbssecfly.c \
+	bbssbs.c bbseditmail.c  bbsfindpass.c bbsresetpass.c bbsfindacc.c bbsnotify.c
+CFILEBACKUP = bbsdmulan.c bbsdt.c bbsjs.c bbslt.c bbsmovie.c bbsnewleft.c bbssel.c bbst.c bbstty.c bbschat.c \
+	      ytml.c ytml_func.c bclass.c bbsusr.c bbsalluser.c
 
 COBJS	:=$(CFILE:.c=.o)
 
@@ -51,7 +52,7 @@ depend dep .depend:
 	gcc $(CFLAGS) -M $(CFILE) $(OTHERS) upload.c >.depend
 
 proto proto.h:
-	cproto -DMAKE_PROTO -D__GNUC__ $(CFILE) $(OTHERS) $(CPPFLAGS) $(WWW_CPPFLAGS) -I$(BASEPATH)/libythtbbs -I$(BASEPATH)/ythtlib -I$(BASEPATH)/include > proto.h
+	cproto -DMAKE_PROTO $(CFILE) $(OTHERS) $(CPPFLAGS) $(WWW_CPPFLAGS) -I$(BASEPATH)/libythtbbs -I$(BASEPATH)/ythtlib -I$(BASEPATH)/include > proto.h
 
 $(COBJS):  .depend
 
