@@ -11,15 +11,6 @@
 
 #define NOTIFILE "Notification"
 
-struct NotifyItem {
-	char from_userid[16];
-	char board[32];
-	char *title_gbk;
-	time_t noti_time;
-	int type;
-	struct NotifyItem * next;
-};
-
 static struct NotifyItem * parse_to_item(xmlNodePtr xmlItem);
 static void addItemtoList(NotifyItemList *List, struct NotifyItem *Item);
 
@@ -249,7 +240,7 @@ static struct NotifyItem * parse_to_item(xmlNodePtr xmlItem) {
 
 	if(item->type == NOTIFY_TYPE_POST) {
 		xmlChar *xml_str_board = xmlGetProp(xmlItem, (const xmlChar *)"board");
-		memcpy(item->board, (char *)xml_str_board, sizeof((char *)xml_str_board));
+		memcpy(item->board, (char *)xml_str_board, strlen((char *)xml_str_board));
 		xmlFree(xml_str_board);
 	}
 

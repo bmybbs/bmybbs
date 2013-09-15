@@ -6,7 +6,14 @@ enum {
 	NOTIFY_TYPE_POST = 0
 };
 
-extern struct NotifyItem;
+struct NotifyItem {
+	char from_userid[16];
+	char board[32];
+	char *title_gbk;
+	time_t noti_time;
+	int type;
+	struct NotifyItem * next;
+};
 
 typedef struct NotifyItem* NotifyItemList;
 
