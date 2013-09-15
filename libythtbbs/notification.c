@@ -13,6 +13,7 @@
 
 struct NotifyItem {
 	char from_userid[16];
+	char board[32];
 	char *title_gbk;
 	time_t noti_time;
 	int type;
@@ -245,6 +246,12 @@ static struct NotifyItem * parse_to_item(xmlNodePtr xmlItem) {
 	xmlChar *xml_str_type = xmlGetProp(xmlItem, (const xmlChar *)"type");
 	item->type = atoi((char *)xml_str_type);
 	xmlFree(xml_str_type);
+
+	if(item->type == NOTIFY_TYPE_POST) {
+		xmlChar *xml_str_board = xmlGetProp(xmlItem, (const xmlChar *)"board");
+		memcpy(item->board, (char *)xml_str_board, sizeof((char *)xml_str_board));
+		xmlFree(xml_str_board);
+	}
 
 	xmlChar *xml_str_userid = xmlGetProp(xmlItem, (const xmlChar *)"uid");
 	memcpy(item->from_userid, (char *)xml_str_userid, 16);
