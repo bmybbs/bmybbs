@@ -12,7 +12,7 @@ ifdef GPROF2
 LIBS    := -lghthash -lz -L/usr/lib/mysql -lmysqlclient
 CFLAGS  := $(CFLAGS) $(OS_DEF) -DGPROF -pg -g
 else
-LIBS	:= -lghthash -L/usr/lib/mysql -lmysqlclient
+LIBS	:= -lghthash -L/usr/lib/mysql -lmysqlclient -lxml2
 CFLAGS	:= $(CFLAGS) $(OS_DEF) -g
 endif
 endif
