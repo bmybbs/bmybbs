@@ -52,7 +52,7 @@ depend dep .depend:
 	gcc $(CFLAGS) -M $(CFILE) $(OTHERS) upload.c >.depend
 
 proto proto.h:
-	cproto -DMAKE_PROTO $(CFILE) $(OTHERS) $(CPPFLAGS) $(WWW_CPPFLAGS) -I$(BASEPATH)/libythtbbs -I$(BASEPATH)/ythtlib -I$(BASEPATH)/include > proto.h
+	cproto -DMAKE_PROTO -D__GNUC__ $(CFILE) $(OTHERS) $(CPPFLAGS) $(WWW_CPPFLAGS) -I$(BASEPATH)/libythtbbs -I$(BASEPATH)/ythtlib -I$(BASEPATH)/include > proto.h
 
 $(COBJS):  .depend
 

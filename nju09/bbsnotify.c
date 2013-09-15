@@ -29,6 +29,7 @@ int bbsnotify_main() {
 						currItem->board, currItem->noti_time, currItem->title_gbk);
 				break;
 			default : break;
+		}
 	}
 	free_notification(allNotifyItems);
 
