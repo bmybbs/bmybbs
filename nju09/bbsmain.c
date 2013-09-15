@@ -117,6 +117,7 @@ struct cgi_applet applets[] = {
 	{bbsfindpass_main, {"bbsfindpass", NULL}},
 	{bbsresetpass_main, {"bbsresetpass", NULL}},
 	{bbsfindacc_main, {"bbsfindacc", NULL}},
+	{bbsnotify_main, {"bbsnotify", NULL}},
 //	{bbschangestyle_main, {"bbschangestyle", "changestyle", NULL}},
 	{NULL}
 };
