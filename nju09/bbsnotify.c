@@ -25,7 +25,7 @@ int bbsnotify_main() {
 	for(currItem = (struct NotifyItem *)allNotifyItems; currItem != NULL; currItem = currItem->next) {
 		switch(currItem->type) {
 			case NOTIFY_TYPE_POST:
-				printf("<li><a href=\"bbscon?B=%s&amp;F=M.%d.A>%s</a></li>",
+				printf("<li><a href=\"bbscon?B=%s&amp;F=M.%d.A\">%s</a></li>",
 						currItem->board, currItem->noti_time, currItem->title_gbk);
 				break;
 			default : break;
