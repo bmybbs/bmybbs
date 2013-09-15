@@ -228,7 +228,7 @@ char text[256];
 int
 update_form(char *board, char *file, char *title)
 {
-	FILE *fp, fp_old;
+	FILE *fp, *fp_old;
 	char *buf = getparm("text"), path[80], path_new[80];
 	int num = 0, filetime;
 	int usemath, useattach, nore;
