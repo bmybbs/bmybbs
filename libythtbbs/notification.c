@@ -223,6 +223,17 @@ int del_post_notification(char * userid, char * board, int article_id) {
 	return 0;
 }
 
+int del_all_notification(char *userid) {
+	char notify_file_path[80];
+	sethomefile(notify_file_path, userid, NOTIFILE);
+
+	int fd = userlock(userid, LOCK_EX);
+	unlink(notify_file_path);
+	userunlock(userid, fd);
+
+	return 0;
+}
+
 static struct NotifyItem * parse_to_item(xmlNodePtr xmlItem) {
 	if(xmlItem == NULL)
 		return NULL;

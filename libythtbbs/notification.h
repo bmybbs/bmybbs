@@ -3,6 +3,7 @@
 #define __NOTIFICATION_H
 
 enum {
+	NOTIFY_TYPE_NONSPECIFIED = -1,	// 仅供删除所有提醒的时候使用
 	NOTIFY_TYPE_POST = 0
 };
 
@@ -74,5 +75,12 @@ int is_post_in_notification(char * userid, char * board, int article_id);
  * @see is_post_in_notification(char * userid, char * board, int article_id)
  */
 int del_post_notification(char * userid, char * board, int article_id);
+
+/** 删除某个用户的所有提醒
+ *
+ * @param userid 用户id
+ * @return 删除成功返回0
+ */
+int del_all_notification(char *userid);
 
 #endif
