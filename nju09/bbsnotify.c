@@ -25,7 +25,7 @@ int bbsnotify_main() {
 	for(currItem = (struct NotifyItem *)allNotifyItems; currItem != NULL; currItem = currItem->next) {
 		switch(currItem->type) {
 			case NOTIFY_TYPE_POST:
-				printf("<li>[<a href=\"bbsdelnotify?type=0&amp;B=%s&amp;ID=%d\">删除</a>] "
+				printf("<li>[<a href=\"bbsdelnotify?type=0&amp;B=%s&amp;ID=%d\">忽略</a>] "
 					   "网友<a href=\"qry?U=%s\">%s</a>%s在<a href=\"bbscon?B=%s&amp;F=M.%d.A\">%s</a>中回复了您</li>",
 					    currItem->board, (int)currItem->noti_time,
 					    currItem->from_userid, currItem->from_userid, Difftime(currItem->noti_time),
@@ -36,7 +36,9 @@ int bbsnotify_main() {
 	}
 	free_notification(allNotifyItems);
 
-	printf("</ul></body>");
+	printf("</ul>");
+	printf("<div><a href=\"bbsdelnotify?type=%d\">忽略全部提醒</a></div>", NOTIFY_TYPE_NONSPECIFIED);
+	printf("</body>");
 	http_quit();
 	return 0;
 }
