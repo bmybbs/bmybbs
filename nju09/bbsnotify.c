@@ -25,10 +25,10 @@ int bbsnotify_main() {
 	for(currItem = (struct NotifyItem *)allNotifyItems; currItem != NULL; currItem = currItem->next) {
 		switch(currItem->type) {
 			case NOTIFY_TYPE_POST:
-				printf("<li>[<a href=\"bbsdelnotify?type=0&amp;B=%s&amp;ID=%d\">删除</a>] [%s]"
-					   "网友<a href=\"qry?U=%s\">%s</a>在<a href=\"bbscon?B=%s&amp;F=M.%d.A\">%s</a>中回复了您</li>",
-					    currItem->board, (int)currItem->noti_time, ctime(&currItem->noti_time),
-					    currItem->from_userid, currItem->from_userid,
+				printf("<li>[<a href=\"bbsdelnotify?type=0&amp;B=%s&amp;ID=%d\">删除</a>] "
+					   "网友<a href=\"qry?U=%s\">%s</a>%s在<a href=\"bbscon?B=%s&amp;F=M.%d.A\">%s</a>中回复了您</li>",
+					    currItem->board, (int)currItem->noti_time,
+					    currItem->from_userid, currItem->from_userid, Difftime(currItem->noti_time),
 						currItem->board, (int)currItem->noti_time, currItem->title_gbk);
 				break;
 			default : break;
