@@ -21,8 +21,8 @@ int bbsdelnotify_main() {
 			del_all_notification(currentuser.userid);
 			break;
 		case NOTIFY_TYPE_POST:
-			strsncpy(board, getparm('B'), 32);
-			id = atoi(getparm('ID'));
+			strsncpy(board, getparm("B"), 32);
+			id = atoi(getparm("ID"));
 			del_post_notification(currentuser.userid, board, id);
 			break;
 		default: break;
