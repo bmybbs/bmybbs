@@ -25,7 +25,7 @@ int bbsnotify_main() {
 	printf("<body><div id=\"notify-content\"><h1>我的提醒</h1>");
 
 	if(allNotifyItems == NULL) {
-		printf("<div class=\"notify-item\">没有提醒</div></div></body>");
+		printf("<div class=\"notify-item\">当前没有提醒，到<a href=\"bbsboa?secstr=*\">预定讨论区</a>多多灌水吧 :-)</div></div></body>");
 		http_quit();
 		return 0;
 	}
