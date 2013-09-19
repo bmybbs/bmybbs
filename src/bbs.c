@@ -1007,6 +1007,11 @@ char *direct;
 		    ("[1;44;31m[тд╤андуб] [33m╫АйЬ Q,║Ш╘╕иор╩╥Б ║Э,l╘╕обр╩╥Б n, <Space>,<Enter>,║Щ╘╕жВлБтд╤а x p [m");
 	}
 
+	// и╬ЁЩлАпя©╙й╪
+	if(is_post_in_notification(currentuser.userid, currboard, fileinfo->filetime)) {
+		del_post_notification(currentuser.userid, currboard, fileinfo->filetime);
+	}
+
 	/* Re-Write By Excellent */
 
 	readingthread = fileinfo->thread;
