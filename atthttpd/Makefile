@@ -18,7 +18,7 @@ depend dep .depend:
 $(COBJS):  .depend
 
 $(PROGNAME): $(COBJS)
-	$(CC) -o $(PROGNAME) $(COBJS) $(LIBS) $(BBSLIB) -lghthash
+	$(CC) -o $(PROGNAME) $(COBJS) $(LIBS) $(LDFLAGS) $(BBSLIB) -lghthash
 
 clean:
 	rm -f $(COBJS) $(PROGNAME)
