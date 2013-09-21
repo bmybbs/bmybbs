@@ -197,5 +197,18 @@ bbssnd_main()
 		sprintf(buf, "%s%s", showByDefMode(), board);
 		redirect(buf);
 	}
+
+	// 发送回帖提醒开始 by IronBlood
+	char noti_userid[14] = { '\0' };
+	if(x!=NULL && r>0 && strchr(x->owner, '.') == NULL) { // x 不为空（即回复模式）、发帖成功、并且为本站用户
+		if(x->owner[0] == '\0') { // 匿名用户
+			memcpy(noti_userid, &x->owner[1], IDLEN);
+		} else {
+			memcpy(noti_userid, x->owner, IDLEN);
+		}
+		if(strcmp(currentuser.userid, noti_userid) != 0) { // 提醒用户和当前用户不相同的时候
+			add_post_notification(noti_userid, (anony) ? "Anonymous" : currentuser.userid, board, r, title);
+		}
+	} // 发送回帖提醒结束
 	return 0;
 }

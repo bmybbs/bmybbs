@@ -567,3 +567,10 @@ static int update_article_link_in_file(char *boardname, int oldthread, int newfi
 
 	return r;
 }
+
+
+time_t fn2timestamp(char * filename) {
+	char num_str[11]={'0'};
+	memcpy(num_str, &filename[2], 10);
+	return (time_t)atoi(num_str);
+}
