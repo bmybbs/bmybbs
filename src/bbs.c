@@ -2208,13 +2208,15 @@ post_article(struct fileheader *sfh)
 	// term 下回帖提醒开始 by IronBlood
 	// 逻辑过程与 mailback 相同
 	char notito[IDLEN+2];
-	if (sfh->owner[0] == 0)
-		strcpy(notito, sfh->owner+1);
-	else
-		strcpy(notito, sfh->owner);
-	if(strcmp(notito, currentuser.userid) != 0) {
-		add_post_notification(notito, (header.chk_anony) ? "Anonymous" : currentuser.userid,
-							  currboard, postfile.filetime, postfile.title);
+	if(sfh!=NULL) {
+		if (sfh->owner[0] == 0)
+			strcpy(notito, sfh->owner+1);
+		else
+			strcpy(notito, sfh->owner);
+		if(strcmp(notito, currentuser.userid) != 0) {
+			add_post_notification(notito, (header.chk_anony) ? "Anonymous" : currentuser.userid,
+								  currboard, postfile.filetime, postfile.title);
+		}
 	}
 	// term 下回帖提醒结束
 	return FULLUPDATE;
