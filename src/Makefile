@@ -51,7 +51,7 @@ GARBAGE  = a.out core installchatd bbs.chatd bbsd thread
 
 .SUFFIXES: .o .c .ln .t
 
-.c.o:   ;   $(CC) $(CFLAGS) -include proto.h -c $*.c
+.c.o:   ;   $(CC) $(CFLAGS) -DDBBSMAIN -DBACK_DELETE_RANGE -include proto.h -c $*.c
 
 #.c.t:   ;   $(CC) -D_GNU_SOURCE $(CFLAGSTEST) $(CPPFLAGS) $(DEFINES) -DBACK_DELETE_RANGE -include proto.h -c $*.c -o $*.t
 
