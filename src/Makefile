@@ -156,7 +156,7 @@ clean:
 #	rm -rf core 'find .. type f -name 'core' -print'
 #	rm -f `find .. -name '*.[oas]' ! -regex '.*lxdialog/.*' -print`
 	-rm -fr $(GARBAGE) $(COBJS) $(COBJSTEST) $(PROGNAME) $(LNFILES) bbsd bbs.chatd thread pty/ptyexec
-	-rm -fr core .depend
+	-rm -fr core .depend bbsnet telnet proto.h
 
 dist_clean: clean
 	-rm -f CONFIG/config.log

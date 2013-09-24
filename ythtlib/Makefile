@@ -20,4 +20,4 @@ install:libytht.a
 	mkdir -p $(BBSHOME)/bin
 	cp libytht.a $(BBSHOME)/bin
 clean:
-	rm -fr $(COBJS) libytht.a
+	rm -fr $(COBJS) libytht.a .depend

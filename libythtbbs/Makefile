@@ -20,7 +20,7 @@ install:libythtbbs.a
 	mkdir -p $(BBSHOME)/bin
 	cp libythtbbs.a $(BBSHOME)/bin
 clean:
-	rm -fr $(COBJS) libythtbbs.a seclist.local gensectree gensectree.o sectree.c
+	rm -fr $(COBJS) libythtbbs.a seclist.local gensectree gensectree.o sectree.c .depend
 seclist.local:
 	if [ -f ../site/seclist.txt ];then ln -sf ../site/seclist.txt seclist.local;else ln -sf seclist.txt seclist.local;fi
 sectree.c: gensectree seclist.local sectree.h

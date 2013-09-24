@@ -104,7 +104,7 @@ upload: upload.c
 	$(CC) $(CFLAGS) -o $@ $^ -L$(BBSHOME)/bin -lytht -lythtbbs
 
 clean:
-	rm -rf $(COBJS) $(PROGRNAME) *.o
+	rm -rf $(COBJS) $(PROGRNAME) *.o .depend proto.h upload www
 checklist:=$(filter-out $(CFILE) $(OTHERS),$(shell ls *.c))
 check:
 	@echo $(checklist)
