@@ -111,7 +111,7 @@ BBSCFILES = bbs.c record.c delete.c main.c stuff.c mail.c register.c \
            bm.c list.c goodbye.c bbsgopher.c fileshm.c postheader.c \
            convcode.c five.c tmachine.c addressbook.c\
            backnumber.c common.c sec_hand.c regular.c 1984.c moneycenter.c\
-	   editboard.c power_select.c tmpl.c
+	   editboard.c power_select.c tmpl.c identify.c
 
 
 SSHD_OBJS = sshd.o auth-passwd.o \
@@ -167,7 +167,7 @@ am__objects_2 = bbs.$(OBJEXT) record.$(OBJEXT) delete.$(OBJEXT) \
 	five.$(OBJEXT) tmachine.$(OBJEXT) addressbook.$(OBJEXT) \
 	backnumber.$(OBJEXT) common.$(OBJEXT) sec_hand.$(OBJEXT) \
 	regular.$(OBJEXT) 1984.$(OBJEXT) moneycenter.$(OBJEXT) \
-	editboard.$(OBJEXT) power_select.$(OBJEXT) tmpl.$(OBJEXT)
+	editboard.$(OBJEXT) power_select.$(OBJEXT) tmpl.$(OBJEXT) identify.$(OBJEXT)
 am__objects_3 = $(am__objects_2)
 am__objects_4 = sshd.$(OBJEXT) auth-passwd.$(OBJEXT) \
 	log-server.$(OBJEXT) canohost.$(OBJEXT) servconf.$(OBJEXT) \
@@ -338,6 +338,7 @@ include ./$(DEPDIR)/fileshm.Po
 include ./$(DEPDIR)/five.Po
 include ./$(DEPDIR)/goodbye.Po
 include ./$(DEPDIR)/help.Po
+include ./$(DEPDIR)/identify.Po
 include ./$(DEPDIR)/io.Po
 include ./$(DEPDIR)/list.Po
 include ./$(DEPDIR)/log-server.Po
