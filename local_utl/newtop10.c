@@ -28,7 +28,7 @@ char area[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'G', 'N', 'H', 
 struct boardtop **topten_area = NULL;
 struct boardtop **ctopten_area = NULL;
 
-const char * TDSTYLE = "<style type=\"text/css\">.td-overflow { overflow: hidden; text-overflow: ellipsis;}</style>";
+const char * TDSTYLE = "<style type=\"text/css\">.td-overflow { width: 236px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}</style>";
 
 int allflag = 0;
 struct mmapfile filtermf = { ptr:NULL, size:0 };
