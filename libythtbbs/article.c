@@ -531,7 +531,10 @@ static int update_article_link_in_file(char *boardname, int oldthread, int newfi
 	int fd=open(filename, O_RDONLY);
 	if(fd == -1)
 		return -1;
-	flock(fd, LOCK_EX);  // ¼ÓËø
+	while(flock(fd, LOCK_EX)!=0) {
+		// ¼ÓËø
+		sleep(1);
+	}
 	htmlDocPtr doc = htmlParseFile(filename, "GBK");
 	if(doc == NULL) {
 		flock(fd, LOCK_UN);
