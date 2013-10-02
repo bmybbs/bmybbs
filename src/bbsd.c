@@ -379,8 +379,8 @@ char *hid;
 		//show_proc_info();  by bjgyt
 		//show_bandwidth_info();
 		prints("\033[0m\n\r");
-		if(!runtest)
-			sleep(2);
+//		if(!runtest)
+//			sleep(2);
 #endif
 		if (!runtest)
 			execl(bbs_prog_path, "bbs", "d", hid, NULL);	/*µ÷ÓÃBBS */
