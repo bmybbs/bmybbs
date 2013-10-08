@@ -194,9 +194,7 @@ userlock(char *userid, int locktype)
 	fd = open(path, O_RDONLY | O_CREAT, 0660);
 	if (fd == -1)
 		return -1;
-	while(flock(fd, locktype)!=0) {
-		sleep(1);
-	}
+	flock(fd, locktype);
 	return fd;
 }
 
