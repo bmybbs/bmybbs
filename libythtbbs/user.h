@@ -51,6 +51,14 @@ int countlife(struct userec *);
 int userlock(char *userid, int locktype);
 int userunlock(char *userid, int fd);
 int checkbansite(const char *addr);
+
+/** 检查用户权限
+ * 改方法从 nju09 移植。
+ * @param x
+ * @param level
+ * @return
+ */
+int check_user_perm(struct userec *x, int level);
 int userbansite(const char *userid, const char *fromhost);
 void logattempt(char *user,char *from,char *zone,time_t time);
 int inoverride(char *who, char *owner, char *file);

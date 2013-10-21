@@ -327,3 +327,7 @@ char *getv4addr(char *fromhost){
 		addr=rindex(fromhost,':');
 		return ++addr;
 	}	
+
+int check_user_perm(struct userec *x, int level) {
+	return (x->userlevel & level);
+}
