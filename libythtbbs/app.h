@@ -1,9 +1,6 @@
 #ifndef __APP_H
 #define __APP_H
 #include "ythtbbs.h"
-static const int MAXSECRETKEYLENGTH 	= 8;	// secret key 长度
-static const int APPKEYLENGTH 			= 36;	// app key 长度
-static const int APPNAMELENGTH 			= 20;	// app 名称长度
 
 /** bmy app 结构体
  * 存放和app有关的原始数据
