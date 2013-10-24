@@ -208,3 +208,4 @@ You must also set "EightBitMode=pass8" in /etc/sendmail.cf
 #define MAXSECRETKEYLENGTH	8
 #define APPKEYLENGTH		36
 #define APPNAMELENGTH		20
+#define APPPID				-1
