@@ -4,6 +4,12 @@
 extern int pu;
 void getrandomint(unsigned int *s);
 void getrandomstr(unsigned char *s);
+/**
+ * getrandomstr 方法的变种
+ * @param s 字符串
+ * @param len 长度
+ */
+void getrandomstr_r(unsigned char *s, size_t len);
 struct mymsgbuf {
 	long int mtype;
 	char mtext[1];

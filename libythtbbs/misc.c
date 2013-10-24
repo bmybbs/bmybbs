@@ -41,6 +41,17 @@ getrandomstr(unsigned char *s)
 	s[30] = 0;
 }
 
+void getrandomstr_r(unsigned char *s, size_t len)
+{
+	int i, fd;
+	fd = open("/dev/urandom", O_RDONLY);
+	read(fd, s, len);
+	for(i=0; i<len; ++i) {
+		s[i] = s[i]%26 + 'A';
+	}
+	s[len-1] = 0;
+}
+
 int
 init_newtracelogmsq()
 {
