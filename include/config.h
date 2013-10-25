@@ -174,8 +174,8 @@ You must also set "EightBitMode=pass8" in /etc/sendmail.cf
 
 #define MY_BBS_HOME   "/home/bbs" 
 #define MY_BBS_NAME   "兵马俑BBS"
-#define MY_BBS_DOMAIN "202.117.3.30" 
-#define MY_BBS_IP     "202.117.3.30" 
+#define MY_BBS_DOMAIN "bbs.xjtu.edu.cn" 
+#define MY_BBS_IP     "202.117.1.8" 
 #define MY_BBS_ID     "BMY"
 #define MY_BBS_LOC    "西安交通大学"
 #define BBSUSER	      "bbs"

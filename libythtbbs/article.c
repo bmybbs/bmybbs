@@ -528,14 +528,20 @@ static int is_article_link_in_file(char *boardname, int thread, char *filename) 
  * @return 若文件已更新，则返回1
  */
 static int update_article_link_in_file(char *boardname, int oldthread, int newfiletime, char *newtitle, char *filename) {
+	int fd=open(filename, O_RDONLY);
+	if(fd == -1)
+		return -1;
+	flock(fd, LOCK_EX);
 	htmlDocPtr doc = htmlParseFile(filename, "GBK");
 	if(doc == NULL) {
+		flock(fd, LOCK_UN);
 		return -1;
 	}
 
 	xmlNodePtr pRoot = xmlDocGetRootElement(doc);
 	if(pRoot == NULL) {
 		xmlFreeDoc(doc);
+		flock(fd, LOCK_UN);
 		return -1;
 	}
 
@@ -564,6 +570,13 @@ static int update_article_link_in_file(char *boardname, int oldthread, int newfi
 	xmlXPathFreeObject(result);
 	xmlXPathFreeContext(ctx);
 	xmlFreeDoc(doc);
-
+	flock(fd, LOCK_UN);
 	return r;
+}
+
+
+time_t fn2timestamp(char * filename) {
+	char num_str[11]={'0'};
+	memcpy(num_str, &filename[2], 10);
+	return (time_t)atoi(num_str);
 }

@@ -451,6 +451,14 @@ bbscon_main()
 		showbinaryattach(filename);
 		return 0;
 	}
+
+	// 删除回复提醒开始 by IronBlood
+	int article_id = (int)fn2timestamp(file);
+	if(is_post_in_notification(currentuser.userid, board, article_id)) {
+		del_post_notification(currentuser.userid, board, article_id);
+	}
+	// 删除回复提醒结束
+
 	strcpy(fileback, file);
 	sprintf(dir, "boards/%s/.DIR", board);
 	total = bx->total;

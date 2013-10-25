@@ -67,7 +67,7 @@ static void show_brdlist(int page, int clsflag, int newflag, int brdnum,
 static int cmpboard(struct newpostdata *brd, struct newpostdata *tmp);
 static int choose_board(int newflag, const struct sectree *sec);
 static void readwritebrc(struct allbrc *allbrc);
-static int readtitle();
+static int readtitle();   // Êä³öÔÄ¶ÁÍ·²¿
 static char *readdoent(int num, struct fileheader *ent, char buf[512]);
 static char *makedatestar(char *datestr, struct fileheader *ent);
 

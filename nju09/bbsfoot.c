@@ -252,6 +252,11 @@ bbsfoot_main()
 	printf("</span>\n");
 
 	printf("<span id='bbsfoot_stay'>停留[<font style=\"font-size:10px\" color=#ff6600>%d</font>小时<font style=\"font-size:10px\" color=#ff6600>%d</font>分钟]</span>", dt / 60, dt % 60);
+
+	if(loginok && !isguest) { //提醒条数
+		printf("<span id='notify_num'>提醒[<a href='bbsnotify' target='f3' class='1011'>%d条</a>]</span>",
+				count_notification_num(currentuser.userid));
+	}
 	//Add by liuche 20120616
 	footInfo();
 	printf("</div>\n");

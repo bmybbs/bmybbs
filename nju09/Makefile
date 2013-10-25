@@ -12,7 +12,7 @@ ifdef GPROF2
 LIBS    := -lghthash -lz -L/usr/lib/mysql -lmysqlclient
 CFLAGS  := $(CFLAGS) $(OS_DEF) -DGPROF -pg -g
 else
-LIBS	:= -lghthash -L/usr/lib/mysql -lmysqlclient
+LIBS	:= -lghthash -L/usr/lib/mysql -lmysqlclient -lxml2
 CFLAGS	:= $(CFLAGS) $(OS_DEF) -g
 endif
 endif
@@ -31,8 +31,10 @@ CFILE	= bbsmain.c bbstop10.c bbsdoc.c bbscon.c bbsbrdadd.c bbsboa.c bbsall.c bbs
 	bbshome.c bbsindex.c bbssechand.c bbsupload.c bbslform.c regreq.c \
 	bbsselstyle.c bbscon1.c bbsattach.c bbskick.c \
 	bbsscanreg.c bbsshowfile.c bbst.c bbsdt.c bbslt.c bbsincon.c bbssetscript.c \
-	bbscccmail.c bbsfwdmail.c bbstmpl.c bbsrss.c bbsucss.c bbsdefcss.c bbssecfly.c bbssbs.c bbseditmail.c  bbsfindpass.c bbsresetpass.c bbsfindacc.c
-	 CFILEBACKUP = bbsdmulan.c bbsdt.c bbsjs.c bbslt.c bbsmovie.c bbsnewleft.c bbssel.c bbst.c bbstty.c bbschat.c \
+	bbscccmail.c bbsfwdmail.c bbstmpl.c bbsrss.c bbsucss.c bbsdefcss.c bbssecfly.c \
+	bbssbs.c bbseditmail.c  bbsfindpass.c bbsresetpass.c bbsfindacc.c bbsnotify.c \
+	bbsdelnotify.c
+CFILEBACKUP = bbsdmulan.c bbsdt.c bbsjs.c bbslt.c bbsmovie.c bbsnewleft.c bbssel.c bbst.c bbstty.c bbschat.c \
 	      ytml.c ytml_func.c bclass.c bbsusr.c bbsalluser.c
 
 COBJS	:=$(CFILE:.c=.o)
@@ -102,7 +104,7 @@ upload: upload.c
 	$(CC) $(CFLAGS) -o $@ $^ -L$(BBSHOME)/bin -lytht -lythtbbs
 
 clean:
-	rm -rf $(COBJS) $(PROGRNAME) *.o
+	rm -rf $(COBJS) $(PROGRNAME) *.o .depend proto.h upload www
 checklist:=$(filter-out $(CFILE) $(OTHERS),$(shell ls *.c))
 check:
 	@echo $(checklist)

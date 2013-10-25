@@ -28,6 +28,8 @@ char area[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'G', 'N', 'H', 
 struct boardtop **topten_area = NULL;
 struct boardtop **ctopten_area = NULL;
 
+const char * TDSTYLE = "<style type=\"text/css\">.td-overflow { width: 236px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}</style>";
+
 int allflag = 0;
 struct mmapfile filtermf = { ptr:NULL, size:0 };
 
@@ -301,8 +303,8 @@ html_topten(int mode, char *file)
 		errlog("topten write error");
 		exit(1);
 	}
-	fprintf(fp, "<body><center><div class='rhead'>%s --<span class='h11'> 今日十大热门话题</span></div>\n<hr>\n",
-		MY_BBS_NAME);
+	fprintf(fp, "%s<body><center><div class='rhead'>%s --<span class='h11'> 今日十大热门话题</span></div>\n<hr>\n",
+		TDSTYLE, MY_BBS_NAME);
 	fprintf(fp, "<table border='1'>\n");
 	fprintf
 	    (fp,
@@ -310,8 +312,8 @@ html_topten(int mode, char *file)
 	for (j = 0; j < 10 && bt->unum != 0; j++, bt++) {
 		fprintf
 		    (fp,
-		     "<tr><td>第 %d 名</td><td><a href='tdoc?board=%s'>%s</a></td><td><a href='tfind?board=%s&amp;th=%d'>%42.42s</a></td><td>%d</td></tr>\n",
-		     j + 1, bt->board, bt->board, bt->board, bt->thread, void1(nohtml(bt->title)),bt->unum);
+		     "<tr><td>第 %d 名</td><td><a href='tdoc?board=%s'>%s</a></td><td><div class='td-overflow'><a href='tfind?board=%s&amp;th=%d' title='%s'>%s</a></div></td><td>%d</td></tr>\n",
+		     j + 1, bt->board, bt->board, bt->board, bt->thread, void1(nohtml(bt->title)), void1(nohtml(bt->title)),bt->unum);
 	}
 	fprintf(fp, "</table></center></body>");
 	fclose(fp);
@@ -331,11 +333,11 @@ html_topten(int mode, char *file)
 		char path[256];
 		sprintf(path, AREA_DIR "/%c", area[i]);
 		fp = fopen(path, "w");
-		fprintf(fp, "<table width='90%'>");
+		fprintf(fp, "%s<table width='90%'>", TDSTYLE);
 		for (j = 0; j < AREA_TOP_CNT && bt->unum != 0; j++, bt++) 
 		{
-			fprintf(fp, "<tr><td width='120px'>[<a href='tdoc?board=%s'>%s</a>]</td><td><a href='tfind?board=%s&amp;th=%d'>%42.42s</a></td><td width='20px'>(%d)</td></tr>",
-				bt->board, bt->board, bt->board, bt->thread, void1(nohtml(bt->title)),bt->unum);
+			fprintf(fp, "<tr><td width='120px'>[<a href='tdoc?board=%s'>%s</a>]</td><td><div class='td-overflow'><a href='tfind?board=%s&amp;th=%d' title='%s'>%s</a></div></td><td width='20px'>(%d)</td></tr>",
+				bt->board, bt->board, bt->board, bt->thread, void1(nohtml(bt->title)), void1(nohtml(bt->title)),bt->unum);
 		}
 		fprintf(fp, "</table>");
 		fclose(fp);
@@ -359,11 +361,12 @@ index_topten(int mode, char *file)
                 errlog("topten write error");
                 exit(1);
         }
+        fprintf(fp, "%s", TDSTYLE);
         for (j = 0; j < 10 && bt->unum != 0; j++, bt++) {
                 fprintf
                     (fp,
-		     "<tr><td><span class=\"smalltext\">%d</span></td><td><a href='tfind?board=%s&th=%d'>%42.42s</a></td></tr>\n",
-                     j + 1, bt->board, bt->thread, void1(nohtml(bt->title)));
+		     "<tr><td><span class=\"smalltext\">%d</span></td><td><div class='td-overflow'><a href='tfind?board=%s&th=%d' title='%s'>%s</a></div></td></tr>\n",
+                     j + 1, bt->board, bt->thread, void1(nohtml(bt->title)), void1(nohtml(bt->title)));
         }
         fclose(fp);
         rename("wwwtmp/indextopten.tmp", file);

@@ -26,25 +26,23 @@ BBSHOME=/home/bbs
 BBSUID=999
 BBSGRP=999
 
-#OS_DEF   = -DLINUX
+OS_DEF   = -DLINUX
 CC       = gcc
-#CFLAGS   = -Wall -O2 -mmmx -msse -pipe -DCONF_HAVE_OPENPTY -I$(BASEPATH)/include -I$(BASEPATH)/ythtlib -I$(BASEPATH)/libythtbbs -L/usr/lib/mysql -lmysqlclient -lxml2
-CFLAGS=-Wall -O2 -g -DCONF_HAVE_OPENPTY -D_GNU_SOURCE -DLINUX -I$(BASEPATH)/include -I$(BASEPATH)/ythtlib -I$(BASEPATH)/libythtbbs -I/usr/include/libxml2
-#CPPFLAGS =  -I/usr/include/mysql -DENABLE_MYSQL
-#CFLAGSTEST   = -Wall -pipe -DCONF_HAVE_OPENPTY -I$(BASEPATH)/include -I$(BASEPATH)/ythtlib -I$(BASEPATH)/libythtbbs -g
+CFLAGS   = -Wall -O2 -mmmx -msse -pipe -DCONF_HAVE_OPENPTY -I$(BASEPATH)/include -I$(BASEPATH)/ythtlib -I$(BASEPATH)/libythtbbs -I/usr/include/libxml2 -L/usr/lib/mysql -lmysqlclient
+CPPFLAGS =  -I/usr/include/mysql -DENABLE_MYSQL
+CFLAGSTEST   = -Wall -pipe -DCONF_HAVE_OPENPTY -I$(BASEPATH)/include -I$(BASEPATH)/ythtlib -I$(BASEPATH)/libythtbbs -g
 #CFLAGSTEST   = -pipe -DCONF_HAVE_OPENPTY -I$(BASEPATH)/include -I$(BASEPATH)/ythtlib -I$(BASEPATH)/libythtbbs -g -pg -static 
-LDFLAGS=-L$(BBSHOME)/bin
-BBSLIB=-lythtbbs -lytht
-LIBS=-lmysqlclient -lxml2 
-#LIBSTEST = 
-#LIBSQL = -L/usr/lib/mysql -lmysqlclient
-#CGIPATH = /home/apache/cgi-bin
-#HTMPATH = /home/apache/htdocs
-#WWW_LIBS =  -lghthash
-#WWW_CPPFLAGS=  -DENABLE_GHTHASH
+BBSLIB = -L$(BBSHOME)/bin -lythtbbs -lytht -lmysqlclient -lxml2
+LIBS     = 
+LIBSTEST = 
+LIBSQL = -L/usr/lib/mysql -lmysqlclient
+CGIPATH = /home/apache/cgi-bin
+HTMPATH = /home/apache/htdocs
+WWW_LIBS =  -lghthash
+WWW_CPPFLAGS=  -DENABLE_GHTHASH
 INSTALL  = /usr/bin/install -c
 
-#CSIE_DEF = 
+CSIE_DEF = 
 
 $(BBSHOME)/bin/%:%
 	cp $< $@.new

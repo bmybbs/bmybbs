@@ -1007,6 +1007,11 @@ char *direct;
 		    ("[1;44;31m[ÔÄ¶ÁÎÄÕÂ] [33m½áÊø Q,¡û©¦ÉÏÒ»·â ¡ü,l©¦ÏÂÒ»·â n, <Space>,<Enter>,¡ı©¦Ö÷ÌâÔÄ¶Á x p [m");
 	}
 
+	// É¾³ıÌáĞÑ¿ªÊ¼
+	if(is_post_in_notification(currentuser.userid, currboard, fileinfo->filetime)) {
+		del_post_notification(currentuser.userid, currboard, fileinfo->filetime);
+	}
+
 	/* Re-Write By Excellent */
 
 	readingthread = fileinfo->thread;
@@ -2200,6 +2205,20 @@ post_article(struct fileheader *sfh)
 			strcpy(replyto, sfh->owner);
 		mail_file(copyfrom, replyto, postfile.title);
 	}
+	// term ÏÂ»ØÌûÌáĞÑ¿ªÊ¼ by IronBlood
+	// Âß¼­¹ı³ÌÓë mailback ÏàÍ¬
+	char notito[IDLEN+2];
+	if(sfh!=NULL) {
+		if (sfh->owner[0] == 0)
+			strcpy(notito, sfh->owner+1);
+		else
+			strcpy(notito, sfh->owner);
+		if(strcmp(notito, currentuser.userid) != 0) {
+			add_post_notification(notito, (header.chk_anony) ? "Anonymous" : currentuser.userid,
+								  currboard, postfile.filetime, postfile.title);
+		}
+	}
+	// term ÏÂ»ØÌûÌáĞÑ½áÊø
 	return FULLUPDATE;
 }
 
