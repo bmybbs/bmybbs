@@ -29,6 +29,7 @@ struct boardtop **topten_area = NULL;
 struct boardtop **ctopten_area = NULL;
 
 const char * TDSTYLE = "<style type=\"text/css\">.td-overflow { width: 236px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}</style>";
+const char * BDSTYLE = "<style type=\"text/css\">.bd-overflow { width: 500px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}</style>";
 
 int allflag = 0;
 struct mmapfile filtermf = { ptr:NULL, size:0 };
@@ -333,10 +334,10 @@ html_topten(int mode, char *file)
 		char path[256];
 		sprintf(path, AREA_DIR "/%c", area[i]);
 		fp = fopen(path, "w");
-		fprintf(fp, "%s<table width='90%'>", TDSTYLE);
+		fprintf(fp, "%s<table width='90%'>", BDSTYLE);
 		for (j = 0; j < AREA_TOP_CNT && bt->unum != 0; j++, bt++) 
 		{
-			fprintf(fp, "<tr><td width='120px'>[<a href='tdoc?board=%s'>%s</a>]</td><td><div class='td-overflow'><a href='tfind?board=%s&amp;th=%d' title='%s'>%s</a></div></td><td width='20px'>(%d)</td></tr>",
+			fprintf(fp, "<tr><td width='120px'>[<a href='tdoc?board=%s'>%s</a>]</td><td><div class='bd-overflow'><a href='tfind?board=%s&amp;th=%d' title='%s'>%s</a></div></td><td width='20px'>(%d)</td></tr>",
 				bt->board, bt->board, bt->board, bt->thread, void1(nohtml(bt->title)), void1(nohtml(bt->title)),bt->unum);
 		}
 		fprintf(fp, "</table>");
