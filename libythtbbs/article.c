@@ -555,7 +555,7 @@ static int update_article_link_in_file(char *boardname, int oldthread, int newfi
 	int r=0;
 	if((r=result->nodesetval->nodeNr) == 1){
 		char new_href[80];
-		sprintf(new_href, "con?B=%s&F=M.%d.A", boardname, newfiletime); //新链接采用一般阅读模式
+		sprintf(new_href, "con?B=%s&amp;F=M.%d.A", boardname, newfiletime); //新链接采用一般阅读模式
 
 		xmlNodePtr cur = result->nodesetval->nodeTab[0];
 		xmlSetProp(cur, (const xmlChar*)"href", (const xmlChar*)new_href); // 更新链接
