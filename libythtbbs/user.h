@@ -53,12 +53,36 @@ int userunlock(char *userid, int fd);
 int checkbansite(const char *addr);
 
 /** 检查用户权限
- * 改方法从 nju09 移植。
+ * 改方法从 nju09 移植，参见 int user_perm(struct userec *x, int level)。
  * @param x
  * @param level
  * @return
  */
 int check_user_perm(struct userec *x, int level);
+
+extern struct user_info;
+extern struct boardmem;
+/**
+ * @brief 检查用户的阅读权限
+ * 该方法从 nju09 移植，用于检查用户读取版面的权限。
+ * @param user
+ * @param board 版面名称
+ * @return
+ * @see int has_read_perm(struct userec *user, char *board)
+ * @see int has_read_perm_x(struct userec *user, struct boardmem *x)
+ */
+int check_user_read_perm(struct user_info *user, char *board);
+
+/**
+ * @brief 检查用户的阅读权限
+ * 该方法从 nju09 移植，用于检查用户读取版面的权限。
+ * @param user
+ * @param board boardmem 指针
+ * @return
+ * @see int has_read_perm(struct userec *user, char *board)
+ * @see int has_read_perm_x(struct userec *user, struct boardmem *x)
+ */
+int check_user_read_perm_x(struct user_info *user, struct boardmem *board);
 int userbansite(const char *userid, const char *fromhost);
 void logattempt(char *user,char *from,char *zone,time_t time);
 int inoverride(char *who, char *owner, char *file);

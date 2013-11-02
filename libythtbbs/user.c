@@ -6,6 +6,7 @@
 #include <arpa/inet.h>
 
 #include "ythtbbs.h"
+#include "bbs.h"
 
 static int isoverride(struct override *o, char *id);
 
@@ -330,4 +331,38 @@ char *getv4addr(char *fromhost){
 
 int check_user_perm(struct userec *x, int level) {
 	return (x->userlevel & level);
+}
+
+int check_user_read_perm(struct user_info *user, char *board)
+{
+	return check_user_read_perm_x(user, getboardbyname(board));
+}
+
+int check_user_read_perm_x(struct user_info *user, struct boardmem *board)
+{
+	if(!board || !user)
+		return 0;
+
+	if(board->header.clubnum != 0) {
+		if(board->header.flag & CLUBTYPE_FLAG)
+			return 1;
+		if(user->active == 0 || strcasecmp(user->userid, "guest")==0)
+			return 0;
+		return user->clubrights[board->header.clubnum / 32]
+		       & (1<<((board->header.clubnum) % 32));
+	}
+
+	if(board->header.level == 0)
+		return 1;
+
+	if(board->header.level & (PERM_POSTMASK | PERM_NOZAP))
+		return 1;
+
+	if((user->userlevel & PERM_BASIC) == 0)
+		return 0;
+
+	if((user->userlevel & board->header.level))
+		return 1;
+
+	return 0;
 }
