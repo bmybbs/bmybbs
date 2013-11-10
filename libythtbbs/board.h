@@ -63,5 +63,5 @@ int fillmboard(struct boardheader *bh, struct myparam1 *param);
  * @see struct boardmem * getbcache(char *board)
  * @see struct boardmem * getboard(char *board)
  */
-struct boardmem *getboardbyname(char *board_name);  // ´Ó nju09 ÒÆÖ²£¬by IronBlood 20130805
+struct boardmem *getboardbyname(const char *board_name);  // ´Ó nju09 ÒÆÖ²£¬by IronBlood 20130805
 #endif

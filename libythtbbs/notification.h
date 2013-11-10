@@ -29,18 +29,18 @@ typedef struct NotifyItem* NotifyItemList;
  * @see is_post_in_notification(char * userid, char * board, int article_id)
  * @see del_post_notification(char * userid, char * board, int article_id)
  */
-int add_post_notification(char * to_userid,
-						  char * from_userid,
-						  char * board,
+int add_post_notification(const char * to_userid,
+						  const char * from_userid,
+						  const char * board,
 						  int article_id,
-						  char * title_gbk);
+						  const char * title_gbk);
 
 /** 将通知解析到内存中
  *
  * @param userid 用户 id
  * @return struct NotifyItem 链表
  */
-NotifyItemList parse_notification(char *userid);
+NotifyItemList parse_notification(const char *userid);
 
 /** 释放 NotifyItemList 内存
  *
@@ -53,7 +53,7 @@ void free_notification(NotifyItemList niList);
  * @param userid 用户 id
  * @return 通知条数，该值 >= 0
  */
-int count_notification_num(char *userid);
+int count_notification_num(const char *userid);
 
 /** 检验某篇文章是否在消息列表中
  * 该方法不使用 libxml2 的方法，仅用于快速判断特征字符串是否存在于通知文件中。
@@ -64,7 +64,7 @@ int count_notification_num(char *userid);
  * @return 若帖子存在在通知文件中，则返回1，否则返回0
  * @see del_post_notification(char * userid, char * board, int article_id)
  */
-int is_post_in_notification(char * userid, char * board, int article_id);
+int is_post_in_notification(const char * userid, const char * board, int article_id);
 
 /** 删除一条回帖提醒
  *
@@ -74,13 +74,13 @@ int is_post_in_notification(char * userid, char * board, int article_id);
  * @return <ul><li>0: 删除成功</li><li>-1: 帖子不在提醒文件中</li><li>-2: 删除失败</li></ul>
  * @see is_post_in_notification(char * userid, char * board, int article_id)
  */
-int del_post_notification(char * userid, char * board, int article_id);
+int del_post_notification(const char * userid, const char * board, int article_id);
 
 /** 删除某个用户的所有提醒
  *
  * @param userid 用户id
  * @return 删除成功返回0
  */
-int del_all_notification(char *userid);
+int del_all_notification(const char *userid);
 
 #endif

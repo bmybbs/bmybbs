@@ -115,7 +115,7 @@ fillmboard(struct boardheader *bh, struct myparam1 *mp)
 }
 
 
-struct boardmem * getboardbyname(char *board_name) {
+struct boardmem * getboardbyname(const char *board_name) {
 	int i;
 	if (board_name[0] == 0)
 		return NULL;

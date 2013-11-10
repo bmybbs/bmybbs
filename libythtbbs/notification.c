@@ -14,8 +14,8 @@
 static struct NotifyItem * parse_to_item(xmlNodePtr xmlItem);
 static void addItemtoList(NotifyItemList *List, struct NotifyItem *Item);
 
-int add_post_notification(char * to_userid, char * from_userid, char * board,
-						  int article_id, char * title_gbk) {
+int add_post_notification(const char * to_userid, const char * from_userid, const char * board,
+						  int article_id, const char * title_gbk) {
 	char noti_type[8];
 	sprintf(noti_type, "%d", NOTIFY_TYPE_POST);
 
@@ -67,7 +67,7 @@ int add_post_notification(char * to_userid, char * from_userid, char * board,
 	return 0;
 }
 
-int count_notification_num(char *userid) {
+int count_notification_num(const char *userid) {
 	char notify_file_path[80];
 	sethomefile(notify_file_path, userid, NOTIFILE);
 	const xmlChar *xpathExpr = (xmlChar *)"/Notify/Item";
@@ -94,7 +94,7 @@ int count_notification_num(char *userid) {
 	return res_num;
 }
 
-int is_post_in_notification(char * userid, char *board, int article_id) {
+int is_post_in_notification(const char * userid, const char *board, int article_id) {
 	char notify_file_path[80], search_str[80], *p;
 	struct stat statbuf;
 	int fd;
@@ -130,7 +130,7 @@ int is_post_in_notification(char * userid, char *board, int article_id) {
 	return (r!=NULL);
 }
 
-NotifyItemList parse_notification(char *userid) {
+NotifyItemList parse_notification(const char *userid) {
 
 	NotifyItemList niList = NULL;
 	const xmlChar * xpathExpr = (xmlChar *)"/Notify/Item";
@@ -181,7 +181,7 @@ void free_notification(NotifyItemList niList) {
 	}
 }
 
-int del_post_notification(char * userid, char * board, int article_id) {
+int del_post_notification(const char * userid, const char * board, int article_id) {
 	char notify_file_path[80], search_str[96];
 	sprintf(search_str, "/Notify/Item[@board=\"%s\" and @aid=\"%d\"]", board, article_id);
 	sethomefile(notify_file_path, userid, NOTIFILE);
@@ -223,7 +223,7 @@ int del_post_notification(char * userid, char * board, int article_id) {
 	return 0;
 }
 
-int del_all_notification(char *userid) {
+int del_all_notification(const char *userid) {
 	char notify_file_path[80];
 	sethomefile(notify_file_path, userid, NOTIFILE);
 
