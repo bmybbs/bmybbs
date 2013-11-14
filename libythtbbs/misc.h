@@ -9,7 +9,7 @@ void getrandomstr(unsigned char *s);
  * @param s ×Ö·û´®
  * @param len ³¤¶È
  */
-void getrandomstr_r(char *s, size_t len);
+void getrandomstr_r(unsigned char *s, size_t len);
 struct mymsgbuf {
 	long int mtype;
 	char mtext[1];

@@ -41,11 +41,12 @@ getrandomstr(unsigned char *s)
 	s[30] = 0;
 }
 
-void getrandomstr_r(char *s, size_t len)
+void getrandomstr_r(unsigned char *s, size_t len)
 {
 	int i, fd;
 	fd = open("/dev/urandom", O_RDONLY);
 	read(fd, s, len);
+	close(fd);
 	for(i=0; i<len; ++i) {
 		s[i] = s[i]%26 + 'A';
 	}
