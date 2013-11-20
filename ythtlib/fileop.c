@@ -316,3 +316,23 @@ clearpath(const char *path)
 	closedir(pdir);
 	return 0;
 }
+
+// 此处原使用的宏 STRLEN 替换成 80
+int seek_in_file(char *filename, char *seekstr)
+{
+	FILE *fp;
+	char buf[80];
+	char *namep;
+
+	if ((fp = fopen(filename, "r")) == NULL)
+		return 0;
+	while (fgets(buf, 80, fp) != NULL) {
+		namep = (char *) strtok(buf, ": \n\r\t");
+		if (namep != NULL && strcasecmp(namep, seekstr) == 0) {
+			fclose(fp);
+			return 1;
+		}
+	}
+	fclose(fp);
+	return 0;
+}
