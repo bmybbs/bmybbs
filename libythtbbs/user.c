@@ -366,3 +366,63 @@ int check_user_read_perm_x(struct user_info *user, struct boardmem *board)
 
 	return 0;
 }
+
+int check_user_post_perm_x(struct user_info *user, struct boardmem *board)
+{
+	char buf[256];
+
+	if(!board || !check_user_read_perm_x(user, board))
+		return 0;
+
+	sprintf(buf, "boards/%s/deny_users", board->header.filename);
+	if(seek_in_file(buf, user->userid))
+		return 0;
+
+	sprintf(buf, "boards/%s/deny_anony", board->header.filename);
+	if(seek_in_file(buf, user->userid))
+		return 0;
+
+	if(!strcasecmp(board->header.filename, "sysop"))
+		return 1;
+
+	if(!strcasecmp(board->header.filename, "Freshman"))
+		return 1;
+
+	if(!strcasecmp(board->header.filename, "welcome"))
+		return 1;
+
+	if(!strcasecmp(board->header.filename, "KaoYan"))
+		return 1;
+
+	if(user->userlevel & PERM_SYSOP)
+		return 1;
+
+	if(!(user->userlevel & PERM_BASIC))
+		return 0;
+
+	if(!(user->userlevel & PERM_POST))
+		return 0;
+
+	if(!strcasecmp(board->header.filename, "Appeal"))
+		return 1;
+
+	if(!strcasecmp(board->header.filename, "committee"))
+		return 1;
+
+	if(seek_in_file("deny_user", user->userid))
+		return 0;
+
+	if(board->header.clubnum != 0) {
+		if(!(board->header.level & PERM_NOZAP) && board->header.level
+				&& !(user->userlevel, board->header.level))
+			return 0;
+		return user->clubrights[board->header.clubnum / 32]
+		    & (1 << (board->header.clubnum % 32));
+	}
+
+	if(!(board->header.level & PERM_NOZAP) && board->header.level
+			&& !(user->userlevel & board->header.level))
+		return 0;
+
+	return 1;
+}

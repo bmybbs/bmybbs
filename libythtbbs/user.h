@@ -78,11 +78,20 @@ int check_user_read_perm(struct user_info *user, char *board);
  * 该方法从 nju09 移植，用于检查用户读取版面的权限。
  * @param user
  * @param board boardmem 指针
- * @return
+ * @return 有权限返回 1，无权限返回 0。
  * @see int has_read_perm(struct userec *user, char *board)
  * @see int has_read_perm_x(struct userec *user, struct boardmem *x)
  */
 int check_user_read_perm_x(struct user_info *user, struct boardmem *board);
+
+/**
+ * @brief 检查用户的发帖权限
+ * 该方法从 nju09 移植，会同时判断版面阅读权限。
+ * @param user
+ * @param board
+ * @return 有权限返回 1，无权限返回 0。
+ */
+int check_user_post_perm_x(struct user_info *user, struct boardmem *board);
 int userbansite(const char *userid, const char *fromhost);
 void logattempt(char *user,char *from,char *zone,time_t time);
 int inoverride(char *who, char *owner, char *file);
