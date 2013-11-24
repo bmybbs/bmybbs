@@ -129,3 +129,8 @@ struct boardmem * getboardbyname(const char *board_name) {
 
 	return NULL;
 }
+
+int board_is_junkboard(char *board_name)
+{
+	return seek_in_file("etc/junkboards", board_name);
+}
