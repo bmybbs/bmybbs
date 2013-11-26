@@ -51,8 +51,8 @@ bbslogin_main()
 			    ("此帐号已被停机, 若有疑问, 请用其他帐号在sysop版询问.");
 		if (file_has_word(MY_BBS_HOME "/etc/prisonor", x->userid))
 			http_fatal("安心改造，不要胡闹");
-		if (x->dietime)
-			http_fatal("死了?还要做什么? :)");
+		//if (x->dietime)
+		//	http_fatal("死了?还要做什么? :)");
 		t = x->lastlogin;
 		x->lastlogin = now_t;
 		if (abs(t - now_t) < 20) {
