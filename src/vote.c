@@ -962,7 +962,7 @@ int num;
 	} else {
 		voted_flag = YEA;
 	}
-	strcpy(uservote.uid, currentuser.userid);
+	strncpy(uservote.uid, currentuser.userid, IDLEN);
 	sprintf(bname, "desc.%ld", (long int) currvote.opendate);
 	setvfile(buf, currboard, bname);
 	ansimore(buf, YEA);
