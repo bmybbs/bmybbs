@@ -58,7 +58,7 @@ make all
 make install
 
 # crontab bbs
-( cd local_utl; crontab crontab.bbs )
+( cd local_utl; su -c "crontab crontab.bbs" -s /bin/sh bbs )
 
 # new top 10
 cp /usr/local/lib/libghthash.so.0 /usr/lib/
