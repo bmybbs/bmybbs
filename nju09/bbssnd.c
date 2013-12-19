@@ -78,6 +78,10 @@ bbssnd_main()
 		MMAP_CATCH {
 		}
 		MMAP_END mmapfile(NULL, &mf);
+
+		if (x->accessed & FH_NOREPLY)
+			http_fatal("本文被设为不可Re模式");
+
 		if (x && (x->accessed & FH_ALLREPLY)) {
 			if (strncmp(x->title, "Re: ", 4))
 				snprintf(title, 60, "Re: %s", x->title);
