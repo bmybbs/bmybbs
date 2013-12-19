@@ -486,7 +486,9 @@ int mode;
 	int save_in_mail;
 	save_in_mail = in_mail;
 	in_mail = NA;
-	strcpy(quote_board, nboard);
+//	strcpy(quote_board, nboard);
+	memset(quote_board, 0, 120);
+	memcpy(quote_board, currboard, strlen(currboard));
 	strcpy(quote_file, filename);
 	strcpy(quote_title, posttitle);
 	retv = post_cross(nboard, mode, 1, 0, 0);
@@ -1763,12 +1765,12 @@ int dangerous;
 	char bkcurrboard[STRLEN];
 	int fp, count, ddigestmode;
 	time_t now;
-	if (!haspostperm(bname) && !mode) {
+	if (!haspostperm(bname) && !mode && strcasecmp(bname, "AnonyLog")!=0) {
 		move(1, 0);
 		prints("您尚无权限在 %s 发表文章.\n", bname);
 		return -1;
 	}
-	if (noadm4political(bname) && !mode) {
+	if (noadm4political(bname) && !mode && strcasecmp(bname, "AnonyLog")!=0) {
 		move(1, 0);
 		prints("对不起,因为没有版面管理人员在线,本版暂时封闭.");
 		return -1;
@@ -1805,8 +1807,14 @@ int dangerous;
 		local_article = 1;
 	if (mode == 1) //here&following 3 line by bjgyt
 		strcpy(whopost, "XJTU-XANET");
-	else
-		strcpy(whopost, currentuser.userid);
+	else {
+		if(strcasecmp(bname, "AnonyLog")==0) {
+			strncpy(whopost, quote_user, sizeof(whopost));
+		} else {
+			strcpy(whopost, currentuser.userid);
+		}
+	}
+
 	if (mode == 1)
 		if ((strcmp(bname, "millionaires") ==0) || (strncmp(bname, "BM_exam", 7)==0))
 			;

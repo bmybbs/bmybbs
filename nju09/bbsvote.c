@@ -351,7 +351,7 @@ bbsvote_main()
 					      SEEK_SET);
 				else
 					fseek(fp, 0, SEEK_END);
-				strcpy(uservote.uid, currentuser.userid);
+				strncpy(uservote.uid, currentuser.userid, IDLEN);
 				uservote.voted = votevalue;
 				strsncpy(buf1, getparm("sug"), 500);
 				tmp2 = buf1;

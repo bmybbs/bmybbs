@@ -477,8 +477,15 @@ char *direct;
 
 	} else {		/* ÄäÃû·â½û */
 		canpost = posttest(user, currboard);
-		if ((canpost) && (addtodeny(user, msgbuf, 0, 0, isanony) == 1))
+		if ((canpost) && (addtodeny(user, msgbuf, 0, 0, isanony) == 1)) {
 			deny_notice(DENY, user, 0, isanony, msgbuf);
+			if(isanony) {
+				char fname[STRLEN];
+				strncpy(quote_user, user, STRLEN);
+				setbfile(fname, currboard, fh2fname(fileinfo));
+				postfile(fname, "AnonyLog", fileinfo->title, 0);
+			}
+		}
 	}
 	return 0;
 }

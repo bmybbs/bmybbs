@@ -620,7 +620,7 @@ choose_board(newflag, sec)
 int newflag;
 const struct sectree *sec;
 {
-	int num;
+	int num=0;
 	struct newpostdata *ptr;
 	int page = 0, ch = 0, tmp, number, tmpnum;
 	int loop_mode = 0, retv;
