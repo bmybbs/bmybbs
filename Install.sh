@@ -3,30 +3,33 @@
 BBS_HOME=/home/bbs
 BBSUID=999
 BBSGRP=999
-INSTALL="/usr/bin/install -c"
-TARGET=/home/bbs/bin
+TARGET=/home/bbs
+HTMPATH=/home/apache/htdocs/bbs
+CGIPATH=/home/apache/cgi-bin/bbs
+LOCALIP=
 
-echo "This script will install the whole BBS to ${BBS_HOME}..."
+# 创建目录
+
+echo -e "\033[1;32m本脚本会在 ${BBS_HOME} 下创建基本目录结构，以及其他需要的文件夹和配置文件"
 echo -n "Press <Enter> to continue ..."
 read ans
 
 if [ -d ${BBS_HOME} ] ; then
-        echo -n "Warning: ${BBS_HOME} already exists, overwrite whole bbs [N]?"
+		echo -e "\033[1;31m警告：${BBS_HOME} 已存在！\033[0m"
+        echo -n "覆盖 [N]?"
         read ans
         ans=${ans:-N}
         case $ans in
-            [Yy]) echo "Installing new bbs to ${BBS_HOME}" ;;
-            *) echo "Abort ..." ; exit ;;
+            [Yy]) echo "创建目录到 ${BBS_HOME}" ;;
+            *) echo "放弃 ..." ; exit ;;
         esac
 else
-        echo "Making dir ${BBS_HOME}"
+        echo -e "\033[1;32mMaking dir ${BBS_HOME}\033[0m"
         mkdir ${BBS_HOME}
-        chown -R ${BBSUID} ${BBS_HOME}
-        chgrp -R ${BBSGRP} ${BBS_HOME}
         chmod -R 770 ${BBS_HOME}
 fi
 
-echo "Setup bbs directory tree ....."
+echo -e "\033[1;32mSetup bbs directory tree .....\033[0m"
 
 (cd ${BBS_HOME};mkdir vote tmp reclog bm bin traced newtrace)
 (cd ${BBS_HOME};for i in home mail;do for j in `perl -e "print join(' ',A..Z)"`;do mkdir -p $i/$j;done;done)
@@ -40,17 +43,13 @@ mv ${BBS_HOME}/badname ${BBS_HOME}/.badname
 mv ${BBS_HOME}/bad_email ${BBS_HOME}/.bad_email
 touch ${BBS_HOME}/.hushlogin
 
-chown -R ${BBSUID} ${BBS_HOME}
-chgrp -R ${BBSGRP} ${BBS_HOME}
+mkdir ${BBS_HOME}/bbstmpfs
+ln ${BBS_HOME}/bbstmpfs/tmp ${BBS_HOME}/tmpfast -s
+ln ${BBS_HOME}/bbstmpfs/dynamic ${BBS_HOME}/dynamic -s
+( cd ${BBS_HOME}/0Announce/bbslist/; for i in day month year week; do ln -s ${BBS_HOME}/etc/posts/$i $i; done )
 
-${INSTALL} -m 550  -s -g ${BBSGRP} -o ${BBSUID}  src/bbs        ${TARGET}
-${INSTALL} -m 550  -s -g ${BBSGRP} -o ${BBSUID}  src/bbsd       ${TARGET}
-${INSTALL} -m 550  -s -g ${BBSGRP} -o ${BBSUID}  src/bbs.chatd  ${TARGET}/chatd
-${INSTALL} -m 550  -s -g ${BBSGRP} -o ${BBSUID}  src/thread     ${TARGET}
-if [ -f src/pty/ptyexec ]
-then
-${INSTALL} -m 4550  -s -g root -o root  src/pty/ptyexec    ${TARGET}
-fi
+mkdir -p ${CGIPATH}
+mkdir -p ${HTMPATH}
 
 cat > ${BBS_HOME}/etc/sysconf.ini << EOF
 #---------------------------------------------------------------
@@ -61,8 +60,8 @@ cat > ${BBS_HOME}/etc/sysconf.ini << EOF
 BBSHOME         = "/home/bbs"
 BBSID           = "BMY"
 BBSNAME         = "����ٸBBS"
-BBSDOMAIN       = "bbs.xjtu.edu.cn"
-BBSIP           = "202.117.1.8"
+BBSDOMAIN       = "${LOCALIP}"
+BBSIP           = "${LOCALIP}"
 
 KEEP_DELETED_HEADER     = 0
 
@@ -117,6 +116,73 @@ PERM_MAILALL   =  PERM_SYSOP,PERM_SPECIAL4
 #include "etc/menu.ini"
 EOF
 
-echo "Install is over...."
-echo "Check the configuration in ${BBS_HOME}/etc/sysconf.ini"
-echo "Then login your BBS and create an account called SYSOP (case-sensitive)"
+# 创建 bbs-start 脚本
+cat > ${BBS_HOME}/bbs-start.sh << EOF
+#!/bin/sh
+
+mount tmpfs /home/bbs/bbstmpfs -t tmpfs -o size=32M
+for i in brc tmp dynamic userattach; do mkdir /home/bbs/bbstmpfs/\$i; done
+chown bbs:bbs /home/bbs/bbstmpfs -R
+
+/home/bbs/bin/bbsd
+EOF
+chmod +x ${BBS_HOME}/bbs-start.sh
+
+# 创建 bbs-stop 脚本
+cat > ${BBS_HOME}/bbs-stop.sh << EOF
+#!/bin/sh
+
+killall bbsd
+umount ${BBS_HOME}/bbstmpfs
+EOF
+chmod +x ${BBS_HOME}/bbs-stop.sh
+
+# 创建 apache2 配置文件
+if [ -f /etc/apache2/sites-available ]
+then
+cat > /etc/apache2/sites-available/bbs << EOF
+NameVirtualHost ${LOCALIP}:80
+<VirtualHost ${LOCALIP}:80>
+        ServerName ${LOCALIP}:80
+        ServerAdmin program_team@bmy
+        DocumentRoot ${HTMPATH}
+        AssignUserID bbs bbs
+        <Directory />
+                Options FollowSymLinks
+                AllowOverride None
+        </Directory>
+        <Directory ${HTMPATH}>
+                Options Indexes FollowSymLinks MultiViews
+                AllowOverride None
+                Order allow,deny
+                allow from all
+        </Directory>
+        ScriptAlias /cgi-bin/ ${CGIPATH%%/bbs}
+        <Directory ${CGIPATH%%/bbs}>
+                AllowOverride None
+                Options None
+                Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+                Order allow,deny
+                Allow from all
+        </Directory>
+
+        RewriteEngine on
+        RewriteRule ^/BMY(.*)$ /cgi-bin/bbs/www [PT]
+        RewriteRule ^/$ /cgi-bin/bbs/www [PT]
+
+        ErrorLog /var/log/apache2/error.log
+        LogLevel warn
+</VirtualHost>
+EOF
+a2ensite bbs
+fi
+
+# 修改文件夹权限
+chown -R ${BBSUID}.${BBSGRP} ${BBS_HOME}
+chown -R ${BBSUID}.${BBSGRP} ${CGIPATH}
+chown -R ${BBSUID}.${BBSGRP} ${HTMPATH}
+
+
+echo -e "\033[1;32m配置结束....\033[0m"
+echo -e "Check the configuration in \033[1;31m${BBS_HOME}/etc/sysconf.ini\033[0m"
+echo -e "现在可以执行编译过程，详细步骤请参考\033[1;31m《BMYBBS权威安装文档》\033[0m"
