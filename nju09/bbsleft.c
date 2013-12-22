@@ -108,7 +108,7 @@ bbsleft_main()
 		printf("<a class=1100>用户: <a href=bbsqry?userid=%s target=f3>%s</a><br>",
 		       currentuser.userid, currentuser.userid);
 		if (currentuser.userlevel & PERM_LOGINOK)
-			strcpy(buf, cexp(countexp(&currentuser)));
+			strcpy(buf, charexp(countexp(&currentuser)));
 		if (currentuser.userlevel & PERM_BOARDS)
 			strcpy(buf, "版主");
 		if (currentuser.userlevel & PERM_XEMPT)
@@ -442,7 +442,7 @@ endleft:
 		printf("用户: <a href=bbsqry?userid=%s target=f3>%s</a><br>",
 		       currentuser.userid, currentuser.userid);
 		if (currentuser.userlevel & PERM_LOGINOK)
-			strcpy(buf, cexp(countexp(&currentuser)));
+			strcpy(buf, charexp(countexp(&currentuser)));
 		if (currentuser.userlevel & PERM_BOARDS)
 			strcpy(buf, "版主");
 		if (currentuser.userlevel & PERM_XEMPT)

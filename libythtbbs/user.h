@@ -43,7 +43,7 @@ char *sethomefile(char *buf, const char *userid, const char *filename);
 char *setmailfile(char *buf, const char *userid, const char *filename);
 int saveuservalue(char *userid, char *key, char *value);
 int readuservalue(char *userid, char *key, char *value, int size);
-char *cexp(int);
+char *charexp(int);
 char *cperf(int);
 int countexp(struct userec *);
 int countperf(struct userec *);

@@ -9,6 +9,7 @@ typedef struct {
 void
 processdollar(buf, ret)
 char buf[256];
+char *ret;
 {
 	extern time_t login_start_time;
 	int frg, i, matchfrg, strlength, cnt, tmpnum;
@@ -51,7 +52,7 @@ char buf[256];
 	now = time(0);
 	tmpnum = countexp(&currentuser);
 	sprintf(exp, "%d", tmpnum);
-	strcpy(ccexp, cexp(tmpnum));
+	strcpy(ccexp, charexp(tmpnum));
 	tmpnum = countperf(&currentuser);
 	sprintf(perf, "%d", tmpnum);
 	strcpy(ccperf, cperf(tmpnum));

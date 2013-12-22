@@ -138,8 +138,6 @@ int has_post_perm(struct userec *user, struct boardmem *x);
 int count_mails(char *id, int *total, int *unread);
 int send_msg(char *myuserid, int i, char *touserid, int topid, char *msg,
 	     int offline);
-char *cexp(int exp);
-char *cperf(int perf);
 int count_life_value(struct userec *urec);
 int countexp(struct userec *x);
 int countperf(struct userec *x);

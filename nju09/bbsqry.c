@@ -58,7 +58,7 @@ apiqry_main()
 	sstrcat(output, "\"UserID\":\"%s\",\"UserNickName\":\"%s\",\"LoginCounts\":%d,\"PostCounts\":%d,\"LastLogin\":\"%s\",\"LastHost\":\"%s\",", x->userid, x->username, x->numlogins, x->numposts,Ctime(x->lastlogin), x->lasthost);
 	// œ‘ æ∏ˆ»À ˝æ›
 	if(!strcasecmp(x->userid, currentuser.userid)){
-		sstrcat(output, "\"Exp\":%d,\"ExpLevel\":\"%s\",\"Perf\":%d,\"PerfLevel\":\"%s\"",countexp(x), cexp(countexp(x)), countperf(x), cperf(countperf(x)));
+		sstrcat(output, "\"Exp\":%d,\"ExpLevel\":\"%s\",\"Perf\":%d,\"PerfLevel\":\"%s\"",countexp(x), charexp(countexp(x)), countperf(x), cperf(countperf(x)));
 	}
 	// œ‘ æ∞ÊŒÒ°¢’æŒÒµ»–≈œ¢
 	if(x->userlevel & PERM_BOARDS)
@@ -232,7 +232,7 @@ bbsqry_main()
 	hprintf("–≈œ‰£∫[[1;32m%s[m]£¨", tmp2 ? "°—" : "  ");
 	if (!strcasecmp(x->userid, currentuser.userid)) {
 		hprintf("æ≠—È÷µ£∫[[1;32m%d[m]([33m%s[m) ", countexp(x),
-			cexp(countexp(x)));
+			charexp(countexp(x)));
 		hprintf("±Ìœ÷÷µ£∫[[1;32m%d[m]([33m%s[m) ", countperf(x),
 			cperf(countperf(x)));
 	}

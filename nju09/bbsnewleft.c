@@ -31,7 +31,7 @@ bbsnewleft_main()
 			printf("<script>alert('您有新信件!')</script>\n");
 		strcpy(buf, "未注册用户");
 		if (currentuser.userlevel & PERM_LOGINOK)
-			strcpy(buf, cexp(countexp(&currentuser)));
+			strcpy(buf, charexp(countexp(&currentuser)));
 		if (currentuser.userlevel & PERM_BOARDS)
 			strcpy(buf, "版主");
 		if (currentuser.userlevel & PERM_XEMPT)
