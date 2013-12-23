@@ -258,8 +258,11 @@ DIR_do_suremarkdel(struct fileheader *fileinfo, struct fileheader *newfileinfo)
 	fileinfo->accessed |= FH_DEL;
 }
 
-void                                                                             DIR_do_top(struct fileheader *fileinfo, struct fileheader *newfileinfo)         
-{                                                                                   SWITCH_FLAG(fileinfo->accessed, FILE_TOP1);                                   }                                                                                                                      
+void
+DIR_do_top(struct fileheader *fileinfo, struct fileheader *newfileinfo)
+{
+	SWITCH_FLAG(fileinfo->accessed, FILE_TOP1);
+}
 
 int
 outgo_post(struct fileheader *fh, char *board, char *id, char *name)
