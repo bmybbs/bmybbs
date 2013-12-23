@@ -178,6 +178,11 @@ DIR_do_underline(struct fileheader *fileinfo, struct fileheader *newfileinfo)
 	SWITCH_FLAG(fileinfo->accessed, FH_NOREPLY);
 }
 
+void DIR_do_water(struct fileheader *fileinfo, struct fileheader *newfileinfo)
+{
+	SWITCH_FLAG(fileinfo->accessed, FH_ISWATER);
+}
+
 void
 DIR_do_allcanre(struct fileheader *fileinfo, struct fileheader *newfileinfo)
 {

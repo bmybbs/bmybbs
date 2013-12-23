@@ -84,6 +84,13 @@ void DIR_do_spec(struct fileheader *, struct fileheader *);
 void DIR_do_import(struct fileheader *, struct fileheader *);
 void DIR_do_suremarkdel(struct fileheader *, struct fileheader *);
 void DIR_do_top(struct fileheader *, struct fileheader *);
+
+/**
+ * @brief 给文章增加或者解除水文标记。
+ * @param
+ * @param
+ */
+void DIR_do_water(struct fileheader *, struct fileheader *);
 int outgo_post(struct fileheader *, char *, char *, char *);
 void cancelpost(char *, char *, struct fileheader *, int);
 int cmp_title(char *title, struct fileheader *fh1);
