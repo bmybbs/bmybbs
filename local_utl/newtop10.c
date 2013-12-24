@@ -175,9 +175,10 @@ _topn(struct boardheader *bh)
 	}
 	p_table = ght_create(tocount, NULL, GHT_HEURISTICS_MOVE_TO_FRONT);
 	for (i = start; i <= total; i++) {
-		ptr =
-		    (struct fileheader *) (mf.ptr +
-					   i * sizeof (struct fileheader));
+		ptr = (struct fileheader *) (mf.ptr + i * sizeof (struct fileheader));
+		if(ptr->accessed & FH_ISWATER)	// 水文跳过不处理
+			continue;
+
 		if ((data = ght_get(p_table, sizeof (int), &(ptr->thread))) ==
 		    NULL) {
 			if ((data = malloc(sizeof (struct data_s))) == NULL) {
