@@ -1527,7 +1527,14 @@ char buf[512];
 	if(IScurrBM&&ent->accessed & FILE_TOP1){
 	    type='#';
 	}
-	//end 
+	//end
+	if(IScurrBM && (ent->accessed & FH_ISWATER)) { // type 位水文标记显示 by IronBlood
+		if(type == ' ')
+			type = 'w';
+		else
+			type = 'W';
+	}
+
 	if ((ent->accessed & FH_DIGEST)) {
 		if (type == ' ')
 			type = 'g';
