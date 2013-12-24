@@ -1385,6 +1385,30 @@ char *direc;
 	return 0;
 }
 
+int water_post(int ent, struct fileheader *fileinfo, char *dirent)
+{
+	if (!IScurrBM) {
+		return DONOTHING;
+	}
+
+	// 如果文章被标注了 m 或者 g，则不可以被标注为水文
+	if ((fileinfo->accessed & FH_MARKED) || (fileinfo->accessed & FH_DIGEST)) {
+		return DONOTHING;
+	}
+
+	if (fileinfo->accessed & FH_ISWATER) {
+		snprintf(genbuf, 256, "%s unwater %s %s %s",
+			currentuser.userid, currboard,
+			fh2owner(fileinfo), fileinfo->title);
+	} else {
+		snprintf(genbuf, 256, "%s water %s %s %s",
+			currentuser.userid, currboard,
+			fh2owner(fileinfo), fileinfo->title);
+	}
+
+	newtrace(genbuf);
+	change_dir(dirent, fileinfo, (void *) DIR_do_water, ent, digestmode, 0);
+}
 
 int
 digest_post(ent, fhdr, direct)
@@ -1398,6 +1422,11 @@ char *direct;
 	}
 	if (digestmode != NA)
 		return DONOTHING;
+
+	// 水文不可被标记为 g
+	if (fhdr->accessed & FH_ISWATER)
+		return DONOTHING;
+
 	if (fhdr->accessed & FH_DIGEST) {
 		dele_digest(fhdr->filetime, direct);
 		snprintf(genbuf, 256, "%s undigest %s %s %s",
@@ -2521,6 +2550,12 @@ char *direct;
 	if (!IScurrBM) {
 		return DONOTHING;
 	}
+
+	// 水文不可被标注 m
+	if (fileinfo->accessed & FH_ISWATER) {
+		return DONOTHING;
+	}
+
 	if (fileinfo->accessed & FH_MARKED) {
 		snprintf(genbuf, 256, "%s unmark %s %s %s",
 			 currentuser.userid, currboard,
@@ -3524,6 +3559,7 @@ struct one_key read_comms[] = {
 	{'d', del_post, "删除文章"},
 	{'D', del_range, "区段删除"},
 	{'m', mark_post, "M 文章"},
+	{'y', water_post, "W 文章"},						//水文标记 by IronBlood 20131224
 	{'t', markdel_post, "标记不减文章数删除"},		//modify by mintbaggio 040322
 	{'n', mark_minus_del_post, "标记减文章数删除"},		//add by mintbaggio 040322 for minus-numposts delete
 	{'E', edit_post, "修改文章"},
