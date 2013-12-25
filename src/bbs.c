@@ -1408,6 +1408,7 @@ int water_post(int ent, struct fileheader *fileinfo, char *dirent)
 
 	newtrace(genbuf);
 	change_dir(dirent, fileinfo, (void *) DIR_do_water, ent, digestmode, 0);
+	return PARTUPDATE;
 }
 
 int
