@@ -182,6 +182,18 @@ bbsedit_main()
 			if (!getattach(FCGI_ToFILE(fp), buf, fn, path, base64, len, 0)) {
 				printf("#attach %s\n", fn);
 			}
+		} else if (!strncmp(buf, "--\n", 3) || !strncmp(buf, "--\r\n", 4)) { // 签名以及变更日志单独存放 IronBlood
+			char filelog[256];
+			sprintf(filelog, "bbstmpfs/tmp/filelog-%s-%s", board, file);
+			FILE *fp_log = fopen(filelog, "w");
+			fprintf(fp_log, "\n%s", buf);
+			while(1) {
+				if(fgets(buf, 500, fp) == 0)
+					break;
+
+				fprintf(fp_log, "%s", buf);
+			}
+			fclose(fp_log);
 		} else
 			printf("%s", nohtml(void1(buf)));
 	}
@@ -299,6 +311,15 @@ update_form(char *board, char *file, char *title)
 	fwrite(mf.ptr, mf.size, 1, fp);
 	mmapfile(NULL, &mf);
 	unlink(filename);
+
+	sprintf(filename, "bbstmpfs/tmp/filelog-%s-%s", board, file);
+	if(access(filename, F_OK) == 0) { // 如果文件操作日志存在的话，则追加写入
+		mmapfile(filename, &mf);
+		fwrite(mf.ptr, mf.size, 1, fp);
+		mmapfile(NULL, &mf);
+		unlink(filename);
+	}
+
 	fclose(fp);
 	add_edit_mark(path_new, currentuser.userid, now_t, fromhost);
 	rename(path_new, path); // 替换原来的文件
