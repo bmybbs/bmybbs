@@ -300,7 +300,7 @@ update_form(char *board, char *file, char *title)
 	mmapfile(NULL, &mf);
 	unlink(filename);
 	fclose(fp);
-	add_edit_mark(path, currentuser.userid, now_t, fromhost);
+	add_edit_mark(path_new, currentuser.userid, now_t, fromhost);
 	rename(path_new, path); // 替换原来的文件
 	sprintf(dir, "boards/%s/.DIR", board);
 	fp = fopen(dir, "r");
