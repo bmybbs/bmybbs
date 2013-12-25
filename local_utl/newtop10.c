@@ -179,8 +179,10 @@ _topn(struct boardheader *bh)
 		if(ptr->accessed & FH_ISWATER)	// 水文跳过不处理
 			continue;
 
-		if ((data = ght_get(p_table, sizeof (int), &(ptr->thread))) ==
-		    NULL) {
+		if ((data = ght_get(p_table, sizeof (int), &(ptr->thread))) == NULL) {
+			if(ptr->thread != ptr->filetime) // 主题不存在，并且该篇帖子 id 和主题不相同，视为回帖
+				continue;
+
 			if ((data = malloc(sizeof (struct data_s))) == NULL) {
 				errlog("malloc failed");
 				exit(-1);
