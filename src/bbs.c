@@ -1391,11 +1391,6 @@ int water_post(int ent, struct fileheader *fileinfo, char *dirent)
 		return DONOTHING;
 	}
 
-	// 如果文章被标注了 m 或者 g，则不可以被标注为水文
-	if ((fileinfo->accessed & FH_MARKED) || (fileinfo->accessed & FH_DIGEST)) {
-		return DONOTHING;
-	}
-
 	if (fileinfo->accessed & FH_ISWATER) {
 		snprintf(genbuf, 256, "%s unwater %s %s %s",
 			currentuser.userid, currboard,
@@ -1422,10 +1417,6 @@ char *direct;
 		return DONOTHING;
 	}
 	if (digestmode != NA)
-		return DONOTHING;
-
-	// 水文不可被标记为 g
-	if (fhdr->accessed & FH_ISWATER)
 		return DONOTHING;
 
 	if (fhdr->accessed & FH_DIGEST) {
@@ -2549,11 +2540,6 @@ struct fileheader *fileinfo;
 char *direct;
 {
 	if (!IScurrBM) {
-		return DONOTHING;
-	}
-
-	// 水文不可被标注 m
-	if (fileinfo->accessed & FH_ISWATER) {
 		return DONOTHING;
 	}
 

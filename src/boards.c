@@ -1524,16 +1524,10 @@ char buf[512];
 	type = (UNREAD(ent, &brc) ? '*' : ' ');
 	//add by hace 2003.05.02
 //comment by bjgyt	if(ent->accessed & FILE_TOP1){
-	if(IScurrBM&&ent->accessed & FILE_TOP1){
+	if(IScurrBM && (ent->accessed & FILE_TOP1)){
 	    type='#';
 	}
 	//end
-	if(IScurrBM && (ent->accessed & FH_ISWATER)) { // type 位水文标记显示 by IronBlood
-		if(type == ' ')
-			type = 'w';
-		else
-			type = 'W';
-	}
 
 	if ((ent->accessed & FH_DIGEST)) {
 		if (type == ' ')
@@ -1596,9 +1590,15 @@ char buf[512];
 			break;
 		}
 	}
-	if (IScurrBM && (ent->accessed & FH_ANNOUNCE)) {
-		sprintf(typestring, "%s\x1b[1;32;42m%c\x1b[m%c", type1, type,
-			type2);
+
+	if(IScurrBM) {
+		if((ent->accessed & FH_ANNOUNCE) && (ent->accessed & FH_ISWATER)) {
+			sprintf(typestring, "%s\x1b[1;4;32;42m%c\x1b[m%c", type1, type, type2);
+		} else if(ent->accessed & FH_ANNOUNCE) {
+			sprintf(typestring, "%s\x1b[1;32;42m%c\x1b[m%c", type1, type, type2);
+		} else if(ent->accessed & FH_ISWATER) {
+			sprintf(typestring, "%s\x1b[4m%c\x1b[m%c", type1, type, type2);
+		}
 	} else
 		sprintf(typestring, "%s%c%c", type1, type, type2);
 
