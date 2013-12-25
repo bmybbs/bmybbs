@@ -49,13 +49,13 @@ ifeq (.depend,$(wildcard .depend))
 include .depend
 endif
 
-depend dep .depend: proto
+depend dep .depend:
 	gcc $(CFLAGS) -MM $(CFILE) $(OTHERS) upload.c >.depend
 
 proto proto.h:
 	cproto -DMAKE_PROTO -D__GNUC__ $(CFILE) $(OTHERS) $(CPPFLAGS) $(WWW_CPPFLAGS) -I$(BASEPATH)/libythtbbs -I$(BASEPATH)/ythtlib -I$(BASEPATH)/include > proto.h
 
-$(COBJS):  .depend
+$(COBJS): proto.h .depend
 
 $(PROGNAME):	$(COBJS) $(OTHERS) BBSLIB.o
 ifdef GPROF
