@@ -94,7 +94,7 @@ bbstop: bbstop.o
 noOUT: noOUT_FLAG.o
 	$(CC) $(CFLAGS)  -o $@ $^
 ptyexec: ptyexec.o
-	$(CC) $(CFLAGS) -lutil -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^ -lutil
 
 searchLastMark: searchLastMark.o
 	$(CC) $(CFLAGS) -o $@ $^ $(BBSLIB)
