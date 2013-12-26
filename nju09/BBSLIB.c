@@ -1491,7 +1491,7 @@ post_article(char *board, char *title, char *file, char *id,
 	}
 	fprintf(fp, "\n--\n");
 	sig_append(fp, id, sig);
-	fprintf(fp, "[1;%dm¡ù À´Ô´:£®%s %s [FROM: %.20s][m\n",
+	fprintf(fp, "[1;%dm¡ù À´Ô´:£®%s %s [FROM: %.20s][m",
 		31 + rand() % 7, BBSNAME, "http://" MY_BBS_DOMAIN, ip);
 	fclose(fp);
 	sprintf(buf3, "boards/%s/M.%d.A", board, t);
