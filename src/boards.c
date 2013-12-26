@@ -1598,7 +1598,8 @@ char buf[512];
 			sprintf(typestring, "%s\x1b[1;32;42m%c\x1b[m%c", type1, type, type2);
 		} else if(ent->accessed & FH_ISWATER) {
 			sprintf(typestring, "%s\x1b[4m%c\x1b[m%c", type1, type, type2);
-		}
+		} else
+			sprintf(typestring, "%s%c%c", type1, type, type2);
 	} else
 		sprintf(typestring, "%s%c%c", type1, type, type2);
 
