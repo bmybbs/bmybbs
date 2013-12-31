@@ -12,6 +12,7 @@ struct bmyapp_s {
     char appname[APPNAMELENGTH];            //!< app 的名称
     time_t createtime;                      //!< 应用的创建时间
     unsigned int status;                    //!< app 的状态
+    unsigned int permission;				//!< api 权限
 };
 
 /** appid hash table
