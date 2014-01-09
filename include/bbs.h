@@ -151,10 +151,11 @@ extern  char ULIST[];
 #define DOT_DIR     ".DIR"         /* Name of Directory file info */
 #define THREAD_DIR  ".THREAD"      /* Name of Thread file info */
 #define DIGEST_DIR  ".DIGEST"      /* Name of Digest file info */
-#define TOPFILE_DIR  ".TOPFILE"    //hace 
+#define TOPFILE_DIR ".TOPFILE"     //hace
 #define BADWORDS    "etc/.badwords_new"     /* word list to filter */
 #define SBADWORDS   "etc/.sbadwords_new"
 #define PBADWORDS   "etc/.pbadwords_new"
+#define APPS		".APPS"		   /* File containing list of apps */
 
 #define QUIT 0x666               /* Return value to abort recursive functions */
 
