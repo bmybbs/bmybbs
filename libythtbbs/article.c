@@ -3,6 +3,7 @@
 #include "ythtbbs.h"
 
 // 为了编辑 html/xml/xhtml 文件引入库 libxml2 by IronBlood 20130805
+#include <sys/file.h>
 #include <libxml/HTMLparser.h>
 #include <libxml/HTMLtree.h>
 #include <libxml/xpath.h>
