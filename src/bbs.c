@@ -3546,7 +3546,6 @@ struct one_key read_comms[] = {
 	{'d', del_post, "删除文章"},
 	{'D', del_range, "区段删除"},
 	{'m', mark_post, "M 文章"},
-	{'y', water_post, "W 文章"},						//水文标记 by IronBlood 20131224
 	{'t', markdel_post, "标记不减文章数删除"},		//modify by mintbaggio 040322
 	{'n', mark_minus_del_post, "标记减文章数删除"},		//add by mintbaggio 040322 for minus-numposts delete
 	{'E', edit_post, "修改文章"},
