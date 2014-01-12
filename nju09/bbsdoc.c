@@ -393,8 +393,11 @@ bbsdoc_main()
 		else
 			printf("<tr>");
 
-		printf("<td class=tdborder>%d</td><td class=tdborder>%s</td><td class=tduser>%s</td>",
-		       start + i, ptr[0] == 0 ? "&nbsp;" : ptr, userid_str(fh2owner(&x)));
+		printf("<td class='tdborder'>%d</td><td class='tdborder'>", start+i);
+		printf("%s%s%s", (x.accessed & FH_ISWATER) ? "<span style='text-decoration:underline;'>" : "",
+				ptr[0] == 0 ? "&nbsp;&nbsp;" : ptr,
+				(x.accessed & FH_ISWATER) ? "</span>" : "");
+		printf("</td><td class='tduser'>%s</td>", userid_str(fh2owner(&x)));
 		if (!i)
 			printf("<td align=center class=tdborder><NOBR>%12.12s</NOBR></td>", Ctime(x.filetime) + 4);
 		else
