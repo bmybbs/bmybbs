@@ -1,5 +1,9 @@
 # BMYBBS Changelog
 
+### BMYBBS 2.0.1_build_20140112
+* 修复 term 下阅读按键和用户自定义文件冲突的问题
+* 新增 nju09 下水文标记显示
+
 ### BMYBBS 2.0.0_build_20140110
 本次发布变更从 20130923 开始记录，参见[程序更新公告](http://bbs.xjtu.edu.cn/BMY/con?B=BMY_Dev&F=M.1379950501.A]。
 
