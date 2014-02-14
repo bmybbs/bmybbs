@@ -183,6 +183,12 @@ _topn(struct boardheader *bh)
 			if(ptr->thread != ptr->filetime) { // 主题不存在，并且该篇帖子 id 和主题不相同，视为回帖
 				// 依据 ptr->thread 搜寻文章
 				int th_num = Search_Bin(mf.ptr, ptr->thread, 0, total);
+				if (th_num < 0) {
+					th_num = -(th_num+1);
+				}
+				if (th_num > total) {
+					th_num = total;
+				}
 				struct fileheader * th_ptr = (struct fileheader*) (mf.ptr + th_num * sizeof(struct fileheader));
 
 				// 如果原贴已经删除
