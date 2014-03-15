@@ -108,57 +108,6 @@ char *get_login_pic ()
     }
 }
 
-// added by IronBlood@11.09.05
-char *get_no_more_than_four_login_pics()
-{
-	FILE *fp;
-	if(!(fp = fopen(MY_BBS_HOME "/logpics","r")))
-		return "cai.jpg";
-
-	char pics[256];
-	const char *pics_dir ="bmyMainPic/using/";
-	char pics_list[4096];
-	char file[16][256];
-	int file_line=0;
-    char link[256];
-    memset(pics_list, '\0', sizeof(pics_list));
-
-	// 读取文件
-	while(fgets(pics,sizeof(pics),fp)!=NULL)
-	{
-		char *tmp=file[file_line];
-		if (pics[strlen(pics) - 1] == '\n')
-			pics[strlen(pics) - 1] = 0;
-		strcpy(tmp,pics);
-		++file_line;
-	}
-	// 释放句柄
-	fclose(fp);
-
-	int i=0;
-
-    while( (i != file_line - 1) && i !=4) // 不超过总图片个数、不超过最大上限
-    {
-        srand(time(NULL)+rand()%100); // 加种子   
-        int randnum = 1 + rand()%file_line; // 生成随机数
-        char *tmp = file[randnum];
-        
-        if( strstr(pics_list,tmp)==NULL ) //不包含图片字符串，才执行下面的操作
-        {
-            get_login_pic_link(tmp,link);
-            if(i>0)
-                strcat(pics_list, ";;");
-            strcat(pics_list, pics_dir);
-            strcat(pics_list, tmp);
-            strcat(pics_list, ";");
-            strcat(pics_list, link);
-            ++i; 
-        }
-    }
-
-	return pics_list;
-}
-
 // add by IronBlood@bmy 20120107
 char *get_login_pic_link (char *picname, char *linkback)
 {
@@ -252,7 +201,8 @@ void loginwindow()
 	char *login_pic;
 	login_link = get_login_link ();
 	//login_pic = get_login_pic (); /* } added by linux 05.9.11*/
-	char *fourpics=get_no_more_than_four_login_pics();
+	char fourpics[512];
+	get_no_more_than_four_login_pics(fourpics, 512);
 	printf("<script>function openreg(){open('" SMAGIC
 	     "/bbsreg', 'winREG', 'width=600,height=460,resizable=yes,scrollbars=yes');}\n"
 	     "function sf(){document.l.id.focus();}\n"

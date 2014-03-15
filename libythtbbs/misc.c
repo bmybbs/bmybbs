@@ -212,3 +212,51 @@ int is_utf(char * inbuf, size_t inlen)
     }
     return 0;
 }
+
+void get_no_more_than_four_login_pics(char *pics_list, size_t len)
+{
+	memset(pics_list, 0, len);
+
+	FILE *fp;
+	if(!(fp = fopen(MY_BBS_HOME "/logpics","r")))
+		sprintf(pics_list, "cai.jpg");
+
+	char pics[256];
+	const char *pics_dir ="bmyMainPic/using/";
+	char file[16][256];
+	int file_line=0;
+    char link[256];
+
+	// 读取文件
+	while(fgets(pics,sizeof(pics),fp)!=NULL)
+	{
+		char *tmp=file[file_line];
+		if (pics[strlen(pics) - 1] == '\n')
+			pics[strlen(pics) - 1] = 0;
+		strcpy(tmp,pics);
+		++file_line;
+	}
+	// 释放句柄
+	fclose(fp);
+
+	int i=0;
+
+    while( (i != file_line - 1) && i !=4) // 不超过总图片个数、不超过最大上限
+    {
+        srand(time(NULL)+rand()%100); // 加种子
+        int randnum = 1 + rand()%file_line; // 生成随机数
+        char *tmp = file[randnum];
+
+        if( strstr(pics_list,tmp)==NULL ) //不包含图片字符串，才执行下面的操作
+        {
+            get_login_pic_link(tmp,link);
+            if(i>0)
+                strcat(pics_list, ";;");
+            strcat(pics_list, pics_dir);
+            strcat(pics_list, tmp);
+            strcat(pics_list, ";");
+            strcat(pics_list, link);
+            ++i;
+        }
+    }
+}
