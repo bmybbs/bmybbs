@@ -108,25 +108,6 @@ char *get_login_pic ()
     }
 }
 
-// add by IronBlood@bmy 20120107
-char *get_login_pic_link (char *picname, char *linkback)
-{
-    FILE *fp;
-    char link[256];
-	memset(link, '\0',sizeof(link));
-    char linkfile[256];
-    sprintf(linkfile, MY_BBS_HOME "/loglinks/%s", picname);
-    if (!(fp = fopen ( linkfile,"r")))
-        return "BMY/home?B=XJTUnews";
-    if (!fgets (link,sizeof (link),fp))
-        return "BMY/home?B=XJTUnews";
-    fclose (fp);
-    if (link[strlen(link) - 1] == '\n')
-        link[strlen(link) - 1] = '\0';
-    return strcpy(linkback, link);
-}
-
-
 int
 loadoneface()
 {

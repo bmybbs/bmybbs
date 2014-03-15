@@ -213,6 +213,25 @@ int is_utf(char * inbuf, size_t inlen)
     return 0;
 }
 
+// add by IronBlood@bmy 20120107
+static char *get_login_pic_link (char *picname, char *linkback)
+{
+    FILE *fp;
+    char link[256];
+	memset(link, '\0',sizeof(link));
+    char linkfile[256];
+    sprintf(linkfile, MY_BBS_HOME "/loglinks/%s", picname);
+    if (!(fp = fopen ( linkfile,"r")))
+        return "BMY/home?B=XJTUnews";
+    if (!fgets (link,sizeof (link),fp))
+        return "BMY/home?B=XJTUnews";
+    fclose (fp);
+    if (link[strlen(link) - 1] == '\n')
+        link[strlen(link) - 1] = '\0';
+    return strcpy(linkback, link);
+}
+
+
 void get_no_more_than_four_login_pics(char *pics_list, size_t len)
 {
 	memset(pics_list, 0, len);
