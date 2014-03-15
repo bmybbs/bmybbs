@@ -3,13 +3,13 @@
 #include "ythtbbs.h"
 
 // 为了编辑 html/xml/xhtml 文件引入库 libxml2 by IronBlood 20130805
-#include <libxml/HTMLparser.h>
-#include <libxml/HTMLtree.h>
-#include <libxml/xpath.h>
-#include <libxml/parser.h>
-#include <libxml/tree.h>
-#include <libxml/xmlmemory.h>   // 编辑xml内容
-#include <libxml/xmlsave.h>
+#include "libxml/HTMLparser.h"
+#include "libxml/HTMLtree.h"
+#include "libxml/xpath.h"
+#include "libxml/parser.h"
+#include "libxml/tree.h"
+#include "libxml/xmlmemory.h"   // 编辑xml内容
+#include "libxml/xmlsave.h"
 
 static int is_article_link_in_file(char *boardname, int thread, char *filename);
 static int update_article_link_in_file(char *boardname, int oldthread, int newfiletime, char *newtitle, char *filename);
