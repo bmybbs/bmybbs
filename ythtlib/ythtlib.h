@@ -11,6 +11,7 @@
 #include <fcntl.h>
 #include <limits.h>
 #include <ctype.h>
+#include <errno.h>
 
 #ifndef sizeof
 #define sizeof(x) ((int)sizeof(x))
