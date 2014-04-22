@@ -279,3 +279,39 @@ void get_no_more_than_four_login_pics(char *pics_list, size_t len)
         }
     }
 }
+
+void
+getsalt(char salt[3])
+{
+	int s, i, c;
+
+#ifdef LINUX
+	int fd;
+	fd = open("/dev/urandom", O_RDONLY);
+	read(fd, &s, 4);
+	close(fd);
+#else
+	s = random();
+#endif
+	salt[0] = s & 077;
+	salt[1] = (s >> 6) & 077;
+	salt[2] = 0;
+	for (i = 0; i < 2; i++) {
+		c = salt[i] + '.';
+		if (c > '9')
+			c += 7;
+		if (c > 'Z')
+			c += 6;
+		salt[i] = c;
+	}
+}
+
+int
+badstr(unsigned char *s)
+{
+	int i;
+	for (i = 0; s[i]; i++)
+		if (s[i] != 9 && (s[i] < 32 || s[i] == 255))
+			return 1;
+	return 0;
+}

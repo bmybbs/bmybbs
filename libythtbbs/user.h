@@ -95,4 +95,12 @@ int check_user_post_perm_x(struct user_info *user, struct boardmem *board);
 int userbansite(const char *userid, const char *fromhost);
 void logattempt(char *user,char *from,char *zone,time_t time);
 int inoverride(char *who, char *owner, char *file);
+
+/**
+ * @brief 检查 id 是否包含数字
+ * 该方法在 telnet/nju09 中均有使用，移动到库中，方法名有待改进。
+ * @param userid 字符串
+ * @return 包含则返回
+ */
+int id_with_num(char *userid);
 #endif

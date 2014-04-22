@@ -426,3 +426,11 @@ int check_user_post_perm_x(struct user_info *user, struct boardmem *board)
 
 	return 1;
 }
+
+int id_with_num(char *userid)
+{
+   char *s;
+   for (s = userid; *s != '\0'; s++)
+      if (*s < 1 || !isalpha(*s)) return 1;
+   return 0;
+}

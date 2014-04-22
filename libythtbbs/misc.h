@@ -23,6 +23,15 @@ int is_utf_special_byte(unsigned char c);
 int is_utf(char * inbuf, size_t inlen);
 
 /**
+ * @brief 加盐的方法
+ * 来自 nju09
+ * @param salt
+ */
+void getsalt(char salt[3]);
+
+int badstr(unsigned char *s);
+
+/**
  * @brief 获取不超过4张进站图片
  * 该方法将把当前进站图片的信息输出到 pics_list 中。每条信息使用单个半角分号将图片和
  * 链接隔开。多条信息使用两个半角分号隔开。
