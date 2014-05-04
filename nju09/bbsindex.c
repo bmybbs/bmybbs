@@ -313,9 +313,9 @@ void loginwindow()
   "</tr>\n"
     "<tr>\n"
     "<td align=center bgcolor=#FFFFFF><img src=\"images/index_line.gif\" name=Image1 width=650 height=20 id=Image1></td>\n"
-  "<tr><td align=center>陕ICP备 05001571号<td></tr>"
-  "<tr><td align=center>本BBS隶属于：西安交通大学网络中心／中国教育科研网西北中心</td></tr>"
-  "<tr><td align=center>开发维护：西安交通大学网络中心  BBS程序组</td></tr>"
+  "<tr><td align=center>陕ICP备 05001571号<br />"
+  "本BBS隶属于：西安交通大学网络中心／中国教育科研网西北中心<br />"
+  "开发维护：西安交通大学网络中心  BBS程序组</td></tr>"
 	"</tr>\n"
 "</table>"/*,login_link,login_pic*/);/* modified by linux 05.9.11 */
 	showannounce();
