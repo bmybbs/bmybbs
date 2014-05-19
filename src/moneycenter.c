@@ -1569,7 +1569,7 @@ money_bank()
 							strcpy(currboard, "sysop");
 							deliverreport
 							    ("[公告]本站公务员领取本月工资",
-							     "请于7天内到兵马俑银行领取，过期视为放弃。");
+							     "请于7天内到兵马俑银行领取，过期视为放弃。\n");
 							strcpy(currboard,	 MC_BOARD);
 							remove(DIR_MC "salary_list");
 							utmpshm->mc.isSalaryTime = 1;
