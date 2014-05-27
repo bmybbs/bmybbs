@@ -13,7 +13,7 @@ static int isExamBoard(struct boardheader *bh)
 static int
 chk_editboardperm(struct boardheader *bh)
 {
-	if (HAS_PERM(PERM_SYSOP))
+	if (HAS_PERM(PERM_SYSOP) || HAS_PERM(PERM_OBOARDS))
 		return YEA;
 	if (HAS_PERM(PERM_ARBITRATE) && isExamBoard(bh))
 		return YEA;
