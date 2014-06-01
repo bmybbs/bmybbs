@@ -156,7 +156,7 @@ fshowcon(FILE * output, char *filename, int show_iframe)
 {
 	char *ptr, buf[512];
 	FILE *fp;
-	int lastq = 0, ano = 0;
+	int lastq = 0, ano = 0, in_sig = 0;
 	if (show_iframe != 2) {
 //		fprintf(output, "<table width=100%% border=1><tr>");
 		fprintf(output, "<tr><td width=40 class=\"level1\">&nbsp;</td>\n<td class=\"level1\"><br><TABLE width=\"95%\" cellpadding=5 cellspacing=0><TBODY>\n<tr><td class=tdtitletheme>&nbsp;</td></tr><tr>\n");
@@ -250,11 +250,20 @@ fshowcon(FILE * output, char *filename, int show_iframe)
 				fprintf(output, "</font>");
 			lastq = 0;
 		}
+
+		if (!strncmp(buf, "--\n", 3)) {
+			if (!in_sig) {
+				fprintf(output, "<div class=\"con_sig\">");
+				in_sig = 1;
+			}
+		}
 		fhhprintf(output, "%s", buf);
 	}
 	printf("</div>\n");
 	if (lastq)
 		fprintf(output, "</font>");
+	if (in_sig)
+		fprintf(output, "</div>");
 	fclose(fp);
 	if (show_iframe != 2)
 		fprintf(output, "\n</td></TR></TBODY></TABLE><br></td></tr>\n");
