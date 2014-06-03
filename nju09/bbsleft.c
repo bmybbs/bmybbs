@@ -133,7 +133,7 @@ bbsleft_main()
 		<td><a target=f3 href=\"bbsshownav?a1=class&a2=all\" class=1100>近日精彩话题</a></td></tr>\n");*/
 	//Add by liuche 20121119 order by oOIOo ^_^
 	printdiv(&div, "BMY告示墙");
-	printf("&nbsp;&nbsp;<a target=f3 href=gdoc?B=AcdemicClub class=linkleft>讲座信息</a><br>\n");
+	printf("&nbsp;&nbsp;<a target=f3 href=gdoc?B=AcademicClub class=linkleft>讲座信息</a><br>\n");
 	printf("&nbsp;&nbsp;<a target=f3 href=gdoc?B=Activity class=linkleft>校园活动</a><br>\n");
 	printf("&nbsp;&nbsp;<a class=linkleft href=\"%sLost_Found\" target=f3>失物招领</a><br>\n"
 		, showByDefMode() );
