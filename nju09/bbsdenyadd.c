@@ -87,7 +87,7 @@ inform(char *board, char *user, char *exp, int dt)
 		 "封人原因: %s\n"
 		 "被封天数: %d\n"
 		 "解封日期: %d月%d日\n"
-		 "如有异议，可向版主提出，或到Appeal版投诉\n",
+		 "如有异议，可向版主提出，或到 committee 版投诉\n",
 		 exp, dt, tmtime->tm_mon + 1, tmtime->tm_mday);
 	fputs(buf, fp);
 	fclose(fp);

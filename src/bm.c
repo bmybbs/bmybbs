@@ -110,21 +110,21 @@ int ischange, isglobal, isanony;
 		else if(isglobal || day>20)
 		sprintf(msg,
                         "封人原因: %s\n被封天数: %d%s\n解封日期: %d月%d日\n"
-                        "如有异议，可向%s提出，或到committee版投诉\n", buf, day,
+                        "如有异议，可向%s提出，或到 committee 版投诉\n", buf, day,
                         "(全站)" , tmtime->tm_mon + 1,
                         tmtime->tm_mday, "站务");
 		else {
 			if (seek_in_file(MY_BBS_HOME"/etc/sysboards",currboard)) {
 				sprintf(msg,
 				"封人原因: %s\n被封天数: %d%s\n解封日期: %d月%d日\n"
-				"如有异议，可向%s提出，或到committee版投诉\n", buf, day,
+				"如有异议，可向%s提出，或到 committee 版投诉\n", buf, day,
 				isglobal ? "(全站)" : "", tmtime->tm_mon + 1,
 				tmtime->tm_mday, "站务" );
 			}
 			else {
 				sprintf(msg,
 					"封人原因: %s\n被封天数: %d%s\n解封日期: %d月%d日\n"
-					"如有异议，可向%s提出，或到Appeal版投诉\n", buf, day,
+					"如有异议，可向%s提出，或到 committee 版投诉\n", buf, day,	// 原来是去 Appeal
 					isglobal ? "(全站)" : "", tmtime->tm_mon + 1,
 					tmtime->tm_mday, isglobal ? "站务" : "版主");
 			}
@@ -139,7 +139,7 @@ int ischange, isglobal, isanony;
 		else {
 			sprintf(strtosave, "%-12s %-35s 手动解封", uident, buf);
 			sprintf(msg, "封人原因: %s\n被封天数: 手动解封%s\n"
-				"如有异议，可向%s提出，或到committee版投诉\n",
+				"如有异议，可向%s提出，或到 committee 版投诉\n",
 				buf, isglobal ? "(全站)" : "",
 				isglobal ? "站务" : "版主");
 		}
