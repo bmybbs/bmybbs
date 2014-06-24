@@ -12,6 +12,9 @@
 #include <libxml/xmlmemory.h>   // 编辑xml内容
 #include <libxml/xmlsave.h>
 
+// 为了处理 @id 引入 pcre 库 by IronBlood 20140624
+#include <pcre.h>
+
 static int is_article_link_in_file(char *boardname, int thread, char *filename);
 static int update_article_link_in_file(char *boardname, int oldthread, int newfiletime, char *newtitle, char *filename);
 
@@ -588,4 +591,47 @@ time_t fn2timestamp(char * filename) {
 	char num_str[11]={'0'};
 	memcpy(num_str, &filename[2], 10);
 	return (time_t)atoi(num_str);
+}
+
+int parse_mentions(char *content, char *userids[])
+{
+	const char * MENTION_PATTERN = "@[A-Za-z]{1,12}\\s";
+	pcre *re;
+	const char *re_error;
+	int erroffset, i, j, offsetcount, offsets[3], is_exist;
+	const char *match;
+	char buf[14];
+
+	re = pcre_compile(MENTION_PATTERN, 0, &re_error, &erroffset, NULL);
+	if(re == NULL) {
+		return -1;
+	}
+
+	i=0;	// 用于 userids[i] 索引
+	offsetcount = pcre_exec(re, NULL, content, strlen(content), 0, 0, offsets, 3);
+	while(offsetcount>0 && i<MAX_MENTION_ID) {
+		if(pcre_get_substring(content, offsets, offsetcount, 0, &match) >= 0) {
+			if(i==0) { // userids 还为空的时候
+				strncpy(userids[0], match+1, strlen(match)-2);
+				++i;
+			} else { // userids 已经存在 id 了，则循环比较
+				is_exist = 0;
+				memset(buf, 0, 14);
+				strncpy(buf, match+1, strlen(match)-2);
+				for(j=0; j<i; ++j) {
+					if(!strcasecmp(buf, userids[j]))
+						is_exist = 1;
+				}
+				if(!is_exist) {	// buf 在 userids 中不存在的时候拷贝到 userids 中
+					strcpy(userids[i++], buf);
+				}
+			}
+
+			pcre_free_substring(match);
+		}
+
+		offsetcount = pcre_exec(re, NULL, content, strlen(content), offsets[1], 0, offsets, 3);
+	}
+
+	pcre_free(re);
 }

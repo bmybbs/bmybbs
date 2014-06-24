@@ -13,6 +13,7 @@
 #define PATHZMODEM MY_BBS_HOME "/bbstmpfs/zmodem"
 #define MAXATTACHSIZE (10000000)
 #define MAXPICSIZE (1500000) // 图片最大为500kb
+#define MAX_MENTION_ID (20)  /* 最大允许 @ 的 id 个数 */
 #include "boardrc.h"
 #include "misc.h"
 #include "record.h"
