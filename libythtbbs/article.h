@@ -115,5 +115,5 @@ time_t fn2timestamp(char * filename);
  * @param userids 字符串数组，需要预先声明为 char [MAX_MENTION_ID][14]
  * @return 处理成功返回0
  */
-int parse_mentions(char *content, char * userids[]);
+int parse_mentions(char *content, char userids[20][14]);
 #endif

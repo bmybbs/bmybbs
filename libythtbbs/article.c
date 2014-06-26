@@ -395,7 +395,7 @@ Search_Bin(char *ptr, int key, int start, int end)
 {
         // 在有序表中折半查找其关键字等于key的数据元素。
         // 若查找到，返回索引
-	// 否则为大于key的最小数据元素索引m，返回(-m-1) 
+	// 否则为大于key的最小数据元素索引m，返回(-m-1)
         int low, high, mid;
 	struct fileheader *totest;
         low = start;
@@ -593,7 +593,7 @@ time_t fn2timestamp(char * filename) {
 	return (time_t)atoi(num_str);
 }
 
-int parse_mentions(char *content, char *userids[])
+int parse_mentions(char *content, char userids[20][14])
 {
 	const char * MENTION_PATTERN = "@[A-Za-z]{1,12}\\s";
 	pcre *re;
