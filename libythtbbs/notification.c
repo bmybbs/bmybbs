@@ -13,11 +13,12 @@
 
 static struct NotifyItem * parse_to_item(xmlNodePtr xmlItem);
 static void addItemtoList(NotifyItemList *List, struct NotifyItem *Item);
+static int add_notification(char * to_userid, char * from_userid, char * board, int article_id, char * title_gbk, int noti_type);
 
-int add_post_notification(char * to_userid, char * from_userid, char * board,
-						  int article_id, char * title_gbk) {
-	char noti_type[8];
-	sprintf(noti_type, "%d", NOTIFY_TYPE_POST);
+static int add_notification(char * to_userid, char * from_userid, char * board,
+						  int article_id, char * title_gbk, int noti_type) {
+	char noti_type_str[8];
+	sprintf(noti_type_str, "%d", noti_type);
 
 	char * title_utf8 = (char *)malloc(2*strlen(title_gbk));
 	if(title_utf8 == NULL)
@@ -52,7 +53,7 @@ int add_post_notification(char * to_userid, char * from_userid, char * board,
 	root = xmlDocGetRootElement(doc);
 
 	xmlNodePtr notify_item = xmlNewChild(root, NULL, (const xmlChar*)"Item", NULL);
-	xmlNewProp(notify_item, (const xmlChar*)"type", (const xmlChar*)noti_type);
+	xmlNewProp(notify_item, (const xmlChar*)"type", (const xmlChar*)noti_type_str);
 	xmlNewProp(notify_item, (const xmlChar*)"board", (const xmlChar*)board);
 	xmlNewProp(notify_item, (const xmlChar*)"aid", (const xmlChar*)article_id_str);
 	xmlNewProp(notify_item, (const xmlChar*)"uid", (const xmlChar*)from_userid);
@@ -65,6 +66,16 @@ int add_post_notification(char * to_userid, char * from_userid, char * board,
 	userunlock(to_userid, ulock);
 
 	return 0;
+}
+
+int add_post_notification(char * to_userid, char * from_userid, char * board,
+						  int article_id, char * title_gbk) {
+	return add_notification(to_userid, from_userid, board, article_id, title_gbk, NOTIFY_TYPE_POST);
+}
+
+int add_mention_notification(char * to_userid, char * from_userid, char * board,
+						  int article_id, char * title_gbk) {
+	return add_notification(to_userid, from_userid, board, article_id, title_gbk, NOTIFY_TYPE_MENTION);
 }
 
 int count_notification_num(char *userid) {

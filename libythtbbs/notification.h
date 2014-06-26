@@ -4,7 +4,8 @@
 
 enum {
 	NOTIFY_TYPE_NONSPECIFIED = -1,	// 仅供删除所有提醒的时候使用
-	NOTIFY_TYPE_POST = 0
+	NOTIFY_TYPE_POST = 0,			// 回复提醒
+	NOTIFY_TYPE_MENTION = 1,		// @ 提醒
 };
 
 struct NotifyItem {
@@ -34,6 +35,21 @@ int add_post_notification(char * to_userid,
 						  char * board,
 						  int article_id,
 						  char * title_gbk);
+
+/** 新增一条 @ 提醒
+ * 使用方法类似 add_post_notification 函数
+ * @param to_userid
+ * @param from_userid
+ * @param board
+ * @param article_id
+ * @param title_gbk
+ * @return
+ */
+int add_mention_notification(char * to_userid,
+							char * from_userid,
+							char * board,
+							int article_id,
+							char * title_gbk);
 
 /** 将通知解析到内存中
  *
