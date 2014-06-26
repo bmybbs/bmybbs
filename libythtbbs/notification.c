@@ -136,6 +136,12 @@ int is_post_in_notification(char * userid, char *board, int article_id) {
 
 	sprintf(search_str, "<Item type=\"0\" board=\"%s\" aid=\"%d\" ", board, article_id);
 	char *r = strstr(p, search_str);
+
+	// ÅÐ¶ÏÊÇ·ñÓÐ @ ÌáÐÑ
+	if(r==NULL) {
+		sprintf(search_str, "<Item type=\"1\" board=\"%s\" aid=\"%d\" ", board, article_id);
+		r = strstr(p, search_str);
+	}
 	munmap(p, statbuf.st_size);
 
 	return (r!=NULL);
