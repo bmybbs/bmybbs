@@ -83,8 +83,8 @@ int count_notification_num(char *userid);
  */
 int is_post_in_notification(char * userid, char * board, int article_id);
 
-/** 删除一条回帖提醒
- *
+/** 删除提醒
+ * 同时删除回复提醒和 @ 提醒。
  * @param userid
  * @param board
  * @param article_id
