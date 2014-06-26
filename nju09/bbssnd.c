@@ -214,5 +214,20 @@ bbssnd_main()
 			add_post_notification(noti_userid, (anony) ? "Anonymous" : currentuser.userid, board, r, title);
 		}
 	} // 发送回帖提醒结束
+
+	// 发送 @ 提醒开始 by IronBlood
+	char mention_ids[MAX_MENTION_ID][IDLEN+2];
+	memset(mention_ids, 0, MAX_MENTION_ID*(IDLEN+2));
+	parse_mentions(content, mention_ids);
+	struct userec *ue;
+	i=0;
+	while(i!=MAX_MENTION_ID && mention_ids[i][0] != 0) {
+		// 因为mention_ids 可能大小写和本站用户 ID 不同，需要特殊处理
+		ue = getuser(mention_ids[i]);
+		if(ue!=NULL)
+			add_mention_notification(ue->userid, (anony) ? "Anonymous" : currentuser.userid, board, r, title);
+		++i;
+	}
+	// 发送 @ 提醒结束
 	return 0;
 }
