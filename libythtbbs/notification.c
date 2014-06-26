@@ -266,11 +266,9 @@ static struct NotifyItem * parse_to_item(xmlNodePtr xmlItem) {
 	item->type = atoi((char *)xml_str_type);
 	xmlFree(xml_str_type);
 
-	if(item->type == NOTIFY_TYPE_POST) {
-		xmlChar *xml_str_board = xmlGetProp(xmlItem, (const xmlChar *)"board");
-		memcpy(item->board, (char *)xml_str_board, strlen((char *)xml_str_board));
-		xmlFree(xml_str_board);
-	}
+	xmlChar *xml_str_board = xmlGetProp(xmlItem, (const xmlChar *)"board");
+	memcpy(item->board, (char *)xml_str_board, strlen((char *)xml_str_board));
+	xmlFree(xml_str_board);
 
 	xmlChar *xml_str_userid = xmlGetProp(xmlItem, (const xmlChar *)"uid");
 	memcpy(item->from_userid, (char *)xml_str_userid, 16);
