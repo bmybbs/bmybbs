@@ -2347,8 +2347,7 @@ int mode;			// 1: politics    0: non-politics
 }
 
 int
-stringfilter(title, mode)
-char *title;
+stringfilter(char *title, int mode)
 {
 	struct mmapfile *mf;
 	char *bf;
