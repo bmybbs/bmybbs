@@ -73,7 +73,8 @@ int count_notification_num(char *userid);
 
 /** 检验某篇文章是否在消息列表中
  * 该方法不使用 libxml2 的方法，仅用于快速判断特征字符串是否存在于通知文件中。
- * @warn 可能存在误判。
+ *
+ * @warning 可能存在误判。
  * @param userid 用户 id
  * @param board 版面名称
  * @param article_id 帖子id
