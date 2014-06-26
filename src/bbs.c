@@ -93,6 +93,7 @@ static int b_notes_edit();
 static int b_notes_passwd();
 static int catnotepad(FILE * fp, char *fname);
 static int change_content_title(char *fname, char *title);
+static int get_mention_ids(char *article_path, char *mention_ids[]);
 
 /*-------by ylsdd- ------*/
 /*进行一个问答*/
@@ -2269,7 +2270,7 @@ post_article(struct fileheader *sfh)
 }
 
 static int
-get_mention_ids(char *article_path, int mention_ids)
+get_mention_ids(char *article_path, char *mention_ids[])
 {
 	int fd;
 	char *p;
