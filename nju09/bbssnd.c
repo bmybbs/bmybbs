@@ -224,7 +224,7 @@ bbssnd_main()
 	while(i!=MAX_MENTION_ID && mention_ids[i][0] != 0) {
 		// 因为mention_ids 可能大小写和本站用户 ID 不同，需要特殊处理
 		ue = getuser(mention_ids[i]);
-		if(ue!=NULL)
+		if(ue!=NULL && strcmp(currentuser.userid, ue->userid)!=0)
 			add_mention_notification(ue->userid, (anony) ? "Anonymous" : currentuser.userid, board, r, title);
 		++i;
 	}
