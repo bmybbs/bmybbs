@@ -23,6 +23,7 @@
 */
 #include <sys/ipc.h>
 #include <sys/msg.h>
+#include <sys/mman.h>
 #include "bbs.h"
 #include "bbstelnet.h"
 
@@ -2172,8 +2173,7 @@ post_article(struct fileheader *sfh)
 	}
 
 	/*重新指定文件名 */
-	if (1)
-	{
+
 		char newfilepath[STRLEN], newfname[STRLEN];
 		int count;
 		t = time(NULL);
@@ -2192,7 +2192,7 @@ post_article(struct fileheader *sfh)
 			if (count++ > MAX_POSTRETRY)
 				break;
 		}
-	}
+
 
 	if (sfh == NULL)
 		postfile.thread = postfile.filetime;
@@ -2248,7 +2248,51 @@ post_article(struct fileheader *sfh)
 		}
 	}
 	// term 下回帖提醒结束
+
+	// term 下 @ 提醒开始 by IronBlood
+	char mention_ids[MAX_MENTION_ID][IDLEN+2];
+	memset(mention_ids, 0, MAX_MENTION_ID*(IDLEN+2));
+	get_mention_ids(newfilepath, mention_ids);
+
+	int uid, i=0;
+	while(i!=MAX_MENTION_ID && mention_ids[i][0]!=0) {
+		uid = searchuser(mention_ids[i]);
+		if(uid!=0 && strcasecmp(currentuser.userid, mention_ids[i]) != 0) {
+			// 用户存在的情况下，且不为当前用户的情况下
+			add_mention_notification(uidshm->userid[uid-1], (header.chk_anony) ? "Anonymous" : currentuser.userid,
+					currboard, postfile.filetime, postfile.title);
+		}
+		++i;
+	}
+	// term 下 @ 提醒结束
 	return FULLUPDATE;
+}
+
+static int
+get_mention_ids(char *article_path, int mention_ids)
+{
+	int fd;
+	char *p;
+	struct stat statbuf;
+
+	fd = open(article_path, O_RDONLY);
+	if(fd == -1)
+		return -1;
+	if(fstat(fd, &statbuf) == -1) {
+		close(fd);
+		return -1;
+	}
+
+	p = mmap(0, statbuf.st_size, PROT_READ, MAP_SHARED, fd, 0);
+	close(fd);
+
+	if(p == MAP_FAILED)
+		return -2;
+
+	parse_mentions(p, mention_ids);
+
+	munmap(p, statbuf.st_size);
+	return 0;
 }
 
 static int
