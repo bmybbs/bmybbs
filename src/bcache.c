@@ -246,6 +246,38 @@ hasreadperm(struct boardheader *bh)
 	    || (bh->level & PERM_NOZAP);
 }
 
+int hasreadperm_ext(char *username,  char *boardname)
+{
+	struct boardmem *x = getbcache(boardname);
+	if(x==0)
+		return 0;
+
+	int tuid = getuser(username);
+	if(tuid == 0)	//ÓÃ»§²»´æÔÚ
+		return 0;
+
+	struct user_info *ui = query_uindex(tuid, 0); // µ÷ÓÃ ui Ç°ÏÈ¼ì²é ui ÊÇ·ñ²»ÔÚÏß£¨Ö÷ÒªÎª¾ãÀÖ²¿¡¢·â±Õ°æÃæ£©
+
+	if(x->header.flag != 0) {
+		if((x->header.flag & CLUBTYPE_FLAG))
+			return 1;
+		if(strcasecmp(username, "guest")==0)
+			return 0;
+		return (ui == 0) ? 0 : (ui->clubrights[x->header.clubnum / 32] & (1<<((x->header.clubnum) % 32)));
+	}
+
+	if(x->header.level == 0)
+		return 1;
+	if(x->header.level & (PERM_POSTMASK | PERM_NOZAP))
+		return 1;
+	if(!(ui->userlevel & PERM_BASIC))
+		return 0;
+	if(ui->userlevel & x->header.level)
+		return 1;
+
+	return 0;
+}
+
 int
 getbnum(bname)
 char *bname;
@@ -857,7 +889,7 @@ int farg;
 			       ModeType(uentp->mode));
                         }
 			else
-                        {  				       	   //ÓÃ»§×Ô¶¨Òå×´Ì¬ 
+                        {  				       	   //ÓÃ»§×Ô¶¨Òå×´Ì¬
                           if(uentp->user_state_temp[0]!='\0')
                            prints("%s%-16s[m ",uentp->pid == 1 ? "\033[35m" : "\033[1;34m",
 			       uentp->user_state_temp);
