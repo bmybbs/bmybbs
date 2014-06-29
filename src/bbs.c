@@ -2255,13 +2255,14 @@ post_article(struct fileheader *sfh)
 	memset(mention_ids, 0, MAX_MENTION_ID*(IDLEN+2));
 	get_mention_ids(newfilepath, mention_ids);
 
-	int uid, i=0;
+	int i=0;
 	while(i!=MAX_MENTION_ID && mention_ids[i][0]!=0) {
-		uid = searchuser(mention_ids[i]);
-		if(uid!=0 && strcasecmp(currentuser.userid, mention_ids[i]) != 0) {
-			// 用户存在的情况下，且不为当前用户的情况下
-			add_mention_notification(uidshm->userid[uid-1], (header.chk_anony) ? "Anonymous" : currentuser.userid,
+		if(getuser(mention_ids[i])!=0 && strcasecmp(currentuser.userid, mention_ids[i])!=0) {
+			if(hasreadperm(&lookupuser, currboard)) {
+				// 用户存在的情况下，且不为当前用户的情况下，且拥有该版面阅读权限的情况下
+				add_mention_notification(lookupuser.userid, (header.chk_anony) ? "Anonymous" : currentuser.userid,
 					currboard, postfile.filetime, postfile.title);
+			}
 		}
 		++i;
 	}
