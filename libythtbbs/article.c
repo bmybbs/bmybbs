@@ -609,7 +609,7 @@ int parse_mentions(char *content, char userids[20][14])
 
 	i=0;	// 用于 userids[i] 索引
 	offsetcount = pcre_exec(re, NULL, content, strlen(content), 0, 0, offsets, 3);
-	while(offsetcount>0 && i<MAX_MENTION_ID) {
+	while(offsetcount>0 && i<MAX_MENTION_ID && strstr(content+offsets[1], "\n--\n")!=NULL) {
 		if(pcre_get_substring(content, offsets, offsetcount, 0, &match) >= 0) {
 			if(i==0) { // userids 还为空的时候
 				strncpy(userids[0], match+1, strlen(match)-2);
@@ -634,4 +634,5 @@ int parse_mentions(char *content, char userids[20][14])
 	}
 
 	pcre_free(re);
+	return i;
 }
