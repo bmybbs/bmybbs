@@ -2274,7 +2274,7 @@ static int
 get_mention_ids(char *article_path, char *mention_ids[])
 {
 	int fd;
-	char *p;
+	char *p, *s;
 	struct stat statbuf;
 
 	fd = open(article_path, O_RDONLY);
@@ -2291,7 +2291,9 @@ get_mention_ids(char *article_path, char *mention_ids[])
 	if(p == MAP_FAILED)
 		return -2;
 
-	parse_mentions(p, mention_ids);
+	s = strstr(p, "\n\n");	// Ìø¹ýÍ·²¿
+	if(s!=NULL)
+		parse_mentions(s, mention_ids);
 
 	munmap(p, statbuf.st_size);
 	return 0;
