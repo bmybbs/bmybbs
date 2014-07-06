@@ -264,8 +264,8 @@ bbsfoot_main()
 	//Add by liuche 20120616
 	printf("<script>setTimeout('self.location.replace("
 	       "\"bbsfoot?lt=%d&mt=%d&mu=%d&sn='+t()+'\")', %d);</script>",
-	       lasttime, mail_total, mail_unread, 300000 + r * 1000);
-	r = (r + dt + now_t) % 30;
+	       lasttime, mail_total, mail_unread, 15000);
+	// r = (r + dt + now_t) % 30; // 此处 r 不再起作用
 	printf("</body>\n");
 	return 0;
 }
