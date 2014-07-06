@@ -2259,9 +2259,10 @@ post_article(struct fileheader *sfh)
 	while(i!=MAX_MENTION_ID && mention_ids[i][0]!=0) {
 		if(strcasecmp(currentuser.userid, mention_ids[i])!=0) {
 			if(hasreadperm_ext(mention_ids[i], currboard)) {	// 该函数内调用了 getuser() 函数，因此可以直接使用 lookupuser 全局变量
-				// 用户存在的情况下，且不为当前用户的情况下，且拥有该版面阅读权限的情况下
-				add_mention_notification(lookupuser.userid, (header.chk_anony) ? "Anonymous" : currentuser.userid,
-					currboard, postfile.filetime, postfile.title);
+				// 用户存在的情况下，且不为当前用户的情况下，且拥有该版面阅读权限的情况下，且不在黑名单里的时候
+				if(!inoverride(currentuser.userid, lookupuser.userid, "rejects"))
+					add_mention_notification(lookupuser.userid, (header.chk_anony) ? "Anonymous" : currentuser.userid,
+							currboard, postfile.filetime, postfile.title);
 			}
 		}
 		++i;
