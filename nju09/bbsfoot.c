@@ -190,7 +190,7 @@ void footInfo(){
 	printf("    while(repeat--)\n");
 	printf("        container.insertBefore(container.lastChild,container.firstChild);\n");
 	printf("}\n");
-	printf("setInterval(\"changeMsg()\",30000);\n");
+	printf("setInterval(\"changeMsg()\",5000);\n");
 	printf("</SCRIPT>\n");
 }
 
