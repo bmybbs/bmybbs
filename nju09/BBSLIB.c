@@ -16,30 +16,30 @@ char rframe[STRLEN];
 char to_hex(char code);
 
 struct wwwstyle wwwstyle[NWWWSTYLE] = {
-	{"橘红(大字体)", CSSPATH "orab.css", 
+	{"橘红(大字体)", CSSPATH "orab.css",
 	 "#b3b7e6", "#abc8f2", "yellow"},
-	{"橘红(小字体)", CSSPATH "oras.css", 
+	{"橘红(小字体)", CSSPATH "oras.css",
 	 "#b3b7e6", "#abc8f2", "yellow"},
-	{"兰色(大字体)", CSSPATH "blub.css", 
+	{"兰色(大字体)", CSSPATH "blub.css",
 	 "#ffc8ce", "#ffe3e7", "#ff8000"},
-	{"兰色(小字体)", CSSPATH "blus.css", 
+	{"兰色(小字体)", CSSPATH "blus.css",
 	 "#ffc8ce", "#ffe3e7", "#ff8000"},
-	{"绿色(大字体)", CSSPATH "greb.css", 
+	{"绿色(大字体)", CSSPATH "greb.css",
 	 "#c0c0c0", "#d0d0d0", "yellow"},
-	{"绿色(小字体)", CSSPATH "gres.css", 
+	{"绿色(小字体)", CSSPATH "gres.css",
         "#c0c0c0", "#d0d0d0", "yellow"},
 	{"黑色(大字体)", CSSPATH "blab.css",
 	 "#c0c0c0", "#d0d0d0", "yellow"},
-	{"黑色(小字体)", CSSPATH "blas.css", 
+	{"黑色(小字体)", CSSPATH "blas.css",
 	 "#c0c0c0", "#d0d0d0", "yellow"},
-	{"自定义的界面", "bbsucss/ubbs.css", 
+	{"自定义的界面", "bbsucss/ubbs.css",
 	 "", "", ""}
 };
 struct wwwstyle *currstyle = wwwstyle;
 int wwwstylenum = 0;
-int usedMath = 0; //本页面中曾经使用数学公式   
-int usingMath = 0; //当前文章（当前hsprintf方式）在使用数学公式   
-int withinMath = 0; //正在数学公式中   
+int usedMath = 0; //本页面中曾经使用数学公式
+int usingMath = 0; //当前文章（当前hsprintf方式）在使用数学公式
+int withinMath = 0; //正在数学公式中
 int no_cache_header = 0;
 int has_smagic = 0;
 int go_to_first_page = 0;
@@ -257,7 +257,7 @@ int num;
 	fstat(fd, &st);
 	len = st.st_size;
 
-	/* lkchu.990428: ernie patch 如果 len=0 & pos>0 
+	/* lkchu.990428: ernie patch 如果 len=0 & pos>0
 	   (在刚开精华区目录进去贴上，选下一个) 时会写入垃圾 */
 	off = len ? size * pos : 0;
 	lseek(fd, off, SEEK_SET);
@@ -2295,7 +2295,7 @@ loadbad(char *id)
 	sethomefile(file, id, "rejects");
 	fp = fopen(file, "r");
 	if (fp) {
-		badnum = fread(fff, sizeof (fff[0]), MAXREJECTS, fp);
+		badnum = fread(bbb, sizeof (bbb[0]), MAXREJECTS, fp);
 		fclose(fp);
 	}
 	return 0;
