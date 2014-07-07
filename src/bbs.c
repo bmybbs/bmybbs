@@ -2294,7 +2294,7 @@ get_mention_ids(char *article_path, char *mention_ids[])
 
 	s = strstr(p, "\n\n");	// Ìø¹ıÍ·²¿
 	if(s!=NULL)
-		parse_mentions(s, mention_ids);
+		parse_mentions(s, mention_ids, 0);
 
 	munmap(p, statbuf.st_size);
 	return 0;

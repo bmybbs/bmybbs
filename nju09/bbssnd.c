@@ -42,7 +42,7 @@ int
 bbssnd_main()
 {
 	char filename[80], dir[80], board[80], title[80], buf[256], userid[20] ,*content,
-	    *ref;
+	    *ref, *content0;
 	int r, i, sig, mark = 0, outgoing, anony, guestre = 0, usemath, nore, mailback;
 	int is1984, to1984 = 0;
 	struct boardmem *brd;
@@ -119,6 +119,7 @@ bbssnd_main()
 	sig = atoi(getparm("signature"));
 	currentuser.signature = sig;
 	content = getparm("text");
+	content0 = strdup(content);
 	printf("text=%s\n", content);
 	//http_fatal("just for test");
 	if (usemath && testmath(content))
@@ -218,7 +219,7 @@ bbssnd_main()
 	// 发送 @ 提醒开始 by IronBlood
 	char mention_ids[MAX_MENTION_ID][IDLEN+2];
 	memset(mention_ids, 0, MAX_MENTION_ID*(IDLEN+2));
-	parse_mentions(content, mention_ids);
+	parse_mentions(content0, mention_ids, 1);
 	struct userec *ue;
 	i=0;
 	while(i!=MAX_MENTION_ID && mention_ids[i][0] != 0) {
