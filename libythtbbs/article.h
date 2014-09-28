@@ -3,9 +3,9 @@
 #define __ARTICLE_H
 
 struct fileheader {
-	int filetime;
-	int edittime;
-	int thread;
+	time_t filetime;
+	time_t edittime;
+	time_t thread;
 	unsigned int accessed;
 	char title[60];
 	char owner[14];		//如果是本站的, 就用id, 如果时email, 就取第一个词并
