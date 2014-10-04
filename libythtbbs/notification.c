@@ -23,7 +23,7 @@ static int add_notification(char * to_userid, char * from_userid, char * board,
 	char * title_utf8 = (char *)malloc(2*strlen(title_gbk));
 	if(title_utf8 == NULL)
 		return -1;
-	memset(title_utf8, 0, sizeof(title_utf8));
+
 	g2u(title_gbk, strlen(title_gbk), title_utf8, 2*strlen(title_gbk));
 
 	int ulock = userlock(to_userid, LOCK_EX);
