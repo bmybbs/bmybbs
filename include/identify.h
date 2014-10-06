@@ -55,6 +55,7 @@ struct active_data{
 int invalid_mail(char* mbox);
 //void gencode(char* code);
 char* str_to_uppercase(char *str);
+char* str_to_lowercase(char *str);
 const char* style_to_str(int style);
 //int send_active_mail(char* mbox, char* code,char* userid, session_t* session);
 //int send_active_msg(char* phone, char* code,char* userid);
