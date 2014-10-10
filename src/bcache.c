@@ -270,9 +270,9 @@ int hasreadperm_ext(char *username,  char *boardname)
 		return 1;
 	if(x->header.level & (PERM_POSTMASK | PERM_NOZAP))
 		return 1;
-	if(!(ui->userlevel & PERM_BASIC))
+	if(!(lookupuser.userlevel & PERM_BASIC))
 		return 0;
-	if(ui->userlevel & x->header.level)
+	if(lookupuser.userlevel & x->header.level)
 		return 1;
 
 	return 0;
