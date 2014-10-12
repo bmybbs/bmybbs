@@ -45,18 +45,18 @@ struct fileheader {
 #define FH_ISWATER		0x00100000	//判断是否被标注为水文
 
 struct bknheader {
-	int filetime;
+	time_t filetime;
 	char boardname[20];
 	char title[60];
 	char unused[44];
 };
 
 struct boardtop {
-        char title[60];
-        int unum;
-        int thread;
-        char firstowner[14];
-        int lasttime;
+	char title[60];
+	int unum;
+	int thread;
+	char firstowner[14];
+	int lasttime;
 	char board[24];
 };
 

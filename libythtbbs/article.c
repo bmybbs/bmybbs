@@ -22,7 +22,7 @@ char *
 fh2fname(struct fileheader *fh)
 {
 	static char s[16];
-	sprintf(s, "M.%d.A", fh->filetime);
+	sprintf(s, "M.%lu.A", (long)fh->filetime);
 	if (fh->accessed & FH_ISDIGEST)
 		s[0] = 'G';
 	if (fh->accessed & FILE_ISTOP1)  //add by wjbta
@@ -590,7 +590,7 @@ static int update_article_link_in_file(char *boardname, int oldthread, int newfi
 time_t fn2timestamp(char * filename) {
 	char num_str[11]={'0'};
 	memcpy(num_str, &filename[2], 10);
-	return (time_t)atoi(num_str);
+	return (time_t)atol(num_str);
 }
 
 int parse_mentions(char *content, char userids[20][14], int from)
