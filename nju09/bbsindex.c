@@ -139,7 +139,7 @@ char *get_no_more_than_four_login_pics()
 
     while( (i != file_line - 1) && i !=4) // 不超过总图片个数、不超过最大上限
     {
-        srand(time(NULL)+rand()%100); // 加种子   
+        srand(time(NULL)+rand()%100); // 加种子
         int randnum = 1 + rand()%file_line; // 生成随机数
         char *tmp = file[randnum];
         
@@ -314,7 +314,7 @@ void loginwindow()
     "<tr>\n"
     "<td align=center bgcolor=#FFFFFF><img src=\"images/index_line.gif\" name=Image1 width=650 height=20 id=Image1></td>\n"
   "<tr><td align=center>陕ICP备 05001571号<br />"
-  "本BBS隶属于：西安交通大学网络中心／中国教育科研网西北中心<br />"
+  //"本BBS隶属于：西安交通大学网络中心／中国教育科研网西北中心<br />"
   "开发维护：西安交通大学网络中心  BBS程序组</td></tr>"
 	"</tr>\n"
 "</table>"/*,login_link,login_pic*/);/* modified by linux 05.9.11 */

@@ -679,7 +679,7 @@ void show_banner()
 	"<table width=\"100%\" height=\"100%\" border=0 cellpadding=0 cellspacing=0 class=\"level2\">\n"
 	"<tr><td><div id=\"bmy\"><span class=\"hidden\">兵马俑</span></div></td>\n");
 
-	//add 广告 clearboy@20060919	
+	//add 广告 clearboy@20060919
 
 /*
 	"<td align=right width=\"468\" height=\"60\">\n"
@@ -741,7 +741,7 @@ endbanner:
 	printf("</td>\n"
 
 	
-	//end 广告 
+	//end 广告
 	//"<td width=290><table border=0 cellpadding=0 cellspacing=0>\n"
 	//"<tr><form action=home target=f3><td colspan=2><input name=board type=text size=20>\n"
 	//"<input name=Submit type=submit class=sumbitgrey value=Search>\n"
@@ -1045,7 +1045,7 @@ recommboard:
 aboutbmy:
 	title_end();
 	title_begin("关于BMY");
-	printf("CPU: Intel Xeon 3GHz × 4<br>RAM: 16GB ECC<br>HD: SAN 1000G<br>\n"
+	printf("CPU: Intel<sup>&reg;</sup> Xeon<sup>&reg;</sup> E5-2620 2.1GHz ×4<br>RAM: 16GB ECC<br>HD: SAN 4000G<br>\n"
 	"网卡: 双1000Mbps NIC<br>\n");
 	title_end();
 
