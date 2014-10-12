@@ -20,7 +20,7 @@ int refcount[HASHSIZE][MAXFILE];
 char otherfile[200];
 int allfile = 0, allref = 0, alllost = 0, unknownfn = 0, nindexitem = 0,
     nstrangeitem = 0;
-int nowtime;
+time_t nowtime;
 
 int
 hash(char *postname)
@@ -52,12 +52,12 @@ isspcname(char *file)
 }
 
 int
-countfile(struct fileheader *fhdr, void *farg)
+countfile(void *fhdr, void *farg)
 {
 	int i, h;
-	char *fname = fh2fname(fhdr);
+	char *fname = fh2fname((struct fileheader *)fhdr);
 	nindexitem++;
-	if (fhdr->filetime == 0) {
+	if (((struct fileheader *)fhdr)->filetime == 0) {
 		nstrangeitem++;
 		return 0;
 	}
@@ -130,8 +130,7 @@ getallpost(char *path)
 int
 useindexfile(char *filename)
 {
-	return new_apply_record(filename, sizeof (struct fileheader), countfile,
-				NULL);
+	return new_apply_record(filename, sizeof (struct fileheader), countfile, NULL);
 }
 
 int
