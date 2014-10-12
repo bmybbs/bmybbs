@@ -54,9 +54,9 @@ struct bknheader {
 struct boardtop {
 	char title[60];
 	int unum;
-	int thread;
+	time_t thread;
 	char firstowner[14];
-	int lasttime;
+	time_t lasttime;
 	char board[24];
 };
 

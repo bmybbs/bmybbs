@@ -19,7 +19,7 @@ struct data_s {
 	struct boardtop bt;
 };
 
-int now_t;
+time_t now_t;
 
 struct boardtop *topten = NULL;
 struct boardtop *ctopten = NULL;
@@ -33,6 +33,8 @@ const char * BDSTYLE = "<style type=\"text/css\">.bd-overflow { width: 500px; wh
 
 int allflag = 0;
 struct mmapfile filtermf = { ptr:NULL, size:0 };
+
+extern int postfile(char *filename, char *owner, char *nboard, char *posttitle);
 
 int
 cmpbt(struct boardtop *a, struct boardtop *b)
@@ -102,7 +104,7 @@ trytoinsert_area(struct boardheader *bh, struct boardtop *bt)
 }
 
 int
-_topn(struct boardheader *bh)
+_topn(struct boardheader *bh, void * fargs)
 {
 	//从 bh 里面找到TOPN个thread
 	int size = sizeof (struct fileheader), total;
@@ -470,7 +472,7 @@ main(int argc, char **argv)
 			return 0;
 		}
 		strncpy(bh.filename, name, STRLEN);
-		_topn(&bh);
+		_topn(&bh, NULL);
 	}
 	if (allflag) {
 		topten = calloc(11, sizeof (struct boardtop));

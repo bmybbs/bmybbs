@@ -95,8 +95,7 @@ struct boardheader *brec;
 }
 
 int
-postfile(filename, owner, nboard, posttitle)
-char *filename, *owner, *nboard, *posttitle;
+postfile(char *filename, char *owner, char *nboard, char *posttitle)
 {
 	struct boardheader fh;
 
