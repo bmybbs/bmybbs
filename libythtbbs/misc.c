@@ -92,7 +92,7 @@ char *s;
 	return;
 }
 
-int code_convert(char *from_charset,char *to_charset,char *inbuf,int inlen,char *outbuf,int outlen)
+int code_convert(char *from_charset,char *to_charset,char *inbuf,size_t inlen,char *outbuf,size_t outlen)
 {
 	iconv_t cd;
 	int rc;
@@ -108,7 +108,7 @@ int code_convert(char *from_charset,char *to_charset,char *inbuf,int inlen,char 
 }
 
 //UNICODEÂë×ªÎªGB2312Âë
-int u2g(char *inbuf,int inlen,char *outbuf,int outlen)
+int u2g(char *inbuf,size_t inlen,char *outbuf,size_t outlen)
 {
 	return code_convert("utf-8","gb2312",inbuf,inlen,outbuf,outlen);
 }
