@@ -1,0 +1,75 @@
+发信人: clearboy (笑语), 信区: Program_Team
+标  题: 系统维护手册(1)
+发信站: 兵马俑BBS (Mon May 16 10:13:43 2005), 本站(202.117.1.8)
+
+1、     常用的路径                                                                                                      
+程序所在的目录:
+/home/bbssrc/
+
+Telnet程序和数据所在的目录
+/home/bbs
+
+www所在的目录
+/home/apache/cgi-bin/bmy
+/home/apache/htdocs/bmy/
+
+进站画面：
+/home/apache/htdocs/bmy/cai.jpg
+
+//上面两个路径，跟实验站上面有出入。
+
+2、     修改程序，常用的命令                                                                                            
+编译Telnet的程序：
+在目录：/home/bbssrc/src 下面执行：make installbbs
+
+编译www的程序
+在目录：/home/bbssrc/nju09 下面执行：make update
+
+编译库文件的程序
+在头文件所在目录，如：/home/bbssrc/libythtbbs下面执行
+make clean
+make
+make install
+
+全部重新编译
+
+1. 备份.BOARDS & .PASSWDS
+/home/bbs/0Announce/.Search文件是精华区索引
+
+2. 清除已有的程序
+/home/bbssrc/ythtlib/make clean
+/home/bbssrc/libythtbbs/make clean
+/home/bbssrc/src/make clean
+/home/bbssrc/nju09/make clean
+/home/bbssrc/atthttpd/make clean
+
+3.编译程序
+3.1 telnet程序的编译
+/home/bbssrc/ythtlib/make
+/home/bbssrc/libythtbbs/make
+/home/bbssrc/make  （这个会调用库文件的make intall）
+3.2 www程序的编译
+/home/bbssrc/nju09/make
+3.3telnet监听进程
+/home/bbssrc/atthttpd/make
+
+4. 安装
+/home/bbssrc/src/make installbbs
+/home/bbssrc/src/make installbbsd
+/home/bbssrc/nju09/make update
+
+5. telnet监听进程
+killall atthttpd
+cp /home/bbssrc/atthttpd/atthttpd /home/bbs/bin/atthttpd
+
+6. 重启系统
+shutdown  -r 1
+
+
+--
+我是笑语,我怕谁
+哈哈哈~~~
+
+※ 来源:．兵马俑BBS 202.117.1.8．[FROM: 202.117.27.64]                                                                  
+※ 修改:．clearboy 于 May 16 10:13:54 修改本文．[FROM: 202.117.27.64]                                                   
+※ 修改:．clearboy 于 May 16 10:30:11 修改本文．[FROM: 202.117.27.64]                                                   

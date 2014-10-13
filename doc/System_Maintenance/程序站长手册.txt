@@ -1,0 +1,222 @@
+程序站长维护手册
+clearboy@BMY
+王晓钰@西安交通大学
+wxy@mail.xjtu.edu.cn
+
+
+目录
+1、	常用的路径	
+2、	修改程序，常用的命令	
+3、	重要备份文件	
+4、	常用系统维护命令	
+5、	常用Linux命令	
+6、	进一步的资源和工作	
+7、	其他命令	
+
+
+【1】常用的路径
+程序所在的目录:
+/home/bbssrc/
+
+Telnet程序和数据所在的目录
+/home/bbs
+
+www所在的目录
+/home/apache/cgi-bin/bmy
+/home/apache/htdocs/bmy/
+
+进站画面：
+/home/apache/htdocs/bmy/cai.jpg
+
+【2】修改程序，常用的命令
+编译Telnet的程序：
+在目录：/home/bbssrc/src 下面执行：make installbbs
+
+编译www的程序
+在目录：/home/bbssrc/src 下面执行：make update
+
+编译库文件的程序
+在头文件所在目录，如：/home/bbssrc/libythtbbs下面执行 
+make clean
+make
+make install
+
+全部重新编译
+
+1. 备份.BOARDS & .PASSWDS
+
+2. 清除已有的程序
+/home/bbssrc/ythtlib/make clean
+/home/bbssrc/libythtbbs/make clean
+/home/bbssrc/src/make clean
+/home/bbssrc/nju09/make clean
+/home/bbssrc/atthttpd/make clean
+
+3.编译程序
+3.1 telnet程序的编译
+/home/bbssrc/ythtlib/make
+/home/bbssrc/libythtbbs/make
+/home/bbssrc/make  （这个会调用库文件的make intall）
+3.2 www程序的编译
+/home/bbssrc/nju09/make
+3.3telnet监听进程
+/home/bbssrc/atthttpd/make
+
+4. 安装
+/home/bbssrc/src/make installbbs
+/home/bbssrc/src/make installbbsd
+/home/bbssrc/nju09/make update
+
+5. telnet监听进程
+killall atthttpd
+cp /home/bbssrc/atthttpd/atthttpd /home/bbs/bin/atthttpd
+
+6. 重启系统
+shutdown  -r 1
+
+【3】重要备份文件
+要注意备份的东西：
+1、	bbs的可执行文件；
+2、	.BOARDS   存储了版面的信息；
+3、	.PASSWDS   存储了用户的信息；
+
+【4】常用系统维护命令
+维护系统：
+
+1、更改版面的权限：
+（在/home/bbs/boards下面执行）
+chmod 755 VisualC
+chown -R bbs:bbs boards/
+
+2、常看精华区
+cd 0Announce/
+cd groups/
+cd GROUP_0/
+cd qwerasdf/
+ll -al | more
+rm M109798*
+rm -rf M109798*
+
+3、目录的操作
+ls -al GROUP_*
+rm -rf M109798*
+
+rm -Rf M1087610*
+
+rm -rf src_1.8_old 删除整个目录
+
+4、定期执行的操作
+crontab –e
+crontab -e -u root
+crontab -u //设定某个用户的cron服务，一般root用户在执行这个命令的时候需要此参数 
+crontab -l //列出某个用户cron服务的详细内容 
+crontab -r //删除没个用户的cron服务 
+crontab -e //编辑某个用户的cron服务
+这个格式的前一部分是对时间的设定，后面一部分是要执行的命令，如果要执行的命令太多，可以把这些命令写到一个脚本里面，然后在这里直接调用这个脚本就可以了，调用的时候记得写出命令的完整路径。时间的设定我们有一定的约定，前面五个*号代表五个数字，数字的取值范围和含义如下： 
+分钟　（0-59） 
+小時　（0-23） 
+日期　（1-31） 
+月份　（1-12） 
+星期　（0-6）//0代表星期天 
+除了数字还有几个个特殊的符号就是"*"、"/"和"-"、","，*代表所有的取值范围内的数字，"/"代表每的意思,"*/5"表示每5个单位，"-"代表从某个数字到某个数字,","分开几个离散的数字。
+以下举几个例子说明问题： 
+
+每天早上6点 
+0 6 * * * echo "Good morning." >> /tmp/test.txt //注意单纯echo，从屏幕上看不到任何输出，因为cron把任何输出都email到root的信箱了。 
+
+每两个小时 
+0 */2 * * * echo "Have a break now." >> /tmp/test.txt 
+晚上11点到早上8点之间每两个小时，早上八点 
+0 23-7/2，8 * * * echo "Have a good dream：）" >> /tmp/test.txt 
+
+每个月的4号和每个礼拜的礼拜一到礼拜三的早上11点 
+0 11 4 * 1-3 command line 
+1月1日早上4点 
+0 4 1 1 * command line 
+
+每次编辑完某个用户的cron设置后，cron自动在/var/spool/cron下生成一个与此用户同名的文件，此用户的cron信息都记录在这个文件中，这个文件是不可以直接编辑的，只可以用crontab -e 来编辑。cron启动后每过一份钟读一次这个文件，检查是否要执行里面的命令。因此此文件修改后不需要重新启动cron服务。
+
+rm -Rf core.*
+
+5、查找
+grep test1 .BOARDS
+
+6、启动、停止程序
+
+/home/apache/bin/apachectl stop
+./bin/apachectl start
+killall bbsd
+/home/apache/bin/apachectl start
+
+
+7、重新启动系统：
+shutdown  -r 1
+shutdown -R 5
+
+8、其他
+ll /home/bbs/etc/moneyCenter/criminals_list
+
+9、察看命令
+
+ps -aef | grep apache
+
+ipcs
+看内存情况
+
+pstree
+
+more httpd.pid
+
+一些重要的系统文件：
+vi named.ca
+more httpd.pid
+
+【5】常用Linux命令
+
+
+【6】进一步的资源和工作
+
+首页图片的推荐
+研究日志的自动rotal
+
+【7】重要维护命令
+ps -aef | more
+ps -aef | grep apache
+pstree
+top
+df  磁盘剩余空间
+passwd
+traceroute
+netstat -nr
+crontab -e 
+
+wget -m http://202.117.1.8/BMYGAYIZUVFJ/attach/bbscon/moneycenter.c?B=Program_Team&F=M.1114330214.A&attachpos=1009&attachname=/moneycenter.c
+ll 202.117.1.8/BMYGAYIZUVFJ/attach/bbscon/moneycenter.c\?B\=Program_Team 
+df
+
+killall bbsd ipcs  显示Shared Memory Segments  ipcrm -m *****  
+1.2 如果系统以前安装运行过bbs,确认以前的shm已经清理干净了,如果使用bash,可以用以 下命令清除所有属主为bbs的shm 	for i in `ipcs|grep bbs|awk '{print $2}'`;do ipcrm shm $i;done
+
+【8】其他命令
+cd /etc/sysconfig/
+cd network-scripts/
+
+vi static-routes 
+route add 202.117.128.59 mask 255.255.255.255 gw 202.117.1.1
+route add -net 202.117.128.59 mask 255.255.255.255 gw 202.117.1.1
+route add -net 202.117.128.59 netmask 255.255.255.255 gw 202.117.1.1
+netstat -nr
+
+【9】修改日志
+
+2005年10月31日
+
+TransferLog "|./rotatelogs /some/where 5M"
+./rotatelogs <logfile> <rotation time in seconds> [offset minutes from UTC] or <rotation size in megabytes>
+/home/apache/bin/rotatelogs
+
+
+TransferLog "|./rotatelogs /home/apache/logs/TransferLog 20M"
+TransferLog "|/home/apache/bin/rotatelogs /home/apache/logs/TransferLog 20M"
+
+

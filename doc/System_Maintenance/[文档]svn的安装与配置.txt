@@ -1,0 +1,90 @@
+发信人: pzhgpzhg (E8rd集团‖叮当叮当，海螺烧香), 信区: Program_Team
+标  题: [文档]svn的安装与配置
+发信站: 兵马俑BBS (Thu Mar 12 03:41:02 2009), 本站(bbs.xjtu.edu.cn)
+
+注意，这里把svn仓库放到/svnsrc下，3.30上实际放到了/svnsrc/svn下，一样的
+
+1.安装
+
+$ sudo aptitude install subversion subversion-tools apache2 libapache2-svn
+$ sudo usermod -g 999 www-data
+$ sudo mkdir /svnsrc/src_1.8 -p
+$ sudo mkdir /svnsrc/doc -p
+$ sudo svnadmin create /svnsrc/src_1.8
+$ sudo svnadmin create /svnsrc/doc
+$ sudo chown bbs.www-data /svnsrc -R
+$ sudo chmod 755 /svnsrc -R
+$ sudo svn import /home/bbssrc/src_1.8 file:///svnsrc/src_1.8
+$ sudo svn import /home/bbssrc/doc file:///svnsrc/doc
+
+
+
+2.http://访问模式配置
+
+$ sudo vim /etc/apache2/mods-available/dav_svn.conf
+改为如下（略去注释）
+<Location /svn>
+        DAV svn
+        SVNParentPath /svnsrc #svn仓库之父目录
+        AuthType Basic
+        AuthName "Subversion Repository"
+        AuthUserFile /etc/apache2/dav_svn.passwd #passwd文件
+        AuthzSVNAccessFile /etc/apache2/dav_svn.authz #目录权限控制
+        Require valid-user
+</Location>
+
+$ sudo vim /etc/apache2/dav_svn.authz
+改为如下（略去注释）
+[/]             #以下语句对根目录起作用（因此对全局起作用）
+* =             #匿名用户无权限
+bmyfan = r      #这个用户只读
+
+$ sudo htpasswd -c /etc/apache2/dav_svn.passwd bmyfan
+$ sudo /etc/init.d/apache2 restart
+
+
+
+3.svn://访问模式配置
+
+$ sudo vim /svnsrc/src_1.8/conf/svnserve.conf
+改为如下（略去注释）
+[general]
+anon-access = none
+auth-access = write
+password-db = /svnsrc/passwd
+authz-db = /svnsrc/authz
+
+$ sudo vim /svnsrc/doc/conf/svnserve.conf
+同上修改
+
+$ sudo vim /svnsrc/passwd
+这是账户存储文件，格式如下
+[users]
+userid = passwd
+
+$ sudo vim /svnsrc/authz
+这是权限控制文件，格式如下
+[groups]  #配置组别
+Program_Team = pzhg  #程序组，可随意添加在passwd文件中定义的用户
+Fan_Group = bmyfan  #兴趣组，可随意添加在passwd文件中定义的用户
+
+[/]   #针对根目录
+@Program_Team = rw  #程序组有读写权限
+@Fan_Group = r  #兴趣组有只读权限
+* =  #匿名用户无权限
+
+$ sudo svnserve -d -r /svnsrc   #start the daemon process
+这句话弄个脚本，放到/etc/init.d和rc*.local里，齐活
+
+--
+                  ┏━━━━━━━━━━━━━━━━━┓
+                  ▍              洛 阳 东            ▋
+                  ▍           LUO YANG DONG          ▋
+                  ▍ 洛  阳 ←─西      东─→ 白马寺 ▋
+                  ▍ 洛阳北 ←─北      南─→ 关  林 ▋
+                  ◣━━━━━━━━━━━━━━━━━◢
+
+※ 来源:．兵马俑BBS bbs.xjtu.edu.cn．[FROM: 210.43.14.86]
+
+※ 修改:．pzhgpzhg 于 Mar 12 03:41:12 修改本文．[FROM: 210.43.14.86]
+※ 修改:．pzhgpzhg 于 Mar 12 04:16:37 修改本文．[FROM: 210.43.14.86]

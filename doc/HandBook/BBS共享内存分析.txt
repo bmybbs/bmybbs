@@ -1,0 +1,262 @@
+发信人: lanboy (从事软件业), 信区: BMY_fan
+标  题: [转载] BBS共享内存分析----版权所有：聂秦岭
+发信站: 兵马俑BBS (Tue Jul 11 10:56:26 2006), 本站(202.117.1.8)
+
+【 以下文字转载自 BBS_Master 讨论区 】                                                                                  
+【 原文由 lanboy 所发表 】                                                                                              
+聂秦岭准备考我老板研究生，在我这里实习，我就给他布置了这个题目，根据
+我提的要求，他现在完成了报告，GYT看看还需要要什么？
+
+
+
+                      Bbs源代码分析
+                                       --bbs中共享内存的使用
+
+在bbs系统中由于本身的特征要频繁的访问一些资源特别是文件,而众多的用户不断的频繁的
+打开关闭存储在外存储器文件会使系统的速度大幅下降.为了提高速度就应该把文件的内容
+提前读入内存中,以供使用,但是由于bbs系统本身的特征,有众多的用户来访问服务器,而服
+务器本身的硬件资
+源有限,不可能为每个用户都提供一大块内存区域存储有关的信息和临时资料,而且这样做也
+很不划算,存在着很大的浪费,是不合理的.由于bbs的用户们用到的信息和资料有很多都是相
+同的,所以我们引入了共享内存的使用,在这些各个用户共享的内存区域中存储着用户们需要
+的共同的信息,
+这些信息都是相同的.由于共享内存的引入一方面提高用户的访问速度,一方面节省硬件空间
+为更多的用户服务,提高了bbs系统整体的性能!
+共享内存的方法实际上就是由系统开出一些每个用户都可以访问的内存空间,其中存储着用
+户们可能使用的信息和资料.这些信息和资料应该对每个用户来说都是一致的.在bbs系统运
+行中,我们动态的修改各共享内存区的内容,来保持共享内存中的信息和资料与当前bbs系统
+的状态是一致的.
+在bbs源代码中主要的共享内存有存储当前在线用户临时信息的utmpshm;存储所有在线用户
+id的uindexshm;存储所有用户id信息的uidshm;存储用户id的hash表的uidhashshm;存储用户
+登陆时和登陆后的各种画面,底线,以及用户离站时的离站画面的共享内存区;在用户登陆后
+还有存储活动面板
+的共享内存区movieshm;存储bbs版面信息的brdshm等.
+Bbs代码中的shm都是采用函数attach_shm()来根据用途来分配具体的共享内存空间,并初始
+化,再将新的共享内存空间attach到调用函数的进程的地址空间中的.在attach_shm()函数中
+调用shmget()来得到一块新的共享内存分区,初始化后调用shmat()来把已经分配的内存区域
+attach到调用att
+ach_shm()函数的进程的地址空间中去.假如已经共享内存去已经存在,则希望访问shm的进程
+只要直接访问就行了.共享内存区被进程们同步互斥的访问.
+Bbs的共享内存区一般是在一个用户登陆的时候完成与用户进程的attach的过程的.
+当有一个用户通过telnet方式连接到bbs系统上的时候,系统首先调用函数resolve_utmp()来
+根据需要申请和初始化共享内存空间utmpshm和uindexshm,并把它们attach到调用它们的进
+程的地址空间中.
+
+它们的结构如下:
+struct UTMPFILE   *utmpshm;
+struct UINDEX     *uindexshm;
+其中:
+struct UTMPFILE {
+        struct user_info uinfo[USHM_SIZE];
+        time_t uptime;
+        unsigned short activeuser;
+        unsigned short maxuser;
+        unsigned short maxtoday;
+        unsigned short wwwguest;
+        time_t activetime;
+        int ave_score;
+        int allprize;
+        time_t watchman;
+        unsigned int unlock;
+        int nouse[5];
+};
+
+struct UINDEX {
+        int user[MAXUSERS][6];
+};
+
+紧接着调用函数resolve_ucache()来根据需要申请或更新uidshm和用户id的hash表.
+在resolve_ucache函数中首先判断uidshm的状态,也就是看uidshm是不是NULL,假如uidshm为
+NULL也就是说此时还没有uidshm,则要调用attach_shm()函数申请并初始化一个新的
+uidshm;假如此时uidshm不为NULL,表示uidshm已经存在,就要检查当前的uidshm的修改时间
+uptime是不是比文件.PAS
+SFLUSH的最后修改时间早,要是uidshm的修改时间早于文件.PASSFLUSH的最后修改时间,说明
+当前存储所有用户id信息的文件.PASSFLUSH中的用户id信息要新于uidshm中的用户id信息.
+则要调用函数apply_record()来更新用户的信息.更新的过程基本上是将文件的内容读入
+uidshm的过程.
+
+Uidshm的结构如下:
+
+struct UCACHE {
+        char userid[MAXUSERS][IDLEN + 1];
+        int number;
+        int usersum;
+        time_t uptime;
+        int nouse[10];
+};
+
+在更新了uidshm以后还要再根据更新更新后的uidshm更新存有用户id信息的hash表,主要的
+结构为:
+
+struct UCACHEHASH *uidhashshm;
+
+struct UCACHEHASH {
+        struct useridhashitem uhi[UCACHE_HASH_SIZE];
+        time_t uptime;
+};
+struct useridhashitem {
+        int num;
+        char userid[IDLEN + 1];
+};
+
+在更新hash表上时,首先检查uidhashshm是不是为空,也就是说看看hash表是不是存在,若不
+存在则申请并初始化,如果存在就检查hash表的更新时间是不是早于uidshm的更新时间,如果
+是则要根据当前的uidshm更新hash表.
+在更新hash表的时候,遍历uidshm将所有的用户id利用函数insertuseridhash()重新插入到
+hash表的相应位置,并且更改hash表的更新时间和uidshm的更新时间一致.最后将更新的
+hash表重新attach到调用进程的地址空间中.
+在完成了uidshm和uidhashshm的工作后要查看是否当前用户数超过了最大用户数或者是超过
+了最大活动用户数.如果是超过了,则要调出文件etc/loginfull提示用户bbs当前用户人数已
+满无法提供服务!然后停止服务,更新状态后退出用户进程.
+假如人数没有超过上限,就调用fill_shmfile()函数将用mode指定的画面装入相应的共享内
+存区.关于存储画面文件的共享内存区有issueshm,goodbyeshm,welcomeshm,和endlineshm;
+分别存储进站画面,离站画面,欢迎画面和叶面底线.
+它们的都是FILESHM结构的;
+
+struct FILESHM {
+        char line[FILE_MAXLINE][FILE_BUFSIZE];
+        int fileline;
+        int max;
+        time_t update;
+};
+
+装入过程基本是将用mode指定的画面从指定的文件中读入结构的过程.当然也要查看文件和
+shm的修改时间,来保持shm的最新性.
+在登陆后就一直显示endlineshm的内容;在进站时显示issueshm的内容,随后显示
+welcomeshm;当离站的时候显示goodbyeshm中的离站画面.
+到此时打印出提示,提示用户输入用户名,并检查输入的用户名是否有登入的权限,如果没有
+就打印提示,停止服务.如果有,提示输入密码,将输入的密码和存放用户信息的文件中该id的
+密码比较来确认密码是不是一致.通过密码检查后再经过各种权限的检查来确认该用户的权
+限,以备在登入后
+给于该用户相应的权限.
+然后设置一些用户的临时信息,比如登陆时间,等等.
+登入!
+将更新后的当前用户的记录写入记录文件中,开始计时记录当前用户的上站时间!
+调用Nnread_init()函数.
+在Nnread_init()函数中,假如没有movieshm则调用attach_shm()申请并初始化一个用于活动
+面板的shm.检查文件etc/movie文件的修改时间是不是早于movishm的修改时间,如果是表示
+当前movieshm的内容比较新,返回调用处,否则就要依据比较新的etc/movie更新movieshm.
+更新的过程是将etc/movie只读打开,再将其中的内容一行行的读入movieshm中,读完后重新
+设定movieshm的属性,将其修改时间改为当前.并且将更新后的movieshm重新attach到调用的
+用户进程的地址空间中.
+
+Movieshm的结构为:
+
+struct ACSHM {
+        char line[ACBOARD_MAXLINE][ACBOARD_BUFSIZE];
+        int movielines;
+        time_t update;
+};
+
+
+到此时一个用户已经获权登陆.
+
+之后查看该用户的目录中的talk_log文件看是否有不正常的断线,询问用户是否要寄回用户
+的信箱中.
+经过对用户的权限的检查以后,读出movieshm的内容显示活动面板,调用函数
+b_closepolls()来关闭投票并统计和显示投票的结果.
+ 在b_closepolls()函数中调用resolve_boards()函数更新版面的共享内存,我们要对
+brdshm中所有的版面作以下的事情:
+在vote/bn下设置文件,并取出投票结果,最后要设置下次投票的时间为七个小时以后.
+ 在函数resolve_boards()中先设置一些有关的time参数,再检查brdshm的修改时间是不是早
+于存储版面列表的文件.BOARDS的修改时间,或者是不是brdshm的修改时间在一个小时以前!
+如果是我们就调用reload_boards()更新brdshm.
+具体做法如下:
+如果没有brdshm就分配一个,有的话我们就建立一个bcache.lock的文件并加上独占的锁
+LOCK_EX.如果brdshm满足更新的条件,我们就调用new_apply_record()函数将文件.BOARDS的
+信息导入到brdshm中,并利用函数bmonlinesync()来更新讨论区版主的信息.
+
+Brdshm的结构如下:
+
+struct BCACHE *brdshm;
+
+struct BCACHE {
+        struct boardmem bcache[MAXBOARD];
+        int number;
+        time_t uptime;
+        time_t pollvote;
+};
+
+ 之后,再经过一系列的权限检查确认用户的版面权利,比如是不是版主等等,显示相应的主菜
+单,供用户选择想要bbs系统提供的功能.
+
+在bbs系统运行时系统对各个共享内存区域进行着动态的修改,来保持共享内存区中保存的信
+息和资料始终能够反应系统当前最新的状态,为提供给用户及时准确的信息.
+共享内存区utmpshm和uindexshm中保存着当前在线的所有用户的临时信息,用户数目,用户
+id等信息.
+当我们要查找一个用户的临时信息的时候,涉及到utmpshm和uindexshm,我们要先检查
+utmpshm和uindexshm是否存在,只有存在才可以进行进一步的操作.如果不存在我们就要新申
+请utmpshm和uidexshm.然后我们就根据给定的信息查出与要求一致的用户的信息,返回存储
+他的结构的指针.当一个
+新的用户登陆时,我们同样要先检查shm的存在性,然后按照登陆用户的ip地址进行hash,根据
+hash的结果将该用户的临时信息插入到utmpshm中去,也要把该用户的id信息插入到
+uindexshm中去.
+并修改shm的uptime为now.为下次修改作准备.
+当前用户对自己可以修改的信息的修改都是先将修改的信息更新到当前用户的一个临时缓冲
+区中去,然后再用这个缓冲区的内容来更新存储相关信息信息的系统文件中去的.
+共享内存区uidshm中保存着所有用户的id信息和所有注册用户的个数,共享内存区
+uidhashshm是为了快速查找用户id而建立的,来存储用户id的hash表的.
+在涉及到对uidshm和uidhashshm的操作中都要先检查shm是不是和存储信息的文件保持一致
+,如果不一致则要根据文件更新shm,再在完成相应的操作.
+例如:
+在查找一个用户的id信息的时候,先要检查shm的最新性也就是和bbs系统文件.PASSFLUSH的
+一致性,如果不一致并且系统文件比较新,则要根据系统文件来得到最新的uidshm,并根据新
+的udishm来更新uidhashshm,然后再利用新的hash表找出用户的id的num,再比较uidshm的第
+(num1)个用户的id
+是不是和要查找的用户的 id相同,若是相同则找到,查找成功,如果在hash表中没找到,则要
+在uidshm中逐个顺序的查找和用户id相同的id的num.
+在当一个新的用户注册成功的时候,要先将新增的id信息添加到bbs系统文件 .PASSFILE的末
+尾,再将该id信息添加到uidshm的最后,最后把该用户的id信息插入到uidhashshm中去,完成
+注册.
+共享内存区brdshm中保存着所有和讨论区版面有关的信息包括讨论区的版主,总得版面数,修
+改时间和版面投票的时间.
+由于在修改某一个版面信息的时候是先将更新保存版面信息的缓冲区然后再把更新写入到保
+存版面信息的文件中去,这样就有可能造成shm和文件信息的不一致并且使brdshm的内容不是
+最新的,为了保持和存放版面信息的文件的一致并且及时准确的向用户提供最新的版面信息
+,在涉及和版面信
+息有关的操作的时候都是先检查一致性,一致性的检查是将存放版面信息的文件和brdshm的
+修改时间相比较,相同则表示一致,如果brdshm的修改时间要早于文件的修改时间,说明文件
+比较新,则要依据文件内容来更新brdshm,再依据新的shm来进行某些操作.
+例如:
+在给定版面名子查找这一版面的信息的时候,我们先调用resolve_boards()函数来检查
+brdshm的最新性和一致性,
+然后再将所有的版面信息中名子项与给定的要查找的版面的名子相比较,如果相同则表示查
+找成功,返回存储该版面信息的结构体的地址;如果查找所有的版面都没有与要求的版面名子
+相同的,则表示系统中没有指定名子的版面,返回错误提示.
+当删除一个版面时,先分别在文件0Announce/.Search和文件etc/junkboards中根据版面的名
+子找到有关要删除版面的信息,把这些信息分别从这两个文件中删除,然后再在各相关文件中
+彻底把要删除版面的信息清除干净,最后再根据更新后的存储版面信息文件的内容,更新
+brdshm.
+假如要建立一个新的讨论区,我们首先设置新的讨论区的名子,权限,内容和各种相关的信息
+,并将这些信息添到文件.BOARDS中去,更新.BOARDS文件.最后我们再根据.BOARDS文件的内容
+更新brdshm的内容.
+还有在任命版主和撤销版主的时候,我们同样是先更改有关的文件,然后再更新brdshm.
+当用户登陆以后我们就调用fill_shmfile()函数将endlineshm共享区attach到调用函数的用
+户进程的地址空间中去,显示底线文件,然后调用同样的函数给予不同的参数,将issueshm和
+welcomshm共享区attach到调用函数的用户进程的地址空间去,显示进站和欢迎画面文件;当
+用户选择离站时,
+调用函数将goodbyeshm共享区 attach到调用函数的用户进程的地址空间去,显示离站画面文
+件!
+我们假如要修改画面,就要修改画面文件,然后要显示画面的时候我们就可以在比较shm和文
+件的一致性的时候从文件中读出新的画面用于显示了.
+活动面板共享内存区movieshm是在用户登陆以后就attach到用户进程的,他一直保持显示直
+到用户离站.与画面信息的修改相同,要修改活动面板的内容,是直接修改存储其内容的文件
+,只有在重新刷新以后才可以显示新的movie.
+Bbs系统中共享内存的使用提高了系统的速度,增加了系统同时可以容纳的用户数,一定程度
+上提高了bbs系统的性能,使系统更好的为用户们服务!
+
+
+
+
+
+
+参考代码:一塌糊涂bbs源代码
+                                                             2003.7
+
+--                                                                                                                      
+我的灵魂是一张琴,               被看不见的手指弹拨,               因缤纷的极乐而                                        
+颤抖,               悄悄地把船歌轻吟． 　　　　　　　－－－有谁倾听？......                                             
+
+※ 来源:．兵马俑BBS bbs.xjtu.edu.cn．[FROM: 202.117.7.13]                                                               
+※ 修改:．lanboy 于 Jul 28 09:40:08 修改本文．[FROM: 202.117.7.13]--                                                    
+※ 转载:．兵马俑BBS 202.117.1.8．[FROM: 202.117.7.11]                                                                   

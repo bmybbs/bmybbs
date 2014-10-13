@@ -1,0 +1,236 @@
+BMY程序文档 [mail.c]
+
+writern by interma@BMY
+
+ver 1.0   2005.4.9
+
+
+1.概述：
+mail.c文件包含邮件收发的所有功能，本文档旨在说明mail.c中的各个全局变量和函数的作用。
+
+2.全局变量说明：（以在mail.c出现的先后顺序为序）
+[1] extern int mailallmode;
+	作用：这个用得很古怪，有时会用它储存信件名，有时又把它赋为0，作用不明确。
+[2] int G_SENDMODE = NA;
+	作用：群发（groupsend）时的模式，有3种取值：
+	1 ---- 给所有好友发信
+	2 ---- 普通群发形式（即手动添加收信人名单）
+	3 ---- 俱乐部群发
+[3] char currmaildir[STRLEN];
+	作用：当前用户的mail索引文件路径（.DIR）。
+[4] int filter_ansi;
+	作用：标示是否过滤 ANSI 控制码。
+[5] int mailmode;
+	作用：6种给所有人发信的模式，有效值：1~6。（见菜单mail->allmail）
+[6] int mailhour;
+	作用：给所有人发信时输入的上站时间下限。
+[7] #define maxrecp 300
+	作用：群发（groupsend）时的收信人数目上限。
+[8] int mrd;
+	作用：只在read_new_mail和m_new函数中使用，用来控制一个信息的输出。
+[9] int delmsgs[1024]; int delcnt;
+	作用：只在read_new_mail和m_new函数中使用，删除信件时用到的2个变量。
+[10] struct one_key mail_comms[]
+	作用：版面帮助，即这个功能对应的函数。（重要）
+
+3。函数说明：（以在mail.c出现的先后顺序为序，以下会说明函数的作用和各个输入参数和返回值得作用）
+[1] char * email_domain()
+	作用：返回发信的领域（现在似乎只是站内发信）
+	返回值：恒为 MY_BBS_DOMAIN
+[2] void filter(char *line) 
+	作用：行过滤器，过滤掉非a~z,A~Z,@之外的字符。（为了过滤 ANSI 控制码）
+	char *line：要过滤的行。
+[3] int chkmail() 
+	作用：在当前邮件路径（索引文件.DIR）中检查是否有新邮件。
+	返回值：0表示没有，1表示有
+[4] int check_query_mail(qry_mail_dir) char qry_mail_dir[STRLEN];
+	作用：离线查询新信。（应该是查询好友的信箱）
+	char qry_mail_dir[STRLEN]：输入信箱路径名
+	返回值：0表示没有，1表示有
+[5] int mailall() 
+	作用：给所有人发信（Type x 信件），具体的发送过程调用mailtoall函数。
+	返回值：0或-2，作用不明。（当vedit返回-1的时候，返回-2）
+[6] void m_internet() 
+	作用：站外信件（兵马俑未使用这个功能），具体的发送过程调用do_send函数。
+[7] void m_init() 
+	作用：初始化当前用户的mail索引文件路径，例如 mail/I/interma/.DIR。
+[8] static int do_send(userid, title) char *userid, *title;
+	作用：发送邮件的具体过程，包含站内和站外。（将邮件文件创建到对方的邮件文件夹中去,同时还要写索	引.DIR，但是好像并没有写邮件正文）
+	char *userid：收件人的id
+	char *title：邮件题目
+	返回值：0表示发送成功，负值都是发送失败。
+	-1 ---- 收信者不正确
+	-2 ---- 主动取消
+	-3 ---- 收件人无法收信
+[9] int m_send(userid) char userid[];
+	作用：发信菜单（由M_send函数调用），具体的发信过程调用了do_send函数。
+	char userid[]：收信人（为NULL的话则是让用户输入）
+	返回值：0或FULLUPDATE，0表示没发出去。
+[10] int M_send()
+	作用：发信菜单mail->send，具体实现调用m_send函数。
+	返回值：0或FULLUPDATE，0表示没发出去。
+[11] static int read_mail(fptr) struct fileheader *fptr
+	作用：读邮件内容。
+	struct fileheader *fptr：邮件索引（在.DIR文件中）
+	返回值：恒为0。
+[12] static int read_new_mail(fptr) struct fileheader *fptr
+	作用：读新信件（new）。
+	struct fileheader *fptr：邮件索引（在.DIR文件中）
+	返回值：0,-1或QUIT，感觉很混乱，似乎都能正常返回。
+[13] int m_new() 
+	作用：感觉好像是对应mail->new菜单，不过bmy似乎没有使用这段代码，因为从未见到No new messages输	出，实际调用read_new_mail函数。
+	返回值：恒为-1。
+[14] static int mailtitle() 
+	作用：mail->read中的邮件列表标题。
+	返回值：恒为0。
+[15] static char *maildoent(num, ent, buf) int num;struct fileheader *ent;char buf[512];
+	作用：对邮件列表中信的标题进行预处理。
+	int num：邮件编号
+	struct fileheader *ent：邮件索引
+	char buf[512]：标题缓存区
+	返回值：buf
+[16] static int mail_read(ent, fileinfo, direct) int ent;struct fileheader *fileinfo;
+     char *direct;
+	作用：读邮件。
+	int ent：在目录中的邮件文件顺序	
+	struct fileheader *fileinfo：邮件索引
+	char *direct：邮件文件目录
+	返回值：恒为FULLUPDATE。
+[17] int mail_reply(ent, fileinfo, direct) int ent;struct fileheader *fileinfo;char *direct;
+	作用：回复邮件。
+	int ent：在邮件中的邮件文件顺序
+	struct fileheader *fileinfo：邮件索引（要回的信的索引）
+	char *direct：邮件文件目录（要回的信的目录）
+	返回值：恒为0或FULLUPDATE，0表示未回复成功。
+[18] static int mail_del(ent, fileinfo, direct) int ent;struct fileheader *fileinfo;
+     char *direct;
+	作用：删除邮件
+	int ent：在目录中的邮件文件顺序	
+	struct fileheader *fileinfo：邮件索引
+	char *direct：邮件文件目录
+	返回值：FULLUPDATE或DIRCHANGED。
+[19] int mail_forward(ent, fileinfo, direct) int ent;struct fileheader *fileinfo;char *direct;
+	作用：转寄信件（通过e-mail）
+	int ent：在目录中的邮件文件顺序	
+	struct fileheader *fileinfo：邮件索引
+	char *direct：邮件文件目录
+	返回值：FULLUPDATE或DONOTHING。
+[20] int mail_u_forward(ent, fileinfo, direct) int ent;struct fileheader *fileinfo;char *direct;
+	和mail_forward作用完全一致，只是doforward函数的最后一个参数不一样。（uuencode转寄）
+[21] static int mail_del_range(ent, fileinfo, direct) int ent;struct fileheader *fileinfo;
+     char *direct;
+	作用：按区段删除邮件（实际调用del_range函数来删除）。
+	int ent：在目录中的邮件文件顺序（实际无用）	
+	struct fileheader *fileinfo：邮件索引（实际无用）
+	char *direct：邮件文件目录
+	返回值：FULLUPDATE，DIRCHANGED或DONOTHING。
+[22] static int mail_mark(ent, fileinfo, direct) int ent;struct fileheader *fileinfo;
+	char *direct;
+	作用：m 邮件
+	int ent：在目录中的邮件文件顺序	
+	struct fileheader *fileinfo：邮件索引
+	char *direct：邮件文件目录
+	返回值：PARTUPDATE
+[23] int m_read() 
+	作用：对应于mail->read菜单
+	返回值：恒为0
+[24] int invalidaddr(addr) char *addr;
+	作用：检查e-mail地址是否合法。
+	char *addr：输入的e-mail地址
+	返回值：0合法，1不合法
+[25] bbs_sendmail函数
+	对应于发送e-mail的部分，由于bmy没使用这部分功能，因此没看这个函数。
+[26] int g_send() 
+	作用：对应mail->groupsend菜单，具体的发送过程为do_gsend函数。
+	返回值：恒为0
+[27] static int do_gsend(userid, title, num) char *userid[], *title;int num;
+	作用：groupsend的具体实现
+	char *userid[]：要群发的收信人id
+	char *title：邮件题目
+	int num：收信人数目
+	返回值：0，-1，-2
+	0  ---- 信件已寄出
+	-1 ---- 信件目录错误
+	-2 ---- 取消
+[28] int mail_file(tmpfile, userid, title) char tmpfile[STRLEN], userid[STRLEN], title[STRLEN];
+	作用：将信件的内容（在tmpfile文件中）写入具体的邮件文件。
+	char tmpfile[STRLEN]：信件内容
+	userid[STRLEN]：收信人id
+	title[STRLEN]：邮件标题
+	返回值：-1或邮件文件名。（-1表示发送未成功）
+[29] int mail_buf(buf, userid, title) char *buf, userid[], title[];
+	作用：将信件的内容（buf中）写入具体的邮件文件。
+	char *buf：信件内容
+	char userid[]：收信人id
+	char title[]：邮件标题
+	返回值：-1或0。（0表示发送成功，-1表示发送未成功）
+[30] int ov_send() 
+	作用：给所有好友发信。（G_SENDMODE = 1）
+	返回值：恒为0
+[31] int club_send() 
+	作用：俱乐部群发。（G_SENDMODE = 3）
+	返回值：恒为0
+[32] int doforward(filepath, oldtitle, mode) char *filepath, *oldtitle; int mode;
+	作用：对应于寄回internet邮箱，'F'
+	由于bmy这部分功能不能用，因此没细看这个函数。
+[33] static void getmailinfo(char *path, struct fileheader *rst) 
+	作用：获取邮件信息。（如寄信人，收信人等）
+	char *path：邮件文件路径
+	struct fileheader *rst：邮件索引
+[34] static int mail_rjunk() 
+	作用：对应于捡垃圾的功能（ctrl + E），应该只能回收最近删除的邮件。
+	返回值：FULLUPDATE或-2（-2对应于没有/mail/.junk/目录）
+[35] static int m_cancel_1(struct fileheader *fh, char *receiver)  
+	作用：撤回邮件（cancel）的具体实现。
+	struct fileheader *fh：邮件索引
+	char *receiver：收信人id
+	返回值：0，1，2
+	0 ---- 未撤回
+	1 ---- 已撤回
+	2 ---- 不能打开文件写，出错。
+[36] static int max_mail_size() 
+	作用：返回最大邮箱大小。
+	返回值：最大大小
+[37] static int get_mail_size() 
+	作用：返回当前邮箱的中的使用大小。（包括消息的部分）
+	返回值：使用的大小
+[38] int m_cancel(userid) char userid[];
+	作用：撤回邮件，具体实现在m_cancel_1函数中。
+	char userid[]：收信人id
+	返回值：0或FULLUPDATE（0为未撤回）
+[39] static int check_maxmail() 
+	作用：检查邮箱的使用是否超过最大容量
+	返回值：1，0
+	1 ---- 已超过
+	0 ---- 未超过
+[40] int post_reply(ent, fileinfo, direct) int ent;struct fileheader *fileinfo;char *direct;
+	作用：回信给作者，ctrl + r。
+	int ent：在目录中的邮件文件顺序（实际无用）	
+	struct fileheader *fileinfo：邮件索引（实际无用）
+	char *direct：邮件文件目录
+	返回值：DONOTHING或FULLUPDATE
+[41] static int check_mail_perm() 
+	作用：检查发信权限。
+	返回值：0，-1
+	0 ---- 有权限
+	-1 ---- 无权限
+[42] static int show_user_notes() 
+	作用：显示个人备忘录
+	返回值：恒为FULLUPDATE
+[43] static int mailto(uentp) struct userec *uentp; 
+	作用：mailtoall具体发送过程。
+	struct userec *uentp：收信人
+	返回值：恒为1
+[44] int mailtoall(mode, hour) int mode, hour;
+	作用：给所有人发信，注意mode（6种），具体发送过程见mailto函数。
+	int mode：发信模式
+	int hour：时间下限
+	返回值：0或-1（0表示发送成功）
+
+
+
+
+
+
+
+

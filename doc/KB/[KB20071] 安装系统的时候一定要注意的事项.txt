@@ -1,0 +1,16 @@
+【1】不要configure（因为我们改了好多Makefile）
+【2】一定备份.BOARDS和.PASSWD
+/home/bbs/0Announce/.Search文件是精华区索引
+【3】如果不是purge安装
+编译安装Telnet的程序：
+在目录：/home/bbssrc/src 下面执行：make installbbs
+编译安装www的程序
+在目录：/home/bbssrc/nju09 下面执行：make update
+(不过upload.c需要 make upload )
+
+而不要make install!!
+否则【2】里边那些文件全都没了。
+
+
+
+

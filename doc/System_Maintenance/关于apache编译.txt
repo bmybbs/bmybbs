@@ -1,0 +1,104 @@
+发信人: interma ( 4PZP | 抓紧时间 | fb伤身啊 ), 信区: Program_Team
+标  题: 1.8上apache优化方案的具体步骤
+发信站: 兵马俑BBS (Wed Jan  3 13:58:59 2007), 本站(202.117.1.8)
+
+写下来，备忘。
+
+【1】准备工作：
+        [1]首先备份httpd.conf
+        [2]然后关闭所有httpd进程：
+        {apachehome}/bin/apachectl stop
+        killall httpd
+        [3]进入apache源码目录：
+        cd {bbssrc}/web/httpd-2.0.47
+【2】开始编译：
+        [1]编译apache：
+        ./buildconf
+        ./configure --enable-mods-shared=all --prefix=/home/apache
+                    --with-mpm=worker
+        make clean
+        make
+        此步可能会遇到：
+        [1] 找不到某个so文件的问题，作一个符号链接就可以了
+        [2] 找不到某个h文件的问题，不理睬，再make一下就好了
+        make install
+【3】检查一下原来的log和conf文件是否被覆盖：
+        conf文件不会被覆盖，只是会再生成一个xxx-std.conf
+        log文件不会被覆盖
+【4】安装fast-cgi：
+        参考我以前写的那个文章
+【5】修改httpd.conf文件：
+        基本打算在1.8的httpd.conf上修改，而不是直接覆盖，因为conf文件太长了，
+        没都看，有些细节可能会和210有差异。
+        [1] DSO模块的加载：
+        #fast_cgi
+LoadModule fastcgi_module modules/mod_fastcgi.so
+
+LoadModule access_module modules/mod_access.so
+LoadModule auth_module modules/mod_auth.so
+#LoadModule auth_anon_module modules/mod_auth_anon.so
+#LoadModule auth_dbm_module modules/mod_auth_dbm.so
+#LoadModule auth_digest_module modules/mod_auth_digest.so
+LoadModule ext_filter_module modules/mod_ext_filter.so
+LoadModule include_module modules/mod_include.so
+LoadModule log_config_module modules/mod_log_config.so
+LoadModule env_module modules/mod_env.so
+#LoadModule mime_magic_module modules/mod_mime_magic.so
+#LoadModule cern_meta_module modules/mod_cern_meta.so
+#LoadModule expires_module modules/mod_expires.so
+#LoadModule headers_module modules/mod_headers.so
+#LoadModule usertrack_module modules/mod_usertrack.so
+#LoadModule unique_id_module modules/mod_unique_id.so
+LoadModule setenvif_module modules/mod_setenvif.so
+LoadModule mime_module modules/mod_mime.so
+#LoadModule dav_module modules/mod_dav.so
+LoadModule status_module modules/mod_status.so
+LoadModule autoindex_module modules/mod_autoindex.so
+LoadModule asis_module modules/mod_asis.so
+#LoadModule info_module modules/mod_info.so
+LoadModule cgid_module modules/mod_cgid.so
+#LoadModule dav_fs_module modules/mod_dav_fs.so
+#LoadModule vhost_alias_module modules/mod_vhost_alias.so
+LoadModule negotiation_module modules/mod_negotiation.so
+LoadModule dir_module modules/mod_dir.so
+LoadModule imap_module modules/mod_imap.so
+LoadModule actions_module modules/mod_actions.so
+#LoadModule speling_module modules/mod_speling.so
+#LoadModule userdir_module modules/mod_userdir.so
+LoadModule alias_module modules/mod_alias.so
+LoadModule rewrite_module modules/mod_rewrite.so
+
+        [2] 性能配置：
+
+(1) worker MPM:
+<IfModule worker.c>
+StartServers         2
+MaxClients         256
+MinSpareThreads     25
+MaxSpareThreads     75
+ThreadsPerChild     64
+MaxRequestsPerChild  0
+</IfModule>
+
+(2)
+
+
+        [3] 安全配置：
+(1) 关闭<Directory "/home/apache/manual">和<Directory "/home/apache/icons">，全
+部注释掉就可以了，因为暴露apache版本。
+
+
+--
+欢迎您加入BMY BBS开发团队，详情请到BMY_Dev版查看。
+The BMY Side (http://tbs.xjtu.edu.cn/) BMY技术Blog群组，期待您的参与～
+本人阅书（程序开发类）无数 ._.Y 免费提供开发类书籍咨询、推荐服务。
+
+每当我写程序的时候，我总会假定那个高个子大眼睛女孩在看着我，希望她也能欣赏到代码
+的美丽，尽管她不喜欢程序也不喜欢我。
+
+※ 来源:．兵马俑BBS 202.117.1.8．[FROM: 202.117.7.204]
+※ 修改:．interma 于 Jan  3 13:59:35 修改本文．[FROM: 202.117.7.204]
+※ 修改:．interma 于 Jan  3 14:06:11 修改本文．[FROM: 202.117.7.204]
+※ 修改:．interma 于 Jan  3 14:12:23 修改本文．[FROM: 202.117.7.204]
+※ 修改:．interma 于 Jan  3 14:20:22 修改本文．[FROM: 202.117.7.204]
+※ 修改:．interma 于 Jan  3 14:42:00 修改本文．[FROM: 202.117.7.204]

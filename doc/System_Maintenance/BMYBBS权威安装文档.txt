@@ -1,0 +1,308 @@
+
+
+作者：interma@BMY ( interma.bmy@gmail.com )
+时间：2006-4-19
+版本：v1.0
+
+
+阅读前的注意事项和要求：
+
+1。命令前边的：# 代表root用户，$ 代表bbs用户。
+2。每个使用这个文档的人，如果在安装过程中有任何心得（或解决了任何以前没有遇见过的问题）
+   就把它加到【附录】FAQ 中，否则打你pp～～
+3。如果发现文中有任何错误或疏漏之处，请和我联系或自行进行修改。
+4。文中有很多地方没有细化，请大家细化或补充。
+5. 重要！：首先去KB目录中看看KB20071!
+
+【1】建立bbs用户帐号
+# groupadd -g999 bbs
+# useradd -u999 -gbbs bbs
+# passwd bbs
+
+【2】准备BMYbbs源码
+# cd /home/
+# mkdir bbssrc
+# chown -R bbs.bbs bbssrc
+# su - bbs
+$ cd /home/bbssrc/
+$ export CVSROOT=:pserver:bmyfan@202.117.3.30:/bmysrc
+$ cvs login
+(password也是bmyfan)
+$ cvs co src_1.8
+
+【3】配置Telnet下的bbs程序（不要执行configure）
+# vi /home/bbssrc/src_1.8/include/config.h
+然后要注意如下关键信息：（根据需要进行改变）
+
+#define POP_CHECK     1			//表示需要pop验证
+#define MY_BBS_HOME   "/home/bbs"	
+#define MY_BBS_NAME   "兵马俑BBS"
+#define MY_BBS_DOMAIN "202.117.1.8"	//域名，如果没有添ip即可
+#define MY_BBS_IP     "202.117.1.8"
+#define MY_BBS_ID     "BMY"
+#define MY_BBS_LOC    "西安交通大学"
+#define BBSUSER	      "bbs"
+#define BBSGID	      999
+#define BBSUID	      999
+#define BBS_PORT      23
+#define BBS_BIG5_PORT 2300
+#define SMAGIC	      "BMY"		// smagic，这个很重要，在后边配置apache的时候要用到
+
+
+# vi /home/bbssrc/src_1.8/bbshome/etc/pop_register/pop_list
+然后根据需要进行修改pop3服务器信息（用来进行注册验证）
+
+
+【4】安装Telnet下的bbs程序
+(编译之前如果你的机器是AMD的处理器，那注意一下文档的最后，对Makefile.Base进行修改)
+$ cd /home/bbssrc/src_1.8/
+$ cd ythtlib
+$ make install
+$ cd ../libythtbbs
+$ make install
+$ cd ../src
+$ make install
+
+# mkdir /home/bbs/bbstmpfs
+# mount tmpfs /home/bbs/bbstmpfs -t tmpfs -o size=512M
+# for i in brc tmp dynamic userattach; do mkdir /home/bbs/bbstmpfs/$i; done
+# chown bbs:bbs /home/bbs/bbstmpfs -R
+# cd /home/bbs
+# ln /home/bbs/bbstmpfs/tmp tmpfast -s
+# ln /home/bbs/bbstmpfs/dynamic dynamic -s
+
+【5】安装local_utl外挂
+如下这3步是安装libghthash-0.5，如果机器上已经安了，就不用再重装了。
+# cd /home/bbssrc/src_1.8/software/libghthash-0.5.0
+# ./configure
+# make install
+
+$ cd /home/bbssrc/src_1.8/local_utl/
+$ make install
+
+$ vi crontab.bbs
+然后根据需要填写需要自动运行的外挂的运行间隔（以下是0.210上边的crontab设置，可供参考）：
+
+TERM=ansi                                                                       
+3 */2 * * * /home/bbs/bin/autoundeny> /home/bbs/0Announce/bbslist/autoundeny
+*/5 * * * * /home/bbs/bin/upnew >> /home/bbs/reclog/uptime.log
+56 * * * * /home/bbs/bin/averun /home/bbs/reclog/uptime.log;/bin/rm /home/bbs/reclog/uptime.log
+5 00 * * * /bin/cp /home/bbs/0Announce/bbslist/countusr /home/bbs/0Announce/bbslist/countusr.last
+5 00 * * * /bin/cp /home/bbs/0Announce/bbslist/board2 /home/bbs/0Announce/bbslist/board2.last
+5 00 * * * /bin/cp -af /home/bbs/0Announce/bbslist/today /home/bbs/0Announce/bbslist/yesterday;/bin/rm /home/bbs/reclog/ave.src
+0 0 * * * (/home/bbs/bin/bbstop /home/bbs 50 1 > /home/bbs/0Announce/bbslist/toplogin)
+0 0 * * * (/home/bbs/bin/bbstop /home/bbs 50 2 > /home/bbs/0Announce/bbslist/toppost)
+0 0 * * * (/home/bbs/bin/bbstop /home/bbs 50 3 > /home/bbs/0Announce/bbslist/topstay)
+0 0 * * * (/home/bbs/bin/bbstop /home/bbs 50 4 > /home/bbs/0Announce/bbslist/topall)
+10 * * * * (/home/bbs/bin/poststat /home/bbs)
+# 15 * * * * (/home/bbs/bin/usage 0 ; /home/bbs/bin/usage 1)
+# 0 * * * * /home/bbs/bin/newacct
+59 23 * * * /bin/mv /home/bbs/0Announce/bbslist/newacct.today /home/bbs/0Announce/bbslist/newacct.last
+10 * * * * /home/bbs/bin/newtop10 -a &> /dev/null
+53 9 * * * /home/bbs/bin/clear_attach
+*/20 * * * * /home/bbs/bin/save_brc &>/dev/null
+*/20 * * * * /home/bbs/bin/bbsstatlog &> /dev/null
+30 23 * * * /home/bbs/bin/newboards
+0 12 * * * /home/bbs/bin/nbstat b 1
+0 12 * * mon /home/bbs/bin/nbstat m 7
+0 12 * * * /home/bbs/bin/nbstat u 1
+0 12 * * * /home/bbs/bin/nbstat s 7
+# 0,15,30,45 * * * * /home/bbs/innd/bbsnnrp news.zixia.net /home/bbs/inndlog/cnnews.active>/dev/null 2>&1
+* * * * * /home/bbs/innd/bbslink /home/bbs >/home/bbs/tmp/portnum
+5 * * * * (/home/bbs/bin/newsday.sh)
+0 3 * * * /home/bbs/bin/auto_rm_junk &>/dev/null; /home/bbs/bin/find_rm_lost &>/dev/null
+0 3 * * 1 (/home/bbs/bin/annIndex)
+0 3 * * 3 (/home/bbs/bin/anall)
+
+$ crontab crontab.bbs
+
+$ cd /home/bbs/0Announce/bbslist/
+$ ln -s /home/bbs/etc/posts/day day
+$ ln -s /home/bbs/etc/posts/month month
+$ ln -s /home/bbs/etc/posts/year year
+$ ln -s /home/bbs/etc/posts/week week
+
+然后手动运行一下需要提前运行一次的外挂：
+$ /home/bbs/bin/newtop10 -a
+
+【6】启动bbs系统
+# /home/bbs/bin/bbsd
+
+之后就可以用telnet连接这台机器了，不要忘了马上注册SYSOP和guest帐号，
+如果你不想安装web访问方式（nju09），安装到此为止就正式结束了。:-)
+
+【7】安装nju09
+# mkdir /var/www/html/bbs
+# mkdir /var/www/cgi-bin/bbs
+# chown bbs.nobody /var/www/html/bbs /var/www/cgi-bin/bbs
+$ cd /home/bbssrc/src_1.8/nju09/
+$ vi Makefile    
+找到如下信息段，然后修改来适应自己的apache目录设置，以下为参考改法：
+
+CGIPATH = /var/www/cgi-bin/bbs
+HTMPATH = /var/www/html/bbs
+
+$ make install
+# vi /etc/httpd/conf/httpd.conf
+找到（或添加）如下信息段，进行apache虚拟主机设置，以下是0.210上的设置，可供参考，
+其中要注意SMAGIC的填写要和你之前所配置的保持一致。
+
+<VirtualHost 202.117.0.210>
+     ServerName 202.117.0.210
+     DocumentRoot /var/www/html/bbs
+     RewriteEngine on
+     RewriteRule ^/BMY(.*)$  /cgi-bin/bbs/www [PT]
+     RewriteRule ^/$         /cgi-bin/bbs/www [PT]
+</VirtualHost>
+
+# service httpd restart
+# mkdir wwwtmp
+# cd wwwtmp/
+# cd ytml/
+$ cp bbssec01.ytml bbssec_all.ytml
+
+【8】添加web下边用到的各种文件
+进入 /var/www/html/bbs 目录，然后在个目录下边添加所需的各种文件（如css,图片等等），
+不添加这些文件也不影响使用，但是web下边会非常丑陋。
+添加这些文件最快捷的方法就是把0.210（或1.8）上边的copy过来。
+
+之后在web浏览器中输入：http://yourdomain/，就可以访问你的bbs了。
+
+【9】如果需要安装ssh服务，可以参考手册中的：
+编译sshbbsd的过程.txt
+
+好了，安装到此全部结束，写这个累死我了~~ 希望你安装顺利~~ :-)
+
+
+
+【附录】
+ FAQ:（在看此附录之前请确认你的【1】～【8】的操作无误，如果仍不能解决问题，请把安装过程重新进行一边试试）
+
+【1】死鬼模式问题：
+dos和unix行结尾导致，dos2unix一下就行了。
+【2】libghthash.so找不到问题：
+发信人: AlexST (考完了，清静了), 信区: BMY_fan
+标  题: libghthash.so找不到问题
+发信站: 兵马俑BBS (Wed Dec 13 15:55:02 2006), 本站(202.117.1.8)
+
+安装过程中碰到了
+我用了下面的笨方法
+cp /usr/local/lib/libghhash.so.0 /usr/lib
+
+大马说还可以用lddconfig，应该就是下面的吧，嗬嗬，偷懒了没有验证
+Alternative,you may edit /etc/ld.so.conf and add the path: /usr/local/lib
+and then type:
+# lddconfig
+【3】发帖断线问题：
+[1] 文件宿主或权限问题
+[2] 如果[1]没有问题，那就清掉shm，然后重启bbsd:
+可以用以下命令清除所有属主为bbs的shm
+	for i in `ipcs|grep bbs|awk '{print $2}'`;do ipcrm shm $i;done	
+【4】执行任何make之后如果发现有头文件找不到：
+就先运行make depend，这样会根据本机的头文件的路径生成新的.depend文件
+【5】未读标志经常丢失：
+tmpfs开的太小了，加大（如768M）就行了。
+【6】ytht的faq（根目录下的FAQ），摘抄过来了：
+1.一连接上之后就断线退出
+	
+    1.1 如果系统上可以找到mysql的支持环境,缺省情形下系统会编译进文章评价功能的代码.
+请使用命令ldd bbs查看是否能找到mysqlclient这个动态库.如果不能找到,请编辑/etc/ld.so.conf
+加上mysql的库目录,然后运行ldconfig
+    1.2 如果系统以前安装运行过bbs,确认以前的shm已经清理干净了,如果使用bash,可以用以
+下命令清除所有属主为bbs的shm
+	for i in `ipcs|grep bbs|awk '{print $2}'`;do ipcrm shm $i;done
+
+2.到注册用户,输入密码后就断线退出
+
+    确认系统安装了支持des的crypt库.有些系统,比如slackware,如果在安装时候没有选择des加密
+库,就会发生这个情况.
+
+3.编译时候报告不能 -lmysql
+
+   确认系统安装了MySQL的开发包,如果是使用rpm安装,确保安装了以下rpm:
+   MySQL-client-3.xx..
+   MySQL-3.xx..
+   MySQL-shared-3.xx..
+   MySQL-devel-3.xx..
+
+4.www一连接报告uid gid error.
+   
+   可以直接修改apache的配置文件,让apache以bbs用户的身份运行
+   或者chown bbs.nobody www;chmod 4755 www
+
+5.编译时报告找不到cproto
+
+    确认系统安装了cproto,如果是使用rpm安装,确保安装了以下rpm:
+    cproto-4.xx..
+
+【7】换系统的时候，会十分弱智的到以前的gcc lib目录去找lib，make dep一下就好了。
+【8】nju09的时候要先make proto一下，会用到cproto程序。
+
+
+AI 增加:
+1. 用gcc-4.0 gcc-4.1无法编译通过，而gcc-3.3.1经测试可以成功编译
+2. apache 的 httpd.conf文件中要注意把cgi-bin目录改好(改为/var/www/cgi-bin/)，具体如下: 
+----------------------------------------------------------------
+ScriptAlias /cgi-bin/ "/var/www/cgi-bin/"
+以及
+# "/usr/local/apache2/cgi-bin" should be changed to whatever your ScriptAliased
+# CGI directory exists, if you have that configured.
+#
+<Directory "/var/www/cgi-bin">
+    AllowOverride None
+    Options None
+    Order allow,deny
+    Allow from all
+</Directory>
+----------------------------------------------------------------
+3 附件的8080服务该如何开?
+  在atthttpd文件夹下执行make
+  然后./atthttpd
+  这个东东与apache没什么关系
+4 如果系统中没有service命令，控制apache可通过
+  $APACHE_HOME/bin/apachectl start(stop,restart等)进行
+5 关于include/config.h中的MY_BBS_IP与MY_BBS_DOMAIN
+  ip需固定，也别用127.0.0.1或localhost
+  否则，ip变化之后，会发生发贴掉线的问题。
+  如果用vmware虚拟一linux，如果有条件，最好用bridge方式联网
+6 编译apache时参照"关于apache编译.txt"，不然编译出来也不能用
+
+Reading增加:
+编译安装时，若是用gcc4及其以上版本会提示错误(最好采用gcc3.x版本)，提示内容大意为某些数组类型不完整，
+  如：bbs.h:267: error: array type has incomplete element type
+  解决办法：可根据提示信息找到相应代码，在原本声明的数组变量前加 *，将原类型变
+  为对应的指针类型，重新编译即可。
+  如  extern struct bm   currBM[] ;     变为：extern struct bm * currBM[] ;
+
+landefeng和leoncom增加：
+有关AMD处理器编译搭站时遇到问题的解决方法
+【1】症状：
+ps:
+
+12083 ?        00:00:00 bbsd
+12084 ?        00:00:00 bbsd
+12252 ?        00:00:06 eva
+12473 ?        00:00:10 gedit
+13852 ?        00:00:00 bbsd
+
+telnet
+
+root@Daniel:/home/bbs/bin# telnet 127.0.0.1
+Trying 127.0.0.1...
+Connected to 127.0.0.1.
+Escape character is '^]'.
+Connection closed by foreign host.
+
+依然……
+
+12083 ?        00:00:00 bbsd
+12084 ?        00:00:00 bbsd
+【2】解决方案：
+把/home/bbssrc/src_1.8/目录下的Makefile.Base文件中的CFLAGS那项中从-mcpu直到
+-msse共4项(直到-pipe前)全部删掉.
+就是去掉奔腾处理器那几项
+
+interma补充：
+现在cvs仓库中的Makefile.Base是：-mcpu=pentium4 -march=pentium4 -mmmx -msse 
+因此一旦系统切换，要根据自己的情况加以修改，例如1.8上边：-mcpu=i686 -march=i686 -mmmx -msse
+

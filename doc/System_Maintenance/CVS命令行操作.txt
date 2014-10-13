@@ -1,0 +1,12 @@
+一。取出所有代码：
+	[1] export CVSROOT=:pserver:interma@202.117.3.30:/bmysrc
+	[2] cvs login
+	[3] cvs co src_1.8
+
+二。更新（update）：
+	[1] cvs -q update -d -P -f .
+
+
+
+
+	

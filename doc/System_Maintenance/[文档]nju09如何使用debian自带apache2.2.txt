@@ -1,0 +1,91 @@
+发信人: pzhgpzhg (E8rd集团‖叮当叮当，海螺烧香), 信区: Program_Team
+标  题: [文档]nju09如何使用debian自带apache2
+发信站: 兵马俑BBS (Thu Mar 12 04:16:26 2009), 本站(bbs.xjtu.edu.cn)
+
+bbs所附apache源码为2.0版
+而debian源中是2.2版
+两相配置大有不同
+
+1.安装apache2和fastcgi
+
+$ sudo aptitude install apache2 libapache2-mod-fcgid
+fastcgi的配置在/etc/apache2/mod-enabled/fcgid.conf
+
+$ sudo a2enmod rewrite
+
+
+
+2.编译安装nju09
+如旧
+但是注意，2.0版apache用户是nobody，而2.2为www-data
+而且区别于权威文档
+建议将/var/www/html和/var/www/cgi-bin之owner设置为bbs.bbs
+
+
+
+3.配置apache2.2
+
+$ sudo vim /etc/apache2/sites-available/default
+修改为如下（去掉注释）
+
+NameVirtualHost 202.117.3.30:80
+
+<VirtualHost 202.117.3.30:80>
+        ServerName 202.117.3.30:80
+        ServerAdmin pzhg@xjtu
+        DocumentRoot /var/www/html/bbs
+        <Directory />
+                Options FollowSymLinks
+                AllowOverride None
+        </Directory>
+        <Directory /var/www/html/bbs>
+                Options Indexes FollowSymLinks MultiViews
+                AllowOverride None
+                Order allow,deny
+                allow from all
+        </Directory>
+        ScriptAlias /cgi-bin/ /var/www/cgi-bin/
+        <Directory /var/www/cgi-bin>
+                AllowOverride None
+                Options None
+                Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+                Order allow,deny
+                Allow from all
+        </Directory>
+
+        RewriteEngine on
+        RewriteRule ^/BMY(.*)$ /cgi-bin/bbs/www [PT]
+        RewriteRule ^/$ /cgi-bin/bbs/www [PT]
+
+        ErrorLog /var/log/apache2/error.log
+        LogLevel warn
+
+</VirtualHost>
+
+$ sudo vim /etc/apache2/httpd.conf
+加上两行
+User bbs
+Group bbs
+
+$ sudo vim /etc/apache2/ports.conf
+设置监听端口到80
+
+$ sudo a2ensite default
+
+
+4.运行
+$ sudo /etc/init.d/apache2 restart
+
+
+5.设置好crontab，rc.local后，重启系统
+
+--
+                  ┏━━━━━━━━━━━━━━━━━┓
+                  ▍              洛 阳 东            ▋
+                  ▍           LUO YANG DONG          ▋
+                  ▍ 洛  阳 ←─西      东─→ 白马寺 ▋
+                  ▍ 洛阳北 ←─北      南─→ 关  林 ▋
+                  ◣━━━━━━━━━━━━━━━━━◢
+
+※ 来源:．兵马俑BBS bbs.xjtu.edu.cn．[FROM: 210.43.14.86]
+※ 修改:．pzhgpzhg 于 Mar 12 04:17:33 修改本文．[FROM: 210.43.14.86]

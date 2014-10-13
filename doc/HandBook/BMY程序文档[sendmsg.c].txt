@@ -1,0 +1,109 @@
+BMY程序文档 [sendmsg.c]
+
+writern by interma@BMY
+
+ver 1.0   2005.5.7
+
+
+1.概述：
+sendmsg.c文件包含消息收发的所有功能，本文档旨在说明sendmsg.c中的各个全局变量和函数的作用。
+
+2.全局变量说明：（以出现的先后顺序为序）
+[1] char buf2[MAX_MSG_SIZE];
+	作用：可能只是一个消息的缓冲区
+[2] int msg_blocked = 0;
+	作用：1（阻止收消息），0（不阻止收消息）
+[3] extern int have_msg_unread;
+	作用：1（有未读的消息），0（没有未读的消息）
+
+3。函数说明：（以出现的先后顺序为序，以下会说明函数的作用和各个输入参数和返回值得作用）
+[1] static int get_msg(uid, msg, line) char *msg, *uid; int line;
+	作用：获取送给uid的信息（用户输入，然后放在msg中）
+	char *msg:信息内容
+	char *uid:收信息人的id
+	int line:不知何用，不过调用get_msg函数时总把它赋为1
+	返回值：0或1，0表示不要送出，1表示送出
+[2] int canmsg(uin) struct user_info *uin;
+	作用：uin是否能收信息
+	struct user_info *uin：收信息人
+	返回值：YEA或NA，YEA表示可以收信息，NA表示无法收信息
+[3] int canmsg_offline(uid) char *uid;
+	作用：是否可以给uid离线信息（uid离线）
+	char *uid：收信息人（离线）
+	返回值：YEA或NA，YEA表示可以收离线信息，NA表示无法收离线信息
+[4] int s_msg()
+	作用：调用do_sendmsg函数进行具体的发送信息过程
+	返回值：恒为0
+[5] int do_sendmsg(uid, uentp, msgstr, mode, userpid)
+char *uid;struct user_info *uentp;char msgstr[256];int mode;int userpid;
+	作用：给uid送信息,具体发送过程调用sendmsgfunc函数
+	char *uid：收信息人
+	struct user_info *uentp：收信息人的user_info
+	char msgstr[256]：不明作用（不知为何要presend msg一次）
+	int mode：发送模式（0，1，2，3），不过不太懂这些模式之间的区别
+	1 -- 包厢聊天，不知道这个在哪里出现的
+	3 -- friend_wall
+	0 -- 一般模式和广播模式
+	2 -- friend_login_wall
+	int userpid：uid->pid
+	返回值：0，-1，1，还有其他的返回值，不过只有1代表成功发送了
+[6] static int dowall(uin) struct user_info *uin;
+	作用：对所有用户进行消息广播
+	struct user_info *uin：接受广播的人
+	返回值：0，-1，0表示广播成功
+[7] static int dowall_telnet(uin) struct user_info *uin;
+	作用：对所有telnet用户进行消息广播
+	struct user_info *uin：接受广播的人
+	返回值：0，-1，0表示广播成功
+[8] static int myfriend_wall(uin) struct user_info *uin;
+	不知为何这个函数从来未被调用
+[9] static int hisfriend_wall(uin) struct user_info *uin;
+	不知为何这个函数从来未被调用
+[10] int wall()
+	作用：对应于sysop的admin菜单中的wall,具体发送过程还要调用dowall函数
+	返回值：0（未发送），1（已发送）
+[11] int wall_telnet()
+	作用：对应于sysop的admin菜单中的telnet,具体发送过程还要调用dowall_telnet函数
+	返回值：0（未发送），1（已发送）
+[12] int friend_wall()
+	不知为何这个函数从来未被调用
+[13] void r_msg2()
+	作用：回或看消息（^z）
+[14] void r_msg()
+	作用：回或看未读消息（^z）
+[15] void block_msg()
+	作用：设置成阻止接受消息
+[16] void unblock_msg()
+	作用：设置成可以接受消息
+[17] int friend_login_wall(pageinfo) struct user_info *pageinfo;
+	作用：好友上站通知
+	struct user_info *pageinfo：收消息的人
+	返回值：恒为0
+[18] static int sendmsgfunc(char *uid, struct user_info *uin, int userpid, const char *msgstr, int mode, char *msgerr)
+	作用：发送消息
+	char *uid：收消息人的id
+	struct user_info *uin：收消息人的 user_info
+	int userpid：收消息人的pid
+	const char *msgstr： 要发送的消息
+	int mode：发送模式（0，1，2，3），不过不太懂这些模式之间的区别
+	1 -- 包厢聊天，不知道这个在哪里出现的
+	3 -- friend_wall
+	0 -- 一般模式和广播模式
+	2 -- friend_login_wall
+	char *msgerr：返回的错误信息（如果发送失败的话）
+	返回值：0，-1，-2，1，不过只有1代表成功发送了
+[19] int show_allmsgs()
+	作用：显示所有消息（L）
+	返回值：-1，0（成功显示）
+[20] static void mail_msg(struct userec *user)
+	作用：寄回收信息人的信箱（L, m）
+	struct userec *user：收信息的人
+
+
+
+
+
+
+
+
+

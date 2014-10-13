@@ -1,0 +1,281 @@
+发信人: interma ( 4PZP | 长远的历程 ), 信区: BMY_fan
+标  题: [转载] 2.<<src_1.8说明文档>>
+发信站: 兵马俑BBS (Sat Jul  8 09:59:19 2006), 本站(202.117.1.8)
+
+【 以下文字转载自 Program_Team 讨论区 】                                                                                
+【 原文由 rainbowboy 所发表 】                                                                                          
+                        BMY代码概述
+                                -----written by rainbowboy@bmy
+　　概述:本文档旨在说明bmy的源文件目录src_1.8下面各个文件夹及文件的用途。可以作
+为src_1.8目录的说明文档。下面的说明中将按照文件的字母顺序一一加以说明。
+_______________________________________________________________________________
+1.atthttpd目录
+作用不详，文档上说是telnet监听进程，(我不太明白)编译的C文件如下:　　
+    main.c sv_core.c conn.c mimetype.c　
+用make编译会生成一个可执行文件atthttpd.
+make clean会删除atthttpd和编译生成的.o文件
+
+interma补充：这个是web下附件（包括图片）进程（经常死掉，:-<）
+_______________________________________________________________________________
+2.bbshome目录
+安装的时候会将这个目录下面的文件复制到bbs用户的家目录下面。里面保存着配置信息文
+件目录etc，帮助信息文件目录help等。
+_______________________________________________________________________________
+3.BMfunc_patch目录
+下面有两个目录libythtbbs和src下面有几个C文件，没有Makefile编译的时候并不会用到，
+可能是存放着一些系统的补丁。
+_______________________________________________________________________________
+4.CVS目录
+这样的目录每个文件夹下面都有,是cvs系统的文件，保存着cvs系统运行需要的信息。
+_______________________________________________________________________________
+5.devweb目录
+YTHT dev主页。make install会安装到/home/bbs/ftphome/root/boards/BBSDev/html
+ytht已成为历史,现在已经没有实际作用了，有兴趣可以看一下，个人认为没有必要安装。
+_______________________________________________________________________________
+6.ebbs目录
+棋牌中心
+    INSTALL:
+        $ gcc -o chess chessd.c
+        $ gcc-o chc chess.c
+        然后将生成的chessd和chc拷贝到($BBSHOME)/bin，
+        运行./chessd& 启动后台程序即可。
+_______________________________________________________________________________
+7.etc目录
+bbs用户的配置文件夹，bbshome下面也有一个，不知道为什么还会有一个，这一个的内容
+更多一些。
+_______________________________________________________________________________
+8.games目录
+保存着游戏的源代码，bmy对这部分好像并没有实现，lqqm上面有。
+    - bbsfreeip            /* IP地址查询 */
+    - cgiman            /* Linux手册 */
+    - jplot                /* 画图的applet */
+    - mj                /* 麻将 */
+    - ncce                /* 科技辞典 */
+    - quickcalc-1.26-ythtpatch    /* 数学运算 */
+    - recite            /* 背单词 */
+    - tetris            /* 俄罗斯方块 */
+    - tex                /* 数学公式支持 */
+    - tt                /* 打字练习 */
+    - winmine            /* 扫雷    */
+    - worker            /* 推箱子  */
+_______________________________________________________________________________
+9.include目录
+保存着bbs配置方面的一些头文件.如bbs.h config.h struct.h等。执行configure的时候
+会把一些配置信息写到这里，编译以前可以检查这里的配置情况，也可以直接在这里更改
+bbs的系统信息。
+_______________________________________________________________________________
+10.inn目录
+转信功能的主程序代码。
+make 编译会生成三个可执行文件bbsfindout bbsinnd bbsoutd
+make inst会将可执行文件复制到bbs用户的bin目录中
+make clean会删除三个可执行文件
+_______________________________________________________________________________
+11.innbbsd目录
+好像是转信功能的守护进程主程序代码。
+可以编译后手动的将innbbsd bbsnnrp mkhistory 复制到 /home/bbs/innd
+将innd/bbspost innd/bntplink 复制到 /home/bbs/innd"
+这部分没怎么看过。(谁给补充一下)
+_______________________________________________________________________________
+12.libythtbbs目录
+一个假定实现各种 bbs 功能，而不与显示方式直接挂钩的函数库.
+C文件如下：
+boardrc.c misc.c record.c user.c article.c modetype.c docutil.c msg.c
+politics.c goodgbid.c binaryattach.c permissions.c bbseva.c attach.c
+regform.c announce.c board.c sectree.c sectreeop.c
+make install会编译所有的C文件，然后用ar命令将编译生成的.o文件打成一个包
+libythtbbs.a并将它复制到/home/bbs/bin中
+make clean会删除所有的.o文件和libythtbbs.a seclist.local
+_______________________________________________________________________________
+13.local_utl目录
+一个独立的(相对于bbs的主程序)程序库，编译完了复制到/home/bbs/bin中.
+_______________________________________________________________________________
+14.mail2bbs目录
+作用不详。
+make install编译生成可执行文件mail2bbs然后复制到/home/bbs/bin中。
+_______________________________________________________________________________
+15.nju09目录
+bmy的www部分的代码。
+这个部分文件比较多，但是并不复杂，与telnet部分的代码不同，这个部分每个文件里面
+只有很少的几个函数，文件大多数以bbs开头，每个文件有一个以bbs开头，_main结尾的函
+数，对应着这个文件的代码完成的功能，其余的函数基本上只在本文件内部调用。全局变量
+在bbslib.h和bbslib.c中声明，同时bbslib.c还是一个函数库，一些频繁调用的函数也在
+这里实现。程序入口函数main()在bbsmain.c中定义。
+make install会编译生成两个可执行文件www和upload。upload的源文件为upload.c。其余
+的大部分.c文件是www的(详见Makefile)。
+make update会更新www。大多数的更新应该执行这个编译选项。
+make getuser会编译getuser.c生成可执行文件getuser。
+make upload会编译upload.c更新upload。
+make clean会删除编译生成的.o文件和www等。
+_______________________________________________________________________________
+16.rzsz目录
+作用不详。
+make install会编译生成一个库librzsz.a并将其复制到/home/bbs/bin中。
+make clean会删除编译过程中生成的.o文件和librzsz.a
+_______________________________________________________________________________
+17.site目录
+本地设置文件所在的目录。可以参照*.sample文件进行设置。
+其中bbsconfig中的信息是执行./configure时的默认选项，可以在这里直接更改，然后在
+执行configure时一路回车就行了。注意这里的文本务必为UNIX格式，不然会安装失败。
+详细情况请见我的另外一篇关于文本格式的文章。
+_______________________________________________________________________________
+18.smth_sshbbsd目录
+bbs的ssh部分的源代码和相关文档。详细情况请这个目录下面的有关文档。
+(我没有仔细看^_^)
+_______________________________________________________________________________
+19.software目录
+bbs系统需要的几个程序和库文件.主要包括fcgi-2.2.2，libghthash-0.5.0，
+mod_fastcgi-2.2.12，glibc-devel-2.2.93-5.i386.rpm,是编译代码所需要的，装上就行
+了。(我没有仔细看^_^)
+_______________________________________________________________________________
+20.src目录
+bbs的telnet部分的源代码。
+有一个文件夹ytht.new，里面好像也是一个完整的代码，但是bmy并没有采用下面的代码。
+make命令会编译生成下面的可执行文件：bbs bbs.chatd bbsd telnet thread
+make install会编译生成上面的5个可执行文件，并执行安装脚本Install.sh进行安装，
+因此如果是更新程序不要执行make install。
+
+bmy的主程序bbs是由下面的C文件编译生成的：
+           bbs.c record.c delete.c main.c stuff.c mail.c register.c
+           xyz.c talk.c read.c comm_lists.c namecomplete.c chat.c
+           maintain.c edit.c more.c help.c bcache.c boards.c
+           smth_screen.c io.c term.c userinfo.c vote.c announce.c sendmsg.c
+           bm.c list.c goodbye.c bbsgopher.c fileshm.c postheader.c
+           convcode.c five.c tmachine.c addressbook.c
+           backnumber.c common.c sec_hand.c regular.c 1984.c
+           moneycenter.c editboard.c power_select.c
+这里面包括了bbs的绝大部分操作，主函数入口地址在main.c中。
+如果更新了上面的文件，可以执行make installbbs。
+
+bbs.chatd为聊天程序，如果更新了station.c可以执行make installchatd
+
+bbsd为bbs的守护进程，如果更新了bbsd.c可以执行make installbbsd
+
+telnet<我不太清楚它的作用，谁给补充一下>
+thread<我不太清楚它的作用，谁给补充一下>
+
+还有许多编译选项，内容比较多，也比较杂，更新程序后先看一下Makefile再执行相应的
+编译命令。
+
+最后,编译src下面的程序要连接ythtlib.a和libythtbbs.a这两个库,因此应该先在ythtlib
+和libythtbbs下面执行相应的编译命令，安装上面的两个库。
+_______________________________________________________________________________
+21.web目录
+httpd-2.0.47
+libghthash-0.5.2这个software下面也有，但是版本号不同。
+mod_fastcgi-2.4.0这个software下面也有，但是版本号不同。
+详细作用不是很清楚,(谁给补充一下>。
+
+interma补充：libghthash是c下的hash表实现（必须），mod_fastcgi是apache的fastcgi
+模块，用来提高web下的访问速度（可选）。    
+_______________________________________________________________________________
+22.wwwtools目录
+说明：里面有个periodic文件夹,是元素周期表,
+    Install:
+    $ mkdir /var/www/html/periodic
+    $ cd ($BBSSRC)wwwtools/periodic
+    $ cp * /var/www/html/periodic
+_______________________________________________________________________________
+23.yftpd目录
+作用不详，好像是提供ftp服务的。C文件如下：
+commands.c dirlist.c logging.c login.c main.c mystring.c pathop.c yftpdutmp.c
+make编译生成yftpd。
+make install生成yftpd并安装到/home/bbs/ftphome
+make clean删除*.o core a.out文件。
+
+简介:前身是bftpd，为bbs量身打造的ftp,用来上传和下载文件,比如版主管理进版页面使用,精华区的下载.
+_______________________________________________________________________________
+24.ythtlib目录
+一个假定跟 bbs 可以独立开的函数库.
+C文件如下：
+uudecode.c strhash.c common.c numbyte.c strop.c fileop.c strlib.c shmop.c
+uuencode.c named_socket.c crypt.c limitcpu.c timeop.c smth_filter.c mgrep.c
+make install会编译所有的C文件，然后用ar命令将编译生成的.o文件打成一个包
+libytht.a并将它复制到/home/bbs/bin中
+make clean会删除所有的.o文件和libytht.a
+*******************************************************************************
+*                               下面的为文件部分                              *
+*******************************************************************************
+25.AUTHORS文件
+ft只有一句话：Please see http://bbsdev.ytht.net,不知道现在还有没有。
+_______________________________________________________________________________
+26.bbsconfig文件
+ytht的配置文件，对我们的bbs没什么作用，我们的配置文件在site目录下面。
+_______________________________________________________________________________
+27.Bindent文件
+内容如下，作用不详。
+#!/bin/bash
+indent -kr -i8 -ts8 -sob -l80 -ss -bs -psl "$@"
+indent -kr -i8 -ts8 -sob -l80 -ss -bs -psl "$@"
+_______________________________________________________________________________
+28.bmy_grep.sh文件
+一个脚本，在src,ythtlib,libythtbbs,include目录下面的.c .h文件中grep一个字符串，
+格式为：bmy_grep.sh "your string"
+应该是很有用的一个脚本，注意转换为UNIX格式并加上X权限哦。
+_______________________________________________________________________________
+29.config.guess   config.status   config.sub文件
+每个标准的GNU软件包里面都会有，安装的时候并不会直接用到，不用理会。
+_______________________________________________________________________________
+30.configure  文件
+配置脚本，执行的时候会填写一些bbs系统的基本信息。也可以在site/bbsconfig里面填写
+默认选项，然后一路回车就行了。
+_______________________________________________________________________________
+31.configure.in文件
+每个标准的GNU软件包里面都会有，安装的时候并不会直接用到，不用理会。
+_______________________________________________________________________________
+32.COPYING文件
+GNU GENERAL PUBLIC LICENSE
+对GPL有兴趣可以看一下。
+_______________________________________________________________________________
+33.FAQ文件
+经常问到的问题。
+_______________________________________________________________________________
+34.INSTALL文件
+This the quick installation guide for Firebird BBS ytht version
+安装文档，可以看一下，还是有点帮助的。
+_______________________________________________________________________________
+35.Install.sh文件
+安装脚本，src下面执行make install的时候会用到。
+_______________________________________________________________________________
+36.Install.sh.in文件
+填写相应的内容就变成Install.sh了，安装的时候并不会直接用到，不用理会。
+_______________________________________________________________________________
+37.install-sh文件
+每个标准的GNU软件包里面都会有，安装的时候并不会直接用到，不用理会。
+_______________________________________________________________________________
+38.makedist.sh文件
+先删除configure,然后将/usr/share/automake/下面的config.sub config.guess
+install-sh 复制到本地目录，再执行autoconf生成新的configure.INSTALL里面是这么说
+的：
+   if you get souce code from our cvs
+   you should run ./makedist.sh
+   if it complain can't find the directory of autoconf or automake
+   you can link your auto* program to the name automake or autoconf
+_______________________________________________________________________________
+39.Makefile文件
+由于编译过程都是在各个目录下分别进行的，所以这个文件并没有实际的作用.
+_______________________________________________________________________________
+40.Makefile.Base文件
+好像是一个全局性的Makefile,下面的各级目录中Makefile会include这个文件。
+_______________________________________________________________________________
+41.Makefile.Base.in文件
+填写相应的内容就变成Makefile.Base了，安装的时候并不会直接用到，不用理会。
+_______________________________________________________________________________
+42.Makefile.in文件
+删除两行便是Makefile了，由于这个Makefile并没有什么用处，因此这个文件也不会用到。
+_______________________________________________________________________________
+43.NEWS文件
+每个标准的GNU软件包里面都会有，只有下面两行字：
+2003.1.1
+一塌糊涂 bbs 正式公开 当前代码
+_______________________________________________________________________________
+44.README文件
+这个不用说了，自己看吧。
+
+                                                rainbowboy@bmy
+                                                2006-1-28 23:51
+--
+               不能再灌水了                                                                                             
+
+※ 来源:．兵马俑BBS 202.117.1.8．[FROM: 219.245.173.109]                                                                
+--
+※ 转载:．兵马俑BBS 202.117.1.8．[FROM: 219.245.165.5]                                                                  

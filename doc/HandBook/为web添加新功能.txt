@@ -1,0 +1,89 @@
+发信人: wjbta (好好爱静--一辈子不后悔), 信区: Program_Team
+标  题: 为web添加新功能
+发信站: 兵马俑BBS (Sun Sep 12 01:18:57 2004), 本站(bbs.xjtu.edu.cn)
+
+发信人: wy (王爷·無隐), 信区: BBSMaintenance
+标  题: [Help] 为web添加新功能
+发信站: 天大求实BBS (Thu Sep  9 19:11:34 2004), 本站(bbs.tju.edu.cn)
+
+        为web添加新功能
+
+本文由 ytht系统维护组负责维护。
+您认为在本文中发现了怀疑有错的地方，或是不通的语句、错字别字，请与
+sofire@ytht.net联系。
+
+假设要添加 bbsmyfunc功能，具体作用是打印字符串：it's my function。
+此处的账号要求用bbs，不要用root。
+
+1，修改nju09/bbsmain.c 函数的 cgi_applet applets 结构体
+  仿照 {bbsdoc_main, {"bbsdoc", "doc", NULL}} ，添加一条：
+  {bbsmyfunc_main,{"bbsmyfunc","myfunc",NULL}}
+
+2，为新功能添加一个新文件：nju09/bbsmyfunc.c
+  内容为：
+
+#include "bbslib.h"
+
+int
+bbsmyfunc_main()
+{
+        html_header(1);
+        check_msg();
+
+        printf("it's my function\n");
+
+        http_quit();
+        return 0;
+}
+
+3，修改nju09/Makefile
+  在 CFILE 中添加上bbsmyfunc.c
+
+4，重新生成 proto.h 文件，这步很关键。
+  make proto
+
+5，重新编译安装
+  make
+  make install
+
+6，测试
+  http://ip/SMAGICxxxxxxxxxxxxxxxxxxxxxxxx/myfunc
+  http://ip/SMAGICxxxxxxxxxxxxxxxxxxxxxxxx/bbsmyfunc
+                                                        sofire
+                                                        2004.5.2
+
+
+--
+        昔者瓠巴鼓瑟而流沉鱼出听        伯牙鼓琴而六马仰秣
+        故声无小而不闻                  行無隐而不形
+        玉在山而草木润                  渊生珠而崖不枯
+        为善不积邪？安有不闻者乎！      学恶乎始？恶乎终？
+        曰：其数则始乎诵经，终乎读礼    其义则始乎为士，终乎 为圣人。
+
+
+
+
+
+
+
+--
+        昔者瓠巴鼓瑟而流沉鱼出听        伯牙鼓琴而六马仰秣
+        故声无小而不闻                  行無隐而不形
+        玉在山而草木润                  渊生珠而崖不枯
+        为善不积邪？安有不闻者乎！      学恶乎始？恶乎终？
+        曰：其数则始乎诵经，终乎读礼    其义则始乎为士，终乎 为圣人。
+
+
+
+
+
+
+
+--
+
+爱一个人需要时间，得到后就不要放弃。
+如果放弃，也许会后悔一辈。
+爱就要勇敢一些，不要去躲避，不要去猜疑，相信那一瞬间的感觉，勇往直前
+爱需要责任，也需要付出，懂得付出，才能得到真心的相待
+
+※ 来源:·交大兵马俑bbs站 bbs.xjtu.edu.cn·[FROM:沙漠之地]
