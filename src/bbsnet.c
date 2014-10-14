@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <termios.h>
 #include <string.h>
+#include <unistd.h>
+#include <time.h>
 
 char host1[100][40], host2[100][40], ip[100][40];
 int port[100], counts = 0;
@@ -229,7 +231,7 @@ static void
 syslog(char *s)
 {
 	char timestr[16], *thetime;
-	int dtime;
+	time_t dtime;
 	FILE *fp;
 	fp = fopen("bbsnet.log", "a");
 	time(&dtime);
