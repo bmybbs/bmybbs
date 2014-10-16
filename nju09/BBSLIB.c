@@ -2728,9 +2728,9 @@ fdisplay_attach(FILE * output, FILE * fp, char *currline, char *nowfile)
 		    (output,
 		     "%d ¸½Í¼: %s (%ld ×Ö½Ú)<br>"
 			"<a href='/attach/%s'> "
-						"<IMG style=\" max-width:800px; width: expression(this.width > 800 ? 800: true); height:auto\" SRC='/attach/%s' border=0/> </a>",
+			"<IMG style=\" max-width:800px; width: expression(this.width > 800 ? 800: true); height:auto\" SRC='/attach/%s' border=0/> </a>",
 	//	"<img src='/attach/%s'></img>",
-		     ++ano, attachfile, size, download);
+		     ++ano, attachfile, size, download, download);
 		break;
 	case 2:
 		fprintf(output,
