@@ -2649,7 +2649,7 @@ utf8_decode(char *src)
 	static char out[2048];
 	char *outbuf;
 	char *inbuf;
-	int flen, tlen, n;
+	size_t flen, tlen, n;
 	if (cd == (iconv_t) - 1) {
 		cd = iconv_open("GB2312", "UTF-8");
 		if (cd == (iconv_t) - 1)
