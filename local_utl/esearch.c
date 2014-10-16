@@ -8,7 +8,7 @@
 #define LINEMAX  128
 #define PATHLEN 1024
 
-int toupper(char *str)
+int str_toupper(char *str)
 {
    int i=0;
    int length=strlen(str);
@@ -28,9 +28,9 @@ void a_article_search(char *path,char *key,char *location)
    char titlebuf[LINEMAX];
    char pathbuf[LINEMAX];
    char index_path[PATHLEN];
-   char filename[256];							//è®°å½•å½“å‰ç›®å½•å®Œæ•´è·¯å¾„
+   char filename[256];							//¼ÇÂ¼µ±Ç°Ä¿Â¼ÍêÕûÂ·¾¶
    strcpy(index_path,path);
-   strcat(index_path,index_file);				//.Nameså®Œæ•´è·¯å¾„
+   strcat(index_path,index_file);				//.NamesÍêÕûÂ·¾¶
    if((fp=fopen(index_path,"r"))==NULL)
    {
      //printf("open error!,%s\n",index_path);
@@ -43,12 +43,12 @@ void a_article_search(char *path,char *key,char *location)
      fgets(titlebuf,LINEMAX,fp);
      if(strncmp(titlebuf,"Name=",5)==0)
      {
-     	fgets(pathbuf,LINEMAX,fp);					//å¦‚æœæ˜¯éšè—/æƒé™ç›®å½•æˆ–æ–‡ä»¶
+     	fgets(pathbuf,LINEMAX,fp);					//Èç¹ûÊÇÒş²Ø/È¨ÏŞÄ¿Â¼»òÎÄ¼ş
 		if(strstr(titlebuf+43,"(BM: BMS)") || strstr(titlebuf+43,"(BM: SYSOPS)") ||
 			strstr(titlebuf+5,"<HIDE>"))
 		continue;
 		char temppath[80];
-        if(strncmp(pathbuf,"Path=",5)==0)           //æˆªå‡ºç›®å½•é€‰é¡¹
+        if(strncmp(pathbuf,"Path=",5)==0)           //½Ø³öÄ¿Â¼Ñ¡Ïî
         {
          if(strncmp(pathbuf,"Path=~/",7)==0)
 		  strncpy(temppath,pathbuf+7,80);
@@ -60,7 +60,7 @@ void a_article_search(char *path,char *key,char *location)
 		strcat(filename,temppath);
 		filename[strlen(filename)-1]='\0';
 		lstat(filename,&buf);
-		if(S_ISDIR(buf.st_mode))					//æ˜¯ç›®å½•åˆ™é€’å½’
+		if(S_ISDIR(buf.st_mode))					//ÊÇÄ¿Â¼Ôòµİ¹é
 		{
 		  char linebuf[20];
 		  fgets(linebuf,20,fp);
@@ -70,7 +70,7 @@ void a_article_search(char *path,char *key,char *location)
 		  sprintf(nextlocate,"%s%s-",location,linebuf+5);
 		  a_article_search(filename,key,nextlocate);
 		}
-		else if(S_ISREG(buf.st_mode))				//æ˜¯æ–‡ä»¶åˆ™åˆ¤æ–­æ˜¯å¦å«æœ‰å…³é”®å­—
+		else if(S_ISREG(buf.st_mode))				//ÊÇÎÄ¼şÔòÅĞ¶ÏÊÇ·ñº¬ÓĞ¹Ø¼ü×Ö
 		{
 			char temptitle[64];
 			bzero(temptitle,sizeof(temptitle));
@@ -79,8 +79,8 @@ void a_article_search(char *path,char *key,char *location)
 			strcpy(tempupper,temptitle);
 			char keyupper[50];
 			strcpy(keyupper,key);
-			toupper(tempupper);
-			toupper(keyupper);
+			str_toupper(tempupper);
+			str_toupper(keyupper);
 			if(strstr(tempupper,keyupper) != NULL)
 			{
 				char linebuf[20];
@@ -108,7 +108,7 @@ void a_article_search(char *path,char *key,char *location)
 		}
 		else
 		{
-			continue;                //²»ËÑË÷·ûºÅÁ´½Ó
+			continue;               //²»ËÑË÷·ûºÅÁ´½Ó
 		}
      }
 	else
