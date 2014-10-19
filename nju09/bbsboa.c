@@ -571,7 +571,7 @@ show_commend()
 	int index;
 	for (index=count; index>count-10; --index) {
 		if (index<1) break;
-		printf(commends[index-1]);
+		printf("%s", commends[index-1]);
 		free(commends[index-1]);
 	}
 	fclose(fp);
@@ -594,7 +594,7 @@ show_commend()
 */
 }	
 
-show_commend2()
+int show_commend2()
 {
 	FILE *fp;
 	struct commend x;
@@ -632,7 +632,7 @@ show_commend2()
 	int index;
         for (index=count; index>count-10; --index) {
                 if (index<1) break;
-                printf(commends[index-1]);
+                printf("%s", commends[index-1]);
                 free(commends[index-1]);
         }
 	
@@ -811,11 +811,11 @@ int show_content()
 	printf("</table>\n");
 
 	//show boards
-	printf("<table width=98% border=0 align=center cellpadding=0 cellspacing=0>\n"
+	printf("<table width=98%% border=0 align=center cellpadding=0 cellspacing=0>\n"
 		"<tr><td width=456><img src=\"/images/bmy_arrowdown_black.gif\">\n"
 		"<span=2 class=F0000>推荐讨论区</span></td>\n"
 		"<td>&nbsp;</td></tr>\n"
-              "<tr><td><a href='%sXJTUdevelop' style=\"color: red\">交大发展</a>&nbsp;<a href='%swelcome' style=\"color: red\">欢迎报考西安交大</a>&nbsp;<a href='%skaoyan' style=\"color: red\">考研与保研</a></td></tr>\n",showByDefMode(),showByDefMode(),showByDefMode(),showByDefMode());
+        "<tr><td><a href='%sXJTUdevelop' style=\"color: red\">交大发展</a>&nbsp;<a href='%swelcome' style=\"color: red\">欢迎报考西安交大</a>&nbsp;<a href='%skaoyan' style=\"color: red\">考研与保研</a></td></tr>\n",showByDefMode(),showByDefMode(),showByDefMode());
 
 	//show_sec(&sectree); 老版本的显示分区的方式，注释掉 by IronBlood@bmy 20120329
 
@@ -830,7 +830,7 @@ int show_content()
 		fclose(secorderfile);
 	}
 	else{
-		strcpy(secorder,"0123456789GNHAC\0"); // 如果站长没有配置，那就按照老版本的来
+		strcpy(secorder,"0123456789GNHAC"); // 如果站长没有配置，那就按照老版本的来
 	}
 
 	for(sec_index=0;sec_index!=strlen(secorder);++sec_index){
@@ -1099,7 +1099,9 @@ fail_out:
 
 void show_sec_by_name(char secid){
 	struct sectree *sec;
-	sec = getsectree(&secid);
+	char str_secid[2];
+	sprintf(str_secid, "%c", secid);
+	sec = getsectree(str_secid);
 	printf("<tr>");
 	printf("<td><div class=\"linediv\"><a href=boa?secstr=%s class=linkboardtheme>"
 		       "%s</a></div></td>\n", sec->basestr, nohtml(sec->title));
@@ -1158,12 +1160,13 @@ void show_boards(char *secstr)
 		if (x->header.filename[0] <= 32 || x->header.filename[0] > 'z')
 			continue;
 		if (hasintro) {
-			if (strcmp(secstr, x->header.sec1) &&
-			    strcmp(secstr, x->header.sec2)) continue;
+//			if (strcmp(secstr, x->header.sec1) &&
+//			    strcmp(secstr, x->header.sec2)) continue;
+			if (secstr[0] != x->header.secnumber1) continue;
 		} else {
-			if (strncmp(secstr, x->header.sec1, len) &&
-			    strncmp(secstr, x->header.sec2, len))
-				continue;
+//			if (strncmp(secstr, x->header.sec1, len) &&
+//			    strncmp(secstr, x->header.sec2, len))
+			if (secstr[0] != x->header.secnumber1) continue;
 		}
 		if (!has_read_perm_x(&currentuser, x))
 			continue;
