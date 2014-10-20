@@ -11,8 +11,7 @@ printdiv(int *n, char *str)
 	"  {"
 		"document.getElementById('menu').click()\n"
 	"  }"
-	"</script>"
-		, *n);
+	"</script>");
 
 	if(!strcmp(str, "分类讨论区")){
 		//modify: \"_bbsall.htm\" to: bbssecfly by: flyinsea
@@ -50,7 +49,7 @@ bbsleft_main()
 {
 	int i;
 	int div = 0;
-	char* buf[512];
+	char buf[512];
 	FILE* fp;
 	changemode(MMENU);
 	html_header(2);
