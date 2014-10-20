@@ -107,7 +107,7 @@ L:	fp = fopen(names, "r");
 			papath);
 	else
 		printf("<tr><td height=35 valign=top><a href=\"#\" class=btnsubmittheme title=\"返回上层目录\" accesskey: b\" accesskey=\"b\">返回上层目录</a></td></tr>\n");
-	printf("<tr><td width=40 class=level1>\&nbsp;</td>\n");
+	printf("<tr><td width=40 class=level1>&nbsp;</td>\n");
 	printf("<td class=level1><table width=95%% cellpadding=2 cellspacing=0>\n");
 	printf("<tbody>\n");
 
