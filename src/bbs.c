@@ -2750,7 +2750,7 @@ char *direct;
 	if (!HAS_PERM(PERM_OBOARDS) && !HAS_PERM(PERM_SYSOP))
 		return DONOTHING;
 	clear();
-	bzero(&atm, sizeof (&atm));
+	memset(&atm, 0, sizeof(atm));
 	prints
 	    ("整理过刊, 请指定日期, 在该日期之前所发表的文章将被\n"
 	     "迁移到最后一个过刊目录里, 而且不再存在于版面\n");
