@@ -21,7 +21,7 @@
 
 #ifdef POP_CHECK
 // 登陆邮件服务器，进行身份验证， added by interma@BMY 2005.5.12
-// 返回值为1表示有效，0表示无效, -1表示和pop服务器连接出错 
+// 返回值为1表示有效，0表示无效, -1表示和pop服务器连接出错
 int test_mail_valid(char *user, char *pass, char *popip)
 {
     char buffer[512]; 
@@ -64,7 +64,7 @@ int test_mail_valid(char *user, char *pass, char *popip)
     if (buffer[0] == '-')
         return -1;
     
-    sprintf(buffer, "USER %s\r\n\0", user);
+    sprintf(buffer, "USER %s\r\n", user);
     if (write(sockfd, buffer, strlen(buffer)) == -1)
     { 
         return -1; 
@@ -79,7 +79,7 @@ int test_mail_valid(char *user, char *pass, char *popip)
         return 0;
     }   
      
-    sprintf(buffer, "PASS %s\r\n\0", pass);
+    sprintf(buffer, "PASS %s\r\n", pass);
     if (write(sockfd, buffer, strlen(buffer)) == -1)
     { 
         return -1; 
@@ -234,7 +234,7 @@ char *addr, char *phone, char *assoc, char *email)
 			}
 
 			mail_file("etc/s_fill", uinfo.userid,
-				  "恭禧您通过身份验证", "SYSOP"); 
+				  "恭禧您通过身份验证", "SYSOP");
 
 			mail_file("etc/s_fill2", uinfo.userid,
 				  "欢迎加入" MY_BBS_NAME "大家庭", "STSOP");
@@ -259,7 +259,7 @@ char * str_to_upper(char *str)
 
 extern char fromhost[256];
 // 纪录pop服务器上的用户名，防止重复注册多个id， added by interma@BMY 2005.5.16
-// 返回值为0表示已纪录，1表示已存在 
+// 返回值为0表示已纪录，1表示已存在
 // 纪录pop服务器上的用户名，防止重复注册多个id， added by interma@BMY 2005.5.16
 /* 返回值为0表示已纪录（未存在），1表示已存在 */
 int write_pop_user(char *user, char *userid, char *pop_name)
@@ -404,8 +404,8 @@ bbsdoreg_main()
 	popip = strtok(NULL, delims);
 
 	// 防止注入漏洞
-	struct stat temp;
-	/*
+	/*struct stat temp;
+
 	if (stat(MY_BBS_HOME "/etc/pop_register/pop_list", &temp) == -1)
 	{
 		http_fatal("目前没有可以信任的邮件服务器列表, 因此无法验证用户\n");
@@ -456,7 +456,7 @@ bbsdoreg_main()
 	
 
 	char email[60];
-	sprintf(email, "%s@%s", user, popname);  // 注意不要将email弄溢出了
+	snprintf(email, 60, "%s@%s", user, popname);  // 注意不要将email弄溢出了
 	str_to_lowercase(email);
 	strsncpy(x.email, email, 60);
 #endif	
@@ -473,7 +473,7 @@ bbsdoreg_main()
 //      x.birthday=atoi(getparm("day"));
 
 	//if (!goodgbid(x.userid))  by bjgyt
-        if (id_with_num(x.userid))
+    if (id_with_num(x.userid))
 		http_fatal("帐号只能由英文字母组成");
 	if (strlen(x.userid) < 2)
 		http_fatal("帐号长度太短(2-12字符)");
@@ -567,22 +567,10 @@ mkdir(filename, 0755);
 	    ("<center><form><input type=button onclick='window.close()' value=关闭本窗口></form></center>\n");
 #else
 	printf("<center><table><td><td><pre>\n");
-	memset(&act_data, 0, sizeof(act_data));
-	strcpy(act_data.name, x.realname);
-	strcpy(act_data.userid, x.userid);
-	strcpy(act_data.dept, dept);
-	strcpy(act_data.phone, phone);
-	strcpy(act_data.email, email);
-	strcpy(act_data.ip, fromhost);
-	strcpy(act_data.operator, x.userid);
 	
-	act_data.status=0;
-	write_active(&act_data);
-
-
 	int result;
 	//int result = test_mail_valid(user, pass, popip);
-	if (strstr(popname, "idp.xjtu6.edu.cn")) {
+	if (!strcasecmp(popname, "idp.xjtu6.edu.cn") && !strcasecmp(popip, IP_POP[3])) {
 		if (!strcmp(fromhost, "202.117.1.190") || !strcmp(fromhost, "2001:250:1001:2::ca75:1be"))
 			result=1;
 		else {
@@ -591,8 +579,32 @@ mkdir(filename, 0755);
 		}
 	}
 	else {
+		int pop_n;
+		result = 0;
+		for(pop_n=1;pop_n<=2; ++pop_n) {
+			if(strcasecmp(popname, MAIL_DOMAINS[pop_n])==0 && strcasecmp(popip, IP_POP[pop_n])==0) {
+				result = 1;
+				break;
+			}
+		}
+
+		if(result!=1)
+			http_fatal("error occur");
+
 		result = test_mail_valid(user, pass, popip);
 	}
+
+	memset(&act_data, 0, sizeof(act_data));
+	strcpy(act_data.name, x.realname);
+	strcpy(act_data.userid, x.userid);
+	strcpy(act_data.dept, dept);
+	strcpy(act_data.phone, phone);
+	strcpy(act_data.email, email);
+	strcpy(act_data.ip, fromhost);
+	strcpy(act_data.operator, x.userid);
+
+	act_data.status=0;
+	write_active(&act_data);
 
 	switch (result)
     {
@@ -600,7 +612,7 @@ mkdir(filename, 0755);
 		printf("<tr><td>%s<br></table><br>\n", 
 			"欢迎您加入交大，来到兵马俑BBS。<br>您采用了新生测试信箱注册，目前您是新生用户身份。"
 			"目前您没有发文、信件、消息等权限。<br><br>"
-			"请在开学取得stu.xjtu.edu.cn信箱后，<br>点击左侧边栏“填写注册单”，完成信箱绑定认证操作，成为本站正式用户。");	
+			"请在开学取得stu.xjtu.edu.cn信箱后，<br>点击左侧边栏“填写注册单”，完成信箱绑定认证操作，成为本站正式用户。");
 		  break;
 		  case -1:
 		  case 0:
@@ -618,7 +630,7 @@ mkdir(filename, 0755);
 		act_data.status=1;
 		response=write_active(&act_data);
 		if (response==WRITE_SUCCESS || response==UPDATE_SUCCESS)  {
-			printf("身份审核成功，您已经可以使用所用功能了！\n"); 
+			printf("身份审核成功，您已经可以使用所用功能了！\n");
 			register_success(getusernum(x.userid) + 1, x.userid, x.realname, dept, x.address, phone, assoc, email);
 			break;
 		}
