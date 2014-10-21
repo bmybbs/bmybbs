@@ -12,6 +12,7 @@ int show_special_web(char *id2) {
 		if(!strcasecmp(id1, id2)) hprintf(" [1;33m°Ô[36m%s[33m°Ô[m",name);
 	}
 	fclose(fp);
+	return 0;
 } 
 
 void show_special_api(char *id2, char *output){
@@ -25,7 +26,7 @@ void show_special_api(char *id2, char *output){
 			if(!strcasecmp(id1, id2)) sstrcat(output, "\"Title\":\"%s\",", name);
 		}
 	}
-	close(fp);
+	fclose(fp);
 }
 
 int
@@ -253,11 +254,11 @@ bbsqry_main()
 		else if (x->userlevel & PERM_SPECIAL7)
 		{
 		if ( (x->userlevel & PERM_SPECIAL1) && !(x->userlevel & PERM_CLOAK) ) 
-		hprintf("[[1;36m¿Î»Œ≥Ã–Ú‘±[m]");		
+		hprintf("[[1;36m¿Î»Œ≥Ã–Ú‘±[m]");
 		else		
 		hprintf("[[1;36m≥Ã–Ú◊È≥…‘±[m]");
 		}
-		else if (x->userlevel & PERM_ACCOUNTS) hprintf ("[[1;36m’ ∫≈π‹¿Ì‘±[m]"); 
+		else if (x->userlevel & PERM_ACCOUNTS) hprintf ("[[1;36m’ ∫≈π‹¿Ì‘±[m]");
 		hprintf("\n");
 	}
 	num = 0;
