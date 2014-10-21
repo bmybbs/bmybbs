@@ -18,7 +18,7 @@
 
 #define MAX_PROXY_NUM 4
 #define DEFAULT_PROXY_PORT 8080
-
+#define HTMPATH "/home/apache/htdocs/bbs/"
 #define CSSPATH		"/images/"
 
 struct WWWCACHE {
