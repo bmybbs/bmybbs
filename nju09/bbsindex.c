@@ -49,6 +49,7 @@ char *get_login_link ()
 }
 
 //added by linux@05.9.12
+/* 该功能已经3年没有被使用了，注释掉 by IronBlood 2014.10.22
 char *get_login_pic ()
 {
   FILE *fp;
@@ -106,9 +107,10 @@ char *get_login_pic ()
 	  return pics_with_dir;
 	}
     }
-}
+}*/
 
 // added by IronBlood@11.09.05
+// 修正函数返回值，记得释放 by IronBlood@2014.10.22
 char *get_no_more_than_four_login_pics()
 {
 	FILE *fp;
@@ -156,7 +158,7 @@ char *get_no_more_than_four_login_pics()
         }
     }
 
-	return pics_list;
+	return strdup(pics_list);
 }
 
 // add by IronBlood@bmy 20120107
@@ -320,6 +322,7 @@ void loginwindow()
 "</table>"/*,login_link,login_pic*/);/* modified by linux 05.9.11 */
 	showannounce();
 	printf("<script>showloginpics(\"%s\")</script>",fourpics);
+	free(fourpics);		// 释放资源 by IronBlood 2014.10.22 其实此处快退出了，会自动释放的 :-)
 	printf("</body>\n</html>");
 }
 
