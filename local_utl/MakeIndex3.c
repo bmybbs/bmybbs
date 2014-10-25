@@ -201,7 +201,6 @@ searchindexfile(char *path)
 int
 main(int argc, char *argv[])
 {
-	searchindexfile("/home/bbs/0Announce/groups/GROUP_H/Beijing");
 	if (argc < 2)
 		return -1;
 	searchindexfile(argv[1]);
