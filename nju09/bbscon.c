@@ -462,7 +462,7 @@ bbscon_main()
 	}
 
 	// 删除回复提醒开始 by IronBlood
-	int article_id = (int)fn2timestamp(file);
+	time_t article_id = fn2timestamp(file);
 	if(is_post_in_notification(currentuser.userid, board, article_id)) {
 		del_post_notification(currentuser.userid, board, article_id);
 	}
