@@ -34,7 +34,7 @@ char *
 bknh2bknname(struct bknheader *bknh)
 {
 	static char s[16];
-	sprintf(s, "B.%d", bknh->filetime);
+	sprintf(s, "B.%lu", bknh->filetime);
 	return s;
 }
 

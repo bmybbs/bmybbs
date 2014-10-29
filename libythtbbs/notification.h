@@ -27,13 +27,13 @@ typedef struct NotifyItem* NotifyItemList;
  * @param article_id 回帖的时间戳
  * @param title_gbk 帖子的标题 @warning gbk 编码，方便调用，内部处理的时候会转为 utf-8 编码
  * @return 添加成功返回0
- * @see is_post_in_notification(char * userid, char * board, int article_id)
- * @see del_post_notification(char * userid, char * board, int article_id)
+ * @see is_post_in_notification(char * userid, char * board, time_t article_id)
+ * @see del_post_notification(char * userid, char * board, time_t article_id)
  */
 int add_post_notification(char * to_userid,
 						  char * from_userid,
 						  char * board,
-						  int article_id,
+						  time_t article_id,
 						  char * title_gbk);
 
 /** 新增一条 @ 提醒
@@ -48,7 +48,7 @@ int add_post_notification(char * to_userid,
 int add_mention_notification(char * to_userid,
 							char * from_userid,
 							char * board,
-							int article_id,
+							time_t article_id,
 							char * title_gbk);
 
 /** 将通知解析到内存中
@@ -79,9 +79,9 @@ int count_notification_num(char *userid);
  * @param board 版面名称
  * @param article_id 帖子id
  * @return 若帖子存在在通知文件中，则返回1，否则返回0
- * @see del_post_notification(char * userid, char * board, int article_id)
+ * @see del_post_notification(char * userid, char * board, time_t article_id)
  */
-int is_post_in_notification(char * userid, char * board, int article_id);
+int is_post_in_notification(char * userid, char * board, time_t article_id);
 
 /** 删除提醒
  * 同时删除回复提醒和 @ 提醒。
@@ -89,9 +89,9 @@ int is_post_in_notification(char * userid, char * board, int article_id);
  * @param board
  * @param article_id
  * @return <ul><li>0: 删除成功</li><li>-1: 帖子不在提醒文件中</li><li>-2: 删除失败</li></ul>
- * @see is_post_in_notification(char * userid, char * board, int article_id)
+ * @see is_post_in_notification(char * userid, char * board, time_t article_id)
  */
-int del_post_notification(char * userid, char * board, int article_id);
+int del_post_notification(char * userid, char * board, time_t article_id);
 
 /** 删除某个用户的所有提醒
  *
