@@ -41,7 +41,7 @@ COBJS	:=$(CFILE:.c=.o)
 
 #OTHERS	= usesql.h BBSLIB.c boardrc.c deny_users.c bbsupdatelastpost.c bbsred.c tshirt.h
 OTHERS = BBSLIB.c boardrc.c deny_users.c bbsupdatelastpost.c bbsred.c 
-.c.o:	;  $(CC) -c $*.c -D_GNU_SOURCE $(CFLAGS) $(CPPFLAGS) $(WWW_CPPFLAGS) -DYTMPATH='"$(YTMPATH)"' -DHTMPATH='"$(HTMPATH)"' -Wall $(LIBS)
+.c.o:	;  $(CC) -c $*.c -D_GNU_SOURCE $(CFLAGS) $(CPPFLAGS) $(WWW_CPPFLAGS) -DYTMPATH='"$(YTMPATH)"' -Wall $(LIBS)
 
 all: $(PROGNAME)
 
@@ -53,7 +53,7 @@ depend dep .depend:
 	gcc $(CFLAGS) -MM $(CFILE) $(OTHERS) upload.c >.depend
 
 proto proto.h:
-	cproto -DMAKE_PROTO -D__GNUC__ $(CFILE) $(OTHERS) $(CPPFLAGS) $(WWW_CPPFLAGS) -I$(BASEPATH)/libythtbbs -I$(BASEPATH)/ythtlib -I$(BASEPATH)/include > proto.h
+	cproto -DMAKE_PROTO $(CFILE) $(OTHERS) $(CPPFLAGS) $(WWW_CPPFLAGS) -I$(BASEPATH)/libythtbbs -I$(BASEPATH)/ythtlib -I$(BASEPATH)/include > proto.h
 
 $(COBJS): proto.h .depend
 
