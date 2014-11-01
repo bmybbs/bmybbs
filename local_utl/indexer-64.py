@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import struct, os, datetime, sys, PyLucene
+import struct, os, datetime, sys, lucene
 
 # configure
 DEBUG = 0
@@ -31,8 +31,8 @@ def get_all_boards():
   return blist
 
 def get_all_files(board, time_delta):
-  recordformat = 'iiii60s14s38s'
-  recordlen = struct.calcsize(recordformat) # the fileheader's length is 128
+  recordformat = 'llll60s14s38s'
+  recordlen = struct.calcsize(recordformat) # the fileheader's length is 144
   
   path = BOARDSPATH+board+'/.DIR'
   f = open(path, 'rb')
@@ -46,7 +46,7 @@ def get_all_files(board, time_delta):
     start =  i * int(recordlen)
     stop = start + int(recordlen)
     record = struct.unpack(recordformat, data[start:stop])
-    filetime = int(record[0])
+    filetime = long(record[0])
     title =  record[4].split('\x00')[0]
     owner =  record[5].split('\x00')[0]
 	
@@ -79,9 +79,9 @@ def filter_file(f):
   return contents
 
 def index_files(board, time_delta):
-  store = PyLucene.FSDirectory.getDirectory(BOARDSPATH+board+'/'+RECENT_INDEX, True)
-  writer = PyLucene.IndexWriter(store, PyLucene.StandardAnalyzer(), True)
-  writer.setMaxFieldLength(1048576) # 1MB
+  store = lucene.SimpleFSDirectory(lucene.File(BOARDSPATH+board+'/'+RECENT_INDEX))
+  writer = lucene.IndexWriter(store, lucene.StandardAnalyzer(lucene.Version.LUCENE_CURRENT), True, lucene.IndexWriter.MaxFieldLength.LIMITED)
+#  writer.setMaxFieldLength(1048576) # 1MB
   
   flist = get_all_files(board, time_delta)
   for filename,owner,title in flist:
@@ -103,19 +103,19 @@ def index_files(board, time_delta):
     f.close()
     
     if len(contents) > 0:
-      doc = PyLucene.Document()
-      doc.add(PyLucene.Field("name", filename,
-			   PyLucene.Field.Store.YES,
-			   PyLucene.Field.Index.UN_TOKENIZED))
-      doc.add(PyLucene.Field("owner", owner,
-			   PyLucene.Field.Store.YES,
-			   PyLucene.Field.Index.UN_TOKENIZED))
-      doc.add(PyLucene.Field("title", title,
-			   PyLucene.Field.Store.YES,
-			   PyLucene.Field.Index.UN_TOKENIZED))
-      doc.add(PyLucene.Field("contents", contents,
-			       PyLucene.Field.Store.YES,
-			       PyLucene.Field.Index.TOKENIZED))
+      doc = lucene.Document()
+      doc.add(lucene.Field("name", filename,
+			   lucene.Field.Store.YES,
+			   lucene.Field.Index.UN_TOKENIZED))
+      doc.add(lucene.Field("owner", owner,
+			   lucene.Field.Store.YES,
+			   lucene.Field.Index.NOT_ANALYZED))
+      doc.add(lucene.Field("title", title,
+			   lucene.Field.Store.YES,
+			   lucene.Field.Index.UN_TOKENIZED))
+      doc.add(lucene.Field("contents", contents,
+			       lucene.Field.Store.YES,
+			       lucene.Field.Index.ANALYZED))
       writer.addDocument(doc)
       debug('adding '+filename)
   writer.optimize()
@@ -146,6 +146,8 @@ if __name__ == '__main__':
   time_delta = int(sys.argv[2])
   
   start = datetime.datetime.now()
+  
+  lucene.initVM()
   if board == 'ALL':
     blist = get_all_boards()
     for board in blist:
