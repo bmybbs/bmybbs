@@ -865,82 +865,76 @@ char *direc;
    } 
 
 int
-topfile_post(ent, fhdr, direct) //slowaction 
-int ent;
-struct fileheader *fhdr;
-char *direct;
-{                                                                                	if (!IScurrBM) return DONOTHING;
-                if (fhdr->accessed & FILE_TOP1) 
-                {   
-	            fhdr->accessed &= ~FILE_TOP1;                                                 //dele_digest(fhdr->filetime, direct);
-		    dele_digest_top(fhdr->filetime, direct); //add by hace
-		    snprintf(genbuf, 256, "%s 去掉置顶 %s %s %s",currentuser.userid, currboard, fhdr->owner,fhdr->title);
-		    newtrace(genbuf);                                                                                      
-            }                                                                                     else {
-		    struct fileheader digest;
-		    char digestdir[STRLEN], digestfile[STRLEN], oldfile[STRLEN];                     directfile(digestdir, direct, TOPFILE_DIR);
-                    /*
-          	    if  (strcmp(currboard, "Picture")==0)
-		      {  if (get_num_records(digestdir, sizeof (digest)) > 8) 
-			{
-                        move(3, 0);
-                        clrtobot();
-                        move(4, 10);
-                        prints ("抱歉，置底数量超过5篇，无法再加入...\n");
-                        pressanykey();
-                        return PARTUPDATE;
-			}}
-			
-			else if  (strcmp(currboard,"welcome")==0)
-			{ if (get_num_records(digestdir,sizeof(digest)) > 8 )
-			{
-			move(3,0);
-			clrtobot();
-			move(4,10);
-			prints("抱歉，置底数量超过5篇，无法再加入...\n");
-			pressanykey();
-			return PARTUPDATE;
-			}}
-			
-			else if  (strcmp(currboard,"ANTIVirus")==0)
-			{ if (get_num_records(digestdir,sizeof(digest)) > 8 )
-			{
-			move(3,0);
-			clrtobot();
-			move(4,10);
-			prints("抱歉，置底数量超过5篇，无法再加入...\n");
-			pressanykey();
-			return PARTUPDATE;
-			}}
+topfile_post(int ent, struct fileheader *fhdr, char *direct) //slowaction
+{
+	if (!IScurrBM) return DONOTHING;
 
-			else if  (strcmp(currboard, "H_talk")==0)
-                      {  if (get_num_records(digestdir, sizeof (digest)) > 10)
-			    {
-			    move(3, 0);
-  			    clrtobot();
-			    move(4, 10);
-			    prints ("抱歉，置底数量超过6篇，无法再加入...\n");
-			    pressanykey();
-			    return PARTUPDATE;
-			    }}
-			else {  
-                        */
+	if (fhdr->accessed & FILE_TOP1) {
+		fhdr->accessed &= ~FILE_TOP1;
+		//dele_digest(fhdr->filetime, direct);
+		dele_digest_top(fhdr->filetime, direct); //add by hace
+		snprintf(genbuf, 256, "%s 去掉置顶 %s %s %s",currentuser.userid, currboard, fhdr->owner,fhdr->title);
+		newtrace(genbuf);
+	} else {
+		struct fileheader digest;
+		char digestdir[STRLEN], digestfile[STRLEN], oldfile[STRLEN];
+		directfile(digestdir, direct, TOPFILE_DIR);
+/*
+		if (strcmp(currboard, "Picture")==0) {
 			if (get_num_records(digestdir, sizeof (digest)) > 8) {
-			move(3, 0);
-			clrtobot();
-			move(4, 10);
-			prints ("抱歉，置底数量超过5篇，无法再加入...\n");
-			pressanykey();
-			return PARTUPDATE; 
-			    }
+				move(3, 0);
+				clrtobot();
+				move(4, 10);
+				prints ("抱歉，置底数量超过5篇，无法再加入...\n");
+				pressanykey();
+				return PARTUPDATE;
+			}
+		} else if  (strcmp(currboard,"welcome")==0) {
+			if (get_num_records(digestdir,sizeof(digest)) > 8 ) {
+				move(3,0);
+				clrtobot();
+				move(4,10);
+				prints("抱歉，置底数量超过5篇，无法再加入...\n");
+				pressanykey();
+				return PARTUPDATE;
+			}
+		} else if  (strcmp(currboard,"ANTIVirus")==0) {
+			if (get_num_records(digestdir,sizeof(digest)) > 8 ) {
+				move(3,0);
+				clrtobot();
+				move(4,10);
+				prints("抱歉，置底数量超过5篇，无法再加入...\n");
+				pressanykey();
+				return PARTUPDATE;
+			}
+		} else if  (strcmp(currboard, "H_talk")==0) {
+			if (get_num_records(digestdir, sizeof (digest)) > 10){
+				move(3, 0);
+				clrtobot();
+				move(4, 10);
+				prints ("抱歉，置底数量超过6篇，无法再加入...\n");
+				pressanykey();
+				return PARTUPDATE;
+			}
+		} else {
+*/
+			if (get_num_records(digestdir, sizeof (digest)) > 8) {
+				move(3, 0);
+				clrtobot();
+				move(4, 10);
+				prints ("抱歉，置底数量超过5篇，无法再加入...\n");
+				pressanykey();
+				return PARTUPDATE;
+			}
                         /*
-     			}
+     	}
                         */
-		    digest = *fhdr;
-		    digest.accessed |= FILE_ISTOP1;
-		    directfile(digestfile, direct, fh2fname(&digest));
-		    directfile(oldfile, direct, fh2fname(fhdr));
-		    if (!dashf(digestfile)) {
+		digest = *fhdr;
+		digest.accessed |= FILE_ISTOP1;
+		directfile(digestfile, direct, fh2fname(&digest));
+		directfile(oldfile, direct, fh2fname(fhdr));
+
+		if (!dashf(digestfile)) {
 			digest.accessed |= FILE_ISTOP1;
 			link(oldfile, digestfile);
 			append_record(digestdir, &digest, sizeof (digest));
@@ -948,11 +942,11 @@ char *direct;
 			//add by hace
 			snprintf(genbuf, 256, "%s 置顶 %s %s %s",currentuser.userid, currboard, fhdr->owner,fhdr->title);
 			newtrace(genbuf);
-		    }
 		}
-	    change_dir(direct, fhdr, (void *) DIR_do_top, ent, 0, 0);
-	    //topfile_record(direct,fhdr->filename,ent); //add by hace 
-	    return PARTUPDATE;
+	}
+	change_dir(direct, fhdr, (void *) DIR_do_top, ent, 0, 0);
+	//topfile_record(direct,fhdr->filename,ent); //add by hace
+	return PARTUPDATE;
 }
 
 static int
