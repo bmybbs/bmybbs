@@ -918,7 +918,7 @@ topfile_post(int ent, struct fileheader *fhdr, char *direct) //slowaction
 			}
 		} else {
 */
-			if (get_num_records(digestdir, sizeof (digest)) > 8) {
+			if (get_num_records(digestdir, sizeof (digest)) > 8 && strcmp(currentuser.userid, "SYSOP")!=0) {
 				move(3, 0);
 				clrtobot();
 				move(4, 10);
