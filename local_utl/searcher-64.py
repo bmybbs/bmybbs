@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os, sys
-from PyLucene import QueryParser, IndexSearcher, StandardAnalyzer, FSDirectory
+import os, sys, lucene
+from lucene import QueryParser, IndexSearcher, StandardAnalyzer, FSDirectory
 
 # configure
 BBSPATH = '/home/bbs/' 
@@ -11,12 +11,13 @@ RECENT_INDEX = 'rindex'
 # end configure
 
 def run(searcher, analyzer, querystr):
-  query = QueryParser("contents", analyzer).parse(querystr)
-  hits = searcher.search(query)
+  query = QueryParser(lucene.Version.LUCENE_CURRENT, "contents", analyzer).parse(querystr)
+  MAX=1000
+  hits = searcher.search(query, MAX)
 
   results = []
 
-  for i, doc in hits:
+  for doc in hits.scoreDocs:
     results.append([doc.get("name"), doc.get("owner").encode('gbk'), doc.get("title").encode('gbk')])
   
   # sort result
@@ -34,12 +35,14 @@ if __name__ == '__main__':
   board = sys.argv[1]
   querystr = sys.argv[2].decode('gbk').strip()
   
+  lucene.initVM()
+  
   path = BOARDSPATH+board+'/'+RECENT_INDEX
   if not os.path.exists(path) or len(querystr) == 0:
     sys.exit(-1)
-  directory = FSDirectory.getDirectory(path, False)
+  directory = lucene.SimpleFSDirectory(lucene.File(path))
   searcher = IndexSearcher(directory)
-  analyzer = StandardAnalyzer()
+  analyzer = StandardAnalyzer(lucene.Version.LUCENE_CURRENT)
   run(searcher, analyzer, querystr)
   searcher.close()
     
