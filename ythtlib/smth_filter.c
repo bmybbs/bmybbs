@@ -2,16 +2,18 @@
 #include <sys/file.h>
 #include <sys/mman.h>
 #include <signal.h>
+#include "mgrep.h"
 
 int WORDBOUND, WHOLELINE, NOUPPER, INVERSE, FILENAMEONLY, SILENT, FNAME;
 int ONLYCOUNT, num_of_matched, total_line;
 char *CurrentFileName;
 
-extern int prepf(int fp, void **patternbuf, size_t * patt_image_len);
-extern int mgrep(int fp, void *patternbuf);
-extern int mgrep_str(char *data, int len, void *patternbuf);
-extern void releasepf(void *patternbuf);
-
+/*
+extern struct pattern_image;
+extern int prepf(int fp, struct pattern_image **patternbuf, size_t * patt_image_len);
+extern int mgrep_str(char *data, int len, struct pattern_image *patternbuf);
+extern void releasepf(struct pattern_image *patternbuf);
+*/
 int
 reload_badwords(char *wordlistf, char *imgf)
 {
