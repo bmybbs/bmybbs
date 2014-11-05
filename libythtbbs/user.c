@@ -42,6 +42,17 @@ setmailfile(char *buf, const char *userid, const char *filename)
 	return buf;
 }
 
+/**
+get the file path of sent mail box
+*/
+char *
+setsentmailfile(char *buf, const char *userid, const char *filename)
+{
+	sprintf(buf, MY_BBS_HOME "/mail/%c/%s/send_mail/%s", mytoupper(userid[0]), userid,
+		filename);
+	return buf;
+}
+
 int
 saveuservalue(char *userid, char *key, char *value)
 {
