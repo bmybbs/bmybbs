@@ -18,7 +18,7 @@ int
 reload_badwords(char *wordlistf, char *imgf)
 {
 	int fp;
-	void *pattern_buf;
+	struct pattern_image *pattern_buf;
 	size_t pattern_imagesize;
 	fp = open(wordlistf, O_RDONLY);
 	if (fp == -1)
