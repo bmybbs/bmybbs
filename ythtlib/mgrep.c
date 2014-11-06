@@ -34,6 +34,7 @@ releasepf(struct pattern_image *patt_img)
 	   }
 	 */
 	free((void *) patt_img);
+	return 0;
 }
 
 int
