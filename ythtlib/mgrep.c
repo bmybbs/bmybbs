@@ -426,7 +426,10 @@ struct pattern_image *patt_img;
 	hash = hash & mm;
 	qt = &patt_img->hashtable[pat_index - 1];
 	qt->index = pat_index;
-	pt = &patt_img->hashtable[patt_img->HASH[hash] - 1];
-	qt->next = pt->index;
+	if(patt_img->HASH[hash] != 0) {
+		pt = &patt_img->hashtable[patt_img->HASH[hash]];
+		qt->next = pt->index;
+	} else
+		qt->next = 0;
 	patt_img->HASH[hash] = pat_index;
 }
