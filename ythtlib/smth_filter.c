@@ -69,7 +69,7 @@ filter_file(char *checkfile, struct mmapfile *badword_img)
 	if (mmapfile(checkfile, &mf) == -1) {
 		return 0;
 	}
-	retv = mgrep_str(mf.ptr, mf.size, badword_img->ptr);
+	retv = mgrep_str(mf.ptr, mf.size, (struct pattern_image*)badword_img->ptr);
 	mmapfile(NULL, &mf);
 	return retv;
 }
@@ -80,7 +80,7 @@ filter_string(char *string, struct mmapfile *badword_img)
 	int retv;
 	default_setting();
 	CurrentFileName = "";
-	retv = mgrep_str(string, strlen(string), badword_img->ptr);
+	retv = mgrep_str(string, strlen(string), (struct pattern_image*)badword_img->ptr);
 	return retv;
 }
 
