@@ -17,7 +17,8 @@ def run(searcher, analyzer, querystr):
 
   results = []
 
-  for doc in hits.scoreDocs:
+  for sd in hits.scoreDocs:
+    doc = searcher.doc(sd.doc)
     results.append([doc.get("name"), doc.get("owner").encode('gbk'), doc.get("title").encode('gbk')])
   
   # sort result
