@@ -80,7 +80,7 @@ def filter_file(f):
 
 def index_files(board, time_delta):
   store = lucene.SimpleFSDirectory(lucene.File(BOARDSPATH+board+'/'+RECENT_INDEX))
-  writer = lucene.IndexWriter(store, lucene.StandardAnalyzer(lucene.Version.LUCENE_CURRENT), True, lucene.IndexWriter.MaxFieldLength.LIMITED)
+  writer = lucene.IndexWriter(store, lucene.StandardAnalyzer(lucene.Version.LUCENE_CURRENT), True, lucene.IndexWriter.MaxFieldLength.UNLIMITED)
 #  writer.setMaxFieldLength(1048576) # 1MB
   
   flist = get_all_files(board, time_delta)
@@ -106,13 +106,13 @@ def index_files(board, time_delta):
       doc = lucene.Document()
       doc.add(lucene.Field("name", filename,
 			   lucene.Field.Store.YES,
-			   lucene.Field.Index.UN_TOKENIZED))
+			   lucene.Field.Index.NOT_ANALYZED))
       doc.add(lucene.Field("owner", owner,
 			   lucene.Field.Store.YES,
 			   lucene.Field.Index.NOT_ANALYZED))
       doc.add(lucene.Field("title", title,
 			   lucene.Field.Store.YES,
-			   lucene.Field.Index.UN_TOKENIZED))
+			   lucene.Field.Index.NOT_ANALYZED))
       doc.add(lucene.Field("contents", contents,
 			       lucene.Field.Store.YES,
 			       lucene.Field.Index.ANALYZED))
