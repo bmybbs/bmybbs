@@ -28,3 +28,4 @@ TERM=ansi
 0 3 * * * /home/bbs/bin/auto_rm_junk &>/dev/null; /home/bbs/bin/find_rm_lost &>/dev/null
 0 3 * * 1 (/home/bbs/bin/annIndex)
 0 3 * * 3 (/home/bbs/bin/anall)
+0 1 * * * /home/bbs/bin/indexer.py ALL 1 > /dev/null 2>&1 &
