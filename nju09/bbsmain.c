@@ -123,6 +123,7 @@ struct cgi_applet applets[] = {
 	{bbsnotify_main, {"bbsnotify", NULL}},
 	{bbsdelnotify_main, {"bbsdelnotify", NULL}},
 //	{bbschangestyle_main, {"bbschangestyle", "changestyle", NULL}},
+    {bbssentmailbox_main, {"bbssentmailbox", "sentmailbox", NULL}},
 	{NULL}
 };
 

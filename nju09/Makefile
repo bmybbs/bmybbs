@@ -33,7 +33,7 @@ CFILE	= bbsmain.c bbstop10.c bbsdoc.c bbscon.c bbsbrdadd.c bbsboa.c bbsall.c bbs
 	bbsscanreg.c bbsshowfile.c bbst.c bbsdt.c bbslt.c bbsincon.c bbssetscript.c \
 	bbscccmail.c bbsfwdmail.c bbstmpl.c bbsrss.c bbsucss.c bbsdefcss.c bbssecfly.c \
 	bbssbs.c bbseditmail.c  bbsfindpass.c bbsresetpass.c bbsfindacc.c bbsnotify.c \
-	bbsdelnotify.c bbsbadd.c bbsbdel.c bbsball.c
+	bbsdelnotify.c bbsbadd.c bbsbdel.c bbsball.c bbssentmailbox.c
 CFILEBACKUP = bbsdmulan.c bbsdt.c bbsjs.c bbslt.c bbsmovie.c bbsnewleft.c bbssel.c bbst.c bbstty.c bbschat.c \
 	      ytml.c ytml_func.c bclass.c bbsusr.c bbsalluser.c
 

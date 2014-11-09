@@ -7,10 +7,24 @@ bbsmail_main()
 	int i, start, total;
 	char buf[512], dir[80];
 	struct fileheader x;
+    /* type of mail box
+     * 0 : in box
+     * 1 : out box
+     */
+    int box_type = 0; 
 	if (!loginok || isguest)
 		http_fatal("ÄúÉĞÎ´µÇÂ¼, ÇëÏÈµÇÂ¼");
-	sprintf(dir, "mail/%c/%s/.DIR", mytoupper(currentuser.userid[0]),
-		currentuser.userid);
+    strsncpy(buf, getparm("type"), 10);
+    if(buf[0] != 0) {
+        box_type = atoi(buf);
+    }
+    if(box_type == 1) {
+	    sprintf(dir, "mail/%c/%s/send_mail/.DIR", mytoupper(currentuser.userid[0]),
+		    currentuser.userid);
+    } else {
+    	sprintf(dir, "mail/%c/%s/.DIR", mytoupper(currentuser.userid[0]),
+    		currentuser.userid);
+    }
 	if(cache_header(file_time(dir),10))
 		return 0;
 	html_header(1);
