@@ -31,7 +31,7 @@ def get_all_boards():
   return blist
 
 def get_all_files(board, time_delta):
-  recordformat = 'llll60s14s38s'
+  recordformat = 'lllI60s14sI3Bc32s'
   recordlen = struct.calcsize(recordformat) # the fileheader's length is 144
   
   path = BOARDSPATH+board+'/.DIR'
