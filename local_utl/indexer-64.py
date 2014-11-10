@@ -114,8 +114,8 @@ def index_files(board, time_delta):
 			   lucene.Field.Store.YES,
 			   lucene.Field.Index.NOT_ANALYZED))
       doc.add(lucene.Field("contents", contents,
-			       lucene.Field.Store.YES,
-			       lucene.Field.Index.ANALYZED))
+		       lucene.Field.Store.NO,
+		       lucene.Field.Index.ANALYZED))
       writer.addDocument(doc)
       debug('adding '+filename)
   writer.optimize()
