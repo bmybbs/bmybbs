@@ -132,7 +132,7 @@ mgrep_str(char *text, int num, struct pattern_image *patt_img)
 	if (patt_img->SHORT)
 		m_short((unsigned char *) text, 0, num - 1, patt_img);
 	else
-		monkey1(text, 0, num - 1, patt_img);
+		monkey1((unsigned char *) text, 0, num - 1, patt_img);
 	return num_of_matched;
 }				/* end mgrep */
 
@@ -225,8 +225,8 @@ struct pattern_image *patt_img;
 				    (hash << 4) + (patt_img->tr1[*(text - i)]);
 			}
 			hash = hash & mm;
-			p = &patt_img->hashtable[patt_img->HASH[hash] - 1];
-			while (p != 0) {
+			p = &patt_img->hashtable[patt_img->HASH[hash]];
+			while (p != 0 && p->index != 0) {
 				pat_index = p->index;
 				if (p->next == 0)
 					p = NULL;
@@ -424,7 +424,7 @@ struct pattern_image *patt_img;
 	if(INVERSE) hash = Pattern[1];
 */
 	hash = hash & mm;
-	qt = &patt_img->hashtable[pat_index - 1];
+	qt = &patt_img->hashtable[pat_index];
 	qt->index = pat_index;
 	if(patt_img->HASH[hash] != 0) {
 		pt = &patt_img->hashtable[patt_img->HASH[hash]];
