@@ -234,11 +234,8 @@ struct pattern_image *patt_img;
 					p = &patt_img->hashtable[p->next - 1];
 				qx = text - m1;
 				j = 0;
-				while (patt_img->
-				       tr[*
-					  (patt_img->pat_spool +
-					   patt_img->patt[pat_index] + j)] ==
-				       patt_img->tr[*(qx++)])
+				while (patt_img->tr[*(patt_img->pat_spool + patt_img->patt[pat_index] + j)]
+								== patt_img->tr[*(qx++)])
 					j++;
 				if (j > m1) {
 					if (patt_img->pat_len[pat_index] <= j) {
@@ -254,42 +251,24 @@ struct pattern_image *patt_img;
 						} else {
 							if (!INVERSE) {
 								if (FNAME)
-									printf
-									    ("%s: ",
-									     CurrentFileName);
-								while (*(--text)
-								       !=
-								       '\n') ;
-								while (*(++text)
-								       != '\n')
-									putchar
-									    (*text);
+									printf("%s: ", CurrentFileName);
+								while (*(--text) != '\n') ;
+								while (*(++text) != '\n') putchar (*text);
 								printf("\n");
 							} else {
 								if (FNAME)
-									printf
-									    ("%s: ",
-									     CurrentFileName);
-								while (*(--text)
-								       !=
-								       '\n') ;
-								if (lastout <
-								    text)
+									printf("%s: ", CurrentFileName);
+								while (*(--text) != '\n') ;
+								if (lastout < text)
 									OUT = 1;
-								while (lastout <
-								       text)
-									putchar
-									    (*lastout++);
+								while (lastout < text)
+									putchar(*lastout++);
 								if (OUT) {
-									putchar
-									    ('\n');
+									putchar('\n');
 									OUT = 0;
 								}
-								while (*(++text)
-								       !=
-								       '\n') ;
-								lastout =
-								    text + 1;
+								while (*(++text) != '\n') ;
+								lastout = text + 1;
 							}
 						}
 /*
@@ -344,11 +323,8 @@ m_short(unsigned char *text, int start, int end, struct pattern_image *patt_img)
 				p = &patt_img->hashtable[p->next - 1];
 			qx = text;
 			j = 0;
-			while (patt_img->
-			       tr[*
-				  (patt_img->pat_spool +
-				   patt_img->patt[pat_index] + j)] ==
-			       patt_img->tr[*(qx++)])
+			while (patt_img->tr[*(patt_img->pat_spool + patt_img->patt[pat_index] + j)]
+						== patt_img->tr[*(qx++)])
 				j++;
 			if (patt_img->pat_len[pat_index] <= j) {
 				if (text >= textend)
