@@ -33,10 +33,10 @@ main(int argc, char **argv)
 	char *name;
 	char buf1[256], buf2[256];
 	struct dirent *ent;
-	int i;
-	FILE *art;
+	int i, lastcount;
+	FILE *art, dirFile;
 	int file, file1, flag;
-	struct fileheader fh;
+	struct fileheader fh, x;
 
 	if (argc > 1)
 		name = argv[1];
@@ -106,6 +106,25 @@ main(int argc, char **argv)
 		}
 	}
 	qsort(data, len, sizeof (struct fileheader), cmpfile);
+
+	dirFile = fopen(".DIR", "r");
+	if(dirFile != NULL) {
+		// 读取原有的 .DIR 标记
+		lastcount = 0;
+		while(fread(&x, sizeof(x), 1, fp) > 0) {
+			for(i=lastcount; i<len; ++i) {
+				if(data[i].filetime == x.filetime) {
+					// 拷贝
+					data[i].accessed = x.accessed;
+					data[i].thread = x.thread;
+					lastcount = i;
+
+					break;
+				}
+			}
+		}
+		fclose(fp);
+	}
 
 	printf("end.len=%d %d", len, len * sizeof (struct fileheader));
 	if (write(file, data, len * sizeof (struct fileheader)) == 0)
