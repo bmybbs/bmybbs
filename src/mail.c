@@ -2362,11 +2362,11 @@ struct userec *uentp;
 	if (!strcmp(uentp->userid, "SYSOP"))
 		return 1;
 	if ((uentp->userlevel == PERM_BASIC && mailmode == 1) ||
-	    (uentp->userlevel & PERM_POST && mailmode == 2) ||
-	    (uentp->userlevel & PERM_BOARDS && mailmode == 3) ||
-	    (uentp->userlevel & PERM_ARBITRATE && mailmode == 4) ||
-	    (uentp->userdefine & DEF_SEEWELC1 && mailmode == 5) ||
-	    (uentp->userlevel & PERM_SYSOP && mailmode == 6)) {
+	    ((uentp->userlevel & PERM_POST) && mailmode == 2) ||
+	    ((uentp->userlevel & PERM_BOARDS) && mailmode == 3) ||
+	    ((uentp->userlevel & PERM_ARBITRATE) && mailmode == 4) ||
+	    ((uentp->userdefine & DEF_SEEWELC1) && mailmode == 5) ||
+	    ((uentp->userlevel & PERM_SYSOP) && mailmode == 6)) {
 		mail_file(filename, uentp->userid, save_title);
 	}
 	return 1;
