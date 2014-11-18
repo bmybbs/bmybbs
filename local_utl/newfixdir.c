@@ -121,6 +121,10 @@ main(int argc, char **argv)
 
 					break;
 				}
+
+				if(data[i].filetime > x.filetime) {
+					break;
+				}
 			}
 		}
 		fclose(fp);
