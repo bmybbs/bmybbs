@@ -285,7 +285,8 @@ int (*filecheck) (void *);
 			}
 		}
 		if (ret == 0) {
-			char *tmp_dup = strdup(ptr);
+			char *tmp_dup = malloc(st.st_size);
+			memcpy(tmp_dup, ptr, st.st_size);
 			memcpy(ptr + (pos - 1) * size, tmp_dup + pos * size,
 			       st.st_size - size * pos);
 			free(tmp_dup);
