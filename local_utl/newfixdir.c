@@ -34,9 +34,10 @@ main(int argc, char **argv)
 	char buf1[256], buf2[256];
 	struct dirent *ent;
 	int i, lastcount;
-	FILE *art, dirFile;
+	FILE *art;
 	int file, file1, flag;
-	struct fileheader fh, x;
+	struct fileheader fh, *x;
+	struct mmapfile mf = { ptr:NULL };
 
 	if (argc > 1)
 		name = argv[1];
@@ -107,28 +108,23 @@ main(int argc, char **argv)
 	}
 	qsort(data, len, sizeof (struct fileheader), cmpfile);
 
-	dirFile = fopen(".DIR", "r");
-	if(dirFile != NULL) {
-		// 读取原有的 .DIR 标记
-		lastcount = 0;
-		while(fread(&x, sizeof(x), 1, fp) > 0) {
-			for(i=lastcount; i<len; ++i) {
-				if(data[i].filetime == x.filetime) {
-					// 拷贝
-					data[i].accessed = x.accessed;
-					data[i].thread = x.thread;
-					lastcount = i;
-
-					break;
-				}
-
-				if(data[i].filetime > x.filetime) {
-					break;
-				}
+	MMAP_TRY {
+		if(mmapfile(".DIR", &mf) < 0) {
+			MMAP_UNTRY;
+		}
+		int total = mf.size / sizeof(struct fileheader);
+		for(i=0; i<len; ++i) {
+			int num = Search_Bin(mf.ptr, data[i].filetime, 0, total-1);
+			if(num >= 0) {
+				x = mf.ptr + num * sizeof(struct fileheader);
+				data[i].accessed = x->accessed;
+				data[i].thread = x->thread;
 			}
 		}
-		fclose(fp);
+	} MMAP_CATCH {
+
 	}
+	MMAP_END mmapfile(NULL, &mf);
 
 	printf("end.len=%d %d", len, len * sizeof (struct fileheader));
 	if (write(file, data, len * sizeof (struct fileheader)) == 0)
