@@ -13,7 +13,7 @@ bbsmail_main()
 	struct fileheader x;
     /**
      * type of mail box
-     * 0 : in box
+     * 0 : in box [defualt]
      * 1 : out box
      */
     int box_type = 0; 
@@ -58,11 +58,20 @@ bbsmail_main()
 		"<table width=100%% height=100%% border=0 cellpadding=0 cellspacing=0 class=level2>\n"
 		"<tr>\n<td width=40 rowspan=2>&nbsp; </td>\n"
 		);
-	printf("<td height=35>%s &gt;  <span id=topmenu_b>信件列表</span> [使用者: <span class=themetext>%s</span>] &#187; <b>信箱容量:</b> <span class=smalltext>%dk</span> &#187; <b>已用空间</b><spanclass=smalltext>%dk</span></td></tr>\n", BBSNAME,currentuser.userid,max_mail_size(),get_mail_size());
+    char name_of_box[20];
+    if(box_type == 1) {
+        snprintf(name_of_box, 20, "已发信件");
+    } else {
+        snprintf(name_of_box, 20, "信件列表");
+    }
+
+	printf("<td height=35>%s &gt;  <span id=topmenu_b>%s</span> [使用者: <span class=themetext>%s</span>] &#187; <b>信箱容量:</b> <span class=smalltext>%dk</span> &#187; <b>已用空间</b><spanclass=smalltext>%dk</span></td></tr>\n", BBSNAME, name_of_box, currentuser.userid,max_mail_size(),get_mail_size());
 	printf("%s", "<tr>\n"
 		"<td height=35 valign=top><a href='javascript:SelectAll()' class=\"btnsubmittheme\">全部选中</a>\n"
-		"<a onclick='return confirm(\"你真的要删除这些信件吗?\")' href='javascript:document.maillist.submit()' class=\"btnsubmittheme\">删除选中的邮件</a>\n"
-		"<a href='bbspstmail' class=\"btnsubmittheme\" title=\"发送信件 accesskey: m\" accesskey=\"m\">发送信件</a>\n");
+		"<a onclick='return confirm(\"你真的要删除这些信件吗?\")' href='javascript:document.maillist.submit()' class=\"btnsubmittheme\">删除选中的邮件</a>\n");
+    if(box_type == 0) {
+		printf("<a href='bbspstmail' class=\"btnsubmittheme\" title=\"发送信件 accesskey: m\" accesskey=\"m\">发送信件</a>\n");
+    }
 	total = file_size(dir) / sizeof (struct fileheader);
 	if (total < 0 || total > 30000)
 		http_fatal("too many mails");

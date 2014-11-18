@@ -9,6 +9,19 @@ bbsmailcon_main()
 	int num, total = 0;
 	if ((!loginok || isguest) && (!tempuser))
 		http_fatal("请先登录%d", tempuser);
+
+    /**
+     * type of mail box
+     * 0 : in box [defualt]
+     * 1 : out box
+     */
+    int box_type = 0;
+    char buf[10];
+    strsncpy(buf, getparm("type"), 10);
+    if(buf[0] != 0) {
+        box_type = atoi(buf);
+    }
+
 	//if (tempuser) http_fatal("user %d", tempuser);
 	changemode(RMAIL);
 	strsncpy(file, getparm("file"), 32);
@@ -18,13 +31,21 @@ bbsmailcon_main()
 		http_fatal("错误的参数1");
 	if (strstr(file, "..") || strstr(file, "/"))
 		http_fatal("错误的参数2");
-	sprintf(path, "mail/%c/%s/%s", mytoupper(id[0]), id, file);
+    if(box_type == 1) {
+        sprintf(path, "mail/%c/%s/send_mail/%s", mytoupper(id[0]), id, file);
+    }else {
+	    sprintf(path, "mail/%c/%s/%s", mytoupper(id[0]), id, file);
+    }
 	if (*getparm("attachname") == '/') {
 		showbinaryattach(path);
 		return 0;
 	}
 	if (!tempuser) {
-		sprintf(dir, "mail/%c/%s/.DIR", mytoupper(id[0]), id);
+        if(box_type == 1) {
+		    sprintf(dir, "mail/%c/%s/send_mail/.DIR", mytoupper(id[0]), id);
+        }else {
+		    sprintf(dir, "mail/%c/%s/.DIR", mytoupper(id[0]), id);
+        }
 		total = file_size(dir) / sizeof (x);
 		if (total <= 0)
 			http_fatal("错误的参数3 %s", dir);
@@ -99,7 +120,11 @@ bbsmailcon_main()
 		       fh2fname(&x));
 		fclose(fp);
 	}
-	sprintf(path, "mail/%c/%s/%s", mytoupper(id[0]), id, file);
+    if(box_type == 1) {
+	    sprintf(path, "mail/%c/%s/send_mail/%s", mytoupper(id[0]), id, file);
+    } else {
+	    sprintf(path, "mail/%c/%s/%s", mytoupper(id[0]), id, file);
+    }
 	showcon(path);
 
 	printf("</table></td></tr></table></body>\n");
