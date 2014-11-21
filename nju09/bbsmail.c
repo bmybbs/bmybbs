@@ -25,7 +25,7 @@ bbsmail_main()
     }
     snprintf(type_string, sizeof(type_string), "type=%d", box_type);
     if(box_type == 1) {
-	    snprintf(dir, sizeof(dir), "mail/%c/%s/send_mail/.DIR", mytoupper(currentuser.userid[0]),
+	    snprintf(dir, sizeof(dir), "sent_mail/%c/%s/.DIR", mytoupper(currentuser.userid[0]),
 		    currentuser.userid);
     } else {
     	snprintf(dir, sizeof(dir), "mail/%c/%s/.DIR", mytoupper(currentuser.userid[0]),

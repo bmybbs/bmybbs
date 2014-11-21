@@ -32,7 +32,7 @@ bbsmailcon_main()
 	if (strstr(file, "..") || strstr(file, "/"))
 		http_fatal("´íÎóµÄ²ÎÊý2");
     if(box_type == 1) {
-        sprintf(path, "mail/%c/%s/send_mail/%s", mytoupper(id[0]), id, file);
+        sprintf(path, "sent_mail/%c/%s/%s", mytoupper(id[0]), id, file);
     }else {
 	    sprintf(path, "mail/%c/%s/%s", mytoupper(id[0]), id, file);
     }
@@ -42,7 +42,7 @@ bbsmailcon_main()
 	}
 	if (!tempuser) {
         if(box_type == 1) {
-		    sprintf(dir, "mail/%c/%s/send_mail/.DIR", mytoupper(id[0]), id);
+		    sprintf(dir, "sent_mail/%c/%s/.DIR", mytoupper(id[0]), id);
         }else {
 		    sprintf(dir, "mail/%c/%s/.DIR", mytoupper(id[0]), id);
         }
@@ -121,7 +121,7 @@ bbsmailcon_main()
 		fclose(fp);
 	}
     if(box_type == 1) {
-	    sprintf(path, "mail/%c/%s/send_mail/%s", mytoupper(id[0]), id, file);
+	    sprintf(path, "sent_mail/%c/%s/%s", mytoupper(id[0]), id, file);
     } else {
 	    sprintf(path, "mail/%c/%s/%s", mytoupper(id[0]), id, file);
     }
