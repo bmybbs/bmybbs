@@ -125,6 +125,8 @@ extern int parm_num;
 
 char *getparm(char *var);
 int shm_init(void);
+int post_mail_to_sent_box(char *userid, char *title, char *file, char *id,
+        char *nickname, char *ip, int sig, int mark);
 int post_mail(char *userid, char *title, char *file, char *id, char *nickname,
 	      char *ip, int sig, int mark);
 int post_imail(char *userid, char *title, char *file, char *id, char *nickname,

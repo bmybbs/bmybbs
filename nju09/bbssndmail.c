@@ -12,7 +12,7 @@ bbssndmail_main()
 	if (!loginok || (isguest && strcmp(userid, "SYSOP")))
 		http_fatal("匆匆过客不能写信，请先登录");
 	if (HAS_PERM(PERM_DENYMAIL))
-		http_fatal("您被封禁发信权");  
+		http_fatal("您被封禁发信权");
 	sprintf(mymaildir, "mail/%c/%s/.DIR", mytoupper(currentuser.userid[0]),currentuser.userid);
 	if (check_maxmail(mymaildir))
 		http_fatal("您的个人信件过多，请整理");
@@ -58,10 +58,11 @@ bbssndmail_main()
 				  fromhost, sig - 1, mark);
 		}
 	}
-	if (backup)
-		post_mail(currentuser.userid, title2, filename,
+    if (backup) {
+        post_mail_to_sent_box(currentuser.userid, title2, filename,
 			  currentuser.userid, currentuser.username, fromhost,
 			  sig - 1, mark);
+    }
 	unlink(filename);
 	printf("信件已寄给%s.<br>\n", allfriend ? "所有好友" : userid);
 	if (backup)
