@@ -22,7 +22,20 @@ bbseditmail_main()
 	type = atoi(getparm("type"));
 	if (!file[0])
 		strsncpy(file, getparm("file"), 30);
-	setmailfile(path, currentuser.userid, ".DIR");
+
+    int box_type = 0;
+    strsncpy(buf, getparm("box_type"), 512);
+    if(buf[0] != 0) {
+        box_type = atoi(buf);
+    }
+    char type_string[20];
+    snprintf(type_string, sizeof(type_string), "box_type=%d", box_type);
+
+    if(box_type == 1) {
+	    setsentmailfile(path, currentuser.userid, ".DIR");
+    } else { 
+	    setmailfile(path, currentuser.userid, ".DIR");
+    }
 	MMAP_TRY {
 		if (mmapfile(path, &mf) == -1) {
 			MMAP_UNTRY;
@@ -40,7 +53,7 @@ bbseditmail_main()
 	if (x == 0)
 		http_fatal("错误的参数");
 	if (type != 0)
-		return update_form_mail( file, title);
+		return update_form_mail( file, title, box_type);
 	
 	printf("<body leftmargin=0 topmargin=0>\n");
 	printf("<table width=\"100%\" border=0 cellpadding=0 cellspacing=0>\n");
@@ -60,7 +73,8 @@ bbseditmail_main()
 		"<TBODY><TR><TD class=tdtitletheme>&nbsp;</TD>\n"
 		"</TR>\n");
 	printf("<TR><TD class=bordertheme>\n"
-		"<form name=form1 method=post action=bbseditmail>\n");
+		"<form name=form1 method=post action=bbseditmail?%s>\n"
+        , type_string);
 	printf("<table width=\"100%\"  border=0 cellspacing=0 cellpadding=0>\n"
 		"<tr>\n<td><table border=0 cellpadding=0 cellspacing=0>\n"
 		"<tr><td> 使用标题：</td>\n"
@@ -94,7 +108,11 @@ bbseditmail_main()
 	     x->accessed & FH_NOREPLY ? " checked" : "");
 	printuploadattach();
 */
-	setmailfile(path, currentuser.userid,  file);
+    if(box_type == 1) {
+	    setsentmailfile(path, currentuser.userid,  file);
+    } else {
+	    setmailfile(path, currentuser.userid,  file);
+    }
 	fp = fopen(path, "r");
 	if (fp == 0)
 		http_fatal("文件丢失");
@@ -151,7 +169,7 @@ bbseditmail_main()
 }
 
 int
-update_form_mail(char *file, char *title)
+update_form_mail(char *file, char *title, int box_type)
 {
 	FILE *fp;
 	FILE *foo;
@@ -163,6 +181,10 @@ update_form_mail(char *file, char *title)
 	struct fileheader x;
 	struct mmapfile mf = { ptr:NULL };
 	int i, dangerous = 0;
+
+    char type_string[20];
+    snprintf(type_string, sizeof(type_string), "box_type=%d", box_type);
+
 	filetime = atoi(file + 2);
 	usemath = strlen(getparm("usemath"));
 	nore = strlen(getparm("nore"));
@@ -181,7 +203,11 @@ update_form_mail(char *file, char *title)
 		http_fatal("标题不能为空");
 	sprintf(filename, "bbstmpfs/tmp/%d.tmp", thispid);
 	useattach = (insertattachments(filename, buf, currentuser.userid));
-	setmailfile(path, currentuser.userid, file);
+    if(box_type == 1) {
+	    setsentmailfile(path, currentuser.userid, file);
+    } else {
+	    setmailfile(path, currentuser.userid, file);
+    }
 	fp = fopen(path, "r+");
 	if (fp == 0)
 		http_fatal("无法存盘");
@@ -203,7 +229,11 @@ update_form_mail(char *file, char *title)
 	unlink(filename);
 	fclose(fp);
 	add_edit_mark(path, currentuser.userid, now_t, fromhost);
-	setmailfile(dir,currentuser.userid, ".DIR");
+	if(box_type == 1) {
+	    setsentmailfile(dir, currentuser.userid, ".DIR");
+    } else {
+	    setmailfile(dir, currentuser.userid, ".DIR");
+    }
 	fp = fopen(dir, "r");
 	if (fp == 0)
 		http_fatal("错误的参数");
@@ -234,7 +264,7 @@ update_form_mail(char *file, char *title)
 		num++;
 	}
 	fclose(fp);
-	printf("修改信件成功.<br><a href=bbsmail>返回信件列表</a>");
+	printf("修改信件成功.<br><a href=bbsmail?%s>返回信件列表</a>", type_string);
 	return 0;
 }
 

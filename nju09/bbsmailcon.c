@@ -17,10 +17,12 @@ bbsmailcon_main()
      */
     int box_type = 0;
     char buf[10];
-    strsncpy(buf, getparm("type"), 10);
+    strsncpy(buf, getparm("box_type"), 10);
     if(buf[0] != 0) {
         box_type = atoi(buf);
     }
+    char type_string[20];
+    snprintf(type_string, sizeof(type_string), "box_type=%d", box_type);
 
 	//if (tempuser) http_fatal("user %d", tempuser);
 	changemode(RMAIL);
@@ -87,19 +89,19 @@ bbsmailcon_main()
 #endif
 	if (!tempuser) {
 		printf("<tr><td height=35 valign=top>\n");
-		printf("<a onclick='return confirm(\"你真的要删除这封信吗?\")' href=bbsdelmail?file=%s class=btnsubmittheme title=\"删除 accesskey: d\" accesskey=\"d\">删除</a>", file);
+		printf("<a onclick='return confirm(\"你真的要删除这封信吗?\")' href=bbsdelmail?file=%s&%s class=btnsubmittheme title=\"删除 accesskey: d\" accesskey=\"d\">删除</a>", file, type_string);
 		if (num > 0) {
 			fseek(fp, sizeof (x) * (num - 1), SEEK_SET);
 			fread(&x, sizeof (x), 1, fp);
-			printf("<a href=bbsmailcon?file=%s&num=%d class=\"btnsubmittheme\" title=\"上一篇 accesskey: f\" accesskey=\"f\">上一篇</a>", fh2fname(&x), num - 1);
+			printf("<a href=bbsmailcon?file=%s&num=%d&%s class=\"btnsubmittheme\" title=\"上一篇 accesskey: f\" accesskey=\"f\">上一篇</a>", fh2fname(&x), num - 1, type_string);
 		}
-		printf("<a href=bbseditmail?file=%s class=btnsubmittheme title=\"编辑 accesskey: e\" accesskey=\"e\">编辑</a>", file);
-		printf("<a href=bbsmail class=\"btnsubmittheme\" title=\"返回信件列表 accesskey: b\" accesskey=\"b\">返回信件列表</a>");
+		printf("<a href=bbseditmail?file=%s&%s class=btnsubmittheme title=\"编辑 accesskey: e\" accesskey=\"e\">编辑</a>", file, type_string);
+		printf("<a href=bbsmail?%s class=\"btnsubmittheme\" title=\"返回信件列表 accesskey: b\" accesskey=\"b\">返回信件列表</a>", type_string);
 		if (num < total - 1) {
 			fseek(fp, sizeof (x) * (num + 1), SEEK_SET);
 			fread(&x, sizeof (x), 1, fp);
-			printf("<a href=bbsmailcon?file=%s&num=%d class=\"btnsubmittheme\" title=\"下一篇 accesskey: n\" accesskey=\"n\">下一篇</a>",
-			       fh2fname(&x), num + 1);
+			printf("<a href=bbsmailcon?file=%s&num=%d&%s class=\"btnsubmittheme\" title=\"下一篇 accesskey: n\" accesskey=\"n\">下一篇</a>",
+			       fh2fname(&x), num + 1, type_string);
 		}
 		if (num >= 0 && num < total) {
 			fseek(fp, sizeof (x) * num, SEEK_SET);
@@ -112,12 +114,15 @@ bbsmailcon_main()
 				    ("<script>top.f4.location.reload();</script>");
 			}
 		}
-		printf("<a href='bbspstmail?file=%s&num=%d' class=\"btnsubmittheme\" title=\"回信 accesskey: m\" accesskey=\"m\">回信</a>",
+        //send box only support 'foward'
+        if(box_type == 0) {
+		    printf("<a href='bbspstmail?file=%s&num=%d' class=\"btnsubmittheme\" title=\"回信 accesskey: m\" accesskey=\"m\">回信</a>",
 		       fh2fname(&x), num);
-		printf("<a href='bbscccmail?file=%s' class=\"btnsubmittheme\" title=\"转贴 accesskey: c\" accesskey=\"c\">转贴</a>",
+		    printf("<a href='bbscccmail?file=%s' class=\"btnsubmittheme\" title=\"转贴 accesskey: c\" accesskey=\"c\">转贴</a>",
 		       fh2fname(&x));
-		printf("<a href='bbsfwdmail?file=%s' class=\"btnsubmittheme\" title=\"转寄 accesskey: u\" accesskey=\"u\">转寄</a>",
-		       fh2fname(&x));
+        }
+		printf("<a href='bbsfwdmail?file=%s&%s' class=\"btnsubmittheme\" title=\"转寄 accesskey: u\" accesskey=\"u\">转寄</a>",
+		       fh2fname(&x), type_string);
 		fclose(fp);
 	}
     if(box_type == 1) {

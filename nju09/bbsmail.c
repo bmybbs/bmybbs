@@ -19,11 +19,11 @@ bbsmail_main()
     int box_type = 0; 
 	if (!loginok || isguest)
 		http_fatal("ÄúÉÐÎ´µÇÂ¼, ÇëÏÈµÇÂ¼");
-    strsncpy(buf, getparm("type"), 10);
+    strsncpy(buf, getparm("box_type"), 10);
     if(buf[0] != 0) {
         box_type = atoi(buf);
     }
-    snprintf(type_string, sizeof(type_string), "type=%d", box_type);
+    snprintf(type_string, sizeof(type_string), "box_type=%d", box_type);
     if(box_type == 1) {
 	    snprintf(dir, sizeof(dir), "sent_mail/%c/%s/.DIR", mytoupper(currentuser.userid[0]),
 		    currentuser.userid);
