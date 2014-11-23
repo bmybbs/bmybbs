@@ -56,11 +56,11 @@ bbsmail_main()
 		"<table width=100%% height=100%% border=0 cellpadding=0 cellspacing=0 class=level2>\n"
 		"<tr>\n<td width=40 rowspan=2>&nbsp; </td>\n"
 		);
-    char name_of_box[20];
+    const char *name_of_box;
     if(box_type == 1) {
-        snprintf(name_of_box, 20, "已发信件");
+        name_of_box = "已发信件";
     } else {
-        snprintf(name_of_box, 20, "信件列表");
+        name_of_box = "信件列表";
     }
 
 	printf("<td height=35>%s &gt;  <span id=topmenu_b>%s</span> [使用者: <span class=themetext>%s</span>] &#187; <b>信箱容量:</b> <span class=smalltext>%dk</span> &#187; <b>已用空间</b><spanclass=smalltext>%dk</span></td></tr>\n", BBSNAME, name_of_box, currentuser.userid,max_mail_size(),get_mail_size());
@@ -112,6 +112,7 @@ bbsmail_main()
 		);
 
 	printf("<table width=95%% cellpadding=2 cellspacing=0><form action=bbsdelmail?%s name=maillist>\n", type_string);
+    printf("<input type=\"hidden\" name=\"box_type\" value=\"%d\"></input>\n", box_type);
 	printf
 	    ("%s","<tbody><tr>\n"
 		"<td class=tdtitle>选择</td>\n"
@@ -160,7 +161,10 @@ bbsmail_main()
 	printf
 	    ("<form><input type=submit value=跳转到> 第 <input style='height:20px' type=text name=start size=3> 封</form></body>");
 #endif
-	printf("<form><input action=bbsmail?%s type=submit class=resetlong value=跳转到> 第 <input type=text name=start size=3> 封</form>\n", type_string);
+	printf("<form><input action=bbsmail?%s type=submit class=resetlong value=跳转到> 第 <input type=text name=start size=3> 封\n", type_string);
+    printf("<input type=\"hidden\" name=\"box_type\" value=\"%d\"></input>\n", box_type);
+    printf("</form>\n");
+
 	printf("</td></tr><table></td></tr></table></body>\n");
 	http_quit();
 	return 0;

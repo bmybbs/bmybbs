@@ -34,9 +34,9 @@ bbsmailcon_main()
 	if (strstr(file, "..") || strstr(file, "/"))
 		http_fatal("´íÎóµÄ²ÎÊý2");
     if(box_type == 1) {
-        sprintf(path, "sent_mail/%c/%s/%s", mytoupper(id[0]), id, file);
+        setsentmailfile(path, id, file);
     }else {
-	    sprintf(path, "mail/%c/%s/%s", mytoupper(id[0]), id, file);
+        setmailfile(path, id, file);
     }
 	if (*getparm("attachname") == '/') {
 		showbinaryattach(path);
@@ -44,9 +44,9 @@ bbsmailcon_main()
 	}
 	if (!tempuser) {
         if(box_type == 1) {
-		    sprintf(dir, "sent_mail/%c/%s/.DIR", mytoupper(id[0]), id);
+            setsentmailfile(dir, id, ".DIR");
         }else {
-		    sprintf(dir, "mail/%c/%s/.DIR", mytoupper(id[0]), id);
+            setmailfile(dir, id, ".DIR");
         }
 		total = file_size(dir) / sizeof (x);
 		if (total <= 0)
@@ -126,9 +126,9 @@ bbsmailcon_main()
 		fclose(fp);
 	}
     if(box_type == 1) {
-	    sprintf(path, "sent_mail/%c/%s/%s", mytoupper(id[0]), id, file);
+        setsentmailfile(path, id, file);
     } else {
-	    sprintf(path, "mail/%c/%s/%s", mytoupper(id[0]), id, file);
+        setmailfile(path, id, file);
     }
 	showcon(path);
 

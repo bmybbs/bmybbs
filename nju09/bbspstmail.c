@@ -138,7 +138,7 @@ bbspstmail_main()
 	printf("		<td>发信人:</td>\n");
 	printf("		<td colspan=\"1\">%s</td>\n", currentuser.userid);
     //add 2014-11-23 save to sent-mail-box
-    printf("        <td><span>保存到发件箱</span><input type=\"checkbox\" name=\"backup\"></td>");
+    printf("        <td><span>保存到发件箱</span><input type=\"checkbox\" name=\"backup\" checked></td>");
 	printf("	</tr>\n");
 	
 	/* 收信人的一行 */
