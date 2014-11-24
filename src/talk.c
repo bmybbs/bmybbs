@@ -271,7 +271,7 @@ char q_id[IDLEN + 2];
 
 	exp = countexp(&lookupuser);
 	perf = countperf(&lookupuser);
-	strcpy(expbuf,cexp(exp));	//add for displaying exp type.  rbb@bmy
+	strcpy(expbuf,charexp(exp));	//add for displaying exp type.  rbb@bmy
 	prints
 	    ("[1m%s [m([1m%s[m) ¹²ÉÏÕ¾ [1;33m%d[m ´Î£¬·¢±í¹ý [1;33m%d[m ÆªÎÄÕÂ",
 	     lookupuser.userid, lookupuser.username, lookupuser.numlogins,

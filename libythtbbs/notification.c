@@ -13,22 +13,23 @@
 
 static struct NotifyItem * parse_to_item(xmlNodePtr xmlItem);
 static void addItemtoList(NotifyItemList *List, struct NotifyItem *Item);
+static int add_notification(char * to_userid, char * from_userid, char * board, time_t article_id, char * title_gbk, int noti_type);
 
-int add_post_notification(const char * to_userid, const char * from_userid, const char * board,
-						  int article_id, const char * title_gbk) {
-	char noti_type[8];
-	sprintf(noti_type, "%d", NOTIFY_TYPE_POST);
+static int add_notification(char * to_userid, char * from_userid, char * board,
+						  time_t article_id, char * title_gbk, int noti_type) {
+	char noti_type_str[8];
+	sprintf(noti_type_str, "%d", noti_type);
 
 	char * title_utf8 = (char *)malloc(2*strlen(title_gbk));
 	if(title_utf8 == NULL)
 		return -1;
-	memset(title_utf8, 0, sizeof(title_utf8));
+
 	g2u(title_gbk, strlen(title_gbk), title_utf8, 2*strlen(title_gbk));
 
 	int ulock = userlock(to_userid, LOCK_EX);
 	char notify_file_path[80], article_id_str[16];
 	sethomefile(notify_file_path, to_userid, NOTIFILE);
-	sprintf(article_id_str, "%d", article_id);
+	sprintf(article_id_str, "%lu", article_id);
 
 	xmlDocPtr doc;
 	xmlNodePtr root;
@@ -52,7 +53,7 @@ int add_post_notification(const char * to_userid, const char * from_userid, cons
 	root = xmlDocGetRootElement(doc);
 
 	xmlNodePtr notify_item = xmlNewChild(root, NULL, (const xmlChar*)"Item", NULL);
-	xmlNewProp(notify_item, (const xmlChar*)"type", (const xmlChar*)noti_type);
+	xmlNewProp(notify_item, (const xmlChar*)"type", (const xmlChar*)noti_type_str);
 	xmlNewProp(notify_item, (const xmlChar*)"board", (const xmlChar*)board);
 	xmlNewProp(notify_item, (const xmlChar*)"aid", (const xmlChar*)article_id_str);
 	xmlNewProp(notify_item, (const xmlChar*)"uid", (const xmlChar*)from_userid);
@@ -67,7 +68,17 @@ int add_post_notification(const char * to_userid, const char * from_userid, cons
 	return 0;
 }
 
-int count_notification_num(const char *userid) {
+int add_post_notification(char * to_userid, char * from_userid, char * board,
+						  time_t article_id, char * title_gbk) {
+	return add_notification(to_userid, from_userid, board, article_id, title_gbk, NOTIFY_TYPE_POST);
+}
+
+int add_mention_notification(char * to_userid, char * from_userid, char * board,
+						  time_t article_id, char * title_gbk) {
+	return add_notification(to_userid, from_userid, board, article_id, title_gbk, NOTIFY_TYPE_MENTION);
+}
+
+int count_notification_num(char *userid) {
 	char notify_file_path[80];
 	sethomefile(notify_file_path, userid, NOTIFILE);
 	const xmlChar *xpathExpr = (xmlChar *)"/Notify/Item";
@@ -94,7 +105,7 @@ int count_notification_num(const char *userid) {
 	return res_num;
 }
 
-int is_post_in_notification(const char * userid, const char *board, int article_id) {
+int is_post_in_notification(char * userid, char *board, time_t article_id) {
 	char notify_file_path[80], search_str[80], *p;
 	struct stat statbuf;
 	int fd;
@@ -123,14 +134,20 @@ int is_post_in_notification(const char * userid, const char *board, int article_
 		return 0;
 	}
 
-	sprintf(search_str, "<Item type=\"0\" board=\"%s\" aid=\"%d\" ", board, article_id);
+	sprintf(search_str, "<Item type=\"0\" board=\"%s\" aid=\"%lu\" ", board, article_id);
 	char *r = strstr(p, search_str);
+
+	// ÅÐ¶ÏÊÇ·ñÓÐ @ ÌáÐÑ
+	if(r==NULL) {
+		sprintf(search_str, "<Item type=\"1\" board=\"%s\" aid=\"%lu\" ", board, article_id);
+		r = strstr(p, search_str);
+	}
 	munmap(p, statbuf.st_size);
 
 	return (r!=NULL);
 }
 
-NotifyItemList parse_notification(const char *userid) {
+NotifyItemList parse_notification(char *userid) {
 
 	NotifyItemList niList = NULL;
 	const xmlChar * xpathExpr = (xmlChar *)"/Notify/Item";
@@ -181,9 +198,9 @@ void free_notification(NotifyItemList niList) {
 	}
 }
 
-int del_post_notification(const char * userid, const char * board, int article_id) {
+int del_post_notification(char * userid, char * board, time_t article_id) {
 	char notify_file_path[80], search_str[96];
-	sprintf(search_str, "/Notify/Item[@board=\"%s\" and @aid=\"%d\"]", board, article_id);
+	sprintf(search_str, "/Notify/Item[@board=\"%s\" and @aid=\"%lu\"]", board, article_id);
 	sethomefile(notify_file_path, userid, NOTIFILE);
 
 	int ulock = userlock(userid, LOCK_EX); // todo
@@ -223,7 +240,7 @@ int del_post_notification(const char * userid, const char * board, int article_i
 	return 0;
 }
 
-int del_all_notification(const char *userid) {
+int del_all_notification(char *userid) {
 	char notify_file_path[80];
 	sethomefile(notify_file_path, userid, NOTIFILE);
 
@@ -249,18 +266,16 @@ static struct NotifyItem * parse_to_item(xmlNodePtr xmlItem) {
 	item->type = atoi((char *)xml_str_type);
 	xmlFree(xml_str_type);
 
-	if(item->type == NOTIFY_TYPE_POST) {
-		xmlChar *xml_str_board = xmlGetProp(xmlItem, (const xmlChar *)"board");
-		memcpy(item->board, (char *)xml_str_board, strlen((char *)xml_str_board));
-		xmlFree(xml_str_board);
-	}
+	xmlChar *xml_str_board = xmlGetProp(xmlItem, (const xmlChar *)"board");
+	memcpy(item->board, (char *)xml_str_board, strlen((char *)xml_str_board));
+	xmlFree(xml_str_board);
 
 	xmlChar *xml_str_userid = xmlGetProp(xmlItem, (const xmlChar *)"uid");
 	memcpy(item->from_userid, (char *)xml_str_userid, 16);
 	xmlFree(xml_str_userid);
 
 	xmlChar *xml_str_timestamp = xmlGetProp(xmlItem, (const xmlChar *)"aid");
-	item->noti_time = (time_t) atoi((char *)xml_str_timestamp);
+	item->noti_time = (time_t) atol((char *)xml_str_timestamp);
 	xmlFree(xml_str_timestamp);
 
 	xmlChar * xml_str_title_utf8 = xmlGetProp(xmlItem, (const xmlChar *)"title");

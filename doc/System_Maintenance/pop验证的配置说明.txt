@@ -1,0 +1,55 @@
+发信人: interma (为何要她和不喜欢的人过一辈子？), 信区: Program_Team
+标  题: pop验证的配置说明
+发信站: 兵马俑BBS (Wed Jun 22 08:21:55 2005), 本站(202.117.1.8)
+
+为了实现此功能，改动过的代码如下：
+Src目录：（term下的新注册界面）
+userinfo.c, register.c
+
+nju09目录：（www下的新注册界面）
+bbsdoreg.c, bbsreg.c, bbsform.c, bbsinfo.c
+
+include目录：（控制是否启用pop验证功能）
+在config.h加了一个 #define POP_CHECK    1  // 表示启用POP验证功能
+
+增添的目录：
+/home/bbs/etc/pop_register
+
+在此目录下（pop_register）增添的文件：
+pop_list（必须）  <pop server name>  <pop server name>_privilege
+
+其中pop_list文件中存放可信任的pop服务器列表，格式为：
+<名称>
+<ip>
+
+举例：
+stu.xjtu.edu.cn
+202.117.1.22
+mail.xjtu.edu.cn
+202.117.1.21
+
+<pop server name>文件中存放的是已经注册id的用户信息，格式为：
+<pop username>
+<bmy id : ip: time>
+这个文件的主要作用是防止通过一个邮箱来注册多个id
+
+举例：
+interma
+next : 202.117.7.34 : Tue Jun  7 10:50:19 2005
+
+<pop server name>_privilege文件中存放的是特权用户，这些特权用户可以使用一个邮箱
+来注册多个BMY id。（目前是可以注册无限个）
+
+格式为：
+<pop username>
+
+
+--
+/******************************************************                                                                 
+* 提高开发水平，体验开发乐趣，感悟开发人生。          *                                                                 
+*                                                     *                                                                 
+* 我的ftp: 202.200.238.199, USER: guest, PASS: guest  *                                                                 
+* 有很多开发工具，欢迎大家访问。:-)                   *                                                                 
+******************************************************/                                                                 
+
+※ 来源:．兵马俑BBS 202.117.1.8．[FROM: 202.117.7.34]                                                                   

@@ -95,8 +95,7 @@ struct boardheader *brec;
 }
 
 int
-postfile(filename, owner, nboard, posttitle)
-char *filename, *owner, *nboard, *posttitle;
+postfile(char *filename, char *owner, char *nboard, char *posttitle)
 {
 	struct boardheader fh;
 
@@ -109,9 +108,7 @@ char *filename, *owner, *nboard, *posttitle;
 	return 0;
 }
 
-securityreport(owner, str, title)
-char *owner;
-char *str;
+void securityreport(char * owner, char * str, char * title)
 {
 	FILE *se;
 	char fname[STRLEN];
@@ -125,15 +122,12 @@ char *str;
 	}
 }
 
-deliverreport(board, title, str)
-char *board;
-char *title;
-char *str;
+void deliverreport(char * board, char * title, char * str)
 {
 	FILE *se;
 	char fname[STRLEN];
 
-	sprintf(fname, "tmp/deliver.%s.%d", board, time(NULL));
+	sprintf(fname, "tmp/deliver.%s.%lu", board, time(NULL));
 	if ((se = fopen(fname, "w")) != NULL) {
 		fprintf(se, "%s", str);
 		fclose(se);

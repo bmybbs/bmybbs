@@ -13,9 +13,9 @@
 #include <ctype.h>
 #include <errno.h>
 
-#ifndef sizeof
+/*#ifndef sizeof
 #define sizeof(x) ((int)sizeof(x))
-#endif
+#endif*/
 
 #ifndef ATTACHCACHE
 #define ATTACHCACHE "/home/bbsattach/cache"

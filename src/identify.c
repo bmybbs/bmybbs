@@ -344,7 +344,7 @@ int active_manual(struct userec* cuser, session_t* session)
 int x_active_manager()
 {
     char an[2];
-    char style[2];
+//	char style[2];
     char userid[IDLEN+2];
     char value[VALUELEN];
     if (!HAS_PERM(PERM_ACCOUNTS) && !HAS_PERM(PERM_SYSOP)) {
@@ -523,7 +523,7 @@ int force_comfirm(char* userid)
 //删除激活记录
 int delete_active(char* userid)
 {
-    struct userec* cuser;
+//	struct userec* cuser;
     char an[2];
     char genbuf[STRLEN];
     struct active_data act_data;
@@ -596,11 +596,11 @@ char *info, *desc, *buf;
 //而不是使用本功能
 int update_active(char* userid)
 {
-    struct userec* cuser;
+//    struct userec* cuser;
     struct active_data act_data;
 	char genbuf[STRLEN];
     char an[2];
-    int response;
+	int response;
 
     getuser(userid);
     response=read_active(userid, &act_data);

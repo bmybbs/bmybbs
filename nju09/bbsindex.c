@@ -49,6 +49,7 @@ char *get_login_link ()
 }
 
 //added by linux@05.9.12
+/* 该功能已经3年没有被使用了，注释掉 by IronBlood 2014.10.22
 char *get_login_pic ()
 {
   FILE *fp;
@@ -106,7 +107,78 @@ char *get_login_pic ()
 	  return pics_with_dir;
 	}
     }
+}*/
+
+// added by IronBlood@11.09.05
+// 修正函数返回值，记得释放 by IronBlood@2014.10.22
+char *get_no_more_than_four_login_pics()
+{
+	FILE *fp;
+	if(!(fp = fopen(MY_BBS_HOME "/logpics","r")))
+		return "cai.jpg";
+
+	char pics[256];
+	const char *pics_dir ="bmyMainPic/using/";
+	char pics_list[4096];
+	char file[16][256];
+	int file_line=0;
+    char link[256];
+    memset(pics_list, '\0', sizeof(pics_list));
+
+	// 读取文件
+	while(fgets(pics,sizeof(pics),fp)!=NULL)
+	{
+		char *tmp=file[file_line];
+		if (pics[strlen(pics) - 1] == '\n')
+			pics[strlen(pics) - 1] = 0;
+		strcpy(tmp,pics);
+		++file_line;
+	}
+	// 释放句柄
+	fclose(fp);
+
+	int i=0;
+
+    while( (i != file_line - 1) && i !=4) // 不超过总图片个数、不超过最大上限
+    {
+        srand(time(NULL)+rand()%100); // 加种子
+        int randnum = 1 + rand()%file_line; // 生成随机数
+        char *tmp = file[randnum];
+        
+        if( strstr(pics_list,tmp)==NULL ) //不包含图片字符串，才执行下面的操作
+        {
+            get_login_pic_link(tmp,link);
+            if(i>0)
+                strcat(pics_list, ";;");
+            strcat(pics_list, pics_dir);
+            strcat(pics_list, tmp);
+            strcat(pics_list, ";");
+            strcat(pics_list, link);
+            ++i; 
+        }
+    }
+
+	return strdup(pics_list);
 }
+
+// add by IronBlood@bmy 20120107
+char *get_login_pic_link (char *picname, char *linkback)
+{
+    FILE *fp;
+    char link[256];
+	memset(link, '\0',sizeof(link));
+    char linkfile[256];
+    sprintf(linkfile, MY_BBS_HOME "/loglinks/%s", picname);
+    if (!(fp = fopen ( linkfile,"r")))
+        return "BMY/home?B=XJTUnews";
+    if (!fgets (link,sizeof (link),fp))
+        return "BMY/home?B=XJTUnews";
+    fclose (fp);
+    if (link[strlen(link) - 1] == '\n')
+        link[strlen(link) - 1] = '\0';
+    return strcpy(linkback, link);
+}
+
 
 int
 loadoneface()
@@ -182,8 +254,7 @@ void loginwindow()
 	char *login_pic;
 	login_link = get_login_link ();
 	//login_pic = get_login_pic (); /* } added by linux 05.9.11*/
-	char fourpics[512];
-	get_no_more_than_four_login_pics(fourpics, 512);
+	char *fourpics=get_no_more_than_four_login_pics();
 	printf("<script>function openreg(){open('" SMAGIC
 	     "/bbsreg', 'winREG', 'width=600,height=460,resizable=yes,scrollbars=yes');}\n"
 	     "function sf(){document.l.id.focus();}\n"
@@ -244,11 +315,14 @@ void loginwindow()
   "</tr>\n"
     "<tr>\n"
     "<td align=center bgcolor=#FFFFFF><img src=\"images/index_line.gif\" name=Image1 width=650 height=20 id=Image1></td>\n"
-  "<tr><td align=center>陕ICP备 05001571号<td></tr>"
+  "<tr><td align=center>陕ICP备 05001571号<br />"
+  //"本BBS隶属于：西安交通大学网络中心／中国教育科研网西北中心<br />"
+  "开发维护：西安交通大学网络中心  BBS程序组</td></tr>"
 	"</tr>\n"
 "</table>"/*,login_link,login_pic*/);/* modified by linux 05.9.11 */
 	showannounce();
 	printf("<script>showloginpics(\"%s\")</script>",fourpics);
+	free(fourpics);		// 释放资源 by IronBlood 2014.10.22 其实此处快退出了，会自动释放的 :-)
 	printf("</body>\n</html>");
 }
 

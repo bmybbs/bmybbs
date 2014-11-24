@@ -9,6 +9,7 @@ typedef struct {
 void
 processdollar(buf, ret)
 char buf[256];
+char *ret;
 {
 	extern time_t login_start_time;
 	int frg, i, matchfrg, strlength, cnt, tmpnum;
@@ -51,7 +52,7 @@ char buf[256];
 	now = time(0);
 	tmpnum = countexp(&currentuser);
 	sprintf(exp, "%d", tmpnum);
-	strcpy(ccexp, cexp(tmpnum));
+	strcpy(ccexp, charexp(tmpnum));
 	tmpnum = countperf(&currentuser);
 	sprintf(perf, "%d", tmpnum);
 	strcpy(ccperf, cperf(tmpnum));
@@ -185,11 +186,11 @@ void footInfo(){
 	printf("function changeMsg(){\n");
 	printf("    var container = document.getElementById(\"msg_contain\");\n");
 	printf("    var now = new Date()\n");
-	printf("    var repeat = now.getSeconds()%4+1;\n");
+	printf("    var repeat = now.getSeconds()%%4+1;\n");
 	printf("    while(repeat--)\n");
 	printf("        container.insertBefore(container.lastChild,container.firstChild);\n");
 	printf("}\n");
-	printf("setInterval(\"changeMsg()\",30000);\n");
+	printf("setInterval(\"changeMsg()\",5000);\n");
 	printf("</SCRIPT>\n");
 }
 
@@ -263,8 +264,8 @@ bbsfoot_main()
 	//Add by liuche 20120616
 	printf("<script>setTimeout('self.location.replace("
 	       "\"bbsfoot?lt=%d&mt=%d&mu=%d&sn='+t()+'\")', %d);</script>",
-	       lasttime, mail_total, mail_unread, 300000 + r * 1000);
-	r = (r + dt + now_t) % 30;
+	       lasttime, mail_total, mail_unread, 15000);
+	// r = (r + dt + now_t) % 30; // 此处 r 不再起作用
 	printf("</body>\n");
 	return 0;
 }

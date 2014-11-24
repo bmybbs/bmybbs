@@ -29,6 +29,9 @@ struct cgi_applet applets[] = {
 	{bbsfadd_main, {"bbsfadd", NULL}},
 	{bbsfdel_main, {"bbsfdel", NULL}},
 	{bbsfall_main, {"bbsfall", NULL}},
+	{bbsbadd_main, {"bbsbadd", NULL}},	// 添加黑名单
+	{bbsbdel_main, {"bbsbdel", NULL}},	// 删除黑名单
+	{bbsball_main, {"bbsball", NULL}},	// 查看所有黑名单
 	{bbsfriend_main, {"bbsfriend", NULL}},
 	{bbsfoot_main, {"bbsfoot", NULL}},
 	{bbsform_main, {"bbsform", NULL}},

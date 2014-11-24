@@ -1,0 +1,22 @@
+#!/bin/sh
+#
+# This script will be executed *after* all the other init scripts.
+# You can put your own initialization stuff in here if you don't
+# want to do the full Sys V style init stuff.
+
+touch /var/lock/subsys/local
+
+route add -net 202.117.0.0 netmask 255.255.0.0 gw 202.117.1.1
+route add -net 202.200.0.0 netmask 255.255.0.0 gw 202.117.1.1
+route add -net 219.245.0.0 netmask 255.255.0.0 gw 202.117.1.1
+
+#ntpdate 202.112.26.37
+mount tmpfs /home/bbs/bbstmpfs -t tmpfs -o size=1024M
+for i in brc tmp dynamic userattach; do mkdir /home/bbs/bbstmpfs/$i; done
+chown bbs:bbs /home/bbs/bbstmpfs -R
+su bbs -c "/home/bbs/bin/bbslogd"
+
+/home/bbs/bin/bbsd
+/home/bbs/bin/atthttpd
+/home/bbs/bin/sshbbsd
+/home/apache/bin/apachectl start

@@ -10,6 +10,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <ght_hash_table.h>
+
+#define _XOPEN_SOURCE /* glibc2 needs this */
 #include <time.h>
 
 #include "config.h"

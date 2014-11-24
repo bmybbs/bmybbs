@@ -1,0 +1,45 @@
+发信人: lanboy (此人家有娇妻，自制力差的mm不要碰。), 信区: Program_Team
+标  题: 关于1.8的环境说明
+发信站: 兵马俑BBS (Wed Dec 29 09:36:53 2004), 本站(bbs.xjtu.edu.cn)
+
+第一：运行环境是
+    /home/bbs 是bbs telnet程序root.
+    /home/apache 是apache的目录
+    /home/apache/htdocs/bmy 是document root
+    /home/apache/cgi-bin/bmy 是cgi的root
+
+    曾经是 /home/apache/htdocs/bbs
+           /home/apache/htdocs/bmy
+
+第二：帅哥gyt 把 fastcgi编译进去以后web就快了。
+      请直接修改本文章告诉我们方法。
+    fastcgi 可用版本和代码位置
+    把fastcgi编译到目前的apache 的方法。
+//gyt say
+        fastcgi必须要2.4版本以上的才可以支持apache2
+        源代码所在目录/home/bbssrc/web/mod_fastcgi-2.4.0
+        安装过程很简单make;make install
+        (对于apache1.3的安装方式完全不一样，需要用apxs,所以昨天也走了不少弯路)
+        然后修改httpd.conf增加fastcgi模块就好了
+        然后修改httpd.conf增加fastcgi模块就好了
+        LoadModule fastcgi_module modules/mod_fastcgi.so
+        重起apache
+
+第三：源代码目录和以后同步方法
+      以后代码一直从 202.117.0.210 朝 1.8同步。
+      目前同步工作我和gyt可以做。
+     源代码目录 /home/bbssrc bbsadm权限
+     web代码目录 /home/bbssrc/nju09 目录
+
+大家可以弄一致。；）
+
+
+--
+              我的灵魂是一张琴,
+              被看不见的手指弹拨,
+              因缤纷的极乐而颤抖,
+              悄悄地把船歌轻吟．
+　　　　　　　－－－有谁倾听？......
+
+※ 来源:．兵马俑BBS bbs.xjtu.edu.cn．[FROM: 202.117.7.13]
+※ 修改:．lanboy 于 Dec 29 09:44:28 修改本文．[FROM: 202.117.7.13]

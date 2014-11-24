@@ -6,6 +6,11 @@ struct BCACHE *brdshm = NULL;
 struct boardmem *bcache = NULL;
 char *timeperiod;
 
+extern void bm_init();
+extern void bu_init();
+extern void bs_init();
+extern void bbslists_init();
+
 int
 boardnoread(struct boardheader *fptr)
 {
@@ -114,7 +119,7 @@ register_fun(struct f_link *fhead, void (*f) ())
 }
 
 int
-register_log(char *action, void (*f) ())
+register_log(const char *action, void (*f) ())
 {
 	struct s_a *as;
 	for (as = af_table; as->action != NULL; as++)
@@ -149,7 +154,7 @@ void
 parse(int day, char *buf)
 {
 	char user[30], time[30], action[30], other[512];
-	char *tmp[4] = { time, user, action, other }, *a;
+	char *tmp[4] = { time, user, action, other };
 	int i;
 	struct s_a *as;
 	i = mystrtok(buf, ' ', tmp, 4);
@@ -172,11 +177,10 @@ parse(int day, char *buf)
 int
 main(int argc, char *argv[])
 {
-	time_t now, filedate;
+	time_t now;
 	int i, days, end;
 	FILE *fp;
 	struct tm *n;
-	struct f_link *tmp;
 	char file[256], buf[512];
 	char target[10];
 	if (argc <= 2)
@@ -246,4 +250,6 @@ main(int argc, char *argv[])
 		(*(exit_fl->f)) ();
 		exit_fl = exit_fl->next;
 	}
+
+	return 0;
 }

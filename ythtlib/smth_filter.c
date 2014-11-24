@@ -2,21 +2,23 @@
 #include <sys/file.h>
 #include <sys/mman.h>
 #include <signal.h>
+#include "mgrep.h"
 
 int WORDBOUND, WHOLELINE, NOUPPER, INVERSE, FILENAMEONLY, SILENT, FNAME;
 int ONLYCOUNT, num_of_matched, total_line;
 char *CurrentFileName;
 
-extern int prepf(int fp, void **patternbuf, size_t * patt_image_len);
-extern int mgrep(int fp, void *patternbuf);
-extern int mgrep_str(char *data, int len, void *patternbuf);
-extern void releasepf(void *patternbuf);
-
+/*
+extern struct pattern_image;
+extern int prepf(int fp, struct pattern_image **patternbuf, size_t * patt_image_len);
+extern int mgrep_str(char *data, int len, struct pattern_image *patternbuf);
+extern void releasepf(struct pattern_image *patternbuf);
+*/
 int
 reload_badwords(char *wordlistf, char *imgf)
 {
 	int fp;
-	void *pattern_buf;
+	struct pattern_image *pattern_buf;
 	size_t pattern_imagesize;
 	fp = open(wordlistf, O_RDONLY);
 	if (fp == -1)
@@ -67,7 +69,7 @@ filter_file(char *checkfile, struct mmapfile *badword_img)
 	if (mmapfile(checkfile, &mf) == -1) {
 		return 0;
 	}
-	retv = mgrep_str(mf.ptr, mf.size, badword_img->ptr);
+	retv = mgrep_str(mf.ptr, mf.size, (struct pattern_image*)badword_img->ptr);
 	mmapfile(NULL, &mf);
 	return retv;
 }
@@ -78,7 +80,7 @@ filter_string(char *string, struct mmapfile *badword_img)
 	int retv;
 	default_setting();
 	CurrentFileName = "";
-	retv = mgrep_str(string, strlen(string), badword_img->ptr);
+	retv = mgrep_str(string, strlen(string), (struct pattern_image*)badword_img->ptr);
 	return retv;
 }
 

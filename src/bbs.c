@@ -23,6 +23,7 @@
 */
 #include <sys/ipc.h>
 #include <sys/msg.h>
+#include <sys/mman.h>
 #include "bbs.h"
 #include "bbstelnet.h"
 
@@ -92,6 +93,7 @@ static int b_notes_edit();
 static int b_notes_passwd();
 static int catnotepad(FILE * fp, char *fname);
 static int change_content_title(char *fname, char *title);
+static int get_mention_ids(char *article_path, char *mention_ids[]);
 
 /*-------by ylsdd- ------*/
 /*进行一个问答*/
@@ -863,82 +865,76 @@ char *direc;
    } 
 
 int
-topfile_post(ent, fhdr, direct) //slowaction 
-int ent;
-struct fileheader *fhdr;
-char *direct;
-{                                                                                	if (!IScurrBM) return DONOTHING;
-                if (fhdr->accessed & FILE_TOP1) 
-                {   
-	            fhdr->accessed &= ~FILE_TOP1;                                                 //dele_digest(fhdr->filetime, direct);
-		    dele_digest_top(fhdr->filetime, direct); //add by hace
-		    snprintf(genbuf, 256, "%s 去掉置顶 %s %s %s",currentuser.userid, currboard, fhdr->owner,fhdr->title);
-		    newtrace(genbuf);                                                                                      
-            }                                                                                     else {
-		    struct fileheader digest;
-		    char digestdir[STRLEN], digestfile[STRLEN], oldfile[STRLEN];                     directfile(digestdir, direct, TOPFILE_DIR);
-                    /*
-          	    if  (strcmp(currboard, "Picture")==0)
-		      {  if (get_num_records(digestdir, sizeof (digest)) > 8) 
-			{
-                        move(3, 0);
-                        clrtobot();
-                        move(4, 10);
-                        prints ("抱歉，置底数量超过5篇，无法再加入...\n");
-                        pressanykey();
-                        return PARTUPDATE;
-			}}
-			
-			else if  (strcmp(currboard,"welcome")==0)
-			{ if (get_num_records(digestdir,sizeof(digest)) > 8 )
-			{
-			move(3,0);
-			clrtobot();
-			move(4,10);
-			prints("抱歉，置底数量超过5篇，无法再加入...\n");
-			pressanykey();
-			return PARTUPDATE;
-			}}
-			
-			else if  (strcmp(currboard,"ANTIVirus")==0)
-			{ if (get_num_records(digestdir,sizeof(digest)) > 8 )
-			{
-			move(3,0);
-			clrtobot();
-			move(4,10);
-			prints("抱歉，置底数量超过5篇，无法再加入...\n");
-			pressanykey();
-			return PARTUPDATE;
-			}}
+topfile_post(int ent, struct fileheader *fhdr, char *direct) //slowaction
+{
+	if (!IScurrBM) return DONOTHING;
 
-			else if  (strcmp(currboard, "H_talk")==0)
-                      {  if (get_num_records(digestdir, sizeof (digest)) > 10)
-			    {
-			    move(3, 0);
-  			    clrtobot();
-			    move(4, 10);
-			    prints ("抱歉，置底数量超过6篇，无法再加入...\n");
-			    pressanykey();
-			    return PARTUPDATE;
-			    }}
-			else {  
-                        */
+	if (fhdr->accessed & FILE_TOP1) {
+		fhdr->accessed &= ~FILE_TOP1;
+		//dele_digest(fhdr->filetime, direct);
+		dele_digest_top(fhdr->filetime, direct); //add by hace
+		snprintf(genbuf, 256, "%s 去掉置顶 %s %s %s",currentuser.userid, currboard, fhdr->owner,fhdr->title);
+		newtrace(genbuf);
+	} else {
+		struct fileheader digest;
+		char digestdir[STRLEN], digestfile[STRLEN], oldfile[STRLEN];
+		directfile(digestdir, direct, TOPFILE_DIR);
+/*
+		if (strcmp(currboard, "Picture")==0) {
 			if (get_num_records(digestdir, sizeof (digest)) > 8) {
-			move(3, 0);
-			clrtobot();
-			move(4, 10);
-			prints ("抱歉，置底数量超过5篇，无法再加入...\n");
-			pressanykey();
-			return PARTUPDATE; 
-			    }
+				move(3, 0);
+				clrtobot();
+				move(4, 10);
+				prints ("抱歉，置底数量超过5篇，无法再加入...\n");
+				pressanykey();
+				return PARTUPDATE;
+			}
+		} else if  (strcmp(currboard,"welcome")==0) {
+			if (get_num_records(digestdir,sizeof(digest)) > 8 ) {
+				move(3,0);
+				clrtobot();
+				move(4,10);
+				prints("抱歉，置底数量超过5篇，无法再加入...\n");
+				pressanykey();
+				return PARTUPDATE;
+			}
+		} else if  (strcmp(currboard,"ANTIVirus")==0) {
+			if (get_num_records(digestdir,sizeof(digest)) > 8 ) {
+				move(3,0);
+				clrtobot();
+				move(4,10);
+				prints("抱歉，置底数量超过5篇，无法再加入...\n");
+				pressanykey();
+				return PARTUPDATE;
+			}
+		} else if  (strcmp(currboard, "H_talk")==0) {
+			if (get_num_records(digestdir, sizeof (digest)) > 10){
+				move(3, 0);
+				clrtobot();
+				move(4, 10);
+				prints ("抱歉，置底数量超过6篇，无法再加入...\n");
+				pressanykey();
+				return PARTUPDATE;
+			}
+		} else {
+*/
+			if (get_num_records(digestdir, sizeof (digest)) > 8 && strcmp(currentuser.userid, "SYSOP")!=0) {
+				move(3, 0);
+				clrtobot();
+				move(4, 10);
+				prints ("抱歉，置底数量超过5篇，无法再加入...\n");
+				pressanykey();
+				return PARTUPDATE;
+			}
                         /*
-     			}
+     	}
                         */
-		    digest = *fhdr;
-		    digest.accessed |= FILE_ISTOP1;
-		    directfile(digestfile, direct, fh2fname(&digest));
-		    directfile(oldfile, direct, fh2fname(fhdr));
-		    if (!dashf(digestfile)) {
+		digest = *fhdr;
+		digest.accessed |= FILE_ISTOP1;
+		directfile(digestfile, direct, fh2fname(&digest));
+		directfile(oldfile, direct, fh2fname(fhdr));
+
+		if (!dashf(digestfile)) {
 			digest.accessed |= FILE_ISTOP1;
 			link(oldfile, digestfile);
 			append_record(digestdir, &digest, sizeof (digest));
@@ -946,11 +942,11 @@ char *direct;
 			//add by hace
 			snprintf(genbuf, 256, "%s 置顶 %s %s %s",currentuser.userid, currboard, fhdr->owner,fhdr->title);
 			newtrace(genbuf);
-		    }
 		}
-	    change_dir(direct, fhdr, (void *) DIR_do_top, ent, 0, 0);
-	    //topfile_record(direct,fhdr->filename,ent); //add by hace 
-	    return PARTUPDATE;
+	}
+	change_dir(direct, fhdr, (void *) DIR_do_top, ent, 0, 0);
+	//topfile_record(direct,fhdr->filename,ent); //add by hace
+	return PARTUPDATE;
 }
 
 static int
@@ -1385,6 +1381,26 @@ char *direc;
 	return 0;
 }
 
+int water_post(int ent, struct fileheader *fileinfo, char *dirent)
+{
+	if (!IScurrBM) {
+		return DONOTHING;
+	}
+
+	if (fileinfo->accessed & FH_ISWATER) {
+		snprintf(genbuf, 256, "%s unwater %s %s %s",
+			currentuser.userid, currboard,
+			fh2owner(fileinfo), fileinfo->title);
+	} else {
+		snprintf(genbuf, 256, "%s water %s %s %s",
+			currentuser.userid, currboard,
+			fh2owner(fileinfo), fileinfo->title);
+	}
+
+	newtrace(genbuf);
+	change_dir(dirent, fileinfo, (void *) DIR_do_water, ent, digestmode, 0);
+	return PARTUPDATE;
+}
 
 int
 digest_post(ent, fhdr, direct)
@@ -1398,6 +1414,7 @@ char *direct;
 	}
 	if (digestmode != NA)
 		return DONOTHING;
+
 	if (fhdr->accessed & FH_DIGEST) {
 		dele_digest(fhdr->filetime, direct);
 		snprintf(genbuf, 256, "%s undigest %s %s %s",
@@ -2151,8 +2168,7 @@ post_article(struct fileheader *sfh)
 	}
 
 	/*重新指定文件名 */
-	if (1)
-	{
+
 		char newfilepath[STRLEN], newfname[STRLEN];
 		int count;
 		t = time(NULL);
@@ -2171,7 +2187,7 @@ post_article(struct fileheader *sfh)
 			if (count++ > MAX_POSTRETRY)
 				break;
 		}
-	}
+
 
 	if (sfh == NULL)
 		postfile.thread = postfile.filetime;
@@ -2227,7 +2243,55 @@ post_article(struct fileheader *sfh)
 		}
 	}
 	// term 下回帖提醒结束
+
+	// term 下 @ 提醒开始 by IronBlood
+	char mention_ids[MAX_MENTION_ID][IDLEN+2];
+	memset(mention_ids, 0, MAX_MENTION_ID*(IDLEN+2));
+	get_mention_ids(newfilepath, mention_ids);
+
+	int i=0;
+	while(i!=MAX_MENTION_ID && mention_ids[i][0]!=0) {
+		if(strcasecmp(currentuser.userid, mention_ids[i])!=0) {
+			if(hasreadperm_ext(mention_ids[i], currboard)) {	// 该函数内调用了 getuser() 函数，因此可以直接使用 lookupuser 全局变量
+				// 用户存在的情况下，且不为当前用户的情况下，且拥有该版面阅读权限的情况下，且不在黑名单里的时候
+				if(!inoverride(currentuser.userid, lookupuser.userid, "rejects"))
+					add_mention_notification(lookupuser.userid, (header.chk_anony) ? "Anonymous" : currentuser.userid,
+							currboard, postfile.filetime, postfile.title);
+			}
+		}
+		++i;
+	}
+	// term 下 @ 提醒结束
 	return FULLUPDATE;
+}
+
+static int
+get_mention_ids(char *article_path, char *mention_ids[])
+{
+	int fd;
+	char *p, *s;
+	struct stat statbuf;
+
+	fd = open(article_path, O_RDONLY);
+	if(fd == -1)
+		return -1;
+	if(fstat(fd, &statbuf) == -1) {
+		close(fd);
+		return -1;
+	}
+
+	p = mmap(0, statbuf.st_size, PROT_READ, MAP_SHARED, fd, 0);
+	close(fd);
+
+	if(p == MAP_FAILED)
+		return -2;
+
+	s = strstr(p, "\n\n");	// 跳过头部
+	if(s!=NULL)
+		parse_mentions(s, mention_ids, 0);
+
+	munmap(p, statbuf.st_size);
+	return 0;
 }
 
 static int
@@ -2282,8 +2346,7 @@ int mode;			// 1: politics    0: non-politics
 }
 
 int
-stringfilter(title, mode)
-char *title;
+stringfilter(char *title, int mode)
 {
 	struct mmapfile *mf;
 	char *bf;
@@ -2521,6 +2584,7 @@ char *direct;
 	if (!IScurrBM) {
 		return DONOTHING;
 	}
+
 	if (fileinfo->accessed & FH_MARKED) {
 		snprintf(genbuf, 256, "%s unmark %s %s %s",
 			 currentuser.userid, currboard,
@@ -2680,7 +2744,7 @@ char *direct;
 	if (!HAS_PERM(PERM_OBOARDS) && !HAS_PERM(PERM_SYSOP))
 		return DONOTHING;
 	clear();
-	bzero(&atm, sizeof (&atm));
+	memset(&atm, 0, sizeof(atm));
 	prints
 	    ("整理过刊, 请指定日期, 在该日期之前所发表的文章将被\n"
 	     "迁移到最后一个过刊目录里, 而且不再存在于版面\n");

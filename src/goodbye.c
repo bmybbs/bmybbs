@@ -125,7 +125,7 @@ char buf[256];
 	now = time(0);
 	tmpnum = countexp(&currentuser);
 	sprintf(exp, "%d", tmpnum);
-	strcpy(ccexp, cexp(tmpnum));
+	strcpy(ccexp, charexp(tmpnum));
 	tmpnum = countperf(&currentuser);
 	sprintf(perf, "%d", tmpnum);
 	strcpy(ccperf, cperf(tmpnum));

@@ -2,8 +2,8 @@ BASEPATH = ..
 include $(BASEPATH)/Makefile.Base
 
 #UTILITY  = repassold repass266 mergeb account averun bfinger newacct poststat usage showuser refriend2 autoundeny autoclear bbstop auto_rm_junk userip tianqi annIndex
-UTILITY  =  finddf mergeb averun showuser refriend2 autoundeny autoclear bbstop auto_rm_junk userip tianqi annIndex  nbstat 2nd_expire bbsstatlog bbsstatproclog clear_junk clear_attach searchLastMark sortdir printSecLastMark searchDIR auto_rm_fakedir bbslogd MakeIndex3 bm bm2 filter find_lost_mail find_rm_lost fixdir id_boards id_distr logfreq near ptyexec reminder save_brc searchauther selpersonal showwhoperm sumcgitime tuijian upersonal cpersonal transuu2bin bbspop3d combine_arc repsync upnew newtop10 newboards printSecLastUpdate check_ulevel setdefaultkey \
-watchman upgrade postfile 
+UTILITY  =  finddf mergeb averun showuser refriend2 autoundeny autoclear bbstop auto_rm_junk userip tianqi annIndex  nbstat 2nd_expire bbsstatlog bbsstatproclog clear_junk clear_attach searchLastMark sortdir printSecLastMark searchDIR auto_rm_fakedir bbslogd makeindex3 bm bm2 filter find_lost_mail find_rm_lost fixdir id_boards id_distr logfreq near ptyexec reminder save_brc searchauther selpersonal showwhoperm sumcgitime tuijian upersonal cpersonal transuu2bin bbspop3d combine_arc repsync upnew newtop10 newboards printSecLastUpdate check_ulevel setdefaultkey \
+watchman upgrade postfile changeboardname
 
 ##  bbsevad
 ifeq (.depend,$(wildcard .depend))
@@ -94,7 +94,7 @@ bbstop: bbstop.o
 noOUT: noOUT_FLAG.o
 	$(CC) $(CFLAGS)  -o $@ $^
 ptyexec: ptyexec.o
-	$(CC) $(CFLAGS) -lutil -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^ -lutil
 
 searchLastMark: searchLastMark.o
 	$(CC) $(CFLAGS) -o $@ $^ $(BBSLIB)
@@ -140,7 +140,7 @@ bbsevad: bbsevad.o
 selpersonal: selpersonal.o
 	$(CC) $(CFLAGS) -o $@ $^ $(BBSLIB) -lm
 
-MakeIndex3: MakeIndex3.o
+makeindex3: makeindex3.o
 	$(CC) $(CFLAGS) -o $@ $^ $(BBSLIB)
 
 id_boards: id_boards.o
@@ -181,6 +181,9 @@ mailallmsg: mailallmsg.o
 	$(CC) $(CFLAGS) -o $@ $^ $(BBSLIB)
 
 changeuser: changeuser.o
+	$(CC) $(CFLAGS) -o $@ $^ $(BBSLIB)
+	
+changeboardname: changeboardname.o record.o sysrecord.o
 	$(CC) $(CFLAGS) -o $@ $^ $(BBSLIB)
 
 upgrade: upgrade.o

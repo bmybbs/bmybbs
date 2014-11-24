@@ -1,0 +1,23 @@
+发信人: linux (Practical Common Lisp), 信区: Program_Team
+标  题: 编译sshbbsd的过程
+发信站: 兵马俑BBS (Thu Apr  5 16:50:43 2007), 本站(bbs.xjtu.edu.cn)
+
+$cd smth_sshbbsd
+$./makedist.sh
+$./configure --prefix=/home/bbs
+$vim Makefile
+找到BBSCFILES，加上tmpl.c
+找到am__objects_2，加上tmpl.$(OBJEXT)
+:wq
+$ln -s ../src/tmpl.c tmpl.c
+$make
+$make install
+$ssh-keygen -t rsa1
+$cp ~/.ssh/identity* /home/bbs/etc/
+$cp /etc/ssh/sshd_config /home/bbs/etc
+$vim /home/bbs/etc/sshd_config
+找到HostKey那一行，改为HostKey etc/identity(只保留这一行，其他注释掉)
+:wq
+##############记得把系统的sshd服务端口改了再启动sshbbsd#############
+#/home/bbs/bin/sshbbsd
+###如果sshbbsd抱怨sshd_config文件有错误的话就把出错那一行注释掉

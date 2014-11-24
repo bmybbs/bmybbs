@@ -1,0 +1,199 @@
+发信人: wjbta (好好爱静--一辈子不后悔), 信区: Program_Team
+标  题: 2003.01.10 ythtbbs代码的安装步骤(zz from tjubbs)
+发信站: 兵马俑BBS (Thu Jun 24 15:50:53 2004), 本站(bbs.xjtu.edu.cn)
+
+发信人: slowaction (王百万), 信区: BBSMaintenance
+标  题: 2003.01.10 ythtbbs代码的安装步骤
+发信站: 天大求实BBS (Tue Feb 24 17:50:26 2004), 本站(bbs.tju.edu.cn)
+
+发信人: 小椰子 (椰子gg), 信区: BBSDev
+标  题: 2003.01.10 ythtbbs代码的安装步骤
+发信站: 一塌糊涂 BBS (Fri Jan 10 21:40:26 2003), 转信(ytht.net)
+
+
+2003.01.10 ythtbbs代码的安装步骤，按照lepton的history整理出来的
+
+可能有误，请大家指正
+
+今天的nju09代码添加了一个函数bbsscanreg，好像有问题，所以注释了
+
+1.按照 http://ytht.net/Ytht.Net/home/boards/BBSDev/html/cvs.html 的方法签出bbs代
+码，目录为bbs，移至/home/bbssrc
+# mv bbs /home/bbssrc
+
+2.创建bbs组和bbs用户，切换到bbs用户
+# groupadd -g99 bbs
+# useradd -u9999 bbs
+# su bbs
+
+3.开始安装
+$ ./makedist.sh
+$ ./configure
+
+/*******************************************************
+....
+Home directory of BBS --> [/home/bbs]
+UID of BBS --> [9999]
+GID of BBS --> [99]
+USER of BBS --> [bbs]
+The ID of your site --> [YTHT] birdy
+The name of your site --> [一塌糊涂 BBS] birdy bbs
+The domain name of your site --> [ytht.net] bbs.birdy.3322.org
+The ip address of your site --> [162.105.31.222] 162.105.147.3
+Maximum number of users --> [20000] 1000
+Maximum number of boards --> [250] 10
+Maximum number of on-line users --> [2000] 100
+Runtime Maximum number of on-line users --> [2000] 100
+BBS listen port --> [23]
+BBS listen port(BIG5) --> [2300]
+MySQL DATABASE NAME --> [test] test
+MySQL USER NAME --> [test] test
+MySQL USER PASSWORD --> [test] test
+Show idle time of BBS users ? --> [Y]
+Can execute outside program(like BBSNET)? --> [N]
+.....
+********************************************************/
+
+$ cd ythtlib/
+$ make install
+$ cd ../libythtbbs/
+$ make install
+$ cd ../src/
+$ make install
+$ cd /home/bbssrc/nju09
+$ make usesql.h
+/*会去/home/bbs/etc/sysconfig.ini中查找所用MySQL数据库、用户民和密码，如果没有的
+话，可以直接修改usesql.h，在其中做宏定义*/
+$ cp usesql.h /home/bbssrc/include
+$ cd /home/bbssrc/local_utl/
+$ make install
+
+$ >crontab.bbs; vi crontab.bbs;
+
+
+/************************************************************
+0,5,10,15,20,25,30,35,45,50,55 * * * * (/usr/bin/uptime >>
+/home/bbs/reclog/uptime.log)
+57 * * * * (/home/bbs/bin/averun /home/bbs/reclog/uptime.log;/bin/rm
+/home/bbs/reclog/uptime.log)
+56 0 * * * (/bin/mv /home/bbs/0Announce/bbslist/today
+/home/bbs/0Announce/bbslist/yesterday; /bin/rm /home/bbs/reclog/ave.src)
+
+0,5,10,15,20,25,30,35,40,45,50,55 * * * * (/home/bbs/bin/account )
+0 0 * * * (/bin/mv /home/bbs/0Announce/bbslist/countusr
+/home/bbs/0Announce/bbslist/countusr.last)
+
+0 0 * * * (/home/bbs/bin/bbstop /home/bbs 50 1 >
+/home/bbs/0Announce/bbslist/toplogin)
+0 0 * * * (/home/bbs/bin/bbstop /home/bbs 50 2 >
+/home/bbs/0Announce/bbslist/toppost)
+0 0 * * * (/home/bbs/bin/bbstop /home/bbs 50 3 >
+/home/bbs/0Announce/bbslist/topstay)
+0 0 * * * (/home/bbs/bin/bbstop /home/bbs 50 4 >
+/home/bbs/0Announce/bbslist/topall)
+10 * * * * (/home/bbs/bin/poststat /home/bbs)
+15 * * * * (/home/bbs/bin/usage 0 ; /home/bbs/bin/usage 1)
+0 * * * * /home/bbs/bin/newacct
+59 23 * * * /bin/mv /home/bbs/0Announce/bbslist/newacct.today
+/home/bbs/0Announce/bbslist/newacct.last
+************************************************************/
+
+
+$ crontab  crontab.bbs
+$ cd /home/bbs/0Announce/bbslist/
+$ ln -s /home/bbs/etc/posts/day day
+$ ln -s /home/bbs/etc/posts/month month
+$ ln -s /home/bbs/etc/posts/year year
+$ ln -s /home/bbs/etc/posts/week week
+
+4.启动测试bbs
+$ su -
+# /home/bbs/bin/bbsd
+# telnet localhost
+
+/********************************************************
+创建SYSOP guest帐号，并修改其他文件，如 etc/menu.ini ...
+**********************************************************/
+
+5.安装nju09
+# mkdir /var/www/html/bbs
+# mkdir /var/www/cgi-bin/bbs
+# chown bbs.nobody /var/www/html/bbs /var/www/cgi-bin/bbs
+# su bbs
+$ cd /home/bbssrc/nju09/
+$ vi Makefile    //修改文件适应自己的apache目录设置，仅供参考
+
+/***********************************************************
+BBSHOME = /home/bbs
+CGIPATH = /home/httpd/cgi-bin       改为 CGIPATH = /var/www/cgi-bin/bbs
+HTMPATH = /home/httpd/html/2001     改为 HTMPATH = /var/www/html/bbs
+........
+************************************************************/
+
+$ make proto
+$ make install
+
+$ su -
+# vi /etc/http/conf/httpd.conf
+
+/*************************************************************
+..............
+<VirtualHost 162.105.147.3>
+ServerName bbs.birdy.3322.org
+DocumentRoot /var/www/html/bbs
+RewriteEngine on                                                    在虚拟主机中
+加入下面三行
+RewriteRule ^/Ytht.Net(.*)$ /cgi-bin/bbs/www [PT]
+RewriteRule  ^/$        /cgi-bin/bbs/www [PT]
+</VirtualHost>
+.....................
+*************************************************************/
+
+# service httpd restart
+# mkdir /home/bbstmpfs
+# mount tmpfs /home/bbstmpfs -t tmpfs -o size=128M
+# for i in brc tmp dynamic userattach; do mkdir /home/bbstmpfs/$i; done
+# chown bbs:bbs /home/bbstmpfs -R
+# cd /home/bbs
+# ln /home/bbstmpfs/tmp tmpfast -s
+# ln /home/bbstmpfs/dynamic dynamic -s
+# mkdir wwwtmp
+# cd wwwtmp/
+# cd ytml/
+$ cp bbssec01.ytml bbssec_all.ytml
+
+
+--
+  这么多年来，总有些事你是不愿再提，或是有些人你不想再见，有的人曾经
+对不起你，也许你想过要杀了他们。 但是你不敢。又或者你觉得不值
+  我最近生活有点困难，只要你随便给我一点银两，我一定可以帮你杀了那个
+人，你尽管考虑一下。
+  考虑好了在tjubbs联系slowaction!
+※ 来源:．天大求实BBS http://bbs.tju.edu.cn [FROM: 202.113.13.188]
+
+--
+
+爱一个人需要时间，得到后就不要放弃。                                                                                    
+如果放弃，也许会后悔一辈。                                                                                              
+# mkdir wwwtmp
+# cd wwwtmp/
+# cd ytml/
+$ cp bbssec01.ytml bbssec_all.ytml
+
+
+--
+  这么多年来，总有些事你是不愿再提，或是有些人你不想再见，有的人曾经
+对不起你，也许你想过要杀了他们。 但是你不敢。又或者你觉得不值
+  我最近生活有点困难，只要你随便给我一点银两，我一定可以帮你杀了那个
+人，你尽管考虑一下。
+  考虑好了在tjubbs联系slowaction!
+※ 来源:．天大求实BBS http://bbs.tju.edu.cn [FROM: 202.113.13.188]
+
+--
+
+爱一个人需要时间，得到后就不要放弃。                                                                                    
+如果放弃，也许会后悔一辈。                                                                                              
+爱就要勇敢一些，不要去躲避，不要去猜疑，相信那一瞬间的感觉，勇往直前                                                    
+爱需要责任，也需要付出，懂得付出，才能得到真心的相待                                                                    
+
+※ 来源:·交大兵马俑bbs站 bbs.xjtu.edu.cn·[FROM:沙漠之地]                                                              

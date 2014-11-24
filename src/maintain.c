@@ -1745,7 +1745,7 @@ do_ordainBM(const char *userid, const char *abname)
 		sprintf(content,
 			"\n\t\t    【 版务任命公告 】\n\n\n" "\t  %s 网友：\n\n"
 			"\t      经本站站务组审批、纪律委员会考核通过，\n\t  现正式任命你为 %s 版版务。\n\n"
-			"\t      请在 3 天之内在 BM_home 版面报道。\n",
+			"\t      请在 3 天之内在 BM_home 版面报到。\n",
 			lookupuser.userid,
 			bname);
 	else

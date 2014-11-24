@@ -1,0 +1,19 @@
+发信人: interma ( 4PZP | 抓紧时间 | 突然累了 ), 信区: Program_Team
+标  题: 记录一下安装mod_fastcgi的方法
+发信站: 兵马俑BBS (Mon Dec 25 16:06:21 2006), 本站(202.117.1.8)
+
+留个档，防止以后忘了：
+
+【1】 首先安httpd-devel包（rpm或apt一下）
+【2】 然后从 http://www.fastcgi.com 下载 mod_fastcgi（咱们bbs源码的web目录下边也
+有）
+【3】 解包之后执行如下操作：
+$ cp Makefile.AP2 Makefile
+$ make top_dir=/usr/lib/httpd/
+$ make install
+编译安装成功后，应该在 /usr/lib/httpd/modules 目录有 mod_fastcgi.so 文件，此时说
+明 mod_fastcgi 已经安装成功。
+【4】修改httpd.conf：
+加入一行：
+LoadModule fastcgi_module modules/mod_fastcgi.so
+【5】重启apache，done

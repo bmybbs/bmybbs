@@ -20,7 +20,7 @@
 #endif
 
 // 登陆邮件服务器，进行身份验证， added by interma@BMY 2005.5.12
-// 返回值为1表示有效，0表示无效, -1表示和pop服务器连接出错 
+// 返回值为1表示有效，0表示无效, -1表示和pop服务器连接出错
 /*
 static int test_mail_valid(char *user, char *pass, char *popip)
 {
@@ -148,6 +148,15 @@ bbsfindacc_main()
 	popname = strtok(popserver, delims);
 	popip = strtok(NULL, delims);
 
+	if(user[0] == 0)
+		http_fatal("error occur");
+
+	if(popname == 0)
+		http_fatal("error occur");
+
+	if(popip == 0)
+		http_fatal("error occur");
+
 	// 防止注入漏洞
 	struct stat temp;
 
@@ -158,7 +167,7 @@ bbsfindacc_main()
 	char ippop[10][256];
 
 	char email[60];
-	sprintf(email, "%s@%s", user, popname);  // 注意不要将email弄溢出了
+	snprintf(email, 60, "%s@%s", user, popname);  // 注意不要将email弄溢出了
 	str_to_lowercase(email);
 
 
@@ -176,7 +185,7 @@ bbsfindacc_main()
 */
 	int result;
 	//int result = test_mail_valid(user, pass, popip);
-	if (strstr(popname, "idp.xjtu6.edu.cn")) {
+	if (!strcasecmp(popname, "idp.xjtu6.edu.cn") && !strcasecmp(popip, IP_POP[3])) {
 		if (!strcmp(fromhost, "202.117.1.190") || !strcmp(fromhost, "2001:250:1001:2::ca75:1be"))
 			result=1;
 		else {
@@ -185,6 +194,18 @@ bbsfindacc_main()
 		}
 	}
 	else {
+		int pop_n;
+		result = 0;
+		for(pop_n=1;pop_n<=2; ++pop_n) {
+			if(strcasecmp(popname, MAIL_DOMAINS[pop_n])==0 && strcasecmp(popip, IP_POP[pop_n])==0) {
+				result = 1;
+				break;
+			}
+		}
+
+		if(result!=1)
+			http_fatal("error occur");
+
 		result = test_mail_valid(user, pass, popip);
 	}
 	
@@ -206,7 +227,7 @@ bbsfindacc_main()
    		 sprintf(sqlbuf,"SELECT userid,status FROM %s WHERE lower(%s)='%s' and status>0;" , USERREG_TABLE, "email", email);
     		mysql_real_query(s, sqlbuf, strlen(sqlbuf));
     		res = mysql_store_result(s);
-		printf("<br>此信箱共认证了%d个用户.<br>\n", mysql_num_rows(res));
+		printf("<br>此信箱共认证了%d个用户.<br>\n", (int)mysql_num_rows(res));
     		//列出同记录下的其他id
     		for (i=0; i<mysql_num_rows(res); ++i) {
         		row = mysql_fetch_row(res);

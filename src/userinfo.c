@@ -52,7 +52,7 @@ static void getfield(int line, char *info, char *desc, char *buf, int len);
 #ifdef POP_CHECK
 // 登陆邮件服务器，进行身份验证， added by interma@BMY 2005.5.12
 /* 返回值为1表示有效，0表示无效, -1表示和pop服务器连接出错 */
-static int test_mail_valid(char *user, char *pass, char *popip)
+static int test_mail_valid(const char *user, const char *pass, const char *popip)
 {
     char buffer[512]; 
     int sockfd;
@@ -62,7 +62,7 @@ static int test_mail_valid(char *user, char *pass, char *popip)
 	if (user[0] == ' ' || pass[0] == ' ')
 		return 0;
 
-    /* 客户程序开始建立 sockfd描述符 */ 
+    /* 客户程序开始建立 sockfd描述符 */
     if((sockfd=socket(AF_INET,SOCK_STREAM,0))==-1) 
     {  
         return -1;
@@ -78,7 +78,7 @@ static int test_mail_valid(char *user, char *pass, char *popip)
         return -1;
     }
 
-    /* 客户程序发起连接请求 */ 
+    /* 客户程序发起连接请求 */
     if(connect(sockfd,(struct sockaddr *)(&server_addr),sizeof(struct sockaddr))==-1) 
     {  
         return -1; 
@@ -91,7 +91,7 @@ static int test_mail_valid(char *user, char *pass, char *popip)
     if (buffer[0] == '-')
         return -1;
     
-    sprintf(buffer, "USER %s\r\n\0", user);
+    sprintf(buffer, "USER %s\r\n", user);
     if (write(sockfd, buffer, strlen(buffer)) == -1)
     { 
         return -1; 
@@ -106,7 +106,7 @@ static int test_mail_valid(char *user, char *pass, char *popip)
         return 0;
     }   
      
-    sprintf(buffer, "PASS %s\r\n\0", pass);
+    sprintf(buffer, "PASS %s\r\n", pass);
     if (write(sockfd, buffer, strlen(buffer)) == -1)
     { 
         return -1; 
@@ -332,9 +332,7 @@ char *str;
 }
 
 void
-disply_userinfo(u, real)
-struct userec *u;
-int real;
+disply_userinfo(struct userec *u, int real)
 {
 	struct stat st;
 	#ifdef __LP64
@@ -370,7 +368,7 @@ int real;
 		prints("文章数目     : %d\n", u->numposts);
 	}
 	exp = countexp(u);
-	prints("经验值       : %d(%s)\n", exp, cexp(exp));
+	prints("经验值       : %d(%s)\n", exp, charexp(exp));
 	exp = countperf(u);
 	prints("表现值       : %d(%s)\n", exp, cperf(exp));
 	prints("上站总时数   : %d 小时 %d 分钟\n", u->stay / 3600,
@@ -719,8 +717,8 @@ x_fillform()
 	char phone[STRLEN], dept[STRLEN], assoc[STRLEN];
 	char ans[5], *mesg, *ptr;
 	FILE *fn;
-	time_t now;
-	int lockfd;
+
+//	int lockfd;	// 此处跟随下方注释代码暂时注释掉，by IronBlood，
 	struct active_data act_data;
 	int index;
 
@@ -834,8 +832,8 @@ x_fillform()
 	}
 
 	char user[USER_LEN + 1];
-    	char pass[PASS_LEN + 1];
-	int result;
+	char pass[PASS_LEN + 1];
+
 	getdata(13, 0, "信箱用户名(输入x放弃验证，新生注册请输入用户名test，密码test) >>  ", user, USER_LEN, DOECHO, YEA);
 	getdata(14, 0, "信箱密码 >>  ", pass, PASSLEN, NOECHO, YEA);
 
@@ -848,7 +846,7 @@ x_fillform()
 			move(5, 0);
 			prints("欢迎您加入交大，来到兵马俑BBS。\n您采用了新生测试信箱注册，目前您是新生用户身份。");
 			prints("目前您没有发文、信件、消息等权限。\n\n");
-			prints("请在开学取得stu.xjtu.edu.cn信箱后，\n按照上站登录后的提示完成信箱绑定认证操作，成为本站正式用户。");	
+			prints("请在开学取得stu.xjtu.edu.cn信箱后，\n按照上站登录后的提示完成信箱绑定认证操作，成为本站正式用户。");
 			pressanykey();
 			return;	
 		}
@@ -892,7 +890,7 @@ x_fillform()
     	if (response==WRITE_SUCCESS || response==UPDATE_SUCCESS)  {
 		clear();
 		move(5, 0);
-		prints("身份审核成功，您已经可以使用所用功能了！\n"); 
+		prints("身份审核成功，您已经可以使用所用功能了！\n");
 		strncpy(currentuser.email, email, STRLEN);
 		register_success(usernum, currentuser.userid, rname, dept, addr, phone, assoc, email);
 		  
@@ -982,12 +980,12 @@ x_fillform()
 	switch (result)
     {
 		  case 0:
-          prints("身份审核失败，请重试                       \n"); 
+          prints("身份审核失败，请重试                       \n");
 		  scroll(); break;
           case -1:
-          prints("邮件服务器连接出错，请重试                  \n"); scroll(); break; 
+          prints("邮件服务器连接出错，请重试                  \n"); scroll(); break;
           case 1:     
-          // prints("身份审核成功，您已经可以使用所用功能了！\n"); 
+          // prints("身份审核成功，您已经可以使用所用功能了！\n");
 		  i = 3;
 		  break;
      
@@ -999,7 +997,7 @@ x_fillform()
     {
 		  case -1:
 		  case 0:
-          prints("3次身份审核均失败，您将只能使用本bbs的最基本功能，十分抱歉\n"); 
+          prints("3次身份审核均失败，您将只能使用本bbs的最基本功能，十分抱歉\n");
 		  
 		  //register_fail(currentuser.userid);
 
@@ -1012,7 +1010,7 @@ x_fillform()
 		  namepop[n - 1][strlen(namepop[n - 1]) - 1] = 0;	  
 		  if (write_pop_user(user, currentuser.userid, namepop[n - 1]) == 1)
 		  {
-				prints("您已经使用该信箱注册过ID了,因此您无法注册这个ID,十分抱歉\n"); 
+				prints("您已经使用该信箱注册过ID了,因此您无法注册这个ID,十分抱歉\n");
 				//register_fail(currentuser.userid);
 
 				scroll();
@@ -1020,7 +1018,7 @@ x_fillform()
 				return;
 		  }
 
-          prints("身份审核成功，您已经可以使用所用功能了！\n"); 
+          prints("身份审核成功，您已经可以使用所用功能了！\n");
 
 		  char email[256];
 		  sprintf(email, "%s@%s", user, namepop[n - 1]);

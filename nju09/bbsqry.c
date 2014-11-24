@@ -12,6 +12,7 @@ int show_special_web(char *id2) {
 		if(!strcasecmp(id1, id2)) hprintf(" [1;33m°Ô[36m%s[33m°Ô[m",name);
 	}
 	fclose(fp);
+	return 0;
 } 
 
 void show_special_api(char *id2, char *output){
@@ -25,7 +26,7 @@ void show_special_api(char *id2, char *output){
 			if(!strcasecmp(id1, id2)) sstrcat(output, "\"Title\":\"%s\",", name);
 		}
 	}
-	close(fp);
+	fclose(fp);
 }
 
 int
@@ -58,7 +59,7 @@ apiqry_main()
 	sstrcat(output, "\"UserID\":\"%s\",\"UserNickName\":\"%s\",\"LoginCounts\":%d,\"PostCounts\":%d,\"LastLogin\":\"%s\",\"LastHost\":\"%s\",", x->userid, x->username, x->numlogins, x->numposts,Ctime(x->lastlogin), x->lasthost);
 	// œ‘ æ∏ˆ»À ˝æ›
 	if(!strcasecmp(x->userid, currentuser.userid)){
-		sstrcat(output, "\"Exp\":%d,\"ExpLevel\":\"%s\",\"Perf\":%d,\"PerfLevel\":\"%s\"",countexp(x), cexp(countexp(x)), countperf(x), cperf(countperf(x)));
+		sstrcat(output, "\"Exp\":%d,\"ExpLevel\":\"%s\",\"Perf\":%d,\"PerfLevel\":\"%s\"",countexp(x), charexp(countexp(x)), countperf(x), cperf(countperf(x)));
 	}
 	// œ‘ æ∞ÊŒÒ°¢’æŒÒµ»–≈œ¢
 	if(x->userlevel & PERM_BOARDS)
@@ -232,7 +233,7 @@ bbsqry_main()
 	hprintf("–≈œ‰£∫[[1;32m%s[m]£¨", tmp2 ? "°—" : "  ");
 	if (!strcasecmp(x->userid, currentuser.userid)) {
 		hprintf("æ≠—È÷µ£∫[[1;32m%d[m]([33m%s[m) ", countexp(x),
-			cexp(countexp(x)));
+			charexp(countexp(x)));
 		hprintf("±Ìœ÷÷µ£∫[[1;32m%d[m]([33m%s[m) ", countperf(x),
 			cperf(countperf(x)));
 	}
@@ -253,11 +254,11 @@ bbsqry_main()
 		else if (x->userlevel & PERM_SPECIAL7)
 		{
 		if ( (x->userlevel & PERM_SPECIAL1) && !(x->userlevel & PERM_CLOAK) ) 
-		hprintf("[[1;36m¿Î»Œ≥Ã–Ú‘±[m]");		
+		hprintf("[[1;36m¿Î»Œ≥Ã–Ú‘±[m]");
 		else		
 		hprintf("[[1;36m≥Ã–Ú◊È≥…‘±[m]");
 		}
-		else if (x->userlevel & PERM_ACCOUNTS) hprintf ("[[1;36m’ ∫≈π‹¿Ì‘±[m]"); 
+		else if (x->userlevel & PERM_ACCOUNTS) hprintf ("[[1;36m’ ∫≈π‹¿Ì‘±[m]");
 		hprintf("\n");
 	}
 	num = 0;

@@ -60,7 +60,7 @@ readuservalue(char *userid, char *key, char *value, int size)
 }
 
 char *
-cexp(int exp)
+charexp(int exp)
 {
 	int expbase = 0;
 

@@ -11,8 +11,7 @@ printdiv(int *n, char *str)
 	"  {"
 		"document.getElementById('menu').click()\n"
 	"  }"
-	"</script>"
-		, *n);
+	"</script>");
 
 	if(!strcmp(str, "分类讨论区")){
 		//modify: \"_bbsall.htm\" to: bbssecfly by: flyinsea
@@ -50,7 +49,7 @@ bbsleft_main()
 {
 	int i;
 	int div = 0;
-	char* buf[512];
+	char buf[512];
 	FILE* fp;
 	changemode(MMENU);
 	html_header(2);
@@ -108,7 +107,7 @@ bbsleft_main()
 		printf("<a class=1100>用户: <a href=bbsqry?userid=%s target=f3>%s</a><br>",
 		       currentuser.userid, currentuser.userid);
 		if (currentuser.userlevel & PERM_LOGINOK)
-			strcpy(buf, cexp(countexp(&currentuser)));
+			strcpy(buf, charexp(countexp(&currentuser)));
 		if (currentuser.userlevel & PERM_BOARDS)
 			strcpy(buf, "版主");
 		if (currentuser.userlevel & PERM_XEMPT)
@@ -133,11 +132,11 @@ bbsleft_main()
 		<td><a target=f3 href=\"bbsshownav?a1=class&a2=all\" class=1100>近日精彩话题</a></td></tr>\n");*/
 	//Add by liuche 20121119 order by oOIOo ^_^
 	printdiv(&div, "BMY告示墙");
-	printf("&nbsp;&nbsp;<a target=f3 href=gdoc?B=AcdemicClub class=linkleft>讲座信息</a><br>\n");
+	printf("&nbsp;&nbsp;<a target=f3 href=gdoc?B=AcademicClub class=linkleft>讲座信息</a><br>\n");
 	printf("&nbsp;&nbsp;<a target=f3 href=gdoc?B=Activity class=linkleft>校园活动</a><br>\n");
 	printf("&nbsp;&nbsp;<a class=linkleft href=\"%sLost_Found\" target=f3>失物招领</a><br>\n"
 		, showByDefMode() );
-	printf("&nbsp;&nbsp;<a class=linkleft href=\"tdoc?board=BoardHome\" target=f3>我要当版主</a><br>\n");			
+	printf("&nbsp;&nbsp;<a class=linkleft href=\"tdoc?board=BoardHome\" target=f3>我要当版主</a><br>\n");
 	printf("&nbsp;&nbsp;<a class=linkleft href=\"%sBMY_Dev\" target=f3>程序与报错</a><br>\n"
 		, showByDefMode() );
 	printf("&nbsp;&nbsp;<a class=linkleft href=\"%sArtDesign\" target=f3>美工与进站</a><br>\n"
@@ -193,9 +192,9 @@ bbsleft_main()
 #endif
 	printf("</div></td></tr>\n");
 //	printf("<tr><td align=right valign=top><img id=img2 src=\"images/bmy_arrow_black.gif\" width=6 height=5></td>\n
-//		<td><DIV class=r id=div2a><a href="javascript:;" target=f3 class=1100 onClick=\"changemn('2');\">谈天说地区</a> 
+//		<td><DIV class=r id=div2a><a href="javascript:;" target=f3 class=1100 onClick=\"changemn('2');\">谈天说地区</a>
 //		</div></td></tr>\n");
-	printdiv(&div, "谈天说地");			
+	printdiv(&div, "谈天说地");
 //	printf("<tr><td align=right></td><td> <DIV class=s id=div2>\n");
 	if (loginok && !isguest) {
 		printf
@@ -227,13 +226,14 @@ bbsleft_main()
 		       "&nbsp;&nbsp;<a target=f3 href=bbsnick class=linkleft>临时改昵称</a><br>"
 		       "&nbsp;&nbsp;<a target=f3 href=bbsstat class=linkleft>排名统计</a><br>"
 		       "&nbsp;&nbsp;<a target=f3 href=bbsfall class=linkleft>设定好友</a><br>"
+			   "&nbsp;&nbsp;<a target=f3 href=bbsball class=linkleft>设定黑名单</a><br>"
 			   "&nbsp;&nbsp;<a target=f3 href=bbsmybrd?mode=2 class=linkleft>RSS订阅管理</a><br>");
 		if (currentuser.userlevel & PERM_CLOAK)
 			printf("&nbsp;&nbsp;<a target=f3 "
 			       "onclick='return confirm(\"确实切换隐身状态吗?\")' "
 			       "href=bbscloak class=linkleft>切换隐身</a><br>\n");
 		printf("</div></td></tr>");
-		printdiv(&div, "处理信件");				
+		printdiv(&div, "处理信件");
 		printf("&nbsp;&nbsp;<a target=f3 href=bbsnewmail class=linkleft>新邮件</a><br>"
 		       "&nbsp;&nbsp;<a target=f3 href=bbsmail class=linkleft>所有邮件</a><br>"
 		       "&nbsp;&nbsp;<a target=f3 href=bbspstmail class=linkleft>发送邮件</a><br>"
@@ -442,7 +442,7 @@ endleft:
 		printf("用户: <a href=bbsqry?userid=%s target=f3>%s</a><br>",
 		       currentuser.userid, currentuser.userid);
 		if (currentuser.userlevel & PERM_LOGINOK)
-			strcpy(buf, cexp(countexp(&currentuser)));
+			strcpy(buf, charexp(countexp(&currentuser)));
 		if (currentuser.userlevel & PERM_BOARDS)
 			strcpy(buf, "版主");
 		if (currentuser.userlevel & PERM_XEMPT)

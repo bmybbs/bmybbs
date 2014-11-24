@@ -1,0 +1,24 @@
+interma@2005.10.31
+
+当重新安装bbs系统的时候，你可能要执行./configure 
+这时你就要小心了，因为./configure会生成（覆盖）如下文件：
+
+configure: creating ./config.status
+config.status: creating Makefile
+config.status: creating Makefile.Base
+config.status: creating src/Makefile
+config.status: creating include/config.h
+config.status: creating Install.sh
+config.status: creating mail2bbs/bbsmail_wrap
+config.status: creating yftpd/ftpmotd
+config.status: executing default commands
+
+正因为如此，如果你在[1]~[6]中的手动加入过一些代码，执行./configure之后
+这些改动都会被覆盖掉的（特别是config.h）。
+
+因此./configure的时候要慎重(尽量不configure)，要做好相应的备份。
+
+
+
+
+

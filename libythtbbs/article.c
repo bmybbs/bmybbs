@@ -3,13 +3,17 @@
 #include "ythtbbs.h"
 
 // 为了编辑 html/xml/xhtml 文件引入库 libxml2 by IronBlood 20130805
-#include "libxml/HTMLparser.h"
-#include "libxml/HTMLtree.h"
-#include "libxml/xpath.h"
-#include "libxml/parser.h"
-#include "libxml/tree.h"
-#include "libxml/xmlmemory.h"   // 编辑xml内容
-#include "libxml/xmlsave.h"
+#include <sys/file.h>
+#include <libxml/HTMLparser.h>
+#include <libxml/HTMLtree.h>
+#include <libxml/xpath.h>
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+#include <libxml/xmlmemory.h>   // 编辑xml内容
+#include <libxml/xmlsave.h>
+
+// 为了处理 @id 引入 pcre 库 by IronBlood 20140624
+#include <pcre.h>
 
 static int is_article_link_in_file(char *boardname, int thread, char *filename);
 static int update_article_link_in_file(char *boardname, int oldthread, int newfiletime, char *newtitle, char *filename);
@@ -18,7 +22,7 @@ char *
 fh2fname(struct fileheader *fh)
 {
 	static char s[16];
-	sprintf(s, "M.%d.A", fh->filetime);
+	sprintf(s, "M.%lu.A", (long)fh->filetime);
 	if (fh->accessed & FH_ISDIGEST)
 		s[0] = 'G';
 	if (fh->accessed & FILE_ISTOP1)  //add by wjbta
@@ -30,7 +34,7 @@ char *
 bknh2bknname(struct bknheader *bknh)
 {
 	static char s[16];
-	sprintf(s, "B.%d", bknh->filetime);
+	sprintf(s, "B.%lu", bknh->filetime);
 	return s;
 }
 
@@ -178,6 +182,11 @@ DIR_do_underline(struct fileheader *fileinfo, struct fileheader *newfileinfo)
 	SWITCH_FLAG(fileinfo->accessed, FH_NOREPLY);
 }
 
+void DIR_do_water(struct fileheader *fileinfo, struct fileheader *newfileinfo)
+{
+	SWITCH_FLAG(fileinfo->accessed, FH_ISWATER);
+}
+
 void
 DIR_do_allcanre(struct fileheader *fileinfo, struct fileheader *newfileinfo)
 {
@@ -258,8 +267,11 @@ DIR_do_suremarkdel(struct fileheader *fileinfo, struct fileheader *newfileinfo)
 	fileinfo->accessed |= FH_DEL;
 }
 
-void                                                                             DIR_do_top(struct fileheader *fileinfo, struct fileheader *newfileinfo)         
-{                                                                                   SWITCH_FLAG(fileinfo->accessed, FILE_TOP1);                                   }                                                                                                                      
+void
+DIR_do_top(struct fileheader *fileinfo, struct fileheader *newfileinfo)
+{
+	SWITCH_FLAG(fileinfo->accessed, FILE_TOP1);
+}
 
 int
 outgo_post(struct fileheader *fh, char *board, char *id, char *name)
@@ -383,7 +395,7 @@ Search_Bin(char *ptr, int key, int start, int end)
 {
         // 在有序表中折半查找其关键字等于key的数据元素。
         // 若查找到，返回索引
-	// 否则为大于key的最小数据元素索引m，返回(-m-1) 
+	// 否则为大于key的最小数据元素索引m，返回(-m-1)
         int low, high, mid;
 	struct fileheader *totest;
         low = start;
@@ -578,5 +590,49 @@ static int update_article_link_in_file(char *boardname, int oldthread, int newfi
 time_t fn2timestamp(char * filename) {
 	char num_str[11]={'0'};
 	memcpy(num_str, &filename[2], 10);
-	return (time_t)atoi(num_str);
+	return (time_t)atol(num_str);
+}
+
+int parse_mentions(char *content, char userids[20][14], int from)
+{
+	const char * MENTION_PATTERN = "@[A-Za-z]{1,12}\\s";
+	pcre *re;
+	const char *re_error;
+	int erroffset, i, j, offsetcount, offsets[3], is_exist;
+	const char *match;
+	char buf[14];
+
+	re = pcre_compile(MENTION_PATTERN, 0, &re_error, &erroffset, NULL);
+	if(re == NULL) {
+		return -1;
+	}
+
+	i=0;	// 用于 userids[i] 索引
+	offsetcount = pcre_exec(re, NULL, content, strlen(content), 0, 0, offsets, 3);
+	while(offsetcount>0 && i<MAX_MENTION_ID && ((from==1) ? 1 : (strstr(content+offsets[1], "\n--\n")!=NULL))) {
+		if(pcre_get_substring(content, offsets, offsetcount, 0, &match) >= 0) {
+			if(i==0) { // userids 还为空的时候
+				strncpy(userids[0], match+1, strlen(match)-2);
+				++i;
+			} else { // userids 已经存在 id 了，则循环比较
+				is_exist = 0;
+				memset(buf, 0, 14);
+				strncpy(buf, match+1, strlen(match)-2);
+				for(j=0; j<i; ++j) {
+					if(!strcasecmp(buf, userids[j]))
+						is_exist = 1;
+				}
+				if(!is_exist) {	// buf 在 userids 中不存在的时候拷贝到 userids 中
+					strcpy(userids[i++], buf);
+				}
+			}
+
+			pcre_free_substring(match);
+		}
+
+		offsetcount = pcre_exec(re, NULL, content, strlen(content), offsets[1], 0, offsets, 3);
+	}
+
+	pcre_free(re);
+	return i;
 }

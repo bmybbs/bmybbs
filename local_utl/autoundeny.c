@@ -4,6 +4,10 @@
 
 #include "article.h"
 /* 以下这段发送邮件的函数，参考src/mail.c中的那个mail_buf函数做成的。interma@BMY 2005.4.24 */
+
+extern void securityreport(char * owner, char * str, char * title);
+extern void deliverreport(char * board, char * title, char * str);
+
 static int
 mail_buf(buf, userid, title)
 char *buf, userid[], title[];
@@ -11,7 +15,8 @@ char *buf, userid[], title[];
 	struct fileheader newmessage;
 	struct stat st;
 	char fname[STRLEN], filepath[STRLEN];
-	int count, tmpinmail, now, fd;
+	int count, tmpinmail, fd;
+	time_t now;
 	FILE *fp;
 
 	memset(&newmessage, 0, sizeof (newmessage));
@@ -29,12 +34,12 @@ char *buf, userid[], title[];
 			return -1;
 	}
 	now = time(NULL);
-	sprintf(fname, "M.%d.A", now);
+	sprintf(fname, "M.%lu.A", now);
 	setmailfile(filepath, userid, fname);
 	count = 0;
 	while ((fd = open(filepath, O_CREAT | O_EXCL | O_WRONLY, 0644)) == -1) {
 		now++;
-		sprintf(fname, "M.%d.A", now);
+		sprintf(fname, "M.%lu.A", now);
 		setmailfile(filepath, userid, fname);
 		if (count++ > MAX_POSTRETRY) {
 			return -1;
@@ -67,11 +72,11 @@ char *buf, userid[], title[];
 	return 0;
 }
 
-report(str)
+/*void report(str)
 char *str;
 {
 //      printf("%s\n",str);
-}
+}*/
 
 unsigned long
 atoul(p)
@@ -174,6 +179,7 @@ int maxlen;
 	return len;
 }
 
+int
 main()
 {
 	int b_fd, d_fd;
@@ -194,7 +200,7 @@ main()
 	bufsize = 0;
 //      sprintf(board_file,"%s/.BOARDS",MY_BBS_HOME);
 	nowtime = time(NULL);
-	printf("bbs home=%s now time = %d\n", MY_BBS_HOME, nowtime);
+	printf("bbs home=%s now time = %lu\n", MY_BBS_HOME, nowtime);
 	if ((b_fd = open(".BOARDS", O_RDONLY)) == -1)
 		return -1;
 	flock(b_fd, LOCK_EX);
@@ -302,4 +308,6 @@ main()
 		free(buf);
 	flock(b_fd, LOCK_UN);
 	close(b_fd);
+
+	return 0;
 }

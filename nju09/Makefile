@@ -33,7 +33,7 @@ CFILE	= bbsmain.c bbstop10.c bbsdoc.c bbscon.c bbsbrdadd.c bbsboa.c bbsall.c bbs
 	bbsscanreg.c bbsshowfile.c bbst.c bbsdt.c bbslt.c bbsincon.c bbssetscript.c \
 	bbscccmail.c bbsfwdmail.c bbstmpl.c bbsrss.c bbsucss.c bbsdefcss.c bbssecfly.c \
 	bbssbs.c bbseditmail.c  bbsfindpass.c bbsresetpass.c bbsfindacc.c bbsnotify.c \
-	bbsdelnotify.c
+	bbsdelnotify.c bbsbadd.c bbsbdel.c bbsball.c
 CFILEBACKUP = bbsdmulan.c bbsdt.c bbsjs.c bbslt.c bbsmovie.c bbsnewleft.c bbssel.c bbst.c bbstty.c bbschat.c \
 	      ytml.c ytml_func.c bclass.c bbsusr.c bbsalluser.c
 
@@ -41,7 +41,7 @@ COBJS	:=$(CFILE:.c=.o)
 
 #OTHERS	= usesql.h BBSLIB.c boardrc.c deny_users.c bbsupdatelastpost.c bbsred.c tshirt.h
 OTHERS = BBSLIB.c boardrc.c deny_users.c bbsupdatelastpost.c bbsred.c 
-.c.o:	;  $(CC) -c $*.c -D_GNU_SOURCE $(CFLAGS) $(CPPFLAGS) $(WWW_CPPFLAGS) -DYTMPATH='"$(YTMPATH)"' -DHTMPATH='"$(HTMPATH)"' -Wall $(LIBS)
+.c.o:	;  $(CC) -c $*.c -D_GNU_SOURCE $(CFLAGS) $(CPPFLAGS) $(WWW_CPPFLAGS) -DYTMPATH='"$(YTMPATH)"' -Wall $(LIBS)
 
 all: $(PROGNAME)
 
@@ -49,13 +49,13 @@ ifeq (.depend,$(wildcard .depend))
 include .depend
 endif
 
-depend dep .depend: proto
+depend dep .depend:
 	gcc $(CFLAGS) -MM $(CFILE) $(OTHERS) upload.c >.depend
 
 proto proto.h:
-	cproto -DMAKE_PROTO -D__GNUC__ $(CFILE) $(OTHERS) $(CPPFLAGS) $(WWW_CPPFLAGS) -I$(BASEPATH)/libythtbbs -I$(BASEPATH)/ythtlib -I$(BASEPATH)/include > proto.h
+	cproto -DMAKE_PROTO $(CFILE) $(OTHERS) $(CPPFLAGS) $(WWW_CPPFLAGS) -I$(BASEPATH)/libythtbbs -I$(BASEPATH)/ythtlib -I$(BASEPATH)/include > proto.h
 
-$(COBJS):  .depend
+$(COBJS): proto.h .depend
 
 $(PROGNAME):	$(COBJS) $(OTHERS) BBSLIB.o
 ifdef GPROF

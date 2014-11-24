@@ -156,10 +156,10 @@ fshowcon(FILE * output, char *filename, int show_iframe)
 {
 	char *ptr, buf[512];
 	FILE *fp;
-	int lastq = 0, ano = 0;
+	int lastq = 0, ano = 0, in_sig = 0;
 	if (show_iframe != 2) {
 //		fprintf(output, "<table width=100%% border=1><tr>");
-		fprintf(output, "<tr><td width=40 class=\"level1\">&nbsp;</td>\n<td class=\"level1\"><br><TABLE width=\"95%\" cellpadding=5 cellspacing=0><TBODY>\n<tr><td class=tdtitletheme>&nbsp;</td></tr><tr>\n");
+		fprintf(output, "<tr><td width=40 class=\"level1\">&nbsp;</td>\n<td class=\"level1\"><br><TABLE width=\"95%%\" cellpadding=5 cellspacing=0><TBODY>\n<tr><td class=tdtitletheme>&nbsp;</td></tr><tr>\n");
 		if (testmozilla() && wwwstylenum % 2)
 			fprintf(output, "<td class=\"bordertheme\">\n");
 		else
@@ -168,7 +168,7 @@ fshowcon(FILE * output, char *filename, int show_iframe)
 			char interurl[256];
 			if (via_proxy)
 				snprintf(interurl, sizeof (interurl),
-					 "/" SMAGIC "/%s+%s", filename,
+					 "/" SMAGIC "/%s+%s+%s", filename,
 					 getparm("T"), usingMath?"m":"");  
 			else
 				snprintf(interurl, sizeof (interurl),
@@ -250,11 +250,20 @@ fshowcon(FILE * output, char *filename, int show_iframe)
 				fprintf(output, "</font>");
 			lastq = 0;
 		}
+
+		if (!strncmp(buf, "--\n", 3)) {
+			if (!in_sig) {
+				fprintf(output, "<div class=\"con_sig\">");
+				in_sig = 1;
+			}
+		}
 		fhhprintf(output, "%s", buf);
 	}
 	printf("</div>\n");
 	if (lastq)
 		fprintf(output, "</font>");
+	if (in_sig)
+		fprintf(output, "</div>");
 	fclose(fp);
 	if (show_iframe != 2)
 		fprintf(output, "\n</td></TR></TBODY></TABLE><br></td></tr>\n");
@@ -453,7 +462,7 @@ bbscon_main()
 	}
 
 	// 删除回复提醒开始 by IronBlood
-	int article_id = (int)fn2timestamp(file);
+	time_t article_id = fn2timestamp(file);
 	if(is_post_in_notification(currentuser.userid, board, article_id)) {
 		del_post_notification(currentuser.userid, board, article_id);
 	}
@@ -526,7 +535,7 @@ bbscon_main()
 		printf("<tr><td><a href=\"boa?secstr=%s\">%s</a> / <a href=\"%s%s\">%s</a> / 阅读文章 "
 			"</td></tr></table></td>\n", bx->header.sec1, nohtml(getsectree(bx->header.sec1)->title), showByDefMode(), board, board);
 		printf("<td><table border=0 align=right cellpadding=0 cellspacing=0>\n"
-			"<tr><td> 版主 %s</tr></table></td></tr></table></td></tr>\n", 
+			"<tr><td> 版主 %s</tr></table></td></tr></table></td></tr>\n",
 			userid_str(bm2str(bmbuf, &(bx->header))));
 		if (dirinfo->accessed & FH_ALLREPLY) {
 			FILE *fp;
@@ -547,13 +556,13 @@ bbscon_main()
 		}
 		thread = dirinfo->thread;
 		printf("<tr><td height=70 colspan=2>\n"
-			"<table width=\"100%\" height=\"100%\" border=0 cellpadding=0 cellspacing=0 bgcolor=#efefef>\n"
+			"<table width=\"100%%\" height=\"100%%\" border=0 cellpadding=0 cellspacing=0 bgcolor=#efefef>\n"
 			"<tr><td width=40>&nbsp; </td>\n"
 			"<td height=70>\n"
-			"<table width=\"95%\" height=\"100%\"  border=0 cellpadding=0 cellspacing=0>\n"
+			"<table width=\"95%%\" height=\"100%%\"  border=0 cellpadding=0 cellspacing=0>\n"
 			"<tr><td colspan=2 valign=bottom>\n"
-			"<table width=\"100%\" border=0 cellpadding=0 cellspacing=0>\n");
-		nbuf = sprintf(buf, "<tr><td><div class=\"menu\">\n<DIV class=btncurrent>&lt;%s&gt;</DIV>\n", void1(titlestr(bx->header.title)));
+			"<table width=\"100%%\" border=0 cellpadding=0 cellspacing=0>\n");
+		nbuf = sprintf(buf, "<tr><td><div class=\"menu\">\n<DIV class=btncurrent>&lt;%s&gt;</DIV>\n", void1((unsigned char *)titlestr(bx->header.title)));
 /*		    sprintf(buf, "[<a href='fwd?B=%s&amp;F=%s'>转寄</a>]",
 			    board, file);
 */
@@ -591,24 +600,24 @@ bbscon_main()
 	fputs(buf, stdout);
 	nbuf = 0;
 	nbuf += sprintf(buf + nbuf,
-		"<a href='pstmail?B=%s&amp;F=%s&amp;num=%d' class=btnfunc title=\"回信给作者 accesskey: m\" accesskey=\"m\">/ 回信给作者</a>\n", board, file, num);	
+		"<a href='pstmail?B=%s&amp;F=%s&amp;num=%d' class=btnfunc title=\"回信给作者 accesskey: m\" accesskey=\"m\">/ 回信给作者</a>\n", board, file, num);
 	nbuf += sprintf(buf + nbuf,
-		"<a href='tfind?B=%s&amp;th=%d&amp;T=%s' class=btnfunc>/ 同主题列表</a>\n", board, dirinfo->thread, encode_url(ptr));
+		"<a href='tfind?B=%s&amp;th=%lu&amp;T=%s' class=btnfunc>/ 同主题列表</a>\n", board, (long)dirinfo->thread, encode_url((unsigned char *)ptr));
 	nbuf += sprintf(buf + nbuf,
-		"<a href='bbstcon?board=%s&amp;start=%d&amp;th=%d' class=btnfunc>/ 同主题由此展开</a>\n", board, num, dirinfo->thread);
+		"<a href='bbstcon?board=%s&amp;start=%d&amp;th=%lu' class=btnfunc>/ 同主题由此展开</a>\n", board, num, (long)dirinfo->thread);
 	nbuf += sprintf(buf + nbuf,
-		"<a href='%s%s&amp;S=%d' class=btnfunc title=\"返回讨论区 accesskey: b\" accesskey=\"b\">/ 返回讨论区</a>\n", 
+		"<a href='%s%s&amp;S=%d' class=btnfunc title=\"返回讨论区 accesskey: b\" accesskey=\"b\">/ 返回讨论区</a>\n",
 		showByDefMode(), board, (num > 4) ? (num - 4) : 1);
 	nbuf += sprintf(buf + nbuf,
 			"</div></td></tr></table></td></tr>\n");
 	nbuf += sprintf(buf + nbuf,
-			"<tr><td width=\"60%\">");
+			"<tr><td width=\"60%%\">");
 
 	if (!(dirinfo->accessed & FH_NOREPLY))
 		nbuf += sprintf(buf + nbuf,
 	"<a href='pst?B=%s&amp;F=%s&amp;num=%d%s' class=btnsubmittheme title=\"回复本文 accesskey: r\" accesskey=\"r\">回复本文</a> </td>\n", board, file, num, outgoing ? "" : (inndboard ? "&amp;la=1" : ""));
 
-	nbuf += sprintf(buf + nbuf, "<td width=\"40%\" align=right>分享到 ");
+	nbuf += sprintf(buf + nbuf, "<td width=\"40%%\" align=right>分享到 ");
     char *encoded_title = url_encode(title_utf8);
     nbuf += sprintf(buf + nbuf, "<a href=\"#\" onclick=\"javascript:share('sina','%s','%s','%s');\"><img src=\"/images/share-sina.png\"/></a> ",encoded_title,board,file);
     nbuf += sprintf(buf + nbuf, "<a href=\"#\" onclick=\"javascript:share('renren','%s','%s','%s');\"><img src=\"/images/share-rr.png\"/></a> ",encoded_title,board,file);
@@ -651,7 +660,7 @@ bbscon_main()
 			if (prenum >= 0 && num - prenum < 100)
 				nbuf += sprintf
 				    (buf + nbuf,
-				     "<a href='con?B=%s&amp;F=%s&amp;N=%d&amp;st=1&amp;T=%d'>同主题上篇 </a>",
+				     "<a href='con?B=%s&amp;F=%s&amp;N=%d&amp;st=1&amp;T=%lu'>同主题上篇 </a>",
 				     board, fh2fname(x), prenum + 1, feditmark(*x));
 			nbuf += sprintf(buf + nbuf,
 					"<a href='%s%s&amp;S=%d'>本讨论区 </a>",
@@ -668,7 +677,7 @@ bbscon_main()
 			if (nextnum < total && nextnum - num < 100)
 				nbuf += sprintf
 				    (buf + nbuf,
-				     "<a href='con?B=%s&amp;F=%s&amp;N=%d&amp;st=1&amp;T=%d'>同主题下篇</a>",
+				     "<a href='con?B=%s&amp;F=%s&amp;N=%d&amp;st=1&amp;T=%lu'>同主题下篇</a>",
 				     board, fh2fname(x), nextnum + 1, feditmark(*x));
 		} else {
 			if (num > 0) {
@@ -679,7 +688,7 @@ bbscon_main()
 								   fileheader));
 				nbuf +=
 				    sprintf(buf + nbuf,
-					    "<a href='con?B=%s&amp;F=%s&amp;N=%d&amp;T=%d' title=\"上篇 accesskey: f\" accesskey=\"f\">上篇 </a>",
+					    "<a href='con?B=%s&amp;F=%s&amp;N=%d&amp;T=%lu' title=\"上篇 accesskey: f\" accesskey=\"f\">上篇 </a>",
 					    board, fh2fname(x), num, feditmark(*x));
 			}
 			nbuf +=
@@ -694,7 +703,7 @@ bbscon_main()
 								   fileheader));
 				nbuf +=
 				    sprintf(buf + nbuf,
-					    "<a href='con?B=%s&amp;F=%s&amp;N=%d&amp;T=%d' title=\"下篇 accesskey: n\" accesskey=\"n\">下篇</a>",
+					    "<a href='con?B=%s&amp;F=%s&amp;N=%d&amp;T=%lu' title=\"下篇 accesskey: n\" accesskey=\"n\">下篇</a>",
 					    board, fh2fname(x), num + 2, feditmark(*x));
 			}
 		}

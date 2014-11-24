@@ -1,0 +1,155 @@
+发信人: wjbta (好好爱静--一辈子不后悔), 信区: Program_Team
+标  题: GDB调试Firebird源代码的方法(bbsd)(zz)
+发信站: 兵马俑BBS (Tue Mar 15 16:32:58 2005), 本站(bbs.xjtu.edu.cn)
+
+发信人: tian (老鼠掉进米缸里), 信区: BBSMaintenance
+标  题: [技巧]GDB调试Firebird源代码的方法(bbsd
+发信站: 天大求实BBS (Sun Mar 13 16:57:45 2005), 本站(bbs.tju.edu.cn)
+
+发信人: tonydudu (最爱小企鹅和小魔鬼), 信区: InstallBBS
+标  题: [技巧]GDB调试Firebird源代码的方法(bbsd)
+发信站: 华南网木棉站 (Tue Dec 11 00:40:25 2001), 转信
+
+GDB调试Firebird源代码的方法(bbsd)
+
+by flyriver@happynet.org
+
+本文是我为 HAPPY BBS 系统进行维护期间一些心得的总结。由于
+HAPPY 使用的原始版本是 FireBird-3.0-19990513-SNAP，因此如
+果你使用的是 FB2000 的话，有些地方可能有所差别，但差别应该
+不会太大，请自行修正。
+
+
+调试环境
+    服务器(Linux, 运行 FB 系统)
+    客户端(Win2k, SecureCRT, S-Term)
+
+首先用 SecureCRT 打开一个终端连到服务器上，设为终端1。
+1. 修改 bbsd.c，首先找到 main() 函数，在 accept() 一个 client
+   之后的那个 fork() 部分，修改成如下代码：
+        pid = fork();
+
+        if (!pid)
+        {
+#ifdef BBS_GDB
+            {
+                char debug_file[128] = "/tmp/start";
+                struct stat fs;
+
+                while (stat(debug_file, &fs) < 0)
+                    sleep(1);
+            }
+#endif
+            //...
+        }
+
+2. 然后修改主Makefile文件(在src目录外面的那个), 分别找到
+CFLAGS   = -O2 -Wunused -I../include
+CSIE_DEF = -DSHOW_IDLE_TIME -DWITHOUT_CHROOT
+
+    把他们注释掉，并改为下面的：
+#CFLAGS   = -O2 -Wunused -I../include                   # 注视掉原来的
+CFLAGS   = -ggdb -Wunused -I../include                  # 加上调试选项
+#CSIE_DEF = -DSHOW_IDLE_TIME -DWITHOUT_CHROOT           # 注视掉原来的
+CSIE_DEF = -DBBS_GDB -DSHOW_IDLE_TIME -DWITHOUT_CHROOT  # 定义BBS_GDB宏
+
+3. 重新编译源代码
+   make clean
+   make
+
+4. 启用一个调试进程
+   # cd src
+   # ./bbsd 9000
+
+5. 运行 gdb 调试器
+   # gdb bbsd
+GNU gdb Red Hat Linux 7.x (5.0rh-12)
+Copyright 2001 Free Software Foundation, Inc.
+GDB is free software, covered by the GNU General Public License, and you are
+welcome to change it and/or distribute copies of it under certain conditions.
+Type "show copying" to see the conditions.
+There is absolutely no warranty for GDB.  Type "show warranty" for details.
+This GDB was configured as "i386-redhat-linux"...
+(gdb) b start_client
+Breakpoint 1 at 0x805fa35: file main.c, line 1056.
+
+6. 连接到调试端口
+再用 SecureCRT 打开另一个终端，设为终端2，然后用 S-Term 连到服务器的 9000 调试
+端口，此时会发现 S-Term 停住了，而不是平常的 FB 登录界面，这就对了。
+在终端2 中输入运行
+    $ ps aux
+bbs       1924  0.0  0.2  1780  648 ?        S    09:33   0:00 bbsd ( 9000
+bbs       1929  0.0  0.2  1780  648 ?        S    09:34   0:00 bbsd ( 9000
+
+可以发现，1929 号进程就是响应 S-Term 的 bbsd 子进程。
+
+7. attach bbsd 子进程
+   切回到终端1 的 gdb 界面
+(gdb) attach 1929
+Attaching to program: /home/bbssrc/src/bbsd, process 1929
+Reading symbols from /lib/libtermcap.so.2...done.
+Loaded symbols for /lib/libtermcap.so.2
+Reading symbols from /lib/libdl.so.2...done.
+Loaded symbols for /lib/libdl.so.2
+Reading symbols from /lib/libc.so.6...done.
+Loaded symbols for /lib/libc.so.6
+Reading symbols from /lib/ld-linux.so.2...done.
+Loaded symbols for /lib/ld-linux.so.2
+0x400d6cb1 in __libc_nanosleep () from /lib/libc.so.6
+
+    可以看到此时进程运行到第 1 步中的新增的循环代码部分。
+
+8. 让 bbsd 子进程脱离循环
+   切回终端2，输入
+   $ touch /tmp/start
+
+9. 调试开始
+   切回终端1 的 gdb 界面
+(gdb) c
+Continuing.
+
+Breakpoint 1, start_client () at main.c:1056
+1056            chdir("/home/bbs");
+(gdb) n
+1061            load_sysconf();
+(gdb) n
+1070            system_init();
+(gdb)
+....
+
+
+
+说明一下，上面的有些步骤其实是可以省的，这里的写法是为了简单易用。
+这种调试方法有一个很好的地方就是 FB 的用户界面与 gdb 调试界面分开
+了，因而可以极大的方便 FB 的开发。不要再固执地使用 prints() 这种
+低效率的方法了，把 gdb 这把利器磨得更锋利才是正途。
+
+
+
+--
+    Nothing but UNIX.
+
+--
+※ 来源:．天大求实 BBS bbs.tju.edu.cn．[FROM: bbs.tju.edu.cn]
+
+说明一下，上面的有些步骤其实是可以省的，这里的写法是为了简单易用。
+这种调试方法有一个很好的地方就是 FB 的用户界面与 gdb 调试界面分开
+了，因而可以极大的方便 FB 的开发。不要再固执地使用 prints() 这种
+低效率的方法了，把 gdb 这把利器磨得更锋利才是正途。
+
+
+
+--
+    Nothing but UNIX.
+
+--
+※ 来源:．天大求实 BBS bbs.tju.edu.cn．[FROM: bbs.tju.edu.cn]
+
+--
+
+爱一个人需要时间，得到后就不要放弃。
+如果放弃，也许会后悔一辈。
+爱就要勇敢一些，不要去躲避，不要去猜疑，相信那一瞬间的感觉，勇往直前
+爱需要责任，也需要付出，懂得付出，才能得到真心的相待
+
+※ 来源:·交大兵马俑bbs站 bbs.xjtu.edu.cn·[FROM:沙漠之地]

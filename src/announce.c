@@ -243,6 +243,7 @@ MENU *pm;
 	ITEM litem;
 	char buf[PATHLEN], *ptr;
 	char hostname[STRLEN];
+	struct boardmem * curr_board=0;
 
 	pm->num = 0;
 	if (snprintf(buf, PATHLEN, "%s/.Names", pm->path) > PATHLEN - 1)
@@ -263,12 +264,13 @@ MENU *pm;
 			else
 				strncpy(litem.fname, buf + 5, 80);
 			litem.fname[79] = '\0';
-			if (((!strstr(litem.title + 38, "(BM: BMS)")
-			      || HAS_PERM(PERM_BOARDS))
-			     && (!strstr(litem.title + 38, "(BM: SYSOPS)")
-				 || HAS_PERM(PERM_SYSOP))
-			     && (strstr(litem.title, "<HIDE>") != litem.title))
-			    || (pm->level & PERM_BOARDS)) {	/*modified by ylsdd */
+
+			curr_board = getboardbyname(litem.fname);
+			if (((!strstr(litem.title + 38, "(BM: BMS)") || HAS_PERM(PERM_BOARDS))
+					&& (!strstr(litem.title + 38, "(BM: SYSOPS)") || HAS_PERM(PERM_SYSOP))
+					&& (strstr(litem.title, "<HIDE>") != litem.title)
+					&& ((curr_board != NULL) ? hasreadperm(&(curr_board->header)) : 1))
+				 || ((pm->level & PERM_BOARDS) && ((curr_board != NULL) ? hasreadperm(&(curr_board->header)) : 1))) {	/*modified by ylsdd */ /* modified by IronBlood 2014.6.1 */
 				if (strstr(litem.fname, "!@#$%")) {
 					char *ptr1, *ptr2, gtmp[STRLEN];
 

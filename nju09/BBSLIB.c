@@ -16,30 +16,30 @@ char rframe[STRLEN];
 char to_hex(char code);
 
 struct wwwstyle wwwstyle[NWWWSTYLE] = {
-	{"éÙºì(´ó×ÖÌå)", CSSPATH "orab.css", 
+	{"éÙºì(´ó×ÖÌå)", CSSPATH "orab.css",
 	 "#b3b7e6", "#abc8f2", "yellow"},
-	{"éÙºì(Ð¡×ÖÌå)", CSSPATH "oras.css", 
+	{"éÙºì(Ð¡×ÖÌå)", CSSPATH "oras.css",
 	 "#b3b7e6", "#abc8f2", "yellow"},
-	{"À¼É«(´ó×ÖÌå)", CSSPATH "blub.css", 
+	{"À¼É«(´ó×ÖÌå)", CSSPATH "blub.css",
 	 "#ffc8ce", "#ffe3e7", "#ff8000"},
-	{"À¼É«(Ð¡×ÖÌå)", CSSPATH "blus.css", 
+	{"À¼É«(Ð¡×ÖÌå)", CSSPATH "blus.css",
 	 "#ffc8ce", "#ffe3e7", "#ff8000"},
-	{"ÂÌÉ«(´ó×ÖÌå)", CSSPATH "greb.css", 
+	{"ÂÌÉ«(´ó×ÖÌå)", CSSPATH "greb.css",
 	 "#c0c0c0", "#d0d0d0", "yellow"},
-	{"ÂÌÉ«(Ð¡×ÖÌå)", CSSPATH "gres.css", 
+	{"ÂÌÉ«(Ð¡×ÖÌå)", CSSPATH "gres.css",
         "#c0c0c0", "#d0d0d0", "yellow"},
 	{"ºÚÉ«(´ó×ÖÌå)", CSSPATH "blab.css",
 	 "#c0c0c0", "#d0d0d0", "yellow"},
-	{"ºÚÉ«(Ð¡×ÖÌå)", CSSPATH "blas.css", 
+	{"ºÚÉ«(Ð¡×ÖÌå)", CSSPATH "blas.css",
 	 "#c0c0c0", "#d0d0d0", "yellow"},
-	{"×Ô¶¨ÒåµÄ½çÃæ", "bbsucss/ubbs.css", 
+	{"×Ô¶¨ÒåµÄ½çÃæ", "bbsucss/ubbs.css",
 	 "", "", ""}
 };
 struct wwwstyle *currstyle = wwwstyle;
 int wwwstylenum = 0;
-int usedMath = 0; //±¾Ò³ÃæÖÐÔø¾­Ê¹ÓÃÊýÑ§¹«Ê½   
-int usingMath = 0; //µ±Ç°ÎÄÕÂ£¨µ±Ç°hsprintf·½Ê½£©ÔÚÊ¹ÓÃÊýÑ§¹«Ê½   
-int withinMath = 0; //ÕýÔÚÊýÑ§¹«Ê½ÖÐ   
+int usedMath = 0; //±¾Ò³ÃæÖÐÔø¾­Ê¹ÓÃÊýÑ§¹«Ê½
+int usingMath = 0; //µ±Ç°ÎÄÕÂ£¨µ±Ç°hsprintf·½Ê½£©ÔÚÊ¹ÓÃÊýÑ§¹«Ê½
+int withinMath = 0; //ÕýÔÚÊýÑ§¹«Ê½ÖÐ
 int no_cache_header = 0;
 int has_smagic = 0;
 int go_to_first_page = 0;
@@ -231,7 +231,7 @@ int num;
 	fstat(fd, &st);
 	len = st.st_size;
 
-	/* lkchu.990428: ernie patch Èç¹û len=0 & pos>0 
+	/* lkchu.990428: ernie patch Èç¹û len=0 & pos>0
 	   (ÔÚ¸Õ¿ª¾«»ªÇøÄ¿Â¼½øÈ¥ÌùÉÏ£¬Ñ¡ÏÂÒ»¸ö) Ê±»áÐ´ÈëÀ¬»ø */
 	off = len ? size * pos : 0;
 	lseek(fd, off, SEEK_SET);
@@ -916,8 +916,8 @@ html_header(int mode)
 	else
 		printf
 		    ("<HTML XMLNS:m=\"http://www.w3.org/1998/Math/MathML\">\n");
-	printf("<!--%d;%d;%d;%d-->", thispid, sizeof (struct wwwsession),
-	       wwwcache->www_visit, wwwcache->home_visit);
+	//printf("<!--%d;%d;%d;%d-->", thispid, sizeof (struct wwwsession),
+	//       wwwcache->www_visit, wwwcache->home_visit);
 	switch (mode) {
 	case 1:
 	case 101:
@@ -1465,7 +1465,7 @@ post_article(char *board, char *title, char *file, char *id,
 	}
 	fprintf(fp, "\n--\n");
 	sig_append(fp, id, sig);
-	fprintf(fp, "[1;%dm¡ù À´Ô´:£®%s %s [FROM: %.20s][m\n",
+	fprintf(fp, "[1;%dm¡ù À´Ô´:£®%s %s [FROM: %.20s][m",
 		31 + rand() % 7, BBSNAME, "http://" MY_BBS_DOMAIN, ip);
 	fclose(fp);
 	sprintf(buf3, "boards/%s/M.%d.A", board, t);
@@ -2269,7 +2269,7 @@ loadbad(char *id)
 	sethomefile(file, id, "rejects");
 	fp = fopen(file, "r");
 	if (fp) {
-		badnum = fread(fff, sizeof (fff[0]), MAXREJECTS, fp);
+		badnum = fread(bbb, sizeof (bbb[0]), MAXREJECTS, fp);
 		fclose(fp);
 	}
 	return 0;
@@ -2623,7 +2623,7 @@ utf8_decode(char *src)
 	static char out[2048];
 	char *outbuf;
 	char *inbuf;
-	int flen, tlen, n;
+	size_t flen, tlen, n;
 	if (cd == (iconv_t) - 1) {
 		cd = iconv_open("GB2312", "UTF-8");
 		if (cd == (iconv_t) - 1)
@@ -2702,9 +2702,9 @@ fdisplay_attach(FILE * output, FILE * fp, char *currline, char *nowfile)
 		    (output,
 		     "%d ¸½Í¼: %s (%ld ×Ö½Ú)<br>"
 			"<a href='/attach/%s'> "
-						"<IMG style=\" max-width:800px; width: expression(this.width > 800 ? 800: true); height:auto\" SRC='/attach/%s' border=0/> </a>",
+			"<IMG style=\" max-width:800px; width: expression(this.width > 800 ? 800: true); height:auto\" SRC='/attach/%s' border=0/> </a>",
 	//	"<img src='/attach/%s'></img>",
-		     ++ano, attachfile, size, download);
+		     ++ano, attachfile, size, download, download);
 		break;
 	case 2:
 		fprintf(output,

@@ -21,7 +21,7 @@ int
 bbssnd_main()
 {
 	char filename[80], dir[80], board[80], title[80], buf[256], userid[20] ,*content,
-	    *ref;
+	    *ref, *content0;
 	int r, i, sig, mark = 0, outgoing, anony, guestre = 0, usemath, nore, mailback;
 	int is1984, to1984 = 0;
 	struct boardmem *brd;
@@ -98,6 +98,7 @@ bbssnd_main()
 	sig = atoi(getparm("signature"));
 	currentuser.signature = sig;
 	content = getparm("text");
+	content0 = strdup(content);
 	printf("text=%s\n", content);
 	//http_fatal("just for test");
 	if (usemath && testmath(content))
@@ -193,5 +194,20 @@ bbssnd_main()
 			add_post_notification(noti_userid, (anony) ? "Anonymous" : currentuser.userid, board, r, title);
 		}
 	} // 发送回帖提醒结束
+
+	// 发送 @ 提醒开始 by IronBlood
+	char mention_ids[MAX_MENTION_ID][IDLEN+2];
+	memset(mention_ids, 0, MAX_MENTION_ID*(IDLEN+2));
+	parse_mentions(content0, mention_ids, 1);
+	struct userec *ue;
+	i=0;
+	while(i!=MAX_MENTION_ID && mention_ids[i][0] != 0) {
+		// 因为mention_ids 可能大小写和本站用户 ID 不同，需要特殊处理
+		ue = getuser(mention_ids[i]);
+		if(ue!=NULL && strcmp(currentuser.userid, ue->userid)!=0 && has_read_perm(ue, board) && !inoverride(currentuser.userid, ue->userid, "rejects"))
+			add_mention_notification(ue->userid, (anony) ? "Anonymous" : currentuser.userid, board, r, title);
+		++i;
+	}
+	// 发送 @ 提醒结束
 	return 0;
 }

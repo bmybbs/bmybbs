@@ -38,10 +38,10 @@ pkglibdir = $(libdir)/sshbbs
 pkgincludedir = $(includedir)/sshbbs
 top_builddir = .
 
-ACLOCAL = ${SHELL} /home/bbssrc/smth_sshbbsd/missing --run aclocal-1.6
-AUTOCONF = ${SHELL} /home/bbssrc/smth_sshbbsd/missing --run autoconf
-AUTOMAKE = ${SHELL} /home/bbssrc/smth_sshbbsd/missing --run automake-1.6
-AUTOHEADER = ${SHELL} /home/bbssrc/smth_sshbbsd/missing --run autoheader
+ACLOCAL = ${SHELL} ./missing --run aclocal-1.6
+AUTOCONF = ${SHELL} ./missing --run autoconf
+AUTOMAKE = ${SHELL} ./missing --run automake-1.6
+AUTOHEADER = ${SHELL} ./missing --run autoheader
 
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
 INSTALL = /usr/bin/install -c
@@ -65,7 +65,7 @@ host_triplet = i686-pc-linux-gnu
 EXEEXT = 
 OBJEXT = o
 PATH_SEPARATOR = :
-AMTAR = ${SHELL} /home/bbssrc/smth_sshbbsd/missing --run tar
+AMTAR = ${SHELL} ./missing --run tar
 AR = ar
 AWK = gawk
 
@@ -82,7 +82,7 @@ STRIP =
 VERSION = 1.0
 am__include = include
 am__quote = 
-install_sh = /home/bbssrc/smth_sshbbsd/install-sh
+install_sh = ./install-sh
 BASEPATH = ..
 HOST_KEY_FILE = $(BBSHOME)/etc/ssh_host_key
 SERVER_CONFIG_FILE = $(BBSHOME)/etc/sshd_config

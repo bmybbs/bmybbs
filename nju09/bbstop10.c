@@ -18,21 +18,21 @@ bbstop10_main()
 	html_header(1);
 	check_msg();
 //main frame
-	printf("<div style=\"width=100%; min-height:350px;\">");
+	printf("<div style=\"width=100%%; min-height:350px;\">");
 	//<!--No.1 Top 10 -->	
 	showTop10Table();
 	printf("</div>");
 
 
-	printf("<div style=\"width:98%;margin-top:50px\">");
+	printf("<div style=\"width:98%%;margin-top:50px\">");
 	printf("<center>");
-	printf("<div style=\"width:48%;min-height:100px;float:left;overflow:hidden;\">");
+	printf("<div style=\"width:48%%;min-height:100px;float:left;overflow:hidden;\">");
 	printf("	<!--No.2  COMMEND -->");
 	showCommend(1);
 	printf("</div>");
 
 	printf("	<!--No.3 COMMEND2-->");
-	printf("<div style=\"width:48%; min-height:100px;float:left; overflow:auto;\">");
+	printf("<div style=\"width:48%%; min-height:100px;float:left; overflow:auto;\">");
 	showCommend(2);
 	printf("</div>");
 	printf("</center>");
@@ -71,7 +71,7 @@ void showCommend(int kind){
 	else if(2==kind)
 		fp=fopen(COMMENDFILE2,"r");
 	if (!fp)
-		 http_fatal("目前没有任何推荐文章");	
+		 http_fatal("目前没有任何推荐文章");
 	printf("	<table border=1>");
 	printf("	<tr><td>No.</td><td>讨论区</td><td>标题</td><td>作者</td></tr>");
 	fseek(fp, -20*sizeof(struct commend), SEEK_END);	

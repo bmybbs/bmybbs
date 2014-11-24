@@ -86,25 +86,24 @@ draw_pic()
 }
 
 int
-parse_ave(time, ave)
-int time, ave;
+parse_ave(time_t time, int ave)
 {
 	FILE *fp;
 
 	if ((fp = fopen(AVEFLE, "a+")) == NULL)
 		return -1;
-	fprintf(fp, "%d:%d\n", time, ave);
+	fprintf(fp, "%lu:%d\n", time, ave);
 	fclose(fp);
+	return 0;
 }
 
 int
-init_base(file, time)
-char *file;
-int *time;
+init_base(char *file, time_t *time)
 {
 	FILE *fp;
 	char buf[80];
-	int ave = 0, tmp = 0, i, t, n;
+	int ave = 0, tmp = 0, i, n;
+	long t;
 
 	if ((fp = fopen(file, "r")) == NULL) {
 		printf("File: %s cannot be opened\n", file);
@@ -112,9 +111,9 @@ int *time;
 	}
 
 	for (i = 0; i < 12; i++) {
-		if (fgets(buf, 99, fp) == NULL)
+		if (fgets(buf, 79, fp) == NULL)
 			break;
-		sscanf(buf, "%d %d", &t, &n);
+		sscanf(buf, "%lu %d", &t, &n);
 		if (i == 0)
 			*time = t;
 		ave = ave + n;
@@ -127,11 +126,10 @@ int *time;
 }
 
 int
-main(argc, argv)
-int argc;
-char **argv;
+main(int argc, char **argv)
 {
-	int ave, time;
+	int ave;
+	time_t time;
 
 	if (argc < 2) {
 		printf("Usage: %s crontab_output_filename\n", argv[0]);
