@@ -235,7 +235,7 @@ bbsleft_main()
 		printf("</div></td></tr>");
 		printdiv(&div, "处理信件");
 		printf("&nbsp;&nbsp;<a target=f3 href=bbsnewmail class=linkleft>新邮件</a><br>"
-		       "&nbsp;&nbsp;<a target=f3 href=bbsmail class=linkleft>所有邮件</a><br>"
+		       "&nbsp;&nbsp;<a target=f3 href=bbsmail class=linkleft>收件箱</a><br>"
 		       "&nbsp;&nbsp;<a target=f3 href=bbsmail?box_type=1 class=linkleft>已发送邮件</a><br>"
 		       "&nbsp;&nbsp;<a target=f3 href=bbspstmail class=linkleft>发送邮件</a><br>"
 		       "</div></td></tr>");
