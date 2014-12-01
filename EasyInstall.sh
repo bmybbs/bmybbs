@@ -34,7 +34,7 @@ fi
 echo "Setup bbs directory tree ....."
 
 (cd ${BBS_HOME};mkdir vote tmp reclog bm bin traced newtrace)
-(cd ${BBS_HOME};for i in home mail;do for j in `perl -e "print join(' ',A..Z)"`;do mkdir -p $i/$j;done;done)
+(cd ${BBS_HOME};for i in home mail sent_mail;do for j in `perl -e "print join(' ',A..Z)"`;do mkdir -p $i/$j;done;done)
 (cd ${BBS_HOME};for i in bbslists sysop syssecurity notepad newcomers junk vote .tmp .backnumbers;do mkdir -p boards/$i;done)
 (cd ${BBS_HOME};for i in sysop bbslists vote newcomers;do mkdir -p 0Announce/groups/GROUP_0/$i;done)
 (cd ${BBS_HOME};mkdir -p 0Announce/groups/GROUP_7/notepad)
