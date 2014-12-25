@@ -1268,6 +1268,59 @@ mail_file(char *filename, char *userid, char *title, char *sender)
 }
 
 int
+post_mail_to_sent_box(char *userid, char *title, char *file,
+        char *id, char *nickname, char *ip, int sig, int mark)
+{
+	FILE *fp, *fp2;
+	char buf[256], dir[256];
+	struct fileheader header;
+	int t;
+	snprintf(buf, sizeof (buf), ".bbs@%s", MY_BBS_DOMAIN);
+	if (strstr(userid, buf)
+	    || strstr(userid, ".bbs@localhost")) {
+		char *pos;
+		pos = strchr(userid, '.');
+		*pos = '\0';
+	}
+	bzero(&header, sizeof (header));
+	fh_setowner(&header, id, 0);
+	setsentmailfile(buf, userid, "");
+	t = trycreatefile(buf, "M.%d.A", now_t, 100);
+	if (t < 0)
+		return -1;
+	header.filetime = t;
+	header.thread = t;
+	strsncpy(header.title, title, sizeof (header.title));
+	header.accessed |= mark;
+	fp = fopen(buf, "w");
+	if (fp == 0)
+		return -2;
+	fp2 = fopen(file, "r");
+	fprintf(fp, "¼ÄÐÅÈË: %s (%s)\n", id, nickname);
+	fprintf(fp, "±ê  Ìâ: %s\n", title);
+	fprintf(fp, "·¢ÐÅÕ¾: %s (%s)\n", BBSNAME, Ctime(now_t));
+	fprintf(fp, "À´  Ô´: %s\n\n", ip);
+	if (fp2) {
+		while (1) {
+			int retv;
+			retv = fread(buf, 1, sizeof (buf), fp2);
+			if (retv <= 0)
+				break;
+			fwrite(buf, 1, retv, fp);
+		}
+		fclose(fp2);
+	}
+	fprintf(fp, "\n--\n");
+	sig_append(fp, id, sig);
+	fprintf(fp, "\n\n[1;%dm¡ù À´Ô´:£®%s %s [FROM: %.20s][m\n",
+		31 + rand() % 7, BBSNAME, "http://" MY_BBS_DOMAIN, ip);
+	fclose(fp);
+	setsentmailfile(dir, userid, ".DIR");
+	append_record(dir, &header, sizeof (header));
+	return 0;
+}
+
+int
 post_mail(char *userid, char *title, char *file, char *id,
 	  char *nickname, char *ip, int sig, int mark)
 {

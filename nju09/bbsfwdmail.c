@@ -22,13 +22,31 @@ bbsfwdmail_main()
 	if (!loginok || isguest)
 		http_fatal("匆匆过客不能进行本项操作");
 	changemode(SMAIL);
-	sprintf(dir, "mail/%c/%s/.DIR", mytoupper(currentuser.userid[0]),
-		currentuser.userid);
+
+    /**
+     * type of mail box
+     * 0 : in box [defualt]
+     * 1 : out box
+    */
+    int box_type = 0;
+    strsncpy(buf, getparm("box_type"), 256);
+    if(buf[0] != 0) {
+        box_type = atoi(buf);
+    }
+    char type_string[20];
+    snprintf(type_string, sizeof(type_string), "box_type=%d", box_type);
+
+    if(box_type == 1) {
+        setsentmailfile(dir, currentuser.userid, ".DIR");
+    } else {
+        setmailfile(dir, currentuser.userid, ".DIR");
+    }
 	if (!((currentuser.userlevel )& (PERM_CHAT|PERM_PAGE|PERM_POST)))
 		http_fatal("您没有权限发信");
 	if (HAS_PERM(PERM_DENYMAIL))
 		http_fatal( "您已经被封禁了发信权\n");
-	if (check_maxmail(dir)){
+    //only check in-box
+	if (box_type == 0 && check_maxmail(dir)){
 		sprintf(buff,"出错原因: 您的私人信件总大小高达 %d k,超过 %d k 时 ,您将无法使用本站的发信功能.<br>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp 请整理信件,将信件总大小控制在 %d k 内,以保证发信功能正常使用",get_mail_size(),max_mail_size()+20,max_mail_size());
 		http_fatal(buff);
 		}
@@ -57,9 +75,11 @@ bbsfwdmail_main()
 		}
 		snprintf(bbsfwdmail_tmpfn, 80, "bbstmpfs/tmp/bbsfwdmail.%s.%d",
 			 currentuser.userid, thispid);
-		snprintf(path, 80, "mail/%c/%s/%s",
-			 mytoupper(currentuser.userid[0]), currentuser.userid,
-			 fh2fname(x));
+        if(box_type == 1) {
+            setsentmailfile(path, currentuser.userid, fh2fname(x));
+        } else {
+            setmailfile(path, currentuser.userid, fh2fname(x));
+        }
 		fp = fopen(bbsfwdmail_tmpfn, "w");
 		fp1 = fopen(path, "r");
 		if (!fp || !fp1) {
@@ -108,7 +128,7 @@ bbsfwdmail_main()
 	printf("文章标题: %s<br>\n", nohtml(x->title));
 	printf("文章作者: %s<br>\n", fh2owner(x));
 	printf("信件出处: %s 的信箱<br>\n", currentuser.userid);
-	printf("<form action=bbsfwdmail method=post>\n");
+	printf("<form action=bbsfwdmail?%s method=post>\n", type_string);
 	printf("<input type=hidden name=file value=%s>", file);
 	printf
 	    ("把文章转寄给 <input name=target size=30 maxlength=30 value='%s'> (请输入对方的id或email地址). <br>\n",
