@@ -1267,6 +1267,18 @@ mail_file(char *filename, char *userid, char *title, char *sender)
 	return 0;
 }
 
+/** 保存邮件到发件箱
+ *
+ * @param userid 发信人的 ID，用于生成存放信件的路径
+ * @param title 标题
+ * @param file 文件
+ * @param id 收信人，用于 .DIR 文件中标明收信人的 ID，以及 struct fileheader 中
+ * @param nickname
+ * @param ip
+ * @param sig
+ * @param mark
+ * @return
+ */
 int
 post_mail_to_sent_box(char *userid, char *title, char *file,
         char *id, char *nickname, char *ip, int sig, int mark)
@@ -1296,7 +1308,7 @@ post_mail_to_sent_box(char *userid, char *title, char *file,
 	if (fp == 0)
 		return -2;
 	fp2 = fopen(file, "r");
-	fprintf(fp, "寄信人: %s (%s)\n", id, nickname);
+	fprintf(fp, "收信人: %s (%s)\n", id, nickname);
 	fprintf(fp, "标  题: %s\n", title);
 	fprintf(fp, "发信站: %s (%s)\n", BBSNAME, Ctime(now_t));
 	fprintf(fp, "来  源: %s\n\n", ip);

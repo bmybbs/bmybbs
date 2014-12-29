@@ -56,26 +56,26 @@ bbseditmail_main()
 		return update_form_mail( file, title, box_type);
 	
 	printf("<body leftmargin=0 topmargin=0>\n");
-	printf("<table width=\"100%\" border=0 cellpadding=0 cellspacing=0>\n");
+	printf("<table width=\"100%%\" border=0 cellpadding=0 cellspacing=0>\n");
 	printf("%s", "<tr>\n<td height=30 colspan=2>\n" 
-		"<table width=\"100%\"  border=0 cellspacing=0 cellpadding=0>\n"
+		"<table width=\"100%%\"  border=0 cellspacing=0 cellpadding=0>\n"
         	"<tr><td width=40><img src=\"/images/spacer.gif\" width=40 height=10 alt=\"\"></td>\n"
-		"<td><table width=\"100%\" border=0 align=right cellpadding=0 cellspacing=0>\n"
+		"<td><table width=\"100%%\" border=0 align=right cellpadding=0 cellspacing=0>\n"
 		"<tr><td>\n");
  	printf("%s", "<tr><td height=70 colspan=2>\n"
- 		"<table width=\"100%\" height=\"100%\" border=0 cellpadding=0 cellspacing=0 bgcolor=\"#efefef\">\n"
+ 		"<table width=\"100%%\" height=\"100%%\" border=0 cellpadding=0 cellspacing=0 bgcolor=\"#efefef\">\n"
 		"<tr><td width=40>&nbsp; </td>\n"
-		"<td height=70><table width=\"95%\" height=\"100%\"  border=0 cellpadding=0 cellspacing=0>\n"
+		"<td height=70><table width=\"95%%\" height=\"100%%\"  border=0 cellpadding=0 cellspacing=0>\n"
 		"<tr>\n");
  	printf("%s", "<tr><td width=40 class=\"level1\"></td>\n"
 		"<td class=\"level1\"><br>\n"
-		"<TABLE width=\"95%\" cellpadding=5 cellspacing=0>\n"
+		"<TABLE width=\"95%%\" cellpadding=5 cellspacing=0>\n"
 		"<TBODY><TR><TD class=tdtitletheme>&nbsp;</TD>\n"
 		"</TR>\n");
 	printf("<TR><TD class=bordertheme>\n"
 		"<form name=form1 method=post action=bbseditmail?%s>\n"
         , type_string);
-	printf("<table width=\"100%\"  border=0 cellspacing=0 cellpadding=0>\n"
+	printf("<table width=\"100%%\"  border=0 cellspacing=0 cellpadding=0>\n"
 		"<tr>\n<td><table border=0 cellpadding=0 cellspacing=0>\n"
 		"<tr><td> 使用标题：</td>\n"
 			
