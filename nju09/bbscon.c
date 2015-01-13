@@ -622,27 +622,6 @@ bbscon_main()
     nbuf += sprintf(buf + nbuf, "<a href=\"#\" onclick=\"javascript:share('sina','%s','%s','%s');\"><img src=\"/images/share-sina.png\"/></a> ",encoded_title,board,file);
     nbuf += sprintf(buf + nbuf, "<a href=\"#\" onclick=\"javascript:share('renren','%s','%s','%s');\"><img src=\"/images/share-rr.png\"/></a> ",encoded_title,board,file);
 	nbuf += sprintf(buf + nbuf, "<a href=\"#\" onclick=\"javascript:share('tencent','%s','%s','%s');\"><img src=\"/images/share-tencent.png\"/></a> | ",encoded_title,board,file);
-/* share to twittwe google+1 and facebook */
-/*
-	nbuf+=sprintf(buf+nbuf, "<a href=\"https://twitter.com/share\" class=\"twitter-share-button\" data-hashtags=\"BMYBBS\">Tweet</a> \n <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=\"//bbs.xjtu.edu.cn/widgets.js\";fjs.parentNode.insertBefore(js,fjs);}}(document,\"script\",\"twitter-wjs\");</script>");
-	nbuf+=sprintf(buf+nbuf, "<g:plusone annotation=\"inline\"></g:plusone>"
-		"<script type=\"text/javascript\">"
- 		"	(function() {"
-   		"	var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;"
-  		"	po.src = 'http://bbs.xjtu.edu.cn/plusone.js';"
- 		"	var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);"
- 		"	})();"
-		"</script>");
-	nbuf+=sprintf(buf+nbuf, "<div id=\"fb-root\"></div>"
-		"<script>(function(d, s, id) {"
- 		 "var js, fjs = d.getElementsByTagName(s)[0];"
- 		 "if (d.getElementById(id)) return;"
-  		 "js = d.createElement(s); js.id = id;"
- 		 "js.src = \"//bbs.xjtu.edu.cn/en_US/all.js#xfbml=1\";"
- 		 "fjs.parentNode.insertBefore(js, fjs);"
-		"}(document, 'script', 'facebook-jssdk'));</script>"
-		"<fb:like send=\"false\" layout=\"button_count\" width=\"450\" show_faces=\"false\"></fb:like>");
-*/
 
 	free(encoded_title);
 		if (sametitle) {
