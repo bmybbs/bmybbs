@@ -486,10 +486,6 @@ bbscon_main()
 			http_fatal("本文不存在或者已被删除");
 		}
 
-/*	 	if (cache_header(fh2modifytime(dirinfo), 86400)) { 
-			mmapfile(NULL, &mf);
-			MMAP_RETURN(0);
-		}*/
 #if 1		
 		html_header(1);		
 		if  (dirinfo->accessed & FH_MATH) {			
@@ -512,9 +508,9 @@ bbscon_main()
 	x = (struct fileheader *)(mf.ptr + num * sizeof (struct fileheader));
     g2u(x->title,sizeof(x->title),title_utf8,sizeof(title_utf8));
 	printf("<title>%s | 兵马俑BBS</title>", x->title);
-//		printf("ipmask:%d doc_mode:%d",w_info->ipmask,w_info->doc_mode);
+
 		printf("<script src='/function.js'></script></head>\n");
-//		printf("<body><center>\n");
+
 		printf("<body leftmargin=0 topmargin=0>\n<img src=\"/images/bmy.gif\" style=\"position: absolute;top:-160px;\"/>\n");
 		printf("%s", "<table width=\"100%\" border=0 cellpadding=0 cellspacing=0>\n"
 			"<tr><td height=30 colspan=2> \n"
@@ -528,10 +524,7 @@ bbscon_main()
 		    && wwwcache->accel_port)||via_proxy) && ! w_info->doc_mode)
 			printf
 			    ("<a href=bbsmywww><font color=red>看不了文章？</font></a>");
-/*		printf
-		    ("%s -- 文章阅读 [讨论区: <a href=\"bbsdoc?B=%s&amp;S=%d\">%s</a>]<hr/>",
-		     BBSNAME, board, num - 5, board);
-*/
+
 		printf("<tr><td><a href=\"boa?secstr=%s\">%s</a> / <a href=\"%s%s\">%s</a> / 阅读文章 "
 			"</td></tr></table></td>\n", bx->header.sec1, nohtml(getsectree(bx->header.sec1)->title), showByDefMode(), board, board);
 		printf("<td><table border=0 align=right cellpadding=0 cellspacing=0>\n"
@@ -563,9 +556,6 @@ bbscon_main()
 			"<tr><td colspan=2 valign=bottom>\n"
 			"<table width=\"100%%\" border=0 cellpadding=0 cellspacing=0>\n");
 		nbuf = sprintf(buf, "<tr><td><div class=\"menu\">\n<DIV class=btncurrent>&lt;%s&gt;</DIV>\n", void1((unsigned char *)titlestr(bx->header.title)));
-/*		    sprintf(buf, "[<a href='fwd?B=%s&amp;F=%s'>转寄</a>]",
-			    board, file);
-*/
 		nbuf += sprintf(buf+nbuf, 
 				"<A href='fwd?B=%s&amp;F=%s' class=btnfunc>/ 转寄</A>\n",
 				board, file);
@@ -573,8 +563,7 @@ bbscon_main()
 		    sprintf(buf + nbuf, 
 			"<DIV><A href='ccc?B=%s&amp;F=%s' class=btnfunc>/ 转贴</a>\n",
 			board, file);
-	//		    "<DIV><A href='ccc?B=%s&amp;F=%s' class=N0040>/ 转贴</a></div>\n<DIV class=N1001></DIV>\n", board,
-	//		    file);
+
 		if (num >= 0 && num < total) {
 		brc_initial(currentuser.userid, board);
 		brc_add_read(dirinfo);
@@ -693,60 +682,8 @@ bbscon_main()
 		MMAP_RETURN(-1);
 	}
 	MMAP_END mmapfile(NULL, &mf);
-/*	if (num >= 0 && num < total) {
-		brc_initial(currentuser.userid, board);
-		brc_add_read(dirinfo);
-		brc_update(currentuser.userid);
-	}
-	if (!strncmp(currentuser.userid, dirinfo->owner, IDLEN + 1)) {
-		//|| has_BM_perm(&currentuser, bx)) {
-		nbuf += sprintf
-		    (buf + nbuf,
-		     "<DIV><A class=N0040 onclick='return confirm(\"你真的要删除本文吗?\")' href='del?B=%s&amp;F=%s'>/ 删除</a></div><DIV class=N1001></DIV>\n",
-		     board, file);
-		nbuf += sprintf(buf + nbuf,
-				"<DIV><A class=N0040 href='edit?B=%s&amp;F=%s'>/ 修改</a></div><DIV class=N1001></DIV>\n",
-				board, file);
-	}
-	ptr = dirinfo->title;
-	if (!strncmp(ptr, "Re: ", 4))
-		ptr += 4;
-	ptr[60] = 0;
-	outgoing = (dirinfo->accessed & FH_INND)
-	    || strchr(dirinfo->owner, '.');
-	
-	fpust(buf, stdout);
-	nbuf = 0;
-	nbuf += sprintf(buf + nbuf,
-		"<div><a class=N0040 href='pstmail?B=%s&amp;F=%s&amp;num=%d'>/ 回信给作者</a><DIV class=N1001></DIV>\n",
-	     board, file, num);	
-	nbuf += sprintf(buf + nbuf,
-		"<div><a class=N0040 href='tfind?B=%s&amp;th=%d&amp;T=%s'>/ 同主题阅读</a><DIV class=N1001></DIV>\n",
-		    board, dirinfo->thread, encode_url(ptr));
-	nbuf += sprintf(buf + nbuf,
-		"<div><a class=N0040 href='doc?B=%s&amp;S=%d'>&lt;返回讨论区&gt;</a><DIV class=N1001></DIV>\n",
-				    board, (num > 4) ? (num - 4) : 1);
-	nbuf += sprintf(buf + nbuf,
-			"<tr><td width=\"59%\"><table border=0 cellspacing=0 cellpadding=0><tr>");
 
-	if (!(dirinfo->accessed & FH_NOREPLY))
-		nbuf += sprintf(buf + nbuf,
-		"<td><span class=F0002><a href='pst?B=%s&amp;F=%s&amp;num=%d%s' class=N0030>回复文章</a></a></span> </td>\n", board, file, num, outgoing ? "" : (inndboard ? "&amp;la=1" : ""));
-	nbuf += sprintf(buf + nbuf, "</tr></table></td>");
-	
-*/	
-//add by yuhuan for mail
-/*	nbuf += sprintf
-	    (buf + nbuf,
-	     "[<a href='pstmail?B=%s&amp;F=%s&amp;num=%d'>回信给作者</a>]",
-	     board, file, num);
-//add by lepton for evaluate
-//      if (!sametitle)
-	nbuf +=
-	    sprintf(buf + nbuf,
-		    "[<a href='tfind?B=%s&amp;th=%d&amp;T=%s'>同主题阅读</a>]\n",
-		    board, dirinfo->thread, encode_url(ptr));
-*/	fputs(buf, stdout);
+	fputs(buf, stdout);
 	if (usexml)
 		showconxml(filename, usexml);
 	else if (hideboard(board)
@@ -756,10 +693,7 @@ bbscon_main()
 		fshowcon(stdout, filename, 0);
 	else
 		fshowcon(stdout, filename, 1);
-/*		showcon_cache(cachelevel(dirinfo->filetime,
-					 dirinfo->accessed & FH_ATTACHED),
-			      dirinfo->edittime);*/
-	//fputs(buf, stdout);
+
 	printf("<tr><td></td><td height=\"20\" valign=\"middle\">");
 	memset(fileback, 0, 80);
 	sprintf(fileback, "http://bbs.xjtu.edu.cn/BMY/con?B=%s&F=%s", board,file);
