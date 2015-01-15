@@ -588,9 +588,7 @@ static int update_article_link_in_file(char *boardname, int oldthread, int newfi
 
 
 time_t fn2timestamp(char * filename) {
-	char num_str[11]={'0'};
-	memcpy(num_str, &filename[2], 10);
-	return (time_t)atol(num_str);
+	return (time_t)atol(filename+2);
 }
 
 int parse_mentions(char *content, char userids[20][14], int from)

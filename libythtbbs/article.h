@@ -103,7 +103,7 @@ int is_article_site_top(char *boardname, int thread);
 int update_article_site_top_link(char *boardname, int oldthread, int newfiletime, char *newtitle);
 
 /** 将文件名转为时间戳
- * @warn 该过程中将 int 直接转为 time_t，可能有些平台上不支持。同时该方法使用过程中未校验 filename 格式是否正确。谨慎使用。
+ * @warn 该过程中将字符串直接转为 time_t，可能有些平台上不支持。同时该方法使用过程中未校验 filename 格式是否正确。谨慎使用。
  * @param filename 形如 M.1376120232.A
  * @return 时间戳
  */
