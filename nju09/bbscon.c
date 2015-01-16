@@ -488,13 +488,13 @@ bbscon_main()
 
 #if 1		
 		html_header(1);		
-		if  (dirinfo->accessed & FH_MATH) {			
+		if (dirinfo->accessed & FH_MATH) {
 			usingMath = 1;			
 			usedMath = 1;			
 			withinMath = 0;		
-			} else {			
+		} else {
 			usingMath = 0;		
-			}
+		}
 #else
 		if (dirinfo->accessed & FH_MATH && (usexml = testxml())) {
 			html_header(100 + usexml - 1);
@@ -504,10 +504,10 @@ bbscon_main()
 		}
 #endif
 		check_msg();
-	// output post title and link by IronBlood@bmy 2011.12.06
-	x = (struct fileheader *)(mf.ptr + num * sizeof (struct fileheader));
-    g2u(x->title,sizeof(x->title),title_utf8,sizeof(title_utf8));
-	printf("<title>%s | 兵马俑BBS</title>", x->title);
+		// output post title and link by IronBlood@bmy 2011.12.06
+		x = (struct fileheader *)(mf.ptr + num * sizeof (struct fileheader));
+		g2u(x->title,sizeof(x->title),title_utf8,sizeof(title_utf8));
+		printf("<title>%s | 兵马俑BBS</title>", x->title);
 
 		printf("<script src='/function.js'></script></head>\n");
 
@@ -565,54 +565,54 @@ bbscon_main()
 			board, file);
 
 		if (num >= 0 && num < total) {
-		brc_initial(currentuser.userid, board);
-		brc_add_read(dirinfo);
-		brc_update(currentuser.userid);
-	}
-	if (!strncmp(currentuser.userid, dirinfo->owner, IDLEN + 1)) {
-		//|| has_BM_perm(&currentuser, bx)) {
-		nbuf += sprintf
-		    (buf + nbuf,
-		     "<A onclick='return confirm(\"你真的要删除本文吗?\")' href='del?B=%s&amp;F=%s' class=btnfunc>/ 删除</a>\n",
-		     board, file);
+			brc_initial(currentuser.userid, board);
+			brc_add_read(dirinfo);
+			brc_update(currentuser.userid);
+		}
+		if (!strncmp(currentuser.userid, dirinfo->owner, IDLEN + 1)) {
+			//|| has_BM_perm(&currentuser, bx)) {
+			nbuf += sprintf
+				(buf + nbuf,
+				 "<A onclick='return confirm(\"你真的要删除本文吗?\")' href='del?B=%s&amp;F=%s' class=btnfunc>/ 删除</a>\n",
+				 board, file);
+			nbuf += sprintf(buf + nbuf,
+					"<A href='edit?B=%s&amp;F=%s' class=btnfunc>/ 修改</a>\n",
+					board, file);
+		}
+		ptr = dirinfo->title;
+		if (!strncmp(ptr, "Re: ", 4))
+			ptr += 4;
+		ptr[60] = 0;
+		outgoing = (dirinfo->accessed & FH_INND)
+			|| strchr(dirinfo->owner, '.');
+
+		fputs(buf, stdout);
+		nbuf = 0;
 		nbuf += sprintf(buf + nbuf,
-				"<A href='edit?B=%s&amp;F=%s' class=btnfunc>/ 修改</a>\n",
-				board, file);
-	}
-	ptr = dirinfo->title;
-	if (!strncmp(ptr, "Re: ", 4))
-		ptr += 4;
-	ptr[60] = 0;
-	outgoing = (dirinfo->accessed & FH_INND)
-	    || strchr(dirinfo->owner, '.');
-	
-	fputs(buf, stdout);
-	nbuf = 0;
-	nbuf += sprintf(buf + nbuf,
-		"<a href='pstmail?B=%s&amp;F=%s&amp;num=%d' class=btnfunc title=\"回信给作者 accesskey: m\" accesskey=\"m\">/ 回信给作者</a>\n", board, file, num);
-	nbuf += sprintf(buf + nbuf,
-		"<a href='tfind?B=%s&amp;th=%lu&amp;T=%s' class=btnfunc>/ 同主题列表</a>\n", board, (long)dirinfo->thread, encode_url((unsigned char *)ptr));
-	nbuf += sprintf(buf + nbuf,
-		"<a href='bbstcon?board=%s&amp;start=%d&amp;th=%lu' class=btnfunc>/ 同主题由此展开</a>\n", board, num, (long)dirinfo->thread);
-	nbuf += sprintf(buf + nbuf,
-		"<a href='%s%s&amp;S=%d' class=btnfunc title=\"返回讨论区 accesskey: b\" accesskey=\"b\">/ 返回讨论区</a>\n",
-		showByDefMode(), board, (num > 4) ? (num - 4) : 1);
-	nbuf += sprintf(buf + nbuf,
-			"</div></td></tr></table></td></tr>\n");
-	nbuf += sprintf(buf + nbuf,
-			"<tr><td width=\"60%%\">");
-
-	if (!(dirinfo->accessed & FH_NOREPLY))
+			"<a href='pstmail?B=%s&amp;F=%s&amp;num=%d' class=btnfunc title=\"回信给作者 accesskey: m\" accesskey=\"m\">/ 回信给作者</a>\n", board, file, num);
 		nbuf += sprintf(buf + nbuf,
-	"<a href='pst?B=%s&amp;F=%s&amp;num=%d%s' class=btnsubmittheme title=\"回复本文 accesskey: r\" accesskey=\"r\">回复本文</a> </td>\n", board, file, num, outgoing ? "" : (inndboard ? "&amp;la=1" : ""));
+			"<a href='tfind?B=%s&amp;th=%lu&amp;T=%s' class=btnfunc>/ 同主题列表</a>\n", board, (long)dirinfo->thread, encode_url((unsigned char *)ptr));
+		nbuf += sprintf(buf + nbuf,
+			"<a href='bbstcon?board=%s&amp;start=%d&amp;th=%lu' class=btnfunc>/ 同主题由此展开</a>\n", board, num, (long)dirinfo->thread);
+		nbuf += sprintf(buf + nbuf,
+			"<a href='%s%s&amp;S=%d' class=btnfunc title=\"返回讨论区 accesskey: b\" accesskey=\"b\">/ 返回讨论区</a>\n",
+			showByDefMode(), board, (num > 4) ? (num - 4) : 1);
+		nbuf += sprintf(buf + nbuf,
+				"</div></td></tr></table></td></tr>\n");
+		nbuf += sprintf(buf + nbuf,
+				"<tr><td width=\"60%%\">");
 
-	nbuf += sprintf(buf + nbuf, "<td width=\"40%%\" align=right>分享到 ");
-    char *encoded_title = url_encode(title_utf8);
-    nbuf += sprintf(buf + nbuf, "<a href=\"#\" onclick=\"javascript:share('sina','%s','%s','%s');\"><img src=\"/images/share-sina.png\"/></a> ",encoded_title,board,file);
-    nbuf += sprintf(buf + nbuf, "<a href=\"#\" onclick=\"javascript:share('renren','%s','%s','%s');\"><img src=\"/images/share-rr.png\"/></a> ",encoded_title,board,file);
-	nbuf += sprintf(buf + nbuf, "<a href=\"#\" onclick=\"javascript:share('tencent','%s','%s','%s');\"><img src=\"/images/share-tencent.png\"/></a> | ",encoded_title,board,file);
+		if (!(dirinfo->accessed & FH_NOREPLY))
+			nbuf += sprintf(buf + nbuf,
+		"<a href='pst?B=%s&amp;F=%s&amp;num=%d%s' class=btnsubmittheme title=\"回复本文 accesskey: r\" accesskey=\"r\">回复本文</a> </td>\n", board, file, num, outgoing ? "" : (inndboard ? "&amp;la=1" : ""));
 
-	free(encoded_title);
+		nbuf += sprintf(buf + nbuf, "<td width=\"40%%\" align=right>分享到 ");
+		char *encoded_title = url_encode(title_utf8);
+		nbuf += sprintf(buf + nbuf, "<a href=\"#\" onclick=\"javascript:share('sina','%s','%s','%s');\"><img src=\"/images/share-sina.png\"/></a> ",encoded_title,board,file);
+		nbuf += sprintf(buf + nbuf, "<a href=\"#\" onclick=\"javascript:share('renren','%s','%s','%s');\"><img src=\"/images/share-rr.png\"/></a> ",encoded_title,board,file);
+		nbuf += sprintf(buf + nbuf, "<a href=\"#\" onclick=\"javascript:share('tencent','%s','%s','%s');\"><img src=\"/images/share-tencent.png\"/></a> | ",encoded_title,board,file);
+
+		free(encoded_title);
 		if (sametitle) {
 			prenum = num - 1;
 			nextnum = num + 1;
