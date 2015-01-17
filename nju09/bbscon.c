@@ -506,7 +506,7 @@ bbscon_main()
 		check_msg();
 		// output post title and link by IronBlood@bmy 2011.12.06
 		x = (struct fileheader *)(mf.ptr + num * sizeof (struct fileheader));
-		g2u(x->title,sizeof(x->title),title_utf8,sizeof(title_utf8));
+		g2u(x->title, strlen(x->title), title_utf8, sizeof(title_utf8));
 		printf("<title>%s | ±øÂíÙ¸BBS</title>", x->title);
 
 		printf("<script src='/function.js'></script></head>\n");

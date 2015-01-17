@@ -159,7 +159,7 @@ apiqry_main()
 	show_special_api(x->userid, output);
 	// ½áÊøÊä³ö
 	sstrcat(output, "}}"); 
-	g2u(output,sizeof(output), output_utf8,sizeof(output_utf8));
+	g2u(output, strlen(output), output_utf8, sizeof(output_utf8));
 	printf("%s", output_utf8);
 	//http_quit();
 	return 0;

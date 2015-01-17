@@ -28,7 +28,7 @@ void tshare(char * board, int start, int thread, int article_count, char * owner
 	char thread_title_utf8[480];
 	char title[256];
 	strcpy(title, thread_title);
-	g2u(title,sizeof(title),thread_title_utf8,sizeof(thread_title_utf8));
+	g2u(title, strlen(title), thread_title_utf8, sizeof(thread_title_utf8));
 	printf("分享到 ");
 	// function thread_share(a,title,owner,board,thread,start,article_count) prototype in function.js
 	printf("<a href=\"#\" onclick=\"javascript:thread_share('sina','%s','%s','%s','%d','%d','%d');\"><img src=\"/images/share-sina.png\"/></a>",
@@ -82,7 +82,7 @@ bbstcon_main()
 		printf("<tr><td><a href=\"boa?secstr=%s\">%s</a> / <a href=\"%s%s\">%s</a> / 阅读文章 "
 			"</td></tr></table></td>\n", x1->header.sec1, nohtml(getsectree(x1->header.sec1)->title), showByDefMode(), board, board);
 		printf("<td><table border=0 align=right cellpadding=0 cellspacing=0>\n"
-			"<tr><td> 版主 [%s]</tr></table></td></tr></table></td></tr>\n", 
+			"<tr><td> 版主 [%s]</tr></table></td></tr></table></td></tr>\n",
 			userid_str(bm2str(bmbuf, &(x1->header))));
 		printf("<tr><td height=70 colspan=2>\n"
 			"<table width=100%% height=100%% border=0 cellpadding=0 cellspacing=0 class=level2>\n"
