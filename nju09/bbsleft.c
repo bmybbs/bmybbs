@@ -4,7 +4,7 @@ void
 printdiv(int *n, char *str)
 {//modify by mintbaggio 040411 for new www, modify 041225
 	printf("<tr><td align=right><img id=img%d src=\"/images/plus.gif\"></td>\n"
-                "<td><DIV class=r id=div%da> <a class=linkleft href=\"javascript:;\" id=menu onClick=\"changemn('%d');\">%s</a>", 
+                "<td><DIV class=r id=div%da> <a class=linkleft href=\"javascript:;\" id=menu onClick=\"changemn('%d');\">%s</a>",
 		*n, *n, *n, str);
 	printf("<script type=\"text/javascript\">"
 	"function clickRadio()"
@@ -140,9 +140,9 @@ bbsleft_main()
 	printf("&nbsp;&nbsp;<a class=linkleft href=\"%sBMY_Dev\" target=f3>程序与报错</a><br>\n"
 		, showByDefMode() );
 	printf("&nbsp;&nbsp;<a class=linkleft href=\"%sArtDesign\" target=f3>美工与进站</a><br>\n"
-		, showByDefMode() );	
+		, showByDefMode() );
 	printf("</div></td></tr>\n");
-	
+
 	if (loginok && !isguest) {
 		char *ptr, buf[10];
 		struct boardmem *x1;
@@ -248,11 +248,11 @@ bbsleft_main()
 	//printf("&nbsp;&nbsp;<a target=f3 href=/periodic/periodic.html class=1100>元素周期表</a><br>\n");
 	//printf("&nbsp;&nbsp;<a target=f3 href=/cgi-bin/cgiman class=1100>Linux手册查询</a><br>\n");
 	printf("&nbsp;&nbsp;<a href=bbsfind target=f3 class=linkleft>文章查询</a><br>\n");
-	
+
 	//printf("&nbsp;&nbsp;<a target=f3 href=/cgi-bin/cgifreeip class=1100>IP地址查询</a><br>\n");
 	printf("&nbsp;&nbsp;<a target=f3 href=bbsx?chm=0 class=linkleft>下载精华区</a><br>\n");
 
-	
+
 	//printf("&nbsp;&nbsp;<a target=f3 href=home/pub/index.html class=linkleft>常用下载</a><br>\n");
 //	printf("&nbsp;&nbsp;<a target=f3 href=\"/xiaoli.htm\" class=linkleft>校历</a><br>\n");
 
@@ -347,8 +347,8 @@ bbsleft_main()
 		if (p == NULL)
 			continue;
 		*p = '\0';
-		
-		printf("<table width=124>" 
+
+		printf("<table width=124>"
 			"<tr><td>"
 			"<a href='%s' target='_blank'><img src='%s' width=120 height=44 border=0 /></a>"
 			"</td></tr></table>\n", p+1, buf);
@@ -365,7 +365,7 @@ endleft:
 //add by macintosh 20051216
 	if (loginok && !isguest) {
 		printf("<script>\n"
-			"function window.onbeforeunload(){\n"
+			"window.onbeforeunload = function(){\n"
 			"  if(event.clientX>document.body.clientWidth&&event.clientY<0||event.altKey){\n"
 			"return '直接关闭浏览器将不计上站时间，强烈建议您点“注销本次登录”。'}}\n"
 			"</script>\n");
@@ -378,7 +378,7 @@ endleft:
 			printf("<script>alert('您有新信件!')</script>\n");
 	}
 	// if(loginok&&currentuser.userdefine&DEF_ACBOARD)
-	//              printf("<script>window.open('bbsmovie','','left=200,top=200,width=600,height=240');</script>"); 
+	//              printf("<script>window.open('bbsmovie','','left=200,top=200,width=600,height=240');</script>");
 	//virusalert();
 	if (isguest && 0)
 		printf
@@ -596,7 +596,7 @@ endleft:
 			printf("<script>alert('您有新信件!')</script>\n");
 	}
 	// if(loginok&&currentuser.userdefine&DEF_ACBOARD)
-	//              printf("<script>window.open('bbsmovie','','left=200,top=200,width=600,height=240');</script>"); 
+	//              printf("<script>window.open('bbsmovie','','left=200,top=200,width=600,height=240');</script>");
 	//virusalert();
 	if (isguest && 0)
 		printf
