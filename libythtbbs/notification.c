@@ -192,6 +192,9 @@ void free_notification(NotifyItemList niList) {
 	struct NotifyItem * next = cur->next;
 	while(next!=NULL) {
 		free(cur->title_gbk);
+		if(cur->title_utf) {
+			free(cur->title_utf);
+		}
 		free(cur);
 		cur = next;
 		next = cur->next;
