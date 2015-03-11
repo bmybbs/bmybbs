@@ -283,6 +283,7 @@ static struct NotifyItem * parse_to_item(xmlNodePtr xmlItem) {
 
 	xmlChar * xml_str_title_utf8 = xmlGetProp(xmlItem, (const xmlChar *)"title");
 	size_t title_len = strlen((char *)xml_str_title_utf8);
+	item->title_utf = strdup((char *)xml_str_title_utf8);
 	item->title_gbk = malloc(title_len+1);  //gbk长度<=utf8
 	memset(item->title_gbk, 0, title_len+1);
 	if(item->title_gbk == NULL) { //内存分配失败
