@@ -156,7 +156,10 @@ int life_special(char *id)
 		//fprintf(fp2, "buf=%s ",buf);
 		//if(sscanf(buf, "%s", id1)>0) continue;
 		buf[strlen(buf)-1] = 0;
-		if(!strcmp(buf, id)) return 1;
+		if(!strcmp(buf, id)) {
+			fclose(fp);
+			return 1;
+		}
 	}
 	fclose(fp);
 	return 0;
@@ -187,8 +190,8 @@ countlife(struct userec *urec)
 		return  666;
 	if (((time(0)-urec->firstlogin)/86400)>365*2)
 		return  365;
-	
-	
+
+
 	//if (urec->stay > 1000000)
       	//	return (365 * 1440 - value) / 1440;
 	res=(180 * 1440 - value) / 1440 + urec->numdays;
@@ -337,4 +340,4 @@ char *getv4addr(char *fromhost){
 		char *addr;
 		addr=rindex(fromhost,':');
 		return ++addr;
-	}	
+	}
