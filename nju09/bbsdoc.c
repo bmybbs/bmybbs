@@ -198,7 +198,7 @@ bbsdoc_helper(char *cgistr, int start, int total, int lines)
 	printf("<a href=\"doc?B=%s&S=%d\">第一页</a>\n", board, 1);
 	printf("<a href=\"doc?B=%s&S=%d\">上一页</a>\n", board, (start-lines));
 	printf("<a href=\"doc?B=%s&S=%d\">下一页</a>\n", board, (start+lines));
-	printf("<a href=\"doc?B=%s&S=%d\">最后一页</a>\n", board, (total-lines+1)); 
+	printf("<a href=\"doc?B=%s&S=%d\">最后一页</a>\n", board, (total-lines+1));
 	printf("</td><td height=20 align=center>\n");
 	printf("<table width=\"100%\"  border=0 cellspacing=0 cellpadding=0>\n"
 		"<tr><td><input name=Submit2 type=button class=2014 value=Go></td>\n"
@@ -263,7 +263,7 @@ bbsdoc_main()
 	strcpy(board, x1->header.filename);
 	sprintf(dir, "boards/%s/.DIR", board);
 //	if(cache_header(file_time(dir),10))
-//		return 0; 
+//		return 0;
 	int hastmpl;
 	sprintf(genbuf, "boards/%s/%s", board, ".tmpl");
 	if ((fp=fopen(genbuf, "r")) == 0)
@@ -276,7 +276,7 @@ bbsdoc_main()
 	html_header(1);
 	check_msg();
 	printf("<script src=/function.js></script>\n");
-	
+
 	fp = fopen(dir, "r");
 	total = x1->total;
 	start = getdocstart(total, w_info->t_lines);
@@ -287,10 +287,10 @@ bbsdoc_main()
 	printboardtop(x1, 3);
 //	printf("一般模式 文章数[%d] ", total);
 	printf("<tr><td><a href=\"pst?B=%s\" class=\"btnsubmittheme\" title=\"我要发表文章 accesskey: p\" accesskey=\"p\">我要发表文章</a>\n", board);
-	if (hastmpl > 0) 
+	if (hastmpl > 0)
 		printf("<a href=bbstmpl?action=show&board=%s class=\"btnsubmittheme\" title=\"模板发文 accesskey: t\" accesskey=\"t\">模板发文</a>\n", board);
 	//add by macintosh 060319 for template post
-	
+
 	printf("文章数[%d] 在线[%d]</td>", total, x1->inboard);
 	printf("<td align=right><a href=\"tdoc?B=%s\">主题模式</a>\n", board);
 	if (has_BM_perm(&currentuser, x1))
@@ -343,7 +343,7 @@ bbsdoc_main()
 		"<TD class=tdtitle>星级</TD>\n"
 		"<TD class=tdtitle>评价</TD>\n"
 		"</TR>\n");
-	
+
 	fseek(fp, (start - 1) * sizeof (struct fileheader), SEEK_SET);
 	//top_file(); //add by wjbta
 	for (i = 0; i < w_info->t_lines; i++) {
@@ -380,8 +380,8 @@ bbsdoc_main()
 		if(!strncmp(x.title, "Re: ",4))
 			strcpy(only_for_b,"");
 
-		
-		
+
+
 		ptr = flag_str2(x.accessed, !brc_un_read(&x));
 		/*if ((ptr[0] == 'N') || (ptr[0]=='n'))
 			cls = " class=B0500";
@@ -440,7 +440,7 @@ bbsdoc_main()
 		"<table width=\"95%\"  border=0 cellpadding=0 cellspacing=0 class=\"level1\" align=\"center\">\n"
 		"<td><form name=form2 action=bbsdoc>\n");
 	printf("<tr><td><a href=\"pst?B=%s\" class=btnsubmittheme>我要发表文章</a>\n", board);
-	if (hastmpl > 0) 
+	if (hastmpl > 0)
 		printf("<a href=bbstmpl?action=show&board=%s class=btnsubmittheme>模板发文</a>\n", board);
 	//add by macintosh 060319 for template post
 	printf("文章数[%d] 在线[%d]</td>\n", total, x1->inboard);
@@ -469,7 +469,7 @@ bbsdoc_main()
 		printkeywords(buf);
 		printf("</td></tr></table>\n");
 	}
-	
+
 	sprintf(genbuf, "boards/%s/boardrelation", board);
 	fp = fopen(genbuf, "r");
     	if (fp != NULL)
@@ -479,11 +479,11 @@ bbsdoc_main()
     		printf("<table width=\"100%\" cellpadding=2 cellspacing=0><tr><td class=tdtitle align=center>\n");
 		printf("来这个版的朋友也常去这些版面: ");
 		printrelationboards(linebuf);
-		printf("</td></tr></table>\n");	
+		printf("</td></tr></table>\n");
 		fclose(fp);
     	}
 
-	
+
 	printf("</table></body>\n");
 	http_quit();
 	return 0;
@@ -551,27 +551,28 @@ int top_file(const char *call_type)
 }
 
 //add by wjbta
-int show_rec() {                                                                                           
-    FILE *fp;                                                                                              
-    struct commend x;                                                                                      
-    int no=0;                                                                                              
-    int i, total;                                                                                          
-    fp=fopen(".commend", "r");                                                                             
-    if(!fp) return 0;                                                                                      
-    printf("%s", "<table width='100%' style='BORDER: 2px solid; BORDER-COLOR:e8e8e8;'>\n");                
-    total=file_size(".commend")/sizeof(struct commend);                                                    
-        for(i=total-1; i>=0; i--) {                                                                        
-                fseek(fp, sizeof(struct commend)*i, SEEK_SET);                                             
-                if(fread(&x, sizeof(struct commend), 1, fp)<=0) break;                                     
-                //if(!x.flag) continue;                                                                    
-                no++;                                                                                      
-                if(no>=17) break;                                                                          
-                if(no%2==1) printf("<tr style=\'line-height:12px\'>");                                     
+// warning by IronBlood: unused function
+void show_rec() {
+    FILE *fp;
+    struct commend x;
+    int no=0;
+    int i, total;
+    fp=fopen(".commend", "r");
+    if(!fp) return 0;
+    printf("%s", "<table width='100%' style='BORDER: 2px solid; BORDER-COLOR:e8e8e8;'>\n");
+    total=file_size(".commend")/sizeof(struct commend);
+        for(i=total-1; i>=0; i--) {
+                fseek(fp, sizeof(struct commend)*i, SEEK_SET);
+                if(fread(&x, sizeof(struct commend), 1, fp)<=0) break;
+                //if(!x.flag) continue;
+                no++;
+                if(no>=17) break;
+                if(no%2==1) printf("<tr style=\'line-height:12px\'>");
                 printf("<td>○<a href=con?B=%s&F=%s&top=1>%s </a> [<a href=board?B=%s&top=2>%s</a>]\n",x.board
 , x.filename, void1(titlestr(x.title)), x.board,x.board);
-        }                                                                                                  
-    printf("</table>\n");                                                                                  
-    printf("<table width='100%'><tr>");                                                                    
+        }
+    printf("</table>\n");
+    printf("<table width='100%'><tr>");
     printf("<td align=right><a style='color:#208020'href=%sLilyDigest>→兵马俑精华←</a> <a style='color:#208020'href=bbsrec2?top=3>→更多推荐文章(共%d篇)←</a></table>\n", showByDefMode(), total);
-    fclose(fp);                                                                                            
-}                    
+    fclose(fp);
+}
