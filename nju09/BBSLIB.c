@@ -418,12 +418,12 @@ hsprintf(char *s, char *s0)
 			} else if (usingMath && withinMath == 1) {
 				strnncpy2(s, &len, "</span>", 7);
 				withinMath = 0;
-			} else 
+			} else
 				s[len++] = c;
 			break;
 		case '"':
 			if (usingMath && !withinMath && s0[i + 1] == '[') {
-				strnncpy2(s, &len, "<div class=math>", 16); 
+				strnncpy2(s, &len, "<div class=math>", 16);
 				i++;
 				withinMath = 2;
 			} else if (usingMath && withinMath == 2 && s0[i + 1] == ']') {
@@ -564,7 +564,7 @@ fhhprintf(FILE * output, char *fmt, ...)
 	char vfile[STRLEN];
 	char cmdline[STRLEN];
 	FILE* vfp;
-	
+
 	va_list ap;
 	va_start(ap, fmt);
 	vsnprintf(buf, 1023, fmt, ap);
@@ -627,7 +627,7 @@ fhhprintf(FILE * output, char *fmt, ...)
 				noh, noh);
 			*s = tmpchar;
 			continue;
-		} 
+		}
 		/*
 		else if (!strncasecmp(s, "#video", 6)) {
 			char *tmp, *noh, tmpchar;
@@ -665,7 +665,7 @@ fhhprintf(FILE * output, char *fmt, ...)
 				noh, noh);
 			*s = tmpchar;
 			continue;
-		} 
+		}
 		*/
 		else {
 			buf0[len] = s[0];
@@ -733,16 +733,16 @@ struct wwwsession guest = {
 };
 
 
-void 
+void
 get_session_string(char *name) {
 	char *cookies_string, *session_string, *p;
 	cookies_string = getenv("HTTP_COOKIE");
 
 	if (NULL != cookies_string) {
 		session_string = strchr(cookies_string, '/');
-		
+
 		snprintf(name, STRLEN, "%s", session_string + sizeof(SMAGIC));
-		
+
 	} else {
 		strcpy(name, "/");
 	}
@@ -763,7 +763,7 @@ print_session_string(char *value) {
 int
 contains_invliad_char(char *s) {
 	char *tmp;
-	int ret = 0; 
+	int ret = 0;
 	tmp = s;
 	while (*s != '\0') {
 		if (!(*s == '/' ||
@@ -779,7 +779,7 @@ contains_invliad_char(char *s) {
 			*s == '-' ||
 			(*s >= 'a' && *s <= 'z') ||
 			(*s >= 'A' && *s <= 'Z') ||
-			(*s >= '0' && *s <= '9')) 
+			(*s >= '0' && *s <= '9'))
 			) {
 			ret = 1;
 			break;
@@ -1202,7 +1202,7 @@ user_init(struct userec *x, struct user_info **y, unsigned char *ub)
 		if ((ofip.s_addr >> (*y)->wwwinfo.ipmask) !=
 		    (from_addr.s_addr >> (*y)->wwwinfo.ipmask))
 			return 0;
-	} else 
+	} else
 	*/
 	if (strncmp((*y)->from, fromhost, 20))  //ipv6 by leoncom 24->20
 		return 0;
@@ -2062,7 +2062,7 @@ int count_life_value(struct userec *urec)
 	    || !strcasecmp(urec->userid, "guest"))
 		return 999;
 	//if (life_special_web(urec->userid)) return 666;
-	i = (now_t - urec->lastlogin) / 60;	
+	i = (now_t - urec->lastlogin) / 60;
 
 	/* new user should register in 30 mins */
 	if (strcmp(urec->userid, "new") == 0) {
@@ -2078,8 +2078,8 @@ int count_life_value(struct userec *urec)
 		return  666;
 	if (((time(0)-urec->firstlogin)/86400)>365*2)
 		return  365;
-	
-	
+
+
 	res=(120 * 1440 - i) / 1440 + urec->numdays;
 	if (res>364) res=364;
 	return res;
@@ -2122,8 +2122,10 @@ is_bansite(char *ip)
 	if (fp == 0)
 		return 0;
 	while (fscanf(FCGI_ToFILE(fp), "%s", buf3) > 0)
-		if (!strcasecmp(buf3, ip))
+		if (!strcasecmp(buf3, ip)) {
+			fclose(fp);
 			return 1;
+		}
 	fclose(fp);
 	return 0;
 }
@@ -2576,7 +2578,7 @@ getbfroma(char *path)
 {
 	static char board[30];
 	char *ptr;
-	
+
 	if (*path == '/')
 		path++;
 	if (strncmp(path, "groups/GROUP_", 13))
@@ -3283,11 +3285,11 @@ char *url_encode(char *str) {
   char *pstr = str, *buf = malloc(strlen(str) * 3 + 1), *pbuf = buf;
   memset(buf, 0, strlen(str) * 3 + 1);
   while (*pstr) {
-    if (isalnum(*pstr) || *pstr == '-' || *pstr == '_' || *pstr == '.' || *pstr == '~') 
+    if (isalnum(*pstr) || *pstr == '-' || *pstr == '_' || *pstr == '.' || *pstr == '~')
       *pbuf++ = *pstr;
-    else if (*pstr == ' ') 
+    else if (*pstr == ' ')
       *pbuf++ = '%', *pbuf++ = '2', *pbuf++ = '0';
-    else 
+    else
       *pbuf++ = '%', *pbuf++ = to_hex(*pstr >> 4), *pbuf++ = to_hex(*pstr & 15);
     pstr++;
   }
@@ -3325,12 +3327,12 @@ NHsprintf(char *s, char *s0)
 			} else if (usingMath && withinMath == 1) {
 				strnncpy2(s, &len, "</span>", 7);
 				withinMath = 0;
-			} else 
+			} else
 				s[len++] = c;
 			break;
 		case '"':
 			if (usingMath && !withinMath && s0[i + 1] == '[') {
-				strnncpy2(s, &len, "<div class=math>", 16); 
+				strnncpy2(s, &len, "<div class=math>", 16);
 				i++;
 				withinMath = 2;
 			} else if (usingMath && withinMath == 2 && s0[i + 1] == ']') {
