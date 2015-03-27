@@ -408,12 +408,9 @@ bbsdoc_main()
 		else
 			printf("<td align=center class=tdborder>%12.12s</td>", Ctime(x.filetime) + 4);
 		x.title[48] = 0;
-		printf
-		    ("<td class=tdborder ><a href=con?B=%s&F=%s&N=%d&T=%d  %s>%s%s </a>%s</td>",
-		     board, fh2fname(&x), start + i, feditmark(x), only_for_b,strncmp(x.title, "Re: ",
-							     4) ? "¡ð " : "",
-		     void1(titlestr(x.title)),
-		     (x.owner[0] == '-') ? "" : size_str(bytenum(x.sizebyte)));
+		printf("<td class=tdborder ><a href=\"con?B=%s&F=%s&N=%ld&T=%ld\" %s>%s%s</a>%s</td>",
+		     board, fh2fname(&x), start + i, feditmark(x), only_for_b,strncmp(x.title, "Re: ", 4) ? "¡ð " : "",
+		     void1(titlestr(x.title)), (x.owner[0] == '-') ? "" : size_str(bytenum(x.sizebyte)));
 		if (x.staravg50) {
 			printf("<td class=tdborder>%d</td>", x.staravg50 / 50);
 			printf("<td class=tdborder>%dÈË</td>\n", x.hasvoted);
