@@ -2039,18 +2039,21 @@ horoscope(int month, int day)
 //add by wjbta@bmy for 666生命力
 int life_special_web(char *id)
 {
-        FILE *fp;
-        char id1[80],buf[80];
-        fp=fopen("etc/life", "r");
-        if(fp==0) return 0;
-        while(1) {
-                if(fgets(buf, 80, fp)==0) break;
+	FILE *fp;
+	char id1[80],buf[80];
+	fp=fopen("etc/life", "r");
+	if(fp==0) return 0;
+	while(1) {
+		if(fgets(buf, 80, fp)==0) break;
 //		printf("%s",buf);
-                if(sscanf(buf, "%s", id1)<1) continue;
+		if(sscanf(buf, "%s", id1)<1) continue;
 //		printf("%s",id1);
-                if(!strcasecmp(id1,id)) return 1;
-                }
-        fclose(fp);
+		if(!strcasecmp(id1,id)) {
+			fclose(fp);
+			return 1;
+		}
+	}
+	fclose(fp);
 	return 0;
 } //add by wjbta@bmy 666生命力
 
