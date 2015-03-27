@@ -1697,6 +1697,7 @@ anno_path_of(char *board)
 		buf1[strlen(buf1) - 1] = 0;
 		if (!strcasecmp(buf1, board)) {
 			sprintf(buf, "/%s", buf2);
+			fclose(fp);
 			return buf;
 		}
 	}
