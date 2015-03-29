@@ -22,8 +22,10 @@ crossfs_rename(const char *oldpath, const char *newpath)
 	if ((fdr = open(oldpath, O_RDONLY)) < 0)
 		return -1;
 	tmpfn = malloc(strlen(newpath) + 5);
-	if (!tmpfn)
+	if (!tmpfn) {
+		close(fdr);
 		return -1;
+	}
 	strcpy(tmpfn, newpath);
 	strcat(tmpfn, ".new");
 	if ((fdw = open(tmpfn, O_WRONLY | O_CREAT, 0660)) < 0) {
