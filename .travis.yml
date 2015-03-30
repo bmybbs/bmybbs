@@ -12,10 +12,11 @@ env:
 addons:
   coverity_scan:
     project:
-	  name: "bmybbs/bmybbs"
-	  description: "Build submitted via Travis CI"
-	notification:
-	  secure: "YlN18ZO9i4Hr+PKuZlfRxSLLvWA/XURFF5STN8PGhoonzL0kpyUnCNFsI9YHB+tDw8b8NUqh3rdHabfbbYIwmxikFHHm00rGcV3JB/haKFw9/3gRIeTvJarryIKJsPME1BufVaG6vsuGqd7y7n8ENdOaxdfx5CgAJz67xdgcgzE="
-	build_command_prepend: "make clean"
-	build_command: "cd ythtlib; make; cd ../libythtbbs; make; cd ../src; make; cd ../nju09; make"
-	branch_pattern: master
+      name: "bmybbs/bmybbs"
+      description: "Build submitted via Travis CI"
+    notification:
+      secure: "YlN18ZO9i4Hr+PKuZlfRxSLLvWA/XURFF5STN8PGhoonzL0kpyUnCNFsI9YHB+tDw8b8NUqh3rdHabfbbYIwmxikFHHm00rGcV3JB/haKFw9/3gRIeTvJarryIKJsPME1BufVaG6vsuGqd7y7n8ENdOaxdfx5CgAJz67xdgcgzE="
+    build_command_prepend: "make clean"
+    build_command: "cd ythtlib; make; cd ../libythtbbs; make; cd ../src; make; cd ../nju09; make"
+    branch_pattern: master
+
