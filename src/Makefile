@@ -95,7 +95,7 @@ bbs.chatd: station.c
 	$(CC) $(CFLAGS) -o bbs.chatd $(OS_DEF) station.c
 
 thread: thread.c record.c
-	$(CC) $(CFLAGS) -include $(BASEPATH)/ythtlib/ythtlib.h -include $(BASEPATH)/libythtbbs/ythtbbs.h -DEXT_UTL -o thread record.c thread.c -L$(BBSHOME)/bin -lytht -lythtbbs
+	$(CC) $(CFLAGS) -include $(BASEPATH)/ythtlib/ythtlib.h -include $(BASEPATH)/libythtbbs/ythtbbs.h -DEXT_UTL -o thread record.c thread.c -L$(BASEPATH)/bin -lytht -lythtbbs
 
 install: all
 	#( cd $(BASEPATH); ./Install.sh)
