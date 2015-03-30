@@ -14,5 +14,5 @@ CPU:=pentium
 installfcgidev:$(fcgi_s)
 	rm -fr $(fcgi);tar xzvf $<;cd $(fcgi);./configure --prefix=/usr;make;make install
 installghthash:libghthash-$(ghthashv).tar.gz
-	tar xzvf $^;cd $(^:.tar.gz=);./configure;$(MAKE);$(MAKE) install
+	tar xzvf $^;cd $(^:.tar.gz=);./configure;$(MAKE);sudo $(MAKE) install
 
