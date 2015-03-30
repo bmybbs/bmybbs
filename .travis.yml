@@ -7,7 +7,7 @@ before_script:
 
 env:
   global:
-   - secure: "HLgw588BO8dmHtMWP+UFnd34UC74OBeefm3AKT/C8Vdw0ApSQ1YNTQmoVyy7YEhFpfVDnSvinAqGq0tDJTWEtmHH5ah4x3dIQ2MmKo9ibLW/NT3oULbOEH7bxNkJN4OZTnvQVjebLeVQNIsPlekVHTn2odTI5PKSF/F2/yZt3AA="
+   - secure: "HHSPWzZPgxpM/oqL60FiUQGziRnaUO6NcZMS7SqZhnqE7PyvKy4K8UgfwZXmfALHaIkHm081uJw1FIv8pMuLQgCLijPq86+9mNxkHqoYV5Hv9s34AAxE9SaMZkELK1toq/phPTmxQM2zh0FoLhaJen9uwUmdHoUE/YleG7MC4mI="
 
 addons:
   coverity_scan:
@@ -17,6 +17,6 @@ addons:
     notification:
       secure: "YlN18ZO9i4Hr+PKuZlfRxSLLvWA/XURFF5STN8PGhoonzL0kpyUnCNFsI9YHB+tDw8b8NUqh3rdHabfbbYIwmxikFHHm00rGcV3JB/haKFw9/3gRIeTvJarryIKJsPME1BufVaG6vsuGqd7y7n8ENdOaxdfx5CgAJz67xdgcgzE="
     build_command_prepend: "make clean"
-    build_command: "cd ythtlib; make; cd ../libythtbbs; make; cd ../src; make; cd ../nju09; make"
+    build_command: "(cd ythtlib; make; cd ../libythtbbs; make; cd ../src; make; cd ../nju09; make)"
     branch_pattern: master
 
