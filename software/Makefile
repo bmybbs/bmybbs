@@ -1,7 +1,7 @@
 include Makefile.Base
 fastcgi_v:=2.2.12
 fcgi_v:=2.2.2
-ghthashv=0.5.0
+ghthashv=0.5.0-x86_64
 
 fastcgi:=mod_fastcgi-$(fastcgi_v)
 fastcgi_s:=$(fastcgi).tar.gz
