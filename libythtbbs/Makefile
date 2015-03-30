@@ -27,4 +27,4 @@ seclist.local:
 sectree.c: gensectree seclist.local sectree.h
 	./gensectree> sectree.c
 gensectree: gensectree.o
-	$(CC) $(CFLAGS) -o $@ $^ -L$(BBSHOME)/bin -lytht 
+	$(CC) $(CFLAGS) -o $@ $^ -L$(BASEPATH)/bin -lytht 
