@@ -1,4 +1,18 @@
 Ma.PHONY:all install clean
+prepend:
+	$(MAKE) -C software installghthash
+	$(MAKE) -C src proto
+	$(MAKE) -C src depend
+	$(MAKE) -C nju09 proto
+	$(MAKE) -C nju09 depend
+
+core:
+	$(MAKE) -C ythtlib
+	$(MAKE) -C libythtbbs
+	$(MAKE) -C src
+	$(MAKE) -C nju09
+	$(MAKE) -C local_utl
+
 all:
 	$(MAKE) -C ythtlib
 	$(MAKE) -C libythtbbs
