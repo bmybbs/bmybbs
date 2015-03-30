@@ -16,6 +16,8 @@ $(COBJS): .depend
 
 libytht.a:$(COBJS)
 	ar r $@ $?
+	mkdir -p $(BASEPATH)/bin
+	cp libytht.a $(BASEPATH)/bin
 install:libytht.a
 	mkdir -p $(BBSHOME)/bin
 	cp libytht.a $(BBSHOME)/bin

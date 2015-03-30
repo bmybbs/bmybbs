@@ -16,6 +16,7 @@ $(COBJS): .depend
 
 libythtbbs.a:$(COBJS)
 	ar r $@ $?
+	cp libythtbbs.a $(BASEPATH)/bin
 install:libythtbbs.a
 	mkdir -p $(BBSHOME)/bin
 	cp libythtbbs.a $(BBSHOME)/bin
