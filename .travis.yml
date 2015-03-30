@@ -1,0 +1,6 @@
+language: c
+compiler: gcc
+script: make all
+before_script:
+- sudo apt-get update -qq
+- sudo apt-get install -qq libmysqlclient-dev cproto

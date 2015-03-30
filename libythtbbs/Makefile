@@ -16,6 +16,7 @@ $(COBJS): .depend
 
 libythtbbs.a:$(COBJS)
 	ar r $@ $?
+	cp libythtbbs.a $(BASEPATH)/bin
 install:libythtbbs.a
 	mkdir -p $(BBSHOME)/bin
 	cp libythtbbs.a $(BBSHOME)/bin
@@ -26,4 +27,4 @@ seclist.local:
 sectree.c: gensectree seclist.local sectree.h
 	./gensectree> sectree.c
 gensectree: gensectree.o
-	$(CC) $(CFLAGS) -o $@ $^ -L$(BBSHOME)/bin -lytht 
+	$(CC) $(CFLAGS) -o $@ $^ -L$(BASEPATH)/bin -lytht 
