@@ -16,20 +16,17 @@ BMYBBS 的源代码遵循 [GNU General Public License version 2](https://www.gnu
 
 ## 参与代码编写
 
-1. 克隆代码到您的计算机，并创建新的分支：
+1. 克隆代码到您的计算机，并创建新的分支：<br />
 
-```
-git clone git@github.com:bmybbs/bmybbs.git
-cd bmybbs
-git checkout -b branch_name
-```
+        git clone git@github.com:bmybbs/bmybbs.git
+        cd bmybbs
+        git checkout -b branch_name
 
 `branch_name` 请尽量取得有意义一些，例如 `fix-issue-30`、`fix-bug-when-doing-sth` 或者 `add-feature-xyz`。
 
 请保持代码的整洁，一个分支仅解决一项任务。如果有多项任务计划完成，请创建独立的分支。
 
 2. 编码。请遵循这样的编码格式约定：
-
     * 使用 tab 缩进，而非空格；
     * 不要遗留多余的空白，空行中不要出现 tab 或者空格；
     * 在运算符前后，以及逗号、分号、冒号之后，以及 `{` 前后和 `}` 之前使用空格；
@@ -37,17 +34,14 @@ git checkout -b branch_name
     * 函数的 `{` 放到新的一行中，其他情况下与之前的代码放在同一行，如下所示；
     * [bmybbs](https://github.com/bmybbs/bmybbs) 的代码使用的是 GBK 编码，[api](https://github.com/bmybbs/api) 和 [web](https://github.com/bmybbs/web) 使用 UTF-8 编码；
 
-```C
-int my_compare (int a, int b)
-{
-	if (a > 0) {
-		return b;
-	} else {
-		return a;
-	}
-}
-```
-
+        int my_compare (int a, int b)
+        {
+        	if (a > 0) {
+        		return b;
+        	} else {
+        		return a;
+        	}
+        }
 
 3. 提交。每次 `git commit` 的时候请使用简短的概括，请勿留空。
 
