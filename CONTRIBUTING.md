@@ -22,9 +22,9 @@ BMYBBS 的源代码遵循 [GNU General Public License version 2](https://www.gnu
         cd bmybbs
         git checkout -b branch_name
 
-`branch_name` 请尽量取得有意义一些，例如 `fix-issue-30`、`fix-bug-when-doing-sth` 或者 `add-feature-xyz`。
+  `branch_name` 请尽量取得有意义一些，例如 `fix-issue-30`、`fix-bug-when-doing-sth` 或者 `add-feature-xyz`。
 
-请保持代码的整洁，一个分支仅解决一项任务。如果有多项任务计划完成，请创建独立的分支。
+  请保持代码的整洁，一个分支仅解决一项任务。如果有多项任务计划完成，请创建独立的分支。
 
 2. 编码。请遵循这样的编码格式约定：
     * 使用 tab 缩进，而非空格；
@@ -34,38 +34,40 @@ BMYBBS 的源代码遵循 [GNU General Public License version 2](https://www.gnu
     * 函数的 `{` 放到新的一行中，其他情况下与之前的代码放在同一行，如下所示；
     * [bmybbs](https://github.com/bmybbs/bmybbs) 的代码使用的是 GBK 编码，[api](https://github.com/bmybbs/api) 和 [web](https://github.com/bmybbs/web) 使用 UTF-8 编码；
 
-        int my_compare (int a, int b)
-        {
-        	if (a > 0) {
-        		return b;
-        	} else {
-        		return a;
-        	}
-        }
+    ```C
+    int my_compare (int a, int b)
+    {
+    	if (a > 0) {
+    		return b;
+    	} else {
+    		return a;
+    	}
+    }
+    ```
 
 3. 提交。每次 `git commit` 的时候请使用简短的概括，请勿留空。
 
 4. Fork。在 clone 项目（例如本例中 bmybbs）的 GitHub 页面中，点击 **Fork** 按钮，这样 GitHub 上会产生您自己的项目。然后，在本地代码目录下执行：
 
-```
-git remote add mine git@github.com:<your user name>/bmybbs.git
-```
+  ```
+  git remote add mine git@github.com:<your user name>/bmybbs.git
+  ```
 
-Fork 仅需执行一次。
+  Fork 仅需执行一次。
 
 5. 上传代码并创建 pull request。
 
-从上游同步代码，并合并本地的变更，再上传到刚刚 Fork 出来的项目中。
+  从上游同步代码，并合并本地的变更，再上传到刚刚 Fork 出来的项目中。
 
-```
-git fetch origin
-git checkout branch_name
-git rebase origin/master
-git push -f mine branch_name
-```
+  ```
+  git fetch origin
+  git checkout branch_name
+  git rebase origin/master
+  git push -f mine branch_name
+  ```
 
-请将 `branch_name` 替换为您实际的分支名称。
+  请将 `branch_name` 替换为您实际的分支名称。
 
-然后，请访问您 Fork 出来的项目页面，例如 <u>github.com/**your-user-name**/bmybbs</u>，在页面上点击 **Pull Request**并创建新的 PR。选择 base 的分支名（一般为 master），以及提交变更的分支名（例如本例的 `branch_name`）。您可以在这个页面上检查所有的变更。请附加说明，并起一个具体的、有意义的标题，然后完成 PR 创建。通常我们会立即收到邮件提醒，并做 code review，请关注后续进程。
+  然后，请访问您 Fork 出来的项目页面，例如 <u>github.com/**your-user-name**/bmybbs</u>，在页面上点击 **Pull Request**并创建新的 PR。选择 base 的分支名（一般为 master），以及提交变更的分支名（例如本例的 `branch_name`）。您可以在这个页面上检查所有的变更。请附加说明，并起一个具体的、有意义的标题，然后完成 PR 创建。通常我们会立即收到邮件提醒，并做 code review，请关注后续进程。
 
 感谢您的贡献。
