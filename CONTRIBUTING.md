@@ -46,6 +46,8 @@ int my_compare (int a, int b)
 		return a;
 	}
 }
+```
+
 
 3. 提交。每次 `git commit` 的时候请使用简短的概括，请勿留空。
 
