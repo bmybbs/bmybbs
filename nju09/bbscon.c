@@ -16,26 +16,26 @@ showbinaryattach(char *filename)
 	MMAP_TRY {
 		if (mmapfile(filename, &mf) < 0) {
 			MMAP_UNTRY;
-			http_fatal("ÎŞ·¨´ò¿ª¸½¼ş");
+			http_fatal("æ— æ³•æ‰“å¼€é™„ä»¶");
 			MMAP_RETURN(-1);
 		}
 		if (pos >= mf.size - 4 || pos < 1) {
 			mmapfile(NULL, &mf);
 			MMAP_UNTRY;
-			http_fatal("ÎŞ·¨´ò¿ª¸½¼ş");
+			http_fatal("æ— æ³•æ‰“å¼€é™„ä»¶");
 			MMAP_RETURN(-1);
 		}
 		if (mf.ptr[pos - 1] != 0) {
 			mmapfile(NULL, &mf);
 			MMAP_UNTRY;
-			http_fatal("ÎŞ·¨´ò¿ª¸½¼ş");
+			http_fatal("æ— æ³•æ‰“å¼€é™„ä»¶");
 			MMAP_RETURN(-1);
 		}
 		size = ntohl(*(unsigned int *) (mf.ptr + pos));
 		if (pos + 4 + size >= mf.size) {
 			mmapfile(NULL, &mf);
 			MMAP_UNTRY;
-			http_fatal("ÎŞ·¨´ò¿ª¸½¼ş");
+			http_fatal("æ— æ³•æ‰“å¼€é™„ä»¶");
 			MMAP_RETURN(-1);
 		}
 		printf("Content-type: %s\n\n", get_mime_type(attachname));
@@ -69,7 +69,7 @@ fprintbinaryattachlink(FILE * fp, int ano, char *attachname, int pos, int size,
 	}
 
 	if (alt) {
-		//ÕâÖÖÇé¿öÄ¿Ç°¿ÉÒÔÓÃatthttpd
+		//è¿™ç§æƒ…å†µç›®å‰å¯ä»¥ç”¨atthttpd
 		if (!atthttp)
 			snprintf(link, sizeof (link),
 				 "%s%s&amp;attachpos=%d&amp;attachname=/%s",
@@ -85,7 +85,7 @@ fprintbinaryattachlink(FILE * fp, int ano, char *attachname, int pos, int size,
 				 alt1, pos, attachname);
 
 	} else if (!strcmp(cginame, "bbscon")) {
-		//Í¬ÉÏ
+		//åŒä¸Š
 		if (!atthttp)
 			snprintf(link, sizeof (link),
 				 "%sattach/bbscon/%s?B=%s&amp;F=%s&amp;attachpos=%d&amp;attachname=/%s",
@@ -126,7 +126,7 @@ fprintbinaryattachlink(FILE * fp, int ano, char *attachname, int pos, int size,
 	case 1:
 		fprintf
 		    (fp,
-		     "%d ¸½Í¼: %s (%d ×Ö½Ú)<br>"
+		     "%d é™„å›¾: %s (%d å­—èŠ‚)<br>"
 			"<a href='%s'> "
 						"<IMG style=\" max-width:800px; width: expression(this.width > 800 ? 800: true); height:auto\" SRC='%s'  border=0/> </a>",
 		//"<img src='%s'></img>",
@@ -134,15 +134,15 @@ fprintbinaryattachlink(FILE * fp, int ano, char *attachname, int pos, int size,
 		break;
 	case 2:
 		fprintf(fp,
-			"%d Flash¶¯»­: "
-			"<a href='%s'>%s</a> (%d ×Ö½Ú)<br>"
+			"%d FlashåŠ¨ç”»: "
+			"<a href='%s'>%s</a> (%d å­—èŠ‚)<br>"
 			"<OBJECT><PARAM NAME='MOVIE' VALUE='%s'>"
 			"<EMBED SRC='%s' width=480 height=360></EMBED></OBJECT>",
 			ano, link, attachname, size, link, link);
 		break;
 	default:
 		fprintf(fp,
-			"%d ¸½¼ş: <a href='%s'>%s</a> (%d ×Ö½Ú)",
+			"%d é™„ä»¶: <a href='%s'>%s</a> (%d å­—èŠ‚)",
 			ano, link, attachname, size);
 	}
 }
@@ -224,7 +224,7 @@ fshowcon(FILE * output, char *filename, int show_iframe)
 			continue;
 		}
 		/*
-		   if (!strncmp(buf, "·¢ĞÅÈË: ", 8)) {
+		   if (!strncmp(buf, "å‘ä¿¡äºº: ", 8)) {
 		   ptr = strdup(buf);
 		   id = strtok(ptr + 8, " ");
 		   s = strtok(0, "");
@@ -233,7 +233,7 @@ fshowcon(FILE * output, char *filename, int show_iframe)
 		   if (s == 0)
 		   s = "\n";
 		   if (strlen(id) < 13 && getuser(id)) {
-		   fprintf(output, "·¢ĞÅÈË: %s%s", userid_str(id),
+		   fprintf(output, "å‘ä¿¡äºº: %s%s", userid_str(id),
 		   s);
 		   fprintf(output, "<br>");
 		   free(ptr);
@@ -286,7 +286,7 @@ showconxml(char *filename, int viewertype)
 	int retv = -1;
 	if (viewertype != 1)
 		printf
-		    ("<br>±¾ÎÄÊ¹ÓÃÁË<a href=home/boards/BBSHelp/html/itex/itexintro.html target=_blank>TexÊıÑ§¹«Ê½</a><br>");
+		    ("<br>æœ¬æ–‡ä½¿ç”¨äº†<a href=home/boards/BBSHelp/html/itex/itexintro.html target=_blank>Texæ•°å­¦å…¬å¼</a><br>");
 	fp = fopen("bbstmpfs/tmp/testxml.txt", "w");
 	fshowcon(fp, filename, 0);
 	fclose(fp);
@@ -450,40 +450,40 @@ bbscon_main()
 	sametitle = atoi(getparm("st"));
 
 	if ((bx = getboard(board)) == NULL)
-		http_fatal("´íÎóµÄÌÖÂÛÇø");
+		http_fatal("é”™è¯¯çš„è®¨è®ºåŒº");
 	if (strncmp(file, "M.", 2) && strncmp(file, "G.", 2) && strncmp(file, "T.", 2))	//modify by mintbaggio 040517 for new www
-		http_fatal("´íÎóµÄ²ÎÊı1");
+		http_fatal("é”™è¯¯çš„å‚æ•°1");
 	if (strstr(file, "..") || strstr(file, "/"))
-		http_fatal("´íÎóµÄ²ÎÊı2");
+		http_fatal("é”™è¯¯çš„å‚æ•°2");
 	sprintf(filename, "boards/%s/%s", board, file);
 	if (*getparm("attachname") == '/') {
 		showbinaryattach(filename);
 		return 0;
 	}
 
-	// É¾³ı»Ø¸´ÌáĞÑ¿ªÊ¼ by IronBlood
+	// åˆ é™¤å›å¤æé†’å¼€å§‹ by IronBlood
 	time_t article_id = fn2timestamp(file);
 	if(is_post_in_notification(currentuser.userid, board, article_id)) {
 		del_post_notification(currentuser.userid, board, article_id);
 	}
-	// É¾³ı»Ø¸´ÌáĞÑ½áÊø
+	// åˆ é™¤å›å¤æé†’ç»“æŸ
 
 	strcpy(fileback, file);
 	sprintf(dir, "boards/%s/.DIR", board);
 	total = bx->total;
 	inndboard = bx->header.flag & INNBBSD_FLAG;
 	if (total <= 0)
-		http_fatal("´ËÌÖÂÛÇø²»´æÔÚ»òÕßÎª¿Õ");
+		http_fatal("æ­¤è®¨è®ºåŒºä¸å­˜åœ¨æˆ–è€…ä¸ºç©º");
 	MMAP_TRY {
 		if (mmapfile(dir, &mf) == -1) {
 			MMAP_UNTRY;
-			http_fatal("´ËÌÖÂÛÇø²»´æÔÚ»òÕßÎª¿Õ");
+			http_fatal("æ­¤è®¨è®ºåŒºä¸å­˜åœ¨æˆ–è€…ä¸ºç©º");
 		}
 		dirinfo = findbarticle(&mf, file, &num, 1);
 		if (dirinfo == NULL) {
 			mmapfile(NULL, &mf);
 			MMAP_UNTRY;
-			http_fatal("±¾ÎÄ²»´æÔÚ»òÕßÒÑ±»É¾³ı");
+			http_fatal("æœ¬æ–‡ä¸å­˜åœ¨æˆ–è€…å·²è¢«åˆ é™¤");
 		}
 
 #if 1		
@@ -507,7 +507,7 @@ bbscon_main()
 		// output post title and link by IronBlood@bmy 2011.12.06
 		x = (struct fileheader *)(mf.ptr + num * sizeof (struct fileheader));
 		g2u(x->title, strlen(x->title), title_utf8, sizeof(title_utf8));
-		printf("<title>%s | ±øÂíÙ¸BBS</title>", x->title);
+		printf("<title>%s | å…µé©¬ä¿‘BBS</title>", x->title);
 
 		printf("<script src='/function.js'></script></head>\n");
 
@@ -519,16 +519,16 @@ bbscon_main()
 			"<td><table width=\"100%\" border=0 align=right cellpadding=0 cellspacing=0>\n");
 		if (loginok && !isguest && (dirinfo->accessed & FH_ATTACHED))
 			printf
-			    ("<a href=bbsmywww><font color=red>¿´²»ÁËÍ¼Æ¬£¿</font></a>");
+			    ("<a href=bbsmywww><font color=red>çœ‹ä¸äº†å›¾ç‰‡ï¼Ÿ</font></a>");
 		if (loginok && !isguest && ((!via_proxy && wwwcache->accel_ip
 		    && wwwcache->accel_port)||via_proxy) && ! w_info->doc_mode)
 			printf
-			    ("<a href=bbsmywww><font color=red>¿´²»ÁËÎÄÕÂ£¿</font></a>");
+			    ("<a href=bbsmywww><font color=red>çœ‹ä¸äº†æ–‡ç« ï¼Ÿ</font></a>");
 
-		printf("<tr><td><a href=\"boa?secstr=%s\">%s</a> / <a href=\"%s%s\">%s</a> / ÔÄ¶ÁÎÄÕÂ "
+		printf("<tr><td><a href=\"boa?secstr=%s\">%s</a> / <a href=\"%s%s\">%s</a> / é˜…è¯»æ–‡ç«  "
 			"</td></tr></table></td>\n", bx->header.sec1, nohtml(getsectree(bx->header.sec1)->title), showByDefMode(), board, board);
 		printf("<td><table border=0 align=right cellpadding=0 cellspacing=0>\n"
-			"<tr><td> °æÖ÷ %s</tr></table></td></tr></table></td></tr>\n",
+			"<tr><td> ç‰ˆä¸» %s</tr></table></td></tr></table></td></tr>\n",
 			userid_str(bm2str(bmbuf, &(bx->header))));
 		if (dirinfo->accessed & FH_ALLREPLY) {
 			FILE *fp;
@@ -545,7 +545,7 @@ bbscon_main()
 		if (dirinfo->owner[0] == '-') {
 			mmapfile(NULL, &mf);
 			MMAP_UNTRY;
-			http_fatal("±¾ÎÄÒÑ±»É¾³ı");
+			http_fatal("æœ¬æ–‡å·²è¢«åˆ é™¤");
 		}
 		thread = dirinfo->thread;
 		printf("<tr><td height=70 colspan=2>\n"
@@ -557,11 +557,11 @@ bbscon_main()
 			"<table width=\"100%%\" border=0 cellpadding=0 cellspacing=0>\n");
 		nbuf = sprintf(buf, "<tr><td><div class=\"menu\">\n<DIV class=btncurrent>&lt;%s&gt;</DIV>\n", void1((unsigned char *)titlestr(bx->header.title)));
 		nbuf += sprintf(buf+nbuf, 
-				"<A href='fwd?B=%s&amp;F=%s' class=btnfunc>/ ×ª¼Ä</A>\n",
+				"<A href='fwd?B=%s&amp;F=%s' class=btnfunc>/ è½¬å¯„</A>\n",
 				board, file);
 		nbuf +=
 		    sprintf(buf + nbuf, 
-			"<DIV><A href='ccc?B=%s&amp;F=%s' class=btnfunc>/ ×ªÌù</a>\n",
+			"<DIV><A href='ccc?B=%s&amp;F=%s' class=btnfunc>/ è½¬è´´</a>\n",
 			board, file);
 
 		if (num >= 0 && num < total) {
@@ -573,10 +573,10 @@ bbscon_main()
 			//|| has_BM_perm(&currentuser, bx)) {
 			nbuf += sprintf
 				(buf + nbuf,
-				 "<A onclick='return confirm(\"ÄãÕæµÄÒªÉ¾³ı±¾ÎÄÂğ?\")' href='del?B=%s&amp;F=%s' class=btnfunc>/ É¾³ı</a>\n",
+				 "<A onclick='return confirm(\"ä½ çœŸçš„è¦åˆ é™¤æœ¬æ–‡å—?\")' href='del?B=%s&amp;F=%s' class=btnfunc>/ åˆ é™¤</a>\n",
 				 board, file);
 			nbuf += sprintf(buf + nbuf,
-					"<A href='edit?B=%s&amp;F=%s' class=btnfunc>/ ĞŞ¸Ä</a>\n",
+					"<A href='edit?B=%s&amp;F=%s' class=btnfunc>/ ä¿®æ”¹</a>\n",
 					board, file);
 		}
 		ptr = dirinfo->title;
@@ -589,13 +589,13 @@ bbscon_main()
 		fputs(buf, stdout);
 		nbuf = 0;
 		nbuf += sprintf(buf + nbuf,
-			"<a href='pstmail?B=%s&amp;F=%s&amp;num=%d' class=btnfunc title=\"»ØĞÅ¸ø×÷Õß accesskey: m\" accesskey=\"m\">/ »ØĞÅ¸ø×÷Õß</a>\n", board, file, num);
+			"<a href='pstmail?B=%s&amp;F=%s&amp;num=%d' class=btnfunc title=\"å›ä¿¡ç»™ä½œè€… accesskey: m\" accesskey=\"m\">/ å›ä¿¡ç»™ä½œè€…</a>\n", board, file, num);
 		nbuf += sprintf(buf + nbuf,
-			"<a href='tfind?B=%s&amp;th=%lu&amp;T=%s' class=btnfunc>/ Í¬Ö÷ÌâÁĞ±í</a>\n", board, (long)dirinfo->thread, encode_url((unsigned char *)ptr));
+			"<a href='tfind?B=%s&amp;th=%lu&amp;T=%s' class=btnfunc>/ åŒä¸»é¢˜åˆ—è¡¨</a>\n", board, (long)dirinfo->thread, encode_url((unsigned char *)ptr));
 		nbuf += sprintf(buf + nbuf,
-			"<a href='bbstcon?board=%s&amp;start=%d&amp;th=%lu' class=btnfunc>/ Í¬Ö÷ÌâÓÉ´ËÕ¹¿ª</a>\n", board, num, (long)dirinfo->thread);
+			"<a href='bbstcon?board=%s&amp;start=%d&amp;th=%lu' class=btnfunc>/ åŒä¸»é¢˜ç”±æ­¤å±•å¼€</a>\n", board, num, (long)dirinfo->thread);
 		nbuf += sprintf(buf + nbuf,
-			"<a href='%s%s&amp;S=%d' class=btnfunc title=\"·µ»ØÌÖÂÛÇø accesskey: b\" accesskey=\"b\">/ ·µ»ØÌÖÂÛÇø</a>\n",
+			"<a href='%s%s&amp;S=%d' class=btnfunc title=\"è¿”å›è®¨è®ºåŒº accesskey: b\" accesskey=\"b\">/ è¿”å›è®¨è®ºåŒº</a>\n",
 			showByDefMode(), board, (num > 4) ? (num - 4) : 1);
 		nbuf += sprintf(buf + nbuf,
 				"</div></td></tr></table></td></tr>\n");
@@ -604,14 +604,15 @@ bbscon_main()
 
 		if (!(dirinfo->accessed & FH_NOREPLY))
 			nbuf += sprintf(buf + nbuf,
-		"<a href='pst?B=%s&amp;F=%s&amp;num=%d%s' class=btnsubmittheme title=\"»Ø¸´±¾ÎÄ accesskey: r\" accesskey=\"r\">»Ø¸´±¾ÎÄ</a> </td>\n", board, file, num, outgoing ? "" : (inndboard ? "&amp;la=1" : ""));
+		"<a href='pst?B=%s&amp;F=%s&amp;num=%d%s' class=btnsubmittheme title=\"å›å¤æœ¬æ–‡ accesskey: r\" accesskey=\"r\">å›å¤æœ¬æ–‡</a> </td>\n", board, file, num, outgoing ? "" : (inndboard ? "&amp;la=1" : ""));
 
-		nbuf += sprintf(buf + nbuf, "<td width=\"40%%\" align=right>·ÖÏíµ½ ");
+		nbuf += sprintf(buf + nbuf, "<td width=\"40%%\" align=right>åˆ†äº«åˆ° ");
 		char *encoded_title = url_encode(title_utf8);
 		nbuf += sprintf(buf + nbuf, "<a href=\"#\" onclick=\"javascript:share('sina','%s','%s','%s');\"><img src=\"/images/share-sina.png\"/></a> ",encoded_title,board,file);
 		nbuf += sprintf(buf + nbuf, "<a href=\"#\" onclick=\"javascript:share('renren','%s','%s','%s');\"><img src=\"/images/share-rr.png\"/></a> ",encoded_title,board,file);
 		nbuf += sprintf(buf + nbuf, "<a href=\"#\" onclick=\"javascript:share('tencent','%s','%s','%s');\"><img src=\"/images/share-tencent.png\"/></a> | ",encoded_title,board,file);
-
+		nbuf += sprintf(buf + nbuf, "<a href=\"#\" onclick=\"javascript:sharewechat();\"><img src=\"/images/share-wechat.png\"/></a> | ");
+		
 		free(encoded_title);
 		if (sametitle) {
 			prenum = num - 1;
@@ -628,10 +629,10 @@ bbscon_main()
 			if (prenum >= 0 && num - prenum < 100)
 				nbuf += sprintf
 				    (buf + nbuf,
-				     "<a href='con?B=%s&amp;F=%s&amp;N=%d&amp;st=1&amp;T=%lu'>Í¬Ö÷ÌâÉÏÆª </a>",
+				     "<a href='con?B=%s&amp;F=%s&amp;N=%d&amp;st=1&amp;T=%lu'>åŒä¸»é¢˜ä¸Šç¯‡ </a>",
 				     board, fh2fname(x), prenum + 1, feditmark(*x));
 			nbuf += sprintf(buf + nbuf,
-					"<a href='%s%s&amp;S=%d'>±¾ÌÖÂÛÇø </a>",
+					"<a href='%s%s&amp;S=%d'>æœ¬è®¨è®ºåŒº </a>",
 					showByDefMode(), board, (num > 4) ? (num - 4) : 1);
 			while (nextnum < total && nextnum - num < 100) {
 				x = (struct fileheader *) (mf.ptr +
@@ -645,7 +646,7 @@ bbscon_main()
 			if (nextnum < total && nextnum - num < 100)
 				nbuf += sprintf
 				    (buf + nbuf,
-				     "<a href='con?B=%s&amp;F=%s&amp;N=%d&amp;st=1&amp;T=%lu'>Í¬Ö÷ÌâÏÂÆª</a>",
+				     "<a href='con?B=%s&amp;F=%s&amp;N=%d&amp;st=1&amp;T=%lu'>åŒä¸»é¢˜ä¸‹ç¯‡</a>",
 				     board, fh2fname(x), nextnum + 1, feditmark(*x));
 		} else {
 			if (num > 0) {
@@ -656,12 +657,12 @@ bbscon_main()
 								   fileheader));
 				nbuf +=
 				    sprintf(buf + nbuf,
-					    "<a href='con?B=%s&amp;F=%s&amp;N=%d&amp;T=%lu' title=\"ÉÏÆª accesskey: f\" accesskey=\"f\">ÉÏÆª </a>",
+					    "<a href='con?B=%s&amp;F=%s&amp;N=%d&amp;T=%lu' title=\"ä¸Šç¯‡ accesskey: f\" accesskey=\"f\">ä¸Šç¯‡ </a>",
 					    board, fh2fname(x), num, feditmark(*x));
 			}
 			nbuf +=
 			    sprintf(buf + nbuf,
-				    "<a href='%s%s&amp;S=%d' title=\"±¾ÌÖÂÛÇø accesskey: c\" accesskey=\"c\">±¾ÌÖÂÛÇø </a>",
+				    "<a href='%s%s&amp;S=%d' title=\"æœ¬è®¨è®ºåŒº accesskey: c\" accesskey=\"c\">æœ¬è®¨è®ºåŒº </a>",
 				    showByDefMode(), board, (num > 4) ? (num - 4) : 1);
 			if (num < total - 1) {
 				x = (struct fileheader *) (mf.ptr +
@@ -671,7 +672,7 @@ bbscon_main()
 								   fileheader));
 				nbuf +=
 				    sprintf(buf + nbuf,
-					    "<a href='con?B=%s&amp;F=%s&amp;N=%d&amp;T=%lu' title=\"ÏÂÆª accesskey: n\" accesskey=\"n\">ÏÂÆª</a>",
+					    "<a href='con?B=%s&amp;F=%s&amp;N=%d&amp;T=%lu' title=\"ä¸‹ç¯‡ accesskey: n\" accesskey=\"n\">ä¸‹ç¯‡</a>",
 					    board, fh2fname(x), num + 2, feditmark(*x));
 			}
 		}
@@ -697,7 +698,7 @@ bbscon_main()
 	printf("<tr><td></td><td height=\"20\" valign=\"middle\">");
 	memset(fileback, 0, 80);
 	sprintf(fileback, "http://bbs.xjtu.edu.cn/BMY/con?B=%s&F=%s", board,file);
-	printf("±¾ÎÄÁ´½Ó&nbsp;&nbsp;<a href=' %s'>%s</a>", fileback, fileback);
+	printf("æœ¬æ–‡é“¾æ¥&nbsp;&nbsp;<a href=' %s'>%s</a>", fileback, fileback);
 	printf("</td></tr>");
 	printf("</table></td></tr></table></td></tr></table>\n");
 #ifdef ENABLE_MYSQL
@@ -711,4 +712,5 @@ bbscon_main()
 	printf("</body></html>\n");
 
 	return 0;
+}
 }
