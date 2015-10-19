@@ -611,7 +611,7 @@ bbscon_main()
 		nbuf += sprintf(buf + nbuf, "<a href=\"#\" onclick=\"javascript:share('sina','%s','%s','%s');\"><img src=\"/images/share-sina.png\"/></a> ",encoded_title,board,file);
 		nbuf += sprintf(buf + nbuf, "<a href=\"#\" onclick=\"javascript:share('renren','%s','%s','%s');\"><img src=\"/images/share-rr.png\"/></a> ",encoded_title,board,file);
 		nbuf += sprintf(buf + nbuf, "<a href=\"#\" onclick=\"javascript:share('tencent','%s','%s','%s');\"><img src=\"/images/share-tencent.png\"/></a> | ",encoded_title,board,file);
-		nbuf += sprintf(buf + nbuf, "<a href=\"#\" onclick=\"javascript:sharewechat();\"><img src=\"/images/share-wechat.png\"/></a> | ",encoded_title,board,file);
+		nbuf += sprintf(buf + nbuf, "<a href=\"#\" onclick=\"javascript:sharewechat();\"><img src=\"/images/share-wechat.png\"/></a> | ");
 		
 		free(encoded_title);
 		if (sametitle) {
