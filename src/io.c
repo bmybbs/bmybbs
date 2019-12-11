@@ -105,7 +105,7 @@ init_alarm()
 	alarm(IDLE_TIMEOUT);
 }
 
-void inline
+void
 ochar(c)
 int c;
 {
@@ -122,10 +122,8 @@ int c;
 	}
 }
 
-void inline
-output(s, len)
-char *s;
-int len;
+void
+output(const char *s, int len)
 {
 	int l, n;
 	char *p0, *p1;

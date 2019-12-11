@@ -9,7 +9,7 @@
     Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
                         Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
     Copyright (C) 1999	KCN,Zhou lin,kcn@cic.tsinghua.edu.cn
-    
+
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 1, or (at your option)
@@ -30,7 +30,7 @@ extern int convcode;
 char tempfile[MAXPATHLEN];
 #endif
 
-extern void output(char *s, int len);
+extern void output(const char *s, int len);
 
 int
 dashf(fname)
