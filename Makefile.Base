@@ -28,7 +28,7 @@ BBSGRP=999
 
 OS_DEF   = -DLINUX
 CC       = gcc
-CFLAGS   = -Wall -g -mmmx -msse -pipe -DCONF_HAVE_OPENPTY -I$(BASEPATH)/include -I$(BASEPATH)/ythtlib -I$(BASEPATH)/libythtbbs `xml2-config --cflags`
+CFLAGS   = -Wall -g -pipe -DCONF_HAVE_OPENPTY -I$(BASEPATH)/include -I$(BASEPATH)/ythtlib -I$(BASEPATH)/libythtbbs `xml2-config --cflags`
 CPPFLAGS =  -I/usr/include/mysql -DENABLE_MYSQL
 CFLAGSTEST   = -Wall -pipe -DCONF_HAVE_OPENPTY -I$(BASEPATH)/include -I$(BASEPATH)/ythtlib -I$(BASEPATH)/libythtbbs -g
 #CFLAGSTEST   = -pipe -DCONF_HAVE_OPENPTY -I$(BASEPATH)/include -I$(BASEPATH)/ythtlib -I$(BASEPATH)/libythtbbs -g -pg -static 
