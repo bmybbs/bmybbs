@@ -1,0 +1,17 @@
+add_library (ytht STATIC
+	uudecode.c
+	uuencode.c
+	strhash.c
+	common.c
+	numbyte.c
+	strop.c
+	fileop.c
+	strlib.c
+	shmop.c
+	named_socket.c
+	crypt.c
+	limitcpu.c
+	timeop.c
+	smth_filter.c
+	mgrep.c
+)
