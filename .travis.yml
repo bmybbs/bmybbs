@@ -3,7 +3,7 @@ compiler: gcc
 script: make all
 before_script:
 - sudo apt-get update -qq
-- sudo apt-get install -qq libmysqlclient-dev cproto
+- sudo apt-get install -qq libmysqlclient-dev cproto cmake
 
 env:
   global:
@@ -16,7 +16,7 @@ addons:
       description: "Build submitted via Travis CI"
     notification_email:
       secure: "YlN18ZO9i4Hr+PKuZlfRxSLLvWA/XURFF5STN8PGhoonzL0kpyUnCNFsI9YHB+tDw8b8NUqh3rdHabfbbYIwmxikFHHm00rGcV3JB/haKFw9/3gRIeTvJarryIKJsPME1BufVaG6vsuGqd7y7n8ENdOaxdfx5CgAJz67xdgcgzE="
-    build_command_prepend: "make clean; make prepend"
-    build_command: "make core"
+    build_command_prepend: "mkdir build; cd build; cmake .."
+    build_command: "cd build; make"
     branch_pattern: master
 
