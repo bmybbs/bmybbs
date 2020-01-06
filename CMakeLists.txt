@@ -18,3 +18,5 @@ add_subdirectory(libythtbbs)
 add_subdirectory(src)
 add_subdirectory(nju09)
 add_subdirectory(local_utl)
+add_subdirectory(atthttpd)
+
