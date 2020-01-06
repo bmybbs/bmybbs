@@ -72,7 +72,7 @@ depend dep .depend:
 
 proto proto.h:
 	echo '#include "bbs.h"' > proto.h
-	cproto $(CFILE) $(DEFINES) -DBACK_DELETE_RANG -I $(BASEPATH)/include -I $(BASEPATH)/ythtlib -I $(BASEPATH)/libythtbbs >> proto.h
+	cproto $(CFILE) $(DEFINES) -DBACK_DELETE_RANGE -I $(BASEPATH)/include -I $(BASEPATH)/ythtlib -I $(BASEPATH)/libythtbbs >> proto.h
 
 $(COBJS) $(COBJSTEST): .depend proto.h
 
