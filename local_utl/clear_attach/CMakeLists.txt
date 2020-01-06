@@ -1,0 +1,2 @@
+add_executable(clear_attach clear_attach)
+target_link_libraries(clear_attach ythtbbs ytht)

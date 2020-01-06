@@ -1,0 +1,2 @@
+add_executable(printSecLastMark printSecLastMark.c)
+target_link_libraries(printSecLastMark ythtbbs ytht)
