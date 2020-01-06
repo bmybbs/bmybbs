@@ -150,11 +150,6 @@ else(NOT EXISTS ${PROTO_FILE})
 	endforeach(file)
 endif(NOT EXISTS ${PROTO_FILE})
 
-execute_process(
-	COMMAND bash -c "echo \"${SRC}\" | sed 's/;/ /g' > ${CMAKE_CURRENT_SOURCE_DIR}/list.txt"
-	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-)
-
 if(SHOULD_GENERATE_PROTO)
 	execute_process(
 		COMMAND bash -c "cproto -DMAKE_PROTO `echo \"${SRC}\" | sed 's/;/ /g'` -I ../../include -I ../../ythtlib -I ../../libythtbbs > proto.h"
