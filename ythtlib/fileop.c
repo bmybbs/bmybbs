@@ -300,7 +300,7 @@ clearpath(const char *path)
 	DIR *pdir;
 	struct dirent *pdent;
 	char fname[1024];
-	int ret;
+	// int ret; // XXX: fix me
 	pdir = opendir(path);
 	if (!pdir)
 		return -1;
@@ -313,7 +313,8 @@ clearpath(const char *path)
 			break;
 		}
 		sprintf(fname, "%s/%s", path, pdent->d_name);
-		ret = unlink(fname);
+		//ret = unlink(fname);
+		unlink(fname);
 	}
 	closedir(pdir);
 	return 0;
