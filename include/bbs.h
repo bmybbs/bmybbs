@@ -21,7 +21,7 @@
     GNU General Public License for more details.
 */
 
-#ifndef  _BBS_H_
+#ifndef _BBS_H_
 #define _BBS_H_
 
 #ifndef BBSIRC
@@ -366,7 +366,6 @@ extern int term_convert;
 #define NUMBUFFER 20
 
 #define SR_BMMINUSDEL    (18)       //add by mintbaggio@BMY for minus-numposts delete
-#endif /* of _BBS_H_ */
 
 #define COMMENDFILE       MY_BBS_HOME"/.COMMEND"
 #define COMMENDFILE2       MY_BBS_HOME"/.COMMEND2"
@@ -376,3 +375,4 @@ enum {
 	BMY_CHARSET_UTF8
 };
 
+#endif /* of _BBS_H_ */
