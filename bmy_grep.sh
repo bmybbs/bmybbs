@@ -1,16 +1,6 @@
 #!/bin/sh
 # 对bmy代码进行grep
 # author: interma@bmy
+# author: ironblood@bmy 合并多个 grep 语句变更为递归方式
 
-grep --color=auto -n $1 include/*.h
-grep --color=auto -n $1 ythtlib/*.c
-grep --color=auto -n $1 ythtlib/*.h
-grep --color=auto -n $1 libythtbbs/*.c
-grep --color=auto -n $1 libythtbbs/*.h
-grep --color=auto -n $1 src/*.c
-grep --color=auto -n $1 src/*.h
-grep --color=auto -n $1 nju09/*.c
-grep --color=auto -n $1 nju09/*.h
-grep --color=auto -n $1 local_utl/*.c
-grep --color=auto -n $1 local_utl/*.h
-
+grep -anr --color=auto --include "*.c" --include "*.h" $1 include ythtlib libythtbbs src nju09 local_utl atthttpd
