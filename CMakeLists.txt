@@ -9,7 +9,7 @@ include_directories(include ythtlib libythtbbs ${LIBXML2_INCLUDE_DIR})
 
 link_directories(ythtlib libythtbbs)
 
-set(CMAKE_C_FLAGS "-Wall -g -pipe")
+set(CMAKE_C_FLAGS "-Wall -g -pipe -Wextra -O")
 
 add_definitions(-D_GNU_SOURCE -DCONF_HAVE_OPENPTY -DLINUX)
 
@@ -19,4 +19,5 @@ add_subdirectory(src)
 add_subdirectory(nju09)
 add_subdirectory(local_utl)
 add_subdirectory(atthttpd)
+add_subdirectory(api)
 
