@@ -351,15 +351,6 @@ badymd(int y, int m, int d)
 }
 #endif
 
-int id_with_num(userid)
-char    userid[IDLEN + 1];
-{
-   char   *s;
-   for (s = userid; *s != '\0'; s++)
-      if (*s < 1 || !isalpha(*s)) return 1;
-   return 0;            
-} 
-
 int
 bbsdoreg_main()
 {
@@ -660,16 +651,6 @@ mkdir(filename, 0755);
 	//sprintf(buf, "%s enter %s www", x.userid, fromhost);
 	//newtrace(buf);
 	//printf("<script>opener.top.location.href=\"%s\";</script>", ub);
-	return 0;
-}
-
-int
-badstr(unsigned char *s)
-{
-	int i;
-	for (i = 0; s[i]; i++)
-		if (s[i] != 9 && (s[i] < 32 || s[i] == 255))
-			return 1;
 	return 0;
 }
 

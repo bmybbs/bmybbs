@@ -1,7 +1,7 @@
 /*
     Pirate Bulletin Board System
     Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
-    Eagles Bulletin Board System 
+    Eagles Bulletin Board System
     Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
                         Guy Vega, gtvega@seabass.st.usm.edu
                         Dominic Tynes, dbtynes@seabass.st.usm.edu
@@ -9,7 +9,7 @@
     Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
                         Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
     Copyright (C) 1999, Zhou Lin, kcn@cic.tsinghua.edu.cn
-    
+
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 1, or (at your option)
@@ -107,7 +107,7 @@ extern int errno ;
 #define randomize() srand((unsigned)time(NULL))
 
 #define YEA (1)        /* Booleans  (Yep, for true and false) */
-#define NA  (0) 
+#define NA  (0)
 
 #define DOECHO (1)     /* Flags to getdata input function */
 #define NOECHO (0)
@@ -136,7 +136,7 @@ extern long ti ;
 #define MAX_POSTRETRY       100
 #define MAXITEMS        1024       /* 精华区最大条目数 */
 #define CLUB_SIZE       4          /* 4 * sizeof(int) 为完全 close club数目上限 . by clearboy*/
-#define MAXnettyLN            7    /* lines of  activity board  */        
+#define MAXnettyLN            7    /* lines of  activity board  */
 #define ACBOARD_BUFSIZE     255    /* max. length of each line for activity board  */
 #define ACBOARD_MAXLINE      400    /* max. lines of  activity board  160 */
 #define MAXGOPHERITEMS     9999    /*max of gopher items*/
@@ -144,17 +144,18 @@ extern long ti ;
 #define ULIST_BASE   ".UTMP"       /* Names of users currently on line */
 extern  char ULIST[];
 
-#ifndef BBSIRC 
+#ifndef BBSIRC
 
 #define FLUSH       ".PASSFLUSH"   /* Stores date for user cache flushing */
 #define BOARDS      ".BOARDS"      /* File containing list of boards */
 #define DOT_DIR     ".DIR"         /* Name of Directory file info */
 #define THREAD_DIR  ".THREAD"      /* Name of Thread file info */
 #define DIGEST_DIR  ".DIGEST"      /* Name of Digest file info */
-#define TOPFILE_DIR  ".TOPFILE"    //hace 
+#define TOPFILE_DIR ".TOPFILE"     //hace
 #define BADWORDS    "etc/.badwords_new"     /* word list to filter */
 #define SBADWORDS   "etc/.sbadwords_new"
 #define PBADWORDS   "etc/.pbadwords_new"
+#define APPS		".APPS"		   /* File containing list of apps */
 
 #define QUIT 0x666               /* Return value to abort recursive functions */
 
@@ -166,7 +167,7 @@ extern  char ULIST[];
 #define FILE_DIGEST 0x10      /* Digest Mode*/
 #define FILE_FORWARDED 0x20	/* undelete */
 #define FILE_NOREPLY 0x40
-#define FILE_ATTACHED 0x80   
+#define FILE_ATTACHED 0x80
 #define FILE1_DEL 0x1        /* Marked for being deleted */ /*accessed array, the 2nd byte*/
 #define FILE1_SPEC 0x2	     /* Will be put to 0Announce, and this flag would be clear then */
 #define FILE1_INND 0x4	/* write into innd/out.bntp */
@@ -197,7 +198,7 @@ extern  char ULIST[];
 #define BRDSORT_FLAG2 0x10 /* true if the boards sorted by score */
 //#define BRDSORT_FLAG 0x20  /* true if the boards sorted alphabetical, */
 			   /* available only if FLAG2 is false */
-#define BRDSORT_MASK 0x30  
+#define BRDSORT_MASK 0x30
 #define CURSOR_FLAG  0x80  /* true if the cursor mode open */
 #define ACTIVE_BOARD 0x200 /* true if user toggled active movie board on */
 
@@ -237,7 +238,7 @@ extern  char ULIST[];
 #define GOTO_NEXT       7       /* Move cursor to next */
 #define DIRCHANGED      8       /* Index file was changed */
 #define UPDATETLINE	9	/* t_lines was changed */
-	
+
 #define I_TIMEOUT   (-2)         /* Used for the getchar routine select call */
 #define I_OTHERDATA (-333)       /* interface, (-3) will conflict with chinese */
 
@@ -253,7 +254,7 @@ extern int clubrights[4];
 
 extern struct user_info uinfo ;   /* Ditto above...utmp entry is stored here
                                      and written back to the utmp file when
-                                     necessary (pretty darn often). */ 
+                                     necessary (pretty darn often). */
 extern int usernum ;      /* Index into passwds file user record */
 extern int utmpent ;      /* Index into this users utmp file entry */
 extern int count_friends,count_users; /*Add by SmallPig for count users and friends*/
@@ -262,8 +263,8 @@ extern int t_lines, t_realcols,t_columns;    /* Screen size / width */
 extern struct userec lookupuser ; /* Used when searching for other user info */
 
 extern int         nettyNN;
-extern char netty_path[] ; 
-extern char netty_board[] ; 
+extern char netty_path[] ;
+extern char netty_board[] ;
 extern char currboard[] ;       /* name of currently selected board */
 extern struct bm * currBM[] ;          /* BM of currently selected board */
 
@@ -369,4 +370,9 @@ extern int term_convert;
 
 #define COMMENDFILE       MY_BBS_HOME"/.COMMEND"
 #define COMMENDFILE2       MY_BBS_HOME"/.COMMEND2"
+
+enum {
+	BMY_CHARSET_GBK,
+	BMY_CHARSET_UTF8
+};
 

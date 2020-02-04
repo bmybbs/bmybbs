@@ -53,7 +53,56 @@ int countlife(struct userec *);
 int userlock(char *userid, int locktype);
 int userunlock(char *userid, int fd);
 int checkbansite(const char *addr);
+
+/** 检查用户权限
+ * 改方法从 nju09 移植，参见 int user_perm(struct userec *x, int level)。
+ * @param x
+ * @param level
+ * @return
+ */
+int check_user_perm(struct userec *x, int level);
+
+extern struct user_info;
+extern struct boardmem;
+/**
+ * @brief 检查用户的阅读权限
+ * 该方法从 nju09 移植，用于检查用户读取版面的权限。
+ * @param user
+ * @param board 版面名称
+ * @return
+ * @see int has_read_perm(struct userec *user, char *board)
+ * @see int has_read_perm_x(struct userec *user, struct boardmem *x)
+ */
+int check_user_read_perm(struct user_info *user, char *board);
+
+/**
+ * @brief 检查用户的阅读权限
+ * 该方法从 nju09 移植，用于检查用户读取版面的权限。
+ * @param user
+ * @param board boardmem 指针
+ * @return 有权限返回 1，无权限返回 0。
+ * @see int has_read_perm(struct userec *user, char *board)
+ * @see int has_read_perm_x(struct userec *user, struct boardmem *x)
+ */
+int check_user_read_perm_x(struct user_info *user, struct boardmem *board);
+
+/**
+ * @brief 检查用户的发帖权限
+ * 该方法从 nju09 移植，会同时判断版面阅读权限。
+ * @param user
+ * @param board
+ * @return 有权限返回 1，无权限返回 0。
+ */
+int check_user_post_perm_x(struct user_info *user, struct boardmem *board);
 int userbansite(const char *userid, const char *fromhost);
 void logattempt(char *user,char *from,char *zone,time_t time);
 int inoverride(char *who, char *owner, char *file);
+
+/**
+ * @brief 检查 id 是否包含数字
+ * 该方法在 telnet/nju09 中均有使用，移动到库中，方法名有待改进。
+ * @param userid 字符串
+ * @return 包含则返回
+ */
+int id_with_num(char *userid);
 #endif

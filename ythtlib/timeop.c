@@ -1,4 +1,6 @@
 #include "ythtlib.h"
+#include "time.h"
+
 char *
 Ctime(time_t clock)
 {
@@ -29,4 +31,14 @@ char * Difftime(time_t compared_time) {
 	}
 
 	return ret;
+}
+
+time_t get_time_of_the_biginning_of_the_day(struct tm *tm)
+{
+	// ÉèÖÃÎª UTC 0:00:00
+	tm->tm_sec = 0;
+	tm->tm_min = 0;
+	tm->tm_hour = 0;
+
+	return mktime(tm) - 8*3600; // ·µ»Ø UTC+8 0:00:00
 }

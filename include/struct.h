@@ -52,6 +52,7 @@ struct commend{
         unsigned int accessed;
 };
 
+#define TOKENLENGTH 8
 struct user_info {		/* Structure used in UTMP file */
 	int active;		/* When allocated this field is true */
 	int uid;		/* Used to find user name in passwd file */
@@ -73,6 +74,8 @@ struct user_info {		/* Structure used in UTMP file */
 	char chatid[10];	/* chat id, if in chat mode */
 	char from[20];		/* machine name the user called in from */
 	char sessionid[40];	/* add by leptin for www use */
+	char token[TOKENLENGTH+1]; /* 用于防范 CSRF 攻击 */
+	char appkey[APPKEYLENGTH+1]; /* 用于存放APP来源 */
 	char userid[20];
 	char realname[20];
 	char username[NAMELEN];

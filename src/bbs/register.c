@@ -268,15 +268,6 @@ getnewuserid(struct userec *newuser)
 	return i;
 }
 
-int id_with_num(userid)
-char    userid[IDLEN + 1];
-{
-   char   *s;
-   for (s = userid; *s != '\0'; s++)
-      if (*s < 1 || !isalpha(*s)) return 1;
-   return 0;
-}
-
 void
 new_register()
 {

@@ -202,3 +202,10 @@ You must also set "EightBitMode=pass8" in /etc/sendmail.cf
 #define BBSLOG_MSQKEY 3333
 #define BBSEVA_MSQKEY 3334
 
+/*
+ * 有关 app 的限制
+ */
+#define MAXSECRETKEYLENGTH	8
+#define APPKEYLENGTH		36
+#define APPNAMELENGTH		20
+#define APPPID				-1

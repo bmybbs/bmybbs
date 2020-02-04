@@ -45,32 +45,6 @@ int has_smagic = 0;
 int go_to_first_page = 0;
 
 void
-getsalt(char salt[3])
-{
-	int s, i, c;
-
-#ifdef LINUX
-	int fd;
-	fd = open("/dev/urandom", O_RDONLY);
-	read(fd, &s, 4);
-	close(fd);
-#else
-	s = random();
-#endif
-	salt[0] = s & 077;
-	salt[1] = (s >> 6) & 077;
-	salt[2] = 0;
-	for (i = 0; i < 2; i++) {
-		c = salt[i] + '.';
-		if (c > '9')
-			c += 7;
-		if (c > 'Z')
-			c += 6;
-		salt[i] = c;
-	}
-}
-
-void
 filter(char *line)
 {
 	char temp[256];
