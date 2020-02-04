@@ -8,7 +8,7 @@
     Firebird Bulletin Board System
     Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
                         Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
-    
+
     Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
 
     This program is free software; you can redistribute it and/or modify
@@ -240,7 +240,7 @@ int ssize;
 		return;
 	}
 	last_line = get_num_records(currdirect, ssize);
-	
+
 	if (last_line == 0) {
 		if (cmdmode == RMAIL) {
 			prints("没有任何新信件...");
@@ -606,7 +606,7 @@ char *pnt;
 	case KEY_END:
 		last_line = get_num_records(currdirect, ssize);
 		last_line_excludeBottom = get_num_records_excludeBottom(currdirect, ssize);
-		
+
 		if (last_line>= locmem->top_line + screen_len) {
 			locmem->top_line = last_line- screen_len + 1;
 			if (locmem->top_line <= 0)
@@ -614,7 +614,7 @@ char *pnt;
 			locmem->crs_line = last_line_excludeBottom;
 			return PARTUPDATE;
 		}
-		
+
 		RMVCURS;
 		locmem->top_line = last_line - screen_len + 1 > 0? last_line - screen_len + 1 : 1;
 		locmem->crs_line = last_line_excludeBottom;
@@ -661,11 +661,11 @@ char *pnt;
 				//errlog("i_read_key crs error:%d, %d", locmem->crs_line, locmem->top_line);
 				return FULLUPDATE;
 			}
-			mode =
-			    (*(rcmdlist[i].fptr)) (locmem->crs_line,
-						   &pnt[(locmem->crs_line -
-							 locmem->top_line) *
-							ssize], currdirect);
+			mode = (*(rcmdlist[i].fptr)) (
+				locmem->crs_line,
+				&pnt[(locmem->crs_line - locmem->top_line) * ssize],
+				currdirect
+			);
 			break;
 		}
 	}
@@ -787,16 +787,16 @@ char *direct;
 	    { "不减文章数删除", "保留", "文摘", "放入精华区", "放入暂存档",
 		"设为不可回复", "合集" ,"减文章数删除"//add heji by bjgyt
 	};
-	static const char *subBMitems[] = 
+	static const char *subBMitems[] =
 	{"相同主题", "相同作者"};		//add by mintbaggio
 
 	if (!IScurrBM) {
 		return DONOTHING;
 	}
-	saveline(t_lines - 2, 0, NULL);			
-	move(t_lines - 2, 0);			
+	saveline(t_lines - 2, 0, NULL);
+	move(t_lines - 2, 0);
 	clrtoeol();
-	
+
 	//add by mintbaggio for BMfunc 'b'
 	getdata(t_lines-2, 0, "执行: (0) 取消  (1) 相同主题  (2) 相同作者  [0]: ", ch, 3, DOECHO, YEA);	//mint
 	dotype =  atoi(ch);
@@ -992,7 +992,7 @@ char *direct;
 		update_endline();
 	return DONOTHING;
 }
-#endif 
+#endif
 int
 t_search_down(ent, fileinfo, direct)
 int ent;
