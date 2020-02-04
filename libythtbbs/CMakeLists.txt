@@ -29,7 +29,7 @@ add_custom_target(sectree ALL
 	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-add_library(ythtbbs STATIC
+add_library(ythtbbs SHARED
 	boardrc.c
 	misc.c
 	record.c
@@ -55,4 +55,5 @@ add_library(ythtbbs STATIC
 
 add_dependencies(ythtbbs sectree)
 add_dependencies(sectree gensectree)
+target_link_libraries(ythtbbs pcre mysqlclient ${LIBXML2_LIBRARIES})
 

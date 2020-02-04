@@ -1,4 +1,4 @@
-add_library (ytht STATIC
+add_library (ytht SHARED
 	uudecode.c
 	uuencode.c
 	strhash.c
