@@ -1,7 +1,7 @@
 /*
     Pirate Bulletin Board System
     Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
-    
+
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 1, or (at your option)
@@ -388,7 +388,7 @@ char *hid;
 #if 1
 			execl(bbstest_prog_path, "bbstest", "d", hid, NULL);	/*调用BBS */
 #else
-			execl("/usr/bin/memusage", "memusage", "-u", "-d", "bbstestmemusage.dat", 
+			execl("/usr/bin/memusage", "memusage", "-u", "-d", "bbstestmemusage.dat",
 				MY_BBS_HOME "/bin/bbstest", "d", hid, NULL);
 #endif
 		}
@@ -473,12 +473,12 @@ char *argv[];
 #endif
 	{		//ipv6
 		if((cp = (char *)malloc(46*sizeof(char))) == NULL)
-		{		
+		{
 			printf("shit");
 			exit(-1);
 		}
 	   inet_ntop(AF_INET6, (struct in6_addr *)&(sin.sin6_addr),cp,46);
-		
+
 		if(is4map6addr(cp))
 		{
 				strcpy(hid,getv4addr(cp));
@@ -516,7 +516,7 @@ checkaddr(struct in6_addr addr, int csock)
 	char str[150];
 	time_t timenow, ttemp;
 	char *strptr;
-	
+
 	if (fd < 0) {
 		fd = open("/tmp/attacklog", O_CREAT | O_WRONLY | O_APPEND,
 			  0664);
@@ -541,7 +541,7 @@ checkaddr(struct in6_addr addr, int csock)
 					addrcheck[i].n, ctime(&timenow));
 				*/
 				//ipv6
-				sprintf(str, "remove\t%s\t%d\t%s", inet_ntop(PF_INET6,(const void *)&addrcheck[i].addr,(char *) strptr,sizeof(struct in6_addr)),addrcheck[i].n, ctime(&timenow));  
+				sprintf(str, "remove\t%s\t%d\t%s", inet_ntop(PF_INET6,(const void *)&addrcheck[i].addr,(char *) strptr,sizeof(struct in6_addr)),addrcheck[i].n, ctime(&timenow));
 				write(fd, str, strlen(str));
 			}
 			addrcheck[i].t = 0;
@@ -571,8 +571,8 @@ checkaddr(struct in6_addr addr, int csock)
 							ctime(&timenow));
 						*/
 					//ipv6
-					sprintf(str, "add\t%s\t%d\t%s", inet_ntop(PF_INET6,(const void *)&addrcheck[i].addr,(char *) strptr,sizeof(struct in6_addr)),addrcheck[i].n, ctime(&timenow));  
-							
+					sprintf(str, "add\t%s\t%d\t%s", inet_ntop(PF_INET6,(const void *)&addrcheck[i].addr,(char *) strptr,sizeof(struct in6_addr)),addrcheck[i].n, ctime(&timenow));
+
 					  write(fd, str, strlen(str));
 						write(csock,
 						      "对不起, 连接将封闭5分钟。请不要不断连接冲击本站\n",
@@ -606,7 +606,7 @@ checkaddr(struct in6_addr addr, int csock)
 		//sprintf(str, "remove\t%s\t%d\t%s", inet_ntoa(addrcheck[i].addr),
 		//	addrcheck[j].n, ctime(&timenow));
 				//ipv6
-				sprintf(str, "remove\t%s\t%d\t%s", inet_ntop(PF_INET6,(const void *)&addrcheck[i].addr,(char *) strptr,sizeof(struct in6_addr)),addrcheck[i].n, ctime(&timenow));  
+				sprintf(str, "remove\t%s\t%d\t%s", inet_ntop(PF_INET6,(const void *)&addrcheck[i].addr,(char *) strptr,sizeof(struct in6_addr)),addrcheck[i].n, ctime(&timenow));
 		write(fd, str, strlen(str));
 	}
 	addrcheck[j].addr = addr;
