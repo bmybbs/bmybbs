@@ -46,6 +46,16 @@ char *filename, *msg;
 	}
 }
 
+int is4map6addr(char *s){
+	return !strncasecmp(s,"::ffff:",7);
+}
+
+char *getv4addr(char *fromhost){
+	char *addr;
+	addr=rindex(fromhost,':');
+	return ++addr;
+}
+
 void
 prints(char *format, ...)
 {
@@ -402,14 +412,14 @@ main(argc, argv)
 int argc;
 char *argv[];
 {
-	int value;
+	socklen_t value;
 	fd_set fds;
 	struct sockaddr_in6 sin;	//ipv6
-	char hid[46];				//ipv6
+	char hid[INET6_ADDRSTRLEN];	//ipv6
 
 	main_signals();
 	start_daemon(argc > 2, atoi(argv[argc - 1]));
-	char *cp;
+	char cp[INET6_ADDRSTRLEN];
 //  main_signals();
 
 	if (argc <= 2)
@@ -472,19 +482,15 @@ char *argv[];
 */
 #endif
 	{		//ipv6
-		if((cp = (char *)malloc(46*sizeof(char))) == NULL)
-		{
-			printf("shit");
-			exit(-1);
-		}
-	   inet_ntop(AF_INET6, (struct in6_addr *)&(sin.sin6_addr),cp,46);
+
+	   inet_ntop(AF_INET6, (struct in6_addr *)&(sin.sin6_addr), cp, INET6_ADDRSTRLEN);
 
 		if(is4map6addr(cp))
 		{
 				strcpy(hid,getv4addr(cp));
 		}
 		else
-				strncpy(hid,cp,46);
+				strncpy(hid,cp,INET6_ADDRSTRLEN);
 		/*
 		char *host = (char *) inet_ntoa(sin.sin_addr);
 		strncpy(hid, host, 17);
@@ -515,7 +521,7 @@ checkaddr(struct in6_addr addr, int csock)
 	static int fd = -1, lll = 1;
 	char str[150];
 	time_t timenow, ttemp;
-	char *strptr;
+	char str_addr[INET6_ADDRSTRLEN];
 
 	if (fd < 0) {
 		fd = open("/tmp/attacklog", O_CREAT | O_WRONLY | O_APPEND,
@@ -541,7 +547,9 @@ checkaddr(struct in6_addr addr, int csock)
 					addrcheck[i].n, ctime(&timenow));
 				*/
 				//ipv6
-				sprintf(str, "remove\t%s\t%d\t%s", inet_ntop(PF_INET6,(const void *)&addrcheck[i].addr,(char *) strptr,sizeof(struct in6_addr)),addrcheck[i].n, ctime(&timenow));
+				if(inet_ntop(PF_INET6,(const void *)&addrcheck[i].addr, str_addr, INET6_ADDRSTRLEN) != NULL) {
+					sprintf(str, "remove\t%s\t%d\t%s", str_addr, addrcheck[i].n, ctime(&timenow));
+				}
 				write(fd, str, strlen(str));
 			}
 			addrcheck[i].t = 0;
@@ -571,7 +579,9 @@ checkaddr(struct in6_addr addr, int csock)
 							ctime(&timenow));
 						*/
 					//ipv6
-					sprintf(str, "add\t%s\t%d\t%s", inet_ntop(PF_INET6,(const void *)&addrcheck[i].addr,(char *) strptr,sizeof(struct in6_addr)),addrcheck[i].n, ctime(&timenow));
+					if (inet_ntop(PF_INET6,(const void *)&addrcheck[i].addr, str_addr, sizeof(struct in6_addr)) != NULL) {
+						sprintf(str, "add\t%s\t%d\t%s", str_addr, addrcheck[i].n, ctime(&timenow));
+					}
 
 					  write(fd, str, strlen(str));
 						write(csock,
@@ -606,7 +616,9 @@ checkaddr(struct in6_addr addr, int csock)
 		//sprintf(str, "remove\t%s\t%d\t%s", inet_ntoa(addrcheck[i].addr),
 		//	addrcheck[j].n, ctime(&timenow));
 				//ipv6
-				sprintf(str, "remove\t%s\t%d\t%s", inet_ntop(PF_INET6,(const void *)&addrcheck[i].addr,(char *) strptr,sizeof(struct in6_addr)),addrcheck[i].n, ctime(&timenow));
+				if (inet_ntop(PF_INET6,(const void *)&addrcheck[i].addr, str_addr, sizeof(struct in6_addr)) != NULL) {
+					sprintf(str, "remove\t%s\t%d\t%s", str_addr, addrcheck[i].n, ctime(&timenow));
+				}
 		write(fd, str, strlen(str));
 	}
 	addrcheck[j].addr = addr;

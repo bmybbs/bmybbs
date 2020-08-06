@@ -2,7 +2,6 @@
 #include <ctype.h>
 #include <sys/file.h>
 #include <sys/socket.h>
-#include <netinet/in.h>
 #include <arpa/inet.h>
 
 #include "ythtbbs.h"
@@ -330,17 +329,6 @@ inoverride(char *who, char *owner, char *file)
         if (search_record(buf, &o, sizeof (o), (void *) isoverride, who) != 0)
                 return 1;
         return 0;
-}
-
-//ipv6
-int is4map6addr(char *s){
-	return !strncasecmp(s,"::ffff:",7);
-}
-
-char *getv4addr(char *fromhost){
-	char *addr;
-	addr=rindex(fromhost,':');
-	return ++addr;
 }
 
 int check_user_perm(struct userec *x, int level) {
