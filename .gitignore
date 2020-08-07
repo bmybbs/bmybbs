@@ -3,6 +3,8 @@ tags
 cscope*
 .clangd/
 compile_commands.json
+.idea/
+cmake-build-debug/
 
 # 中间文件
 bin/
