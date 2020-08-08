@@ -25,7 +25,7 @@ bbspst_main()
 		}
 	}
 	else if (seek_in_file(MY_BBS_HOME"/etc/guestbanip", fromhost) && !loginok)
-		http_fatal("您的ip被禁止使用guest在本版发表文章!″");
+		http_fatal("您的ip被禁止使用guest在本版发表文章!");
 	local_article = 1; // modified by linux @ 2006.6.6 for the default post status to no outgo
 //	strsncpy(board, getparm("B"), 32);
 	if (!board[0])
