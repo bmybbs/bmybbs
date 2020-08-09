@@ -365,7 +365,7 @@ bbsindex_main()
 		http_quit();
 		return 0;
 	}
-	if (!loginok && (rframe[0] == 0)) {
+	if (!(loginok || strcasecmp("/" SMAGIC "/", getsenv("SCRIPT_URL")) == 0) && (rframe[0] == 0)) {
 		if (strcasecmp(FIRST_PAGE, getsenv("SCRIPT_URL"))) {
 	//if (!has_smagic) {
 		//if (!loginok && (rframe[0] == 0)) {
@@ -380,7 +380,7 @@ bbsindex_main()
 	//	}
 	//	if (loginok) {
 			html_header(3);
-		redirect(FIRST_PAGE);
+			redirect(FIRST_PAGE);
 		//	sprintf(main_page, "/%s/", SMAGIC);
 		//	redirect(main_page);
 			http_quit();
@@ -390,7 +390,7 @@ bbsindex_main()
 		loginwindow();
 		http_quit();
 	}
-	if (!loginok) {
+	if (!(loginok || strcasecmp("/" SMAGIC "/", getsenv("SCRIPT_URL")) == 0)) {
 		sprintf(redbuf, "/" SMAGIC "/bbslogin?id=guest&t=%d",
 			(int) now_t);
 		html_header(3);

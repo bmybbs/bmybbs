@@ -4,6 +4,7 @@
 //#define NSEARCH ((MAXACTIVE / 8) > 100 ? (MAXACTIVE / 8) : 100)
 #define NSEARCH MAXACTIVE
 static char *makeurlbase(int uent);
+static const char *makeguesturl(void);
 static char *check_multi(char *id, int uid);
 static int iphash(char *fromhost);
 int
@@ -21,9 +22,7 @@ bbslogin_main()
 	ipmask = atoi(getparm("ipmask"));
 
 	if (loginok && strcasecmp(id, currentuser.userid) && !isguest) {
-		http_fatal
-		    ("系统检测到目前你的计算机上已经登录有一个帐号 %s，请先退出.(选择正常logout)",
-		     currentuser.userid);
+		http_fatal("系统检测到目前你的计算机上已经登录有一个帐号 %s，请先退出.(选择正常logout)", currentuser.userid);
 	}
 	if (!strcmp(id, "")) {
 		strcpy(id, "guest");
@@ -36,9 +35,7 @@ bbslogin_main()
 	strcpy(id, x->userid);
 	if (strcasecmp(id, "guest")) {
 		if (checkbansite(fromhost)) {
-			http_fatal
-			    ("对不起, 本站不欢迎来自 [%s] 的登录. <br>若有疑问, 请与SYSOP联系.",
-			     fromhost);
+			http_fatal("对不起, 本站不欢迎来自 [%s] 的登录. <br>若有疑问, 请与SYSOP联系.", fromhost);
 		}
 		if (userbansite(x->userid, fromhost))
 			http_fatal("本ID已设置禁止从%s登录", fromhost);
@@ -47,8 +44,7 @@ bbslogin_main()
 			http_fatal("密码错误");
 		}
 		if (!user_perm(x, PERM_BASIC))
-			http_fatal
-			    ("此帐号已被停机, 若有疑问, 请用其他帐号在sysop版询问.");
+			http_fatal("此帐号已被停机, 若有疑问, 请用其他帐号在sysop版询问.");
 		if (file_has_word(MY_BBS_HOME "/etc/prisonor", x->userid))
 			http_fatal("安心改造，不要胡闹");
 		//if (x->dietime)
@@ -84,34 +80,19 @@ bbslogin_main()
 		if (isdigit(buf[0]))
 			wwwstylenum = atoi(buf);
 		if ((wwwstylenum > NWWWSTYLE || wwwstylenum < 0))
-			if (!readuservalue
-			    (x->userid, "wwwstyle", buf, sizeof (buf)))
-				    wwwstylenum = atoi(buf);
+			if (!readuservalue(x->userid, "wwwstyle", buf, sizeof (buf)))
+				wwwstylenum = atoi(buf);
 		if (wwwstylenum < 0 || wwwstylenum >= NWWWSTYLE)
 			wwwstylenum = 1;
 		currstyle = &wwwstyle[wwwstylenum];
 	} else {
 		wwwstylenum = 1;
 		currstyle = &wwwstyle[wwwstylenum];
-
 	}
 
 	ub = wwwlogin(x, ipmask);
-	if (!strcmp(url, "1")) 
-		/*printf("<link href=\"images/@byron.css\" rel=stylesheet type=\"text/css\">\n
-			<frameset cols=135,* frameSpacing=0 frameborder=no id=fs0>\n
-			<frame src=\"%sbbsleft?t=%ld\" name=f2 frameborder=no scrolling=no>\n
-			<frameset id=fs1 rows=0,*,18 frameSpacing=0 frameborder=no border=0>\n
-			<frame scrolling=no name=fmsg src=\"%sbbsmsg\">\n
-			<frame name=f3 src=\"%sbbsfoot\">\n
-			<frame scrolling=no name=f4 src=\"%sbbsfoot.htm\">\n
-			</frameset>\n
-			</frameset>\n", ub, now_t, ub, ub, ub);*/			//add by mintbaggio 040411 for new www
-
-	//	html_header(3);
-
-		printf
-		    ("<script>opener.parent.f2.location.href=\"%sbbsleft?t=%ld\";\n"
+	if (!strcmp(url, "1"))
+		printf("<script>opener.parent.f2.location.href=\"%sbbsleft?t=%ld\";\n"
 		     "opener.parent.fmsg.location.href=\"%sbbsgetmsg\";\n"
 		     //"opener.parent.f4.location.href=\"%sbbsfoot\";\n"
 		     "a=window.opener.location.href;\n" "l=a.length;\n"
@@ -120,17 +101,8 @@ bbslogin_main()
 		     "window.opener.location.href=nu;window.close();</script>",
 		     ub, now_t, ub, ub, ub);
 
-		
-	//}
 	else
 		redirect(ub);
-	//else {
-	//	print_session_string(ub);
-	//	html_header(3);
-	//	
-	//	sprintf(main_page, "/%s/", SMAGIC);
-	//	redirect(main_page);
-	//}
 	http_quit();
 	return 0;
 }
@@ -160,17 +132,14 @@ wwwlogin(struct userec *user, int ipmask)
 	nsearch = NSEARCH;
 	//if (strcasecmp(user->userid, "guest"))
 	//      nsearch = MAXACTIVE / 4;
-	for (i = 0, n = iphash(fromhost) * (MAXACTIVE / NHASH); i < nsearch;
-	     i++, n++) {
+	for (i = 0, n = 0; i < nsearch; i++, n++) {
 		if (n >= MAXACTIVE)
 			n = 0;
 		u = &(shm_utmp->uinfo[n]);
-		if (u->active && u->pid == 1
-		    && ((now_t - u->lasttime) > 20 * 60 || u->wwwinfo.iskicked)) {
+		if (u->active && u->pid == 1 && ((now_t - u->lasttime) > 20 * 60 || u->wwwinfo.iskicked)) {
 			st = u->lasttime - u->wwwinfo.login_start_time;
 			if (st > 86400) {
-				errlog("Strange long stay time,%d!, drop %s",
-				       st, u->userid);
+				errlog("Strange long stay time,%d!, drop %s", st, u->userid);
 				st = 86400;
 			}
 			sprintf(genbuf, "%s drop %d www", u->userid, st);
@@ -193,8 +162,7 @@ wwwlogin(struct userec *user, int ipmask)
 			u->userlevel = user->userlevel;
 			u->lasttime = now_t;
 			u->curboard = 0;
-			if (user_perm(user, PERM_LOGINCLOAK) &&
-			    (user->flags[0] & CLOAK_FLAG))
+			if (user_perm(user, PERM_LOGINCLOAK) && (user->flags[0] & CLOAK_FLAG))
 				u->invisible = YEA;
 			u->pager = 0;
 			if (user->userdefine & DEF_FRIENDCALL)
@@ -213,26 +181,25 @@ wwwlogin(struct userec *user, int ipmask)
 			strsncpy(u->username, user->username, NAMELEN);
 			strsncpy(u->userid, user->userid, IDLEN + 1);
 			getrandomstr(u->sessionid);
-			if (strcasecmp(user->userid, "guest"))
+			if (strcasecmp(user->userid, "guest")) {
 				initfriends(u);
-			else
-				memset(u->friend, 0, sizeof (u->friend));
-			urlbase = makeurlbase(n);
+				urlbase = makeurlbase(n);
+			} else {
+				memset(u->friend, 0, sizeof(u->friend));
+				urlbase = makeguesturl();
+			}
+
 			w_info = &(u_info->wwwinfo);
 			w_info->login_start_time = now_t;
 			w_info->ipmask = ipmask;
 			if (strcasecmp(user->userid, "guest")) {
 				sethomefile(fname, user->userid, "clubrights");
 				if ((fp1 = fopen(fname, "r")) == NULL) {
-					memset(u_info->clubrights, 0,
-					       4 * sizeof (int));
+					memset(u_info->clubrights, 0, 4 * sizeof (int));
 				} else {
-					while (fgets(genbuf, STRLEN, fp1) !=
-					       NULL) {
+					while (fgets(genbuf, STRLEN, fp1) != NULL) {
 						clubnum = atoi(genbuf);
-						u_info->clubrights[clubnum /
-								   32] |=
-						    (1 << clubnum % 32);
+						u_info->clubrights[clubnum / 32] |= (1 << clubnum % 32);
 					}
 					fclose(fp1);
 				}
@@ -251,8 +218,7 @@ wwwlogin(struct userec *user, int ipmask)
 	flock(fileno(fp), LOCK_UN);
 	fclose(fp);
 	if (!dolog)
-		http_fatal
-		    ("抱歉，目前在线用户数已达上限，无法登录。请稍后再来。");
+		http_fatal("抱歉，目前在线用户数已达上限，无法登录。请稍后再来。");
 	if ((user->userlevel & PERM_BOARDS))
 		setbmstatus(user, 1);
 	return urlbase;
@@ -281,13 +247,18 @@ makeurlbase(int uent)
 	return urlbase;
 }
 
+static const char *
+makeguesturl(void) {
+	return "/" SMAGIC "/";
+}
+
 static char *
 check_multi(char *id, int uid)
 {
 	int i, uent;
 	if (uid <= 0 || uid > MAXUSERS)
 		return NULL;
-	if (strcasecmp(id, "guest") && 1) {
+	if (strcasecmp(id, "guest") != 0) {
 		//这种算法, wwwlogin必须限制登录窗口数目, 否则
 		//上线名单会被轻易冲爆
 		for (i = 3; i < 6; i++) {
@@ -297,13 +268,7 @@ check_multi(char *id, int uid)
 		}
 		return NULL;
 	} else {
-		for (i = 0, uent = iphash(fromhost) * (MAXACTIVE / NHASH);
-		     i < NSEARCH; i++, uent++) {
-			if (uent >= MAXACTIVE)
-				uent = 0;
-			if (do_check(uent, uid))
-				return makeurlbase(uent);
-		}
+		return makeguesturl();
 	}
 	return NULL;
 }
