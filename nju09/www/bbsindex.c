@@ -20,6 +20,14 @@ static struct wwwface bbsface[NFACE] = {
 	{"white", "gray", "/cai.jpg", "/stamp.gif", "/logo.gif"}
 };
 
+/**
+ * 判断是否为合法的 guest 链接
+ * 样式后缀允许为 _[A-H]
+ * @param url
+ * @return 0 不合法 1 合法
+ */
+static int is_valid_guest_url(const char* url);
+
 char *get_login_pic_link (char *picname, char *linkback);
 
 int
@@ -357,7 +365,7 @@ bbsindex_main()
 		http_quit();
 		return 0;
 	}
-	if (!(loginok || strcasecmp("/" SMAGIC "/", getsenv("SCRIPT_URL")) == 0) && (rframe[0] == 0)) {
+	if (!(loginok || is_valid_guest_url(getsenv("SCRIPT_URL"))) && (rframe[0] == 0)) {
 		if (strcasecmp(FIRST_PAGE, getsenv("SCRIPT_URL"))) {
 			html_header(3);
 			redirect(FIRST_PAGE);
@@ -367,7 +375,7 @@ bbsindex_main()
 		loginwindow();
 		http_quit();
 	}
-	if (!(loginok || strcasecmp("/" SMAGIC "/", getsenv("SCRIPT_URL")) == 0)) {
+	if (!(loginok || is_valid_guest_url(getsenv("SCRIPT_URL")))) {
 		sprintf(redbuf, "/" SMAGIC "/bbslogin?id=guest&t=%d", (int) now_t);
 		html_header(3);
 		redirect(redbuf);
@@ -413,4 +421,26 @@ bbsindex_main()
 		"</noframes>\n", MY_BBS_NAME, now_t, bbsred(rframe));
 	http_quit();
 	return 0;
+}
+
+static int is_valid_guest_url(const char* url) {
+	const char* patt = "/" SMAGIC "_?/";
+	int i, l;
+	l = strlen(patt);
+
+	if (strcmp("/" SMAGIC "/", url) == 0)
+		return 1;
+
+	if (strlen(url) != l)
+		return 0;
+
+	for(i=0; i<l; i++) {
+		if (patt[i] == '?') {
+			if(url[i] < 'A' || url[i] > 'H')
+				return 0;
+		} else if (patt[i] != url[i])
+			return 0;
+	}
+
+	return 1;
 }

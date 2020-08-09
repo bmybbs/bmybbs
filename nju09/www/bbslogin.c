@@ -249,7 +249,7 @@ makeurlbase(int uent)
 
 static const char *
 makeguesturl(void) {
-	return "/" SMAGIC "/";
+	return "/" SMAGIC "_B/";
 }
 
 static char *
