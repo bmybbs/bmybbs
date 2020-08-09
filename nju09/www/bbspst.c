@@ -6,8 +6,7 @@ bbspst_main()
 {
 	FILE *fp;
 	int local_article, i, num, fullquote = 0, guestre = 0, thread = -1;
-	char userid[80], buf[512], path[512], file[512], board[512], title[80] =
-	    "";
+	char userid[80], buf[512], path[512], file[512], board[512], title[80] = "";
 	struct fileheader *dirinfo = NULL;
 	struct boardmem *x;
 	char bmbuf[IDLEN * 4 + 4];		//add by mintbaggio 040807 for new www
@@ -15,8 +14,8 @@ bbspst_main()
 	html_header(1);
 	check_msg();
 	strsncpy(board, getparm("B"), 32);
-	if(strcmp(board, "welcome")  &&
-	   strcmp(board, "KaoYan")){	///modify by mintbaggio 040614 for guest post at board "welcome" + "KaoYan"(by wsf)
+	if(strcasecmp(board, "welcome") && strcasecmp(board, "KaoYan")){
+		// modify by mintbaggio 040614 for guest post at board "welcome" + "KaoYan"(by wsf)
 		if (!loginok) {
 			printf("<script src=/function.js></script>\n");
 			printf("匆匆过客不能发表文章，请先登录!<br><br>");
@@ -68,19 +67,20 @@ bbspst_main()
 			http_fatal("错误的文件名");
 		if (dirinfo->accessed & FH_NOREPLY)
 			http_fatal("本文被设为不可Re模式");
+	}
 
-	}
-	if (!has_post_perm(&currentuser, x) && !isguest) 
-	{
-		  if (x->header.secnumber2=='C')
+	if (!has_post_perm(&currentuser, x) && !isguest) {
+		if (x->header.secnumber2=='C')
 			http_fatal("俱乐部版面，请联系版主，申请加入俱乐部方能发文.");
-		  else
-		  	http_fatal("错误的讨论区或者您无权在此讨论区发表文章");
+		else
+			http_fatal("错误的讨论区或者您无权在此讨论区发表文章");
 	}
+
 	if (noadm4political(board))
 		http_fatal("对不起,因为没有版面管理人员在线,本版暂时封闭.");
-	if(strcmp(board, "welcome") &&
-	   strcmp(board, "KaoYan")){	//add by mintbaggio 040614 for guest post at "welcome" + "KaoYan"(by wsf)
+
+	if(strcasecmp(board, "welcome") && strcasecmp(board, "KaoYan")){
+		//add by mintbaggio 040614 for guest post at "welcome" + "KaoYan"(by wsf)
 		if (isguest && !guestre) {
 			printf("<script src=/function.js></script>\n");
 			printf("匆匆过客不能发表文章，请先登录!<br><br>");
@@ -94,7 +94,7 @@ bbspst_main()
 //	printf("<body><center>\n");
 	printf("<body leftmargin=0 topmargin=0>\n");
 	printf("<table width=\"100%\" border=0 cellpadding=0 cellspacing=0>\n");
-	printf("%s", "<tr>\n<td height=30 colspan=2>\n" 
+	printf("%s", "<tr>\n<td height=30 colspan=2>\n"
 		"<table width=\"100%\"  border=0 cellspacing=0 cellpadding=0>\n"
         	"<tr><td width=40><img src=\"/images/spacer.gif\" width=40 height=10 alt=\"\"></td>\n"
 		"<td><table width=\"100%\" border=0 align=right cellpadding=0 cellspacing=0>\n"
@@ -102,18 +102,18 @@ bbspst_main()
 	printf("<a href=\"boa?secstr=%s\">%s</a> / <a href=\"%s%s\">%s版</a> / 发表文章 </td>\n"
 		"</tr></table></td>\n<td><table border=0 align=right cellpadding=0 cellspacing=0>\n"
 		"<tr><td> 版主 %s \n"
-		"</td></tr></table></td></tr></table></td></tr>\n", 
+		"</td></tr></table></td></tr></table></td></tr>\n",
 		x->header.sec1,nohtml(getsectree(x->header.sec1)->title), showByDefMode(), board, board, userid_str(bm2str(bmbuf, &(x->header))));
 //	printf("%s -- 发表文章 [使用者: %s]<hr>\n", BBSNAME, currentuser.userid);
 	if (x->header.flag & IS1984_FLAG)
 		printf("<tr><td height=30 colspan=2><font color=red>请注意，本文发表后需通过审查</font></td></tr>");
- 	printf("%s", "<tr><td height=70 colspan=2>\n"
- 		"<table width=\"100%\" height=\"100%\" border=0 cellpadding=0 cellspacing=0 bgcolor=\"#efefef\">\n"
+	printf("%s", "<tr><td height=70 colspan=2>\n"
+		"<table width=\"100%\" height=\"100%\" border=0 cellpadding=0 cellspacing=0 bgcolor=\"#efefef\">\n"
 		"<tr><td width=40>&nbsp; </td>\n"
 		"<td height=70><table width=\"95%\" height=\"100%\"  border=0 cellpadding=0 cellspacing=0>\n"
 		"<tr>\n");
- 	printf("<td valign=bottom>\n"
- 		"<table width=\"100%\" border=0 cellpadding=0 cellspacing=0>\n"
+	printf("<td valign=bottom>\n"
+		"<table width=\"100%\" border=0 cellpadding=0 cellspacing=0>\n"
 		"<tr><td class=F0002><div class=\"menu\">\n"
 		"<DIV class=btncurrent>&lt;%s&gt;</DIV>\n"
 		"<DIV><A class=btnfunc href=\"%s%s\" title=\"返回讨论区 accesskey: b\" accesskey=\"b\">/ 返回讨论区</A></DIV>\n"
@@ -156,7 +156,7 @@ bbspst_main()
 		printf("<tr><td class=bordertheme>");
 		printf("<a target=_self href=bbstmpl?action=show&board=%s class=btnsubmittheme>", board);
 		printf("模板发文</a>");
-		printf("</td></tr>\n");		
+		printf("</td></tr>\n");
 	}
 	printf("<TR><TD class=bordertheme>\n"
 		"<form name=form1 method=post action=bbssnd?board=%s&th=%d%s>\n",
@@ -164,14 +164,14 @@ bbspst_main()
 	printf("<table width=\"100%\"  border=0 cellspacing=0 cellpadding=0>\n"
 		"<tr>\n<td><table border=0 cellpadding=0 cellspacing=0>\n"
 		"<tr><td> 使用标题: </td>\n");
-	
-		//ArthurF修改部分开始 
+
+		//ArthurF修改部分开始
 		//预计实现功能 www下的标题长度限制 标题将通过js限制在45个英文和22个汉字之内
 		//失去焦点的时候进行统计 超过则弹出提示框 要求修改
 		if (file[0]){
 			printf("<td><input name=title type=text class=inputtitle maxlength=45 size=50 value='%s'></td>\n", (void1(noquote_html(title))));
 		}
-		else{	
+		else{
 			printf("<script language=\"JavaScript\">\n"
 					"function realLen(v){\n"
 					"  l=0;\n"
@@ -190,7 +190,7 @@ bbspst_main()
 			        " document.getElementById(\"edittitle\").focus(); \n"
 			        "  </script>");
 		}
-			//修改部分结束 
+			//修改部分结束
 
 	printf("<td height=20>\n"
 		" 讨论区: [%s]</td>\n"
@@ -204,30 +204,33 @@ bbspst_main()
 		printf("匿名<input type=checkbox name=anony>\n");
 	printf("<br>作者：%s &nbsp;", currentuser.userid);
 */
-	printselsignature();
-	printuploadattach();
+
+	if (!isguest) {
+		printselsignature();
+		printuploadattach();
+	}
+
 	if (innd_board(board))
-                printf("转信<input type=checkbox name=outgoing %s>\n",
-                       local_article ? "" : "checked");
-        if (anony_board(board))
-                printf("匿名<input type=checkbox name=anony>\n");
+		printf("转信<input type=checkbox name=outgoing %s>\n", local_article ? "" : "checked");
+
+	if (anony_board(board))
+		printf("匿名<input type=checkbox name=anony>\n");
+
 	printf("</td></tr></table></td></tr>\n");
 	//printusemath(0);
 	printf("<tr><td>\n");
 	printf("使用Tex风格的数学公式<input type=checkbox name=usemath>\n");
 	printf("设为不可回复<input type=checkbox name=nore>\n");
 	printf("回复抄送至信箱<input type=checkbox name=mailback>\n");
-	if (file[0])
-		if (dirinfo->accessed & FH_MAILREPLY)
-			printf("<input type=hidden name=replyto value=%s>\n", userid);
+
+	if (file[0] && (dirinfo->accessed & FH_MAILREPLY))
+		printf("<input type=hidden name=replyto value=%s>\n", userid);
+
 	printf("</td></tr>\n");
 	if (file[0]) {
 		printf("<tr><td>引文模式: %s ", fullquote ? "完全" : "精简");
-		printf
-		    ("[<a target=_self href=bbspst?inframe=1&board=%s&file=%s&num=%d&la=%d",
-		     board, file, num, local_article);
-		printf("&fullquote=%d>切换为%s模式</a> (将丢弃所更改内容)]",
-		       !fullquote, (!fullquote) ? "完全" : "精简");
+		printf("[<a target=_self href=bbspst?inframe=1&board=%s&file=%s&num=%d&la=%d", board, file, num, local_article);
+		printf("&fullquote=%d>切换为%s模式</a> (将丢弃所更改内容)]", !fullquote, (!fullquote) ? "完全" : "精简");
 		printf("</td></tr>\n");
 	}
 	printf
@@ -249,8 +252,8 @@ bbspst_main()
 				if (!strncmp(buf, ": : ", 4))
 					continue;
 				if (!strncmp(buf, "--\n", 3)
-				    || !strncmp(buf, "begin 644 ", 10)
-				    || !strncmp(buf, "beginbinaryattach ", 18))
+						|| !strncmp(buf, "begin 644 ", 10)
+						|| !strncmp(buf, "beginbinaryattach ", 18))
 					break;
 				if (buf[0] == '\n')
 					continue;
@@ -266,10 +269,10 @@ bbspst_main()
 	printf("</textarea></td></tr>\n");
 	if(file[0])
 		printf("<script language=\"JavaScript\">\n"
-			   " document.getElementById(\"textedit\").focus(); \n"
-			   "  </script>");
-	
-		
+				" document.getElementById(\"textedit\").focus(); \n"
+				"  </script>");
+
+
 /*	printf
 	    ("<tr><td class=post align=center><input type=submit value=发表> ");
 	printf("<input type=reset value=清除></form>\n");
@@ -292,8 +295,7 @@ printselsignature()
 {	//modify by mintbaggio 040809 for new www
 	int i, sigln, numofsig;
 	char path[200];
-	sprintf(path, "home/%c/%s/signatures",
-		mytoupper(currentuser.userid[0]), currentuser.userid);
+	sprintf(path, "home/%c/%s/signatures", mytoupper(currentuser.userid[0]), currentuser.userid);
 	sigln = countln(path);
 	numofsig = (sigln + MAXSIGLINES - 1) / MAXSIGLINES;
 	printf("%s", "<td>使用签名档:</td><td height=20> <select name=\"signature\" class=2015>\n");
@@ -309,12 +311,9 @@ printselsignature()
 	}
 	for (i = 1; i <= numofsig; i++) {
 		if (currentuser.signature == i)
-			printf
-			    ("<option value=\"%d\" selected>第 %d 个</option>\n",
-			     i, i);
+			printf("<option value=\"%d\" selected>第 %d 个</option>\n", i, i);
 		else
-			printf("<option value=\"%d\">第 %d 个</option>\n", i,
-			       i);
+			printf("<option value=\"%d\">第 %d 个</option>\n", i, i);
 	}
 	printf("</select></td>\n");
 	printf("%s", "<td> [<a target=_blank href=bbssig>查看签名档</a>]");
@@ -324,10 +323,9 @@ void
 printuploadattach()
 {	//modify by mintbaggio 040809 for new www
 	int i = u_info - &(shm_utmp->uinfo[0]);
-	printf
-	    (" [<a href=/cgi-bin/bbs/upload/%c%c%c%s target=uploadytht>添加/删除附件</a>]\n",
-	     i / (26 * 26) + 'A', i / 26 % 26 + 'A', i % 26 + 'A',
-	     u_info->sessionid);
+	printf(" [<a href=/cgi-bin/bbs/upload/%c%c%c%s target=uploadytht>添加/删除附件</a>]\n",
+			i / (26 * 26) + 'A', i / 26 % 26 + 'A', i % 26 + 'A',
+			u_info->sessionid);
 }
 
 void

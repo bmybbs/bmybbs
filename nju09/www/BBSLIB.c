@@ -1130,7 +1130,7 @@ user_init(struct userec *x, struct user_info **y, unsigned char *ub)
 	//bzero(x, sizeof (*x));
 	x2 = getuser("guest");
 	if (x2)
-		memcpy(x, getuser("guest"), sizeof (*x));
+		memcpy(x, x2, sizeof (*x));
 	else
 		bzero(x, sizeof (*x));
 	*y = NULL;
@@ -1159,6 +1159,12 @@ user_init(struct userec *x, struct user_info **y, unsigned char *ub)
 			utmpent = i + 1;
 			memcpy(x, x2, sizeof (*x));
 			tempuser = 1;
+		} else {
+			// 认为 session 不合法，视为 guest 用户 by IronBlood
+			if (x2) {
+				isguest = 1;
+				memcpy(x, x2, sizeof(*x));
+			}
 		}
 		return 0;
 	}
