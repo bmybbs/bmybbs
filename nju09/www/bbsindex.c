@@ -17,7 +17,7 @@ static struct wwwface oneface = {
 static struct wwwface bbsface[NFACE] = {
 	{"#000000", "#99ccff", "/ytht2men.jpg", NULL, NULL},
 	{"white", "#99ccff", "/ythtBlkRedGry.gif", NULL, NULL},
-	{"white", "gray", "/cai.jpg", "/stamp.gif", "/logo.gif"} 
+	{"white", "gray", "/cai.jpg", "/stamp.gif", "/logo.gif"}
 };
 
 char *get_login_pic_link (char *picname, char *linkback);
@@ -286,15 +286,15 @@ loginwindow()
 		printf
 		    ("<table width=75%%><tr><td align=right><IMG src=%s border=0 alt=''></td></tr></table>",
 		     pface->stamp);
-//by bjgyt  
+//by bjgyt
 	printf("<table><tr><!--td><IMG src=/ythtnet.gif border=0 alt=''></td-->"
 	       "<form name=l action=/" SMAGIC "/bbslogin method=post><td>");
 
 	if (pface->logo)
-		
+
 	else
 		printf("<font size=+1>B M Y</font>");
-//by bjgyt 
+//by bjgyt
 	printf("<table><tr><td>’ ∫≈<INPUT maxLength=12 size=8 name=id>"
 	       " √‹¬Î<INPUT type=password maxLength=12 size=8 name=pw>"
 	       "<INPUT type=submit value=µ«¬º>"
@@ -352,14 +352,6 @@ int
 bbsindex_main()
 {
 	char str[20], redbuf[50]; //, main_page[STRLEN];
-	/*
-	if (go_to_first_page) {
-		html_header(3);
-		redirect(FIRST_PAGE);
-		http_quit();
-		return 0;
-	}
-	*/
 	if (nologin) {
 		shownologin();
 		http_quit();
@@ -367,34 +359,17 @@ bbsindex_main()
 	}
 	if (!(loginok || strcasecmp("/" SMAGIC "/", getsenv("SCRIPT_URL")) == 0) && (rframe[0] == 0)) {
 		if (strcasecmp(FIRST_PAGE, getsenv("SCRIPT_URL"))) {
-	//if (!has_smagic) {
-		//if (!loginok && (rframe[0] == 0)) {
-			/*if (strcasecmp(FIRST_PAGE, getsenv("SCRIPT_URL"))) {
-				html_header(3);
-				redirect(FIRST_PAGE);
-				http_quit();
-			}*/
-			//wwwcache->home_visit++;
-			//loginwindow();
-			//http_quit();
-	//	}
-	//	if (loginok) {
 			html_header(3);
 			redirect(FIRST_PAGE);
-		//	sprintf(main_page, "/%s/", SMAGIC);
-		//	redirect(main_page);
 			http_quit();
-		//	return 0;
 		}
 		wwwcache->home_visit++;
 		loginwindow();
 		http_quit();
 	}
 	if (!(loginok || strcasecmp("/" SMAGIC "/", getsenv("SCRIPT_URL")) == 0)) {
-		sprintf(redbuf, "/" SMAGIC "/bbslogin?id=guest&t=%d",
-			(int) now_t);
+		sprintf(redbuf, "/" SMAGIC "/bbslogin?id=guest&t=%d", (int) now_t);
 		html_header(3);
-		//printf("<!-- %s -- %s -->", getsenv("SCRIPT_URL"), rframe);
 		redirect(redbuf);
 		http_quit();
 	}
@@ -435,7 +410,7 @@ bbsindex_main()
 		"<noframes>\n"
 		"<body>\n"
 		"</body>\n"
-		"</noframes>\n", MY_BBS_NAME, now_t, bbsred(rframe));			
+		"</noframes>\n", MY_BBS_NAME, now_t, bbsred(rframe));
 	http_quit();
 	return 0;
 }
