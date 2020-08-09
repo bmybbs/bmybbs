@@ -420,7 +420,7 @@ char *argv[];
 	main_signals();
 	start_daemon(argc > 2, atoi(argv[argc - 1]));
 	char cp[INET6_ADDRSTRLEN];
-//  main_signals();
+
 
 	if (argc <= 2)
 		for (;;) {
@@ -428,18 +428,14 @@ char *argv[];
 			FD_SET(0, &fds);
 			if (select(1, &fds, NULL, NULL, NULL) < 0)
 				continue;
-/*
-    value = 1;
-    if (select(1, (fd_set *) & value, NULL, NULL, NULL) < 0)
-      continue;
-*/
+
 			value = sizeof (sin);
 			csock = accept(0, (struct sockaddr *) &sin, &value);
 			if (csock < 0) {
 				reaper();
 				continue;
 			}
-//add by ylsdd, 对抗上站机
+
 			if (checkaddr(sin.sin6_addr, csock) < 0) {	//ipv6
 				close(csock);
 				continue;
@@ -504,7 +500,6 @@ char *argv[];
 	return 0;
 }
 
-//checkaddr(...), add by ylsdd, 对抗上站机
 #define NADDRCHECK 500
 struct {
 	//ipv6
@@ -514,6 +509,13 @@ struct {
 	int n;
 } addrcheck[NADDRCHECK];
 
+/**
+ * 对抗上站机
+ * @author ylsdd
+ * @param addr
+ * @aram csock
+ * @return
+ */
 int
 checkaddr(struct in6_addr addr, int csock)
 {
@@ -541,11 +543,6 @@ checkaddr(struct in6_addr addr, int csock)
 		if (timenow - addrcheck[i].t > 60 * 5
 		    || timenow < addrcheck[i].t) {
 			if (addrcheck[i].x > 100 && addrcheck[i].n > 7) {
-				/*
-				sprintf(str, "remove\t%s\t%d\t%s",
-					inet_ntoa(addrcheck[i].addr),
-					addrcheck[i].n, ctime(&timenow));
-				*/
 				//ipv6
 				if(inet_ntop(PF_INET6,(const void *)&addrcheck[i].addr, str_addr, INET6_ADDRSTRLEN) != NULL) {
 					sprintf(str, "remove\t%s\t%d\t%s", str_addr, addrcheck[i].n, ctime(&timenow));
@@ -558,36 +555,24 @@ checkaddr(struct in6_addr addr, int csock)
 		if (memcmp(&addrcheck[i].addr, &addr, sizeof (addr)) == 0) {
 			if (addrcheck[i].x <= 100 || addrcheck[i].n <= 7) {
 				j = 0;
-				addrcheck[i].x = addrcheck[i].x / (((unsigned)
-
-								    (timenow -
-								     addrcheck
-								     [i].t) +
-								    15) / 20.) +
-				    30;
-			} else
+				addrcheck[i].x = addrcheck[i].x / (((unsigned) (timenow - addrcheck[i].t) + 15) / 20.) + 30;
+			} else {
 				j = 1;
+			}
 			addrcheck[i].n++;
 
 			if (addrcheck[i].x > 100 && addrcheck[i].n > 7) {
 				if (j == 0 && fd >= 0)
 					if (fork() == 0) {
-						/*
-						sprintf(str, "add\t%s\t%d\t%s",
-							inet_ntoa(addr),
-							addrcheck[i].n,
-							ctime(&timenow));
-						*/
-					//ipv6
-					if (inet_ntop(PF_INET6,(const void *)&addrcheck[i].addr, str_addr, sizeof(struct in6_addr)) != NULL) {
-						sprintf(str, "add\t%s\t%d\t%s", str_addr, addrcheck[i].n, ctime(&timenow));
-					}
+						//ipv6
+						if (inet_ntop(PF_INET6,(const void *)&addrcheck[i].addr, str_addr, sizeof(struct in6_addr)) != NULL) {
+							sprintf(str, "add\t%s\t%d\t%s", str_addr, addrcheck[i].n, ctime(&timenow));
+						}
 
-					  write(fd, str, strlen(str));
-						write(csock,
-						      "对不起, 连接将封闭5分钟。请不要不断连接冲击本站\n",
-						      strlen
-						      ("对不起, 连接将封闭5分钟。请不要不断连接冲击本站\n"));
+						write(fd, str, strlen(str));
+
+						char *s = "对不起, 连接将封闭5分钟。请不要不断连接冲击本站\n";
+						write(csock, s, strlen(s));
 						sleep(5);
 						exit(0);
 					}
