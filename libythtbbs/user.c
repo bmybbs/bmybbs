@@ -29,16 +29,14 @@ sethomepath(char *buf, const char *userid)
 char *
 sethomefile(char *buf, const char *userid, const char *filename)
 {
-	sprintf(buf, MY_BBS_HOME "/home/%c/%s/%s", mytoupper(userid[0]), userid,
-		filename);
+	sprintf(buf, MY_BBS_HOME "/home/%c/%s/%s", mytoupper(userid[0]), userid, filename);
 	return buf;
 }
 
 char *
 setmailfile(char *buf, const char *userid, const char *filename)
 {
-	sprintf(buf, MY_BBS_HOME "/mail/%c/%s/%s", mytoupper(userid[0]), userid,
-		filename);
+	sprintf(buf, MY_BBS_HOME "/mail/%c/%s/%s", mytoupper(userid[0]), userid, filename);
 	return buf;
 }
 
@@ -48,8 +46,7 @@ get the file path of sent mail box
 char *
 setsentmailfile(char *buf, const char *userid, const char *filename)
 {
-	sprintf(buf, MY_BBS_HOME "/sent_mail/%c/%s/%s", mytoupper(userid[0]), userid,
-		filename);
+	sprintf(buf, MY_BBS_HOME "/sent_mail/%c/%s/%s", mytoupper(userid[0]), userid, filename);
 	return buf;
 }
 
@@ -125,8 +122,8 @@ countexp(struct userec *udata)
 	if (!strcmp(udata->userid, "guest"))
 		return -9999;
 	exp = udata->numposts /*+post_in_tin( udata->userid ) */  +
-	    udata->numlogins / 5 + (time(0) - udata->firstlogin) / 86400 +
-	    udata->stay / 3600;
+		udata->numlogins / 5 + (time(0) - udata->firstlogin) / 86400 +
+		udata->stay / 3600;
 	return exp > 0 ? exp : 0;
 }
 
@@ -145,16 +142,17 @@ countperf(struct userec *udata)
 	return perf > 0 ? perf : 0;
 }
 
+// unused function detected, commented by IronBlood 2020.08.10
+/*
 int life_special(char *id)
 {
-	FILE *fp , *fp2;
+	FILE *fp;
 	char buf[128];
 	fp=fopen("etc/life", "r");
 	if(fp==0) return 0;
 	while(1) {
 		if(fgets(buf, 128, fp)==0) break;
-		//fprintf(fp2, "buf=%s ",buf);
-		//if(sscanf(buf, "%s", id1)>0) continue;
+
 		buf[strlen(buf)-1] = 0;
 		if(!strcmp(buf, id)) {
 			fclose(fp);
@@ -164,6 +162,8 @@ int life_special(char *id)
 	fclose(fp);
 	return 0;
 }
+*/
+
 int
 countlife(struct userec *urec)
 {
@@ -190,7 +190,6 @@ countlife(struct userec *urec)
 		return  666;
 	if (((time(0)-urec->firstlogin)/86400)>365*2)
 		return  365;
-
 
 	//if (urec->stay > 1000000)
       	//	return (365 * 1440 - value) / 1440;
@@ -299,9 +298,7 @@ logattempt(char *user, char *from, char *zone, time_t time)
 	snprintf(buf, 256, "%-12.12s  %-30s %-16s %-6s\n",
 		 user, Ctime(time), from, zone);
 	len = strlen(buf);
-	if ((fd =
-	     open(MY_BBS_HOME "/" BADLOGINFILE, O_WRONLY | O_CREAT | O_APPEND,
-		  0644)) >= 0) {
+	if ((fd = open(MY_BBS_HOME "/" BADLOGINFILE, O_WRONLY | O_CREAT | O_APPEND, 0644)) >= 0) {
 		write(fd, buf, len);
 		close(fd);
 	}
@@ -315,20 +312,20 @@ logattempt(char *user, char *from, char *zone, time_t time)
 static int
 isoverride(struct override *o, char *id)
 {
-        if (strcasecmp(o->id, id) == 0)
-                return 1;
-        return 0;
+	if (strcasecmp(o->id, id) == 0)
+		return 1;
+	return 0;
 }
 
 int
 inoverride(char *who, char *owner, char *file)
 {
 	char buf[80];
-        struct override o;
+	struct override o;
 	sethomefile(buf, owner, file);
-        if (search_record(buf, &o, sizeof (o), (void *) isoverride, who) != 0)
-                return 1;
-        return 0;
+	if (search_record(buf, &o, sizeof (o), (void *) isoverride, who) != 0)
+		return 1;
+	return 0;
 }
 
 int check_user_perm(struct userec *x, int level) {
@@ -350,8 +347,7 @@ int check_user_read_perm_x(struct user_info *user, struct boardmem *board)
 			return 1;
 		if(user->active == 0 || strcasecmp(user->userid, "guest")==0)
 			return 0;
-		return user->clubrights[board->header.clubnum / 32]
-		       & (1<<((board->header.clubnum) % 32));
+		return user->clubrights[board->header.clubnum / 32] & (1<<((board->header.clubnum) % 32));
 	}
 
 	if(board->header.level == 0)
@@ -415,15 +411,12 @@ int check_user_post_perm_x(struct user_info *user, struct boardmem *board)
 		return 0;
 
 	if(board->header.clubnum != 0) {
-		if(!(board->header.level & PERM_NOZAP) && board->header.level
-				&& !(user->userlevel, board->header.level))
+		if(!(board->header.level & PERM_NOZAP) && board->header.level && !(user->userlevel, board->header.level))
 			return 0;
-		return user->clubrights[board->header.clubnum / 32]
-		    & (1 << (board->header.clubnum % 32));
+		return user->clubrights[board->header.clubnum / 32] & (1 << (board->header.clubnum % 32));
 	}
 
-	if(!(board->header.level & PERM_NOZAP) && board->header.level
-			&& !(user->userlevel & board->header.level))
+	if(!(board->header.level & PERM_NOZAP) && board->header.level && !(user->userlevel & board->header.level))
 		return 0;
 
 	return 1;
@@ -431,8 +424,8 @@ int check_user_post_perm_x(struct user_info *user, struct boardmem *board)
 
 int id_with_num(char *userid)
 {
-   char *s;
-   for (s = userid; *s != '\0'; s++)
-      if (*s < 1 || !isalpha(*s)) return 1;
-   return 0;
+	char *s;
+	for (s = userid; *s != '\0'; s++)
+		if (*s < 1 || !isalpha(*s)) return 1;
+	return 0;
 }
