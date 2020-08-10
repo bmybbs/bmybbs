@@ -120,8 +120,6 @@ extern long ti ;
 
 #endif /* BBSIRC */
 
-#define MAXFRIENDS (200)
-#define MAXREJECTS (32)
 #define GOOD_BRC_NUM    40      // 最多有 GOOD_BRC_NUM 个个人定制版面
 #define NUMPERMS   (31)
 //#define REG_EXPIRED         180    /* 重做身份确认期限 */
