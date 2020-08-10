@@ -41,18 +41,8 @@ struct boardmanager {		/* record in user directionary */
 	short bid;
 };
 
-struct myparam1 {		/* just use to pass a param to fillmboard() */
-	struct userec user;
-	int fd;
-	short bid;
-};
-
 char *bm2str(char *buf, struct boardheader *bh);
 char *sbm2str(char *buf, struct boardheader *bh);
-int chk_BM(struct userec *, struct boardheader *bh, int isbig);
-int chk_BM_id(char *, struct boardheader *);
-int bmfilesync(struct userec *);
-int fillmboard(struct boardheader *bh, struct myparam1 *param);
 
 /**
  * 依据版面名称获取 boardmem 对象

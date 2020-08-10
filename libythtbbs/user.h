@@ -106,4 +106,8 @@ int inoverride(char *who, char *owner, char *file);
  * @return °üº¬Ôò·µ»Ø
  */
 int id_with_num(char *userid);
+
+int chk_BM(struct userec *, struct boardheader *bh, int isbig);
+int chk_BM_id(char *, struct boardheader *);
+int bmfilesync(struct userec *);
 #endif
