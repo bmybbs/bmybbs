@@ -32,6 +32,7 @@ set(SRC
 	fileshm.c
 	postheader.c
 	convcode.c
+	five.c
 	tmachine.c
 	addressbook.c
 	backnumber.c

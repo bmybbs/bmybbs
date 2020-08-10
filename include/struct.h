@@ -157,6 +157,12 @@ struct postlog {
 	int number;
 };
 
+struct fivechess {
+	int winner;
+	int hand, tdeadf, tlivef, livethree, threefour;
+	int playboard[15][15];
+};
+
 // unused struct
 /*
 struct {
