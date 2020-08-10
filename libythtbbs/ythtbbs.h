@@ -34,4 +34,5 @@
 #include "board.h"
 #include "sectree.h"
 #include "notification.h"
+#include "cache.h"
 #endif
