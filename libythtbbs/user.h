@@ -1,6 +1,9 @@
 /* user.c */
 #ifndef __USER_H
 #define __USER_H
+
+#include "struct.h"
+#include "board.h"
 /** Structure used to hold information in PASSFILE
  *
  */
@@ -62,8 +65,6 @@ int checkbansite(const char *addr);
  */
 int check_user_perm(struct userec *x, int level);
 
-extern struct user_info;
-extern struct boardmem;
 /**
  * @brief 检查用户的阅读权限
  * 该方法从 nju09 移植，用于检查用户读取版面的权限。
