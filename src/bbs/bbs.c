@@ -1973,9 +1973,7 @@ post_article(struct fileheader *sfh)
 			mailback = 1;
 	}
 	modify_user_mode(POSTING);
-	if (! ((strcmp(currboard, "welcome") == 0) 
-	    || (strcmp(currboard, "KaoYan") == 0) 
-		&& (strcmp(currentuser.userid, "guest") == 0)))
+	if (! ( /**/ (strcmp(currboard, "welcome") == 0 || strcmp(currboard, "KaoYan") == 0) /**/ && strcmp(currentuser.userid, "guest") == 0))
 	{
 		if (!haspostperm(currboard))
 		{
@@ -2222,7 +2220,7 @@ post_article(struct fileheader *sfh)
 	if (mailback)
 	{
 		char copyfrom[STRLEN], replyto[IDLEN + 2];
-		sprintf(copyfrom, "boards/%s/M.%d.A", currboard, postfile.filetime);
+		sprintf(copyfrom, "boards/%s/M.%ld.A", currboard, postfile.filetime);
 		if (sfh->owner[0] == 0)
 			strcpy(replyto, sfh->owner + 1);
 		else
@@ -2247,7 +2245,7 @@ post_article(struct fileheader *sfh)
 	// term 下 @ 提醒开始 by IronBlood
 	char mention_ids[MAX_MENTION_ID][IDLEN+2];
 	memset(mention_ids, 0, MAX_MENTION_ID*(IDLEN+2));
-	get_mention_ids(newfilepath, mention_ids);
+	get_mention_ids(newfilepath, (char **)mention_ids);
 
 	int i=0;
 	while(i!=MAX_MENTION_ID && mention_ids[i][0]!=0) {
@@ -2266,7 +2264,7 @@ post_article(struct fileheader *sfh)
 }
 
 static int
-get_mention_ids(char *article_path, char *mention_ids[])
+get_mention_ids(char *article_path, char **mention_ids)
 {
 	int fd;
 	char *p, *s;

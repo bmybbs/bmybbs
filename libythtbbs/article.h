@@ -116,5 +116,5 @@ time_t fn2timestamp(char * filename);
  * @param from 用于调用时候声明来源，1 表示 nju09 以及其他不附带 QMD 的场景下，跳过内部 QMD 校验。
  * @return 处理成功返回0
  */
-int parse_mentions(char *content, char userids[20][14], int from);
+int parse_mentions(char *content, char **userids, int from);
 #endif

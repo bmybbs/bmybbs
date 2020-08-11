@@ -198,7 +198,7 @@ bbssnd_main()
 	// 发送 @ 提醒开始 by IronBlood
 	char mention_ids[MAX_MENTION_ID][IDLEN+2];
 	memset(mention_ids, 0, MAX_MENTION_ID*(IDLEN+2));
-	parse_mentions(content0, mention_ids, 1);
+	parse_mentions(content0, (char **)mention_ids, 1);
 	struct userec *ue;
 	i=0;
 	while(i!=MAX_MENTION_ID && mention_ids[i][0] != 0) {
