@@ -1,6 +1,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <netdb.h>
@@ -13,18 +14,23 @@
 #include <sys/socket.h>
 #include <sys/ioctl.h>
 #include <termios.h>
+#include <time.h>
+#include <arpa/inet.h>
+
 #define stty(fd, data) tcsetattr( fd, TCSANOW, data )
 #define gtty(fd, data) tcgetattr( fd, data )
 struct termios tty_state, tty_new;
 
-get_tty()
+int telnetopt(int fd, char *buf, int max);
+
+int get_tty(void)
 {
 	if (gtty(1, &tty_state) < 0)
 		return 0;
 	return 1;
 }
 
-init_tty()
+void init_tty(void)
 {
 	long vdisable;
 
@@ -42,19 +48,19 @@ init_tty()
 	tcsetattr(1, TCSANOW, &tty_new);
 }
 
-reset_tty()
+void reset_tty(void)
 {
 	stty(1, &tty_state);
 }
 
 static void
-timeout()
+timeout(void )
 {
 	reset_tty();
 	exit(0);
 }
 
-proc(char *server, int port)
+void proc(char *server, int port)
 {
 	int fd;
 	struct sockaddr_in blah;
@@ -219,7 +225,7 @@ telnetopt(int fd, char *buf, int max)
 	return 0;
 }
 
-main(int argn, char *argc[])
+int main(int argn, char *argc[])
 {
 	char remotehost[256] = "localhost";
 	int remoteport = 23;
@@ -232,4 +238,6 @@ main(int argn, char *argc[])
 		remoteport = atoi(argc[2]);
 	proc(remotehost, remoteport);
 	reset_tty();
+
+	return 0;
 }
