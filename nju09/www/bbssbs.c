@@ -37,9 +37,9 @@ bbssbs_main()
 			redirect(buf);
 */
 		}else {
-			printf("<table width=\"100%\" border=0 cellpadding=0 cellspacing=0><tr>\n"
+			printf("<table width=\"100%%\" border=0 cellpadding=0 cellspacing=0><tr>\n"
 				"<td width=40>&nbsp;</td>\n"
-				"<td colspan=2 class=\"level1\"><TABLE width=\"90%\" border=0 cellPadding=2 cellSpacing=0>\n"
+				"<td colspan=2 class=\"level1\"><TABLE width=\"90%%\" border=0 cellPadding=2 cellSpacing=0>\n"
 				"<TBODY>\n");
 			printf("<TR>\n"
 				"<TD class=tdtitle>δ</TD>\n"

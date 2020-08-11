@@ -89,7 +89,7 @@ bbsbfind_main()
 printf("<td>%s", flag_str(x.accessed));
 		printf("<td>%s", userid_str(x.owner));
 		printf("<td>%12.12s", 4 + Ctime(x.filetime));
-		printf("<td><a href=con?B=%s&F=%s&N=%d&T=%d>%40.40s </a>\n", board,
+		printf("<td><a href=con?B=%s&F=%s&N=%d&T=%ld>%40.40s </a>\n", board,
 		       fh2fname(&x), num, feditmark(x), x.title);
 		if (total >= 999)
 			break;

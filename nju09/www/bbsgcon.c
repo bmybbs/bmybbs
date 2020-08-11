@@ -70,7 +70,7 @@ bbsgcon_main()
 	ptr = dirinfo->title;
 	if (!strncmp(ptr, "Re: ", 4))
 		ptr += 4;
-	printf("[<a href='bbstfind?board=%s&th=%d'>同主题阅读</a>]\n",
+	printf("[<a href='bbstfind?board=%s&th=%ld'>同主题阅读</a>]\n",
 	       board, dirinfo->thread);
 	printf("</center></body>\n");
 	http_quit();

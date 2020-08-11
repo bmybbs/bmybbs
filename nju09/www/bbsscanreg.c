@@ -2,17 +2,17 @@
 //int versionsort(const void *a, const void *b);
 #include "bbslib.h"
 
-const static char *field[] =
+static const char *field[] =
     { "usernum", "userid", "realname", "dept", "addr", "phone", "assoc",
 	NULL
 };
-const static char *finfo[] =
+static const char *finfo[] =
     { "帐号位置", "申请帐号", "真实姓名", "学校系级", "目前住址",
 	"连络电话", "毕业学校", NULL
 };
 
 #define NUMREASON 5
-const static char *reason[] =
+static const char *reason[] =
     { "请确实填写真实姓名。", "请填学校科系年级或工作单位。",
 	"请填写完整的住址资料。",
 	"请详细、确实填写注册资料。",

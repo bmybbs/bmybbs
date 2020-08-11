@@ -55,7 +55,7 @@ bbstdoc_main()
 		//printf("<nobr><center>\n");
 // 	lanboy add next line
 		printf("<body topmargin=0 leftmargin=0>\n");
-		printf("<table width=\"100%\" border=0 cellpadding=0 cellspacing=0>\n"
+		printf("<table width=\"100%%\" border=0 cellpadding=0 cellspacing=0>\n"
 				"<form name=form1 action=bbstdoc>");
 // 	lanboy
 		printboardtop(x1, 3);
@@ -91,7 +91,7 @@ bbstdoc_main()
 		printf("</td></tr></table></td></tr></table></td></tr></form></table>\n");
 		printboardhot(x1); //显示版面热门话题
 		printf
-		    ("<table width=\"95%\" cellpadding=2 cellspacing=0 align=\"center\"><tr>\n"
+		    ("<table width=\"95%%\" cellpadding=2 cellspacing=0 align=\"center\"><tr>\n"
 		    		"<td class=tdtitle>序号</td>"
 		    		"<td class=tdtitle>状态</td>"
 		    		"<td class=tduser>作者</td>"
@@ -125,7 +125,7 @@ bbstdoc_main()
 			       userid_str(fh2owner(&data[i])));
 			printf("<td align=center class=tdborder>%6.6s</td>", Ctime(data[i].filetime) + 4); // 日期
 			printf
-			    ("<td class=tdborder><a href=bbstcon?board=%s&start=%d&th=%d %s>○ %s </a></td><td class=tdborder>%s</td>\n",
+			    ("<td class=tdborder><a href=bbstcon?board=%s&start=%d&th=%ld %s>○ %s </a></td><td class=tdborder>%s</td>\n",
 			     board, i, data[i].thread, only_for_b,void1(titlestr(data[i].title)),
 			     stat1(data, i, total));
 			if (sum > start + w_info->t_lines - 2)
@@ -138,7 +138,7 @@ bbstdoc_main()
 	}
 	MMAP_END munmap(data, size);
 	printf("<tr><td height=40 class=\"level1\"><TD class=level1 width=40>&nbsp;</TD>\n"
-		"<table width=\"95%\"  border=0 cellpadding=0 cellspacing=0 class=\"level1\" align=\"center\">\n"
+		"<table width=\"95%%\"  border=0 cellpadding=0 cellspacing=0 class=\"level1\" align=\"center\">\n"
 		"<td><form name=form2 action=bbstdoc>");
 	printf("<tr><td><a href=\"pst?B=%s\" class=btnsubmittheme>我要发表文章</a>\n", board);
 	if (hastmpl > 0)
@@ -163,7 +163,7 @@ bbstdoc_main()
 	printf("</td></tr></form></table>");
 	sprintf(buf, "%s", strtrim(x1->header.keyword));
 	if (strlen(buf)){
-		printf("<table width=\"100%\" cellpadding=2 cellspacing=0><tr><td class=tdtitle align=center>\n");
+		printf("<table width=\"100%%\" cellpadding=2 cellspacing=0><tr><td class=tdtitle align=center>\n");
 		printf("本版关键字: ");
 		printkeywords(buf);
 		printf("</td></tr></table>\n");
@@ -175,7 +175,7 @@ bbstdoc_main()
     	{
     	    	char linebuf[128];
     		fgets(linebuf, 128, fp);
-    		printf("<table width=\"100%\" cellpadding=2 cellspacing=0><tr><td class=tdtitle align=center>\n");
+    		printf("<table width=\"100%%\" cellpadding=2 cellspacing=0><tr><td class=tdtitle align=center>\n");
 		printf("来这个版的朋友也常去这些版面: ");
 		printrelationboards(linebuf);
 		printf("</td></tr></table>\n");

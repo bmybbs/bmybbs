@@ -42,81 +42,6 @@ checkfile(char *fn, int maxsz)
 	return 0;
 }
 
-
-//added by linux@05.9.11
-char *get_login_link ()
-{
-  FILE *fp;
-  char link[256];
-  if (!(fp = fopen (MY_BBS_HOME "/loglink","r")))
-    return "BMYKWDVKPBGPAAXVDSNNLFFOMPPOKRCXYYMQ_B/home?B=XJTUnews";
-  if (!fgets (link,sizeof (link),fp))
-    return "BMYKWDVKPBGPAAXVDSNNLFFOMPPOKRCXYYMQ_B/home?B=XJTUnews";
-  fclose (fp);
-  return link;
-}
-
-//added by linux@05.9.12
-/* 该功能已经3年没有被使用了，注释掉 by IronBlood 2014.10.22
-char *get_login_pic ()
-{
-  FILE *fp;
-  if (!(fp = fopen (MY_BBS_HOME "/logpics","r")))
-    return "cai.jpg";
-  char pics[256];
-  char pics_with_dir[256] = "bmyMainPic/using/";
-  char picnums[8];
-  int c;
-  int i = 0;
-  while ((c = fgetc (fp)) != '\n')
-    {
-      if (c == NULL)
-	return "cai.jpg";
-      if (!isdigit (c))
-	continue;
-      picnums [i] = c;
-      i++;
-    }
-  picnums [i] = '\0';
-  i = atoi (picnums);
-  if (i == 1)
-    {
-      if (!fgets (pics,sizeof (pics),fp))
-	return "cai.jpg";
-      fclose (fp);
-      strcat (pics_with_dir,pics);
-      return pics_with_dir;
-    }
-  else if (i > 1)
-    {
-      srand ((unsigned)time (NULL));
-      int randpic;
-      randpic = rand () % i;
-      if (randpic == 0)
-	{
-	  if (!fgets (pics,sizeof (pics),fp))
-	    return "cai.jpg";
-	  fclose (fp);
-	  strcat (pics_with_dir,pics);
-	  return pics_with_dir;
-	}
-      else
-	{
-	  while (randpic)
-	    {
-	      while (fgetc (fp) != '\n')
-		;
-	      randpic--;
-	    }
-	  if (!fgets (pics,sizeof (pics),fp))
-	    return "cai.jpg";
-	  fclose (fp);
-	  strcat (pics_with_dir,pics);
-	  return pics_with_dir;
-	}
-    }
-}*/
-
 int
 loadoneface()
 {
@@ -187,10 +112,7 @@ void loginwindow()
 	else
 		pface = &(bbsface[n]);
 	html_header(4);
-/* { */ char *login_link;
-	char *login_pic;
-	login_link = get_login_link ();
-	//login_pic = get_login_pic (); /* } added by linux 05.9.11*/
+
 	char *fourpics=get_no_more_than_four_login_pics();
 	printf("<script>function openreg(){open('" SMAGIC
 	     "/bbsreg', 'winREG', 'width=600,height=460,resizable=yes,scrollbars=yes');}\n"
@@ -256,7 +178,7 @@ void loginwindow()
   //"本BBS隶属于：西安交通大学网络中心／中国教育科研网西北中心<br />"
   "开发维护：西安交通大学网络中心  BBS程序组</td></tr>"
 	"</tr>\n"
-"</table>"/*,login_link,login_pic*/);/* modified by linux 05.9.11 */
+"</table>");/* modified by linux 05.9.11 */
 	showannounce();
 	printf("<script>showloginpics(\"%s\")</script>",fourpics);
 	free(fourpics);		// 释放资源 by IronBlood 2014.10.22 其实此处快退出了，会自动释放的 :-)

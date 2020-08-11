@@ -16,8 +16,8 @@ int bbsnotify_main() {
 	// style 就直接写在这里了
 	printf("<style type=\"text/css\">\n"
 			"body { padding: 40px }\n"
-			"div#notify-content { width: 80% }\n"
-			"div#notify-content h1 { width: 100%; border-bottom: 1px #AAAAAA solid; padding-bottom: 12px }\n"
+			"div#notify-content { width: 80%% }\n"
+			"div#notify-content h1 { width: 100%%; border-bottom: 1px #AAAAAA solid; padding-bottom: 12px }\n"
 			"div.notify-item { border-bottom: 1px #AAAAAA solid; padding: 12px 15px; }\n"
 			"div.notify-item a { display: inline-block; margin: 0 5px; }\n"
 			"div.mention-item { background-color: #F8F8F8 }\n"

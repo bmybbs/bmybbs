@@ -153,7 +153,7 @@ bbstcon_main()
 
 //			article_count++;
 
-			printf("<a href=con?B=%s&F=%s&N=%d&T=%d class=linkwhite>本篇全文</a>&nbsp;",
+			printf("<a href=con?B=%s&F=%s&N=%d&T=%ld class=linkwhite>本篇全文</a>&nbsp;",
 			       board, fh2fname(x), num + 1, feditmark(*x));
 			printf("<a href='pst?B=%s&F=%s&num=%d' class=linkwhite>回复本文</a>&nbsp;",
 			       board, fh2fname(x), num);
@@ -262,11 +262,11 @@ fshow_file(FILE * output, char *board, struct fileheader *x, int n)
 	    && (via_proxy || (wwwcache->accel_ip && wwwcache->accel_port))) {
 		if (via_proxy)
 			snprintf(interurl, sizeof (interurl),
-				 "/" SMAGIC "/%s+%d", path,
+				 "/" SMAGIC "/%s+%ld", path,
 				 x->edittime ? (x->edittime - x->filetime) : 0);
 		else
 			snprintf(interurl, sizeof (interurl),
-				 "http://%s:%d/" SMAGIC "/%s+%d",
+				 "http://%s:%d/" SMAGIC "/%s+%ld",
 				 inet_ntoa(wwwcache->accel_addr),
 				 wwwcache->accel_port,
 				 path,
@@ -374,6 +374,8 @@ show_file(char *board, struct fileheader *x, int n)
 	fshow_file(stdout, board, x, n);
 	return 0;
 
+	// unused
+	/*
 	sprintf(filename, "boards/%s/%s", board, fh2fname(x));
 	if (x->edittime == 0) {
 		snprintf(showfile, NAME_MAX, "short:%s", filename);
@@ -422,4 +424,5 @@ show_file(char *board, struct fileheader *x, int n)
 	}
 	MMAP_END munmap(ptr, st.st_size);
 	return 0;
+	*/
 }

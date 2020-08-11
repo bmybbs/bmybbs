@@ -282,7 +282,7 @@ bbsdoc_main()
 	start = getdocstart(total, w_info->t_lines);
 	brc_initial(currentuser.userid, board);
 	printf("<body topmargin=0 leftmargin=0>\n");
-	printf("<table width=\"100%\" border=0 cellpadding=0 cellspacing=0>\n"
+	printf("<table width=\"100%%\" border=0 cellpadding=0 cellspacing=0>\n"
 		"<td><form name=form1 action=bbsdoc>\n");
 	printboardtop(x1, 3);
 //	printf("一般模式 文章数[%d] ", total);
@@ -408,7 +408,7 @@ bbsdoc_main()
 		else
 			printf("<td align=center class=tdborder>%12.12s</td>", Ctime(x.filetime) + 4);
 		x.title[48] = 0;
-		printf("<td class=tdborder ><a href=\"con?B=%s&F=%s&N=%ld&T=%ld\" %s>%s%s</a>%s</td>",
+		printf("<td class=tdborder ><a href=\"con?B=%s&F=%s&N=%d&T=%ld\" %s>%s%s</a>%s</td>",
 		     board, fh2fname(&x), start + i, feditmark(x), only_for_b,strncmp(x.title, "Re: ", 4) ? "○ " : "",
 		     void1(titlestr(x.title)), (x.owner[0] == '-') ? "" : size_str(bytenum(x.sizebyte)));
 		if (x.staravg50) {
@@ -434,7 +434,7 @@ bbsdoc_main()
 */
 //	show_header(board, x1, start, total, w_info->t_lines);
 	printf("<tr><td height=40 class=\"level1\"><TD class=level1 width=40>&nbsp;</TD>\n"
-		"<table width=\"95%\"  border=0 cellpadding=0 cellspacing=0 class=\"level1\" align=\"center\">\n"
+		"<table width=\"95%%\"  border=0 cellpadding=0 cellspacing=0 class=\"level1\" align=\"center\">\n"
 		"<td><form name=form2 action=bbsdoc>\n");
 	printf("<tr><td><a href=\"pst?B=%s\" class=btnsubmittheme>我要发表文章</a>\n", board);
 	if (hastmpl > 0)
@@ -461,7 +461,7 @@ bbsdoc_main()
 	printf("</table></td></tr>");
 	sprintf(buf, "%s", strtrim(x1->header.keyword));
 	if (strlen(buf)){
-		printf("<table width=\"100%\" cellpadding=2 cellspacing=0><tr><td class=tdtitle align=center>\n");
+		printf("<table width=\"100%%\" cellpadding=2 cellspacing=0><tr><td class=tdtitle align=center>\n");
 		printf("本版关键字: ");
 		printkeywords(buf);
 		printf("</td></tr></table>\n");
@@ -473,7 +473,7 @@ bbsdoc_main()
     	{
     	    	char linebuf[128];
     		fgets(linebuf, 128, fp);
-    		printf("<table width=\"100%\" cellpadding=2 cellspacing=0><tr><td class=tdtitle align=center>\n");
+    		printf("<table width=\"100%%\" cellpadding=2 cellspacing=0><tr><td class=tdtitle align=center>\n");
 		printf("来这个版的朋友也常去这些版面: ");
 		printrelationboards(linebuf);
 		printf("</td></tr></table>\n");
@@ -555,7 +555,7 @@ void show_rec() {
     int no=0;
     int i, total;
     fp=fopen(".commend", "r");
-    if(!fp) return 0;
+    if(!fp) return;
     printf("%s", "<table width='100%' style='BORDER: 2px solid; BORDER-COLOR:e8e8e8;'>\n");
     total=file_size(".commend")/sizeof(struct commend);
         for(i=total-1; i>=0; i--) {
@@ -569,7 +569,7 @@ void show_rec() {
 , x.filename, void1(titlestr(x.title)), x.board,x.board);
         }
     printf("</table>\n");
-    printf("<table width='100%'><tr>");
+    printf("<table width='100%%'><tr>");
     printf("<td align=right><a style='color:#208020'href=%sLilyDigest>→兵马俑精华←</a> <a style='color:#208020'href=bbsrec2?top=3>→更多推荐文章(共%d篇)←</a></table>\n", showByDefMode(), total);
     fclose(fp);
 }

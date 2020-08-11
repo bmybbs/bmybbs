@@ -99,7 +99,7 @@ bbslogin_main()
 		     "t=a.indexOf('/" SMAGIC "',1);\n" "t=a.indexOf('/',t+1);\n"
 		     "nu=\"%s\"+a.substring(t+1,l);\n"
 		     "window.opener.location.href=nu;window.close();</script>",
-		     ub, now_t, ub, ub, ub);
+		     ub, now_t, ub, /*ub,*/ ub);
 
 	else
 		redirect(ub);

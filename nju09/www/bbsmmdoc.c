@@ -41,7 +41,7 @@ bbsmmdoc_main()
 	fp = fopen(buf, "r");	
 	start = getdocstart(total, w_info->t_lines);
 	printf("<body topmargin=0 leftmargin=0>\n");
-	printf("<table width=\"100%\" border=0 cellpadding=0 cellspacing=0>\n"
+	printf("<table width=\"100%%\" border=0 cellpadding=0 cellspacing=0>\n"
 		"<td><form name=form1 action=bbsmmdoc>\n");
 	printboardtop(x1, 4);
 
@@ -95,7 +95,7 @@ bbsmmdoc_main()
 	printf("</TR> </TBODY></TABLE></td></tr>\n");
 	printf("<tr><td height=40 class=\"level1\">&nbsp;</td>\n"
 		"<td height=40 class=\"level1\">\n"
-		"<table width=\"95%\" height=\"100%\"  border=0 cellpadding=0 cellspacing=0 class=\"level1\">\n"
+		"<table width=\"95%%\" height=\"100%%\"  border=0 cellpadding=0 cellspacing=0 class=\"level1\">\n"
 		"<td><form name=form2 action=bbsmmdoc>\n");
 	printf("<tr><td><a href=\"pst?B=%s\" class=\"btnsubmittheme\" title=\"发表文章 accesskey: p\" accesskey=\"p\">发表文章</a>\n", board);
 	printf("文章数&lt;%d&gt; 在线&lt;%d&gt;</td>", total, x1->inboard);

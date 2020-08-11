@@ -115,7 +115,7 @@ bbspstmail_main()
 	printf("<body>\n");
 	
 	/* 使用者ID */
-	printf("<div style=\"width: 100%; height: 24px; text-align: center;\" class=\"level2\">\n");
+	printf("<div style=\"width: 100%%; height: 24px; text-align: center;\" class=\"level2\">\n");
 	printf("<p style=\"line-height: 24px;\">%s -- 寄语信鸽 [使用者: %s]</p>\n", BBSNAME, currentuser.userid);
 	printf("</div>\n");
 	

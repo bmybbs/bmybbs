@@ -93,7 +93,7 @@ bbspst_main()
 	changemode(POSTING);
 //	printf("<body><center>\n");
 	printf("<body leftmargin=0 topmargin=0>\n");
-	printf("<table width=\"100%\" border=0 cellpadding=0 cellspacing=0>\n");
+	printf("<table width=\"100%%\" border=0 cellpadding=0 cellspacing=0>\n");
 	printf("%s", "<tr>\n<td height=30 colspan=2>\n"
 		"<table width=\"100%\"  border=0 cellspacing=0 cellpadding=0>\n"
         	"<tr><td width=40><img src=\"/images/spacer.gif\" width=40 height=10 alt=\"\"></td>\n"
@@ -113,13 +113,13 @@ bbspst_main()
 		"<td height=70><table width=\"95%\" height=\"100%\"  border=0 cellpadding=0 cellspacing=0>\n"
 		"<tr>\n");
 	printf("<td valign=bottom>\n"
-		"<table width=\"100%\" border=0 cellpadding=0 cellspacing=0>\n"
+		"<table width=\"100%%\" border=0 cellpadding=0 cellspacing=0>\n"
 		"<tr><td class=F0002><div class=\"menu\">\n"
 		"<DIV class=btncurrent>&lt;%s&gt;</DIV>\n"
 		"<DIV><A class=btnfunc href=\"%s%s\" title=\"返回讨论区 accesskey: b\" accesskey=\"b\">/ 返回讨论区</A></DIV>\n"
 		"<DIV style=\"width:10px\" class=N1001></DIV>\n"
 		"</div></td></tr></table></td></tr>\n", void1(titlestr(x->header.title)), showByDefMode(), board);
-	printf("<tr><td width=\"100%\"><table  border=0 cellspacing=0 cellpadding=0>\n"
+	printf("<tr><td width=\"100%%\"><table  border=0 cellspacing=0 cellpadding=0>\n"
 		"<tr><td> 发文注意事项: <br>\n"
 		"发文时应慎重考虑文章内容是否适合公开场合发表，请勿肆意灌水。谢谢您的合作。 <br>"
 		"本站规定同样内容的文章严禁在 4 个或 4 个以上讨论区内重复发表。违者将被封禁在本站发文的权利。<br>"
@@ -142,7 +142,7 @@ bbspst_main()
 */
 	printf("<tr><td width=40 class=\"level1\"></td>\n"
 		"<td class=\"level1\"><br>\n"
-		"<TABLE width=\"95%\" cellpadding=5 cellspacing=0>\n"
+		"<TABLE width=\"95%%\" cellpadding=5 cellspacing=0>\n"
 		"<TBODY><TR><TD class=tdtitletheme>&nbsp;</TD>\n"
 		"</TR>\n");
 	int hastmpl;
@@ -161,7 +161,7 @@ bbspst_main()
 	printf("<TR><TD class=bordertheme>\n"
 		"<form name=form1 method=post action=bbssnd?board=%s&th=%d%s>\n",
 		board, thread, file[0] ? buf : "");
-	printf("<table width=\"100%\"  border=0 cellspacing=0 cellpadding=0>\n"
+	printf("<table width=\"100%%\"  border=0 cellspacing=0 cellpadding=0>\n"
 		"<tr>\n<td><table border=0 cellpadding=0 cellspacing=0>\n"
 		"<tr><td> 使用标题: </td>\n");
 

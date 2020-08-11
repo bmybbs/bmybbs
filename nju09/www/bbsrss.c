@@ -222,8 +222,7 @@ prt_item(int j, int *rssform, struct fileheader *rssdata, char* board, int nodes
 	rss_chartrans(t, rssdata[j].title);
 	printf("<item>\n");
 	printf("<title> %s </title>\n", t);
-	printf("<link>http://%s/" SMAGIC "/con?B=%s&amp;F=M.%d.A</link>\n", 
-		MY_BBS_DOMAIN, board, rssdata[j].thread);
+	printf("<link>http://" MY_BBS_DOMAIN "/" SMAGIC "/con?B=%s&amp;F=M.%ld.A</link>\n", board, rssdata[j].thread);
 	//printf("<guid isPermaLink=\"true\">http://%s/" SMAGIC "/bbstcon?board=%s&amp;start=%d&amp;th=%d</guid>\n", 
 	//	MY_BBS_DOMAIN, board, rssform[j], rssdata[j].thread);
 	printf("<dc:creator>%s</dc:creator>\n", fh2owner(&rssdata[j]));
