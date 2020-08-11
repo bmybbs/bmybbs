@@ -555,7 +555,7 @@ bbscon_main()
 			"<table width=\"95%%\" height=\"100%%\"  border=0 cellpadding=0 cellspacing=0>\n"
 			"<tr><td colspan=2 valign=bottom>\n"
 			"<table width=\"100%%\" border=0 cellpadding=0 cellspacing=0>\n");
-		nbuf = sprintf(buf, "<tr><td><div class=\"menu\">\n<DIV class=btncurrent>&lt;%s&gt;</DIV>\n", void1((unsigned char *)titlestr(bx->header.title)));
+		nbuf = sprintf(buf, "<tr><td><div class=\"menu\">\n<DIV class=btncurrent>&lt;%s&gt;</DIV>\n", void1(titlestr(bx->header.title)));
 		nbuf += sprintf(buf+nbuf, 
 				"<A href='fwd?B=%s&amp;F=%s' class=btnfunc>/ 转寄</A>\n",
 				board, file);
@@ -591,7 +591,7 @@ bbscon_main()
 		nbuf += sprintf(buf + nbuf,
 			"<a href='pstmail?B=%s&amp;F=%s&amp;num=%d' class=btnfunc title=\"回信给作者 accesskey: m\" accesskey=\"m\">/ 回信给作者</a>\n", board, file, num);
 		nbuf += sprintf(buf + nbuf,
-			"<a href='tfind?B=%s&amp;th=%lu&amp;T=%s' class=btnfunc>/ 同主题列表</a>\n", board, (long)dirinfo->thread, encode_url((unsigned char *)ptr));
+			"<a href='tfind?B=%s&amp;th=%lu&amp;T=%s' class=btnfunc>/ 同主题列表</a>\n", board, (long)dirinfo->thread, encode_url(ptr));
 		nbuf += sprintf(buf + nbuf,
 			"<a href='bbstcon?board=%s&amp;start=%d&amp;th=%lu' class=btnfunc>/ 同主题由此展开</a>\n", board, num, (long)dirinfo->thread);
 		nbuf += sprintf(buf + nbuf,

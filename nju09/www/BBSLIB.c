@@ -2377,7 +2377,7 @@ changemode(int mode)
 }
 
 char *
-encode_url(unsigned char *s)
+encode_url(char *s)
 {
 	int i, j, half = 0;
 	static char buf[512];
@@ -2403,7 +2403,7 @@ encode_url(unsigned char *s)
 }
 
 char *
-noquote_html(unsigned char *s)
+noquote_html(char *s)
 {
 	int i, j;
 	static char buf[512];
@@ -2424,7 +2424,7 @@ noquote_html(unsigned char *s)
 }
 
 char *
-void1(unsigned char *s)
+void1(char *s)
 {
 	int i;
 	int flag = 0;

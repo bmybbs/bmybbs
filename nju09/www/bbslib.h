@@ -163,7 +163,7 @@ extern int badnum;
 
 int loadbad(char *);
 int isbad(char *);
-char *void1(unsigned char *);
+char *void1(char *);
 char *sec(char);
 char *flag_str(int);
 char *flag_str2(int, int);
@@ -200,8 +200,8 @@ void display_attach(FILE * fp, char *currline, char *nowfile);
 extern char mybrd[GOOD_BRC_NUM][80];
 extern int mybrdnum;
 
-extern char *encode_url(unsigned char *);
-extern char *noquote_html(unsigned char *);
+extern char *encode_url(char *);
+extern char *noquote_html(char *);
 extern char *utf8_decode(char *str);
 int initfriends(struct user_info *);
 void newreport(char *board, char *s);
