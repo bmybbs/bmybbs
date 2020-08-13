@@ -9,7 +9,7 @@ static int
 appendonebinaryattach(char *filename, char *attachname, char *attachfname)
 {
 	FILE *fp;
-	int size, origsize;
+	size_t size, origsize;
 	struct mmapfile mf = { ptr:NULL };
 	char ch = 0;
 

@@ -66,7 +66,8 @@ getdes(char *basestr)
 int
 gentree(char *basestr, struct sectree *tree)
 {
-	int i, len;
+	int i;
+	size_t len;
 	struct sectree *subsec;
 	len = strlen(basestr);
 	strsncpy(tree->basestr, basestr, sizeof (tree->basestr));

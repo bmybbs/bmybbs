@@ -43,7 +43,8 @@ getrandomstr(unsigned char *s)
 
 void getrandomstr_r(unsigned char *s, size_t len)
 {
-	int i, fd;
+	int fd;
+	size_t i;
 	fd = open("/dev/urandom", O_RDONLY);
 	read(fd, s, len);
 	close(fd);

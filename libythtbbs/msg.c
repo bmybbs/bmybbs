@@ -90,7 +90,8 @@ translate_msg(char *src, struct msghead *head, char *dest, int add_site)
 {
 	char *time, attstr[STRLEN];
 	char uid[STRLEN];
-	int i, j = 0, len, pos, ret = 0;
+	size_t i, len, pos;
+	int j = 0, ret = 0;
 	time = ctime(&head->time);
 	dest[0] = 0;
 	if (head->mode == 0) {
