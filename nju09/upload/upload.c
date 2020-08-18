@@ -260,7 +260,7 @@ save_attach()
 	
 	if (checkfilename(p0)){
 		printf("<script language=\"JavaScript\">\n"
-                                        " alert(\"文件名中不能包含空格或者下面的非法字符\\r\\n\\/~`!@#$%^&*()|{}[];:\\\"'<>,?\");\n"
+                                        " alert(\"文件名中不能包含空格或者下面的非法字符\\r\\n\\/~`!@#$%%^&*()|{}[];:\\\"'<>,?\");\n"
                                         "</script>\n");
 		http_fatal("无效的文件名");
 	}
