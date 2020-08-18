@@ -213,9 +213,9 @@ printf("<td>%s", flag_str(x.accessed));
 		 }
 	}
 E:
-	if (type == 1)
+	if (type == 1 && fp != NULL)
 		fclose(fp);
-	else if (type == 2 || type == 3 )
+	else if ((type == 2 || type == 3) && fp != NULL)
 		pclose(fp);
 	printf("</table>\n");
 	printf("<br>共找到 %d 篇文章符合条件", total);

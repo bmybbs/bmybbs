@@ -1104,7 +1104,7 @@ addextraparam(char *ub, int size, int n, int param)
 }
 
 void
-extraparam_init(unsigned char *extrastr)
+extraparam_init(char *extrastr)
 {
 	int i;
 	if (*extrastr) {
@@ -1119,7 +1119,7 @@ extraparam_init(unsigned char *extrastr)
 }
 
 int
-user_init(struct userec *x, struct user_info **y, unsigned char *ub)
+user_init(struct userec *x, struct user_info **y, char *ub)
 {
 	struct userec *x2;
 	char sessionid[30];
@@ -1215,7 +1215,7 @@ mail_file(char *filename, char *userid, char *title, char *sender)
 	char buf[256], dir[256];
 	struct fileheader header;
 	int t;
-	if (getuser(userid) <= 0)
+	if (getuser(userid) == NULL)
 		return -1;
 	bzero(&header, sizeof (header));
 	fh_setowner(&header, sender, 0);
@@ -1329,7 +1329,7 @@ post_mail(char *userid, char *title, char *file, char *id,
 	}
 	if (strstr(userid, "@"))
 		return post_imail(userid, title, file, id, nickname, ip, sig);
-	if (getuser(userid) <= 0)
+	if (getuser(userid) == NULL)
 		http_fatal("错误的收信人地址");
 	bzero(&header, sizeof (header));
 	fh_setowner(&header, id, 0);
@@ -1390,7 +1390,7 @@ post_imail(char *userid, char *title, char *file, char *id,
 {
 	FILE *fp1, *fp2;
 	char buf[256], *ptr;
-	unsigned int len;
+	size_t len;
 
 	if (strlen(userid) > 100)
 		http_fatal("错误的收信人地址");
@@ -2201,11 +2201,11 @@ getuser(char *id)
 	int uid;
 	uid = getusernum(id);
 	if (uid < 0)
-		return 0;
+		return NULL;
 	if ((uid + 1) * sizeof (struct userec) > ummap_size)
 		ummap();
 	if (!ummap_ptr)
-		return 0;
+		return NULL;
 	memcpy(&userec1, ummap_ptr + sizeof (struct userec) * uid,
 	       sizeof (userec1));
 	return &userec1;
@@ -2258,7 +2258,7 @@ count_online2()
 }
 
 struct override fff[200];
-int friendnum = 0;
+size_t friendnum = 0;
 int
 loadfriend(char *id)
 {
@@ -2317,13 +2317,13 @@ initfriends(struct user_info *u)
 int
 isfriend(char *id)
 {
-	int n, num;
+	int n;
+	int num;
 	if (!loginok || isguest)
 		return 0;
 	if (u_info->fnum < 40) {
 		for (n = 0; n < u_info->fnum; n++)
-			if (!strcasecmp
-			    (id, shm_ucache->userid[u_info->friend[n] - 1]))
+			if (!strcasecmp(id, shm_ucache->userid[u_info->friend[n] - 1]))
 				return 1;
 		return 0;
 	}
@@ -2331,7 +2331,7 @@ isfriend(char *id)
 		return 0;
 	num++;
 	for (n = 0; n < u_info->fnum; n++)
-		if (num == u_info->friend[n])
+		if ((unsigned int) num == u_info->friend[n])
 			return 1;
 	return 0;
 }
@@ -2430,7 +2430,7 @@ void1(char *s)
 	int flag = 0;
 	for (i = 0; s[i]; i++) {
 		if (flag == 0) {
-			if (s[i] >= 128)
+			if ((unsigned char) s[i] >= 128)
 				flag = 1;
 			continue;
 		}

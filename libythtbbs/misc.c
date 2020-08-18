@@ -313,11 +313,12 @@ getsalt(char salt[3])
 }
 
 int
-badstr(unsigned char *s)
+badstr(char *s)
 {
 	int i;
+	unsigned char *t = (unsigned char *)s;
 	for (i = 0; s[i]; i++)
-		if (s[i] != 9 && (s[i] < 32 || s[i] == 255))
+		if (t[i] != 9 && (t[i] < 32 || t[i] == 255))
 			return 1;
 	return 0;
 }

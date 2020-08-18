@@ -2,7 +2,7 @@
 
 static void show_xbanner(void);
 static void show_xsec(struct sectree *sec);
-static void show_xboards(char *secstr);
+static void show_xboards(const char *secstr);
 static void show_xsec_boards(struct boardmem *(data[]), int total);
 int chm=0;
 
@@ -42,10 +42,11 @@ show_xsec(struct sectree *sec)
 }
 
 static void 
-show_xboards(char *secstr)
+show_xboards(const char *secstr)
 {	
 	struct boardmem *(data[MAXBOARD]), *x;
-	int len, hasintro = 0;
+	int hasintro = 0;
+	size_t len;
 	int i, total = 0;
 	const struct sectree *sec;
 	

@@ -11,7 +11,7 @@ getlastpost(char *board, int *lastpost, int *total)
 		return -1;
 	fstat(fd, &st);
 	atotal = st.st_size / sizeof (fh);
-	if (total <= 0) {
+	if (*total <= 0) {
 		*lastpost = 0;
 		*total = 0;
 		close(fd);

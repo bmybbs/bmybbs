@@ -28,16 +28,11 @@ showheader(char *grp)
 		while (read(fd, &tempslot, sizeof (SLOT)) > 0) {
 			if (!(tempslot.prop & PROP_IS_CANCEL))
 				if (!strcmp(grp, tempslot.fn)) {
-					printf
-					    (" [<a href=bbssechand?grp=%s>%s</a>] ",
-					     tempslot.fn,
-					     void1(titlestr(tempslot.title)));
+					printf(" [<a href=bbssechand?grp=%s>%s</a>] ", tempslot.fn, void1(titlestr(tempslot.title)));
 					valid = 1;
-				} else
-					printf
-					    (" <a href=bbssechand?grp=%s>%s</a> ",
-					     tempslot.fn,
-					     void1(titlestr(tempslot.title)));
+				} else {
+					printf(" <a href=bbssechand?grp=%s>%s</a> ", tempslot.fn, void1(titlestr(tempslot.title)));
+				}
 		}
 		close(fd);
 	}
@@ -50,9 +45,7 @@ showwelcome()
 {
 	showcon("etc/2ndhand_wwwdecl");
 	printf("</center><br><font class=f2>");
-	printf
-	    ("相关版面：<br><li><a href=%ssecondhand>网上练摊版(secondhand)</a><br>"
-	     "<li><a href=%sShopping>购物版(Shopping)</a>", showByDefMode(), showByDefMode());
+	printf("相关版面：<br><li><a href=%ssecondhand>网上练摊版(secondhand)</a><br><li><a href=%sShopping>购物版(Shopping)</a>", showByDefMode(), showByDefMode());
 }
 
 void
@@ -67,29 +60,21 @@ showgroup(char *grp)
 	sprintf(fpath, "2nd/%s/%s", grp, FN_ITEM);
 	if (!file_isdir(grpdir))
 		http_fatal("该组不存在或已被删除");
-	printf("<a href=bbssechand?grp=%s&mode=1&sell=0>我要购买物品</a> ",
-	       grp);
+	printf("<a href=bbssechand?grp=%s&mode=1&sell=0>我要购买物品</a> ", grp);
 	printf("<a href=bbssechand?grp=%s&mode=1&sell=1>我要卖出物品</a>", grp);
 	printhr();
 	fd = open(fpath, O_RDONLY);
 	if (fd > 0) {
-		printf
-		    ("<table><tr><td>序号</td><td>目标</td><td>作者</td><td>日期</td><td>标题</td><td>回信人数</td></tr>");
+		printf("<table><tr><td>序号</td><td>目标</td><td>作者</td><td>日期</td><td>标题</td><td>回信人数</td></tr>");
 		while (read(fd, &tempslot, sizeof (SLOT)) > 0) {
 			if (tempslot.prop & PROP_IS_CANCEL)
 				continue;
 			printf("<tr>");
 			printf("<td>%d</td>", i);
-			printf("<td>%s</td>",
-			       (tempslot.prop & PROP_I_SELL) ?
-			       "<font color=green>转让</font>" :
-			       "<font color=red>求购</font>");
-			printf("<td><a href=bbsqry?userid=%s>%s</a></td>",
-			       tempslot.userid, tempslot.userid);
+			printf("<td>%s</td>", (tempslot.prop & PROP_I_SELL) ?  "<font color=green>转让</font>" : "<font color=red>求购</font>");
+			printf("<td><a href=bbsqry?userid=%s>%s</a></td>", tempslot.userid, tempslot.userid);
 			printf("<td>%s</td>", tempslot.date);
-			printf
-			    ("<td><a href=bbssechand?grp=%s&item=%s>%s</a></td>",
-			     grp, tempslot.fn, void1(titlestr(tempslot.title)));
+			printf("<td><a href=bbssechand?grp=%s&item=%s>%s</a></td>", grp, tempslot.fn, void1(titlestr(tempslot.title)));
 			printf("<td>%d</td>", tempslot.reply);
 			printf("</tr>");
 			i++;
@@ -117,18 +102,11 @@ showitem(char *grp, char *item)
 		while (read(fd, &tempslot, sizeof (SLOT)) > 0) {
 			if (!strcmp(tempslot.fn, item)
 			    && !(tempslot.prop & PROP_IS_CANCEL)) {
-				printf
-				    ("<font size=+1>%s</font><br></center><font style='font-size:14px'>"
-				     "发布时间：%s<br>描述：<br>",
-				     void1(titlestr(tempslot.title)),
-				     ctime(&t));
+				printf("<font size=+1>%s</font><br></center><font style='font-size:14px'>发布时间：%s<br>描述：<br>", void1(titlestr(tempslot.title)), ctime(&t));
 				showcon(fpath);
 				printf("希望价格: %s<br>", tempslot.price);
-				printf
-				    ("<a href=bbssechand?grp=%s&item=%s&mode=3>写信给%s</a><br>",
-				     grp, tempslot.fn, tempslot.userid);
-				printf("其他联络方式: %s<br>",
-				       tempslot.contact);
+				printf("<a href=bbssechand?grp=%s&item=%s&mode=3>写信给%s</a><br>", grp, tempslot.fn, tempslot.userid);
+				printf("其他联络方式: %s<br>", tempslot.contact);
 				while (read(fd, &tempslot, sizeof (SLOT)) > 0) {
 					if (!(tempslot.prop & PROP_IS_CANCEL)) {
 						strcpy(next, tempslot.fn);
@@ -144,47 +122,35 @@ showitem(char *grp, char *item)
 	}
 	printf("<hr>");
 	if (prev[0] != '\0')
-		printf("<a href=bbssechand?grp=%s&item=%s>上一篇</a> ",
-		       grp, prev);
+		printf("<a href=bbssechand?grp=%s&item=%s>上一篇</a> ", grp, prev);
 	printf("<a href=bbssechand?grp=%s>本组所有信息</a> ", grp);
 	if (next[0] != '\0')
-		printf("<a href=bbssechand?grp=%s&item=%s>下一篇</a> ",
-		       grp, next);
+		printf("<a href=bbssechand?grp=%s&item=%s>下一篇</a> ", grp, next);
 }
 
 void
 postnewslot(char *grp)
 {
-	printf("%s -- 二手市场 [使用者: %s]<hr>\n", BBSNAME,
-	       currentuser.userid);
+	printf("%s -- 二手市场 [使用者: %s]<hr>\n", BBSNAME, currentuser.userid);
 	printf("<table border=1>\n");
 	printf("<tr><td>");
 	printf("<font color=green>发文注意事项: <br>\n");
-	printf
-	    ("发文时应慎重考虑文章内容是否适合公开场合发表，请勿肆意灌水。谢谢您的合作。<br>"
+	printf("发文时应慎重考虑文章内容是否适合公开场合发表，请勿肆意灌水。谢谢您的合作。<br>"
 	     "在此发表的广告同时会张贴到Secondhand版版面，所以不必重复发文。\n</font>");
-	printf
-	    ("<tr><td><form name=form1 method=post action=bbssechand?grp=%s&mode=2>\n",
-	     grp);
+	printf("<tr><td><form name=form1 method=post action=bbssechand?grp=%s&mode=2>\n", grp);
 	printf("使用标题: <input type=text name=title size=30 maxlength=30>");
 	printf(" 作者：%s", currentuser.userid);
-	printf
-	    ("<br>您所希望的价格：<input type=text name=price size=10 maxlength=10>");
-	printf
-	    (" 除回信外其他联络方式：<input type=text name=contact size=20 maxlength=20>");
+	printf("<br>您所希望的价格：<input type=text name=price size=10 maxlength=10>");
+	printf(" 除回信外其他联络方式：<input type=text name=contact size=20 maxlength=20>");
 	if (atoi(getparm("sell")) == 0) {
-		printf("<input type=radio name=sell value=0 checked>买 "
-		       "<input type=radio name=sell value=1>卖");
+		printf("<input type=radio name=sell value=0 checked>买 <input type=radio name=sell value=1>卖");
 	} else {
-		printf("<input type=radio name=sell value=0>买 "
-		       "<input type=radio name=sell value=1 checked>卖");
+		printf("<input type=radio name=sell value=0>买 <input type=radio name=sell value=1 checked>卖");
 	}
-	printf
-	    ("<br>\n<textarea  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.form1.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.form1.submit()' name=text rows=20 cols=76 wrap=physical class=f2>\n\n");
+	printf("<br>\n<textarea  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.form1.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.form1.submit()' name=text rows=20 cols=76 wrap=physical class=f2>\n\n");
 	printf("</textarea>\n");
 	printf("<tr><td>");
-	printf
-	    ("<tr><td class=post align=center><input type=submit value=发表> ");
+	printf("<tr><td class=post align=center><input type=submit value=发表> ");
 	printf("<input type=reset value=清除></form>\n");
 	printf("</table>");
 }
@@ -195,7 +161,8 @@ savenewslot(char *grp)
 
 	FILE *fp, *fp2;
 	char filename[80], title[30], buf[256], buf3[1024], *content;
-	int i, sell, fd;
+	size_t i;
+	int sell, fd;
 	struct SLOT tosave;
 	time_t t = 0;		//to make gcc happy,let t has a initial value.
 	bzero(&tosave, sizeof (tosave));
@@ -230,25 +197,19 @@ savenewslot(char *grp)
 	strsncpy(tosave.title, title, 30);
 	fp = fopen(buf3, "w");
 	fp2 = fopen(filename, "r");
-	fprintf(fp,
-		"%s(%s), 发布信息时ip: \033[35m%s\033[m\n\n",
-		currentuser.userid, currentuser.username, fromhost);
+	fprintf(fp, "%s(%s), 发布信息时ip: \033[35m%s\033[m\n\n", currentuser.userid, currentuser.username, fromhost);
 	if (fp2 != 0) {
 		while (1) {
-			if (fgets(buf3, 1000, fp2) <= 0)
+			if (fgets(buf3, 1000, fp2) == NULL)
 				break;
 			fprintf2(fp, buf3);
 		}
 		fclose(fp2);
 	}
 	fclose(fp);
-	sprintf(buf3,
-		"\n希望价格: %s\n联系方式: %s\n(本文为 WWW 二手市场广告的复本)",
-		tosave.price, tosave.contact);
+	sprintf(buf3, "\n希望价格: %s\n联系方式: %s\n(本文为 WWW 二手市场广告的复本)", tosave.price, tosave.contact);
 	f_append(filename, buf3);
-	post_article("SecondHand", title, filename, currentuser.userid,
-		     currentuser.username, fromhost, 0, 0, 0,
-		     currentuser.userid, -1);
+	post_article("SecondHand", title, filename, currentuser.userid, currentuser.username, fromhost, 0, 0, 0, currentuser.userid, -1);
 	unlink(filename);
 	tosave.chrono = t;
 	sprintf(tosave.fn, "M.%ld.A", t);
@@ -310,23 +271,16 @@ replymail(char *grp, char *item)
 	if (found) {
 		printf("<hr>");
 		printf("<center>\n");
-		printf("%s -- 寄语信鸽 [使用者: %s]<hr>\n", BBSNAME,
-		       currentuser.userid);
+		printf("%s -- 寄语信鸽 [使用者: %s]<hr>\n", BBSNAME, currentuser.userid);
 		printf("<table border=1><tr><td>\n");
-		printf("<form name=form1 method=post action=bbssndmail?userid=%s>\n",
-		       userid);
-		printf
-		    ("信件标题: <input type=text name=title size=40 maxlength=100 value='%s'> ",
-		     (noquote_html(title)));
+		printf("<form name=form1 method=post action=bbssndmail?userid=%s>\n", userid);
+		printf("信件标题: <input type=text name=title size=40 maxlength=100 value='%s'> ", (noquote_html(title)));
 		printf("发信人: &nbsp;%s<br>\n", currentuser.userid);
-		printf
-		    ("收信人: &nbsp;&nbsp;<input type=text name=userid value='%s'> ",
-		     nohtml(userid));
+		printf("收信人: &nbsp;&nbsp;<input type=text name=userid value='%s'> ", nohtml(userid));
 		printselsignature();
 		printf(" 备份<input type=checkbox name=backup>\n");
 		printf("<br>\n");
-		printf
-		    ("<textarea  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.form1.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.form1.submit()' name=text rows=20 cols=80 wrap=physical>\n\n");
+		printf("<textarea  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.form1.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.form1.submit()' name=text rows=20 cols=80 wrap=physical>\n\n");
 		{
 			int lines = 0, i;
 			FILE *fp;
@@ -358,8 +312,7 @@ replymail(char *grp, char *item)
 				fclose(fp);
 			}
 			printf("</textarea><br><div align=center>\n");
-			printf
-			    ("<tr><td align=center><input type=submit value=发送> ");
+			printf("<tr><td align=center><input type=submit value=发送> ");
 			printf("<input type=reset value=清除></form>\n");
 			printf("</div></table>");
 		}
@@ -381,9 +334,7 @@ bbssechand_main()
 	strncpy(curr_item, getparm("item"), 15);
 	mode = atoi(getparm("mode"));
 	printf("<body><center>");
-	if (strstr(curr_item, ".GRP") || strstr(curr_item, ".ITEM")
-	    || strstr(curr_item, "..") || strstr(curr_item, "SYSHome")
-	    || strstr(curr_grp, "..") || strstr(curr_grp, "SYSHome"))
+	if (strstr(curr_item, ".GRP") || strstr(curr_item, ".ITEM") || strstr(curr_item, "..") || strstr(curr_item, "SYSHome") || strstr(curr_grp, "..") || strstr(curr_grp, "SYSHome"))
 		http_fatal("错误的参数");
 	valid_grp = showheader(curr_grp);
 	if (mode && valid_grp) {

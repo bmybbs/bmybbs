@@ -7,6 +7,7 @@ bbsnot_main()
 	char buf[512], board[80], filename[128], notestr[STRLEN];
 	struct boardmem *x;
 	int mode;
+	size_t i;
 	
 	html_header(1);
 	check_msg();
@@ -48,7 +49,6 @@ bbsnot_main()
 		if (fgets(buf, 512, fp) == 0)
 			break;
 		while (1) {
-			int i;
 			s = strstr(buf, "$userid");
 			if (s == 0)
 				break;

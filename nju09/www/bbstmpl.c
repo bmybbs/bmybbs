@@ -87,10 +87,10 @@ tmpl_post(int ent, char *nboard){
 	printf("<hr>\n");
 	printf("<form action=bbstmpl?action=send&board=%s&num=%d method=post>\n", nboard, ent);
 	for(i=0; i< ptemplate[ent].tmpl->content_num; i++){
-		printf("问题: %s      (答案最大长度:    %d)<br>\n",
+		printf("问题: %s      (答案最大长度:    %ld)<br>\n",
 			ptemplate[ent].cont[i].text, ptemplate[ent].cont[i].length);
 		if (ptemplate[ent].cont[i].length < 80)
-			printf("<input type=text name=text%d size=%d maxlength=%d><br><br><br>\n",
+			printf("<input type=text name=text%d size=%ld maxlength=%ld><br><br><br>\n",
 			i, ptemplate[ent].cont[i].length, ptemplate[ent].cont[i].length);
 		else
 			printf("<textarea name=text%d rows=5 cols=80 wrap=virtual></textarea><br><br><br>\n", i);

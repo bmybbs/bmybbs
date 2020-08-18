@@ -25,7 +25,7 @@ bbsvote_main()
 	int num_voted;		//???????卸?????投??票
 	int num_of_vote;	//?????强?????投票??
 	int votenum;		//???????没?选?????械诩???投票
-	int votevalue = 0;
+	unsigned int votevalue = 0;
 	int procvote;
 	time_t closedate;
 	struct stat st;
@@ -39,9 +39,7 @@ bbsvote_main()
 	procvote = atoi(getparm("procvote"));
 	if (getboard(board) == NULL)
 		http_fatal("错误的版面!");
-	printf
-	    ("<body><center><a href=%s%s><h2>%s讨论区</h2></a></center>", showByDefMode(),
-	     board, board);
+	printf("<body><center><a href=%s%s><h2>%s讨论区</h2></a></center>", showByDefMode(), board, board);
 	if (!loginok || isguest) {
 		printf("<script src=/function.js></script>\n");
 		printf("抱歉，请先登录!!<br><br>");
@@ -56,9 +54,7 @@ bbsvote_main()
 		http_fatal("对不起，您没有投票权");
 	if (votenum == 0) {
 		sprintf(controlfile, "vote/%s/%s", board, "control");
-		num_of_vote =
-		    (stat(controlfile, &st) ==
-		     -1) ? 0 : st.st_size / sizeof (struct votebal);
+		num_of_vote = (stat(controlfile, &st) == -1) ? 0 : st.st_size / sizeof (struct votebal);
 		if (num_of_vote == 0)
 			http_fatal("抱歉, 目前没有任何投票举行");
 		fp = fopen(controlfile, "r");
@@ -73,20 +69,14 @@ bbsvote_main()
 		printf("</tr>");
 		for (i = 1; i <= num_of_vote; i++) {
 			fread(&ent, sizeof (struct votebal), 1, fp);
-			sprintf(flagname, "vote/%s/flag.%d", board,
-				(int) ent.opendate);
-			num_voted =
-			    (stat(flagname, &st) ==
-			     -1) ? 0 : st.st_size / sizeof (struct ballot);
+			sprintf(flagname, "vote/%s/flag.%d", board, (int) ent.opendate);
+			num_voted = (stat(flagname, &st) == -1) ? 0 : st.st_size / sizeof (struct ballot);
 			date = ctime(&ent.opendate) + 4;
 			printf("<tr>");
 			printf("<td>%d</td>", i);
-			printf("<td><a href=bbsqry?userid=%s>%s</a></td>",
-			       ent.userid, ent.userid);
+			printf("<td><a href=bbsqry?userid=%s>%s</a></td>", ent.userid, ent.userid);
 			printf("<td>%.24s</td>", date);
-			printf
-			    ("<td><a href=bbsvote?board=%s&votenum=%d>%s<a></td>",
-			     board, i, ent.title);
+			printf("<td><a href=bbsvote?board=%s&votenum=%d>%s<a></td>", board, i, ent.title);
 			printf("<td>%s</td>", vote_type[ent.type - 1]);
 			printf("<td>%d</td>", ent.maxdays);
 			printf("<td>%d</td>", num_voted);
@@ -97,9 +87,7 @@ bbsvote_main()
 		printf("<p><a href=javascript:history.go(-1)>返回上一页</a>");
 	} else {
 		sprintf(controlfile, "vote/%s/%s", board, "control");
-		num_of_vote =
-		    (stat(controlfile, &st) ==
-		     -1) ? 0 : st.st_size / sizeof (struct votebal);
+		num_of_vote = (stat(controlfile, &st) == -1) ? 0 : st.st_size / sizeof (struct votebal);
 		if (num_of_vote == 0)
 			http_fatal("抱歉, 目前没有任何投票举行");
 		if (votenum > num_of_vote)
@@ -120,19 +108,15 @@ bbsvote_main()
 			}
 		}
 		//end
-		sprintf(flagname, "vote/%s/flag.%d", board,
-			(int) currvote.opendate);
-		num_voted =
-		    (stat(flagname, &st) ==
-		     -1) ? 0 : st.st_size / sizeof (struct ballot);
+		sprintf(flagname, "vote/%s/flag.%d", board, (int) currvote.opendate);
+		num_voted = (stat(flagname, &st) == -1) ? 0 : st.st_size / sizeof (struct ballot);
 		pos = 0;
 		fp = fopen(flagname, "r");
 		voted_flag = NA;
 		if (fp) {
 			for (i = 1; i <= num_voted; i++) {
 				fread(&uservote, sizeof (struct ballot), 1, fp);
-				if (!strcasecmp
-				    (uservote.uid, currentuser.userid)) {
+				if (!strcasecmp(uservote.uid, currentuser.userid)) {
 					voted_flag = YEA;
 					pos = i;
 					break;
@@ -144,20 +128,15 @@ bbsvote_main()
 			(void) memset(&uservote, 0, sizeof (uservote));
 		if (procvote == 0) {
 			date = ctime(&currvote.opendate) + 4;
-			closedate =
-			    currvote.opendate + currvote.maxdays * 86400;
+			closedate = currvote.opendate + currvote.maxdays * 86400;
 			printf("投票主题是 %s<br>", currvote.title);
-			printf("投票类型是 %s<br>",
-			       vote_type[currvote.type - 1]);
+			printf("投票类型是 %s<br>", vote_type[currvote.type - 1]);
 			printf("投票将于 %s 结束<br>", ctime(&closedate));
-			printf("投票人ID将%s<br>",
-			       (currvote.flag & VOTE_FLAG_OPENED) ? "公开" :
-			       "不公开");
+			printf("投票人ID将%s<br>", (currvote.flag & VOTE_FLAG_OPENED) ? "公开" : "不公开");
 			if (currvote.type != VOTE_ASKING)
 				printf("您可以投%d票<br>", currvote.maxtkt);
 			printf("<hr>投票说明:<br>");
-			sprintf(buf, "vote/%s/desc.%d", board,
-				(int) currvote.opendate);
+			sprintf(buf, "vote/%s/desc.%d", board, (int) currvote.opendate);
 			fp = fopen(buf, "r");
 			if (fp == 0)
 				http_fatal("投票说明丢失");
@@ -168,94 +147,49 @@ bbsvote_main()
 			}
 			fclose(fp);
 			printf("<hr><form name=voteform method=post>");
-			if ((currvote.type != VOTE_ASKING)
-			    && (currvote.type != VOTE_VALUE))
-				multiroll =
-				    (num_voted + now_t) % currvote.totalitems;
+			if ((currvote.type != VOTE_ASKING) && (currvote.type != VOTE_VALUE))
+				multiroll = (num_voted + now_t) % currvote.totalitems;
 			switch (currvote.type) {
 			case VOTE_SINGLE:
-				j =
-				    (uservote.voted >> multiroll) +
-				    (uservote.voted << (currvote.totalitems -
-							multiroll));
+				j = (uservote.voted >> multiroll) + (uservote.voted << (currvote.totalitems - multiroll));
 				for (i = 0; i < currvote.totalitems; i++) {
-					printf
-					    ("<input type=radio name=votesingle value=%d %s>%s<br>",
-					     (i +
-					      multiroll) % currvote.totalitems +
-					     1, (j & 1) ? "checked" : "",
-					     currvote.items[(i + multiroll) %
-							    currvote.totalitems]);
+					printf("<input type=radio name=votesingle value=%d %s>%s<br>", (i + multiroll) % currvote.totalitems + 1, (j & 1) ? "checked" : "", currvote.items[(i + multiroll) % currvote.totalitems]);
 					j >>= 1;
 				}
 				printf
 				    ("<input type=hidden name=procvote value=2>");
 				break;
 			case VOTE_MULTI:
-				j =
-				    (uservote.voted >> multiroll) +
-				    (uservote.voted << (currvote.totalitems -
-							multiroll));
+				j = (uservote.voted >> multiroll) + (uservote.voted << (currvote.totalitems - multiroll));
 				for (i = 0; i < currvote.totalitems; i++) {
-					printf
-					    ("<input type=checkbox name=votemulti%d value=%d %s>%s<br>",
-					     (i +
-					      multiroll) % currvote.totalitems +
-					     1, 1, (j & 1) ? "checked" : "",
-					     currvote.items[(i + multiroll) %
-							    currvote.totalitems]);
+					printf("<input type=checkbox name=votemulti%d value=%d %s>%s<br>", (i + multiroll) % currvote.totalitems + 1, 1, (j & 1) ? "checked" : "", currvote.items[(i + multiroll) % currvote.totalitems]);
 					j >>= 1;
 				}
-				printf
-				    ("<input type=hidden name=procvote value=3>");
+				printf("<input type=hidden name=procvote value=3>");
 				break;
 			case VOTE_SMULTI:
-				j =
-				    (uservote.voted >> multiroll) +
-				    (uservote.voted << (currvote.totalitems -
-							multiroll));
+				j = (uservote.voted >> multiroll) + (uservote.voted << (currvote.totalitems - multiroll));
 				for (i = 0; i < currvote.totalitems; i++) {
-					printf
-					    ("<input type=checkbox name=votemulti%d value=%d %s>%s<br>",
-					     (i +
-					      multiroll) % currvote.totalitems +
-					     1, 1, (j & 1) ? "checked" : "",
-					     currvote.items[(i + multiroll) %
-							    currvote.totalitems]);
+					printf("<input type=checkbox name=votemulti%d value=%d %s>%s<br>", (i + multiroll) % currvote.totalitems + 1, 1, (j & 1) ? "checked" : "", currvote.items[(i + multiroll) % currvote.totalitems]);
 					j >>= 1;
 				}
-				printf
-				    ("<input type=hidden name=procvote value=6>");
+				printf ("<input type=hidden name=procvote value=6>");
 				break;
 			case VOTE_YN:
-				j =
-				    (uservote.voted >> multiroll) +
-				    (uservote.voted << (currvote.totalitems -
-							multiroll));
+				j = (uservote.voted >> multiroll) + (uservote.voted << (currvote.totalitems - multiroll));
 				for (i = 0; i < currvote.totalitems; i++) {
-					printf
-					    ("<input type=radio name=voteyn value=%d %s>%s<br>",
-					     (i +
-					      multiroll) % currvote.totalitems +
-					     1, (j & 1) ? "checked" : "",
-					     currvote.items[(i + multiroll) %
-							    currvote.totalitems]);
+					printf("<input type=radio name=voteyn value=%d %s>%s<br>", (i + multiroll) % currvote.totalitems + 1, (j & 1) ? "checked" : "", currvote.items[(i + multiroll) % currvote.totalitems]);
 					j >>= 1;
 				}
-				printf
-				    ("<input type=hidden name=procvote value=1>");
+				printf ("<input type=hidden name=procvote value=1>");
 				break;
 			case VOTE_VALUE:
 				printf("请输入一个值");
-				printf
-				    ("<input type=<input type=text name=votevalue	value=%d><br>",
-				     uservote.voted);
-				printf
-				    ("<input type=hidden name=procvote value=4>");
+				printf("<input type=<input type=text name=votevalue value=%d><br>", uservote.voted);
+				printf("<input type=hidden name=procvote value=4>");
 				break;
 			case VOTE_ASKING:
-				printf
-				    ("<input type=hidden name=procvote value=5>");
+				printf("<input type=hidden name=procvote value=5>");
 				break;
 			default:
 				http_fatal("没有这种类型的投票囧");
@@ -267,8 +201,7 @@ bbsvote_main()
 			printf("%s\n", nohtml(void1(uservote.msg[2])));
 			printf("</textarea><br>");
 			printf("<input type=submit name=Submit value=投下去>");
-			printf
-			    ("<input type=reset name=Submit2 value=我再改改>");
+			printf("<input type=reset name=Submit2 value=我再改改>");
 			printf("</form>");
 		} else {
 			if (procvote != currvote.type)
@@ -277,8 +210,7 @@ bbsvote_main()
 			case 2:	//VOTE_SINGLE
 				votevalue = 1;
 				votevalue <<= atoi(getparm("votesingle")) - 1;
-				if (atoi(getparm("votesingle")) >
-				    currvote.totalitems + 1)
+				if (atoi(getparm("votesingle")) > currvote.totalitems + 1)
 					http_fatal("参数错误");
 				aborted = (votevalue == uservote.voted);
 				break;
@@ -293,9 +225,7 @@ bbsvote_main()
 				}
 				aborted = (votevalue == uservote.voted);
 				if (j > currvote.maxtkt) {
-					sprintf(buf,
-						"您最多只能投%d票",
-						currvote.maxtkt);
+					sprintf(buf, "您最多只能投%d票", currvote.maxtkt);
 					http_fatal(buf);
 				}
 				break;
@@ -310,45 +240,35 @@ bbsvote_main()
 				}
 				aborted = (votevalue == uservote.voted);
 				if (j != currvote.maxtkt) {
-					sprintf(buf,
-						"您必须投%d票",
-						currvote.maxtkt);
+					sprintf(buf, "您必须投%d票", currvote.maxtkt);
 					http_fatal(buf);
 				}
 				break;
 			case 1:	//VOTE_YN
 				votevalue = 1;
 				votevalue <<= atoi(getparm("voteyn")) - 1;
-				if (atoi(getparm("voteyn")) >
-				    currvote.totalitems + 1)
+				if (atoi(getparm("voteyn")) > currvote.totalitems + 1)
 					http_fatal("参数错误");
 				aborted = (votevalue == uservote.voted);
 				break;
 			case 4:	//VOTE_VALUE
-				aborted =
-				    ((votevalue = atoi(getparm("votevalue"))) ==
-				     uservote.voted);
+				aborted = ((votevalue = atoi(getparm("votevalue"))) == uservote.voted);
 				if (votevalue > currvote.maxtkt) {
-					sprintf(buf, "最大值不能超过%d",
-						currvote.maxtkt);
+					sprintf(buf, "最大值不能超过%d", currvote.maxtkt);
 					http_fatal(buf);
 				}
 				break;
 				//              case 5: //VOTE_ASKING
 			}
 			if (aborted == YEA) {
-				printf("保留【%s】原来的投票。<p>",
-				       currvote.title);
+				printf("保留【%s】原来的投票。<p>", currvote.title);
 			} else {
 				fp = fopen(flagname, "r+");
 				if (fp == 0)
 					fp = fopen(flagname, "w+");
 				flock(fileno(fp), LOCK_EX);
 				if (pos > 0)
-					fseek(fp,
-					      (pos -
-					       1) * sizeof (struct ballot),
-					      SEEK_SET);
+					fseek(fp, (pos - 1) * sizeof (struct ballot), SEEK_SET);
 				else
 					fseek(fp, 0, SEEK_END);
 				strncpy(uservote.uid, currentuser.userid, IDLEN);
@@ -368,8 +288,7 @@ bbsvote_main()
 						break;
 					tmp2 = tmp1 + 1;
 				}
-				fwrite(&uservote, sizeof (struct ballot), 1,
-				       fp);
+				fwrite(&uservote, sizeof (struct ballot), 1, fp);
 				flock(fileno(fp), LOCK_UN);
 				fclose(fp);
 				if (currvote.flag & VOTE_FLAG_OPENED) {
@@ -377,21 +296,16 @@ bbsvote_main()
 					strcpy(log.ip, currentuser.lasthost);
 					log.votetime = now_t;
 					log.voted = uservote.voted;
-					sprintf(logname, "vote/%s/newlog.%d",
-						board, (int) currvote.opendate);
+					sprintf(logname, "vote/%s/newlog.%d", board, (int) currvote.opendate);
 					fp = fopen(logname, "a+");
 					flock(fileno(fp), LOCK_EX);
-					fwrite(&log, sizeof (struct votelog), 1,
-					       fp);
+					fwrite(&log, sizeof (struct votelog), 1, fp);
 					flock(fileno(fp), LOCK_UN);
 					fclose(fp);
 				}
 				printf("<p>已经帮您投入投票箱中...</p>");
 				if (!strcmp(board, "SM_Election")) {
-					sprintf(buf, "%s %s %s",
-						currentuser.userid,
-						currentuser.lasthost,
-						Ctime(now_t));
+					sprintf(buf, "%s %s %s", currentuser.userid, currentuser.lasthost, Ctime(now_t));
 					addtofile(MY_BBS_HOME "/vote.log", buf);
 				}
 			}

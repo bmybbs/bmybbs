@@ -373,7 +373,7 @@ showtop10(int nodes)
 		if (start < 0)
 			start = - (start + 1);			
 
-		int j;
+		size_t j;
 		for (j = start; j < nr; j++) 
 		{
 			if (!strncmp(x[j].title, title[i], 80))

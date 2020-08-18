@@ -18,7 +18,7 @@ bbssbs_main()
 		for (i = 0; i < shm_bcache->number && total < MAXBOARD ; i++){
 			if (shm_bcache->bcache[i].header.filename[0] == '\0')
 				continue;
-			if (has_read_perm_x(&currentuser, &(shm_bcache->bcache[i].header))) {
+			if (has_read_perm_x(&currentuser, &shm_bcache->bcache[i])) {
 				if (strcasestr(shm_bcache->bcache[i].header.filename, keyword) 
 				 || strcasestr(shm_bcache->bcache[i].header.keyword, keyword) 
 				 || strcasestr(shm_bcache->bcache[i].header.title, keyword) ){

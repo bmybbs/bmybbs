@@ -5,7 +5,8 @@ bbssndmail_main()
 {
 	char mymaildir[80], userid[80], filename[80], title[80], title2[80],
 	    *content;
-	int i, sig, backup, allfriend, mark = 0;
+	int sig, backup, allfriend, mark = 0;
+	size_t i;
 	struct userec *u;
 	html_header(1);
 	strsncpy(userid, getparm("userid"), 40);

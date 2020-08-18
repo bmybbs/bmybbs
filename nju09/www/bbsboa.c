@@ -11,9 +11,9 @@ void show_area_top(char c);
 void show_banner();
 int show_commend();
 int show_content();
-void show_sec(struct sectree *sec);
+void show_sec(const struct sectree *sec);
 void show_sec_by_name(char secid);
-void show_boards(char* secstr);
+void show_boards(const char* secstr);
 void show_sec_boards(struct boardmem *(data[]), int total);
 void show_top10();
 void show_right_click_header(int i);
@@ -778,7 +778,7 @@ int show_content()
 {	//add by mintbaggio 040517 for new www
 	FILE* fp, *secorderfile;
 	char buf[512], str[1], buf1[512], buf2[512], secorder[16];
-	int sec_index;
+	size_t sec_index, sec_length;
 	struct sectree * psec;
 	const char * secorderfilepath = BBSHOME "/etc/secorder";
 
@@ -833,7 +833,7 @@ int show_content()
 		strcpy(secorder,"0123456789GNHAC"); // 如果站长没有配置，那就按照老版本的来
 	}
 
-	for(sec_index=0;sec_index!=strlen(secorder);++sec_index){
+	for(sec_index=0, sec_length = strlen(secorder); sec_index!=sec_length; ++sec_index){
 		show_sec_by_name(secorder[sec_index]);
 	}
 
@@ -1097,7 +1097,7 @@ fail_out:
 }*/
 
 void show_sec_by_name(char secid){
-	struct sectree *sec;
+	const struct sectree *sec;
 	char str_secid[2];
 	sprintf(str_secid, "%c", secid);
 	sec = getsectree(str_secid);
@@ -1110,7 +1110,7 @@ void show_sec_by_name(char secid){
 	printf("</td></tr>\n");
 }
 
-void show_sec(struct sectree *sec)
+void show_sec(const struct sectree *sec)
 {	//add by mintbaggio 040517 for new www
 	int i;
 	for (i = 0; i < sec->nsubsec; i++) {
@@ -1143,15 +1143,14 @@ void show_sec(struct sectree *sec)
 	
 }
 */
-void show_boards(char *secstr)
+void show_boards(const char *secstr)
 {	//add by mintbaggio 040518 for new www
 	struct boardmem *(data[MAXBOARD]), *x;
-	int len, hasintro = 0;
+	int hasintro = 0;
 	int i, total = 0;
 	const struct sectree *sec;
 	
 	sec = getsectree(secstr);
-	len = strlen(secstr);
 	if (sec->introstr[0])
 		hasintro = 1;
 	for (i = 0; i < MAXBOARD && i < shm_bcache->number; i++) {

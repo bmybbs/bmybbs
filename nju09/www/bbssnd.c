@@ -22,8 +22,9 @@ bbssnd_main()
 {
 	char filename[80], dir[80], board[80], title[80], buf[256], userid[20] ,*content,
 	    *ref, *content0;
-	int r, i, sig, mark = 0, outgoing, anony, guestre = 0, usemath, nore, mailback;
+	int r, sig, mark = 0, outgoing, anony, guestre = 0, usemath, nore, mailback;
 	int is1984, to1984 = 0;
+	size_t i;
 	struct boardmem *brd;
 	struct fileheader *x = NULL;
 	int thread = -1;

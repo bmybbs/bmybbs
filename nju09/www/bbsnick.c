@@ -4,7 +4,8 @@ int
 bbsnick_main()
 {	//modify by mintbaggio 20040829 for new www
 	int i;
-	unsigned char nick[80];
+	char nick[80];
+	unsigned c;
 	html_header(1);
 	check_msg();
 	//printf("<body>");
@@ -29,8 +30,8 @@ bbsnick_main()
 		printf("</form></td></tr></table></td></tr></table></body></html>");
 		http_quit();
 	}
-	for (i = 0; nick[i]; i++)
-		if (nick[i] < 32 || nick[i] == 255)
+	for (i = 0, c = (unsigned char) nick[i]; nick[i]; i++)
+		if (c < 32 || c == 255)
 			nick[i] = ' ';
 	strsncpy(u_info->username, nick, 32);
 	printf("临时变更昵称成功");

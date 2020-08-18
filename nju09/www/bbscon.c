@@ -5,14 +5,21 @@ int
 showbinaryattach(char *filename)
 {
 	char *attachname;
-	int pos;
+	int pos_i;
+	size_t pos;
 	unsigned int size;
 	struct mmapfile mf = { ptr:NULL };
 //      no_outcache();
 	if (cache_header(file_time(filename), 86400))
 		return 0;
 	attachname = getparm("attachname");
-	pos = atoi(getparm("attachpos"));
+	pos_i = atoi(getparm("attachpos"));
+	if (pos_i < 0) {
+		http_fatal("无法打开附件");
+		return -1;
+	}
+
+	pos = pos_i;
 	MMAP_TRY {
 		if (mmapfile(filename, &mf) < 0) {
 			MMAP_UNTRY;

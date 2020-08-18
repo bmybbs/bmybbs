@@ -20,7 +20,7 @@ struct secmanager {
 };
 
 extern const struct sectree sectree;
-const struct sectree *getsectree(char *str);
+const struct sectree *getsectree(const char *str);
 int gensecm(const char *txtfile);
 struct secmanager *getsecm(const char *str);
 int issecm(const char *str, const char *userid);

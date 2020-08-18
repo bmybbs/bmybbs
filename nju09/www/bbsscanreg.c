@@ -45,7 +45,7 @@ static void
 scanreg_info()
 {
 	int i, n;
-	char buf[256];
+	char buf[320];
 	struct dirent **namelist;
 	n = countnumforms("new_register");
 	printf("Total number of forms: %d<br>", n);
@@ -61,8 +61,7 @@ scanreg_info()
 	}
 	while (i--) {
 		if (!strncmp(namelist[i]->d_name, "R.", 2)) {
-			printf("<li><a href=bbsscanreg?STEP=1&F=%s>%s</a>",
-			       namelist[i]->d_name, namelist[i]->d_name);
+			printf("<li><a href=bbsscanreg?STEP=1&F=%s>%s</a>", namelist[i]->d_name, namelist[i]->d_name);
 			sprintf(buf, "%s/%s", SCANREGDIR, namelist[i]->d_name);
 			printf(" n=%d", countnumforms(buf));
 			printf(" %s", Ctime(atoi(namelist[i]->d_name + 2)));
@@ -84,8 +83,7 @@ scanreg_readforms()
 	int unum;
 	ptr = getparm("F");
 	if (*ptr) {
-		if (strstr(ptr, "..") || strchr(ptr, '/')
-		    || strncmp(ptr, "R.", 2))
+		if (strstr(ptr, "..") || strchr(ptr, '/') || strncmp(ptr, "R.", 2))
 			http_fatal("Wrong parameter!");
 		snprintf(filename, sizeof (filename), SCANREGDIR "/%s", ptr);
 		if (!file_exist(filename))
@@ -111,8 +109,7 @@ scanreg_readforms()
 	count = 0;
 	printf("<center><form action=bbsscanreg name=regformlist method=post>");
 	printf("<input type=hidden name=STEP value='2'>");
-	printf("<input type=hidden name=F value=%s>",
-	       strrchr(filename, '/') + 1);
+	printf("<input type=hidden name=F value=%s>", strrchr(filename, '/') + 1);
 	printf("<table border=1>");
 	fp = fopen(filename, "r");
 	while (fgets(buf, STRLEN, fp) != NULL) {
@@ -144,8 +141,7 @@ scanreg_readforms()
 		uinfo = *getuser(fdata[1]);
 		printf("<tr><td width=30><nobr>");
 		printf("帐号位置: %s<br>", fdata[0]);
-		printf("&nbsp; &nbsp; 代号: <font class=blu>%s</font><br>",
-		       uinfo.userid);
+		printf("&nbsp; &nbsp; 代号: <font class=blu>%s</font><br>", uinfo.userid);
 		printf("真实姓名: <font class=blu>%s</font><br>", fdata[2]);
 		printf("居住住址: <font class=blu>%s</font><br>", fdata[4]);
 		printf("学校系级: <font class=blu>%s</font><br>", fdata[3]);
@@ -159,21 +155,12 @@ scanreg_readforms()
 		if (uinfo.userlevel & PERM_LOGINOK) {
 			printf("此帐号不需再填写注册单.");
 		} else {
-			printf("<input type=hidden name=userid%d value='%s'>",
-			       count, uinfo.userid);
-			printf
-			    ("<input type=radio name=result%d value=PASS checked>PASS",
-			     count);
-			printf
-			    (" <input type=radio name=result%d value=SKIP>SKIP",
-			     count);
-			printf
-			    (" <input type=radio name=result%d value=DEL>DEL<br>",
-			     count);
+			printf("<input type=hidden name=userid%d value='%s'>", count, uinfo.userid);
+			printf("<input type=radio name=result%d value=PASS checked>PASS", count);
+			printf(" <input type=radio name=result%d value=SKIP>SKIP", count);
+			printf(" <input type=radio name=result%d value=DEL>DEL<br>", count);
 			for (n = 0; n < NUMREASON; n++) {
-				printf
-				    ("<input type=radio name=result%d value=%d>%s<br>",
-				     count, n, reason[n]);
+				printf("<input type=radio name=result%d value=%d>%s<br>", count, n, reason[n]);
 			}
 			count++;
 		}
@@ -275,12 +262,9 @@ scanreg_done()
 					fdata[5][i = 40] = '\0';
 				fdata[3][60 - i] = '\0';
 			}
-			strsncpy(uinfo.realname, fdata[2],
-				 sizeof (uinfo.realname));
-			strsncpy(uinfo.address, fdata[4],
-				 sizeof (uinfo.address));
-			sprintf(buf, "%s$%s@%s", fdata[3], fdata[5],
-				currentuser.userid);
+			strsncpy(uinfo.realname, fdata[2], sizeof (uinfo.realname));
+			strsncpy(uinfo.address, fdata[4], sizeof (uinfo.address));
+			sprintf(buf, "%s$%s@%s", fdata[3], fdata[5], currentuser.userid);
 			strsncpy(uinfo.realmail, buf, sizeof (uinfo.realmail));
 			uinfo.userlevel |= PERM_DEFAULT;	// by ylsdd
 			save_user_data(&uinfo);
@@ -293,29 +277,22 @@ scanreg_done()
 			}
 			if ((fout = fopen(buf, "w")) != NULL) {
 				for (i = 0; field[i] != NULL; i++)
-					fprintf(fout, "%s: %s\n", field[i],
-						fdata[i]);
+					fprintf(fout, "%s: %s\n", field[i], fdata[i]);
 				fprintf(fout, "Date: %s\n", Ctime(time(NULL)));
-				fprintf(fout, "Approved: %s\n",
-					currentuser.userid);
+				fprintf(fout, "Approved: %s\n", currentuser.userid);
 				fclose(fout);
 			}
-			mail_file("etc/s_fill", uinfo.userid,
-				  "恭禧您通过身份验证", currentuser.userid);
-			mail_file("etc/s_fill2", uinfo.userid,
-				  "欢迎加入" MY_BBS_NAME "大家庭",
-				  currentuser.userid);
+			mail_file("etc/s_fill", uinfo.userid, "恭禧您通过身份验证", currentuser.userid);
+			mail_file("etc/s_fill2", uinfo.userid, "欢迎加入" MY_BBS_NAME "大家庭", currentuser.userid);
 			sethomefile(buf, uinfo.userid, "mailcheck");
 			unlink(buf);
 			sprintf(buf, "让 %s 通过身分确认.", uinfo.userid);
 			securityreport(buf, buf);
 		} else {
-			snprintf(buf, sizeof (buf), "<注册失败>-%s",
-				 results[n]);
+			snprintf(buf, sizeof (buf), "<注册失败>-%s", results[n]);
 			strsncpy(uinfo.address, buf, sizeof (uinfo.address));
 			save_user_data(&uinfo);
-			mail_file("etc/f_fill", uinfo.userid, buf,
-				  currentuser.userid);
+			mail_file("etc/f_fill", uinfo.userid, buf, currentuser.userid);
 		}
 		bzero(fdata, sizeof (fdata));
 	}

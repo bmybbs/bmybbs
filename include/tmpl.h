@@ -10,7 +10,7 @@
 
 struct s_content{
 	char text[50];
-	int length;
+	size_t length;
 };
 
 struct s_template{

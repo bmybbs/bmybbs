@@ -29,7 +29,7 @@ int is_utf(char * inbuf, size_t inlen);
  */
 void getsalt(char salt[3]);
 
-int badstr(unsigned char *s);
+int badstr(char *s);
 
 /**
  * @brief 获取不超过4张进站图片

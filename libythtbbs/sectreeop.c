@@ -2,11 +2,12 @@
 //#include <string.h>
 #define BINSECMFILE MY_BBS_HOME "/etc/secmlist.data"
 const struct sectree *
-getsectree(char *str)
+getsectree(const char *s)
 {
 	const struct sectree *sec;
-	char *ptr;
+	char *ptr, *str;
 	sec = &sectree;
+	str = s;
 	while (*str && (ptr = strchr(sec->seccodes, *str))) {
 		sec = sec->subsec[ptr - sec->seccodes];
 		str++;

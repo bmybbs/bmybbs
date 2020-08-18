@@ -120,7 +120,7 @@ apiqry_main()
 	if (num == 0 )
 	{
 		sstrcat(output, "\"null\",");
-		if( x->lastlogout != NULL )
+		if( x->lastlogout != 0 )
 			sstrcat(output, "\"LastLogout\":\"%s\",",Ctime(x->lastlogout));
 		else
 			sstrcat(output, "\"LastLogout\":null,");

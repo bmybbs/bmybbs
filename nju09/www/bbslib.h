@@ -153,7 +153,7 @@ int count_online(void);
 int count_online2(void);
 
 extern struct override fff[200];
-extern int friendnum;
+extern size_t friendnum;
 
 int loadfriend(char *id);
 int isfriend(char *id);

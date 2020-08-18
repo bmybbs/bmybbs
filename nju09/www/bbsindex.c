@@ -347,7 +347,7 @@ bbsindex_main()
 
 static int is_valid_guest_url(const char* url) {
 	const char* patt = "/" SMAGIC "_?/";
-	int i, l;
+	size_t i, l;
 	l = strlen(patt);
 
 	if (strcmp("/" SMAGIC "/", url) == 0)

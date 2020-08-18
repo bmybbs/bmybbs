@@ -11,7 +11,7 @@ filter_attach(char *path)
 {
 	FILE *fp;
 	int hasa, fd;
-	unsigned int len;
+	size_t len;
 	char buf[2048];
 #ifdef LOCAL_UTL
 	static char *tmp = NULL;
@@ -239,7 +239,7 @@ decode_attach(char *filename, char *path)
 	FILE *fp;
 	char buf[500];
 	int isa = 0, base64;
-	unsigned len;
+	size_t len;
 	char *fn = NULL;
 	fp = fopen(filename, "r");
 	if (fp == NULL)
@@ -274,7 +274,7 @@ copyfile_attach(char *source, char *target)
 	FILE *fpr, *fpw;
 	char buf[500];
 	int isa = 0, base64;
-	unsigned int len;
+	size_t len;
 	char *fn = NULL;
 	fpr = fopen(source, "r");
 	if (fpr == NULL)

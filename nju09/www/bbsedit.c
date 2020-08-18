@@ -6,7 +6,8 @@ bbsedit_main()
 	FILE *fp;
 	int type = 0, num;
 	char buf[512], path[512], file[512], board[512], title[80];
-	int base64, isa = 0, len;
+	int base64, isa = 0;
+	size_t len;
 	char *fn = NULL;
 	struct boardmem *brd;
 	struct fileheader *x = NULL;
@@ -173,7 +174,7 @@ bbsedit_main()
 			base64 = 1;
 			len = 0;
 			fn = buf + 10;
-		} else if (checkbinaryattach(buf, FCGI_ToFILE(fp), &len)) {
+		} else if (checkbinaryattach(buf, fp, &len)) {
 			isa = 1;
 			base64 = 0;
 			fn = buf + 18;
@@ -248,7 +249,9 @@ update_form(char *board, char *file, char *title)
 	char filename[STRLEN];
 	struct fileheader x;
 	struct mmapfile mf = { ptr:NULL };
-	int i, dangerous = 0;
+	int dangerous = 0;
+	size_t i;
+	long l;
 	filetime = atoi(file + 2);
 	usemath = strlen(getparm("usemath"));
 	nore = strlen(getparm("nore"));
@@ -258,10 +261,10 @@ update_form(char *board, char *file, char *title)
 	for (i = 0; i < strlen(title); i++)
 		if (title[i] <= 27 && title[i] >= -1)
 			title[i] = ' ';
-	i = strlen(title) - 1;
-	while (i >= 0 && isspace(title[i])) {
-		title[i] = 0;
-		i--;
+	l = strlen(title) - 1;
+	while (l >= 0 && isspace(title[l])) {
+		title[l] = 0;
+		l--;
 	}
 	if (title[0] == 0)
 		http_fatal("标题不能为空");

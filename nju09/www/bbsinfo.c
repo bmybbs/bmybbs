@@ -65,7 +65,7 @@ bbsinfo_main()
 int
 check_info()
 {
-	int m;
+	size_t m;
 	char buf[256];
 	strsncpy(buf, getparm("nick"), 30);
 	for (m = 0; m < strlen(buf); m++)
