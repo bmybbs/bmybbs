@@ -2,13 +2,6 @@
 
 extern int cmpbnames(char *bname, struct boardheader *brec);
 
-int
-report(err)
-char *err;
-{
-	return printf(err);
-}
-
 int main(int argc, char *argv[])
 {
 	if(argc!=3) {

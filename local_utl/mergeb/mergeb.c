@@ -3,16 +3,10 @@
 #include "bbs.h"
 #include "ythtbbs.h"
 #define MAXINT ((int)((((unsigned int)~(int)0))>>1))
-int
-report(err)
-char *err;
-{
-	return printf(err);
-}
 
-main(argc, argv)
-int argc;
-char **argv;
+long get_num_records(char *filename, int size);
+
+int main(int argc, char *argv[])
 {
 	char dir1[256], dir2[256], tmpfile[256];
 	struct fileheader fh1, fh2;
@@ -70,4 +64,14 @@ char **argv;
 		printf("%d-%s,", id1, fh2fname(&fh1));
 		printf("%d-%s\n", id2, fh2fname(&fh2));
 	}
+}
+
+long
+get_num_records(char *filename, int size)
+{
+	struct stat st;
+
+	if (stat(filename, &st) == -1)
+		return 0;
+	return (st.st_size / size);
 }

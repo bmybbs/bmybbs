@@ -9,12 +9,7 @@
 #include "bbs.h"
 #include "ythtbbs.h"
 
-void
-report(str)
-char *str;
-{
-	printf("%s\n", str);
-}
+void securityreport(char * owner, char * str, char * title);
 
 char information[4096];
 

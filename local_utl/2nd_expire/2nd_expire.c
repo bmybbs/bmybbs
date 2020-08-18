@@ -11,12 +11,6 @@
 #include "bbs.h"
 #include "sec_hand.h"
 #define EXP 90
-int
-report(err)
-char *err;
-{
-	return printf(err);
-}
 
 void
 expire_grp()

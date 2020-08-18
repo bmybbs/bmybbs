@@ -1,7 +1,9 @@
 #include "bbs.h"
 #include "ythtbbs.h"
 #include <stdio.h>
-#include <iconv.h> 
+#include <iconv.h>
+
+int postfile(char *filename, char *owner, char *nboard, char *posttitle);
   
 int main(int argc, char **argv)
 {
