@@ -319,3 +319,47 @@ get_record(char *filename, void *rptr, int size, int id)
 	close(fd);
 	return 0;
 }
+
+int
+substitute_record(char *filename, void *rptr, int size, int id) {
+	struct flock ldata;
+	int retv = 0;
+	int fd;
+	// add by hace
+	struct stat st;
+	if (stat(filename, &st) == -1 || st.st_size / size < id)
+		return -1;
+	// end
+
+	if ((fd = open(filename, O_WRONLY | O_CREAT, 0660) == -1))
+		return -1;
+
+	ldata.l_type = F_WRLCK;
+	ldata.l_whence = 0;
+	ldata.l_len = size;
+	ldata.l_start = size * (id - 1);
+
+	if (fcntl(fd, F_SETLKW, &ldata) == -1) {
+		errlog("reclock error %d", errno);
+		close(fd);
+		return -1;
+	}
+
+	if (lseek(fd, size*(id-1), SEEK_SET) == -1) {
+		errlog("subrec seek err %d", errno);
+		retv = -1;
+		goto FAIL;
+	}
+
+	if (safewrite(fd, rptr, size) != size) {
+		errlog("subrec write err %d", errno);
+		retv = -1;
+		goto FAIL;
+	}
+
+FAIL:
+	ldata.l_type = F_UNLCK;
+	fcntl(fd, F_SETLK, &ldata);
+	close(fd);
+	return retv;
+}

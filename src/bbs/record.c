@@ -189,61 +189,6 @@ return (n /size);
 }
 
 int
-substitute_record(filename, rptr, size, id)
-char *filename;
-void *rptr;
-int size, id;
-{
-#ifdef LINUX
-	struct flock ldata;
-#endif
-	int retv = 0;
-	int fd;
-	//add by hace
-	struct stat st;
-	if(stat(filename,&st)==-1)
-	    return -1;
-	else{
-	    if(st.st_size/size <id)
-		return -1;
-	}
-	//end 
-	if ((fd = open(filename, O_WRONLY | O_CREAT, 0660)) == -1)
-		return -1;
-#ifdef LINUX
-	ldata.l_type = F_WRLCK;
-	ldata.l_whence = 0;
-	ldata.l_len = size;
-	ldata.l_start = size * (id - 1);
-	if (fcntl(fd, F_SETLKW, &ldata) == -1) {
-		errlog("reclock error %d", errno);
-		return -1;
-	}
-#else
-	flock(fd, LOCK_EX);
-#endif
-	if (lseek(fd, size * (id - 1), SEEK_SET) == -1) {
-		errlog("subrec seek err %d", errno);
-		retv = -1;
-		goto FAIL;
-	}
-	if (safewrite(fd, rptr, size) != size) {
-		errlog("subrec write err %d", errno);
-		retv = -1;
-		goto FAIL;
-	}
-      FAIL:
-#ifdef LINUX
-	ldata.l_type = F_UNLCK;
-	fcntl(fd, F_SETLK, &ldata);
-#else
-	flock(fd, LOCK_UN);
-#endif
-	close(fd);
-	return retv;
-}
-
-int
 insert_record(fpath, data, size, pos, num)
 char *fpath;
 void *data;
