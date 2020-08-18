@@ -3,7 +3,7 @@
 struct bbsstatlogitem item;
 
 int
-main()
+main(int argc, char *argv[])
 {
 	int i, j, fd;
 	struct tm *ptm;
@@ -26,7 +26,7 @@ main()
 	bzero(loadavg, sizeof (loadavg));
 	fd = open(BBSSTATELOGFILE, O_RDONLY | O_CREAT, 0600);
 	if (fd < 0)
-		return;
+		return -1;
 	while (read(fd, &item, sizeof (item)) == sizeof (item)) {
 		if (item.nonline <= 0)
 			continue;
@@ -63,36 +63,21 @@ main()
 	ptm = localtime(&t);
 	i = ptm->tm_hour;
 	j = ptm->tm_min / 6;
-	printf("#now=%d.%d; %dsec; %s", i, j, t, ctime(&t));
+	printf("#now=%d.%d; %ldsec; %s", i, j, t, ctime(&t));
 	printf
 	    ("#time\tonline\tonlineavg\ttelnet\ttelnetavg\twww\twwwavg\tload\tloadavg\tn162105\taverage\twwwguest\twgavg\tnetflow\tnfavg\n");
 	for (i = 0; i < 24; i++)
 		for (j = 0; j < 10; j++) {
 			printf("%d.%d", i, j);
-			printf("\t%d\t%d", online[i][j],
-			       (onlineavg[i][j][1] ==
-				0) ? 0 : (onlineavg[i][j][0] /
-					  onlineavg[i][j][1]));
-			printf("\t%d\t%d", telnet[i][j],
-			       (telnetavg[i][j][1] ==
-				0) ? 0 : (telnetavg[i][j][0] /
-					  telnetavg[i][j][1]));
-			printf("\t%d\t%d", www[i][j],
-			       (wwwavg[i][j][1] ==
-				0) ? 0 : (wwwavg[i][j][0] / wwwavg[i][j][1]));
-			printf("\t%f\t%f", load[i][j],
-			       (loadavg[i][j][1] ==
-				0) ? 0 : (loadavg[i][j][0] / loadavg[i][j][1]));
-			printf("\t%d\t%d", n162105[i][j],
-			       (n162105avg[i][j][1] ==
-				0) ? 0 : (n162105avg[i][j][0] /
-					  n162105avg[i][j][1]));
-			printf("\t%d\t%d", wwwguest[i][j],
-			       (wgavg[i][j][1] ==
-				0) ? 0 : (wgavg[i][j][0] / wgavg[i][j][1]));
-			printf("\t%d\t%d", netflow[i][j],
-			       (nfavg[i][j][1] == 0) ? 0 :
-			       (nfavg[i][j][0] / nfavg[i][j][1]));
+			printf("\t%d\t%d", online[i][j],   (onlineavg[i][j][1] == 0)  ? 0 : (onlineavg[i][j][0]  / onlineavg[i][j][1]));
+			printf("\t%d\t%d", telnet[i][j],   (telnetavg[i][j][1] == 0)  ? 0 : (telnetavg[i][j][0]  / telnetavg[i][j][1]));
+			printf("\t%d\t%d", www[i][j],      (wwwavg[i][j][1] == 0)     ? 0 : (wwwavg[i][j][0]     / wwwavg[i][j][1]));
+			printf("\t%f\t%f", load[i][j],     (loadavg[i][j][1] == 0)    ? 0 : (loadavg[i][j][0]    / loadavg[i][j][1]));
+			printf("\t%d\t%d", n162105[i][j],  (n162105avg[i][j][1] == 0) ? 0 : (n162105avg[i][j][0] / n162105avg[i][j][1]));
+			printf("\t%d\t%d", wwwguest[i][j], (wgavg[i][j][1] == 0)      ? 0 : (wgavg[i][j][0]      / wgavg[i][j][1]));
+			printf("\t%d\t%d", netflow[i][j],  (nfavg[i][j][1] == 0)      ? 0 : (nfavg[i][j][0]      / nfavg[i][j][1]));
 			printf("\n");
 		}
+
+	return 0;
 }

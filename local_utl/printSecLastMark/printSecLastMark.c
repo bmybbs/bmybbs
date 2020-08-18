@@ -7,6 +7,10 @@
 #define MAXLNRAND 4
 #define MAXFILTER 100
 
+int makeallseclastmark(const struct sectree *sec);
+void makeseclastmark(const struct sectree *sec);
+int printseclastmark(FILE * fp, const struct sectree *sec, int nline);
+
 struct lastmark {
 	char title[100];
 	char board[30];
@@ -217,7 +221,7 @@ makeallseclastmark(const struct sectree *sec)
 	return 0;
 }
 
-int
+void
 makeseclastmark(const struct sectree *sec)
 {
 	int i, len, j, k;

@@ -1,8 +1,6 @@
 //查找版面最靠后的mark文章      ylsdd 2002/4/3
-#include "bbs.h"
 #include "ythtlib.h"
 #include "ythtbbs.h"
-#include "www.h"
 
 #define MAXFOUNDD 9
 #define MAXAUTHOR 5

@@ -21,8 +21,9 @@ makeindex(FILE * wfp, char *path, char *prefix, int indextype, int depth)
 	char filen[800], str[500];
 	char title[100], *ptr;
 	struct stat sbuf;
-	int i, n, hide;
+	int n, hide;
 	time_t t;
+	size_t i, l;
 	while ((ptr = strstr(prefix, "  ")))
 		memcpy(ptr, "¡¡", 2);
 
@@ -64,7 +65,7 @@ makeindex(FILE * wfp, char *path, char *prefix, int indextype, int depth)
 		if (strstr(str, "Path=~") != str)
 			continue;
 		n++;
-		for (i = strlen(str); i >= strlen("Path=~"); i--) {
+		for (i = strlen(str), l = strlen("Path=~"); i >= l; i--) {
 			if (strchr("\n\t\r /.", str[i]) == NULL)
 				break;
 			str[i] = '\0';
@@ -135,7 +136,8 @@ searchindexfile(char *path)
 	FILE *fp, *wfp;
 	char filen[800], str[500];
 	struct stat sbuf;
-	int indextype, i;
+	int indextype;
+	size_t i, l;
 	time_t t = time(NULL);
 	//printf("search %s\n",path);
 	sprintf(filen, "%s/.Names", path);
@@ -152,7 +154,7 @@ searchindexfile(char *path)
 			break;
 		if (strstr(str, "Path=~") != str)
 			break;
-		for (i = strlen(str); i >= strlen("Path=~"); i--) {
+		for (i = strlen(str), l = strlen("Path=~"); i >= l; i--) {
 			if (strchr("\n\t\r /.", str[i]) == NULL)
 				break;
 			str[i] = '\0';

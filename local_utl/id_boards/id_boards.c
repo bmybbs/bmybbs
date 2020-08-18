@@ -2,7 +2,9 @@
 #include "stdio.h"
 
 int silentmode = 0;
-main(int argn, char *(argv[]))
+int id_boards(char *id);
+
+int main(int argn, char *(argv[]))
 {
 	char str[250], *id;
 	if (argn > 1) {
@@ -19,6 +21,8 @@ main(int argn, char *(argv[]))
 			continue;
 		id_boards(id);
 	}
+
+	return 0;
 }
 
 int
@@ -46,4 +50,5 @@ id_boards(char *id)
 	}
 	printf(i == 0 ? "一个都没有。\n" : "\n");
 	fclose(fd1);
+	return 0;
 }

@@ -6,7 +6,9 @@
 
 char ignore[10]="Y";
 
-int cmpboardt(struct boardheader *a,struct boardheader *b) {
+int cmpboardt(const void *aa, const void *bb) {
+	struct boardheader *a = (struct boardheader *)aa;
+	struct boardheader *b = (struct boardheader *)bb;
 	return (b->board_ctime - a->board_ctime);
 }
 int

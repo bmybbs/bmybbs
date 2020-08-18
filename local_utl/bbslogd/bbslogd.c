@@ -307,7 +307,8 @@ int
 main()
 {
 	char lastch = 0, *str;
-	int l, msqid, i;
+	int msqid, i;
+	size_t l;
 
 	umask(027);
 

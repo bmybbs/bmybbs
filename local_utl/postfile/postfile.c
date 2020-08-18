@@ -21,6 +21,6 @@ int main(int argc, char **argv)
 //		system(cmd);
 		u2g(argv[4], strlen(argv[4]), title, 128);
 	}
-	int ret=postfile(argv[1], argv[2], argv[3], title);
-	return 0;
+	int ret = postfile(argv[1], argv[2], argv[3], title);
+	return ret;
 }

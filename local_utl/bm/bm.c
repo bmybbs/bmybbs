@@ -1,9 +1,8 @@
 #include "bbs.h"
 #include "stdio.h"
-#include "ythtlib.h"
 #include "ythtbbs.h"
 
-main()
+int main(int argc, char *argv[])
 {
 	FILE *fd1;
 	struct boardheader rec;
@@ -20,4 +19,5 @@ main()
 		       rec.title, bm2str(bmbuf, &rec));
 	}
 	fclose(fd1);
+	return 0;
 }

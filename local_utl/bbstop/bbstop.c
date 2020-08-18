@@ -7,7 +7,7 @@
 #define NUMCOUNT 100 
 
 struct mystat {
-	int key;
+	unsigned int key;
 	int num;
 };
 
@@ -152,7 +152,7 @@ top_perm(FILE * fp)
 }
 
 void
-insert_data(struct userec *queue, int *comp_f(struct userec *, struct userec *),
+insert_data(struct userec *queue, int comp_f(struct userec *, struct userec *),
 	    struct userec *aman)
 {
 	int i, j;
@@ -218,7 +218,7 @@ void
 insert_ages(struct userec *aman)
 {
 	int i;
-	int key;
+	long key;
 	key = (now - aman->firstlogin)/60/60/24;
 	for (i=age_c - 1; i>=0; i--) {
 		if (key == age_s[i].key) {
@@ -257,8 +257,8 @@ output(char *file, int mode)
 	}
 }
 
-int cmpstat(struct mystat *a, struct mystat *b) {
-	return (b->key - a->key);
+int cmpstat(const void *a, const void *b) {
+	return (((struct mystat *)b)->key - ((struct mystat *)a)->key);
 }
 
 void

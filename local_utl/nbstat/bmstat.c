@@ -264,8 +264,10 @@ struct action_f bm[] = {
 };
 
 int
-bm_cmp(struct bmstat *b, struct bmstat *a)
+bm_cmp(const void *bb, const void *aa)
 {
+	struct bmstat *b = (struct bmstat *) bb;
+	struct bmstat *a = (struct bmstat *) aa;
 	if (a->stay != b->stay)
 		return (a->stay - b->stay);
 	if (a->inboard != b->inboard)

@@ -45,7 +45,7 @@ main(int argc, char *argv[])
 	}
 	fread(data, sizeof (struct fileheader), n, dr);
 	qsort(data, n, sizeof (struct fileheader), cmpfile);
-	printf("end.len=%d %d", n, n * sizeof (struct fileheader));
+	printf("end.len=%d %ld", n, n * sizeof (struct fileheader));
 	file = open("tmpfile", O_CREAT | O_TRUNC | O_WRONLY, 0770);
 	if (file < 0) {
 		printf("can't open file to write\n");
@@ -55,4 +55,6 @@ main(int argc, char *argv[])
 		perror("write error");
 	if (close(file))
 		printf("close error=%d\n", errno);
+
+	return 0;
 }

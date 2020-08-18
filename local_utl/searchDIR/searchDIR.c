@@ -91,7 +91,7 @@ main(int argn, char **argv)
 	if (countdb(fh.title)) {
 		fh.title[strlen(fh.title) - 1] = 0;
 	}
-	printf("%s,%d,%s,%s\n", fh2owner(&fh), fh.thread, encode_url(fh.title),
+	printf("%s,%ld,%s,%s\n", fh2owner(&fh), fh.thread, encode_url(fh.title),
 	       fh.title);
 	return 0;
 }

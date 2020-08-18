@@ -11,7 +11,7 @@ int refcount[HASHSIZE][MAXFILE];
 char otherfile[200];
 int allfile = 0, allref = 0, alllost = 0, unknownfn = 0, nindexitem = 0,
     nstrangeitem = 0;
-int nowtime;
+time_t nowtime;
 
 int
 hash(char *postname)
@@ -58,11 +58,12 @@ ispostfilename(char *file)
 }
 
 int
-countfile(struct fileheader *fhdr, void *farg)
+countfile(void *fhdr_void, void *farg)
 {
 	int i, h;
 	char *fname;
 	nindexitem++;
+	struct fileheader *fhdr = (struct fileheader *) fhdr_void;
 	if (fhdr->filetime == 0) {
 		nstrangeitem++;
 		return 0;

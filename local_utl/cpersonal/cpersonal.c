@@ -74,7 +74,8 @@ howmanynew(char *path, struct Report *rp)
 	FILE *fp;
 	char filen[800], str[500];
 	struct stat sbuf;
-	int i, ishideguest = 0;
+	int ishideguest = 0;
+	size_t i, l;
 	sprintf(filen, "%s/.Names", path);
 	fp = fopen(filen, "r");
 	if (fp == NULL) {
@@ -96,7 +97,7 @@ howmanynew(char *path, struct Report *rp)
 			continue;
 		if (strncmp(str, "Path=~", 6))
 			continue;
-		for (i = strlen(str); i >= strlen("Path=~"); i--) {
+		for (i = strlen(str), l = strlen("Path=~"); i >= l; i--) {
 			if (strchr("\n\t\r /.", str[i]) == NULL)
 				break;
 			str[i] = '\0';
@@ -123,7 +124,7 @@ howmanynew(char *path, struct Report *rp)
 	return 0;
 }
 
-main()
+int main(int argc, char *argv[])
 {
 	char ch, path[500], fn[500], name[500];
 	int tday = 0, tweek = 0, tweek2 = 0, tnfile = 0;
@@ -169,4 +170,5 @@ main()
 		fclose(fp);
 	}
 	printf("ºÏ    ¼Æ    %8d%12d%12d%10d\n", tday, tweek, tweek2, tnfile);
+	return 0;
 }

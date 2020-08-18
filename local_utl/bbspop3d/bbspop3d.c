@@ -144,7 +144,7 @@ char *filename;
 	FILE *fp;
 	char *attach;
 	char linebuf[256];
-	int len;
+	size_t len;
 
 	if ((fp = fopen(filename, "r")) != NULL) {
 		while (fgets(linebuf, sizeof (linebuf), fp) != NULL) {
@@ -402,7 +402,8 @@ char **argv;
 {
 
 	struct sockaddr_in fsin, our;
-	int on, alen, len, i, n;
+	int on, i, n;
+	socklen_t alen, len;
 	char *str;
 	int portnum = POP3D_PORT;
 	int childpid;

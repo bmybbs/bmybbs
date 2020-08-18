@@ -43,8 +43,10 @@ struct action_f bu[] = {
 };
 
 int
-bu_cmp(struct buser *b, struct buser *a)
+bu_cmp(const void *bb, const void *aa)
 {
+	struct buser *b = (struct buser *)bb;
+	struct buser *a = (struct buser *)aa;
 	return a->used - b->used;
 }
 

@@ -26,7 +26,7 @@ struct fileheader fh;
 	len++;
 }
 
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	DIR *pdir;
 	char *name;
@@ -108,7 +108,7 @@ main(int argc, char **argv)
 		}
 	}
 	qsort(data, len, sizeof (struct fileheader), cmpfile);
-	printf("end.len=%d %d", len, len * sizeof (struct fileheader));
+	printf("end.len=%d %ld", len, len * sizeof (struct fileheader));
 	if (write(file, data, len * sizeof (struct fileheader)) == 0)
 		perror("write error");
 	if (close(file))
@@ -120,4 +120,6 @@ main(int argc, char **argv)
 		sprintf(buf1, "mv -f .tmpfile %s/.DIR", name);
 		system(buf1);
 	}
+
+	return 0;
 }

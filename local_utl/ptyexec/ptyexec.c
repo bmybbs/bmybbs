@@ -1,16 +1,15 @@
 // by ecnegrevid 2001.7.18
 #include <sys/time.h>
 #include <unistd.h>
-#include        <sys/types.h>
-#include        <sys/stat.h>
-#include        <errno.h>
-#include        <fcntl.h>
-#include        <grp.h>
-#include	<stdio.h>
-#include	<signal.h>
-#include	<termios.h>
+#include <grp.h>
+#include <signal.h>
+#include <termios.h>
+#include <pty.h>
+#include <string.h>
 
-int
+void pipedata(int fdr, int fdw);
+
+void
 dosetpty()
 {
 	struct termios ti;
@@ -32,7 +31,7 @@ main(int argc, char *argv[])
 	setsid();
 	pid = forkpty(&fdm, slave_name, NULL, NULL);
 	if (pid < 0)
-		return;
+		return -1;
 	else if (pid == 0) {	/* child */
 		dosetpty();
 		if (execvp(argv[1], &argv[1]) < 0)
@@ -40,7 +39,7 @@ main(int argc, char *argv[])
 	}
 	pid = fork();
 	if (pid < 0)
-		return;
+		return -1;
 	else if (pid == 0) {
 		pipedata(0, fdm);
 		kill(getppid(), 9);
@@ -48,9 +47,11 @@ main(int argc, char *argv[])
 		pipedata(fdm, 1);
 		kill(pid, 9);
 	}
+
+	return 0;
 }
 
-int
+void
 pipedata(int fdr, int fdw)
 {
 	char ch;

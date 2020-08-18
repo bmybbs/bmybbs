@@ -79,8 +79,10 @@ testperm(struct boardmem *x)
 }
 
 int
-cmpfiletime(struct lastmark *a, struct lastmark *b)
+cmpfiletime(const void *aa, const void *bb)
 {
+	struct lastmark *a = (struct lastmark *) aa;
+	struct lastmark *b = (struct lastmark *) bb;
 	return b->filetime - a->filetime;
 }
 

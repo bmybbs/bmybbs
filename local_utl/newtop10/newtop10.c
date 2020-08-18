@@ -37,8 +37,10 @@ struct mmapfile filtermf = { ptr:NULL, size:0 };
 extern int postfile(char *filename, char *owner, char *nboard, char *posttitle);
 
 int
-cmpbt(struct boardtop *a, struct boardtop *b)
+cmpbt(const void *aa, const void *bb)
 {
+	struct boardtop *a = (struct boardtop *)aa;
+	struct boardtop *b = (struct boardtop *)bb;
 	return b->unum - a->unum;
 }
 
@@ -65,7 +67,7 @@ trytoinsert(char *board, struct boardtop *bt)
 struct boardtop *
 getTopTenBt(struct boardtop ** basebt, struct boardheader *bh)
 {
-	int i;
+	size_t i;
 	for (i = 0; i < LEN(area); i++)
 	{
 		if (area[i] == bh->secnumber1)
@@ -104,8 +106,9 @@ trytoinsert_area(struct boardheader *bh, struct boardtop *bt)
 }
 
 int
-_topn(struct boardheader *bh, void * fargs)
+_topn(void *bh_void, void * fargs)
 {
+	struct boardheader *bh = (struct boardheader *) bh_void;
 	//从 bh 里面找到TOPN个thread
 	int size = sizeof (struct fileheader), total;
 	int i, j, k, *usernum;
@@ -292,7 +295,7 @@ _topn(struct boardheader *bh, void * fargs)
 			fprintf(fp, "<table width='80%%' align=\"center\" > ");
 		}
 		k++;
-		fprintf(fp, "<tr><td><font color='red'>HOT</font></td><td><a href='tfind?B=%s&amp;th=%d'>%s", bh->filename, bt1->thread, nohtml(bt1->title));
+		fprintf(fp, "<tr><td><font color='red'>HOT</font></td><td><a href='tfind?B=%s&amp;th=%ld'>%s", bh->filename, bt1->thread, nohtml(bt1->title));
 		fprintf(fp, "</a></td><td>[讨论人数:%d] </td></tr>\n ", bt1->unum);
 	}
 	if (k)
@@ -307,8 +310,7 @@ _topn(struct boardheader *bh, void * fargs)
 int
 top_all_dir()
 {
-	return new_apply_record(".BOARDS", sizeof (struct boardheader),
-				_topn, NULL);
+	return new_apply_record(".BOARDS", sizeof (struct boardheader), _topn, NULL);
 }
 
 int
@@ -335,7 +337,7 @@ html_topten(int mode, char *file)
 	for (j = 0; j < 10 && bt->unum != 0; j++, bt++) {
 		fprintf
 		    (fp,
-		     "<tr><td>第 %d 名</td><td><a href='tdoc?board=%s'>%s</a></td><td><div class='td-overflow'><a href='tfind?board=%s&amp;th=%d' title='%s'>%s</a></div></td><td>%d</td></tr>\n",
+		     "<tr><td>第 %d 名</td><td><a href='tdoc?board=%s'>%s</a></td><td><div class='td-overflow'><a href='tfind?board=%s&amp;th=%ld' title='%s'>%s</a></div></td><td>%d</td></tr>\n",
 		     j + 1, bt->board, bt->board, bt->board, bt->thread, void1(nohtml(bt->title)), void1(nohtml(bt->title)),bt->unum);
 	}
 	fprintf(fp, "</table></center></body>");
@@ -349,17 +351,17 @@ html_topten(int mode, char *file)
 	else
 		bt_area = topten_area;
 
-	int i;
+	size_t i;
 	for (i = 0; i < LEN(area); i++)
 	{
 		bt = bt_area[i];
 		char path[256];
 		sprintf(path, AREA_DIR "/%c", area[i]);
 		fp = fopen(path, "w");
-		fprintf(fp, "%s<table width='90%'>", BDSTYLE);
+		fprintf(fp, "%s<table width='90%%'>", BDSTYLE);
 		for (j = 0; j < AREA_TOP_CNT && bt->unum != 0; j++, bt++) 
 		{
-			fprintf(fp, "<tr><td width='120px'>[<a href='tdoc?board=%s'>%s</a>]</td><td><div class='bd-overflow'><a href='tfind?board=%s&amp;th=%d' title='%s'>%s</a></div></td><td width='20px'>(%d)</td></tr>",
+			fprintf(fp, "<tr><td width='120px'>[<a href='tdoc?board=%s'>%s</a>]</td><td><div class='bd-overflow'><a href='tfind?board=%s&amp;th=%ld' title='%s'>%s</a></div></td><td width='20px'>(%d)</td></tr>",
 				bt->board, bt->board, bt->board, bt->thread, void1(nohtml(bt->title)), void1(nohtml(bt->title)),bt->unum);
 		}
 		fprintf(fp, "</table>");
@@ -388,7 +390,7 @@ index_topten(int mode, char *file)
         for (j = 0; j < 10 && bt->unum != 0; j++, bt++) {
                 fprintf
                     (fp,
-		     "<tr><td><span class=\"smalltext\">%d</span></td><td><div class='td-overflow'><a href='tfind?board=%s&th=%d' title='%s'>%s</a></div></td></tr>\n",
+		     "<tr><td><span class=\"smalltext\">%d</span></td><td><div class='td-overflow'><a href='tfind?board=%s&th=%ld' title='%s'>%s</a></div></td></tr>\n",
                      j + 1, bt->board, bt->thread, void1(nohtml(bt->title)), void1(nohtml(bt->title)));
         }
         fclose(fp);

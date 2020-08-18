@@ -47,7 +47,7 @@ gettitle(char ch, char *author)
 	return retstr;
 }
 
-main()
+int main(int argc, char *argv[])
 {
 	char au[MAXPERSON][512], ch[MAXPERSON], buf[512], lastchar = 'A';
 	int score[MAXPERSON];
@@ -98,4 +98,6 @@ main()
 		printf
 		    ("<li><a href=bbs0an?path=/groups/GROUP_0/Personal_Corpus/%c/%s>%s</a><br>\n",
 		     ch[num[i]], au[num[i]], gettitle(ch[num[i]], au[num[i]]));
+
+	return 0;
 }

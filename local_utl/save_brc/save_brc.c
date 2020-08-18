@@ -27,7 +27,7 @@ copy_brc(char *ent, char *toent)
 	return 0;
 }
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	char path[1024], ent[1024], newent[1024], tmpent[1024];
 	time_t nowtime;
@@ -53,7 +53,7 @@ main(int argc, char *argv[])
 	printf("processing %s\n", path);
 	dirp = opendir(PATHTMPBRC);
 	if (dirp == NULL)
-		return;
+		return -1;
 	while ((direntp = readdir(dirp)) != NULL) {
 		sprintf(ent, PATHTMPBRC "/%s", direntp->d_name);
 		if (strchr(direntp->d_name, '.')) {
@@ -80,4 +80,5 @@ main(int argc, char *argv[])
 		}
 	}
 	closedir(dirp);
+	return 0;
 }

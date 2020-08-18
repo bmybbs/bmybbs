@@ -76,7 +76,7 @@ attachuu2bin(char *filename)	//将老格式的uuencode附件变成bin格式的附件
 }
 
 int
-dotran(const char *file, const struct stat *sb, int flag)
+dotran(const char *file, const struct stat *sb, int flag, struct FTW *unused)
 {
 	int ret;
 	char *ptr;
@@ -92,7 +92,7 @@ dotran(const char *file, const struct stat *sb, int flag)
 
 }
 
-void
+int
 main(int argc, char *argv[])
 {
 	if (argc < 2) {
@@ -101,4 +101,6 @@ main(int argc, char *argv[])
 		exit(1);
 	}
 	printf("finished %d\n", nftw(argv[1], dotran, 30, FTW_PHYS));
+
+	return 0;
 }
