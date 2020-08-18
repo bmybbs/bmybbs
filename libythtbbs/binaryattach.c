@@ -94,7 +94,7 @@ appendbinaryattach(char *filename, char *userid, char *attachname)
 }
 
 char *
-checkbinaryattach(char *buf, FILE * fp, unsigned int *len)
+checkbinaryattach(char *buf, FILE * fp, size_t *len)
 {
 	char ch, *ptr;
 	if (strncmp(buf, "beginbinaryattach ", 18))
