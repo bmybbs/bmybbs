@@ -743,7 +743,7 @@ a_edits()
 	prints("编修系统档案\n\n");
 	for (num = 0;
 	     HAS_PERM(PERM_SYSOP) ? e_file[num] != NULL
-	     && explain_file[num] != NULL : explain_file[num] != "menu.ini";
+	     && explain_file[num] != NULL : strcasecmp(explain_file[num], "menu.ini") != 0;
 	     num++) {
 		if (num >= 20)
 			move(num - 20 + 2, 39);
@@ -828,7 +828,7 @@ a_edits2()
 	prints("编修系统档案2\n\n");
 	for (num = 0;
 	     HAS_PERM(PERM_SYSOP) ? e_file[num] != NULL
-	     && explain_file[num] != NULL : explain_file[num] != "menu.ini";
+	     && explain_file[num] != NULL : strcasecmp(explain_file[num], "menu.ini") != 0;
 	     num++) {
 		if (num >= 20)
 			move(num - 20 + 2, 39);
@@ -1918,7 +1918,7 @@ escape_filename(char *fn)
 	    { '/', '\\', '!', '&', '|', '*', '?', '`', '\'', '\"', ';', '<',
 		'>', ':', '~', '(', ')', '[', ']', '{', '}', '$', '\n', '\r'
 	};
-	int i, j;
+	size_t i, j;
 
 	for (i = 0; i < strlen(fn); i++)
 		for (j = 0; j < sizeof (invalid); j++)
@@ -1936,7 +1936,8 @@ zsend_file(char *from, char *title)
 	char buf[512], *fn = NULL;
 	char attachfile[200];
 	char attach_to_send[200];
-	int len, isa, base64;
+	int  isa, base64;
+	size_t len;
 
 	ansimore("etc/zmodem", 0);
 	move(14, 0);

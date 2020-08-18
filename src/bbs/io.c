@@ -1060,8 +1060,8 @@ int
 multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len,
 	      int maxline, int clearlabel)
 {
-	int ch, x, y, startx, starty, now, i, j, k, i0, chk, cursorx =
-	    0, cursory = 0;
+	int ch, x, y, startx, starty, j, k, i0, cursorx = 0, cursory = 0;
+	size_t i, chk, now;
 	char savebuffer[25][LINELEN * 3];
 	extern int RMSG;
 

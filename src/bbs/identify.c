@@ -414,7 +414,7 @@ int query_active(char* userid)
     char sqlbuf[512];
     struct active_data act_data;
     char value[VALUELEN];
-    int i;
+    unsigned int i;
 	
     MYSQL *s = NULL;
     MYSQL_RES *res;

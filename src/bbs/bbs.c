@@ -8,7 +8,7 @@
     Firebird Bulletin Board System
     Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
                         Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
-    
+
     Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
 
     This program is free software; you can redistribute it and/or modify
@@ -45,7 +45,7 @@ struct mmapfile mf_badwords;
 struct mmapfile mf_sbadwords;
 struct mmapfile mf_pbadwords;
 
-void logbuf(char *buf, char *title, int headerindex);
+//void logbuf(char *buf, char *title, int headerindex);
 
 extern int SR_BMDELFLAG;
 static int show_cake(char *filename, int num);
@@ -102,32 +102,39 @@ show_cake(char *filename, int num)
 {
 	int i, count, n;
 	static unsigned int num0 = 0;
+	int tmp_mod;
 	FILE *fp;
 	char line[200], str[30];
+
 	fp = fopen(filename, "r");
 	if (fp == NULL)
 		goto CAKEERROR0;
 	if (NULL == fgets(line, 200, fp) || sscanf(line, "%d", &count) != 1)
 		goto CAKEERROR1;
+
 	num0 += num;
 	n = num0 % count;
+
 	while (1) {
-		if (NULL == fgets(line, 200, fp)
-		    || sscanf(line, "%29s %d", str, &count) != 2)
+		if (NULL == fgets(line, 200, fp) || sscanf(line, "%29s %d", str, &count) != 2)
 			goto CAKEERROR1;
 		if (count > n)
 			break;
 		n -= count;
 	}
+
 	fclose(fp);
+
 	for (i = strlen(filename); i >= 0; i--) {
 		if (filename[i] == '/')
 			break;
 	}
 	if (i > 160)
 		goto CAKEERROR0;
+
 	memmove(line, filename, i + 1);
 	strcpy(line + i + 1, str);
+
 	fp = fopen(line, "r");
 	if (fp == NULL)
 		goto CAKEERROR0;
@@ -138,31 +145,28 @@ show_cake(char *filename, int num)
 			i++;
 	}
 	i = 0;
-	prints("\033[1;28H\033[35mA PIECE OF CAKE\033[2;29HÐ¡ ²Ë Ò» µú"
-	       "\033[0m\n\n\n");
+	prints("\033[1;28H\033[35mA PIECE OF CAKE\033[2;29HÐ¡ ²Ë Ò» µú\033[0m\n\n\n");
+
 	while (NULL != fgets(line, 200, fp)) {
 		i++;
 		if (i > 25)
 			goto CAKEERROR1;
 		if (line[0] == '#' && line[1] != '#') {
 			for (i = strlen(line); i >= 0; i--) {
-				if (line[i] == ' ' || line[i] == '\r'
-				    || line[i] == '\t' || line[i] < 32)
+				if (line[i] == ' ' || line[i] == '\r' || line[i] == '\t' || line[i] < 32)
 					line[i] = '\0';
 				else
 					break;
 			}
 			if (i == 0) {
-				sprintf(line, " ÇëÊäÈëÊý×Ö'%d': ", num0 % 10);
+				tmp_mod = num0 % 10;
+				sprintf(line, " ÇëÊäÈëÊý×Ö'%d': ", tmp_mod);
 				getdata(20, 1, line, str, 29, DOECHO, YEA);
-				if (atoi(str) != num0 % 10) {
-					prints
-					    ("\033[22;1H??..ºÃÏó²»´ó¶Ô°É, Äú»¹ÓÐÒ»´Î»ú»á...");
-					getdata(20, 1, line, str, 29, DOECHO,
-						YEA);
-					if (atoi(str) != num0 % 10) {
-						prints
-						    ("°¡? ¾¹È»»¹²»¶Ô? ÕæµÄÊÇÄãÃ´, ÎÒºÃÉËÐÄ...");
+				if (atoi(str) != tmp_mod) {
+					prints ("\033[22;1H??..ºÃÏó²»´ó¶Ô°É, Äú»¹ÓÐÒ»´Î»ú»á...");
+					getdata(20, 1, line, str, 29, DOECHO, YEA);
+					if (atoi(str) != tmp_mod) {
+						prints ("°¡? ¾¹È»»¹²»¶Ô? ÕæµÄÊÇÄãÃ´, ÎÒºÃÉËÐÄ...");
 						pressreturn();
 						Q_Goodbye();
 					}
@@ -172,8 +176,7 @@ show_cake(char *filename, int num)
 			}
 			getdata(20, 1, "ÄúµÄ´ð°¸: ", str, 29, DOECHO, YEA);
 			for (i = strlen(str); i >= 0; i--) {
-				if (str[i] == ' ' || str[i] == '\r'
-				    || str[i] == '\t' || str[i] < 32)
+				if (str[i] == ' ' || str[i] == '\r' || str[i] == '\t' || str[i] < 32)
 					str[i] = '\0';
 				else
 					break;
@@ -211,7 +214,7 @@ myexp(float x)
 {
 	if (x < -4)
 		return 0;
-	return 1 + x * (1 + x / 2 * (1 + x / 3 * (1 + x / 4 * (1 + x / 5 * (1 + x / 6 * 
+	return 1 + x * (1 + x / 2 * (1 + x / 3 * (1 + x / 4 * (1 + x / 5 * (1 + x / 6 *
 	       (1 + x / 7 * (1 + x / 8 * (1 + x / 9 * (1 + x / 10 * (1 + x / 11 * (1 + x
 	       / 12 * (1 + x / 13 * (1 + x / 14 * (1 + x / 15 / 1.4))))))))))))));
 }
@@ -857,12 +860,12 @@ char *direc;
        currfiletime = filetime;
        pos =new_search_record(new_dir, &fh, sizeof (fh),(void *) cmpfilename, NULL);
        if (pos <= 0) return 0;
-       delete_file(new_dir, sizeof (struct fileheader),pos, (void *) cmpfilename); 
+       delete_file(new_dir, sizeof (struct fileheader),pos, (void *) cmpfilename);
        currfiletime = tmpcurrfiletime;
        directfile(new_dir, direc, digest_name);
        unlink(new_dir);
        return 0;
-   } 
+   }
 
 int
 topfile_post(int ent, struct fileheader *fhdr, char *direct) //slowaction
@@ -938,7 +941,7 @@ topfile_post(int ent, struct fileheader *fhdr, char *direct) //slowaction
 			digest.accessed |= FILE_ISTOP1;
 			link(oldfile, digestfile);
 			append_record(digestdir, &digest, sizeof (digest));
-			//topfile_record(direct,fhdr->filename,ent);  
+			//topfile_record(direct,fhdr->filename,ent);
 			//add by hace
 			snprintf(genbuf, 256, "%s ÖÃ¶¥ %s %s %s",currentuser.userid, currboard, fhdr->owner,fhdr->title);
 			newtrace(genbuf);
@@ -1073,9 +1076,9 @@ char *direct;
 	case 'y':
 	case 'r':
 /* Added by deardragon 1999.11.21 Ôö¼Ó²»¿É RE ÊôÐÔ */
-// comment by bjgyt	
+// comment by bjgyt
 		if (!(fileinfo->accessed & FH_NOREPLY))
-//		if (!(fileinfo->accessed & FH_NOREPLY) && !(fileinfo->accessed & FILE_TOP1)) 
+//		if (!(fileinfo->accessed & FH_NOREPLY) && !(fileinfo->accessed & FILE_TOP1))
 			do_reply(fileinfo);
 		else {
 			move(3, 0);
@@ -1153,9 +1156,8 @@ extern int page, range;
 int result[MAXBOARD];
 int super_board_count;
 int super_board_now=0;
-char *strstr2(char *s, char *s2);
 
-static int 
+static int
 fill_super_board(char *searchname, int result[], int max)
 {
 	int i, total=0;
@@ -1164,8 +1166,8 @@ fill_super_board(char *searchname, int result[], int max)
 		if (bcache[i].header.filename[0] == '\0')
 			continue;
 		if (hasreadperm(&(bcache[i].header))) {
-			if (strstr2(bcache[i].header.filename, searchname) 
-			|| strstr2(bcache[i].header.title, searchname) 
+			if (strstr2(bcache[i].header.filename, searchname)
+			|| strstr2(bcache[i].header.title, searchname)
 			|| strstr2(bcache[i].header.keyword, searchname)){
 				result[total] = i;
 				total ++;
@@ -1175,14 +1177,14 @@ fill_super_board(char *searchname, int result[], int max)
 	return total;
 }
 
-static int 
+static int
 sb_show()
 {
 	int i;
 	struct boardmem *bptr;
 	struct boardheader *ptr;
 	char tmpBM[IDLEN + 1], buf[STRLEN];
-	
+
 	setlistrange(super_board_count);
 	if (range < 1)
 		return -1;
@@ -1191,7 +1193,7 @@ sb_show()
 		move(i+3, 0);
 		bptr = &bcache[result[i]];
 		ptr = &(bptr->header);
-		
+
 		prints(" %5d  ", bptr->total);
 		strncpy(tmpBM, bptr->header.bm[0], IDLEN);
 		sprintf(buf, "[%s] %s", bptr->header.type, bptr->header.title);
@@ -1207,7 +1209,7 @@ sb_show()
 	return 0;
 }
 
-static int 
+static int
 sb_key(int key, int allnum, int pagenum)
 {
 	switch(key){
@@ -1230,14 +1232,14 @@ sb_refresh()
 	update_endline();
 }
 
-static int 
+static int
 sb_select(int page, int number)
 {
  	super_board_now = page * BBS_PAGESIZE + number;
 	return -1;
 }
 
-int 
+int
 super_select_board(char *bname)
 {
 	char searchname[64], buf[64];//¹Ø¼ü×Ö¾Í¸øÁË64bytes.....
@@ -1285,7 +1287,7 @@ char *direct;
 	char bname[STRLEN], bpath[STRLEN];
 	struct stat st;
 	int ret;
-	
+
 	if (currentuser.dietime || inprison)
 		return DONOTHING;
 	if (digestmode == 4 || digestmode == 5)
@@ -1298,7 +1300,7 @@ char *direct;
 
 	make_blist();
 	if((ret=namecomplete((char *) NULL, bname))=='#') //super_select_board
-		super_select_board(bname);		
+		super_select_board(bname);
 	setbpath(bpath, bname);
 	if (*bname == '\0')
 		return FULLUPDATE;
@@ -1492,8 +1494,11 @@ char *str;
 }
 
 int
-transferattach(char *buf, int size, FILE * fp, FILE * fpto)
+transferattach(char *buf, size_t size, FILE * fp, FILE * fpto)
 {
+	char ch;
+	size_t len, n;
+
 	if (!strncmp(buf, "begin 644 ", 10)) {
 		fwrite(buf, 1, strlen(buf), fpto);
 		while (fgets(buf, size, fp) != NULL) {
@@ -1504,9 +1509,6 @@ transferattach(char *buf, int size, FILE * fp, FILE * fpto)
 		return 1;
 	}
 	if (!strncmp(buf, "beginbinaryattach ", 18)) {
-		char ch;
-		unsigned int len;
-		int n;
 		fwrite(buf, 1, strlen(buf), fpto);
 		fread(&ch, 1, 1, fp);
 		if (ch != 0) {
@@ -1700,8 +1702,8 @@ int mode;
 				owner[count - 8] = '\0';
 			}
 		}
-		
-		// read original time 
+
+		// read original time
 		fgets(temptime,256,inf);
 		if(fgets(temptime,256,inf)!=NULL)
 		{
@@ -1719,7 +1721,7 @@ int mode;
 			}
 		}
 		//
-		
+
 		if (in_mail == YEA)
 			fprintf(of,
 				"[1;37m¡¾ ÒÔÏÂÎÄ×Ö×ªÔØ×Ô [32m%s [37mµÄÐÅÏä ¡¿\n",
@@ -1732,7 +1734,7 @@ int mode;
 			fprintf(of, "¡¾ Ô­ÎÄÓÉ[32m %s [37mÓÚ[32m %s [37m·¢±í¡¿[m\n", owner,oritime);
 		else
 			fprintf(of, "¡¾ Ô­ÎÄÓÉ[32m %s [37m·¢±í¡¿[m\n", owner);
-		
+
 		if (hashead) {
 			while (fgets(buf, 256, inf) != NULL)	/*Clear Post header */
 				if (buf[0] == '\n' || buf[0] == '\r')
@@ -1751,7 +1753,7 @@ int mode;
 	} else if (mode == 2) {
 		write_header(of, 0 /*Ð´Èë .posts */ );
 	}
-	
+
 	while ((count = fread(buf, 1, sizeof (buf), inf)) > 0)
 		fwrite(buf, 1, count, of);
 	fclose(inf);
@@ -1769,12 +1771,7 @@ do_post()
 
 /* Add by SmallPig */
 static int
-post_cross(bname, mode, islocal, hascheck, dangerous)
-char *bname;
-int mode;
-int islocal;
-int hascheck;
-int dangerous;
+post_cross(char *bname, int mode, int islocal, int hascheck, int dangerous)
 {
 	struct fileheader postfile;
 	char filepath[STRLEN], fname[STRLEN];
@@ -1820,8 +1817,10 @@ int dangerous;
 	if ((!islocal) & (mode != 1)) {
 		postfile.accessed |= FH_INND;
 		local_article = 0;
-	} else
+	} else {
 		local_article = 1;
+	}
+
 	if (mode == 1) //here&following 3 line by bjgyt
 		strcpy(whopost, "XJTU-XANET");
 	else {
@@ -1832,11 +1831,9 @@ int dangerous;
 		}
 	}
 
-	if (mode == 1)
-		if ((strcmp(bname, "millionaires") ==0) || (strncmp(bname, "BM_exam", 7)==0))
-			;
-		else
-			postfile.accessed |= FH_MARKED;
+	if (mode == 1 && strcmp(bname, "millionaires") != 0 && strncmp(bname, "BM_exam", 7) != 0)
+		postfile.accessed |= FH_MARKED;
+
 	strsncpy(postfile.owner, whopost, sizeof (postfile.owner));
 	setbfile(filepath, bname, fname);
 	modify_user_mode(POSTING);
@@ -1846,25 +1843,22 @@ int dangerous;
 	strcpy(currboard, bkcurrboard);
 	postfile.sizebyte = numbyte(eff_size(filepath));
 	strsncpy(postfile.title, save_title, sizeof (postfile.title));
+
 	if (mode != 1) {
 		if (!hascheck)
-			dangerous =
-			    dofilter(postfile.title, filepath,
-				     political_board(bname));
+			dangerous = dofilter(postfile.title, filepath, political_board(bname));
 		if (dangerous) {
 			char mtitle[256];
-			snprintf(mtitle, sizeof (mtitle), "[×ªÔØ±¨¾¯] %s %.60s",
-				 bname, postfile.title);
+			snprintf(mtitle, sizeof (mtitle), "[×ªÔØ±¨¾¯] %s %.60s", bname, postfile.title);
 			mail_file(filepath, "delete", mtitle);
 			updatelastpost("deleterequest");
 			postfile.accessed |= FH_DANGEROUS;
 		}
 	}
-	{
-		int i = strlen(postfile.title) - 1;
-		while (i > 0 && isspace(postfile.title[i]))
-			postfile.title[i--] = 0;
-	}
+
+	int i = strlen(postfile.title) - 1;
+	while (i > 0 && isspace(postfile.title[i]))
+		postfile.title[i--] = 0;
 
 	ddigestmode = digestmode;
 	digestmode = 0;
@@ -1872,13 +1866,9 @@ int dangerous;
 	digestmode = ddigestmode;
 	if (append_record(buf, &postfile, sizeof (postfile)) == -1) {
 		if (!mode) {
-			errlog
-			    ("cross_posting '%s' on '%s': append_record failed!",
-			     postfile.title, quote_board);
+			errlog("cross_posting '%s' on '%s': append_record failed!", postfile.title, quote_board);
 		} else {
-			errlog
-			    ("Posting '%s' on '%s': append_record failed!",
-			     postfile.title, quote_board);
+			errlog("Posting '%s' on '%s': append_record failed!", postfile.title, quote_board);
 		}
 		pressreturn();
 		clear();
@@ -1888,8 +1878,7 @@ int dangerous;
 	updatelastpost(bname);
 	if (!mode) {
 		add_crossinfo(filepath, 1);
-		sprintf(buf, "%s crosspost %s %s",
-			currentuser.userid, bname, postfile.title);
+		sprintf(buf, "%s crosspost %s %s", currentuser.userid, bname, postfile.title);
 		newtrace(buf);
 	}
 	return (int)now;  // return filetime instead of 1 by IronBlood 20130807
@@ -2295,7 +2284,7 @@ get_mention_ids(char *article_path, char **mention_ids)
 static int
 dofilter(title, fn, mode)
 char *title, *fn;
-int mode;			// 1: politics    0: non-politics 
+int mode;			// 1: politics    0: non-politics
 {
 	//this function return 0 if article is safe, return -1 if article is dangerous
 	//return -2 if article is possbily dangerous.
@@ -2503,7 +2492,7 @@ char *direct;
 		system(command);
 	}
 	else
-	{	
+	{
 		char filepathtemp[STRLEN];
 		strcpy(filepathtemp,filepath);
 	    char *temp;
@@ -2533,12 +2522,12 @@ char *direct;
 	char buf[STRLEN], filepath[STRLEN];
 	int now;
 	if(stat(direct,&st)==-1 || (st.st_size/sizeof(struct fileheader) < ent))
-	        return DONOTHING;//add by hace
+		return DONOTHING;//add by hace
 	if (!in_mail)
 	{
 		if (is1984_board(currboard))
 			return DONOTHING;
-		if (!IScurrBM) 
+		if (!IScurrBM)
 		{
 			if (digestmode == 4 || digestmode == 5 || !strcmp(currboard, "syssecurity"))
 				return DONOTHING;
@@ -2550,7 +2539,7 @@ char *direct;
 		if (dashl(filepath))
 			return DONOTHING;//ÐÅÏäÖÐln¹ýÀ´µÄÎÄ¼þ½ûÖ¹±à¼­
 	}
-	
+
 	strsncpy(buf, fileinfo->title, sizeof (buf));
 	getdata(t_lines - 1, 0, "ÐÂÎÄÕÂ±êÌâ: ", buf, 50, DOECHO, NA);
 
@@ -2672,7 +2661,7 @@ char *direct;
         change_dir(direct, fileinfo, (void *) DIR_do_mark_minus_del, ent, digestmode,
                    0);
         return PARTUPDATE;
-}   
+}
 
 static int
 markspec_post(ent, fileinfo, direct)
@@ -3137,8 +3126,7 @@ struct fileheader *fptr;
 			else {
 				move(3, 0);
 				clrtobot();
-				prints
-				    ("\n\n    ÀÏ´ó,ÓÐÈË²»ÈÃÄãReÕâÆªÎÄÕÂ°¡!!!    ");
+				prints("\n\n    ÀÏ´ó,ÓÐÈË²»ÈÃÄãReÕâÆªÎÄÕÂ°¡!!!    ");
 				pressreturn();
 				clear();
 			}
@@ -4094,7 +4082,7 @@ marked_mode()
 				return PARTUPDATE;
 			sprintf(select, "×÷ÕßÊÇ %s", whattosearch);
 			break;
-		}		
+		}
 		setbdir(direct, currboard,4);
 		return power_action(direct, 1, -1, select, 9);
 		setbdir(currdirect, currboard, 4);
@@ -4152,17 +4140,17 @@ marked_mode()
 			digestmode = NA;
 			break;
 		// È«ÎÄËÑË÷£¬interma@bmy
-		case 8: 
+		case 8:
 			getdata(t_lines - 1, 0,
 			    "ÇëÊäÈë¹Ø¼ü×Ö:", whattosearch, 31, DOECHO,NA);
 			if (whattosearch[0] == '\0')
-				return PARTUPDATE;		
+				return PARTUPDATE;
 			digestmode = NA;
 			break;
 		/*case 9:				//×÷Õß¿´»ØÊÕÕ¾×Ô¼ºÎÄÕÂ
 			sprintf(select, "×÷ÕßÊÇ %s", currentuser.userid);
 			digestmode = 4;
-			break;*/			
+			break;*/
 		}
 		if (type == 8) {
 			return full_search_action(whattosearch);
@@ -4267,7 +4255,7 @@ b_notes_edit()
 
 	sprintf(buf2, "(E)±à¼­ (D)É¾³ý %s? [E]: ", ptr);
 	getdata(11, 0, buf2, ans, 2, DOECHO, YEA);
-	
+
 	if (notetype != 4){
 		if (ans[0] == 'D' || ans[0] == 'd') {
 			move(12, 0);
@@ -4289,8 +4277,8 @@ b_notes_edit()
 				setvfile(buf, currboard, "noterec");
 			else if (notetype == 2)
 				setvfile(buf, currboard, "notespasswd");
-			else 
-				buf[0]='\0'; 
+			else
+				buf[0]='\0';
 			unlink(buf);
 		}
 	}else {//keywords
@@ -4333,7 +4321,7 @@ b_notes_edit()
 			}else
 				aborted = -1;
 		}
-		if (aborted == -1) 
+		if (aborted == -1)
 			pressreturn();
 	}
 
@@ -4426,7 +4414,7 @@ struct fileheader *fileinfo;
 	fprintf(fp,"[1;32m¡î©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤¡î[0;1m\n");
 
 	int blankline=0;
-	
+
 	setbfile(buf, board, fh2fname(fileinfo));		//modify by mintbaggio 040321 for heji
  	fp1=fopen(buf, "rt");
 	if (fgets(temp2, 200, fp1)!=NULL){
@@ -4437,8 +4425,8 @@ struct fileheader *fileinfo;
 			if (transferattach(temp2, 200, fp1, fp))
 				continue;
 			if ((unsigned)*temp2<'\x1b'){
-				if (blankline) continue; 
-				else blankline=1; 
+				if (blankline) continue;
+				else blankline=1;
 			}
 			else blankline=0;
 			if (!strncmp(temp2, "·¢ÐÅÈË:", 7)||!strncmp(temp2, "±ê  Ìâ:", 7)||!strncmp(temp2, "·¢ÐÅÕ¾:", 7))
@@ -4459,7 +4447,7 @@ int commend_article(char* board, struct fileheader* fileinfo)
 {					//add by mintbaggio 040326 for front page commend
 	struct commend* x;
 	int offset;
-	
+
 	x = (struct commend*) malloc (sizeof(struct commend));
 	if((offset=is_in_commend(board, fileinfo))){	//if the file has in commend file list
 		del_commend(offset);			//then delete it
@@ -4490,7 +4478,7 @@ int is_in_commend(char* board, struct fileheader* fileinfo)	//if is, return offs
         fp=fopen(COMMENDFILE, "r");
         if(!fp)
         	return 0;
-        
+
         while(1){
                 if(fread(&x, sizeof(struct commend), 1, fp)<=0)	break;
                 if(!strcmp(board, x.board) && !strcmp(fh2fname(fileinfo), x.filename)){
@@ -4507,7 +4495,7 @@ int del_commend(int offset)
 {					//add by mintbaggio 040326 for front page commend
 	FILE *fp, *fp2;
 	struct commend x;
-	
+
 	fp = fopen(COMMENDFILE, "r");
 	fp2 = fopen(COMMENDFILE".new", "w");
 	if(!fp || !fp2)
@@ -4531,7 +4519,7 @@ int do_commend(char* board, struct fileheader* fileinfo)
 	FILE *fp;
 	struct commend y;
 	bzero(&y, sizeof(struct commend));
-	
+
 	fp=fopen(COMMENDFILE, "a");
 	if(!fp)
 		return 0;
@@ -4556,7 +4544,7 @@ int count_commend()
 	FILE *fp;
 	struct commend x;
 	int count = 0;
-	
+
 	fp = fopen(COMMENDFILE, "r");
 	if(!fp)	return 0;
 	while(1){
@@ -4595,7 +4583,7 @@ int commend_article2(char* board, struct fileheader* fileinfo)
 {					//add by mintbaggio 040326 for front page commend
 	struct commend* x;
 	int offset;
-	
+
 	x = (struct commend*) malloc (sizeof(struct commend));
 	if((offset=is_in_commend2(board, fileinfo))){	//if the file has in commend file list
 		del_commend2(offset);			//then delete it
@@ -4627,7 +4615,7 @@ int is_in_commend2(char* board, struct fileheader* fileinfo)	//if is, return off
         fp=fopen(COMMENDFILE2, "r");
         if(!fp)
         	return 0;
-        
+
         while(1){
                 if(fread(&x, sizeof(struct commend), 1, fp)<=0)	break;
                 if(!strcmp(board, x.board) && !strcmp(fh2fname(fileinfo), x.filename)){
@@ -4644,7 +4632,7 @@ int del_commend2(int offset)
 {					//add by mintbaggio 040326 for front page commend
 	FILE *fp, *fp2;
 	struct commend x;
-	
+
 	fp = fopen(COMMENDFILE2, "r");
 	fp2 = fopen(COMMENDFILE2".new", "w");
 	if(!fp || !fp2)
@@ -4668,7 +4656,7 @@ int do_commend2(char* board, struct fileheader* fileinfo)
 	FILE *fp;
 	struct commend y;
 	bzero(&y, sizeof(struct commend));
-	
+
 	fp=fopen(COMMENDFILE2, "a");
 	if(!fp)
 		return 0;
@@ -4693,7 +4681,7 @@ int count_commend2()
 	FILE *fp;
 	struct commend x;
 	int count = 0;
-	
+
 	fp = fopen(COMMENDFILE2, "r");
 	if(!fp)	return 0;
 	while(1){

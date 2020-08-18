@@ -358,7 +358,7 @@ char q_id[IDLEN + 2];
 if (HAS_PERM(PERM_ACCOUNTS))
    {
         char secu[35];
-        int num;
+        size_t num;
 
         strcpy(secu, "bTCPRD#@XWBA#VS-DOM-F0s23456789H");
         for (num = 0; num < strlen(secu); num++)
@@ -515,7 +515,7 @@ if (HAS_PERM(PERM_ACCOUNTS))
 			if (HAS_PERM(PERM_ACCOUNTS))
    {
         char secu[35];
-        int num;
+        size_t num;
 
         strcpy(secu, "bTCPRD#@XWBA#VS-DOM-F0s23456789H");
         for (num = 0; num < strlen(secu); num++)
@@ -567,6 +567,7 @@ int show_special(char *id2) {
 	}
 	fclose(fp);
 
+	return 0;
 }//add by wjbta@bmy
 
 static int
@@ -802,7 +803,8 @@ struct user_info *userinfo;
 		clrtoeol();
 		return -1;
 	} else {
-		int sock, msgsock, length;
+		int sock, msgsock;
+		socklen_t length;
 		struct sockaddr_in server;
 		char c, answer[2] = "";
 		char buf[512];
@@ -914,7 +916,7 @@ struct user_info *userinfo;
 			}
 		}
 
-		msgsock = accept(sock, (struct sockaddr *) 0, (int *) 0);
+		msgsock = accept(sock, (struct sockaddr *) 0, (unsigned int *) 0);
 		if (msgsock == -1) {
 			perror("accept");
 			return -1;

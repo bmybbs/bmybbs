@@ -44,9 +44,11 @@ set(SRC
 	editboard.c
 	power_select.c
 	tmpl.c
-	logger.c
 	identify.c
 )
+
+## unused source files:
+## logger.c
 
 set(PROTO_FILE ${CMAKE_CURRENT_SOURCE_DIR}/proto.h)
 set(SHOULD_GENERATE_PROTO FALSE)

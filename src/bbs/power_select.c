@@ -8,7 +8,7 @@
     Firebird Bulletin Board System
     Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
                         Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
-    
+
     Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
 
     This program is free software; you can redistribute it and/or modify
@@ -36,8 +36,7 @@ static void sure_markdel(int ent, struct fileheader *fileinfo, char *direct);
 static void minus_markdel(int ent, struct fileheader *fileinfo, char *direct);
 static void ann_mark(int ent, struct fileheader *fileinfo, char *direct);
 static void power_dir(int ent, struct fileheader *fileinfo, char *direct);
-static int power_range(char *filename, int id1, int id2, char *select,
-		       power_dofunc function, int *shoot);
+static int power_range(char *filename, unsigned int id1, int id2, char *select, power_dofunc function, int *shoot);
 static int titlehas(char *buf);
 static int idis(char *buf);
 static int checkmark(char *buf);
@@ -46,27 +45,27 @@ static int checktext(char *query);
 static int checkattr(char *buf);
 static int checkstar(char *buf);
 static int checkevas(char *buf);
-char *strstr2(char *s, char *s2);
+const char *strstr2(const char *s, const char *s2);
 
-static int slowtolower(int ch) 
-{ 
-	if (ch > 64 && ch < 91) 
-	{ 
-		return (ch + 32); 
-	} 
+static int slowtolower(int ch)
+{
+	if (ch > 64 && ch < 91)
+	{
+		return (ch + 32);
+	}
 	else
 	return ch;
-} 
+}
 
-static char *slowstrlwr(char *str) 
-{ 
-	int i;
-	for (i = 0; i < strlen(str); i++) 
-	{ 
-		str[i]=slowtolower(str[i]); 
-	} 
-	return str; 
-} 
+static char *slowstrlwr(char *str)
+{
+	size_t i;
+	for (i = 0; i < strlen(str); i++)
+	{
+		str[i] = slowtolower(str[i]);
+	}
+	return str;
+}
 
 
 static void
@@ -114,15 +113,11 @@ char *direct;
 }
 
 static int
-power_range(filename, id1, id2, select, function, shoot)
-char *filename;
-int id1, id2;
-char *select;
-power_dofunc function;
-int *shoot;
+power_range(char *filename, unsigned int id1, int id2, char *select, power_dofunc function, int *shoot)
 {
 	struct fileheader *buf;
-	int fd, bufsize, i, n, ret;
+	int fd, bufsize, n, ret;
+	size_t i;
 	struct stat st;
 	*shoot = 0;
 	if ((fd = open(filename, O_RDONLY)) == -1) {
@@ -165,14 +160,14 @@ int full_search_action(char *whattosearch)
   //
   char cmd[256];
   sprintf(cmd, MY_BBS_HOME "/bin/searcher.py %s '%s'", currboard, whattosearch);
-   
+
   FILE *fp = popen(cmd, "r");
   if (fp == 0)
     return PARTUPDATE;
-  
+
   char line[256];
-  struct fileheader fh; 
-  bzero(&fh, sizeof(struct fileheader));  
+  struct fileheader fh;
+  bzero(&fh, sizeof(struct fileheader));
   int nr = 0;
   while (fgets(line, 256, fp) != NULL)
   {
@@ -185,9 +180,9 @@ int full_search_action(char *whattosearch)
     char o_buf[16];
 
     int len = strlen(line);
-    strsncpy(f_buf, line, 15); 
-    sscanf(f_buf, "M.%d.A", &(fh.filetime));
-    sscanf(f_buf, "M.%d.A", &(fh.edittime));
+    strsncpy(f_buf, line, 15);
+    sscanf(f_buf, "M.%ld.A", &(fh.filetime));
+    sscanf(f_buf, "M.%ld.A", &(fh.edittime));
 
     char *p2s = strchr(line+15, ' ');
     int owner_len = p2s-line-15;
@@ -197,7 +192,7 @@ int full_search_action(char *whattosearch)
     fh.title[strlen(fh.title)-1] = 0;
     fh.thread = nr++;
     append_record(currdirect, &fh, sizeof(struct fileheader));
-  }  
+  }
 
   pclose(fp);
   //
@@ -207,11 +202,7 @@ int full_search_action(char *whattosearch)
 
 
 int
-power_action(filename, id1, id2, select, action)
-char *filename;
-int id1, id2;
-char *select;
-int action;
+power_action(char *filename, unsigned int id1, int id2, char *select, int action)
 {
 	ExtStru myextstru[] = {
 		{titlehas, Pair("标题", "含")},
@@ -283,15 +274,15 @@ int action;
 	return FULLUPDATE;
 }
 
-char*
-strstr2(char *s, char *s2) {
-        unsigned char *p;
-        int len=strlen(s2);
-        for(p=s; p[0]; p++) {
-                if(!strncasecmp(p, s2, len)) return p;
-                if(p[0]>127 && p[1]>31) p++;
-        }
-        return 0;
+const char*
+strstr2(const char *s, const char *s2) {
+	const char *p;
+	size_t len = strlen(s2);
+	for(p=s; p[0] != '\0'; p++) {
+		if(!strncasecmp(p, s2, len)) return p;
+		if(p[0]<0 && p[1]>31) p++;
+	}
+	return 0;
 }
 
 static int
@@ -316,7 +307,7 @@ idis(char *buf)
 		else
 			return 0;
 	}
-	
+
 	if (strcasecmp(slowstrlwr(tmpowner), slowstrlwr(buf)))
 
 		return 0;
@@ -445,7 +436,7 @@ char *direct;
 {
 	char num[8];
 	static char select[STRLEN];
-	int inum1, inum2, answer;
+	unsigned int inum1, inum2, answer;
 	char dir[STRLEN];
 	if (uinfo.mode != READING || digestmode != NA)
 		return DONOTHING;
@@ -496,7 +487,7 @@ char *direct;
 	else
 		getdata(6, 0,
 			"请输入你希望的操作: 0)取消 9)阅读:",
-			num, 2, DOECHO, YEA);	
+			num, 2, DOECHO, YEA);
 	answer = atoi(num);
 	if (answer > 0 && answer < 9 && !IScurrBM) {
 		prints("您选择的功能不能使用\n");

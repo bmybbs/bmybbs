@@ -8,7 +8,7 @@
     Firebird Bulletin Board System
     Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
                         Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
-    
+
     Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
 
     This program is free software; you can redistribute it and/or modify
@@ -651,7 +651,7 @@ direct_login()
 	fill_shmfile(5, "etc/endline", ENDLINE1_SHMKEY);
 	resolve_utmp();
 	resolve_ucache();
-	if (uinfo.userid == '\0' || !dosearchuser(uinfo.userid)) {
+	if (uinfo.userid[0] == '\0' || !dosearchuser(uinfo.userid)) {
 		prints("\x1b[1;31m错误的使用者帐号...\x1b[0m\n");
 		refresh();
 		exit(1);
@@ -823,8 +823,8 @@ user_login()
 		ansimore("etc/posts/newsday", 1);
 		ansimore("etc/posts/good10", 0);
 
-		
-		//add 
+
+		//add
 		local1=localtime(&login_start_time);
 		day1=local1->tm_mday;
 		mon1=local1->tm_mon;
@@ -1405,7 +1405,7 @@ R_endline(int signum)
 	    && uinfo.mode != RMAIL && uinfo.mode != DIGEST) return;
 /*---------
     if (uinfo.mode != READBRD
-        &&uinfo.mode != READNEW 
+        &&uinfo.mode != READNEW
         &&uinfo.mode != SELECT
         &&uinfo.mode != LUSERS
         &&uinfo.mode != FRIEND

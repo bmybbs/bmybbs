@@ -316,11 +316,8 @@ void permtostr(perm, str)
 void disply_userinfo(struct userec *u, int real)
 {
 	struct stat st;
-#ifdef __LP64
-	long diff, num;
-#else
-	int diff, num;
-#endif
+	long diff;
+	size_t num;
 
 	int exp;
 

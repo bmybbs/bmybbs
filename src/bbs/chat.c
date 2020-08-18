@@ -157,7 +157,7 @@ chat_send(fd, buf)
 int fd;
 char *buf;
 {
-	int len;
+	size_t len;
 
 	sprintf(genbuf, "%s\n", buf);
 	len = strlen(genbuf);
@@ -170,8 +170,9 @@ int fd;
 char *chatid;
 {
 	static char buf[512];
-	static int bufstart = 0;
-	int c, len;
+	static size_t bufstart = 0;
+	ssize_t c;
+	size_t len;
 	char *bptr;
 
 	len = sizeof (buf) - bufstart - 1;
@@ -181,7 +182,7 @@ char *chatid;
 	bptr = buf;
 	while (c > 0) {
 		len = strlen(bptr) + 1;
-		if (len > c && len < (sizeof (buf) / 2))
+		if (len > (unsigned long) c && len < (sizeof (buf) / 2))
 			break;
 
 		if (*bptr == '/') {
@@ -342,7 +343,7 @@ char *chatbuf;
 			if (vfork() == 0) {
 #endif
 				close(0);
-				execl("bin/chatd", "chatd", runchatbuf, 0);
+				execl("bin/chatd", "chatd", runchatbuf, NULL);
 				exit(-1);
 			}
 			cfd = socket(sin.sin_family, SOCK_STREAM, 0);
@@ -376,7 +377,7 @@ char *chatbuf;
 			if (vfork() == 0) {
 #endif
 				close(0);
-				execl("bin/chatd", "chatd", runchatbuf, 0);
+				execl("bin/chatd", "chatd", runchatbuf, NULL);
 				exit(-1);
 			}
 			sleep(1);

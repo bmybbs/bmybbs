@@ -31,7 +31,7 @@ struct user_info *t_search();
 int msg_blocked = 0;
 extern int have_msg_unread;
 
-static int get_msg(char *uid, char *msg, int line);
+static int get_msg(char *uid, char *msg, size_t msg_len, int line);
 static int dowall(struct user_info *uin);
 static int dowall_telnet(struct user_info *uin);
 static int myfriend_wall(struct user_info *uin);
@@ -41,16 +41,14 @@ static int sendmsgfunc(char *uid, struct user_info *uin, int userpid,
 static void mail_msg(struct userec *user);
 
 static int
-get_msg(uid, msg, line)
-char *msg, *uid;
-int line;
+get_msg(char *uid, char *msg, size_t msg_len, int line)
 {
 	int i;
 
 	move(line, 0);
 	clrtoeol();
 	prints("送音信给:%-12s    请输入音信内容，Ctrl+Q 换行:", uid);
-	memset(msg, 0, sizeof (msg));
+	memset(msg, 0, msg_len);
 	while (1) {
 		i = multi_getdata(line + 1, 0, 79, NULL, msg, MAX_MSG_SIZE, 11,
 				  0);
@@ -183,7 +181,7 @@ int userpid;
 		return -1;
 		break;
 	case 0:		/* message presending test ok, get the message and resend */
-		Gmode = get_msg(uident, buf, 1);
+		Gmode = get_msg(uident, buf, sizeof(buf), 1);
 		if (!Gmode) {
 			move(1, 0);
 			clrtoeol();
@@ -295,7 +293,7 @@ wall()
 	modify_user_mode(MSG);
 	move(2, 0);
 	clrtobot();
-	if (!get_msg("所有使用者", buf2, 1)) {
+	if (!get_msg("所有使用者", buf2, sizeof(buf2), 1)) {
 		return 0;
 	}
 	if (apply_ulist(dowall) == 0) {
@@ -316,7 +314,7 @@ wall_telnet()
 	modify_user_mode(MSG);
 	move(2, 0);
 	clrtobot();
-	if (!get_msg("telnet用户", buf2, 1)) {
+	if (!get_msg("telnet用户", buf2, sizeof(buf2), 1)) {
 		return 0;
 	}
 	if (apply_ulist(dowall_telnet) == 0) {
@@ -348,7 +346,7 @@ friend_wall()
 		buf, 2, DOECHO, YEA);
 	switch (buf[0]) {
 	case '1':
-		if (!get_msg("我的好朋友", buf2, 1))
+		if (!get_msg("我的好朋友", buf2, sizeof(buf2), 1))
 			return 0;
 		if (apply_ulist(myfriend_wall) == -1) {
 			move(2, 0);
@@ -357,7 +355,7 @@ friend_wall()
 		}
 		break;
 	case '2':
-		if (!get_msg("与我为友者", buf2, 1))
+		if (!get_msg("与我为友者", buf2, sizeof(buf2), 1))
 			return 0;
 		if (apply_ulist(hisfriend_wall) == -1) {
 			move(2, 0);

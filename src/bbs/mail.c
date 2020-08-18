@@ -10,7 +10,7 @@
                         Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
 
     Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
-    
+
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 1, or (at your option)
@@ -22,6 +22,7 @@
     GNU General Public License for more details.
 */
 
+#include <stddef.h>
 #include "bbs.h"
 #include "bbstelnet.h"
 
@@ -97,7 +98,8 @@ chkmail()
 	static int ismail = 0;
 	struct stat st;
 	int fd;
-	int i, offset;
+	int i;
+	size_t offset;
 	int numfiles;
 	int accessed;
 	extern char currmaildir[STRLEN];
@@ -105,7 +107,7 @@ chkmail()
 	if (!HAS_PERM(PERM_BASIC)) {
 		return 0;
 	}
-	offset = (int) &((struct fileheader *) 0)->accessed;
+	offset = offsetof(struct fileheader, accessed);
 
 	if (stat(currmaildir, &st) < 0)
 		return (ismail = 0);
@@ -120,16 +122,14 @@ chkmail()
 		close(fd);
 		return (ismail = 0);
 	}
-	lseek(fd, (st.st_size - (sizeof (struct fileheader) - offset)),
-	      SEEK_SET);
+	lseek(fd, (st.st_size - (sizeof (struct fileheader) - offset)), SEEK_SET);
 	for (i = 0; i < numfiles && i < 10; i++) {
 		read(fd, &accessed, sizeof (accessed));
 		if (!(accessed & FH_READ)) {
 			close(fd);
 			return (ismail = 1);
 		}
-		lseek(fd, -sizeof (struct fileheader) - sizeof (accessed),
-		      SEEK_CUR);
+		lseek(fd, -sizeof (struct fileheader) - sizeof (accessed), SEEK_CUR);
 	}
 	close(fd);
 	return (ismail = 0);
@@ -141,11 +141,11 @@ char qry_mail_dir[STRLEN];
 {
 	struct stat st;
 	int fd;
-	int offset;
+	size_t offset;
 	int numfiles;
 	int accessed;
 
-	offset = (int) &((struct fileheader *) 0)->accessed;
+	offset = offsetof(struct fileheader, accessed);
 	if ((fd = open(qry_mail_dir, O_RDONLY)) < 0)
 		return 0;
 	fstat(fd, &st);
@@ -291,7 +291,7 @@ char *userid, *title;
 	char uid[80];
 	int now;
 	int save_in_mail;
-	
+
 	strcpy(uid, userid);
 	/* I hate go to , but I use it again for the noodle code :-) */
 	if (strchr(userid, '@')) {
@@ -925,7 +925,6 @@ char *direct;
 
 // 等价子
 typedef int(*equalor)(const struct fileheader*, void *);
-char *strstr2(char *s, char *s2);
 // 标记的邮件
 static int ismark(const struct fileheader *mail, void *ext)
 {
@@ -985,7 +984,7 @@ static void do_search_mailbox(int type, const char *whattosearch, const char *te
 		isequal = issender;
 		break;
 	}
-	
+
 	size_t n = 0;
 	struct fileheader mail;
 	while ((n = fread(&mail, sizeof(struct fileheader), 1, fdir)) > 0)
@@ -1035,7 +1034,7 @@ char *direct;
 	if (ans[0] == '\0')
 		type = 0;
 	if (type < 1 || type > 4)
-		return PARTUPDATE;	
+		return PARTUPDATE;
 	whattosearch[0] = '\0';
 	switch (type)
 	{
@@ -1055,18 +1054,26 @@ char *direct;
 		break;
 	}
 
-	//char tempdir[L_tmpnam]; 
+	//char tempdir[L_tmpnam];
 	//tmpnam(tempdir);
 	char maildir[256];
-	strncpy(maildir, currmaildir, 256);
-	char *tempdir = tempnam(truncateDIR(maildir), ".DIR");
-	do_search_mailbox(type, whattosearch, tempdir);
-	// m_init();
+	//strncpy(maildir, currmaildir, 256);
+	//char *tempdir = tempnam(truncateDIR(maildir), ".DIR");
 
-	i_read(RMAIL, tempdir, mailtitle, (void *) maildoent, query_comms, sizeof (struct fileheader));
+	snprintf(maildir, 256, "%s-XXXXXX", currmaildir);
+	int fd = mkstemp(maildir);
 
-	unlink(tempdir);
-	free(tempdir);
+	if (fd != -1) {
+		close(fd); // close file descriptor immediately
+
+		do_search_mailbox(type, whattosearch, maildir);
+		// m_init();
+
+		i_read(RMAIL, maildir, mailtitle, (void *) maildoent, query_comms, sizeof(struct fileheader));
+
+		unlink(maildir);
+	}
+
 	i_read(RMAIL, currmaildir, mailtitle, (void *) maildoent, mail_comms, sizeof (struct fileheader));
 	return DOQUIT; // 如果不是DOQUIT，那就要多按几下"后退"才能退出，呵呵
 }
@@ -1248,7 +1255,7 @@ char *fname, *title, *receiver;
 {
 	FILE *fin, *fout;
 	char *attach;
-	int len;
+	size_t len;
 
 	sprintf(genbuf, "/usr/lib/sendmail -f %s.bbs@%s %s",
 		currentuser.userid, email_domain(), receiver);
@@ -1329,7 +1336,7 @@ g_send()
 			tmp[0]='a';
 			tmp[1]=0;
 		}
-		else { 
+		else {
 		getdata(0, 0,
 			"(A)增加 (D)删除 (I)引入好友 (C)清除目前名单 (E)放弃 (S)寄出? [S]： ",
 			tmp, 2, DOECHO, YEA);
@@ -2067,7 +2074,7 @@ mail_rjunk()
 	DIR *dirp;
 	struct dirent *direntp;
 	int len, count;
-	char buf[256], rpath[256], npath[256];
+	char buf[256], rpath[512], npath[256];
 	struct fileheader rstmsg;
 
 	clear();
@@ -2080,30 +2087,24 @@ mail_rjunk()
 		return FULLUPDATE;
 	}
 
-	len =
-	    sprintf(buf, "%c/%s/", mytoupper(currentuser.userid[0]),
-		    currentuser.userid);
+	len = sprintf(buf, "%c/%s/", mytoupper(currentuser.userid[0]), currentuser.userid);
 	normalize(buf);
 	dirp = opendir(MY_BBS_HOME "/mail/.junk");
 	if (dirp == NULL)
 		return -2;
 	count = 0;
 	while ((direntp = readdir(dirp)) != NULL) {
-		if (strncmp(buf, direntp->d_name, len)
-		    || strncmp(direntp->d_name + len, "M.", 2))
+		if (strncmp(buf, direntp->d_name, len) || strncmp(direntp->d_name + len, "M.", 2))
 			continue;
 		sprintf(rpath, MY_BBS_HOME "/mail/.junk/%s", direntp->d_name);
-		sprintf(npath, "mail/%c/%s/%s",
-			mytoupper(currentuser.userid[0]), currentuser.userid,
-			direntp->d_name + len);
+		sprintf(npath, "mail/%c/%s/%s", mytoupper(currentuser.userid[0]), currentuser.userid, direntp->d_name + len);
 		rename(rpath, npath);
 		bzero(&rstmsg, sizeof(struct fileheader));
 		getmailinfo(npath, &rstmsg);
 		rstmsg.filetime = atoi(direntp->d_name + 2 + len);
 		rstmsg.thread = rstmsg.filetime;
 		setmailfile(genbuf, currentuser.userid, DOT_DIR);
-		if (append_record(genbuf, &rstmsg, sizeof (struct fileheader))
-		    == -1)
+		if (append_record(genbuf, &rstmsg, sizeof (struct fileheader)) == -1)
 			break;
 		count++;
 	}

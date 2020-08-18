@@ -7,7 +7,6 @@
 //因为可能存在一些内存的问题，做了部分修改
 
 #include "bbs.h"
-#include <math.h>
 #define MAIL_ID "program" //这个是邮件的收信人id，将这个id的信箱映射到版面
 
 int alter = 0;

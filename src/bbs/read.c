@@ -66,7 +66,6 @@ static int search_articles(struct keeploc *locmem, char *query, int offset, int 
 static int cursor_pos(struct keeploc *locmem, int val, int from_top);
 static int search_threadid(struct keeploc *locmem, int offset, int thread, int mode);
 static int digest_mode(void);
-char *strstr2(char *s, char *s2);
 
 
 //getkeep语义: 最开始的一页是1,

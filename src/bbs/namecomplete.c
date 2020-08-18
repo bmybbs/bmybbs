@@ -38,7 +38,7 @@ static int NumInList(register struct word *list);
 static struct word *GetSubList(register char *tag, register struct word *list);
 static void ClearSubList(struct word *list);
 static int MaxLen(struct word *list, int count);
-static int MaxCommonStr(char str[STRLEN], struct word *list, int n);
+static size_t MaxCommonStr(char str[STRLEN], struct word *list, size_t n);
 static int UserMaxLen(char cwlist[][IDLEN + 1], int cwnum, int morenum, int count);
 static int UserSubArray(char cwbuf[][IDLEN + 1], char cwlist[][IDLEN + 1], int cwnum, int key, int pos);
 
@@ -185,18 +185,18 @@ int count;
 	return len;
 }
 
-static int
+static size_t
 MaxCommonStr(str, list, n)
 char str[STRLEN];
 struct word *list;
-int n;
+size_t n;
 {
-	int len;
+	size_t len;
 	strcpy(str, list->word);
 	len = strlen(str);
 	list = list->next;
 	while (list != NULL && len > n) {
-		while (strncasecmp(str, list->word, len) && len > 0)
+		while (strncasecmp(str, list->word, len) != 0 && len > 0)
 			len--;
 		str[len] = '\0';
 		if (strlen(list->word) == len)
@@ -274,8 +274,7 @@ char *prompt, *data;
 				continue;
 			}
 			//自动补齐, 代码添加开始, by ecnegrevid
-			if (MaxCommonStr(str, cwlist, strlen(data)) >
-			    strlen(data)) {
+			if (MaxCommonStr(str, cwlist, strlen(data)) > strlen(data)) {
 				struct word *node;
 				strcpy(data, str);
 				node = GetSubList(data, cwlist);
