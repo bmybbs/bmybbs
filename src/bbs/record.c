@@ -110,15 +110,6 @@ int size;
 	return num/size;
 }
 
-static void
-toobigmesg()
-{
-/*
-    prints( "record size too big!!\n" );
-    refresh();
-*/
-}
-
 int
 apply_record(filename, fptr, size)
 char *filename;
@@ -129,7 +120,6 @@ int size;
 	int fd, sizeread, n, i;
 
 	if ((buf = malloc(size * NUMBUFFER)) == NULL) {
-		toobigmesg();
 		return -1;
 	}
 	if ((fd = open(filename, O_RDONLY, 0)) == -1) {
@@ -427,7 +417,6 @@ void (*fileupdate) (void *);
 	int fd;
 
 	if (size > BUFSIZE) {
-		toobigmesg();
 		return -1;
 	}
 	if ((fd = open(dirname, O_RDWR)) == -1)
