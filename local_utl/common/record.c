@@ -48,31 +48,6 @@ toobigmesg()
 */
 }
 
-
-
-int
-get_records(filename, rptr, size, id, number)
-char *filename;
-char *rptr;
-int size, id, number;
-{
-	int fd;
-	int n;
-
-	if ((fd = open(filename, O_RDONLY, 0)) == -1)
-		return -1;
-	if (lseek(fd, size * (id - 1), SEEK_SET) == -1) {
-		close(fd);
-		return 0;
-	}
-	if ((n = read(fd, rptr, size * number)) == -1) {
-		close(fd);
-		return -1;
-	}
-	close(fd);
-	return (n / size);
-}
-
 int
 substitute_record(filename, rptr, size, id)
 char *filename;
@@ -110,58 +85,4 @@ int size, id;
 #endif
 	close(fd);
 	return 0;
-}
-
-int
-update_file(dirname, size, ent, filecheck, fileupdate)
-char *dirname;
-int size, ent;
-int (*filecheck) ();
-void (*fileupdate) ();
-{
-	char abuf[BUFSIZE];
-	int fd;
-
-	if (size > BUFSIZE) {
-		toobigmesg();
-		return -1;
-	}
-	if ((fd = open(dirname, O_RDWR)) == -1)
-		return -1;
-	flock(fd, LOCK_EX);
-	if (lseek(fd, size * (ent - 1), SEEK_SET) != -1) {
-		if (read(fd, abuf, size) == size)
-			if ((*filecheck) (abuf)) {
-				lseek(fd, -size, SEEK_CUR);
-				(*fileupdate) (abuf);
-				if (safewrite(fd, abuf, size) != size) {
-					report("update err");
-					flock(fd, LOCK_UN);
-					close(fd);
-					return -1;
-				}
-				flock(fd, LOCK_UN);
-				close(fd);
-				return 0;
-			}
-	}
-	lseek(fd, 0, SEEK_SET);
-	while (read(fd, abuf, size) == size) {
-		if ((*filecheck) (abuf)) {
-			lseek(fd, -size, SEEK_CUR);
-			(*fileupdate) (abuf);
-			if (safewrite(fd, abuf, size) != size) {
-				report("update err");
-				flock(fd, LOCK_UN);
-				close(fd);
-				return -1;
-			}
-			flock(fd, LOCK_UN);
-			close(fd);
-			return 0;
-		}
-	}
-	flock(fd, LOCK_UN);
-	close(fd);
-	return -1;
 }
