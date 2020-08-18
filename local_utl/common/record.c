@@ -48,27 +48,7 @@ toobigmesg()
 */
 }
 
-int
-get_record(filename, rptr, size, id)
-char *filename;
-char *rptr;
-int size, id;
-{
-	int fd;
 
-	if ((fd = open(filename, O_RDONLY, 0)) == -1)
-		return -2;
-	if (lseek(fd, size * (id - 1), SEEK_SET) == -1) {
-		close(fd);
-		return -3;
-	}
-	if (read(fd, rptr, size) != size) {
-		close(fd);
-		return -1;
-	}
-	close(fd);
-	return 0;
-}
 
 int
 get_records(filename, rptr, size, id, number)

@@ -300,3 +300,22 @@ int (*filecheck) (void *);
 	close(fd);
 	return ret;
 }
+
+int
+get_record(char *filename, void *rptr, int size, int id)
+{
+	int fd;
+
+	if ((fd = open(filename, O_RDONLY, 0)) == -1)
+		return -2;
+	if (lseek(fd, size * (id - 1), SEEK_SET) == -1) {
+		close(fd);
+		return -3;
+	}
+	if (read(fd, rptr, size) != size) {
+		close(fd);
+		return -1;
+	}
+	close(fd);
+	return 0;
+}

@@ -100,7 +100,6 @@ char *ModeType(int mode);
 char *anno_path_of(char *board);
 int file_has_word(char *file, char *word);
 int f_append(char *file, char *buf);
-int get_record(void *buf, int size, int num, char *file);
 int put_record(void *buf, int size, int num, char *file);
 int del_record(char *file, int size, int num);
 char *noansi(char *s);		//return a static buf

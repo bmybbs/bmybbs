@@ -152,27 +152,6 @@ f_append(char *file, char *buf)
 }
 
 int
-get_record(void *buf, int size, int num, char *file)
-{
-	int fd;
-	if (size < 1 || size > 4096)
-		return 0;
-	if (num < 0 || num > 1000000)
-		return 0;
-	bzero(buf, size);
-	fd = open(file, O_RDONLY);
-	if (fd < 0)
-		return 0;
-	lseek(fd, num * size, SEEK_SET);
-	if (read(fd, buf, size) != size) {
-		close(fd);
-		return 0;
-	}
-	close(fd);
-	return 1;
-}
-
-int
 put_record(void *buf, int size, int num, char *file)
 {
 	int fd;
