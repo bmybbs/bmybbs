@@ -11,7 +11,7 @@ link_directories(ythtlib libythtbbs)
 
 set(CMAKE_C_FLAGS "-Wall -g -pipe -Wextra -O -Wno-unused-result -Wno-unused-parameter -Wno-unused-variable -Wno-unused-but-set-variable -Wno-unused-value -std=gnu11")
 
-add_definitions(-D_GNU_SOURCE -DCONF_HAVE_OPENPTY -DLINUX)
+add_definitions(-D_GNU_SOURCE -DCONF_HAVE_OPENPTY -DLINUX -DSMTP_OPENSSL)
 
 add_subdirectory(ythtlib)
 add_subdirectory(libythtbbs)
