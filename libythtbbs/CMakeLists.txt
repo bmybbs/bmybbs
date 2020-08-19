@@ -51,6 +51,7 @@ add_library(ythtbbs SHARED
 	sectreeop.c
 	libiden.c
 	notification.c
+	mailsender.c
 )
 
 add_dependencies(ythtbbs sectree)

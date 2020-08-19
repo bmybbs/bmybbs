@@ -35,4 +35,5 @@
 #include "sectree.h"
 #include "notification.h"
 #include "cache.h"
+#include "mailsender.h"
 #endif

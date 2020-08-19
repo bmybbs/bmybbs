@@ -20,4 +20,4 @@ add_subdirectory(nju09)
 add_subdirectory(local_utl)
 add_subdirectory(atthttpd)
 add_subdirectory(api)
-
+add_subdirectory(tests)
