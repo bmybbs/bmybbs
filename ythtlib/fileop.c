@@ -85,6 +85,27 @@ readstrvalue(const char *filename, const char *str, char *value, int size)
 }
 
 int
+readstrvalue_fp(FILE *fp, const char *str, char *value, size_t size)
+{
+	fseek(fp, 0, SEEK_SET);
+	char buf[512], *ptr;
+	int retv = -1;
+	while (fgets(buf, sizeof (buf), fp)) {
+		if (!(ptr = strchr(buf, ' ')))
+			continue;
+		*ptr++ = 0;
+		if (strcmp(buf, str))
+			continue;
+		strsncpy(value, ptr, size);
+		if ((ptr = strchr(value, '\n')))
+			*ptr = 0;
+		retv = 0;
+		break;
+	}
+	return retv;
+}
+
+int
 savestrvalue(const char *filename, const char *str, const char *value)
 {
 	FILE *fp;

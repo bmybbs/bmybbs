@@ -26,6 +26,21 @@ sigjmp_buf bus_jump;
 
 int crossfs_rename(const char *oldpath, const char *newpath);
 int readstrvalue(const char *filename, const char *str, char *value, int size);
+
+/**
+ * 从配置文件中读取值
+ * 配置文件格式：
+ *   key1 value1
+ *   key2 value2
+ * 作用和 readstrvalue 一样，区别在于若同时从一个文件中读取配置信息，减少 fopen/fclose 的调用次数。
+ * @see readstrvalue
+ * @param[in]   fp    配置文件描述符
+ * @param[in]   str   键
+ * @param[out]  value 存放值的缓冲区
+ * @param[in]   size  缓冲区大小
+ * @return
+ */
+int readstrvalue_fp(FILE *fp, const char *str, char *value, size_t size);
 int savestrvalue(const char *filename, const char *str, const char *value);
 void sigbus(int signo);
 int mmapfile(char *filename, struct mmapfile *pmf);
