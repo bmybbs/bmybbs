@@ -9,7 +9,7 @@
     Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
                         Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
     Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
-    
+
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 1, or (at your option)
@@ -25,9 +25,9 @@
 #include "bbstelnet.h"
 #include "identify.h"
 /*
-#define  EMAIL          0x0001 
-#define  NICK           0x0002 
-#define  REALNAME       0x0004 
+#define  EMAIL          0x0001
+#define  NICK           0x0002
+#define  REALNAME       0x0004
 #define  ADDR           0x0008
 #define  REALEMAIL      0x0010
 #define  BADEMAIL       0x0020
@@ -54,7 +54,7 @@ char * str_to_upper(char *str);
 -3	没有找到这个邮件服务器，删除失败
 -4	打开临时文件失败，删除失败
 */
-int 
+int
 release_email(char *userid, char *email) //释放邮箱, added by interma 2006.2.21
 {
     struct userec* cuser;
@@ -76,22 +76,22 @@ release_email(char *userid, char *email) //释放邮箱, added by interma 2006.2.21
 /*
     char username[50];
     char popserver[50];
-    
+
     char *p = strchr(email, '@');
     if (p == NULL)
         return -1;
-    
-    memset(username, '\0', sizeof(username)); 
-    memset(popserver, '\0', sizeof(popserver));    
+
+    memset(username, '\0', sizeof(username));
+    memset(popserver, '\0', sizeof(popserver));
     strncpy(username, email, p - email);
     strncpy(popserver, p + 1, strlen(email) - 1 - (p - email));
-    
-    //printf("[%s][%s]", username, popserver);  
-    
+
+    //printf("[%s][%s]", username, popserver);
+
     FILE *fp;
     char buf[256];
     int isexist = 0;
-    
+
 	fp = fopen(MY_BBS_HOME "/etc/pop_register/pop_list", "r");
     if (fp == NULL)
         return -2;
@@ -99,38 +99,38 @@ release_email(char *userid, char *email) //释放邮箱, added by interma 2006.2.21
 	{
         if (strcmp(buf, "") == 0 || strcmp(buf, " ") == 0 || strcmp(buf, "\n") == 0)
 			break;
-		
+
         buf[strlen(buf) - 1] = '\0';
         if (strcmp(buf, popserver) == 0)
-        {   
+        {
             isexist = 1;
-            break; 	
-        }	
-        	
-        fgets(buf, 256, fp);      	
-    }      
-    fclose(fp);  
-    
+            break;
+        }
+
+        fgets(buf, 256, fp);
+    }
+    fclose(fp);
+
     if (!isexist)
         return -3;
-    
+
 	strncpy(buf, MY_BBS_HOME "/etc/pop_register/", 256);
 	strncat(buf, popserver, 256);
    	fp = fopen(buf, "r");
 	strncpy(buf, MY_BBS_HOME "/etc/pop_register/", 256);
    	strncat(buf, popserver, 256);
    	strncat(buf, "_temp", 5);
-    
+
 	int lockfd = openlockfile(".lock_new_register", O_RDONLY, LOCK_EX); // 加锁来保证互斥操作
 	FILE *fp2 = fopen(buf, "w");
     if (fp == NULL || fp2 == NULL)
-	{   
+	{
 		close(lockfd);
-		return -4;  
+		return -4;
     }
     char username2[50];
     char userid2[20];
-    
+
     while(fgets(buf, 256, fp) != NULL)
 	{
 	    strncpy(username2, buf, 50);
@@ -139,9 +139,9 @@ release_email(char *userid, char *email) //释放邮箱, added by interma 2006.2.21
 	    strncpy(userid2, buf, 20);
 	    p = strchr(userid2, ' ');
 	    userid2[p - userid2] = '\0';
-	    
-	    //printf("[%s][%s]\n", userid2, username2); 
-	    if (strcmp(str_to_upper(userid), str_to_upper(userid2)) == 0 && 
+
+	    //printf("[%s][%s]\n", userid2, username2);
+	    if (strcmp(str_to_upper(userid), str_to_upper(userid2)) == 0 &&
             strcmp(str_to_upper(username), str_to_upper(username2)) == 0)
 	    {
 	        ;
@@ -151,12 +151,12 @@ release_email(char *userid, char *email) //释放邮箱, added by interma 2006.2.21
             fputs(username2, fp2);
             fputs("\n", fp2);
             fputs(buf, fp2);
-        }          
-	}    
+        }
+	}
 
     fclose(fp);
     fclose(fp2);
-    
+
  	char buf2[256];
 	strncpy(buf2, MY_BBS_HOME "/etc/pop_register/", 256);
 	strncat(buf2, popserver, 256);
@@ -165,10 +165,10 @@ release_email(char *userid, char *email) //释放邮箱, added by interma 2006.2.21
    	strncat(buf, popserver, 256);
    	strncat(buf, "_temp", 5);
 	rename(buf, buf2);
-    close(lockfd);  
-    return 0;         
+    close(lockfd);
+    return 0;
     */
-}    
+}
 
 
 static int
@@ -224,7 +224,7 @@ getnewuserid(struct userec *newuser)
 				strncpy(email, utmp.email, 50);
 				release_email(userid, email); //id饿死了之后自动释放邮箱，added by interma 2006.2.21
 				// 给此用户发信,提醒邮箱已经释放.
-				sprintf(buf, MY_BBS_HOME "/bin/sendmail.py '%s' '%s@bmy已经死亡' '%s已经死亡，邮箱绑定已经解除，请重新用此邮箱注册id。'", 
+				sprintf(buf, MY_BBS_HOME "/bin/sendmail.py '%s' '%s@bmy已经死亡' '%s已经死亡，邮箱绑定已经解除，请重新用此邮箱注册id。'",
 					email, userid, userid);
 				int ret = system(buf);
 
@@ -505,7 +505,7 @@ check_register_info()
 	}
 	if (!(currentuser.userlevel & PERM_LOGINOK)) {
 		if (!invalid_realmail
-		    (urec->userid, urec->realmail, STRLEN - 16)) 
+		    (urec->userid, urec->realmail, STRLEN - 16))
 		{
 			#ifndef POP_CHECK /* 防止拣回尸体后，不用输入信箱名。interma@BMY*/
 			sethomefile(buf, urec->userid, "sucessreg");
@@ -630,7 +630,7 @@ check_register_info()
 			clear();
 			/*
 			   ans[0]='\0';
-			   while (ans[0] < '1' || ans[0] > '3') {          
+			   while (ans[0] < '1' || ans[0] > '3') {
 			   getdata(3,0,"请输入你的性别: [1]男的 [2]女的 [3]不告诉你 (1-3): ",
 			   ans,2,DOECHO,EA);
 			   }
