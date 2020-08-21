@@ -161,4 +161,4 @@ else(SHOULD_GENERATE_PROTO)
 endif(SHOULD_GENERATE_PROTO)
 
 add_executable(www ${SRC})
-target_link_libraries(www ythtbbs ytht ghthash pcre mysqlclient ${LIBXML2_LIBRARIES})
+target_link_libraries(www ythtbbs ytht ghthash)

@@ -1,2 +1,2 @@
 add_executable(2nd_expire 2nd_expire.c)
-target_link_libraries(2nd_expire ythtbbs ytht pcre ${LIBXML2_LIBRARIES})
+target_link_libraries(2nd_expire ythtbbs ytht)
