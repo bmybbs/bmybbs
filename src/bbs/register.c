@@ -275,6 +275,7 @@ new_register()
 	char passbuf[STRLEN];
 	int allocid, try;
 
+	/* unused
 	if (0) {
 		now_t = time(0);
 		sprintf(genbuf, "etc/no_register_%3.3s", ctime(&now_t));
@@ -284,6 +285,7 @@ new_register()
 			exit(1);
 		}
 	}
+	*/
 	memset(&newuser, 0, sizeof (newuser));
 	// getdata(0, 0, "使用GB编码阅读?(\xa8\xcf\xa5\xce BIG5\xbd\x58\xbe\x5c\xc5\xaa\xbd\xd0\xbf\xefN)(Y/N)? [Y]: ", passbuf, 4, DOECHO, YEA);
 	// if (*passbuf == 'n' || *passbuf == 'N')
@@ -309,15 +311,13 @@ new_register()
 //		if (!goodgbid(newuser.userid)) {   by bjgyt
 //			prints("不正确的中英文帐号\n");
 		if (id_with_num(newuser.userid)) {
-         	        prints("帐号必须全为英文字母!                           \n");
+			prints("帐号必须全为英文字母!\n");
 		} else if (strlen(newuser.userid) < 2) {
-			prints("帐号至少需有两个英文字母!                        \n");
-		} else if ((*newuser.userid == '\0')
-			   || is_bad_id(newuser.userid)) {
-			prints
-			    ("抱歉, 您不能使用这个字作为帐号。 请想过另外一个。\n");
+			prints("帐号至少需有两个英文字母!\n");
+		} else if ((*newuser.userid == '\0') || is_bad_id(newuser.userid)) {
+			prints("抱歉, 您不能使用这个字作为帐号。 请想过另外一个。\n");
 		} else if (dosearchuser(newuser.userid)) {
-			prints("此帐号已经有人使用                           \n");
+			prints("此帐号已经有人使用\n");
 		} else
 			break;
 	}
@@ -344,8 +344,7 @@ new_register()
 	newuser.userdefine = -1;
 	if (!strcmp(newuser.userid, "guest")) {
 		newuser.userlevel = 0;
-		newuser.userdefine &=
-		    ~(DEF_FRIENDCALL | DEF_ALLMSG | DEF_FRIENDMSG);
+		newuser.userdefine &= ~(DEF_FRIENDCALL | DEF_ALLMSG | DEF_FRIENDMSG);
 	} else {
 		newuser.userlevel = PERM_BASIC;
 		newuser.flags[0] = PAGER_FLAG | BRDSORT_FLAG2;
@@ -371,8 +370,7 @@ new_register()
 	}
 	sethomepath(genbuf, newuser.userid);
 	mkdir(genbuf, 0775);
-	sprintf(genbuf, "%s newaccount %d %s", newuser.userid, allocid,
-		fromhost);
+	sprintf(genbuf, "%s newaccount %d %s", newuser.userid, allocid, fromhost);
 	newtrace(genbuf);
 }
 
