@@ -366,7 +366,8 @@ struct associated_userid *get_associated_userid(const char *email) {
 	my_bool bind_status;
 	char *sqlbuf;
 	char userid[IDLEN + 1];
-	MYSQL_BIND params[1], results[1];
+	long user_status;
+	MYSQL_BIND params[1], results[2];
 	struct associated_userid *au;
 	long idx;
 	long rows;
@@ -387,7 +388,7 @@ struct associated_userid *get_associated_userid(const char *email) {
 		goto END;
 	}
 
-	sqlbuf = "SELECT userid FROM " USERREG_TABLE " WHERE email=?;";
+	sqlbuf = "SELECT userid, status FROM " USERREG_TABLE " WHERE email=?;";
 	mysql_status = mysql_stmt_prepare(stmt, sqlbuf, strlen(sqlbuf));
 	if (mysql_status != 0) {
 		goto END;
@@ -401,6 +402,9 @@ struct associated_userid *get_associated_userid(const char *email) {
 	results[0].buffer = (void *)userid;
 	results[0].buffer_length = IDLEN;
 
+	results[1].buffer_type = MYSQL_TYPE_LONG;
+	results[1].buffer = (void *) &user_status;
+	results[1].buffer_length = sizeof(long);
 
 	bind_status = mysql_stmt_bind_param(stmt, params);
 	if (bind_status != 0) {
@@ -430,9 +434,11 @@ struct associated_userid *get_associated_userid(const char *email) {
 	au = (struct associated_userid *) calloc(1, sizeof(struct associated_userid));
 	au->count = mysql_stmt_num_rows(stmt);
 	au->id_array = (char**) calloc(au->count, sizeof(void *));
+	au->status_array = (int *) calloc(au->count, sizeof(int));
 	for (idx=0; idx < au->count; idx++) {
 		mysql_stmt_fetch(stmt);
 		au->id_array[idx] = strdup(userid);
+		au->status_array[idx] = user_status % 10;
 	}
 
 END:
@@ -450,7 +456,10 @@ void free_associated_userid(struct associated_userid *au) {
 			free(au->id_array[i]);
 	}
 
-	if (au->count > 0) free(au->id_array);
+	if (au->count > 0) {
+		free(au->id_array);
+		free(au->status_array);
+	}
 
 	free(au);
 }

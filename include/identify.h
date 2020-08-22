@@ -55,6 +55,7 @@ struct active_data{
 struct associated_userid {
 	long count;
 	char **id_array;
+	int  *status_array;
 };
 
 int invalid_mail(char* mbox);
