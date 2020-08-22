@@ -369,8 +369,8 @@ struct associated_userid *get_associated_userid(const char *email) {
 	long user_status;
 	MYSQL_BIND params[1], results[2];
 	struct associated_userid *au;
-	long idx;
-	long rows;
+	size_t idx;
+	size_t rows;
 
 	s = NULL;
 	stmt = NULL;
@@ -448,7 +448,7 @@ END:
 }
 
 void free_associated_userid(struct associated_userid *au) {
-	long i;
+	size_t i;
 	if (au == NULL) return;
 
 	for (i = 0; i < au->count; i++) {

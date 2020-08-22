@@ -53,7 +53,7 @@ struct active_data{
 };
 
 struct associated_userid {
-	long count;
+	size_t count;
 	char **id_array;
 	int  *status_array;
 };
