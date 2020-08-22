@@ -124,10 +124,6 @@ bbsfindacc_main()
 	char sqlbuf[512];
 	size_t i;
 
-	MYSQL *s = NULL;
-	MYSQL_RES *res;
-	MYSQL_ROW row;
-
 	html_header(1);
 	printf("<body>");
 
@@ -212,21 +208,18 @@ bbsfindacc_main()
 		break;
 
 	case 1:
-		s = mysql_init(s);
-		if (!my_connect_mysql(s)) {
+		str_to_lowercase(email);
+		struct associated_userid *au = get_associated_userid(email);
+		if (au == NULL) {
 			http_fatal("查询失败");
 		}
-		str_to_lowercase(email);
-		sprintf(sqlbuf,"SELECT userid,status FROM %s WHERE lower(%s)='%s' and status>0;" , USERREG_TABLE, "email", email);
-		mysql_real_query(s, sqlbuf, strlen(sqlbuf));
-		res = mysql_store_result(s);
-		printf("<br>此信箱共认证了%d个用户.<br>\n", (int)mysql_num_rows(res));
+
+		printf("<br>此信箱共关联了%ld个用户.<br>\n", au->count);
 		//列出同记录下的其他id
-		for (i=0; i<mysql_num_rows(res); ++i) {
-			row = mysql_fetch_row(res);
-			printf("%s<br>\n", row[0]);
+		for (i=0; i < au->count; ++i) {
+			printf("%s %s<br>\n", au->id_array[i], style_to_str(au->status_array[i]));
 		}
-		mysql_close(s);
+		free_associated_userid(au);
 
 		break;
 
