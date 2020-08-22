@@ -8,7 +8,7 @@
 #define SQLUSER "root"
 #define SQLPASSWD "xj,bbs,1"
 #define USERREG_TABLE "userreglog"
-// #define SCHOOLDATA_TABLE "schooldata" 
+// #define SCHOOLDATA_TABLE "schooldata"
 
 //一些返回值
 #define TOO_MUCH_RECORDS 3
@@ -52,6 +52,11 @@ struct active_data{
 	int status;
 };
 
+struct associated_userid {
+	long count;
+	char **id_array;
+};
+
 int invalid_mail(char* mbox);
 //void gencode(char* code);
 char* str_to_uppercase(char *str);
@@ -72,5 +77,17 @@ int get_active_value(char* value, struct active_data* act_data);
 //int get_official_data(struct active_data* act_data);
 MYSQL * my_connect_mysql(MYSQL *s);
 
+/**
+ * 依据邮箱地址查询关联的id列表，使用结束记得调用 free_associated_userid 释放内存。
+ * @param email 邮件地址
+ * @return struct associated_userid 指针
+ */
+struct associated_userid *get_associated_userid(const char *email);
+
+/**
+ * 释放由 get_associated_userid 产生的内存空间。
+ * @param au
+ */
+void free_associated_userid(struct associated_userid* au);
 #endif
 

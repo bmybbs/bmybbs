@@ -225,7 +225,7 @@ int query_record_num(char* value, int style)
 
 	s = mysql_init(s);
 	if (!my_connect_mysql(s)) {
-		if (s != NULL) free(s);
+		if (s != NULL) mysql_close(s);
 		return -1;
 	}
 	sprintf(sqlbuf,"SELECT * FROM %s WHERE lower(%s)='%s' AND status>0; " , USERREG_TABLE, active_style_str[style], str_to_lowercase(value));
@@ -285,7 +285,7 @@ int write_active(struct active_data* act_data)
 
 	s = mysql_init(s);
 	if (!my_connect_mysql(s)) {
-		if (s != NULL) free(s);
+		if (s != NULL) mysql_close(s);
 		return WRITE_FAIL;
 	}
 /*
@@ -330,7 +330,7 @@ int read_active(char* userid, struct active_data* act_data)
 
 	s = mysql_init(s);
 	if (!my_connect_mysql(s)) {
-		if (s != NULL) free(s);
+		if (s != NULL) mysql_close(s);
 		return 0;
 	}
 	strcpy(act_data->userid, userid);
@@ -357,6 +357,102 @@ int read_active(char* userid, struct active_data* act_data)
 	act_data->status=atoi(row[10]);
 	mysql_close(s);
 	return count;
+}
+
+struct associated_userid *get_associated_userid(const char *email) {
+	MYSQL *s;
+	MYSQL_STMT *stmt;
+	int mysql_status;
+	my_bool bind_status;
+	char *sqlbuf;
+	char userid[IDLEN + 1];
+	MYSQL_BIND params[1], results[1];
+	struct associated_userid *au;
+	long idx;
+	long rows;
+
+	s = NULL;
+	stmt = NULL;
+	au = NULL;
+	memset(params, 0, sizeof(params));
+	memset(results, 0, sizeof(results));
+
+	s = mysql_init(NULL);
+	if (!my_connect_mysql(s)) {
+		goto END;
+	}
+
+	stmt = mysql_stmt_init(s);
+	if (!stmt) {
+		goto END;
+	}
+
+	sqlbuf = "SELECT userid FROM " USERREG_TABLE " WHERE email=?;";
+	mysql_status = mysql_stmt_prepare(stmt, sqlbuf, strlen(sqlbuf));
+	if (mysql_status != 0) {
+		goto END;
+	}
+
+	params[0].buffer_type = MYSQL_TYPE_STRING;
+	params[0].buffer = (void *)email;
+	params[0].buffer_length = strlen(email);
+
+	results[0].buffer_type = MYSQL_TYPE_STRING;
+	results[0].buffer = (void *)userid;
+	results[0].buffer_length = IDLEN;
+
+
+	bind_status = mysql_stmt_bind_param(stmt, params);
+	if (bind_status != 0) {
+		goto END;
+	}
+
+	bind_status = mysql_stmt_bind_result(stmt, results);
+	if (bind_status != 0) {
+		goto END;
+	}
+
+	mysql_status = mysql_stmt_execute(stmt);
+	if (mysql_status != 0) {
+		goto END;
+	}
+
+	mysql_status = mysql_stmt_store_result(stmt);
+	if (mysql_status != 0) {
+		goto END;
+	}
+
+	rows = mysql_stmt_num_rows(stmt);
+	if (rows == 0) {
+		goto END;
+	}
+
+	au = (struct associated_userid *) calloc(1, sizeof(struct associated_userid));
+	au->count = mysql_stmt_num_rows(stmt);
+	au->id_array = (char**) calloc(au->count, sizeof(void *));
+	for (idx=0; idx < au->count; idx++) {
+		mysql_stmt_fetch(stmt);
+		au->id_array[idx] = strdup(userid);
+	}
+
+END:
+	if(stmt) mysql_stmt_close(stmt);
+	if(s)    mysql_close(s);
+	return au;
+}
+
+void free_associated_userid(struct associated_userid *au) {
+	long i;
+	if (au == NULL) return;
+
+	for (i = 0; i < au->count; i++) {
+		if (au->id_array[i])
+			free(au->id_array[i]);
+	}
+
+	if (au->count > 0) free(au->id_array);
+
+	free(au);
 }
 
 /*
