@@ -77,4 +77,4 @@ add_definitions(-DBBSMAIN -DBACK_DELETE_RANGE)
 add_compile_options(-include ${PROTO_FILE})
 
 add_executable(bbs ${SRC})
-target_link_libraries(bbs ythtbbs ytht)
+target_link_libraries(bbs ythtbbs ytht m)
