@@ -8,12 +8,12 @@ static const char *active_style_str[] = {"", "email", "phone", "idnum", NULL};
 //判断信箱是否合法
 int invalid_mail(char* mbox)
 {
-    if (strstr(mbox, "@bbs.")) return 1;
-    if (strstr(mbox, ".bbs@")) return 1;
-    if (!strstr(mbox, "@")) return 1;
-    //if (invalidaddr(mbox)) return 0;
-    if (strcmp(mbox+strlen(mbox)-5, "ac.cn")!=0) return 1;
-    return 0;
+	if (strstr(mbox, "@bbs.")) return 1;
+	if (strstr(mbox, ".bbs@")) return 1;
+	if (!strstr(mbox, "@")) return 1;
+	//if (invalidaddr(mbox)) return 0;
+	if (strcmp(mbox+strlen(mbox)-5, "ac.cn")!=0) return 1;
+	return 0;
 }
 
 /*
@@ -33,46 +33,46 @@ void gencode(char* code)
 
 char* str_to_uppercase(char *str)
 {
-    char *h = str;
-    while (*str != '\n' && *str != 0) {
-        *str = toupper(*str);
-        str++;
-    }
-    return h;
+	char *h = str;
+	while (*str != '\n' && *str != 0) {
+		*str = toupper(*str);
+		str++;
+	}
+	return h;
 }
 
 char* str_to_lowercase(char *str)
 {
-    char *h = str;
-    while (*str != '\n' && *str != 0) {
-        *str = tolower(*str);
-        str++;
-    }
-    return h;
+	char *h = str;
+	while (*str != '\n' && *str != 0) {
+		*str = tolower(*str);
+		str++;
+	}
+	return h;
 }
 
 
 const char* style_to_str(int style)
 {
-    switch (style) {
+	switch (style) {
 	case NO_ACTIVE:
 		return "未验证";
 		break;
-        case MAIL_ACTIVE:
-            return "信箱";
-            break;
-        case PHONE_ACTIVE:
-            return "手机号码";
-            break;
-        case IDCARD_ACTIVE:
-            return "其他证件";
-            break;
-        case FORCE_ACTIVE:
-            return "手工激活";
-            break;
-        default:
-            return "未知";
-    }
+	case MAIL_ACTIVE:
+		return "信箱";
+		break;
+	case PHONE_ACTIVE:
+		return "手机号码";
+		break;
+	case IDCARD_ACTIVE:
+		return "其他证件";
+		break;
+	case FORCE_ACTIVE:
+		return "手工激活";
+		break;
+	default:
+		return "未知";
+	}
 }
 
 /*
@@ -129,7 +129,7 @@ int send_active_msg(char* phone, char* code,char* userid)
     mysql_real_query(s, sqlbuf, strlen(sqlbuf));
     res = mysql_store_result(s);
     mysql_close(s);
-    
+
 	//system(command);
     return 0;
 }
@@ -218,22 +218,22 @@ int get_active_value(char* value, struct active_data* act_data)
 //查询某个记录绑定了几个id
 int query_record_num(char* value, int style)
 {
-    char sqlbuf[512];
-    int count;
-    MYSQL *s = NULL;
-    MYSQL_RES *res;
+	char sqlbuf[512];
+	int count;
+	MYSQL *s = NULL;
+	MYSQL_RES *res;
 
-    s = mysql_init(s);
-    //mysql = mysql_real_connect(mysql,"localhost",SQLUSER,SQLPASSWD,SQLDB,0, NULL,0);
-    if (!my_connect_mysql(s)) {
-        return -1;
-    }
-    sprintf(sqlbuf,"SELECT * FROM %s WHERE lower(%s)='%s' AND status>0; " , USERREG_TABLE, active_style_str[style], str_to_lowercase(value));
-    mysql_real_query(s, sqlbuf, strlen(sqlbuf));
-    res = mysql_store_result(s);
-    count=mysql_num_rows(res);
-    mysql_close(s);
-    return count;
+	s = mysql_init(s);
+	if (!my_connect_mysql(s)) {
+		if (s != NULL) free(s);
+		return -1;
+	}
+	sprintf(sqlbuf,"SELECT * FROM %s WHERE lower(%s)='%s' AND status>0; " , USERREG_TABLE, active_style_str[style], str_to_lowercase(value));
+	mysql_real_query(s, sqlbuf, strlen(sqlbuf));
+	res = mysql_store_result(s);
+	count=mysql_num_rows(res);
+	mysql_close(s);
+	return count;
 }
 
 /**
@@ -269,7 +269,7 @@ MYSQL * my_connect_mysql(MYSQL *s)
 
 	flock(cfg_fd, LOCK_UN);
 	fclose(cfg_fp);
-    return mysql_real_connect(s, sql_host, sql_user, sql_pass, sql_db, atoi(sql_port), NULL, CLIENT_IGNORE_SIGPIPE);
+	return mysql_real_connect(s, sql_host, sql_user, sql_pass, sql_db, atoi(sql_port), NULL, CLIENT_IGNORE_SIGPIPE);
 }
 
 
@@ -277,16 +277,17 @@ MYSQL * my_connect_mysql(MYSQL *s)
  */
 int write_active(struct active_data* act_data)
 {
-    char sqlbuf[512];
-    int count;
+	char sqlbuf[512];
+	int count;
 
-    MYSQL *s = NULL;
-    MYSQL_RES *res;
+	MYSQL *s = NULL;
+	MYSQL_RES *res;
 
-    s = mysql_init(s);
-    if (!my_connect_mysql(s)) {
-        return WRITE_FAIL;
-    }
+	s = mysql_init(s);
+	if (!my_connect_mysql(s)) {
+		if (s != NULL) free(s);
+		return WRITE_FAIL;
+	}
 /*
     sprintf(sqlbuf,"SELECT * FROM %s WHERE %s='%s' AND status>0; " , USERREG_TABLE, active_style_str[style], record);
     mysql_real_query(s, sqlbuf, strlen(sqlbuf));
@@ -297,64 +298,65 @@ int write_active(struct active_data* act_data)
         return TOO_MUCH_RECORDS;
     }
 */
-    sprintf(sqlbuf,"SELECT * FROM %s WHERE userid='%s'; " , USERREG_TABLE, act_data->userid);
-    mysql_real_query(s, sqlbuf, strlen(sqlbuf));
-    res = mysql_store_result(s);
-    count = mysql_num_rows(res);
-    if (count==0) {
-        sprintf(sqlbuf, "INSERT INTO %s(userid, name, ip, regtime, updatetime, operator, email, phone, idnum, studnum, dept, status) VALUES('%s', '%s', '%s', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '%s', '%s', '%s', '%s', '%s', '%s', %d);",
-                USERREG_TABLE, act_data->userid, act_data->name, act_data->ip, act_data->operator, act_data->email, act_data->phone, act_data->idnum, act_data->stdnum, act_data->dept, act_data->status);
-        mysql_real_query(s, sqlbuf, strlen(sqlbuf));
-        mysql_close(s);
-        return WRITE_SUCCESS;
-    } else{
-        sprintf(sqlbuf, "UPDATE %s SET updatetime=CURRENT_TIMESTAMP, name='%s', ip='%s', operator='%s', email='%s', phone='%s', idnum='%s', studnum='%s', status=%d, dept='%s' WHERE userid='%s';",
-                USERREG_TABLE, act_data->name, act_data->ip, act_data->operator, act_data->email, act_data->phone, act_data->idnum, act_data->stdnum, act_data->status, act_data->dept, act_data->userid);
-        mysql_real_query(s, sqlbuf, strlen(sqlbuf));
-        mysql_close(s);
-        return UPDATE_SUCCESS;
-    }
+	sprintf(sqlbuf,"SELECT * FROM %s WHERE userid='%s'; " , USERREG_TABLE, act_data->userid);
+	mysql_real_query(s, sqlbuf, strlen(sqlbuf));
+	res = mysql_store_result(s);
+	count = mysql_num_rows(res);
+	if (count==0) {
+		sprintf(sqlbuf, "INSERT INTO %s(userid, name, ip, regtime, updatetime, operator, email, phone, idnum, studnum, dept, status) VALUES('%s', '%s', '%s', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '%s', '%s', '%s', '%s', '%s', '%s', %d);",
+				USERREG_TABLE, act_data->userid, act_data->name, act_data->ip, act_data->operator, act_data->email, act_data->phone, act_data->idnum, act_data->stdnum, act_data->dept, act_data->status);
+		mysql_real_query(s, sqlbuf, strlen(sqlbuf));
+		mysql_close(s);
+		return WRITE_SUCCESS;
+	} else{
+		sprintf(sqlbuf, "UPDATE %s SET updatetime=CURRENT_TIMESTAMP, name='%s', ip='%s', operator='%s', email='%s', phone='%s', idnum='%s', studnum='%s', status=%d, dept='%s' WHERE userid='%s';",
+				USERREG_TABLE, act_data->name, act_data->ip, act_data->operator, act_data->email, act_data->phone, act_data->idnum, act_data->stdnum, act_data->status, act_data->dept, act_data->userid);
+		mysql_real_query(s, sqlbuf, strlen(sqlbuf));
+		mysql_close(s);
+		return UPDATE_SUCCESS;
+	}
 
-    mysql_close(s);
-    return WRITE_FAIL;
+	mysql_close(s);
+	return WRITE_FAIL;
 }
 
 int read_active(char* userid, struct active_data* act_data)
 {
-    char sqlbuf[512];
-    int count;
-    MYSQL *s = NULL;
-    MYSQL_RES *res;
-    MYSQL_ROW row;
+	char sqlbuf[512];
+	int count;
+	MYSQL *s = NULL;
+	MYSQL_RES *res;
+	MYSQL_ROW row;
 
-    s = mysql_init(s);
-    if (!my_connect_mysql(s)) {
-        return 0;
-    }
-    strcpy(act_data->userid, userid);
+	s = mysql_init(s);
+	if (!my_connect_mysql(s)) {
+		if (s != NULL) free(s);
+		return 0;
+	}
+	strcpy(act_data->userid, userid);
 
-    sprintf(sqlbuf,"SELECT name, dept, ip, regtime, updatetime, operator, email, phone, idnum, studnum, status FROM %s WHERE userid='%s'; " , USERREG_TABLE, userid);
-    mysql_real_query(s, sqlbuf, strlen(sqlbuf));
-    res = mysql_store_result(s);
-    row=mysql_fetch_row(res);
-    count=mysql_num_rows(res);	
-    if (count<1) {
-        mysql_close(s);
-        return 0;
-    }
-    strcpy(act_data->name, row[0]);
-    strcpy(act_data->dept, row[1]);
-    strcpy(act_data->ip, row[2]);
-    strcpy(act_data->regtime, row[3]);
-    strcpy(act_data->uptime, row[4]);
-    strcpy(act_data->operator, row[5]);
-    strcpy(act_data->email, row[6]);
-    strcpy(act_data->phone, row[7]);
-    strcpy(act_data->idnum, row[8]);
-    strcpy(act_data->stdnum, row[9]);
-    act_data->status=atoi(row[10]);
-    mysql_close(s);
-    return count;
+	sprintf(sqlbuf,"SELECT name, dept, ip, regtime, updatetime, operator, email, phone, idnum, studnum, status FROM %s WHERE userid='%s'; " , USERREG_TABLE, userid);
+	mysql_real_query(s, sqlbuf, strlen(sqlbuf));
+	res = mysql_store_result(s);
+	row=mysql_fetch_row(res);
+	count=mysql_num_rows(res);
+	if (count<1) {
+		mysql_close(s);
+		return 0;
+	}
+	strcpy(act_data->name, row[0]);
+	strcpy(act_data->dept, row[1]);
+	strcpy(act_data->ip, row[2]);
+	strcpy(act_data->regtime, row[3]);
+	strcpy(act_data->uptime, row[4]);
+	strcpy(act_data->operator, row[5]);
+	strcpy(act_data->email, row[6]);
+	strcpy(act_data->phone, row[7]);
+	strcpy(act_data->idnum, row[8]);
+	strcpy(act_data->stdnum, row[9]);
+	act_data->status=atoi(row[10]);
+	mysql_close(s);
+	return count;
 }
 
 /*
@@ -376,7 +378,7 @@ int valid_stunum(char* mbox, char* stunum)
     res = mysql_store_result(s);
     row=mysql_fetch_row(res);
 //    strcpy(stunum_cmp, row[0]);
-    count=mysql_num_rows(res);	
+    count=mysql_num_rows(res);
     mysql_close(s);
 //    return !strcmp(stunum, stunum_cmp);
     return count;
@@ -405,7 +407,6 @@ int get_official_data(struct active_data* act_data)
 }
 
 */
-
 
 #endif
 
