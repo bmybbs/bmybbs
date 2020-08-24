@@ -22,8 +22,8 @@
 
 //允许的邮箱域
 #define DOMAIN_COUNT 3
-static const char *MAIL_DOMAINS[] = {"", "stu.xjtu.edu.cn", "mail.xjtu.edu.cn", "idp.xjtu6.edu.cn", NULL};
-static const char* IP_POP[]={"", "202.117.1.22", "202.117.1.28", "2001:250:1001:2::ca75:1c0", NULL};
+extern const char *MAIL_DOMAINS[];
+extern const char *IP_POP[];
 
 //绑定的方式
 #define DIED_ACIVE -1 /* 挂了*/

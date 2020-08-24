@@ -5,6 +5,8 @@
 #ifdef POP_CHECK
 
 static const char *active_style_str[] = {"", "email", "phone", "idnum", NULL};
+const char *MAIL_DOMAINS[] = {"", "stu.xjtu.edu.cn", "mail.xjtu.edu.cn", "idp.xjtu6.edu.cn", NULL};
+const char *IP_POP[] = {"", "202.117.1.22", "202.117.1.28", "2001:250:1001:2::ca75:1c0", NULL};
 
 //判断信箱是否合法
 int invalid_mail(char* mbox)
@@ -360,33 +362,31 @@ int read_active(char* userid, struct active_data* act_data)
 	return count;
 }
 
-void *get_associated_userid_callback(MYSQL_STMT *stmt, MYSQL_BIND *result_cols) {
-	struct associated_userid *au;
+static void get_associated_userid_callback(MYSQL_STMT *stmt, MYSQL_BIND *result_cols, void *result_set) {
+	struct associated_userid **au = result_set;
 	size_t idx;
 	size_t rows;
 
 	char *userid;
 	long *user_status;
 
-	au = NULL;
+	*au = NULL;
 	rows = mysql_stmt_num_rows(stmt);
-	if (rows == 0) return (void *)au;
+	if (rows == 0) return;
 
 	userid = result_cols[0].buffer;
 	user_status = (long *) result_cols[1].buffer;
 
-	au = (struct associated_userid *) calloc(1, sizeof(struct associated_userid));
-	au->count = rows;
-	au->id_array = (char**) calloc(au->count, sizeof(void *));
-	au->status_array = (int *) calloc(au->count, sizeof(int));
+	*au = (struct associated_userid *) calloc(1, sizeof(struct associated_userid));
+	(*au)->count = rows;
+	(*au)->id_array = (char**) calloc(rows, sizeof(void *));
+	(*au)->status_array = (int *) calloc(rows, sizeof(int));
 
-	for (idx=0; idx < au->count; idx++) {
+	for (idx=0; idx < rows; idx++) {
 		mysql_stmt_fetch(stmt);
-		au->id_array[idx] = strdup(userid);
-		au->status_array[idx] = (*user_status) % 10;
+		(*au)->id_array[idx] = strdup(userid);
+		(*au)->status_array[idx] = (*user_status) % 10;
 	}
-
-	return (void *)au;
 }
 
 struct associated_userid *get_associated_userid(const char *email) {
@@ -394,7 +394,9 @@ struct associated_userid *get_associated_userid(const char *email) {
 	char userid[IDLEN + 1];
 	long user_status;
 	MYSQL_BIND params[1], results[2];
+	struct associated_userid *au;
 
+	user_status = 0;
 	sqlbuf = "SELECT userid, status FROM " USERREG_TABLE " WHERE email=?;";
 
 	memset(params, 0, sizeof(params));
@@ -412,7 +414,9 @@ struct associated_userid *get_associated_userid(const char *email) {
 	results[1].buffer = (void *) &user_status;
 	results[1].buffer_length = sizeof(long);
 
-	return (struct associated_userid *) execute_prep_stmt(sqlbuf, params, results, get_associated_userid_callback);
+	au = NULL;
+	execute_prep_stmt(sqlbuf, params, results, (void *) &au, get_associated_userid_callback);
+	return au;
 }
 
 void free_associated_userid(struct associated_userid *au) {

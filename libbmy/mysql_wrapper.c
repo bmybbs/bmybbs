@@ -41,19 +41,20 @@ static MYSQL * my_connect_mysql(MYSQL *s)
 	return mysql_real_connect(s, sql_host, sql_user, sql_pass, sql_db, atoi(sql_port), NULL, CLIENT_IGNORE_SIGPIPE);
 }
 
-void *execute_prep_stmt(const char* sqlbuf, MYSQL_BIND *params, MYSQL_BIND *result_cols, BMY_MYSQL_WRAPPER_CALLBACK callback) {
+int execute_prep_stmt(const char* sqlbuf, MYSQL_BIND *params, MYSQL_BIND *result_cols, void *result_set, BMY_MYSQL_WRAPPER_CALLBACK callback) {
 	MYSQL *s;
 	MYSQL_STMT *stmt;
 	int mysql_status;
 	my_bool bind_status;
-	void *result;
+	int result;
 
 	s = NULL;
 	stmt = NULL;
-	result = NULL;
+	result = MYSQL_OK;
 
 	s = mysql_init(NULL);
 	if (!my_connect_mysql(s)) {
+		result = MYSQL_CANNOT_CONNECT_TO_MYSQL;
 		goto END;
 	}
 
@@ -64,12 +65,14 @@ void *execute_prep_stmt(const char* sqlbuf, MYSQL_BIND *params, MYSQL_BIND *resu
 
 	mysql_status = mysql_stmt_prepare(stmt, sqlbuf, strlen(sqlbuf));
 	if (mysql_status != 0) {
+		result = MYSQL_CANNOT_INIT_STMT;
 		goto END;
 	}
 
 	if (params != NULL) {
 		bind_status = mysql_stmt_bind_param(stmt, params);
 		if (bind_status != 0) {
+			result = MYSQL_CANNOT_BIND_PARAMS;
 			goto END;
 		}
 	}
@@ -77,22 +80,25 @@ void *execute_prep_stmt(const char* sqlbuf, MYSQL_BIND *params, MYSQL_BIND *resu
 	if (result_cols != NULL) {
 		bind_status = mysql_stmt_bind_result(stmt, result_cols);
 		if (bind_status != 0) {
+			result = MYSQL_CANNOT_BIND_RESULT_COLS;
 			goto END;
 		}
 	}
 
 	mysql_status = mysql_stmt_execute(stmt);
 	if (mysql_status != 0) {
+		result = MYSQL_CANNOT_EXEC_STMT;
 		goto END;
 	}
 
 	mysql_status = mysql_stmt_store_result(stmt);
 	if (mysql_status != 0) {
+		result = MYSQL_CANNOT_STORE_RESULT;
 		goto END;
 	}
 
 	if (callback != NULL) {
-		result = callback(stmt, result_cols);
+		callback(stmt, result_cols, result_set);
 	}
 
 END:
