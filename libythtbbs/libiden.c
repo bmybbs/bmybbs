@@ -217,26 +217,38 @@ int get_active_value(char* value, struct active_data* act_data)
 	return 1;
 }
 
+void query_record_num_callback(MYSQL_STMT *stmt, MYSQL_BIND *result_col, void *result_set) {
+	mysql_stmt_fetch(stmt);
+}
 
 //查询某个记录绑定了几个id
 int query_record_num(char* value, int style)
 {
 	char sqlbuf[512];
-	int count;
-	MYSQL *s = NULL;
-	MYSQL_RES *res;
+	char *str;
+	MYSQL_BIND params[1], results[1];
+	int status;
+	char count[8];
 
-	s = mysql_init(s);
-	if (!my_connect_mysql(s)) {
-		if (s != NULL) mysql_close(s);
-		return -1;
-	}
-	sprintf(sqlbuf,"SELECT * FROM %s WHERE lower(%s)='%s' AND status>0; " , USERREG_TABLE, active_style_str[style], str_to_lowercase(value));
-	mysql_real_query(s, sqlbuf, strlen(sqlbuf));
-	res = mysql_store_result(s);
-	count=mysql_num_rows(res);
-	mysql_close(s);
-	return count;
+	memset(count, 0, sizeof(count));
+	str = strdup(value);
+	str_to_lowercase(str);
+	memset(params, 0, sizeof(params));
+	memset(results, 0, sizeof(results));
+
+	params[0].buffer_type = MYSQL_TYPE_STRING;
+	params[0].buffer = str;
+	params[0].buffer_length = strlen(str);
+
+	results[0].buffer_type = MYSQL_TYPE_STRING;
+	results[0].buffer = count;
+	results[0].buffer_length = sizeof(count);
+
+	sprintf(sqlbuf,"SELECT count(*) FROM %s WHERE %s=? AND status>0;", USERREG_TABLE, active_style_str[style]);
+	status = execute_prep_stmt(sqlbuf, params, results, NULL, query_record_num_callback);
+
+	free(str);
+	return (status != MYSQL_OK) ? -1 : atoi(count);
 }
 
 /**

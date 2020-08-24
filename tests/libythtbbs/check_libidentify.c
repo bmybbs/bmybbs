@@ -64,6 +64,13 @@ START_TEST(test_associate_ids_with_foo) {
 	free_associated_userid(au);
 }
 
+START_TEST(test_query_record_num) {
+	ck_assert_int_eq(query_record_num("foo@xjtu.edu.cn", MAIL_ACTIVE), 4);
+	ck_assert_int_eq(query_record_num("bar@xjtu.edu.cn", MAIL_ACTIVE), 2);
+	ck_assert_int_eq(query_record_num("baz@xjtu.edu.cn", MAIL_ACTIVE), 0);
+	ck_assert_int_eq(query_record_num("null@xjtu.edu.cn", MAIL_ACTIVE), 0);
+}
+
 END_TEST
 
 Suite * test_suite_identify(void) {
@@ -73,6 +80,10 @@ Suite * test_suite_identify(void) {
 	tcase_add_test(tc, test_associate_ids_with_baz);
 	tcase_add_test(tc, test_associate_ids_with_foo);
 	tcase_add_test(tc, test_associated_ids_with_email_not_exist);
+	suite_add_tcase(s, tc);
+
+	tc = tcase_create("check query_record_num");
+	tcase_add_test(tc, test_query_record_num);
 	suite_add_tcase(s, tc);
 
 	return s;
