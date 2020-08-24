@@ -14,7 +14,6 @@ add_library (ytht SHARED
 	timeop.c
 	smth_filter.c
 	mgrep.c
-	smtp.c
 )
 
-target_link_libraries(ytht ssl crypto)
+target_link_libraries(ytht)
