@@ -1,5 +1,6 @@
 #include "bbs.h"
 #include "identify.h"
+#include "mysql_wrapper.h"
 
 #ifdef POP_CHECK
 
@@ -242,17 +243,17 @@ int query_record_num(char* value, int style)
  * @param s
  * @return
  */
-MYSQL * my_connect_mysql(MYSQL *s)
+__attribute__((deprecated)) MYSQL * my_connect_mysql(MYSQL *s)
 {
 	const char *MYSQL_CONFIG_FILE = MY_BBS_HOME "/etc/mysqlconfig";
 
 	FILE *cfg_fp;
 	int   cfg_fd;
-	char *sql_user[16];
-	char *sql_pass[16];
-	char *sql_db[24];
-	char *sql_port[4];
-	char *sql_host[32];
+	char  sql_user[16];
+	char  sql_pass[16];
+	char  sql_db[24];
+	char  sql_port[8];
+	char  sql_host[32];
 
 	cfg_fp = fopen(MYSQL_CONFIG_FILE, "r");
 	if (!cfg_fp)
@@ -359,40 +360,45 @@ int read_active(char* userid, struct active_data* act_data)
 	return count;
 }
 
-struct associated_userid *get_associated_userid(const char *email) {
-	MYSQL *s;
-	MYSQL_STMT *stmt;
-	int mysql_status;
-	my_bool bind_status;
-	char *sqlbuf;
-	char userid[IDLEN + 1];
-	long user_status;
-	MYSQL_BIND params[1], results[2];
+void *get_associated_userid_callback(MYSQL_STMT *stmt, MYSQL_BIND *result_cols) {
 	struct associated_userid *au;
 	size_t idx;
 	size_t rows;
 
-	s = NULL;
-	stmt = NULL;
+	char *userid;
+	long *user_status;
+
 	au = NULL;
-	memset(params, 0, sizeof(params));
-	memset(results, 0, sizeof(results));
+	rows = mysql_stmt_num_rows(stmt);
+	if (rows == 0) return (void *)au;
 
-	s = mysql_init(NULL);
-	if (!my_connect_mysql(s)) {
-		goto END;
+	userid = result_cols[0].buffer;
+	user_status = (long *) result_cols[1].buffer;
+
+	au = (struct associated_userid *) calloc(1, sizeof(struct associated_userid));
+	au->count = rows;
+	au->id_array = (char**) calloc(au->count, sizeof(void *));
+	au->status_array = (int *) calloc(au->count, sizeof(int));
+
+	for (idx=0; idx < au->count; idx++) {
+		mysql_stmt_fetch(stmt);
+		au->id_array[idx] = strdup(userid);
+		au->status_array[idx] = (*user_status) % 10;
 	}
 
-	stmt = mysql_stmt_init(s);
-	if (!stmt) {
-		goto END;
-	}
+	return (void *)au;
+}
+
+struct associated_userid *get_associated_userid(const char *email) {
+	char *sqlbuf;
+	char userid[IDLEN + 1];
+	long user_status;
+	MYSQL_BIND params[1], results[2];
 
 	sqlbuf = "SELECT userid, status FROM " USERREG_TABLE " WHERE email=?;";
-	mysql_status = mysql_stmt_prepare(stmt, sqlbuf, strlen(sqlbuf));
-	if (mysql_status != 0) {
-		goto END;
-	}
+
+	memset(params, 0, sizeof(params));
+	memset(results, 0, sizeof(results));
 
 	params[0].buffer_type = MYSQL_TYPE_STRING;
 	params[0].buffer = (void *)email;
@@ -406,45 +412,7 @@ struct associated_userid *get_associated_userid(const char *email) {
 	results[1].buffer = (void *) &user_status;
 	results[1].buffer_length = sizeof(long);
 
-	bind_status = mysql_stmt_bind_param(stmt, params);
-	if (bind_status != 0) {
-		goto END;
-	}
-
-	bind_status = mysql_stmt_bind_result(stmt, results);
-	if (bind_status != 0) {
-		goto END;
-	}
-
-	mysql_status = mysql_stmt_execute(stmt);
-	if (mysql_status != 0) {
-		goto END;
-	}
-
-	mysql_status = mysql_stmt_store_result(stmt);
-	if (mysql_status != 0) {
-		goto END;
-	}
-
-	rows = mysql_stmt_num_rows(stmt);
-	if (rows == 0) {
-		goto END;
-	}
-
-	au = (struct associated_userid *) calloc(1, sizeof(struct associated_userid));
-	au->count = mysql_stmt_num_rows(stmt);
-	au->id_array = (char**) calloc(au->count, sizeof(void *));
-	au->status_array = (int *) calloc(au->count, sizeof(int));
-	for (idx=0; idx < au->count; idx++) {
-		mysql_stmt_fetch(stmt);
-		au->id_array[idx] = strdup(userid);
-		au->status_array[idx] = user_status % 10;
-	}
-
-END:
-	if(stmt) mysql_stmt_close(stmt);
-	if(s)    mysql_close(s);
-	return au;
+	return (struct associated_userid *) execute_prep_stmt(sqlbuf, params, results, get_associated_userid_callback);
 }
 
 void free_associated_userid(struct associated_userid *au) {
