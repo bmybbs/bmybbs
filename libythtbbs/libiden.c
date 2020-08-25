@@ -8,6 +8,13 @@ static const char *active_style_str[] = {"", "email", "phone", "idnum", NULL};
 const char *MAIL_DOMAINS[] = {"", "stu.xjtu.edu.cn", "mail.xjtu.edu.cn", "idp.xjtu6.edu.cn", NULL};
 const char *IP_POP[] = {"", "202.117.1.22", "202.117.1.28", "2001:250:1001:2::ca75:1c0", NULL};
 
+static void convert_mysql_time_to_str(char *buf, MYSQL_TIME *mt) {
+snprintf(buf, 20,
+		 "%04d-%02d-%02d %02d:%02d:%02d",
+		 mt->year, mt->month, mt->day,
+		 mt->hour, mt->minute, mt->second);
+}
+
 //判断信箱是否合法
 int invalid_mail(char* mbox)
 {
@@ -217,7 +224,7 @@ int get_active_value(char* value, struct active_data* act_data)
 	return 1;
 }
 
-void query_record_num_callback(MYSQL_STMT *stmt, MYSQL_BIND *result_col, void *result_set) {
+static void query_record_num_callback(MYSQL_STMT *stmt, MYSQL_BIND *result_col, void *result_set) {
 	mysql_stmt_fetch(stmt);
 }
 
@@ -335,43 +342,79 @@ int write_active(struct active_data* act_data)
 	return WRITE_FAIL;
 }
 
+static void read_active_callback(MYSQL_STMT *stmt, MYSQL_BIND *result_col, void *result_set) {
+	*(int *)result_set = mysql_stmt_num_rows(stmt);
+	if (*(int *)result_set > 0) {
+		mysql_stmt_fetch(stmt);
+	}
+}
+
 int read_active(char* userid, struct active_data* act_data)
 {
-	char sqlbuf[512];
-	int count;
-	MYSQL *s = NULL;
-	MYSQL_RES *res;
-	MYSQL_ROW row;
+	char sqlbuf[128];
+	int count, rc;
+	MYSQL_BIND params[1], results[11];
+	MYSQL_TIME regtime, uptime;
 
-	s = mysql_init(s);
-	if (!my_connect_mysql(s)) {
-		if (s != NULL) mysql_close(s);
-		return 0;
-	}
-	strcpy(act_data->userid, userid);
+	strncpy(act_data->userid, userid, IDLEN);
+	sprintf(sqlbuf,"SELECT name, dept, ip, regtime, updatetime, operator, email, phone, idnum, studnum, status FROM %s WHERE userid=?;", USERREG_TABLE);
 
-	sprintf(sqlbuf,"SELECT name, dept, ip, regtime, updatetime, operator, email, phone, idnum, studnum, status FROM %s WHERE userid='%s'; " , USERREG_TABLE, userid);
-	mysql_real_query(s, sqlbuf, strlen(sqlbuf));
-	res = mysql_store_result(s);
-	row=mysql_fetch_row(res);
-	count=mysql_num_rows(res);
-	if (count<1) {
-		mysql_close(s);
-		return 0;
-	}
-	strcpy(act_data->name, row[0]);
-	strcpy(act_data->dept, row[1]);
-	strcpy(act_data->ip, row[2]);
-	strcpy(act_data->regtime, row[3]);
-	strcpy(act_data->uptime, row[4]);
-	strcpy(act_data->operator, row[5]);
-	strcpy(act_data->email, row[6]);
-	strcpy(act_data->phone, row[7]);
-	strcpy(act_data->idnum, row[8]);
-	strcpy(act_data->stdnum, row[9]);
-	act_data->status=atoi(row[10]);
-	mysql_close(s);
-	return count;
+	memset(params, 0, sizeof(params));
+	memset(results, 0, sizeof(results));
+
+	params[0].buffer_type = MYSQL_TYPE_STRING;
+	params[0].buffer = act_data->userid;
+	params[0].buffer_length = strlen(act_data->userid);
+
+	results[0].buffer_type = MYSQL_TYPE_STRING;
+	results[0].buffer = act_data->name;
+	results[0].buffer_length = STRLEN;
+
+	results[1].buffer_type = MYSQL_TYPE_STRING;
+	results[1].buffer = act_data->dept;
+	results[1].buffer_length = STRLEN;
+
+	results[2].buffer_type = MYSQL_TYPE_STRING;
+	results[2].buffer = act_data->ip;
+	results[2].buffer_length = 20;
+
+	results[3].buffer_type = MYSQL_TYPE_TIMESTAMP;
+	results[3].buffer = &regtime;
+	results[3].buffer_length = sizeof(MYSQL_TIME);
+
+	results[4].buffer_type = MYSQL_TYPE_TIMESTAMP;
+	results[4].buffer = &uptime;
+	results[4].buffer_length = sizeof(MYSQL_TIME);
+
+	results[5].buffer_type = MYSQL_TYPE_STRING;
+	results[5].buffer = act_data->operator;
+	results[5].buffer_length = IDLEN+2;
+
+	results[6].buffer_type = MYSQL_TYPE_STRING;
+	results[6].buffer = act_data->email;
+	results[6].buffer_length = VALUELEN;
+
+	results[7].buffer_type = MYSQL_TYPE_STRING;
+	results[7].buffer = act_data->phone;
+	results[7].buffer_length = VALUELEN;
+
+	results[8].buffer_type = MYSQL_TYPE_STRING;
+	results[8].buffer = act_data->idnum;
+	results[8].buffer_length = VALUELEN;
+
+	results[9].buffer_type = MYSQL_TYPE_STRING;
+	results[9].buffer = act_data->stdnum;
+	results[9].buffer_length = VALUELEN;
+
+	results[10].buffer_type = MYSQL_TYPE_INT24;
+	results[10].buffer = &(act_data->status);
+	results[10].buffer_length = sizeof(int);
+
+	rc = execute_prep_stmt(sqlbuf, params, results, &count, read_active_callback);
+	convert_mysql_time_to_str(act_data->regtime, &regtime);
+	convert_mysql_time_to_str(act_data->uptime, &uptime);
+
+	return (rc < 0) ? 0 : count;
 }
 
 static void get_associated_userid_callback(MYSQL_STMT *stmt, MYSQL_BIND *result_cols, void *result_set) {

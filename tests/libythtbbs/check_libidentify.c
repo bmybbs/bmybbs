@@ -71,6 +71,26 @@ START_TEST(test_query_record_num) {
 	ck_assert_int_eq(query_record_num("null@xjtu.edu.cn", MAIL_ACTIVE), 0);
 }
 
+START_TEST(test_read_active) {
+	struct active_data ad;
+	int count;
+	memset(&ad, 0, sizeof(struct active_data));
+	count = read_active("foo1", &ad);
+	ck_assert_int_eq(count, 1);
+	ck_assert_str_eq(ad.userid, "foo1");
+	ck_assert_str_eq(ad.name, "foo1_name");
+	ck_assert_str_eq(ad.dept, "foo1_dept");
+	ck_assert_str_eq(ad.ip, "foo1_ip");
+	ck_assert_str_eq(ad.regtime, "2020-08-22 14:27:21");
+	ck_assert_str_eq(ad.uptime, "2020-08-22 14:27:21");
+	ck_assert_str_eq(ad.operator, "foo1");
+	ck_assert_str_eq(ad.email, "foo@xjtu.edu.cn");
+	ck_assert_str_eq(ad.phone, "foo1_phone");
+	ck_assert_str_eq(ad.idnum, "foo1_idnum");
+	ck_assert_str_eq(ad.stdnum, "foo1_studnum");
+	ck_assert_int_eq(ad.status, 1);
+}
+
 END_TEST
 
 Suite * test_suite_identify(void) {
@@ -84,6 +104,10 @@ Suite * test_suite_identify(void) {
 
 	tc = tcase_create("check query_record_num");
 	tcase_add_test(tc, test_query_record_num);
+	suite_add_tcase(s, tc);
+
+	tc = tcase_create("check read_active");
+	tcase_add_test(tc, test_read_active);
 	suite_add_tcase(s, tc);
 
 	return s;
