@@ -3,6 +3,7 @@
 
 extern Suite * test_suite_mailsender(void);
 extern Suite * test_suite_identify(void);
+extern Suite * test_suite_captcha(void);
 
 Suite * main_suit(void) {
 	Suite *s = suite_create("bmybbs test suite");
@@ -17,6 +18,7 @@ int main (void)
 	SRunner *sr = srunner_create(s);
 	srunner_add_suite(sr, test_suite_mailsender());
 	srunner_add_suite(sr, test_suite_identify());
+	srunner_add_suite(sr, test_suite_captcha());
 
 	srunner_set_log (sr, "bmybbs.test.log");
 	srunner_set_xml (sr, "bmybbs.test.xml");
