@@ -27,6 +27,13 @@ sethomepath(char *buf, const char *userid)
 }
 
 char *
+sethomepath_s(char *buf, size_t buf_size, const char *userid)
+{
+	snprintf(buf, buf_size, MY_BBS_HOME "/home/%c/%s", mytoupper(userid[0]), userid);
+	return buf;
+}
+
+char *
 sethomefile(char *buf, const char *userid, const char *filename)
 {
 	sprintf(buf, MY_BBS_HOME "/home/%c/%s/%s", mytoupper(userid[0]), userid, filename);
@@ -34,9 +41,23 @@ sethomefile(char *buf, const char *userid, const char *filename)
 }
 
 char *
+sethomefile_s(char *buf, size_t buf_size, const char *userid, const char *filename)
+{
+	snprintf(buf, buf_size, MY_BBS_HOME "/home/%c/%s/%s", mytoupper(userid[0]), userid, filename);
+	return buf;
+}
+
+char *
 setmailfile(char *buf, const char *userid, const char *filename)
 {
 	sprintf(buf, MY_BBS_HOME "/mail/%c/%s/%s", mytoupper(userid[0]), userid, filename);
+	return buf;
+}
+
+char *
+setmailfile_s(char *buf, size_t buf_size, const char *userid, const char *filename)
+{
+	snprintf(buf, buf_size, MY_BBS_HOME "/mail/%c/%s/%s", mytoupper(userid[0]), userid, filename);
 	return buf;
 }
 

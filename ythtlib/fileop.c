@@ -293,12 +293,30 @@ f_stat(char *file)
 }
 
 struct stat *
+f_stat_s(struct stat *s, const char *file) {
+	if (stat(file, s) == -1) {
+		memset(s, 0, sizeof(struct stat));
+	}
+
+	return s;
+}
+
+struct stat *
 l_stat(char *file)
 {
 	static struct stat buf;
 	if (lstat(file, &buf) == -1)
 		bzero(&buf, sizeof (buf));
 	return &buf;
+}
+
+struct stat *
+l_stat_s(struct stat *s, const char *file) {
+	if (lstat(file, s) == -1) {
+		memset(s, 0, sizeof(struct stat));
+	}
+
+	return s;
 }
 
 int
