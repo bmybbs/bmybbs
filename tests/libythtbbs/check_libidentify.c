@@ -1,4 +1,6 @@
 #include <check.h>
+#include <stdio.h>
+
 #define IDLEN 12
 #define STRLEN 80
 #include "identify.h"
@@ -91,6 +93,27 @@ START_TEST(test_read_active) {
 	ck_assert_int_eq(ad.status, 1);
 }
 
+START_TEST(test_write_active) {
+	struct active_data ad;
+	memset(&ad, 0, sizeof(struct active_data));
+
+	snprintf(ad.userid, IDLEN+1, "foo5"),
+	snprintf(ad.name, STRLEN, "foo5_name");
+	snprintf(ad.dept, STRLEN, "foo5_dept");
+	snprintf(ad.ip, 20, "localhost");
+	snprintf(ad.operator, IDLEN+1, "foo5_op");
+	snprintf(ad.email, VALUELEN, "foo5@xjtu.edu.cn");
+	snprintf(ad.phone, VALUELEN, "foo5_phone");
+	snprintf(ad.idnum, VALUELEN, "foo5_idnum");
+	snprintf(ad.stdnum, VALUELEN, "foo5_studnum");
+	ad.status = 1;
+
+	ck_assert_int_eq(write_active(&ad), WRITE_SUCCESS);
+
+	snprintf(ad.operator, IDLEN+1, "foo5");
+	ck_assert_int_eq(write_active(&ad), UPDATE_SUCCESS);
+}
+
 END_TEST
 
 Suite * test_suite_identify(void) {
@@ -108,6 +131,10 @@ Suite * test_suite_identify(void) {
 
 	tc = tcase_create("check read_active");
 	tcase_add_test(tc, test_read_active);
+	suite_add_tcase(s, tc);
+
+	tc = tcase_create("check write_active");
+	tcase_add_test(tc, test_write_active);
 	suite_add_tcase(s, tc);
 
 	return s;

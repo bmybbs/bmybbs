@@ -294,52 +294,95 @@ __attribute__((deprecated)) MYSQL * my_connect_mysql(MYSQL *s)
 	return mysql_real_connect(s, sql_host, sql_user, sql_pass, sql_db, atoi(sql_port), NULL, CLIENT_IGNORE_SIGPIPE);
 }
 
+static void write_active_callback_count(MYSQL_STMT *stmt, MYSQL_BIND *result_cols, void *result_set) {
+	mysql_stmt_fetch(stmt);
+}
+
+static void write_active_callback_I_U(MYSQL_STMT *stmt, MYSQL_BIND *result_cols, void *result_set) {
+	*(int *) result_set = mysql_affected_rows(stmt->mysql);
+}
 
 /*写入数据库
  */
 int write_active(struct active_data* act_data)
 {
 	char sqlbuf[512];
-	int count;
+	char count_s[8];
+	int count, rc, row_affected;
+	MYSQL_BIND params_count[1], params_I_U[10], results[1];
 
-	MYSQL *s = NULL;
-	MYSQL_RES *res;
+	memset(params_count, 0, sizeof(params_count));
+	memset(params_I_U, 0, sizeof(params_I_U));
+	memset(results, 0, sizeof(results));
+	memset(count_s, 0, sizeof(count_s));
+	rc = MYSQL_OK;
+	row_affected = 0;
 
-	s = mysql_init(s);
-	if (!my_connect_mysql(s)) {
-		if (s != NULL) mysql_close(s);
+	sprintf(sqlbuf,"SELECT count(*) FROM %s WHERE userid=?;", USERREG_TABLE);
+	params_count->buffer_type = MYSQL_TYPE_STRING;
+	params_count->buffer = act_data->userid;
+	params_count->buffer_length = strlen(act_data->userid);
+	results->buffer_type = MYSQL_TYPE_STRING;
+	results->buffer = count_s;
+	results->buffer_length = sizeof(count_s);
+
+	rc = execute_prep_stmt(sqlbuf, params_count, results, NULL, write_active_callback_count);
+	if (rc != MYSQL_OK)
 		return WRITE_FAIL;
-	}
-/*
-    sprintf(sqlbuf,"SELECT * FROM %s WHERE %s='%s' AND status>0; " , USERREG_TABLE, active_style_str[style], record);
-    mysql_real_query(s, sqlbuf, strlen(sqlbuf));
-    res = mysql_store_result(s);
-    //大于三个，不写
-    if (mysql_num_rows(res)>=MAX_USER_PER_RECORD) {
-        mysql_close(s);
-        return TOO_MUCH_RECORDS;
-    }
-*/
-	sprintf(sqlbuf,"SELECT * FROM %s WHERE userid='%s'; " , USERREG_TABLE, act_data->userid);
-	mysql_real_query(s, sqlbuf, strlen(sqlbuf));
-	res = mysql_store_result(s);
-	count = mysql_num_rows(res);
-	if (count==0) {
-		sprintf(sqlbuf, "INSERT INTO %s(userid, name, ip, regtime, updatetime, operator, email, phone, idnum, studnum, dept, status) VALUES('%s', '%s', '%s', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '%s', '%s', '%s', '%s', '%s', '%s', %d);",
-				USERREG_TABLE, act_data->userid, act_data->name, act_data->ip, act_data->operator, act_data->email, act_data->phone, act_data->idnum, act_data->stdnum, act_data->dept, act_data->status);
-		mysql_real_query(s, sqlbuf, strlen(sqlbuf));
-		mysql_close(s);
-		return WRITE_SUCCESS;
+
+	count = atoi(count_s);
+	if (count == 0) {
+		sprintf(sqlbuf,
+			"INSERT INTO %s(name, ip, regtime, updatetime, operator, email, phone, idnum, studnum, dept, status, userid) "
+			"VALUES(?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, ?, ?, ?, ?, ?, ?, ?, ?);", USERREG_TABLE);
 	} else{
-		sprintf(sqlbuf, "UPDATE %s SET updatetime=CURRENT_TIMESTAMP, name='%s', ip='%s', operator='%s', email='%s', phone='%s', idnum='%s', studnum='%s', status=%d, dept='%s' WHERE userid='%s';",
-				USERREG_TABLE, act_data->name, act_data->ip, act_data->operator, act_data->email, act_data->phone, act_data->idnum, act_data->stdnum, act_data->status, act_data->dept, act_data->userid);
-		mysql_real_query(s, sqlbuf, strlen(sqlbuf));
-		mysql_close(s);
-		return UPDATE_SUCCESS;
+		sprintf(sqlbuf,
+			"UPDATE %s SET updatetime=CURRENT_TIMESTAMP, name=?, ip=?, operator=?, email=?, phone=?, idnum=?, "
+			"studnum=?, dept=?, status=? WHERE userid=?;", USERREG_TABLE);
 	}
 
-	mysql_close(s);
-	return WRITE_FAIL;
+	params_I_U[0].buffer = act_data->name;
+	params_I_U[0].buffer_length = strlen(act_data->name);
+	params_I_U[0].buffer_type = MYSQL_TYPE_STRING;
+
+	params_I_U[1].buffer = act_data->ip;
+	params_I_U[1].buffer_length = strlen(act_data->ip);
+	params_I_U[1].buffer_type = MYSQL_TYPE_STRING;
+
+	params_I_U[2].buffer = act_data->operator;
+	params_I_U[2].buffer_length = strlen(act_data->operator);
+	params_I_U[2].buffer_type = MYSQL_TYPE_STRING;
+
+	params_I_U[3].buffer = act_data->email;
+	params_I_U[3].buffer_length = strlen(act_data->email);
+	params_I_U[3].buffer_type = MYSQL_TYPE_STRING;
+
+	params_I_U[4].buffer = act_data->phone;
+	params_I_U[4].buffer_length = strlen(act_data->phone);
+	params_I_U[4].buffer_type = MYSQL_TYPE_STRING;
+
+	params_I_U[5].buffer = act_data->idnum;
+	params_I_U[5].buffer_length = strlen(act_data->idnum);
+	params_I_U[5].buffer_type = MYSQL_TYPE_STRING;
+
+	params_I_U[6].buffer = act_data->stdnum;
+	params_I_U[6].buffer_length = strlen(act_data->stdnum);
+	params_I_U[6].buffer_type = MYSQL_TYPE_STRING;
+
+	params_I_U[7].buffer = act_data->dept;
+	params_I_U[7].buffer_length = strlen(act_data->dept);
+	params_I_U[7].buffer_type = MYSQL_TYPE_STRING;
+
+	params_I_U[8].buffer = &(act_data->status);
+	params_I_U[8].buffer_length = sizeof(int);
+	params_I_U[8].buffer_type = MYSQL_TYPE_LONG;
+
+	params_I_U[9].buffer = act_data->userid;
+	params_I_U[9].buffer_length = strlen(act_data->userid);
+	params_I_U[9].buffer_type = MYSQL_TYPE_STRING;
+
+	rc = execute_prep_stmt(sqlbuf, params_I_U, NULL, &row_affected, write_active_callback_I_U);
+	return (rc != MYSQL_OK || row_affected != 1) ? WRITE_FAIL : ((count == 0) ? WRITE_SUCCESS : UPDATE_SUCCESS);
 }
 
 static void read_active_callback(MYSQL_STMT *stmt, MYSQL_BIND *result_col, void *result_set) {
@@ -414,7 +457,7 @@ int read_active(char* userid, struct active_data* act_data)
 	convert_mysql_time_to_str(act_data->regtime, &regtime);
 	convert_mysql_time_to_str(act_data->uptime, &uptime);
 
-	return (rc < 0) ? 0 : count;
+	return (rc != MYSQL_OK) ? 0 : count;
 }
 
 static void get_associated_userid_callback(MYSQL_STMT *stmt, MYSQL_BIND *result_cols, void *result_set) {
