@@ -411,18 +411,10 @@ int x_active_manager()
 //查询某id的验证信息
 int query_active(char* userid)
 {
-    char sqlbuf[512];
     struct active_data act_data;
     char value[VALUELEN];
     unsigned int i;
-	
-    MYSQL *s = NULL;
-    MYSQL_RES *res;
-    MYSQL_ROW row;
-    s = mysql_init(s);
-    if (!my_connect_mysql(s)) {
-        return 0;
-    }
+    struct associated_userid *au;
 
     i=read_active(userid, &act_data);
     getuser(userid);
@@ -457,20 +449,19 @@ int query_active(char* userid)
             get_active_value(value, &act_data);
             prints("\n----------------------------------------------------------\n\n");
             prints("同认证记录下的其他ID:\n");
-            sprintf(sqlbuf,"SELECT userid,status FROM %s WHERE %s='%s';" , USERREG_TABLE, active_style_str[act_data.status], value);
-            mysql_real_query(s, sqlbuf, strlen(sqlbuf));
-            res = mysql_store_result(s);
+            au = get_associated_userid_by_style(act_data.status, value);
             //列出同记录下的其他id
-            for (i=0; i<mysql_num_rows(res); ++i) {
-                row = mysql_fetch_row(res);
-                prints("%-12s\t%s\n", row[0], style_to_str(atoi(row[1])));
-            }
+            if (au != NULL) {
+				for (i = 0; i < au->count; ++i) {
+					prints("%-12s\t%s\n", au->id_array[i], style_to_str(au->status_array[i]));
+				}
+				free_associated_userid(au);
+			}
         }
     } else {
         move(5, 0);
         prints("未找到用户 %s 的认证与绑定信息!", userid);
     }
-    mysql_close(s);
     pressreturn();
     return 1;		
 }
@@ -635,31 +626,21 @@ int update_active(char* userid)
 //查询某记录下绑定的id
 int query_value(char* value, int style)
 {
-    char sqlbuf[512];
-    int i;
-
-    MYSQL *s = NULL;
-    MYSQL_RES *res;
-    MYSQL_ROW row;
-
-    s = mysql_init(s);
-    if (!my_connect_mysql(s)) {
-        return 0;
-    }
+    size_t i;
+    struct associated_userid *au;
 
     clear();
     move(5, 0);
     str_to_lowercase(value);
     prints("同认证记录下的ID:\n");
-    sprintf(sqlbuf,"SELECT userid,status FROM %s WHERE lower(%s)='%s';" , USERREG_TABLE, active_style_str[style], value);
-    mysql_real_query(s, sqlbuf, strlen(sqlbuf));
-    res = mysql_store_result(s);
+    au = get_associated_userid_by_style(style, value);
     //列出同记录下的其他id
-    for (i=0; i<mysql_num_rows(res); ++i) {
-        row = mysql_fetch_row(res);
-        prints("%-12s\t%s\n", row[0], style_to_str(atoi(row[1])));
-    }
-    mysql_close(s);
+    if (au != NULL) {
+		for (i = 0; i < au->count; ++i) {
+			prints("%-12s\t%s\n", au->id_array[i], style_to_str(au->status_array[i]));
+		}
+		free_associated_userid(au);
+	}
     pressreturn();
     return 1;
 }

@@ -488,21 +488,26 @@ static void get_associated_userid_callback(MYSQL_STMT *stmt, MYSQL_BIND *result_
 }
 
 struct associated_userid *get_associated_userid(const char *email) {
-	char *sqlbuf;
+	return get_associated_userid_by_style(MAIL_ACTIVE, email);
+}
+
+struct associated_userid *get_associated_userid_by_style(int style, const char *value) {
+	if (style <= 0 || style >= 4) return NULL;
+	char sqlbuf[128];
 	char userid[IDLEN + 1];
 	long user_status;
 	MYSQL_BIND params[1], results[2];
 	struct associated_userid *au;
 
 	user_status = 0;
-	sqlbuf = "SELECT userid, status FROM " USERREG_TABLE " WHERE email=?;";
+	snprintf(sqlbuf, 128, "SELECT userid, status FROM " USERREG_TABLE " WHERE %s=?;", active_style_str[style]);
 
 	memset(params, 0, sizeof(params));
 	memset(results, 0, sizeof(results));
 
 	params[0].buffer_type = MYSQL_TYPE_STRING;
-	params[0].buffer = (void *)email;
-	params[0].buffer_length = strlen(email);
+	params[0].buffer = (void *)value;
+	params[0].buffer_length = strlen(value);
 
 	results[0].buffer_type = MYSQL_TYPE_STRING;
 	results[0].buffer = (void *)userid;

@@ -79,11 +79,19 @@ int get_active_value(char* value, struct active_data* act_data);
 MYSQL * my_connect_mysql(MYSQL *s);
 
 /**
- * 依据邮箱地址查询关联的id列表，使用结束记得调用 free_associated_userid 释放内存。
+ * 依据邮箱地址查询关联的id列表，使用结束记得调用 free_associated_userid 释放内存。本函数属于 get_associated_userid_by_style 的封装。
  * @param email 邮件地址
  * @return struct associated_userid 指针
  */
 struct associated_userid *get_associated_userid(const char *email);
+
+/**
+ * 依据认证方式关联的id列表，使用结束记得调用 free_associated_userid 释放内存。
+ * @param style 认证方式，MAIL_ACTIVE | PHONE_ACTIVE | IDCARD_ACTIVE | FORCE_ACTIVE
+ * @param value 关联值
+ * @return struct associated_userid 指针
+ */
+struct associated_userid *get_associated_userid_by_style(int style, const char *value);
 
 /**
  * 释放由 get_associated_userid 产生的内存空间。
