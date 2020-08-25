@@ -5,6 +5,28 @@
 #define STRLEN 80
 #include "identify.h"
 
+struct active_data ad;
+
+static void prep_ad() {
+	snprintf(ad.userid, IDLEN+1, "foo5"),
+	snprintf(ad.name, STRLEN, "foo5_name");
+	snprintf(ad.dept, STRLEN, "foo5_dept");
+	snprintf(ad.ip, 20, "localhost");
+	snprintf(ad.operator, IDLEN+1, "foo5_op");
+	snprintf(ad.email, VALUELEN, "foo5@xjtu.edu.cn");
+	snprintf(ad.phone, VALUELEN, "foo5_phone");
+	snprintf(ad.idnum, VALUELEN, "foo5_idnum");
+	snprintf(ad.stdnum, VALUELEN, "foo5_studnum");
+	ad.status = 1;
+}
+
+extern int execute_prep_stmt(const char* sqlbuf, MYSQL_BIND *params, MYSQL_BIND *result_cols, void *result_set, void (*callback)(MYSQL_STMT *, MYSQL_BIND *, void*));
+
+static void clearup() {
+	const char *sqlbuf = "delete from userreglog where id<>0 and userid=\"foo5\"";
+	execute_prep_stmt(sqlbuf, NULL, NULL, NULL, NULL);
+}
+
 // test sample data:
 // foo@xjtu.edu.cn: foo1 foo2 foo3 foo4
 // bar@xjtu.edu.cn: bar1 bar2 bar3
@@ -74,49 +96,47 @@ START_TEST(test_query_record_num) {
 }
 
 START_TEST(test_read_active) {
-	struct active_data ad;
+	struct active_data ad1;
 	int count;
-	memset(&ad, 0, sizeof(struct active_data));
-	count = read_active("foo1", &ad);
+	memset(&ad1, 0, sizeof(struct active_data));
+	count = read_active("foo5", &ad1);
 	ck_assert_int_eq(count, 1);
-	ck_assert_str_eq(ad.userid, "foo1");
-	ck_assert_str_eq(ad.name, "foo1_name");
-	ck_assert_str_eq(ad.dept, "foo1_dept");
-	ck_assert_str_eq(ad.ip, "foo1_ip");
-	ck_assert_str_eq(ad.regtime, "2020-08-22 14:27:21");
-	ck_assert_str_eq(ad.uptime, "2020-08-22 14:27:21");
-	ck_assert_str_eq(ad.operator, "foo1");
-	ck_assert_str_eq(ad.email, "foo@xjtu.edu.cn");
-	ck_assert_str_eq(ad.phone, "foo1_phone");
-	ck_assert_str_eq(ad.idnum, "foo1_idnum");
-	ck_assert_str_eq(ad.stdnum, "foo1_studnum");
-	ck_assert_int_eq(ad.status, 1);
+	ck_assert_str_eq(ad1.userid, ad.userid);
+	ck_assert_str_eq(ad1.name, ad.name);
+	ck_assert_str_eq(ad1.dept, ad.dept);
+	ck_assert_str_eq(ad1.ip, ad.ip);
+	ck_assert_str_eq(ad1.operator, ad.userid);
+	ck_assert_str_eq(ad1.email, ad.email);
+	ck_assert_str_eq(ad1.phone, ad.phone);
+	ck_assert_str_eq(ad1.idnum, ad.idnum);
+	ck_assert_str_eq(ad1.stdnum, ad.stdnum);
+	ck_assert_int_eq(ad1.status, ad.status);
+}
+
+START_TEST(test_read_active_after_delete) {
+	struct active_data ad1;
+	int count;
+	memset(&ad1, 0, sizeof(struct active_data));
+	clearup();
+	count = read_active("foo5", &ad1);
+	ck_assert_int_eq(count, 0);
 }
 
 START_TEST(test_write_active) {
-	struct active_data ad;
-	memset(&ad, 0, sizeof(struct active_data));
+	struct active_data ad1;
+	memcpy(&ad1, &ad, sizeof(struct active_data));
 
-	snprintf(ad.userid, IDLEN+1, "foo5"),
-	snprintf(ad.name, STRLEN, "foo5_name");
-	snprintf(ad.dept, STRLEN, "foo5_dept");
-	snprintf(ad.ip, 20, "localhost");
-	snprintf(ad.operator, IDLEN+1, "foo5_op");
-	snprintf(ad.email, VALUELEN, "foo5@xjtu.edu.cn");
-	snprintf(ad.phone, VALUELEN, "foo5_phone");
-	snprintf(ad.idnum, VALUELEN, "foo5_idnum");
-	snprintf(ad.stdnum, VALUELEN, "foo5_studnum");
-	ad.status = 1;
+	ck_assert_int_eq(write_active(&ad1), WRITE_SUCCESS);
 
-	ck_assert_int_eq(write_active(&ad), WRITE_SUCCESS);
-
-	snprintf(ad.operator, IDLEN+1, "foo5");
-	ck_assert_int_eq(write_active(&ad), UPDATE_SUCCESS);
+	snprintf(ad1.operator, IDLEN+1, "foo5");
+	ck_assert_int_eq(write_active(&ad1), UPDATE_SUCCESS);
 }
 
 END_TEST
 
 Suite * test_suite_identify(void) {
+	prep_ad();
+
 	Suite *s = suite_create("libidentify");
 
 	TCase *tc = tcase_create("check associated ids");
@@ -129,13 +149,13 @@ Suite * test_suite_identify(void) {
 	tcase_add_test(tc, test_query_record_num);
 	suite_add_tcase(s, tc);
 
-	tc = tcase_create("check read_active");
-	tcase_add_test(tc, test_read_active);
-	suite_add_tcase(s, tc);
-
 	tc = tcase_create("check write_active");
 	tcase_add_test(tc, test_write_active);
 	suite_add_tcase(s, tc);
 
+	tc = tcase_create("check read_active");
+	tcase_add_test(tc, test_read_active);
+	tcase_add_test(tc, test_read_active_after_delete);
+	suite_add_tcase(s, tc);
 	return s;
 }
