@@ -54,6 +54,9 @@ START_TEST(test_gen_captcha_for_user) {
 
 	readstrvalue(filename, "used", value, sizeof(value));
 	ck_assert_str_eq(value, "false");
+
+	readstrvalue(filename, "attempts", value, sizeof(value));
+	ck_assert_str_eq(value, "0");
 }
 
 START_TEST(test_gen_captcha_for_user_regen_immediately_should_reject) {
@@ -89,6 +92,9 @@ START_TEST(test_gen_captcha_for_user_fake_create_time_should_allow) {
 
 	readstrvalue(filename, "used", value, sizeof(value));
 	ck_assert_str_eq(value, "false");
+
+	readstrvalue(filename, "attempts", value, sizeof(value));
+	ck_assert_str_eq(value, "0");
 }
 
 START_TEST(test_verify_captcha_for_user) {
@@ -106,6 +112,73 @@ START_TEST(test_verify_captcha_for_user) {
 	readstrvalue(filename, "used", value, sizeof(value));
 	ck_assert_str_eq(value, "true");
 }
+
+START_TEST(test_verify_captcha_for_user_case_insensitive) {
+	struct BMYCaptcha c;
+	int rc;
+	char value[32];
+
+	savestrvalue(filename, "create_time", "0");
+	rc = gen_captcha_for_user("foo", &c);
+	ck_assert_int_eq(rc, CAPTCHA_OK);
+
+	c.value[0] -= 32;
+	rc = verify_captcha_for_user("foo", c.value);
+	ck_assert_int_eq(rc, CAPTCHA_OK);
+
+	readstrvalue(filename, "used", value, sizeof(value));
+	ck_assert_str_eq(value, "true");
+}
+
+START_TEST(test_verify_captcha_for_user_case_wrong_attempts) {
+	struct BMYCaptcha c;
+	int rc;
+	char value[32];
+
+	savestrvalue(filename, "create_time", "0");
+	rc = gen_captcha_for_user("foo", &c);
+	ck_assert_int_eq(rc, CAPTCHA_OK);
+
+	c.value[0] -= 31;
+	rc = verify_captcha_for_user("foo", c.value);
+	ck_assert_int_eq(rc, CAPTCHA_WRONG);
+	readstrvalue(filename, "used", value, sizeof(value));
+	ck_assert_str_eq(value, "false");
+
+	rc = verify_captcha_for_user("foo", c.value);
+	ck_assert_int_eq(rc, CAPTCHA_WRONG);
+	readstrvalue(filename, "used", value, sizeof(value));
+	ck_assert_str_eq(value, "false");
+
+	rc = verify_captcha_for_user("foo", c.value);
+	ck_assert_int_eq(rc, CAPTCHA_WRONG);
+	readstrvalue(filename, "used", value, sizeof(value));
+	ck_assert_str_eq(value, "false");
+
+	rc = verify_captcha_for_user("foo", c.value);
+	ck_assert_int_eq(rc, CAPTCHA_WRONG);
+	readstrvalue(filename, "used", value, sizeof(value));
+	ck_assert_str_eq(value, "false");
+
+	rc = verify_captcha_for_user("foo", c.value);
+	ck_assert_int_eq(rc, CAPTCHA_WRONG);
+	readstrvalue(filename, "used", value, sizeof(value));
+	ck_assert_str_eq(value, "true");
+}
+
+START_TEST(test_verify_captcha_for_user_not_exists_or_wrong_length) {
+	int rc;
+
+	rc = verify_captcha_for_user("bar", "xxxxx");
+	ck_assert_int_ne(rc, CAPTCHA_OK);
+
+	rc = verify_captcha_for_user("foo", "xxxxxx");
+	ck_assert_int_ne(rc, CAPTCHA_OK);
+
+	rc = verify_captcha_for_user("foo", "xxxx");
+	ck_assert_int_ne(rc, CAPTCHA_OK);
+
+}
 END_TEST
 
 Suite * test_suite_captcha(void) {
@@ -120,6 +193,9 @@ Suite * test_suite_captcha(void) {
 
 	tc = tcase_create("check verify captcha to user foo");
 	tcase_add_test(tc, test_verify_captcha_for_user);
+	tcase_add_test(tc, test_verify_captcha_for_user_case_insensitive);
+	tcase_add_test(tc, test_verify_captcha_for_user_case_wrong_attempts);
+	tcase_add_test(tc, test_verify_captcha_for_user_not_exists_or_wrong_length);
 
 	suite_add_tcase(s, tc);
 

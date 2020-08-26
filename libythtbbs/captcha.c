@@ -2,6 +2,7 @@
 #include "mysql_wrapper.h"
 
 static const unsigned int TOTAL_CAPTCHA_NUMS = 500000;
+static const unsigned int MAX_ATTEMPTS       = 5;
 static const int INTERVAL_TO_REGEN  = 60;      /* 1min */
 static const int INTERVAL_TIMEOUT   = 15 * 60; /* 15 min */
 
@@ -12,6 +13,7 @@ static const char *KEY_CAPTCHA      = "captcha";
 static const char *KEY_TIMESTAMP    = "timestamp";
 static const char *KEY_CREATE_TIME  = "create_time";
 static const char *KEY_BOOL_USED    = "used";
+static const char *KEY_ATTEMPTS     = "attempts";
 static const char *VAL_BOOL_USED    = "true";
 static const char *VAL_BOOL_UNUSED  = "false";
 
@@ -50,6 +52,7 @@ static void store_captcha(const char *filename, struct BMYCaptcha *captcha) {
 	savestrvalue(filename, KEY_TIMESTAMP, timestamp);
 	savestrvalue(filename, KEY_CREATE_TIME, create_time);
 	savestrvalue(filename, KEY_BOOL_USED, VAL_BOOL_UNUSED);
+	savestrvalue(filename, KEY_ATTEMPTS, "0");
 }
 
 static int allow_to_regenerate_captcha(const char *filename) {
@@ -107,6 +110,7 @@ int verify_captcha_for_user(const char *userid, const char *code) {
 	int lockfd;
 	char value[80];
 	time_t now;
+	unsigned int attempts;
 
 	if (strlen(code) != 5) {
 		return CAPTCHA_WRONG;
@@ -146,7 +150,17 @@ int verify_captcha_for_user(const char *userid, const char *code) {
 		close(lockfd);
 		return CAPTCHA_OK;
 	} else {
-		// TODO wrong count
+		attempts = 0; // init
+
+		readstrvalue(captcha_filename, KEY_ATTEMPTS, value, sizeof(value));
+		attempts = atoi(value) + 1;
+
+		if (attempts >= MAX_ATTEMPTS) {
+			savestrvalue(captcha_filename, KEY_BOOL_USED, VAL_BOOL_USED);
+		} else {
+			snprintf(value, sizeof(value), "%d", attempts);
+			savestrvalue(captcha_filename, KEY_ATTEMPTS, value);
+		}
 		close(lockfd);
 		return CAPTCHA_WRONG;
 	}
