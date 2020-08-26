@@ -15,32 +15,6 @@ snprintf(buf, 20,
 		 mt->hour, mt->minute, mt->second);
 }
 
-//判断信箱是否合法
-int invalid_mail(char* mbox)
-{
-	if (strstr(mbox, "@bbs.")) return 1;
-	if (strstr(mbox, ".bbs@")) return 1;
-	if (!strstr(mbox, "@")) return 1;
-	//if (invalidaddr(mbox)) return 0;
-	if (strcmp(mbox+strlen(mbox)-5, "ac.cn")!=0) return 1;
-	return 0;
-}
-
-/*
-//生成随机码
-void gencode(char* code)
-{
-    int i;
-    int c1, c2;
-    for (i=0; i<CODELEN; ++i) {
-        c1=rand()%2;
-        c2=rand()%26;
-        code[i]=65+c1*32+c2;
-    }
-    code[CODELEN]='\0';
-}
-*/
-
 char* str_to_uppercase(char *str)
 {
 	char *h = str;
@@ -60,7 +34,6 @@ char* str_to_lowercase(char *str)
 	}
 	return h;
 }
-
 
 const char* style_to_str(int style)
 {
@@ -123,87 +96,6 @@ int send_active_mail(char* mbox, char* code, char* userid, session_t* session)
     }
 
     return 0;
-}
-
-int send_active_msg(char* phone, char* code,char* userid)
-{
-    char command[512];
-    char sqlbuf[512];
-    MYSQL* s=NULL;
-    MYSQL_RES *res;
-
-    s=mysql_init(s);
-    s = mysql_real_connect(s,"localhost",SQLUSER,SQLPASSWD,SQLDB,3306, NULL,0);
-    sprintf(command, "%s. Welcome to KYXK BBS. Your verification code is:%s", userid, code);
-    sprintf(sqlbuf,"INSERT INTO outbox(number, text) VALUES('%s', '%s'); " ,phone, command);
-    mysql_real_query(s, sqlbuf, strlen(sqlbuf));
-    res = mysql_store_result(s);
-    mysql_close(s);
-
-	//system(command);
-    return 0;
-}
-
-//不知道为什么，本地测试的时候sethomefile()定位不到用户的home目录
-//如果实际上可以的话，这个封装函数可以舍弃
-int setactivefile(char* genbuf, char* userid, char* filename)
-{
-    char fpath[STRLEN];
-//    FILE* dp;
-
-    strcpy(genbuf, BBS_HOMEPATH);
-    strcat(genbuf, "/");
-    sethomefile(fpath,userid,filename);
-    strcat(genbuf, fpath);
-
-    // sethomefile(genbuf,userid,filename);
-    return 0;
-}
-
-
-//用户的家目录下写入随机码
-int set_active_code(char* userid, char* code, char* value, int style)
-{
-    char genbuf[STRLEN];
-    FILE* dp;
-
-    setactivefile(genbuf,userid,ACTIVE_FILE);
-    if ((dp=fopen(genbuf,"w"))==NULL) {
-        fclose(dp);
-        return 0;
-    }
-    fwrite(code, sizeof(char), CODELEN+1, dp);
-    fwrite(value, sizeof(char), VALUELEN, dp);
-    fwrite(&style, sizeof(int), 1, dp);
-    fclose(dp);
-    return 1;
-}
-
-//用户的家目录下写入随机码
-//value和style一起读，是便于url验证方式使用
-int get_active_code(char* userid, char* code, char* value, int* style)
-{
-    char genbuf[STRLEN];
-    char fpath[STRLEN];
-    FILE* dp;
-
-    strcpy(fpath, BBS_HOMEPATH);
-    strcat(fpath, "/");
-    setactivefile(genbuf,userid,ACTIVE_FILE);
-    strcat(fpath, genbuf);
-    if (access(genbuf, 0)==0) {
-        if ((dp=fopen(genbuf,"r"))==NULL) {
-            fclose(dp);
-            return 0;
-        }
-        fread(code, sizeof(char), CODELEN+1, dp);
-        fread(value, sizeof(char), VALUELEN, dp);
-        fread(style, sizeof(int), 1, dp);
-        fclose(dp);
-    } else {
-        return FILE_NOT_FOUND;
-    }
-    return 1;
 }
 */
 
@@ -538,55 +430,6 @@ void free_associated_userid(struct associated_userid *au) {
 
 	free(au);
 }
-
-/*
-int valid_stunum(char* mbox, char* stunum)
-{
-    char sqlbuf[512];
-//    char stunum_cmp[32];
-    MYSQL *s = NULL;
-    int count;
-    MYSQL_RES *res;
-    MYSQL_ROW row;
-
-    s = mysql_init(s);
-    if (!my_connect_mysql(s)) {
-        return 0;
-    }
-    sprintf(sqlbuf,"SELECT * FROM %s WHERE lower(email)='%s' AND studnum='%s'; " , SCHOOLDATA_TABLE, mbox, stunum);
-    mysql_real_query(s, sqlbuf, strlen(sqlbuf));
-    res = mysql_store_result(s);
-    row=mysql_fetch_row(res);
-//    strcpy(stunum_cmp, row[0]);
-    count=mysql_num_rows(res);
-    mysql_close(s);
-//    return !strcmp(stunum, stunum_cmp);
-    return count;
-}
-
-int get_official_data(struct active_data* act_data)
-{
-    char sqlbuf[512];
-    MYSQL *s = NULL;
-    MYSQL_RES *res;
-    MYSQL_ROW row;
-
-    s = mysql_init(s);
-    if (!my_connect_mysql(s)) {
-        return 0;
-    }
-
-    sprintf(sqlbuf,"SELECT name, dept  FROM %s WHERE lower(email)='%s' AND studnum='%s'; " , SCHOOLDATA_TABLE, str_to_lowercase(act_data->email), act_data->stdnum);
-    mysql_real_query(s, sqlbuf, strlen(sqlbuf));
-    res = mysql_store_result(s);
-    row=mysql_fetch_row(res);
-    strcpy(act_data->name, row[0]);
-    strcpy(act_data->dept, row[1]);
-    mysql_close(s);
-    return 0;
-}
-
-*/
 
 #endif
 
