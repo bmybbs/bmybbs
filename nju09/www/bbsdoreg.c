@@ -10,7 +10,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <netdb.h> 
+#include <netdb.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 // 邮件服务器上用户名和密码的长度， added by interma@BMY 2005.5.12
@@ -24,94 +24,82 @@
 // 返回值为1表示有效，0表示无效, -1表示和pop服务器连接出错
 __attribute__((deprecated)) int test_mail_valid(char *user, char *pass, char *popip)
 {
-    char buffer[512]; 
-    int sockfd;
-    struct sockaddr_in server_addr; 
-    struct hostent *host; 
+	char buffer[512];
+	int sockfd;
+	struct sockaddr_in server_addr;
+	struct hostent *host;
 
 	if (user[0] == ' ' || pass[0] == ' ')
 		return 0;
 
-    // 客户程序开始建立 sockfd描述符
-    if((sockfd=socket(AF_INET,SOCK_STREAM,0))==-1) 
-    {  
-        return -1;
-    } 
-    if (strcmp(user, "test")==0) {
-	return -2;
-    }
-    int i;
-    for ( i = 0; i < 8; i++)
-    server_addr.sin_zero[i] = 0;
-    server_addr.sin_family=AF_INET; 
-    server_addr.sin_port=htons(110);
-    // 202.117.1.22 == stu.xjtu.edu.cn 
-    if(inet_aton(popip, &server_addr.sin_addr) == 0) 
-    {  
-        return -1;
-    }
+	// 客户程序开始建立 sockfd描述符
+	if((sockfd=socket(AF_INET,SOCK_STREAM,0))==-1)
+	{
+		return -1;
+	}
+	if (strcmp(user, "test")==0) {
+		return -2;
+	}
+	int i;
+	for ( i = 0; i < 8; i++)
+		server_addr.sin_zero[i] = 0;
+	server_addr.sin_family=AF_INET;
+	server_addr.sin_port=htons(110);
+	// 202.117.1.22 == stu.xjtu.edu.cn
+	if(inet_aton(popip, &server_addr.sin_addr) == 0)
+	{
+		return -1;
+	}
 
-    // 客户程序发起连接请求
-    if(connect(sockfd,(struct sockaddr *)(&server_addr),sizeof(struct sockaddr))==-1) 
-    {  
-        return -1; 
-    } 
+	// 客户程序发起连接请求
+	if(connect(sockfd,(struct sockaddr *)(&server_addr),sizeof(struct sockaddr))==-1)
+	{
+		return -1;
+	}
 
-    if(read(sockfd,buffer,512) == -1 )
-    {  
-        return -1; 
-    } 
-    if (buffer[0] == '-')
-        return -1;
-    
-    sprintf(buffer, "USER %s\r\n", user);
-    if (write(sockfd, buffer, strlen(buffer)) == -1)
-    { 
-        return -1; 
-    }   
-     
-    if(read(sockfd,buffer,512) == -1 )
-    {  
-        return -1; 
-    } 
-    if (buffer[0] == '-')
-    {   
-        return 0;
-    }   
-     
-    sprintf(buffer, "PASS %s\r\n", pass);
-    if (write(sockfd, buffer, strlen(buffer)) == -1)
-    { 
-        return -1; 
-    }
-     
-    if(read(sockfd,buffer,512) == -1 )
-    {  
-        return -1; 
-    } 
-    if (buffer[0] == '-')
-    {
-        return 0;
-    }
-            
-    write(sockfd, "QUIT\r\n", strlen("QUIT\r\n"));          
-    return 1;
-}    
+	if(read(sockfd,buffer,512) == -1 )
+	{
+		return -1;
+	}
+	if (buffer[0] == '-')
+		return -1;
 
-//void securityreport(char *str, char *content);
+	sprintf(buffer, "USER %s\r\n", user);
+	if (write(sockfd, buffer, strlen(buffer)) == -1)
+	{
+		return -1;
+	}
 
-/*
-char *
-sethomefile(char *buf, const char *userid, const char *filename)
-{
-	sprintf(buf, MY_BBS_HOME "/home/%c/%s/%s", mytoupper(userid[0]), userid,
-		filename);
-	return buf;
+	if(read(sockfd,buffer,512) == -1 )
+	{
+		return -1;
+	}
+	if (buffer[0] == '-')
+	{
+		return 0;
+	}
+
+	sprintf(buffer, "PASS %s\r\n", pass);
+	if (write(sockfd, buffer, strlen(buffer)) == -1)
+	{
+		return -1;
+	}
+
+	if(read(sockfd,buffer,512) == -1 )
+	{
+		return -1;
+	}
+	if (buffer[0] == '-')
+	{
+		return 0;
+	}
+
+	write(sockfd, "QUIT\r\n", strlen("QUIT\r\n"));
+	return 1;
 }
-*/
 
 // 令username用户通过验证， added by interma@BMY 2005.5.12
-void register_success(int usernum, char *userid, char *realname, char *dept, 
+void register_success(int usernum, char *userid, char *realname, char *dept,
 char *addr, char *phone, char *assoc, char *email)
 {
 	struct userec uinfo;
@@ -130,63 +118,52 @@ char *addr, char *phone, char *assoc, char *email)
 		return;
 	}
 
-		
-	
 	fprintf(fn, "usernum: %d\n", usernum);
 	fclose(fn);
 
 	memcpy(&uinfo, u, sizeof (uinfo));
 
-			strsncpy(uinfo.userid, userid,
-				 sizeof (uinfo.userid));
-			strsncpy(uinfo.realname, realname,
-				 sizeof (uinfo.realname));
-			strsncpy(uinfo.address, addr,
-				 sizeof (uinfo.address));
-			sprintf(genbuf, "%s$%s@%s", dept, phone, userid);
-			strsncpy(uinfo.realmail, genbuf,
-				 sizeof (uinfo.realmail));
+	strsncpy(uinfo.userid, userid, sizeof (uinfo.userid));
+	strsncpy(uinfo.realname, realname, sizeof (uinfo.realname));
+	strsncpy(uinfo.address, addr, sizeof (uinfo.address));
+	sprintf(genbuf, "%s$%s@%s", dept, phone, userid);
+	strsncpy(uinfo.realmail, genbuf, sizeof (uinfo.realmail));
 
-			strsncpy(uinfo.email, email, sizeof (uinfo.email));
+	strsncpy(uinfo.email, email, sizeof (uinfo.email));
 
-			uinfo.userlevel |= PERM_DEFAULT;	// by ylsdd
-			substitute_record(PASSFILE, &uinfo, sizeof (struct userec), usernum);
+	uinfo.userlevel |= PERM_DEFAULT;	// by ylsdd
+	substitute_record(PASSFILE, &uinfo, sizeof (struct userec), usernum);
 
-			sethomefile(buf, uinfo.userid, "sucessreg");
-			if ((fout = fopen(buf, "w")) != NULL) {
-				fprintf(fout, "\n");
-				fclose(fout);
-			}
+	sethomefile(buf, uinfo.userid, "sucessreg");
+	if ((fout = fopen(buf, "w")) != NULL) {
+		fprintf(fout, "\n");
+		fclose(fout);
+	}
 
-			sethomefile(buf, uinfo.userid, "register");
-	
-			if ((fout = fopen(buf, "w")) != NULL) 
-			{
-				
-				fprintf(fout, "%s: %d\n", "usernum", usernum);
-				fprintf(fout, "%s: %s\n", "userid", userid);
-				fprintf(fout, "%s: %s\n", "realname", realname);
-				fprintf(fout, "%s: %s\n", "dept", dept);
-				fprintf(fout, "%s: %s\n", "addr", addr);
-				fprintf(fout, "%s: %s\n", "phone", phone);
-				fprintf(fout, "%s: %s\n", "assoc", assoc);
+	sethomefile(buf, uinfo.userid, "register");
 
-				n = time(NULL);
-				fprintf(fout, "Date: %s",
-					ctime((time_t *) & n));
-				fprintf(fout, "Approved: %s\n", userid);
-				fclose(fout);
-			}
+	if ((fout = fopen(buf, "w")) != NULL) {
+		fprintf(fout, "%s: %d\n", "usernum", usernum);
+		fprintf(fout, "%s: %s\n", "userid", userid);
+		fprintf(fout, "%s: %s\n", "realname", realname);
+		fprintf(fout, "%s: %s\n", "dept", dept);
+		fprintf(fout, "%s: %s\n", "addr", addr);
+		fprintf(fout, "%s: %s\n", "phone", phone);
+		fprintf(fout, "%s: %s\n", "assoc", assoc);
 
-			mail_file("etc/s_fill", uinfo.userid,
-				  "恭禧您通过身份验证", "SYSOP");
+		n = time(NULL);
+		fprintf(fout, "Date: %s", ctime((time_t *) & n));
+		fprintf(fout, "Approved: %s\n", userid);
+		fclose(fout);
+	}
 
-			mail_file("etc/s_fill2", uinfo.userid,
-				  "欢迎加入" MY_BBS_NAME "大家庭", "STSOP");
-			sethomefile(buf, uinfo.userid, "mailcheck");
-			unlink(buf);
-			sprintf(genbuf, "让 %s 通过身分确认.", uinfo.userid);
-			securityreport(genbuf, genbuf);
+	mail_file("etc/s_fill", uinfo.userid, "恭禧您通过身份验证", "SYSOP");
+
+	mail_file("etc/s_fill2", uinfo.userid, "欢迎加入" MY_BBS_NAME "大家庭", "STSOP");
+	sethomefile(buf, uinfo.userid, "mailcheck");
+	unlink(buf);
+	sprintf(genbuf, "让 %s 通过身分确认.", uinfo.userid);
+	securityreport(genbuf, genbuf);
 	return ;
 }
 
@@ -208,11 +185,11 @@ extern char fromhost[256];
 // 纪录pop服务器上的用户名，防止重复注册多个id， added by interma@BMY 2005.5.16
 /* 返回值为0表示已纪录（未存在），1表示已存在 */
 int write_pop_user(char *user, char *userid, char *pop_name)
-{	
+{
 	FILE *fp;
 	char buf[256];
 	char path[256];
-	int isprivilege = 0; 
+	int isprivilege = 0;
 
 	char username[USER_LEN + 2];
 	sprintf(username, "%s\n", user);
@@ -231,7 +208,7 @@ int write_pop_user(char *user, char *userid, char *pop_name)
 				break;
 			}
 		}
-			
+
 		fclose(fp);
 	}
 
@@ -240,11 +217,11 @@ int write_pop_user(char *user, char *userid, char *pop_name)
 	sprintf(path, MY_BBS_HOME "/etc/pop_register/%s", pop_name);
 
 	int lockfd = openlockfile(".lock_new_register", O_RDONLY, LOCK_EX); // 加锁来保证互斥操作
-	
+
 	fp = fopen(path, "a+");
 
-	if (fp == NULL) 
-	{	
+	if (fp == NULL)
+	{
 		close(lockfd);
 		return 0;
 	}
@@ -314,7 +291,7 @@ bbsdoreg_main()
 	char user[USER_LEN + 1];
     char pass[PASS_LEN + 1];
 	char popserver[512];
-	strsncpy(popserver, getparm("popserver"), 512);	
+	strsncpy(popserver, getparm("popserver"), 512);
 	strsncpy(user, getparm("user"), USER_LEN);
 	strsncpy(pass, getparm("pass"), PASS_LEN);
 #endif
@@ -331,7 +308,7 @@ bbsdoreg_main()
 	strsncpy(x.email, getparm("email"), 60);
 #else
 	char delims[] = "+";
-    	char *popname;
+	char *popname;
 	char *popip;
 	//char popname[256];
 	//char popip[256];
@@ -339,76 +316,16 @@ bbsdoreg_main()
 	popname = strtok(popserver, delims);
 	popip = strtok(NULL, delims);
 
-	// 防止注入漏洞
-	/*struct stat temp;
-
-	if (stat(MY_BBS_HOME "/etc/pop_register/pop_list", &temp) == -1)
-	{
-		http_fatal("目前没有可以信任的邮件服务器列表, 因此无法验证用户\n");
-	}
-	
-	fp = fopen(MY_BBS_HOME "/etc/pop_register/pop_list", "r");
-	if (fp == NULL)
-	{
-		http_fatal("打开可以信任的邮件服务器列表出错, 因此无法验证用户\n");
-	}
-	*/
-
-	//if (!seek_in_file(MY_BBS_HOME "/etc/pop_register/pop_list", popname)) {
-	//	http_fatal("不是可信任的邮件服务器列表!");
-	//}
-	int vaild = 0;
-	char bufpop[256];
-	int numpop = 0;
-	char namepop[10][256]; // 注意：最多信任10个pop服务器，要不就溢出了！
-	char ippop[10][256];
-	/*
-	while(fgets(bufpop, 256, fp) != NULL)
-	{
-		if (strcmp(bufpop, "") == 0 || strcmp(bufpop, " ") == 0 || strcmp(bufpop, "\n") == 0)
-			break;
-		strcpy(namepop[numpop], bufpop);
-		fgets(bufpop, 256, fp);
-		strcpy(ippop[numpop], bufpop);
-		
-		namepop[numpop][strlen(namepop[numpop]) - 1] = 0;
-		ippop[numpop][strlen(ippop[numpop]) - 1] = 0;
-
-		if (strcmp(namepop[numpop], popname) == 0 &&
-			strcmp(ippop[numpop], popip) == 0 )
-		{
-			vaild = 1;
-			break;
-		}
-		
-		numpop ++;
-	}
-	fclose(fp);	
-	*/
-	
-	//if (!vaild)
-	//	http_fatal("-_-bb \n");
-	//
-	
-
 	char email[60];
 	snprintf(email, 60, "%s@%s", user, popname);  // 注意不要将email弄溢出了
 	str_to_lowercase(email);
 	strsncpy(x.email, email, 60);
-#endif	
-	
+#endif
+
 	strsncpy(phone, getparm("phone"), 60);
 	strsncpy(assoc, getparm("assoc"), 60);
 	strsncpy(words, getparm("words"), 1000);
 
-
-//      x.gender='M';
-//      if(atoi(getparm("gender"))) x.gender='F';
-//      x.birthyear=atoi(getparm("year"))-1900;
-//      x.birthmonth=atoi(getparm("month"));
-//      x.birthday=atoi(getparm("day"));
-
-	//if (!goodgbid(x.userid))  by bjgyt
     if (id_with_num(x.userid))
 		http_fatal("帐号只能由英文字母组成");
 	if (strlen(x.userid) < 2)
@@ -428,7 +345,6 @@ bbsdoreg_main()
 		http_fatal("您的注册单中含有非法字符");
 	if (badstr(x.address) || badstr(x.email))
 		http_fatal("您的注册单中含有非法字符");
-//      if(badymd(x.birthyear, x.birthmonth, x.birthday)) http_fatal("请输入您的出生年月");
 	if (is_bad_id(x.userid))
 		http_fatal("不雅帐号或禁止注册的id, 请重新选择");
 	if (getuser(x.userid))
@@ -440,15 +356,11 @@ bbsdoreg_main()
 #ifdef POP_CHECK
 	if (strlen(user) == 0)
 		http_fatal("邮箱用户名没添啊");
-	if (strlen(pass) == 0)
-		http_fatal("邮箱密码没添啊");
 #endif
-
 
 	getsalt(salt);
 	strsncpy(x.passwd, crypt1(pass1, salt), 14);
-	strncpy(x.lasthost, fromhost,15);	//ipv6 by leoncom 
-						//不能赋值太多，就影响后面的数据
+	strncpy(x.lasthost, fromhost,15);	//ipv6 by leoncom 不能赋值太多，就影响后面的数据
 	x.userlevel = PERM_BASIC;
 	x.firstlogin = now_t;
 	x.lastlogin = now_t - 3600;  //ipv6 by leoncom 注册后手动登录
@@ -476,8 +388,8 @@ bbsdoreg_main()
 	close(lockfd);
 #endif
 
-sprintf(filename, "home/%c/%s", mytoupper(x.userid[0]), x.userid);
-mkdir(filename, 0755);
+	sprintf(filename, "home/%c/%s", mytoupper(x.userid[0]), x.userid);
+	mkdir(filename, 0755);
 
 #ifndef POP_CHECK
 	printf("<center><table><td><td><pre>\n");
@@ -488,8 +400,7 @@ mkdir(filename, 0755);
 	printf("认手续之后，您还会获得更多的权限。目前您的注册单已经被提交\n");
 	printf("等待审阅。一般情况24小时以内就会有答复，请耐心等待。同时请\n");
 	printf("留意您的站内信箱。\n");
-	printf
-	    ("如果您有任何疑问，可以去sysop(站长的工作室)版发文求助。\n\n</pre></table>");
+	printf("如果您有任何疑问，可以去sysop(站长的工作室)版发文求助。\n\n</pre></table>");
 	printf("<hr><br>您的基本资料如下:<br>\n");
 	printf("<table border=1 width=400>");
 	printf("<tr><td>帐号位置: <td>%d\n", getusernum(x.userid));
@@ -499,11 +410,10 @@ mkdir(filename, 0755);
 	printf("<tr><td>上站位置: <td>%s<br>\n", x.lasthost);
 	printf("<tr><td>电子邮件: <td>%s<br></table><br>\n", x.email);
 
-	printf
-	    ("<center><form><input type=button onclick='window.close()' value=关闭本窗口></form></center>\n");
+	printf("<center><form><input type=button onclick='window.close()' value=关闭本窗口></form></center>\n");
 #else
 	printf("<center><table><td><td><pre>\n");
-	
+
 	int result;
 	//int result = test_mail_valid(user, pass, popip);
 	if (!strcasecmp(popname, "idp.xjtu6.edu.cn") && !strcasecmp(popip, IP_POP[3])) {
@@ -543,24 +453,23 @@ mkdir(filename, 0755);
 	write_active(&act_data);
 
 	switch (result)
-    {
-		case -2:
-		printf("<tr><td>%s<br></table><br>\n", 
-			"欢迎您加入交大，来到兵马俑BBS。<br>您采用了新生测试信箱注册，目前您是新生用户身份。"
-			"目前您没有发文、信件、消息等权限。<br><br>"
-			"请在开学取得stu.xjtu.edu.cn信箱后，<br>点击左侧边栏“填写注册单”，完成信箱绑定认证操作，成为本站正式用户。");
-		  break;
-		  case -1:
-		  case 0:
-		  printf("<tr><td>%s<br></table><br>\n", 
-			  "邮件服务器身份审核失败，您将只能使用本bbs的最基本功能，十分抱歉。");
-		  break;
+	{
+	case -2:
+		printf("<tr><td>%s<br></table><br>\n",
+				"欢迎您加入交大，来到兵马俑BBS。<br>您采用了新生测试信箱注册，目前您是新生用户身份。"
+				"目前您没有发文、信件、消息等权限。<br><br>"
+				"请在开学取得stu.xjtu.edu.cn信箱后，<br>点击左侧边栏“填写注册单”，完成信箱绑定认证操作，成为本站正式用户。");
+		break;
+	case -1:
+	case 0:
+		printf("<tr><td>%s<br></table><br>\n", "邮件服务器身份审核失败，您将只能使用本bbs的最基本功能，十分抱歉。");
+		break;
 
-		  case 1:			  
-		   if (query_record_num(email, MAIL_ACTIVE)>=MAX_USER_PER_RECORD ) {
-        		printf("您的信箱已经验证过 %d 个id，无法再用于验证了!\n", MAX_USER_PER_RECORD);
+	case 1:
+		if (query_record_num(email, MAIL_ACTIVE)>=MAX_USER_PER_RECORD ) {
+			printf("您的信箱已经验证过 %d 个id，无法再用于验证了!\n", MAX_USER_PER_RECORD);
 			break;
-		  }
+		}
 		int response;
 		strcpy(act_data.email, email);
 		act_data.status=1;
@@ -570,24 +479,20 @@ mkdir(filename, 0755);
 			register_success(getusernum(x.userid) + 1, x.userid, x.realname, dept, x.address, phone, assoc, email);
 			break;
 		}
-    		printf("  验证失败!");
-			break;
+		printf("  验证失败!");
+		break;
+	}
 
-     
-    }
-
-	printf
-	    ("<center><form><input type=button onclick='window.close()' value=关闭本窗口></form></center>\n");
+	printf("<center><form><input type=button onclick='window.close()' value=关闭本窗口></form></center>\n");
 #endif
-	
+
 	// 以下这行（newcomer）可能将会引起www（ia64）下的问题。interma@BMY
-	newcomer(&x, words); 
+	newcomer(&x, words);
 
 
 //      sprintf(buf, "%s %-12s %d\n", Ctime(now_t)+4, x.userid, getusernum(x.userid));
 //      f_append("wwwreg.log", buf);
-	sprintf(buf, "%s newaccount %d %s www", x.userid, getusernum(x.userid),
-		fromhost);
+	sprintf(buf, "%s newaccount %d %s www", x.userid, getusernum(x.userid), fromhost);
 	newtrace(buf);
 	//wwwstylenum = 1;
 
@@ -612,8 +517,7 @@ newcomer(struct userec *x, char *words)
 	fprintf(fp, "自我介绍:\n\n");
 	fprintf(fp, "%s", words);
 	fclose(fp);
-	post_article("newcomers", "WWW新手上路", filename, x->userid,
-		     x->username, fromhost, -1, 0, 0, x->userid, -1);
+	post_article("newcomers", "WWW新手上路", filename, x->userid, x->username, fromhost, -1, 0, 0, x->userid, -1);
 	unlink(filename);
 }
 
@@ -629,13 +533,11 @@ adduser(struct userec *x)
 			if (i + 1 > shm_ucache->number)
 				shm_ucache->number = i + 1;
 			strncpy(shm_ucache->userid[i], x->userid, 13);
-			insertuseridhash(uidhashshm->uhi, UCACHE_HASH_SIZE,
-					 x->userid, i + 1);
+			insertuseridhash(uidhashshm->uhi, UCACHE_HASH_SIZE, x->userid, i + 1);
 			save_user_data(x);
 			break;
 		}
 	}
 	flock(fileno(fp), LOCK_UN);
 	fclose(fp);
-	//utime(FLUSH, NULL);
 }
