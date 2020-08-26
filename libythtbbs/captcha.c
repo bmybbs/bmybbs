@@ -49,7 +49,7 @@ static void store_captcha(const char *filename, struct BMYCaptcha *captcha) {
 	savestrvalue(filename, KEY_CAPTCHA, captcha->value);
 	savestrvalue(filename, KEY_TIMESTAMP, timestamp);
 	savestrvalue(filename, KEY_CREATE_TIME, create_time);
-	savestrvalue(filename, KEY_BOOL_USED, "false");
+	savestrvalue(filename, KEY_BOOL_USED, VAL_BOOL_UNUSED);
 }
 
 static int allow_to_regenerate_captcha(const char *filename) {
@@ -99,4 +99,55 @@ CREATE:
 	store_captcha(captcha_filename, captcha);
 	close(lockfd);
 	return CAPTCHA_OK;
+}
+
+int verify_captcha_for_user(const char *userid, const char *code) {
+	char captcha_filename[80], captcha_lock_filename[80];
+	struct stat captcha_file_stat;
+	int lockfd;
+	char value[80];
+	time_t now;
+
+	if (strlen(code) != 5) {
+		return CAPTCHA_WRONG;
+	}
+
+	sethomefile_s(captcha_filename, sizeof(captcha_filename), userid, CAPTCHA_FILE);
+	sethomefile_s(captcha_lock_filename, sizeof(captcha_lock_filename), userid, CAPTCHA_LK_FILE);
+
+	lockfd = openlockfile(captcha_lock_filename, O_RDONLY, LOCK_EX);
+	if (lockfd <= 0)
+		return CAPTCHA_FILE_ERROR;
+
+	f_stat_s(&captcha_file_stat, captcha_filename);
+	if(captcha_file_stat.st_mtim.tv_sec == 0) {
+		close(lockfd);
+		return CAPTCHA_NO_CAP;
+	}
+
+	// captcha file exists
+	readstrvalue(captcha_filename, KEY_BOOL_USED, value, sizeof(value));
+	if (strcmp(value, VAL_BOOL_UNUSED) != 0) {
+		close(lockfd);
+		return CAPTCHA_NO_CAP;
+	}
+
+	readstrvalue(captcha_filename, KEY_CREATE_TIME, value, sizeof(value));
+	time(&now);
+	if(now - atol(value) > INTERVAL_TIMEOUT) {
+		close(lockfd);
+		return CAPTCHA_TIMEOUT;
+	}
+
+	readstrvalue(captcha_filename, KEY_CAPTCHA, value, sizeof(value));
+	if (strcasecmp(value, code) == 0) {
+		// valid input
+		savestrvalue(captcha_filename, KEY_BOOL_USED, VAL_BOOL_USED);
+		close(lockfd);
+		return CAPTCHA_OK;
+	} else {
+		// TODO wrong count
+		close(lockfd);
+		return CAPTCHA_WRONG;
+	}
 }

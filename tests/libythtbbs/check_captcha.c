@@ -90,6 +90,22 @@ START_TEST(test_gen_captcha_for_user_fake_create_time_should_allow) {
 	readstrvalue(filename, "used", value, sizeof(value));
 	ck_assert_str_eq(value, "false");
 }
+
+START_TEST(test_verify_captcha_for_user) {
+	struct BMYCaptcha c;
+	int rc;
+	char value[32];
+
+	savestrvalue(filename, "create_time", "0");
+	rc = gen_captcha_for_user("foo", &c);
+	ck_assert_int_eq(rc, CAPTCHA_OK);
+
+	rc = verify_captcha_for_user("foo", c.value);
+	ck_assert_int_eq(rc, CAPTCHA_OK);
+
+	readstrvalue(filename, "used", value, sizeof(value));
+	ck_assert_str_eq(value, "true");
+}
 END_TEST
 
 Suite * test_suite_captcha(void) {
@@ -101,6 +117,9 @@ Suite * test_suite_captcha(void) {
 	tcase_add_test(tc, test_gen_captcha_for_user);
 	tcase_add_test(tc, test_gen_captcha_for_user_regen_immediately_should_reject);
 	tcase_add_test(tc, test_gen_captcha_for_user_fake_create_time_should_allow);
+
+	tc = tcase_create("check verify captcha to user foo");
+	tcase_add_test(tc, test_verify_captcha_for_user);
 
 	suite_add_tcase(s, tc);
 
