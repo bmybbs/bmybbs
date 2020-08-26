@@ -21,4 +21,6 @@ struct BMYCaptcha {
 int gen_captcha_for_user(const char *userid, struct BMYCaptcha *captcha);
 
 int verify_captcha_for_user(const char *userid, const char *code);
+
+void gen_captcha_url(char *buf, size_t buf_size, long long timestamp);
 #endif //BMYBBS_CAPTCHA_H

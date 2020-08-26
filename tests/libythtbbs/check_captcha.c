@@ -179,24 +179,37 @@ START_TEST(test_verify_captcha_for_user_not_exists_or_wrong_length) {
 	ck_assert_int_ne(rc, CAPTCHA_OK);
 
 }
+
+START_TEST(test_gen_captcha_url) {
+	char buf[80];
+	long long timestamp = 1532939106925709978L;
+
+	gen_captcha_url(buf, sizeof(buf), timestamp);
+	ck_assert_str_eq(buf, "http://bbs.xjtu.edu.cn/captcha/99/1532939106925709978.gif");
+}
 END_TEST
 
 Suite * test_suite_captcha(void) {
 	Suite *s = suite_create("check captcha");
 	TCase *tc = tcase_create("check query captcha by id");
 	tcase_add_test(tc, test_query_captcha_by_id);
+	suite_add_tcase(s, tc);
 
 	tc = tcase_create("check generate captcha to user foo");
 	tcase_add_test(tc, test_gen_captcha_for_user);
 	tcase_add_test(tc, test_gen_captcha_for_user_regen_immediately_should_reject);
 	tcase_add_test(tc, test_gen_captcha_for_user_fake_create_time_should_allow);
+	suite_add_tcase(s, tc);
 
 	tc = tcase_create("check verify captcha to user foo");
 	tcase_add_test(tc, test_verify_captcha_for_user);
 	tcase_add_test(tc, test_verify_captcha_for_user_case_insensitive);
 	tcase_add_test(tc, test_verify_captcha_for_user_case_wrong_attempts);
 	tcase_add_test(tc, test_verify_captcha_for_user_not_exists_or_wrong_length);
+	suite_add_tcase(s, tc);
 
+	tc = tcase_create("check captcha url");
+	tcase_add_test(tc, test_gen_captcha_url);
 	suite_add_tcase(s, tc);
 
 	return s;

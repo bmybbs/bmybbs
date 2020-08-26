@@ -16,6 +16,7 @@ static const char *KEY_BOOL_USED    = "used";
 static const char *KEY_ATTEMPTS     = "attempts";
 static const char *VAL_BOOL_USED    = "true";
 static const char *VAL_BOOL_UNUSED  = "false";
+static const char *BASE_URL_PATT    = "http://" MY_BBS_DOMAIN "/captcha/00/%lld.gif";
 
 static void query_captcha_by_id_callback(MYSQL_STMT *stmt, MYSQL_BIND *result_cols, void *result) {
 	if (mysql_stmt_num_rows(stmt) == 1)
@@ -164,4 +165,16 @@ int verify_captcha_for_user(const char *userid, const char *code) {
 		close(lockfd);
 		return CAPTCHA_WRONG;
 	}
+}
+
+void gen_captcha_url(char *buf, size_t buf_size, long long timestamp) {
+	unsigned int idx;
+	size_t len;
+
+	snprintf(buf, buf_size, BASE_URL_PATT, timestamp);
+	len = strlen(buf);
+	idx = len - 8;
+	buf[idx-18] = buf[idx];
+	idx++;
+	buf[idx-18] = buf[idx];
 }
