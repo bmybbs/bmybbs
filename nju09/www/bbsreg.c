@@ -43,7 +43,10 @@ bbsreg_main()
 	}
 	printf("</select>\n");
 	printf("<tr><td align=right>*请输入邮箱用户名（新生请输入test）:<td align=left><input name=user size=20 maxlength=20> \n");
-	printf("<tr><td align=right><td align=left>每个信箱最多可以认证 %d 个bbs帐号，此处仅需输入 @ 字符以前的部分，例如您的邮箱为 \"example@xjtu.edu.cn\"，此处输入 \"example\" 即可（不包含引号）。<br>邮箱域名请从列表中选择。", MAX_USER_PER_RECORD);
+	printf("<tr><td align=right><td align=left>每个信箱最多可以认证 %d 个bbs帐号，此处仅需输入 @ 字符以前的部分，<br>例如您的邮箱为 <code>example@xjtu.edu.cn</code>，此处输入 <code>example</code> 即可。<br>邮箱域名请从列表中选择。", MAX_USER_PER_RECORD);
+	printf("<tr><td align=right><td align=left>尽量使用高复杂度的密码，并避免和其他网站相同。本站推荐使用安全<br>的方式访问，以确保您的密码不在网络传输中被泄漏。安全的方式包括<br>https 和 ssh。");
+	printf("<tr><td align=right><td align=left><a href=\"https://bbs.xjtu.edu.cn\">https://bbs.xjtu.edu.cn</a>");
+	printf("<tr><td align=right><td align=left><a href=\"https://bbs.xjtu6.edu.cn\">https://bbs.xjtu6.edu.cn</a>");
 
 #endif
 
