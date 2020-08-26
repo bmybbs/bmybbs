@@ -26,14 +26,6 @@ illegal_email_chars(char c) {
 	return 0;
 }
 
-/**
- * 检查是否是合法的交大邮箱，允许的邮箱域：
- *   xjtu.edu.cn
- *   mail.xjtu.edu.cn
- *   stu.xjtu.edu.cn
- * @param mail_to
- * @return
- */
 enum mail_sender_code
 check_mail_to_address(const char *mail_to) {
 	int i;

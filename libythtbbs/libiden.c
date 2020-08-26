@@ -5,7 +5,7 @@
 #ifdef POP_CHECK
 
 static const char *active_style_str[] = {"", "email", "phone", "idnum", NULL};
-const char *MAIL_DOMAINS[] = {"", "stu.xjtu.edu.cn", "mail.xjtu.edu.cn", "idp.xjtu6.edu.cn", NULL};
+const char *MAIL_DOMAINS[] = {"", "xjtu.edu.cn", "stu.xjtu.edu.cn", "mail.xjtu.edu.cn", NULL};
 const char *IP_POP[] = {"", "202.117.1.22", "202.117.1.28", "2001:250:1001:2::ca75:1c0", NULL};
 
 static void convert_mysql_time_to_str(char *buf, MYSQL_TIME *mt) {
@@ -58,46 +58,57 @@ const char* style_to_str(int style)
 	}
 }
 
-/*
 //发送验证信函
-int send_active_mail(char* mbox, char* code, char* userid, session_t* session)
+int send_active_mail(char *userid, char *email)
 {
-    int return_no;
-    FILE *fout;
-    char buff[STRLEN];
-    char mtitle[STRLEN];
-    //char acturl[STRLEN];
-    const char *c=sysconf_str("BBS_WEBDOMAIN");
+	int rc;
+	struct BMYCaptcha c;
+	char mail[1024];
+	char url[80];
+	const char *mail_subject = "BMYBBS \xe6\xb3\xa8\xe5\x86\x8c\xe7\xa1\xae\xe8\xae\xa4\xe5\x87\xbd";
+	const char *mail_body_template = "\xe6\x82\xa8\xe5\xa5\xbd\xef\xbc\x8c\xe8\xbf\x99\xe6\x98\xaf%s\xe7\x9a\x84\xe5"
+		"\xae\x9e\xe5\x90\x8d\xe5\x88\xb6\xe8\xae\xa4\xe8\xaf\x81\xe7\xa1\xae\xe8\xae\xa4"
+		"\xe4\xbf\xa1\xe5\x87\xbd\xe3\x80\x82\xe5\xa6\x82\xe6\x9e\x9c\xe6\x82\xa8\xe6\xb2"
+		"\xa1\xe6\x9c\x89\xe5\x9c\xa8\xe6\x9c\xac\xe7\xab\x99\xe6\xb3\xa8\xe5\x86\x8c\xef"
+		"\xbc\x8c\xe8\xaf\xb7\xe4\xb8\x8d\xe7\x94\xa8\xe7\x90\x86\xe4\xbc\x9a\xe6\x9c\xac"
+		"\xe4\xbf\xa1\xe4\xbb\xb6\xe3\x80\x82\x0a\xe6\x82\xa8\xe6\xb3\xa8\xe5\x86\x8c\xe7"
+		"\x9a\x84\xe4\xbd\xbf\xe7\x94\xa8\xe8\x80\x85\xe4\xbb\xa3\xe5\x8f\xb7\xe6\x98\xaf"
+		"\xef\xbc\x9a%s\x0a\xe6\x82\xa8\xe7\x9a\x84\xe5\xae\x9e\xe5\x90\x8d\xe8\xae\xa4"
+		"\xe8\xaf\x81\xe9\xaa\x8c\xe8\xaf\x81\xe7\xa0\x81\xe6\x98\xaf\xef\xbc\x9a%s\x0a"
+		"\xe6\x82\xa8\xe5\x8f\xaf\xe4\xbb\xa5\xe4\xbd\xbf\xe7\x94\xa8\x20\x77\x77\x77\x20"
+		"\xe6\x88\x96\xe8\x80\x85\x20\x74\x65\x6c\x6e\x65\x74\x20\xe6\x96\xb9\xe5\xbc\x8f"
+		"\xe7\x99\xbb\xe5\xbd\x95\xe5\x90\x8e\xe5\xa1\xab\xe5\x86\x99\xe9\xaa\x8c\xe8\xaf"
+		"\x81\xe4\xbf\xa1\xe6\x81\xaf\xe3\x80\x82\x0a\x0a\x77\x77\x77\x20\xe6\x96\xb9\xe5"
+		"\xbc\x8f\xef\xbc\x9a\xe7\x82\xb9\xe5\x87\xbb\xe5\xb7\xa6\xe4\xbe\xa7\xe8\xbe\xb9"
+		"\xe6\xa0\x8f\xe2\x80\x9c\xe5\xa1\xab\xe5\x86\x99\xe6\xb3\xa8\xe5\x86\x8c\xe5\x8d"
+		"\x95\xe2\x80\x9d\xef\xbc\x8c\xe5\xae\x8c\xe6\x88\x90\xe4\xbf\xa1\xe7\xae\xb1\xe7"
+		"\xbb\x91\xe5\xae\x9a\xe8\xae\xa4\xe8\xaf\x81\xe6\x93\x8d\xe4\xbd\x9c\xe3\x80\x82"
+		"\x0a\x74\x65\x6c\x6e\x65\x74\x20\xe6\x96\xb9\xe5\xbc\x8f\xef\xbc\x9a\xe8\xbf\x9b"
+		"\xe5\x85\xa5\xe4\xb8\xaa\xe4\xba\xba\xe5\xb7\xa5\xe5\x85\xb7\xe7\xae\xb1\xe5\xa1"
+		"\xab\xe5\x86\x99\xe6\xb3\xa8\xe5\x86\x8c\xe5\x8d\x95\xe3\x80\x82";
+/*
+您好，这是%s的实名制认证确认信函。如果您没有在本站注册，请不用理会本信件。
+您注册的使用者代号是：%s
+您的实名认证验证码是：%s
+您可以使用 www 或者 telnet 方式登录后填写验证信息。
 
-    if (!c) c=sysconf_str("BBSDOMAIN");
-    sethomefile(buff, userid, "active_mail");
-    fout = fopen(buff, "w");
-    if (fout != NULL) {
-        fprintf(fout, "Reply-To: bbs@%s\n", "kyxk.net");
-        fprintf(fout, "From: bbs@%s\n",  "kyxk.net");
-        fprintf(fout, "To: %s\n", str_to_lowercase(mbox));
-        fprintf(fout, "Subject: %s实名认证确认信函.\n", BBS_FULL_NAME);
-        fprintf(fout, "X-Forwarded-By: SYSOP \n");
-        fprintf(fout, "X-Disclaimer: None\n");
-        fprintf(fout, "\n");
-        fprintf(fout,"您好，这是%s的实名制认证确认信函。如果您没有在本站注册，请不用理会本信件.\n", BBS_FULL_NAME);
-        fprintf(fout,"您注册的使用者代号是：%s\n\n",userid);
-        fprintf(fout,"您的实名认证验证码是：\n%s\n\n",code);
-        // fprintf(fout,"您可以直接点击以下链接完成认证手续：\n");
-        // fprintf(fout,"%s\n\n", acturl);
-        fprintf(fout,"复制本验证码并在本站验证界面下输入，即可完成认证步骤\n\n");
-        fprintf(fout,"亲爱的 %s, %s欢迎您的光临!",userid, BBS_FULL_NAME);
-        fprintf(fout, ".\n");
-        fclose(fout);
-        sprintf(mtitle, "%s欢迎您!", BBS_FULL_NAME);
-        return_no = bbs_sendmail(buff,  mtitle, str_to_lowercase(mbox), 0, 1, session);
-        unlink(buff);
-        return return_no;
-    }
-
-    return 0;
-}
+www 方式：点击左侧边栏“填写注册单”，完成信箱绑定认证操作。
+telnet 方式：进入个人工具箱填写注册单。
 */
+	rc = gen_captcha_for_user(userid, &c);
+	if (rc != CAPTCHA_OK)
+		return -1;
+
+	gen_captcha_url(url, sizeof(url), c.timestamp);
+	snprintf(mail, sizeof(mail), mail_body_template, " BMYBBS ", userid, url);
+
+	rc = send_mail(userid, userid, mail_subject, mail);
+	if (rc != MAIL_SENDER_SUCCESS)
+		return -1;
+
+	return 1;
+}
+
 
 int get_active_value(char* value, struct active_data* act_data)
 {

@@ -23,7 +23,7 @@
 //允许的邮箱域
 #define DOMAIN_COUNT 3
 extern const char *MAIL_DOMAINS[];
-extern const char *IP_POP[];
+extern const char *IP_POP[] __attribute__((deprecated("IP_POP shouldn't be used any more.")));
 
 //绑定的方式
 #define DIED_ACIVE -1 /* 挂了*/
@@ -61,7 +61,7 @@ struct associated_userid {
 char* str_to_uppercase(char *str);
 char* str_to_lowercase(char *str);
 const char* style_to_str(int style);
-//int send_active_mail(char* mbox, char* code,char* userid, session_t* session);
+int send_active_mail(char *userid, char *email);
 
 int query_record_num(char* value, int style);
 int write_active(struct active_data* act_data);

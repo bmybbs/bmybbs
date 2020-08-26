@@ -289,11 +289,10 @@ bbsdoreg_main()
 
 #ifdef POP_CHECK
 	char user[USER_LEN + 1];
-    char pass[PASS_LEN + 1];
-	char popserver[512];
-	strsncpy(popserver, getparm("popserver"), 512);
+	char popserver[4];
+	int popserver_index;
+	strsncpy(popserver, getparm("popserver"), 4);
 	strsncpy(user, getparm("user"), USER_LEN);
-	strsncpy(pass, getparm("pass"), PASS_LEN);
 #endif
 
 	strsncpy(x.userid, getparm("userid"), 13);
@@ -307,14 +306,11 @@ bbsdoreg_main()
 #ifndef POP_CHECK
 	strsncpy(x.email, getparm("email"), 60);
 #else
-	char delims[] = "+";
-	char *popname;
-	char *popip;
-	//char popname[256];
-	//char popip[256];
+	const char *popname;
+	popserver_index = atoi(popserver);
+	if(popserver_index < 1 || popserver_index > 3) popserver_index = 1;
 
-	popname = strtok(popserver, delims);
-	popip = strtok(NULL, delims);
+	popname = MAIL_DOMAINS[popserver_index];
 
 	char email[60];
 	snprintf(email, 60, "%s@%s", user, popname);  // 注意不要将email弄溢出了
@@ -356,6 +352,8 @@ bbsdoreg_main()
 #ifdef POP_CHECK
 	if (strlen(user) == 0)
 		http_fatal("邮箱用户名没添啊");
+	if (check_mail_to_address(email) == MAIL_SENDER_WRONG_EMAIL)
+		http_fatal("您的邮箱名不合法，请联系站长或至 https://github.com/bmybbs/bmybbs/issues/ 反馈问题。");
 #endif
 
 	getsalt(salt);
@@ -414,32 +412,6 @@ bbsdoreg_main()
 #else
 	printf("<center><table><td><td><pre>\n");
 
-	int result;
-	//int result = test_mail_valid(user, pass, popip);
-	if (!strcasecmp(popname, "idp.xjtu6.edu.cn") && !strcasecmp(popip, IP_POP[3])) {
-		if (!strcmp(fromhost, "202.117.1.190") || !strcmp(fromhost, "2001:250:1001:2::ca75:1be"))
-			result=1;
-		else {
-			http_fatal("非可信的认证域!");
-			result=0;
-		}
-	}
-	else {
-		int pop_n;
-		result = 0;
-		for(pop_n=1;pop_n<=2; ++pop_n) {
-			if(strcasecmp(popname, MAIL_DOMAINS[pop_n])==0 && strcasecmp(popip, IP_POP[pop_n])==0) {
-				result = 1;
-				break;
-			}
-		}
-
-		if(result!=1)
-			http_fatal("error occur");
-
-		result = test_mail_valid(user, pass, popip);
-	}
-
 	memset(&act_data, 0, sizeof(act_data));
 	strcpy(act_data.name, x.realname);
 	strcpy(act_data.userid, x.userid);
@@ -452,6 +424,15 @@ bbsdoreg_main()
 	act_data.status=0;
 	write_active(&act_data);
 
+	int result;
+	if (strcmp(user, "test") == 0) {
+		result = -2; // 新生
+	} else if (query_record_num(email, MAIL_ACTIVE)>=MAX_USER_PER_RECORD ) {
+		result = -3;
+	} else {
+		// smtp
+		result = send_active_mail(x.userid, email);
+	}
 	switch (result)
 	{
 	case -2:
@@ -460,26 +441,19 @@ bbsdoreg_main()
 				"目前您没有发文、信件、消息等权限。<br><br>"
 				"请在开学取得stu.xjtu.edu.cn信箱后，<br>点击左侧边栏“填写注册单”，完成信箱绑定认证操作，成为本站正式用户。");
 		break;
+	case -3:
+		printf("您的信箱已经验证过 %d 个id，无法再用于验证了!\n", MAX_USER_PER_RECORD);
+		break;
 	case -1:
 	case 0:
 		printf("<tr><td>%s<br></table><br>\n", "邮件服务器身份审核失败，您将只能使用本bbs的最基本功能，十分抱歉。");
 		break;
 
 	case 1:
-		if (query_record_num(email, MAIL_ACTIVE)>=MAX_USER_PER_RECORD ) {
-			printf("您的信箱已经验证过 %d 个id，无法再用于验证了!\n", MAX_USER_PER_RECORD);
-			break;
-		}
-		int response;
-		strcpy(act_data.email, email);
-		act_data.status=1;
-		response=write_active(&act_data);
-		if (response==WRITE_SUCCESS || response==UPDATE_SUCCESS)  {
-			printf("身份审核成功，您已经可以使用所用功能了！\n");
-			register_success(getusernum(x.userid) + 1, x.userid, x.realname, dept, x.address, phone, assoc, email);
-			break;
-		}
-		printf("  验证失败!");
+		printf("欢迎您加入交大，来到兵马俑BBS。<br>"
+			"目前您没有发文、信件、消息等权限。<br>"
+			"验证信息已发送至您的邮箱 %s ，及时请查收。<br>"
+			"请登录系统后点击左侧边栏“填写注册单”，完成信箱绑定认证操作，成为本站正式用户。", email);
 		break;
 	}
 

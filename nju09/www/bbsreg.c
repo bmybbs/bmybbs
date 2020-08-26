@@ -33,9 +33,9 @@ bbsreg_main()
 	while(n <= DOMAIN_COUNT)
 	{
 		if (n == 1)
-			printf("<OPTION VALUE=%s SELECTED>", MAIL_DOMAINS[n]);
+			printf("<OPTION VALUE=%d SELECTED>", n);
 		else
-			printf("<OPTION VALUE=%s>", MAIL_DOMAINS[n]);
+			printf("<OPTION VALUE=%d>", n);
 
 		printf("%s", MAIL_DOMAINS[n]);
 		n++;
