@@ -5,6 +5,12 @@
 #include "ythtlib.h"
 #include "mysql_wrapper.h"
 
+#if MYSQL_VERSION_ID < 80000
+typedef my_bool MYBOOL;
+#else
+typedef bool MYBOOL;
+#endif
+
 /**
  * 从配置文件读取 sql 的连接信息，该函数属于 mysql_real_connect 的封装。
  * 当配置文件存在且连接正常时，返回 MYSQL* 指针。
@@ -45,7 +51,7 @@ int execute_prep_stmt(const char* sqlbuf, MYSQL_BIND *params, MYSQL_BIND *result
 	MYSQL *s;
 	MYSQL_STMT *stmt;
 	int mysql_status;
-	my_bool bind_status;
+	MYBOOL bind_status;
 	int result;
 
 	s = NULL;
