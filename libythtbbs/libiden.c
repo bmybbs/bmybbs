@@ -102,7 +102,7 @@ telnet 方式：进入个人工具箱填写注册单。
 	gen_captcha_url(url, sizeof(url), c.timestamp);
 	snprintf(mail, sizeof(mail), mail_body_template, " BMYBBS ", userid, url);
 
-	rc = send_mail(userid, userid, mail_subject, mail);
+	rc = send_mail(email, userid, mail_subject, mail);
 	if (rc != MAIL_SENDER_SUCCESS)
 		return -1;
 
