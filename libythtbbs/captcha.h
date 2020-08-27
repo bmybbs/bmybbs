@@ -18,6 +18,8 @@ struct BMYCaptcha {
 	time_t create_time;
 };
 
+int check_captcha_status(const char *userid);
+
 int gen_captcha_for_user(const char *userid, struct BMYCaptcha *captcha);
 
 int verify_captcha_for_user(const char *userid, const char *code);

@@ -73,6 +73,44 @@ static int allow_to_regenerate_captcha(const char *filename) {
 	return CAPTCHA_NOT_ALLOW_TO_REGEN;
 }
 
+int check_captcha_status(const char *userid) {
+	char captcha_filename[80], captcha_lock_filename[80];
+	char value[32];
+	time_t now, ct;
+	struct stat captcha_file_stat;
+	int lockfd;
+
+	sethomefile_s(captcha_filename, sizeof(captcha_filename), userid, CAPTCHA_FILE);
+	sethomefile_s(captcha_lock_filename, sizeof(captcha_lock_filename), userid, CAPTCHA_LK_FILE);
+
+	lockfd = openlockfile(captcha_lock_filename, O_RDONLY, LOCK_EX);
+	if (lockfd <= 0)
+		return CAPTCHA_FILE_ERROR;
+
+	f_stat_s(&captcha_file_stat, captcha_filename);
+	if(captcha_file_stat.st_mtim.tv_sec == 0) {
+		close(lockfd);
+		return CAPTCHA_NO_CAP;
+	}
+
+	readstrvalue(captcha_filename, KEY_BOOL_USED, value, sizeof(value));
+	if (strcmp(value, VAL_BOOL_USED) == 0) {
+		close(lockfd);
+		return CAPTCHA_USED;
+	}
+
+	readstrvalue(captcha_filename, KEY_CREATE_TIME, value, sizeof(value));
+	ct = (time_t) atol(value);
+	time(&now);
+	if (now - ct > INTERVAL_TIMEOUT) {
+		close(lockfd);
+		return CAPTCHA_TIMEOUT;
+	}
+
+	close(lockfd);
+	return CAPTCHA_OK;
+}
+
 int gen_captcha_for_user(const char *userid, struct BMYCaptcha *captcha) {
 	char captcha_filename[80], captcha_lock_filename[80];
 	struct stat captcha_file_stat;
