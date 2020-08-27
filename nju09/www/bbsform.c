@@ -49,7 +49,9 @@ bbsform_main()
 		check_submit_form();
 		http_quit();
 	}
+	printf("<style>.hidden { display: none }</style>");
 	printf("您好, %s, 注册单通过后即可获得注册用户的权限, 下面各项务必请认真填写<br><hr>\n", currentuser.userid);
+	printf("<div id='form-reg' class='hidden'>");
 	printf("<form method=post action=bbsform?type=1>\n");
 	printf("真实姓名: <input name=realname type=text maxlength=8 size=8 value='%s'><br>\n", nohtml(currentuser.realname));
 	printf("居住地址: <input name=address type=text maxlength=32 size=32 value='%s'><br>\n", nohtml(currentuser.address));
@@ -58,35 +60,35 @@ bbsform_main()
 	printf("校友会/毕业学校(可选): <input name=assoc maxlength=60 size=42><br><hr><br>\n");
 
 #ifdef POP_CHECK
-	char bufpop[256];
-	int numpop = 0;
-	char namepop[10][256]; // 注意：最多信任10个pop服务器，要不就溢出了！
-	char ippop[10][256];
 	printf("以下信息要作为邮件服务器身份验证之用，必须填写<br><hr>\n");
 	printf("每个信箱最多可以认证 %d 个bbs帐号 <br><hr>\n", MAX_USER_PER_RECORD);
 	printf("<tr><td align=right>*可以信任的邮件服务器列表:<td align=left><SELECT NAME=popserver>\n");
 	int n = 1;
 	while(n <= DOMAIN_COUNT)
 	{
-		char tempbuf[512];
-		strncpy(tempbuf, MAIL_DOMAINS[n], 256);
-		strcat(tempbuf, "+");
-		strcat(tempbuf, IP_POP[n]);
 		if (n == 1)
-			printf("<OPTION VALUE=%s SELECTED>", tempbuf);
+			printf("<OPTION VALUE=%d SELECTED>", n);
 		else
-			printf("<OPTION VALUE=%s>", tempbuf);
+			printf("<OPTION VALUE=%d>", n);
 
 		printf("%s", MAIL_DOMAINS[n]);
 		n++;
 	}
 	printf("</select><br>\n");
 	printf("<tr><td align=right>*请输入邮箱用户名:<td align=left><input name=user size=20 maxlength=20><br>\n");
-	printf("<tr><td align=right>*请输入邮箱密码:<td align=left><input type=password name=pass size=20 maxlength=20><br><hr><br>\n");
 
 #endif
 
 	printf("<input type=submit value=注册> <input type=reset value=取消>");
+	printf("</form></div>"); // div#form-reg
+
+	printf("<div id='form-cap' class='hidden'><form method='post' action='bbsform?type=2'");
+	printf("您关联的信箱是： %s，验证码已发送到您的信箱。<br>", nohtml(currentuser.email));
+	printf("验证码<input name='captcha' maxlength=5><br>");
+	printf("<button id='btn-cap-submit'>提交</button> <button id='btn-cap-resent'>重新发送</button> <button id='btn-cap-update'>更新信箱</button>");
+	printf("</form></div>");
+	printf("<script>var cap_status=%d;</script>", check_captcha_status(currentuser.userid)); // CAPTCHA_OK == 0
+	printf("<script src='/bbsform.js'></script>");
 	http_quit();
 	return 0;
 }
