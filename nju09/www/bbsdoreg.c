@@ -425,9 +425,9 @@ bbsdoreg_main()
 	write_active(&act_data);
 
 	int result;
-	if (strcmp(user, "test") == 0) {
+	if (strcasecmp(user, "test") == 0) {
 		result = -2; // ÐÂÉú
-	} else if (query_record_num(email, MAIL_ACTIVE)>=MAX_USER_PER_RECORD ) {
+	} else if (query_record_num(email, MAIL_ACTIVE) >= MAX_USER_PER_RECORD) {
 		result = -3;
 	} else {
 		// smtp
