@@ -1,6 +1,9 @@
 #include "bbslib.h"
 #include "identify.h"
 
+static void check_captcha_form(void);
+static void resent_active_mail(void);
+
 #ifdef POP_CHECK
 
 // 登陆邮件服务器用的头文件 added by interma@BMY 2005.5.12
@@ -33,23 +36,34 @@ int
 bbsform_main()
 {
 	int type;
-	html_header(1);
-
-	#ifdef POP_CHECK
-	struct stat temp;
-	#endif
 
 	type = atoi(getparm("type"));
-	if (!loginok || isguest)
+
+	if (!loginok || isguest) {
 		http_fatal("您尚未登录, 请重新登录。");
-	changemode(NEW);
-	printf("%s -- 填写注册单<hr>\n", BBSNAME);
+	}
+
 	check_if_ok();
+
 	if (type == 1) {
+		// update register info
 		check_submit_form();
 		http_quit();
+	} else if (type == 2) {
+		// TODO check captcha
+		check_captcha_form();
+		http_quit();
+	} else if (type == 3) {
+		// TODO resent captcha
+		resent_active_mail();
+		http_quit();
 	}
-	printf("<style>.hidden { display: none }</style>");
+
+
+	html_header(1);
+	changemode(NEW);
+	printf("%s -- 填写注册单<hr>\n", BBSNAME);
+	printf("<link href='/bbsform.css' rel='stylesheet'>");
 	printf("您好, %s, 注册单通过后即可获得注册用户的权限, 下面各项务必请认真填写<br><hr>\n", currentuser.userid);
 	printf("<div id='form-reg' class='hidden'>");
 	printf("<form method=post action=bbsform?type=1>\n");
@@ -75,18 +89,25 @@ bbsform_main()
 		n++;
 	}
 	printf("</select><br>\n");
-	printf("<tr><td align=right>*请输入邮箱用户名:<td align=left><input name=user size=20 maxlength=20><br>\n");
+	printf("<tr><td align=right>*请输入邮箱用户名:<td align=left><input name=user size=20 maxlength=20 placeholder='只需要输入@之前的部分'><br>\n");
 
 #endif
 
-	printf("<input type=submit value=注册> <input type=reset value=取消>");
-	printf("</form></div>"); // div#form-reg
+	printf("</form>");
+	printf("<button id='btn-reg-submit'>注册</button> <button id='btn-reg-reset'>取消</button> <button id='btn-reg-captcha'>输入验证码</button>");
+	printf("</div>"); // div#form-reg
 
-	printf("<div id='form-cap' class='hidden'><form method='post' action='bbsform?type=2'");
-	printf("您关联的信箱是： %s，验证码已发送到您的信箱。<br>", nohtml(currentuser.email));
+	printf("<div id='form-cap' class='hidden'>");
+	printf("您关联的信箱是： <span id='cap-email'>%s</span>，验证码已发送到您的信箱。<br>", nohtml(currentuser.email));
 	printf("验证码<input name='captcha' maxlength=5><br>");
 	printf("<button id='btn-cap-submit'>提交</button> <button id='btn-cap-resent'>重新发送</button> <button id='btn-cap-update'>更新信箱</button>");
-	printf("</form></div>");
+	printf("</div>"); //div#form-cap
+
+	printf("<div id='myModal' class='modal'>");
+	printf("<div class='modal-content'>");
+	printf("<span class='close'>&times;</span>");
+	printf("<p></p>");
+	printf("</div></div>");
 	printf("<script>var cap_status=%d;</script>", check_captcha_status(currentuser.userid)); // CAPTCHA_OK == 0
 	printf("<script src='/bbsform.js'></script>");
 	http_quit();
@@ -114,34 +135,28 @@ check_submit_form()
 #ifdef POP_CHECK
 	char user[USER_LEN + 1];
 	char pass[PASS_LEN + 1];
-	char popserver[512];
-	strsncpy(popserver, getparm("popserver"), 512);
+	char popserver[4];
+	int popserver_index;
+	strsncpy(popserver, getparm("popserver"), 4);
 	strsncpy(user, getparm("user"), USER_LEN);
 	strsncpy(pass, getparm("pass"), PASS_LEN);
 
 	if (strlen(user) == 0)
 		http_fatal("邮箱用户名没添啊");
-	if (strlen(pass) == 0)
-		http_fatal("邮箱密码没添啊");
 
-	char delims[] = "+";
-	char *popname;
-	char *popip;
-	//char popname[256];
-	//char popip[256];
-
-	popname = strtok(popserver, delims);
-	popip = strtok(NULL, delims);
-
-	//strncpy(popname, );
-	//strncpy();
+	const char *popname;
+	popserver_index = atoi(popserver);
+	if(popserver_index < 1 || popserver_index > 3) popserver_index = 1;
+	popname = MAIL_DOMAINS[popserver_index];
 
 	char email[60];
 	sprintf(email, "%s@%s", user, popname);  // 注意不要将email弄溢出了
 	strsncpy(currentuser.email, email, 60);
 	str_to_lowercase(email);
-#endif
 
+	if (check_mail_to_address(email) == MAIL_SENDER_WRONG_EMAIL)
+		http_fatal("您的邮箱名不合法，请联系站长或至 https://github.com/bmybbs/bmybbs/issues/ 反馈问题。");
+#endif
 
 	strsncpy(currentuser.realname, getparm("realname"), 20);
 	strsncpy(dept, getparm("dept"), 60);
@@ -175,34 +190,90 @@ check_submit_form()
 	fclose(fp);
 	printf("您的注册单已成功提交. 站长检验过后会给您发信, 请留意您的信箱.<br>" "<a href=bbsboa>浏览" MY_BBS_NAME "</a>");
 #else
-	int result = test_mail_valid(user, pass, popip);
+	int result;
+
+	if (strcasecmp(user, "test") == 0) {
+		result = -2;
+	} else if (query_record_num(email, MAIL_ACTIVE) >= MAX_USER_PER_RECORD) {
+		result = -3;
+	} else {
+		result = send_active_mail(currentuser.userid, email);
+	}
+
+	html_header(1);
 
 	switch (result)
-    {
+	{
+	case -2:
 	case -1:
 	case 0:
 		printf("邮件服务器身份审核失败，您将只能使用本bbs的最基本功能，十分抱歉。<br>");
 		break;
 
+	case -3:
+		printf("您的信箱已经验证过 %d 个id，无法再用于验证了!\n", MAX_USER_PER_RECORD);
+		break;
 	case 1:
-		if (query_record_num(email, MAIL_ACTIVE)>=MAX_USER_PER_RECORD ) {
-			printf("您的信箱已经验证过 %d 个id，无法再用于验证了!\n", MAX_USER_PER_RECORD);
-			break;
-		}
-		int response;
-		strcpy(act_data.email, email);
-		act_data.status=1;
-		response=write_active(&act_data);
-		if (response==WRITE_SUCCESS || response==UPDATE_SUCCESS)  {
-			printf("身份审核成功，您已经可以使用所用功能了！\n");
-			register_success(getusernum(currentuser.userid) + 1, currentuser.userid, currentuser.realname, dept, currentuser.address, phone, assoc, email);
-			break;
-		}
-		printf("  验证失败!");
+		printf("验证信息已发送至您的邮箱 %s ，及时请查收。<br>"
+			"请登录系统后点击左侧边栏“填写注册单”，完成信箱绑定认证操作，成为本站正式用户。", email);
 		break;
 	}
 
 #endif
 
+}
+
+static void
+check_captcha_form(void)
+{
+	char code[6];
+	int rc;
+	struct active_data act_data;
+
+	memset(&act_data, 0, sizeof(struct active_data));
+	snprintf(code, 6, "%s", getparm("code"));
+	rc = verify_captcha_for_user(currentuser.userid, code);
+	if (rc == CAPTCHA_OK) {
+		read_active(currentuser.userid, &act_data);
+		act_data.status = 1;
+		rc = write_active(&act_data);
+		if (rc == WRITE_SUCCESS || rc == UPDATE_SUCCESS) {
+			register_success(getusernum(currentuser.userid) + 1, currentuser.userid, currentuser.realname,
+					act_data.dept, currentuser.address, act_data.phone, "", currentuser.email);
+			rc = 0;
+		} else {
+			// WRITE_FAIL == 0
+			rc = -1;
+		}
+	}
+
+	json_header();
+	printf("{ \"status\": %d }", rc);
+}
+
+static void
+resent_active_mail(void)
+{
+	int rc;
+	char c;
+
+	if (strlen(currentuser.email) < 5) {
+		rc = -2;
+	} else {
+		c = currentuser.email[4];
+		currentuser.email[4] = '\0';
+		rc = strcasecmp(currentuser.email, "test");
+		currentuser.email[4] = c;
+		if (rc == 0) {
+			rc = -2;
+		} else if (query_record_num(currentuser.email, MAIL_ACTIVE) >= MAX_USER_PER_RECORD) {
+			rc = -3;
+		} else {
+			rc = send_active_mail(currentuser.userid, currentuser.email);
+		}
+	}
+
+	json_header();
+	printf("{ \"status\": %d }", rc);
 }
 
