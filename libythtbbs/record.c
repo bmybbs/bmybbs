@@ -331,7 +331,7 @@ substitute_record(char *filename, void *rptr, int size, int id) {
 		return -1;
 	// end
 
-	if ((fd = open(filename, O_WRONLY | O_CREAT, 0660) == -1))
+	if ((fd = open(filename, O_WRONLY | O_CREAT, 0660)) == -1)
 		return -1;
 
 	ldata.l_type = F_WRLCK;
