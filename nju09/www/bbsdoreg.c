@@ -105,7 +105,7 @@ char *addr, char *phone, char *assoc, char *email)
 	struct userec uinfo;
 	FILE *fout, *fn;
 	char buf[STRLEN];
-	int n;
+	time_t n;
 	char genbuf[512];
 
 	//int id = getuser(userid);
@@ -152,14 +152,14 @@ char *addr, char *phone, char *assoc, char *email)
 		fprintf(fout, "%s: %s\n", "assoc", assoc);
 
 		n = time(NULL);
-		fprintf(fout, "Date: %s", ctime((time_t *) & n));
+		fprintf(fout, "Date: %s\n", ctime(&n));
 		fprintf(fout, "Approved: %s\n", userid);
 		fclose(fout);
 	}
 
 	mail_file("etc/s_fill", uinfo.userid, "恭禧您通过身份验证", "SYSOP");
 
-	mail_file("etc/s_fill2", uinfo.userid, "欢迎加入" MY_BBS_NAME "大家庭", "STSOP");
+	mail_file("etc/s_fill2", uinfo.userid, "欢迎加入" MY_BBS_NAME "大家庭", "SYSOP");
 	sethomefile(buf, uinfo.userid, "mailcheck");
 	unlink(buf);
 	sprintf(genbuf, "让 %s 通过身分确认.", uinfo.userid);
