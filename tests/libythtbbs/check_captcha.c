@@ -59,12 +59,21 @@ START_TEST(test_gen_captcha_for_user) {
 	ck_assert_str_eq(value, "0");
 }
 
-START_TEST(test_gen_captcha_for_user_regen_immediately_should_reject) {
-	struct BMYCaptcha c;
+START_TEST(test_gen_captcha_for_user_regen_immediately_should_remain_the_same) {
+	struct BMYCaptcha c1, c2;
 	int rc;
 
-	rc = gen_captcha_for_user("foo", &c);
-	ck_assert_int_eq(rc, CAPTCHA_NOT_ALLOW_TO_REGEN);
+	savestrvalue(filename, "create_time", "0");
+
+	rc = gen_captcha_for_user("foo", &c1);
+	ck_assert_int_eq(rc, CAPTCHA_OK);
+
+	rc = gen_captcha_for_user("foo", &c2);
+	ck_assert_int_eq(rc, CAPTCHA_OK);
+
+	ck_assert_int_eq(c1.timestamp, c2.timestamp);
+	ck_assert_int_eq(c1.create_time, c2.create_time);
+	ck_assert_str_eq(c1.value, c2.value);
 }
 
 START_TEST(test_gen_captcha_for_user_fake_create_time_should_allow) {
@@ -197,7 +206,7 @@ Suite * test_suite_captcha(void) {
 
 	tc = tcase_create("check generate captcha to user foo");
 	tcase_add_test(tc, test_gen_captcha_for_user);
-	tcase_add_test(tc, test_gen_captcha_for_user_regen_immediately_should_reject);
+	tcase_add_test(tc, test_gen_captcha_for_user_regen_immediately_should_remain_the_same);
 	tcase_add_test(tc, test_gen_captcha_for_user_fake_create_time_should_allow);
 	suite_add_tcase(s, tc);
 

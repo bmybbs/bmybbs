@@ -56,6 +56,18 @@ static void store_captcha(const char *filename, struct BMYCaptcha *captcha) {
 	savestrvalue(filename, KEY_ATTEMPTS, "0");
 }
 
+static void load_captcha(const char *filename, struct BMYCaptcha *captcha) {
+	char value[32];
+
+	readstrvalue(filename, KEY_CREATE_TIME, value, sizeof(value));
+	captcha->create_time = atol(value);
+
+	readstrvalue(filename, KEY_TIMESTAMP, value, sizeof(value));
+	captcha->timestamp = atoll(value);
+
+	readstrvalue(filename, KEY_CAPTCHA, captcha->value, 6);
+}
+
 static int allow_to_regenerate_captcha(const char *filename) {
 	char used[10], create_time[32];
 	time_t now, ct;
@@ -130,8 +142,9 @@ int gen_captcha_for_user(const char *userid, struct BMYCaptcha *captcha) {
 
 	rc = allow_to_regenerate_captcha(captcha_filename);
 	if (rc == CAPTCHA_NOT_ALLOW_TO_REGEN) {
+		load_captcha(captcha_filename, captcha);
 		close(lockfd);
-		return rc;
+		return CAPTCHA_OK;
 	}
 
 CREATE:
