@@ -4,6 +4,7 @@
 #include "config.h"
 #include "fileop.h"
 #include "mailsender.h"
+#include "misc.h"
 
 const char *MAIL_CONFIG_FILE = MY_BBS_HOME "/etc/smtpconfig";
 const int SMTP_FLAG_NO_DEBUG = 0;
@@ -67,7 +68,8 @@ send_mail(const char *mail_to, const char *mail_to_name, const char *mail_subjec
 	char mail_pass[32];
 
 	int  mail_security;
-	int  rc;
+	int  rc, rc1, rc2, rc3, rc4, rc5, rc6, rc7;
+	char log[160];
 	int  cfg_fd;
 	FILE *cfg_fp;
 	struct smtp *smtp;
@@ -101,18 +103,22 @@ send_mail(const char *mail_to, const char *mail_to_name, const char *mail_subjec
 	else
 		mail_security = SMTP_SECURITY_NONE;
 
-	rc = smtp_open(mail_server, mail_port, mail_security, SMTP_FLAG_NO_DEBUG, NULL, &smtp);
+	rc1 = smtp_open(mail_server, mail_port, mail_security, SMTP_FLAG_NO_DEBUG, NULL, &smtp);
 
-	rc = smtp_auth(smtp, SMTP_AUTH_PLAIN, mail_user, mail_pass);
+	rc2 = smtp_auth(smtp, SMTP_AUTH_PLAIN, mail_user, mail_pass);
 
-	rc = smtp_address_add(smtp, SMTP_ADDRESS_FROM, mail_user, mail_name);
-	rc = smtp_address_add(smtp, SMTP_ADDRESS_TO, mail_to, mail_to_name);
+	rc3 = smtp_address_add(smtp, SMTP_ADDRESS_FROM, mail_user, mail_name);
+	rc4 = smtp_address_add(smtp, SMTP_ADDRESS_TO, mail_to, mail_to_name);
 
-	rc = smtp_header_add(smtp, "Subject", mail_subject);
-	rc = smtp_mail(smtp, mail_body);
+	rc5 = smtp_header_add(smtp, "Subject", mail_subject);
+	rc6 = smtp_mail(smtp, mail_body);
 
-	rc = smtp_close(smtp);
+	rc7 = smtp_close(smtp);
 
-	return rc;
+	snprintf(log, sizeof(log), "[mail] %s send to %s smtp-status %d-%d-%d-%d-%d-%d-%d",
+		mail_to_name, mail_to, rc1, rc2, rc3, rc4, rc5, rc6, rc7);
+	newtrace(log);
+
+	return rc7;
 }
 
