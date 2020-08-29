@@ -48,82 +48,6 @@ extern char fromhost[60];
 static void getfield(int line, char *info, char *desc, char *buf, int len);
 
 #ifdef POP_CHECK
-// 登陆邮件服务器，进行身份验证， added by interma@BMY 2005.5.12
-/* 返回值为1表示有效，0表示无效, -1表示和pop服务器连接出错 */
-static int test_mail_valid(const char *user, const char *pass, const char *popip)
-{
-	char buffer[512];
-	int sockfd;
-	struct sockaddr_in server_addr;
-	struct hostent *host;
-
-	if (user[0] == ' ' || pass[0] == ' ')
-		return 0;
-
-	/* 客户程序开始建立 sockfd描述符 */
-	if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
-		close(sockfd);
-		return -1;
-	}
-	int i;
-	for (i = 0; i < 8; i++)
-		server_addr.sin_zero[i] = 0;
-	server_addr.sin_family = AF_INET;
-	server_addr.sin_port = htons(110);
-	// 202.117.1.22 == stu.xjtu.edu.cn
-	if (inet_aton(popip, &server_addr.sin_addr) == 0) {
-		close(sockfd);
-		return -1;
-	}
-
-	/* 客户程序发起连接请求 */
-	if (connect(sockfd, (struct sockaddr *) (&server_addr), sizeof(struct sockaddr)) == -1) {
-		close(sockfd);
-		return -1;
-	}
-
-	if (read(sockfd, buffer, 512) == -1) {
-		close(sockfd);
-		return -1;
-	}
-	if (buffer[0] == '-')
-		return -1;
-
-	sprintf(buffer, "USER %s\r\n", user);
-	if (write(sockfd, buffer, strlen(buffer)) == -1) {
-		close(sockfd);
-		return -1;
-	}
-
-	if (read(sockfd, buffer, 512) == -1) {
-		close(sockfd);
-		return -1;
-	}
-	if (buffer[0] == '-') {
-		close(sockfd);
-		return 0;
-	}
-
-	sprintf(buffer, "PASS %s\r\n", pass);
-	if (write(sockfd, buffer, strlen(buffer)) == -1) {
-		close(sockfd);
-		return -1;
-	}
-
-	if (read(sockfd, buffer, 512) == -1) {
-		close(sockfd);
-		return -1;
-	}
-	if (buffer[0] == '-') {
-		close(sockfd);
-		return 0;
-	}
-
-	write(sockfd, "QUIT\r\n", strlen("QUIT\r\n"));
-	close(sockfd);
-	return 1;
-}
-
 void securityreport(char *str, char *content);
 
 // 令username用户通过验证， added by interma@BMY 2005.5.12
@@ -194,7 +118,7 @@ static void register_success(int usernum, char *userid, char *realname,
 }
 
 // username用户验证失败的处理（砍掉这个用户，不过目前暂未使用这个函数）， added by interma@BMY 2005.5.16
-void register_fail(char *userid)
+static void register_fail(char *userid)
 {
 	int id;
 	strcpy(genbuf, userid);
@@ -587,9 +511,15 @@ void x_fillform()
 	char phone[STRLEN], dept[STRLEN], assoc[STRLEN];
 	char ans[5], *mesg, *ptr;
 	FILE *fn;
+	char user[USER_LEN + 1];
+	char email[STRLEN];
+	int rc;
+	char tempn[3];
+	int n = -1;
 
 	struct active_data act_data;
 	int index;
+	int cap_status;
 
 	modify_user_mode(NEW);
 	move(3, 0);
@@ -618,6 +548,85 @@ void x_fillform()
 		}
 		fclose(fn);
 	}
+
+	cap_status = check_captcha_status(currentuser.userid);
+	if (cap_status == CAPTCHA_OK) {
+		char code[6];
+		do {
+			clear();
+			getdata(3, 0, "请输入您的验证码(输入x放弃验证) >>  ", code, 5, DOECHO, YEA);
+
+			if (strcasecmp(code, "x") == 0) {
+				return;
+			}
+
+			cap_status = verify_captcha_for_user(currentuser.userid, code);
+			if (cap_status == CAPTCHA_OK) {
+				// 当前邮箱验证成功
+				// IronBlood 2020.08.29 备注：
+				// 判断路径从 pop_register/%s_privilege 改变为 pop_register/%s，结合系统管理菜单
+				// 中的设置项，目前可以为 mail / stu 两个邮箱域设置不受账号数目限制的邮箱
+				char path[128];
+				char *domain;
+				int isprivilege = 0;
+
+				snprintf(email, sizeof(email), "%s", currentuser.email);
+				domain = strchr(email, '@');
+				if (domain != NULL) {
+					*domain = '\0';
+					domain++;
+					sprintf(path, MY_BBS_HOME "/etc/pop_register/%s", domain);
+
+					if (seek_in_file(path, user)) {
+						isprivilege = 1;
+					}
+				}
+
+				if (isprivilege == 0 && query_record_num(email, MAIL_ACTIVE) >= MAX_USER_PER_RECORD) {
+					clear();
+					move(3, 0);
+					prints("您的信箱已经验证过 %d 个id，无法再用于验证了!\n", MAX_USER_PER_RECORD);
+					pressreturn();
+					return;
+				}
+
+				int response;
+
+				read_active(currentuser.userid, &act_data);
+				act_data.status = 1;
+				response = write_active(&act_data);
+
+				if (response == WRITE_SUCCESS || response == UPDATE_SUCCESS) {
+					clear();
+					move(5, 0);
+					prints("身份审核成功，您已经可以使用所用功能了！\n");
+					strncpy(currentuser.email, email, STRLEN);
+					register_success(usernum, currentuser.userid, rname, dept, addr, phone, assoc, email);
+
+					//scroll();
+					pressreturn();
+					return;
+				}
+				clear();
+				move(3, 0);
+				prints("验证失败!");
+				pressreturn();
+				return;
+			} else {
+				// 验证码校验失败，重新判断状态
+				cap_status = check_captcha_status(currentuser.userid);
+				if (cap_status == CAPTCHA_TIMEOUT || cap_status == CAPTCHA_USED) {
+					prints("验证码已失效，请重新填写注册单");
+					pressanykey();
+					break;
+				} else {
+					prints("验证码错误，请重新输入");
+					pressanykey();
+				}
+			}
+		} while (1);
+	}
+
 	move(3, 0);
 	sprintf(genbuf, "您要填写注册单，加入%s大家庭吗？", MY_BBS_NAME);
 	if (askyn(genbuf, YEA, NA) == NA)
@@ -656,92 +665,55 @@ void x_fillform()
 	write_active(&act_data);
 
 	// 以下要用户选择是否要通过邮件服务器进行审核， added by interma@BMY 2005.5.12
-	clear();
-	move(3, 0);
-	prints("下面将进行实名认证。本站目前支持以下域名的电子信箱进行认证. \n");
-	prints("每个信箱可以认证 %d 个id.\n\n", MAX_USER_PER_RECORD);
-	for (index = 1; index <= DOMAIN_COUNT; ++index) {
-		prints("[%d] %s \n", index, MAIL_DOMAINS[index]);
-	}
-	char tempn[3];
-	int n = -1;
-	while (!(n > 0 && n <= DOMAIN_COUNT)) {
-		getdata(10, 0, "请选择你的信箱域名序号（新生注册请选择1） >>  ", tempn, 3, DOECHO, YEA);
-		sscanf(tempn, "%d", &n);
-	}
+	do {
+		clear();
+		move(3, 0);
+		prints("下面将进行实名认证。本站目前支持以下域名的电子信箱进行认证. \n");
+		prints("每个信箱可以认证 %d 个id.\n\n", MAX_USER_PER_RECORD);
+		for (index = 1; index <= DOMAIN_COUNT; ++index) {
+			prints("[%d] %s \n", index, MAIL_DOMAINS[index]);
+		}
+		while (!(n > 0 && n <= DOMAIN_COUNT)) {
+			getdata(10, 0, "请选择你的信箱域名序号（新生注册请选择1） >>  ", tempn, 3, DOECHO, YEA);
+			sscanf(tempn, "%d", &n);
+		}
+		getdata(13, 0, "信箱用户名(输入x放弃验证，新生注册请输入用户名test) >>  ", user, USER_LEN, DOECHO, YEA);
 
-	char user[USER_LEN + 1];
-	char pass[PASS_LEN + 1];
-
-	getdata(13, 0, "信箱用户名(输入x放弃验证，新生注册请输入用户名test，密码test) >>  ", user, USER_LEN, DOECHO, YEA);
-	getdata(14, 0, "信箱密码 >>  ", pass, PASSLEN, NOECHO, YEA);
-
-	while (test_mail_valid(user, pass, IP_POP[n]) != 1) {
 		if (strcmp(user, "x") == 0) {
 			return;
 		}
-		if (strcmp(user, "test") == 0) {
+		if (strcasecmp(user, "test") == 0) {
 			clear();
 			move(5, 0);
 			prints("欢迎您加入交大，来到兵马俑BBS。\n您采用了新生测试信箱注册，目前您是新生用户身份。");
 			prints("目前您没有发文、信件、消息等权限。\n\n");
-			prints("请在开学取得stu.xjtu.edu.cn信箱后，\n按照上站登录后的提示完成信箱绑定认证操作，成为本站正式用户。");
+			prints("请在开学取得xjtu.edu.cn信箱后，\n按照上站登录后的提示完成信箱绑定认证操作，成为本站正式用户。");
 			pressanykey();
 			return;
 		}
+
 		move(11, 0);
 		clrtobot();
 		move(12, 0);
-		prints("认证失败，请检查后重新输入.");
-		getdata(13, 0, "信箱用户名(输入x放弃验证，新生注册请输入用户名test，密码test) >>  ", user, USER_LEN, DOECHO, YEA);
-		getdata(14, 0, "信箱密码 >>  ", pass, PASSLEN, NOECHO, YEA);
-	}
+		strcpy(email, str_to_lowercase(user));
+		strcat(email, "@");
+		strcat(email, MAIL_DOMAINS[n]);
+		rc = send_active_mail(currentuser.userid, email);
 
-	char email[STRLEN];
-	strcpy(email, str_to_lowercase(user));
-	strcat(email, "@");
-	strcat(email, MAIL_DOMAINS[n]);
+		if (rc != 1)
+			prints("验证码失败，请检查后重新输入.");
+	} while (rc != 1);
 
-	//FILE* fp;
-	char path[128];
-	sprintf(path, MY_BBS_HOME "/etc/pop_register/%s_privilege", MAIL_DOMAINS[n]);
-	int isprivilege = 0;
-
-	if (seek_in_file(path, user)) {
-		isprivilege = 1;
-	}
-
-	if (query_record_num(email, MAIL_ACTIVE) >= MAX_USER_PER_RECORD
-			&& isprivilege == 0) {
-		clear();
-		move(3, 0);
-		prints("您的信箱已经验证过 %d 个id，无法再用于验证了!\n", MAX_USER_PER_RECORD);
-		pressreturn();
-		return;
-	}
-
-	int response;
-
+	strncpy(currentuser.email, email, STRLEN);
 	strcpy(act_data.email, email);
-	act_data.status = 1;
-	response = write_active(&act_data);
+	write_active(&act_data);
 
-	if (response == WRITE_SUCCESS || response == UPDATE_SUCCESS) {
-		clear();
-		move(5, 0);
-		prints("身份审核成功，您已经可以使用所用功能了！\n");
-		strncpy(currentuser.email, email, STRLEN);
-		register_success(usernum, currentuser.userid, rname, dept, addr, phone, assoc, email);
-
-		//scroll();
-		pressreturn();
-		return;
-	}
-	clear();
 	move(3, 0);
-	prints("  验证失败!");
-	pressreturn();
-	return;
+	sprintf(genbuf, "验证码已发送，需要现在输入吗？");
+	if (askyn(genbuf, YEA, NA) == NA)
+		return;
+
+	x_fillform();
 }
 #else
 void
