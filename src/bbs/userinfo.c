@@ -50,8 +50,7 @@ static void getfield(int line, char *info, char *desc, char *buf, int len);
 #ifdef POP_CHECK
 // µÇÂ½ÓÊ¼þ·þÎñÆ÷£¬½øÐÐÉí·ÝÑéÖ¤£¬ added by interma@BMY 2005.5.12
 /* ·µ»ØÖµÎª1±íÊ¾ÓÐÐ§£¬0±íÊ¾ÎÞÐ§, -1±íÊ¾ºÍpop·þÎñÆ÷Á¬½Ó³ö´í */
-static int test_mail_valid(const char *user, const char *pass,
-		const char *popip)
+static int test_mail_valid(const char *user, const char *pass, const char *popip)
 {
 	char buffer[512];
 	int sockfd;
@@ -78,8 +77,7 @@ static int test_mail_valid(const char *user, const char *pass,
 	}
 
 	/* ¿Í»§³ÌÐò·¢ÆðÁ¬½ÓÇëÇó */
-	if (connect(sockfd, (struct sockaddr *) (&server_addr),
-			sizeof(struct sockaddr)) == -1) {
+	if (connect(sockfd, (struct sockaddr *) (&server_addr), sizeof(struct sockaddr)) == -1) {
 		close(sockfd);
 		return -1;
 	}
@@ -170,7 +168,6 @@ static void register_success(int usernum, char *userid, char *realname,
 	sethomefile(buf, uinfo.userid, "register");
 
 	if ((fout = fopen(buf, "w")) != NULL) {
-
 		fprintf(fout, "%s: %d\n", "usernum", usernum);
 		fprintf(fout, "%s: %s\n", "userid", userid);
 		fprintf(fout, "%s: %s\n", "realname", realname);
@@ -207,11 +204,9 @@ void register_fail(char *userid)
 		return;
 	}
 
-	sprintf(genbuf, "mail/%c/%s", mytoupper(lookupuser.userid[0]),
-			lookupuser.userid);
+	sprintf(genbuf, "mail/%c/%s", mytoupper(lookupuser.userid[0]), lookupuser.userid);
 	deltree(genbuf);
-	sprintf(genbuf, "home/%c/%s", mytoupper(lookupuser.userid[0]),
-			lookupuser.userid);
+	sprintf(genbuf, "home/%c/%s", mytoupper(lookupuser.userid[0]), lookupuser.userid);
 	deltree(genbuf);
 	lookupuser.userlevel = 0;
 	strcpy(lookupuser.address, "");
@@ -349,8 +344,7 @@ void disply_userinfo(struct userec *u, int real)
 	exp = countperf(u);
 	prints("±íÏÖÖµ       : %d(%s)\n", exp, cperf(exp));
 	prints("ÉÏÕ¾×ÜÊ±Êý   : %d Ð¡Ê± %d ·ÖÖÓ\n", u->stay / 3600, (u->stay / 60) % 60);
-	sprintf(genbuf, "mail/%c/%s/%s", mytoupper(u->userid[0]), u->userid,
-			DOT_DIR);
+	sprintf(genbuf, "mail/%c/%s/%s", mytoupper(u->userid[0]), u->userid, DOT_DIR);
 	if (stat(genbuf, &st) >= 0)
 		num = st.st_size / (sizeof(struct fileheader));
 	else
@@ -373,8 +367,7 @@ void disply_userinfo(struct userec *u, int real)
 	} else {
 		diff = (time(0) - login_start_time) / 60;
 #ifdef __LP64
-		prints("Í£ÁôÆÚ¼ä     : %ld Ð¡Ê± %02ld ·Ö\n", diff / 60,
-				diff % 60);
+		prints("Í£ÁôÆÚ¼ä     : %ld Ð¡Ê± %02ld ·Ö\n", diff / 60, diff % 60);
 #else
 		prints("Í£ÁôÆÚ¼ä     : %d Ð¡Ê± %02d ·Ö\n", diff / 60, diff % 60);
 #endif
@@ -390,8 +383,7 @@ void disply_userinfo(struct userec *u, int real)
 	}
 }
 
-int uinfo_query(u, real, unum)
-	struct userec *u;int real, unum;
+int uinfo_query(struct userec *u, int real, int unum)
 {
 	struct userec newinfo;
 	char ans[3], buf[STRLEN], genbuf[128];
@@ -436,8 +428,7 @@ int uinfo_query(u, real, unum)
 #ifndef POP_CHECK  // ²»ÈÃ¸ÄÐÅÏäµØÖ·ÁË£¬ÒòÎªÒª°ó¶¨
 		sprintf(genbuf, "µç×ÓÐÅÏä [%s]: ", u->email);
 		getdata(i++, 0, genbuf, buf, STRLEN - 10, DOECHO, YEA);
-		if (buf[0])
-		{
+		if (buf[0]) {
 			strncpy(newinfo.email, buf, STRLEN);
 		}
 #endif
@@ -464,19 +455,17 @@ int uinfo_query(u, real, unum)
 				newinfo.numposts = atoi(buf);
 
 			sprintf(genbuf, "ÉÏÕ¾Ð¡Ê±Êý [%ld Ð¡Ê± %ld ·ÖÖÓ]: ",
-					(long int ) (u->stay / 3600),
-					(long int ) ((u->stay / 60) % 60));
+					(long int) (u->stay / 3600),
+					(long int) ((u->stay / 60) % 60));
 			getdata(i++, 0, genbuf, buf, 16, DOECHO, YEA);
 			if (atoi(buf) > 0)
 				newinfo.stay = atoi(buf) * 3600;
-
 		}
 
 		break;
 	case '2':
 		if (!real) {
-			getdata(i++, 0, "ÇëÊäÈëÔ­ÃÜÂë: ", buf, PASSLEN, NOECHO,
-			YEA);
+			getdata(i++, 0, "ÇëÊäÈëÔ­ÃÜÂë: ", buf, PASSLEN, NOECHO, YEA);
 			if (*buf == '\0' || !checkpasswd(u->passwd, buf)) {
 				prints("\n\nºÜ±§Ç¸, ÄúÊäÈëµÄÃÜÂë²»ÕýÈ·¡£\n");
 				fail++;
@@ -508,8 +497,7 @@ int uinfo_query(u, real, unum)
 			if (atoi(buf) > 0)
 				newinfo.signature = atoi(buf);
 		} else {
-			getdata(i++, 0, "ÐÂµÄÊ¹ÓÃÕß´úºÅ: ", genbuf, IDLEN + 1,
-			DOECHO, YEA);
+			getdata(i++, 0, "ÐÂµÄÊ¹ÓÃÕß´úºÅ: ", genbuf, IDLEN + 1, DOECHO, YEA);
 			if (*genbuf != '\0') {
 				if (getuser(genbuf)) {
 					prints("\n´íÎó! ÒÑ¾­ÓÐÍ¬Ñù ID µÄÊ¹ÓÃÕß\n");
@@ -541,8 +529,7 @@ int uinfo_query(u, real, unum)
 		if (strcmp(u->userid, newinfo.userid)) {
 
 			sprintf(src, "mail/%c/%s", mytoupper(u->userid[0]), u->userid);
-			sprintf(dst, "mail/%c/%s", mytoupper(newinfo.userid[0]),
-					newinfo.userid);
+			sprintf(dst, "mail/%c/%s", mytoupper(newinfo.userid[0]), newinfo.userid);
 			rename(src, dst);
 			sethomepath(src, u->userid);
 			sethomepath(dst, newinfo.userid);
@@ -575,8 +562,7 @@ int uinfo_query(u, real, unum)
 				}
 				fprintf(dp, "%9.9ld\n", (long int) code);
 				fclose(dp);
-				sprintf(genbuf, "/usr/lib/sendmail -f %s.bbs@%s %s ", u->userid,
-						email_domain(), newinfo.email);
+				sprintf(genbuf, "/usr/lib/sendmail -f %s.bbs@%s %s ", u->userid, email_domain(), newinfo.email);
 				fout = popen(genbuf, "w");
 				fin = fopen(sysconf_str("EMAILFILE"), "r");
 				if (fin == NULL || fout == NULL)
@@ -584,14 +570,11 @@ int uinfo_query(u, real, unum)
 				fprintf(fout, "Reply-To: SYSOP.bbs@%s\n", email_domain());
 				fprintf(fout, "From: SYSOP.bbs@%s\n", email_domain());
 				fprintf(fout, "To: %s\n", newinfo.email);
-				fprintf(fout, "Subject: @%s@[-%9.9ld-]%s mail check.\n",
-						u->userid, (long int) code, MY_BBS_ID);
+				fprintf(fout, "Subject: @%s@[-%9.9ld-]%s mail check.\n", u->userid, (long int) code, MY_BBS_ID);
 				fprintf(fout, "X-Forwarded-By: SYSOP \n");
-				fprintf(fout, "X-Disclaimer: %s registration mail.\n",
-				MY_BBS_ID);
+				fprintf(fout, "X-Disclaimer: %s registration mail.\n", MY_BBS_ID);
 				fprintf(fout, "\n");
-				fprintf(fout, "BBS LOCATION     : %s (%s)\n", email_domain(),
-				MY_BBS_IP);
+				fprintf(fout, "BBS LOCATION     : %s (%s)\n", email_domain(), MY_BBS_IP);
 				fprintf(fout, "YOUR BBS USER ID : %s\n", u->userid);
 				fprintf(fout, "APPLICATION DATE : %s", ctime(&u->firstlogin));
 				fprintf(fout, "LOGIN HOST       : %s\n", fromhost);
@@ -609,7 +592,7 @@ int uinfo_query(u, real, unum)
 			} else {
 				if (sysconf_str("EMAILFILE") != NULL) {
 					move(t_lines - 5, 0);
-					prints("\nÄúËùÌîµÄµç×ÓÓÊ¼þµØÖ· ¡¾[1;33m%s[m¡¿\n", newinfo.email);
+					prints("\nÄúËùÌîµÄµç×ÓÓÊ¼þµØÖ· ¡¾\033[1;33m%s\033[m¡¿\n", newinfo.email);
 					prints("²¢·ÇºÏ·¨Ö® UNIX ÕÊºÅ£¬ÏµÍ³²»»áÍ¶µÝ×¢²áÐÅ£¬Çë°ÑËüÐÞÕýºÃ...\n");
 					pressanykey();
 				}
@@ -646,7 +629,7 @@ static void getfield(line, info, desc, buf, len)
 {
 	char prompt[STRLEN];
 
-	sprintf(genbuf, "  Ô­ÏÈÉè¶¨: %-46.46s [1;32m(%s)[m",
+	sprintf(genbuf, "  Ô­ÏÈÉè¶¨: %-46.46s \033[1;32m(%s)\033[m",
 			(buf[0] == '\0') ? "(Î´Éè¶¨)" : buf, info);
 	move(line, 0);
 	prints("%s", genbuf);
@@ -669,7 +652,6 @@ void x_fillform()
 	char ans[5], *mesg, *ptr;
 	FILE *fn;
 
-//	int lockfd;	// ´Ë´¦¸úËæÏÂ·½×¢ÊÍ´úÂëÔÝÊ±×¢ÊÍµô£¬by IronBlood£¬
 	struct active_data act_data;
 	int index;
 
@@ -712,10 +694,8 @@ void x_fillform()
 		clrtoeol();
 		prints("%s ÄúºÃ, Çë¾ÝÊµÌîÐ´ÒÔÏÂµÄ×ÊÁÏ:\n", currentuser.userid);
 		getfield(6, "ÇëÓÃÖÐÎÄ", "ÕæÊµÐÕÃû", rname, NAMELEN);
-		getfield(8, "Ñ§Ð£Ïµ¼¶»ò¹«Ë¾Ö°³Æ", "Ñ§Ð£Ïµ¼¶»ò¹¤×÷µ¥Î»", dept,
-		STRLEN);
-		getfield(10, "°üÀ¨ÇÞÊÒ»òÃÅÅÆºÅÂë", "Ä¿Ç°×¡Ö·»òÍ¨Ñ¶µØÖ·", addr,
-		STRLEN);
+		getfield(8, "Ñ§Ð£Ïµ¼¶»ò¹«Ë¾Ö°³Æ", "Ñ§Ð£Ïµ¼¶»ò¹¤×÷µ¥Î»", dept, STRLEN);
+		getfield(10, "°üÀ¨ÇÞÊÒ»òÃÅÅÆºÅÂë", "Ä¿Ç°×¡Ö·»òÍ¨Ñ¶µØÖ·", addr, STRLEN);
 		getfield(12, "°üÀ¨¿ÉÁªÂçÊ±¼ä", "ÁªÂçµç»°", phone, STRLEN);
 		getfield(14, "Ð£ÓÑ»á»ò±ÏÒµÑ§Ð£", "Ð£ ÓÑ »á", assoc, STRLEN);
 		/* only for 9#        getfield( 14, "½éÉÜÈËIDºÍÕæÊµÐÕÃû",    "½éÉÜÈË(ÍâÀ´µÄIDÐëÌî:ID/ÐÕÃû)",   assoc, STRLEN );
@@ -739,32 +719,6 @@ void x_fillform()
 	act_data.status = 0;
 	write_active(&act_data);
 
-	/*
-	 lockfd = openlockfile(".lock_new_register", O_RDONLY, LOCK_EX);
-	 if ((fn = fopen("new_register", "a")) != NULL) {
-	 now = time(NULL);
-	 fprintf(fn, "usernum: %d, %s", usernum, ctime(&now));
-	 fprintf(fn, "userid: %s\n", currentuser.userid);
-	 fprintf(fn, "realname: %s\n", rname);
-	 fprintf(fn, "dept: %s\n", dept);
-	 fprintf(fn, "addr: %s\n", addr);
-	 fprintf(fn, "phone: %s\n", phone);
-	 fprintf(fn, "assoc: %s\n", assoc);
-	 fprintf(fn, "----\n");
-	 fclose(fn);
-	 }
-	 close(lockfd);
-	 */
-	/*
-	 setuserfile(genbuf, "mailcheck");
-	 if ((fn = fopen(genbuf, "w")) == NULL) {
-	 fclose(fn);
-	 return;
-	 }
-	 fprintf(fn, "usernum: %d\n", usernum);
-	 fclose(fn);
-	 */
-
 	// ÒÔÏÂÒªÓÃ»§Ñ¡ÔñÊÇ·ñÒªÍ¨¹ýÓÊ¼þ·þÎñÆ÷½øÐÐÉóºË£¬ added by interma@BMY 2005.5.12
 	clear();
 	move(3, 0);
@@ -783,8 +737,7 @@ void x_fillform()
 	char user[USER_LEN + 1];
 	char pass[PASS_LEN + 1];
 
-	getdata(13, 0, "ÐÅÏäÓÃ»§Ãû(ÊäÈëx·ÅÆúÑéÖ¤£¬ÐÂÉú×¢²áÇëÊäÈëÓÃ»§Ãûtest£¬ÃÜÂëtest) >>  ", user, USER_LEN,
-	DOECHO, YEA);
+	getdata(13, 0, "ÐÅÏäÓÃ»§Ãû(ÊäÈëx·ÅÆúÑéÖ¤£¬ÐÂÉú×¢²áÇëÊäÈëÓÃ»§Ãûtest£¬ÃÜÂëtest) >>  ", user, USER_LEN, DOECHO, YEA);
 	getdata(14, 0, "ÐÅÏäÃÜÂë >>  ", pass, PASSLEN, NOECHO, YEA);
 
 	while (test_mail_valid(user, pass, IP_POP[n]) != 1) {
@@ -804,8 +757,7 @@ void x_fillform()
 		clrtobot();
 		move(12, 0);
 		prints("ÈÏÖ¤Ê§°Ü£¬Çë¼ì²éºóÖØÐÂÊäÈë.");
-		getdata(13, 0, "ÐÅÏäÓÃ»§Ãû(ÊäÈëx·ÅÆúÑéÖ¤£¬ÐÂÉú×¢²áÇëÊäÈëÓÃ»§Ãûtest£¬ÃÜÂëtest) >>  ", user,
-		USER_LEN, DOECHO, YEA);
+		getdata(13, 0, "ÐÅÏäÓÃ»§Ãû(ÊäÈëx·ÅÆúÑéÖ¤£¬ÐÂÉú×¢²áÇëÊäÈëÓÃ»§Ãûtest£¬ÃÜÂëtest) >>  ", user, USER_LEN, DOECHO, YEA);
 		getdata(14, 0, "ÐÅÏäÃÜÂë >>  ", pass, PASSLEN, NOECHO, YEA);
 	}
 
@@ -816,8 +768,7 @@ void x_fillform()
 
 	//FILE* fp;
 	char path[128];
-	sprintf(path, MY_BBS_HOME "/etc/pop_register/%s_privilege",
-			MAIL_DOMAINS[n]);
+	sprintf(path, MY_BBS_HOME "/etc/pop_register/%s_privilege", MAIL_DOMAINS[n]);
 	int isprivilege = 0;
 
 	if (seek_in_file(path, user)) {
@@ -844,8 +795,7 @@ void x_fillform()
 		move(5, 0);
 		prints("Éí·ÝÉóºË³É¹¦£¬ÄúÒÑ¾­¿ÉÒÔÊ¹ÓÃËùÓÃ¹¦ÄÜÁË£¡\n");
 		strncpy(currentuser.email, email, STRLEN);
-		register_success(usernum, currentuser.userid, rname, dept, addr, phone,
-				assoc, email);
+		register_success(usernum, currentuser.userid, rname, dept, addr, phone, assoc, email);
 
 		//scroll();
 		pressreturn();
@@ -856,136 +806,6 @@ void x_fillform()
 	prints("  ÑéÖ¤Ê§°Ü!");
 	pressreturn();
 	return;
-
-	/*
-	 struct stat temp;
-	 if (stat(MY_BBS_HOME "/etc/pop_register/pop_list", &temp) == -1)
-	 {
-	 prints("Ä¿Ç°Ã»ÓÐ¿ÉÒÔÐÅÈÎµÄÓÊ¼þ·þÎñÆ÷ÁÐ±í, Òò´ËÎÞ·¨ÑéÖ¤ÓÃ»§£¡\n");
-	 //register_fail(currentuser.userid);
-	 scroll();
-	 pressreturn();
-	 exit(1);
-	 }
-
-	 FILE *fp;
-	 fp = fopen(MY_BBS_HOME "/etc/pop_register/pop_list", "r");
-	 if (fp == NULL)
-	 {
-	 prints("´ò¿ª¿ÉÒÔÐÅÈÎµÄÓÊ¼þ·þÎñÆ÷ÁÐ±í³ö´í, Òò´ËÎÞ·¨ÑéÖ¤ÓÃ»§£¡\n");
-	 //register_fail(currentuser.userid);
-	 scroll();
-	 pressreturn();
-	 exit(1);
-	 }
-
-	 char bufpop[256];
-	 int numpop = 0;
-	 char namepop[10][256]; // ×¢Òâ£º×î¶àÐÅÈÎ10¸öpop·þÎñÆ÷£¬Òª²»¾ÍÒç³öÁË£¡
-	 char ippop[10][256];
-
-	 prints("Ä¿Ç°¿ÉÒÔÐÅÈÎµÄÓÊ¼þ·þÎñÆ÷ÁÐ±í: \n");
-
-	 while(fgets(bufpop, 256, fp) != NULL)
-	 {
-	 if (strcmp(bufpop, "") == 0 || strcmp(bufpop, " ") == 0 || strcmp(bufpop, "\n") == 0)
-	 break;
-	 strcpy(namepop[numpop], bufpop);
-	 fgets(bufpop, 256, fp);
-	 strcpy(ippop[numpop], bufpop);
-
-	 //scroll();
-	 prints("[%d] %s\n", numpop + 1, namepop[numpop]);
-	 numpop ++;
-	 }
-	 fclose(fp);
-
-	 char tempn[3];
-	 int n = -1;
-
-	 while (!(n > 0 && n <= numpop))
-	 {
-	 getdata(t_lines - 1, 0, "ÇëÑ¡ÔñÄãµÄÓÊ¼þ·þÎñÆ÷: £¨ÊäÈëÐòºÅ£©", tempn, 3, DOECHO, YEA);
-	 scroll();
-	 sscanf(tempn, "%d", &n);
-	 }
-
-	 // ÒÔÏÂ¿ªÊ¼Í¨¹ýÓÊ¼þ·þÎñÆ÷½øÐÐÉóºË
-
-	 scroll();
-	 char user[USER_LEN + 1];
-	 char pass[PASS_LEN + 1];
-
-	 int i = 0;
-	 int result;
-
-	 clear();
-
-	 while (i < 3) // 3ÎªÔÊÐíÖØÊÔµÄ´ÎÊý
-	 {
-	 getdata(1, 0, "ÇëÊäÈëÓÊ¼þ·þÎñÆ÷ÉÏµÄÓÃ»§Ãû:  ", user, USER_LEN, DOECHO, YEA);
-	 scroll();
-	 getdata(1, 0, "ÇëÊäÈëÓÊ¼þ·þÎñÆ÷ÉÏµÄÃÜÂë:    ", pass, PASS_LEN, NOECHO, YEA);
-	 scroll();
-	 scroll();
-
-	 result = test_mail_valid(user, pass, ippop[n - 1]);
-	 switch (result)
-	 {
-	 case 0:
-	 prints("Éí·ÝÉóºËÊ§°Ü£¬ÇëÖØÊÔ                       \n");
-	 scroll(); break;
-	 case -1:
-	 prints("ÓÊ¼þ·þÎñÆ÷Á¬½Ó³ö´í£¬ÇëÖØÊÔ                  \n"); scroll(); break;
-	 case 1:
-	 // prints("Éí·ÝÉóºË³É¹¦£¬ÄúÒÑ¾­¿ÉÒÔÊ¹ÓÃËùÓÃ¹¦ÄÜÁË£¡\n");
-	 i = 3;
-	 break;
-
-	 }
-	 i++;
-	 } // end of while
-
-	 switch (result)
-	 {
-	 case -1:
-	 case 0:
-	 prints("3´ÎÉí·ÝÉóºË¾ùÊ§°Ü£¬Äú½«Ö»ÄÜÊ¹ÓÃ±¾bbsµÄ×î»ù±¾¹¦ÄÜ£¬Ê®·Ö±§Ç¸\n");
-
-	 //register_fail(currentuser.userid);
-
-	 scroll();
-	 pressreturn();
-	 return;
-	 break;
-
-	 case 1:
-	 namepop[n - 1][strlen(namepop[n - 1]) - 1] = 0;
-	 if (write_pop_user(user, currentuser.userid, namepop[n - 1]) == 1)
-	 {
-	 prints("ÄúÒÑ¾­Ê¹ÓÃ¸ÃÐÅÏä×¢²á¹ýIDÁË,Òò´ËÄúÎÞ·¨×¢²áÕâ¸öID,Ê®·Ö±§Ç¸\n");
-	 //register_fail(currentuser.userid);
-
-	 scroll();
-	 pressreturn();
-	 return;
-	 }
-
-	 prints("Éí·ÝÉóºË³É¹¦£¬ÄúÒÑ¾­¿ÉÒÔÊ¹ÓÃËùÓÃ¹¦ÄÜÁË£¡\n");
-
-	 char email[256];
-	 sprintf(email, "%s@%s", user, namepop[n - 1]);
-	 strncpy(currentuser.email, email, STRLEN);
-
-	 register_success(usernum, currentuser.userid, rname, dept, addr, phone, assoc, email);
-
-	 scroll();
-	 pressreturn();
-	 break;
-
-	 }
-	 */
-
 }
 #else
 void
@@ -1044,10 +864,8 @@ x_fillform()
 		clrtoeol();
 		prints("%s ÄúºÃ, Çë¾ÝÊµÌîÐ´ÒÔÏÂµÄ×ÊÁÏ:\n", currentuser.userid);
 		getfield(6, "ÇëÓÃÖÐÎÄ", "ÕæÊµÐÕÃû", rname, NAMELEN);
-		getfield(8, "Ñ§Ð£Ïµ¼¶»ò¹«Ë¾Ö°³Æ", "Ñ§Ð£Ïµ¼¶»ò¹¤×÷µ¥Î»", dept,
-				STRLEN);
-		getfield(10, "°üÀ¨ÇÞÊÒ»òÃÅÅÆºÅÂë", "Ä¿Ç°×¡Ö·»òÍ¨Ñ¶µØÖ·", addr,
-				STRLEN);
+		getfield(8, "Ñ§Ð£Ïµ¼¶»ò¹«Ë¾Ö°³Æ", "Ñ§Ð£Ïµ¼¶»ò¹¤×÷µ¥Î»", dept, STRLEN);
+		getfield(10, "°üÀ¨ÇÞÊÒ»òÃÅÅÆºÅÂë", "Ä¿Ç°×¡Ö·»òÍ¨Ñ¶µØÖ·", addr, STRLEN);
 		getfield(12, "°üÀ¨¿ÉÁªÂçÊ±¼ä", "ÁªÂçµç»°", phone, STRLEN);
 		getfield(14, "Ð£ÓÑ»á»ò±ÏÒµÑ§Ð£", "Ð£ ÓÑ »á", assoc, STRLEN);
 		/* only for 9#        getfield( 14, "½éÉÜÈËIDºÍÕæÊµÐÕÃû",    "½éÉÜÈË(ÍâÀ´µÄIDÐëÌî:ID/ÐÕÃû)",   assoc, STRLEN );
