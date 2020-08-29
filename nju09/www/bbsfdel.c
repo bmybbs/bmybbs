@@ -4,7 +4,7 @@ int
 bbsfdel_main()
 {
 	FILE *fp;
-	int i, total = 0;
+	unsigned int i, total = 0;
 	char path[80], userid[80];
 	struct override f[200];
 	html_header(1);

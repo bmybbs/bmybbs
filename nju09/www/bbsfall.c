@@ -3,7 +3,7 @@
 int
 bbsfall_main()
 {	//modify by mintbaggio 20040829 for new www
-	int i;
+	unsigned int i;
 	html_header(1);
 	check_msg();
 	if (!loginok || isguest)
