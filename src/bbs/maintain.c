@@ -1509,7 +1509,7 @@ char *bname;
 	fh.bm[bmpos][0] = 0;	//先清理掉, 免的有问题
 	fh.hiretime[bmpos] = 0;
 	for (i = bmpos; i < (bm ? 4 : BMNUM); i++) {
-		if (i == bm ? 3 : BMNUM - 1) {	//最后一个BM
+		if (i == (bm ? 3 : BMNUM - 1)) {	//最后一个BM
 			fh.bm[i][0] = 0;
 			fh.hiretime[i] = 0;
 		} else {
