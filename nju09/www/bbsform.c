@@ -204,6 +204,7 @@ check_submit_form()
 
 	switch (result)
 	{
+	default:
 	case -2:
 	case -1:
 	case 0:
@@ -234,15 +235,19 @@ check_captcha_form(void)
 	snprintf(code, 6, "%s", getparm("code"));
 	rc = verify_captcha_for_user(currentuser.userid, code);
 	if (rc == CAPTCHA_OK) {
-		read_active(currentuser.userid, &act_data);
-		act_data.status = 1;
-		rc = write_active(&act_data);
-		if (rc == WRITE_SUCCESS || rc == UPDATE_SUCCESS) {
-			register_success(getusernum(currentuser.userid) + 1, currentuser.userid, currentuser.realname,
-					act_data.dept, currentuser.address, act_data.phone, "", currentuser.email);
-			rc = 0;
+		if (query_record_num(currentuser.email, MAIL_ACTIVE) < MAX_USER_PER_RECORD) {
+			read_active(currentuser.userid, &act_data);
+			act_data.status = 1;
+			rc = write_active(&act_data);
+			if (rc == WRITE_SUCCESS || rc == UPDATE_SUCCESS) {
+				register_success(getusernum(currentuser.userid) + 1, currentuser.userid, currentuser.realname,
+						act_data.dept, currentuser.address, act_data.phone, "", currentuser.email);
+				rc = 0;
+			} else {
+				// WRITE_FAIL == 0
+				rc = -1;
+			}
 		} else {
-			// WRITE_FAIL == 0
 			rc = -1;
 		}
 	}
