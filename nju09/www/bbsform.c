@@ -50,11 +50,11 @@ bbsform_main()
 		check_submit_form();
 		http_quit();
 	} else if (type == 2) {
-		// TODO check captcha
+		// check captcha
 		check_captcha_form();
 		http_quit();
 	} else if (type == 3) {
-		// TODO resent captcha
+		// resent captcha
 		resent_active_mail();
 		http_quit();
 	}
