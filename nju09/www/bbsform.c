@@ -29,7 +29,6 @@ int test_mail_valid(char *user, char *pass, char *popip);
 int substitute_record(char *filename, void *rptr, int size, int id);
 void register_success(int usernum, char *userid, char *realname, char *dept,
 char *addr, char *phone, char *assoc, char *email);
-int write_pop_user(char *user, char *userid, char *pop_name);
 #endif
 
 int
