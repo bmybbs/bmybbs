@@ -554,7 +554,7 @@ void x_fillform()
 		char code[6];
 		do {
 			clear();
-			getdata(3, 0, "请输入您的验证码(输入x放弃验证) >>  ", code, 5, DOECHO, YEA);
+			getdata(3, 0, "请输入您的验证码(输入x放弃验证) >>  ", code, 6, DOECHO, YEA);
 
 			if (strcasecmp(code, "x") == 0) {
 				return;
