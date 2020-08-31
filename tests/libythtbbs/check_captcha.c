@@ -38,7 +38,7 @@ START_TEST(test_gen_captcha_for_user) {
 	long long ts;
 
 	unlink(filename);
-	rc = gen_captcha_for_user("foo", &c);
+	rc = gen_captcha_for_user("foo", &c, CAPTCHA_FILE_REGISTER);
 	ck_assert_int_eq(rc, CAPTCHA_OK);
 
 	readstrvalue(filename, "captcha", value, sizeof(value));
@@ -65,10 +65,10 @@ START_TEST(test_gen_captcha_for_user_regen_immediately_should_remain_the_same) {
 
 	savestrvalue(filename, "create_time", "0");
 
-	rc = gen_captcha_for_user("foo", &c1);
+	rc = gen_captcha_for_user("foo", &c1, CAPTCHA_FILE_REGISTER);
 	ck_assert_int_eq(rc, CAPTCHA_OK);
 
-	rc = gen_captcha_for_user("foo", &c2);
+	rc = gen_captcha_for_user("foo", &c2, CAPTCHA_FILE_REGISTER);
 	ck_assert_int_eq(rc, CAPTCHA_OK);
 
 	ck_assert_int_eq(c1.timestamp, c2.timestamp);
@@ -85,7 +85,7 @@ START_TEST(test_gen_captcha_for_user_fake_create_time_should_allow) {
 
 	savestrvalue(filename, "create_time", "0");
 
-	rc = gen_captcha_for_user("foo", &c);
+	rc = gen_captcha_for_user("foo", &c, CAPTCHA_FILE_REGISTER);
 	ck_assert_int_eq(rc, CAPTCHA_OK);
 
 	readstrvalue(filename, "captcha", value, sizeof(value));
@@ -112,10 +112,10 @@ START_TEST(test_verify_captcha_for_user) {
 	char value[32];
 
 	savestrvalue(filename, "create_time", "0");
-	rc = gen_captcha_for_user("foo", &c);
+	rc = gen_captcha_for_user("foo", &c, CAPTCHA_FILE_REGISTER);
 	ck_assert_int_eq(rc, CAPTCHA_OK);
 
-	rc = verify_captcha_for_user("foo", c.value);
+	rc = verify_captcha_for_user("foo", c.value, CAPTCHA_FILE_REGISTER);
 	ck_assert_int_eq(rc, CAPTCHA_OK);
 
 	readstrvalue(filename, "used", value, sizeof(value));
@@ -128,11 +128,11 @@ START_TEST(test_verify_captcha_for_user_case_insensitive) {
 	char value[32];
 
 	savestrvalue(filename, "create_time", "0");
-	rc = gen_captcha_for_user("foo", &c);
+	rc = gen_captcha_for_user("foo", &c, CAPTCHA_FILE_REGISTER);
 	ck_assert_int_eq(rc, CAPTCHA_OK);
 
 	c.value[0] -= 32;
-	rc = verify_captcha_for_user("foo", c.value);
+	rc = verify_captcha_for_user("foo", c.value, CAPTCHA_FILE_REGISTER);
 	ck_assert_int_eq(rc, CAPTCHA_OK);
 
 	readstrvalue(filename, "used", value, sizeof(value));
@@ -145,31 +145,31 @@ START_TEST(test_verify_captcha_for_user_case_wrong_attempts) {
 	char value[32];
 
 	savestrvalue(filename, "create_time", "0");
-	rc = gen_captcha_for_user("foo", &c);
+	rc = gen_captcha_for_user("foo", &c, CAPTCHA_FILE_REGISTER);
 	ck_assert_int_eq(rc, CAPTCHA_OK);
 
 	c.value[0] -= 31;
-	rc = verify_captcha_for_user("foo", c.value);
+	rc = verify_captcha_for_user("foo", c.value, CAPTCHA_FILE_REGISTER);
 	ck_assert_int_eq(rc, CAPTCHA_WRONG);
 	readstrvalue(filename, "used", value, sizeof(value));
 	ck_assert_str_eq(value, "false");
 
-	rc = verify_captcha_for_user("foo", c.value);
+	rc = verify_captcha_for_user("foo", c.value, CAPTCHA_FILE_REGISTER);
 	ck_assert_int_eq(rc, CAPTCHA_WRONG);
 	readstrvalue(filename, "used", value, sizeof(value));
 	ck_assert_str_eq(value, "false");
 
-	rc = verify_captcha_for_user("foo", c.value);
+	rc = verify_captcha_for_user("foo", c.value, CAPTCHA_FILE_REGISTER);
 	ck_assert_int_eq(rc, CAPTCHA_WRONG);
 	readstrvalue(filename, "used", value, sizeof(value));
 	ck_assert_str_eq(value, "false");
 
-	rc = verify_captcha_for_user("foo", c.value);
+	rc = verify_captcha_for_user("foo", c.value, CAPTCHA_FILE_REGISTER);
 	ck_assert_int_eq(rc, CAPTCHA_WRONG);
 	readstrvalue(filename, "used", value, sizeof(value));
 	ck_assert_str_eq(value, "false");
 
-	rc = verify_captcha_for_user("foo", c.value);
+	rc = verify_captcha_for_user("foo", c.value, CAPTCHA_FILE_REGISTER);
 	ck_assert_int_eq(rc, CAPTCHA_WRONG);
 	readstrvalue(filename, "used", value, sizeof(value));
 	ck_assert_str_eq(value, "true");
@@ -178,13 +178,13 @@ START_TEST(test_verify_captcha_for_user_case_wrong_attempts) {
 START_TEST(test_verify_captcha_for_user_not_exists_or_wrong_length) {
 	int rc;
 
-	rc = verify_captcha_for_user("bar", "xxxxx");
+	rc = verify_captcha_for_user("bar", "xxxxx", CAPTCHA_FILE_REGISTER);
 	ck_assert_int_ne(rc, CAPTCHA_OK);
 
-	rc = verify_captcha_for_user("foo", "xxxxxx");
+	rc = verify_captcha_for_user("foo", "xxxxxx", CAPTCHA_FILE_REGISTER);
 	ck_assert_int_ne(rc, CAPTCHA_OK);
 
-	rc = verify_captcha_for_user("foo", "xxxx");
+	rc = verify_captcha_for_user("foo", "xxxx", CAPTCHA_FILE_REGISTER);
 	ck_assert_int_ne(rc, CAPTCHA_OK);
 
 }

@@ -95,7 +95,7 @@ int send_active_mail(char *userid, char *email)
 www 方式：点击左侧边栏“填写注册单”，完成信箱绑定认证操作。
 telnet 方式：进入个人工具箱填写注册单。
 */
-	rc = gen_captcha_for_user(userid, &c);
+	rc = gen_captcha_for_user(userid, &c, CAPTCHA_FILE_REGISTER);
 	if (rc != CAPTCHA_OK)
 		return -1;
 

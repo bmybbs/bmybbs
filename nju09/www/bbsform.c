@@ -107,7 +107,7 @@ bbsform_main()
 	printf("<span class='close'>&times;</span>");
 	printf("<p></p>");
 	printf("</div></div>");
-	printf("<script>var cap_status=%d;</script>", check_captcha_status(currentuser.userid)); // CAPTCHA_OK == 0
+	printf("<script>var cap_status=%d;</script>", check_captcha_status(currentuser.userid, CAPTCHA_FILE_REGISTER)); // CAPTCHA_OK == 0
 	printf("<script src='/bbsform.js'></script>");
 	http_quit();
 	return 0;
@@ -232,7 +232,7 @@ check_captcha_form(void)
 
 	memset(&act_data, 0, sizeof(struct active_data));
 	snprintf(code, 6, "%s", getparm("code"));
-	rc = verify_captcha_for_user(currentuser.userid, code);
+	rc = verify_captcha_for_user(currentuser.userid, code, CAPTCHA_FILE_REGISTER);
 	if (rc == CAPTCHA_OK) {
 		if (query_record_num(currentuser.email, MAIL_ACTIVE) < MAX_USER_PER_RECORD) {
 			read_active(currentuser.userid, &act_data);

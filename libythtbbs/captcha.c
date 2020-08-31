@@ -6,8 +6,6 @@ static const unsigned int MAX_ATTEMPTS       = 5;
 static const int INTERVAL_TO_REGEN  = 60;      /* 1min */
 static const int INTERVAL_TIMEOUT   = 15 * 60; /* 15 min */
 
-static const char *CAPTCHA_FILE     = ".captcha";
-static const char *CAPTCHA_LK_FILE  = ".captcha.lock";
 static const char *CAPTCHA_TABLE    = "captcha";
 static const char *KEY_CAPTCHA      = "captcha";
 static const char *KEY_TIMESTAMP    = "timestamp";
@@ -17,6 +15,17 @@ static const char *KEY_ATTEMPTS     = "attempts";
 static const char *VAL_BOOL_USED    = "true";
 static const char *VAL_BOOL_UNUSED  = "false";
 static const char *BASE_URL_PATT    = "http://" MY_BBS_DOMAIN "/captcha/00/%lld.gif";
+static const char *CAPTCHA_FILES[] = {
+		".REG",
+		".RESET",
+		".FINDACC"
+};
+
+static const char *CAPTCHA_LK_FILES[] = {
+		".REG.lock",
+		".RESET.lock",
+		".FINDACC.lock"
+};
 
 static void query_captcha_by_id_callback(MYSQL_STMT *stmt, MYSQL_BIND *result_cols, void *result) {
 	if (mysql_stmt_num_rows(stmt) == 1)
@@ -85,15 +94,15 @@ static int allow_to_regenerate_captcha(const char *filename) {
 	return CAPTCHA_NOT_ALLOW_TO_REGEN;
 }
 
-int check_captcha_status(const char *userid) {
+int check_captcha_status(const char *userid, enum CAPTCHA_FILE_TYPE file_type) {
 	char captcha_filename[80], captcha_lock_filename[80];
 	char value[32];
 	time_t now, ct;
 	struct stat captcha_file_stat;
 	int lockfd;
 
-	sethomefile_s(captcha_filename, sizeof(captcha_filename), userid, CAPTCHA_FILE);
-	sethomefile_s(captcha_lock_filename, sizeof(captcha_lock_filename), userid, CAPTCHA_LK_FILE);
+	sethomefile_s(captcha_filename, sizeof(captcha_filename), userid, CAPTCHA_FILES[file_type]);
+	sethomefile_s(captcha_lock_filename, sizeof(captcha_lock_filename), userid, CAPTCHA_LK_FILES[file_type]);
 
 	lockfd = openlockfile(captcha_lock_filename, O_RDONLY, LOCK_EX);
 	if (lockfd <= 0)
@@ -123,14 +132,14 @@ int check_captcha_status(const char *userid) {
 	return CAPTCHA_OK;
 }
 
-int gen_captcha_for_user(const char *userid, struct BMYCaptcha *captcha) {
+int gen_captcha_for_user(const char *userid, struct BMYCaptcha *captcha, enum CAPTCHA_FILE_TYPE file_type) {
 	char captcha_filename[80], captcha_lock_filename[80];
 	struct stat captcha_file_stat;
 	unsigned int cap_id;
 	int rc, lockfd;
 
-	sethomefile_s(captcha_filename, sizeof(captcha_filename), userid, CAPTCHA_FILE);
-	sethomefile_s(captcha_lock_filename, sizeof(captcha_lock_filename), userid, CAPTCHA_LK_FILE);
+	sethomefile_s(captcha_filename, sizeof(captcha_filename), userid, CAPTCHA_FILES[file_type]);
+	sethomefile_s(captcha_lock_filename, sizeof(captcha_lock_filename), userid, CAPTCHA_LK_FILES[file_type]);
 
 	lockfd = openlockfile(captcha_lock_filename, O_RDONLY, LOCK_EX);
 	if (lockfd <= 0)
@@ -156,7 +165,7 @@ CREATE:
 	return CAPTCHA_OK;
 }
 
-int verify_captcha_for_user(const char *userid, const char *code) {
+int verify_captcha_for_user(const char *userid, const char *code, enum CAPTCHA_FILE_TYPE file_type) {
 	char captcha_filename[80], captcha_lock_filename[80];
 	struct stat captcha_file_stat;
 	int lockfd;
@@ -168,8 +177,8 @@ int verify_captcha_for_user(const char *userid, const char *code) {
 		return CAPTCHA_WRONG;
 	}
 
-	sethomefile_s(captcha_filename, sizeof(captcha_filename), userid, CAPTCHA_FILE);
-	sethomefile_s(captcha_lock_filename, sizeof(captcha_lock_filename), userid, CAPTCHA_LK_FILE);
+	sethomefile_s(captcha_filename, sizeof(captcha_filename), userid, CAPTCHA_FILES[file_type]);
+	sethomefile_s(captcha_lock_filename, sizeof(captcha_lock_filename), userid, CAPTCHA_LK_FILES[file_type]);
 
 	lockfd = openlockfile(captcha_lock_filename, O_RDONLY, LOCK_EX);
 	if (lockfd <= 0)

@@ -1,6 +1,12 @@
 #ifndef BMYBBS_CAPTCHA_H
 #define BMYBBS_CAPTCHA_H
 
+enum CAPTCHA_FILE_TYPE {
+	CAPTCHA_FILE_REGISTER         = 0,
+	CAPTCHA_FILE_RESET            = 1,
+	CAPTCHA_FILE_FINDACC          = 2,
+};
+
 enum CAPTCHA_STATUS_CODE {
 	CAPTCHA_USED                  = 1,
 	CAPTCHA_ALLOW_TO_REGEN        = 2,
@@ -18,11 +24,11 @@ struct BMYCaptcha {
 	time_t create_time;
 };
 
-int check_captcha_status(const char *userid);
+int check_captcha_status(const char *userid, enum CAPTCHA_FILE_TYPE file_type);
 
-int gen_captcha_for_user(const char *userid, struct BMYCaptcha *captcha);
+int gen_captcha_for_user(const char *userid, struct BMYCaptcha *captcha, enum CAPTCHA_FILE_TYPE file_type);
 
-int verify_captcha_for_user(const char *userid, const char *code);
+int verify_captcha_for_user(const char *userid, const char *code, enum CAPTCHA_FILE_TYPE file_type);
 
 void gen_captcha_url(char *buf, size_t buf_size, long long timestamp);
 #endif //BMYBBS_CAPTCHA_H

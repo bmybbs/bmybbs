@@ -549,7 +549,7 @@ void x_fillform()
 		fclose(fn);
 	}
 
-	cap_status = check_captcha_status(currentuser.userid);
+	cap_status = check_captcha_status(currentuser.userid, CAPTCHA_FILE_REGISTER);
 	if (cap_status == CAPTCHA_OK) {
 		char code[6];
 		do {
@@ -560,7 +560,7 @@ void x_fillform()
 				return;
 			}
 
-			cap_status = verify_captcha_for_user(currentuser.userid, code);
+			cap_status = verify_captcha_for_user(currentuser.userid, code, CAPTCHA_FILE_REGISTER);
 			if (cap_status == CAPTCHA_OK) {
 				// 当前邮箱验证成功
 				// IronBlood 2020.08.29 备注：
@@ -614,7 +614,7 @@ void x_fillform()
 				return;
 			} else {
 				// 验证码校验失败，重新判断状态
-				cap_status = check_captcha_status(currentuser.userid);
+				cap_status = check_captcha_status(currentuser.userid, CAPTCHA_FILE_REGISTER);
 				if (cap_status == CAPTCHA_TIMEOUT || cap_status == CAPTCHA_USED) {
 					prints("验证码已失效，请重新填写注册单");
 					pressanykey();
