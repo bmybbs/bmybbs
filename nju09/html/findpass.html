@@ -1,0 +1,219 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>BMYBBS - 找回账号或密码</title>
+		<link rel="stylesheet" href="css/bootstrap.min.css">
+		<link rel="stylesheet" href="findpass.css">
+	</head>
+
+	<body>
+		<div class="container-fluid">
+			<div class="row" id="form">
+				<div class="col-md-8 offset-md-2">
+					<ul id="progressbar">
+						<li class="active">选择查询类型</li>
+						<li>获取验证码</li>
+						<li>输入验证码</li>
+					</ul>
+
+					<div class="fieldset" id="form-base" p-index="0">
+						<h2 class="fs-title">请选择想找回的信息</h2>
+						<h3 class="fs-subtitle">&nbsp;</h3>
+
+						<div class="btn-group-vertical">
+							<button class="btn btn-secondary" id="btn-resetpass">忘记密码（依据信箱重置密码）</button>
+							<button class="btn btn-secondary" id="btn-findacc">忘记账号（依据信箱列出认证的ID）</button>
+						</div>
+					</div><!-- end of a fieldset -->
+
+					<div class="fieldset" id="form-resetpass" p-index="1">
+						<h2 class="fs-title">请填写以下信息获取验证码</h2>
+						<h3 class="fs-subtitle">若已获得验证码请点击输入验证码按钮</h3>
+
+						<div class="form-group row">
+							<label for="input-resetpass-id" class="col-sm-3 col-form-label">BMY ID</label>
+							<div class="col-sm-9">
+								<input type="text" class="form-control" id="input-resetpass-id">
+							</div>
+						</div>
+
+						<div class="form-group row">
+							<label for="input-resetpass-email-user" class="col-sm-3 col-form-label">邮箱</label>
+							<div class="col-sm-5">
+								<div class="input-group">
+									<input type="text" class="form-control" id="input-resetpass-email-user">
+									<div class="input-group-append">
+										<span class="input-group-text">@</span>
+									</div>
+								</div>
+							</div>
+							<div class="col-sm-4">
+								<select class="custom-select">
+									<option disabled selected>请选择邮箱域</option>
+									<option value="0">xjtu.edu.cn</option>
+									<option value="1">stu.xjtu.edu.cn</option>
+									<option value="2">mail.xjtu.edu.cn</option>
+								</select>
+							</div>
+						</div>
+
+						<div class="form-group row">
+							<div class="col-sm-4">
+								<button class="btn btn-outline-secondary btn-block go-back-base">上一步</button>
+							</div>
+							<div class="col-sm-4">
+								<button class="btn btn-secondary btn-block" id="btn-getcaptcha-resetpass">发送验证码</button>
+							</div>
+							<div class="col-sm-4">
+								<button class="btn btn-secondary btn-block" id="btn-doresetpass">输入验证码</button>
+							</div>
+						</div>
+					</div><!-- end of a fieldset -->
+
+					<div class="fieldset" id="form-doresetpass" p-index="2">
+						<h2 class="fs-title">请更新您的密码</h2>
+						<h3 class="fs-subtitle">请注意重置的验证码与注册、查找账号不同</h3>
+
+						<div class="form-group row">
+							<label for="input-resetpass-id-2" class="col-sm-3 col-form-label">BMY ID</label>
+							<div class="col-sm-9">
+								<input type="text" class="form-control" id="input-resetpass-id-2">
+							</div>
+						</div>
+
+						<div class="form-group row">
+							<label for="input-resetpass-pass" class="col-sm-3 col-form-label">密码</label>
+							<div class="col-sm-9">
+								<input type="password" class="form-control" id="input-resetpass-pass">
+							</div>
+						</div>
+
+						<div class="form-group row">
+							<label for="input-resetpass-pass-2" class="col-sm-3 col-form-label">重复密码</label>
+							<div class="col-sm-9">
+								<input type="password" class="form-control" id="input-resetpass-pass-2">
+							</div>
+						</div>
+
+						<div class="form-group row">
+							<label for="input-resetpass-captcha" class="col-sm-3 col-form-label">验证码</label>
+							<div class="col-sm-9">
+								<input type="text" class="form-control" id="input-resetpass-captcha">
+							</div>
+						</div>
+
+						<div class="form-group row">
+							<div class="col-sm-4 offset-md-2">
+								<button class="btn btn-outline-secondary btn-block go-back-resetpass">上一步</button>
+							</div>
+							<div class="col-sm-4">
+								<button class="btn btn-secondary btn-block" id="btn-post-resetpass">重置密码</button>
+							</div>
+						</div>
+					</div><!-- end of a fieldset -->
+
+					<div class="fieldset" id="form-findacc" p-index="1">
+						<h2 class="fs-title">请填写以下信息获取验证码</h2>
+						<h3 class="fs-subtitle">若已获得验证码请点击输入验证码按钮</h3>
+
+						<div class="form-group row">
+							<label for="input-resetpass-email-user" class="col-sm-3 col-form-label">邮箱</label>
+							<div class="col-sm-5">
+								<div class="input-group">
+									<input type="text" class="form-control" id="input-resetpass-email-user">
+									<div class="input-group-append">
+										<span class="input-group-text">@</span>
+									</div>
+								</div>
+							</div>
+							<div class="col-sm-4">
+								<select class="custom-select">
+									<option disabled selected>请选择邮箱域</option>
+									<option value="0">xjtu.edu.cn</option>
+									<option value="1">stu.xjtu.edu.cn</option>
+									<option value="2">mail.xjtu.edu.cn</option>
+								</select>
+							</div>
+						</div>
+
+						<div class="form-group row">
+							<div class="col-sm-4">
+								<button class="btn btn-outline-secondary btn-block go-back-base">上一步</button>
+							</div>
+							<div class="col-sm-4">
+								<button class="btn btn-secondary btn-block" id="btn-getcaptcha-findacc">发送验证码</button>
+							</div>
+							<div class="col-sm-4">
+								<button class="btn btn-secondary btn-block" id="btn-dofindacc">输入验证码</button>
+							</div>
+						</div>
+					</div><!-- end of a fieldset -->
+
+					<div class="fieldset" id="form-dofindacc" p-index="2">
+						<h2 class="fs-title">填写以下信息查找关联的 ID 列表</h2>
+						<h3 class="fs-subtitle">请注意验证码与注册、重置密码不同</h3>
+						<div class="form-group row">
+							<label for="input-resetpass-email-user" class="col-sm-3 col-form-label">邮箱</label>
+							<div class="col-sm-5">
+								<div class="input-group">
+									<input type="text" class="form-control" id="input-resetpass-email-user">
+									<div class="input-group-append">
+										<span class="input-group-text">@</span>
+									</div>
+								</div>
+							</div>
+							<div class="col-sm-4">
+								<select class="custom-select">
+									<option disabled selected>请选择邮箱域</option>
+									<option value="0">xjtu.edu.cn</option>
+									<option value="1">stu.xjtu.edu.cn</option>
+									<option value="2">mail.xjtu.edu.cn</option>
+								</select>
+							</div>
+						</div>
+
+						<div class="form-group row">
+							<label for="input-resetpass-captcha" class="col-sm-3 col-form-label">验证码</label>
+							<div class="col-sm-9">
+								<input type="text" class="form-control" id="input-resetpass-captcha">
+							</div>
+						</div>
+
+						<div class="form-group row">
+							<div class="col-sm-4 offset-md-2">
+								<button class="btn btn-outline-secondary btn-block go-back-findacc">上一步</button>
+							</div>
+							<div class="col-sm-4">
+								<button class="btn btn-secondary btn-block" id="btn-post-query">查询账户列表</button>
+							</div>
+						</div>
+					</div><!-- end of a fieldset -->
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="msg-modal" data-backdrop="static" data-keyboard="false" tabindex="-1">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">foo</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+
+					<div class="modal-body">
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="js/jquery-3.5.1.min.js"></script>
+		<script src="js/jquery-ui-1.12.1.min.js"></script>
+		<script src="js/popper.min.js"></script>
+		<script src="js/bootstrap.min.js"></script>
+		<script src="findpass.js"></script>
+	</body>
+</html>
+
