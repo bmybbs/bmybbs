@@ -10,7 +10,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <netdb.h> 
+#include <netdb.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 // 邮件服务器上用户名和密码的长度， added by interma@BMY 2005.5.12
@@ -19,112 +19,21 @@
 
 #endif
 
-// 登陆邮件服务器，进行身份验证， added by interma@BMY 2005.5.12
-// 返回值为1表示有效，0表示无效, -1表示和pop服务器连接出错 
-/*
-static int test_mail_valid(char *user, char *pass, char *popip)
-{
-    char buffer[512]; 
-    int sockfd;
-    struct sockaddr_in server_addr; 
-    struct hostent *host; 
-
-	if (user[0] == ' ' || pass[0] == ' ')
-		return 0;
-
-    // 客户程序开始建立 sockfd描述符
-    if((sockfd=socket(AF_INET,SOCK_STREAM,0))==-1) 
-    {  
-        return -1;
-    } 
-    int i;
-    for ( i = 0; i < 8; i++)
-    server_addr.sin_zero[i] = 0;
-    server_addr.sin_family=AF_INET; 
-    server_addr.sin_port=htons(110);
-    // 202.117.1.22 == stu.xjtu.edu.cn 
-    if(inet_aton(popip, &server_addr.sin_addr) == 0) 
-    {  
-        return -1;
-    }
-
-    // 客户程序发起连接请求
-    if(connect(sockfd,(struct sockaddr *)(&server_addr),sizeof(struct sockaddr))==-1) 
-    {  
-        return -1; 
-    } 
-
-    if(read(sockfd,buffer,512) == -1 )
-    {  
-        return -1; 
-    } 
-    if (buffer[0] == '-')
-        return -1;
-    
-    sprintf(buffer, "USER %s\r\n\0", user);
-    if (write(sockfd, buffer, strlen(buffer)) == -1)
-    { 
-        return -1; 
-    }   
-     
-    if(read(sockfd,buffer,512) == -1 )
-    {  
-        return -1; 
-    } 
-    if (buffer[0] == '-')
-    {   
-        return 0;
-    }   
-     
-    sprintf(buffer, "PASS %s\r\n\0", pass);
-    if (write(sockfd, buffer, strlen(buffer)) == -1)
-    { 
-        return -1; 
-    }
-     
-    if(read(sockfd,buffer,512) == -1 )
-    {  
-        return -1; 
-    } 
-    if (buffer[0] == '-')
-    {
-        return 0;
-    }
-            
-    write(sockfd, "QUIT\r\n", strlen("QUIT\r\n"));          
-    return 1;
-}    
-
-
-static char * str_to_upper(char *str)
-{
-	char *h = str;
-	while (*str != '\n' && *str != 0)
-	{
-		*str = toupper(*str);
-		str++;
-	}
-	return h;
-}
-
-*/
 int
 bbsresetpass_main()
 {
-	FILE *fp;
+
 	struct userec* x;
-	char buf[256], filename[80], pass1[80], pass2[80], dept[80], phone[80],
-	    assoc[80], salt[3], words[1024], userid[32],  *ub = FIRST_PAGE;
-	int lockfd;
+	char pass1[80], pass2[80], salt[3], userid[32];
 	int count;
 	struct active_data act_data;
 	html_header(1);
 	printf("<body>");
 
 	char user[USER_LEN + 1];
-    char pass[PASS_LEN + 1];
+	char pass[PASS_LEN + 1];
 	char popserver[512];
-	strsncpy(popserver, getparm("popserver"), 512);	
+	strsncpy(popserver, getparm("popserver"), 512);
 	strsncpy(user, getparm("user"), USER_LEN);
 	strsncpy(pass, getparm("pass"), PASS_LEN);
 
@@ -132,28 +41,15 @@ bbsresetpass_main()
 	strsncpy(pass1, getparm("pass1"), 13);
 	strsncpy(pass2, getparm("pass2"), 13);
 	char delims[] = "+";
-    	char *popname;
+	char *popname;
 	char *popip;
-
 
 	popname = strtok(popserver, delims);
 	popip = strtok(NULL, delims);
 
-	// 防止注入漏洞
-	struct stat temp;
-
-	int vaild = 0;
-	char bufpop[256];
-	int numpop = 0;
-	char namepop[10][256]; // 注意：最多信任10个pop服务器，要不就溢出了！
-	char ippop[10][256];
-
 	char email[60];
 	sprintf(email, "%s@%s", user, popname);  // 注意不要将email弄溢出了
 	str_to_lowercase(email);
-
-
-
 
 	if (strlen(pass1) < 4)
 		http_fatal("密码太短(至少4字符)");
@@ -163,9 +59,6 @@ bbsresetpass_main()
 		http_fatal("邮箱用户名没添啊");
 	if (strlen(pass) == 0)
 		http_fatal("邮箱密码没添啊");
-
-
-
 
 	printf("<center><table><td><td><pre>\n");
 	count=read_active(userid, &act_data);
@@ -177,7 +70,6 @@ bbsresetpass_main()
 	}
 
 	int result;
-	//int result = test_mail_valid(user, pass, popip);
 	if (strstr(popname, "idp.xjtu6.edu.cn")) {
 		if (!strcmp(fromhost, "202.117.1.190") || !strcmp(fromhost, "2001:250:1001:2::ca75:1be"))
 			result=1;
@@ -191,31 +83,25 @@ bbsresetpass_main()
 	}
 
 	switch (result)
-    {
-		  case -1:
-		  case 0:
-		  printf("<tr><td>%s<br></table><br>\n", 
-			  "邮件服务器身份审核失败，无法重置密码，您是否输错信箱密码了?");
-		  break;
+	{
+	case -1:
+	case 0:
+		printf("<tr><td>%s<br></table><br>\n",
+				"邮件服务器身份审核失败，无法重置密码，您是否输错信箱密码了?");
+		break;
 
-		  case 1:			  
-
+	case 1:
 		x=getuser(userid);
 		getsalt(salt);
 		strcpy(x->passwd, crypt1(pass2, salt));
 		save_user_data(x);
-		
-		
-			printf("密码重置成功!\n"); 
-			break;
 
-     
-    }
+		printf("密码重置成功!\n");
+		break;
+	}
 
-	printf
-	    ("<center><form><input type=button onclick='window.close()' value=关闭本窗口></form></center>\n");
+	printf("<center><form><input type=button onclick='window.close()' value=关闭本窗口></form></center>\n");
 
 	return 0;
 }
-
 
