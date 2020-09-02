@@ -62,6 +62,7 @@ char* str_to_uppercase(char *str);
 char* str_to_lowercase(char *str);
 const char* style_to_str(int style);
 int send_active_mail(char *userid, char *email);
+int send_resetpass_mail(char *userid, char *email);
 
 int query_record_num(char* value, int style);
 int write_active(struct active_data* act_data);
