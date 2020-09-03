@@ -117,7 +117,6 @@ set(SRC
 	bbssbs.c
 	bbseditmail.c
 
-	bbsfindpass.c
 	bbsresetpass.c
 	bbsfindacc.c
 	bbsnotify.c

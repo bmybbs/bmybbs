@@ -154,7 +154,7 @@ void loginwindow()
                 "<td><input name=pw type=password id=pwd style=\"font-size:11px;font-family:verdana\" size=10></td>\n"
                 "<td>&nbsp&nbsp&nbsp<input name=login_btn type=image id=login_btn src=\"images/index_log.gif\" width=40 height=18 border=0 onMouseOver=\"this.src='images/index_log2.gif'\" onMouseOut=\"this.src='images/index_log.gif'\"></td>\n"
 	//add by liuche@BMY 20120205
-		"<td>&nbsp&nbsp&nbsp<a href='/" SMAGIC "/bbsfindpass' target='_blank' class=linkindex>找回用户名或密码？</a></td>\n"
+		"<td>&nbsp&nbsp&nbsp<a href='/findpass.html' target='_blank' class=linkindex>找回用户名或密码？</a></td>\n"
 		"</form></tr></table>\n"
 	//"<table border=0 align=center cellpadding=0 cellspacing=0>"
 	//"<tr><td><class=1004>验证客户 IP 范围到<select name=ipmask>\n"
