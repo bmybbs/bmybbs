@@ -2409,12 +2409,12 @@ void1(char *s)
 	int flag = 0;
 	for (i = 0; s[i]; i++) {
 		if (flag == 0) {
-			if ((unsigned char) s[i] >= 128)
+			if (s[i] < 0)
 				flag = 1;
 			continue;
 		}
 		flag = 0;
-		if (s[i] < 32)
+		if (s[i] < 32 && s[i] > 0)
 			s[i - 1] = 32;
 	}
 	if (flag)
