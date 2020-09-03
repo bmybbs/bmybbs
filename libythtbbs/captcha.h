@@ -4,7 +4,6 @@
 enum CAPTCHA_FILE_TYPE {
 	CAPTCHA_FILE_REGISTER         = 0,
 	CAPTCHA_FILE_RESET            = 1,
-	CAPTCHA_FILE_FINDACC          = 2,
 };
 
 enum CAPTCHA_STATUS_CODE {

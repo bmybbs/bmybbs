@@ -18,13 +18,11 @@ static const char *BASE_URL_PATT    = "http://" MY_BBS_DOMAIN "/captcha/00/%lld.
 static const char *CAPTCHA_FILES[] = {
 		".REG",
 		".RESET",
-		".FINDACC"
 };
 
 static const char *CAPTCHA_LK_FILES[] = {
 		".REG.lock",
 		".RESET.lock",
-		".FINDACC.lock"
 };
 
 static void query_captcha_by_id_callback(MYSQL_STMT *stmt, MYSQL_BIND *result_cols, void *result) {
