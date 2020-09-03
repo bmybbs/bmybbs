@@ -24,9 +24,6 @@ static void resent_active_mail(void);
 #endif
 
 #ifdef POP_CHECK
-int test_mail_valid(char *user, char *pass, char *popip);
-//void securityreport(char *str, char *content);
-int substitute_record(char *filename, void *rptr, int size, int id);
 void register_success(int usernum, char *userid, char *realname, char *dept,
 char *addr, char *phone, char *assoc, char *email);
 #endif
