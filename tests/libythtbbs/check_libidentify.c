@@ -1,5 +1,6 @@
 #include <check.h>
 #include <stdio.h>
+#include <mysql/mysql.h>
 
 #define IDLEN 12
 #define STRLEN 80

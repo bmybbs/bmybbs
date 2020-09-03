@@ -1,18 +1,19 @@
 #include "bbs.h"
 #include "identify.h"
 #include "mysql_wrapper.h"
+//关于链接数据库的一些常量
+#define USERREG_TABLE "userreglog"
 
 #ifdef POP_CHECK
 
 static const char *active_style_str[] = {"", "email", "phone", "idnum", NULL};
 const char *MAIL_DOMAINS[] = {"", "xjtu.edu.cn", "stu.xjtu.edu.cn", "mail.xjtu.edu.cn", NULL};
-const char *IP_POP[] = {"", "202.117.1.22", "202.117.1.28", "2001:250:1001:2::ca75:1c0", NULL};
 
 static void convert_mysql_time_to_str(char *buf, MYSQL_TIME *mt) {
 snprintf(buf, 20,
-		 "%04d-%02d-%02d %02d:%02d:%02d",
-		 mt->year, mt->month, mt->day,
-		 mt->hour, mt->minute, mt->second);
+		"%04d-%02d-%02d %02d:%02d:%02d",
+		mt->year, mt->month, mt->day,
+		mt->hour, mt->minute, mt->second);
 }
 
 char* str_to_uppercase(char *str)
@@ -38,23 +39,12 @@ char* str_to_lowercase(char *str)
 const char* style_to_str(int style)
 {
 	switch (style) {
-	case NO_ACTIVE:
-		return "未验证";
-		break;
-	case MAIL_ACTIVE:
-		return "信箱";
-		break;
-	case PHONE_ACTIVE:
-		return "手机号码";
-		break;
-	case IDCARD_ACTIVE:
-		return "其他证件";
-		break;
-	case FORCE_ACTIVE:
-		return "手工激活";
-		break;
-	default:
-		return "未知";
+	case NO_ACTIVE:     return "未验证";
+	case MAIL_ACTIVE:   return "信箱";
+	case PHONE_ACTIVE:  return "手机号码";
+	case IDCARD_ACTIVE: return "其他证件";
+	case FORCE_ACTIVE:  return "手工激活";
+	default:            return "未知";
 	}
 }
 
@@ -249,42 +239,6 @@ int query_record_num(char* value, int style)
 
 	free(str);
 	return (status != MYSQL_OK) ? -1 : atoi(count);
-}
-
-/**
- * 从配置文件读取 sql 的连接信息，该函数属于 mysql_real_connect 的封装。
- * 当配置文件存在且连接正常时，返回 MYSQL* 指针。
- * @param s
- * @return
- */
-__attribute__((deprecated)) MYSQL * my_connect_mysql(MYSQL *s)
-{
-	const char *MYSQL_CONFIG_FILE = MY_BBS_HOME "/etc/mysqlconfig";
-
-	FILE *cfg_fp;
-	int   cfg_fd;
-	char  sql_user[16];
-	char  sql_pass[16];
-	char  sql_db[24];
-	char  sql_port[8];
-	char  sql_host[32];
-
-	cfg_fp = fopen(MYSQL_CONFIG_FILE, "r");
-	if (!cfg_fp)
-		return NULL;
-
-	cfg_fd = fileno(cfg_fp);
-	flock(cfg_fd, LOCK_SH);
-
-	readstrvalue_fp(cfg_fp, "SQL_USER", sql_user, sizeof(sql_user));
-	readstrvalue_fp(cfg_fp, "SQL_PASS", sql_pass, sizeof(sql_pass));
-	readstrvalue_fp(cfg_fp, "SQL_DB", sql_db, sizeof(sql_db));
-	readstrvalue_fp(cfg_fp, "SQL_PORT", sql_port, sizeof(sql_port));
-	readstrvalue_fp(cfg_fp, "SQL_HOST", sql_host, sizeof(sql_host));
-
-	flock(cfg_fd, LOCK_UN);
-	fclose(cfg_fp);
-	return mysql_real_connect(s, sql_host, sql_user, sql_pass, sql_db, atoi(sql_port), NULL, CLIENT_IGNORE_SIGPIPE);
 }
 
 static void write_active_callback_count(MYSQL_STMT *stmt, MYSQL_BIND *result_cols, void *result_set) {

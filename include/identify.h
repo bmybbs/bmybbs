@@ -1,15 +1,6 @@
 #ifndef _LIBIDEN__H
 #define _LIBIDEN__H
 
-#include <mysql/mysql.h>
-
-//关于链接数据库的一些常量
-#define SQLDB "bbsreg"
-#define SQLUSER "root"
-#define SQLPASSWD "xj,bbs,1"
-#define USERREG_TABLE "userreglog"
-// #define SCHOOLDATA_TABLE "schooldata"
-
 //一些返回值
 #define TOO_MUCH_RECORDS 3
 #define WRITE_SUCCESS    2
@@ -23,7 +14,6 @@
 //允许的邮箱域
 #define DOMAIN_COUNT 3
 extern const char *MAIL_DOMAINS[];
-extern const char *IP_POP[] __attribute__((deprecated("IP_POP shouldn't be used any more.")));
 
 //绑定的方式
 #define DIED_ACIVE -1 /* 挂了*/
@@ -70,8 +60,6 @@ int write_active(struct active_data* act_data);
 
 int read_active(char* userid, struct active_data* act_data);
 int get_active_value(char* value, struct active_data* act_data);
-
-MYSQL * my_connect_mysql(MYSQL *s);
 
 /**
  * 依据邮箱地址查询关联的id列表，使用结束记得调用 free_associated_userid 释放内存。本函数属于 get_associated_userid_by_style 的封装。
