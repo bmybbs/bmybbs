@@ -193,15 +193,12 @@ document.addEventListener("DOMContentLoaded", function() {
 	$("#btn-resetpass")    .click(() => go_forward("#form-base", "#form-resetpass"));
 	$("#btn-findacc")      .click(() => go_forward("#form-base", "#form-findacc"));
 	$("#btn-doresetpass")  .click(() => go_forward("#form-resetpass", "#form-doresetpass"));
-	$("#btn-dofindacc")    .click(() => go_forward("#form-findacc", "#form-dofindacc"));
 	$(".go-back-resetpass").click(() => go_backward("#form-doresetpass", "#form-resetpass"));
-	$(".go-back-findacc")  .click(() => go_backward("#form-dofindacc", "#form-findacc"));
 	$(".go-back-base")     .click(function() {
 		go_backward("#" + $(this).parent().parent().parent().attr("id"), "#form-base");
 	});
 
 	$("#btn-getcaptcha-resetpass").click(function() {
-		// TODO
 		const bmy_id = document.querySelector("#input-resetpass-id").value,
 			user = document.querySelector("#input-resetpass-email-user").value,
 			domain_el = document.querySelector("#select-resetpass-domain"),
@@ -257,8 +254,7 @@ document.addEventListener("DOMContentLoaded", function() {
 									case -1: msg = "您的输入有误"; break;
 									case -2: msg = "啊咧，查无此人，您输错用户id了?"; break;
 									case -3: msg = "此用户并不是采用您输入的信箱认证的呀>__<"; break;
-									case -4: msg = "当前无法给您发送验证码...";
-										break;
+									case -4: msg = "当前无法给您发送验证码..."; break;
 									default: msg = "未知错误"; // shouldn't be here
 									}
 
@@ -274,11 +270,6 @@ document.addEventListener("DOMContentLoaded", function() {
 				}
 			});
 		}
-	});
-
-	$("#btn-getcaptcha-findacc").click(function() {
-		// TODO
-		$("#msg-modal").modal('show');
 	});
 
 	$("#btn-post-resetpass").click(function() {
@@ -354,7 +345,68 @@ document.addEventListener("DOMContentLoaded", function() {
 	});
 
 	$("#btn-post-query").click(function() {
-		// TODO
-		$("#msg-modal").modal('show');
+		const user = document.querySelector("#input-findacc-email-user").value,
+			domain_el = document.querySelector("#select-findacc-domain"),
+			domain = domain_el.value;
+
+		let rc = verify_email(user, domain),
+			txt;
+
+		switch(rc) {
+		case -1: txt = "缺少信息邮箱信息"; break;
+		case -2: txt = "邮箱名过长"; break;
+		case -3: txt = "邮箱名包含不支持的字符"; break;
+		default:
+			txt = [
+				"您想要查找的关联的邮箱是 ", user, "@",
+				domain_el.options[domain_el.selectedIndex].text,
+				"，点击\"确定\"按钮发送查询结果。"
+			].join("");
+			break;
+		}
+
+		if (rc < 0) {
+			show_modal({ title: "错误", body: txt });
+		} else {
+			show_modal({
+				title: "确认信息",
+				body: txt,
+				callback: function() {
+					hide_modal(function() {
+						startLoadingAnimation();
+
+						$.ajax({
+							url: [
+								"/BMY/bbsfindacc?type=1",
+								"&user=", user,
+								"&domain=", domain
+							].join(""),
+							success: function(data, status, xhr) {
+								stopLoadingAnimation();
+
+								if (data.status == 0) {
+									show_modal({ title: "提示", body: "您的账户关联信息已发送到您的邮箱。"});
+								} else {
+									let msg;
+									switch(data.status) {
+									case -1: msg = "您的输入有误"; break;
+									case -2: msg = "我仔细地找了找，没有您说的这个邮箱呀"; break;
+									case -3: msg = "抱歉服务器开小差了，请稍后再试"; break;
+									case -4: msg = "当前无法给您发送邮件..."; break;
+									default: msg = "未知错误"; // shouldn't be here
+									}
+
+									show_modal({ title: "错误", body: msg });
+								}
+							},
+							error: function(xhr, status, err) {
+								stopLoadingAnimation();
+								show_modal({ title: "出错了", body: "很抱歉兵马俑暂时无法处理您的请求，请稍后再试。" });
+							}
+						});
+					});
+				}
+			});
+		}
 	});
 });

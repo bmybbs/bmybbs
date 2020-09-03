@@ -128,61 +128,18 @@
 								</div>
 							</div>
 							<div class="col-sm-4">
-								<select class="custom-select">
+								<select class="custom-select" id="select-findacc-domain">
 									<option value="-1" disabled selected>请选择邮箱域</option>
 									<option value="1">xjtu.edu.cn</option>
 									<option value="2">stu.xjtu.edu.cn</option>
 									<option value="3">mail.xjtu.edu.cn</option>
 								</select>
-							</div>
-						</div>
-
-						<div class="form-group row">
-							<div class="col-sm-4">
-								<button class="btn btn-outline-secondary btn-block go-back-base">上一步</button>
-							</div>
-							<div class="col-sm-4">
-								<button class="btn btn-secondary btn-block" id="btn-getcaptcha-findacc">发送验证码</button>
-							</div>
-							<div class="col-sm-4">
-								<button class="btn btn-secondary btn-block" id="btn-dofindacc">输入验证码</button>
-							</div>
-						</div>
-					</div><!-- end of a fieldset -->
-
-					<div class="fieldset" id="form-dofindacc" p-index="2">
-						<h2 class="fs-title">填写以下信息查找关联的 ID 列表</h2>
-						<h3 class="fs-subtitle">请注意验证码与注册、重置密码不同</h3>
-						<div class="form-group row">
-							<label for="input-dofindacc-email-user" class="col-sm-3 col-form-label">邮箱</label>
-							<div class="col-sm-5">
-								<div class="input-group">
-									<input type="text" class="form-control" id="input-dofindacc-email-user">
-									<div class="input-group-append">
-										<span class="input-group-text">@</span>
-									</div>
-								</div>
-							</div>
-							<div class="col-sm-4">
-								<select class="custom-select">
-									<option value="-1" disabled selected>请选择邮箱域</option>
-									<option value="1">xjtu.edu.cn</option>
-									<option value="2">stu.xjtu.edu.cn</option>
-									<option value="3">mail.xjtu.edu.cn</option>
-								</select>
-							</div>
-						</div>
-
-						<div class="form-group row">
-							<label for="input-dofindacc-captcha" class="col-sm-3 col-form-label">验证码</label>
-							<div class="col-sm-9">
-								<input type="text" class="form-control" id="input-dofindacc-captcha">
 							</div>
 						</div>
 
 						<div class="form-group row">
 							<div class="col-sm-4 offset-md-2">
-								<button class="btn btn-outline-secondary btn-block go-back-findacc">上一步</button>
+								<button class="btn btn-outline-secondary btn-block go-back-base">上一步</button>
 							</div>
 							<div class="col-sm-4">
 								<button class="btn btn-secondary btn-block" id="btn-post-query">查询账户列表</button>
