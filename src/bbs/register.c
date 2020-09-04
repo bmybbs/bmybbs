@@ -626,46 +626,26 @@ check_register_info()
 		if (urec->numlogins == 1) {
 
 			clear();
-			/*
-			   ans[0]='\0';
-			   while (ans[0] < '1' || ans[0] > '3') {
-			   getdata(3,0,"请输入你的性别: [1]男的 [2]女的 [3]不告诉你 (1-3): ",
-			   ans,2,DOECHO,EA);
-			   }
-			   switch (ans[0]) {
-			   case '1': strcpy (buf2, "小弟"); break;
-			   case '2': strcpy (buf2, "小女子"); break;
-			   case '3':
-			   default : strcpy (buf2, "我"); break;
-			   } */
-			strcpy(buf, "我");
 			sprintf(buf, "tmp/newcomer.%s", currentuser.userid);
 			if ((fout = fopen(buf, "w")) != NULL) {
 				fprintf(fout, "大家好,\n\n");
 				fprintf(fout, "我是 %s (%s), 来自 %s\n",
 					currentuser.userid, urec->username,
 					fromhost);
-				fprintf(fout,
-					"今天%s初来此站报到, 请大家多多指教。\n",
-					buf2);
+				fprintf(fout, "今天我初来此站报到, 请大家多多指教。\n");
 				move(5, 0);
-				prints
-				    ("请作个简短的个人简介, 向本站其他使用者打个招呼\n");
-				prints
-				    ("(最多三行, 写完可直接按 <Enter> 跳离)....");
+				prints("请作个简短的个人简介, 向本站其他使用者打个招呼\n");
+				prints("(最多三行, 写完可直接按 <Enter> 跳离)....");
 				getdata(7, 0, ":", buf2, 75, DOECHO, YEA);
 				if (buf2[0] != '\0') {
 					fprintf(fout, "\n\n自我介绍:\n\n");
 					fprintf(fout, "%s\n", buf2);
-					getdata(8, 0, ":", buf2, 75, DOECHO,
-						YEA);
+					getdata(8, 0, ":", buf2, 75, DOECHO, YEA);
 					if (buf2[0] != '\0') {
 						fprintf(fout, "%s\n", buf2);
-						getdata(9, 0, ":", buf2, 75,
-							DOECHO, YEA);
+						getdata(9, 0, ":", buf2, 75, DOECHO, YEA);
 						if (buf2[0] != '\0') {
-							fprintf(fout, "%s\n",
-								buf2);
+							fprintf(fout, "%s\n", buf2);
 						}
 					}
 				}
@@ -679,8 +659,7 @@ check_register_info()
 		if (!HAS_PERM(PERM_SYSOP) && newregfile != NULL) {
 			set_safe_record();
 			urec->userlevel &= ~(perm);
-			substitute_record(PASSFILE, urec,
-					  sizeof (struct userec), usernum);
+			substitute_record(PASSFILE, urec, sizeof (struct userec), usernum);
 			ansimore(newregfile, YEA);
 		}
 	}
