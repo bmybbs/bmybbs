@@ -174,6 +174,8 @@ bbsdoreg_main()
 		http_fatal("帐号只能由英文字母组成");
 	if (strlen(x.userid) < 2)
 		http_fatal("帐号长度太短(2-12字符)");
+	if (strcasecmp(x.userid, "new") == 0)
+		http_fatal("禁止使用 new 作为账号名");
 	if (strlen(pass1) < 4)
 		http_fatal("密码太短(至少4字符)");
 	if (strcmp(pass1, pass2))
