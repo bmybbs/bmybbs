@@ -127,6 +127,7 @@ check_submit_form()
 	FILE *fp;
 	char dept[80], phone[80], assoc[80];
 	struct active_data act_data;
+	int count, mail_diff;
 
 #ifdef POP_CHECK
 	char user[USER_LEN + 1];
@@ -147,8 +148,16 @@ check_submit_form()
 
 	char email[60];
 	sprintf(email, "%s@%s", user, popname);  // 注意不要将email弄溢出了
-	strsncpy(currentuser.email, email, 60);
 	str_to_lowercase(email);
+	count = read_active(currentuser.userid, &act_data);
+	if (count == 0) {
+		mail_diff = 1;
+	} else {
+		if (strcasecmp(act_data.email, email) != 0) {
+			mail_diff = 1;
+		}
+	}
+	strsncpy(currentuser.email, email, 60);
 
 	if (check_mail_to_address(email) == MAIL_SENDER_WRONG_EMAIL)
 		http_fatal("您的邮箱名不合法，请联系站长或至 https://github.com/bmybbs/bmybbs/issues/ 反馈问题。");
@@ -193,6 +202,9 @@ check_submit_form()
 	} else if (query_record_num(email, MAIL_ACTIVE) >= MAX_USER_PER_RECORD) {
 		result = -3;
 	} else {
+		if (mail_diff) {
+			unlink_captcha(currentuser.userid, CAPTCHA_FILE_REGISTER);
+		}
 		result = send_active_mail(currentuser.userid, email);
 	}
 
@@ -231,13 +243,13 @@ check_captcha_form(void)
 	snprintf(code, 6, "%s", getparm("code"));
 	rc = verify_captcha_for_user(currentuser.userid, code, CAPTCHA_FILE_REGISTER);
 	if (rc == CAPTCHA_OK) {
-		if (query_record_num(currentuser.email, MAIL_ACTIVE) < MAX_USER_PER_RECORD) {
-			read_active(currentuser.userid, &act_data);
+		read_active(currentuser.userid, &act_data);
+		if (query_record_num(act_data.email, MAIL_ACTIVE) < MAX_USER_PER_RECORD) {
 			act_data.status = 1;
 			rc = write_active(&act_data);
 			if (rc == WRITE_SUCCESS || rc == UPDATE_SUCCESS) {
 				register_success(getusernum(currentuser.userid) + 1, currentuser.userid, currentuser.realname,
-						act_data.dept, currentuser.address, act_data.phone, "", currentuser.email);
+						act_data.dept, currentuser.address, act_data.phone, "", act_data.email);
 				rc = 0;
 			} else {
 				// WRITE_FAIL == 0
