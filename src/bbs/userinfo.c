@@ -570,7 +570,8 @@ void x_fillform()
 				char *domain;
 				int isprivilege = 0;
 
-				snprintf(email, sizeof(email), "%s", currentuser.email);
+				read_active(currentuser.userid, &act_data);
+				snprintf(email, sizeof(email), "%s", act_data.email);
 				domain = strchr(email, '@');
 				if (domain != NULL) {
 					*domain = '\0';
@@ -592,7 +593,6 @@ void x_fillform()
 
 				int response;
 
-				read_active(currentuser.userid, &act_data);
 				act_data.status = 1;
 				response = write_active(&act_data);
 
@@ -698,6 +698,11 @@ void x_fillform()
 		strcpy(email, str_to_lowercase(user));
 		strcat(email, "@");
 		strcat(email, MAIL_DOMAINS[n]);
+
+		if (strcasecmp(email, currentuser.email) != 0) {
+			unlink_captcha(currentuser.userid, CAPTCHA_FILE_REGISTER);
+			strncpy(currentuser.email, email, STRLEN);
+		}
 		rc = send_active_mail(currentuser.userid, email);
 
 		if (rc != 1)
