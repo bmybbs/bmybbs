@@ -2363,9 +2363,7 @@ encode_url(char *s)
 	char a[3];
 	j = 0;
 	for (i = 0; s[i]; i++) {
-		if ((!half
-		     && strchr("~`!@#$%%^&*()-_=+[{]}\\|;:'\",<.>/? ", s[i]))
-		    || (s[i + 1] == 0 && !half && (unsigned char) s[i] >= 128)) {
+		if ((!half && strchr("~`!@#$%%^&*()-_=+[{]}\\|;:'\",<.>/? ", s[i])) || (s[i + 1] == 0 && !half && s[i] < 0)) {
 			buf[j++] = '%';
 			sprintf(a, "%02X", s[i]);
 			buf[j++] = a[0];
@@ -2374,7 +2372,7 @@ encode_url(char *s)
 			buf[j++] = s[i];
 		if (half)
 			half = 0;
-		else if ((unsigned char) s[i] >= 128)
+		else if (s[i] < 0)
 			half = 1;
 	}
 	buf[j] = 0;
