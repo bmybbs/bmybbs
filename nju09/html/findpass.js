@@ -27,7 +27,6 @@ function go_forward(current, target) {
 		complete: function() {
 			current_fs.hide();
 			animating = false;
-			$("#progressbar li").eq(next_fs.attr("p-index")).addClass("active");
 		},
 		easing: 'easeInOutBack'
 	});
@@ -58,7 +57,6 @@ function go_backward(current, target) {
 		complete: function() {
 			current_fs.hide();
 			animating = false;
-			$("#progressbar li").eq(current_fs.attr("p-index")).removeClass("active");
 		},
 		easing: 'easeInOutBack'
 	});
