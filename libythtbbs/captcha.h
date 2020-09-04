@@ -23,6 +23,8 @@ struct BMYCaptcha {
 	time_t create_time;
 };
 
+int unlink_captcha(const char *userid, enum CAPTCHA_FILE_TYPE file_type);
+
 int check_captcha_status(const char *userid, enum CAPTCHA_FILE_TYPE file_type);
 
 int gen_captcha_for_user(const char *userid, struct BMYCaptcha *captcha, enum CAPTCHA_FILE_TYPE file_type);

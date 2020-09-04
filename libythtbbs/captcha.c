@@ -236,3 +236,23 @@ void gen_captcha_url(char *buf, size_t buf_size, long long timestamp) {
 	idx++;
 	buf[idx-18] = buf[idx];
 }
+
+int unlink_captcha(const char *userid, enum CAPTCHA_FILE_TYPE file_type) {
+	int rc, lockfd;
+	char captcha_filename[80], captcha_lock_filename[80];
+
+	sethomefile_s(captcha_filename, sizeof(captcha_filename), userid, CAPTCHA_FILES[file_type]);
+	sethomefile_s(captcha_lock_filename, sizeof(captcha_lock_filename), userid, CAPTCHA_LK_FILES[file_type]);
+
+	if( access(captcha_filename, F_OK ) == -1)
+		return CAPTCHA_OK; // doesn't exist
+
+	lockfd = openlockfile(captcha_lock_filename, O_RDONLY, LOCK_EX);
+	if (lockfd <= 0)
+		return CAPTCHA_OK;
+
+	rc = unlink(captcha_filename);
+	close(lockfd);
+
+	return rc;
+}
