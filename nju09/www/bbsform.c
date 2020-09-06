@@ -128,6 +128,8 @@ check_submit_form()
 	char dept[80], phone[80], assoc[80];
 	struct active_data act_data;
 	int count, mail_diff;
+	int isprivilege = 0;
+	char path[128];
 
 #ifdef POP_CHECK
 	char user[USER_LEN + 1];
@@ -197,9 +199,14 @@ check_submit_form()
 #else
 	int result;
 
+	snprintf(path, 127, MY_BBS_HOME "/etc/pop_register/%s", popname);
+	if (seek_in_file(path, user)) {
+		isprivilege = 1;
+	}
+
 	if (strcasecmp(user, "test") == 0) {
 		result = -2;
-	} else if (query_record_num(email, MAIL_ACTIVE) >= MAX_USER_PER_RECORD) {
+	} else if (isprivilege == 0 && query_record_num(email, MAIL_ACTIVE) >= MAX_USER_PER_RECORD) {
 		result = -3;
 	} else {
 		if (mail_diff) {
@@ -236,7 +243,8 @@ static void
 check_captcha_form(void)
 {
 	char code[6];
-	int rc;
+	char tmp_email[STRLEN+1], *domain, path[128];
+	int rc, isprivilege;
 	struct active_data act_data;
 
 	memset(&act_data, 0, sizeof(struct active_data));
@@ -244,7 +252,19 @@ check_captcha_form(void)
 	rc = verify_captcha_for_user(currentuser.userid, code, CAPTCHA_FILE_REGISTER);
 	if (rc == CAPTCHA_OK) {
 		read_active(currentuser.userid, &act_data);
-		if (query_record_num(act_data.email, MAIL_ACTIVE) < MAX_USER_PER_RECORD) {
+
+		snprintf(tmp_email, STRLEN, "%s", act_data.email);
+		domain = strchr(tmp_email, '@');
+		if (domain != NULL) {
+			*domain = '\0';
+			domain++;
+			snprintf(path, 127, MY_BBS_HOME "/etc/pop_register/%s", domain);
+
+			if (seek_in_file(path, tmp_email)) {
+				isprivilege = 1;
+			}
+		}
+		if ((isprivilege == 1) || (query_record_num(act_data.email, MAIL_ACTIVE) < MAX_USER_PER_RECORD)) {
 			act_data.status = 1;
 			rc = write_active(&act_data);
 			if (rc == WRITE_SUCCESS || rc == UPDATE_SUCCESS) {
