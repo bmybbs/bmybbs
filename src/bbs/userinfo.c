@@ -578,12 +578,12 @@ void x_fillform()
 					domain++;
 					sprintf(path, MY_BBS_HOME "/etc/pop_register/%s", domain);
 
-					if (seek_in_file(path, user)) {
+					if (seek_in_file(path, email)) {
 						isprivilege = 1;
 					}
 				}
 
-				if (isprivilege == 0 && query_record_num(email, MAIL_ACTIVE) >= MAX_USER_PER_RECORD) {
+				if (isprivilege == 0 && query_record_num(act_data.email, MAIL_ACTIVE) >= MAX_USER_PER_RECORD) {
 					clear();
 					move(3, 0);
 					prints("您的信箱已经验证过 %d 个id，无法再用于验证了!\n", MAX_USER_PER_RECORD);
@@ -600,8 +600,8 @@ void x_fillform()
 					clear();
 					move(5, 0);
 					prints("身份审核成功，您已经可以使用所用功能了！\n");
-					strncpy(currentuser.email, email, STRLEN);
-					register_success(usernum, currentuser.userid, rname, dept, addr, phone, assoc, email);
+					strncpy(currentuser.email, act_data.email, STRLEN);
+					register_success(usernum, currentuser.userid, rname, dept, addr, phone, assoc, act_data.email);
 
 					//scroll();
 					pressreturn();
