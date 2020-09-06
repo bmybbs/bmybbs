@@ -13,3 +13,8 @@ build/
 # 临时生成的代码文件
 libythtbbs/sectree.c
 proto.h
+
+# nju09 第三方库
+nju09/html/js
+nju09/html/css
+
