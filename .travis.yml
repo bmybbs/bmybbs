@@ -24,7 +24,7 @@ addons:
       description: "Build submitted via Travis CI"
     notification_email:
       secure: "YlN18ZO9i4Hr+PKuZlfRxSLLvWA/XURFF5STN8PGhoonzL0kpyUnCNFsI9YHB+tDw8b8NUqh3rdHabfbbYIwmxikFHHm00rGcV3JB/haKFw9/3gRIeTvJarryIKJsPME1BufVaG6vsuGqd7y7n8ENdOaxdfx5CgAJz67xdgcgzE="
-    build_command_prepend: "mkdir build; cd build; cmake .."
-    build_command: "cd build; make"
+    build_command_prepend: "mkdir coverity_build; cd coverity_build; cmake .."
+    build_command: "cd coverity_build; make"
     branch_pattern: master
 
