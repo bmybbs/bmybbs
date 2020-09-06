@@ -58,7 +58,8 @@ uudecode(fp, outname)
 FILE *fp;
 char *outname;
 {
-	int fd, nw = 0;
+	int fd;
+	size_t nw = 0;
 	FILE *fw;
 	char buf[2 * BUFSIZ], wbuf[1024 * 16 + 2];
 

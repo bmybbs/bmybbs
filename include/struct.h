@@ -3,21 +3,12 @@
     Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
     Eagles Bulletin Board System
     Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
-                         G    struct
-    {
-      char author[IDLEN + 1];
-      char board[18];
-      char title[66];
-      time_t date;
-      int number;
-    }      postlog;
-
-uy Vega, gtvega@seabass.st.usm.edu
+                        Guy Vega, gtvega@seabass.st.usm.edu
                         Dominic Tynes, dbtynes@seabass.st.usm.edu
     Firebird Bulletin Board System
     Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
                         Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
-    
+
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 1, or (at your option)
@@ -28,6 +19,12 @@ uy Vega, gtvega@seabass.st.usm.edu
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 */
+
+#ifndef __BBS_STRUCT_H
+#define __BBS_STRUCT_H
+
+#define MAXFRIENDS (200)
+#define MAXREJECTS (32)
 
 struct wwwsession {
 	unsigned char used:1, show_reg:1, att_mode:1, ipmask:4, doc_mode:1;
@@ -41,17 +38,18 @@ struct wwwsession {
 
 //modify by mintbaggio 040326 for front page commend
 struct commend{
-        char board[24];         //the board that the article be commened is in
-        char userid[14];        //the author of the article be commended
-        char com_user[14];      //the user who commend this article
-        char title[80];         //the title of the article be commended
-        char filename[80];      //the filename of the article be commended
-        //int time;
-        time_t time;            //the time when the com_user commend this article
-        //int flag;
-        unsigned int accessed;
+	char board[24];         //the board that the article be commened is in
+	char userid[14];        //the author of the article be commended
+	char com_user[14];      //the user who commend this article
+	char title[80];         //the title of the article be commended
+	char filename[80];      //the filename of the article be commended
+	//int time;
+	time_t time;            //the time when the com_user commend this article
+	//int flag;
+	unsigned int accessed;
 };
 
+#define TOKENLENGTH 8
 struct user_info {		/* Structure used in UTMP file */
 	int active;		/* When allocated this field is true */
 	int uid;		/* Used to find user name in passwd file */
@@ -73,6 +71,8 @@ struct user_info {		/* Structure used in UTMP file */
 	char chatid[10];	/* chat id, if in chat mode */
 	char from[20];		/* machine name the user called in from */
 	char sessionid[40];	/* add by leptin for www use */
+	char token[TOKENLENGTH+1]; /* 用于防范 CSRF 攻击 */
+	char appkey[APPKEYLENGTH+1]; /* 用于存放APP来源 */
 	char userid[20];
 	char realname[20];
 	char username[NAMELEN];
@@ -87,7 +87,7 @@ struct user_info {		/* Structure used in UTMP file */
 	unsigned reject[MAXREJECTS];
 	struct wwwsession wwwinfo;
 	struct onebrc brc;
-	char user_state_temp[16];  //add by leoncom 
+	char user_state_temp[16];  //add by leoncom
 };
 
 #define BM_LEN 60
@@ -128,61 +128,14 @@ struct one_key {		/* Used to pass commands to the readmenu */
 };
 
 struct moneyCenter {
-        int ave_score;
-        int prize777;
-        int prize367;
-        int prizeSoccer;
-        unsigned char transfer_rate;
-        unsigned char deposit_rate;
-        unsigned char lend_rate;
-        unsigned char isSalaryTime:1,isSoccerSelling:1,isMCclosed:1,unused:5;
-};
-
-#define USHM_SIZE       (MAXACTIVE + 10)
-struct UTMPFILE {
-	struct user_info uinfo[USHM_SIZE];
-	time_t uptime;
-	unsigned short activeuser;
-	unsigned short maxuser;	//add by gluon
-	unsigned short maxtoday;
-	unsigned short wwwguest;
-	time_t activetime;	//time of updating activeuser
 	int ave_score;
-	int allprize;
-	time_t watchman;
-	unsigned int unlock;
-	int nouse[5];
-	struct moneyCenter mc;
-};
-
-struct BCACHE {
-	struct boardmem bcache[MAXBOARD];
-	int number;
-	time_t uptime;
-	time_t pollvote;
-};
-
-struct UCACHE {
-	char userid[MAXUSERS][IDLEN + 1];
-	int number;
-	int usersum;
-	time_t uptime;
-	int nouse[10];
-};
-
-#define UCACHE_HASH_SIZE (MAXUSERS*2)
-struct useridhashitem {
-	int num;
-	char userid[IDLEN + 1];
-};
-
-struct UCACHEHASH {
-	struct useridhashitem uhi[UCACHE_HASH_SIZE];
-	time_t uptime;
-};
-
-struct UINDEX {
-	int user[MAXUSERS][6];	//不清楚www判断多登录的机制是否使上限超出telnet中的5, 设成6
+	int prize777;
+	int prize367;
+	int prizeSoccer;
+	unsigned char transfer_rate;
+	unsigned char deposit_rate;
+	unsigned char lend_rate;
+	unsigned char isSalaryTime:1,isSoccerSelling:1,isMCclosed:1,unused:5;
 };
 
 struct postheader {
@@ -209,4 +162,16 @@ struct fivechess {
 	int hand, tdeadf, tlivef, livethree, threefour;
 	int playboard[15][15];
 };
+
+// unused struct
+/*
+struct {
+	char author[IDLEN + 1];
+	char board[18];
+	char title[66];
+	time_t date;
+	int number;
+} postlog;
+*/
+#endif
 

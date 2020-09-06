@@ -15,4 +15,16 @@ int new_search_record(char *filename, void *rptr, int size,
 int search_record(char *filename, void *rptr, int size,
 		  int (*fptr) (void *, void *), void *farg);
 int delete_file(char *filename, int size, int ent, int (*filecheck) (void *));
+
+int get_record(char *filename, void *rptr, int size, int id);
+
+/**
+ * ÒÆÖ²×Ô src/bbs/record.c ÒÔ¼° local_utl/common/record.c
+ * @param filename
+ * @param rptr
+ * @param size
+ * @param id
+ * @return
+ */
+int substitute_record(char *filename, void *rptr, int size, int id);
 #endif

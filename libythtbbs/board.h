@@ -41,18 +41,8 @@ struct boardmanager {		/* record in user directionary */
 	short bid;
 };
 
-struct myparam1 {		/* just use to pass a param to fillmboard() */
-	struct userec user;
-	int fd;
-	short bid;
-};
-
 char *bm2str(char *buf, struct boardheader *bh);
 char *sbm2str(char *buf, struct boardheader *bh);
-int chk_BM(struct userec *, struct boardheader *bh, int isbig);
-int chk_BM_id(char *, struct boardheader *);
-int bmfilesync(struct userec *);
-int fillmboard(struct boardheader *bh, struct myparam1 *param);
 
 /**
  * 依据版面名称获取 boardmem 对象
@@ -63,5 +53,13 @@ int fillmboard(struct boardheader *bh, struct myparam1 *param);
  * @see struct boardmem * getbcache(char *board)
  * @see struct boardmem * getboard(char *board)
  */
-struct boardmem *getboardbyname(char *board_name);  // 从 nju09 移植，by IronBlood 20130805
+struct boardmem *getboardbyname(const char *board_name);  // 从 nju09 移植，by IronBlood 20130805
+
+/**
+ * @brief 依据版面名称检查是否是存在于 etc/junkboards 文件中
+ * @warning 该方法移植自 nju09，和 term 下略有不同，需要进一步检查。
+ * @param board_name 版面名称
+ * @return
+ */
+int board_is_junkboard(char *board_name);
 #endif

@@ -12,6 +12,7 @@ struct NotifyItem {
 	char from_userid[16];
 	char board[32];
 	char *title_gbk;
+	char *title_utf;
 	time_t noti_time;
 	int type;
 	struct NotifyItem * next;

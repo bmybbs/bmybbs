@@ -10,7 +10,8 @@ void
 filter_attach(char *path)
 {
 	FILE *fp;
-	int hasa, fd, len;
+	int hasa, fd;
+	size_t len;
 	char buf[2048];
 #ifdef LOCAL_UTL
 	static char *tmp = NULL;
@@ -167,7 +168,7 @@ getattach(FILE * fp, char *currline, char *attachfile, char *nowfile,
 	char buf[PATH_MAX + 1], *ext;
 	strncpy(buf, nowfile, sizeof (buf));
 	buf[PATH_MAX] = 0;
-	
+
 	ext = strstr(buf, "..");
 	if (ext != NULL)
 		*ext = 0;
@@ -209,32 +210,27 @@ comdecode(FILE * fp, char *filename, int base64, int len)
 		int output;
 		char endchar = 0;
 		void *target;
-		if ((output =
-		     open(filename, O_RDWR | O_CREAT | O_TRUNC, 0666)) == -1)
+		if ((output = open(filename, O_RDWR | O_CREAT | O_TRUNC, 0666)) == -1)
 			goto ERROR1;
 		lseek(output, len - 1, SEEK_SET);
 		write(output, &endchar, 1);
-		if ((target =
-		     mmap(0, len, PROT_WRITE, MAP_SHARED, output,
-			  0)) == (void *) -1)
+		if ((target = mmap(0, len, PROT_WRITE, MAP_SHARED, output, 0)) == (void *) -1)
 			goto ERROR2;
 		fread(target, len, 1, fp);
 		close(output);
 		munmap(target, len);
 		return 0;
-	      ERROR2:close(output);
+
+ERROR2: close(output);
 		unlink(filename);
-	      ERROR1:return -1;
+ERROR1: return -1;
 	}
 }
 
 static int
 comfakedecode(FILE * fp, int base64, int len)
 {
-	if (base64)
-		return fakedecode(fp);
-	else
-		return fseek(fp, len, SEEK_CUR);
+	return (base64) ? fakedecode(fp) : fseek(fp, len, SEEK_CUR);
 }
 
 int
@@ -242,7 +238,8 @@ decode_attach(char *filename, char *path)
 {
 	FILE *fp;
 	char buf[500];
-	int isa = 0, base64, len;
+	int isa = 0, base64;
+	size_t len;
 	char *fn = NULL;
 	fp = fopen(filename, "r");
 	if (fp == NULL)
@@ -276,7 +273,8 @@ copyfile_attach(char *source, char *target)
 {
 	FILE *fpr, *fpw;
 	char buf[500];
-	int isa = 0, base64, len;
+	int isa = 0, base64;
+	size_t len;
 	char *fn = NULL;
 	fpr = fopen(source, "r");
 	if (fpr == NULL)
@@ -286,29 +284,29 @@ copyfile_attach(char *source, char *target)
 		fclose(fpr);
 		return -1;
 	}
-        while (1) {
-                if (fgets(buf, 500, fpr) == 0)
-                        break;
-                if (isa && (!strcmp(buf, "\r\n") || !strcmp(buf, "\n")))        //附件之后吞一个空行
-                        continue;
-                base64 = isa = 0;
-                if (!strncmp(buf, "begin 644", 10)) {
-                        isa = 1;
-                        base64 = 1;
-                        len = 0;
-                        fn = buf + 10;
-                } else if (checkbinaryattach(buf, fpr, &len)) {
-                        isa = 1;
-                        base64 = 0;
-                        fn = buf + 18;
-                }
-                if (isa) {
-                        if (!getattach(fpr, buf, fn, "/tmp" , base64, len, 1)) {
-                                fprintf(fpw, "#attach %s\n", fn);
-                        }
-                } else
-                        fprintf(fpw, "%s", buf);
-        }
+	while (1) {
+		if (fgets(buf, 500, fpr) == 0)
+			break;
+		if (isa && (!strcmp(buf, "\r\n") || !strcmp(buf, "\n")))        //附件之后吞一个空行
+			continue;
+		base64 = isa = 0;
+		if (!strncmp(buf, "begin 644", 10)) {
+			isa = 1;
+			base64 = 1;
+			len = 0;
+			fn = buf + 10;
+		} else if (checkbinaryattach(buf, fpr, &len)) {
+			isa = 1;
+			base64 = 0;
+			fn = buf + 18;
+		}
+		if (isa) {
+			if (!getattach(fpr, buf, fn, "/tmp" , base64, len, 1)) {
+				fprintf(fpw, "#attach %s\n", fn);
+			}
+		} else
+			fprintf(fpw, "%s", buf);
+	}
 	fclose(fpw);
 	fclose(fpr);
 	return 0;

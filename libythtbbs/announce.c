@@ -20,6 +20,7 @@ checktitle(char *str)
 	return indextype;
 }
 
+/*
 int
 do_testtime(int t, char *path0, int mode, int time)	//mode=0 测试所有文件 mode=1 测试 .Names 文件
 {
@@ -41,7 +42,7 @@ do_testtime(int t, char *path0, int mode, int time)	//mode=0 测试所有文件 mode=1
 			if (checktitle(genbuf + 5))
 				continue;
 			fgets(genbuf, 256, fp);
-			if (strncmp("Path=~/", genbuf, 6))
+			if (strncmp("Path=~/", genbuf, 6) != 0)
 				continue;
 			for (m = 0; m < strlen(genbuf); m++)
 				if (genbuf[m] <= 27)
@@ -56,8 +57,7 @@ do_testtime(int t, char *path0, int mode, int time)	//mode=0 测试所有文件 mode=1
 				continue;
 			if (!file_exist(path00))
 				continue;
-			if (lfile_isdir(path00)
-			    && do_testtime(t, path00, mode, time)) {
+			if (lfile_isdir(path00) && do_testtime(t, path00, mode, time)) {
 				fclose(fp);
 				return 1;
 			} else if (!mode && file_time(path00) >= t - time) {
@@ -109,3 +109,4 @@ checkautofile(char *fname, char *fpath)
 	}
 	return 0;
 }
+*/

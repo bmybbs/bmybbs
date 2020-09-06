@@ -591,7 +591,7 @@ time_t fn2timestamp(char * filename) {
 	return (time_t)atol(filename+2);
 }
 
-int parse_mentions(char *content, char userids[20][14], int from)
+int parse_mentions(char *content, char **userids, int from)
 {
 	const char * MENTION_PATTERN = "@[A-Za-z]{1,12}\\s";
 	pcre *re;

@@ -40,7 +40,8 @@ releasepf(struct pattern_image *patt_img)
 int
 prepf(int fp, struct pattern_image **ppatt_img, size_t * patt_image_len)
 {
-	int length = 0, i, p = 1, num_pat;
+	int length = 0, i, num_pat;
+	size_t p;
 	struct pattern_image *patt_img;
 	unsigned char *pat_ptr;
 	unsigned Mask = 15;
@@ -200,8 +201,11 @@ struct pattern_image *patt_img;
 	register unsigned char *textend;
 	register unsigned hash, i;
 	register unsigned char shift;
-	register int m1, j, Long = patt_img->LONG;
-	int pat_index, m = patt_img->p_size;
+	register unsigned j;
+	int Long = patt_img->LONG;
+	int pat_index;
+	size_t m = patt_img->p_size;
+	size_t m1;
 	int MATCHED = 0;
 	register unsigned char *qx;
 	register struct pat_list *p;
@@ -221,8 +225,7 @@ struct pattern_image *patt_img;
 		if (shift == 0) {
 			hash = 0;
 			for (i = 0; i <= m1; i++) {
-				hash =
-				    (hash << 4) + (patt_img->tr1[*(text - i)]);
+				hash = (hash << 4) + (patt_img->tr1[*(text - i)]);
 			}
 			hash = hash & mm;
 			p = &patt_img->hashtable[patt_img->HASH[hash]];
@@ -234,8 +237,7 @@ struct pattern_image *patt_img;
 					p = &patt_img->hashtable[p->next - 1];
 				qx = text - m1;
 				j = 0;
-				while (patt_img->tr[*(patt_img->pat_spool + patt_img->patt[pat_index] + j)]
-								== patt_img->tr[*(qx++)])
+				while (patt_img->tr[*(patt_img->pat_spool + patt_img->patt[pat_index] + j)] == patt_img->tr[*(qx++)])
 					j++;
 				if (j > m1) {
 					if (patt_img->pat_len[pat_index] <= j) {

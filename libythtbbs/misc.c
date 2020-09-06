@@ -41,6 +41,19 @@ getrandomstr(unsigned char *s)
 	s[30] = 0;
 }
 
+void getrandomstr_r(unsigned char *s, size_t len)
+{
+	int fd;
+	size_t i;
+	fd = open("/dev/urandom", O_RDONLY);
+	read(fd, s, len);
+	close(fd);
+	for(i=0; i<len; ++i) {
+		s[i] = s[i]%26 + 'A';
+	}
+	s[len-1] = 0;
+}
+
 int
 init_newtracelogmsq()
 {
@@ -109,15 +122,15 @@ int code_convert(char *from_charset,char *to_charset,char *inbuf,size_t inlen,ch
 	return (rc == (size_t) -1) ? -1 : 0;
 }
 
-//UNICODE码转为GB2312码
+//UNICODE码转为GBK码
 int u2g(char *inbuf,size_t inlen,char *outbuf,size_t outlen)
 {
-	return code_convert("utf-8","gb2312",inbuf,inlen,outbuf,outlen);
+	return code_convert("utf-8","gbk",inbuf,inlen,outbuf,outlen);
 }
-//GB2312码转为UNICODE码
+//GBK码转为UNICODE码
 int g2u(char *inbuf,size_t inlen,char *outbuf,size_t outlen)
 {
-	return code_convert("gb2312","utf-8",inbuf,inlen,outbuf,outlen);
+	return code_convert("gbk","utf-8",inbuf,inlen,outbuf,outlen);
 }
 
 int is_utf_special_byte(unsigned char c){
@@ -201,4 +214,111 @@ int is_utf(char * inbuf, size_t inlen)
     	}
     }
     return 0;
+}
+
+// add by IronBlood@bmy 20120107
+static char *get_login_pic_link (char *picname, char *linkback)
+{
+	FILE *fp;
+	char link[256];
+	memset(link, '\0',sizeof(link));
+	char linkfile[256];
+	sprintf(linkfile, MY_BBS_HOME "/loglinks/%s", picname);
+	if (!(fp = fopen ( linkfile,"r")))
+		return "BMY/home?B=XJTUnews";
+	if (!fgets (link,sizeof (link),fp))
+		return "BMY/home?B=XJTUnews";
+	fclose (fp);
+	if (link[strlen(link) - 1] == '\n')
+		link[strlen(link) - 1] = '\0';
+	return strcpy(linkback, link);
+}
+
+// added by IronBlood@11.09.05
+// 修正函数返回值，记得释放 by IronBlood@2014.10.22
+char *get_no_more_than_four_login_pics()
+{
+	FILE *fp;
+	if(!(fp = fopen(MY_BBS_HOME "/logpics","r")))
+		return "cai.jpg";
+
+	char pics[256];
+	const char *pics_dir ="bmyMainPic/using/";
+	char pics_list[4096];
+	char file[16][256];
+	int file_line=0;
+    char link[256];
+    memset(pics_list, '\0', sizeof(pics_list));
+
+	// 读取文件
+	while(fgets(pics,sizeof(pics),fp)!=NULL)
+	{
+		char *tmp=file[file_line];
+		if (pics[strlen(pics) - 1] == '\n')
+			pics[strlen(pics) - 1] = 0;
+		strcpy(tmp,pics);
+		++file_line;
+	}
+	// 释放句柄
+	fclose(fp);
+
+	int i=0;
+
+    while( (i != file_line - 1) && i !=4) // 不超过总图片个数、不超过最大上限
+    {
+        srand(time(NULL)+rand()%100); // 加种子
+        int randnum = 1 + rand()%file_line; // 生成随机数
+        char *tmp = file[randnum];
+
+        if( strstr(pics_list,tmp)==NULL ) //不包含图片字符串，才执行下面的操作
+        {
+            get_login_pic_link(tmp,link);
+            if(i>0)
+                strcat(pics_list, ";;");
+            strcat(pics_list, pics_dir);
+            strcat(pics_list, tmp);
+            strcat(pics_list, ";");
+            strcat(pics_list, link);
+            ++i;
+        }
+    }
+
+	return strdup(pics_list);
+}
+
+void
+getsalt(char salt[3])
+{
+	int s, i, c;
+
+#ifdef LINUX
+	int fd;
+	fd = open("/dev/urandom", O_RDONLY);
+	read(fd, &s, 4);
+	close(fd);
+#else
+	s = random();
+#endif
+	salt[0] = s & 077;
+	salt[1] = (s >> 6) & 077;
+	salt[2] = 0;
+	for (i = 0; i < 2; i++) {
+		c = salt[i] + '.';
+		if (c > '9')
+			c += 7;
+		if (c > 'Z')
+			c += 6;
+		salt[i] = c;
+	}
+}
+
+int
+badstr(char *s)
+{
+	int i;
+	unsigned char *t = (unsigned char *)s;
+	for (i = 0; s[i]; i++)
+		if (t[i] != 9 && (t[i] < 32 || t[i] == 255))
+			return 1;
+	return 0;
 }

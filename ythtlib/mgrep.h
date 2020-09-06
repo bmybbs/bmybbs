@@ -21,7 +21,7 @@ struct pat_list {
 struct pattern_image {
 	int LONG;
 	int SHORT;
-	int p_size;
+	size_t p_size;
 	unsigned char SHIFT1[MAXMEMBER1];
 	unsigned char tr[MAXSYM];
 	unsigned char tr1[MAXSYM];

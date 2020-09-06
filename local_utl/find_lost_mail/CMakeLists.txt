@@ -1,0 +1,2 @@
+add_executable(find_lost_mail find_lost_mail.c)
+target_link_libraries(find_lost_mail ythtbbs ytht)

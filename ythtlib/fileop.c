@@ -85,6 +85,27 @@ readstrvalue(const char *filename, const char *str, char *value, int size)
 }
 
 int
+readstrvalue_fp(FILE *fp, const char *str, char *value, size_t size)
+{
+	fseek(fp, 0, SEEK_SET);
+	char buf[512], *ptr;
+	int retv = -1;
+	while (fgets(buf, sizeof (buf), fp)) {
+		if (!(ptr = strchr(buf, ' ')))
+			continue;
+		*ptr++ = 0;
+		if (strcmp(buf, str))
+			continue;
+		strsncpy(value, ptr, size);
+		if ((ptr = strchr(value, '\n')))
+			*ptr = 0;
+		retv = 0;
+		break;
+	}
+	return retv;
+}
+
+int
 savestrvalue(const char *filename, const char *str, const char *value)
 {
 	FILE *fp;
@@ -272,12 +293,30 @@ f_stat(char *file)
 }
 
 struct stat *
+f_stat_s(struct stat *s, const char *file) {
+	if (stat(file, s) == -1) {
+		memset(s, 0, sizeof(struct stat));
+	}
+
+	return s;
+}
+
+struct stat *
 l_stat(char *file)
 {
 	static struct stat buf;
 	if (lstat(file, &buf) == -1)
 		bzero(&buf, sizeof (buf));
 	return &buf;
+}
+
+struct stat *
+l_stat_s(struct stat *s, const char *file) {
+	if (lstat(file, s) == -1) {
+		memset(s, 0, sizeof(struct stat));
+	}
+
+	return s;
 }
 
 int
@@ -300,7 +339,7 @@ clearpath(const char *path)
 	DIR *pdir;
 	struct dirent *pdent;
 	char fname[1024];
-	int ret;
+	// int ret; // XXX: fix me
 	pdir = opendir(path);
 	if (!pdir)
 		return -1;
@@ -313,8 +352,29 @@ clearpath(const char *path)
 			break;
 		}
 		sprintf(fname, "%s/%s", path, pdent->d_name);
-		ret = unlink(fname);
+		//ret = unlink(fname);
+		unlink(fname);
 	}
 	closedir(pdir);
+	return 0;
+}
+
+// 此处原使用的宏 STRLEN 替换成 80
+int seek_in_file(char *filename, char *seekstr)
+{
+	FILE *fp;
+	char buf[80];
+	char *namep;
+
+	if ((fp = fopen(filename, "r")) == NULL)
+		return 0;
+	while (fgets(buf, 80, fp) != NULL) {
+		namep = (char *) strtok(buf, ": \n\r\t");
+		if (namep != NULL && strcasecmp(namep, seekstr) == 0) {
+			fclose(fp);
+			return 1;
+		}
+	}
+	fclose(fp);
 	return 0;
 }

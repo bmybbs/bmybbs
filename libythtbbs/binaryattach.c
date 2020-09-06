@@ -9,7 +9,7 @@ static int
 appendonebinaryattach(char *filename, char *attachname, char *attachfname)
 {
 	FILE *fp;
-	int size, origsize;
+	size_t size, origsize;
 	struct mmapfile mf = { ptr:NULL };
 	char ch = 0;
 
@@ -94,7 +94,7 @@ appendbinaryattach(char *filename, char *userid, char *attachname)
 }
 
 char *
-checkbinaryattach(char *buf, FILE * fp, unsigned int *len)
+checkbinaryattach(char *buf, FILE * fp, size_t *len)
 {
 	char ch, *ptr;
 	if (strncmp(buf, "beginbinaryattach ", 18))

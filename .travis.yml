@@ -1,9 +1,17 @@
 language: c
 compiler: gcc
-script: make all
+script:
+  - (mkdir ght_build && cd ght_build && tar xf ../software/libghthash-0.5.0-x86_64.tar.gz && cd libghthash-0.5.0-x86_64 && ./configure && make && sudo make install)
+  - (sudo ldconfig)
+  - (mkdir build && cd build && cmake .. && make)
 before_script:
-- sudo apt-get update -qq
-- sudo apt-get install -qq libmysqlclient-dev cproto
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq libmysqlclient-dev cproto cmake libxml2-dev libhiredis-dev libjson-c-dev libpcre3-dev
+  - git submodule update --init
+  - git clone https://github.com/libcheck/check
+  - (cd check; autoreconf --install; ./configure; make; sudo make install; sudo cp check_stdint.h /usr/local/include; sudo ldconfig)
+  - git clone https://github.com/davidmoreno/onion
+  - (mkdir onion-build; cd onion-build; cmake ../onion; make; cd src/onion; sudo make install)
 
 env:
   global:
@@ -16,7 +24,7 @@ addons:
       description: "Build submitted via Travis CI"
     notification_email:
       secure: "YlN18ZO9i4Hr+PKuZlfRxSLLvWA/XURFF5STN8PGhoonzL0kpyUnCNFsI9YHB+tDw8b8NUqh3rdHabfbbYIwmxikFHHm00rGcV3JB/haKFw9/3gRIeTvJarryIKJsPME1BufVaG6vsuGqd7y7n8ENdOaxdfx5CgAJz67xdgcgzE="
-    build_command_prepend: "make clean; make prepend"
-    build_command: "make core"
+    build_command_prepend: "mkdir build; cd build; cmake .."
+    build_command: "cd build; make"
     branch_pattern: master
 

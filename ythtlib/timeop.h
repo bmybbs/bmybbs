@@ -10,4 +10,11 @@ char *Ctime(time_t);
  * @warning 该方法不是线程安全的！并且会强制转换为 int 类型。
  */
 char *Difftime(time_t compared_time);
+
+/**
+ * @brief 获得某一天 0:00:00 的时间戳(UTC+8 时区)
+ * @param tm
+ * @return 时间戳
+ */
+time_t get_time_of_the_biginning_of_the_day(struct tm *tm);
 #endif

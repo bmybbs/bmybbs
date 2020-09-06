@@ -2,10 +2,10 @@
 #include <ctype.h>
 #include <sys/file.h>
 #include <sys/socket.h>
-#include <netinet/in.h>
 #include <arpa/inet.h>
 
 #include "ythtbbs.h"
+#include "bbs.h"
 
 static int isoverride(struct override *o, char *id);
 
@@ -27,18 +27,37 @@ sethomepath(char *buf, const char *userid)
 }
 
 char *
+sethomepath_s(char *buf, size_t buf_size, const char *userid)
+{
+	snprintf(buf, buf_size, MY_BBS_HOME "/home/%c/%s", mytoupper(userid[0]), userid);
+	return buf;
+}
+
+char *
 sethomefile(char *buf, const char *userid, const char *filename)
 {
-	sprintf(buf, MY_BBS_HOME "/home/%c/%s/%s", mytoupper(userid[0]), userid,
-		filename);
+	sprintf(buf, MY_BBS_HOME "/home/%c/%s/%s", mytoupper(userid[0]), userid, filename);
+	return buf;
+}
+
+char *
+sethomefile_s(char *buf, size_t buf_size, const char *userid, const char *filename)
+{
+	snprintf(buf, buf_size, MY_BBS_HOME "/home/%c/%s/%s", mytoupper(userid[0]), userid, filename);
 	return buf;
 }
 
 char *
 setmailfile(char *buf, const char *userid, const char *filename)
 {
-	sprintf(buf, MY_BBS_HOME "/mail/%c/%s/%s", mytoupper(userid[0]), userid,
-		filename);
+	sprintf(buf, MY_BBS_HOME "/mail/%c/%s/%s", mytoupper(userid[0]), userid, filename);
+	return buf;
+}
+
+char *
+setmailfile_s(char *buf, size_t buf_size, const char *userid, const char *filename)
+{
+	snprintf(buf, buf_size, MY_BBS_HOME "/mail/%c/%s/%s", mytoupper(userid[0]), userid, filename);
 	return buf;
 }
 
@@ -48,8 +67,7 @@ get the file path of sent mail box
 char *
 setsentmailfile(char *buf, const char *userid, const char *filename)
 {
-	sprintf(buf, MY_BBS_HOME "/sent_mail/%c/%s/%s", mytoupper(userid[0]), userid,
-		filename);
+	sprintf(buf, MY_BBS_HOME "/sent_mail/%c/%s/%s", mytoupper(userid[0]), userid, filename);
 	return buf;
 }
 
@@ -125,8 +143,8 @@ countexp(struct userec *udata)
 	if (!strcmp(udata->userid, "guest"))
 		return -9999;
 	exp = udata->numposts /*+post_in_tin( udata->userid ) */  +
-	    udata->numlogins / 5 + (time(0) - udata->firstlogin) / 86400 +
-	    udata->stay / 3600;
+		udata->numlogins / 5 + (time(0) - udata->firstlogin) / 86400 +
+		udata->stay / 3600;
 	return exp > 0 ? exp : 0;
 }
 
@@ -145,16 +163,17 @@ countperf(struct userec *udata)
 	return perf > 0 ? perf : 0;
 }
 
+// unused function detected, commented by IronBlood 2020.08.10
+/*
 int life_special(char *id)
 {
-	FILE *fp , *fp2;
+	FILE *fp;
 	char buf[128];
 	fp=fopen("etc/life", "r");
 	if(fp==0) return 0;
 	while(1) {
 		if(fgets(buf, 128, fp)==0) break;
-		//fprintf(fp2, "buf=%s ",buf);
-		//if(sscanf(buf, "%s", id1)>0) continue;
+
 		buf[strlen(buf)-1] = 0;
 		if(!strcmp(buf, id)) {
 			fclose(fp);
@@ -164,6 +183,8 @@ int life_special(char *id)
 	fclose(fp);
 	return 0;
 }
+*/
+
 int
 countlife(struct userec *urec)
 {
@@ -190,7 +211,6 @@ countlife(struct userec *urec)
 		return  666;
 	if (((time(0)-urec->firstlogin)/86400)>365*2)
 		return  365;
-
 
 	//if (urec->stay > 1000000)
       	//	return (365 * 1440 - value) / 1440;
@@ -299,9 +319,7 @@ logattempt(char *user, char *from, char *zone, time_t time)
 	snprintf(buf, 256, "%-12.12s  %-30s %-16s %-6s\n",
 		 user, Ctime(time), from, zone);
 	len = strlen(buf);
-	if ((fd =
-	     open(MY_BBS_HOME "/" BADLOGINFILE, O_WRONLY | O_CREAT | O_APPEND,
-		  0644)) >= 0) {
+	if ((fd = open(MY_BBS_HOME "/" BADLOGINFILE, O_WRONLY | O_CREAT | O_APPEND, 0644)) >= 0) {
 		write(fd, buf, len);
 		close(fd);
 	}
@@ -315,29 +333,204 @@ logattempt(char *user, char *from, char *zone, time_t time)
 static int
 isoverride(struct override *o, char *id)
 {
-        if (strcasecmp(o->id, id) == 0)
-                return 1;
-        return 0;
+	if (strcasecmp(o->id, id) == 0)
+		return 1;
+	return 0;
 }
 
 int
 inoverride(char *who, char *owner, char *file)
 {
 	char buf[80];
-        struct override o;
+	struct override o;
 	sethomefile(buf, owner, file);
-        if (search_record(buf, &o, sizeof (o), (void *) isoverride, who) != 0)
-                return 1;
-        return 0;
+	if (search_record(buf, &o, sizeof (o), (void *) isoverride, who) != 0)
+		return 1;
+	return 0;
 }
 
-//ipv6
-int is4map6addr(char *s){
-	return !strncasecmp(s,"::ffff:",7);
+int check_user_perm(struct userec *x, int level) {
+	return (x->userlevel & level);
 }
 
-char *getv4addr(char *fromhost){
-		char *addr;
-		addr=rindex(fromhost,':');
-		return ++addr;
+int check_user_read_perm(struct user_info *user, char *board)
+{
+	return check_user_read_perm_x(user, getboardbyname(board));
+}
+
+int check_user_read_perm_x(struct user_info *user, struct boardmem *board)
+{
+	if(!board || !user)
+		return 0;
+
+	if(board->header.clubnum != 0) {
+		if(board->header.flag & CLUBTYPE_FLAG)
+			return 1;
+		if(user->active == 0 || strcasecmp(user->userid, "guest")==0)
+			return 0;
+		return user->clubrights[board->header.clubnum / 32] & (1<<((board->header.clubnum) % 32));
 	}
+
+	if(board->header.level == 0)
+		return 1;
+
+	if(board->header.level & (PERM_POSTMASK | PERM_NOZAP))
+		return 1;
+
+	if((user->userlevel & PERM_BASIC) == 0)
+		return 0;
+
+	if((user->userlevel & board->header.level))
+		return 1;
+
+	return 0;
+}
+
+int check_user_post_perm_x(struct user_info *user, struct boardmem *board)
+{
+	char buf[256];
+
+	if(!board || !check_user_read_perm_x(user, board))
+		return 0;
+
+	sprintf(buf, "boards/%s/deny_users", board->header.filename);
+	if(seek_in_file(buf, user->userid))
+		return 0;
+
+	sprintf(buf, "boards/%s/deny_anony", board->header.filename);
+	if(seek_in_file(buf, user->userid))
+		return 0;
+
+	if(!strcasecmp(board->header.filename, "sysop"))
+		return 1;
+
+	if(!strcasecmp(board->header.filename, "Freshman"))
+		return 1;
+
+	if(!strcasecmp(board->header.filename, "welcome"))
+		return 1;
+
+	if(!strcasecmp(board->header.filename, "KaoYan"))
+		return 1;
+
+	if(user->userlevel & PERM_SYSOP)
+		return 1;
+
+	if(!(user->userlevel & PERM_BASIC))
+		return 0;
+
+	if(!(user->userlevel & PERM_POST))
+		return 0;
+
+	if(!strcasecmp(board->header.filename, "Appeal"))
+		return 1;
+
+	if(!strcasecmp(board->header.filename, "committee"))
+		return 1;
+
+	if(seek_in_file("deny_user", user->userid))
+		return 0;
+
+	if(board->header.clubnum != 0) {
+		if(!(board->header.level & PERM_NOZAP) && board->header.level && !(user->userlevel, board->header.level))
+			return 0;
+		return user->clubrights[board->header.clubnum / 32] & (1 << (board->header.clubnum % 32));
+	}
+
+	if(!(board->header.level & PERM_NOZAP) && board->header.level && !(user->userlevel & board->header.level))
+		return 0;
+
+	return 1;
+}
+
+int id_with_num(char *userid)
+{
+	char *s;
+	for (s = userid; *s != '\0'; s++)
+		if (*s < 1 || !isalpha(*s)) return 1;
+	return 0;
+}
+
+int
+chk_BM(struct userec *user, struct boardheader *bh, int isbig)
+{
+	int i;
+	for (i = 0; i < 4; i++) {
+		if (bh->bm[i][0] == 0)
+			break;
+		if (!strcmp(bh->bm[i], user->userid)
+			&& bh->hiretime[i] >= user->firstlogin)
+			return i + 1;
+	}
+	if (isbig)
+		return 0;
+	for (i = 4; i < BMNUM; i++) {
+		if (bh->bm[i][0] == 0)
+			break;
+		if (!strcmp(bh->bm[i], user->userid)
+			&& bh->hiretime[i] >= user->firstlogin)
+			return i + 1;
+	}
+	return 0;
+}
+
+int
+chk_BM_id(char *user, struct boardheader *bh)
+{
+	int i;
+	for (i = 0; i < BMNUM; i++) {
+		if (bh->bm[i][0] == 0) {
+			if (i < 4) {
+				i = 3;
+				continue;
+			}
+			break;
+		}
+		if (!strcmp(bh->bm[i], user))
+			return i + 1;
+	}
+	return 0;
+}
+
+struct myparam1 {		/* just use to pass a param to fillmboard() */
+	struct userec user;
+	int fd;
+	short bid;
+};
+static int fillmboard(struct boardheader *bh, struct myparam1 *param);
+
+int
+bmfilesync(struct userec *user)
+{
+	char path[256];
+	struct myparam1 mp;
+	sethomefile(path, user->userid, "mboard");
+	if (file_time(path) > file_time(".BOARDS"))
+		return 0;
+	memcpy(&(mp.user), user, sizeof (struct userec));
+	mp.fd = open(path, O_CREAT | O_TRUNC | O_WRONLY, 0600);	//touch a new file
+	if (mp.fd == -1) {
+		errlog("touch new mboard error");
+		return -1;
+	}
+	mp.bid = 0;
+	new_apply_record(".BOARDS", sizeof (struct boardheader), (void *)fillmboard, &mp);
+	close(mp.fd);
+	return 0;
+}
+
+int
+fillmboard(struct boardheader *bh, struct myparam1 *mp)
+{
+	struct boardmanager bm;
+	int i;
+	if ((i = chk_BM(&(mp->user), bh, 0))) {
+		bzero(&bm, sizeof (bm));
+		strncpy(bm.board, bh->filename, 24);
+		bm.bmpos = i - 1;
+		bm.bid = mp->bid;
+		write(mp->fd, &bm, sizeof (bm));
+	}
+	(mp->bid)++;
+	return 0;
+}
