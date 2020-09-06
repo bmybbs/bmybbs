@@ -6,8 +6,10 @@ script:
   - (mkdir build && cd build && cmake .. && make)
 before_script:
   - sudo apt-get update -qq
-  - sudo apt-get install -qq libmysqlclient-dev cproto cmake libxml2-dev libhiredis-dev check libjson-c-dev libpcre3-dev
+  - sudo apt-get install -qq libmysqlclient-dev cproto cmake libxml2-dev libhiredis-dev libjson-c-dev libpcre3-dev
   - git submodule update --init
+  - git clone https://github.com/libcheck
+  - (cd libcheck; mkdir build; cd build; cmake ..; make; sudo make install)
   - git clone https://github.com/davidmoreno/onion
   - (mkdir onion-build; cd onion-build; cmake ../onion; make; cd src/onion; sudo make install)
 
