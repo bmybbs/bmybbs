@@ -30,7 +30,7 @@ extern int convcode;
 char tempfile[MAXPATHLEN];
 #endif
 
-extern void output(const char *s, int len);
+extern void io_output(const char *s, int len);
 
 int
 dashf(fname)
@@ -143,7 +143,7 @@ bell()
 	char sound;
 
 	sound = Ctrl('G');
-	output(&sound, 1);
+	io_output(&sound, 1);
 }
 
 void
