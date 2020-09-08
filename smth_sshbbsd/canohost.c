@@ -241,6 +241,9 @@ const char *get_canonical_hostname(void)
 /* Returns the IP-address of the remote host as a string.  The returned
    string need not be freed. */
 
+extern int is4map6addr(char *s);
+extern char *getv4addr(char *fromhost);
+
 const char *get_remote_ipaddr(void)
 {
     struct sockaddr_in6 from, to;
