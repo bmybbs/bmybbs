@@ -8,6 +8,8 @@
 
 #include "ythtlib.h"
 
+sigjmp_buf bus_jump;
+
 int
 crossfs_rename(const char *oldpath, const char *newpath)
 {
