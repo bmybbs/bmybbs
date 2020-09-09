@@ -37,7 +37,7 @@ time_t update_time = 0;
 int freshmode = 0;
 int toggle1 = 0, toggle2 = 0;
 int friendmode = 0;
-int usercounter;
+extern int usercounter;
 int range, page, readplan, num;
 int sortmode = 0;
 struct user_info **user_record;
