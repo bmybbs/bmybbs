@@ -34,7 +34,7 @@ static char *const vote_type[] = { "ÊÇ·Ç", "µ¥Ñ¡", "¸´Ñ¡", "Êý×Ö", "ÎÊ´ð" ,"ÏÞ¶¨
 struct votebal currvote;
 extern int numboards;
 char controlfile[STRLEN];
-unsigned int result[33];
+static unsigned int vote_result[33];
 int vnum;
 int voted_flag;
 FILE *sug;
@@ -209,19 +209,19 @@ struct ballot *ptr;
 		for (i = 0; i < 3; i++)
 			fprintf(sug, "%s\n", ptr->msg[i]);
 	}
-	result[32]++;
+	vote_result[32]++;
 	if (currvote.type == VOTE_ASKING) {
 		return 0;
 	}
 	if (currvote.type != VOTE_VALUE) {
 		for (i = 0; i < 32; i++) {
 			if ((ptr->voted >> i) & 1)
-				(result[i])++;
+				(vote_result[i])++;
 		}
 
 	} else {
-		result[31] += ptr->voted;
-		result[(ptr->voted * 10) / (currvote.maxtkt + 1)]++;
+		vote_result[31] += ptr->voted;
+		vote_result[(ptr->voted * 10) / (currvote.maxtkt + 1)]++;
 	}
 	return 0;
 }
@@ -289,7 +289,7 @@ mk_result()
 		pressanykey();
 		return;
 	}
-	(void) memset(result, 0, sizeof (result));
+	(void) memset(vote_result, 0, sizeof (vote_result));
 	if (apply_record(fname, (void *) count_result, sizeof (struct ballot))
 	    == -1) {
 		errlog("Vote apply flag error");
@@ -309,30 +309,30 @@ mk_result()
 
 	fprintf(sug, "** Í¶Æ±½á¹û:\n\n");
 	if (currvote.type == VOTE_VALUE) {
-		total = result[32];
+		total = vote_result[32];
 		for (i = 0; i < 10; i++) {
 			fprintf(sug,
 				"[1m  %4d[m µ½ [1m%4d[m Ö®¼äÓÐ [1m%4d[m Æ±  Ô¼Õ¼ [1m%d%%[m\n",
 				(i * currvote.maxtkt) / 10 + ((i == 0) ? 0 : 1),
-				((i + 1) * currvote.maxtkt) / 10, result[i]
+				((i + 1) * currvote.maxtkt) / 10, vote_result[i]
 				,
-				(result[i] * 100) / ((total <= 0) ? 1 : total));
+				(vote_result[i] * 100) / ((total <= 0) ? 1 : total));
 		}
 		fprintf(sug, "´Ë´ÎÍ¶Æ±½á¹ûÆ½¾ùÖµÊÇ: [1m%d[m\n",
-			result[31] / ((total <= 0) ? 1 : total));
+				vote_result[31] / ((total <= 0) ? 1 : total));
 	} else if (currvote.type == VOTE_ASKING) {
-		total = result[32];
+		total = vote_result[32];
 	} else {
 		for (i = 0; i < currvote.totalitems; i++) {
-			total += result[i];
+			total += vote_result[i];
 		}
 		for (i = 0; i < currvote.totalitems; i++) {
 			fprintf(sug, "(%c) %-40s  %4d Æ±  Ô¼Õ¼ [1m%d%%[m\n",
-				'A' + i, currvote.items[i], result[i],
-				(result[i] * 100) / ((total <= 0) ? 1 : total));
+				'A' + i, currvote.items[i], vote_result[i],
+				(vote_result[i] * 100) / ((total <= 0) ? 1 : total));
 		}
 	}
-	fprintf(sug, "\nÍ¶Æ±×ÜÈËÊý = [1m%d[m ÈË\n", result[32]);
+	fprintf(sug, "\nÍ¶Æ±×ÜÈËÊý = [1m%d[m ÈË\n", vote_result[32]);
 	fprintf(sug, "Í¶Æ±×ÜÆ±Êý =[1m %d[m Æ±\n\n", total);
 	fprintf(sug,
 		"[1;44;36m¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©ÈÊ¹ÓÃÕß%s©À¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª[m\n\n\n",
