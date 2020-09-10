@@ -12,20 +12,9 @@ char *random_str(char *buf, int len)
 	return buf;
 }
 
-// 检查邮件格式的有效性
-// 返回1为有效
-int vaild_mail(const char *email)
-{
-	if (!strchr(email, '@'))
-		return 0;
-	if (strstr(email, ".bbs"))
-		return 0;
-	return 1;
-}
-
 int
-bbspwd_main()
-{	//modify by mintbaggio 20040829 for new www
+bbspwd_main() {
+	//modify by mintbaggio 20040829 for new www
 	int type;
 	html_header(1);
 	check_msg();
@@ -42,15 +31,11 @@ bbspwd_main()
 		printf("<body>");
 		type = atoi(getparm("type"));
 		if (type == 0) {
-			printf("<div class=rhead>%s -- 修改密码 [用户: <span class=h11>%s</span>]</div><hr>\n",
-				   BBSNAME, currentuser.userid);
+			printf("<div class=rhead>%s -- 修改密码 [用户: <span class=h11>%s</span>]</div><hr>\n", BBSNAME, currentuser.userid);
 			printf("<form action=bbspwd?mode=1&type=1 method=post>\n");
-			printf
-				("你的旧密码: <input maxlength=12 size=12 type=password name=pw1><br>\n");
-			printf
-				("你的新密码: <input maxlength=12 size=12 type=password name=pw2><br>\n");
-			printf
-				("再输入一次: <input maxlength=12 size=12 type=password name=pw3><br><br>\n");
+			printf("你的旧密码: <input maxlength=12 size=12 type=password name=pw1><br>\n");
+			printf("你的新密码: <input maxlength=12 size=12 type=password name=pw2><br>\n");
+			printf("再输入一次: <input maxlength=12 size=12 type=password name=pw3><br><br>\n");
 			printf("<input type=submit value=确定修改>\n");
 			printf("</body>");
 			http_quit();
