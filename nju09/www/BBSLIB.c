@@ -1283,7 +1283,7 @@ post_mail_to_sent_box(char *userid, char *title, char *file,
 	}
 	fprintf(fp, "\n--\n");
 	sig_append(fp, id, sig);
-	fprintf(fp, "\n\n[1;%dm¡ù À´Ô´:£®%s %s [FROM: %.20s][m\n",
+	fprintf(fp, "\n\n[1;%dm¡ù À´Ô´:£®%s %s [FROM: %.40s][m\n",
 		31 + rand() % 7, BBSNAME, "http://" MY_BBS_DOMAIN, ip);
 	fclose(fp);
 	setsentmailfile(dir, userid, ".DIR");
@@ -1340,7 +1340,7 @@ post_mail(char *userid, char *title, char *file, char *id,
 	}
 	fprintf(fp, "\n--\n");
 	sig_append(fp, id, sig);
-	fprintf(fp, "\n\n[1;%dm¡ù À´Ô´:£®%s %s [FROM: %.20s][m\n",
+	fprintf(fp, "\n\n[1;%dm¡ù À´Ô´:£®%s %s [FROM: %.40s][m\n",
 		31 + rand() % 7, BBSNAME, "http://" MY_BBS_DOMAIN, ip);
 	fclose(fp);
 	setmailfile(dir, userid, ".DIR");
@@ -1405,7 +1405,7 @@ post_imail(char *userid, char *title, char *file, char *id,
 
 	fputs("\n--\n", fp2);
 	sig_append(fp2, id, sig);
-	fprintf(fp2, "\n\n[1;%dm¡ù À´Ô´:£®%s %s [FROM: %.20s][m\n",
+	fprintf(fp2, "\n\n[1;%dm¡ù À´Ô´:£®%s %s [FROM: %.40s][m\n",
 		31 + rand() % 7, BBSNAME, "http://" MY_BBS_DOMAIN, ip);
 	fprintf(fp2, ".\n");
 	fclose(fp1);
@@ -1462,7 +1462,7 @@ post_article_1984(char *board, char *title, char *file, char *id,
 	}
 	fprintf(fp, "\n--\n");
 	sig_append(fp, id, sig);
-	fprintf(fp, "\n\033[1;%dm¡ù À´Ô´:£®%s %s [FROM: %.20s]\033[m\n",
+	fprintf(fp, "\n\033[1;%dm¡ù À´Ô´:£®%s %s [FROM: %.40s]\033[m\n",
 		31 + rand() % 7, BBSNAME, "http://" MY_BBS_DOMAIN, ip);
 	fclose(fp);
 	sprintf(buf3, "%s/M.%d.A", buf, t);
@@ -1515,7 +1515,7 @@ post_article(char *board, char *title, char *file, char *id,
 	}
 	fprintf(fp, "\n--\n");
 	sig_append(fp, id, sig);
-	fprintf(fp, "[1;%dm¡ù À´Ô´:£®%s %s [FROM: %.20s][m",
+	fprintf(fp, "[1;%dm¡ù À´Ô´:£®%s %s [FROM: %.40s][m",
 		31 + rand() % 7, BBSNAME, "http://" MY_BBS_DOMAIN, ip);
 	fclose(fp);
 	sprintf(buf3, "boards/%s/M.%d.A", board, t);
