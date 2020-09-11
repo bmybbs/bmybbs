@@ -758,7 +758,8 @@ int main(int ac, char **av)
 {
     extern char *optarg;
     extern int optind;
-    int opt, aux, sock_in, sock_out, newsock, i, pid, on = 1;
+    int opt, sock_in, sock_out, newsock, i, pid, on = 1;
+    socklen_t aux;
     int remote_major, remote_minor;
     int perm_denied = 0;
     int ret;
@@ -1754,6 +1755,8 @@ void sshbbs_end(void)
     packet_disconnect("sshd exit");
 }
 
+extern int ssh_init(void);
+extern int bbs_entry(int argc, char *argv[]);
 void do_exec_no_pty(const char *command, char *pw, const char *display, const char *auth_proto, const char *auth_data, int quick_login)
 {
     char *argv[3]={"bbs","d",get_remote_ipaddr()};
