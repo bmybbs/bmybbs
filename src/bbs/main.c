@@ -149,7 +149,7 @@ u_enter()
 	}
 	uinfo.uid = usernum;
 	uinfo.userlevel = currentuser.userlevel;
-	strncpy(uinfo.from, fromhost, 16);
+	strncpy(uinfo.from, fromhost, BMY_IPV6_LEN);
 	uinfo.lasttime = time(0);
 	if (runssh)
 		uinfo.isssh = 1;
@@ -380,11 +380,11 @@ char **argv;
 	sprintf(ULIST, "%s.%s", ULIST_BASE, genbuf);
 
 	if (argc >= 3) {
-		strncpy(fromhost, argv[2], 60);
+		strncpy(fromhost, argv[2], BMY_IPV6_LEN);
 	} else {
 		fromhost[0] = '\0';
 	}
-	fromhost[59] = '\0';
+	fromhost[BMY_IPV6_LEN] = '\0';
 
 #ifndef lint
 	signal(SIGINT, SIG_IGN);
@@ -641,8 +641,8 @@ direct_login()
 	u_enter();
 	started = 1;
 	WishNum = 9999;
-	strncpy(currentuser.lasthost, fromhost, 16);
-	currentuser.lasthost[15] = '\0';	/* dumb mistake on my part */
+	strncpy(currentuser.lasthost, fromhost, BMY_IPV6_LEN);
+	currentuser.lasthost[BMY_IPV6_LEN] = '\0';	/* dumb mistake on my part */
 	currentuser.lastlogin = time(NULL);
 	if(uinfo.invisible){			//add by mintbaggio@BMY for normal cloak
 		//currentuser.pseudo_lastlogout = currentuser.lastlogin+10;
@@ -831,8 +831,8 @@ user_login()
 	}
 
 	set_safe_record();
-	strncpy(currentuser.lasthost, fromhost, 16);
-	currentuser.lasthost[15] = '\0';	/* dumb mistake on my part */
+	strncpy(currentuser.lasthost, fromhost, BMY_IPV6_LEN);
+	currentuser.lasthost[BMY_IPV6_LEN] = '\0';	/* dumb mistake on my part */
 	dtime = time(NULL) - 4 * 3600;
 	day = localtime(&dtime)->tm_mday;
 	dtime = currentuser.lastlogin - 4 * 3600;

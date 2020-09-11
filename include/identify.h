@@ -31,7 +31,7 @@ struct active_data{
 	char userid[IDLEN+2];
 	char name[STRLEN];
 	char dept[STRLEN];
-	char ip[20];
+	char ip[40];  // update to IPv6
 	char regtime[32];
 	char uptime[32];
 	char operator[IDLEN+2];

@@ -100,8 +100,6 @@ char * str_to_upper(char *str)
 	}
 	return h;
 }
-
-extern char fromhost[256];
 #endif
 // -------------------------------------------------------------------------------
 
@@ -208,7 +206,8 @@ bbsdoreg_main()
 
 	getsalt(salt);
 	strsncpy(x.passwd, crypt1(pass1, salt), 14);
-	strncpy(x.lasthost, fromhost,15);	//ipv6 by leoncom 不能赋值太多，就影响后面的数据
+	//ipv6 by leoncom 不能赋值太多，就影响后面的数据 fixed by IronBlood 2020.09.11
+	strncpy(x.lasthost, fromhost,BMY_IPV6_LEN);
 	x.userlevel = PERM_BASIC;
 	x.firstlogin = now_t;
 	x.lastlogin = now_t - 3600;  //ipv6 by leoncom 注册后手动登录

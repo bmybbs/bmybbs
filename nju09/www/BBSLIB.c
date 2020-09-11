@@ -96,7 +96,7 @@ struct mmapfile mf_sbadwords = { ptr:NULL };
 struct mmapfile mf_pbadwords = { ptr:NULL };
 char *ummap_ptr = NULL;
 int ummap_size = 0;
-char fromhost[256];
+char fromhost[BMY_IPV6_LEN]; // 从环境变量获取 IP 地址，IPv4/IPv6 已经由 apache 处理过
 struct in6_addr from_addr;   //ipv6 by leoncom
 int via_proxy = 0;
 
@@ -1121,7 +1121,7 @@ user_init(struct userec *x, struct user_info **y, char *ub)
 			if (i < 0 || i >= MAXACTIVE)
 				return 0;
 			(*y) = &(shm_utmp->uinfo[i]);
-			if (strncmp((*y)->from, fromhost, 24))
+			if (strncmp((*y)->from, fromhost, BMY_IPV6_LEN))
 				return 0;
 			if (strncmp((*y)->sessionid, sessionid, 6)) {
 				return 0;
@@ -1163,7 +1163,7 @@ user_init(struct userec *x, struct user_info **y, char *ub)
 			return 0;
 	} else
 	*/
-	if (strncmp((*y)->from, fromhost, 20))  //ipv6 by leoncom 24->20
+	if (strncmp((*y)->from, fromhost, BMY_IPV6_LEN))  //ipv6 by leoncom 24->20
 		return 0;
 	if (strcmp((*y)->sessionid, sessionid))
 		return 0;

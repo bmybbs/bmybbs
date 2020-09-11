@@ -61,7 +61,7 @@ bbslogin_main()
 		if (t < localtime(&dtime)->tm_mday && x->numdays < 800)
 			x->numdays++;
 		x->numlogins++;
-		strsncpy(x->lasthost, fromhost, 16);
+		strsncpy(x->lasthost, fromhost, BMY_IPV6_LEN);
 		save_user_data(x);
 		currentuser = *x;
 	}
@@ -177,7 +177,7 @@ wwwlogin(struct userec *user, int ipmask)
 				u->pager |= ALLMSG_PAGER;
 				u->pager |= FRIENDMSG_PAGER;
 			}
-			strsncpy(u->from, fromhost, 24);
+			strsncpy(u->from, fromhost, BMY_IPV6_LEN);
 			strsncpy(u->username, user->username, NAMELEN);
 			strsncpy(u->userid, user->userid, IDLEN + 1);
 			getrandomstr(u->sessionid);
@@ -231,7 +231,7 @@ do_check(int uent, int uid)
 		&& shm_utmp->uinfo[uent].pid == 1
 		&& now_t - shm_utmp->uinfo[uent].lasttime < 18 * 60
 		&& shm_utmp->uinfo[uent].uid == uid
-		&& !strncmp(fromhost, shm_utmp->uinfo[uent].from, 24));
+		&& !strncmp(fromhost, shm_utmp->uinfo[uent].from, BMY_IPV6_LEN));
 }
 
 static char *
