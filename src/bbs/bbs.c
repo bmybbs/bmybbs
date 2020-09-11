@@ -327,7 +327,7 @@ set_safe_record()
 	currentuser.numdays = tmp.numdays;
 	currentuser.lastlogin = tmp.lastlogin;
 	currentuser.dietime = tmp.dietime;
-	strsncpy(currentuser.lasthost, fromhost, 16);
+	strsncpy(currentuser.lasthost, fromhost, BMY_IPV6_LEN);
 	currentuser.stay = tmp.stay;
 	return 0;
 }

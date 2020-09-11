@@ -10,7 +10,7 @@
 struct userec {
 	char userid[IDLEN + 2];
 	time_t firstlogin;
-	char lasthost[16];
+	char lasthost[BMY_IPV6_LEN];
 	unsigned int numlogins;
 	unsigned int numposts;
 	char flags[2];
