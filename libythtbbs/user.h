@@ -10,7 +10,7 @@
 struct userec {
 	char userid[IDLEN + 2];
 	time_t firstlogin;
-	char lasthost[16];
+	char lasthost[BMY_IPV6_LEN];
 	unsigned int numlogins;
 	unsigned int numposts;
 	char flags[2];
@@ -20,7 +20,7 @@ struct userec {
 	char unuse[30];
 	time_t dietime;
 	time_t lastlogout;
-	char ip[16];
+	char ip[BMY_IPV6_LEN];
 	char realmail[STRLEN - 16];
 	unsigned userlevel;
 	time_t lastlogin;

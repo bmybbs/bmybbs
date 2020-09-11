@@ -366,7 +366,7 @@ int read_active(char* userid, struct active_data* act_data)
 
 	results[2].buffer_type = MYSQL_TYPE_STRING;
 	results[2].buffer = act_data->ip;
-	results[2].buffer_length = 20;
+	results[2].buffer_length = BMY_IPV6_LEN;
 
 	results[3].buffer_type = MYSQL_TYPE_TIMESTAMP;
 	results[3].buffer = &regtime;
