@@ -19,11 +19,6 @@ struct a_template * ptemplate = NULL ;
 int template_num = 0;
 int t_now = 0;
 
-char controlfile[STRLEN];
-unsigned int result[33];
-FILE *sug;
-
-
 static int orig_tmpl_init(char * nboard, int mode, struct a_template ** pptemp);
 static int orig_tmpl_free(struct a_template ** pptemp, int temp_num);
 static int orig_tmpl_save(struct a_template * ptemp, int temp_num, char *board);

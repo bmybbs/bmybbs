@@ -34,6 +34,9 @@ int csock;			/* socket for Master and Child */
 int killer();
 int checkaddr(struct in6_addr addr, int csock);//ipv6
 
+extern int is4map6addr(char *s);
+extern char *getv4addr(char *fromhost);
+
 void
 cat(filename, msg)
 char *filename, *msg;
@@ -44,16 +47,6 @@ char *filename, *msg;
 		fputs(msg, fp);
 		fclose(fp);
 	}
-}
-
-int is4map6addr(char *s){
-	return !strncasecmp(s,"::ffff:",7);
-}
-
-char *getv4addr(char *fromhost){
-	char *addr;
-	addr=rindex(fromhost,':');
-	return ++addr;
 }
 
 void

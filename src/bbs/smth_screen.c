@@ -27,11 +27,11 @@
 #include <sys/param.h>
 #include <stdarg.h>
 
-extern void output(const char *s, int len);
+extern void io_output(const char *s, int len);
 extern void ochar(int c);
 
-#define o_clear() {if(tc_color!=7||tc_mode!=0) output("\x1b[m",3);output("\x1b[H\x1b[J",6); tc_mode=0; tc_color=7;  tc_col=0; tc_line=0; }
-#define o_cleol() output("\x1b[K",3)
+#define o_clear() {if(tc_color!=7||tc_mode!=0) io_output("\x1b[m",3);io_output("\x1b[H\x1b[J",6); tc_mode=0; tc_color=7;  tc_col=0; tc_line=0; }
+#define o_cleol() io_output("\x1b[K",3)
 
 int scr_lns, scr_cols;
 int cur_ln = 0, cur_col = 0;
@@ -208,7 +208,7 @@ rel_move(int was_col, int was_ln, int new_col, int new_ln)
 			sprintf(ss, "\x1b[C");
 		else
 			sprintf(ss, "\x1b[%dC", new_col - was_col);
-		output(ss, strlen(ss));
+		io_output(ss, strlen(ss));
 		return;
 	}
 	if (new_ln == was_ln && new_col <= was_col - 1) {
@@ -217,7 +217,7 @@ rel_move(int was_col, int was_ln, int new_col, int new_ln)
 			sprintf(ss, "\x1b[D");
 		else
 			sprintf(ss, "\x1b[%dD", was_col - new_col);
-		output(ss, strlen(ss));
+		io_output(ss, strlen(ss));
 		return;
 	}
 	if ((new_col == was_col || new_col == 0) && new_ln >= was_ln + 1) {
@@ -228,7 +228,7 @@ rel_move(int was_col, int was_ln, int new_col, int new_ln)
 			sprintf(ss, "\x1b[B");
 		else
 			sprintf(ss, "\x1b[%dB", new_ln - was_ln);
-		output(ss, strlen(ss));
+		io_output(ss, strlen(ss));
 		if (new_col == 0 && was_col != 0)
 			ochar('\r');
 		return;
@@ -241,7 +241,7 @@ rel_move(int was_col, int was_ln, int new_col, int new_ln)
 			sprintf(ss, "\x1b[A");
 		else
 			sprintf(ss, "\x1b[%dA", was_ln - new_ln);
-		output(ss, strlen(ss));
+		io_output(ss, strlen(ss));
 		if (new_col == 0 && was_col != 0)
 			ochar('\r');
 		return;
@@ -281,7 +281,7 @@ rel_changemodecolor(int mode, int color)
 	    || ((tc_color & 0xf0) && !(color & 0xf0))) {
 		tc_mode = 0;
 		tc_color = 7;
-		output("\x1b[m", 3);
+		io_output("\x1b[m", 3);
 	}
 	if (!(tc_mode & SCREEN_BRIGHT)
 	    && mode & SCREEN_BRIGHT) {
@@ -337,7 +337,7 @@ rel_changemodecolor(int mode, int color)
 			}
 		strcpy(p, "m");
 		pos++;
-		output(buf, pos);
+		io_output(buf, pos);
 	}
 }
 
@@ -356,7 +356,7 @@ refresh()
 		char buf[10];
 		rel_move(tc_col, tc_line, 0, 0);
 		sprintf(buf, "\033[%dL", -scrollcnt);
-		output(buf, strlen(buf));
+		io_output(buf, strlen(buf));
 		scrollcnt = 0;
 	}
 	if (scrollcnt > 0) {
@@ -673,7 +673,7 @@ outns(const char *str, int n)
 						  && *(str + j) <= '9');
 				if (k) {
 					refresh();
-					output(str, i + 1);
+					io_output(str, i + 1);
 					oflush();
 				}
 				str += i + 1;

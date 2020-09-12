@@ -241,10 +241,14 @@ const char *get_canonical_hostname(void)
 /* Returns the IP-address of the remote host as a string.  The returned
    string need not be freed. */
 
+extern int is4map6addr(char *s);
+extern char *getv4addr(char *fromhost);
+
 const char *get_remote_ipaddr(void)
 {
     struct sockaddr_in6 from, to;
-    int fromlen, tolen, socket;
+    socklen_t fromlen, tolen;
+    int socket;
 
     /* Check if we have previously retrieved this same name. */
     if (canonical_host_ip != NULL)
@@ -302,7 +306,7 @@ const char *get_remote_ipaddr(void)
 int get_peer_port(int sock)
 {
     struct sockaddr_in6 from;
-    int fromlen;
+	socklen_t fromlen;
 
     /* Get IP address of client. */
     fromlen = sizeof(from);
@@ -321,7 +325,7 @@ int get_peer_port(int sock)
 int get_remote_port(void)
 {
     int socket;
-    int fromlen, tolen;
+	socklen_t fromlen, tolen;
     struct sockaddr_in6 from, to;
 
     /* If two different descriptors, check if they are internet-domain, and

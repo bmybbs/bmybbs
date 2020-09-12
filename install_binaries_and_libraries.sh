@@ -89,6 +89,5 @@ else
 	install_binary $BUILD_DIR/local_utl/setdefaultkey/setdefaultkey           setdefaultkey
 	install_binary $BUILD_DIR/local_utl/sortdir/sortdir                       sortdir
 	install_binary $BUILD_DIR/local_utl/transuu2bin/transuu2bin               transuu2bin
-	install_binary $BUILD_DIR/local_utl/upgrade/upgrade                       upgrade
 	install_binary $BUILD_DIR/local_utl/watchman/watchman                     watchman
 fi

@@ -327,7 +327,7 @@ set_safe_record()
 	currentuser.numdays = tmp.numdays;
 	currentuser.lastlogin = tmp.lastlogin;
 	currentuser.dietime = tmp.dietime;
-	strsncpy(currentuser.lasthost, fromhost, 16);
+	strsncpy(currentuser.lasthost, fromhost, BMY_IPV6_LEN);
 	currentuser.stay = tmp.stay;
 	return 0;
 }
@@ -1899,7 +1899,7 @@ char *filepath;
 	if (!dashf(fname) || currentuser.signature == 0 || noidboard)
 		fputs("\n--", fp);
 	fprintf(fp,
-		"\n[m[1;%2dm¡ù À´Ô´:£®%s %s£®[FROM: %-.20s][m\n",
+		"\n[m[1;%2dm¡ù À´Ô´:£®%s %s£®[FROM: %-.40s][m\n",
 		color, MY_BBS_NAME, email_domain(),
 		(noidboard) ? "ÄäÃûÌìÊ¹µÄ¼Ò" : fromhost);
 	fclose(fp);
@@ -1917,7 +1917,7 @@ int mode;
 	if ((fp = fopen(filepath, "a")) == NULL)
 		return;
 	fprintf(fp,
-		"--\n[m[1;%2dm¡ù ×ª%s:£®%s %s£®[FROM: %-.20s][m\n",
+		"--\n[m[1;%2dm¡ù ×ª%s:£®%s %s£®[FROM: %-.40s][m\n",
 		color, (mode == 1) ? "ÔØ" : "¼Ä",
 		MY_BBS_NAME, email_domain(), fromhost);
 	fclose(fp);

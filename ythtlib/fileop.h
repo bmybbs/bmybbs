@@ -22,7 +22,7 @@ struct mmapfile {
 #define MMAP_UNTRY {signal(SIGBUS, SIG_IGN);}
 #define MMAP_RETURN(x) {signal(SIGBUS, SIG_IGN);return (x);}
 #define MMAP_RETURN_VOID {signal(SIGBUS, SIG_IGN);return;}
-sigjmp_buf bus_jump;
+extern sigjmp_buf bus_jump;
 
 int crossfs_rename(const char *oldpath, const char *newpath);
 int readstrvalue(const char *filename, const char *str, char *value, int size);

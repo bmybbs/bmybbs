@@ -420,7 +420,7 @@ add_edit_mark(char *fname, char *userid, time_t now_t, char *fromhost)
         if ((fp = fopen(fname, "a")) == NULL)
                 return 0;
         fprintf(fp,
-                "\n[1;36m¡ù ÐÞ¸Ä:£®%s ÓÚ %15.15s ÐÞ¸Ä±¾ÎÄ£®[FROM: %-.20s][m",
+                "\n[1;36m¡ù ÐÞ¸Ä:£®%s ÓÚ %15.15s ÐÞ¸Ä±¾ÎÄ£®[FROM: %-.40s][m",
                 userid, ctime(&now_t) + 4, fromhost);
         fclose(fp);
         return 0;

@@ -96,7 +96,7 @@ struct mmapfile mf_sbadwords = { ptr:NULL };
 struct mmapfile mf_pbadwords = { ptr:NULL };
 char *ummap_ptr = NULL;
 int ummap_size = 0;
-char fromhost[256];
+char fromhost[BMY_IPV6_LEN]; // ´Ó»·¾³±äÁ¿»ñÈ¡ IP µØÖ·£¬IPv4/IPv6 ÒÑ¾­ÓÉ apache ´¦Àí¹ý
 struct in6_addr from_addr;   //ipv6 by leoncom
 int via_proxy = 0;
 
@@ -1121,7 +1121,7 @@ user_init(struct userec *x, struct user_info **y, char *ub)
 			if (i < 0 || i >= MAXACTIVE)
 				return 0;
 			(*y) = &(shm_utmp->uinfo[i]);
-			if (strncmp((*y)->from, fromhost, 24))
+			if (strncmp((*y)->from, fromhost, BMY_IPV6_LEN))
 				return 0;
 			if (strncmp((*y)->sessionid, sessionid, 6)) {
 				return 0;
@@ -1163,7 +1163,7 @@ user_init(struct userec *x, struct user_info **y, char *ub)
 			return 0;
 	} else
 	*/
-	if (strncmp((*y)->from, fromhost, 20))  //ipv6 by leoncom 24->20
+	if (strncmp((*y)->from, fromhost, BMY_IPV6_LEN))  //ipv6 by leoncom 24->20
 		return 0;
 	if (strcmp((*y)->sessionid, sessionid))
 		return 0;
@@ -1283,7 +1283,7 @@ post_mail_to_sent_box(char *userid, char *title, char *file,
 	}
 	fprintf(fp, "\n--\n");
 	sig_append(fp, id, sig);
-	fprintf(fp, "\n\n[1;%dm¡ù À´Ô´:£®%s %s [FROM: %.20s][m\n",
+	fprintf(fp, "\n\n[1;%dm¡ù À´Ô´:£®%s %s [FROM: %.40s][m\n",
 		31 + rand() % 7, BBSNAME, "http://" MY_BBS_DOMAIN, ip);
 	fclose(fp);
 	setsentmailfile(dir, userid, ".DIR");
@@ -1340,7 +1340,7 @@ post_mail(char *userid, char *title, char *file, char *id,
 	}
 	fprintf(fp, "\n--\n");
 	sig_append(fp, id, sig);
-	fprintf(fp, "\n\n[1;%dm¡ù À´Ô´:£®%s %s [FROM: %.20s][m\n",
+	fprintf(fp, "\n\n[1;%dm¡ù À´Ô´:£®%s %s [FROM: %.40s][m\n",
 		31 + rand() % 7, BBSNAME, "http://" MY_BBS_DOMAIN, ip);
 	fclose(fp);
 	setmailfile(dir, userid, ".DIR");
@@ -1405,7 +1405,7 @@ post_imail(char *userid, char *title, char *file, char *id,
 
 	fputs("\n--\n", fp2);
 	sig_append(fp2, id, sig);
-	fprintf(fp2, "\n\n[1;%dm¡ù À´Ô´:£®%s %s [FROM: %.20s][m\n",
+	fprintf(fp2, "\n\n[1;%dm¡ù À´Ô´:£®%s %s [FROM: %.40s][m\n",
 		31 + rand() % 7, BBSNAME, "http://" MY_BBS_DOMAIN, ip);
 	fprintf(fp2, ".\n");
 	fclose(fp1);
@@ -1462,7 +1462,7 @@ post_article_1984(char *board, char *title, char *file, char *id,
 	}
 	fprintf(fp, "\n--\n");
 	sig_append(fp, id, sig);
-	fprintf(fp, "\n\033[1;%dm¡ù À´Ô´:£®%s %s [FROM: %.20s]\033[m\n",
+	fprintf(fp, "\n\033[1;%dm¡ù À´Ô´:£®%s %s [FROM: %.40s]\033[m\n",
 		31 + rand() % 7, BBSNAME, "http://" MY_BBS_DOMAIN, ip);
 	fclose(fp);
 	sprintf(buf3, "%s/M.%d.A", buf, t);
@@ -1515,7 +1515,7 @@ post_article(char *board, char *title, char *file, char *id,
 	}
 	fprintf(fp, "\n--\n");
 	sig_append(fp, id, sig);
-	fprintf(fp, "[1;%dm¡ù À´Ô´:£®%s %s [FROM: %.20s][m",
+	fprintf(fp, "[1;%dm¡ù À´Ô´:£®%s %s [FROM: %.40s][m",
 		31 + rand() % 7, BBSNAME, "http://" MY_BBS_DOMAIN, ip);
 	fclose(fp);
 	sprintf(buf3, "boards/%s/M.%d.A", board, t);

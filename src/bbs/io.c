@@ -123,7 +123,7 @@ int c;
 }
 
 void
-output(const char *s, int len)
+io_output(const char *s, int len)
 {
 	int l, n;
 	char *p0, *p1;
@@ -161,7 +161,7 @@ void inline
 outputstr(s)
 char *s;
 {
-	output(s, strlen(s));
+	io_output(s, strlen(s));
 }
 
 int i_newfd = 0;
