@@ -87,9 +87,7 @@ fprintbinaryattachlink(FILE * fp, int ano, char *attachname, int pos, int size,
 				 inet_ntoa(wwwcache->accel_addr),
 				 wwwcache->accel_port, ptr, alt, pos, attachname);
 		else
-			snprintf(link, sizeof (link),
-				 "http://%s:8080/%s/%d/%s", MY_BBS_IP,
-				 alt1, pos, attachname);
+			snprintf(link, sizeof (link),"/attach/%s/%d/%s", alt1, pos, attachname);
 
 	} else if (!strcmp(cginame, "bbscon")) {
 		//м╛ио
@@ -107,10 +105,7 @@ fprintbinaryattachlink(FILE * fp, int ano, char *attachname, int pos, int size,
 				 ptr, attachname, board, getparm2("F", "file"),
 				 pos, attachname);
 		else
-			snprintf(link, sizeof (link),
-				 "http://%s:8080/%s/%s/%d/%s", MY_BBS_IP,
-
-				 board, getparm2("F", "file"), pos, attachname);
+			snprintf(link, sizeof (link),"/attach/%s/%s/%d/%s", board, getparm2("F", "file"), pos, attachname);
 	} else
 		snprintf(link, sizeof (link),
 			 "attach/%s/%s?%s&amp;attachpos=%d&amp;attachname=/%s",

@@ -612,8 +612,11 @@ http://站名/版面名称/文件名称/随机数/包含后缀的文件名
 /*修改by Clearboy@BMY 2005.2.27
 1. 去掉原来的文件名,不分行显示;
 2. 更改了文件名提取的方法,用"."来提取，以便在推荐的帖子中图片仍然能正常显示；*/
-			if (!strcasecmp(p, ".bmp") || !strcasecmp(p, ".jpg") || !strcasecmp(p, ".gif") || !strcasecmp(p, ".jpeg") ||!strcasecmp(p, ".png"))                            prints("\033[m附图: \033[1;4mhttp://%s:8080/%s/M%s/%d/%d%s\033[0m\n",
-				MY_BBS_DOMAIN, currboard, strchr(fn,'.'), nPos, l->curr_line - 4, strrchr(attachname, '.'));                     else					 	                           prints("\033[m附件: \033[1;4mhttp://%s:8080/%s/M%s/%d/%d%s\033[0m\n",
+			if (!strcasecmp(p, ".bmp") || !strcasecmp(p, ".jpg") || !strcasecmp(p, ".gif") || !strcasecmp(p, ".jpeg") ||!strcasecmp(p, ".png"))
+				prints("\033[m附图: \033[1;4mhttp://%s/attach/%s/M%s/%d/%d%s\033[0m\n",
+				MY_BBS_DOMAIN, currboard, strchr(fn,'.'), nPos, l->curr_line - 4, strrchr(attachname, '.'));
+			else
+				prints("\033[m附件: \033[1;4mhttp://%s/attach/%s/M%s/%d/%d%s\033[0m\n",
 				MY_BBS_DOMAIN, currboard, strchr(fn,'.'), nPos, l->curr_line - 4, strrchr(attachname, '.'));
 			}
 		
