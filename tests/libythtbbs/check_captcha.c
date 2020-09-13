@@ -7,7 +7,7 @@
 #include "fileop.h"
 
 extern int query_captcha_by_id(unsigned int cap_id, struct BMYCaptcha *captcha);
-static const char *filename = "/home/bbs/home/F/foo/.captcha";
+static const char *filename = "/home/bbs/home/F/foo/.REG";
 
 START_TEST(test_query_captcha_by_id) {
 	struct BMYCaptcha c;
