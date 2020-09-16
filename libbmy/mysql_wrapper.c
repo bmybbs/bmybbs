@@ -59,6 +59,7 @@ int execute_prep_stmt(const char* sqlbuf, MYSQL_BIND *params, MYSQL_BIND *result
 	result = MYSQL_OK;
 
 	s = mysql_init(NULL);
+	mysql_options(s, MYSQL_SET_CHARSET_NAME, "gbk");
 	if (!my_connect_mysql(s)) {
 		result = MYSQL_CANNOT_CONNECT_TO_MYSQL;
 		goto END;
