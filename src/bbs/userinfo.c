@@ -655,12 +655,19 @@ void x_fillform()
 	strncpy(currentuser.realname, rname, NAMELEN);
 	strncpy(currentuser.address, addr, STRLEN);
 	memset(&act_data, 0, sizeof(act_data));
-	strcpy(act_data.name, rname);
-	strcpy(act_data.dept, dept);
-	strcpy(act_data.userid, currentuser.userid);
-	strcpy(act_data.phone, phone);
-	strcpy(act_data.operator, currentuser.userid);
-	strcpy(act_data.ip, currentuser.lasthost);
+	snprintf(act_data.name, NAMELEN, "%s", rname);
+	act_data.name[NAMELEN-1] = '\0';
+	snprintf(act_data.dept, STRLEN, "%s", dept);
+	act_data.dept[STRLEN-1] = '\0';
+	snprintf(act_data.userid, IDLEN+2, "%s", currentuser.userid);
+	act_data.userid[IDLEN+1] = '\0';
+	snprintf(act_data.phone, VALUELEN, "%s", phone);
+	act_data.phone[VALUELEN-1] = '\0';
+	snprintf(act_data.operator, IDLEN+2, "%s", currentuser.userid);
+	act_data.operator[IDLEN+1] = '\0';
+	snprintf(act_data.ip, 40, "%s", currentuser.lasthost);
+	act_data.ip[40] = '\0';
+	sprintf(act_data.email, "");
 	act_data.status = 0;
 	write_active(&act_data);
 

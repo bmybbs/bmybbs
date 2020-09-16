@@ -262,11 +262,15 @@ bbsdoreg_main()
 	printf("<center><table><td><td><pre>\n");
 
 	memset(&act_data, 0, sizeof(act_data));
-	strcpy(act_data.name, x.realname);
+	snprintf(act_data.name, NAMELEN, "%s", x.realname);
+	act_data.name[NAMELEN-1] = '\0';
 	strcpy(act_data.userid, x.userid);
-	strcpy(act_data.dept, dept);
-	strcpy(act_data.phone, phone);
-	strcpy(act_data.email, email);
+	snprintf(act_data.dept, STRLEN, "%s", dept);
+	act_data.dept[STRLEN-1] = '\0';
+	snprintf(act_data.phone, VALUELEN, "%s", phone);
+	act_data.phone[VALUELEN-1] = '\0';
+	snprintf(act_data.email, VALUELEN, "%s", email);
+	act_data.email[VALUELEN-1] = '\0';
 	strcpy(act_data.ip, fromhost);
 	strcpy(act_data.operator, x.userid);
 
