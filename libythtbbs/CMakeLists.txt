@@ -49,7 +49,7 @@ add_library(ythtbbs SHARED
 	board.c
 	sectree.c
 	sectreeop.c
-	libiden.c
+	identify.c
 	notification.c
 	mailsender.c
 	captcha.c
