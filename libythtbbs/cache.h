@@ -6,7 +6,6 @@
 #define BMYBBS_CACHE_H
 #include <time.h>
 #include "config.h"
-#include "chat.h"
 #include "struct.h"
 #include "board.h"
 
