@@ -20,10 +20,13 @@
     GNU General Public License for more details.
 */
 
-typedef struct node GOPHER;
-struct node {
+#ifndef __BBS_GOPHER_H
+#define __BBS_GOPHER_H
+typedef struct gopher_node GOPHER;
+struct gopher_node {
     char        file[81],title[71],server[41];
     int         port;
     int         position;
     GOPHER      *next;
 };
+#endif
