@@ -20,6 +20,9 @@
     GNU General Public License for more details.
 */
 
+#ifndef __BBS_EDIT_H
+#define __BBS_EDIT_H
+
 #define WRAPMARGIN (255)
 
 #define M_MARK  0x01
@@ -41,3 +44,4 @@ struct textline {
     char data[WRAPMARGIN + 1] ;
 } ;
 
+#endif
