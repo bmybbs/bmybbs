@@ -22,6 +22,9 @@
     GNU General Public License for more details.
 */
 
+#ifndef __BBS_CONFIG
+#define __BBS_CONFIG
+
 /* FIREBIRD BBS 3.0K CONFIGURATION VARIABLES */
 
 /* 
@@ -209,3 +212,4 @@ You must also set "EightBitMode=pass8" in /etc/sendmail.cf
 #define APPKEYLENGTH		36
 #define APPNAMELENGTH		20
 #define APPPID				-1
+#endif
