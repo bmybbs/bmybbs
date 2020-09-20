@@ -55,11 +55,6 @@ void uuencode(FILE * fr, FILE * fw, int len, char *filename);
 unsigned char numbyte(int n);
 int bytenum(unsigned char c);
 
-void normalize(char *buf);
-void strsncpy(char *s1, const char *s2, int n);
-char *strltrim(char *s);
-char *strrtrim(char *s);
-#define strtrim(s) strltrim(strrtrim(s))
 char *strnstr(const char *haystack, const char *needle, size_t haystacklen);
 char *strncasestr(const char *haystack, const char *needle, size_t haystacklen);
 
@@ -85,6 +80,7 @@ void *get_shm(int key, int size);
 #include "limitcpu.h"
 #include "timeop.h"
 #include "common.h"
+#include "strop.h"
 
 #define BAD_WORD_NOTICE "您的文章可能含有按照国家有关规定" \
                        "不适宜在公共场合发表的内容\n本文须" \

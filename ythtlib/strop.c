@@ -1,8 +1,6 @@
-#include "ythtlib.h"
 #include <string.h>
 
-void
-strsncpy(char *s1, const char *s2, int n)
+void strsncpy(char *s1, const char *s2, int n)
 {
 	int l = strlen(s2);
 	if (n < 0)
@@ -13,8 +11,7 @@ strsncpy(char *s1, const char *s2, int n)
 	s1[n - 1] = 0;
 }
 
-char *
-strltrim(char *s)
+char *strltrim(char *s)
 {
 	char *s2 = s;
 	if (s[0] == 0)
@@ -24,8 +21,7 @@ strltrim(char *s)
 	return s2;
 }
 
-char *
-strrtrim(char *s)
+char *strrtrim(char *s)
 {
 	static char t[1024], *t2;
 	if (s[0] == 0)
@@ -38,8 +34,7 @@ strrtrim(char *s)
 	return t;
 }
 
-void
-normalize(char *buf)
+void normalize(char *buf)
 {
 	int i = 0;
 	while (buf[i]) {
