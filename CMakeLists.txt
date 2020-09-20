@@ -13,9 +13,9 @@ set(CMAKE_C_FLAGS "-Wall -g -pipe -Wextra -Wno-unused-result -Wno-unused-paramet
 
 add_definitions(-D_GNU_SOURCE -DCONF_HAVE_OPENPTY -DLINUX -DSMTP_OPENSSL)
 
-add_subdirectory(ythtlib)
-add_subdirectory(libythtbbs)
+add_subdirectory(libytht)
 add_subdirectory(libbmy)
+add_subdirectory(libythtbbs)
 add_subdirectory(src)
 add_subdirectory(smth_sshbbsd)
 add_subdirectory(nju09)
