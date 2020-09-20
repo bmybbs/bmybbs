@@ -1,7 +1,6 @@
 add_library (ytht SHARED
 	uudecode.c
 	uuencode.c
-	strhash.c
 	common.c
 	numbyte.c
 	strop.c

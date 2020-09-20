@@ -1,6 +1,7 @@
 #include "ythtlib.h"
 #include "nbstat.h"
 #include "bbs.h"
+#include "strhash.h"
 
 #define BUSTAT MY_BBS_HOME"/0Announce/bbslist/board3"
 #define BUSSTAT MY_BBS_HOME"/0Announce/groups/GROUP_0/syssecurity/board3"

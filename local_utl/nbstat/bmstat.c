@@ -1,6 +1,7 @@
 #include "ythtlib.h"
 #include "nbstat.h"
 #include "bbs.h"
+#include "strhash.h"
 
 #define BMSTAT MY_BBS_HOME"/0Announce/bmstat"
 #define BMSTATA MY_BBS_HOME"/0Announce/groups/GROUP_0/syssecurity/bmstata"
