@@ -17,9 +17,6 @@
 #define sizeof(x) ((int)sizeof(x))
 #endif*/
 
-unsigned char numbyte(int n);
-int bytenum(unsigned char c);
-
 char *strnstr(const char *haystack, const char *needle, size_t haystacklen);
 char *strncasestr(const char *haystack, const char *needle, size_t haystacklen);
 
@@ -49,5 +46,6 @@ void *get_shm(int key, int size);
 #include "smth_filter.h"
 #include "uudecode.h"
 #include "uuencode.h"
+#include "numbyte.h"
 
 #endif
