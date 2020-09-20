@@ -38,37 +38,7 @@ struct hword *finddic(diction dic, char *key);
 struct hword *insertdic(diction dic, struct hword *cell);
 int mystrtok(char *str, int delim, char *result[], int max);
 
-/**
- * A wrapper of stat(2)
- * @warning Thread UNsafe
- * @param file
- * @return
- */
-struct stat *f_stat(char *file) __attribute__((deprecated));
 
-/**
- * A wrapper of lstat(2)
- * @warning Thread UNsafe
- * @param file
- * @return
- */
-struct stat *l_stat(char *file) __attribute__((deprecated));
-
-/**
- * A thread-safe wrapper of stat(2)
- * @param s
- * @param file
- * @return
- */
-struct stat *f_stat_s(struct stat *s, const char *file);
-
-/**
- * A thread-safe wrapper of lstat(2)
- * @param s
- * @param file
- * @return
- */
-struct stat *l_stat_s(struct stat *s, const char *file);
 int uudecode(FILE * fp, char *outname);
 int fakedecode(FILE * fp);
 char *attachdecode(FILE * fp, char *articlename, char *filename);
