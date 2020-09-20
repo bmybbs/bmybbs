@@ -55,18 +55,6 @@ void *get_shm(int key, int size);
 #include "timeop.h"
 #include "common.h"
 #include "strop.h"
-
-#define BAD_WORD_NOTICE "您的文章可能含有按照国家有关规定" \
-                       "不适宜在公共场合发表的内容\n本文须" \
-                       "经过有关人士审查后发表\n"            \
-                       "如果您有疑问，请联系在线的站长审核该文章"
-#define DO1984_NOTICE  "按照有关部门要求,本版文章必须经过有关" \
-                       "人士审查后发表,请耐心等候!\n"           \
-                       "如果您有疑问，请联系在线的站长审核该文章"
-
-int reload_badwords(char *wordlistf, char *imgf);
-int filter_file(char *checkfile, struct mmapfile *badword_img);
-int filter_string(char *string, struct mmapfile *badword_img);
-int filter_article(char *title, char *filename, struct mmapfile *badword_img);
+#include "smth_filter.h"
 
 #endif

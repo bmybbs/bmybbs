@@ -1,7 +1,7 @@
-#include "ythtbbs.h"
+#include <unistd.h>
+#include <string.h>
 #include <sys/file.h>
-#include <sys/mman.h>
-#include <signal.h>
+#include "fileop.h"
 #include "mgrep.h"
 
 int WORDBOUND, WHOLELINE, NOUPPER, INVERSE, FILENAMEONLY, SILENT, FNAME;
