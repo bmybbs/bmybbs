@@ -6,7 +6,9 @@
  *
  */
 
-#include "ythtlib.h"
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 #define lowercase(c)            (isupper ((int) (c)) ? tolower ((int) (c)) : (int) (c))
 #define bm_index(c, icase)      ((icase) ? lowercase (c) : (int) (c))
 #define bm_equal(c1, c2, icase) ((icase) ? lowercase (c1) == lowercase (c2) : (c1) == (c2))

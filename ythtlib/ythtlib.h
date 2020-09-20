@@ -17,9 +17,6 @@
 #define sizeof(x) ((int)sizeof(x))
 #endif*/
 
-char *strnstr(const char *haystack, const char *needle, size_t haystacklen);
-char *strncasestr(const char *haystack, const char *needle, size_t haystacklen);
-
 //Copy from Linux 2.4 kernel...
 #define min(x,y) ({ \
 	const typeof(x) _x = (x);	\
@@ -45,5 +42,6 @@ char *strncasestr(const char *haystack, const char *needle, size_t haystacklen);
 #include "uuencode.h"
 #include "numbyte.h"
 #include "shmop.h"
+#include "strlib.h"
 
 #endif
