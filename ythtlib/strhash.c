@@ -1,4 +1,5 @@
-#include "ythtlib.h"
+#include <string.h>
+#include "strhash.h"
 // from src/bcache.c:useridhash by ylsdd. perhaps it is no good enough.
 int
 strhash(char *id)
