@@ -7,7 +7,6 @@ add_library (ytht SHARED
 	fileop.c
 	strlib.c
 	shmop.c
-	named_socket.c
 	crypt.c
 	limitcpu.c
 	timeop.c
