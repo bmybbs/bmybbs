@@ -90,4 +90,13 @@ struct stat *f_stat_s(struct stat *s, const char *file);
  * @return
  */
 struct stat *l_stat_s(struct stat *s, const char *file);
+
+#define file_size(x) (f_stat(x)->st_size)
+#define file_time(x) (f_stat(x)->st_mtime)
+#define file_rtime(x) (f_stat(x)->st_atime)
+//#define file_exist(x) (file_time(x)!=0)
+#define file_exist(x) (access(x, F_OK)==0)
+#define file_isdir(x) ((f_stat(x)->st_mode & S_IFDIR)!=0)
+#define file_isfile(x) ((f_stat(x)->st_mode & S_IFREG)!=0)
+#define lfile_isdir(x) ((l_stat(x)->st_mode & S_IFDIR)!=0)
 #endif

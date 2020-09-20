@@ -25,16 +25,6 @@ int uudecode(FILE * fp, char *outname);
 int fakedecode(FILE * fp);
 char *attachdecode(FILE * fp, char *articlename, char *filename);
 void uuencode(FILE * fr, FILE * fw, int len, char *filename);
-#define errlog(format, args...) _errlog(__FILE__ ":%s line %d " format, __FUNCTION__,__LINE__ , ##args)
-
-#define file_size(x) (f_stat(x)->st_size)
-#define file_time(x) (f_stat(x)->st_mtime)
-#define file_rtime(x) (f_stat(x)->st_atime)
-//#define file_exist(x) (file_time(x)!=0)
-#define file_exist(x) (access(x, F_OK)==0)
-#define file_isdir(x) ((f_stat(x)->st_mode & S_IFDIR)!=0)
-#define file_isfile(x) ((f_stat(x)->st_mode & S_IFREG)!=0)
-#define lfile_isdir(x) ((l_stat(x)->st_mode & S_IFDIR)!=0)
 
 unsigned char numbyte(int n);
 int bytenum(unsigned char c);
