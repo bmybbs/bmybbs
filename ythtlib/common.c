@@ -1,4 +1,14 @@
-#include "ythtlib.h"
+#include <stdio.h>
+#include <fcntl.h>
+#include <time.h>
+#include <unistd.h>
+#include <string.h>
+#include <stdarg.h>
+
+#ifndef ERRLOG
+#define ERRLOG "/home/bbs/deverrlog"
+#endif
+
 void
 _errlog(char *fmt, ...)
 {

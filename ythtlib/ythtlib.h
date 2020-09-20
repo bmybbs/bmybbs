@@ -21,10 +21,6 @@
 #define ATTACHCACHE "/home/bbsattach/cache"
 #endif
 
-#ifndef ERRLOG
-#define ERRLOG	"/home/bbs/deverrlog"
-#endif
-
 struct hword {
 	char str[80];
 	void *value;
