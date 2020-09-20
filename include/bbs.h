@@ -112,17 +112,10 @@ extern int errno ;
 #define DOECHO (1)     /* Flags to getdata input function */
 #define NOECHO (0)
 
-/*char *strdup() ;        External function declarations */
-char *bfile() ;
-
-extern FILE *ufp ;     /* External variable declarations */
-extern long ti ;
-
 #endif /* BBSIRC */
 
 #define GOOD_BRC_NUM    40      // 最多有 GOOD_BRC_NUM 个个人定制版面
 #define NUMPERMS   (31)
-//#define REG_EXPIRED         180    /* 重做身份确认期限 */
 
 #define FILE_BUFSIZE        250    /* max. length of a file in SHM*/
 #define FILE_MAXLINE         25    /* max. line of a file in SHM */
