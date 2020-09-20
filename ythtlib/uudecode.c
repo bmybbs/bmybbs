@@ -49,7 +49,15 @@
 
 /* Reworked to GNU style by Ian Lance Taylor, ian@airs.com, August 93.  */
 
-#include "ythtlib.h"
+#include <stdio.h>
+#include <string.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <limits.h>
+
+#include "config.h"
+#include "uudecode.h"
+#include "common.h"
 
 #define	DEC(Char) (((Char) - ' ') & 077)
 

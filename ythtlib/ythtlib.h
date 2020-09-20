@@ -17,13 +17,6 @@
 #define sizeof(x) ((int)sizeof(x))
 #endif*/
 
-#ifndef ATTACHCACHE
-#define ATTACHCACHE "/home/bbsattach/cache"
-#endif
-
-int uudecode(FILE * fp, char *outname);
-int fakedecode(FILE * fp);
-char *attachdecode(FILE * fp, char *articlename, char *filename);
 void uuencode(FILE * fr, FILE * fw, int len, char *filename);
 
 unsigned char numbyte(int n);

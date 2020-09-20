@@ -87,7 +87,7 @@ hog or anything, but if you don't want it...
    will go to the bbs mailbox in the usual mail spool. 
 */
 #define ERRORS_TO "root"
-#endif
+#endif  /* INTERNET_EMAIL */
 
 /* 
    Define DOTIMEOUT to set a timer to log out users who sit idle on the system.
@@ -212,4 +212,8 @@ You must also set "EightBitMode=pass8" in /etc/sendmail.cf
 #define APPKEYLENGTH		36
 #define APPNAMELENGTH		20
 #define APPPID				-1
-#endif
+
+#ifndef ATTACHCACHE
+#define ATTACHCACHE "/home/bbsattach/cache"
+#endif  /* ATTACHCACHE */
+#endif  /* __BBS_CONFIG */
