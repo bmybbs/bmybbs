@@ -49,7 +49,7 @@
 
 /* Reworked to GNU style by Ian Lance Taylor, ian@airs.com, August 93.  */
 
-#include "ythtlib.h"
+#include <stdio.h>
 
 static const char uu_std[64] = {
 	'`', '!', '"', '#', '$', '%', '&', '\'',

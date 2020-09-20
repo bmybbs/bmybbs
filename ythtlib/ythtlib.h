@@ -17,8 +17,6 @@
 #define sizeof(x) ((int)sizeof(x))
 #endif*/
 
-void uuencode(FILE * fr, FILE * fw, int len, char *filename);
-
 unsigned char numbyte(int n);
 int bytenum(unsigned char c);
 
@@ -49,5 +47,7 @@ void *get_shm(int key, int size);
 #include "common.h"
 #include "strop.h"
 #include "smth_filter.h"
+#include "uudecode.h"
+#include "uuencode.h"
 
 #endif
