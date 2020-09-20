@@ -1,4 +1,3 @@
-#include "ythtlib.h"
 #include "ythtbbs.h"
 struct action_f {
 	const char *action;

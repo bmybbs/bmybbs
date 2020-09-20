@@ -1,6 +1,5 @@
 #include "bbs.h"
 #include "stdio.h"
-#include "ythtlib.h"
 #include "ythtbbs.h"
 #include <string.h>
 

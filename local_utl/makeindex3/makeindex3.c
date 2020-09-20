@@ -7,7 +7,6 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
-#include "ythtlib.h"
 #include "ythtbbs.h"
 
 #define MAXDEPTH 6

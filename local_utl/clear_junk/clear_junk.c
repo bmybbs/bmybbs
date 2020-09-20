@@ -1,5 +1,4 @@
 #include "bbs.h"
-#include "ythtlib.h"
 
 int clear_junk(char *junk, char *junk2);
 int

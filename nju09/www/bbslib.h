@@ -6,7 +6,6 @@
 //#include "fcgi_stdio.h"
 #include <sys/mman.h>
 #include "bbs.h"
-#include "ythtlib.h"
 #include "ythtbbs.h"
 
 #define FIRST_PAGE	"/"

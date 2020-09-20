@@ -1,5 +1,4 @@
 #include "bbs.h"
-#include "ythtlib.h"
 #include "ythtbbs.h"
 
 int

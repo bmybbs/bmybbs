@@ -9,7 +9,6 @@
 #include <signal.h>
 #include <sys/mman.h>
 #include "ythtbbs.h"
-#include "ythtlib.h"
 #ifdef NUMBUFFER
 #undef NUMBUFFER
 #endif

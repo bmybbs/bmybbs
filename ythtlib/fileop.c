@@ -5,8 +5,14 @@
 #include <sys/file.h>
 #include <sys/types.h>
 #include <dirent.h>
+#include <setjmp.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <ctype.h>
 
-#include "ythtlib.h"
+#include "ytht/strop.h"
+#include "ytht/fileop.h"
 
 sigjmp_buf bus_jump;
 

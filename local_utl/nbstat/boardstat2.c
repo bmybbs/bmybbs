@@ -1,4 +1,3 @@
-#include "ythtlib.h"
 #include "nbstat.h"
 #include "bbs.h"
 #include "strhash.h"

@@ -2,7 +2,8 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <unistd.h>
-#include "ythtlib.h"
+
+#include "ytht/strop.h"
 
 int
 make_named_socket(char *filename)

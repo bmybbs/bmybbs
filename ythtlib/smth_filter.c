@@ -1,8 +1,8 @@
 #include <unistd.h>
 #include <string.h>
 #include <sys/file.h>
-#include "fileop.h"
-#include "mgrep.h"
+#include "ytht/fileop.h"
+#include "ytht/mgrep.h"
 
 int WORDBOUND, WHOLELINE, NOUPPER, INVERSE, FILENAMEONLY, SILENT, FNAME;
 int ONLYCOUNT, num_of_matched, total_line;

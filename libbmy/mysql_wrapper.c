@@ -2,7 +2,7 @@
 #include <string.h>
 #include <sys/file.h>
 #include "config.h"
-#include "ythtlib.h"
+#include "ytht/fileop.h"
 #include "mysql_wrapper.h"
 
 #if MYSQL_VERSION_ID < 80000

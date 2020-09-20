@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include "bbs.h"
-#include "ythtlib.h"
 #include "www.h"
 #define MAXL 50
 #define MAXNLINE  20

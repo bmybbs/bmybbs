@@ -56,8 +56,8 @@
 #include <limits.h>
 
 #include "config.h"
-#include "uudecode.h"
-#include "common.h"
+#include "ytht/uudecode.h"
+#include "ytht/common.h"
 
 #define	DEC(Char) (((Char) - ' ') & 077)
 

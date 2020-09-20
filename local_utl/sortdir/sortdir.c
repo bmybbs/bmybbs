@@ -5,7 +5,6 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include "bbs.h"
-#include "ythtlib.h"
 #include "ythtbbs.h"
 #include "errno.h"
 

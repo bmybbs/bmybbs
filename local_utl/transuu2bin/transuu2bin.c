@@ -1,4 +1,3 @@
-#include "ythtlib.h"
 #include "ythtbbs.h"
 #include <ftw.h>
 

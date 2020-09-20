@@ -1,7 +1,7 @@
 #ifndef __YTHTBBS_H
 #define __YTHTBBS_H
 #include "config.h"
-#include "ythtlib.h"
+#include "ytht/ytht.h"
 #define STRLEN               80	/* Length of most string data */
 #define NAMELEN              40	/* Length of username/realname */
 #define IDLEN                12	/* Length of userids */

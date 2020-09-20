@@ -1,4 +1,4 @@
-#include "ythtlib.h"
+#include <string.h>
 #define CHARSET "gb2312"
 #define HTTP_HEADER     "HTTP/1.0 200 OK\nContent-type: "
 #define EOL	"\r\n"

@@ -1,5 +1,4 @@
 //查找版面最靠后的mark文章      ylsdd 2002/4/3
-#include "ythtlib.h"
 #include "ythtbbs.h"
 
 #define MAXFOUNDD 9

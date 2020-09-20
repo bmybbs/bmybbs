@@ -1,7 +1,7 @@
 #include <time.h>
 #include <sys/resource.h>
 #include <unistd.h>
-#include "limitcpu.h"
+
 static int load_limit = 200;	// it means the cpu limit is 1/200=0.5%
 void
 set_cpu_limit(int limit)

@@ -1,14 +1,13 @@
 /* Copyright (c) 1991 Sun Wu and Udi Manber.  All Rights Reserved. */
 /* multipattern matcher */
-#include "ythtlib.h"
-
 #include <stdio.h>
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
-#include "mgrep.h"
+#include "ytht/common.h"
+#include "ytht/mgrep.h"
 
 extern int ONLYCOUNT, FNAME, SILENT, FILENAMEONLY, num_of_matched;
 extern int INVERSE;
