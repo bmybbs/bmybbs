@@ -1,6 +1,8 @@
 /* fileop.c */
 #ifndef __FILEOP_H
 #define __FILEOP_H
+#include <time.h>
+#include <stdio.h>
 #include <setjmp.h>
 struct mmapfile {
 	char *ptr;
