@@ -36,14 +36,11 @@ typedef struct hword *diction[26 * 26];
 int getdic(diction dic, size_t size, void **mem);
 struct hword *finddic(diction dic, char *key);
 struct hword *insertdic(diction dic, struct hword *cell);
-int mystrtok(char *str, int delim, char *result[], int max);
-
 
 int uudecode(FILE * fp, char *outname);
 int fakedecode(FILE * fp);
 char *attachdecode(FILE * fp, char *articlename, char *filename);
 void uuencode(FILE * fr, FILE * fw, int len, char *filename);
-void _errlog(char *fmt, ...);
 #define errlog(format, args...) _errlog(__FILE__ ":%s line %d " format, __FUNCTION__,__LINE__ , ##args)
 
 #define file_size(x) (f_stat(x)->st_size)
@@ -87,6 +84,7 @@ void *get_shm(int key, int size);
 #include "crypt.h"
 #include "limitcpu.h"
 #include "timeop.h"
+#include "common.h"
 
 #define BAD_WORD_NOTICE "您的文章可能含有按照国家有关规定" \
                        "不适宜在公共场合发表的内容\n本文须" \
