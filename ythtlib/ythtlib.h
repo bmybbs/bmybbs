@@ -20,9 +20,6 @@
 char *strnstr(const char *haystack, const char *needle, size_t haystacklen);
 char *strncasestr(const char *haystack, const char *needle, size_t haystacklen);
 
-void *try_get_shm(int key, int size, int flag);
-void *get_shm(int key, int size);
-#define get_old_shm(x,y) try_get_shm(x,y,0)
 //Copy from Linux 2.4 kernel...
 #define min(x,y) ({ \
 	const typeof(x) _x = (x);	\
@@ -47,5 +44,6 @@ void *get_shm(int key, int size);
 #include "uudecode.h"
 #include "uuencode.h"
 #include "numbyte.h"
+#include "shmop.h"
 
 #endif

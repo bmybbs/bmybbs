@@ -1,4 +1,4 @@
-#include "ythtlib.h"
+#include <string.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
 
