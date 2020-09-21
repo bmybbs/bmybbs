@@ -36,7 +36,7 @@ if [ "$#" -ne 1 ]; then
 else
 	BUILD_DIR=$1
 
-	install_library $BUILD_DIR/ythtlib/libytht.so       libytht.so
+	install_library $BUILD_DIR/libytht/libytht.so       libytht.so
 	install_library $BUILD_DIR/libbmy/libbmy.so         libbmy.so
 	install_library $BUILD_DIR/libythtbbs/libythtbbs.so libythtbbs.so
 
