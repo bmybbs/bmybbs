@@ -1,9 +1,13 @@
-#include <sys/ipc.h>
-#include <sys/msg.h>
-#include "ythtbbs.h"
 #include <time.h>
 #include <stdlib.h>
 #include <iconv.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <string.h>
+#include "ythtbbs.h"
+
 int pu = 0;
 
 void

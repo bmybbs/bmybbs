@@ -1,3 +1,6 @@
+#include <fcntl.h>
+#include <unistd.h>
+#include <string.h>
 #include "ythtbbs.h"
 
 int

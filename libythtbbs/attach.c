@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <sys/file.h>
 #include <sys/mman.h>
+#include <limits.h>
+#include <string.h>
+#include <unistd.h>
 #include "ythtbbs.h"
 
 static int comfakedecode(FILE * fp, int base64, int len);

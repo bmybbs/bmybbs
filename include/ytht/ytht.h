@@ -1,21 +1,5 @@
 #ifndef __YTHTLIB_H
 #define __YTHTLIB_H
-#include <stdio.h>
-#include <string.h>
-#include <time.h>
-#include <stdlib.h>
-#include <stdarg.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <limits.h>
-#include <ctype.h>
-#include <errno.h>
-
-/*#ifndef sizeof
-#define sizeof(x) ((int)sizeof(x))
-#endif*/
 
 //Copy from Linux 2.4 kernel...
 #define min(x,y) ({ \

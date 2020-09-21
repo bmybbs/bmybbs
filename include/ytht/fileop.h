@@ -4,6 +4,8 @@
 #include <time.h>
 #include <stdio.h>
 #include <setjmp.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 struct mmapfile {
 	char *ptr;
 	time_t mtime;
