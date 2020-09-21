@@ -6,5 +6,5 @@ int bbseva_askoneid(int ent, char *board, char *filename, char *id);
 int bbseva_askavg(int ent, char *board, char *filename, float *avg);
 int bbseva_set(int ent, char *board, char *filename, char *id, int star);
 int bbseva_qset(int ent, char *board, char *filename, char *id, int star,
-		int *oldstar, int *count, float *avg);
+int *oldstar, int *count, float *avg);
 #endif

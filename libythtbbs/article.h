@@ -8,16 +8,16 @@ struct fileheader {
 	time_t thread;
 	unsigned int accessed;
 	char title[60];
-	char owner[14];		//如果是本站的, 就用id, 如果时email, 就取第一个词并
-	//且加'.'. 如果是本站匿名, 则第一个为'\0', 后面跟id
+	char owner[14];				//如果是本站的, 就用id, 如果时email, 就取第一个词并
+								//且加'.'. 如果是本站匿名, 则第一个为'\0', 后面跟id
 	unsigned short viewtime;
 	unsigned char sizebyte;
 	unsigned char staravg50;	//staravg 最大为5, staravg50 = staravg * 50
-	//i.e. staravg50 = totalstar * 50 / hasvoted
+								//i.e. staravg50 = totalstar * 50 / hasvoted
 	unsigned char hasvoted;
-	char deltime;		//记录回收站和纸篓里面的文章时什么时间删除的
-	//now_t / (3600 * 24) % 100
-	//用于自动清除垃圾
+	char deltime;				//记录回收站和纸篓里面的文章时什么时间删除的
+								//now_t / (3600 * 24) % 100
+								//用于自动清除垃圾
 	char unused[32];
 };
 
@@ -66,8 +66,7 @@ char *fh2owner(struct fileheader *fh);
 char *fh2realauthor(struct fileheader *fh);
 void fh_setowner(struct fileheader *fh, char *owner, int anony);
 int fh2modifytime(struct fileheader *fh);
-int change_dir(char *, struct fileheader *,
-	       void *func(void *, void *), int, int, int);
+int change_dir(char *, struct fileheader *, void *func(void *, void *), int, int, int);
 void DIR_do_mark(struct fileheader *, struct fileheader *);
 void DIR_do_digest(struct fileheader *, struct fileheader *);
 void DIR_do_underline(struct fileheader *, struct fileheader *);

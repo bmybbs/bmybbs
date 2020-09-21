@@ -92,12 +92,12 @@ extern const char * const permstrings[];
 #define DEF_LOGINFROM    02000000
 #define DEF_NOTEPAD      04000000
 #define DEF_NOLOGINSEND  010000000
-#define DEF_THESIS	 020000000	/* youzi */
+#define DEF_THESIS       020000000	/* youzi */
 #define DEF_MSGGETKEY    040000000
 #define DEF_DELDBLCHAR   0100000000	/*  KCN */
-#define DEF_USEGB	 0200000000	/*  KCN  */
+#define DEF_USEGB        0200000000	/*  KCN  */
 #define DEF_ANIENDLINE   0400000000	/*  ylsdd */
-#define DEF_INTOANN	 01000000000	/* ylsdd */
+#define DEF_INTOANN      01000000000	/* ylsdd */
 #define DEF_POSTNOMSG    02000000000	/* yuhuan */
 #define DEF_SEESTATINLOG 04000000000
 #define	DEF_FILTERXXX	 010000000000

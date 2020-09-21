@@ -1,3 +1,4 @@
+#include <string.h>
 #include "ythtbbs.h"
 int
 qnyjzx(char *id)
