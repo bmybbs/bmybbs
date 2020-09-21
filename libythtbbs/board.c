@@ -1,4 +1,4 @@
-#include "ythtbbs.h"
+#include "ythtbbs/ythtbbs.h"
 #include "bbs.h"
 
 char *

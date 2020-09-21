@@ -7,7 +7,6 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
-#include "ythtbbs.h"
 #include "bbs.h"
 
 #define PersonalPATH MY_BBS_HOME"/0Announce/groups/GROUP_0/PersonalCorpus"

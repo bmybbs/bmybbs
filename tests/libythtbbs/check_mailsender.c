@@ -1,5 +1,5 @@
 #include <check.h>
-#include "mailsender.h"
+#include "ythtbbs/mailsender.h"
 
 extern enum mail_sender_code
 check_mail_to_address(const char *mail_to);

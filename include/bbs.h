@@ -27,7 +27,7 @@
 #ifndef BBSIRC
 
 /* Global includes, needed in most every source file... */
-#include "ythtbbs.h"
+#include "ythtbbs/ythtbbs.h"
 #include "config.h"
 // TODO: Core 里头不应该判断是否存在 FCGI 的实现吧
 #ifndef ENABLE_FASTCGI

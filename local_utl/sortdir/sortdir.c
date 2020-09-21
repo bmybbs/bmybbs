@@ -5,7 +5,6 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include "bbs.h"
-#include "ythtbbs.h"
 #include "errno.h"
 
 struct fileheader *data;

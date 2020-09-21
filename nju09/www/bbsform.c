@@ -1,5 +1,5 @@
 #include "bbslib.h"
-#include "identify.h"
+#include "ythtbbs/identify.h"
 
 static void check_captcha_form(void);
 static void resent_active_mail(void);

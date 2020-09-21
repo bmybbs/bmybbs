@@ -6,7 +6,7 @@
 //#include "fcgi_stdio.h"
 #include <sys/mman.h>
 #include "bbs.h"
-#include "ythtbbs.h"
+#include "ythtbbs/ythtbbs.h"
 
 #define FIRST_PAGE	"/"
 #define CSS_FILE 	"/bbs.css"

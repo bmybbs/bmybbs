@@ -23,7 +23,7 @@
 
 #include "bbs.h"
 #include "bbstelnet.h"
-#include "identify.h"
+#include "ythtbbs/identify.h"
 /*
 #define  EMAIL          0x0001
 #define  NICK           0x0002

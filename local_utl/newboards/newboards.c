@@ -1,7 +1,6 @@
-#include "bbs.h"
-#include "stdio.h"
-#include "ythtbbs.h"
+#include <stdio.h>
 #include <string.h>
+#include "bbs.h"
 
 char ignore[10]="Y";
 

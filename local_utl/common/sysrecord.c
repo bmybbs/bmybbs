@@ -1,5 +1,4 @@
 #include "bbs.h"
-#include "ythtbbs.h"
 
 char *
 setbfile(buf, boardname, filename)

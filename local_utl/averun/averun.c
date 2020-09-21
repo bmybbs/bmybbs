@@ -4,7 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "ythtbbs.h"
+#include <time.h>
+#include "config.h"
+#include "ytht/timeop.h"
 
 #define AVEFLE  MY_BBS_HOME"/reclog/ave.src"
 #define AVEPIC  MY_BBS_HOME"/0Announce/bbslist/today"

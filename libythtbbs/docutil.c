@@ -1,5 +1,6 @@
 #include <stdio.h>
-#include "ythtbbs.h"
+#include <string.h>
+#include "ythtbbs/ythtbbs.h"
 
 int
 eff_size(char *file)

@@ -1,5 +1,7 @@
-#include "ythtbbs.h"
-//#include <string.h>
+#include <string.h>
+#include <unistd.h>
+#include "ythtbbs/ythtbbs.h"
+
 #define BINSECMFILE MY_BBS_HOME "/etc/secmlist.data"
 const struct sectree *
 getsectree(const char *s)

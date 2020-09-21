@@ -1,5 +1,4 @@
 #include "bbs.h"
-#include "ythtbbs.h"
 
 char *
 encode_url(unsigned char *s)

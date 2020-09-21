@@ -1,4 +1,4 @@
-#include "ythtbbs.h"
+#include "ythtbbs/ythtbbs.h"
 struct action_f {
 	const char *action;
 	void (*f) (int, char *, char *, char *);

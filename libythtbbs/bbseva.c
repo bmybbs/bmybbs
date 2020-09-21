@@ -1,7 +1,9 @@
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/msg.h>
-#include "ythtbbs.h"
+#include <string.h>
+#include <unistd.h>
+#include "ythtbbs/ythtbbs.h"
 
 int
 init_bbsevamsq()

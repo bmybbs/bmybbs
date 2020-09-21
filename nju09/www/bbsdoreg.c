@@ -1,5 +1,5 @@
 #include "bbslib.h"
-#include "identify.h"
+#include "ythtbbs/identify.h"
 
 #ifdef POP_CHECK
 // 登陆邮件服务器用的头文件 added by interma@BMY 2005.5.12

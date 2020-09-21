@@ -4,7 +4,6 @@
 */
 
 #include "bbs.h"
-#include "ythtbbs.h"
 #define Ctrl(c)         ( c & 037 )
 
 int key[] = {

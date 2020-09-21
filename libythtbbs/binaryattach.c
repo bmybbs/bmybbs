@@ -3,7 +3,8 @@
 #include <dirent.h>
 #include <netinet/in.h>
 #include <stdio.h>
-#include "ythtbbs.h"
+#include <string.h>
+#include "ythtbbs/ythtbbs.h"
 
 static int
 appendonebinaryattach(char *filename, char *attachname, char *attachfname)

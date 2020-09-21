@@ -36,7 +36,7 @@
 #include <netdb.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include "identify.h"
+#include "ythtbbs/identify.h"
 // 邮件服务器上用户名和密码的长度， added by interma@BMY 2005.5.12
 #define USER_LEN 20
 #define PASS_LEN 20

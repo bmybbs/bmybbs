@@ -1,7 +1,6 @@
 //自动删除.DELETED和.JUNK中所列过期文章. ylsdd 2000.6.7
 
 #include "bbs.h"
-#include "ythtbbs.h"
 #define LOCAL_UTL
 
 int digestmode;

@@ -1,7 +1,6 @@
 //查找和删除丢失到board目录下的文章     ylsdd   2001/6/16
 
 #include "bbs.h"
-#include "ythtbbs.h"
 
 #define MAXFILE 500000
 #define MINAGE 50000		//at least 50000 sec old

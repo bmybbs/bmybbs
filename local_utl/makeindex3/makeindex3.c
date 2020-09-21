@@ -7,7 +7,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
-#include "ythtbbs.h"
+#include <ythtbbs/announce.h>
 
 #define MAXDEPTH 6
 int ncachetitle = 0;

@@ -1,4 +1,4 @@
-#include "ythtbbs.h"
+#include "ythtbbs/ythtbbs.h"
 const char * const permstrings[] = {
 	"基本权力",		/* PERM_BASIC */
 	"进入聊天室",		/* PERM_CHAT */

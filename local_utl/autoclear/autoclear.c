@@ -7,7 +7,6 @@
 /*       但不删除加g,m及一个月内的文章             */
 
 #include "bbs.h"
-#include "ythtbbs.h"
 
 void securityreport(char * owner, char * str, char * title);
 

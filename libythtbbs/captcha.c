@@ -1,5 +1,14 @@
-#include "ythtbbs.h"
+#include <string.h>
+#include <stdio.h>
+#include <time.h>
+#include <unistd.h>
+#include "config.h"
+#include "ytht/fileop.h"
 #include "mysql_wrapper.h"
+#include "ythtbbs/captcha.h"
+#include "ythtbbs/boardrc.h"
+#include "ythtbbs/user.h"
+#include "ythtbbs/misc.h"
 
 static const unsigned int TOTAL_CAPTCHA_NUMS = 500000;
 static const unsigned int MAX_ATTEMPTS       = 5;

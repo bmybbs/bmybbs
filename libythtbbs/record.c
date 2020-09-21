@@ -8,7 +8,7 @@
 #include <sys/file.h>
 #include <signal.h>
 #include <sys/mman.h>
-#include "ythtbbs.h"
+#include "ythtbbs/ythtbbs.h"
 #ifdef NUMBUFFER
 #undef NUMBUFFER
 #endif

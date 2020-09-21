@@ -1,5 +1,5 @@
 #include "bbs.h"
-#include "identify.h"
+#include "ythtbbs/identify.h"
 #include "mysql_wrapper.h"
 //关于链接数据库的一些常量
 #define USERREG_TABLE "userreglog"

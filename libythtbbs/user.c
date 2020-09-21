@@ -4,7 +4,6 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
-#include "ythtbbs.h"
 #include "bbs.h"
 
 static int isoverride(struct override *o, char *id);

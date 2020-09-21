@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <check.h>
 #include <unistd.h>
-#include "captcha.h"
+#include "ythtbbs/captcha.h"
 #include "ytht/fileop.h"
 
 extern int query_captcha_by_id(unsigned int cap_id, struct BMYCaptcha *captcha);

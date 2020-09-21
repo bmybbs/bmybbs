@@ -6,7 +6,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
-#include "ythtbbs.h"
+#include "ythtbbs/ythtbbs.h"
 
 int pu = 0;
 

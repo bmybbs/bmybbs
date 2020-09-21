@@ -1,5 +1,4 @@
 #include "bbs.h"
-#include "ythtbbs.h"
 #include <stdio.h>
 #include <iconv.h>
 

@@ -3,8 +3,8 @@
 #include "smtp.h"
 #include "config.h"
 #include "ytht/fileop.h"
-#include "mailsender.h"
-#include "misc.h"
+#include "ythtbbs/mailsender.h"
+#include "ythtbbs/misc.h"
 
 const char *MAIL_CONFIG_FILE = MY_BBS_HOME "/etc/smtpconfig";
 const int SMTP_FLAG_NO_DEBUG = 0;

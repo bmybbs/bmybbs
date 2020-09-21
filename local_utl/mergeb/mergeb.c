@@ -1,7 +1,6 @@
 #include <time.h>
 #include <stdio.h>
 #include "bbs.h"
-#include "ythtbbs.h"
 #define MAXINT ((int)((((unsigned int)~(int)0))>>1))
 
 long get_num_records(char *filename, int size);

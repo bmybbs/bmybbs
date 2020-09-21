@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include <sys/mman.h>
 #include <sys/types.h>
-#include "ythtbbs.h"
+#include "ythtbbs/ythtbbs.h"
 
 int
 checktitle(char *str)

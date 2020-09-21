@@ -14,7 +14,6 @@
 */
 
 #include "bbs.h"
-#include "ythtbbs.h"
 
 /* Edit these lines to fit the configuration of your server */
 

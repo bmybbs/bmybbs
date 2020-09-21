@@ -1,7 +1,7 @@
 //ylsdd Nov 05, 2002
 #include <dirent.h>
 #include "bbs.h"
-#include "ythtbbs.h"
+#include "ythtbbs/ythtbbs.h"
 
 #define MAX_PROXY_NUM 2
 #define DEBUG_MODE 0

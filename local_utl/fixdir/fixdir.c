@@ -5,7 +5,6 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include "bbs.h"
-#include "ythtbbs.h"
 extern int errno;
 
 struct fileheader data[20000];

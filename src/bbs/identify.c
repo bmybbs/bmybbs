@@ -1,5 +1,5 @@
 #include "bbs.h"
-#include "identify.h"
+#include "ythtbbs/identify.h"
 
 #ifdef POP_CHECK
 /*

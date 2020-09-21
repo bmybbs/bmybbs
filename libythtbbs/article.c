@@ -1,6 +1,8 @@
 #include <fcntl.h>
 #include <errno.h>
-#include "ythtbbs.h"
+#include <string.h>
+#include <unistd.h>
+#include "ythtbbs/ythtbbs.h"
 
 // 为了编辑 html/xml/xhtml 文件引入库 libxml2 by IronBlood 20130805
 #include <sys/file.h>

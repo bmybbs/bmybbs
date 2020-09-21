@@ -5,7 +5,7 @@ project(BMYBBS)
 find_package(LibXml2 REQUIRED)
 #find_package(MySQL REQUIRED)
 
-include_directories(include libythtbbs libbmy ${LIBXML2_INCLUDE_DIR})
+include_directories(include libbmy ${LIBXML2_INCLUDE_DIR})
 
 link_directories(ythtlib libythtbbs libbmy)
 

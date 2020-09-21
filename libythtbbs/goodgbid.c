@@ -1,4 +1,8 @@
-#include "ythtbbs.h"
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+
+#include "config.h"
 
 static int
 whatch(unsigned char ch)

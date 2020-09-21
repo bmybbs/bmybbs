@@ -1,5 +1,5 @@
 #include "bbs.h"
-#include "ythtbbs.h"
+
 #include <time.h>
 #include <sys/types.h>
 #include <sys/mman.h>

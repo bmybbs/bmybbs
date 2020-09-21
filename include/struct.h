@@ -22,6 +22,7 @@
 
 #ifndef __BBS_STRUCT_H
 #define __BBS_STRUCT_H
+#include "config.h"
 
 /**
  * INET6_ADDRSTRLEN 46 longest: 0fff:1fff:2fff:3fff:4fff:5fff:255.255.255.255

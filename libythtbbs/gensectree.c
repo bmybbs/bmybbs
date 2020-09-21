@@ -1,6 +1,6 @@
 #include <string.h>
 #include <stdio.h>
-#include "ythtbbs.h"
+#include "ythtbbs/ythtbbs.h"
 #define MAXPAIRS 300
 struct {
 	int used;

@@ -1,4 +1,6 @@
-#include "ythtbbs.h"
+#include <string.h>
+#include <unistd.h>
+#include "ythtbbs/ythtbbs.h"
 int
 getregforms(char *filename, int num, const char *userid)
 {

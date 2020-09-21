@@ -5,8 +5,6 @@
 */
 
 #include "bbs.h"
-#include "ythtbbs.h"
-
 
 #define LOG_FILE		"check_ulevel.log"
 #define FILE_NAME		"check_ulevel.special"

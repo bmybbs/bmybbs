@@ -216,4 +216,17 @@ You must also set "EightBitMode=pass8" in /etc/sendmail.cf
 #ifndef ATTACHCACHE
 #define ATTACHCACHE "/home/bbsattach/cache"
 #endif  /* ATTACHCACHE */
+
+#define STRLEN               80	/* Length of most string data */
+#define NAMELEN              40	/* Length of username/realname */
+#define IDLEN                12	/* Length of userids */
+#define PASSLEN              14	/* Length of encrypted passwd field */
+#define MAXMESSAGE	     5
+#define BADLOGINFILE "logins.bad"
+#define PATHTMPBRC MY_BBS_HOME "/bbstmpfs/brc"
+#define PATHUSERATTACH MY_BBS_HOME "/bbstmpfs/userattach"
+#define PATHZMODEM MY_BBS_HOME "/bbstmpfs/zmodem"
+#define MAXATTACHSIZE (10000000)
+#define MAXPICSIZE (1500000) // 图片最大为500kb
+#define MAX_MENTION_ID (20)  /* 最大允许 @ 的 id 个数 */
 #endif  /* __BBS_CONFIG */

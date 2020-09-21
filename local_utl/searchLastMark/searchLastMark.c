@@ -1,5 +1,14 @@
 //查找版面最靠后的mark文章      ylsdd 2002/4/3
-#include "ythtbbs.h"
+#include <stdio.h>
+#include <string.h>
+#include <time.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include "config.h"
+#include "ytht/fileop.h"
+#include "ytht/strop.h"
+#include "ythtbbs/article.h"
+#include "ythtbbs/board.h"
 
 #define MAXFOUNDD 9
 #define MAXAUTHOR 5
