@@ -1,6 +1,6 @@
 #include <string.h>
 #include <sys/file.h>
-#include "smtp.h"
+#include "bmy/smtp.h"
 #include "config.h"
 #include "ytht/fileop.h"
 #include "ythtbbs/mailsender.h"

@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include "config.h"
 #include "ytht/fileop.h"
-#include "mysql_wrapper.h"
+#include "bmy/mysql_wrapper.h"
 #include "ythtbbs/captcha.h"
 #include "ythtbbs/boardrc.h"
 #include "ythtbbs/user.h"

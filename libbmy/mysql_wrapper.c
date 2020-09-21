@@ -3,7 +3,7 @@
 #include <sys/file.h>
 #include "config.h"
 #include "ytht/fileop.h"
-#include "mysql_wrapper.h"
+#include "bmy/mysql_wrapper.h"
 
 #if MYSQL_VERSION_ID < 80000
 typedef my_bool MYBOOL;
