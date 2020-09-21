@@ -41,7 +41,6 @@ add_library(ythtbbs SHARED
 	politics.c
 	goodgbid.c
 	binaryattach.c
-	permissions.c
 	bbseva.c
 	attach.c
 	regform.c

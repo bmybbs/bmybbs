@@ -68,7 +68,6 @@
 #define DEFINE(x)     ((x)?currentuser.userdefine&(x):1)
 #define UNREAD(x, y) (((x)->edittime)?(brc_unreadt(y, (x)->edittime)):brc_unreadt(y, (x)->filetime))
 #define SETREAD(x, y) (((x)->edittime)?(brc_addlistt(y, (x)->edittime)):brc_addlistt(y, (x)->filetime))
-extern const char * const permstrings[];
 
 #define DEF_FRIENDCALL   000001
 #define DEF_ALLMSG       000002
@@ -104,5 +103,4 @@ extern const char * const permstrings[];
 //#define DEF_INTERNETMAIL   020000000000
 #define DEF_NEWSTOP10    020000000000 //add by bjgyt
 #define NUMDEFINES 32
-extern const char * const user_definestr[];
 #endif

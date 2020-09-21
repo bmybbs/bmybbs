@@ -1,5 +1,5 @@
 /*
-    Pirate Bulletin Board System  
+    Pirate Bulletin Board System
     Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
     Eagles Bulletin Board System
     Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
@@ -9,7 +9,7 @@
     Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
                         Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
     Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
-    
+
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 1, or (at your option)
@@ -40,6 +40,76 @@ static void childreturn(int i);
 static void escape_filename(char *fn);
 static void bbs_zsendfile(char *filename);
 static void get_load(double load[]);
+
+static const char * const g_permstrings[] = {
+	"ª˘±æ»®¡¶",		/* PERM_BASIC */
+	"Ω¯»Î¡ƒÃÏ “",		/* PERM_CHAT */
+	"∫ÙΩ–À˚»À¡ƒÃÏ",		/* PERM_PAGE */
+	"∑¢±ÌŒƒ’¬",		/* PERM_POST */
+	" π”√’ﬂ◊ ¡œ’˝»∑",	/* PERM_LOGINOK */
+	"Ω˚÷π π”√«©√˚µµ",	/* PERM_DENYSIG */
+	"“˛…Ì ı",		/* PERM_CLOAK */
+	"ø¥¥©“˛…Ì ı",		/* PERM_SEECLOAK */
+	"’ ∫≈”¿æ√±£¡Ù",		/* PERM_XEMPT */
+	"±‡º≠Ω¯’æª≠√Ê",		/* PERM_WELCOME */
+	"∞Â÷˜",			/* PERM_BOARDS */
+	"’ ∫≈π‹¿Ì‘±",		/* PERM_ACCOUNTS */
+	"±æ’æ÷Ÿ≤√",		/* PERM_ARBITRATE */
+	"Õ∂∆±π‹¿Ì‘±",		/* PERM_OVOTE */
+	"œµÕ≥Œ¨ª§π‹¿Ì‘±",	/* PERM_SYSOP */
+	"Read/Post œﬁ÷∆",	/* PERM_POSTMASK */
+	"æ´ª™«¯◊‹π‹",		/* PERM_ANNOUNCE */
+	"Ã÷¬€«¯◊‹π‹",		/* PERM_OBOARDS */
+	"ªÓ∂Øø¥∞Ê◊‹π‹",		/* PERM_ACBOARD */
+	"≤ªƒ‹ ZAP(Ã÷¬€«¯◊®”√)",	/* PERM_NOZAP */
+	"«ø÷∆∫ÙΩ–",		/* PERM_FORCEPAGE */
+	"—”≥§∑¢¥Ù ±º‰",		/* PERM_EXT_IDLE */
+	"¥Û–≈œ‰",		/* PERM_SPECIAL1 */
+	"Ãÿ ‚»®œﬁ 2",		/* PERM_SPECIAL2 */
+	"Ãÿ ‚»®œﬁ 3",		/* PERM_SPECIAL3 */
+	"«¯≥§",			/* PERM_SPECIAL4 */
+	"±æ’æº‡≤Ï◊È",		/* PERM_SPECIAL5 */
+	"±æ’æ¡¢∑®ª·",		/* PERM_SPECIAL6 */
+	"Ãÿ ‚»®œﬁ 7",		/* PERM_SPECIAL7 */
+	"∏ˆ»ÀŒƒºØ",		/* PERM_SPECIAL8 */
+	"Ω˚÷π∑¢–≈»®",		/* PERM_DENYMAIL */
+};
+
+static const char *const g_user_definestr[NUMDEFINES] = {
+	"∫ÙΩ–∆˜πÿ±’ ±ø…»√∫√”—∫ÙΩ–",	/* DEF_FRIENDCALL */
+	"Ω” ‹À˘”–»Àµƒ—∂œ¢",	/* DEF_ALLMSG */
+	"Ω” ‹∫√”—µƒ—∂œ¢",	/* DEF_FRIENDMSG */
+	" ’µΩ—∂œ¢∑¢≥ˆ…˘“Ù",	/* DEF_SOUNDMSG */
+	" π”√≤ …´",		/* DEF_COLOR */
+	"œ‘ æªÓ∂Øø¥∞Ê",		/* DEF_ACBOARD */
+	"œ‘ æ—°µ•µƒ—∂œ¢¿∏",	/* DEF_ENDLINE */
+	"±‡º≠ ±œ‘ æ◊¥Ã¨¿∏",	/* DEF_EDITMSG */
+	"—∂œ¢¿∏≤…”√“ª∞„/æ´ºÚƒ£ Ω",	/* DEF_NOTMSGFRIEND */
+	"—°µ•≤…”√“ª∞„/æ´ºÚƒ£ Ω",	/* DEF_NORMALSCR */
+	"∑÷¿‡Ã÷¬€«¯“‘ New œ‘ æ",	/* DEF_NEWPOST */
+	"‘ƒ∂¡Œƒ’¬ «∑Ò π”√»∆æÌ—°‘Ò",	/* DEF_CIRCLE */
+	"‘ƒ∂¡Œƒ’¬”Œ±ÍÕ£”⁄µ⁄“ª∆™Œ¥∂¡",	/* DEF_FIRSTNEW */
+	"Ω¯’æ ±œ‘ æ∫√”—√˚µ•",	/* DEF_LOGFRIEND */
+	"Ω¯’æ ±œ‘ æ±∏Õ¸¬º",	/* DEF_INNOTE */
+	"¿Î’æ ±œ‘ æ±∏Õ¸¬º",	/* DEF_OUTNOTE */
+	"¿Î’æ ±—ØŒ ºƒªÿÀ˘”–—∂œ¢",	/* DEF_MAILMSG */
+	" π”√◊‘º∫µƒ¿Î’æª≠√Ê",	/* DEF_LOGOUT */
+	"Œ“ «’‚∏ˆ◊È÷Øµƒ≥…‘±",	/* DEF_SEEWELC1 */
+	"∫√”—…œ’æÕ®÷™",		/* DEF_LOGINFROM */
+	"π€ø¥¡Ù—‘∞Ê",		/* DEF_NOTEPAD */
+	"≤ª“™ÀÕ≥ˆ…œ’æÕ®÷™∏¯∫√”—",	/* DEF_NOLOGINSEND */
+	"÷˜Ã‚ Ωø¥∞Ê",		/* DEF_THESIS */
+	" ’µΩ—∂œ¢µ»∫Úªÿ”¶ªÚ«Â≥˝",	/* DEF_MSGGETKEY */
+	"∫∫◊÷’˚◊÷¥¶¿Ì",		/* DEF_DELDBLCHAR */
+	" π”√GB¬Î‘ƒ∂¡",		/* DEF_USEGB KCN 99.09.03 */
+	" π”√∂ØÃ¨µ◊œﬂ",		/* DEF_ANIENDLINE */
+	"≥ı¥Œ∑√Œ ∞Ê√ÊÃ· æΩ¯»Îæ´ª™«¯",	/* DEF_INTOANN */
+	"∑¢±ÌŒƒ’¬ ±‘› ±∆¡±ŒMSG",	/* DEF_POSTNOMSG */
+	"Ω¯’æ ±π€ø¥Õ≥º∆–≈œ¢",	/* DEF_SEESTATINLOG */
+	"π˝¬Àø…ƒ‹¡Ó»À∑¥∏––≈œ¢",	/* DEF_FILTERXXX */
+	//" ’»°’æÕ‚–≈º˛",		/* DEF_INTERNETMAIL */
+	"Ω¯’æ ±π€ø¥»´π˙ Æ¥Û≈≈––∞Ò"	/* DEF_NEWSTOP10 */
+};
 
 static int
 loadkeys(struct one_key *key, char *name)
@@ -157,7 +227,7 @@ int i, use_define;
 	char buf[STRLEN];
 
 	sprintf(buf, "%c. %-30s %3s", 'A' + i,
-		(use_define) ? user_definestr[i] : permstrings[i],
+		(use_define) ? g_user_definestr[i] : g_permstrings[i],
 		((pbits >> i) & 1 ? "ON" : "OFF"));
 	move(i + 6 - ((i > 15) ? 16 : 0), 0 + ((i > 15) ? 40 : 0));
 	prints(buf);
@@ -280,7 +350,7 @@ x_copykeys()
 
 	if (ans[0] == '0' || ans[0] == '\n' || ans[0] == '\0')
 			return 0;
-	
+
 	if (ans[0] == '3' || ans[0] == '6')
 	{
 		int i = 0;
@@ -290,9 +360,9 @@ x_copykeys()
 		}
 		setuserfile(tempname, "mailkey");
 		savekeys(&mail_comms[0], tempname);
-		
+
 	}
-	
+
 	prints("…Ë÷√ÕÍ±œ");
 	pressreturn();
 	return 0;
@@ -615,7 +685,7 @@ x_cloak()
 	if (!uinfo.in_chat) {
 		move(1, 0);
 		clrtoeol();
-	        if(uinfo.invisible)				//add by mintbaggio@BMY for normal cloak	
+	        if(uinfo.invisible)				//add by mintbaggio@BMY for normal cloak
 			currentuser./*pseudo_*/lastlogout = time(NULL);
 		else	currentuser./*pseudo_*/lastlogout = 0;
 		substitute_record(PASSFILE, &currentuser, sizeof (currentuser),
@@ -715,7 +785,7 @@ a_edits()
 		"autopost", "junkboards", "sysops", "prisonor", "untrust",
 		"bbsnetA.ini", "bbsnet.ini", "filtertitle",
 		"../ftphome/ftp_adm", "badwords", "sbadwords", "pbadwords",
-		"../inndlog/newsfeeds.bbs", "spec_site", "secmlist","special","life", 
+		"../inndlog/newsfeeds.bbs", "spec_site", "secmlist","special","life",
 		"commendlist", "manager_team","./pop_register/mail.xjtu.edu.cn","./pop_register/stu.xjtu.edu.cn",
 		"top10forbid","voteidboards","newboard","recommboard","guestbanip",NULL
 	};
@@ -927,7 +997,7 @@ x_lockscreen()
 	                getdata(17,0,"«Î ‰»Î◊‘∂®“Â¿Ì”…:",user_self,9,DOECHO,YEA);
 		        int i=0,flag=0;
 			for(i=0;i<=7;i++){
-			if(user_self[i]==' ')  
+			if(user_self[i]==' ')
 			{
 				flag=1;
 				break;
@@ -943,7 +1013,7 @@ x_lockscreen()
 			 modify_user_mode(USERDF4);break;
              }
 			else
-			{	
+			{
 				move(17,0);
 				clrtobot();
 				prints("ƒ˙ ‰»Îµƒ◊‘∂®“Â¿Ì”…∫¨”–≤ª∫œ  ¥ ª„ªÚÃÿ ‚◊÷∑˚£¨Ω´“‘ƒ¨»œ∑Ω ΩÀ¯∆¡");
@@ -952,19 +1022,19 @@ x_lockscreen()
 			}
 		   }
 			else
-			{   
+			{
 				move(17,0);
 				clrtobot();
 				prints("ƒ„±ªπ‹¿Ì‘±»°œ˚◊‘∂®“ÂÀ¯∆¡µƒ»®œﬁ£¨Ω´“‘ƒ¨»œ∑Ω ΩÀ¯∂®");
 				modify_user_mode(LOCKSCREEN);
 				break;
-			} 
+			}
 		default:
 			prints("ƒ¨»œÀ¯∆¡");
 			modify_user_mode(LOCKSCREEN);
 	}
 	move(18,0);
-	clrtobot();      
+	clrtobot();
 	prints("[1;36m”´ƒª“—‘⁄[33m %19s[36m  ±±ª[32m %-12s [36m‘› ±À¯◊°¡À...[m",
 	     ctime(&now), currentuser.userid);
 	while (*buf == '\0' || !checkpasswd(currentuser.passwd, buf)) {
@@ -1460,7 +1530,7 @@ sendGoodWish(char *userid)
 	   if (uid[0] == '\0') {
 	   clear();
 	   return 0;
-	   }         
+	   }
 	   if (!(tuid = getuser(uid))) {
 	   move(7, 0);
 	   prints("\x1b[1mƒ˙ ‰»Îµƒ π”√’ﬂ¥˙∫≈( ID )≤ª¥Ê‘⁄£°\x1b[m\n");
