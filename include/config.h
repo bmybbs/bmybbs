@@ -22,8 +22,8 @@
     GNU General Public License for more details.
 */
 
-#ifndef __BBS_CONFIG
-#define __BBS_CONFIG
+#ifndef BBS_CONFIG
+#define BBS_CONFIG
 
 /* FIREBIRD BBS 3.0K CONFIGURATION VARIABLES */
 
@@ -176,11 +176,11 @@ You must also set "EightBitMode=pass8" in /etc/sendmail.cf
 #define NOREMOTECHAT
 
 #define MY_BBS_HOME   "/home/bbs" 
-#define MY_BBS_NAME   "±øÂíÙ¸BBS"
+#define MY_BBS_NAME   "\xB1\xF8\xC2\xED\xD9\xB8\x42\x42\x53"  /* å…µé©¬ä¿‘BBS */
 #define MY_BBS_DOMAIN "bbs.xjtu.edu.cn" 
 #define MY_BBS_IP     "202.117.1.8" 
 #define MY_BBS_ID     "BMY"
-#define MY_BBS_LOC    "Î÷°²½»Í¨´óÑ§"
+#define MY_BBS_LOC    "\xCE\xF7\xB0\xB2\xBD\xBB\xCD\xA8\xB4\xF3\xD1\xA7" /* è¥¿å®‰äº¤é€šå¤§å­¦ */
 #define BBSUSER	      "bbs"
 #define BBSGID	      999
 #define BBSUID	      999
@@ -206,7 +206,7 @@ You must also set "EightBitMode=pass8" in /etc/sendmail.cf
 #define BBSEVA_MSQKEY 3334
 
 /*
- * ÓĞ¹Ø app µÄÏŞÖÆ
+ * æœ‰å…³ app çš„é™åˆ¶
  */
 #define MAXSECRETKEYLENGTH	8
 #define APPKEYLENGTH		36
@@ -221,12 +221,12 @@ You must also set "EightBitMode=pass8" in /etc/sendmail.cf
 #define NAMELEN              40	/* Length of username/realname */
 #define IDLEN                12	/* Length of userids */
 #define PASSLEN              14	/* Length of encrypted passwd field */
-#define MAXMESSAGE	     5
+#define MAXMESSAGE            5
 #define BADLOGINFILE "logins.bad"
 #define PATHTMPBRC MY_BBS_HOME "/bbstmpfs/brc"
 #define PATHUSERATTACH MY_BBS_HOME "/bbstmpfs/userattach"
 #define PATHZMODEM MY_BBS_HOME "/bbstmpfs/zmodem"
 #define MAXATTACHSIZE (10000000)
-#define MAXPICSIZE (1500000) // Í¼Æ¬×î´óÎª500kb
-#define MAX_MENTION_ID (20)  /* ×î´óÔÊĞí @ µÄ id ¸öÊı */
-#endif  /* __BBS_CONFIG */
+#define MAXPICSIZE (1500000) // å›¾ç‰‡æœ€å¤§ä¸º500kb
+#define MAX_MENTION_ID (20)  /* æœ€å¤§å…è®¸ @ çš„ id ä¸ªæ•° */
+#endif  /* BBS_CONFIG */
