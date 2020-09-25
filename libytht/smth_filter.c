@@ -9,7 +9,7 @@ int ONLYCOUNT, num_of_matched, total_line;
 char *CurrentFileName;
 
 int
-reload_badwords(char *wordlistf, char *imgf)
+ytht_smth_reload_badwords(char *wordlistf, char *imgf)
 {
 	int fp;
 	struct pattern_image *pattern_buf;
@@ -54,7 +54,7 @@ default_setting()
 }
 
 int
-filter_file(char *checkfile, struct mmapfile *badword_img)
+ytht_smth_filter_file(char *checkfile, struct mmapfile *badword_img)
 {
 	int retv;
 	struct mmapfile mf = { ptr:NULL };
@@ -69,7 +69,7 @@ filter_file(char *checkfile, struct mmapfile *badword_img)
 }
 
 int
-filter_string(char *string, struct mmapfile *badword_img)
+ytht_smth_filter_string(char *string, struct mmapfile *badword_img)
 {
 	int retv;
 	default_setting();
@@ -78,6 +78,6 @@ filter_string(char *string, struct mmapfile *badword_img)
 	return retv;
 }
 
-int filter_article(char *title, char *filename, struct mmapfile *badword_img){
-	return (filter_string(title, badword_img) || filter_file(filename, badword_img)); 
+int ytht_smth_filter_article(char *title, char *filename, struct mmapfile *badword_img){
+	return (ytht_smth_filter_string(title, badword_img) || ytht_smth_filter_file(filename, badword_img));
 }

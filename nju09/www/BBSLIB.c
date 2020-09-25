@@ -3088,7 +3088,7 @@ dofilter(char *title, char *fn, int level)
 	if (mmapfile(bf, mb) < 0)
 		goto CHECK2;
 
-	if (filter_article(title, fn, mb)) {
+	if (ytht_smth_filter_article(title, fn, mb)) {
 		if (level != 2)
 			return 1;
 		return 2;
@@ -3100,7 +3100,7 @@ dofilter(char *title, char *fn, int level)
 	bf = PBADWORDS;
 	if (mmapfile(bf, mb) < 0)
 		return 0;
-	if (filter_article(title, fn, mb))
+	if (ytht_smth_filter_article(title, fn, mb))
 		return 2;
 	else
 		return 0;
@@ -3130,8 +3130,8 @@ dofilter_edit(char *title, char *buf, int level)
 	if (mmapfile(bf, mb) < 0)
 		goto CHECK2;
 
-	if (filter_string(buf, mb)
-	    || filter_string(title, mb)) {
+	if (ytht_smth_filter_string(buf, mb)
+		|| ytht_smth_filter_string(title, mb)) {
 		if (level != 2)
 			return 1;
 		return 2;
@@ -3143,8 +3143,8 @@ dofilter_edit(char *title, char *buf, int level)
 	bf = PBADWORDS;
 	if (mmapfile(bf, mb) < 0)
 		return 0;
-	if (filter_string(buf, mb)
-	    || filter_string(title, mb))
+	if (ytht_smth_filter_string(buf, mb)
+		|| ytht_smth_filter_string(title, mb))
 		return 2;
 	else
 		return 0;
@@ -3155,9 +3155,9 @@ search_filter(char *pat1, char *pat2, char *pat3)
 {
 	if (mmapfile(BADWORDS, &mf_badwords) < 0)
 		return 0;
-	if (filter_string(pat1, &mf_badwords)
-	    || filter_string(pat2, &mf_badwords)
-	    || filter_string(pat3, &mf_badwords)) {
+	if (ytht_smth_filter_string(pat1, &mf_badwords)
+		|| ytht_smth_filter_string(pat2, &mf_badwords)
+		|| ytht_smth_filter_string(pat3, &mf_badwords)) {
 		return -1;
 	}
 	return 0;

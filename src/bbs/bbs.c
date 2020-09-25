@@ -2308,7 +2308,7 @@ int mode;			// 1: politics    0: non-politics
 	}
 	if (mmapfile(bf, mf) < 0)
 		goto CHECK2;
-	if (filter_article(title, fn, mf)) {
+	if (ytht_smth_filter_article(title, fn, mf)) {
 		if (mode != 2) {
 			move(0, 0);
 			clear();
@@ -2326,7 +2326,7 @@ int mode;			// 1: politics    0: non-politics
 	bf = PBADWORDS;
 	if (mmapfile(bf, mf) < 0)
 		return 0;
-	if (filter_article(title, fn, mf))
+	if (ytht_smth_filter_article(title, fn, mf))
 		return -2;
 	else
 		return 0;
@@ -2355,7 +2355,7 @@ stringfilter(char *title, int mode)
 	}
 	if (mmapfile(bf, mf) < 0)
 		return 0;
-	if (filter_string(title, mf)) {
+	if (ytht_smth_filter_string(title, mf)) {
 		return -1;
 	}
 	return 0;

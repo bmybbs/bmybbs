@@ -8,7 +8,7 @@
     Firebird Bulletin Board System
     Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
                         Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
-    
+
     Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
 
     This program is free software; you can redistribute it and/or modify
@@ -500,7 +500,7 @@ char *configfile, *imgfile;
 }
 
 /*static int
-reload_badwords(bwfile, tobuild)
+ytht_smth_reload_badwords(bwfile, tobuild)
 char *bwfile;
 char *tobuild;
 {
@@ -767,11 +767,10 @@ char *menu_name;
 			size = domenu_screen(pm, cmdprompt, pos);
 			now = 0;
 			fill_shmfile(5, "etc/endline", ENDLINE1_SHMKEY);
-			reload_badwords("etc/badwords", "etc/.badwords_new");
-			reload_badwords("etc/sbadwords", "etc/.sbadwords_new");
-			reload_badwords("etc/pbadwords", "etc/.pbadwords_new");
-			reload_badwords("etc/filtertitle",
-					"etc/.filtertitle_new");
+			ytht_smth_reload_badwords("etc/badwords", "etc/.badwords_new");
+			ytht_smth_reload_badwords("etc/sbadwords", "etc/.sbadwords_new");
+			ytht_smth_reload_badwords("etc/pbadwords", "etc/.pbadwords_new");
+			ytht_smth_reload_badwords("etc/filtertitle", "etc/.filtertitle_new");
 			gensecm("etc/secmlist");
 			break;
 		case '!':	/* youzi leave */

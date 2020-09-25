@@ -2,6 +2,7 @@
 
 #ifndef BMYBBS_SMTH_FILTER
 #define BMYBBS_SMTH_FILTER
+#include "ytht/fileop.h"
 
 /*
  * 您的文章可能含有按照国家有关规定不适宜在公共场合发表的内容
@@ -20,9 +21,9 @@
 #define DO1984_NOTICE  "\xB0\xB4\xD5\xD5\xD3\xD0\xB9\xD8\xB2\xBF\xC3\xC5\xD2\xAA\xC7\xF3,\xB1\xBE\xB0\xE6\xCE\xC4\xD5\xC2\xB1\xD8\xD0\xEB\xBE\xAD\xB9\xFD\xD3\xD0\xB9\xD8\xC8\xCB\xCA\xBF\xC9\xF3\xB2\xE9\xBA\xF3\xB7\xA2\xB1\xED,\xC7\xEB\xC4\xCD\xD0\xC4\xB5\xC8\xBA\xF2\x21!\n" \
                        "\xC8\xE7\xB9\xFB\xC4\xFA\xD3\xD0\xD2\xC9\xCE\xCA\xA3\xAC\xC7\xEB\xC1\xAA\xCF\xB5\xD4\xDA\xCF\xDF\xB5\xC4\xD5\xBE\xB3\xA4\xC9\xF3\xBA\xCB\xB8\xC3\xCE\xC4\xD5\xC2"
 
-int reload_badwords(char *wordlistf, char *imgf);
-int filter_file(char *checkfile, struct mmapfile *badword_img);
-int filter_string(char *string, struct mmapfile *badword_img);
-int filter_article(char *title, char *filename, struct mmapfile *badword_img);
+int ytht_smth_reload_badwords(char *wordlistf, char *imgf);
+int ytht_smth_filter_file(char *checkfile, struct mmapfile *badword_img);
+int ytht_smth_filter_string(char *string, struct mmapfile *badword_img);
+int ytht_smth_filter_article(char *title, char *filename, struct mmapfile *badword_img);
 
 #endif
