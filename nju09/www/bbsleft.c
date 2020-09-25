@@ -312,7 +312,7 @@ bbsleft_main()
 		}
 		bzero(buf, 512);
 		while(fgets(buf, 512, fp)){
-			strltrim(strrtrim(buf));
+			ytht_strtrim(buf);
 			if (strlen(buf) <= 1)
 				continue;
 			char *p = strchr(buf, ' ');

@@ -1251,7 +1251,7 @@ super_select_board(char *bname)
 	prints("[1;31mÔÚÕâÀï¿ÉÒÔÊäÈë°æÃæÖĞÎÄÃû³Æ/Ó¢ÎÄÃû³Æ/°æÃæ¹Ø¼ü×Ö½øĞĞËÑË÷£¬Ö§³ÖÄ£ºıËÑË÷¡£[m\n"
 		"[1;31mÀıÈç£¬ÊäÈë¡°ÌúÂ·¡±¡°³µÃÔ¡±£¬¾ù¿É¶¨Î»ÖÁtraffic°æ¡£[m");
     	getdata(4, 0, "ËÑË÷°æÃæ¹Ø¼ü×Ö: ", buf, 64, DOECHO, YEA);
-	strcpy(searchname, strtrim(buf));
+	strcpy(searchname, ytht_strtrim(buf));
 	if (searchname[0] == '\0')
 		return -1;
 	if ((super_board_count = fill_super_board(searchname, result, MAXBOARD)) <= 0){

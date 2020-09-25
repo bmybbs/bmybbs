@@ -17,7 +17,25 @@ void normalize(char *buf);
  * @param n  长度
  */
 void ytht_strsncpy(char *s1, const char *s2, int n);
-char *strltrim(char *s);
-char *strrtrim(char *s);
-#define strtrim(s) strltrim(strrtrim(s))
+
+/**
+ * @brief 从左侧裁剪空白字符
+ * 包括 " ", "\t", "\r", "\n"
+ * @param s 待裁剪的字符串
+ * @return 原字符串中首个非空字符的地址
+ */
+char *ytht_strltrim(char *s);
+
+/**
+ * @brief 从右侧裁剪空白字符
+ * @warning 多线程不安全
+ * @param s 待裁剪的字符串
+ * @return 内部静态变量的地址
+ */
+char *ytht_strrtrim(char *s);
+
+/**
+ * @warning 多线程不安全
+ */
+#define ytht_strtrim(s) ytht_strltrim(ytht_strrtrim(s))
 #endif //BMYBBS_STRLIB_H

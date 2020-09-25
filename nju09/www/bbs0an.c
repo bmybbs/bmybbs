@@ -27,7 +27,7 @@ anc_readitem(FILE * fp, char *path, int sizepath, char *name, int sizename)
 			continue;
 		if (strncmp(buf, "Path=~", 6))
 			continue;
-		ytht_strsncpy(path, strtrim(buf + 6), sizepath);
+		ytht_strsncpy(path, ytht_strtrim(buf + 6), sizepath);
 		hasname = 2;
 		break;
 	}

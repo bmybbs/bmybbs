@@ -23,7 +23,7 @@ eff_size(char *file)
 			*ptr = 0;
 		if ((ptr = strchr(buf, '\n')))
 			*ptr = 0;
-		if (!strlen(strtrim(buf)))
+		if (!strlen(ytht_strtrim(buf)))
 			break;
 	}
 	while (1) {
@@ -40,7 +40,7 @@ eff_size(char *file)
 		for (i = 0; buf[i]; i++)
 			if (buf[i] < 0)
 				size2++;
-		size += strlen(strtrim(buf));
+		size += strlen(ytht_strtrim(buf));
 	}
 	fclose(fp);
       E:

@@ -821,7 +821,7 @@ http_parm_init(void)
 			t3[0] = 0;
 			t3++;
 			__unhcode(t3);
-			parm_add(strtrim(t2), t3);
+			parm_add(ytht_strtrim(t2), t3);
 		}
 		t2 = strtok(0, "&");
 	}
@@ -834,7 +834,7 @@ http_parm_init(void)
 			t3[0] = 0;
 			t3++;
 			__unhcode(t3);
-			parm_add(strtrim(t2), t3);
+			parm_add(ytht_strtrim(t2), t3);
 		}
 		t2 = strtok(0, "&");
 	}

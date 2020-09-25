@@ -161,7 +161,7 @@ bbstdoc_main()
 	else
 	printf(" Page: %d/%d\n",(start-1)/w_info->t_lines+2,(total-1)/w_info->t_lines+1);
 	printf("</td></tr></form></table>");
-	sprintf(buf, "%s", strtrim(x1->header.keyword));
+	sprintf(buf, "%s", ytht_strtrim(x1->header.keyword));
 	if (strlen(buf)){
 		printf("<table width=\"100%%\" cellpadding=2 cellspacing=0><tr><td class=tdtitle align=center>\n");
 		printf("±¾°æ¹Ø¼ü×Ö: ");

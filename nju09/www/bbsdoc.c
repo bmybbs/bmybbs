@@ -459,7 +459,7 @@ bbsdoc_main()
 	fclose(fp);
 //	printdocform("doc", board);
 	printf("</table></td></tr>");
-	sprintf(buf, "%s", strtrim(x1->header.keyword));
+	sprintf(buf, "%s", ytht_strtrim(x1->header.keyword));
 	if (strlen(buf)){
 		printf("<table width=\"100%%\" cellpadding=2 cellspacing=0><tr><td class=tdtitle align=center>\n");
 		printf("±¾°æ¹Ø¼ü×Ö: ");

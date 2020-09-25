@@ -722,7 +722,7 @@ void show_banner()
 	}
 	bzero(buf, 512);
 	while(fgets(buf, 512, fp)){
-		strltrim(strrtrim(buf));
+		ytht_strtrim(buf);
 		if (strlen(buf) <= 1)
 			continue;
 		char *p = strchr(buf, ' ');
@@ -967,7 +967,7 @@ int show_content()
 	bzero(buf2, 512);
 	printf("<marquee scrollamount=1 scrolldelay=20 direction= UP width=200 height=80  onmouseover=\"this.stop();\" onmouseout=\"this.start();\">\n");
 	while(fgets(buf1, 512, fp)){
-		strltrim(strrtrim(buf1));
+		ytht_strtrim(buf1);
 		if (strlen(buf1) <= 1)
 			continue;
 		
@@ -977,7 +977,7 @@ int show_content()
 		*p = '\0';
 		
 		strcpy(buf2, p+1);
-		strltrim(strrtrim(buf2));
+		ytht_strtrim(buf2);
 		if (strlen(buf2) <= 1)
 			continue;
 		p = strchr(buf2, ' ');
@@ -1003,7 +1003,7 @@ newboard:
 	}
 	bzero(buf, 512);
 	while(fgets(buf, 512, fp)){
-		strltrim(strrtrim(buf));
+		ytht_strtrim(buf);
 		if (strlen(buf) <= 1)
 			continue;
 		char *p = strchr(buf, ' ');
@@ -1025,7 +1025,7 @@ recommboard:
 	}
 	bzero(buf, 512);
 	while(fgets(buf, 512, fp)){
-		strltrim(strrtrim(buf));
+		ytht_strtrim(buf);
 		if (strlen(buf) <= 1)
 			continue;
 		char *p = strchr(buf, ' ');

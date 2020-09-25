@@ -178,7 +178,7 @@ void ytht_strsncpy(char *s1, const char *s2, int n)
 	s1[n - 1] = 0;
 }
 
-char *strltrim(char *s)
+char *ytht_strltrim(char *s)
 {
 	char *s2 = s;
 	if (s[0] == 0)
@@ -188,7 +188,7 @@ char *strltrim(char *s)
 	return s2;
 }
 
-char *strrtrim(char *s)
+char *ytht_strrtrim(char *s)
 {
 	static char t[1024], *t2;
 	if (s[0] == 0)

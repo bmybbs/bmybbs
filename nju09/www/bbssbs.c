@@ -14,7 +14,7 @@ bbssbs_main()
 	printf("<body><center>");
 	printf("<div class=rhead>%s -- ≥¨º∂∞Ê√Ê—°‘Ò</div><hr>\n", BBSNAME);
 	
-	if (strlen(strtrim(keyword))) { 
+	if (strlen(ytht_strtrim(keyword))) {
 		for (i = 0; i < shm_bcache->number && total < MAXBOARD ; i++){
 			if (shm_bcache->bcache[i].header.filename[0] == '\0')
 				continue;
