@@ -157,7 +157,7 @@ parse(int day, char *buf)
 	char *tmp[4] = { time, user, action, other };
 	int i;
 	struct s_a *as;
-	i = mystrtok(buf, ' ', tmp, 4);
+	i = ytht_strtok(buf, ' ', tmp, 4);
 	if (i < 3) {
 		errlog("Error input %d %s", day, buf);
 		return;

@@ -31,7 +31,7 @@ bs_use(int day, char *time, char *user, char *other)
 	char *temp[2] = { board, staytime };
 	int i, stay, countstay;
 //      int hour = 2;
-	i = mystrtok(other, ' ', temp, 2);
+	i = ytht_strtok(other, ' ', temp, 2);
 	a = finddic(bsstat, board);
 	stay = atoi(staytime);
 //      if (stay > hour * 3600)
@@ -82,7 +82,7 @@ bs_post(int day, char *time, char *user, char *other)
 	char board[30], title[128];
 	char *temp[2] = { board, title };
 	int i;
-	i = mystrtok(other, ' ', temp, 2);
+	i = ytht_strtok(other, ' ', temp, 2);
 	a = finddic(bsstat, board);
 	if (a != NULL) {
 		data = a->value;

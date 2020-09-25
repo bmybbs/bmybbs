@@ -37,7 +37,7 @@ bm_posted(int day, char *time, char *user, char *other)
 	char board[30], title[128];
 	char *tmp[2] = { board, title };
 	int i;
-	i = mystrtok(other, ' ', tmp, 2);
+	i = ytht_strtok(other, ' ', tmp, 2);
 	snprintf(buf, STRLEN - 1, "%s %s", board, user);
 	a = finddic(bmd, buf);
 	if (a != NULL) {
@@ -55,7 +55,7 @@ bm_use(int day, char *time, char *user, char *other)
 	char board[30], staytime[30];
 	char *tmp[2] = { board, staytime };
 	int i;
-	i = mystrtok(other, ' ', tmp, 2);
+	i = ytht_strtok(other, ' ', tmp, 2);
 	snprintf(buf, STRLEN - 1, "%s %s", board, user);
 	a = finddic(bmd, buf);
 	if (a != NULL) {
@@ -74,7 +74,7 @@ bm_import(int day, char *time, char *user, char *other)
 	char board[30], author[20], title[128];
 	char *tmp[3] = { board, author, title };
 	int i;
-	i = mystrtok(other, ' ', tmp, 3);
+	i = ytht_strtok(other, ' ', tmp, 3);
 	snprintf(buf, STRLEN - 1, "%s %s", board, user);
 	a = finddic(bmd, buf);
 	if (a != NULL) {
@@ -92,7 +92,7 @@ bm_move(int day, char *time, char *user, char *other)
 	char board[30], path[512];
 	char *tmp[2] = { board, path };
 	int i;
-	i = mystrtok(other, ' ', tmp, 2);
+	i = ytht_strtok(other, ' ', tmp, 2);
 	snprintf(buf, STRLEN - 1, "%s %s", board, user);
 	a = finddic(bmd, buf);
 	if (a != NULL) {
@@ -110,7 +110,7 @@ bm_undigest(int day, char *time, char *user, char *other)
 	char board[30], author[20], title[128];
 	char *tmp[3] = { board, author, title };
 	int i;
-	i = mystrtok(other, ' ', tmp, 3);
+	i = ytht_strtok(other, ' ', tmp, 3);
 	snprintf(buf, STRLEN - 1, "%s %s", board, user);
 	a = finddic(bmd, buf);
 	if (a != NULL) {
@@ -128,7 +128,7 @@ bm_digest(int day, char *time, char *user, char *other)
 	char board[30], author[20], title[128];
 	char *tmp[3] = { board, author, title };
 	int i;
-	i = mystrtok(other, ' ', tmp, 3);
+	i = ytht_strtok(other, ' ', tmp, 3);
 	snprintf(buf, STRLEN - 1, "%s %s", board, user);
 	a = finddic(bmd, buf);
 	if (a != NULL) {
@@ -146,7 +146,7 @@ bm_mark(int day, char *time, char *user, char *other)
 	char board[30], author[20], title[128];
 	char *tmp[3] = { board, author, title };
 	int i;
-	i = mystrtok(other, ' ', tmp, 3);
+	i = ytht_strtok(other, ' ', tmp, 3);
 	snprintf(buf, STRLEN - 1, "%s %s", board, user);
 	a = finddic(bmd, buf);
 	if (a != NULL) {
@@ -164,7 +164,7 @@ bm_unmark(int day, char *time, char *user, char *other)
 	char board[30], author[20], title[128];
 	char *tmp[3] = { board, author, title };
 	int i;
-	i = mystrtok(other, ' ', tmp, 3);
+	i = ytht_strtok(other, ' ', tmp, 3);
 	snprintf(buf, STRLEN - 1, "%s %s", board, user);
 	a = finddic(bmd, buf);
 	if (a != NULL) {
@@ -182,7 +182,7 @@ bm_range(int day, char *time, char *user, char *other)
 	char board[30], num1[10], num2[10];
 	char *tmp[3] = { board, num1, num2 };
 	int i;
-	i = mystrtok(other, ' ', tmp, 3);
+	i = ytht_strtok(other, ' ', tmp, 3);
 	snprintf(buf, STRLEN - 1, "%s %s", board, user);
 	a = finddic(bmd, buf);
 	if (a != NULL) {
@@ -200,7 +200,7 @@ bm_del(int day, char *time, char *user, char *other)
 	char board[30], author[20], title[128];
 	char *tmp[3] = { board, author, title };
 	int i;
-	i = mystrtok(other, ' ', tmp, 3);
+	i = ytht_strtok(other, ' ', tmp, 3);
 	snprintf(buf, STRLEN - 1, "%s %s", board, user);
 	a = finddic(bmd, buf);
 	if (a != NULL) {
@@ -218,7 +218,7 @@ bm_deny(int day, char *time, char *user, char *other)
 	char board[30], denyuser[20];
 	char *tmp[2] = { board, denyuser };
 	int i;
-	i = mystrtok(other, ' ', tmp, 2);
+	i = ytht_strtok(other, ' ', tmp, 2);
 	snprintf(buf, STRLEN - 1, "%s %s", board, user);
 	a = finddic(bmd, buf);
 	if (a != NULL) {
@@ -236,7 +236,7 @@ bm_same(int day, char *time, char *user, char *other)
 	char board[30], title[128];
 	char *tmp[2] = { board, title };
 	int i;
-	i = mystrtok(other, ' ', tmp, 2);
+	i = ytht_strtok(other, ' ', tmp, 2);
 	snprintf(buf, STRLEN - 1, "%s %s", board, user);
 	a = finddic(bmd, buf);
 	if (a != NULL) {

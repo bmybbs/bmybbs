@@ -53,7 +53,7 @@ _errlog(char *fmt, ...)
 }
 
 int
-mystrtok(char *buf, int c, char *tmp[], int max)
+ytht_strtok(char *buf, int c, char **tmp, int max)
 {
 	int i;
 	char *a;

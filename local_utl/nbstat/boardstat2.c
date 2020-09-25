@@ -23,7 +23,7 @@ bu_use(int day, char *time, char *user, char *other)
 	char board[30], staytime[10];
 	char *temp[2] = { board, staytime };
 	int i;
-	i = mystrtok(other, ' ', temp, 2);
+	i = ytht_strtok(other, ' ', temp, 2);
 	a = finddic(bustat, board);
 	if (a != NULL) {
 		data = a->value;

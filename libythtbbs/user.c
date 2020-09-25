@@ -283,7 +283,7 @@ userbansite(const char *userid, const char *fromhost)
 	if ((fp = fopen(path, "r")) == NULL)
 		return 0;
 	while (fgets(buf, STRLEN, fp) != NULL) {
-		i = mystrtok(buf, ' ', tmp, 3);
+		i = ytht_strtok(buf, ' ', tmp, 3);
 		if (i == 1) {	//µ¥¶À ip
 			banaddr = inet_addr(addr);
 			banmask = inet_addr("255.255.255.255");
