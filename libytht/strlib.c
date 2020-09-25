@@ -129,7 +129,7 @@ ytht_strnstr(const char *haystack, const char *needle, size_t haystacklen)
 }
 
 char *
-strncasestr(const char *haystack, const char *needle, size_t haystacklen)
+ytht_strncasestr(const char *haystack, const char *needle, size_t haystacklen)
 {
 	register unsigned char *h, *n, *hc, *nc;
 	size_t needlelen;

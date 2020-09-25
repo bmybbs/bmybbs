@@ -1462,7 +1462,7 @@ char *query;
 		close(fd);
 		if (ptr == NULL)
 			MMAP_RETURN(0);
-		if (strncasestr(ptr, query, st.st_size))
+		if (ytht_strncasestr(ptr, query, st.st_size))
 			ret = 1;
 		else
 			ret = 0;

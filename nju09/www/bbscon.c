@@ -313,18 +313,18 @@ showconxml(char *filename, int viewertype)
 			unlink(filetmp);
 			MMAP_RETURN(-1);
 		}
-		ptr = strncasestr(mf.ptr, "<body>", mf.size);
+		ptr = ytht_strncasestr(mf.ptr, "<body>", mf.size);
 		if (!ptr) {
 			mmapfile(NULL, &mf);
 			unlink(filetmp);
 			MMAP_RETURN(retv);
 		}
 		ptr += 6;
-		pend = strncasestr(ptr, "</body>", mf.size - (ptr - mf.ptr));
+		pend = ytht_strncasestr(ptr, "</body>", mf.size - (ptr - mf.ptr));
 		if (!pend)
 			pend = mf.ptr + mf.size;
 		fwrite(ptr, pend - ptr, 1, stdout);
-		if (strncasestr(ptr, "</table>", pend - ptr) == NULL)
+		if (ytht_strncasestr(ptr, "</table>", pend - ptr) == NULL)
 			printf("</td></tr></table>");
 	}
 	MMAP_CATCH {
