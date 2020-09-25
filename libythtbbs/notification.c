@@ -81,6 +81,7 @@ int add_mention_notification(char * to_userid, char * from_userid, char * board,
 int count_notification_num(char *userid) {
 	char notify_file_path[80];
 	sethomefile(notify_file_path, userid, NOTIFILE);
+	if (!file_exist(notify_file_path)) return 0;
 	const xmlChar *xpathExpr = (xmlChar *)"/Notify/Item";
 
 	xmlDocPtr doc = xmlParseFile(notify_file_path);
