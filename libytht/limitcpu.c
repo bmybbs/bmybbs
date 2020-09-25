@@ -19,8 +19,9 @@ limit_cpu(void)
 	static time_t start = 0;
 	time_t now;
 	struct rusage u;
-	static int sc, sc_u, t = 0;
-	int cost, cost_u, d, ret = 0;
+	static time_t sc, sc_u, t = 0;
+	time_t cost, cost_u, d;
+	int ret = 0;
 	if (!start) {
 		start = time(0);
 		getrusage(RUSAGE_SELF, &u);
@@ -34,10 +35,7 @@ limit_cpu(void)
 	getrusage(RUSAGE_SELF, &u);
 	cost = u.ru_utime.tv_sec + u.ru_stime.tv_sec;
 	cost_u = u.ru_utime.tv_usec + u.ru_stime.tv_usec;
-	d =
-	    load_limit * (cost - sc) + (cost_u -
-					sc_u) / (1000000 / load_limit) - (now -
-									  start);
+	d = load_limit * ((cost - sc) + (cost_u - sc_u) / 1000000) - (now - start);
 	if (d > 10)
 		d = 10;
 	if (d > 0) {
