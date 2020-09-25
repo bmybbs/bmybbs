@@ -8,12 +8,6 @@ int WORDBOUND, WHOLELINE, NOUPPER, INVERSE, FILENAMEONLY, SILENT, FNAME;
 int ONLYCOUNT, num_of_matched, total_line;
 char *CurrentFileName;
 
-/*
-extern struct pattern_image;
-extern int prepf(int fp, struct pattern_image **patternbuf, size_t * patt_image_len);
-extern int mgrep_str(char *data, int len, struct pattern_image *patternbuf);
-extern void releasepf(struct pattern_image *patternbuf);
-*/
 int
 reload_badwords(char *wordlistf, char *imgf)
 {
@@ -29,18 +23,18 @@ reload_badwords(char *wordlistf, char *imgf)
 		close(fp);
 		return 0;
 	}*/
-	prepf(fp, &pattern_buf, &pattern_imagesize);
+	ytht_mgrep_prepf(fp, &pattern_buf, &pattern_imagesize);
 
 	flock(fp, LOCK_UN);
 	close(fp);
 	fp = open(imgf, O_WRONLY | O_TRUNC | O_CREAT, 0600);
 	if (fp == -1) {
-		releasepf(pattern_buf);
+		ytht_mgrep_releasepf(pattern_buf);
 		return -1;
 	}
 	write(fp, pattern_buf, pattern_imagesize);
 	close(fp);
-	releasepf(pattern_buf);
+	ytht_mgrep_releasepf(pattern_buf);
 	return 0;
 }
 
@@ -69,7 +63,7 @@ filter_file(char *checkfile, struct mmapfile *badword_img)
 	if (mmapfile(checkfile, &mf) == -1) {
 		return 0;
 	}
-	retv = mgrep_str(mf.ptr, mf.size, (struct pattern_image*)badword_img->ptr);
+	retv = ytht_mgrep_mgrep_str(mf.ptr, mf.size, (struct pattern_image *) badword_img->ptr);
 	mmapfile(NULL, &mf);
 	return retv;
 }
@@ -80,7 +74,7 @@ filter_string(char *string, struct mmapfile *badword_img)
 	int retv;
 	default_setting();
 	CurrentFileName = "";
-	retv = mgrep_str(string, strlen(string), (struct pattern_image*)badword_img->ptr);
+	retv = ytht_mgrep_mgrep_str(string, strlen(string), (struct pattern_image *) badword_img->ptr);
 	return retv;
 }
 

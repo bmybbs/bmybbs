@@ -23,7 +23,7 @@ static int m_short(unsigned char *text, int start, int end, struct pattern_image
 static void f_prep(int pat_index, unsigned char *Pattern, struct pattern_image *patt_img);
 
 int
-releasepf(struct pattern_image *patt_img)
+ytht_mgrep_releasepf(struct pattern_image *patt_img)
 {
 	/*
 	   for (i = 0; i < MAXHASH; i++) {
@@ -42,7 +42,7 @@ releasepf(struct pattern_image *patt_img)
 }
 
 int
-prepf(int fp, struct pattern_image **ppatt_img, size_t * patt_image_len)
+ytht_mgrep_prepf(int fp, struct pattern_image **ppatt_img, size_t * patt_image_len)
 {
 	int length = 0, i, num_pat;
 	size_t p;
@@ -132,14 +132,14 @@ prepf(int fp, struct pattern_image **ppatt_img, size_t * patt_image_len)
 }
 
 int
-mgrep_str(char *text, int num, struct pattern_image *patt_img)
+ytht_mgrep_mgrep_str(char *text, int num, struct pattern_image *patt_img)
 {
 	if (patt_img->SHORT)
 		m_short((unsigned char *) text, 0, num - 1, patt_img);
 	else
 		monkey1((unsigned char *) text, 0, num - 1, patt_img);
 	return num_of_matched;
-} /* end mgrep_str */
+} /* end ytht_mgrep_mgrep_str */
 
 static int
 mgrep(int fd, struct pattern_image *patt_img)

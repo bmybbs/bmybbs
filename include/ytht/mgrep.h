@@ -1,17 +1,17 @@
 #ifndef __MGREP_H
 #define __MGREP_H
 
-#define MAXPAT  256
-#define MAXLINE 1024
-#define MAXSYM  256
-#define MAXMEMBER1 4096
-#define MAXPATFILE 2600		/*patternÎÄ¼şµÄ×î´ó³¤¶È */
-#define BLOCKSIZE  8192		/*ÓÃÓÚÔ¤¶ÁµÄÊı¾İ´óĞ¡ */
-#define MAXHASH    512		/*patternÊ¹ÓÃµÄhash±í´óĞ¡ */
-#define mm 	   511		/*ÓÃÓÚhashÖµµÄÈ¡Ä£ÔËËã */
-#define max_num    200		/*×î´óµÄpattern¸öÊı */
-#define W_DELIM	   128
-#define L_DELIM    10
+#define MAXPAT		256
+#define MAXLINE		1024
+#define MAXSYM		256
+#define MAXMEMBER1	4096
+#define MAXPATFILE	2600		/*patternæ–‡ä»¶çš„æœ€å¤§é•¿åº¦ */
+#define BLOCKSIZE	8192		/*ç”¨äºé¢„è¯»çš„æ•°æ®å¤§å° */
+#define MAXHASH		512			/*patternä½¿ç”¨çš„hashè¡¨å¤§å° */
+#define mm			511			/*ç”¨äºhashå€¼çš„å–æ¨¡è¿ç®— */
+#define max_num		200			/*æœ€å¤§çš„patternä¸ªæ•° */
+#define W_DELIM		128
+#define L_DELIM		10
 
 struct pat_list {
 	int index;
@@ -28,14 +28,14 @@ struct pattern_image {
 	unsigned int HASH[MAXHASH];
 	unsigned char buf[MAXPATFILE + BLOCKSIZE];
 	unsigned char pat_spool[MAXPATFILE + 2 * max_num + MAXPAT];
-	unsigned long patt[max_num];	/*ÓÃÓÚÖ¸Ïòpat_spoolµÄÆ«ÒÆ */
+	unsigned long patt[max_num];	/*ç”¨äºæŒ‡å‘pat_spoolçš„åç§» */
 	unsigned char pat_len[max_num];
 	struct pat_list hashtable[max_num];
 };
 
-int releasepf(struct pattern_image *patt_img);
-int prepf(int fp, struct pattern_image **ppatt_img, size_t *patt_image_len);
-int mgrep_str(char *text, int num, struct pattern_image *patt_img);
+int ytht_mgrep_releasepf(struct pattern_image *patt_img);
+int ytht_mgrep_prepf(int fp, struct pattern_image **ppatt_img, size_t *patt_image_len);
+int ytht_mgrep_mgrep_str(char *text, int num, struct pattern_image *patt_img);
 
 
 #endif
