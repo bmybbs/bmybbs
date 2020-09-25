@@ -3,7 +3,6 @@
 
 #include "minmax.h"
 #include "fileop.h"
-#include "named_socket.h"
 #include "crypt.h"
 #include "limitcpu.h"
 #include "timeop.h"
