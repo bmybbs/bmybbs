@@ -11,6 +11,13 @@ my $loginadd = "http://202.117.1.8/picmgr.htm";
 my $lock_sh = 1;
 my $lock_un = 8;
 my $randnum = int (rand () * 1000000000000);
+
+# 一些常量，在升级 .PASSWDS 结构后需要对应更新
+my $IDLEN = 14;
+my $PWLEN = 14;
+my $SIZE_OF_USEREC = 528;
+my $OFFSET_OF_PW = 74;
+
 while ($randnum <= 100000000000)
 {
     $randnum = int (rand () * 1000000000000);
@@ -43,7 +50,7 @@ until (flock (PW,$lock_sh))
 {
     sleep 1;
 }
-read (PW,$id,14);
+read (PW,$id,$IDLEN);
 until (($lastchar = chop ($id)) ne "\0")
 {
     ;
@@ -51,8 +58,8 @@ until (($lastchar = chop ($id)) ne "\0")
 $id .= $lastchar;
 while (lc ($id) ne $username)
 {
-    seek (PW,438,1);
-    read (PW,$id,14);
+    seek (PW,$SIZE_OF_USEREC - $IDLEN,1);
+    read (PW,$id,$IDLEN);
     unless ($id)
     {
 	print "无此ID,请重新登陆";
@@ -66,8 +73,8 @@ while (lc ($id) ne $username)
     }
     $id .= $lastchar;
 }#先找ID
-seek (PW,32,1);
-read (PW,$passwd,14);
+seek (PW,$OFFSET_OF_PW - $IDLEN,1);
+read (PW,$passwd,$PWLEN);
 until (($lastchar = chop ($passwd)) ne "\0")
 {
     ;
@@ -90,7 +97,7 @@ if ($chkpw eq $passwd)#判断密码是否正确
     print SE $acttime,"\n";
     close (SE);
     print "登陆成功";
-    print "<meta http-equiv=\"refresh\" content=\"2; url=$cgibin/showpics.pl\">"; 
+    print "<meta http-equiv=\"refresh\" content=\"2; url=$cgibin/showpics.pl\">";
 }
 else
 {
