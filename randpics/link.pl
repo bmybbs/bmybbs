@@ -3,7 +3,6 @@ use CGI;
 my $req = new CGI;
 my $bbshome = "/home/bbs";
 my $htmpath = "/home/apache/htdocs/bbs";
-my $cgibin = "http://202.117.1.8/cgi-bin/bbs";
 my $loginadd = "/picmgr.htm";
 my $remote_ip = $req -> remote_addr ();
 print $req -> header ({-charset=>gb2312});
@@ -51,10 +50,10 @@ if ($req -> param ())
     print LINK "BMYKWDVKPBGPAAXVDSNNLFFOMPPOKRCXYYMQ_B/home?B=",$newboard;
     close (LINK);
     print "修改成功<br>";
-    print "<meta http-equiv=\"refresh\" content=\"2; url=$cgibin/showpics.pl\">";
+    print "<meta http-equiv=\"refresh\" content=\"2; url=showpics.pl\">";
 }
 else
 {
     print "没有操作<br>";
-    print "<meta http-equiv=\"refresh\" content=\"2; url=$cgibin/showpics.pl\">";
+    print "<meta http-equiv=\"refresh\" content=\"2; url=showpics.pl\">";
 }

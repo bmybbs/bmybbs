@@ -3,7 +3,6 @@ use CGI;
 my $req = new CGI;
 my $bbshome = "/home/bbs";
 my $htmpath = "/home/apache/htdocs/bbs";
-my $cgibin = "http://202.117.1.8/cgi-bin/bbs";
 my $loginadd = "/picmgr.htm";
 my $remote_ip = $req -> remote_addr ();
 print $req -> header ({-charset=>gb2312});
@@ -66,11 +65,11 @@ chomp ($board);
 close (LINK);
 print $req -> start_html (),
     $req -> h2 ("Welcome to XJTU bbs BMY!"),
-    $req -> a ({-href=>"$cgibin/upload.pl"},"上传"),
+    $req -> a ({-href=>"upload.pl"},"上传"),
     "|",
-    $req -> a ({-href=>"$cgibin/logout.pl"},"退出"),
+    $req -> a ({-href=>"logout.pl"},"退出"),
     $req -> hr (),
-    $req -> start_multipart_form ("POST","$cgibin/using.pl","gb2312"),
+    $req -> start_multipart_form ("POST","using.pl","gb2312"),
     $req -> th ("Now using pictures"),
     $req -> table ({-border=>'1'}),
     $req -> Tr (),
@@ -92,14 +91,14 @@ print $req -> end_table,
     $req -> submit ({-label=>'delete'}),
     $req -> end_form;
 print $req -> p,
-    $req -> start_multipart_form ("POST","$cgibin/uploaded.pl","gb2312"),
+    $req -> start_multipart_form ("POST","uploaded.pl","gb2312"),
     $req -> th ("Not used yet pictures"),
     $req -> table ({-border=>'1'}),
     $req -> Tr (),
     $req -> td (["Thumbnail","File name","Board","File","Select"]);
 for (my $i = 2;$i < @nonused;$i ++)
 {
-#	$req -> start_multipart_form ("POST","$cgibin/uploaded.pl","gb2312"),
+#	$req -> start_multipart_form ("POST","uploaded.pl","gb2312"),
     print $req -> Tr (),
     $req -> td ([$req -> img ({-src=>("/bmyMainPic/uploaded/".$nonused[$i]),-width=>'200',-height=>'100'}),$nonused[$i], $req -> textfield ({-name=>"Board".$i}), $req -> textfield ({-name=>"File".$i}),$req -> checkbox ({-name=>$nonused[$i],-value=>"ON",-label=>""})]);
 #	$req -> end_form;
@@ -109,7 +108,7 @@ print $req -> end_table,
     $req -> submit ({-name=>'DEL',-label=>'del'}),
     $req -> end_form;
 print $req -> p,
-    $req -> start_multipart_form ("POST","$cgibin/used.pl","gb2312"),
+    $req -> start_multipart_form ("POST","used.pl","gb2312"),
     $req -> th ("Already used pictures"),
     $req ->table ({-border=>'1'}),
     $req -> Tr (),
@@ -124,7 +123,7 @@ print $req -> end_table,
     $req -> submit ({-name=>'DEL',-label=>'del'}),
     $req ->end_form,
     $req -> hr (),
-    $req -> start_multipart_form ("POST","$cgibin/link.pl","gb2312"),
+    $req -> start_multipart_form ("POST","link.pl","gb2312"),
     $req -> th ("The linked board of the login picture is <font color=red>$board</font>"),
     $req -> textfield ({-name=>'BOARD',-maxlength=>'16'}),
     $req -> submit ({-label=>'modify'}),

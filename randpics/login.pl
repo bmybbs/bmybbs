@@ -6,7 +6,6 @@ my $password = $req -> param ("PW");
 my $passfile = "/home/bbs/.PASSWDS";
 my $bbshome = "/home/bbs";
 my $htmpath = "/home/apache/htdocs/bbs";
-my $cgibin = "http://202.117.1.8/cgi-bin/bbs";
 my $loginadd = "/picmgr.htm";
 my $lock_sh = 1;
 my $lock_un = 8;
@@ -97,7 +96,7 @@ if ($chkpw eq $passwd)#判断密码是否正确
     print SE $acttime,"\n";
     close (SE);
     print "登陆成功";
-    print "<meta http-equiv=\"refresh\" content=\"2; url=$cgibin/showpics.pl\">";
+    print "<meta http-equiv=\"refresh\" content=\"2; url=showpics.pl\">";
 }
 else
 {

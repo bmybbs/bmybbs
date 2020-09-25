@@ -3,7 +3,6 @@ use CGI;
 my $req = new CGI;
 my $bbshome = "/home/bbs";
 my $htmpath = "/home/apache/htdocs/bbs/bmyMainPic";
-my $cgibin = "http://202.117.1.8/cgi-bin/bbs";
 my $loginadd = "/picmgr.htm";
 my $remote_ip = $req -> remote_addr ();
 print $req -> header ({-charset=>'gb2312'});
@@ -67,12 +66,12 @@ if ($req -> cookie('id'))#检查有没有cookie
 		rename ($htmpath."/using/".$delpics[$i],$htmpath."/used/".$delpics[$i]) || die $!;
 	    }#把删除文件移到used文件夹
 	    print "删除成功<br>";
-	    print "<meta http-equiv=\"refresh\" content=\"2; url=$cgibin/showpics.pl\">";
+	    print "<meta http-equiv=\"refresh\" content=\"2; url=showpics.pl\">";
 	}
 	else
 	{
 	    print "没有操作……<br>";
-	    print "<meta http-equiv=\"refresh\" content=\"2; url=$cgibin/showpics.pl\">";
+	    print "<meta http-equiv=\"refresh\" content=\"2; url=showpics.pl\">";
 	}
     }#检查登陆是否已经超时
     else

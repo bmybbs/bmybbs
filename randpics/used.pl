@@ -3,7 +3,6 @@ use CGI;
 my $req = new CGI;
 my $bbshome = "/home/bbs";
 my $htmpath = "/home/apache/htdocs/bbs/bmyMainPic";
-my $cgibin = "http://202.117.1.8/cgi-bin/bbs";
 my $loginadd = "/picmgr.htm";
 my $remote_ip = $req -> remote_addr ();
 print $req -> header ({-charset=>gb2312});
@@ -73,7 +72,7 @@ if ($req -> param ())
 	seek (PIC,0,0);
 	print PIC "total:",$picnum + $added,"\n" || die;
 	close (PIC);
-	print "<meta http-equiv=\"refresh\" content=\"2; url=$cgibin/showpics.pl\">";
+	print "<meta http-equiv=\"refresh\" content=\"2; url=showpics.pl\">";
     }
     else
     {
@@ -91,11 +90,11 @@ if ($req -> param ())
 		unlink ($bbshome."/loglinks/".$todel[$i]) || die;
 	    print "$todel[$i]已删除","<br>";
 	}
-	print "<meta http-equiv=\"refresh\" content=\"2; url=$cgibin/showpics.pl\">";
+	print "<meta http-equiv=\"refresh\" content=\"2; url=showpics.pl\">";
     }
 }
 else
 {
     print "没有操作<br>";
-    print "<meta http-equiv=\"refresh\" content=\"2; url=$cgibin/showpics.pl\">";
+    print "<meta http-equiv=\"refresh\" content=\"2; url=showpics.pl\">";
 }
