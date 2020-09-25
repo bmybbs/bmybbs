@@ -3,7 +3,6 @@ add_library (ytht SHARED
 	uuencode.c
 	common.c
 	numbyte.c
-	strop.c
 	fileop.c
 	strlib.c
 	shmop.c

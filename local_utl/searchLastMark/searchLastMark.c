@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include "config.h"
 #include "ytht/fileop.h"
-#include "ytht/strop.h"
+#include "ytht/strlib.h"
 #include "ythtbbs/article.h"
 #include "ythtbbs/board.h"
 

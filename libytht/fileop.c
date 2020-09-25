@@ -11,7 +11,7 @@
 #include <sys/stat.h>
 #include <ctype.h>
 
-#include "ytht/strop.h"
+#include "ytht/strlib.h"
 #include "ytht/fileop.h"
 
 sigjmp_buf bus_jump;

@@ -1,6 +1,6 @@
 #include <string.h>
 #include <stdio.h>
-#include "ytht/strop.h"
+#include "ytht/strlib.h"
 
 char *
 encode_url(unsigned char *s)

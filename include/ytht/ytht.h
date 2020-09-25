@@ -7,7 +7,6 @@
 #include "limitcpu.h"
 #include "timeop.h"
 #include "common.h"
-#include "strop.h"
 #include "smth_filter.h"
 #include "uudecode.h"
 #include "uuencode.h"
