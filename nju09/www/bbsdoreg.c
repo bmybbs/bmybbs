@@ -205,7 +205,7 @@ bbsdoreg_main()
 #endif
 
 	getsalt(salt);
-	strsncpy(x.passwd, crypt1(pass1, salt), 14);
+	strsncpy(x.passwd, ytht_crypt_crypt1(pass1, salt), 14);
 	//ipv6 by leoncom 不能赋值太多，就影响后面的数据 fixed by IronBlood 2020.09.11
 	strncpy(x.lasthost, fromhost,BMY_IPV6_LEN);
 	x.userlevel = PERM_BASIC;

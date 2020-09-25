@@ -6,14 +6,14 @@
 
 // add by scaner
 //
-// des ÊµÏÖÀ´Ô´ÓÚnju09µÄcrypt.inc
-// genpasswd/checkpasswd²Î¿¼ÁËFB2000µÄ¾ßÌåÊµÏÖ
+// des å®ç°æ¥æºäºnju09çš„crypt.inc
+// ytht_crypt_genpasswd/ytht_crypt_checkpasswdå‚è€ƒäº†FB2000çš„å…·ä½“å®ç°
 //
-// ¹ØÓÚcrypt µÄÒ»Ğ©¶¨Òå
+// å…³äºcrypt çš„ä¸€äº›å®šä¹‰
 // __OPT_CRYPT__
-// __OPT_CRYPT_SYS__ Ê¹ÓÃÏµÍ³crypt
-// __OPT_CRYPT_MD5__ Ê¹ÓÃmd5 Ëã·¨
-// __OPT_CRYPT_DES__ Ê¹ÓÃdes Ëã·¨
+// __OPT_CRYPT_SYS__ ä½¿ç”¨ç³»ç»Ÿcrypt
+// __OPT_CRYPT_MD5__ ä½¿ç”¨md5 ç®—æ³•
+// __OPT_CRYPT_DES__ ä½¿ç”¨des ç®—æ³•
 
 #ifndef __OPT_CRYPT__
 #define __OPT_CRYPT__     1
@@ -505,7 +505,7 @@ crypt1_p(const char *buf, const char *salt, unsigned char buff[20])
 }
 
 char *
-crypt1(const char *buf, const char *salt)
+ytht_crypt_crypt1(const char *buf, const char *salt)
 {
 	static unsigned char buff[20];
 	return crypt1_p(buf, salt, buff);
@@ -515,11 +515,11 @@ crypt1(const char *buf, const char *salt)
 char *crypt();
 #define crypt_f crypt
 #else
-#define crypt_f crypt1
+#define crypt_f ytht_crypt_crypt1
 #endif
 
 int
-checkpasswd(const char *pw_crypted, const char *pw_try)
+ytht_crypt_checkpasswd(const char *pw_crypted, const char *pw_try)
 {
 #ifdef __OPT_CRYPT_SYS__
 	return !strcmp(crypt_f(pw_try, pw_crypted), pw_crypted);
@@ -543,7 +543,7 @@ to64(char *s, long v, int n)
 
 #define PASSMAXLAN 68
 char *
-genpasswd(char *pw)
+ytht_crypt_genpasswd(char *pw)
 {
 	char salt[10];
 	static char pwbuf[PASSMAXLAN];

@@ -326,7 +326,7 @@ int uinfo_query(struct userec *u, int real, int unum)
 	case '2':
 		if (!real) {
 			getdata(i++, 0, "请输入原密码: ", buf, PASSLEN, NOECHO, YEA);
-			if (*buf == '\0' || !checkpasswd(u->passwd, buf)) {
+			if (*buf == '\0' || !ytht_crypt_checkpasswd(u->passwd, buf)) {
 				prints("\n\n很抱歉, 您输入的密码不正确。\n");
 				fail++;
 				break;
@@ -348,7 +348,7 @@ int uinfo_query(struct userec *u, int real, int unum)
 			break;
 		}
 		buf[8] = '\0';
-		strncpy(newinfo.passwd, genpasswd(buf), PASSLEN);
+		strncpy(newinfo.passwd, ytht_crypt_genpasswd(buf), PASSLEN);
 		break;
 	case '3':
 		if (!real) {

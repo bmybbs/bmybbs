@@ -550,7 +550,7 @@ else sprintf(str1,"现在是 %s, 新世纪已经开始了%d秒\n",str,-dis);
 			getdata(t_lines - 1, 0, "请输入密码: ", passbuf, PASSLEN, NOECHO, YEA);
 			scroll();
 			passbuf[8] = '\0';
-			if (!checkpasswd(currentuser.passwd, passbuf)) {
+			if (!ytht_crypt_checkpasswd(currentuser.passwd, passbuf)) {
 				logattempt(currentuser.userid, fromhost, "", now_t);
 				move(t_lines - 1, 0);
 				clrtoeol();

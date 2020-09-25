@@ -39,7 +39,7 @@ bbslogin_main()
 		}
 		if (userbansite(x->userid, fromhost))
 			http_fatal("本ID已设置禁止从%s登录", fromhost);
-		if (!checkpasswd(x->passwd, pw)) {
+		if (!ytht_crypt_checkpasswd(x->passwd, pw)) {
 			logattempt(x->userid, fromhost, "WWW", now_t);
 			http_fatal("密码错误");
 		}

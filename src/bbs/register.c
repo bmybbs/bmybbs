@@ -337,7 +337,7 @@ new_register()
 			continue;
 		}
 		passbuf[8] = '\0';
-		strncpy(newuser.passwd, genpasswd(passbuf), PASSLEN);
+		strncpy(newuser.passwd, ytht_crypt_genpasswd(passbuf), PASSLEN);
 		break;
 	}
 	strcpy(newuser.ip, "");

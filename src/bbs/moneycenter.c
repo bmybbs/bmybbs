@@ -4223,7 +4223,7 @@ money_robber()
 			}
 			getdata(7, 4, "请输入你的密码: ", buf, PASSLEN, NOECHO, YEA);
 			if (*buf == '\0'
-			    || !checkpasswd(currentuser.passwd, buf)) {
+			    || !ytht_crypt_checkpasswd(currentuser.passwd, buf)) {
 				showAt(8, 4, "很抱歉, 您输入的密码不正确。", 2);
 				break;
 			}
@@ -4546,7 +4546,7 @@ money_robber()
 			}
 			getdata(7, 4, "请输入你的密码: ", buf, PASSLEN, NOECHO, YEA);
 			if (*buf == '\0'
-			    || !checkpasswd(currentuser.passwd, buf)) {
+			    || !ytht_crypt_checkpasswd(currentuser.passwd, buf)) {
 				showAt(8, 4, "很抱歉, 您输入的密码不正确。", 2);
 				break;
 			}

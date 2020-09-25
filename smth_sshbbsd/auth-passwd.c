@@ -202,7 +202,7 @@ int auth_password(const char *server_user, const char *password)
     if( !access("NOLOGIN",F_OK) && !HAS_PERM(PERM_SPEC))
 	return 0;
 
-    if (!checkpasswd(currentuser.passwd,password)) {
+    if (!ytht_crypt_checkpasswd(currentuser.passwd, password)) {
 	time_t t=time(0);
         logattempt(server_user, get_remote_ipaddr(),"SSH", t);
         return 0;

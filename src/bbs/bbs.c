@@ -2183,7 +2183,7 @@ post_article(struct fileheader *sfh)
 	{
 		errlog
 		("posting '%s' on '%s': append_record failed!",
-				postfile.title, currboard);
+		 postfile.title, currboard);
 		pressreturn();
 		clear();
 		return FULLUPDATE;
@@ -3350,7 +3350,7 @@ check_notespasswd()
 			YEA);
 		if (passbuf[0] == '\0' || passbuf[0] == '\n')
 			return NA;
-		if (!checkpasswd(prepass, passbuf)) {
+		if (!ytht_crypt_checkpasswd(prepass, passbuf)) {
 			move(3, 0);
 			prints("´íÎóµÄÃØÃÜ±¸ÍüÂ¼ÃÜÂë...");
 			pressanykey();
@@ -4365,7 +4365,7 @@ b_notes_passwd()
 		pressanykey();
 		return FULLUPDATE;
 	}
-	fprintf(pass, "%s\n", genpasswd(passbuf));
+	fprintf(pass, "%s\n", ytht_crypt_genpasswd(passbuf));
 	fclose(pass);
 	pass = 0;
 	move(5, 0);

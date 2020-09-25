@@ -2197,7 +2197,7 @@ checkuser(char *id, char *pw)
 	x = getuser(id);
 	if (x == 0)
 		return 0;
-	return checkpasswd(x->passwd, pw);
+	return ytht_crypt_checkpasswd(x->passwd, pw);
 }
 
 int
@@ -2960,8 +2960,8 @@ setbmhat(struct boardmanager *bm, int *online)
 {
 	if (strcmp(shm_bcache->bcache[bm->bid].header.filename, bm->board)) {
 		errlog("error board name %s, %s. user %s",
-		       shm_bcache->bcache[bm->bid].header.filename, bm->board,
-		       currentuser.userid);
+			   shm_bcache->bcache[bm->bid].header.filename, bm->board,
+			   currentuser.userid);
 		return -1;
 	}
 	if (*online) {

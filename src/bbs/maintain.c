@@ -55,7 +55,7 @@ check_systempasswd()
 		getdata(1, 0, "请输入系统密码: ", passbuf, 19, NOECHO, YEA);
 		if (passbuf[0] == '\0' || passbuf[0] == '\n')
 			return NA;
-		if (!checkpasswd(prepass, passbuf)) {
+		if (!ytht_crypt_checkpasswd(prepass, passbuf)) {
 			move(2, 0);
 			prints("错误的系统密码...");
 			securityreport("系统密码输入错误...",
@@ -90,7 +90,7 @@ setsystempasswd()
 		pressanykey();
 		return -1;
 	}
-	fprintf(pass, "%s\n", genpasswd(passbuf));
+	fprintf(pass, "%s\n", ytht_crypt_genpasswd(passbuf));
 	fclose(pass);
 	move(4, 0);
 	prints("系统密码设定完成....");

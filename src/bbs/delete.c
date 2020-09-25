@@ -127,7 +127,7 @@ offline()
 	}
 
 	getdata(1, 0, "请输入你的密码: ", buf, PASSLEN, NOECHO, YEA);
-	if (*buf == '\0' || !checkpasswd(currentuser.passwd, buf)) {
+	if (*buf == '\0' || !ytht_crypt_checkpasswd(currentuser.passwd, buf)) {
 		prints("\n\n很抱歉, 您输入的密码不正确。\n");
 		pressreturn();
 		clear();
@@ -186,7 +186,7 @@ online()
 		return -1;
 	}
 	getdata(1, 0, "请输入你的密码: ", buf, PASSLEN, NOECHO, YEA);
-	if (*buf == '\0' || !checkpasswd(currentuser.passwd, buf)) {
+	if (*buf == '\0' || !ytht_crypt_checkpasswd(currentuser.passwd, buf)) {
 		prints("\n\n很抱歉, 您输入的密码不正确。\n");
 		pressreturn();
 		clear();

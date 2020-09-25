@@ -221,7 +221,7 @@ x_csh()
 	modify_user_mode(SYSINFO);
 	clear();
 	getdata(1, 0, "ÇëÊäÈëÍ¨ĞĞ°µºÅ: ", buf, PASSLEN, NOECHO, YEA);
-	if (*buf == '\0' || !checkpasswd(currentuser.passwd, buf)) {
+	if (*buf == '\0' || !ytht_crypt_checkpasswd(currentuser.passwd, buf)) {
 		prints("\n\n°µºÅ²»ÕıÈ·, ²»ÄÜÖ´ĞĞ¡£\n");
 		pressreturn();
 		clear();
@@ -1070,7 +1070,7 @@ x_lockscreen()
 	clrtobot();
 	prints("[1;36mÓ«Ä»ÒÑÔÚ[33m %19s[36m Ê±±»[32m %-12s [36mÔİÊ±Ëø×¡ÁË...[m",
 	     ctime(&now), currentuser.userid);
-	while (*buf == '\0' || !checkpasswd(currentuser.passwd, buf)) {
+	while (*buf == '\0' || !ytht_crypt_checkpasswd(currentuser.passwd, buf)) {
 		move(19, 0);
 		clrtobot();
 		update_endline();
