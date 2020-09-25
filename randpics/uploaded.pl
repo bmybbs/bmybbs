@@ -1,7 +1,6 @@
 #!/usr/bin/perl -w
 use CGI;
 my $req = new CGI;
-my $host = "http://202.117.1.8";
 my $bbshome = "/home/bbs";
 my $htmpath = "/home/apache/htdocs/bbs/bmyMainPic";
 my $cgibin = "http://202.117.1.8/cgi-bin/bbs";
