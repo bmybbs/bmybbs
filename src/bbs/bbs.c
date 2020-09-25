@@ -1841,7 +1841,7 @@ post_cross(char *bname, int mode, int islocal, int hascheck, int dangerous)
 	strcpy(currboard, bname);
 	getcross(filepath, mode);
 	strcpy(currboard, bkcurrboard);
-	postfile.sizebyte = numbyte(eff_size(filepath));
+	postfile.sizebyte = ytht_num2byte(eff_size(filepath));
 	strsncpy(postfile.title, save_title, sizeof (postfile.title));
 
 	if (mode != 1) {
@@ -2097,7 +2097,7 @@ post_article(struct fileheader *sfh)
 		return FULLUPDATE;
 	}
 	add_loginfo(edittmp);
-	postfile.sizebyte = numbyte(eff_size(edittmp));
+	postfile.sizebyte = ytht_num2byte(eff_size(edittmp));
 	crossfs_rename(edittmp, filepath);
 
 	if (local_article == 0)
@@ -2435,7 +2435,7 @@ char *direct;
 		switch (dangerous) {
 			char mtitle[256];
 		case -1:
-			fileinfo->sizebyte = numbyte(eff_size(tmpfile));
+			fileinfo->sizebyte = ytht_num2byte(eff_size(tmpfile));
 			fileinfo->edittime = time(0);
 			post_to_1984(tmpfile, fileinfo, 0);
 			unlink(tmpfile);
@@ -2459,7 +2459,7 @@ char *direct;
 	decode_attach(filepath, attach_path);
 	insertattachments_byfile(filepath, tmpfile, currentuser.userid);
 	unlink(tmpfile);
-	fileinfo->sizebyte = numbyte(eff_size(filepath));
+	fileinfo->sizebyte = ytht_num2byte(eff_size(filepath));
 	fileinfo->edittime = time(0);
 	change_dir(direct, fileinfo, (void *) DIR_do_edit, ent, digestmode, 1);
 	if (!in_mail) {
@@ -3425,7 +3425,7 @@ char *direct;
 	prints("文章作者:     %s\n", fh2owner(fileinfo));
 	prints("文章日期:     %s", ctime(&t));
 	prints("文章等级:     %d级\n", (fileinfo->staravg50 / 50));
-	prints("文件大小:     %d字节\n", bytenum(fileinfo->sizebyte));
+	prints("文件大小:     %d字节\n", ytht_byte2num(fileinfo->sizebyte));
 	prints("URL 地址:\n");
 	prints("http://%s/" SMAGIC "%s/%scon?B=%s&F=%s\n", MY_BBS_DOMAIN,
 	       temp_sessionid, (digestmode == YEA) ? "g" : "", currboard,

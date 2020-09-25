@@ -38,7 +38,7 @@ static const int numtable[255] = {
 };
 
 unsigned char
-numbyte(int n)
+ytht_num2byte(int n)
 {
 	int i;
 	if (n <= 0)
@@ -50,7 +50,7 @@ numbyte(int n)
 }
 
 int
-bytenum(unsigned char c)
+ytht_byte2num(unsigned char c)
 {
 	if (!c)
 		return 0;

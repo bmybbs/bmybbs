@@ -1466,7 +1466,7 @@ post_article_1984(char *board, char *title, char *file, char *id,
 		31 + rand() % 7, BBSNAME, "http://" MY_BBS_DOMAIN, ip);
 	fclose(fp);
 	sprintf(buf3, "%s/M.%d.A", buf, t);
-	header.sizebyte = numbyte(eff_size(buf3));
+	header.sizebyte = ytht_num2byte(eff_size(buf3));
 	sprintf(buf3, "%s/.DIR", buf);
 	append_record(buf3, &header, sizeof (header));
 	return t;
@@ -1519,7 +1519,7 @@ post_article(char *board, char *title, char *file, char *id,
 		31 + rand() % 7, BBSNAME, "http://" MY_BBS_DOMAIN, ip);
 	fclose(fp);
 	sprintf(buf3, "boards/%s/M.%d.A", board, t);
-	header.sizebyte = numbyte(eff_size(buf3));
+	header.sizebyte = ytht_num2byte(eff_size(buf3));
 	if (thread == -1)
 		header.thread = header.filetime;
 	else

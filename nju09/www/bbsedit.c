@@ -335,7 +335,7 @@ update_form(char *board, char *file, char *title)
 			break;
 		if (x.filetime == filetime) {
 			x.edittime = now_t;
-			x.sizebyte = numbyte(eff_size(path));
+			x.sizebyte = ytht_num2byte(eff_size(path));
 			strsncpy(x.title, title, sizeof (x.title));
 			if (nore)
 				x.accessed |= FH_NOREPLY;

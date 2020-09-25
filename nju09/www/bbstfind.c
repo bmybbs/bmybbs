@@ -123,7 +123,7 @@ bbstfind_main()
 			printf("<td><a href=con?B=%s&F=%s&N=%d&st=1&T=%ld>%s </a>\n",
 			       board, fh2fname(x), i + 1, feditmark(*x), nohtml(x->title));
 			if (x->sizebyte)
-				printf(" %s", size_str(bytenum(x->sizebyte)));
+				printf(" %s", size_str(ytht_byte2num(x->sizebyte)));
 			printf("</td><td class=%s>%d</td>\n",
 			       x->staravg50 ? "red" : "blk", x->staravg50 / 50);
 			printf("<td class=%s>%d»À</td></tr>\n",

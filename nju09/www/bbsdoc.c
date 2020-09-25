@@ -354,7 +354,7 @@ bbsdoc_main()
 		while (x.sizebyte == 0) {
 			int fd;
 			sprintf(filename, "boards/%s/%s", board, fh2fname(&x));
-			x.sizebyte = numbyte(eff_size(filename));
+			x.sizebyte = ytht_num2byte(eff_size(filename));
 			fd = open(dir, O_RDWR);
 			if (fd < 0)
 				break;
@@ -410,7 +410,7 @@ bbsdoc_main()
 		x.title[48] = 0;
 		printf("<td class=tdborder ><a href=\"con?B=%s&F=%s&N=%d&T=%ld\" %s>%s%s</a>%s</td>",
 		     board, fh2fname(&x), start + i, feditmark(x), only_for_b,strncmp(x.title, "Re: ", 4) ? "¡ð " : "",
-		     void1(titlestr(x.title)), (x.owner[0] == '-') ? "" : size_str(bytenum(x.sizebyte)));
+		     void1(titlestr(x.title)), (x.owner[0] == '-') ? "" : size_str(ytht_byte2num(x.sizebyte)));
 		if (x.staravg50) {
 			printf("<td class=tdborder>%d</td>", x.staravg50 / 50);
 			printf("<td class=tdborder>%dÈË</td>\n", x.hasvoted);
