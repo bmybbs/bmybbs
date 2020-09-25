@@ -349,7 +349,7 @@ showcon_cache(char *filename, int level, int edittime)
 		strncpy(showfile, filename, NAME_MAX);
 	else
 		snprintf(showfile, NAME_MAX, "%s:%d", filename, edittime);
-	normalize(showfile);
+	ytht_normalize(showfile);
 	snprintf(showpath, PATH_MAX, "%s/%s", ATTACHCACHE, showfile);
 	if (access(showpath, R_OK)) {
 		if (level < 2)

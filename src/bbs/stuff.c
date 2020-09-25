@@ -214,7 +214,7 @@ char *dst;
 	memmove(rpath + j + 6, rpath + j, sizeof (rpath) - j - 6);
 	memcpy(rpath + j, ".junk/", 6);
 	j += 6;
-	normalize(rpath + j);
+	ytht_normalize(rpath + j);
 	rpath[PATH_MAX - 10] = 0;
 	j = strlen(rpath);
 	i = 0;

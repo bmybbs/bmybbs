@@ -7,7 +7,13 @@ char *ytht_strnstr(const char *haystack, const char *needle, size_t haystacklen)
 
 // 类似于 strcasestr(3)
 char *ytht_strncasestr(const char *haystack, const char *needle, size_t haystacklen);
-void normalize(char *buf);
+
+/**
+ * @brief 将字符串中包含的 "/" 转换为 ":"
+ * 猜测便于生成对应的 *NIX 文件路径
+ * @param buf 原字符串
+ */
+void ytht_normalize(char *buf);
 
 /**
  * @brief 安全版本的 strncpy

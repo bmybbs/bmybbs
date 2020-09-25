@@ -2088,7 +2088,7 @@ mail_rjunk()
 	}
 
 	len = sprintf(buf, "%c/%s/", mytoupper(currentuser.userid[0]), currentuser.userid);
-	normalize(buf);
+	ytht_normalize(buf);
 	dirp = opendir(MY_BBS_HOME "/mail/.junk");
 	if (dirp == NULL)
 		return -2;

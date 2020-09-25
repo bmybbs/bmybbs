@@ -385,7 +385,7 @@ show_file(char *board, struct fileheader *x, int n)
 	}
 
 	level = cachelevel(x->filetime, x->accessed & FH_ATTACHED);
-	normalize(showfile);
+	ytht_normalize(showfile);
 	snprintf(showpath, PATH_MAX, "%s/%s", ATTACHCACHE, showfile);
 //      f_append("stat4cache2", "show\n");
 	if (access(showpath, R_OK)) {

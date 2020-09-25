@@ -201,7 +201,7 @@ char *ytht_strrtrim(char *s)
 	return t;
 }
 
-void normalize(char *buf)
+void ytht_normalize(char *buf)
 {
 	int i = 0;
 	while (buf[i]) {

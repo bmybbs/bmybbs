@@ -2057,7 +2057,7 @@ MENU *pm;
 	if (realpath(pm->path, rpath) == NULL)
 		return -1;
 	strcpy(buf, rpath + sizeof (MY_BBS_HOME "/0Announce"));
-	normalize(buf);
+	ytht_normalize(buf);
 	len = strlen(buf);
 	dirp = opendir(MY_BBS_HOME "/0Announce/.junk");
 	if (dirp == NULL)
