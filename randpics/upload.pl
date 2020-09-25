@@ -60,7 +60,7 @@ for (my $i = 1;$i <= $maxupload;$i ++)
     $req -> br (),
 }
 print $req -> submit ({-label=>'upload'}),
-    $req -> endform,
+    $req -> end_form,
     $req -> hr ();#生成上传文件的表单
 if ($req -> param ())
 {

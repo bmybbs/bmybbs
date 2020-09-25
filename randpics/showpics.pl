@@ -88,9 +88,9 @@ for (my $i = 0;$i < $picnum;$i ++)
 		$req -> td ([$req -> img ({-src=>("/bmyMainPic/using/".$pics[$i]),-width=>'200',-height=>'100'}),$pics[$i],"",$req -> checkbox ({-name=>$i,-value=>"ON",-label=>""})]);
 	}
 }#把当前使用的进站画面显示出来
-print $req -> end_table, 
+print $req -> end_table,
     $req -> submit ({-label=>'delete'}),
-    $req -> endform;
+    $req -> end_form;
 print $req -> p,
     $req -> start_multipart_form ("POST","$cgibin/uploaded.pl","gb2312"),
     $req -> th ("Not used yet pictures"),
@@ -102,12 +102,12 @@ for (my $i = 2;$i < @nonused;$i ++)
 #	$req -> start_multipart_form ("POST","$cgibin/uploaded.pl","gb2312"),
     print $req -> Tr (),
     $req -> td ([$req -> img ({-src=>("/bmyMainPic/uploaded/".$nonused[$i]),-width=>'200',-height=>'100'}),$nonused[$i], $req -> textfield ({-name=>"Board".$i}), $req -> textfield ({-name=>"File".$i}),$req -> checkbox ({-name=>$nonused[$i],-value=>"ON",-label=>""})]);
-#	$req -> endform;
+#	$req -> end_form;
 }#把已上传还没使用的进站画面显示出来
 print $req -> end_table,
     $req -> submit ({-name=>'ADD',-label=>'add'}),
     $req -> submit ({-name=>'DEL',-label=>'del'}),
-    $req -> endform;
+    $req -> end_form;
 print $req -> p,
     $req -> start_multipart_form ("POST","$cgibin/used.pl","gb2312"),
     $req -> th ("Already used pictures"),
@@ -122,11 +122,11 @@ for (my $i = 2;$i < @used;$i ++)
 print $req -> end_table,
     $req -> submit ({-name=>'ADD',-label=>'add'}),
     $req -> submit ({-name=>'DEL',-label=>'del'}),
-    $req ->endform,
+    $req ->end_form,
     $req -> hr (),
     $req -> start_multipart_form ("POST","$cgibin/link.pl","gb2312"),
     $req -> th ("The linked board of the login picture is <font color=red>$board</font>"),
     $req -> textfield ({-name=>'BOARD',-maxlength=>'16'}),
     $req -> submit ({-label=>'modify'}),
-    $req -> endform,
+    $req -> end_form,
     $req -> end_html;
