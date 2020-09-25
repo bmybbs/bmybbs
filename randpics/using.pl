@@ -3,8 +3,7 @@ use CGI;
 my $req = new CGI;
 my $bbshome = "/home/bbs";
 my $htmpath = "/home/apache/htdocs/bbs/bmyMainPic";
-my $cgibin = "http://202.117.1.8/cgi-bin/bbs";
-my $loginadd = "http://202.117.1.8/picmgr.htm";
+my $loginadd = "/picmgr.htm";
 my $remote_ip = $req -> remote_addr ();
 print $req -> header ({-charset=>'gb2312'});
 if ($req -> cookie('id'))#检查有没有cookie
@@ -30,7 +29,7 @@ if ($req -> cookie('id'))#检查有没有cookie
     chomp (my $randnum = <SE>);
     chomp (my $acttime = <SE>);
     my $nowtime = time;
-    if (($last_ip == $remote_ip) && ($checknum == $randnum) && (($nowtime - $acttime) < 600))
+    if (($last_ip eq $remote_ip) && ($checknum == $randnum) && (($nowtime - $acttime) < 600))
     {
 	seek (SE,length ($randnum) + length ($last_ip) + 2,0) || die;
 	print SE time;#如果没有超时则更新最后活动时间
@@ -67,13 +66,13 @@ if ($req -> cookie('id'))#检查有没有cookie
 		rename ($htmpath."/using/".$delpics[$i],$htmpath."/used/".$delpics[$i]) || die $!;
 	    }#把删除文件移到used文件夹
 	    print "删除成功<br>";
-	    print "<meta http-equiv=\"refresh\" content=\"2; url=$cgibin/showpics.pl\">";
+	    print "<meta http-equiv=\"refresh\" content=\"2; url=showpics.pl\">";
 	}
 	else
 	{
 	    print "没有操作……<br>";
-	    print "<meta http-equiv=\"refresh\" content=\"2; url=$cgibin/showpics.pl\">";
-	}    
+	    print "<meta http-equiv=\"refresh\" content=\"2; url=showpics.pl\">";
+	}
     }#检查登陆是否已经超时
     else
     {

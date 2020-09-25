@@ -3,8 +3,7 @@ use CGI;
 my $req = new CGI;
 my $bbshome = "/home/bbs";
 my $htmpath = "/home/apache/htdocs/bbs/bmyMainPic";
-my $cgibin = "http://202.117.1.8/cgi-bin/bbs";
-my $loginadd = "http://202.117.1.8/picmgr.htm";
+my $loginadd = "/picmgr.htm";
 my $remote_ip = $req -> remote_addr ();
 print $req -> header ({-charset=>gb2312});
 unless ($req -> cookie('id'))
@@ -34,7 +33,7 @@ chomp (my $last_ip = <SE>);
 chomp (my $randnum = <SE>);
 chomp (my $acttime = <SE>);
 my $nowtime = time;
-unless (($last_ip == $remote_ip) && ($checknum == $randnum) && (($nowtime - $acttime) < 600))
+unless (($last_ip eq $remote_ip) && ($checknum == $randnum) && (($nowtime - $acttime) < 600))
 {
     print "登陆超时，请重新登陆<br>";
     print "<meta http-equiv=\"refresh\" content=\"2; url=$loginadd\">";
@@ -73,7 +72,7 @@ if ($req -> param ())
 	seek (PIC,0,0);
 	print PIC "total:",$picnum + $added,"\n" || die;
 	close (PIC);
-	print "<meta http-equiv=\"refresh\" content=\"2; url=$cgibin/showpics.pl\">";
+	print "<meta http-equiv=\"refresh\" content=\"2; url=showpics.pl\">";
     }
     else
     {
@@ -91,11 +90,11 @@ if ($req -> param ())
 		unlink ($bbshome."/loglinks/".$todel[$i]) || die;
 	    print "$todel[$i]已删除","<br>";
 	}
-	print "<meta http-equiv=\"refresh\" content=\"2; url=$cgibin/showpics.pl\">";
+	print "<meta http-equiv=\"refresh\" content=\"2; url=showpics.pl\">";
     }
 }
 else
 {
     print "没有操作<br>";
-    print "<meta http-equiv=\"refresh\" content=\"2; url=$cgibin/showpics.pl\">";
+    print "<meta http-equiv=\"refresh\" content=\"2; url=showpics.pl\">";
 }

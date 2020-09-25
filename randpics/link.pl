@@ -1,11 +1,9 @@
 #!/usr/bin/perl -w
 use CGI;
 my $req = new CGI;
-my $host = "http://202.117.1.8";
 my $bbshome = "/home/bbs";
 my $htmpath = "/home/apache/htdocs/bbs";
-my $cgibin = "http://202.117.1.8/cgi-bin/bbs";
-my $loginadd = "http://202.117.1.8/picmgr.htm";
+my $loginadd = "/picmgr.htm";
 my $remote_ip = $req -> remote_addr ();
 print $req -> header ({-charset=>gb2312});
 unless ($req -> cookie('id'))
@@ -35,7 +33,7 @@ chomp (my $last_ip = <SE>);
 chomp (my $randnum = <SE>);
 chomp (my $acttime = <SE>);
 my $nowtime = time;
-unless (($last_ip == $remote_ip) && ($checknum == $randnum) && (($nowtime - $acttime) < 600))
+unless (($last_ip eq $remote_ip) && ($checknum == $randnum) && (($nowtime - $acttime) < 600))
 {
     print "登陆超时，请重新登陆<br>";
     print "<meta http-equiv=\"refresh\" content=\"2; url=$loginadd\">";
@@ -52,10 +50,10 @@ if ($req -> param ())
     print LINK "BMYKWDVKPBGPAAXVDSNNLFFOMPPOKRCXYYMQ_B/home?B=",$newboard;
     close (LINK);
     print "修改成功<br>";
-    print "<meta http-equiv=\"refresh\" content=\"2; url=$cgibin/showpics.pl\">";
+    print "<meta http-equiv=\"refresh\" content=\"2; url=showpics.pl\">";
 }
 else
 {
     print "没有操作<br>";
-    print "<meta http-equiv=\"refresh\" content=\"2; url=$cgibin/showpics.pl\">";
+    print "<meta http-equiv=\"refresh\" content=\"2; url=showpics.pl\">";
 }

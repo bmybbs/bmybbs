@@ -6,8 +6,7 @@ my $maxupload = 5;
 my $ext = ".jpg";
 my $bbshome = "/home/bbs";
 my $htmpath = "/home/apache/htdocs/bbs/bmyMainPic";
-my $cgibin = "http://202.117.1.8/cgi-bin/bbs";
-my $loginadd = "http://202.117.1.8/picmgr.htm";
+my $loginadd = "/picmgr.htm";
 my $remote_ip = $req -> remote_addr ();
 print $req -> header ({-charset=>gb2312});
 unless ($req -> cookie('id'))
@@ -37,7 +36,7 @@ chomp (my $last_ip = <SE>);
 chomp (my $randnum = <SE>);
 chomp (my $acttime = <SE>);
 my $nowtime = time;
-unless (($last_ip == $remote_ip) && ($checknum == $randnum) && (($nowtime - $acttime) < 600))
+unless (($last_ip eq $remote_ip) && ($checknum == $randnum) && (($nowtime - $acttime) < 600))
 {
     print "登陆超时，请重新登陆<br>";
     print "<meta http-equiv=\"refresh\" content=\"2; url=$loginadd\">";
@@ -49,9 +48,9 @@ print SE time;#更新最后活动时间
 close (SE);
 print $req -> start_html (),
     $req -> h2 ("Welcome to XJTU bbs BMY!"),
-    $req -> a ({-href=>"$cgibin/showpics.pl"},"返回"),
+    $req -> a ({-href=>"showpics.pl"},"返回"),
     "|",
-    $req -> a ({-href=>"$cgibin/logout.pl"},"退出"),
+    $req -> a ({-href=>"logout.pl"},"退出"),
     $req -> hr (),
     $req -> start_multipart_form ("POST","","gb2312");
 for (my $i = 1;$i <= $maxupload;$i ++)
@@ -60,7 +59,7 @@ for (my $i = 1;$i <= $maxupload;$i ++)
     $req -> br (),
 }
 print $req -> submit ({-label=>'upload'}),
-    $req -> endform,
+    $req -> end_form,
     $req -> hr ();#生成上传文件的表单
 if ($req -> param ())
 {

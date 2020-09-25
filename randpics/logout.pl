@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use CGI;
 my $req = new CGI;
-my $loginadd = "http://202.117.1.8/picmgr.htm";
+my $loginadd = "/picmgr.htm";
 my $remote_ip = $req -> remote_addr ();
 print $req -> header ({-charset=>gb2312});
 unless ($req -> cookie('id'))
@@ -31,7 +31,7 @@ chomp (my $last_ip = <SE>);
 chomp (my $randnum = <SE>);
 chomp (my $acttime = <SE>);
 my $nowtime = time;
-unless (($last_ip == $remote_ip) && ($checknum == $randnum) && (($nowtime - $acttime) < 600))
+unless (($last_ip eq $remote_ip) && ($checknum == $randnum) && (($nowtime - $acttime) < 600))
 {
     unlink ("/tmp/$username.se");
     print "µÇÂ½³¬Ê±<br>";

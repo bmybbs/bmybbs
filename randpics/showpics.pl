@@ -3,8 +3,7 @@ use CGI;
 my $req = new CGI;
 my $bbshome = "/home/bbs";
 my $htmpath = "/home/apache/htdocs/bbs";
-my $cgibin = "http://202.117.1.8/cgi-bin/bbs";
-my $loginadd = "http://202.117.1.8/picmgr.htm";
+my $loginadd = "/picmgr.htm";
 my $remote_ip = $req -> remote_addr ();
 print $req -> header ({-charset=>gb2312});
 unless ($req -> cookie('id'))
@@ -34,7 +33,7 @@ chomp (my $last_ip = <SE>);
 chomp (my $randnum = <SE>);
 chomp (my $acttime = <SE>);
 my $nowtime = time;
-unless (($last_ip == $remote_ip) && ($checknum == $randnum) && (($nowtime - $acttime) < 600))
+unless (($last_ip eq $remote_ip) && ($checknum == $randnum) && (($nowtime - $acttime) < 600))
 {
     print "登陆超时，请重新登陆<br>";
     print "<meta http-equiv=\"refresh\" content=\"2; url=$loginadd\">";
@@ -66,11 +65,11 @@ chomp ($board);
 close (LINK);
 print $req -> start_html (),
     $req -> h2 ("Welcome to XJTU bbs BMY!"),
-    $req -> a ({-href=>"$cgibin/upload.pl"},"上传"),
+    $req -> a ({-href=>"upload.pl"},"上传"),
     "|",
-    $req -> a ({-href=>"$cgibin/logout.pl"},"退出"),
+    $req -> a ({-href=>"logout.pl"},"退出"),
     $req -> hr (),
-    $req -> start_multipart_form ("POST","$cgibin/using.pl","gb2312"),
+    $req -> start_multipart_form ("POST","using.pl","gb2312"),
     $req -> th ("Now using pictures"),
     $req -> table ({-border=>'1'}),
     $req -> Tr (),
@@ -88,28 +87,28 @@ for (my $i = 0;$i < $picnum;$i ++)
 		$req -> td ([$req -> img ({-src=>("/bmyMainPic/using/".$pics[$i]),-width=>'200',-height=>'100'}),$pics[$i],"",$req -> checkbox ({-name=>$i,-value=>"ON",-label=>""})]);
 	}
 }#把当前使用的进站画面显示出来
-print $req -> end_table, 
+print $req -> end_table,
     $req -> submit ({-label=>'delete'}),
-    $req -> endform;
+    $req -> end_form;
 print $req -> p,
-    $req -> start_multipart_form ("POST","$cgibin/uploaded.pl","gb2312"),
+    $req -> start_multipart_form ("POST","uploaded.pl","gb2312"),
     $req -> th ("Not used yet pictures"),
     $req -> table ({-border=>'1'}),
     $req -> Tr (),
     $req -> td (["Thumbnail","File name","Board","File","Select"]);
 for (my $i = 2;$i < @nonused;$i ++)
 {
-#	$req -> start_multipart_form ("POST","$cgibin/uploaded.pl","gb2312"),
+#	$req -> start_multipart_form ("POST","uploaded.pl","gb2312"),
     print $req -> Tr (),
     $req -> td ([$req -> img ({-src=>("/bmyMainPic/uploaded/".$nonused[$i]),-width=>'200',-height=>'100'}),$nonused[$i], $req -> textfield ({-name=>"Board".$i}), $req -> textfield ({-name=>"File".$i}),$req -> checkbox ({-name=>$nonused[$i],-value=>"ON",-label=>""})]);
-#	$req -> endform;
+#	$req -> end_form;
 }#把已上传还没使用的进站画面显示出来
 print $req -> end_table,
     $req -> submit ({-name=>'ADD',-label=>'add'}),
     $req -> submit ({-name=>'DEL',-label=>'del'}),
-    $req -> endform;
+    $req -> end_form;
 print $req -> p,
-    $req -> start_multipart_form ("POST","$cgibin/used.pl","gb2312"),
+    $req -> start_multipart_form ("POST","used.pl","gb2312"),
     $req -> th ("Already used pictures"),
     $req ->table ({-border=>'1'}),
     $req -> Tr (),
@@ -122,11 +121,11 @@ for (my $i = 2;$i < @used;$i ++)
 print $req -> end_table,
     $req -> submit ({-name=>'ADD',-label=>'add'}),
     $req -> submit ({-name=>'DEL',-label=>'del'}),
-    $req ->endform,
+    $req ->end_form,
     $req -> hr (),
-    $req -> start_multipart_form ("POST","$cgibin/link.pl","gb2312"),
+    $req -> start_multipart_form ("POST","link.pl","gb2312"),
     $req -> th ("The linked board of the login picture is <font color=red>$board</font>"),
     $req -> textfield ({-name=>'BOARD',-maxlength=>'16'}),
     $req -> submit ({-label=>'modify'}),
-    $req -> endform,
+    $req -> end_form,
     $req -> end_html;
