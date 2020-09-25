@@ -31,7 +31,7 @@ chomp (my $last_ip = <SE>);
 chomp (my $randnum = <SE>);
 chomp (my $acttime = <SE>);
 my $nowtime = time;
-unless (($last_ip == $remote_ip) && ($checknum == $randnum) && (($nowtime - $acttime) < 600))
+unless (($last_ip eq $remote_ip) && ($checknum == $randnum) && (($nowtime - $acttime) < 600))
 {
     unlink ("/tmp/$username.se");
     print "µÇÂ½³¬Ê±<br>";

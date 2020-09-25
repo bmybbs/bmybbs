@@ -37,7 +37,7 @@ chomp (my $last_ip = <SE>);
 chomp (my $randnum = <SE>);
 chomp (my $acttime = <SE>);
 my $nowtime = time;
-unless (($last_ip == $remote_ip) && ($checknum == $randnum) && (($nowtime - $acttime) < 600))
+unless (($last_ip eq $remote_ip) && ($checknum == $randnum) && (($nowtime - $acttime) < 600))
 {
     print "µÇÂ½³¬Ê±£¬ÇëÖØÐÂµÇÂ½<br>";
     print "<meta http-equiv=\"refresh\" content=\"2; url=$loginadd\">";

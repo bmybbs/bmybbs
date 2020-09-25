@@ -30,7 +30,7 @@ if ($req -> cookie('id'))#检查有没有cookie
     chomp (my $randnum = <SE>);
     chomp (my $acttime = <SE>);
     my $nowtime = time;
-    if (($last_ip == $remote_ip) && ($checknum == $randnum) && (($nowtime - $acttime) < 600))
+    if (($last_ip eq $remote_ip) && ($checknum == $randnum) && (($nowtime - $acttime) < 600))
     {
 	seek (SE,length ($randnum) + length ($last_ip) + 2,0) || die;
 	print SE time;#如果没有超时则更新最后活动时间
@@ -73,7 +73,7 @@ if ($req -> cookie('id'))#检查有没有cookie
 	{
 	    print "没有操作……<br>";
 	    print "<meta http-equiv=\"refresh\" content=\"2; url=$cgibin/showpics.pl\">";
-	}    
+	}
     }#检查登陆是否已经超时
     else
     {
