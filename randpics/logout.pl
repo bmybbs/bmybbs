@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use CGI;
 my $req = new CGI;
-my $loginadd = "http://202.117.1.8/picmgr.htm";
+my $loginadd = "/picmgr.htm";
 my $remote_ip = $req -> remote_addr ();
 print $req -> header ({-charset=>gb2312});
 unless ($req -> cookie('id'))
