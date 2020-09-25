@@ -20,10 +20,10 @@ char *buf, userid[], title[];
 	FILE *fp;
 
 	memset(&newmessage, 0, sizeof (newmessage));
-	strsncpy(newmessage.owner, "XJTU-XANET",
-		 sizeof (newmessage.owner));
-	strsncpy(newmessage.title, title, sizeof (newmessage.title));
-	//strsncpy(save_title, newmessage.title, sizeof (save_title));
+	ytht_strsncpy(newmessage.owner, "XJTU-XANET",
+				  sizeof(newmessage.owner));
+	ytht_strsncpy(newmessage.title, title, sizeof(newmessage.title));
+	//ytht_strsncpy(save_title, newmessage.title, sizeof (save_title));
 
 	setmailfile(filepath, userid, "");
 	if (stat(filepath, &st) == -1) {

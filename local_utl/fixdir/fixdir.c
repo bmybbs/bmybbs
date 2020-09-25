@@ -93,7 +93,7 @@ int main(int argc, char **argv)
 				fh.thread = fh.filetime;
 				if (ent->d_name[0] == 'G')
 					fh.accessed |= FH_DIGEST;
-				strsncpy(fh.title, buf2 + 8, sizeof (fh.title));
+				ytht_strsncpy(fh.title, buf2 + 8, sizeof(fh.title));
 				if (strncmp(buf1, "发信站", 6)
 				    && strncmp(buf1, "寄信人: ", 8)
 				    && strncmp(buf1, "发信人: ", 8))

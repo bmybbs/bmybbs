@@ -31,9 +31,9 @@ bbssnd_main()
 	struct mmapfile mf = { ptr:NULL };
 	html_header(1);
 
-	strsncpy(board, getparm("board"), 18);
-	strsncpy(title, getparm("title"), 60);
-	strsncpy(userid, getparm("replyto"), 14);
+	ytht_strsncpy(board, getparm("board"), 18);
+	ytht_strsncpy(title, getparm("title"), 60);
+	ytht_strsncpy(userid, getparm("replyto"), 14);
 	outgoing = strlen(getparm("outgoing"));
 	anony = strlen(getparm("anony"));
 	usemath = strlen(getparm("usemath"));

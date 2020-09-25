@@ -12,14 +12,14 @@ readuserallbrc(char *userid, int must)
 		snprintf(buf, sizeof (buf), "guest.%s", fromhost);
 		if (!must && !strncmp(allbrcuser, buf, sizeof (allbrcuser)))
 			return 0;
-		strsncpy(allbrcuser, buf, sizeof (allbrcuser));
+		ytht_strsncpy(allbrcuser, buf, sizeof(allbrcuser));
 		brc_init(&allbrc, allbrcuser, NULL);
 
 	} else {
 		if (!must && !strncmp(allbrcuser, userid, sizeof (allbrcuser)))
 			return 0;
 		sethomefile(buf, userid, "brc");
-		strsncpy(allbrcuser, userid, sizeof (allbrcuser));
+		ytht_strsncpy(allbrcuser, userid, sizeof(allbrcuser));
 		brc_init(&allbrc, userid, buf);
 	}
 	return 0;

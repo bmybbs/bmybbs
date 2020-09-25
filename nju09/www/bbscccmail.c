@@ -11,10 +11,10 @@ bbscccmail_main()
 	int num;
 	html_header(1);
 	check_msg();
-	strsncpy(file, getparm("F"), 30);
+	ytht_strsncpy(file, getparm("F"), 30);
 	if (!file[0])
-		strsncpy(file, getparm("file"), 30);
-	strsncpy(target, getparm("target"), 30);
+		ytht_strsncpy(file, getparm("file"), 30);
+	ytht_strsncpy(target, getparm("target"), 30);
 	if (!loginok || isguest)
 		http_fatal("匆匆过客不能进行本项操作");
 	changemode(POSTING);
@@ -105,7 +105,7 @@ do_cccmail(struct fileheader *x, struct boardmem *brd)
 	fclose(fp);
 	fclose(fp2);
 	if (!strncmp(x->title, "[转载]", 6)) {
-		strsncpy(title, x->title, sizeof (title));
+		ytht_strsncpy(title, x->title, sizeof(title));
 	} else {
 		sprintf(title, "[转载] %.55s", x->title);
 	}

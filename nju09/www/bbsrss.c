@@ -41,7 +41,7 @@ rss_chartrans(char *s, char *s0)  // transfer characters according to XML standa
 			for (m = i + 2; s0[m] && m < i + 24; m++)
 				if (strchr("0123456789;", s0[m]) == 0)
 					break;
-			strsncpy(ansibuf, &s0[i + 2], m - (i + 2) + 1);
+				ytht_strsncpy(ansibuf, &s0[i + 2], m - (i + 2) + 1);
 			i = m;
 			if (s0[i] != 'm')
 				continue;
@@ -415,7 +415,7 @@ showboard(char *B, int nodes)
 	}
 	changemode(READING);
 	memset(board,0,sizeof(board));
-	strsncpy(board, B, 32);
+	ytht_strsncpy(board, B, 32);
 	x1 = getboard(board);
 	if (x1 == 0) {
 		html_header(1);
@@ -521,7 +521,7 @@ bbsrss_main()
 	char board[32];
 	int nodes = 0;
 
-	strsncpy(board, getparm("board"), sizeof(board));
+	ytht_strsncpy(board, getparm("board"), sizeof(board));
 	
 	if (strcmp("1", getparm("nodes")) == 0) //if nodes==1, dont show description.
 		nodes = 1;

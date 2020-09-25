@@ -276,7 +276,7 @@ filterlog(char *str)
 		fields[5]
 	};
 	int n, retv;
-	strsncpy(buf, str, sizeof (buf));
+	ytht_strsncpy(buf, str, sizeof(buf));
 	if ((ptr = strchr(buf, '\n')))
 		*ptr = 0;
 	n = ytht_strtok(buf, ' ', tmp, 6);

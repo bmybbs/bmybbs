@@ -36,7 +36,7 @@ addmiauthor(struct markeditem *mi, char *author)
 	}
 	if (i >= MAXAUTHOR)
 		return -1;
-	strsncpy(mi->author[i], author, sizeof (mi->author[i]));
+	ytht_strsncpy(mi->author[i], author, sizeof(mi->author[i]));
 	mi->n++;
 	return mi->n;
 }
@@ -53,7 +53,7 @@ addmarkedlist(struct markedlist *ml, char *title, char *author, int thread)
 	}
 	if (i >= MAXFOUNDD)
 		return ml->n;
-	strsncpy(ml->mi[i].title, title, sizeof (ml->mi[0].title));
+	ytht_strsncpy(ml->mi[i].title, title, sizeof(ml->mi[0].title));
 	addmiauthor(&ml->mi[i], author);
 	ml->mi[i].thread = thread;
 	ml->n++;

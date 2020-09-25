@@ -68,12 +68,12 @@ getdocauthor(char *filename, char *author, int len)
 		ptr = buf + 8;
 		f1 = strsep(&ptr, " ,\n\r\t");
 		if (f1)
-			strsncpy(author, f1, len);
+			ytht_strsncpy(author, f1, len);
 		f2 = strsep(&ptr, " ,\n\r\t");
 		if (f2 && f2[0] == '<' && f2[strlen(f2) - 1] == '>'
 		    && strchr(f2, '@')) {
 			f2[strlen(f2) - 1] = 0;
-			strsncpy(author, f2 + 1, len);
+			ytht_strsncpy(author, f2 + 1, len);
 		}
 		ptr = strpbrk(author, "();:!#$\"\'");
 		if (ptr)

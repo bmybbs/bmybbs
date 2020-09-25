@@ -12,9 +12,9 @@ bbstfind_main()
 	html_header(1);
 	check_msg();
 	changemode(READING);
-	strsncpy(board, getparm("B"), 32);
+	ytht_strsncpy(board, getparm("B"), 32);
 	if (!board[0])
-		strsncpy(board, getparm("board"), 32);
+		ytht_strsncpy(board, getparm("board"), 32);
 	thread = atoi(getparm("th"));
 	x1 = getboard(board);
 	if (x1 == 0)
@@ -62,9 +62,9 @@ bbstfind_main()
 	MMAP_END mmapfile(NULL, &mf);
 //1
 
-	strsncpy(board, getparm("B"), 32);
+	ytht_strsncpy(board, getparm("B"), 32);
 	if (!board[0])
-		strsncpy(board, getparm("board"), 32);
+		ytht_strsncpy(board, getparm("board"), 32);
 	thread = atoi(getparm("th"));
 	x1 = getboard(board);
 	if (x1 == 0)

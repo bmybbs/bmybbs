@@ -13,8 +13,8 @@ bbsbadd_main()
 	sethomefile(path, currentuser.userid, "rejects");
 	printf("<body><center>%s -- 黑名单 [使用者: %s]<hr>\n", BBSNAME,
 	       currentuser.userid);
-	strsncpy(userid, getparm("userid"), 13);
-	strsncpy(exp, getparm("exp"), 32);
+	ytht_strsncpy(userid, getparm("userid"), 13);
+	ytht_strsncpy(exp, getparm("exp"), 32);
 	loadbad(currentuser.userid);
 	if (userid[0] == 0 || exp[0] == 0) {
 		if (userid[0])

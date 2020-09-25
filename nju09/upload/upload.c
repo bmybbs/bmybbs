@@ -42,7 +42,7 @@ getreqstr()
 	static char str[100] = { 0 }, *ptr;
 	if (str[0])
 		return str;
-	strsncpy(str, getsenv("SCRIPT_URL"), sizeof (str));
+	ytht_strsncpy(str, getsenv("SCRIPT_URL"), sizeof(str));
 	if ((ptr = strchr(str, '&')))
 		*ptr = 0;
 	return str;
@@ -277,7 +277,7 @@ do_del()
 {
 	char str[1024], *p0, *ptr, str_gbk[1024];
 	char filename[1024];
-	strsncpy(str, getsenv("PATH_INFO"), sizeof (str));
+	ytht_strsncpy(str, getsenv("PATH_INFO"), sizeof(str));
 	if (!(p0 = strchr(str, '&')))
 		return;
 	p0++;
@@ -352,14 +352,14 @@ main(int argc, char *argv[], char *environment[])
 	wwwcache = get_old_shm(WWWCACHE_SHMKEY, sizeof (struct WWWCACHE));
 	if (!wwwcache)
 		http_fatal("内部错误 2");
-	strsncpy(str, getsenv("PATH_INFO"), sizeof (str));
+	ytht_strsncpy(str, getsenv("PATH_INFO"), sizeof(str));
 
 	if ((ptr = strchr(str, '&')))
 		*ptr = 0;
 
 	if (strlen(str) != 34)
 		http_fatal("请先登录 1");
-	strsncpy(utmpnstr, str + 1, 4);
+	ytht_strsncpy(utmpnstr, str + 1, 4);
 
 	utmpnstr[4] = 0;
 	i = myatoi(utmpnstr);
@@ -376,7 +376,7 @@ main(int argc, char *argv[], char *environment[])
 	if (i < 0 || i > USHM_SIZE)
 		http_fatal("请先登录 2");
 	uin = shm_utmp->uinfo[i];
-	strsncpy(fromhost, getsenv("REMOTE_ADDR"), 32);
+	ytht_strsncpy(fromhost, getsenv("REMOTE_ADDR"), 32);
 	inet_pton(AF_INET6,fromhost,&from_addr);   //ipv6 by leoncom
 	//inet_aton(fromhost, &from_addr);
 	/* ipv6 无视这个wwwcache
@@ -448,7 +448,7 @@ main(int argc, char *argv[], char *environment[])
 	if (!ptr)
 		http_fatal("文件传送错误 3");
 	ptr++;
-	strsncpy(Boundary + 2, ptr, sizeof (Boundary) - 2);
+	ytht_strsncpy(Boundary + 2, ptr, sizeof(Boundary) - 2);
 	/* Get the total number of bytes in the input stream from the
 	   CONTENT_LENGTH environment variable. */
 	len = atoi(getsenv("CONTENT_LENGTH"));

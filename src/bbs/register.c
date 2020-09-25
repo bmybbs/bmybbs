@@ -259,8 +259,8 @@ getnewuserid(struct userec *newuser)
 		return -1;
 	}
 	write(fd, newuser, sizeof (*newuser));
-	strsncpy(uidshm->userid[i - 1], newuser->userid,
-		 sizeof (uidshm->userid[i - 1]));
+	ytht_strsncpy(uidshm->userid[i - 1], newuser->userid,
+				  sizeof(uidshm->userid[i - 1]));
 	insertuseridhash(uidhashshm->uhi, UCACHE_HASH_SIZE, newuser->userid, i);
 	flock(fd, LOCK_UN);
 	close(fd);

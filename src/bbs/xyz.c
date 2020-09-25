@@ -1107,7 +1107,7 @@ const char *cmdfile, *param;
 	if (param != NULL) {
 		char *avoid = "&;!`'\"|?~<>^()[]{}$\n\r\\", *ptr;
 		int n = strlen(avoid);
-		strsncpy(param1, param, sizeof (param1));
+		ytht_strsncpy(param1, param, sizeof(param1));
 		while (n > 0) {
 			n--;
 			ptr = strchr(param1, avoid[n]);

@@ -88,7 +88,7 @@ d_board()
 	sprintf(genbuf, " << '%s'±» %s É¾³ý >>",
 			binfo.filename, currentuser.userid);
 	memset(&binfo, 0, sizeof (binfo));
-	strsncpy(binfo.title, genbuf, sizeof (binfo.title));
+	ytht_strsncpy(binfo.title, genbuf, sizeof(binfo.title));
 	binfo.level = PERM_SYSOP;
 	substitute_record(BOARDS, &binfo, sizeof (binfo), bid);
 

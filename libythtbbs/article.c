@@ -74,14 +74,14 @@ fh_setowner(struct fileheader *fh, char *owner, int anony)
 	bzero(fh->owner, sizeof (fh->owner));
 	if (anony) {
 		fh->owner[0] = 0;
-		strsncpy(fh->owner + 1, owner, sizeof (fh->owner) - 1);
+		ytht_strsncpy(fh->owner + 1, owner, sizeof(fh->owner) - 1);
 		return;
 	}
 	if (!*owner) {
 		*fh->owner = 0;
 		return;
 	}
-	strsncpy(fh->owner, owner, sizeof (fh->owner) - 1);
+	ytht_strsncpy(fh->owner, owner, sizeof(fh->owner) - 1);
 	if (!strchr(owner, '@') && !strchr(owner, '.')) {
 		ptr = strchr(fh->owner, ' ');
 		if (ptr)
@@ -307,7 +307,7 @@ cancelpost(char *board, char *userid, struct fileheader *fh, int owned)
 	postfile.accessed &= ~(FH_MARKED | FH_SPEC | FH_DIGEST);
 	postfile.deltime = time(&now_t) / (3600 * 24) % 100;
 	sprintf(buf, "%-32.32s - %s", fh->title, userid);
-	strsncpy(postfile.title, buf, sizeof (postfile.title));
+	ytht_strsncpy(postfile.title, buf, sizeof(postfile.title));
 	digestmode = (owned) ? 5 : 4;
 	if (5 == digestmode)
 		sprintf(buf, MY_BBS_HOME "/boards/%s/.JUNK", board);

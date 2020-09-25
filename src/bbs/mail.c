@@ -337,8 +337,8 @@ char *userid, *title;
 	close(fp);
 	newmessage.filetime = now;
 	newmessage.thread = now;
-	strsncpy(newmessage.owner, currentuser.userid,
-		 sizeof (newmessage.owner));
+	ytht_strsncpy(newmessage.owner, currentuser.userid,
+				  sizeof(newmessage.owner));
 
       edit_mail_file:
 	if (title == NULL) {
@@ -356,9 +356,9 @@ char *userid, *title;
 	ansimore2(genbuf, NA, 0, 18);
 	strcpy(header.ds, uid);
 	if (post_header(&header)) {
-		strsncpy(newmessage.title, header.title,
-			 sizeof (newmessage.title));
-		strsncpy(save_title, newmessage.title, sizeof (save_title));
+		ytht_strsncpy(newmessage.title, header.title,
+					  sizeof(newmessage.title));
+		ytht_strsncpy(save_title, newmessage.title, sizeof(save_title));
 		sprintf(save_title2, "{%.16s} %.60s", uid, newmessage.title);
 	}
 	do_quote(filepath, header.include_mode);
@@ -643,7 +643,7 @@ char buf[512];
 	strcpy(c1, "\033[1;36m");
 	if (!strcmp(ReadPost, ent->title) || !strcmp(ReplyPost, ent->title))
 		same = YEA;
-	strsncpy(b2, ent->owner, sizeof (b2));
+	ytht_strsncpy(b2, ent->owner, sizeof(b2));
 
 	//add by gluon
 	/* Added by deardragon 1999.11.15 给已回信件加上 "回信" 标记 ('R') */
@@ -758,7 +758,7 @@ char *direct;
 	}
 	clear();
 	modify_user_mode(SMAIL);
-	strsncpy(uid, fh2owner(fileinfo), sizeof (uid));
+	ytht_strsncpy(uid, fh2owner(fileinfo), sizeof(uid));
 	if (strchr(uid, '.')) {
 		char filename[STRLEN];
 		directfile(filename, direct, fh2fname(fileinfo));
@@ -1683,10 +1683,10 @@ char tmpfile[STRLEN], userid[STRLEN], title[STRLEN];
 	int fp, count, now;
 
 	memset(&newmessage, 0, sizeof (newmessage));
-	strsncpy(newmessage.owner, currentuser.userid,
-		 sizeof (newmessage.owner));
-	strsncpy(newmessage.title, title, sizeof (newmessage.title));
-	strsncpy(save_title, newmessage.title, sizeof (save_title));
+	ytht_strsncpy(newmessage.owner, currentuser.userid,
+				  sizeof(newmessage.owner));
+	ytht_strsncpy(newmessage.title, title, sizeof(newmessage.title));
+	ytht_strsncpy(save_title, newmessage.title, sizeof(save_title));
 
 	setmailfile(filepath, userid, "");
 	if (stat(filepath, &st) == -1) {
@@ -1736,10 +1736,10 @@ char *buf, userid[], title[];
 	FILE *fp;
 
 	memset(&newmessage, 0, sizeof (newmessage));
-	strsncpy(newmessage.owner, currentuser.userid,
-		 sizeof (newmessage.owner));
-	strsncpy(newmessage.title, title, sizeof (newmessage.title));
-	strsncpy(save_title, newmessage.title, sizeof (save_title));
+	ytht_strsncpy(newmessage.owner, currentuser.userid,
+				  sizeof(newmessage.owner));
+	ytht_strsncpy(newmessage.title, title, sizeof(newmessage.title));
+	ytht_strsncpy(save_title, newmessage.title, sizeof(save_title));
 
 	setmailfile(filepath, userid, "");
 	if (stat(filepath, &st) == -1) {
@@ -2061,7 +2061,7 @@ getmailinfo(char *path, struct fileheader *rst)
 			*p = 0;
 		if ((p = strchr(buf2 + 8, '\r')))
 			*p = 0;
-		strsncpy(rst->title, buf2 + 8, sizeof (rst->title));
+		ytht_strsncpy(rst->title, buf2 + 8, sizeof(rst->title));
 		break;
 	}
 	fclose(fp);
@@ -2298,7 +2298,7 @@ char *direct;
 			pressreturn();
 		}
 	} else
-		strsncpy(uid, quote_user, sizeof (uid));
+		ytht_strsncpy(uid, quote_user, sizeof(uid));
 	/* make the title */
 	if (toupper(fileinfo->title[0]) != 'R'
 	    || fileinfo->title[1] != 'e' || fileinfo->title[2] != ':')

@@ -10,7 +10,7 @@ bbssbs_main()
 	html_header(1);
 	check_msg();
 	changemode(READING);
-	strsncpy(keyword, getparm("keyword"), 32);
+	ytht_strsncpy(keyword, getparm("keyword"), 32);
 	printf("<body><center>");
 	printf("<div class=rhead>%s -- ≥¨º∂∞Ê√Ê—°‘Ò</div><hr>\n", BBSNAME);
 	

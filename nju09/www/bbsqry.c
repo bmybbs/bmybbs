@@ -39,9 +39,9 @@ apiqry_main()
 	int i, tmp2, num;
 	json_header();
 //	changemode(QUERY);
-	strsncpy(userid, getparm("U"), 13);
+	ytht_strsncpy(userid, getparm("U"), 13);
 	if (!userid[0])
-		strsncpy(userid,getparm("userid"), 13);
+		ytht_strsncpy(userid, getparm("userid"), 13);
 	if (userid[0] == '\0')
 	{
 		printf("{\"User\":null}");
@@ -176,9 +176,9 @@ bbsqry_main()
 	html_header(1);
 	check_msg();
 	changemode(QUERY);
-	strsncpy(userid, getparm("U"), 13);
+	ytht_strsncpy(userid, getparm("U"), 13);
 	if (!userid[0])
-		strsncpy(userid, getparm("userid"), 13);
+		ytht_strsncpy(userid, getparm("userid"), 13);
 	printf("<body><center>");
 	printf("<div class=rhead>%s -- ²éÑ¯ÍøÓÑ</div><hr>\n", BBSNAME);
 	if (userid[0] == 0) {

@@ -11,10 +11,10 @@ bbsbkndoc_main()
 	html_header(1);
 	changemode(BACKNUMBER);
 	check_msg();
-	strsncpy(board, getparm("B"), 32);
+	ytht_strsncpy(board, getparm("B"), 32);
 	if (!board[0])
-		strsncpy(board, getparm("board"), 32);
-	strsncpy(bkn, getparm("bkn"), 32);
+		ytht_strsncpy(board, getparm("board"), 32);
+	ytht_strsncpy(bkn, getparm("bkn"), 32);
 	ptr = bkn;
 	while (*ptr) {
 		if (*ptr != 'B' && *ptr != '.' && !isdigit(*ptr))

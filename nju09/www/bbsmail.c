@@ -19,7 +19,7 @@ bbsmail_main()
     int box_type = 0; 
 	if (!loginok || isguest)
 		http_fatal("ÄúÉÐÎ´µÇÂ¼, ÇëÏÈµÇÂ¼");
-    strsncpy(buf, getparm("box_type"), 10);
+	ytht_strsncpy(buf, getparm("box_type"), 10);
     if(buf[0] != 0) {
         box_type = atoi(buf);
     }
@@ -34,7 +34,7 @@ bbsmail_main()
 	html_header(1);
 	check_msg();
 	changemode(RMAIL);
-	strsncpy(buf, getparm("start"), 10);
+	ytht_strsncpy(buf, getparm("start"), 10);
 	start = atoi(buf);
 	if (buf[0] == 0)
 		start = 999999;

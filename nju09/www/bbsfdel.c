@@ -15,7 +15,7 @@ bbsfdel_main()
 	sethomefile(path, currentuser.userid, "friends");
 	printf("<center>%s -- 好友名单 [使用者: %s]<hr>\n", BBSNAME,
 	       currentuser.userid);
-	strsncpy(userid, getparm("userid"), 13);
+	ytht_strsncpy(userid, getparm("userid"), 13);
 	if (userid[0] == 0) {
 		printf("<form action=bbsfdel>\n");
 		printf("请输入欲删除的好友帐号: <input type=text><br>\n");

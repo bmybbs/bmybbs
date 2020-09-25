@@ -9,13 +9,13 @@ bbsfwd_main()
 	struct mmapfile mf = { ptr:NULL };
 	html_header(1);
 	check_msg();
-	strsncpy(board, getparm("B"), 32);
+	ytht_strsncpy(board, getparm("B"), 32);
 	if (!board[0])
-		strsncpy(board, getparm("board"), 32);
-	strsncpy(file, getparm("F"), 30);
+		ytht_strsncpy(board, getparm("board"), 32);
+	ytht_strsncpy(file, getparm("F"), 30);
 	if (!file[0])
-		strsncpy(file, getparm("file"), 30);
-	strsncpy(target, getparm("target"), 30);
+		ytht_strsncpy(file, getparm("file"), 30);
+	ytht_strsncpy(target, getparm("target"), 30);
 	if (!loginok || isguest)
 		http_fatal("匆匆过客不能进行本项操作");
 	changemode(SMAIL);

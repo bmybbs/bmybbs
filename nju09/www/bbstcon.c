@@ -4,7 +4,7 @@ char* userid_str_class(char *s, char* class)
 {
 	static char buf[512];
 	char buf2[256], tmp[256], *ptr, *ptr2;
-	strsncpy(tmp, s, 255);
+	ytht_strsncpy(tmp, s, 255);
 	buf[0] = 0;
 	ptr = strtok(tmp, " ,();\r\n\t");
 	while (ptr && strlen(buf) < 400) {
@@ -54,7 +54,7 @@ bbstcon_main()
 	html_header(1);
 	check_msg();
 	printf("<script src=/function.js></script>\n");
-	strsncpy(board, getparm("board"), 32);
+	ytht_strsncpy(board, getparm("board"), 32);
 	thread = atoi(getparm("th"));
 	printf("<body leftmargin=0 topmargin=0>\n<img src=\"/images/bmy.gif\" style=\"position: absolute;top:-160px;\"/>\n");
 	printf("<table width=100%% border=0 cellpadding=0 cellspacing=0>\n");

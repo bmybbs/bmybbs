@@ -118,7 +118,7 @@ scanreg_readforms()
 			for (n = 0; field[n] != NULL; n++) {
 				if (strcmp(buf, field[n]) != 0)
 					continue;
-				strsncpy(fdata[n], ptr + 2, sizeof (fdata[n]));
+				ytht_strsncpy(fdata[n], ptr + 2, sizeof(fdata[n]));
 				if ((ptr = strchr(fdata[n], '\n')) != NULL)
 					*ptr = '\0';
 			}
@@ -216,7 +216,7 @@ scanreg_done()
 			for (i = 0; field[i] != NULL; i++) {
 				if (strcmp(buf, field[i]) != 0)
 					continue;
-				strsncpy(fdata[i], ptr + 2, sizeof (fdata[i]));
+				ytht_strsncpy(fdata[i], ptr + 2, sizeof(fdata[i]));
 				if ((ptr = strchr(fdata[i], '\n')) != NULL)
 					*ptr = '\0';
 			}
@@ -262,10 +262,10 @@ scanreg_done()
 					fdata[5][i = 40] = '\0';
 				fdata[3][60 - i] = '\0';
 			}
-			strsncpy(uinfo.realname, fdata[2], sizeof (uinfo.realname));
-			strsncpy(uinfo.address, fdata[4], sizeof (uinfo.address));
+			ytht_strsncpy(uinfo.realname, fdata[2], sizeof(uinfo.realname));
+			ytht_strsncpy(uinfo.address, fdata[4], sizeof(uinfo.address));
 			sprintf(buf, "%s$%s@%s", fdata[3], fdata[5], currentuser.userid);
-			strsncpy(uinfo.realmail, buf, sizeof (uinfo.realmail));
+			ytht_strsncpy(uinfo.realmail, buf, sizeof(uinfo.realmail));
 			uinfo.userlevel |= PERM_DEFAULT;	// by ylsdd
 			save_user_data(&uinfo);
 			sethomefile(buf, uinfo.userid, "sucessreg");
@@ -290,7 +290,7 @@ scanreg_done()
 			securityreport(buf, buf);
 		} else {
 			snprintf(buf, sizeof (buf), "<×¢²áÊ§°Ü>-%s", results[n]);
-			strsncpy(uinfo.address, buf, sizeof (uinfo.address));
+			ytht_strsncpy(uinfo.address, buf, sizeof(uinfo.address));
 			save_user_data(&uinfo);
 			mail_file("etc/f_fill", uinfo.userid, buf, currentuser.userid);
 		}

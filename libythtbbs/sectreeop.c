@@ -38,12 +38,12 @@ gensecm(const char *txtfile)
 		if (!ptr)
 			continue;
 		bzero(&secm, sizeof (secm));
-		strsncpy(secm.secstr, ptr, sizeof (secm.secstr));
+		ytht_strsncpy(secm.secstr, ptr, sizeof(secm.secstr));
 		for (i = 0; i < MAXSECM; i++) {
 			ptr = strsep(&p0, "\t\r\n ");
 			if (ptr == NULL)
 				break;
-			strsncpy(secm.secm[i], ptr, sizeof (secm.secm));
+			ytht_strsncpy(secm.secm[i], ptr, sizeof(secm.secm));
 		}
 		if (i == 0)
 			continue;

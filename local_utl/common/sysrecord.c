@@ -68,7 +68,7 @@ char *filename, *nboard, *posttitle, *owner;
 	postfile.filetime = now;
 	postfile.thread = now;
 	fh_setowner(&postfile, owner, 0);
-	strsncpy(postfile.title, posttitle, sizeof (postfile.title));
+	ytht_strsncpy(postfile.title, posttitle, sizeof(postfile.title));
 
 	getcross(filepath, filename, nboard, posttitle);
 	chmod(filepath, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH); 

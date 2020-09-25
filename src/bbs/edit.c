@@ -940,11 +940,11 @@ int mode;
 	time_t now;
 
 	now = time(0);
-	strsncpy(uid, currentuser.userid, 20);
+	ytht_strsncpy(uid, currentuser.userid, 20);
 	if (in_mail)
-		strsncpy(uname, currentuser.username, NAMELEN);
+		ytht_strsncpy(uname, currentuser.username, NAMELEN);
 	else
-		strsncpy(uname, currentuser.username, NAMELEN);
+		ytht_strsncpy(uname, currentuser.username, NAMELEN);
 	save_title[STRLEN - 10] = '\0';
 	bp = getbcache(currboard);
 	//这里bp会不存在么？fp还在那个目录里呢啊

@@ -18,17 +18,17 @@ bbsedit_main()
 	if (!loginok || isguest)
 		http_fatal("匆匆过客不能修改文章，请先登录");
 	changemode(EDIT);
-	strsncpy(title, getparm("title"), 60);
-	strsncpy(board, getparm("B"), 32);
+	ytht_strsncpy(title, getparm("title"), 60);
+	ytht_strsncpy(board, getparm("B"), 32);
 	if (!board[0])
-		strsncpy(board, getparm("board"), 32);
+		ytht_strsncpy(board, getparm("board"), 32);
 	type = atoi(getparm("type"));
 	brd = getboard(board);
 	if (brd == 0)
 		http_fatal("错误的讨论区");
-	strsncpy(file, getparm("F"), 30);
+	ytht_strsncpy(file, getparm("F"), 30);
 	if (!file[0])
-		strsncpy(file, getparm("file"), 30);
+		ytht_strsncpy(file, getparm("file"), 30);
 	if (!has_post_perm(&currentuser, brd))
 		http_fatal("错误的讨论区或者您无权在此讨论区发表文章");
 	if (noadm4political(board))
@@ -336,7 +336,7 @@ update_form(char *board, char *file, char *title)
 		if (x.filetime == filetime) {
 			x.edittime = now_t;
 			x.sizebyte = ytht_num2byte(eff_size(path));
-			strsncpy(x.title, title, sizeof (x.title));
+			ytht_strsncpy(x.title, title, sizeof(x.title));
 			if (nore)
 				x.accessed |= FH_NOREPLY;
 			else

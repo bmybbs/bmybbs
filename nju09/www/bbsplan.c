@@ -43,7 +43,7 @@ save_plan(char *plan)
 {
 	char buf[10000];
 	fp = fopen(plan, "w");
-	strsncpy(buf, getparm("text"), 9999);
+	ytht_strsncpy(buf, getparm("text"), 9999);
 	buf[9999] = 0;
 	fprintf(fp, "%s", buf);
 	fclose(fp);

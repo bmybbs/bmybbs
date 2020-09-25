@@ -15,7 +15,7 @@ bbsman_main()
 	if (!loginok || isguest)
 		http_fatal("ÇëÏÈµÇÂ¼");
 	changemode(READING);
-	strsncpy(board, getparm("board"), 60);
+	ytht_strsncpy(board, getparm("board"), 60);
 	mode = atoi(getparm("mode"));
 	brd = getboard(board);
 	if (brd == 0)

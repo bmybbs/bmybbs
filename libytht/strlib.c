@@ -167,7 +167,7 @@ ytht_strncasestr(const char *haystack, const char *needle, size_t haystacklen)
 	return NULL;
 }
 
-void strsncpy(char *s1, const char *s2, int n)
+void ytht_strsncpy(char *s1, const char *s2, int n)
 {
 	int l = strlen(s2);
 	if (n < 0)
@@ -193,7 +193,7 @@ char *strrtrim(char *s)
 	static char t[1024], *t2;
 	if (s[0] == 0)
 		return s;
-	strsncpy(t, s, 1024);
+	ytht_strsncpy(t, s, 1024);
 	t2 = t + strlen(s) - 1;
 	while (strchr(" \t\r\n", t2[0]) && t2 > t)
 		t2--;

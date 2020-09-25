@@ -103,8 +103,8 @@ load_GoodBrd()			//从文件中获取订阅版面，填充数据结构 GoodBrd
 		for (GoodBrd.num = 0; GoodBrd.num < GOOD_BRC_NUM;) {
 			if (!fgets(buf, sizeof (buf), fp))
 				break;
-			strsncpy(GoodBrd.ID[GoodBrd.num], strtrim(buf),
-				 sizeof (GoodBrd.ID[GoodBrd.num]));
+			ytht_strsncpy(GoodBrd.ID[GoodBrd.num], strtrim(buf),
+						  sizeof(GoodBrd.ID[GoodBrd.num]));
 			if (canberead(GoodBrd.ID[GoodBrd.num]))
 				GoodBrd.num++;
 		}
@@ -1514,7 +1514,7 @@ char buf[512];
 
 	{
 		char *ptr;
-		strsncpy(owner, ent->owner, 13);
+		ytht_strsncpy(owner, ent->owner, 13);
 		if (!owner[0])
 			strcpy(owner, "Anonymous");
 		if ((ptr = strchr(owner, '.')) != NULL)

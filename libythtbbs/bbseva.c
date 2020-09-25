@@ -58,7 +58,7 @@ bbseva_qry(int ent, char *s, int size, int needreply)
 				return -1;
 			if (!strchr(msg->mtext, ' '))
 				return -1;
-			strsncpy(s, strchr(msg->mtext, ' ') + 1, size);
+			ytht_strsncpy(s, strchr(msg->mtext, ' ') + 1, size);
 			return 0;
 		}
 	}

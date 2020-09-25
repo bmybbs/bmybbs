@@ -16,9 +16,9 @@ bbslogin_main()
 	struct userec *x;
 	int ipmask;
 	html_header(3);
-	strsncpy(id, getparm("id"), 13);
-	strsncpy(pw, getparm("pw"), 13);
-	strsncpy(url, getparm("url"), 3);
+	ytht_strsncpy(id, getparm("id"), 13);
+	ytht_strsncpy(pw, getparm("pw"), 13);
+	ytht_strsncpy(url, getparm("url"), 3);
 	ipmask = atoi(getparm("ipmask"));
 
 	if (loginok && strcasecmp(id, currentuser.userid) && !isguest) {
@@ -61,7 +61,7 @@ bbslogin_main()
 		if (t < localtime(&dtime)->tm_mday && x->numdays < 800)
 			x->numdays++;
 		x->numlogins++;
-		strsncpy(x->lasthost, fromhost, BMY_IPV6_LEN);
+		ytht_strsncpy(x->lasthost, fromhost, BMY_IPV6_LEN);
 		save_user_data(x);
 		currentuser = *x;
 	}
@@ -75,7 +75,7 @@ bbslogin_main()
 		sethomepath(filename, x->userid);
 		mkdir(filename, 0755);
 
-		strsncpy(buf, getparm("style"), 3);
+		ytht_strsncpy(buf, getparm("style"), 3);
 		wwwstylenum = -1;
 		if (isdigit(buf[0]))
 			wwwstylenum = atoi(buf);
@@ -177,9 +177,9 @@ wwwlogin(struct userec *user, int ipmask)
 				u->pager |= ALLMSG_PAGER;
 				u->pager |= FRIENDMSG_PAGER;
 			}
-			strsncpy(u->from, fromhost, BMY_IPV6_LEN);
-			strsncpy(u->username, user->username, NAMELEN);
-			strsncpy(u->userid, user->userid, IDLEN + 1);
+			ytht_strsncpy(u->from, fromhost, BMY_IPV6_LEN);
+			ytht_strsncpy(u->username, user->username, NAMELEN);
+			ytht_strsncpy(u->userid, user->userid, IDLEN + 1);
 			getrandomstr(u->sessionid);
 			if (strcasecmp(user->userid, "guest")) {
 				initfriends(u);

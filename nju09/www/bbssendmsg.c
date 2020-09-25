@@ -16,8 +16,8 @@ bbssendmsg_main()
 	//if (!((currentuser.userlevel )& (PERM_CHAT|PERM_PAGE)))
 	if (!((currentuser.userlevel )& (PERM_PAGE)))	
 		http_fatal("您没有权限发讯息");
-	strsncpy(destid, getparm("destid"), 13);
-	strsncpy(msg, getparm("msg"), MAX_MSG_SIZE);
+	ytht_strsncpy(destid, getparm("destid"), 13);
+	ytht_strsncpy(msg, getparm("msg"), MAX_MSG_SIZE);
 	direct_reply = atoi(getparm("dr"));
 	destpid = atoi(getparm("destpid"));
 	if (destid[0] == 0 || msg[0] == 0) {

@@ -72,13 +72,13 @@ static void register_success(int usernum, char *userid, char *realname,
 
 	memcpy(&uinfo, &lookupuser, sizeof(uinfo));
 
-	strsncpy(uinfo.userid, userid, sizeof(uinfo.userid));
-	strsncpy(uinfo.realname, realname, sizeof(uinfo.realname));
-	strsncpy(uinfo.address, addr, sizeof(uinfo.address));
+	ytht_strsncpy(uinfo.userid, userid, sizeof(uinfo.userid));
+	ytht_strsncpy(uinfo.realname, realname, sizeof(uinfo.realname));
+	ytht_strsncpy(uinfo.address, addr, sizeof(uinfo.address));
 	sprintf(genbuf, "%s$%s@%s", dept, phone, userid);
-	strsncpy(uinfo.realmail, genbuf, sizeof(uinfo.realmail));
+	ytht_strsncpy(uinfo.realmail, genbuf, sizeof(uinfo.realmail));
 
-	strsncpy(uinfo.email, email, sizeof(uinfo.email));
+	ytht_strsncpy(uinfo.email, email, sizeof(uinfo.email));
 
 	uinfo.userlevel |= PERM_DEFAULT;	// by ylsdd
 	substitute_record(PASSFILE, &uinfo, sizeof(struct userec), usernum);

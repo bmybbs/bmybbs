@@ -451,7 +451,7 @@ m_newbrd()
 	move(12, 0);
 	prints("主分区设定: %s", genbuf);
 	newboard.secnumber1 = genbuf[0];
-	strsncpy(newboard.sec1, genbuf, sizeof (newboard.sec1));
+	ytht_strsncpy(newboard.sec1, genbuf, sizeof(newboard.sec1));
 	move(12, 30);
 	prints("选择分区链接: ");
 	genbuf[0] = 0;
@@ -459,7 +459,7 @@ m_newbrd()
 	move(12, 30);
 	prints("分区链接设定: %s", genbuf);
 	newboard.secnumber2 = genbuf[0];
-	strsncpy(newboard.sec2, genbuf, sizeof (newboard.sec2));
+	ytht_strsncpy(newboard.sec2, genbuf, sizeof(newboard.sec2));
 	move(13, 0);
 	while (1) {
 		getdata(13, 0, "讨论区分类(4字):", newboard.type,
@@ -651,8 +651,8 @@ m_editbrd()
 				goto enterbname;
 			}
 			if (valid_brdname(genbuf)) {
-				strsncpy(newfh.filename, genbuf,
-					 sizeof (newfh.filename));
+				ytht_strsncpy(newfh.filename, genbuf,
+							  sizeof(newfh.filename));
 				strcpy(bname, genbuf);
 			} else {
 				move(2, 0);
@@ -664,7 +664,7 @@ m_editbrd()
 		}
 		getdata(8, 0, "新讨论区中文名: ", genbuf, 24, DOECHO, YEA);
 		if (genbuf[0] != 0)
-			strsncpy(newfh.title, genbuf, sizeof (newfh.title));
+			ytht_strsncpy(newfh.title, genbuf, sizeof(newfh.title));
 		ansimore2("etc/boardref", NA, 9, 7);
 		strcpy(genbuf, newfh.sec1);
 		move(16, 0);
@@ -672,7 +672,7 @@ m_editbrd()
 		setsecstr(genbuf, 17);
 		if (genbuf[0] != 0) {
 			newfh.secnumber1 = genbuf[0];
-			strsncpy(newfh.sec1, genbuf, sizeof (newfh.sec1));
+			ytht_strsncpy(newfh.sec1, genbuf, sizeof(newfh.sec1));
 		}
 		move(16, 0);
 		prints("新分区设定: %s", genbuf);
@@ -681,12 +681,12 @@ m_editbrd()
 		prints("选择新分区链接: %s", genbuf);
 		setsecstr(genbuf, 17);
 		newfh.secnumber2 = genbuf[0];
-		strsncpy(newfh.sec2, genbuf, sizeof (newfh.sec2));
+		ytht_strsncpy(newfh.sec2, genbuf, sizeof(newfh.sec2));
 		move(16, 40);
 		prints("新分区链接设定: %s", genbuf);
 		getdata(17, 0, "新讨论区分类(4字): ", genbuf, 5, DOECHO, YEA);
 		if (genbuf[0] != 0)
-			strsncpy(newfh.type, genbuf, sizeof (newfh.type));
+			ytht_strsncpy(newfh.type, genbuf, sizeof(newfh.type));
 		move(18, 0);
 		if (askyn("是否是转信版面", innboard, NA) == YEA)
 			newfh.flag |= INNBBSD_FLAG;
@@ -1128,7 +1128,7 @@ do_ordainBM(const char *userid, const char *abname)
 	clrtoeol();
 	move(2, 0);
 	if (userid)
-		strsncpy(genbuf, userid, sizeof (genbuf));
+		ytht_strsncpy(genbuf, userid, sizeof(genbuf));
 	else
 		usercomplete("输入欲任命的使用者帐号: ", genbuf);
 	if (genbuf[0] == '\0') {
@@ -1144,7 +1144,7 @@ do_ordainBM(const char *userid, const char *abname)
 		return 0;
 	}
 	if (abname)
-		strsncpy(bname, abname, sizeof (bname));
+		ytht_strsncpy(bname, abname, sizeof(bname));
 	else {
 		make_blist_full();
 		namecomplete("输入该使用者将管理的讨论区名称: ", bname);
@@ -1245,10 +1245,10 @@ do_ordainBM(const char *userid, const char *abname)
 	substitute_record(BOARDS, &fh, sizeof (fh), pos);
 	if (fh.clubnum) {
 		char tmpb[30];
-		strsncpy(tmpb, currboard, 30);
-		strsncpy(currboard, fh.filename, 30);
+		ytht_strsncpy(tmpb, currboard, 30);
+		ytht_strsncpy(currboard, fh.filename, 30);
 		addclubmember(lookupuser.userid, fh.clubnum);
-		strsncpy(currboard, tmpb, 30);
+		ytht_strsncpy(currboard, tmpb, 30);
 	}
 	reload_boards();
 	sprintf(genbuf, "任命 %s 为 %s 讨论区版主", lookupuser.userid,
@@ -1314,7 +1314,7 @@ do_retireBM(const char *userid, const char *abname)
 	stand_title("版主离职\n");
 	clrtoeol();
 	if (userid)
-		strsncpy(genbuf, userid, sizeof (genbuf));
+		ytht_strsncpy(genbuf, userid, sizeof(genbuf));
 	else
 		usercomplete("输入欲离任的使用者帐号: ", genbuf);
 	if (genbuf[0] == '\0') {
@@ -1330,7 +1330,7 @@ do_retireBM(const char *userid, const char *abname)
 		return 0;
 	}
 	if (abname)
-		strsncpy(bname, abname, sizeof (bname));
+		ytht_strsncpy(bname, abname, sizeof(bname));
 	else {
 		make_blist_full();
 		namecomplete("输入该使用者将管理的讨论区名称: ", bname);

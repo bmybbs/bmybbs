@@ -358,7 +358,7 @@ millionairesrec(char *title, char *str, char *owner)
 	postfile.filetime = now;
 	postfile.thread = now;
 	fh_setowner(&postfile, owner[0] ? owner : "millionaires", 0);
-	strsncpy(postfile.title, title, sizeof (postfile.title));
+	ytht_strsncpy(postfile.title, title, sizeof(postfile.title));
 
 	//getcross(filepath, fname, "millionairesrec", title);
 	now = time(0);
@@ -9043,7 +9043,7 @@ mail_buf_slow(char *userid, char *title, char *content, char *sender)
         if (t < 0)
                 return -1;
         header.filetime = t;
-        strsncpy(header.title, title, sizeof (header.title));
+        ytht_strsncpy(header.title, title, sizeof (header.title));
         fp = fopen(buf, "w");
         if (fp == 0)
                 return -2;

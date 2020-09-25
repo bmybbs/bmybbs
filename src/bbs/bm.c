@@ -600,8 +600,8 @@ mail_buf_slow(char *userid, char *title, char *content, char *sender)
         t = trycreatefile(buf, "M.%d.A", now, 100);                                          
         if (t < 0)                                                                           
                 return -1;                                                                   
-        header.filetime = t;                                                                 
-        strsncpy(header.title, title, sizeof (header.title));                                
+        header.filetime = t;
+	ytht_strsncpy(header.title, title, sizeof(header.title));
         fp = fopen(buf, "w");                                                                
         if (fp == 0)                                                                         
                 return -2;                                                                   

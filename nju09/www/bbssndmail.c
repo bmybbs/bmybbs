@@ -9,7 +9,7 @@ bbssndmail_main()
 	size_t i;
 	struct userec *u;
 	html_header(1);
-	strsncpy(userid, getparm("userid"), 40);
+	ytht_strsncpy(userid, getparm("userid"), 40);
 	if (!loginok || (isguest && strcmp(userid, "SYSOP")))
 		http_fatal("匆匆过客不能写信，请先登录");
 	if (HAS_PERM(PERM_DENYMAIL))
@@ -18,7 +18,7 @@ bbssndmail_main()
 	if (check_maxmail(mymaildir))
 		http_fatal("您的个人信件过多，请整理");
 	changemode(SMAIL);
-	strsncpy(title, getparm("title"), 50);
+	ytht_strsncpy(title, getparm("title"), 50);
 	backup = strlen(getparm("backup"));
 	allfriend = strlen(getparm("allfriend"));
 	if (!strstr(userid, "@") && !allfriend) {

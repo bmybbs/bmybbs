@@ -45,13 +45,13 @@ char *addr, char *phone, char *assoc, char *email)
 
 	memcpy(&uinfo, u, sizeof (uinfo));
 
-	strsncpy(uinfo.userid, userid, sizeof (uinfo.userid));
-	strsncpy(uinfo.realname, realname, sizeof (uinfo.realname));
-	strsncpy(uinfo.address, addr, sizeof (uinfo.address));
+	ytht_strsncpy(uinfo.userid, userid, sizeof(uinfo.userid));
+	ytht_strsncpy(uinfo.realname, realname, sizeof(uinfo.realname));
+	ytht_strsncpy(uinfo.address, addr, sizeof(uinfo.address));
 	sprintf(genbuf, "%s$%s@%s", dept, phone, userid);
-	strsncpy(uinfo.realmail, genbuf, sizeof (uinfo.realmail));
+	ytht_strsncpy(uinfo.realmail, genbuf, sizeof(uinfo.realmail));
 
-	strsncpy(uinfo.email, email, sizeof (uinfo.email));
+	ytht_strsncpy(uinfo.email, email, sizeof(uinfo.email));
 
 	uinfo.userlevel |= PERM_DEFAULT;	// by ylsdd
 	substitute_record(PASSFILE, &uinfo, sizeof (struct userec), usernum);
@@ -137,17 +137,17 @@ bbsdoreg_main()
 	char user[USER_LEN + 1];
 	char popserver[4];
 	int popserver_index;
-	strsncpy(popserver, getparm("popserver"), 4);
-	strsncpy(user, getparm("user"), USER_LEN);
+	ytht_strsncpy(popserver, getparm("popserver"), 4);
+	ytht_strsncpy(user, getparm("user"), USER_LEN);
 #endif
 
-	strsncpy(x.userid, getparm("userid"), 13);
-	strsncpy(pass1, getparm("pass1"), 13);
-	strsncpy(pass2, getparm("pass2"), 13);
-	strsncpy(x.username, getparm("username"), 32);
-	strsncpy(x.realname, getparm("realname"), 32);
-	strsncpy(dept, getparm("dept"), 60);
-	strsncpy(x.address, getparm("address"), 60);
+	ytht_strsncpy(x.userid, getparm("userid"), 13);
+	ytht_strsncpy(pass1, getparm("pass1"), 13);
+	ytht_strsncpy(pass2, getparm("pass2"), 13);
+	ytht_strsncpy(x.username, getparm("username"), 32);
+	ytht_strsncpy(x.realname, getparm("realname"), 32);
+	ytht_strsncpy(dept, getparm("dept"), 60);
+	ytht_strsncpy(x.address, getparm("address"), 60);
 
 #ifndef POP_CHECK
 	strsncpy(x.email, getparm("email"), 60);
@@ -161,12 +161,12 @@ bbsdoreg_main()
 	char email[60];
 	snprintf(email, 60, "%s@%s", user, popname);  // 注意不要将email弄溢出了
 	str_to_lowercase(email);
-	strsncpy(x.email, email, 60);
+	ytht_strsncpy(x.email, email, 60);
 #endif
 
-	strsncpy(phone, getparm("phone"), 60);
-	strsncpy(assoc, getparm("assoc"), 60);
-	strsncpy(words, getparm("words"), 1000);
+	ytht_strsncpy(phone, getparm("phone"), 60);
+	ytht_strsncpy(assoc, getparm("assoc"), 60);
+	ytht_strsncpy(words, getparm("words"), 1000);
 
     if (id_with_num(x.userid))
 		http_fatal("帐号只能由英文字母组成");
@@ -205,7 +205,7 @@ bbsdoreg_main()
 #endif
 
 	getsalt(salt);
-	strsncpy(x.passwd, ytht_crypt_crypt1(pass1, salt), 14);
+	ytht_strsncpy(x.passwd, ytht_crypt_crypt1(pass1, salt), 14);
 	//ipv6 by leoncom 不能赋值太多，就影响后面的数据 fixed by IronBlood 2020.09.11
 	strncpy(x.lasthost, fromhost,BMY_IPV6_LEN);
 	x.userlevel = PERM_BASIC;

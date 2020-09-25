@@ -12,7 +12,7 @@ bbsmmdoc_main()
 	check_msg();
 	printf("<script src=/function.js></script>\n");
 	changemode(READING);
-	strsncpy(board, getparm2("B", "board"), 32);
+	ytht_strsncpy(board, getparm2("B", "board"), 32);
 	x1 = getboard(board);
 	if (x1 == 0)
 		nosuchboard(board, "bbsmmdoc");

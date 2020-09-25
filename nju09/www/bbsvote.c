@@ -32,9 +32,9 @@ bbsvote_main()
 	struct boardmem *x;
 	html_header(1);
 	check_msg();
-	strsncpy(board, getparm("B"), 32);
+	ytht_strsncpy(board, getparm("B"), 32);
 	if (!board[0])
-		strsncpy(board, getparm("board"), 32);
+		ytht_strsncpy(board, getparm("board"), 32);
 	votenum = atoi(getparm("votenum"));
 	procvote = atoi(getparm("procvote"));
 	if (getboard(board) == NULL)
@@ -273,7 +273,7 @@ bbsvote_main()
 					fseek(fp, 0, SEEK_END);
 				strncpy(uservote.uid, currentuser.userid, IDLEN);
 				uservote.voted = votevalue;
-				strsncpy(buf1, getparm("sug"), 500);
+				ytht_strsncpy(buf1, getparm("sug"), 500);
 				tmp2 = buf1;
 				if (pos > 0)
 					uservote.msg[0][0] =
@@ -283,7 +283,7 @@ bbsvote_main()
 					tmp1 = strchr(tmp2, '\n');
 					if (tmp1 != NULL)
 						*tmp1 = 0;
-					strsncpy(uservote.msg[i], tmp2, 70);
+					ytht_strsncpy(uservote.msg[i], tmp2, 70);
 					if (tmp1 == NULL)
 						break;
 					tmp2 = tmp1 + 1;

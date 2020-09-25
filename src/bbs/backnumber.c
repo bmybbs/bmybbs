@@ -276,7 +276,7 @@ new_backnumber()
 		}
 	}
 	bn.filetime = now;
-	strsncpy(bn.boardname, currboard, sizeof (bn.boardname));
+	ytht_strsncpy(bn.boardname, currboard, sizeof(bn.boardname));
 	sprintf(backnumberboarddir, "boards/.backnumbers/%s/%s", currboard,
 		DOT_DIR);
 	append_record(backnumberboarddir, &bn, sizeof (bn));
@@ -318,10 +318,10 @@ char *direct;
 	if (!IScurrBM)
 //by bjgyt        if (!HAS_PERM(PERM_OBOARDS) && !HAS_PERM(PERM_SYSOP))
                 return DONOTHING;
-	strsncpy(buf, bkninfo->title, 60);
+	ytht_strsncpy(buf, bkninfo->title, 60);
 	getdata(t_lines - 1, 0, "新过刊标题: ", buf, 50, DOECHO, NA);
 	if (buf[0] != '\0') {
-		strsncpy(bkninfo->title, buf, sizeof (bkninfo->title));
+		ytht_strsncpy(bkninfo->title, buf, sizeof(bkninfo->title));
 		substitute_record(direct, bkninfo, sizeof (*bkninfo), ent);
 		//change_dir(direct, bkninfo, (void *)DIR_do_changetitle, ent, digestmode, 1);
 	}

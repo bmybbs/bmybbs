@@ -180,15 +180,15 @@ int full_search_action(char *whattosearch)
     char o_buf[16];
 
     int len = strlen(line);
-    strsncpy(f_buf, line, 15);
+	  ytht_strsncpy(f_buf, line, 15);
     sscanf(f_buf, "M.%ld.A", &(fh.filetime));
     sscanf(f_buf, "M.%ld.A", &(fh.edittime));
 
     char *p2s = strchr(line+15, ' ');
     int owner_len = p2s-line-15;
-    strsncpy(fh.owner, line+15, owner_len+1);
+	  ytht_strsncpy(fh.owner, line + 15, owner_len + 1);
 
-    strsncpy(fh.title, p2s+1, len-2-owner_len-14+1);
+	  ytht_strsncpy(fh.title, p2s + 1, len - 2 - owner_len - 14 + 1);
     fh.title[strlen(fh.title)-1] = 0;
     fh.thread = nr++;
     append_record(currdirect, &fh, sizeof(struct fileheader));

@@ -12,9 +12,9 @@ bbsnot_main()
 	html_header(1);
 	check_msg();
 	changemode(READING);
-	strsncpy(board, getparm("B"), 32);
+	ytht_strsncpy(board, getparm("B"), 32);
 	if (!board[0])
-		strsncpy(board, getparm("board"), 32);
+		ytht_strsncpy(board, getparm("board"), 32);
 	if (!(x = getboard(board)))
 		http_fatal("´íÎóµÄ°æÃæ");
 	mode = atoi(getparm("mode"));

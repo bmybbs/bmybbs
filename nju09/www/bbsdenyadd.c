@@ -16,8 +16,8 @@ bbsdenyadd_main()
 	if (!loginok || isguest)
 		http_fatal("您尚未登录, 请先登录");
 	changemode(READING);
-	strsncpy(board, getparm("board"), 30);
-	strsncpy(exp, getparm("exp"), 30);
+	ytht_strsncpy(board, getparm("board"), 30);
+	ytht_strsncpy(exp, getparm("exp"), 30);
 	dt = atoi(getparm("dt"));
 	if (!(x1 = getboard(board)))
 		http_fatal("错误的讨论区");
@@ -43,8 +43,8 @@ bbsdenyadd_main()
 			http_fatal("此用户已经被封");
 	if (denynum > 40)
 		http_fatal("太多人被封了");
-	strsncpy(denyuser[denynum].id, userid, 13);
-	strsncpy(denyuser[denynum].exp, exp, 30);
+	ytht_strsncpy(denyuser[denynum].id, userid, 13);
+	ytht_strsncpy(denyuser[denynum].exp, exp, 30);
 	denyuser[denynum].free_time = now_t + dt * 86400;
 	denynum++;
 	savedenyuser(board);

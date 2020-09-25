@@ -15,10 +15,10 @@ bbsfwdmail_main()
 	int i, retv;
 	html_header(1);
 	check_msg();
-	strsncpy(file, getparm("F"), 30);
+	ytht_strsncpy(file, getparm("F"), 30);
 	if (!file[0])
-		strsncpy(file, getparm("file"), 30);
-	strsncpy(target, getparm("target"), 30);
+		ytht_strsncpy(file, getparm("file"), 30);
+	ytht_strsncpy(target, getparm("target"), 30);
 	if (!loginok || isguest)
 		http_fatal("匆匆过客不能进行本项操作");
 	changemode(SMAIL);
@@ -29,7 +29,7 @@ bbsfwdmail_main()
      * 1 : out box
     */
     int box_type = 0;
-    strsncpy(buf, getparm("box_type"), 256);
+	ytht_strsncpy(buf, getparm("box_type"), 256);
     if(buf[0] != 0) {
         box_type = atoi(buf);
     }

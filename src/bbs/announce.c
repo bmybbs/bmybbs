@@ -125,7 +125,7 @@ MENU *pm;
 		prints("      << 目前没有文章 >>\n");
 	for (n = pm->page; n < pm->page + A_PAGESIZE && n < pm->num; n++) {
 		overlen = 0;
-		strsncpy(title, pm->item[n]->title, sizeof (title));
+		ytht_strsncpy(title, pm->item[n]->title, sizeof(title));
 		if (a_fmode) {
 			snprintf(fname, STRLEN, "%s", pm->item[n]->fname);
 			if (snprintf(pathbuf, PATHLEN, "%s/%s", pm->path, fname)
@@ -209,7 +209,7 @@ int port;
 
 	if (pm->num < MAXITEMS) {
 		newitem = (ITEM *) malloc(sizeof (ITEM));
-		strsncpy(newitem->title, title, sizeof (newitem->title));
+		ytht_strsncpy(newitem->title, title, sizeof(newitem->title));
 		if (host != NULL) {
 			newitem->host =
 			    (char *) malloc(sizeof (char) * (strlen(host) + 1));
@@ -217,7 +217,7 @@ int port;
 		} else
 			newitem->host = host;
 		newitem->port = port;
-		strsncpy(newitem->fname, fname, sizeof (newitem->fname));
+		ytht_strsncpy(newitem->fname, fname, sizeof(newitem->fname));
 		pm->item[(pm->num)++] = newitem;
 	}
 }
@@ -288,8 +288,8 @@ MENU *pm;
 			hostname[0] = '\0';
 		} else if (strncmp(buf, "# Title=", 8) == 0) {
 			if (pm->mtitle[0] == '\0') {
-				strsncpy(pm->mtitle, buf + 8,
-					 sizeof (pm->mtitle));
+				ytht_strsncpy(pm->mtitle, buf + 8,
+							  sizeof(pm->mtitle));
 			}
 		} else if (strncmp(buf, "Host=", 5) == 0) {
 			strncpy(hostname, buf + 5, STRLEN);
@@ -852,8 +852,8 @@ int paste;			// -1:cut 0:copy have perm 1:paste 2:copy have no perm
 #define AN_PATH "0Announce/groups/GROUP_0/"
 #define AN_PES_PATH AN_PATH "PersonalCorpus"
 		item = pm->item[pm->now];
-		strsncpy(title, item->title, sizeof (title));
-		strsncpy(filename, item->fname, sizeof (filename));
+		ytht_strsncpy(title, item->title, sizeof(title));
+		ytht_strsncpy(filename, item->fname, sizeof(filename));
 		if (snprintf(fpath, PATHLEN, "%s/%s", pm->path, filename) >
 		    PATHLEN - 1) {
 			prints("档案路径过深, 无法复制");
@@ -1067,7 +1067,7 @@ a_changemtitle(char *fpath, char *newmtitle)
 	pm.path = fpath;
 	pm.level |= PERM_BOARDS;
 	a_loadnames(&pm);
-	strsncpy(pm.mtitle, newmtitle, sizeof (pm.mtitle));
+	ytht_strsncpy(pm.mtitle, newmtitle, sizeof(pm.mtitle));
 	a_savenames(&pm);
 	freeitem(&pm);
 	return 0;
@@ -1199,7 +1199,7 @@ int ch;
 			ret = 0;
 			if (dashl(fpath))
 				break;
-			strsncpy(changed_T, item->title, 39);
+				ytht_strsncpy(changed_T, item->title, 39);
 			{
 				int i = strlen(changed_T) - 1;
 				while (i > 0 && isspace(changed_T[i]))
@@ -1216,8 +1216,8 @@ int ch;
 			if (dashf(fpath)) {
 				sprintf(genbuf, "%-38.38s %s ",
 					changed_T, currentuser.userid);
-				strsncpy(item->title, genbuf,
-					 sizeof (item->title));
+				ytht_strsncpy(item->title, genbuf,
+							  sizeof(item->title));
 			} else if (dashd(fpath)) {
 				if (HAS_PERM(PERM_SYSOP)
 				    || HAS_PERM(PERM_ANNOUNCE)) {
@@ -1282,11 +1282,11 @@ int ch;
 						strcpy(item->fname, fname);
 					}
 				}
-				strsncpy(item->title, genbuf,
-					 sizeof (item->title));
+				ytht_strsncpy(item->title, genbuf,
+							  sizeof(item->title));
 			} else if (pm->item[pm->now]->host != NULL)
-				strsncpy(item->title, changed_T,
-					 sizeof (item->title));
+				ytht_strsncpy(item->title, changed_T,
+							  sizeof(item->title));
 			if (ret == 0) {
 				a_savenames(pm);
 				a_changemtitle(fpath, genbuf);
@@ -1299,8 +1299,8 @@ int ch;
 					sprintf(genbuf, "%-38.38s %s",
 						item->title,
 						currentuser.userid);
-					strsncpy(item->title, genbuf,
-						 sizeof (item->title));
+					ytht_strsncpy(item->title, genbuf,
+								  sizeof(item->title));
 					a_savenames(pm);
 				}
 				pm->page = 9999;
@@ -1800,7 +1800,7 @@ char grp[STRLEN], bname[STRLEN], title[STRLEN];
 	pm.level |= PERM_BOARDS;	/*add by ylsdd */
 	a_loadnames(&pm);
 	for (i = 0; i < pm.num; i++) {
-		strsncpy(buf2, pm.item[i]->fname, sizeof (buf2));
+		ytht_strsncpy(buf2, pm.item[i]->fname, sizeof(buf2));
 		strcpy(check, strtok(buf2, "/~\n\b"));
 		if (strstr(pm.item[i]->title, title)
 		    && !strcmp(check, bname)) {
@@ -1839,12 +1839,12 @@ char bname[STRLEN], grp[STRLEN], title[STRLEN], newtitle[100];
 	pm.level |= PERM_BOARDS;	/*add by ylsdd */
 	a_loadnames(&pm);
 	for (i = 0; i < pm.num; i++) {
-		strsncpy(buf2, pm.item[i]->fname, sizeof (buf2));
+		ytht_strsncpy(buf2, pm.item[i]->fname, sizeof(buf2));
 		strcpy(check, strtok(buf2, "/~\n\b"));
 		if (strstr(pm.item[i]->title, title)
 		    && !strcmp(check, bname)) {
-			strsncpy(pm.item[i]->title, newtitle,
-				 sizeof (pm.item[i]->title));
+			ytht_strsncpy(pm.item[i]->title, newtitle,
+						  sizeof(pm.item[i]->title));
 			break;
 		}
 	}
@@ -1852,7 +1852,7 @@ char bname[STRLEN], grp[STRLEN], title[STRLEN], newtitle[100];
 	freeitem(&pm);
 	pm.path = bpath;
 	a_loadnames(&pm);
-	strsncpy(pm.mtitle, newtitle, sizeof (pm.mtitle));
+	ytht_strsncpy(pm.mtitle, newtitle, sizeof(pm.mtitle));
 	a_savenames(&pm);
 	freeitem(&pm);
 	return 0;

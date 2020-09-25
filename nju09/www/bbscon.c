@@ -440,12 +440,12 @@ bbscon_main()
 
 	changemode(READING);
 
-	strsncpy(board, getparm("B"), 32);
+	ytht_strsncpy(board, getparm("B"), 32);
 	if (!board[0])
-		strsncpy(board, getparm("board"), 32);
-	strsncpy(file, getparm("F"), 32);
+		ytht_strsncpy(board, getparm("board"), 32);
+	ytht_strsncpy(file, getparm("F"), 32);
 	if (!file[0])
-		strsncpy(file, getparm("file"), 32);
+		ytht_strsncpy(file, getparm("file"), 32);
 	num = atoi((ptr = getparm("N"))) - 1;
 	if (!ptr[0])
 		num = atoi(getparm("num")) - 1;

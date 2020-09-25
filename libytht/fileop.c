@@ -81,7 +81,7 @@ readstrvalue(const char *filename, const char *str, char *value, int size)
 		*ptr++ = 0;
 		if (strcmp(buf, str))
 			continue;
-		strsncpy(value, ptr, size);
+		ytht_strsncpy(value, ptr, size);
 		if ((ptr = strchr(value, '\n')))
 			*ptr = 0;
 		retv = 0;
@@ -104,7 +104,7 @@ readstrvalue_fp(FILE *fp, const char *str, char *value, size_t size)
 		*ptr++ = 0;
 		if (strcmp(buf, str))
 			continue;
-		strsncpy(value, ptr, size);
+		ytht_strsncpy(value, ptr, size);
 		if ((ptr = strchr(value, '\n')))
 			*ptr = 0;
 		retv = 0;

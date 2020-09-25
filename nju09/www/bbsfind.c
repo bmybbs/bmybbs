@@ -9,10 +9,10 @@ bbsfind_main()
 	html_header(1);
 	check_msg();
 	changemode(READING);
-	strsncpy(user, getparm("user"), 13);
-	strsncpy(title, getparm("title"), 50);
-	strsncpy(title2, getparm("title2"), 50);
-	strsncpy(title3, getparm("title3"), 50);
+	ytht_strsncpy(user, getparm("user"), 13);
+	ytht_strsncpy(title, getparm("title"), 50);
+	ytht_strsncpy(title2, getparm("title2"), 50);
+	ytht_strsncpy(title3, getparm("title3"), 50);
 	day = atoi(getparm("day"));
 	printf("<body>");
 	if (day == 0) {

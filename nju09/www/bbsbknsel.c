@@ -12,9 +12,9 @@ bbsbknsel_main()
 	printf("<script src=/function.js></script>\n");
 	check_msg();
 	changemode(SELBACKNUMBER);
-	strsncpy(board, getparm("B"), 32);
+	ytht_strsncpy(board, getparm("B"), 32);
 	if (!board[0])
-		strsncpy(board, getparm("board"), 32);
+		ytht_strsncpy(board, getparm("board"), 32);
 	x1 = getboard(board);
 	if (x1 == 0)
 		nosuchboard(board, "bbsbknsel");

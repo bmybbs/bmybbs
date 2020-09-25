@@ -15,7 +15,7 @@ bbsbdel_main()
 	sethomefile(path, currentuser.userid, "rejects");
 	printf("<center>%s -- 黑名单 [使用者: %s]<hr>\n", BBSNAME,
 	       currentuser.userid);
-	strsncpy(userid, getparm("userid"), 13);
+	ytht_strsncpy(userid, getparm("userid"), 13);
 	if (userid[0] == 0) {
 		printf("<form action=bbsbdel>\n");
 		printf("请输入欲删除的黑名单帐号: <input type=text><br>\n");

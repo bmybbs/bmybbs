@@ -146,10 +146,10 @@ bbstmpl_main()
 	
 	html_header(1);
 	check_msg();
-	strsncpy(board, getparm("B"), 32);
+	ytht_strsncpy(board, getparm("B"), 32);
 	if (!board[0])
-		strsncpy(board, getparm("board"), 32);
-	strsncpy(action, getparm("action"), 32);
+		ytht_strsncpy(board, getparm("board"), 32);
+	ytht_strsncpy(action, getparm("action"), 32);
 	tmplnum = atoi(getparm("num"));
 	if (getboard(board) == NULL)
 		http_fatal("´íÎóµÄÌÖÂÛÇø");

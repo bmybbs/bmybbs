@@ -15,19 +15,19 @@ bbsbfind_main()
 	check_msg();
 	printf("<center>%s -- °æÄÚÎÄÕÂËÑË÷<hr>\n", BBSNAME);
 	type = atoi(getparm("type"));
-	strsncpy(board, getparm("B"), 32);
+	ytht_strsncpy(board, getparm("B"), 32);
 	if (!board[0])
-		strsncpy(board, getparm("board"), 30);
+		ytht_strsncpy(board, getparm("board"), 30);
 	if (type == 0)
 		return show_form(board);
 	// Ò»°ãËÑË÷
 	else if (type == 1)
-	{ 
-	
-	strsncpy(title, getparm("title"), 60);
-	strsncpy(title2, getparm("title2"), 60);
-	strsncpy(title3, getparm("title3"), 60);
-	strsncpy(userid, getparm("userid"), 60);
+	{
+
+		ytht_strsncpy(title, getparm("title"), 60);
+		ytht_strsncpy(title2, getparm("title2"), 60);
+		ytht_strsncpy(title3, getparm("title3"), 60);
+		ytht_strsncpy(userid, getparm("userid"), 60);
 	if (!strcasecmp(userid, "Anonymous"))
 		userid[0] = 0;
 	dt = atoi(getparm("dt"));
@@ -102,7 +102,7 @@ printf("<td>%s", flag_str(x.accessed));
 	{
 		char content[200];
 		char cmd[256];
-		strsncpy(content, getparm("content"), 200);
+		ytht_strsncpy(content, getparm("content"), 200);
 		sprintf(cmd, MY_BBS_HOME "/bin/searcher.py %s '%s'", board, content);
 		
 		brd = getboard(board);
@@ -128,14 +128,14 @@ printf("<td>%s", flag_str(x.accessed));
     		char o_buf[16];
 
     		int len = strlen(line);
-    		strsncpy(f_buf, line, 15); 
+			ytht_strsncpy(f_buf, line, 15);
     		sscanf(f_buf, "M.%d.A", &filetime);
 
     		char *p2s = strchr(line+15, ' ');
     		int owner_len = p2s-line-15;
-    		strsncpy(o_buf, line+15, owner_len+1);
+			ytht_strsncpy(o_buf, line + 15, owner_len + 1);
 
-    		strsncpy(t_buf, p2s+1, len-2-owner_len-14+1);
+			ytht_strsncpy(t_buf, p2s + 1, len - 2 - owner_len - 14 + 1);
 
 			printf("<tr><td><a href=qry?U=%s>%s", o_buf, o_buf);
 			printf("<td>%s",Ctime(filetime));

@@ -5,7 +5,7 @@ userid_str2(char *s)
 {
 	static char buf[512];
 	char buf2[256], tmp[256], *ptr, *ptr2;
-	strsncpy(tmp, s, 255);
+	ytht_strsncpy(tmp, s, 255);
 	buf[0] = 0;
 	ptr = strtok(tmp, " ,();\r\n\t");
 	while (ptr && strlen(buf) < 400) {
@@ -82,9 +82,9 @@ bbshome_main()
 	char bmbuf[(IDLEN + 1) * 4];
 	struct mmapfile mf = { ptr:NULL };
 	changemode(READING);
-	strsncpy(board, getparm("B"), 32);
+	ytht_strsncpy(board, getparm("B"), 32);
 	if (!board[0])
-		strsncpy(board, getparm("board"), 32);
+		ytht_strsncpy(board, getparm("board"), 32);
 	if (strcmp(board, "")) {
 		x1 = getboard(board);
 		if (x1 == NULL) {
@@ -167,7 +167,7 @@ bbshome_main()
 			ptr++;
 		} else
 			ptr = "";
-		strsncpy(board, path_info + 7, 32);
+		ytht_strsncpy(board, path_info + 7, 32);
 		if (getboard(board) == NULL)
 			http_fatal("错误的文件名");
 		i = strlen(ptr);

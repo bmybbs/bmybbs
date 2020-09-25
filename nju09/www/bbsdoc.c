@@ -251,9 +251,9 @@ bbsdoc_main()
 	struct fileheader x, x2;
 	int i, start, total;
 	changemode(READING);
-	strsncpy(board, getparm("B"), 32);
+	ytht_strsncpy(board, getparm("B"), 32);
 	if (!board[0])
-		strsncpy(board, getparm("board"), 32);
+		ytht_strsncpy(board, getparm("board"), 32);
 	x1 = getboard(board);
 	if (x1 == 0) {
 		html_header(1);
@@ -510,7 +510,7 @@ int top_file(const char *call_type)
         if(!strcmp(call_type,"bbsdoc")) flag = 0;
         if(!strcmp(call_type,"bbstdoc")) flag = 1;
 
-        strsncpy(board, getparm2("B", "board"), 32);
+	ytht_strsncpy(board, getparm2("B", "board"), 32);
         x1 = getboard(board);
         updateinboard(x1);
         strcpy(board, x1->header.filename);

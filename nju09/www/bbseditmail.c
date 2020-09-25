@@ -18,14 +18,14 @@ bbseditmail_main()
 	if (!loginok || isguest)
 		http_fatal("匆匆过客不能修改信件，请先登录");
 	changemode(EDIT);
-	strsncpy(title, getparm("title"), 60);
-	strsncpy(file, getparm("F"), 30);
+	ytht_strsncpy(title, getparm("title"), 60);
+	ytht_strsncpy(file, getparm("F"), 30);
 	type = atoi(getparm("type"));
 	if (!file[0])
-		strsncpy(file, getparm("file"), 30);
+		ytht_strsncpy(file, getparm("file"), 30);
 
     int box_type = 0;
-    strsncpy(buf, getparm("box_type"), 512);
+	ytht_strsncpy(buf, getparm("box_type"), 512);
     if(buf[0] != 0) {
         box_type = atoi(buf);
     }
@@ -246,7 +246,7 @@ update_form_mail(char *file, char *title, int box_type)
 		if (x.filetime == filetime) {
 			x.edittime = now_t;
 			x.sizebyte = ytht_num2byte(eff_size(path));
-			strsncpy(x.title, title, sizeof (x.title));
+			ytht_strsncpy(x.title, title, sizeof(x.title));
 			if (nore)
 				x.accessed |= FH_NOREPLY;
 			else

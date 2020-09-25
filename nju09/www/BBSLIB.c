@@ -426,7 +426,7 @@ hsprintf(char *s, char *s0)
 			for (m = i + 2; s0[m] && m < i + 24; m++)
 				if (strchr("0123456789;", s0[m]) == 0)
 					break;
-			strsncpy(ansibuf, &s0[i + 2], m - (i + 2) + 1);
+				ytht_strsncpy(ansibuf, &s0[i + 2], m - (i + 2) + 1);
 			i = m;
 			if (s0[i] != 'm')
 				continue;
@@ -646,8 +646,8 @@ parm_add(char *name, char *val)
 	parm_val[parm_num] = calloc(len + 1, 1);
 	if (parm_val[parm_num] == 0)
 		http_fatal("memory overflow2 %d %d", len, parm_num);
-	strsncpy(parm_name[parm_num], name, 78);
-	strsncpy(parm_val[parm_num], val, len + 1);
+	ytht_strsncpy(parm_name[parm_num], name, 78);
+	ytht_strsncpy(parm_val[parm_num], val, len + 1);
 	parm_num++;
 }
 
@@ -775,11 +775,11 @@ url_parse()
 	if (!strcmp(url, "/") || nologin) {
 		strcpy(needcgi, "bbsindex");
 		strcpy(rframe, "");
-		strsncpy(name, getsenv("HTTP_HOST"), 70);
+		ytht_strsncpy(name, getsenv("HTTP_HOST"), 70);
 		p = strchr(name, '.');
 		if (p != NULL && isaword(domainname, p + 1)) {
 			*p = 0;
-			strsncpy(rframe, name, 60);
+			ytht_strsncpy(rframe, name, 60);
 		}
 		if (rframe[0] && isaword(specname, rframe))
 			rframe[0] = 0;
@@ -826,7 +826,7 @@ http_parm_init(void)
 		t2 = strtok(0, "&");
 	}
 	free(buf);
-	strsncpy(buf2, getsenv("QUERY_STRING"), 1024);
+	ytht_strsncpy(buf2, getsenv("QUERY_STRING"), 1024);
 	t2 = strtok(buf2, "&");
 	while (t2) {
 		t3 = strchr(t2, '=');
@@ -854,7 +854,7 @@ cache_header(time_t t, int age)
 		if (strptime(old, "%a, %d %b %Y %H:%M:%S %Z", &tm))
 			oldt = mktime(&tm) - timezone;
 		else {
-			strsncpy(buf, old, STRLEN - 10);
+			ytht_strsncpy(buf, old, STRLEN - 10);
 			strcat(buf, "\n");
 			f_append("bbstmpfs/tmp/not-known-time", buf);
 		}
@@ -1205,7 +1205,7 @@ mail_file(char *filename, char *userid, char *title, char *sender)
 		return -1;
 	header.filetime = t;
 	header.thread = t;
-	strsncpy(header.title, title, sizeof (header.title));
+	ytht_strsncpy(header.title, title, sizeof(header.title));
 	fp = fopen(buf, "w");
 	if (fp == 0)
 		return -2;
@@ -1261,7 +1261,7 @@ post_mail_to_sent_box(char *userid, char *title, char *file,
 		return -1;
 	header.filetime = t;
 	header.thread = t;
-	strsncpy(header.title, title, sizeof (header.title));
+	ytht_strsncpy(header.title, title, sizeof(header.title));
 	header.accessed |= mark;
 	fp = fopen(buf, "w");
 	if (fp == 0)
@@ -1318,7 +1318,7 @@ post_mail(char *userid, char *title, char *file, char *id,
 		return -1;
 	header.filetime = t;
 	header.thread = t;
-	strsncpy(header.title, title, sizeof (header.title));
+	ytht_strsncpy(header.title, title, sizeof(header.title));
 	header.accessed |= mark;
 	fp = fopen(buf, "w");
 	if (fp == 0)
@@ -1441,7 +1441,7 @@ post_article_1984(char *board, char *title, char *file, char *id,
 	header.filetime = t;
 	if (thread != -1)
 		header.thread = thread;
-	strsncpy(header.title, title, sizeof (header.title));
+	ytht_strsncpy(header.title, title, sizeof(header.title));
 	fp = fopen(buf3, "w");
 	if (NULL == fp)
 		return -1;
@@ -1491,7 +1491,7 @@ post_article(char *board, char *title, char *file, char *id,
 	if (t < 0)
 		return -1;
 	header.filetime = t;
-	strsncpy(header.title, title, sizeof (header.title));
+	ytht_strsncpy(header.title, title, sizeof(header.title));
 	header.accessed |= mark;
 	if (outgoing)
 		header.accessed |= FH_INND;
@@ -2490,7 +2490,7 @@ userid_str(char *s)
 {
 	static char buf[512];
 	char buf2[256], tmp[256], *ptr, *ptr2;
-	strsncpy(tmp, s, 255);
+	ytht_strsncpy(tmp, s, 255);
 	buf[0] = 0;
 	ptr = strtok(tmp, " ,();\r\n\t");
 	while (ptr && strlen(buf) < 400) {
@@ -2547,7 +2547,7 @@ getbfroma(char *path)
 	ptr = strchr(path + 13, '/');
 	if (!ptr)
 		return "";
-	strsncpy(board, ptr + 1, sizeof (board));
+	ytht_strsncpy(board, ptr + 1, sizeof(board));
 	ptr = strchr(board, '/');
 	if (ptr)
 		*ptr = 0;
@@ -3343,7 +3343,7 @@ NHsprintf(char *s, char *s0)
 			for (m = i + 2; s0[m] && m < i + 24; m++)
 				if (strchr("0123456789;", s0[m]) == 0)
 					break;
-			strsncpy(ansibuf, &s0[i + 2], m - (i + 2) + 1);
+				ytht_strsncpy(ansibuf, &s0[i + 2], m - (i + 2) + 1);
 			i = m;
 			if (s0[i] != 'm')
 				continue;

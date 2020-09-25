@@ -11,7 +11,7 @@ bbsadl_main()
 	printf("<table>\n");
 	printf("<tr><td>序号<td>名称<td>大小(字节)<td>更新时间\n");
 	for (i = 0; i < MAXBOARD && i < shm_bcache->number; i++) {
-		strsncpy(brd, shm_bcache->bcache[i].header.filename, 60);
+		ytht_strsncpy(brd, shm_bcache->bcache[i].header.filename, 60);
 		sprintf(buf, "www/an/%s.tgz", brd);
 		if (!file_exist(buf))
 			continue;

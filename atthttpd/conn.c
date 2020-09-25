@@ -191,9 +191,9 @@ getbcache(char *board)
 			num++;
 			if (!shm_bcache->bcache[i].header.filename[0])
 				continue;
-			strsncpy(upperstr,
-				 shm_bcache->bcache[i].header.filename,
-				 sizeof (upperstr));
+			ytht_strsncpy(upperstr,
+						  shm_bcache->bcache[i].header.filename,
+						  sizeof(upperstr));
 			for (j = 0; upperstr[j]; j++)
 				upperstr[j] = toupper(upperstr[j]);
 			ght_insert(p_table, &shm_bcache->bcache[i], j,
@@ -201,7 +201,7 @@ getbcache(char *board)
 		}
 		uptime = now_t;
 	}
-	strsncpy(upperstr, board, sizeof (upperstr));
+	ytht_strsncpy(upperstr, board, sizeof(upperstr));
 	for (j = 0; upperstr[j]; j++)
 		upperstr[j] = toupper(upperstr[j]);
 	return ght_get(p_table, j, upperstr);

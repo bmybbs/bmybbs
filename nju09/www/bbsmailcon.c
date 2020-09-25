@@ -17,7 +17,7 @@ bbsmailcon_main()
      */
     int box_type = 0;
     char buf[10];
-    strsncpy(buf, getparm("box_type"), 10);
+	ytht_strsncpy(buf, getparm("box_type"), 10);
     if(buf[0] != 0) {
         box_type = atoi(buf);
     }
@@ -26,7 +26,7 @@ bbsmailcon_main()
 
 	//if (tempuser) http_fatal("user %d", tempuser);
 	changemode(RMAIL);
-	strsncpy(file, getparm("file"), 32);
+	ytht_strsncpy(file, getparm("file"), 32);
 	num = atoi(getparm("num"));
 	id = currentuser.userid;
 	if (strncmp(file, "M.", 2))

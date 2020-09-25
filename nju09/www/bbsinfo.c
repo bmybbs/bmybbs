@@ -67,7 +67,7 @@ check_info()
 {
 	size_t m;
 	char buf[256];
-	strsncpy(buf, getparm("nick"), 30);
+	ytht_strsncpy(buf, getparm("nick"), 30);
 	for (m = 0; m < strlen(buf); m++)
 		if ((buf[m] < 32 && buf[m] > 0) || buf[m] == -1)
 			buf[m] = ' ';
@@ -76,20 +76,20 @@ check_info()
 	} else {
 		printf("警告: 昵称太短!<br>\n");
 	}
-	strsncpy(buf, getparm("realname"), 9);
+	ytht_strsncpy(buf, getparm("realname"), 9);
 	if (strlen(buf) > 1) {
 		strcpy(currentuser.realname, buf);
 	} else {
 		printf("警告: 真实姓名太短!<br>\n");
 	}
-	strsncpy(buf, getparm("address"), 40);
+	ytht_strsncpy(buf, getparm("address"), 40);
 	if (strlen(buf) > 8) {
 		strcpy(currentuser.address, buf);
 	} else {
 		printf("警告: 居住地址太短!<br>\n");
 	}
 	/*
-	strsncpy(buf, getparm("email"), 32);
+	ytht_strsncpy(buf, getparm("email"), 32);
 	if (strlen(buf) > 8 && strchr(buf, '@')) {
 		strcpy(currentuser.email, buf);
 	} else {
@@ -114,7 +114,7 @@ check_info()
 	} else {
 		printf("警告: 错误的出生日期!<br>\n");
 	}
-	strsncpy(buf, getparm("gender"), 2);
+	ytht_strsncpy(buf, getparm("gender"), 2);
 	if (!strcasecmp(buf, "F"))
 		currentuser.gender = 'F';
 	if (!strcasecmp(buf, "M"))

@@ -11,9 +11,9 @@ bbstdoc_main()
 	struct fileheader *data = NULL;
 	int i, start = 0, total2 = 0, total = 0, sum = 0, fd, size;
 	changemode(READING);
-	strsncpy(board, getparm("B"), 32);
+	ytht_strsncpy(board, getparm("B"), 32);
 	if (!board[0])
-		strsncpy(board, getparm("board"), 32);
+		ytht_strsncpy(board, getparm("board"), 32);
 	x1 = getboard(board);
 	if (x1 == 0) {
 		html_header(1);

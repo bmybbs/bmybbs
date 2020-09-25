@@ -166,10 +166,10 @@ savenewslot(char *grp)
 	struct SLOT tosave;
 	time_t t = 0;		//to make gcc happy,let t has a initial value.
 	bzero(&tosave, sizeof (tosave));
-	strsncpy(title, getparm("title"), 30);
+	ytht_strsncpy(title, getparm("title"), 30);
 	sell = atoi(getparm("sell"));
-	strsncpy(tosave.price, getparm("price"), 10);
-	strsncpy(tosave.contact, getparm("contact"), 20);
+	ytht_strsncpy(tosave.price, getparm("price"), 10);
+	ytht_strsncpy(tosave.contact, getparm("contact"), 20);
 	for (i = 0; i < strlen(title); i++)
 		if (title[i] <= 27 && title[i] >= -1)
 			title[i] = ' ';
@@ -194,7 +194,7 @@ savenewslot(char *grp)
 	}
 	if (i >= 100)
 		return -1;
-	strsncpy(tosave.title, title, 30);
+	ytht_strsncpy(tosave.title, title, 30);
 	fp = fopen(buf3, "w");
 	fp2 = fopen(filename, "r");
 	fprintf(fp, "%s(%s), 发布信息时ip: \033[35m%s\033[m\n\n", currentuser.userid, currentuser.username, fromhost);

@@ -375,7 +375,7 @@ main(int argc, char *argv[])
 		html_header(0);
 		now_t = time(NULL);
 		via_proxy = 0;
-		strsncpy(fromhost, getsenv("REMOTE_ADDR"), BMY_IPV6_LEN); //ipv6 by leoncom
+		ytht_strsncpy(fromhost, getsenv("REMOTE_ADDR"), BMY_IPV6_LEN); //ipv6 by leoncom
 		fromhost[BMY_IPV6_LEN] = '\0';
 		inet_pton(PF_INET6,fromhost,&from_addr);
 		//inet_aton(fromhost, &from_addr);

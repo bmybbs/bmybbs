@@ -24,7 +24,7 @@ anc_readtitle(FILE * fp, char *title, int size)
 	char buf[512];
 	while (fgets(buf, sizeof (buf), fp)) {
 		if (!strncmp(buf, "# Title=", 8)) {
-			strsncpy(title, buf + 8, size);
+			ytht_strsncpy(title, buf + 8, size);
 			return 0;
 		}
 	}
@@ -38,14 +38,14 @@ anc_readitem(FILE * fp, char *path, int sizepath, char *name, int sizename)
 	int hasname = 0;
 	while (fgets(buf, sizeof (buf), fp)) {
 		if (!strncmp(buf, "Name=", 5)) {
-			strsncpy(name, buf + 5, sizename);
+			ytht_strsncpy(name, buf + 5, sizename);
 			hasname = 1;
 		}
 		if (!hasname)
 			continue;
 		if (strncmp(buf, "Path=~", 6))
 			continue;
-		strsncpy(path, strtrim(buf + 6), sizepath);
+		ytht_strsncpy(path, strtrim(buf + 6), sizepath);
 		hasname = 2;
 		break;
 	}

@@ -198,8 +198,8 @@ read_submit()
 				       nohtml(parm_name[i]));
 				continue;
 			}
-			strsncpy(mybrd[mybrdnum], parm_name[i],
-				 sizeof (mybrd[0]));
+			ytht_strsncpy(mybrd[mybrdnum], parm_name[i],
+						  sizeof(mybrd[0]));
 			mybrdnum++;
 		}
 	}

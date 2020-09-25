@@ -8,9 +8,9 @@ bbsbkncon_main()
 	struct mmapfile mf = { ptr:NULL };
 	int num, total;
 	changemode(BACKNUMBER);
-	strsncpy(board, getparm("board"), 32);
-	strsncpy(bkn, getparm("bkn"), 32);
-	strsncpy(file, getparm("file"), 32);
+	ytht_strsncpy(board, getparm("board"), 32);
+	ytht_strsncpy(bkn, getparm("bkn"), 32);
+	ytht_strsncpy(file, getparm("file"), 32);
 	num = atoi(getparm("num"));
 	ptr = bkn;
 	while (*ptr) {

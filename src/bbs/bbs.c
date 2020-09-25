@@ -327,7 +327,7 @@ set_safe_record()
 	currentuser.numdays = tmp.numdays;
 	currentuser.lastlogin = tmp.lastlogin;
 	currentuser.dietime = tmp.dietime;
-	strsncpy(currentuser.lasthost, fromhost, BMY_IPV6_LEN);
+	ytht_strsncpy(currentuser.lasthost, fromhost, BMY_IPV6_LEN);
 	currentuser.stay = tmp.stay;
 	return 0;
 }
@@ -582,7 +582,7 @@ char *direct;
 	fclose(fp);
 
 	UFile = *fileinfo;
-	strsncpy(UFile.title, UTitle, sizeof (UFile.title));
+	ytht_strsncpy(UFile.title, UTitle, sizeof(UFile.title));
 	UFile.deltime = 0;
 	UFile.accessed &= ~FH_DEL;
 
@@ -667,8 +667,8 @@ char *direct;
 		directfile(genbuf, direct, fh2fname(fileinfo));
 	else
 		sprintf(genbuf, "boards/%s/%s", currboard, fh2fname(fileinfo));;
-	strsncpy(quote_file, genbuf, sizeof (quote_file));
-	strsncpy(quote_title, fileinfo->title, sizeof (quote_title));
+	ytht_strsncpy(quote_file, genbuf, sizeof(quote_file));
+	ytht_strsncpy(quote_title, fileinfo->title, sizeof(quote_title));
 
 	clear();
 	prints
@@ -773,11 +773,11 @@ struct fileheader *fhdr;
 	now = localtime(&tnow);
 
 	sprintf(buf, "-%s", fhdr->owner);
-	strsncpy(fhdr->owner, buf, sizeof (fhdr->owner));
+	ytht_strsncpy(fhdr->owner, buf, sizeof(fhdr->owner));
 	sprintf(buf, "<< 本文被 %s 于 %d/%d %d:%02d:%02d 删除 >>",
 		currentuser.userid, now->tm_mon + 1, now->tm_mday,
 		now->tm_hour, now->tm_min, now->tm_sec);
-	strsncpy(fhdr->title, buf, sizeof (fhdr->title));
+	ytht_strsncpy(fhdr->title, buf, sizeof(fhdr->title));
 	fhdr->filetime = 0;	//表示文章被删除了
 }
 
@@ -969,9 +969,9 @@ char *direct;
 	clear();
 	directfile(genbuf, direct, fh2fname(fileinfo));
 	SETREAD(fileinfo, &brc);
-	strsncpy(quote_file, genbuf, sizeof (quote_file));
-	strsncpy(quote_board, currboard, 24);
-	strsncpy(quote_title, fileinfo->title, sizeof (quote_title));
+	ytht_strsncpy(quote_file, genbuf, sizeof(quote_file));
+	ytht_strsncpy(quote_board, currboard, 24);
+	ytht_strsncpy(quote_title, fileinfo->title, sizeof(quote_title));
 	strncpy(quote_user, fh2owner(fileinfo), sizeof (quote_user));
 	isattached = 0;
 #ifndef NOREPLY
@@ -1018,12 +1018,12 @@ char *direct;
 	readingthread = fileinfo->thread;
 	if (strncmp(fileinfo->title, "Re: ", 4) != 0) {
 		strcpy(ReplyPost, "Re: ");
-		strsncpy(ReplyPost + 4, fileinfo->title,
-			 sizeof (ReplyPost) - 4);
-		strsncpy(ReadPost, fileinfo->title, sizeof (ReadPost));
+		ytht_strsncpy(ReplyPost + 4, fileinfo->title,
+					  sizeof(ReplyPost) - 4);
+		ytht_strsncpy(ReadPost, fileinfo->title, sizeof(ReadPost));
 	} else {
-		strsncpy(ReplyPost, fileinfo->title, sizeof (ReplyPost));
-		strsncpy(ReadPost, fileinfo->title + 4, sizeof (ReadPost));
+		ytht_strsncpy(ReplyPost, fileinfo->title, sizeof(ReplyPost));
+		ytht_strsncpy(ReadPost, fileinfo->title + 4, sizeof(ReadPost));
 	}
 
 	if (!
@@ -1834,7 +1834,7 @@ post_cross(char *bname, int mode, int islocal, int hascheck, int dangerous)
 	if (mode == 1 && strcmp(bname, "millionaires") != 0 && strncmp(bname, "BM_exam", 7) != 0)
 		postfile.accessed |= FH_MARKED;
 
-	strsncpy(postfile.owner, whopost, sizeof (postfile.owner));
+	ytht_strsncpy(postfile.owner, whopost, sizeof(postfile.owner));
 	setbfile(filepath, bname, fname);
 	modify_user_mode(POSTING);
 	strcpy(bkcurrboard, currboard);
@@ -1842,7 +1842,7 @@ post_cross(char *bname, int mode, int islocal, int hascheck, int dangerous)
 	getcross(filepath, mode);
 	strcpy(currboard, bkcurrboard);
 	postfile.sizebyte = ytht_num2byte(eff_size(filepath));
-	strsncpy(postfile.title, save_title, sizeof (postfile.title));
+	ytht_strsncpy(postfile.title, save_title, sizeof(postfile.title));
 
 	if (mode != 1) {
 		if (!hascheck)
@@ -2065,8 +2065,8 @@ post_article(struct fileheader *sfh)
 	header.mailreply = 0; //no reply mail to author by defauit , by macintosh
 	if (post_header(&header))
 	{
-		strsncpy(postfile.title, header.title, sizeof (postfile.title));
-		strsncpy(save_title, postfile.title, sizeof (save_title));
+		ytht_strsncpy(postfile.title, header.title, sizeof(postfile.title));
+		ytht_strsncpy(save_title, postfile.title, sizeof(save_title));
 	}
 	else
 	{
@@ -2102,7 +2102,7 @@ post_article(struct fileheader *sfh)
 
 	if (local_article == 0)
 		postfile.accessed |= FH_INND;
-	strsncpy(postfile.title, save_title, sizeof (postfile.title));
+	ytht_strsncpy(postfile.title, save_title, sizeof(postfile.title));
 
 	if (header.canreply == 0)
 		postfile.accessed |= FH_NOREPLY;
@@ -2540,7 +2540,7 @@ char *direct;
 			return DONOTHING;//信箱中ln过来的文件禁止编辑
 	}
 
-	strsncpy(buf, fileinfo->title, sizeof (buf));
+	ytht_strsncpy(buf, fileinfo->title, sizeof(buf));
 	getdata(t_lines - 1, 0, "新文章标题: ", buf, 50, DOECHO, NA);
 
 	if (buf[0] != '\0' && strcmp(fileinfo->title, buf)
@@ -2551,7 +2551,7 @@ char *direct;
 			currentuser.userid, currboard,
 			fh2owner(fileinfo), fileinfo->title, buf);
 		newtrace(str);
-		strsncpy(fileinfo->title, buf, sizeof (fileinfo->title));
+		ytht_strsncpy(fileinfo->title, buf, sizeof(fileinfo->title));
 		directfile(genbuf, direct, fh2fname(fileinfo));
 		change_content_title(genbuf, buf);
 		now = time(NULL);
@@ -3098,8 +3098,8 @@ struct fileheader *fptr;
 			return 0;
 		}
 		setbfile(genbuf, currboard, fh2fname(fptr));
-		strsncpy(quote_file, genbuf, sizeof (quote_file));
-		strsncpy(quote_user, fh2owner(fptr), sizeof (quote_user));
+		ytht_strsncpy(quote_file, genbuf, sizeof(quote_file));
+		ytht_strsncpy(quote_user, fh2owner(fptr), sizeof(quote_user));
 #ifdef NOREPLY
 		ansimore_withzmodem(genbuf, YEA, fptr->title);
 #else
@@ -4523,11 +4523,11 @@ int do_commend(char* board, struct fileheader* fileinfo)
 	fp=fopen(COMMENDFILE, "a");
 	if(!fp)
 		return 0;
-	strsncpy(y.userid, fileinfo->owner, 13);
-	strsncpy(y.com_user, currentuser.userid, 13);
-	strsncpy(y.title, fileinfo->title, 80);
-	strsncpy(y.board, currboard, 24);
-	strsncpy(y.filename, fh2fname(fileinfo), 80);
+	ytht_strsncpy(y.userid, fileinfo->owner, 13);
+	ytht_strsncpy(y.com_user, currentuser.userid, 13);
+	ytht_strsncpy(y.title, fileinfo->title, 80);
+	ytht_strsncpy(y.board, currboard, 24);
+	ytht_strsncpy(y.filename, fh2fname(fileinfo), 80);
 	y.accessed=fileinfo->accessed;
 	y.time=time(NULL);
 	if(fwrite(&y, sizeof(struct commend), 1, fp) != 1){
@@ -4660,11 +4660,11 @@ int do_commend2(char* board, struct fileheader* fileinfo)
 	fp=fopen(COMMENDFILE2, "a");
 	if(!fp)
 		return 0;
-	strsncpy(y.userid, fileinfo->owner, 13);
-	strsncpy(y.com_user, currentuser.userid, 13);
-	strsncpy(y.title, fileinfo->title, 80);
-	strsncpy(y.board, currboard, 24);
-	strsncpy(y.filename, fh2fname(fileinfo), 80);
+	ytht_strsncpy(y.userid, fileinfo->owner, 13);
+	ytht_strsncpy(y.com_user, currentuser.userid, 13);
+	ytht_strsncpy(y.title, fileinfo->title, 80);
+	ytht_strsncpy(y.board, currboard, 24);
+	ytht_strsncpy(y.filename, fh2fname(fileinfo), 80);
 	y.accessed=fileinfo->accessed;
 	y.time=time(NULL);
 	if(fwrite(&y, sizeof(struct commend), 1, fp) != 1){

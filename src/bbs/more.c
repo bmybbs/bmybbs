@@ -555,7 +555,7 @@ mem_printline(char *ptr, int len, char *fn, char ty,struct MemMoreLines *l)
 	} else if (ty == 100 || ty == 102) {
 		char attachname[41], *p;
 		isattached = 1;
-		strsncpy(attachname, ptr + (ty == 100 ? 10 : 18), 40);
+		ytht_strsncpy(attachname, ptr + (ty == 100 ? 10 : 18), 40);
 		p = strchr(attachname, '\n');
 		if (p != NULL)
 			*p = 0;

@@ -13,7 +13,7 @@ bbspst_main()
 	struct mmapfile mf = { ptr:NULL };
 	html_header(1);
 	check_msg();
-	strsncpy(board, getparm("B"), 32);
+	ytht_strsncpy(board, getparm("B"), 32);
 	if(strcasecmp(board, "welcome") && strcasecmp(board, "KaoYan")){
 		// modify by mintbaggio 040614 for guest post at board "welcome" + "KaoYan"(by wsf)
 		if (!loginok) {
@@ -26,12 +26,12 @@ bbspst_main()
 	else if (seek_in_file(MY_BBS_HOME"/etc/guestbanip", fromhost) && !loginok)
 		http_fatal("您的ip被禁止使用guest在本版发表文章!");
 	local_article = 1; // modified by linux @ 2006.6.6 for the default post status to no outgo
-//	strsncpy(board, getparm("B"), 32);
+//	ytht_strsncpy(board, getparm("B"), 32);
 	if (!board[0])
-		strsncpy(board, getparm("board"), 20);
-	strsncpy(file, getparm("F"), 20);
+		ytht_strsncpy(board, getparm("board"), 20);
+	ytht_strsncpy(file, getparm("F"), 20);
 	if (!file[0])
-		strsncpy(file, getparm("file"), 20);
+		ytht_strsncpy(file, getparm("file"), 20);
 	fullquote = atoi(getparm("fullquote"));
 	if (file[0] != 'M' && file[0])
 		http_fatal("错误的文件名");
@@ -55,14 +55,14 @@ bbspst_main()
 			thread = dirinfo->thread;
 			//if (dirinfo->accessed & FH_ALLREPLY)
 			//	guestre = 1;
-			strsncpy(userid, fh2owner(dirinfo), 20);
+			ytht_strsncpy(userid, fh2owner(dirinfo), 20);
 			if (strncmp(dirinfo->title, "Re: ", 4))
 			  {
 				snprintf(title, 60, "Re: %s", dirinfo->title);
 				local_article = atoi(getparm("la")); // added by linux @2006.6.6 for the post status to the status of the article before when doing a reply post
 			  }
 			else
-				strsncpy(title, dirinfo->title, 60);
+				ytht_strsncpy(title, dirinfo->title, 60);
 		} else
 			http_fatal("错误的文件名");
 		if (dirinfo->accessed & FH_NOREPLY)
