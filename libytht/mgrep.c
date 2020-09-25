@@ -17,6 +17,11 @@ extern int total_line;
 
 static void countline(unsigned char *text, int len);
 
+static int mgrep(int fd, struct pattern_image *patt_img);
+static void monkey1(register unsigned char *text, int start, int end, struct pattern_image *patt_img);
+static int m_short(unsigned char *text, int start, int end, struct pattern_image *patt_img);
+static void f_prep(int pat_index, unsigned char *Pattern, struct pattern_image *patt_img);
+
 int
 releasepf(struct pattern_image *patt_img)
 {
@@ -134,12 +139,10 @@ mgrep_str(char *text, int num, struct pattern_image *patt_img)
 	else
 		monkey1((unsigned char *) text, 0, num - 1, patt_img);
 	return num_of_matched;
-}				/* end mgrep */
+} /* end mgrep_str */
 
-int
-mgrep(fd, patt_img)
-int fd;
-struct pattern_image *patt_img;
+static int
+mgrep(int fd, struct pattern_image *patt_img)
 {
 	register char r_newline = '\n';
 	unsigned char text[2 * BLOCKSIZE + MAXLINE];
@@ -178,7 +181,7 @@ struct pattern_image *patt_img;
 			monkey1(text, start, end, patt_img);
 	}
 	return 0;
-}				/* end mgrep */
+} /* end mgrep */
 
 static void
 countline(text, len)
@@ -192,10 +195,7 @@ int len;
 			total_line++;
 }
 
-void monkey1(text, start, end, patt_img)
-int start, end;
-register unsigned char *text;
-struct pattern_image *patt_img;
+static void monkey1(register unsigned char *text, int start, int end, struct pattern_image *patt_img)
 {
 	register unsigned char *textend;
 	register unsigned hash, i;
@@ -299,7 +299,7 @@ struct pattern_image *patt_img;
 			putchar(*lastout++);
 }
 
-int
+static int
 m_short(unsigned char *text, int start, int end, struct pattern_image *patt_img)
 {
 	register unsigned char *textend;
@@ -372,11 +372,8 @@ m_short(unsigned char *text, int start, int end, struct pattern_image *patt_img)
 	return 0;
 }
 
-void
-f_prep(pat_index, Pattern, patt_img)
-unsigned char *Pattern;
-int pat_index;
-struct pattern_image *patt_img;
+static void
+f_prep(int pat_index, unsigned char *Pattern, struct pattern_image *patt_img)
 {
 	int i, m;
 	register unsigned hash, Mask = 15;

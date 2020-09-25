@@ -36,9 +36,6 @@ struct pattern_image {
 int releasepf(struct pattern_image *patt_img);
 int prepf(int fp, struct pattern_image **ppatt_img, size_t *patt_image_len);
 int mgrep_str(char *text, int num, struct pattern_image *patt_img);
-int mgrep(int fd, struct pattern_image *patt_img);
-void monkey1(register unsigned char *text, int start, int end, struct pattern_image *patt_img);
-int m_short(unsigned char *text, int start, int end, struct pattern_image *patt_img);
-void f_prep(int pat_index, unsigned char *Pattern, struct pattern_image *patt_img);
+
 
 #endif
