@@ -75,7 +75,7 @@ __boyer_moore(const unsigned char *haystack, size_t haystacklen,
 }
 
 /**
- * strnstr:
+ * ytht_strnstr:
  * @haystack: string to search
  * @needle: substring to search for
  * @haystacklen: length of the haystack to search
@@ -87,7 +87,7 @@ __boyer_moore(const unsigned char *haystack, size_t haystacklen,
  * @haystack, or NULL if the substring is not found.
  **/
 char *
-strnstr(const char *haystack, const char *needle, size_t haystacklen)
+ytht_strnstr(const char *haystack, const char *needle, size_t haystacklen)
 {
 	register unsigned char *h, *n, *hc, *nc;
 	size_t needlelen;

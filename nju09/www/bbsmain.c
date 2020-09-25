@@ -269,7 +269,7 @@ end_outcache()
 		printf("\n\nfaint! ³öÃ«²¡ÁË...");
 		return;
 	}
-	if (strnstr(myoutbuf, "Content-type: ", ptr - myoutbuf)) {
+	if (ytht_strnstr(myoutbuf, "Content-type: ", ptr - myoutbuf)) {
 		len = myoutsize - (ptr - myoutbuf) - 2;
 		printf("Content-Length: %d\n", len);
 	}
