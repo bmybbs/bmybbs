@@ -60,12 +60,41 @@ struct boardtop {
 	char board[24];
 };
 
+/**
+ * @brief 依据日期、标记位转换为文件名
+ * @warning 多线程不安全
+ */
 char *fh2fname(struct fileheader *fh);
+
+/**
+ * @brief 生成过刊文件名
+ * @warning 多线程不安全
+ */
 char *bknh2bknname(struct bknheader *bknh);
+
+/**
+ * @brief 获取文章作者
+ * 匿名模式返回 "Anonymous"
+ * @see fh2realauthor
+ */
 char *fh2owner(struct fileheader *fh);
+
+/**
+ * @brief 获取真实文章作者
+ * 匿名模式特别处理
+ * @see fh2owner
+ */
 char *fh2realauthor(struct fileheader *fh);
+
+/**
+ * @brief 获取文章的修改时间
+ */
+time_t fh2modifytime(struct fileheader *fh);
+
+/**
+ * @brief 设置文章作者
+ */
 void fh_setowner(struct fileheader *fh, char *owner, int anony);
-int fh2modifytime(struct fileheader *fh);
 int change_dir(char *, struct fileheader *, void *func(void *, void *), int, int, int);
 void DIR_do_mark(struct fileheader *, struct fileheader *);
 void DIR_do_digest(struct fileheader *, struct fileheader *);
@@ -94,7 +123,7 @@ int outgo_post(struct fileheader *, char *, char *, char *);
 void cancelpost(char *, char *, struct fileheader *, int);
 int cmp_title(char *title, struct fileheader *fh1);
 int fh_find_thread(struct fileheader *fh, char *board);
-int Search_Bin(char *ptr, int key, int start, int end);	
+int Search_Bin(char *ptr, int key, int start, int end);
 int add_edit_mark(char *fname, char *userid, time_t now_t, char *fromhost);
 int is_article_area_top(char *boardname, int thread);
 int update_article_area_top_link(char *boardname, int oldthread, int newfiletime, char *newtitle);

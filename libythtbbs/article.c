@@ -28,7 +28,7 @@ fh2fname(struct fileheader *fh)
 	if (fh->accessed & FH_ISDIGEST)
 		s[0] = 'G';
 	if (fh->accessed & FILE_ISTOP1)  //add by wjbta
-	        s[0] = 'T';   
+	        s[0] = 'T';
 	return s;
 }
 
@@ -58,7 +58,7 @@ fh2realauthor(struct fileheader *fh)
 		return fh->owner;
 }
 
-int
+time_t
 fh2modifytime(struct fileheader *fh)
 {
 	if (fh->edittime)
@@ -288,7 +288,7 @@ outgo_post(struct fileheader *fh, char *board, char *id, char *name)
 	return 0;
 }
 
-/* modifying by ylsdd 
+/* modifying by ylsdd
  * unlink action is taked within cancelpost if in mail
  * else this item is added to the file '.DELETED' under
  * the board's directory, the filename is not changed.
@@ -395,24 +395,24 @@ fh_find_thread(struct fileheader *fh, char *board)
 int
 Search_Bin(char *ptr, int key, int start, int end)
 {
-        // 在有序表中折半查找其关键字等于key的数据元素。
-        // 若查找到，返回索引
+	// 在有序表中折半查找其关键字等于key的数据元素。
+	// 若查找到，返回索引
 	// 否则为大于key的最小数据元素索引m，返回(-m-1)
-        int low, high, mid;
+	int low, high, mid;
 	struct fileheader *totest;
-        low = start;
-        high = end;
-        while (low <= high) {
-                mid = (low + high) / 2;
+	low = start;
+	high = end;
+	while (low <= high) {
+		mid = (low + high) / 2;
 		totest = (struct fileheader *)(ptr + mid * sizeof(struct fileheader));
-                if (key == totest->filetime)
-                        return mid; 
-                else if (key < totest->filetime)
-                        high = mid - 1;
-                else
-                        low = mid + 1;
-        }
-        return -(low+1);
+		if (key == totest->filetime)
+			return mid;
+		else if (key < totest->filetime)
+			high = mid - 1;
+		else
+			low = mid + 1;
+	}
+	return -(low+1);
 }
 
 int
@@ -577,7 +577,7 @@ static int update_article_link_in_file(char *boardname, int oldthread, int newfi
 
 		char newFilename[80];
 		sprintf(newFilename, "%s.new", filename);
-		htmlSaveFileEnc(newFilename, doc, "GBK");	
+		htmlSaveFileEnc(newFilename, doc, "GBK");
 		rename(newFilename, filename);
 	}
 
