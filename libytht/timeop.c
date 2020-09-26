@@ -13,6 +13,16 @@ char *ytht_ctime(const time_t clock)
 	return ptr;
 }
 
+char *ytht_ctime_r(const time_t clock, char *buf) {
+	char *tmp;
+	ctime_r(clock, buf);
+	tmp = strchr(buf, '\n');
+	if (NULL != tmp)
+		*tmp = '\0';
+
+	return buf;
+}
+
 char *ytht_Difftime(time_t compared_time) {
 	static char ret[64];
 	time_t now = time(NULL);

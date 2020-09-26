@@ -7,8 +7,16 @@
  * 会额外截断转换后字符串结尾的换行符
  * @return 时间的字符串形式
  * @warning 多线程不安全
+ * @see ytht_ctime_r
  */
 char *ytht_ctime(const time_t clock);
+
+/**
+ * @brief ctime_r(3) 的封装
+ * 会额外截断转换后字符串结尾的换行符
+ * @return 时间的字符串形式
+ */
+char *ytht_ctime_r(const time_t clock, char *buf);
 
 /** 比较当前时间和目标时间的差异，并返回适当的字符串。
  * 例如 5秒钟前，10分钟后
