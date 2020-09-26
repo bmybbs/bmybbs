@@ -107,7 +107,7 @@ makeindex(FILE * wfp, char *path, char *prefix, int indextype, int depth)
 		} else if (S_ISREG(sbuf.st_mode)) {
 			int thisnew = 0;
 			if (t - sbuf.st_mtime < 24 * 3600 * 3
-			    && !checktitle(title)) thisnew = 1;
+			    && !ythtbbs_announce_checktitle(title)) thisnew = 1;
 			if (indextype == 3) {
 				if (thisnew) {
 					for (i = 0; i < ncachetitle; i++)
@@ -148,7 +148,7 @@ searchindexfile(char *path)
 	while (fgets(str, 500, fp) != NULL) {
 		if (strstr(str, "Name=") != str)
 			continue;
-		indextype = checktitle(str + 5);
+		indextype = ythtbbs_announce_checktitle(str + 5);
 		if (fgets(str, 500, fp) == NULL)
 			break;
 		if (strstr(str, "Path=~") != str)

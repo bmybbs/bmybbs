@@ -6,23 +6,23 @@
 #include "ythtbbs/ythtbbs.h"
 
 int
-checktitle(char *str)
+ythtbbs_announce_checktitle(const char *str)
 {
 	int indextype = 0;
-	if (strstr(str, "¡¾¾«»ªÇøË÷Òı¡¿") == str)
+	if (strstr(str, "\xA1\xBE\xBE\xAB\xBB\xAA\xC7\xF8\xCB\xF7\xD2\xFD\xA1\xBF") == str) // ã€ç²¾ååŒºç´¢å¼•ã€‘
 		indextype = 2;
-	else if (strstr(str, "¡¾¾«»ªÇøÄ¿Â¼Ë÷Òı¡¿") == str)
+	else if (strstr(str, "\xA1\xBE\xBE\xAB\xBB\xAA\xC7\xF8\xC4\xBF\xC2\xBC\xCB\xF7\xD2\xFD\xA1\xBF") == str) // ã€ç²¾ååŒºç›®å½•ç´¢å¼•ã€‘
 		indextype = 2;
-	else if (strstr(str, "¡¾¾«»ªÇøÎÄÕÂË÷Òı¡¿") == str)
+	else if (strstr(str, "\xA1\xBE\xBE\xAB\xBB\xAA\xC7\xF8\xCE\xC4\xD5\xC2\xCB\xF7\xD2\xFD\xA1\xBF") == str) // ã€ç²¾ååŒºæ–‡ç« ç´¢å¼•ã€‘
 		indextype = 1;
-	else if (strstr(str, "¡¾¾«»ªÇø¸üĞÂË÷Òı¡¿") == str)
+	else if (strstr(str, "\xA1\xBE\xBE\xAB\xBB\xAA\xC7\xF8\xB8\xFC\xD0\xC2\xCB\xF7\xD2\xFD\xA1\xBF") == str) // ã€ç²¾ååŒºæ›´æ–°ç´¢å¼•ã€‘
 		indextype = 3;
 	return indextype;
 }
 
 /*
 int
-do_testtime(int t, char *path0, int mode, int time)	//mode=0 ²âÊÔËùÓĞÎÄ¼ş mode=1 ²âÊÔ .Names ÎÄ¼ş
+do_testtime(int t, char *path0, int mode, int time)	//mode=0 æµ‹è¯•æ‰€æœ‰æ–‡ä»¶ mode=1 æµ‹è¯• .Names æ–‡ä»¶
 {
 	char names[1024], genbuf[1024], path00[1024];
 	FILE *fp;
@@ -39,7 +39,7 @@ do_testtime(int t, char *path0, int mode, int time)	//mode=0 ²âÊÔËùÓĞÎÄ¼ş mode=1
 		return 0;
 	while (fgets(genbuf, sizeof (genbuf), fp)) {
 		if (!strncmp(genbuf, "Name=", 5)) {
-			if (checktitle(genbuf + 5))
+			if (ythtbbs_announce_checktitle(genbuf + 5))
 				continue;
 			fgets(genbuf, 256, fp);
 			if (strncmp("Path=~/", genbuf, 6) != 0)
