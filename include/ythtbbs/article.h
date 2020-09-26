@@ -125,9 +125,43 @@ int cmp_title(char *title, struct fileheader *fh1);
 int fh_find_thread(struct fileheader *fh, char *board);
 int Search_Bin(char *ptr, int key, int start, int end);
 int add_edit_mark(char *fname, char *userid, time_t now_t, char *fromhost);
+
+/**
+ * 检查主题是否存在与所在讨论区热门话题中
+ * @param boardname 版面名称
+ * @param thread 主题id
+ * @return 存在返回1
+ */
 int is_article_area_top(char *boardname, int thread);
+
+/**
+ * 在主题所在讨论区中更新链接
+ * @param boardname 版面名称
+ * @param oldthread 原主题id
+ * @param newfiletime 对应新的合集文章的 filetime
+ * @param newtitle 对应新的合集文章的标题，e.g. "【合集】 "
+ * @return 更新成功返回1
+ */
 int update_article_area_top_link(char *boardname, int oldthread, int newfiletime, char *newtitle);
+
+/**
+ * 判断是否十大。
+ * @warning 仅需要检查一个文件。
+ * @param boardname 版面名称
+ * @param thread 主题id
+ * @return 存在返回1
+ */
 int is_article_site_top(char *boardname, int thread);
+
+/**
+ * 更新十大链接。
+ * @warning 需要更新四个文件。
+ * @param boardname 版面名称
+ * @param oldthread 原主题id
+ * @param newfiletime 对应新的合集文章的 filetime
+ * @param newtitle 对应新的合集文章的标题，e.g. "【合集】 "
+ * @return 更新成功返回1
+ */
 int update_article_site_top_link(char *boardname, int oldthread, int newfiletime, char *newtitle);
 
 /** 将文件名转为时间戳

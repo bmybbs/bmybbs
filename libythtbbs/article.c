@@ -4,17 +4,17 @@
 #include <unistd.h>
 #include "ythtbbs/ythtbbs.h"
 
-// ÎªÁË±à¼­ html/xml/xhtml ÎÄ¼şÒıÈë¿â libxml2 by IronBlood 20130805
+// ä¸ºäº†ç¼–è¾‘ html/xml/xhtml æ–‡ä»¶å¼•å…¥åº“ libxml2 by IronBlood 20130805
 #include <sys/file.h>
 #include <libxml/HTMLparser.h>
 #include <libxml/HTMLtree.h>
 #include <libxml/xpath.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
-#include <libxml/xmlmemory.h>   // ±à¼­xmlÄÚÈİ
+#include <libxml/xmlmemory.h>   // ç¼–è¾‘xmlå†…å®¹
 #include <libxml/xmlsave.h>
 
-// ÎªÁË´¦Àí @id ÒıÈë pcre ¿â by IronBlood 20140624
+// ä¸ºäº†å¤„ç† @id å¼•å…¥ pcre åº“ by IronBlood 20140624
 #include <pcre.h>
 
 static int is_article_link_in_file(char *boardname, int thread, char *filename);
@@ -325,7 +325,7 @@ cancelpost(char *board, char *userid, struct fileheader *fh, int owned)
 				buf[len] = '\0';
 				if (len <= 8)
 					break;
-				if (strncmp(buf, "·¢ĞÅÈË: ", 8))
+				if (strncmp(buf, "\xB7\xA2\xD0\xC5\xC8\xCB: ", 8))
 					continue;
 				if ((ptr = strrchr(buf, ')')) != NULL) {
 					*ptr = '\0';
@@ -381,7 +381,7 @@ fh_find_thread(struct fileheader *fh, char *board)
 		p = title;
 	start = mf.size / size;
 	for (i = start, buf1 = (struct fileheader *)(mf.ptr + size * (start - 1)); i > start - 100 && i>0; i--, buf1 = (struct fileheader *)(mf.ptr + size * (i - 1)))
-		//½öÔÚ×î½ü100ÆªÄÚ³¢ÊÔËÑË÷Í¬Ö÷Ìâ
+		//ä»…åœ¨æœ€è¿‘100ç¯‡å†…å°è¯•æœç´¢åŒä¸»é¢˜
 		if (cmp_title(p, buf1)) {
 			if (buf1->thread != 0) {
 				fh->thread = buf1->thread;
@@ -395,9 +395,9 @@ fh_find_thread(struct fileheader *fh, char *board)
 int
 Search_Bin(char *ptr, int key, int start, int end)
 {
-	// ÔÚÓĞĞò±íÖĞÕÛ°ë²éÕÒÆä¹Ø¼ü×ÖµÈÓÚkeyµÄÊı¾İÔªËØ¡£
-	// Èô²éÕÒµ½£¬·µ»ØË÷Òı
-	// ·ñÔòÎª´óÓÚkeyµÄ×îĞ¡Êı¾İÔªËØË÷Òım£¬·µ»Ø(-m-1)
+	// åœ¨æœ‰åºè¡¨ä¸­æŠ˜åŠæŸ¥æ‰¾å…¶å…³é”®å­—ç­‰äºkeyçš„æ•°æ®å…ƒç´ ã€‚
+	// è‹¥æŸ¥æ‰¾åˆ°ï¼Œè¿”å›ç´¢å¼•
+	// å¦åˆ™ä¸ºå¤§äºkeyçš„æœ€å°æ•°æ®å…ƒç´ ç´¢å¼•mï¼Œè¿”å›(-m-1)
 	int low, high, mid;
 	struct fileheader *totest;
 	low = start;
@@ -418,22 +418,16 @@ Search_Bin(char *ptr, int key, int start, int end)
 int
 add_edit_mark(char *fname, char *userid, time_t now_t, char *fromhost)
 {
-        FILE *fp;
-        if ((fp = fopen(fname, "a")) == NULL)
-                return 0;
-        fprintf(fp,
-                "\n[1;36m¡ù ĞŞ¸Ä:£®%s ÓÚ %15.15s ĞŞ¸Ä±¾ÎÄ£®[FROM: %-.40s][m",
-                userid, ctime(&now_t) + 4, fromhost);
-        fclose(fp);
-        return 0;
+	FILE *fp;
+	if ((fp = fopen(fname, "a")) == NULL)
+		return 0;
+	// \n\033[1;36mâ€» ä¿®æ”¹:ï¼%s äº %15.15s ä¿®æ”¹æœ¬æ–‡ï¼[FROM: %-.40s]\033[m
+	fprintf(fp, "\n\033[1;36m\xA1\xF9 \xD0\xDE\xB8\xC4:ï¼%s \xD3\xDA %15.15s \xD0\xDE\xB8\xC4\xB1\xBE\xCE\xC4ï¼[FROM: %-.40s]\033[m",
+			userid, ctime(&now_t) + 4, fromhost);
+	fclose(fp);
+	return 0;
 }
 
-/**
- * ¼ì²éÖ÷ÌâÊÇ·ñ´æÔÚÓëËùÔÚÌÖÂÛÇøÈÈÃÅ»°ÌâÖĞ
- * @param boardname °æÃæÃû³Æ
- * @param thread Ö÷Ìâid
- * @return ´æÔÚ·µ»Ø1
- */
 int is_article_area_top(char *boardname, int thread) {
 	struct boardmem *bm = getboardbyname(boardname);
     if(bm==NULL)
@@ -445,14 +439,6 @@ int is_article_area_top(char *boardname, int thread) {
 	return is_article_link_in_file(boardname, thread, area_top_filename);
 }
 
-/**
- * ÔÚÖ÷ÌâËùÔÚÌÖÂÛÇøÖĞ¸üĞÂÁ´½Ó
- * @param boardname °æÃæÃû³Æ
- * @param oldthread Ô­Ö÷Ìâid
- * @param newfiletime ¶ÔÓ¦ĞÂµÄºÏ¼¯ÎÄÕÂµÄ filetime
- * @param newtitle ¶ÔÓ¦ĞÂµÄºÏ¼¯ÎÄÕÂµÄ±êÌâ£¬e.g. "¡¾ºÏ¼¯¡¿ "
- * @return ¸üĞÂ³É¹¦·µ»Ø1
- */
 int update_article_area_top_link(char *boardname, int oldthread, int newfiletime, char *newtitle) {
 	struct boardmem *bm = getboardbyname(boardname);
     if(bm==NULL)
@@ -464,28 +450,12 @@ int update_article_area_top_link(char *boardname, int oldthread, int newfiletime
 	return update_article_link_in_file(boardname, oldthread, newfiletime, newtitle, area_top_filename);
 }
 
-/**
- * ÅĞ¶ÏÊÇ·ñÊ®´ó¡£
- * @warning ½öĞèÒª¼ì²éÒ»¸öÎÄ¼ş¡£
- * @param boardname °æÃæÃû³Æ
- * @param thread Ö÷Ìâid
- * @return ´æÔÚ·µ»Ø1
- */
 int is_article_site_top(char *boardname, int thread) {
 	char *site_top_file1 = "wwwtmp/topten";
 
 	return is_article_link_in_file(boardname, thread, site_top_file1);
 }
 
-/**
- * ¸üĞÂÊ®´óÁ´½Ó¡£
- * @warning ĞèÒª¸üĞÂËÄ¸öÎÄ¼ş¡£
- * @param boardname °æÃæÃû³Æ
- * @param oldthread Ô­Ö÷Ìâid
- * @param newfiletime ¶ÔÓ¦ĞÂµÄºÏ¼¯ÎÄÕÂµÄ filetime
- * @param newtitle ¶ÔÓ¦ĞÂµÄºÏ¼¯ÎÄÕÂµÄ±êÌâ£¬e.g. "¡¾ºÏ¼¯¡¿ "
- * @return ¸üĞÂ³É¹¦·µ»Ø1
- */
 int update_article_site_top_link(char *boardname, int oldthread, int newfiletime, char *newtitle) {
 	char *site_top_file1 = "wwwtmp/topten";
 	char *site_top_file2 = "wwwtmp/indextopten";
@@ -499,11 +469,11 @@ int update_article_site_top_link(char *boardname, int oldthread, int newfiletime
 }
 
 /**
- * ÅĞ¶ÏÎÄÕÂÖ÷ÌâÁ´½ÓÊÇ·ñ´æÔÚÓÚÎÄ¼şÖĞ
- * @param boardname °æÃæÃû³Æ
- * @param thread Ô­Ö÷Ìâid
- * @param filename ĞèÒªÅĞ¶ÏµÄÎÄ¼şÂ·¾¶
- * @return Èç¹ûÎÄ¼şÖĞ´æÔÚ¸ÃÆªÎÄÕÂÖ÷Ìâ£¬Ôò·µ»Ø1£¬²»´æÔÚ·µ»Ø0£¬³ö´í·µ»Ø-1
+ * åˆ¤æ–­æ–‡ç« ä¸»é¢˜é“¾æ¥æ˜¯å¦å­˜åœ¨äºæ–‡ä»¶ä¸­
+ * @param boardname ç‰ˆé¢åç§°
+ * @param thread åŸä¸»é¢˜id
+ * @param filename éœ€è¦åˆ¤æ–­çš„æ–‡ä»¶è·¯å¾„
+ * @return å¦‚æœæ–‡ä»¶ä¸­å­˜åœ¨è¯¥ç¯‡æ–‡ç« ä¸»é¢˜ï¼Œåˆ™è¿”å›1ï¼Œä¸å­˜åœ¨è¿”å›0ï¼Œå‡ºé”™è¿”å›-1
  */
 static int is_article_link_in_file(char *boardname, int thread, char *filename) {
 	htmlDocPtr doc = htmlParseFile(filename, "GBK");
@@ -533,13 +503,13 @@ static int is_article_link_in_file(char *boardname, int thread, char *filename) 
 }
 
 /**
- * ¸üĞÂÎÄ¼şÖĞÎÄÕÂµÄÁ´½Ó
- * @param boardname °æÃæÃû³Æ
- * @param oldthread Ô­Ö÷Ìâid
- * @param newfiletime ¶ÔÓ¦ĞÂÎÄÕÂµÄ filetime
- * @param newtitle ĞÂÎÄÕÂµÄ±êÌâ£¬e.g. "¡¾ºÏ¼¯¡¿ "
- * @param filename ĞèÒª¸üĞÂµÄÎÄ¼şÂ·¾¶
- * @return ÈôÎÄ¼şÒÑ¸üĞÂ£¬Ôò·µ»Ø1
+ * æ›´æ–°æ–‡ä»¶ä¸­æ–‡ç« çš„é“¾æ¥
+ * @param boardname ç‰ˆé¢åç§°
+ * @param oldthread åŸä¸»é¢˜id
+ * @param newfiletime å¯¹åº”æ–°æ–‡ç« çš„ filetime
+ * @param newtitle æ–°æ–‡ç« çš„æ ‡é¢˜ï¼Œe.g. "ã€åˆé›†ã€‘ "
+ * @param filename éœ€è¦æ›´æ–°çš„æ–‡ä»¶è·¯å¾„
+ * @return è‹¥æ–‡ä»¶å·²æ›´æ–°ï¼Œåˆ™è¿”å›1
  */
 static int update_article_link_in_file(char *boardname, int oldthread, int newfiletime, char *newtitle, char *filename) {
 	int fd=open(filename, O_RDONLY);
@@ -565,15 +535,15 @@ static int update_article_link_in_file(char *boardname, int oldthread, int newfi
 	xmlXPathContextPtr ctx = xmlXPathNewContext(doc);
 	xmlXPathObjectPtr result = xmlXPathEvalExpression((const xmlChar*)xpath, ctx);
 
-	// ÎÄ¼şÖĞÓĞÇÒ½öÓĞÒ»¸öÁ´½ÓÊ±²Å»áÖ´ĞĞ¸üĞÂÁ´½ÓµÄ²Ù×÷
+	// æ–‡ä»¶ä¸­æœ‰ä¸”ä»…æœ‰ä¸€ä¸ªé“¾æ¥æ—¶æ‰ä¼šæ‰§è¡Œæ›´æ–°é“¾æ¥çš„æ“ä½œ
 	int r=0;
 	if((r=result->nodesetval->nodeNr) == 1){
 		char new_href[80];
-		sprintf(new_href, "con?B=%s&F=M.%d.A", boardname, newfiletime); //ĞÂÁ´½Ó²ÉÓÃÒ»°ãÔÄ¶ÁÄ£Ê½
+		sprintf(new_href, "con?B=%s&F=M.%d.A", boardname, newfiletime); //æ–°é“¾æ¥é‡‡ç”¨ä¸€èˆ¬é˜…è¯»æ¨¡å¼
 
 		xmlNodePtr cur = result->nodesetval->nodeTab[0];
-		xmlSetProp(cur, (const xmlChar*)"href", (const xmlChar*)new_href); // ¸üĞÂÁ´½Ó
-//		xmlNodeSetContent(cur, (const xmlChar*)newtitle); // ¸üĞÂÁ´½ÓÎÄ×Ö
+		xmlSetProp(cur, (const xmlChar*)"href", (const xmlChar*)new_href); // æ›´æ–°é“¾æ¥
+//		xmlNodeSetContent(cur, (const xmlChar*)newtitle); // æ›´æ–°é“¾æ¥æ–‡å­—
 
 		char newFilename[80];
 		sprintf(newFilename, "%s.new", filename);
@@ -607,14 +577,14 @@ int parse_mentions(char *content, char **userids, int from)
 		return -1;
 	}
 
-	i=0;	// ÓÃÓÚ userids[i] Ë÷Òı
+	i=0;	// ç”¨äº userids[i] ç´¢å¼•
 	offsetcount = pcre_exec(re, NULL, content, strlen(content), 0, 0, offsets, 3);
 	while(offsetcount>0 && i<MAX_MENTION_ID && ((from==1) ? 1 : (strstr(content+offsets[1], "\n--\n")!=NULL))) {
 		if(pcre_get_substring(content, offsets, offsetcount, 0, &match) >= 0) {
-			if(i==0) { // userids »¹Îª¿ÕµÄÊ±ºò
+			if(i==0) { // userids è¿˜ä¸ºç©ºçš„æ—¶å€™
 				strncpy(userids[0], match+1, strlen(match)-2);
 				++i;
-			} else { // userids ÒÑ¾­´æÔÚ id ÁË£¬ÔòÑ­»·±È½Ï
+			} else { // userids å·²ç»å­˜åœ¨ id äº†ï¼Œåˆ™å¾ªç¯æ¯”è¾ƒ
 				is_exist = 0;
 				memset(buf, 0, 14);
 				strncpy(buf, match+1, strlen(match)-2);
@@ -622,7 +592,7 @@ int parse_mentions(char *content, char **userids, int from)
 					if(!strcasecmp(buf, userids[j]))
 						is_exist = 1;
 				}
-				if(!is_exist) {	// buf ÔÚ userids ÖĞ²»´æÔÚµÄÊ±ºò¿½±´µ½ userids ÖĞ
+				if(!is_exist) {	// buf åœ¨ userids ä¸­ä¸å­˜åœ¨çš„æ—¶å€™æ‹·è´åˆ° userids ä¸­
 					strcpy(userids[i++], buf);
 				}
 			}
