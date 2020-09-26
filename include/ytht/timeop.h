@@ -3,18 +3,23 @@
 #define __TIMEOP_H
 char *Ctime(time_t);
 
-/** ±È½Ïµ±Ç°Ê±¼äºÍÄ¿±êÊ±¼äµÄ²îÒì£¬²¢·µ»ØÊÊµ±µÄ×Ö·û´®¡£
- * ÀıÈç 5ÃëÖÓÇ°£¬10·ÖÖÓºó
- * @param compared_time ĞèÒª¶Ô±ÈµÄÊ±¼ä¡£
- * @return ¸üÈİÒ×Àí½âµÄÎÄ×Ö
- * @warning ¸Ã·½·¨²»ÊÇÏß³Ì°²È«µÄ£¡²¢ÇÒ»áÇ¿ÖÆ×ª»»Îª int ÀàĞÍ¡£
+/** æ¯”è¾ƒå½“å‰æ—¶é—´å’Œç›®æ ‡æ—¶é—´çš„å·®å¼‚ï¼Œå¹¶è¿”å›é€‚å½“çš„å­—ç¬¦ä¸²ã€‚
+ * ä¾‹å¦‚ 5ç§’é’Ÿå‰ï¼Œ10åˆ†é’Ÿå
+ * @param compared_time éœ€è¦å¯¹æ¯”çš„æ—¶é—´ã€‚
+ * @return æ›´å®¹æ˜“ç†è§£çš„æ–‡å­—
+ * @warning è¯¥æ–¹æ³•ä¸æ˜¯çº¿ç¨‹å®‰å…¨çš„ï¼å¹¶ä¸”ä¼šå¼ºåˆ¶è½¬æ¢ä¸º int ç±»å‹ã€‚
  */
-char *Difftime(time_t compared_time);
+char *ytht_Difftime(time_t compared_time);
 
 /**
- * @brief »ñµÃÄ³Ò»Ìì 0:00:00 µÄÊ±¼ä´Á(UTC+8 Ê±Çø)
+ * @brief ytht_Difftime å¯¹åº”çš„å®‰å…¨ç‰ˆæœ¬
+ */
+char *ytht_Difftime_s(time_t compared_time, char *buf, size_t buf_len);
+
+/**
+ * @brief è·å¾—æŸä¸€å¤© 0:00:00 çš„æ—¶é—´æˆ³(UTC+8 æ—¶åŒº)
  * @param tm
- * @return Ê±¼ä´Á
+ * @return æ—¶é—´æˆ³
  */
 time_t get_time_of_the_biginning_of_the_day(struct tm *tm);
 #endif

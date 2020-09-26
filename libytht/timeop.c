@@ -14,7 +14,7 @@ Ctime(time_t clock)
 	return ptr;
 }
 
-char * Difftime(time_t compared_time) {
+char *ytht_Difftime(time_t compared_time) {
 	static char ret[64];
 	time_t now = time(NULL);
 	int now_i = (int)now;
@@ -22,25 +22,44 @@ char * Difftime(time_t compared_time) {
 
 	int diff_i = abs(now_i - tgt_i);
 
-	if(diff_i < 60) { //Ò»·ÖÖÓÄÚ
-		sprintf(ret, "%dÃëÖÖ%s", diff_i, (now_i>tgt_i) ? "Ç°" : "ºó");
-	} else if (diff_i < 3600) { // Ò»Ð¡Ê±ÄÚ
-		sprintf(ret, "%d·ÖÖÓ%s", diff_i/60, (now_i>tgt_i) ? "Ç°" : "ºó");
-	} else if (diff_i < 86400) { // Ò»ÌìÒÔÄÚ
-		sprintf(ret, "%dÐ¡Ê±%s", diff_i/3600, (now_i>tgt_i) ? "Ç°" : "ºó");
-	} else { // ³¬¹ýÒ»Ìì
-		sprintf(ret, "%dÌì%s", diff_i/86400, (now_i>tgt_i) ? "Ç°" : "ºó");
+	if(diff_i < 60) { //ä¸€åˆ†é’Ÿå†… %dç§’é’Ÿ%s å‰|åŽ
+		sprintf(ret, "%d\xC3\xEB\xD6\xD3%s", diff_i, (now_i>tgt_i) ? "\xC7\xB0" : "\xBA\xF3");
+	} else if (diff_i < 3600) { // ä¸€å°æ—¶å†… %dåˆ†é’Ÿ%s
+		sprintf(ret, "%d\xB7\xD6\xD6\xD3%s", diff_i/60, (now_i>tgt_i) ? "\xC7\xB0" : "\xBA\xF3");
+	} else if (diff_i < 86400) { // ä¸€å¤©ä»¥å†… %då°æ—¶%s
+		sprintf(ret, "%d\xD0\xA1\xCA\xB1%s", diff_i/3600, (now_i>tgt_i) ? "\xC7\xB0" : "\xBA\xF3");
+	} else { // è¶…è¿‡ä¸€å¤© %då¤©%s
+		sprintf(ret, "%d\xCC\xEC%s", diff_i/86400, (now_i>tgt_i) ? "\xC7\xB0" : "\xBA\xF3");
 	}
 
 	return ret;
 }
 
+char *ytht_Difftime_s(time_t compared_time, char *buf, size_t buf_len) {
+	time_t now = time(NULL);
+	long diff = now - compared_time;
+	if (diff < 0)
+		diff = -diff;
+
+	if(diff < 60) { //ä¸€åˆ†é’Ÿå†… %dç§’é’Ÿ%s å‰|åŽ
+		snprintf(buf, buf_len, "%ld\xC3\xEB\xD6\xD3%s", diff,       (now > compared_time) ? "\xC7\xB0" : "\xBA\xF3");
+	} else if (diff < 3600) { // ä¸€å°æ—¶å†… %dåˆ†é’Ÿ%s
+		snprintf(buf, buf_len,"%ld\xB7\xD6\xD6\xD3%s",  diff/60,    (now > compared_time) ? "\xC7\xB0" : "\xBA\xF3");
+	} else if (diff < 86400) { // ä¸€å¤©ä»¥å†… %då°æ—¶%s
+		snprintf(buf, buf_len,"%ld\xD0\xA1\xCA\xB1%s",  diff/3600,  (now > compared_time) ? "\xC7\xB0" : "\xBA\xF3");
+	} else { // è¶…è¿‡ä¸€å¤© %då¤©%s
+		snprintf(buf, buf_len,"%ld\xCC\xEC%s",          diff/86400, (now > compared_time) ? "\xC7\xB0" : "\xBA\xF3");
+	}
+
+	return buf;
+}
+
 time_t get_time_of_the_biginning_of_the_day(struct tm *tm)
 {
-	// ÉèÖÃÎª UTC 0:00:00
+	// è®¾ç½®ä¸º UTC 0:00:00
 	tm->tm_sec = 0;
 	tm->tm_min = 0;
 	tm->tm_hour = 0;
 
-	return mktime(tm) - 8*3600; // ·µ»Ø UTC+8 0:00:00
+	return mktime(tm) - 8*3600; // è¿”å›ž UTC+8 0:00:00
 }
