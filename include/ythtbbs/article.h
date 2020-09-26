@@ -8,16 +8,16 @@ struct fileheader {
 	time_t thread;
 	unsigned int accessed;
 	char title[60];
-	char owner[14];				//Èç¹ûÊÇ±¾Õ¾µÄ, ¾ÍÓÃid, Èç¹ûÊ±email, ¾ÍÈ¡µÚÒ»¸ö´Ê²¢
-								//ÇÒ¼Ó'.'. Èç¹ûÊÇ±¾Õ¾ÄäÃû, ÔòµÚÒ»¸öÎª'\0', ºóÃæ¸úid
+	char owner[14];				//å¦‚æœæ˜¯æœ¬ç«™çš„, å°±ç”¨id, å¦‚æœæ—¶email, å°±å–ç¬¬ä¸€ä¸ªè¯å¹¶
+								//ä¸”åŠ '.'. å¦‚æœæ˜¯æœ¬ç«™åŒ¿å, åˆ™ç¬¬ä¸€ä¸ªä¸º'\0', åé¢è·Ÿid
 	unsigned short viewtime;
 	unsigned char sizebyte;
-	unsigned char staravg50;	//staravg ×î´óÎª5, staravg50 = staravg * 50
+	unsigned char staravg50;	//staravg æœ€å¤§ä¸º5, staravg50 = staravg * 50
 								//i.e. staravg50 = totalstar * 50 / hasvoted
 	unsigned char hasvoted;
-	char deltime;				//¼ÇÂ¼»ØÊÕÕ¾ºÍÖ½Â¨ÀïÃæµÄÎÄÕÂÊ±Ê²Ã´Ê±¼äÉ¾³ıµÄ
+	char deltime;				//è®°å½•å›æ”¶ç«™å’Œçº¸ç¯“é‡Œé¢çš„æ–‡ç« æ—¶ä»€ä¹ˆæ—¶é—´åˆ é™¤çš„
 								//now_t / (3600 * 24) % 100
-								//ÓÃÓÚ×Ô¶¯Çå³ıÀ¬»ø
+								//ç”¨äºè‡ªåŠ¨æ¸…é™¤åƒåœ¾
 	char unused[32];
 };
 
@@ -42,7 +42,7 @@ struct fileheader {
 #define FILE_ISTOP1		0x00020000	//slowaction
 #define FH_MINUSDEL 	0x00040000	//add by mintbaggio for minus-postnums delte
 #define FH_MAILREPLY 	0x00080000	//add by macintosh for reply mail to author
-#define FH_ISWATER		0x00100000	//ÅĞ¶ÏÊÇ·ñ±»±ê×¢ÎªË®ÎÄ
+#define FH_ISWATER		0x00100000	//åˆ¤æ–­æ˜¯å¦è¢«æ ‡æ³¨ä¸ºæ°´æ–‡
 
 struct bknheader {
 	time_t filetime;
@@ -85,7 +85,7 @@ void DIR_do_suremarkdel(struct fileheader *, struct fileheader *);
 void DIR_do_top(struct fileheader *, struct fileheader *);
 
 /**
- * @brief ¸øÎÄÕÂÔö¼Ó»òÕß½â³ıË®ÎÄ±ê¼Ç¡£
+ * @brief ç»™æ–‡ç« å¢åŠ æˆ–è€…è§£é™¤æ°´æ–‡æ ‡è®°ã€‚
  * @param
  * @param
  */
@@ -101,19 +101,19 @@ int update_article_area_top_link(char *boardname, int oldthread, int newfiletime
 int is_article_site_top(char *boardname, int thread);
 int update_article_site_top_link(char *boardname, int oldthread, int newfiletime, char *newtitle);
 
-/** ½«ÎÄ¼şÃû×ªÎªÊ±¼ä´Á
- * @warn ¸Ã¹ı³ÌÖĞ½«×Ö·û´®Ö±½Ó×ªÎª time_t£¬¿ÉÄÜÓĞĞ©Æ½Ì¨ÉÏ²»Ö§³Ö¡£Í¬Ê±¸Ã·½·¨Ê¹ÓÃ¹ı³ÌÖĞÎ´Ğ£Ñé filename ¸ñÊ½ÊÇ·ñÕıÈ·¡£½÷É÷Ê¹ÓÃ¡£
- * @param filename ĞÎÈç M.1376120232.A
- * @return Ê±¼ä´Á
+/** å°†æ–‡ä»¶åè½¬ä¸ºæ—¶é—´æˆ³
+ * @warn è¯¥è¿‡ç¨‹ä¸­å°†å­—ç¬¦ä¸²ç›´æ¥è½¬ä¸º time_tï¼Œå¯èƒ½æœ‰äº›å¹³å°ä¸Šä¸æ”¯æŒã€‚åŒæ—¶è¯¥æ–¹æ³•ä½¿ç”¨è¿‡ç¨‹ä¸­æœªæ ¡éªŒ filename æ ¼å¼æ˜¯å¦æ­£ç¡®ã€‚è°¨æ…ä½¿ç”¨ã€‚
+ * @param filename å½¢å¦‚ M.1376120232.A
+ * @return æ—¶é—´æˆ³
  */
 time_t fn2timestamp(char * filename);
 
-/** ´¦ÀíÎÄÕÂÖĞ @id ÕâÖÖ¹Ø¼ü×Ö
+/** å¤„ç†æ–‡ç« ä¸­ @id è¿™ç§å…³é”®å­—
  *
- * @param content ·¢ÌûµÄÕıÎÄ
- * @param userids ×Ö·û´®Êı×é£¬ĞèÒªÔ¤ÏÈÉùÃ÷Îª char [MAX_MENTION_ID][14]
- * @param from ÓÃÓÚµ÷ÓÃÊ±ºòÉùÃ÷À´Ô´£¬1 ±íÊ¾ nju09 ÒÔ¼°ÆäËû²»¸½´ø QMD µÄ³¡¾°ÏÂ£¬Ìø¹ıÄÚ²¿ QMD Ğ£Ñé¡£
- * @return ´¦Àí³É¹¦·µ»Ø0
+ * @param content å‘å¸–çš„æ­£æ–‡
+ * @param userids å­—ç¬¦ä¸²æ•°ç»„ï¼Œéœ€è¦é¢„å…ˆå£°æ˜ä¸º char [MAX_MENTION_ID][14]
+ * @param from ç”¨äºè°ƒç”¨æ—¶å€™å£°æ˜æ¥æºï¼Œ1 è¡¨ç¤º nju09 ä»¥åŠå…¶ä»–ä¸é™„å¸¦ QMD çš„åœºæ™¯ä¸‹ï¼Œè·³è¿‡å†…éƒ¨ QMD æ ¡éªŒã€‚
+ * @return å¤„ç†æˆåŠŸè¿”å›0
  */
 int parse_mentions(char *content, char **userids, int from);
 #endif
