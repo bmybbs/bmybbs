@@ -24,7 +24,7 @@
 #include "bbs.h"
 
 extern char fromhost[];
-extern int convcode;
+extern int g_convcode;
 
 #ifdef CAN_EXEC
 char tempfile[MAXPATHLEN];

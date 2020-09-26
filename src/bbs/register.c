@@ -38,7 +38,7 @@ char *genpasswd();
 
 extern char fromhost[60];
 extern time_t login_start_time;
-extern int convcode;
+extern int g_convcode;
 
 time_t system_time;
 
@@ -350,7 +350,7 @@ new_register()
 		newuser.flags[0] = PAGER_FLAG | BRDSORT_FLAG2;
 	}
 	newuser.userdefine &= ~(DEF_MAILMSG | DEF_NOLOGINSEND);
-	if (convcode)
+	if (g_convcode)
 		newuser.userdefine &= ~DEF_USEGB;
 
 	newuser.flags[1] = 0;

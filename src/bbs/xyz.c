@@ -673,8 +673,8 @@ x_userdefine()
 	else {
 		lookupuser.userdefine = newlevel;
 		currentuser.userdefine = newlevel;
-		if ((!convcode && !(newlevel & DEF_USEGB))
-		    || (convcode && (newlevel & DEF_USEGB)))
+		if ((!g_convcode && !(newlevel & DEF_USEGB))
+		    || (g_convcode && (newlevel & DEF_USEGB)))
 			switch_code();
 		substitute_record(PASSFILE, &lookupuser, sizeof (struct userec),
 				  id);

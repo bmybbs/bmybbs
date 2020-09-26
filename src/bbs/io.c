@@ -63,7 +63,7 @@ void
 oflush()
 {
 	if (obufsize) {
-		if (convcode) {
+		if (g_convcode) {
 			char *out;
 			out = gb2big(outbuf, &obufsize, 0);
 #ifdef SSHBBS
@@ -349,7 +349,7 @@ igetch2()
 			goto igetagain2;
 		}
 		/* add by KCN for GB/BIG5 encode */
-		if (convcode) {
+		if (g_convcode) {
 			inbuf = big2gb(inbuffer2 + 1, &ibufsize2, 0);
 			if (ibufsize2 == 0) {
 				icurrchar2 = 0;
@@ -662,7 +662,7 @@ igetch_org()
 			goto igetagain;
 		}
 		/* add by KCN for GB/BIG5 encode */
-		if (!convcode) {
+		if (!g_convcode) {
 			inbuf = inbuffer + 1;
 		} else {
 			inbuf = big2gb(inbuffer + 1, &ibufsize, 0);

@@ -32,7 +32,7 @@ static char gb2big_savec[2];
 static char big2gb_savec[2];
 
 #ifndef PTY_EXEC
-extern int convcode;
+extern int g_convcode;
 
 static void resolv_file(char *buf);
 static void *attach_shm2(int shmkey, int shmsize, void (*resolv_file) (char *));
@@ -43,7 +43,7 @@ static char *hzconvert(char *s, int *plen, char *psaved, void (*dbcvrt) (void));
 void
 switch_code()
 {
-	convcode = !convcode;
+	g_convcode = !g_convcode;
 	redoscr();
 }
 #endif

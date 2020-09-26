@@ -52,7 +52,7 @@ char ULIST[STRLEN];
 int utmpent = -1;
 time_t login_start_time;
 int showansi = 1;
-int convcode = 0;
+int g_convcode = 0;
 
 char GoodWish[20][STRLEN - 3];
 int WishNum = 0;
@@ -510,7 +510,7 @@ else sprintf(str1,"现在是 %s, 新世纪已经开始了%d秒\n",str,-dis);
 			int l = strlen(uid);
 			if (l > 0 && uid[l - 1] == '.') {
 				uid[l - 1] = 0;
-				if (!convcode)
+				if (!g_convcode)
 					switch_code();
 			}
 		}
@@ -543,8 +543,8 @@ else sprintf(str1,"现在是 %s, 新世纪已经开始了%d秒\n",str,-dis);
 			prints("\033[1;31m用户%s已经禁止从%s尝试登录\033[0m\n", currentuser.userid, fromhost);
 			scroll();
 		} else {
-			if (!convcode)
-				convcode = !(currentuser.userdefine & DEF_USEGB);
+			if (!g_convcode)
+				g_convcode = !(currentuser.userdefine & DEF_USEGB);
 			move(t_lines - 1, 0);
 			clrtoeol();
 			getdata(t_lines - 1, 0, "请输入密码: ", passbuf, PASSLEN, NOECHO, YEA);
@@ -1053,7 +1053,7 @@ char *argv[];
 	runssh = 1;
 #endif
 	if (*argv[1] == 'e')
-		convcode = 1;
+		g_convcode = 1;
 	system_init(argc, argv);
 	if (setjmp(byebye)) {
 		abort_bbs();
@@ -1391,7 +1391,7 @@ relogin()
 	sprintf(bbstest_prog_path, "%s/bin/bbstest", MY_BBS_HOME);
 	for (n = 1; n < 10; n++)
 		close(n);
-	if (convcode) {
+	if (g_convcode) {
 		if (!runtest)
 			execl(bbs_prog_path, "bbs", "e", currentuser.lasthost, utmppos, currentuser.userid, NULL);	/*调用BBS */
 		else

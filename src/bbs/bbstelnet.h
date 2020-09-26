@@ -21,7 +21,7 @@ extern int bug_possible;
 extern int can_R_endline;
 extern int clearbuflen;
 extern int cleolbuflen;
-extern int convcode;
+extern int g_convcode;
 extern int delcnt;
 extern int delmsgs[];
 extern int digestmode;
