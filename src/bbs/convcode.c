@@ -28,8 +28,8 @@
 unsigned char *GtoB, *BtoG;
 #define GtoB_count 7614
 #define BtoG_count 13973
-char gb2big_savec[2];
-char big2gb_savec[2];
+static char gb2big_savec[2];
+static char big2gb_savec[2];
 
 #ifndef PTY_EXEC
 extern int convcode;
