@@ -81,7 +81,7 @@ int do_check()
 			if(fwrite(check_user, sizeof(struct userec), 1, fp)!=1)
 				return WRITEFILE_ERROR;
 			printf("user %s's level has been changed\n", check_user->userid);
-			fprintf(logfp, "user %s's level has been changed(%s)\n", check_user->userid, Ctime(time(NULL)));
+			fprintf(logfp, "user %s's level has been changed(%s)\n", check_user->userid, ytht_ctime(time(NULL)));
 		}
 	}
 	fclose(fp);

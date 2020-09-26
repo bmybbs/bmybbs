@@ -136,7 +136,7 @@ bbsmail_main()
 		printf("<td class=tdborder>%c%c</td>", type,
 		       x.accessed & FH_ATTACHED ? '@' : ' ');
 		printf("<td class=tdborder>%s</td>", userid_str(fh2owner(&x)));
-		printf("<td class=tdborder>%12.12s</td>", Ctime(x.filetime) + 4);
+		printf("<td class=tdborder>%12.12s</td>", ytht_ctime(x.filetime) + 4);
 		printf("<td class=tdborder><a href=bbsmailcon?file=%s&num=%d&%s>", fh2fname(&x),
 		       i + start - 1, type_string);
 		if (strncmp("Re: ", x.title, 4))

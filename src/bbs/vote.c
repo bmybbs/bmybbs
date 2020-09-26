@@ -238,7 +238,7 @@ struct votelog *ptr;
 		return 0;
 	}
 	fprintf(sug, "%12s   %16s   %s %s\n", ptr->uid, ptr->ip,
-		Ctime(ptr->votetime), (ptr->voted == 0) ? "0" : "");
+			ytht_ctime(ptr->votetime), (ptr->voted == 0) ? "0" : "");
 	return 0;
 }
 
@@ -1027,7 +1027,7 @@ int num;
 			int now;
 			now = time(NULL);
 			sprintf(buf, "%s %s %s", currentuser.userid,
-				currentuser.lasthost, Ctime(now));
+					currentuser.lasthost, ytht_ctime(now));
 			addtofile(MY_BBS_HOME "/vote.log", buf);
 		}
 	}

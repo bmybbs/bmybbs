@@ -106,8 +106,8 @@ bbsfwdmail_main()
 			"\033[m\033[1m【 以下文字转寄自 \033[32m%s \033[m\033[1m的信箱 】\n",
 			currentuser.userid);
 		fprintf(fp,
-			"\033[m\033[1m【 原文由 \033[32m%s \033[m\033[1m于 \033[0m%s\033[1m 发表 】\033[m\n",
-			fh2owner(x), Ctime(x->filetime));
+				"\033[m\033[1m【 原文由 \033[32m%s \033[m\033[1m于 \033[0m%s\033[1m 发表 】\033[m\n",
+				fh2owner(x), ytht_ctime(x->filetime));
 		while (1) {
 			retv = fread(buf, 1, sizeof (buf), fp1);
 			if (retv <= 0)

@@ -2767,7 +2767,7 @@ char *direct;
 	if (t <= 0 || t >= (time(NULL) - (time_t) 3600 * 24 * 7)) {
 		prints
 		    ("Ê±¼äÖ¸¶¨ÓĞÎó( ÄúÊäÈëµÄÊ±¼äÎª%s )\n(¾àµ±Ç°ÈÕÆÚÒ»ÖÜÖ®ÄÚµÄÎÄÕÂ²»ÄÜ·Åµ½¹ı¿¯µÄ)\n",
-		     Ctime(t));
+			 ytht_ctime(t));
 		pressanykey();
 		return FULLUPDATE;
 	}
@@ -2783,7 +2783,7 @@ char *direct;
 			pressanykey();
 		}
 		sprintf(genbuf, "into backnumber, %s, %s, %d",
-			currboard, Ctime(t), retv);
+				currboard, ytht_ctime(t), retv);
 		sprintf(content, "%s ½«ÎÄÕÂÖÃÈë %s °æ¹ı¿¯ ",
 			currentuser.userid, currboard);
 		securityreport(genbuf, content);
@@ -3395,7 +3395,7 @@ show_b_note()
 		else
 			prints
 			    ("ÕşÖÎĞÔ°æÃæÒÑËø¶¨,ÍíÓÚ %s ¾Í²»ÄÜ·¢±íÎÄÕÂÁË.½âËøÂë: %d",
-			     Ctime(utmpshm->watchman), utmpshm->unlock % 10000);
+				 ytht_ctime(utmpshm->watchman), utmpshm->unlock % 10000);
 
 	}
 	return what_to_do();
@@ -3692,8 +3692,8 @@ notepad()
 			fprintf(in,
 				"[1;34m¡õ[44m¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ[36mËá[32mÌğ[33m¿à[31mÀ±[37m°æ[34m¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ[40m¡õ[m\n");
 			fprintf(in,
-				"[1;34m¡õ[32;44m %-48s[32mÔÚ [36m%.19s[32m Àë¿ªÊ±ÁôÏÂµÄ»°  [m\n",
-				tmp, Ctime(thetime));
+					"[1;34m¡õ[32;44m %-48s[32mÔÚ [36m%.19s[32m Àë¿ªÊ±ÁôÏÂµÄ»°  [m\n",
+					tmp, ytht_ctime(thetime));
 			for (n = 0; n < i; n++) {
 				if (note[n][0] == '\0')
 					break;
@@ -4419,7 +4419,8 @@ struct fileheader *fileinfo;
  	fp1=fopen(buf, "rt");
 	if (fgets(temp2, 200, fp1)!=NULL){
 		keepoldheader(fp1, SKIPHEADER);
-		fprintf(fp, "    [0;1;32m%s [0;1mÓÚ [1;36m%s[0;1m Ìáµ½£º[0m\n",fh2owner(fileinfo),Ctime(fileinfo->filetime));
+		fprintf(fp, "    [0;1;32m%s [0;1mÓÚ [1;36m%s[0;1m Ìáµ½£º[0m\n", fh2owner(fileinfo),
+				ytht_ctime(fileinfo->filetime));
 		while (!feof(fp1)) {
 			fgets(temp2, 200, fp1);
 			if (transferattach(temp2, 200, fp1, fp))
@@ -4573,7 +4574,7 @@ int show_commend()
 	for(num=20; num>0; num--){
 		if(fread(&x, sizeof(struct commend), 1, fp) != 1)
 			break;
-		//prints("\033[37mĞÅÇø:\033[33m%-16s\033[37m±êÌâ:\033[1;44;37m%-60.60s\033[40m\033[37m¡¾ÍÆ¼öÊ±¼ä:\033[32m%s\033[37m,ÍÆ¼öÈË:\033[32m%s\033[37m¡¿\033[0m\n", x.board, x.title, Ctime(x.time), x.com_user);
+		//prints("\033[37mĞÅÇø:\033[33m%-16s\033[37m±êÌâ:\033[1;44;37m%-60.60s\033[40m\033[37m¡¾ÍÆ¼öÊ±¼ä:\033[32m%s\033[37m,ÍÆ¼öÈË:\033[32m%s\033[37m¡¿\033[0m\n", x.board, x.title, ytht_ctime(x.time), x.com_user);
 		prints("\033[1;44;37mĞÅÇø:\033[33m%-13s\033[37m±êÌâ:\033[37m%-30s \033[37m×÷Õß:\033[32m%-12s\033[0m\n", x.board, x.title, x.userid);
 	}
 	return 0;
@@ -4710,7 +4711,7 @@ int show_commend2()
 	for(num=20; num>0; num--){
 		if(fread(&x, sizeof(struct commend), 1, fp) != 1)
 			break;
-		//prints("\033[37mĞÅÇø:\033[33m%-16s\033[37m±êÌâ:\033[1;44;37m%-60.60s\033[40m\033[37m¡¾ÍÆ¼öÊ±¼ä:\033[32m%s\033[37m,ÍÆ¼öÈË:\033[32m%s\033[37m¡¿\033[0m\n", x.board, x.title, Ctime(x.time), x.com_user);
+		//prints("\033[37mĞÅÇø:\033[33m%-16s\033[37m±êÌâ:\033[1;44;37m%-60.60s\033[40m\033[37m¡¾ÍÆ¼öÊ±¼ä:\033[32m%s\033[37m,ÍÆ¼öÈË:\033[32m%s\033[37m¡¿\033[0m\n", x.board, x.title, ytht_ctime(x.time), x.com_user);
 		prints("\033[1;44;37mĞÅÇø:\033[33m%-13s\033[37m±êÌâ:\033[37m%-30s \033[37m×÷Õß:\033[32m%-12s\033[0m\n", x.board, x.title, x.userid);
 	}
 	return 0;

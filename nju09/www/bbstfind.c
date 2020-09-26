@@ -119,7 +119,7 @@ bbstfind_main()
 				if (strlen(buf) < 500)
 					strcat(buf, buf2);
 			}
-			printf("<td>%6.6s</td>", Ctime(x->filetime) + 4);
+			printf("<td>%6.6s</td>", ytht_ctime(x->filetime) + 4);
 			printf("<td><a href=con?B=%s&F=%s&N=%d&st=1&T=%ld>%s </a>\n",
 			       board, fh2fname(x), i + 1, feditmark(*x), nohtml(x->title));
 			if (x->sizebyte)

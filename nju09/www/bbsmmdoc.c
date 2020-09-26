@@ -83,7 +83,7 @@ bbsmmdoc_main()
 		       start + i, 
 		       //flag_str(x.accessed) , 
 		       userid_str(x.owner));
-		printf("<td align=center class=tdborder>%12.12s</td>", Ctime(x.filetime) + 4);
+		printf("<td align=center class=tdborder>%12.12s</td>", ytht_ctime(x.filetime) + 4);
 		printf
 		    ("<td class=tdborder><a href=con?B=%s&F=%s>%s%s</a></td><td class=tdborder>%d</td><td class=tdborder>%d»À</td></tr>\n",
 		     board, fh2fname(&x),  strncmp(x.title,

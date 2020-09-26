@@ -95,7 +95,7 @@ do_cccmail(struct fileheader *x, struct boardmem *brd)
 		"\033[m\033[1m¡¾ ÒÔÏÂÎÄ×Ö×ªÔØ×Ô \033[32m%s \033[m\033[1mµÄÐÅÏä ¡¿\n",
 		currentuser.userid);
 	fprintf(fp2, "[37;1m¡¾ Ô­ÎÄÓÉ [32m%s [37mÓÚ [32m%s [37m·¢±í ¡¿[m\n\n",
-		fh2owner(x) ,Ctime(x->filetime));
+			fh2owner(x) , ytht_ctime(x->filetime));
 	while (1) {
 		retv = fread(buf, 1, sizeof (buf), fp);
 		if (retv <= 0)

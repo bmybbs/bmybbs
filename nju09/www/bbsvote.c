@@ -305,7 +305,7 @@ bbsvote_main()
 				}
 				printf("<p>已经帮您投入投票箱中...</p>");
 				if (!strcmp(board, "SM_Election")) {
-					sprintf(buf, "%s %s %s", currentuser.userid, currentuser.lasthost, Ctime(now_t));
+					sprintf(buf, "%s %s %s", currentuser.userid, currentuser.lasthost, ytht_ctime(now_t));
 					addtofile(MY_BBS_HOME "/vote.log", buf);
 				}
 			}

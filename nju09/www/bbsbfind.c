@@ -88,7 +88,7 @@ bbsbfind_main()
 		
 printf("<td>%s", flag_str(x.accessed));
 		printf("<td>%s", userid_str(x.owner));
-		printf("<td>%12.12s", 4 + Ctime(x.filetime));
+		printf("<td>%12.12s", 4 + ytht_ctime(x.filetime));
 		printf("<td><a href=con?B=%s&F=%s&N=%d&T=%ld>%40.40s </a>\n", board,
 		       fh2fname(&x), num, feditmark(x), x.title);
 		if (total >= 999)
@@ -138,7 +138,7 @@ printf("<td>%s", flag_str(x.accessed));
 			ytht_strsncpy(t_buf, p2s + 1, len - 2 - owner_len - 14 + 1);
 
 			printf("<tr><td><a href=qry?U=%s>%s", o_buf, o_buf);
-			printf("<td>%s",Ctime(filetime));
+			printf("<td>%s", ytht_ctime(filetime));
 
 			printf("<td><a href=con?B=%s&F=%s>%40.40s </a>\n", board, f_buf, t_buf);
 

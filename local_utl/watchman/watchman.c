@@ -46,7 +46,7 @@ main(int argc, char *argv[])
 		shm_utmp->watchman = now_t + time_add;
 		getrandomint(&(shm_utmp->unlock));
 		snprintf(buf, sizeof (buf), "来来来,点卯了!现在是 %s",
-			 Ctime(now_t));
+				 ytht_ctime(now_t));
 	}
 
 	fp = popen("/bin/mail bbs", "w");

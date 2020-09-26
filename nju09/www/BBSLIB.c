@@ -1269,7 +1269,7 @@ post_mail_to_sent_box(char *userid, char *title, char *file,
 	fp2 = fopen(file, "r");
 	fprintf(fp, "收信人: %s (%s)\n", id, nickname);
 	fprintf(fp, "标  题: %s\n", title);
-	fprintf(fp, "发信站: %s (%s)\n", BBSNAME, Ctime(now_t));
+	fprintf(fp, "发信站: %s (%s)\n", BBSNAME, ytht_ctime(now_t));
 	fprintf(fp, "来  源: %s\n\n", ip);
 	if (fp2) {
 		while (1) {
@@ -1326,7 +1326,7 @@ post_mail(char *userid, char *title, char *file, char *id,
 	fp2 = fopen(file, "r");
 	fprintf(fp, "寄信人: %s (%s)\n", id, nickname);
 	fprintf(fp, "标  题: %s\n", title);
-	fprintf(fp, "发信站: %s (%s)\n", BBSNAME, Ctime(now_t));
+	fprintf(fp, "发信站: %s (%s)\n", BBSNAME, ytht_ctime(now_t));
 	fprintf(fp, "来  源: %s\n\n", ip);
 	if (fp2) {
 		while (1) {
@@ -1447,8 +1447,8 @@ post_article_1984(char *board, char *title, char *file, char *id,
 		return -1;
 	fp2 = fopen(file, "r");
 	fprintf(fp,
-		"发信人: %s (%s), 信区: %s\n标  题: %s\n发信站: %s (%24.24s), %s)\n\n",
-		id, nickname, board, title, BBSNAME, Ctime(now_t),
+			"发信人: %s (%s), 信区: %s\n标  题: %s\n发信站: %s (%24.24s), %s)\n\n",
+			id, nickname, board, title, BBSNAME, ytht_ctime(now_t),
 		outgoing ? "转信(" MY_BBS_DOMAIN : "本站(" MY_BBS_DOMAIN);
 	if (fp2 != 0) {
 		while (1) {
@@ -1500,8 +1500,8 @@ post_article(char *board, char *title, char *file, char *id,
 		return -1;
 	fp2 = fopen(file, "r");
 	fprintf(fp,
-		"发信人: %s (%s), 信区: %s\n标  题: %s\n发信站: %s (%24.24s), %s)\n\n",
-		id, nickname, board, title, BBSNAME, Ctime(now_t),
+			"发信人: %s (%s), 信区: %s\n标  题: %s\n发信站: %s (%24.24s), %s)\n\n",
+			id, nickname, board, title, BBSNAME, ytht_ctime(now_t),
 		outgoing ? "转信(" MY_BBS_DOMAIN : "本站(" MY_BBS_DOMAIN);
 	if (fp2 != 0) {
 		while (1) {

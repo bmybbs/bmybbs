@@ -2137,8 +2137,8 @@ m_cancel_1(struct fileheader *fh, char *receiver)
 		}
 		keepoldheader(fp, SKIPHEADER);
 		now = time(0);
-		fprintf(fp, "本文已经于 %s 被 %s 撤回\n", Ctime(now),
-			currentuser.userid);
+		fprintf(fp, "本文已经于 %s 被 %s 撤回\n", ytht_ctime(now),
+				currentuser.userid);
 		ftruncate(fileno(fp), ftell(fp));
 		fclose(fp);
 		return 1;

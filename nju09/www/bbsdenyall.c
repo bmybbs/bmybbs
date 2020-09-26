@@ -26,7 +26,7 @@ bbsdenyall_main()
 		printf("<td><a href=bbsqry?userid=%s>%s</a>", denyuser[i].id,
 		       denyuser[i].id);
 		printf("<td>%s\n", nohtml(denyuser[i].exp));
-		printf("<td>%s\n", Ctime(denyuser[i].free_time) + 4);
+		printf("<td>%s\n", ytht_ctime(denyuser[i].free_time) + 4);
 		printf
 		    ("<td>[<a onclick='return confirm(\"确实解封吗?\")' href=bbsdenydel?board=%s&userid=%s>解封</a>]",
 		     board, denyuser[i].id);

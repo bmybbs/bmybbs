@@ -212,7 +212,7 @@ bbsfoot_main()
 		dt = abs(now_t - w_info->login_start_time) / 60;
 	}
 
-	printf("<span id='bbsfoot_time'>时间[<span class=0011>%16.16s</span>]</span>\n", Ctime(now_t));
+	printf("<span id='bbsfoot_time'>时间[<span class=0011>%16.16s</span>]</span>\n", ytht_ctime(now_t));
 	printf("<span id='bbsfoot_online'>");
 	if (loginok && !isguest){
 		for (i = 0; i < u_info->fnum; i++)

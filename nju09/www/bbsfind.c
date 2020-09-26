@@ -106,7 +106,7 @@ search(char *id, char *pat, char *pat2, char *pat3, int dt)
 				printf
 				    ("<tr><td>%d<td><a href=bbsqry?userid=%s>%s</a>",
 				     j + 1, x[j].owner, x[j].owner);
-				printf("<td>%6.6s", Ctime(x[j].filetime) + 4);
+				printf("<td>%6.6s", ytht_ctime(x[j].filetime) + 4);
 				printf
 				    ("<td><a href=con?B=%s&F=%s&N=%d&T=%lu>%s</a>\n",
 				     board, fh2fname(&x[j]), j + 1,feditmark(x[j]),

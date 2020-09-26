@@ -70,7 +70,7 @@ bbsbkndoc_main()
 					bkn, fh2fname(&x));
 				printf("<tr><td>%d<td>%s<td>%s", start + i, ptr,
 				       userid_str(x.owner));
-				printf("<td>%12.12s", Ctime(x.filetime) + 4);
+				printf("<td>%12.12s", ytht_ctime(x.filetime) + 4);
 				x.title[40] = 0;
 				printf
 				    ("<td><a href=bbsbkncon?board=%s&bkn=%s&file=%s&num=%d>%s%s </a>%s",

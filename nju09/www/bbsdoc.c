@@ -404,9 +404,9 @@ bbsdoc_main()
 					start + i, ptr[0] == 0 ? "&nbsp;" : ptr, userid_str(fh2owner(&x)));
 		}
 		if (!i)
-			printf("<td align=center class=tdborder><NOBR>%12.12s</NOBR></td>", Ctime(x.filetime) + 4);
+			printf("<td align=center class=tdborder><NOBR>%12.12s</NOBR></td>", ytht_ctime(x.filetime) + 4);
 		else
-			printf("<td align=center class=tdborder>%12.12s</td>", Ctime(x.filetime) + 4);
+			printf("<td align=center class=tdborder>%12.12s</td>", ytht_ctime(x.filetime) + 4);
 		x.title[48] = 0;
 		printf("<td class=tdborder ><a href=\"con?B=%s&F=%s&N=%d&T=%ld\" %s>%s%s</a>%s</td>",
 		     board, fh2fname(&x), start + i, feditmark(x), only_for_b,strncmp(x.title, "Re: ", 4) ? "¡ð " : "",
@@ -536,7 +536,7 @@ int top_file(const char *call_type)
 
                 printf("<tr class='doctop'><td class='tdborder doctopword'>ÌáÊ¾</td>\n"
 			           "<td class='tdborder'>%s</td><td class='tduser'>%s</td>",(ptr[0] == ' ' || ptr[0] == 0)? "&nbsp;" : ptr,userid_str(x.owner));
-                printf("<td align=center class='tdborder'>%12.12s</td>", Ctime(x.filetime) + 4);
+                printf("<td align=center class='tdborder'>%12.12s</td>", ytht_ctime(x.filetime) + 4);
                 printf("<td class='tdborder'><a href=con?B=%s&F=%s class=1103>%s%s</a></td>\n",board, title, strncmp(x.title,"Re: ", 4) ? "¡ñ ":" ",void1(titlestr(x.title)));;
                 if(!flag)
                 	printf("<td class='tdborder'>&nbsp;</td><td class='tdborder'>&nbsp;</td></tr>");

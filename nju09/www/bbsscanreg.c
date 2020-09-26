@@ -64,7 +64,7 @@ scanreg_info()
 			printf("<li><a href=bbsscanreg?STEP=1&F=%s>%s</a>", namelist[i]->d_name, namelist[i]->d_name);
 			sprintf(buf, "%s/%s", SCANREGDIR, namelist[i]->d_name);
 			printf(" n=%d", countnumforms(buf));
-			printf(" %s", Ctime(atoi(namelist[i]->d_name + 2)));
+			printf(" %s", ytht_ctime(atoi(namelist[i]->d_name + 2)));
 		}
 		free(namelist[i]);
 	}
@@ -148,8 +148,8 @@ scanreg_readforms()
 		printf("电子邮箱: %s<br>", uinfo.email);
 		printf("连络电话: %s<br>", fdata[5]);
 		printf("毕业学校: %s<br>", fdata[6]);
-		printf("帐号建立日期: %s<br>", Ctime(uinfo.firstlogin));
-		printf("最近光临日期: %s<br>", Ctime(uinfo.lastlogin));
+		printf("帐号建立日期: %s<br>", ytht_ctime(uinfo.firstlogin));
+		printf("最近光临日期: %s<br>", ytht_ctime(uinfo.lastlogin));
 		printf("最近光临机器: %s", uinfo.lasthost);
 		printf("</td><td valign=top>");
 		if (uinfo.userlevel & PERM_LOGINOK) {
@@ -278,7 +278,7 @@ scanreg_done()
 			if ((fout = fopen(buf, "w")) != NULL) {
 				for (i = 0; field[i] != NULL; i++)
 					fprintf(fout, "%s: %s\n", field[i], fdata[i]);
-				fprintf(fout, "Date: %s\n", Ctime(time(NULL)));
+				fprintf(fout, "Date: %s\n", ytht_ctime(time(NULL)));
 				fprintf(fout, "Approved: %s\n", currentuser.userid);
 				fclose(fout);
 			}

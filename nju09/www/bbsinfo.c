@@ -31,8 +31,8 @@ bbsinfo_main()
 	printf
 	    ("居住地址: <input type=text name=address value='%s' size=40 maxlength=40><br>\n",
 	     currentuser.address);
-	printf("帐号建立: %s<br>", Ctime(currentuser.firstlogin));
-	printf("最近光临: %s<br>", Ctime(currentuser.lastlogin));
+	printf("帐号建立: %s<br>", ytht_ctime(currentuser.firstlogin));
+	printf("最近光临: %s<br>", ytht_ctime(currentuser.lastlogin));
 	printf("来源地址: %s<br>", currentuser.lasthost);
 #ifndef POP_CHECK	
 	printf

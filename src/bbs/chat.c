@@ -699,10 +699,10 @@ char *arg;
 	printchatline(msg);
 
 	strcpy(genbuf,
-	       lookupuser.dietime ? Ctime(lookupuser.dietime) :
-	       Ctime(lookupuser.lastlogin));
+		   lookupuser.dietime ? ytht_ctime(lookupuser.dietime) :
+		   ytht_ctime(lookupuser.lastlogin));
 	if (ifinprison(lookupuser.userid)) {
-		strcpy(genbuf, Ctime(lookupuser.lastlogin));
+		strcpy(genbuf, ytht_ctime(lookupuser.lastlogin));
 		sprintf(msg, "在监狱服刑，入狱时间[\033[1m%s\033[m]", genbuf);
 	} else if (lookupuser.dietime) {
 		sprintf(msg,

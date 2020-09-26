@@ -18,7 +18,7 @@ bbsadl_main()
 		no++;
 		printf
 		    ("<tr><td>%d<td><a href=/an/%s.tgz>%s.tgz</a><td>%ld<td>%s\n",
-		     no, brd, brd, file_size(buf), Ctime(file_time(buf)) + 4);
+			 no, brd, brd, file_size(buf), ytht_ctime(file_time(buf)) + 4);
 	}
 	printf("</table>");
 	return 0;

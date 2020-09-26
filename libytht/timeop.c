@@ -3,8 +3,7 @@
 #include <stdio.h>
 #include <time.h>
 
-char *
-Ctime(time_t clock)
+char *ytht_ctime(const time_t clock)
 {
 	char *tmp;
 	char *ptr = ctime(&clock);

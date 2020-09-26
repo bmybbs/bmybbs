@@ -156,8 +156,8 @@ L:	fp = fopen(names, "r");
 		printf("<td class=tdborder>%s</td>", userid_str(id));
 	else
 		printf("<td  class=tdborder> </td>");
-	printf("<td>%6.6s %s</td></tr>", Ctime(file_time(buf)) + 4,
-	       Ctime(file_time(buf)) + 20);
+	printf("<td>%6.6s %s</td></tr>", ytht_ctime(file_time(buf)) + 4,
+		   ytht_ctime(file_time(buf)) + 20);
 
 }
 fclose(fp);

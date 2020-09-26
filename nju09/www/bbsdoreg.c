@@ -222,7 +222,7 @@ bbsdoreg_main()
 	fp = fopen("new_register", "a");
 	if (fp) {
 		fprintf(fp, "usernum: %d, %s\n", getusernum(x.userid) + 1,
-			Ctime(now_t));
+			ytht_ctime(now_t));
 		fprintf(fp, "userid: %s\n", x.userid);
 		fprintf(fp, "realname: %s\n", x.realname);
 		fprintf(fp, "dept: %s\n", dept);
@@ -317,7 +317,7 @@ bbsdoreg_main()
 	newcomer(&x, words);
 
 
-//      sprintf(buf, "%s %-12s %d\n", Ctime(now_t)+4, x.userid, getusernum(x.userid));
+//      sprintf(buf, "%s %-12s %d\n", ytht_ctime(now_t)+4, x.userid, getusernum(x.userid));
 //      f_append("wwwreg.log", buf);
 	sprintf(buf, "%s newaccount %d %s www", x.userid, getusernum(x.userid), fromhost);
 	newtrace(buf);

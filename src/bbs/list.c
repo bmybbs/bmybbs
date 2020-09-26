@@ -1030,7 +1030,7 @@ struct userec *uentp;
 	uleveltochar(permstr, uentp->userlevel);
 	switch (toggle1) {
 	case 0:
-		sprintf(msgstr, "%-.16s", Ctime(uentp->lastlogin));
+		sprintf(msgstr, "%-.16s", ytht_ctime(uentp->lastlogin));
 		break;
 	case 1:
 		sprintf(msgstr, "%-.16s", uentp->lasthost);
@@ -1038,8 +1038,8 @@ struct userec *uentp;
 	case 2:
 	default:
 		sprintf(msgstr, "%-.11s%.4s",
-			Ctime(uentp->firstlogin),
-			Ctime(uentp->firstlogin) + 20);
+				ytht_ctime(uentp->firstlogin),
+				ytht_ctime(uentp->firstlogin) + 20);
 		break;
 	}
 	user_data[i - page] = *uentp;

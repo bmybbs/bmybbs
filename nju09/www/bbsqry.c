@@ -56,7 +56,8 @@ apiqry_main()
 	// ¿ªÊ¼Êä³öÓÃ»§Êı¾İ
 	sstrcat(output, "{\"User\":{");
 	// ÏÔÊ¾»ù±¾Êı¾İ
-	sstrcat(output, "\"UserID\":\"%s\",\"UserNickName\":\"%s\",\"LoginCounts\":%d,\"PostCounts\":%d,\"LastLogin\":\"%s\",\"LastHost\":\"%s\",", x->userid, x->username, x->numlogins, x->numposts,Ctime(x->lastlogin), x->lasthost);
+	sstrcat(output, "\"UserID\":\"%s\",\"UserNickName\":\"%s\",\"LoginCounts\":%d,\"PostCounts\":%d,\"LastLogin\":\"%s\",\"LastHost\":\"%s\",", x->userid, x->username, x->numlogins, x->numposts,
+			ytht_ctime(x->lastlogin), x->lasthost);
 	// ÏÔÊ¾¸öÈËÊı¾İ
 	if(!strcasecmp(x->userid, currentuser.userid)){
 		sstrcat(output, "\"Exp\":%d,\"ExpLevel\":\"%s\",\"Perf\":%d,\"PerfLevel\":\"%s\"",countexp(x), charexp(countexp(x)), countperf(x), cperf(countperf(x)));
@@ -121,7 +122,7 @@ apiqry_main()
 	{
 		sstrcat(output, "\"null\",");
 		if( x->lastlogout != 0 )
-			sstrcat(output, "\"LastLogout\":\"%s\",",Ctime(x->lastlogout));
+			sstrcat(output, "\"LastLogout\":\"%s\",", ytht_ctime(x->lastlogout));
 		else
 			sstrcat(output, "\"LastLogout\":null,");
 	}
@@ -228,7 +229,7 @@ bbsqry_main()
 	show_special_web(x->userid);//add by wjbta@bmy  Ôö¼Óid±êÊ¶
 	printf("\n");
 	hprintf("ÉÏ´ÎÔÚ [[1;32m%s[m] ´Ó [[1;32m%s[m] µ½±¾Õ¾Ò»ÓÎ¡£\n",
-		Ctime(x->lastlogin), x->lasthost);
+			ytht_ctime(x->lastlogin), x->lasthost);
 	mails(userid, &tmp2);
 	hprintf("ĞÅÏä£º[[1;32m%s[m]£¬", tmp2 ? "¡Ñ" : "  ");
 	if (!strcasecmp(x->userid, currentuser.userid)) {
@@ -285,8 +286,8 @@ bbsqry_main()
 	}
 	if (num == 0) {
 		hprintf("Ä¿Ç°²»ÔÚÕ¾ÉÏ, ÉÏ´ÎÀëÕ¾Ê±¼ä [[1;32m%s[m]\n\n",
-			x->lastlogout ? Ctime(x->lastlogout) :
-			"ÒòÔÚÏßÉÏ»ò²»Õı³£¶ÏÏß²»Ïê");
+				x->lastlogout ? ytht_ctime(x->lastlogout) :
+				"ÒòÔÚÏßÉÏ»ò²»Õı³£¶ÏÏß²»Ïê");
 	}
 	printf("\n");
 	printf("</pre><table width=100%%><tr><td class=f2>");

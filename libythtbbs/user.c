@@ -316,7 +316,7 @@ logattempt(char *user, char *from, char *zone, time_t time)
 	sprintf(buf, "system passerr %s", from);
 	newtrace(buf);
 	snprintf(buf, 256, "%-12.12s  %-30s %-16s %-6s\n",
-		 user, Ctime(time), from, zone);
+			 user, ytht_ctime(time), from, zone);
 	len = strlen(buf);
 	if ((fd = open(MY_BBS_HOME "/" BADLOGINFILE, O_WRONLY | O_CREAT | O_APPEND, 0644)) >= 0) {
 		write(fd, buf, len);

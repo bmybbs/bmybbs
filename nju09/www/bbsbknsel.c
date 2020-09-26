@@ -49,10 +49,10 @@ bbsbknsel_main()
 				       start + i, x.boardname);
 				if (!i)
 					printf("<td><nobr>%12.12s</td>",
-					       Ctime(x.filetime) + 4);
+						   ytht_ctime(x.filetime) + 4);
 				else
 					printf("<td>%12.12s</td>",
-					       Ctime(x.filetime) + 4);
+						   ytht_ctime(x.filetime) + 4);
 				printf
 				    ("<td><a href=bbsbkndoc?board=%s&bkn=%s&num=%d>¡ð %s </a></td></tr>",
 				     board, bknh2bknname(&x), start + i - 1,

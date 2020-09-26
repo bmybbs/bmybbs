@@ -123,7 +123,7 @@ bbstdoc_main()
 					"<td class=tduser>%s</td>",		// 作者
 			       sum, flag_str(data[i].accessed)[0] == ' ' ? "&nbsp;" : flag_str(data[i].accessed),
 			       userid_str(fh2owner(&data[i])));
-			printf("<td align=center class=tdborder>%6.6s</td>", Ctime(data[i].filetime) + 4); // 日期
+			printf("<td align=center class=tdborder>%6.6s</td>", ytht_ctime(data[i].filetime) + 4); // 日期
 			printf
 			    ("<td class=tdborder><a href=bbstcon?board=%s&start=%d&th=%ld %s>○ %s </a></td><td class=tdborder>%s</td>\n",
 			     board, i, data[i].thread, only_for_b,void1(titlestr(data[i].title)),

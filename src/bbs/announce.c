@@ -406,7 +406,7 @@ int nomsg;
 		    ("\033[1;36m───────────────────────────────────────\033[0m\n",
 		     fpd);
 		fprintf(fpd, "\033[0;44;37m 作者 %-14s 时间 %-52s\033[0m\n",
-			fh2owner(fileinfo), Ctime(fileinfo->filetime));
+				fh2owner(fileinfo), ytht_ctime(fileinfo->filetime));
 		fputs
 		    ("\033[1;36m───────────────────────────────────────\033[0m\n",
 		     fpd);

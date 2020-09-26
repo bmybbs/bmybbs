@@ -279,10 +279,10 @@ char q_id[IDLEN + 2];
 	show_special(lookupuser.userid); //add by wjbta@bmy
 	strcpy(planid, lookupuser.userid);
 	strcpy(genbuf,
-	       lookupuser.dietime ? Ctime(lookupuser.dietime) :
-	       Ctime(lookupuser.lastlogin));
+		   lookupuser.dietime ? ytht_ctime(lookupuser.dietime) :
+		   ytht_ctime(lookupuser.lastlogin));
 	if (ifinprison(lookupuser.userid)) {
-		strcpy(genbuf, Ctime(lookupuser.lastlogin));
+		strcpy(genbuf, ytht_ctime(lookupuser.lastlogin));
 		prints("\nÔÚ¼àÓü·şĞÌ£¬ÉÏ´Î·Å·çÊ±¼ä[\033[1m%s\033[m]\n", genbuf);
 		if (uinfo.mode != LUSERS && uinfo.mode != LAUSERS
 		    && uinfo.mode != FRIEND && uinfo.mode != GMENU)
@@ -308,15 +308,16 @@ char q_id[IDLEN + 2];
 //	show_special(lookupuser.userid); //add by wjbta@bmy
 	if(HAS_PERM(PERM_SYSOP | PERM_SEECLOAK)){		//add by mintbaggio@BMY
 		if(lookupuser.userlevel&PERM_CLOAK)
-			strcpy(genbuf, (lookupuser.lastlogout>=lookupuser.lastlogin)? (user_isonline(lookupuser.userid)?"ÒòÔÚÏßÉÏ»ò²»Õı³£¶ÏÏß²»Ïê":Ctime(lookupuser.lastlogout)) : "ÒòÔÚÏßÉÏ»ò²»Õı³£¶ÏÏß²»Ïê");
+			strcpy(genbuf, (lookupuser.lastlogout>=lookupuser.lastlogin) ? (user_isonline(lookupuser.userid)? "ÒòÔÚÏßÉÏ»ò²»Õı³£¶ÏÏß²»Ïê": ytht_ctime(
+					lookupuser.lastlogout)) : "ÒòÔÚÏßÉÏ»ò²»Õı³£¶ÏÏß²»Ïê");
 		else
-			strcpy(genbuf, (lookupuser.lastlogout>=lookupuser.lastlogin) ? Ctime(lookupuser.lastlogout) : "ÒòÔÚÏßÉÏ»ò²»Õı³£¶ÏÏß²»Ïê");
+			strcpy(genbuf, (lookupuser.lastlogout>=lookupuser.lastlogin) ? ytht_ctime(lookupuser.lastlogout) : "ÒòÔÚÏßÉÏ»ò²»Õı³£¶ÏÏß²»Ïê");
 	}
 	else
-		strcpy(genbuf, (lookupuser.lastlogout>=lookupuser.lastlogin) ? Ctime(lookupuser.lastlogout) : "ÒòÔÚÏßÉÏ»ò²»Õı³£¶ÏÏß²»Ïê");
+		strcpy(genbuf, (lookupuser.lastlogout>=lookupuser.lastlogin) ? ytht_ctime(lookupuser.lastlogout) : "ÒòÔÚÏßÉÏ»ò²»Õı³£¶ÏÏß²»Ïê");
 /*	if(testonline(lookupuser.userid))
 		strcpy(genbuf, "ÒòÔÚÏßÉÏ»ò²»Õı³£¶ÏÏß²»Ïê");
-	else	strcpy(genbuf, Ctime(lookupuser.lastlogout));
+	else	strcpy(genbuf, ytht_ctime(lookupuser.lastlogout));
 */
 	prints
 	    ("ÀëÕ¾Ê±¼ä£º[\033[1;36m%s\033[m] ĞÅÏä£º[[1;5m%2s[m]£¬ÉúÃüÁ¦£º[[1;32m%d[m] ÍøÁä£º[[1;32m%d[m]Ìì¡£\n",
@@ -446,10 +447,10 @@ if (HAS_PERM(PERM_ACCOUNTS))
 			show_special(lookupuser.userid); //add by wjbta@bmy
 			strcpy(planid, lookupuser.userid);
 			strcpy(genbuf,
-			       lookupuser.dietime ? Ctime(lookupuser.dietime) :
-			       Ctime(lookupuser.lastlogin));
+				   lookupuser.dietime ? ytht_ctime(lookupuser.dietime) :
+				   ytht_ctime(lookupuser.lastlogin));
 			if (ifinprison(lookupuser.userid)) {
-				strcpy(genbuf, Ctime(lookupuser.lastlogin));
+				strcpy(genbuf, ytht_ctime(lookupuser.lastlogin));
 				prints("\nÔÚ¼àÓü·şĞÌ£¬ÉÏ´Î·Å·çÊ±¼ä[\033[1m%s\033[m]\n", genbuf);
 				if (uinfo.mode != LUSERS && uinfo.mode != LAUSERS
 				    && uinfo.mode != FRIEND && uinfo.mode != GMENU)
@@ -471,12 +472,13 @@ if (HAS_PERM(PERM_ACCOUNTS))
 				genbuf, (lookupuser.lasthost[0] =='\0' ? "(²»Ïê)" : lookupuser.lasthost));//add for displaying exp type rbb@bmy
 			if(HAS_PERM(PERM_SYSOP | PERM_SEECLOAK)){		//add by mintbaggio@BMY
 				if(lookupuser.userlevel&PERM_CLOAK)
-					strcpy(genbuf, (lookupuser.lastlogout>=lookupuser.lastlogin)? (user_isonline(lookupuser.userid)?"ÒòÔÚÏßÉÏ»ò²»Õı³£¶ÏÏß²»Ïê":Ctime(lookupuser.lastlogout)) : "ÒòÔÚÏßÉÏ»ò²»Õı³£¶ÏÏß²»Ïê");
+					strcpy(genbuf, (lookupuser.lastlogout>=lookupuser.lastlogin) ? (user_isonline(lookupuser.userid)? "ÒòÔÚÏßÉÏ»ò²»Õı³£¶ÏÏß²»Ïê": ytht_ctime(
+							lookupuser.lastlogout)) : "ÒòÔÚÏßÉÏ»ò²»Õı³£¶ÏÏß²»Ïê");
 				else
-					strcpy(genbuf, (lookupuser.lastlogout>=lookupuser.lastlogin) ? Ctime(lookupuser.lastlogout) : "ÒòÔÚÏßÉÏ»ò²»Õı³£¶ÏÏß²»Ïê");
+					strcpy(genbuf, (lookupuser.lastlogout>=lookupuser.lastlogin) ? ytht_ctime(lookupuser.lastlogout) : "ÒòÔÚÏßÉÏ»ò²»Õı³£¶ÏÏß²»Ïê");
 			}
 			else
-				strcpy(genbuf, (lookupuser.lastlogout>=lookupuser.lastlogin) ? Ctime(lookupuser.lastlogout) : "ÒòÔÚÏßÉÏ»ò²»Õı³£¶ÏÏß²»Ïê");
+				strcpy(genbuf, (lookupuser.lastlogout>=lookupuser.lastlogin) ? ytht_ctime(lookupuser.lastlogout) : "ÒòÔÚÏßÉÏ»ò²»Õı³£¶ÏÏß²»Ïê");
 			prints
 			    ("ÀëÕ¾Ê±¼ä£º[\033[1;36m%s\033[m] ĞÅÏä£º[[1;5m%2s[m]£¬ÉúÃüÁ¦£º[[1;32m%d[m] ÍøÁä£º[[1;32m%d[m]Ìì¡£\n",
 			     genbuf, (check_query_mail(qry_mail_dir) == 1) ? "¡Ñ" : "  ",

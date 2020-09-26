@@ -806,7 +806,7 @@ user_login()
 			substitute_record(PASSFILE, &currentuser, sizeof (struct userec), getuser(currentuser.userid));
 		}
 		*/
-		prints("☆ 上次连线时间为 \033[33m%s\033[m", Ctime(currentuser.lastlogin));
+		prints("☆ 上次连线时间为 \033[33m%s\033[m", ytht_ctime(currentuser.lastlogin));
 		igetkey();
 		if(DEFINE(DEF_NEWSTOP10))//add by bjgyt
 			show_help("0Announce/bbslist/newsday");

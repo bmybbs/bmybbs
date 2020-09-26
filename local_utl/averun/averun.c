@@ -76,7 +76,7 @@ draw_pic()
 	fprintf(fp,
 		"[1;37m   0[36m©¸¡ª¡ª[37m%sÆ½¾ù¸ºÔØÈËÊýÍ³¼Æ  [36m¡ª¡ª",
 		sid);
-	fprintf(fp, "¡ª¡ª[37m %s [36m¡ª¡ª¡ª©¼[m\n", Ctime(now));
+	fprintf(fp, "¡ª¡ª[37m %s [36m¡ª¡ª¡ª©¼[m\n", ytht_ctime(now));
 	fprintf(fp,
 		"[1;36m      00 01 02 03 04 05 06 07 08 09 10 11 [31m12 13 14");
 	fprintf(fp, " 15 16 17 18 19 20 21 22 23[m\n\n");

@@ -8,7 +8,7 @@ bbsnotepad_main()
 	html_header(1);
 	check_msg();
 	changemode(NOTEPAD);
-	printf("%s -- 留言版 [日期: %6.6s]<hr>\n", BBSNAME, Ctime(now_t) + 4);
+	printf("%s -- 留言版 [日期: %6.6s]<hr>\n", BBSNAME, ytht_ctime(now_t) + 4);
 	fp = fopen("etc/notepad", "r");
 	if (fp == 0) {
 		printf("今天的留言版为空");
