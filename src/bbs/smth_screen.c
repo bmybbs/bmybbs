@@ -884,6 +884,7 @@ rscroll()
 	slp->lchanged = 1;
 }
 
+/*
 void
 noscroll()
 {
@@ -895,7 +896,7 @@ noscroll()
 	for (i = 0; i < scr_lns; i++)
 		memcpy(big_picture + i, bp + i, sizeof (struct screenline));
 	roll = 0;
-}
+}*/
 
 void
 saveline(int line, int mode, char *buffer)
