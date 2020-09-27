@@ -31,10 +31,10 @@ struct FILESHM {
 	time_t update;
 };
 
-struct FILESHM *welcomeshm = NULL;
-struct FILESHM *goodbyeshm = NULL;
-struct FILESHM *issueshm = NULL;
-struct FILESHM *endlineshm = NULL;
+static struct FILESHM *welcomeshm = NULL;
+static struct FILESHM *goodbyeshm = NULL;
+static struct FILESHM *issueshm   = NULL;
+static struct FILESHM *endlineshm = NULL;
 
 static void show_shmfile(struct FILESHM *fh);
 
