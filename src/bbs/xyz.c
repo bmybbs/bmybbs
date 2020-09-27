@@ -2002,9 +2002,7 @@ s_checkid()
 	return 1;
 }
 
-char *
-directfile(char *fpath, char *direct, char *filename)
-{
+char *directfile(char *fpath, char *direct, char *filename) {
 	char *t;
 	strcpy(fpath, direct);
 	if ((t = strrchr(fpath, '/')) == NULL)
