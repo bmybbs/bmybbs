@@ -3,7 +3,7 @@
 #include <sys/shm.h>
 
 void *
-try_get_shm(int key, int size, int flag)
+try_get_shm(int key, size_t size, int flag)
 {
 	int id;
 	void *ptr;
@@ -18,7 +18,7 @@ try_get_shm(int key, int size, int flag)
 }
 
 void *
-get_shm(int key, int size)
+get_shm(int key, size_t size)
 {
 	void *ptr;
 	ptr = try_get_shm(key, size, IPC_CREAT | IPC_EXCL | 0600);
