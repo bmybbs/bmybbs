@@ -108,9 +108,7 @@ void (*resolv_file) (char *);
 	return shmptr;
 }
 
-void
-conv_init()
-{
+void conv_init() {
 	BtoG =
 	    attach_shm2(CONVTABLE_SHMKEY, GtoB_count * 2 + BtoG_count * 2,
 			resolv_file);
@@ -206,20 +204,10 @@ void (*dbcvrt) ();		/* 2-byte conversion func for a hanzi */
 	return (s);
 }
 
-char *
-gb2big(s, plen, inst)
-char *s;
-int *plen;
-int inst;
-{
+char *gb2big(char *s, int *plen, int inst) {
 	return (hzconvert(s, plen, &gb2big_savec[inst], (void *) g2b));
 }
 
-char *
-big2gb(s, plen, inst)
-char *s;
-int *plen;
-int inst;
-{
+char *big2gb(char *s, int *plen, int inst) {
 	return (hzconvert(s, plen, &big2gb_savec[inst], (void *) b2g));
 }
