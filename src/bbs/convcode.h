@@ -1,5 +1,6 @@
 #ifndef BMYBBS_CONVCODE_H
 #define BMYBBS_CONVCODE_H
+extern int g_convcode;
 
 void switch_code(void);
 void conv_init(void);

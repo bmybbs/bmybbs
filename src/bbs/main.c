@@ -52,7 +52,6 @@ char ULIST[STRLEN];
 int utmpent = -1;
 time_t login_start_time;
 int showansi = 1;
-int g_convcode = 0;
 
 char GoodWish[20][STRLEN - 3];
 int WishNum = 0;

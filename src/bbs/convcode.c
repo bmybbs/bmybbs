@@ -32,7 +32,7 @@ static char gb2big_savec[2];
 static char big2gb_savec[2];
 
 #ifndef PTY_EXEC
-extern int g_convcode;
+int g_convcode = 0;
 
 static void resolv_file(char *buf);
 static void *attach_shm2(int shmkey, int shmsize, void (*resolv_file) (char *));
