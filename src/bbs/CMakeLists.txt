@@ -65,7 +65,7 @@ endif(NOT EXISTS ${PROTO_FILE})
 
 if(SHOULD_GENERATE_PROTO)
 	execute_process(
-		COMMAND bash -c "echo \"#include \\\"bbs.h\\\"\" > proto.h ; cproto `echo \"${SRC}\" | sed 's/;/ /g'` -DBBSMAIN -DLINUX -DBACK_DELETE_RANGE -I ../../include -I ../../ythtlib -I ../../libythtbbs >> proto.h"
+		COMMAND bash -c "echo \"#include \\\"bbs.h\\\"\" > proto.h ; cproto `echo \"${SRC}\" | sed 's/;/ /g'` -DBBSMAIN -DLINUX -DBACK_DELETE_RANGE -I ../../include >> proto.h"
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 	)
 	message(STATUS "${PROTO_FILE} has been generated successfully")

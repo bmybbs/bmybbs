@@ -151,7 +151,7 @@ endif(NOT EXISTS ${PROTO_FILE})
 
 if(SHOULD_GENERATE_PROTO)
 	execute_process(
-		COMMAND bash -c "cproto -DMAKE_PROTO `echo \"${SRC}\" | sed 's/;/ /g'` -I ../../include -I ../../ythtlib -I ../../libythtbbs > proto.h"
+		COMMAND bash -c "cproto -DMAKE_PROTO `echo \"${SRC}\" | sed 's/;/ /g'` -I ../../include > proto.h"
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 	)
 	message(STATUS "${PROTO_FILE} has been generated successfully")
