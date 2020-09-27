@@ -25,7 +25,7 @@
 #define	GtoB_bad1 0xa1
 #define	GtoB_bad2 0xbc
 
-unsigned char *GtoB, *BtoG;
+static unsigned char *GtoB, *BtoG;
 #define GtoB_count 7614
 #define BtoG_count 13973
 static char gb2big_savec[2];
