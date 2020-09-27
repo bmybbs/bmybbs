@@ -254,36 +254,23 @@ extern int t_lines, t_realcols,t_columns;    /* Screen size / width */
 extern struct userec lookupuser ; /* Used when searching for other user info */
 
 extern int         nettyNN;
-extern char netty_path[] ;
-extern char netty_board[] ;
 extern char currboard[] ;       /* name of currently selected board */
-extern struct bm * currBM[] ;          /* BM of currently selected board */
-
 extern int selboard ;           /* THis flag is true if above is active */
 
 extern char genbuf[1024] ;      /* generally used global buffer */
 
 extern jmp_buf byebye ;        /* Used for exception condition like I/O error*/
 
-extern struct commands * xyzlist[] ;   /* These are command lists for all the */
-extern struct commands * talklist[] ;  /* sub-menus */
-extern struct commands * maillist[] ;
-extern struct commands * dellist[] ;
-extern struct commands * maintlist[] ;
-
 extern char save_title[] ;    /* These are used by the editor when inserting */
 extern char save_filename[] ; /* header information */
 extern int in_mail ;
-extern int dumb_term ;
 extern int showansi;
-
-extern int t_big5;         //added by zhoulin from the furture
 extern sigjmp_buf bus_jump;
 /*#endif*/ /* !BBSIRC */
 
 /*SREAD Define*/
 #define SR_BMBASE       (10)
-#define SR_BMDEL	(11)
+#define SR_BMDEL        (11)
 #define SR_BMMARK       (12)
 #define SR_BMDIGEST     (13)
 #define SR_BMIMPORT     (14)
