@@ -1,0 +1,4 @@
+#ifndef BMYBBS_ADDRESSBOOK_H
+#define BMYBBS_ADDRESSBOOK_H
+int addressbook();
+#endif //BMYBBS_ADDRESSBOOK_H
