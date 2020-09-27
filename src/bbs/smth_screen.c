@@ -148,9 +148,7 @@ init_screen(int slns, int scols)
 	free(oldp);
 }
 
-void
-clear()
-{
+void clear() {
 	int i;
 	struct screenline *slp;
 
@@ -490,9 +488,7 @@ clrtoeol()
 	}
 }
 
-void
-clrtobot()
-{
+void clrtobot() {
 	int i;
 	clrtoeol();
 	for (i = cur_ln + 1; i < scr_lns; i++)

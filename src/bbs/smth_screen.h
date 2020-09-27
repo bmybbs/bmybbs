@@ -25,4 +25,6 @@
 
 void prints(char *format, ...);
 void move(int y, int x);
+void clrtobot(void);
+void clear(void);
 #endif
