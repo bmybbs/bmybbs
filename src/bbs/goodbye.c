@@ -119,7 +119,8 @@ void showstuff(char *buf) {
 	tmpnum = countperf(&currentuser);
 	sprintf(perf, "%d", tmpnum);
 	strcpy(ccperf, cperf(tmpnum));
-	sprintf(alltime, "%ldĞ¡Ê±%ld·ÖÖÓ", (long int) (currentuser.stay / 3600),
+	// %ldå°æ—¶%ldxåˆ†é’Ÿ
+	sprintf(alltime, "%ld\xD0\xA1\xCA\xB1%ld\xB7\xD6\xD6\xD3", (long int) (currentuser.stay / 3600),
 		(long int) ((currentuser.stay / 60) % 60));
 	sprintf(rgtday, "%24.24s", ctime(&currentuser.firstlogin));
 	sprintf(lasttime, "%24.24s", ctime(&currentuser.lastlogin));
