@@ -63,10 +63,7 @@ term_init()
 	strncpy(endstandout, "\033[m", endstandoutlen);
 }
 
-void
-do_move(destcol, destline, outc)
-int destcol, destline;
-int (*outc) ();
+void do_move(int destcol, int destline, int (*outc) ())
 {
 	char buf[30];
 	char *p;
