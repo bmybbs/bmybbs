@@ -1,3 +1,5 @@
+#ifndef BMYBBS_BBS_BBSTELNET
+#define BMYBBS_BBS_BBSTELNET
 extern char clearbuf[];
 extern char cleolbuf[];
 extern char save_title[STRLEN];
@@ -81,3 +83,4 @@ extern int readingthread;
 extern int inBBSNET;
 #define ZMODEM_RATE 5000
 #define LINELEN 256
+#endif
