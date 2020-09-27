@@ -3269,7 +3269,8 @@ NHsprintf(char *s, char *s0)
 {
 	char ansibuf[80], buf2[80];
 	char *tmp;
-	int c, bold, m, i, len, lsp = -1;
+	int bold, m, i, len, lsp = -1;
+	char c;
 	len = 0;
 	bold = 0;
 	for (i = 0; (c = s0[i]); i++) {
