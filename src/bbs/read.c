@@ -208,15 +208,7 @@ doquickview(int i)
 			  quickviewdata.currdirect);
 }
 
-void
-i_read(cmdmode, direct, dotitle, doentry, rcmdlist, ssize)
-int cmdmode;
-char *direct;
-int (*dotitle) ();
-char *(*doentry) (int, void *, char *);
-const struct one_key *rcmdlist;
-int ssize;
-{
+void i_read(int cmdmode, char *direct, int (*dotitle) (), char *(*doentry) (int, void *, char *), const struct one_key *rcmdlist, int ssize) {
 	extern int talkrequest;
 	extern int friendflag;
 	extern time_t login_start_time;
