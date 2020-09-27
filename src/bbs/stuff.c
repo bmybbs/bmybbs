@@ -72,9 +72,7 @@ pressanykey()
 	return 0;
 }
 
-int
-pressreturn()
-{
+int pressreturn() {
 	extern int showansi;
 	char buf[3];
 
