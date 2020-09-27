@@ -23,6 +23,7 @@
 #ifndef __BBS_STRUCT_H
 #define __BBS_STRUCT_H
 #include "config.h"
+#include "ythtbbs/boardrc.h"
 
 /**
  * INET6_ADDRSTRLEN 46 longest: 0fff:1fff:2fff:3fff:4fff:5fff:255.255.255.255
@@ -31,6 +32,7 @@
 #define BMY_IPV6_LEN (40)
 #define MAXFRIENDS (200)
 #define MAXREJECTS (32)
+#define BM_LEN 60
 
 struct wwwsession {
 	unsigned char used:1, show_reg:1, att_mode:1, ipmask:4, doc_mode:1;
@@ -94,37 +96,6 @@ struct user_info {		/* Structure used in UTMP file */
 	struct wwwsession wwwinfo;
 	struct onebrc brc;
 	char user_state_temp[16];  //add by leoncom
-};
-
-#define BM_LEN 60
-struct oldboardheader {
-	char filename[STRLEN];
-//	int stocknum;
-//	int score;
-//	int clubnum;
-//	int total;
-//	int lastpost;
-	char BM[BM_LEN - 1];
-	char flag;
-	char title[STRLEN];
-	unsigned level;
-//	short inboard;
-	unsigned char unused[10];
-};
-
-struct oldfileheader {		/* This structure is used to hold data in */
-	char filename[STRLEN];	/* the DIR files */
-	char owner[STRLEN];
-//	time_t edittime;
-//	char unused[3];
-//	char realauthor[IDLEN + 1];
-	char title[STRLEN];
-//	unsigned char star_avg:3, hasvoted:5;
-//	unsigned char sizebyte;
-//	short viewtime;
-//add follow one line
-        unsigned level;
-	unsigned char accessed[12];	/* struct size = 256 bytes */
 };
 
 struct one_key {		/* Used to pass commands to the readmenu */
