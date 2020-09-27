@@ -45,26 +45,21 @@ int term_convert;
 queue_tl qneti, qneto;
 #endif
 
-void
-init_tty()
-{
+void init_tty(void) {
 #ifdef CAN_EXEC
 	max_timeout = 0;
 	tmachine_init(0);
 #endif
 }
 
-void
-term_init()
-{
+void term_init(void) {
 	strncpy(clearbuf, "\033[H\033[J", clearbuflen);
 	strncpy(cleolbuf, "\033[K", cleolbuflen);
 	strncpy(strtstandout, "\033[7m", strtstandoutlen);
 	strncpy(endstandout, "\033[m", endstandoutlen);
 }
 
-void do_move(int destcol, int destline, int (*outc) ())
-{
+void do_move(int destcol, int destline, int (*outc) ()) {
 	char buf[30];
 	char *p;
 	sprintf(buf, "\033[%d;%dH", destline + 1, destcol + 1);
