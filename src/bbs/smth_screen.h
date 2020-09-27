@@ -22,9 +22,24 @@
 */
 #ifndef BMYBBS_BBS_SMTH_SCREEN
 #define BMYBBS_BBS_SMTH_SCREEN
-
-void prints(char *format, ...);
-void move(int y, int x);
-void clrtobot(void);
+void resetcolor(void);
+int num_noans_chr(char *str);
 void clear(void);
+void initscr(void);
+void refresh(void);
+void redoscr(void);
+void move(int y, int x);
+void getyx(int *y, int *x);
+void clear_whole_line(int i);
+void clrtoeol(void);
+void clrtobot(void);
+void outc(unsigned char c);
+void outns(const char *str, int n);
+void outs(const char *str);
+void prints(char *format, ...);
+void scroll(void);
+void rscroll(void);
+void saveline(int line, int mode, char *buffer);
+void do_naws(int ln, int col);
+void show_message(char msg[]);
 #endif
