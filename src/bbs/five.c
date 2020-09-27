@@ -3,7 +3,6 @@
 /*  成大电机88级                           */
 
 #include "bbs.h"
-#include "screen.h"
 #include <sys/socket.h>
 #define black 1
 #define white 2
