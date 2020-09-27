@@ -27,6 +27,25 @@
 #include <sys/param.h>
 #include <stdarg.h>
 
+/* Maximum Screen width in chars */
+/*#define LINELEN (220) */
+#include "bbstelnet.h"
+//#define SCREEN_MODIFIED 1
+#define SCREEN_BRIGHT 2
+#define SCREEN_LINE 4
+#define SCREEN_BLINK 8
+#define SCREEN_BACK 16
+//#define SCREEN_NOTMOD 30
+//#define SCREEN_ALL 31
+
+struct screenline {
+	unsigned char data[LINELEN];
+	unsigned char mode[LINELEN];
+	unsigned char color[LINELEN];
+	unsigned char changed[LINELEN];
+	int lchanged;
+};
+
 extern void io_output(const char *s, int len);
 extern void ochar(int c);
 
@@ -430,8 +449,7 @@ redoscr()
 	refresh();
 }
 
-void
-move(int y, int x)
+void move(int y, int x)
 {
 	cur_col = x /*+c_shift(y,x) */ ;
 	cur_ln = y;
@@ -731,8 +749,7 @@ int dec[] =
 	1
 };
 
-void
-prints(char *format, ...)
+void prints(char *format, ...)
 {
 	va_list ap;
 	char *fmt;
