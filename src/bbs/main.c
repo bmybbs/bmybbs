@@ -1280,9 +1280,7 @@ nowishfile:
 }
 
 /*ReWrite by SmallPig*/
-void
-showtitle(title, mid)
-char *title, *mid;
+void showtitle(char *title, char *mid)
 {
 	char buf[STRLEN], *note;
 	int spc1, spc2;
