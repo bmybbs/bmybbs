@@ -19,21 +19,18 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "bbs.h"
+#include <string.h>
+#include <stdio.h>
 
-#include <arpa/telnet.h>
+static const int clearbuflen = 6;
+static const int strtstandoutlen = 4;
+static const int endstandoutlen = 3;
+static const int cleolbuflen = 3;
 
-int clearbuflen = 6;
-char clearbuf[6];
-
-int cleolbuflen = 3;
-char cleolbuf[3];
-
-int strtstandoutlen = 4;
-char strtstandout[4];
-
-int endstandoutlen = 3;
-char endstandout[3];
+static char cleolbuf[clearbuflen];
+static char clearbuf[clearbuflen];
+static char strtstandout[clearbuflen];
+static char endstandout[clearbuflen];
 
 int t_lines = 24;
 int t_columns = 80;
