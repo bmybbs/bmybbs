@@ -411,10 +411,7 @@ int cwnum, key, pos;
 	return num;
 }
 
-int
-usercomplete(prompt, data)
-char *prompt, *data;
-{
+int usercomplete(char *prompt, char *data) {
 	char *u_namearray();
 	char *cwbuf, *cwlist, *temp;
 	int cwnum, x, y, origx, origy;
