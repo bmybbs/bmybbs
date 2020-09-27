@@ -1138,9 +1138,7 @@ char *argv[];
 }
 
 int refscreen = NA;
-int
-egetch()
-{
+int egetch(void) {
 	int rval;
 	check_calltime();
 	if (talkrequest) {
