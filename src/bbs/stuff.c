@@ -41,10 +41,7 @@ const char *fname;
 	return (stat(fname, &st) == 0 && S_ISREG(st.st_mode));
 }
 
-int
-dashd(fname)
-char *fname;
-{
+int dashd(char *fname) {
 	struct stat st;
 
 	return (stat(fname, &st) == 0 && S_ISDIR(st.st_mode));
