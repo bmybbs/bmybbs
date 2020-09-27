@@ -222,8 +222,7 @@ char *bname;
 	return NULL;
 }
 
-int
-updatelastpost(char *board)
+int updatelastpost(char *board)
 {
 	struct boardmem *bptr;
 	bptr = getbcache(board);
