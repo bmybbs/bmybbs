@@ -3,4 +3,5 @@
 int dashf(const char *fname);
 int dashd(char *fname);
 int pressreturn(void);
+int pressanykey(void);
 #endif //BMYBBS_STUFF_H

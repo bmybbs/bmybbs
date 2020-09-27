@@ -53,9 +53,7 @@ char *fname;
 	return (lstat(fname, &st) == 0 && S_ISLNK(st.st_mode));
 }
 
-int
-pressanykey()
-{
+int pressanykey() {
 	extern int showansi;
 
 	showansi = 1;
