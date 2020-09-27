@@ -926,11 +926,7 @@ mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
 	}
 }
 
-int
-ansimore(filename, promptend)
-char *filename;
-int promptend;
-{
+int ansimore(char *filename, int promptend) {
 	int ch;
 
 	clear();
