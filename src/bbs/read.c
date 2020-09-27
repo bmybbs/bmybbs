@@ -1125,11 +1125,7 @@ char *title;
 }
 
 /*Add by SmallPig*/
-int
-sread(passonly, readfirst, pnum, auser, ptitle)
-int passonly, readfirst, auser, pnum;
-struct fileheader *ptitle;
-{
+int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *ptitle) {
 	struct keeploc *locmem;
 	int rem_top, rem_crs;	/* youzi 1997.7.7 */
 	extern int readingthread;
