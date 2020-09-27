@@ -38,12 +38,7 @@ struct FILESHM *endlineshm = NULL;
 
 static void show_shmfile(struct FILESHM *fh);
 
-int
-fill_shmfile(mode, fname, shmkey)
-int mode;
-char *fname;
-int shmkey;
-{
+int fill_shmfile(int mode, char *fname, int shmkey) {
 	FILE *fffd;
 	char *ptr;
 	char buf[FILE_BUFSIZE];
@@ -120,10 +115,7 @@ int shmkey;
 	return 1;
 }
 
-static void
-show_shmfile(fh)
-struct FILESHM *fh;
-{
+static void show_shmfile(struct FILESHM *fh) {
 	int i;
 	char buf[FILE_BUFSIZE];
 
@@ -133,9 +125,7 @@ struct FILESHM *fh;
 	}
 }
 
-void
-show_goodbyeshm()
-{
+void show_goodbyeshm() {
 	int logouts;
 
 	logouts = goodbyeshm[0].max;
@@ -145,9 +135,7 @@ show_goodbyeshm()
 		       ((logouts <= 1) ? 1 : logouts))]);
 }
 
-void
-show_welcomeshm()
-{
+void show_welcomeshm() {
 	int welcomes;
 
 	welcomes = welcomeshm[0].max;
@@ -169,9 +157,7 @@ show_issue()
 }
 #endif
 
-int
-show_endline()
-{
+int show_endline() {
 	static int i = 0;
 	char buf[FILE_BUFSIZE + 10];
 	int y, x;
