@@ -192,10 +192,7 @@ loaduserkeys()
 	loadkeys(reject_list, tempname);
 }
 
-int
-modify_user_mode(mode)
-int mode;
-{
+int modify_user_mode(int mode) {
 	if (uinfo.mode == mode)
 		return 0;
 	uinfo.mode = mode;
