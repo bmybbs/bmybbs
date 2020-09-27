@@ -1,14 +1,27 @@
 //copy by lepton from backnumber.c writen by ecnegrevid, 2002.9.30
 #include "bbs.h"
+
+#include "main.h"
+#include "smth_screen.h"
+#include "bbsinc.h"
+#include "xyz.h"
+#include "more.h"
+#include "read.h"
+#include "sendmsg.h"
+#include "stuff.h"
+#include "bcache.h"
+#include "io.h"
+
 extern struct UTMPFILE *utmpshm;
 
-char boarddir1984[STRLEN * 2];
+static char boarddir1984[STRLEN * 2];
 static int do1984title(void);
 static char *do1984doent(int num, struct fileheader *ent, char buf[512]);
 static int do1984_read(int ent, struct fileheader *fileinfo, char *direct);
 static int do1984_done(int ent, struct fileheader *fileinfo, char *direct);
 static int gettarget_board_title(char *board, char *title, char *filename);
 static int do1984(time_t dtime, int mode);
+static void post_1984_to_board(char *dir, struct fileheader *fileinfo);
 
 void
 set1984file(char *path, char *filename)
@@ -217,7 +230,7 @@ gettarget_board_title(char *board, char *title, char *filename)
 
 }
 
-void
+static void
 post_1984_to_board(char *dir, struct fileheader *fileinfo)
 {
 	char *ptr;

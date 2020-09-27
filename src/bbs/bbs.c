@@ -333,10 +333,7 @@ set_safe_record()
 }
 
 /*Add by SmallPig*/
-void
-setqtitle(stitle)
-char *stitle;
-{
+void setqtitle(char *stitle) {
 	if (strncmp(stitle, "Re: ", 4) != 0 && strncmp(stitle, "RE: ", 4) != 0) {
 		snprintf(ReplyPost, 55, "Re: %s", stitle);
 		strcpy(ReadPost, stitle);
@@ -482,11 +479,7 @@ Post()
 	return 0;
 }
 #endif
-int
-postfile(filename, nboard, posttitle, mode)
-char *filename, *nboard, *posttitle;
-int mode;
-{
+int postfile(char *filename, char *nboard, char *posttitle, int mode) {
 	int retv;
 	int save_in_mail;
 	save_in_mail = in_mail;
