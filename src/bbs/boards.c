@@ -23,6 +23,7 @@
 */
 #include "bbs.h"
 #include "bbstelnet.h"
+#include "editboard.h"
 
 #define BBS_PAGESIZE    (t_lines - 4)
 
