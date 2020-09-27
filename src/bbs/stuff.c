@@ -32,10 +32,7 @@ char tempfile[MAXPATHLEN];
 
 extern void io_output(const char *s, int len);
 
-int
-dashf(fname)
-const char *fname;
-{
+int dashf(const char *fname) {
 	struct stat st;
 
 	return (stat(fname, &st) == 0 && S_ISREG(st.st_mode));

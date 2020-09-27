@@ -1,5 +1,6 @@
 #ifndef BMYBBS_STUFF_H
 #define BMYBBS_STUFF_H
+int dashf(const char *fname);
 int dashd(char *fname);
 int pressreturn(void);
 #endif //BMYBBS_STUFF_H
