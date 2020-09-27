@@ -7,12 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 //"not" inserted in identifier
-const char *And = "且";
-const char *Or = "或";
-const char *Not = "非";
-const char LeftBracket = '(';
-const char RightBracket = ')';
-const char Separator[] = { ' ', '\t' };	//seperator, you can add ',', ';' to it, etc
+static const char *And = "\xC7\xD2";  // 且
+static const char *Or  = "\xBB\xF2";  // 或
+static const char *Not = "\xB7\xC7";  // 非
+static const char LeftBracket = '(';
+static const char RightBracket = ')';
+static const char Separator[] = { ' ', '\t' };	//seperator, you can add ',', ';' to it, etc
 
 ////////////////////////////////////////////////////////////////////////////////////////
 //Implementation
