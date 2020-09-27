@@ -1,4 +1,9 @@
 #include "bbs.h"
+#include "xyz.h"
+#include "io.h"
+#include "smth_screen.h"
+#include "stuff.h"
+#include "namecomplete.h"
 #define NADDRESSITEM 6
 static const char addressitems[NADDRESSITEM][16] = {
 	"oicqºÅÂë",
