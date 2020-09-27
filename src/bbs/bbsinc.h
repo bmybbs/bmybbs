@@ -7,7 +7,6 @@
 #ifndef BMYBBS_BBSINC_H
 #define BMYBBS_BBSINC_H
 #include <setjmp.h>
-extern int t_lines, t_realcols,t_columns;    /* Screen size / width */
 extern int nettyNN;
 extern int selboard;           /* THis flag is true if above is active */
 extern int showansi;

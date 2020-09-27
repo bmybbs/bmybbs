@@ -35,8 +35,6 @@ static char endstandout[clearbuflen];
 int t_lines = 24;
 int t_columns = 80;
 
-int automargins = 1;
-
 #ifdef CAN_EXEC
 int term_convert;
 queue_tl qneti, qneto;
