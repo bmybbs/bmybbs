@@ -22,9 +22,7 @@
 */
 
 #include "bbs.h"
-
-extern char fromhost[];
-extern int g_convcode;
+#include "term.h"
 
 #ifdef CAN_EXEC
 char tempfile[MAXPATHLEN];
