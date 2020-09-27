@@ -29,10 +29,7 @@ typedef struct {
 	char *replace;
 } tag_logout;
 
-int
-countlogouts(filename)
-char filename[STRLEN];
-{
+int countlogouts(char *filename) {
 	FILE *fp;
 	char buf[256];
 	int count = 0;
@@ -48,11 +45,7 @@ char filename[STRLEN];
 	return count + 1;
 }
 
-void
-user_display(filename, number, mode)
-char *filename;
-int number, mode;
-{
+void user_display(char *filename, int number, int mode) {
 	FILE *fp;
 	char buf[256];
 	int count = 1;
@@ -81,10 +74,7 @@ int number, mode;
 	return;
 }
 
-void
-showstuff(buf)
-char buf[256];
-{
+void showstuff(char *buf) {
 	extern time_t login_start_time;
 	int frg, i, matchfrg, strlength, cnt, tmpnum;
 	static char numlogins[10], numposts[10], rgtday[35], lasttime[35],
