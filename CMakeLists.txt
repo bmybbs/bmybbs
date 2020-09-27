@@ -7,7 +7,7 @@ find_package(LibXml2 REQUIRED)
 
 include_directories(include ${LIBXML2_INCLUDE_DIR})
 
-link_directories(ythtlib libythtbbs libbmy)
+link_directories(libytht libbmy libythtbbs)
 
 set(CMAKE_C_FLAGS "-Wall -g -pipe -Wextra -Wno-unused-result -Wno-unused-parameter -Wno-unused-variable -Wno-unused-but-set-variable -Wno-unused-value -std=gnu11")
 
