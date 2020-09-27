@@ -68,24 +68,6 @@ static void init_screen(int slns, int scols);
 static void rel_move(int was_col, int was_ln, int new_col, int new_ln);
 
 void
-setfcolor(int i, int j)
-{
-	cur_color = i + cur_color / 16 * 16;
-	if (j)
-		cur_mode |= SCREEN_BRIGHT;
-	else
-		cur_mode &= ~SCREEN_BRIGHT;
-}
-
-void
-setbcolor(int i)
-{
-	if (i == 0)
-		i = 8;
-	cur_color = cur_color % 16 + i * 16;
-}
-
-void
 resetcolor()
 {
 	prints("\033[37;40;0m");
