@@ -222,9 +222,7 @@ int port;
 	}
 }
 
-int
-countstr(char *s0, char *s1)
-{
+static int countstr(char *s0, char *s1) {
 	int i = 0, j;
 	char *ptr = s0;
 	j = strlen(s1);
@@ -462,9 +460,7 @@ check_import(char *anboard)
 		return -2;
 }
 
-int
-an_log(char *action, char *path)
-{
+static int an_log(char *action, char *path) {
 	char anboard[STRLEN], *ptr, buf[256];
 	if (!strncmp(path, "0Announce/groups/GROUP_", 23)) {
 		strncpy(anboard, &(path[25]), STRLEN);
@@ -1916,10 +1912,7 @@ char *cmd;
 
 // end 
 /*chk_currBM_Personal用于对个人精华区的支持, by ylsdd*/
-int
-chk_currBM_Personal(BMstr)
-char *BMstr;
-{
+static int chk_currBM_Personal(char *BMstr) {
 	char *ptr;
 	char BMstrbuf[BM_LEN];
 	int chk1 = 0, chk2 = 0;
@@ -1957,9 +1950,7 @@ char *BMstr;
 }
 
 /* logvisit, 用来记录精华区的访问次数和时间长度 */
-int
-logvisit(time_t timein, const char *path)
-{
+static int logvisit(time_t timein, const char *path) {
 	char fn[PATH_MAX + 1];
 	int fd, t, n[2], len;
 	t = time(NULL) - timein;
@@ -1983,9 +1974,7 @@ logvisit(time_t timein, const char *path)
 	return 0;
 }
 
-int
-getvisit(int n[2], const char *path)
-{
+static int getvisit(int n[2], const char *path) {
 	char fn[PATH_MAX + 1];
 	int fd;
 	int len;
@@ -2090,9 +2079,7 @@ MENU *pm;
 	return changed;
 }
 
-int
-add_anpath(char *title, char *path)
-{
+static int add_anpath(char *title, char *path) {
 	char titles[20][STRLEN], paths[20][PATHLEN], *ptr;
 	int i;
 	int index = 0, nindex = 0;
@@ -2246,9 +2233,7 @@ select_anpath()
 	return 0;
 }
 
-int
-save_anpath(char titles[20][STRLEN], char paths[20][PATHLEN])
-{
+static int save_anpath(char titles[20][STRLEN], char paths[20][PATHLEN]) {
 	int i;
 	FILE *fp;
 	char pathfile[PATHLEN];
@@ -2264,9 +2249,7 @@ save_anpath(char titles[20][STRLEN], char paths[20][PATHLEN])
 	return 0;
 }
 
-int
-read_anpath(char titles[20][STRLEN], char paths[20][PATHLEN])
-{
+static int read_anpath(char titles[20][STRLEN], char paths[20][PATHLEN]) {
 	int i, j = 0;
 	FILE *fp;
 	char pathfile[PATHLEN], *ptr;
