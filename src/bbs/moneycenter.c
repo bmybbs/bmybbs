@@ -102,8 +102,8 @@ extern int numboards;
 char marry_status[][20] = {"未知","求婚","已婚","婚礼中","已离婚","求婚失败",""};
 int multex=0;
 
-void *loadData(char *filepath, void *buffer, size_t filesize);
-void saveData(void *buffer, size_t filesize);
+static void *loadData(char *filepath, void *buffer, size_t filesize);
+static void saveData(void *buffer, size_t filesize);
 static int loadValue(char *user, char *valueName, int sup);
 static int saveValue(char *user, char *valueName, int valueToAdd, int sup);
 static int show_welcome(char *filepath,int startline,int endline);
@@ -443,7 +443,7 @@ saveValue(char *user, char *valueName, int valueToAdd, int sup)
 	return 0;
 }  //保存相关数值
 
-void *loadData(char *filepath, void *buffer, size_t filesize) {
+static void *loadData(char *filepath, void *buffer, size_t filesize) {
 	int fd;
 
 	if ((fd = open(filepath, O_RDWR, 0660)) == -1)
@@ -453,7 +453,7 @@ void *loadData(char *filepath, void *buffer, size_t filesize) {
 	return buffer;
 }
 
-void saveData(void *buffer, size_t filesize) {
+static void saveData(void *buffer, size_t filesize) {
 	if (buffer != NULL)
 		munmap(buffer, filesize);
 }
