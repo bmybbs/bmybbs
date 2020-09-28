@@ -29,4 +29,8 @@ struct gopher_node {
     int         position;
     GOPHER      *next;
 };
+int savetmpfile(char *tmpname);
+void enterdir(char *path);
+int get_con(char *servername, int port);
+int gopher(char *serv, char *dire, int port, char *title);
 #endif

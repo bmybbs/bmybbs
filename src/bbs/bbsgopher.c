@@ -34,9 +34,7 @@ GOPHER *tmpitem;
 int gopher_position = 0;
 char gophertmpfile[40];
 
-int
-interrupt_chk()
-{
+static int interrupt_chk(void) {
 	int key;
 
 	while (1) {
@@ -51,25 +49,15 @@ interrupt_chk()
 	}
 }
 
-static GOPHER *
-nth_item(n)
-int n;
-{
+static GOPHER *nth_item(int n) {
 	return (GOPHER *) & (cur_page[n * sizeof (GOPHER)]);
 }
 
-void
-clear_gophertmpfile()
-{
+static void clear_gophertmpfile(void) {
 	unlink(gophertmpfile);
 }
 
-int
-readfield(fd, ptr, maxlen)
-int fd;
-char *ptr;
-int maxlen;
-{
+static int readfield(int fd, char *ptr, int maxlen) {
 	int n;
 	int rc;
 	char c;
@@ -94,12 +82,7 @@ int maxlen;
 	return (n);
 }
 
-int
-readline(fd, ptr, maxlen)
-int fd;
-char *ptr;
-int maxlen;
-{
+static int readline(int fd, char *ptr, int maxlen) {
 	int n;
 	int rc;
 	char c;
@@ -122,10 +105,7 @@ int maxlen;
 	return (n);
 }
 
-int
-savetmpfile(tmpname)
-char tmpname[];
-{
+int savetmpfile(char *tmpname) {
 	char buf[256];
 	FILE *fp;
 	int cc;
@@ -152,9 +132,7 @@ char tmpname[];
 
 }
 
-void
-print_gophertitle()
-{
+static void print_gophertitle(void) {
 	char buf[256];
 	char title[256];
 
@@ -168,10 +146,7 @@ print_gophertitle()
 	    ("             [1;32mF [37m¼Ä»Ø×Ô¼ºµÄÐÅÏä [32m ¡ü¡ý[37m ÒÆ¶¯  [32m¡ú <Enter>[37m ¶ÁÈ¡ [32m ¡û[37m Àë¿ª");
 }
 
-void
-printgopher_title()
-{
-
+static void printgopher_title(void) {
 	move(2, 0);
 	clrtoeol();
 
@@ -179,19 +154,13 @@ printgopher_title()
 	    ("[1;37;44m ±àºÅ [Àà±ð] ±ê    Ìâ                                                          [m\n");
 }
 
-void
-g_refresh()
-{
+static void g_refresh(void) {
 	print_gophertitle();
 	show_gopher();
 	update_endline();
 }
 
-int
-deal_gopherkey(ch, allnum, pagenum)
-char ch;
-int allnum, pagenum;
-{
+static int deal_gopherkey(char ch, int allnum, int pagenum) {
 	char fname[STRLEN], fpath[STRLEN];
 
 	switch (ch) {
@@ -313,20 +282,13 @@ int allnum, pagenum;
 	return 1;
 }
 
-void
-enterdir(path)
-char path[];
-{
+void enterdir(char *path) {
 	char buf[256];
 	sprintf(buf, "%s\r\n", path == NULL ? "" : path);
 	write(a, buf, sizeof (buf));
 }
 
-int
-get_con(servername, port)
-char *servername;
-int port;
-{
+int get_con(char *servername, int port) {
 	struct hostent *h2;
 	struct sockaddr_in sin;
 
@@ -360,16 +322,11 @@ int port;
 	return 1;
 }
 
-int
-do_gopher(page, num)
-int page, num;
-{
+static int do_gopher(int page, int num) {
 	return -1;
 }
 
-int
-show_gopher()
-{
+static int show_gopher(void) {
 	extern int page, range;
 	int i;
 	GOPHER *tmpnode;
@@ -388,9 +345,7 @@ show_gopher()
 	return 0;
 }
 
-void
-showout()
-{
+static void showout(void) {
 	int i = 0, i2 = 0;
 	char foo[1024];
 	char tmpfile[STRLEN];
@@ -521,11 +476,7 @@ showout()
 	}
 }
 
-int
-gopher(serv, dire, port, title)
-char serv[], dire[], title[];
-int port;
-{
+int gopher(char *serv, char *dire, int port, char *title) {
 	GOPHER *newitem;
 	char buf[80];
 
