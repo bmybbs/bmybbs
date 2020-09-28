@@ -265,12 +265,7 @@ char *direct;
 	return PARTUPDATE;
 }
 
-int
-allcanre_post(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+static int allcanre_post(int ent, struct fileheader *fileinfo, char *direct) {
 	if (!HAS_PERM(PERM_SYSOP))
 		return DONOTHING;
 	change_dir(direct, fileinfo, (void *) DIR_do_allcanre, ent,
