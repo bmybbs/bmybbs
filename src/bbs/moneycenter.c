@@ -112,7 +112,7 @@ static int buy_present(int order, char *kind, char *cardname, char *filepath, in
 
 static void moneycenter_welcome(void);
 static void moneycenter_byebye(void);
-int millionairesrec(char *title, char *str, char *owner);
+static int millionairesrec(char *title, char *str, char *owner);
 static int limitValue(int value, int sup);
 static int money_bank(void);
 static int money_lottery(void);
@@ -333,8 +333,7 @@ moneycenter_byebye()
 } //Àë¿ª½çÃæ
 
 //added by macintosh 20051202
-int
-millionairesrec(char *title, char *str, char *owner)
+static int millionairesrec(char *title, char *str, char *owner)
 {
 	struct fileheader postfile;
 	char filepath[STRLEN], fname[STRLEN];
