@@ -93,16 +93,6 @@ register struct word *list;
 	return i;
 }
 
-void
-ApplyToNameList(fptr)
-int ((*fptr) ());
-{
-	struct word *p;
-
-	for (p = toplev; p != NULL; p = p->next)
-		(*fptr) (p->word);
-}
-
 int
 chkstr(otag, tag, name)
 char *otag, *tag, *name;
