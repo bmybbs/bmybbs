@@ -132,9 +132,7 @@ const char *str;
 	outs("¡ú");
 }
 
-void
-chat_clear()
-{
+static void chat_clear() {
 	for (chatline = 2; chatline < stop_line; chatline++) {
 		move(chatline, 0);
 		clrtoeol();
@@ -143,10 +141,7 @@ chat_clear()
 	printchatline("");
 }
 
-void
-print_chatid(chatid)
-char *chatid;
-{
+static void print_chatid(char *chatid) {
 	move(b_lines, 0);
 	outs(chatid);
 	outc(':');
