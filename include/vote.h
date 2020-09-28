@@ -19,13 +19,14 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 */
-
+#ifndef BMYBBS_VOTE_H
+#define BMYBBS_VOTE_H
 #define VOTE_YN         (1)
 #define VOTE_SINGLE     (2)
 #define VOTE_MULTI      (3)
 #define VOTE_VALUE      (4)
 #define VOTE_ASKING     (5)
-#define VOTE_SMULTI		(6)
+#define VOTE_SMULTI     (6)
 
 #define VOTE_FLAG_OPENED 0x1
 #define VOTE_FLAG_LIMITED 0x2
@@ -59,8 +60,7 @@ struct votebal
 	short int	flag;
         time_t          opendate;
 	char		listfname[STRLEN];
-}
-;
+};
 
 struct voterlist
 {
@@ -68,5 +68,17 @@ struct voterlist
 	int		voternum;
 	char		listfname[80];
 	char		authorid[80];
-}
-;
+};
+
+void makevdir(char *bname);
+void setvfile(char *buf, char *bname, char *filename);
+int b_closepolls(void);
+int vote_maintain(char *bname);
+int b_vote_maintain(void);
+int m_voter(void);
+int b_vote(void);
+int b_results(void);
+void m_vote(void);
+void x_vote(void);
+int x_results(void);
+#endif
