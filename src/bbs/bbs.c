@@ -2594,22 +2594,16 @@ int has_perm_commend(char* userid)			//add by mintbaggio 040406 for front page c
 	return ret;
 }
 
-int mark_commend(ent, fileinfo, direct)				//add by mintbaggio 040331 for front page commend
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+//add by mintbaggio 040331 for front page commend
+static int mark_commend(int ent, struct fileheader *fileinfo, char *direct)		{
 	if(!HAS_PERM(PERM_SYSOP) && !has_perm_commend(currentuser.userid))
 		return DONOTHING;
 	commend_article(currboard, fileinfo);
 	return PARTUPDATE;
 }
 
-int mark_commend2(ent, fileinfo, direct)				//add by mintbaggio 040331 for front page commend
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+//add by mintbaggio 040331 for front page commend
+static int mark_commend2(int ent, struct fileheader *fileinfo, char *direct) {
 	if(!HAS_PERM(PERM_SYSOP) && !has_perm_commend(currentuser.userid))
 		return DONOTHING;
 	commend_article2(currboard, fileinfo);
