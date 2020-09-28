@@ -4421,8 +4421,9 @@ struct fileheader *fileinfo;
 	fprintf(fp,"\n" );
 	fclose(fp);
 }
-int commend_article(char* board, struct fileheader* fileinfo)
-{					//add by mintbaggio 040326 for front page commend
+
+//add by mintbaggio 040326 for front page commend
+static int commend_article(char* board, struct fileheader* fileinfo) {
 	struct commend* x;
 	int offset;
 
@@ -4447,8 +4448,9 @@ int commend_article(char* board, struct fileheader* fileinfo)
 	return 0;
 }
 
-int is_in_commend(char* board, struct fileheader* fileinfo)	//if is, return offset, else 0
-{					//add by mintbaggio 040326 for front page commend
+//add by mintbaggio 040326 for front page commend
+//if is, return offset, else 0
+int is_in_commend(char* board, struct fileheader* fileinfo) {
 	FILE *fp;
         struct commend x;
 	int offset;
@@ -4469,8 +4471,8 @@ int is_in_commend(char* board, struct fileheader* fileinfo)	//if is, return offs
         return 0;
 }
 
-int del_commend(int offset)
-{					//add by mintbaggio 040326 for front page commend
+//add by mintbaggio 040326 for front page commend
+static int del_commend(int offset) {
 	FILE *fp, *fp2;
 	struct commend x;
 
@@ -4492,8 +4494,8 @@ int del_commend(int offset)
 	return 0;
 }
 
-int do_commend(char* board, struct fileheader* fileinfo)
-{					//add by mintbaggio 040326 for front page commend
+//add by mintbaggio 040326 for front page commend
+static int do_commend(char* board, struct fileheader* fileinfo) {
 	FILE *fp;
 	struct commend y;
 	bzero(&y, sizeof(struct commend));
@@ -4517,8 +4519,8 @@ int do_commend(char* board, struct fileheader* fileinfo)
         return 1;
 }
 
-int count_commend()
-{					//add by mintbaggio 040327 for front page commend
+//add by mintbaggio 040327 for front page commend
+static int count_commend() {
 	FILE *fp;
 	struct commend x;
 	int count = 0;
@@ -4533,8 +4535,8 @@ int count_commend()
 	return count;
 }
 
-int show_commend()
-{					//add by mintbaggio 040331 for front page commend
+//add by mintbaggio 040331 for front page commend
+int show_commend() {
 	int num;
 	FILE *fp;
 	struct commend x;
@@ -4557,8 +4559,8 @@ int show_commend()
 	return 0;
 }
 
-int commend_article2(char* board, struct fileheader* fileinfo)
-{					//add by mintbaggio 040326 for front page commend
+//add by mintbaggio 040326 for front page commend
+static int commend_article2(char* board, struct fileheader* fileinfo) {
 	struct commend* x;
 	int offset;
 
@@ -4584,8 +4586,9 @@ int commend_article2(char* board, struct fileheader* fileinfo)
 	return 0;
 }
 
-int is_in_commend2(char* board, struct fileheader* fileinfo)	//if is, return offset, else 0
-{					//add by mintbaggio 040326 for front page commend
+//add by mintbaggio 040326 for front page commend
+//if is, return offset, else 0
+int is_in_commend2(char* board, struct fileheader* fileinfo) {
 	FILE *fp;
         struct commend x;
 	int offset;
@@ -4606,8 +4609,8 @@ int is_in_commend2(char* board, struct fileheader* fileinfo)	//if is, return off
         return 0;
 }
 
-int del_commend2(int offset)
-{					//add by mintbaggio 040326 for front page commend
+//add by mintbaggio 040326 for front page commend
+static int del_commend2(int offset) {
 	FILE *fp, *fp2;
 	struct commend x;
 
@@ -4629,8 +4632,8 @@ int del_commend2(int offset)
 	return 0;
 }
 
-int do_commend2(char* board, struct fileheader* fileinfo)
-{					//add by mintbaggio 040326 for front page commend
+//add by mintbaggio 040326 for front page commend
+static int do_commend2(char* board, struct fileheader* fileinfo) {
 	FILE *fp;
 	struct commend y;
 	bzero(&y, sizeof(struct commend));
@@ -4654,8 +4657,8 @@ int do_commend2(char* board, struct fileheader* fileinfo)
         return 1;
 }
 
-int count_commend2()
-{					//add by mintbaggio 040327 for front page commend
+//add by mintbaggio 040327 for front page commend
+static int count_commend2() {
 	FILE *fp;
 	struct commend x;
 	int count = 0;
@@ -4670,8 +4673,8 @@ int count_commend2()
 	return count;
 }
 
-int show_commend2()
-{					//add by mintbaggio 040331 for front page commend
+//add by mintbaggio 040331 for front page commend
+int show_commend2() {
 	int num;
 	FILE *fp;
 	struct commend x;
@@ -4693,8 +4696,3 @@ int show_commend2()
 	}
 	return 0;
 }
-/* The End */
-
-
-
-/* The End */
