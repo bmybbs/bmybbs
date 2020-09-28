@@ -486,7 +486,7 @@ check_register_info()
 	#ifndef POP_CHECK
 	if (strchr(urec->email, '@') == NULL) {
 		move(8, 0);
-		prints("µç×ÓĞÅÏä¸ñÊ½Îª: [1;37muserid@your.domain.name[m\n");
+		prints("µç×ÓĞÅÏä¸ñÊ½Îª: \033[1;37muserid@your.domain.name\033[m\n");
 		prints("ÇëÊäÈëµç×ÓĞÅÏä (²»ÄÜÌá¹©Õß°´ <Enter>)");
 		getdata(10, 0, "> ", urec->email, STRLEN - 10, DOECHO, YEA);
 		if (strchr(urec->email, '@') == NULL) {
@@ -612,10 +612,10 @@ check_register_info()
 				showansi = 1;
 				if (sysconf_str("EMAILFILE") != NULL) {
 					prints
-					    ("\nÄúËùÌîĞ´µÄµç×ÓÓÊ¼şµØÖ· ¡¾[1;33m%s[m¡¿\n",
+					    ("\nÄúËùÌîĞ´µÄµç×ÓÓÊ¼şµØÖ· ¡¾\033[1;33m%s\033[m¡¿\n",
 					     urec->email);
 					prints
-					    ("²¢·ÇºÏ·¨Ö® UNIX ÕÊºÅ£¬ÏµÍ³²»»áÍ¶µİ×¢²áĞÅ£¬Çëµ½[1;32mInfoEdit->Info[mÖĞĞŞ¸Ä...\n");
+					    ("²¢·ÇºÏ·¨Ö® UNIX ÕÊºÅ£¬ÏµÍ³²»»áÍ¶µİ×¢²áĞÅ£¬Çëµ½\033[1;32mInfoEdit->Info\033[mÖĞĞŞ¸Ä...\n");
 					pressanykey();
 				}
 			}
