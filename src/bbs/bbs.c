@@ -855,8 +855,7 @@ char *direc;
        return 0;
    }
 
-int
-topfile_post(int ent, struct fileheader *fhdr, char *direct) //slowaction
+static int topfile_post(int ent, struct fileheader *fhdr, char *direct) //slowaction
 {
 	if (!IScurrBM) return DONOTHING;
 
