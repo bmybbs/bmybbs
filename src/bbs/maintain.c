@@ -1023,7 +1023,7 @@ m_trace()
 }
 
 /* mode == O_EXCL / O_APPEND / O_TRUNC by bjgyt*/
-int f_cp(char *src, char *dst, int mode)
+static int f_cp(char *src, char *dst, int mode)
 {
    int     fsrc, fdst, ret;
    ret = 0;
