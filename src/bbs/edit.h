@@ -22,26 +22,11 @@
 
 #ifndef __BBS_EDIT_H
 #define __BBS_EDIT_H
+#include <stdio.h>
 
-#define WRAPMARGIN (255)
-
-#define M_MARK  0x01
-#define M_ATTR0 0x01
-#define M_ATTR1 0x02
-#define M_ATTR2 0x04
-#define M_ATTR3 0x08
-#define M_ATTR4 0x10
-#define M_ATTR5 0x20
-#define M_ATTR6 0x40
-#define M_ATTR7 0x80
-
-
-struct textline {
-    struct textline *prev ;
-    struct textline *next ;
-    int  len ;
-    unsigned char attr;
-    char data[WRAPMARGIN + 1] ;
-} ;
+int write_header(FILE *fp, int mode);
+void addsignature(FILE *fp, int blank);
+void keep_fail_post(void);
+int vedit(char *filename, int saveheader, int modifyheader);
 
 #endif
