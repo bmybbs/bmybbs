@@ -82,10 +82,7 @@ struct user_info *uin;
 	return NA;
 }
 
-int
-canmsg_offline(uid)
-char *uid;
-{
+static int canmsg_offline(char *uid) {
 	if (!strcmp(uid, "guest"))
 		return NA;
 	if (inoverride(currentuser.userid, uid, "rejects"))
