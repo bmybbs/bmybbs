@@ -190,9 +190,7 @@ netty_more()
 	move(y, x);
 }
 
-void
-printacbar()
-{
+static void printacbar() {
 	struct boardmem *bp;
 	int x, y;
 	getyx(&y, &x);
@@ -972,11 +970,7 @@ int numlines;
 	return ch;
 }
 
-int
-ansimorestuff(filename, promptend)
-char *filename;
-int promptend;
-{
+static int ansimorestuff(char *filename, int promptend) {
 	int retv;
 	stuffmode = 1;
 	retv = ansimore(filename, promptend);
