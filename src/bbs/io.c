@@ -993,9 +993,8 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, int c
 }
 
 int ZmodemRateLimit = 0;
-int
-raw_write(int fd, char *buf, int len)
-{
+
+static int raw_write(int fd, char *buf, int len) {
 	static int lastcounter = 0;
 	int nowcounter, i;
 	static int bufcounter;
@@ -1042,9 +1041,7 @@ raw_write(int fd, char *buf, int len)
 #endif
 }
 
-int
-raw_read(int fd, char *buf, int len)
-{
+static int raw_read(int fd, char *buf, int len) {
 #ifdef SSHBBS
 	return ssh_read(fd, buf, len);
 #else
