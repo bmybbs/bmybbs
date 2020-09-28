@@ -14,11 +14,11 @@ int continue_active(struct userec* cuser);
 
 int x_active_manager();
 // int active_manual_confirm();
-int query_active(char* userid);
-int force_comfirm(char* userid);
-int delete_active(char* userid);
-int update_active(char* userid);
-int query_value(char* value, int style);
+static int query_active(char* userid);
+static int force_comfirm(char* userid);
+static int delete_active(char* userid);
+static int update_active(char* userid);
+static int query_value(char* value, int style);
 //int update_email(char* value);
 
 
@@ -409,7 +409,7 @@ int x_active_manager()
 }
 
 //查询某id的验证信息
-int query_active(char* userid)
+static int query_active(char* userid)
 {
     struct active_data act_data;
     char value[VALUELEN];
@@ -467,7 +467,7 @@ int query_active(char* userid)
 }
 
 //强制激活某用户
-int force_comfirm(char* userid)
+static int force_comfirm(char* userid)
 {
     struct userec cuser;
     struct active_data act_data;
@@ -512,7 +512,7 @@ int force_comfirm(char* userid)
 }
 
 //删除激活记录
-int delete_active(char* userid)
+static int delete_active(char* userid)
 {
 //	struct userec* cuser;
     char an[2];
@@ -585,7 +585,7 @@ char *info, *desc, *buf;
 //更新激活信息记录
 //一般情况下应该删除激活记录再要求用户重新手工激活
 //而不是使用本功能
-int update_active(char* userid)
+static int update_active(char* userid)
 {
 //    struct userec* cuser;
     struct active_data act_data;
@@ -624,7 +624,7 @@ int update_active(char* userid)
 
 
 //查询某记录下绑定的id
-int query_value(char* value, int style)
+static int query_value(char* value, int style)
 {
     size_t i;
     struct associated_userid *au;
