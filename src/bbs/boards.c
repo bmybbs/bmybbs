@@ -1247,9 +1247,7 @@ readwritebrc(struct allbrc *allbrc)
 
 }
 
-void
-brc_update()
-{
+static void brc_update() {
 	if (!brc.changed)
 		return;
 	if (allbrc) {
