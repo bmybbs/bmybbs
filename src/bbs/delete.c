@@ -212,9 +212,7 @@ online()
 	return 0;
 }
 
-void
-getuinfo(FILE *fn)
-{
+static void getuinfo(FILE *fn) {
 	int num;
 	char buf[40];
 
