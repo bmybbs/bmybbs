@@ -251,8 +251,7 @@ talk_request(int signum)
 	return;
 }
 
-void
-do_abort_bbs()
+static void do_abort_bbs()
 {
 	time_t stay;
 #ifdef CAN_EXEC
@@ -1375,9 +1374,7 @@ tlog_recover()
 
 //#endif
 
-void
-relogin()
-{
+static void relogin() {
 	char bbs_prog_path[STRLEN], bbstest_prog_path[STRLEN];
 	char utmppos[STRLEN];
 	int n;
