@@ -2373,10 +2373,7 @@ struct userec *uentp;
 	return 1;
 }
 
-int
-mailtoall(mode, hour)
-int mode, hour;
-{
+static int mailtoall(int mode, int hour) {
 	char filename[STRLEN];
 	sprintf(filename, "tmp/mailall.%s", currentuser.userid);
 	mailmode = mode;
