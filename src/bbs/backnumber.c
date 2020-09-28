@@ -195,12 +195,7 @@ static const struct one_key backnumber_comms[] = {
 	{'\0', NULL, ""}
 };
 
-int
-readbacknumber(ent, bkninfo, direct)
-int ent;
-struct bknheader *bkninfo;
-char *direct;
-{
+static int readbacknumber(int ent, struct bknheader *bkninfo, char *direct) {
 	char buf[MAXPATHLEN], *t;
 	strcpy(buf, direct);
 	if ((t = strrchr(buf, '/')) != NULL)
