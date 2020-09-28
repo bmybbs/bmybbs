@@ -106,7 +106,7 @@ void *loadData(char *filepath, void *buffer, size_t filesize);
 void saveData(void *buffer, size_t filesize);
 static int loadValue(char *user, char *valueName, int sup);
 static int saveValue(char *user, char *valueName, int valueToAdd, int sup);
-int show_welcome(char *filepath,int startline,int endline);
+static int show_welcome(char *filepath,int startline,int endline);
 static int shop_present(int order, char *kind, char *touserid);
 static int buy_present(int order, char *kind, char *cardname, char *filepath, int price_per,char *touserid);
 
@@ -7260,7 +7260,7 @@ buy_card(char *cardname, int cardnumber)
 //add by happybird for 鲜花店，贺卡店
 //显示欢迎画面
 //这个要读文件可能会造成损耗，小心使用
-int show_welcome(char *filepath,int startline,int endline)
+static int show_welcome(char *filepath,int startline,int endline)
 {
 	FILE *fp;
 	char buf[400];
