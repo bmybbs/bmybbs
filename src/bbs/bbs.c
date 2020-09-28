@@ -3314,9 +3314,7 @@ char *direct;
 	return FULLUPDATE;
 }
 
-int
-check_notespasswd()
-{
+static int check_notespasswd() {
 	FILE *pass;
 	char passbuf[20], prepass[STRLEN];
 	char buf[STRLEN];
