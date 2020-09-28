@@ -185,8 +185,8 @@ static int marry_attend(struct MC_Marry *marryMem, int n);
 static int marry_court(struct MC_Marry *marryMem, int n);
 static int marry_perpare(struct MC_Marry *marryMem, int n);
 static int marry_divorce();
-char *get_date_str(time_t *tt);
-char *get_simple_date_str(time_t *tt);
+static char *get_date_str(time_t *tt);
+static char *get_simple_date_str(time_t *tt);
 static int marry_refresh(struct MC_Marry *marryMem, int n);
 static int marry_recordlist(struct MC_Marry *marryMem, int n);
 static int marry_all_records();
@@ -10188,7 +10188,7 @@ marry_givemoney(struct MC_Marry *mm)
 }
 
 //精简的日期表
-char *get_simple_date_str(time_t *tt)
+static char *get_simple_date_str(time_t *tt)
 {
     struct tm *tm;
 	static char timestr[200];
@@ -10551,7 +10551,7 @@ marry_court(struct MC_Marry *marryMem, int n)
 }
 
 
-char *get_date_str(time_t *tt)
+static char *get_date_str(time_t *tt)
 {
     struct tm *tm;
 	static char timestr[200];
