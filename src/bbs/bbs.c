@@ -25,7 +25,7 @@
 #include <sys/msg.h>
 #include <sys/mman.h>
 #include "bbs.h"
-#include "bbstelnet.h"
+#include "bbs_global_vars.h"
 #include "talk.h"
 #include "vote.h"
 #include "bbsinc.h"

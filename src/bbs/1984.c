@@ -11,6 +11,7 @@
 #include "stuff.h"
 #include "bcache.h"
 #include "io.h"
+#include "term.h"
 
 extern struct UTMPFILE *utmpshm;
 

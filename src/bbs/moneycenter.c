@@ -1,7 +1,7 @@
 #include <sys/mman.h>	// for mmap
 #include <math.h>
 #include "bbs.h"
-#include "bbstelnet.h"
+#include "bbs_global_vars.h"
 #include "stuff.h"
 #include "smth_screen.h"
 #include "maintain.h"

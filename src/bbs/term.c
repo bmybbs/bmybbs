@@ -22,10 +22,10 @@
 #include <string.h>
 #include <stdio.h>
 
-static const int clearbuflen = 6;
-static const int strtstandoutlen = 4;
-static const int endstandoutlen = 3;
-static const int cleolbuflen = 3;
+#define clearbuflen       6
+#define strtstandoutlen   4
+#define endstandoutlen    3
+#define cleolbuflen       3
 
 static char cleolbuf[clearbuflen];
 static char clearbuf[clearbuflen];

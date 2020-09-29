@@ -28,9 +28,10 @@
 #include "smth_screen.h"
 #include "io.h"
 #include "more.h"
-#include "announce.h"
 #include "stuff.h"
 #include "bbsinc.h"
+#include "mail.h"
+#include "edit.h"
 
 extern int numofsig;
 struct boardmem *getbcache();

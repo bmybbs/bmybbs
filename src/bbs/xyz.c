@@ -22,7 +22,7 @@
 */
 #include <sys/mman.h>
 #include "bbs.h"
-#include "bbstelnet.h"
+#include "bbs_global_vars.h"
 #include "smth_screen.h"
 #include "maintain.h"
 #include "bcache.h"

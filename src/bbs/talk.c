@@ -22,7 +22,7 @@
 */
 
 #include "bbs.h"
-#include "bbstelnet.h"
+#include "bbs_global_vars.h"
 #include "list.h"
 #include "io.h"
 #include "smth_screen.h"

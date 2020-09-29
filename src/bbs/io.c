@@ -1,4 +1,4 @@
- /*
+/*
     Pirate Bulletin Board System
     Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
     Eagles Bulletin Board System
@@ -20,7 +20,7 @@
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-  */
+*/
 
 #include "bbs.h"
 #include "edit.h"
@@ -30,6 +30,7 @@
 #include "sendmsg.h"
 #include "smth_screen.h"
 #include "term.h"
+#include "bbs_global_vars.h"
 
 #define OBUFSIZE  (1024*4)
 #define IBUFSIZE  (256)
