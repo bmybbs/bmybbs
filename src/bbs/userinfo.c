@@ -22,6 +22,16 @@
  */
 
 #include "bbs.h"
+#include "bcache.h"
+#include "smth_screen.h"
+#include "term.h"
+#include "stuff.h"
+#include "io.h"
+#include "mail.h"
+#include "xyz.h"
+#include "bbsinc.h"
+#include "register.h"
+#include "comm_list.h"
 
 #ifdef POP_CHECK
 // 登陆邮件服务器用的头文件 added by interma@BMY 2005.5.12
