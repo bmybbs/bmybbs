@@ -24,11 +24,22 @@
 */
 
 #include "bbs.h"
-#include "bbstelnet.h"
+#include "smth_screen.h"
+#include "io.h"
+#include "stuff.h"
+#include "talk.h"
+#include "namecomplete.h"
+#include "bcache.h"
+#include "bbsinc.h"
+#include "more.h"
+#include "maintain.h"
+#include "mail.h"
+
 #define DENY 1
 #define UNDENY 2
 #define CHANGEDENY 3
 
+extern int millionairesrec(char *title, char *str, char *owner);
 static int addtodeny(char *uident, char *msg, int ischange, int isglobal,
 		     int isanony);
 static int deldeny(char *uident, int isglobal, int isanony);
