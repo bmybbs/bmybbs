@@ -107,7 +107,6 @@ const struct scommandlist sysconf_cmdlist[] = {
 	{"SetAlarm", (void *) setcalltime},
 	{"MailAll", (void *) mailall},
 	{"LockScreen", (void *) x_lockscreen},
-	{"RECITE", (void *) x_recite},
 	{"QUICKCALC", (void *) x_quickcalc},
 	{"FREEIP", (void *) x_freeip},
 	{"OffLine", (void *) offline},

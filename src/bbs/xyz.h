@@ -19,7 +19,6 @@ void a_edits2(void);
 void x_lockscreen(void);
 int heavyload(float maxload);
 int sendgoodwish(char *uid);
-void x_recite(void);
 void x_quickcalc(void);
 void x_freeip(void);
 int ent_bnet(char *cmd);

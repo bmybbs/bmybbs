@@ -1590,13 +1590,6 @@ sendGoodWish(char *userid)
 }
 
 void
-x_recite()
-{
-	myexec_cmd(RECITE, NA, "bin/ptyexec", "bin/recite");
-	redoscr();
-}
-
-void
 x_quickcalc()
 {
 	clear();
