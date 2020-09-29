@@ -23,6 +23,11 @@
 */
 
 #include "bbs.h"
+#include "smth_screen.h"
+#include "io.h"
+#include "term.h"
+#include "stuff.h"
+#include "main.h"
 
 extern int can_R_endline;
 
