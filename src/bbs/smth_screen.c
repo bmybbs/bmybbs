@@ -21,15 +21,13 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#include <stdarg.h>
 #include "bbs.h"
 #include "edit.h"
 #include "smth_screen.h"
-#include <sys/param.h>
-#include <stdarg.h>
+#include "term.h"
+#include "io.h"
 
-/* Maximum Screen width in chars */
-/*#define LINELEN (220) */
-#include "bbstelnet.h"
 //#define SCREEN_MODIFIED 1
 #define SCREEN_BRIGHT 2
 #define SCREEN_LINE 4
