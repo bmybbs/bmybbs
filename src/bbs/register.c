@@ -22,8 +22,17 @@
 */
 
 #include "bbs.h"
-#include "bbstelnet.h"
 #include "ythtbbs/identify.h"
+#include "smth_screen.h"
+#include "io.h"
+#include "stuff.h"
+#include "more.h"
+#include "main.h"
+#include "term.h"
+#include "bbsinc.h"
+#include "bcache.h"
+#include "mail.h"
+#include "maintain.h"
 /*
 #define  EMAIL          0x0001
 #define  NICK           0x0002
