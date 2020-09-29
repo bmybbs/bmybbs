@@ -23,6 +23,25 @@
 */
 
 #include "bbs.h"
+#include "smth_screen.h"
+#include "stuff.h"
+#include "backnumber.h"
+#include "io.h"
+#include "talk.h"
+#include "bbs_global_vars.h"
+#include "main.h"
+#include "bbsinc.h"
+#include "sendmsg.h"
+#include "mail.h"
+#include "bcache.h"
+#include "announce.h"
+#include "1984.h"
+#include "more.h"
+#include "record.h"
+#include "xyz.h"
+#include "power_select.h"
+#include "read.h"
+#include "bm.h"
 
 #define PUTCURS   move(3+locmem->crs_line-locmem->top_line,0);prints(">");move(3+locmem->crs_line-locmem->top_line,0);
 //#define PUTCURS   move(3+locmem->crs_line-locmem->top_line,0);prints(">");
