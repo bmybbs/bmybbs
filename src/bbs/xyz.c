@@ -1644,13 +1644,6 @@ x_dict()
 }
 
 void
-x_tt()
-{
-	myexec_cmd(TT, NA, "bin/tt", NULL);
-	redoscr();
-}
-
-void
 x_recite()
 {
 	myexec_cmd(RECITE, NA, "bin/ptyexec", "bin/recite");

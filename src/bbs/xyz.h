@@ -21,7 +21,6 @@ void x_lockscreen(void);
 int heavyload(float maxload);
 int sendgoodwish(char *uid);
 void x_dict(void);
-void x_tt(void);
 void x_recite(void);
 void x_ncce(void);
 void x_chess(void);

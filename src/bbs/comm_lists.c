@@ -111,7 +111,6 @@ const struct scommandlist sysconf_cmdlist[] = {
 	{"ExecDict", (void *) x_dict},
 	{"LockScreen", (void *) x_lockscreen},
 	{"SecondHand", (void *) sec_hand},
-	{"TT", (void *) x_tt},
 	{"RECITE", (void *) x_recite},
 	{"NCCE", (void *) x_ncce},
 	{"CHESS", (void *) x_chess},
