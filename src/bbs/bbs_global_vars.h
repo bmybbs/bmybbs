@@ -66,5 +66,4 @@ extern char ISdelrq;
 extern int readingthread;
 extern int inBBSNET;
 #define ZMODEM_RATE 5000
-#define LINELEN 256
 #endif

@@ -1,5 +1,6 @@
 #ifndef BMYBBS_TERM_H
 #define BMYBBS_TERM_H
+#define LINELEN 256
 extern int t_lines;   ///< lines of screen
 extern int t_columns; ///< columns of screen
 void init_tty(void);
