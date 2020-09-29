@@ -19,7 +19,6 @@ void a_edits2(void);
 void x_lockscreen(void);
 int heavyload(float maxload);
 int sendgoodwish(char *uid);
-void x_freeip(void);
 int ent_bnet(char *cmd);
 int x_denylevel(void);
 char *directfile(char *fpath, char *direct, char *filename);

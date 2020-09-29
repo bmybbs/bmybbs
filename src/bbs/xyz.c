@@ -1589,19 +1589,6 @@ sendGoodWish(char *userid)
 	return 0;
 }
 
-void
-x_freeip()
-{
-	clear();
-	if (heavyload(2.5)) {
-		prints("抱歉，目前系统负荷过重，此功能暂时不能执行...");
-		pressanykey();
-		return;
-	}
-	myexec_cmd(FREEIP, NA, "bin/ptyexec", "bin/freeip");
-	redoscr();
-}
-
 static void
 childreturn(int i)
 {
