@@ -24,7 +24,17 @@
 
 #include "bbs.h"
 #include "edit.h"
-
+#include "smth_screen.h"
+#include "bbs_global_vars.h"
+#include "talk.h"
+#include "mail.h"
+#include "sendmsg.h"
+#include "io.h"
+#include "main.h"
+#include "xyz.h"
+#include "help.h"
+#include "bbsinc.h"
+#include "stuff.h"
 
 #define WRAPMARGIN (255)
 
