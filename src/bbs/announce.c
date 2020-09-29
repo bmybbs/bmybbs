@@ -24,6 +24,21 @@
 
 #include "bbs.h"
 #include "bbsgopher.h"
+#include "smth_screen.h"
+#include "main.h"
+#include "term.h"
+#include "stuff.h"
+#include "xyz.h"
+#include "io.h"
+#include "announce.h"
+#include "mail.h"
+#include "more.h"
+#include "bbsinc.h"
+#include "bcache.h"
+#include "help.h"
+#include "maintain.h"
+#include "edit.h"
+#include "talk.h"
 
 #define PATHLEN         1024
 //modified by ylsdd #define A_PAGESIZE      (t_lines - 5)
@@ -34,6 +49,13 @@
 #define ADDGOPHER       3
 
 void a_menu();
+static int read_anpath(char titles[20][STRLEN], char paths[20][PATHLEN]);
+static int save_anpath(char titles[20][STRLEN], char paths[20][PATHLEN]);
+static int logvisit(time_t timein, const char *path);
+static int chk_currBM_Personal(char *BMstr);
+static int countstr(char *s0, char *s1);
+static int getvisit(int n[2], const char *path);
+static int add_anpath(char *title, char *path);
 
 extern void a_prompt();		/* added by netty */
 extern int can_R_endline;
