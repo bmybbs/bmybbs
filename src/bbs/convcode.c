@@ -16,6 +16,8 @@
 */
 
 #include "bbs.h"
+#include "smth_screen.h"
+#include "bcache.h"
 
 #define BtoGtablefile "etc/b2g_table"
 #define GtoBtablefile "etc/g2b_table"
