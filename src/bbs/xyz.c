@@ -20,10 +20,24 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 */
-#define EXTERN
+#include <sys/mman.h>
 #include "bbs.h"
 #include "bbstelnet.h"
-#include <sys/mman.h>
+#include "smth_screen.h"
+#include "maintain.h"
+#include "bcache.h"
+#include "stuff.h"
+#include "io.h"
+#include "edit.h"
+#include "sendmsg.h"
+#include "talk.h"
+#include "namecomplete.h"
+#include "mail.h"
+#include "more.h"
+#include "bbsinc.h"
+#include "convcode.h"
+#include "userinfo.h"
+#include "main.h"
 
 pid_t childpid;
 static int loadkeys(struct one_key *key, char *name);
