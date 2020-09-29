@@ -23,6 +23,19 @@
 */
 
 #include "bbs.h"
+#include "xyz.h"
+#include "smth_screen.h"
+#include "stuff.h"
+#include "maintain.h"
+#include "io.h"
+#include "namecomplete.h"
+#include "bcache.h"
+#include "talk.h"
+#include "main.h"
+#include "mail.h"
+#include "announce.h"
+#include "bbsinc.h"
+#include "boards.h"
 
 int
 d_board()
