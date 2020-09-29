@@ -2,10 +2,20 @@
  * add by macintosh 2006.3,  Ä£°å·¢ÎÄ
  ***************************************************************************/
 
+#include <sys/mman.h>
 #include "bbs.h"
 #include "tmpl.h"
-#include "common.h"
-#include <sys/mman.h>
+#include "smth_screen.h"
+#include "io.h"
+#include "bbsinc.h"
+#include "term.h"
+#include "stuff.h"
+#include "announce.h"
+#include "more.h"
+#include "main.h"
+#include "edit.h"
+#include "list.h"
+#include "xyz.h"
 
 #define BBS_PAGESIZE    (t_lines - 4)
 
