@@ -1748,7 +1748,7 @@ packet_get_string(NULL);
 /* This is called to fork and execute a command when we have no tty.  This
    will call do_child from the child, and server_loop from the parent after
    setting up file descriptors and such. */
-
+extern void do_abort_bbs();
 void sshbbs_end(void)
 {
     do_abort_bbs();	

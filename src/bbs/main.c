@@ -273,8 +273,7 @@ talk_request(int signum)
 	return;
 }
 
-static void do_abort_bbs()
-{
+void do_abort_bbs() {
 	time_t stay;
 #ifdef CAN_EXEC
 	extern char tempfile[];
