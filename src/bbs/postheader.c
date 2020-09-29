@@ -23,8 +23,14 @@
 */
 
 #include "bbs.h"
-#include "bbstelnet.h"
+#include "bbs_global_vars.h"
 #include "tmpl.h"
+#include "smth_screen.h"
+#include "io.h"
+#include "more.h"
+#include "announce.h"
+#include "stuff.h"
+#include "bbsinc.h"
 
 extern int numofsig;
 struct boardmem *getbcache();
