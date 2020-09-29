@@ -21,7 +21,14 @@
     GNU General Public License for more details.
 */
 #include "bbs.h"
-#include "bbstelnet.h"
+#include "smth_screen.h"
+#include "talk.h"
+#include "record.h"
+#include "list.h"
+#include "bcache.h"
+#include "bbsinc.h"
+#include "namecomplete.h"
+#include "io.h"
 //CHINPUT_SHMKEY=5102
 
 struct BCACHE *brdshm;
