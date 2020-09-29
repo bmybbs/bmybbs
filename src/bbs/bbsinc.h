@@ -9,7 +9,7 @@
 #include <setjmp.h>
 extern int nettyNN;
 extern int selboard;           /* THis flag is true if above is active */
-extern int showansi;
+extern int inBBSNET;
 extern char IScurrBM;
 extern char quote_file[], quote_user[];
 

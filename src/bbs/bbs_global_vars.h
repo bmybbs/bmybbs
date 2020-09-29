@@ -38,8 +38,6 @@ extern int page, range;
 extern int pty;
 extern int range;
 extern int refscreen;
-extern int RMSG;
-extern int showansi;
 extern int started;
 extern int talkidletime;
 extern int talkrequest;
@@ -64,6 +62,5 @@ extern int scr_cols;
 extern int disable_move;
 extern char ISdelrq;
 extern int readingthread;
-extern int inBBSNET;
 #define ZMODEM_RATE 5000
 #endif
