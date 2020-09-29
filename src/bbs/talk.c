@@ -23,6 +23,24 @@
 
 #include "bbs.h"
 #include "bbstelnet.h"
+#include "list.h"
+#include "io.h"
+#include "smth_screen.h"
+#include "xyz.h"
+#include "bcache.h"
+#include "stuff.h"
+#include "main.h"
+#include "sendmsg.h"
+#include "talk.h"
+#include "mail.h"
+#include "read.h"
+#include "record.h"
+#include "namecomplete.h"
+#include "bbsinc.h"
+#include "help.h"
+#include "chat.h"
+#include "announce.h"
+
 #define M_INT 8			/* monitor mode update interval */
 #define P_INT 20		/* interval to check for page req. in talk/chat */
 
@@ -33,6 +51,9 @@ int friendflag = 1;
 int talkrec = -1;
 char partner[IDLEN + 1];
 //#endif
+
+static int show_special(char *id2);
+extern void five_pk(int fd, int first); // five.c TODO
 
 struct talk_win {
 	int curcol, curln;
