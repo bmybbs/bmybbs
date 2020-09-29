@@ -23,8 +23,19 @@
 */
 
 #include "bbs.h"
-#include "bbstelnet.h"
 #include "edit.h"
+#include "smth_screen.h"
+#include "io.h"
+#include "stuff.h"
+#include "xyz.h"
+#include "bcache.h"
+#include "sendmsg.h"
+#include "list.h"
+#include "term.h"
+#include "namecomplete.h"
+#include "mail.h"
+#include "bbsinc.h"
+#include "main.h"
 
 char buf2[MAX_MSG_SIZE];
 struct user_info *t_search();
@@ -36,9 +47,9 @@ static int dowall(struct user_info *uin);
 static int dowall_telnet(struct user_info *uin);
 static int myfriend_wall(struct user_info *uin);
 static int hisfriend_wall(struct user_info *uin);
-static int sendmsgfunc(char *uid, struct user_info *uin, int userpid,
-		       const char *msgstr, int mode, char *msgerr);
+static int sendmsgfunc(char *uid, struct user_info *uin, int userpid, const char *msgstr, int mode, char *msgerr);
 static void mail_msg(struct userec *user);
+static int canmsg_offline(char *uid);
 
 static int
 get_msg(char *uid, char *msg, size_t msg_len, int line)

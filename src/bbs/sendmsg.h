@@ -3,7 +3,6 @@
 #include "struct.h"
 
 int canmsg(struct user_info *uin);
-int canmsg_offline(char *uid);
 int s_msg(void);
 int do_sendmsg(char *uid, struct user_info *uentp, char msgstr[256], int mode, int userpid);
 int wall(void);
