@@ -8,6 +8,16 @@
 /*-------------------------------------------------------*/
 #include "bbs.h"
 #include "sec_hand.h"
+#include "smth_screen.h"
+#include "term.h"
+#include "maintain.h"
+#include "io.h"
+#include "edit.h"
+#include "mail.h"
+#include "xyz.h"
+#include "main.h"
+#include "stuff.h"
+#include "record.h"
 
 #undef HAVE_RESTRICTION		// restrict posting according to currentuser.vmail
 #ifdef  HAVE_RESTRICTION
