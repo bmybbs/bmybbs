@@ -956,7 +956,6 @@ int modifyheader;
 }
 
 char save_title[STRLEN];
-int in_mail;
 
 int
 write_header(fp, mode)

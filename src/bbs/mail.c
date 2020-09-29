@@ -45,7 +45,7 @@
 #include "talk.h"
 #include "power_select.h"
 
-extern int in_mail; // edit.c
+int in_mail;
 extern int mailallmode;
 int G_SENDMODE = NA;
 

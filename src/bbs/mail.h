@@ -2,6 +2,8 @@
 #define BMYBBS_MAIL_H
 #include "ythtbbs/article.h"
 
+extern int in_mail;
+
 char *email_domain(void);
 void filter(char *line);
 int chkmail(void);
