@@ -3454,26 +3454,16 @@ what_to_do()
 {
 	int retv = FULLUPDATE;
 	move(t_lines - 2, 0);
-	prints("\033[m%s%s%s%s%s%s%s",
-	       HAS_PERM(PERM_BASIC) ? "(d)查字典" : "",
-	       HAS_PERM(PERM_BASIC) ? "(n)科技词典" :
-	       "", "(u)查询网友",
+	prints("\033[m%s%s%s%s%s",
+	       "(u)查询网友",
 	       HAS_PERM(PERM_POST) ? "(m)书灯絮语" : "",
 	       HAS_PERM(PERM_POST) ? "(i)飞鸽传书" : "",
-	       HAS_PERM(PERM_CHAT) ? "(c)咖啡红茶店" :
-	       "", HAS_PERM(PERM_BASIC) ? "(o)好友名单" : "");
+	       HAS_PERM(PERM_CHAT) ? "(c)咖啡红茶店" : "",
+	       HAS_PERM(PERM_BASIC) ? "(o)好友名单" : "");
 	move(t_lines - 1, 0);
 	prints("%s  请选择功能, 或按空格键继续",
 	       HAS_PERM(PERM_BASIC) ? "(q)计算" : "");
 	switch (igetkey()) {
-	case 'd':
-		if (HAS_PERM(PERM_BASIC))
-			x_dict();
-		break;
-	case 'n':
-		if (HAS_PERM(PERM_BASIC))
-			x_ncce();
-		break;
 	case 'u':
 		clear();
 		prints("查询网友状态");

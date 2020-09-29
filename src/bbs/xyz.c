@@ -1589,71 +1589,10 @@ sendGoodWish(char *userid)
 	return 0;
 }
 
-/* ppfoong */
-void
-x_dict()
-{
-	char buf[STRLEN];
-	char *s;
-	//int whichdict;
-
-	if (heavyload(0)) {
-		clear();
-		prints("±§Ç¸£¬Ä¿Ç°ÏµÍ³¸ººÉ¹ıÖØ£¬´Ë¹¦ÄÜÔİÊ±²»ÄÜÖ´ĞĞ...");
-		pressanykey();
-		return;
-	}
-	modify_user_mode(DICT);
-	clear();
-	prints("\n[1;32m     _____  __        __   __");
-	prints
-	    ("\n    |     \\|__|.----.|  |_|__|.-----.-----.---.-.----.--.--.");
-	prints
-	    ("\n    |  --  |  ||  __||   _|  ||  _  |     |  _  |   _|  |  |");
-	prints
-	    ("\n    |_____/|__||____||____|__||_____|__|__|___._|__| |___  |");
-	prints
-	    ("\n                                                     |_____|[m");
-	prints("\n\n\n»¶Ó­Ê¹ÓÃ±¾Õ¾µÄ×Öµä¡£");
-	prints
-	    ("\n±¾×ÖµäÖ÷ÒªÎª[1;33m¡¸Ó¢ºº¡¹[m²¿·Ö, µ«Òà¿É×÷[1;33m¡¸ººÓ¢¡¹[m²éÑ¯¡£");
-	prints
-	    ("\n\nÏµÍ³½«¸ù¾İÄúËùÊäÈëµÄ×Ö´®, ×Ô¶¯ÅĞ¶ÏÄúËùÒª·­²éµÄÊÇÓ¢ÎÄ×Ö»¹ÊÇÖĞÎÄ×Ö¡£");
-	prints("\n\n\nÇëÊäÈëÄúÓû·­²éµÄÓ¢ÎÄ×Ö»òÖĞÎÄ×Ö, »òÖ±½Ó°´ <ENTER> È¡Ïû¡£");
-	getdata(15, 0, ">", buf, 30, DOECHO, YEA);
-	if (buf[0] == '\0') {
-		prints("\nÄú²»Ïë²éÁËà¸...");
-		pressanykey();
-		return;
-	}
-	for (s = buf; *s != '\0'; s++) {
-		if (isspace(*s)) {
-			prints("\nÒ»´ÎÖ»ÄÜ²éÒ»¸ö×ÖÀ², ²»ÄÜÌ«Ì°ĞÄà¸!!");
-			pressanykey();
-			return;
-		}
-	}
-	myexec_cmd(DICT, YEA, "bin/cdict.sh", buf);
-	sprintf(buf, "bbstmpfs/tmp/dict.%s.%d", currentuser.userid, uinfo.pid);
-	if (dashf(buf)) {
-		ansimore(buf, NA);
-		if (askyn("Òª½«½á¹û¼Ä»ØĞÅÏäÂğ", NA, NA) == YEA)
-			mail_file(buf, currentuser.userid, "×Öµä²éÑ¯½á¹û");
-		unlink(buf);
-	}
-}
-
 void
 x_recite()
 {
 	myexec_cmd(RECITE, NA, "bin/ptyexec", "bin/recite");
-	redoscr();
-}
-
-void
-x_ncce()
-{
-	myexec_cmd(NCCE, NA, "bin/ptyexec", "bin/ncce");
 	redoscr();
 }
 

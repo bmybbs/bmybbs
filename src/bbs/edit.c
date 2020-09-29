@@ -1762,14 +1762,6 @@ int action, arg;
 		display_buffer();
 		redoscr();
 		break;
-	case '=':
-		savemode = uinfo.mode;
-		showansi = 1;
-		x_dict();
-		modify_user_mode(savemode);
-		display_buffer();
-		redoscr();
-		break;
 	}
 
 	if (strchr("FBRCM", action))
