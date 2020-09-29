@@ -22,6 +22,23 @@
     GNU General Public License for more details.
 */
 #include "bbs.h"
+#include "smth_screen.h"
+#include "io.h"
+#include "maintain.h"
+#include "stuff.h"
+#include "xyz.h"
+#include "namecomplete.h"
+#include "bcache.h"
+#include "userinfo.h"
+#include "more.h"
+#include "record.h"
+#include "bm.h"
+#include "bbsinc.h"
+#include "announce.h"
+#include "talk.h"
+#include "boards.h"
+#include "term.h"
+#include "mail.h"
 
 #define        BLK_SIZ         4096  //by bjgyt
 
