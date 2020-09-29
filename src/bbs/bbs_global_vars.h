@@ -40,7 +40,6 @@ extern int range;
 extern int refscreen;
 extern int started;
 extern int talkidletime;
-extern int talkrequest;
 extern int t_columns;
 extern int t_lines;
 extern int toggle1, toggle2;

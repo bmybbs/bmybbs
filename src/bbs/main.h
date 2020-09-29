@@ -2,6 +2,7 @@
 #define BMYBBS_BBS_MAIN
 #include "ythtbbs/user.h"
 extern int showansi;
+extern int talkrequest;
 extern int RMSG;
 extern jmp_buf byebye ;        /* Used for exception condition like I/O error*/
 
