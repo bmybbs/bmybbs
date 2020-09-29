@@ -23,8 +23,22 @@
 */
 
 #include "bbs.h"
-#include "bbstelnet.h"
 #include "common.h"
+#include "term.h"
+#include "smth_screen.h"
+#include "io.h"
+#include "main.h"
+#include "stuff.h"
+#include "delete.h"
+#include "help.h"
+#include "sendmsg.h"
+#include "xyz.h"
+#include "mail.h"
+#include "list.h"
+#include "bcache.h"
+#include "bbsinc.h"
+#include "talk.h"
+#include "record.h"
 // modified by yldsd.
 // #define BBS_PAGESIZE    (19)
 #define BBS_PAGESIZE (t_lines - 4)
