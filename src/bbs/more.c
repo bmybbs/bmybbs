@@ -24,6 +24,15 @@
 
 #include <sys/mman.h>
 #include "bbs.h"
+#include "smth_screen.h"
+#include "term.h"
+#include "io.h"
+#include "stuff.h"
+#include "main.h"
+#include "help.h"
+#include "bcache.h"
+#include "xyz.h"
+#include "goodbye.h"
 
 static int stuffmode = 0;
 time_t calltime = 0;
