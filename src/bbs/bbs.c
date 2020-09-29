@@ -1787,7 +1787,7 @@ int mode;
 	*quote_file = '\0';
 }
 
-static int do_post() {
+int do_post() {
 	*quote_file = '\0';
 	*quote_user = '\0';
 	return post_article(NULL);

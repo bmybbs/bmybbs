@@ -38,6 +38,7 @@ int digest_post(int ent, struct fileheader *fhdr, char *direct);
 int do_reply(struct fileheader *fh);
 int transferattach(char *buf, size_t size, FILE *fp, FILE *fpto);
 void do_quote(char *filepath, int quote_mode);
+static int do_post(void);
 void add_loginfo(char *filepath);
 void add_crossinfo(char *filepath, int mode);
 int show_board_notes(char bname[30]);
