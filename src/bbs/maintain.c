@@ -37,7 +37,6 @@
 #include "announce.h"
 #include "talk.h"
 #include "boards.h"
-#include "term.h"
 #include "mail.h"
 
 #define        BLK_SIZ         4096  //by bjgyt

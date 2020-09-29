@@ -31,7 +31,6 @@
 #include "sendmsg.h"
 #include "io.h"
 #include "main.h"
-#include "xyz.h"
 #include "help.h"
 #include "bbsinc.h"
 #include "stuff.h"
