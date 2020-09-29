@@ -23,6 +23,8 @@
 */
 
 #include "bbs.h"
+#include "smth_screen.h"
+#include "goodbye.h"
 
 typedef struct {
 	char *match;
