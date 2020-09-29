@@ -1658,20 +1658,6 @@ x_ncce()
 }
 
 void
-x_chess()
-{
-	myexec_cmd(CHESS, NA, "bin/chc", NULL);
-	redoscr();
-}
-
-void
-x_qkmj()
-{
-	myexec_cmd(CHESS, NA, "bin/qkmj", NULL);
-	redoscr();
-}
-
-void
 x_quickcalc()
 {
 	clear();

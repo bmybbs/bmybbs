@@ -23,8 +23,6 @@ int sendgoodwish(char *uid);
 void x_dict(void);
 void x_recite(void);
 void x_ncce(void);
-void x_chess(void);
-void x_qkmj(void);
 void x_quickcalc(void);
 void x_freeip(void);
 void x_showuser(void);

@@ -113,8 +113,6 @@ const struct scommandlist sysconf_cmdlist[] = {
 	{"SecondHand", (void *) sec_hand},
 	{"RECITE", (void *) x_recite},
 	{"NCCE", (void *) x_ncce},
-	{"CHESS", (void *) x_chess},
-	{"QKMJ", (void *) x_qkmj},
 	{"ShowUser", (void *) x_showuser},
 	{"QUICKCALC", (void *) x_quickcalc},
 	{"FREEIP", (void *) x_freeip},
