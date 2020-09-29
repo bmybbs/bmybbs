@@ -10,7 +10,7 @@
                         Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
 
     Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
-    
+
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 1, or (at your option)
@@ -208,15 +208,12 @@ static void printacbar() {
 	if (bp == NULL)
 		return;
 	move(2, 0);
-	prints
-	    ("[1;31m¡õ¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©È[37m»î  ¶¯  ¿´  °æ[31m©À¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡õ [m\n");
+	prints("\033[1;31m¡õ¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©È\033[37m»î  ¶¯  ¿´  °æ\033[31m©À¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡õ \033[m\n");
 	move(3 + MAXnettyLN, 0);
 	if (bp->header.flag & VOTE_FLAG)
-		prints
-		    ("[1;31m¡õ¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©È[37mÏµÍ³Í¶Æ±ÖÐ [ Config->Vote ] [31m©À¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡õ [m\n");
+		prints("\033[1;31m¡õ¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©È\033[37mÏµÍ³Í¶Æ±ÖÐ [ Config->Vote ] \033[31m©À¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡õ \033[m\n");
 	else
-		prints
-		    ("[1;31m¡õ¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡õ [m\n");
+		prints("\033[1;31m¡õ¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡õ \033[m\n");
 
 	move(y, x);
 	refresh();
@@ -238,7 +235,7 @@ check_calltime()
 		bell();
 		move(line, 0);
 		clrtoeol();
-		prints("[1;44;32mBBS ÏµÍ³Í¨¸æ: [37m%-65s[m",
+		prints("\033[1;44;32mBBS ÏµÍ³Í¨¸æ: \033[37m%-65s\033[m",
 		       "ÏµÍ³ÄÖÖÓ Áå¡«¡«¡«¡«¡«¡«");
 		igetkey();
 		move(line, 0);
@@ -410,7 +407,7 @@ measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
 	return 0;
 }
 
-int effectiveline;		//ÓÐÐ§ÐÐÊý, Ö»¼ÆËãÇ°ÃæµÄ²¿·Ö, Í·²¿²»º¬, ¿ÕÐÐ²»º¬, Ç©Ãûµµ²»º¬, ÒýÑÔ²»º¬ 
+int effectiveline;		//ÓÐÐ§ÐÐÊý, Ö»¼ÆËãÇ°ÃæµÄ²¿·Ö, Í·²¿²»º¬, ¿ÕÐÐ²»º¬, Ç©Ãûµµ²»º¬, ÒýÑÔ²»º¬
 
 static void
 init_MemMoreLines(struct MemMoreLines *l, char *ptr, int size)
@@ -603,7 +600,7 @@ http://Õ¾Ãû/°æÃæÃû³Æ/ÎÄ¼þÃû³Æ/Ëæ»úÊý/°üº¬ºó×ºµÄÎÄ¼þÃû
 Ö»¸ù¾ÝÎÄ¼þÃûºó×ºÅÐ¶ÏÒ»ÏÂÎÄ¼þÀàÐÍ¡£Òò´Ë£¬ÎªÁË±ÜÃâÒòÎªÓÃ»§ÉÏÔØµÄÎÄ¼þÃûµÄ²»Í¬ÒýÆðµÄÂé·³£¬·µ»ØµÄÍ¼Æ¬Á´½ÓµØÖ·£¬
 ²¢Ã»ÓÐÓÃÔ­Ê¼µÄÎÄ¼þÃû¡£
 
-*/				
+*/
 /*			if((attachname[0] > ' ' && attachname[0] < 'z' && strlen(attachname) < 20))
 			{
 			prints
@@ -626,7 +623,7 @@ http://Õ¾Ãû/°æÃæÃû³Æ/ÎÄ¼þÃû³Æ/Ëæ»úÊý/°üº¬ºó×ºµÄÎÄ¼þÃû
 				prints("\033[m¸½¼þ: \033[1;4mhttp://%s/attach/%s/M%s/%d/%d%s\033[0m\n",
 				MY_BBS_DOMAIN, currboard, strchr(fn,'.'), nPos, l->curr_line - 4, strrchr(attachname, '.'));
 			}
-		
+
 		}
 		return;
 	} else if (ty == 104) {
@@ -650,30 +647,28 @@ http://Õ¾Ãû/°æÃæÃû³Æ/ÎÄ¼þÃû³Æ/Ëæ»úÊý/°üº¬ºó×ºµÄÎÄ¼þÃû
 		switch (type) {
 		case 1:
 			if (digestmode == YEA)
-				prints("http://%s/" SMAGIC
-				       "%s/gcon?B=%s&F=%s", MY_BBS_DOMAIN,
-				       temp_sessionid, currboard, q);
+				prints("http://%s/" SMAGIC "%s/gcon?B=%s&F=%s",
+						MY_BBS_DOMAIN, temp_sessionid, currboard, q);
 			else
-				prints("http://%s/" SMAGIC
-				       "%s/con?B=%s&F=%s", MY_BBS_DOMAIN,
-				       temp_sessionid, currboard, q);
+				prints("http://%s/" SMAGIC "%s/con?B=%s&F=%s",
+						MY_BBS_DOMAIN, temp_sessionid, currboard, q);
 			break;
 		case 2:
 			if (0)
 				prints("http://%s/" SMAGIC "%s/anc?path=%s",
-				       MY_BBS_DOMAIN, temp_sessionid, q);
+						MY_BBS_DOMAIN, temp_sessionid, q);
 			break;
 		case 3:
 			prints("http://%s/" SMAGIC "%s/bbsmailcon?file=%s",
-			       MY_BBS_DOMAIN, temp_sessionid, q);
+					MY_BBS_DOMAIN, temp_sessionid, q);
 			break;
 		case 4:
 			prints("http://%s/" SMAGIC "%s/c1?T=%d&F=%s",
-			       MY_BBS_DOMAIN, temp_sessionid, type, fn + 13);
+					MY_BBS_DOMAIN, temp_sessionid, type, fn + 13);
 			break;
 		case 5:
 			prints("http://%s/" SMAGIC "%s/c1?T=%d&F=%s",
-			       MY_BBS_DOMAIN, temp_sessionid, type, fn + 20);
+					MY_BBS_DOMAIN, temp_sessionid, type, fn + 20);
 			break;
 		default:
 			break;
@@ -941,7 +936,7 @@ int ansimore(char *filename, int promptend) {
 	if (promptend)
 		pressanykey();
 	move(t_lines - 1, 0);
-	prints("[m[m");
+	prints("\033[m\033[m");
 	return ch;
 }
 
