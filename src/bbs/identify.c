@@ -1,5 +1,11 @@
 #include "bbs.h"
 #include "ythtbbs/identify.h"
+#include "smth_screen.h"
+#include "io.h"
+#include "maintain.h"
+#include "namecomplete.h"
+#include "stuff.h"
+#include "bcache.h"
 
 #ifdef POP_CHECK
 
