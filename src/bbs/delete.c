@@ -294,9 +294,7 @@ mail_info()
 	}
 }
 #endif
-int
-d_user(char *cid)
-{
+static int d_user(char *cid) {
 	int id;
 
 	if (uinfo.mode != OFFLINE) {
