@@ -22,10 +22,32 @@
     GNU General Public License for more details.
 */
 
+#include <time.h>
+#include <stdio.h>
 #include "bbs.h"
-#include "bbstelnet.h"
-#include "time.h"
-#include "stdio.h"
+#include "bbs_global_vars.h"
+#include "bcache.h"
+#include "smth_screen.h"
+#include "bbsinc.h"
+#include "io.h"
+#include "sendmsg.h"
+#include "more.h"
+#include "stuff.h"
+#include "term.h"
+#include "convcode.h"
+#include "mail.h"
+#include "xyz.h"
+#include "talk.h"
+#include "userinfo.h"
+#include "boards.h"
+#include "fileshm.h"
+#include "register.h"
+#include "help.h"
+#include "goodbye.h"
+#include "list.h"
+#include "comm_list.h"
+#include "edit.h"
+#include "vote.h"
 
 int ERROR_READ_SYSTEM_FILE = NA;
 int RMSG = YEA;
