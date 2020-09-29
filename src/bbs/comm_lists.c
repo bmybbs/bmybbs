@@ -47,7 +47,6 @@
 
 extern int moneycenter(void);        // moneycenter.c
 extern int x_active_manager(void);   // identify.c
-extern int sec_hand(void);           // sec_hand.c
 
 #define SC_BUFSIZE              20480
 #define SC_KEYSIZE              256
@@ -109,7 +108,6 @@ const struct scommandlist sysconf_cmdlist[] = {
 	{"MailAll", (void *) mailall},
 	{"ExecDict", (void *) x_dict},
 	{"LockScreen", (void *) x_lockscreen},
-	{"SecondHand", (void *) sec_hand},
 	{"RECITE", (void *) x_recite},
 	{"NCCE", (void *) x_ncce},
 	{"QUICKCALC", (void *) x_quickcalc},

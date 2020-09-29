@@ -94,7 +94,6 @@ struct cgi_applet applets[] = {
 	{bbsbkncon_main, {"bbsbkncon", "bkncon", NULL}, 0L, 0L, 0},
 	{bbshome_main, {"bbshome", "home", NULL}, 0L, 0L, 0},
 	{bbsindex_main, {"bbsindex", NULL}, 0L, 0L, 0},
-	{bbssechand_main, {"bbssechand", NULL}, 0L, 0L, 0},
 	{bbsupload_main, {"bbsupload", NULL}, 0L, 0L, 0},
 	{bbslform_main, {"bbslform", NULL}, 0L, 0L, 0},
 	{bbst_main, {"bbst", NULL}, 0L, 0L, 0},

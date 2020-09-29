@@ -64,7 +64,6 @@ SET(BBS_SRCS
 	../src/bbs/addressbook.c
 	../src/bbs/backnumber.c
 	../src/bbs/common.c
-	../src/bbs/sec_hand.c
 	../src/bbs/regular.c
 	../src/bbs/1984.c
 	../src/bbs/moneycenter.c

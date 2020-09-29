@@ -37,7 +37,6 @@ set(SRC
 	addressbook.c
 	backnumber.c
 	common.c
-	sec_hand.c
 	regular.c
 	1984.c
 	moneycenter.c

@@ -1,6 +1,5 @@
 include_directories(include)
 
-add_subdirectory(2nd_expire)
 #add_subdirectory(annIndex)
 add_subdirectory(averun)
 #add_subdirectory(auto_rm_fakedir)

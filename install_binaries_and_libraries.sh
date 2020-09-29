@@ -50,7 +50,6 @@ else
 	install_binary $BUILD_DIR/atthttpd/atthttpd         atthttpd
 	install_www    $BUILD_DIR/nju09/www/www             www
 
-	install_binary $BUILD_DIR/local_utl/2nd_expire/2nd_expire                 2nd_expire
 	install_binary $BUILD_DIR/local_utl/averun/averun                         averun
 	install_binary $BUILD_DIR/local_utl/auto_rm_junk/auto_rm_junk             auto_rm_junk
 	install_binary $BUILD_DIR/local_utl/autoclear/autoclear                   autoclear
