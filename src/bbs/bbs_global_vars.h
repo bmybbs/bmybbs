@@ -2,7 +2,6 @@
 #define BMYBBS_BBS_BBSTELNET
 extern char save_title[STRLEN];
 extern char currboard[STRLEN];
-extern char currdirect[STRLEN];
 extern int currfiletime;
 extern char currmaildir[STRLEN];
 extern char fromhost[];

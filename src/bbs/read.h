@@ -2,6 +2,8 @@
 #define BMYBBS_READ_H
 #include "ythtbbs/article.h"
 
+extern char currdirect[];
+
 struct keeploc *getkeep(char *s, int def_topline, int def_cursline);
 void fixkeep(char *s, int first, int last);
 void i_read(int cmdmode, char *direct, int (*dotitle)(void), char *(*doentry)(int, void *, char *), const struct one_key *rcmdlist, int ssize);

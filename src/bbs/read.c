@@ -1717,11 +1717,7 @@ search_threadid(struct keeploc *locmem, int offset, int thread, int mode)
 	return match;
 }
 
-static int
-digest_mode()
-{
-	extern char currdirect[STRLEN];
-
+static int digest_mode() {
 	if (digestmode == YEA) {
 		digestmode = NA;
 		setbdir(currdirect, currboard, digestmode);
