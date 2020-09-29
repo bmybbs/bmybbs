@@ -24,6 +24,17 @@
 
 #include "bbs.h"
 #include "bbsgopher.h"
+#include "main.h"
+#include "smth_screen.h"
+#include "edit.h"
+#include "stuff.h"
+#include "bbsinc.h"
+#include "help.h"
+#include "xyz.h"
+#include "more.h"
+#include "list.h"
+#include "record.h"
+#include "mail.h"
 
 int a;
 int inrp_by_user = YEA;
@@ -33,6 +44,8 @@ char *cur_page;
 GOPHER *tmpitem;
 int gopher_position = 0;
 char gophertmpfile[40];
+
+static int show_gopher(void);
 
 static int interrupt_chk(void) {
 	int key;
