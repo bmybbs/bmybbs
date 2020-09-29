@@ -1,5 +1,9 @@
 #ifndef BMYBBS_BOARDS_H
 #define BMYBBS_BOARDS_H
+#include "ythtbbs/boardrc.h"
+
+extern struct onebrc brc;
+
 void GoodBrds(void);
 void EGroup(char *cmd);
 void Boards(void);
