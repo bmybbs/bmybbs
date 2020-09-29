@@ -1,0 +1,570 @@
+digraph G {
+	n_1984 [label="1984.c"];
+	n_addr [label="addressbook.c"];
+	n_anno [label="announce.c"];
+	n_bckn [label="backnumber.c"];
+	n_bbs  [label="bbs.c"];
+	n_bbsg [label="bbsgopher.c"];
+	n_bcch [label="bcache.c"];
+	n_bm   [label="bm.c"];
+	n_brds [label="boards.c"];
+	n_chat [label="chat.c"];
+	n_clst [label="comm_lists.c"];
+	n_cmmn [label="common.c"];
+	n_cvcd [label="convcode.c"];
+	n_delt [label="delete.c"];
+	n_edit [label="edit.c"];
+	n_edbd [label="editboard.c"];
+	n_fshm [label="fileshm.c"];
+	n_five [label="five.c"];
+	n_gdby [label="goodbye.c"];
+	n_help [label="help.c"];
+	n_idtf [label="identify.c"];
+	n_io   [label="io.c"];
+	n_list [label="list.c"];
+	n_mail [label="mail.c"];
+	n_main [label="main.c"];
+	n_mntn [label="maintain.c"];
+	n_mnct [label="moneycenter.c"];
+	n_more [label="more.c"];
+	n_nmcp [label="namecomplete.c"];
+	n_psth [label="postheader.c"];
+	n_psel [label="power_select.c"];
+	n_read [label="read.c"];
+	n_rcrd [label="record.c"];
+	n_regi [label="register.c"];
+	n_regu [label="regular.c"];
+	n_smsg [label="sendmsg.c"];
+	n_smth [label="smth_screen.c"];
+	n_stff [label="stuff.c"];
+	n_talk [label="talk.c"];
+	n_term [label="term.c"];
+	n_tmpl [label="tmpl.c"];
+	n_user [label="userinfo.c"];
+	n_vote [label="vote.c"];
+	n_xyz  [label="xyz.c"];
+
+	/* 1984.c */
+	n_main -> n_1984;
+	n_smth -> n_1984;
+	n_bbs  -> n_1984;
+	n_xyz  -> n_1984;
+	n_more -> n_1984;
+	n_read -> n_1984;
+	n_smsg -> n_1984;
+	n_stff -> n_1984;
+	n_bcch -> n_1984;
+	n_io   -> n_1984;
+	n_term -> n_1984;
+
+	/* addressbook.c */
+	n_xyz  -> n_addr;
+	n_io   -> n_addr;
+	n_smth -> n_addr;
+	n_stff -> n_addr;
+	n_nmcp -> n_addr;
+
+	/* announce.c */
+	n_bbs  -> n_anno;
+	n_bbsg -> n_anno;
+	n_smth -> n_anno;
+	n_main -> n_anno;
+	n_term -> n_anno;
+	n_stff -> n_anno;
+	n_xyz  -> n_anno;
+	n_io   -> n_anno;
+	n_mail -> n_anno;
+	n_more -> n_anno;
+	n_bcch -> n_anno;
+	n_help -> n_anno;
+	n_mntn -> n_anno;
+	n_edit -> n_anno;
+	n_talk -> n_anno;
+
+	/* backnumber.c */
+	n_smth -> n_bckn;
+	n_main -> n_bckn;
+	n_xyz  -> n_bckn;
+	n_stff -> n_bckn;
+	n_more -> n_bckn;
+	n_read -> n_bckn;
+	n_bbs  -> n_bckn;
+	n_io   -> n_bckn;
+	n_term -> n_bckn;
+	n_smsg -> n_bckn;
+	n_help -> n_bckn;
+	n_mntn -> n_bckn;
+	n_list -> n_bckn;
+
+	/* bbs.c */
+	n_talk -> n_bbs;
+	n_vote -> n_bbs;
+	n_smsg -> n_bbs;
+	n_mail -> n_bbs;
+	n_list -> n_bbs;
+	n_stff -> n_bbs;
+	n_smth -> n_bbs;
+	n_io   -> n_bbs;
+	n_edit -> n_bbs;
+	n_brds -> n_bbs;
+	n_bcch -> n_bbs;
+	n_psel -> n_bbs;
+	n_tmpl -> n_bbs;
+	n_main -> n_bbs;
+	n_read -> n_bbs;
+	n_bm   -> n_bbs;
+	n_clst -> n_bbs;
+	n_xyz  -> n_bbs;
+	n_more -> n_bbs;
+	n_nmcp -> n_bbs;
+	n_1984 -> n_bbs;
+	n_psth -> n_bbs;
+	n_anno -> n_bbs;
+	n_mntn -> n_bbs;
+	n_bckn -> n_bbs;
+	n_rcrd -> n_bbs;
+	n_chat -> n_bbs;
+	n_help -> n_bbs;
+
+	/* bbsgopher.c */
+	n_main -> n_bbsg;
+	n_smth -> n_bbsg;
+	n_edit -> n_bbsg;
+	n_stff -> n_bbsg;
+	n_bbs  -> n_bbsg;
+	n_help -> n_bbsg;
+	n_xyz  -> n_bbsg;
+	n_more -> n_bbsg;
+	n_list -> n_bbsg;
+	n_rcrd -> n_bbsg;
+	n_mail -> n_bbsg;
+
+	/* bcache.c */
+	n_smth -> n_bcch;
+	n_talk -> n_bcch;
+	n_rcrd -> n_bcch;
+	n_list -> n_bcch;
+	n_bbs  -> n_bcch;
+	n_nmcp -> n_bcch;
+	n_io   -> n_bcch;
+
+	/* bm.c */
+	n_smth -> n_bm;
+	n_io   -> n_bm;
+	n_stff -> n_bm;
+	n_talk -> n_bm;
+	n_nmcp -> n_bm;
+	n_bcch -> n_bm;
+	n_bbs  -> n_bm;
+	n_more -> n_bm;
+	n_mntn -> n_bm;
+	n_mail -> n_bm;
+
+	/* boards.c */
+	n_edbd -> n_brds;
+	n_bbs  -> n_brds;
+	n_io   -> n_brds;
+	n_smth -> n_brds;
+	n_main -> n_brds;
+	n_stff -> n_brds;
+	n_bcch -> n_brds;
+	n_xyz  -> n_brds;
+	n_smsg -> n_brds;
+	n_more -> n_brds;
+	n_1984 -> n_brds;
+	n_read -> n_brds;
+	n_mail -> n_brds;
+	n_edit -> n_brds;
+	n_mntn -> n_brds;
+	n_nmcp -> n_brds;
+	n_help -> n_brds;
+	n_talk -> n_brds;
+	n_list -> n_brds;
+	n_anno -> n_brds;
+	n_vote -> n_brds;
+
+	/* chat.c */
+	n_smth -> n_chat;
+	n_xyz  -> n_chat;
+	n_term -> n_chat;
+	n_io   -> n_chat;
+	n_mail -> n_chat;
+	n_bcch -> n_chat;
+	n_smsg -> n_chat;
+	n_stff -> n_chat;
+	n_rcrd -> n_chat;
+	n_talk -> n_chat;
+	n_list -> n_chat;
+	n_main -> n_chat;
+	n_bbs  -> n_chat;
+
+	/* comm_lists.c */
+	n_stff -> n_clst;
+	n_xyz  -> n_clst;
+	n_brds -> n_clst;
+	n_anno -> n_clst;
+	n_mntn -> n_clst;
+	n_mail -> n_clst;
+	n_list -> n_clst;
+	n_talk -> n_clst;
+	n_smsg -> n_clst;
+	n_user -> n_clst;
+	n_vote -> n_clst;
+	n_bbs  -> n_clst;
+	n_addr -> n_clst;
+	n_chat -> n_clst;
+	n_delt -> n_clst;
+	n_more -> n_clst;
+	n_cvcd -> n_clst;
+	n_smth -> n_clst;
+	n_main -> n_clst;
+	n_fshm -> n_clst;
+	n_mnct -> n_clst;
+	n_idtf -> n_clst;
+
+	/* convcode.c */
+	n_bcch -> n_cvcd;
+	n_smth -> n_cvcd;
+
+	/* delete.c */
+	n_xyz  -> n_delt;
+	n_smth -> n_delt;
+	n_stff -> n_delt;
+	n_mntn -> n_delt;
+	n_io   -> n_delt;
+	n_nmcp -> n_delt;
+	n_bcch -> n_delt;
+	n_talk -> n_delt;
+	n_main -> n_delt;
+	n_mail -> n_delt;
+	n_anno -> n_delt;
+	n_bbs  -> n_delt;
+	n_brds -> n_delt;
+
+	/* edit.c */
+	n_smth -> n_edit;
+	n_talk -> n_edit;
+	n_mail -> n_edit;
+	n_smsg -> n_edit;
+	n_io   -> n_edit;
+	n_main -> n_edit;
+	n_help -> n_edit;
+	n_bbs  -> n_edit;
+	n_stff -> n_edit;
+
+	/* editboard.c */
+	n_smth -> n_edbd;
+	n_bbs  -> n_edbd;
+	n_stff -> n_edbd;
+	n_mntn -> n_edbd;
+	n_main -> n_edbd;
+
+	/* fileshm.c */
+	n_bcch -> n_fshm;
+	n_smth -> n_fshm;
+	n_stff -> n_fshm;
+	n_gdby -> n_fshm;
+
+	/* five.c */
+	n_smth -> n_five;
+	n_stff -> n_five;
+	n_io   -> n_five;
+	n_xyz  -> n_five;
+	n_term -> n_five;
+	n_main -> n_five;
+
+	/* goodbye.c */
+	n_smth -> n_gdby;
+
+	/* help.c */
+	n_more -> n_help;
+	n_smth -> n_help;
+
+	/* identify.c */
+	n_smth -> n_idtf;
+	n_io   -> n_idtf;
+	n_mntn -> n_idtf;
+	n_nmcp -> n_idtf;
+	n_stff -> n_idtf;
+	n_bcch -> n_idtf;
+
+	/* io.c */
+	n_edit -> n_io;
+	n_cvcd -> n_io;
+	n_bcch -> n_io;
+	n_main -> n_io;
+	n_smsg -> n_io;
+	n_smth -> n_io;
+	n_term -> n_io;
+
+	/* list.c */
+	n_cmmn -> n_list;
+	n_term -> n_list;
+	n_smth -> n_list;
+	n_io   -> n_list;
+	n_main -> n_list;
+	n_stff -> n_list;
+	n_delt -> n_list;
+	n_help -> n_list;
+	n_smsg -> n_list;
+	n_xyz  -> n_list;
+	n_mail -> n_list;
+	n_bcch -> n_list;
+	n_bbs  -> n_list;
+	n_talk -> n_list;
+	n_rcrd -> n_list;
+
+	/* mail.c */
+	n_smth -> n_mail;
+	n_psth -> n_mail;
+	n_io   -> n_mail;
+	n_xyz  -> n_mail;
+	n_stff -> n_mail;
+	n_read -> n_mail;
+	n_more -> n_mail;
+	n_rcrd -> n_mail;
+	n_main -> n_mail;
+	n_list -> n_mail;
+	n_nmcp -> n_mail;
+	n_bcch -> n_mail;
+	n_edit -> n_mail;
+	n_bbs  -> n_mail;
+	n_smsg -> n_mail;
+	n_help -> n_mail;
+	n_talk -> n_mail;
+	n_psel -> n_mail;
+
+	/* main.c */
+	n_bcch -> n_main;
+	n_smth -> n_main;
+	n_bbs  -> n_main;
+	n_io   -> n_main;
+	n_smsg -> n_main;
+	n_more -> n_main;
+	n_stff -> n_main;
+	n_term -> n_main;
+	n_cvcd -> n_main;
+	n_mail -> n_main;
+	n_xyz  -> n_main;
+	n_talk -> n_main;
+	n_user -> n_main;
+	n_brds -> n_main;
+	n_fshm -> n_main;
+	n_regi -> n_main;
+	n_help -> n_main;
+	n_gdby -> n_main;
+	n_list -> n_main;
+	n_clst -> n_main;
+	n_edit -> n_main;
+	n_vote -> n_main;
+
+	/* maintain.c */
+	n_smth -> n_mntn;
+	n_io   -> n_mntn;
+	n_stff -> n_mntn;
+	n_xyz  -> n_mntn;
+	n_nmcp -> n_mntn;
+	n_bcch -> n_mntn;
+	n_user -> n_mntn;
+	n_more -> n_mntn;
+	n_rcrd -> n_mntn;
+	n_bm   -> n_mntn;
+	n_bbs  -> n_mntn;
+	n_anno -> n_mntn;
+	n_talk -> n_mntn;
+	n_brds -> n_mntn;
+	n_mail -> n_mntn;
+
+	/* moneycenter.c */
+	n_stff -> n_mnct;
+	n_smth -> n_mnct;
+	n_mntn -> n_mnct;
+	n_nmcp -> n_mnct;
+	n_main -> n_mnct;
+	n_bcch -> n_mnct;
+	n_talk -> n_mnct;
+	n_bbs  -> n_mnct;
+	n_mail -> n_mnct;
+	n_bm   -> n_mnct;
+	n_io   -> n_mnct;
+	n_rcrd -> n_mnct;
+	n_more -> n_mnct;
+	n_xyz  -> n_mnct;
+	n_brds -> n_mnct;
+	n_edit -> n_mnct;
+
+	/* more.c */
+	n_smth -> n_more;
+	n_term -> n_more;
+	n_io   -> n_more;
+	n_stff -> n_more;
+	n_main -> n_more;
+	n_help -> n_more;
+	n_bcch -> n_more;
+	n_xyz  -> n_more;
+	n_gdby -> n_more;
+
+	/* namecomplete.c */
+	n_smth -> n_nmcp;
+	n_io   -> n_nmcp;
+	n_term -> n_nmcp;
+	n_stff -> n_nmcp;
+	n_main -> n_nmcp;
+
+	/* postheader.c */
+	n_tmpl -> n_psth;
+	n_smth -> n_psth;
+	n_io   -> n_psth;
+	n_more -> n_psth;
+	n_stff -> n_psth;
+	n_bbs  -> n_psth;
+	n_mail -> n_psth;
+	n_edit -> n_psth;
+
+	/* power_select.c */
+	n_regu -> n_psel;
+	n_smth -> n_psel;
+	n_bbs  -> n_psel;
+	n_stff -> n_psel;
+	n_io   -> n_psel;
+	n_read -> n_psel;
+	n_brds -> n_psel;
+
+	/* read.c */
+	n_smth -> n_read;
+	n_stff -> n_read;
+	n_bckn -> n_read;
+	n_io   -> n_read;
+	n_talk -> n_read;
+	n_main -> n_read;
+	n_bbs  -> n_read;
+	n_smsg -> n_read;
+	n_mail -> n_read;
+	n_bcch -> n_read;
+	n_anno -> n_read;
+	n_1984 -> n_read;
+	n_more -> n_read;
+	n_rcrd -> n_read;
+	n_xyz  -> n_read;
+	n_psel -> n_read;
+	n_bm   -> n_read;
+
+	/* register.c */
+	n_smth -> n_regi;
+	n_io   -> n_regi;
+	n_stff -> n_regi;
+	n_more -> n_regi;
+	n_main -> n_regi;
+	n_term -> n_regi;
+	n_bbs  -> n_regi;
+	n_bcch -> n_regi;
+	n_mail -> n_regi;
+	n_mntn -> n_regi;
+
+	/* sendmsg.c */
+	n_edit -> n_smsg;
+	n_smth -> n_smsg;
+	n_io   -> n_smsg;
+	n_stff -> n_smsg;
+	n_xyz  -> n_smsg;
+	n_bcch -> n_smsg;
+	n_list -> n_smsg;
+	n_term -> n_smsg;
+	n_nmcp -> n_smsg;
+	n_mail -> n_smsg;
+	n_bbs  -> n_smsg;
+	n_main -> n_smsg;
+
+	/* smth_screen.c */
+	n_edit -> n_smth;
+	n_term -> n_smth;
+	n_io   -> n_smth;
+
+	/* stuff.c */
+	n_term -> n_stff;
+	n_smth -> n_stff;
+	n_main -> n_stff;
+	n_io   -> n_stff;
+
+	/* talk.c */
+	n_list -> n_talk;
+	n_io   -> n_talk;
+	n_smth -> n_talk;
+	n_xyz  -> n_talk;
+	n_bcch -> n_talk;
+	n_stff -> n_talk;
+	n_main -> n_talk;
+	n_smsg -> n_talk;
+	n_mail -> n_talk;
+	n_read -> n_talk;
+	n_rcrd -> n_talk;
+	n_nmcp -> n_talk;
+	n_bbs  -> n_talk;
+	n_help -> n_talk;
+	n_chat -> n_talk;
+	n_anno -> n_talk;
+
+	/* tmpl.c */
+	n_smth -> n_tmpl;
+	n_io   -> n_tmpl;
+	n_bbs  -> n_tmpl;
+	n_term -> n_tmpl;
+	n_stff -> n_tmpl;
+	n_anno -> n_tmpl;
+	n_more -> n_tmpl;
+	n_main -> n_tmpl;
+	n_edit -> n_tmpl;
+	n_list -> n_tmpl;
+	n_xyz  -> n_tmpl;
+
+	/* userinfo.c */
+	n_bcch -> n_user;
+	n_smth -> n_user;
+	n_term -> n_user;
+	n_stff -> n_user;
+	n_io   -> n_user;
+	n_mail -> n_user;
+	n_xyz  -> n_user;
+	n_bbs  -> n_user;
+	n_regi -> n_user;
+	n_clst -> n_user;
+
+	/* vote.c */
+	n_cmmn -> n_vote;
+	n_bbs  -> n_vote;
+	n_bcch -> n_vote;
+	n_smth -> n_vote;
+	n_term -> n_vote;
+	n_stff -> n_vote;
+	n_rcrd -> n_vote;
+	n_io   -> n_vote;
+	n_edit -> n_vote;
+	n_more -> n_vote;
+	n_talk -> n_vote;
+	n_anno -> n_vote;
+	n_mntn -> n_vote;
+	n_mail -> n_vote;
+	n_xyz  -> n_vote;
+	n_nmcp -> n_vote;
+	n_help -> n_vote;
+	n_list -> n_vote;
+	n_main -> n_vote;
+
+	/* xyz.c */
+	n_smth -> n_xyz;
+	n_mntn -> n_xyz;
+	n_bcch -> n_xyz;
+	n_stff -> n_xyz;
+	n_io   -> n_xyz;
+	n_edit -> n_xyz;
+	n_smsg -> n_xyz;
+	n_talk -> n_xyz;
+	n_nmcp -> n_xyz;
+	n_mail -> n_xyz;
+	n_more -> n_xyz;
+	n_bbs  -> n_xyz;
+	n_cvcd -> n_xyz;
+	n_user -> n_xyz;
+	n_main -> n_xyz;
+}
+
