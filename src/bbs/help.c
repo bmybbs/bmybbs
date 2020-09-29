@@ -23,6 +23,9 @@
 */
 
 #include "bbs.h"
+#include "more.h"
+#include "smth_screen.h"
+
 void show_help(char *fname) {
 	ansimore(fname, YEA);
 	clear();
