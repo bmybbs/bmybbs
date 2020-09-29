@@ -23,6 +23,10 @@
 */
 
 #include "bbs.h"
+#include "bcache.h"
+#include "smth_screen.h"
+#include "stuff.h"
+#include "goodbye.h"
 
 struct FILESHM {
 	char line[FILE_MAXLINE][FILE_BUFSIZE];
