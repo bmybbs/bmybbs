@@ -23,8 +23,13 @@
   */
 
 #include "bbs.h"
-#include "bbstelnet.h"
 #include "edit.h"
+#include "convcode.h"
+#include "bcache.h"
+#include "main.h"
+#include "sendmsg.h"
+#include "smth_screen.h"
+#include "term.h"
 
 #define OBUFSIZE  (1024*4)
 #define IBUFSIZE  (256)
