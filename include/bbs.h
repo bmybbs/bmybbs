@@ -250,22 +250,14 @@ extern int usernum ;      /* Index into passwds file user record */
 extern int utmpent ;      /* Index into this users utmp file entry */
 extern int count_friends,count_users; /*Add by SmallPig for count users and friends*/
 
-extern int t_lines, t_realcols,t_columns;    /* Screen size / width */
 extern struct userec lookupuser ; /* Used when searching for other user info */
 
-extern int         nettyNN;
 extern char currboard[] ;       /* name of currently selected board */
-extern int selboard ;           /* THis flag is true if above is active */
 
 extern char genbuf[1024] ;      /* generally used global buffer */
 
-extern jmp_buf byebye ;        /* Used for exception condition like I/O error*/
-
 extern char save_title[] ;    /* These are used by the editor when inserting */
 extern char save_filename[] ; /* header information */
-extern int in_mail ;
-extern int showansi;
-extern sigjmp_buf bus_jump;
 /*#endif*/ /* !BBSIRC */
 
 /*SREAD Define*/
