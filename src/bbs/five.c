@@ -4,6 +4,12 @@
 
 #include "bbs.h"
 #include <sys/socket.h>
+#include "smth_screen.h"
+#include "stuff.h"
+#include "io.h"
+#include "xyz.h"
+#include "term.h"
+#include "main.h"
 #define black 1
 #define white 2
 #define FDATA "five"
