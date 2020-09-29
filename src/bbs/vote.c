@@ -21,10 +21,28 @@
     GNU General Public License for more details.
 */
 
+#include <sys/mman.h>
 #include "bbs.h"
 #include "vote.h"
 #include "common.h"
-#include <sys/mman.h>
+#include "bbsinc.h"
+#include "bcache.h"
+#include "smth_screen.h"
+#include "term.h"
+#include "stuff.h"
+#include "record.h"
+#include "io.h"
+#include "edit.h"
+#include "more.h"
+#include "talk.h"
+#include "announce.h"
+#include "maintain.h"
+#include "mail.h"
+#include "xyz.h"
+#include "namecomplete.h"
+#include "help.h"
+#include "list.h"
+#include "main.h"
 
 extern int page, range;
 extern char IScurrBM;
