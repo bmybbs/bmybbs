@@ -1,5 +1,8 @@
 #ifndef BMYBBS_IO_H
 #define BMYBBS_IO_H
+#include <time.h>
+extern time_t now_t, old;
+
 void oflush(void);
 void init_alarm(void);
 void ochar(int c);

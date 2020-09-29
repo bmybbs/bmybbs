@@ -54,7 +54,6 @@ extern struct postheader header;
 extern struct user_info **user_record;
 extern struct UTMPFILE *utmpshm;
 extern time_t login_start_time;
-extern time_t now_t, old;
 extern int cur_ln;
 extern int scr_cols;
 extern int disable_move;
