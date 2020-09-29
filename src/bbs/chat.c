@@ -24,8 +24,20 @@
 */
 
 #include "bbs.h"
-#include "bbstelnet.h"
 #include "chat.h"
+#include "smth_screen.h"
+#include "xyz.h"
+#include "term.h"
+#include "io.h"
+#include "mail.h"
+#include "bcache.h"
+#include "sendmsg.h"
+#include "stuff.h"
+#include "record.h"
+#include "talk.h"
+#include "list.h"
+#include "main.h"
+#include "bbsinc.h"
 
 char chatroom[IDLEN];		/* Chat-Room Name */
 int chatline;			/* Where to display message now */
@@ -37,10 +49,8 @@ char chat_station[19];
 
 #define b_lines t_lines-1
 #define cuser currentuser
-char *msg_seperator = "\
-¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª";
-char *msg_shortulist = "[1;33;44m\
- Ê¹ÓÃÕß´úºÅ    Ä¿Ç°×´Ì¬  ©¦ Ê¹ÓÃÕß´úºÅ    Ä¿Ç°×´Ì¬  ©¦ Ê¹ÓÃÕß´úºÅ    Ä¿Ç°×´Ì¬ [m";
+char *msg_seperator = "¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª";
+char *msg_shortulist = "[1;33;44m Ê¹ÓÃÕß´úºÅ    Ä¿Ç°×´Ì¬  ©¦ Ê¹ÓÃÕß´úºÅ    Ä¿Ç°×´Ì¬  ©¦ Ê¹ÓÃÕß´úºÅ    Ä¿Ç°×´Ì¬ [m";
 
 struct chat_command {
 	char *cmdname;		/* Char-room command length */
