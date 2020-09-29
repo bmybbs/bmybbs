@@ -1651,34 +1651,6 @@ x_tt()
 }
 
 void
-x_worker()
-{
-	myexec_cmd(WORKER, YEA, "bin/worker", NULL);
-	redoscr();
-}
-
-void
-x_tetris()
-{
-	myexec_cmd(TETRIS, NA, "bin/tetris", NULL);
-	redoscr();
-}
-
-void
-x_winmine()
-{
-	myexec_cmd(WINMINE, NA, "bin/winmine", NULL);
-	redoscr();
-}
-
-void
-x_winmine2()
-{
-	myexec_cmd(WINMINE2, NA, "bin/winmine2", NULL);
-	redoscr();
-}
-
-void
 x_recite()
 {
 	myexec_cmd(RECITE, NA, "bin/ptyexec", "bin/recite");
