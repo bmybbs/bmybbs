@@ -26,6 +26,35 @@
 #include <sys/mman.h>
 #include "bbs.h"
 #include "bbstelnet.h"
+#include "talk.h"
+#include "vote.h"
+#include "bbsinc.h"
+#include "sendmsg.h"
+#include "mail.h"
+#include "list.h"
+#include "stuff.h"
+#include "smth_screen.h"
+#include "io.h"
+#include "edit.h"
+#include "boards.h"
+#include "bcache.h"
+#include "power_select.h"
+#include "tmpl.h"
+#include "main.h"
+#include "read.h"
+#include "bm.h"
+#include "comm_list.h"
+#include "xyz.h"
+#include "more.h"
+#include "namecomplete.h"
+#include "1984.h"
+#include "postheader.h"
+#include "announce.h"
+#include "maintain.h"
+#include "backnumber.h"
+#include "record.h"
+#include "chat.h"
+#include "help.h"
 
 struct postheader header;
 int continue_flag;
@@ -94,6 +123,16 @@ static int b_notes_passwd();
 static int catnotepad(FILE * fp, char *fname);
 static int change_content_title(char *fname, char *title);
 static int get_mention_ids(char *article_path, char *mention_ids[]);
+static int mark_commend(int ent, struct fileheader *fileinfo, char *direct);
+static int mark_commend2(int ent, struct fileheader *fileinfo, char *direct);
+static int commend_article(char* board, struct fileheader* fileinfo);
+static int commend_article2(char* board, struct fileheader* fileinfo);
+static int del_commend(int offset);
+static int del_commend2(int offset);
+static int do_commend(char* board, struct fileheader* fileinfo);
+static int do_commend2(char* board, struct fileheader* fileinfo);
+static int count_commend();
+static int count_commend2();
 
 /*-------by ylsdd- ------*/
 /*进行一个问答*/
@@ -2595,7 +2634,7 @@ int has_perm_commend(char* userid)			//add by mintbaggio 040406 for front page c
 }
 
 //add by mintbaggio 040331 for front page commend
-static int mark_commend(int ent, struct fileheader *fileinfo, char *direct)		{
+static int mark_commend(int ent, struct fileheader *fileinfo, char *direct) {
 	if(!HAS_PERM(PERM_SYSOP) && !has_perm_commend(currentuser.userid))
 		return DONOTHING;
 	commend_article(currboard, fileinfo);
