@@ -1,5 +1,5 @@
 /*
-    modify test by leoncom 2009.3.4(nothing but add this comment) 
+    modify test by leoncom 2009.3.4(nothing but add this comment)
     Pirate Bulletin Board System
     Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
     Eagles Bulletin Board System
@@ -9,7 +9,7 @@
     Firebird Bulletin Board System
     Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
                         Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
-                        
+
     Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
 
     This program is free software; you can redistribute it and/or modify
@@ -50,7 +50,7 @@ char chat_station[19];
 #define b_lines t_lines-1
 #define cuser currentuser
 char *msg_seperator = "¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª";
-char *msg_shortulist = "[1;33;44m Ê¹ÓÃÕß´úºÅ    Ä¿Ç°×´Ì¬  ©¦ Ê¹ÓÃÕß´úºÅ    Ä¿Ç°×´Ì¬  ©¦ Ê¹ÓÃÕß´úºÅ    Ä¿Ç°×´Ì¬ [m";
+char *msg_shortulist = "\033[1;33;44m Ê¹ÓÃÕß´úºÅ    Ä¿Ç°×´Ì¬  ©¦ Ê¹ÓÃÕß´úºÅ    Ä¿Ç°×´Ì¬  ©¦ Ê¹ÓÃÕß´úºÅ    Ä¿Ç°×´Ì¬ \033[m";
 
 struct chat_command {
 	char *cmdname;		/* Char-room command length */
@@ -206,10 +206,10 @@ char *chatid;
 			case 't':
 				move(0, 0);
 				clrtoeol();
-				sprintf(genbuf, "·¿¼ä£º [32m%s", chatroom);
+				sprintf(genbuf, "·¿¼ä£º \033[32m%s", chatroom);
 				strncpy(buftopic, bptr + 2, STRLEN - 1);
 				prints
-				    ("[1;44;33m %-21s  [33m»°Ìâ£º[36m%-47s[5;31m%6s[m",
+				    ("\033[1;44;33m %-21s  \033[33m»°Ìâ£º\033[36m%-47s\033[5;31m%6s\033[m",
 				     genbuf, bptr + 2,
 				     (recflag == 1) ? "Â¼ÒôÖÐ" : "      ");
 			}
@@ -498,7 +498,7 @@ char *chatbuf;
 
 		if (!newmail && chkmail()) {
 			newmail = 1;
-			printchatline("[1;32m¡ô [31mµ±£¡ÓÊ²îËÍÐÅÀ´ÁË...[m");
+			printchatline("\033[1;32m¡ô \033[31mµ±£¡ÓÊ²îËÍÐÅÀ´ÁË...\033[m");
 		}
 
 		if (ch == I_OTHERDATA) {	/* incoming */
@@ -684,12 +684,12 @@ char *arg;
 	userid = strrchr(arg, ' ');
 
 	if (userid == NULL) {
-		printchatline("[1;37m¡ï [33mÇëÊäÈëÄúÒª²éÑ°µÄ ID [37m¡ï[m");
+		printchatline("\033[1;37m¡ï \033[33mÇëÊäÈëÄúÒª²éÑ°µÄ ID \033[37m¡ï\033[m");
 		return;
 	}
 	userid++;
 	if (!getuser(userid)) {
-		printchatline("[1;31m²»ÕýÈ·µÄÊ¹ÓÃÕß´úºÅ[m");
+		printchatline("\033[1;31m²»ÕýÈ·µÄÊ¹ÓÃÕß´úºÅ\033[m");
 		return;
 	}
 	sprintf(qry_mail_dir, "mail/%c/%s/%s", mytoupper(lookupuser.userid[0]),
@@ -697,8 +697,8 @@ char *arg;
 	exp = countexp(&lookupuser);
 	perf = countperf(&lookupuser);
 
-	sprintf(msg, "[1;32m%s[m ([1;37m%s[m) ¹²ÉÏÕ¾ [1;37m%d[m ´Î, ·¢±í"
-		"¹ý [1;37m%d[m ÆªÎÄÕÂ", lookupuser.userid,
+	sprintf(msg, "\033[1;32m%s\033[m (\033[1;37m%s\033[m) ¹²ÉÏÕ¾ \033[1;37m%d\033[m ´Î, ·¢±í"
+		"¹ý \033[1;37m%d\033[m ÆªÎÄÕÂ", lookupuser.userid,
 		lookupuser.username, lookupuser.numlogins, lookupuser.numposts);
 
 	printchatline(msg);
@@ -715,7 +715,7 @@ char *arg;
 			countlife(&lookupuser));
 	} else {
 		sprintf(msg,
-			"ÉÏ´ÎÔÚ [[1;37m%-24.24s[m] ÓÉ [[1;37m%s[m] µ½±¾Õ¾Ò»ÓÎ",
+			"ÉÏ´ÎÔÚ [\033[1;37m%-24.24s\033[m] ÓÉ [\033[1;37m%s\033[m] µ½±¾Õ¾Ò»ÓÎ",
 			genbuf,
 			(lookupuser.lasthost[0] ==
 			 '\0' ? "(²»Ïê)" : lookupuser.lasthost));
@@ -723,11 +723,11 @@ char *arg;
 
 	printchatline(msg);
 
-	sprintf(msg, "ÐÅÏä£º[[1;5;37m%2s[m]£¬ÉúÃüÁ¦£º[[1;37m%d[m]",
+	sprintf(msg, "ÐÅÏä£º[\033[1;5;37m%2s\033[m]£¬ÉúÃüÁ¦£º[\033[1;37m%d\033[m]",
 		(check_query_mail(qry_mail_dir) == 1) ? "¡Ñ" : "  ",
 		countlife(&lookupuser));
 	printchatline(msg);
-	sprintf(msg, "[1;37mÄ¿Ç°%sÕ¾ÉÏ[m", (t_search(userid, NA, 1) != NULL) ?
+	sprintf(msg, "\033[1;37mÄ¿Ç°%sÕ¾ÉÏ\033[m", (t_search(userid, NA, 1) != NULL) ?
 		"ÔÚ" : "²»ÔÚ");
 	printchatline(msg);
 }
@@ -742,7 +742,7 @@ char *arg;
 
 	userid = strrchr(arg, ' ');
 	if (userid == NULL) {
-		printchatline("[1;37m¡ï [32mÇëÊäÈëÄãÒªÑûÇëµÄ ID[37m ¡ï[m");
+		printchatline("\033[1;37m¡ï \033[32mÇëÊäÈëÄãÒªÑûÇëµÄ ID\033[37m ¡ï\033[m");
 		return;
 	} else
 		userid += 1;
@@ -758,10 +758,10 @@ char *arg;
 	if (good_id == YEA && canmsg(uin)) {
 		sprintf(msg, "µ½ %s µÄ %s °üÏáÁÄÁÄÌì", chat_station, chatroom);
 		do_sendmsg(userid, uin, msg, 1, uin->pid);
-		sprintf(msg, "[1;37mÒÑ¾­°ïÄãÑûÇë [32m%s[37m ÁË[m",
+		sprintf(msg, "\033[1;37mÒÑ¾­°ïÄãÑûÇë \033[32m%s\033[37m ÁË\033[m",
 			uin->userid);
 	} else
-		sprintf(msg, "[1;32m%s[37m %s[m", userid,
+		sprintf(msg, "\033[1;32m%s\033[37m %s\033[m", userid,
 			uin ? "ÎÞ·¨ºô½Ð" : "²¢Ã»ÓÐÉÏÕ¾");
 	printchatline(msg);
 }
@@ -782,12 +782,12 @@ static void
 chat_users()
 {
 	printchatline("");
-	sprintf(genbuf, "[1m¡¾ [36m%s [37mµÄ·Ã¿ÍÁÐ±í ¡¿[m", MY_BBS_NAME);
+	sprintf(genbuf, "\033[1m¡¾ \033[36m%s \033[37mµÄ·Ã¿ÍÁÐ±í ¡¿\033[m", MY_BBS_NAME);
 	printchatline(genbuf);
 	printchatline(msg_shortulist);
 
 	if (apply_ulist(printuserent) == -1) {
-		printchatline("[1m¿ÕÎÞÒ»ÈË[m");
+		printchatline("\033[1m¿ÕÎÞÒ»ÈË\033[m");
 	}
 	printuserent(NULL);
 }
@@ -808,12 +808,12 @@ set_rec()
 		if ((rec = fopen(fname, "w")) == NULL)
 			return;
 
-		printchatline("[1;5;32m¿ªÊ¼Â¼Òô...[m");
+		printchatline("\033[1;5;32m¿ªÊ¼Â¼Òô...\033[m");
 		recflag = 1;
 		move(0, 0);
 		clrtoeol();
-		sprintf(genbuf, "·¿¼ä£º [32m%s", chatroom);
-		prints("[1;44;33m %-21s  [33m»°Ìâ£º[36m%-47s[5;31m%6s[m",
+		sprintf(genbuf, "·¿¼ä£º \033[32m%s", chatroom);
+		prints("\033[1;44;33m %-21s  \033[33m»°Ìâ£º\033[36m%-47s\033[5;31m%6s\033[m",
 		       genbuf, buftopic, (recflag == 1) ? "Â¼ÒôÖÐ" : "      ");
 
 		fprintf(rec, "±¾¶ÎÓÉ %s", currentuser.userid);
@@ -823,11 +823,11 @@ set_rec()
 		recflag = 0;
 		move(0, 0);
 		clrtoeol();
-		sprintf(genbuf, "·¿¼ä£º [32m%s", chatroom);
-		prints("[1;44;33m %-21s  [33m»°Ìâ£º[36m%-47s[5;31m%6s[m",
+		sprintf(genbuf, "·¿¼ä£º \033[32m%s", chatroom);
+		prints("\033[1;44;33m %-21s  \033[33m»°Ìâ£º\033[36m%-47s\033[5;31m%6s\033[m",
 		       genbuf, buftopic, (recflag == 1) ? "Â¼ÒôÖÐ" : "      ");
 
-		printchatline("[1;5;32mÂ¼Òô½áÊø...[m");
+		printchatline("\033[1;5;32mÂ¼Òô½áÊø...\033[m");
 		fprintf(rec, "½áÊøÊ±¼ä£º%s\n", ctime(&now));
 		fclose(rec);
 		mail_file(fname, currentuser.userid, "Â¼Òô½á¹û");
@@ -843,7 +843,7 @@ setpager()
 	char buf[STRLEN];
 
 	t_pager();
-	sprintf(buf, "[1;32m¡ô [31mºô½ÐÆ÷ %s ÁË[m",
+	sprintf(buf, "\033[1;32m¡ô \033[31mºô½ÐÆ÷ %s ÁË\033[m",
 		(uinfo.pager & ALL_PAGER) ? "´ò¿ª" : "¹Ø±Õ");
 	printchatline(buf);
 
@@ -991,18 +991,18 @@ int cfd;
 						    255 - 8)
 							break;
 						buf1[slen] = 0;
-						strcat(buf1, "[1m");
+						strcat(buf1, "\033[1m");
 						strcat(buf1, args[index]);
-						strcat(buf1, "[m");
+						strcat(buf1, "\033[m");
 						slen += strlen(args[index]) + 7;
 					} else if (*fmt == 's') {
 						if (slen + strlen(args[1]) >
 						    255 - 8)
 							break;
 						buf1[slen] = 0;
-						strcat(buf1, "[1m");
+						strcat(buf1, "\033[1m");
 						strcat(buf1, args[1]);
-						strcat(buf1, "[m");
+						strcat(buf1, "\033[m");
 						slen += strlen(args[1]) + 7;
 					} else if (slen < 253) {
 						buf1[slen++] = '$';
@@ -1068,12 +1068,12 @@ static void
 chat_friends()
 {
 	printchatline("");
-	sprintf(genbuf, "[1m¡¾ µ±Ç°ÏßÉÏµÄºÃÓÑÁÐ±í ¡¿[m");
+	sprintf(genbuf, "\033[1m¡¾ µ±Ç°ÏßÉÏµÄºÃÓÑÁÐ±í ¡¿\033[m");
 	printchatline(genbuf);
 	printchatline(msg_shortulist);
 
 	if (apply_ulist(print_friend_ent) == -1) {
-		printchatline("[1mÃ»ÓÐÅóÓÑÔÚÏßÉÏ[m");
+		printchatline("\033[1mÃ»ÓÐÅóÓÑÔÚÏßÉÏ\033[m");
 	}
 	print_friend_ent(NULL);
 }
@@ -1087,14 +1087,14 @@ char *arg;
 
 	uident = strchr(arg, ' ');
 	if (uident == NULL) {
-		printchatline("[1;32mÇëÊäÈëÄãÒª·¢ÏûÏ¢µÄ ID[m");
+		printchatline("\033[1;32mÇëÊäÈëÄãÒª·¢ÏûÏ¢µÄ ID\033[m");
 		return;
 	} else
 		uident += 1;
 
 	msgstr = strchr(uident, ' ');
 	if (msgstr == NULL) {
-		printchatline("[1;32mÇëÊäÈëÄãÒª·¢µÄÏûÏ¢[m");
+		printchatline("\033[1;32mÇëÊäÈëÄãÒª·¢µÄÏûÏ¢\033[m");
 		return;
 	}
 	*msgstr = 0;
@@ -1102,16 +1102,16 @@ char *arg;
 
 	uentp = t_search(uident, NA, 1);
 	if (uentp == NULL) {
-		printchatline("[1mÏßÉÏÃ»ÓÐÕâ¸öID[m");
+		printchatline("\033[1mÏßÉÏÃ»ÓÐÕâ¸öID\033[m");
 		return;
 	}
 
 	if (do_sendmsg(uentp->userid, uentp, msgstr, 2, 0) != 1) {
-		sprintf(showstr, "[1mÎÞ·¨·¢ÏûÏ¢¸ø %s [m", uentp->userid);
+		sprintf(showstr, "\033[1mÎÞ·¨·¢ÏûÏ¢¸ø %s \033[m", uentp->userid);
 		printchatline(showstr);
 		return;
 	}
-	sprintf(showstr, "[1mÒÑ¾­¸ø %s ·¢³öÏûÏ¢[m", uentp->userid);
+	sprintf(showstr, "\033[1mÒÑ¾­¸ø %s ·¢³öÏûÏ¢\033[m", uentp->userid);
 	printchatline(showstr);
 }
 
