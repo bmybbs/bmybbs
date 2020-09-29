@@ -11,7 +11,6 @@ extern int nettyNN;
 extern int selboard;           /* THis flag is true if above is active */
 extern int showansi;
 extern int in_mail;
-extern jmp_buf byebye ;        /* Used for exception condition like I/O error*/
 
 void do_delay(int i);
 int underline_post(int ent, struct fileheader *fileinfo, char *direct);

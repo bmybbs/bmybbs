@@ -1,6 +1,7 @@
 #ifndef BMYBBS_BBS_MAIN
 #define BMYBBS_BBS_MAIN
 #include "ythtbbs/user.h"
+extern jmp_buf byebye ;        /* Used for exception condition like I/O error*/
 
 int ifinprison(char *name);
 int cmpuids(char *uid, struct userec *up);
