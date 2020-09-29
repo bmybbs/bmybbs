@@ -69,7 +69,6 @@ extern int cur_ln;
 extern int scr_cols;
 extern struct UCACHEHASH *uidhashshm;
 extern int disable_move;
-extern char IScurrBM;
 extern char ISdelrq;
 extern int readingthread;
 extern int inBBSNET;
