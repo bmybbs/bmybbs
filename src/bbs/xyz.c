@@ -1951,14 +1951,3 @@ double load[];
 	load[2] = rs.avenrun[2] / (double) (1 << 8);
 #endif
 }
-
-void
-inn_reload()
-{
-	char ans[4];
-
-	getdata(t_lines - 1, 0, "ÖØ¶ÁÅäÖÃÂð (Y/N)? [N]: ", ans, 2, DOECHO, YEA);
-	if (ans[0] == 'Y' || ans[0] == 'y') {
-		myexec_cmd(ADMIN, NA, "innd/ctlinnbbsd", "reload");
-	}
-}

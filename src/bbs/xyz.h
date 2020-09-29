@@ -23,5 +23,4 @@ int ent_bnet(char *cmd);
 int x_denylevel(void);
 char *directfile(char *fpath, char *direct, char *filename);
 int zsend_file(char *from, char *title);
-void inn_reload(void);
 #endif //BMYBBS_XYZ_H

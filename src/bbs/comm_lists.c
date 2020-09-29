@@ -156,7 +156,6 @@ const struct scommandlist sysconf_cmdlist[] = {
 	{"ADDPERSONAL", (void *) m_addpersonal},
 	{"CancelMail", m_cancel},
 	{"MONEYCENTER", (void *) moneycenter},
-	{"InnReload", (void *) inn_reload},
 	{"Wall_telnet", (void *) wall_telnet},
 	{NULL, NULL}
 };
