@@ -21,12 +21,16 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 */
-#include "bbs.h"
-#include "bbstelnet.h"
-#include "regular.h"
 #include <stdlib.h>
 #include <string.h>
-
+#include "bbs.h"
+#include "regular.h"
+#include "smth_screen.h"
+#include "bbsinc.h"
+#include "stuff.h"
+#include "io.h"
+#include "read.h"
+#include "boards.h"
 
 
 typedef void (*power_dofunc) (int, struct fileheader *, char *);
@@ -102,13 +106,7 @@ char *direct;
 }
 
 static struct fileheader *select_cur;
-static void
-power_dir(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
-	extern char currdirect[STRLEN];
+static void power_dir(int ent, struct fileheader *fileinfo, char *direct) {
 	append_record(currdirect, fileinfo, sizeof (struct fileheader));
 }
 
@@ -218,7 +216,6 @@ power_action(char *filename, unsigned int id1, int id2, char *select, int action
 	power_dofunc function;
 	int shoot;
 	int ret;
-	extern char currdirect[STRLEN];
 	extstru = myextstru;
 	switch (action) {
 	case 9:
