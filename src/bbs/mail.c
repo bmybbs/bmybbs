@@ -25,7 +25,27 @@
 #include <stddef.h>
 #include "bbs.h"
 #include "bbstelnet.h"
+#include "smth_screen.h"
+#include "mail.h"
+#include "postheader.h"
+#include "io.h"
+#include "xyz.h"
+#include "stuff.h"
+#include "read.h"
+#include "more.h"
+#include "record.h"
+#include "main.h"
+#include "list.h"
+#include "namecomplete.h"
+#include "bcache.h"
+#include "edit.h"
+#include "bbsinc.h"
+#include "sendmsg.h"
+#include "help.h"
+#include "talk.h"
+#include "power_select.h"
 
+extern int in_mail; // edit.c
 extern int mailallmode;
 int G_SENDMODE = NA;
 
@@ -54,6 +74,7 @@ static int check_maxmail();
 static int check_mail_perm();
 static int show_user_notes();
 static int mailto(struct userec *uentp);
+static int mailtoall(int mode, int hour);
 
 #ifdef INTERNET_EMAIL
 
