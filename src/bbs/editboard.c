@@ -1,4 +1,9 @@
 #include "bbs.h"
+#include "smth_screen.h"
+#include "bbsinc.h"
+#include "stuff.h"
+#include "maintain.h"
+#include "main.h"
 
 static int chk_editboardperm(struct boardheader *bh);
 static int isExamBoard(struct boardheader *bh);
