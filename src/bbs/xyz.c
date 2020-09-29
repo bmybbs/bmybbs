@@ -1590,15 +1590,6 @@ sendGoodWish(char *userid)
 }
 
 void
-x_quickcalc()
-{
-	clear();
-	prints("\n-------数字运算, 输入help获得帮助------\n");
-	myexec_cmd(QUICKCALC, NA, "bin/ptyexec", "bin/qc");
-	redoscr();
-}
-
-void
 x_freeip()
 {
 	clear();

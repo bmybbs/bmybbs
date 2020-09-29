@@ -3461,8 +3461,7 @@ what_to_do()
 	       HAS_PERM(PERM_CHAT) ? "(c)咖啡红茶店" : "",
 	       HAS_PERM(PERM_BASIC) ? "(o)好友名单" : "");
 	move(t_lines - 1, 0);
-	prints("%s  请选择功能, 或按空格键继续",
-	       HAS_PERM(PERM_BASIC) ? "(q)计算" : "");
+	prints("请选择功能, 或按空格键继续");
 	switch (igetkey()) {
 	case 'u':
 		clear();
@@ -3492,10 +3491,6 @@ what_to_do()
 			t_friend();
 			retv = 999;
 		}
-		break;
-	case 'q':
-		if (HAS_PERM(PERM_BASIC))
-			x_quickcalc();
 		break;
 	}
 	return retv;
