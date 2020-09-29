@@ -1,6 +1,19 @@
 //writen by ecnegrevid, 2001.7
 #include "bbs.h"
-#include "bbstelnet.h"
+#include "smth_screen.h"
+#include "main.h"
+#include "xyz.h"
+#include "stuff.h"
+#include "more.h"
+#include "read.h"
+#include "bbsinc.h"
+#include "io.h"
+#include "term.h"
+#include "sendmsg.h"
+#include "help.h"
+#include "maintain.h"
+#include "list.h"
+
 extern char quote_file[], quote_user[];
 char currbacknumberdir[STRLEN * 2];
 static int backnumbertitle(void);
