@@ -949,65 +949,6 @@ char *filename;
 	return fd;
 }
 
-int
-m_trace()
-{
-	struct stat ostatb, cstatb;
-	int otflag, ctflag, done = 0;
-	char ans[3];
-	char *msg;
-
-	modify_user_mode(ADMIN);
-	if (!check_systempasswd()) {
-		return -1;
-	}
-	clear();
-	stand_title("Set Trace Options");
-	while (!done) {
-		move(2, 0);
-		otflag = stat("trace", &ostatb);
-		ctflag = stat("trace.chatd", &cstatb);
-		prints("目前设定:\n");
-		trace_state(otflag, "一般", ostatb.st_size);
-		trace_state(ctflag, "聊天", cstatb.st_size);
-		move(9, 0);
-		prints("<1> 切换一般记录\n");
-		prints("<2> 切换聊天记录\n");
-		getdata(12, 0, "请选择 (1/2/Exit) [E]: ", ans, 2, DOECHO, YEA);
-
-		switch (ans[0]) {
-		case '1':
-			if (otflag) {
-				touchfile("trace");
-				msg = "一般记录 ON";
-			} else {
-				rename("trace", "trace.old");
-				msg = "一般记录 OFF";
-			}
-			break;
-		case '2':
-			if (ctflag) {
-				touchfile("trace.chatd");
-				msg = "聊天记录 ON";
-			} else {
-				rename("trace.chatd", "trace.chatd.old");
-				msg = "聊天记录 OFF";
-			}
-			break;
-		default:
-			msg = NULL;
-			done = 1;
-		}
-		move(t_lines - 2, 0);
-		if (msg) {
-			prints("%s\n", msg);
-			//report(msg);
-		}
-	}
-	clear();
-	return 0;
-}
-
 /* mode == O_EXCL / O_APPEND / O_TRUNC by bjgyt*/
 static int f_cp(char *src, char *dst, int mode)
 {
