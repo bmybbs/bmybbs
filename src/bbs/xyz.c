@@ -1679,27 +1679,6 @@ x_freeip()
 	redoscr();
 }
 
-void
-x_showuser()
-{
-	char buf[STRLEN];
-
-	modify_user_mode(SYSINFO);
-	clear();
-	stand_title("本站使用者资料查询");
-	ansimore("etc/showuser.msg", NA);
-	getdata(20, 0, "Parameter: ", buf, 30, DOECHO, YEA);
-	if ((buf[0] == '\0') || dashf("bbstmpfs/tmp/showuser.result"))
-		return;
-	securityreport("查询使用者资料", "查询使用者资料");
-	exec_cmd(SYSINFO, YEA, "bin/showuser.sh", buf);
-	sprintf(buf, "bbstmpfs/tmp/showuser.result");
-	if (dashf(buf)) {
-		mail_file(buf, currentuser.userid, "使用者资料查询结果");
-		unlink(buf);
-	}
-}
-
 static void
 childreturn(int i)
 {
@@ -1912,56 +1891,6 @@ x_denylevel()
 	substitute_record(PASSFILE, &lookupuser, sizeof (struct userec), id);
 	clear();
 	return 0;
-}
-
-int
-s_checkid()
-{
-	char buf[256];
-	char checkuser[20];
-	int day, id;
-	modify_user_mode(GMENU);
-	clear();
-	stand_title("调查ID发文情况\n");
-	clrtoeol();
-	move(2, 0);
-	usercomplete("输入欲调查的使用者帐号: ", genbuf);
-	if (genbuf[0] == '\0') {
-		clear();
-		return 0;
-	}
-	strcpy(checkuser, genbuf);
-	if (!(id = getuser(genbuf))) {
-		move(4, 0);
-		prints("无效的使用者帐号");
-		clrtoeol();
-		pressreturn();
-		clear();
-		return 0;
-	}
-	getdata(5, 0, "输入天数(0-所有时间): ", buf, 7, DOECHO, YEA);
-	day = atoi(buf);
-	sprintf(buf,
-		"/usr/bin/nice " MY_BBS_HOME "/bin/finddf %d %d %s > " MY_BBS_HOME
-		"/bbstmpfs/tmp/checkid.%s 2>/dev/null", currentuser.userlevel,
-		day, checkuser, currentuser.userid);
-	if ((HAS_PERM(PERM_SYSOP) && heavyload(2.5))
-	    || (!HAS_PERM(PERM_SYSOP) && heavyload(1.5))) {
-		prints("系统负载过重, 无法执行本指令");
-		pressreturn();
-		return 1;
-	}
-	system(buf);
-	sprintf(buf, "%s finddf %s %d", currentuser.userid, checkuser, day);
-	newtrace(buf);
-	sprintf(buf, MY_BBS_HOME "/bbstmpfs/tmp/checkid.%s",
-		currentuser.userid);
-	mail_file(buf, currentuser.userid, "\"System Report\"");
-	prints("完毕");
-	clrtoeol();
-	pressreturn();
-	clear();
-	return 1;
 }
 
 char *directfile(char *fpath, char *direct, char *filename) {

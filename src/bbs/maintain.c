@@ -84,37 +84,6 @@ check_systempasswd()
 	return YEA;
 }
 
-int
-setsystempasswd()
-{
-	FILE *pass;
-	char passbuf[20], prepass[20];
-
-	modify_user_mode(ADMIN);
-	if (strcmp(currentuser.userid, "SYSOP"))
-		return -1;
-	if (!check_systempasswd())
-		return -1;
-	getdata(2, 0, "请输入新的系统密码: ", passbuf, 19, NOECHO, YEA);
-	getdata(3, 0, "确认新的系统密码: ", prepass, 19, NOECHO, YEA);
-	if (strcmp(passbuf, prepass))
-		return -1;
-	if (passbuf[0] == '\0' || passbuf[0] == '\n')
-		return NA;
-	if ((pass = fopen("etc/.syspasswd", "w")) == NULL) {
-		move(4, 0);
-		prints("系统密码无法设定....");
-		pressanykey();
-		return -1;
-	}
-	fprintf(pass, "%s\n", ytht_crypt_genpasswd(passbuf));
-	fclose(pass);
-	move(4, 0);
-	prints("系统密码设定完成....");
-	pressanykey();
-	return 0;
-}
-
 void
 deliverreport(title, str)
 char *title;

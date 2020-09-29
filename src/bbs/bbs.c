@@ -3888,50 +3888,6 @@ char *s;
 #endif
 
 int
-Info()
-{
-	modify_user_mode(XMENU);
-	ansimore("Version.Info", YEA);
-	clear();
-	return 0;
-}
-
-int
-Conditions()
-{
-	modify_user_mode(XMENU);
-	ansimore("COPYING", YEA);
-	clear();
-	return 0;
-}
-
-int
-Welcome()
-{
-	char ans[3];
-	modify_user_mode(XMENU);
-	if (!dashf("Welcome2"))
-		ansimore("Welcome", YEA);
-	else {
-		clear();
-		stand_title("观看进站画面");
-		for (;;) {
-			getdata(1, 0,
-				"(1)特殊进站公布栏  (2)本站进站画面 ? : ",
-				ans, 2, DOECHO, YEA);
-			if (ans[0] == '1' || ans[0] == '2')
-				break;
-		}
-		if (ans[0] == '1')
-			ansimore("Welcome", YEA);
-		else
-			ansimore("Welcome2", YEA);
-	}
-	clear();
-	return 0;
-}
-
-int
 cmpbnames(brec, bname)
 struct boardheader *brec;
 char *bname;

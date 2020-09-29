@@ -1696,22 +1696,3 @@ m_vote()
 	strcpy(currboard, buf);
 	return;
 }
-
-void
-x_vote()
-{
-	char buf[STRLEN];
-	modify_user_mode(XMENU);
-	strcpy(buf, currboard);
-	strcpy(currboard, DEFAULTBOARD);
-	b_vote();
-	strcpy(currboard, buf);
-	return;
-}
-
-int
-x_results()
-{
-	modify_user_mode(XMENU);
-	return vote_results(DEFAULTBOARD);
-}

@@ -79,6 +79,4 @@ int m_voter(void);
 int b_vote(void);
 int b_results(void);
 void m_vote(void);
-void x_vote(void);
-int x_results(void);
 #endif

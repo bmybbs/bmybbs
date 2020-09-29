@@ -1137,20 +1137,6 @@ int star, curr;
 	return 0;
 }
 
-void
-Users()
-{
-	range = allusers();
-	modify_user_mode(LAUSERS);
-	clear();
-	user_data =
-	    (struct userec *) calloc(sizeof (struct userec), BBS_PAGESIZE);
-	choose(NA, 0, print_title2, deal_key2, Show_Users, do_query2);
-	clear();
-	free(user_data);
-	return;
-}
-
 int
 t_friends()
 {

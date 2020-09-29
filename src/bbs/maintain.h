@@ -1,7 +1,6 @@
 #ifndef BMYBBS_MAINTAIN_H
 #define BMYBBS_MAINTAIN_H
 int check_systempasswd(void);
-int setsystempasswd(void);
 void deliverreport(char *title, char *str);
 void securityreport(char *str, char *content);
 int get_grp(char seekstr[80]);
