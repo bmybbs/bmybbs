@@ -158,9 +158,7 @@ struct user_info *uentp;
 	return 0;
 }
 
-void
-creat_list()
-{
+static void creat_list() {
 	listcuent(NULL);
 	apply_ulist(listcuent);
 }
@@ -557,7 +555,7 @@ if (HAS_PERM(PERM_ACCOUNTS))
 */
 
 //add by wjbta@bmy
-int show_special(char *id2) {
+static int show_special(char *id2) {
 	FILE *fp;
 	char id1[80], name[80], buf[256];
 	fp=fopen("etc/special", "r");
