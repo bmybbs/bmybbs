@@ -3,6 +3,8 @@
 #include "ythtbbs/board.h"
 #include "struct.h"
 
+extern struct boardmem *bcache;
+
 void attach_err(int shmkey, char *name);
 void *attach_shm(int shmkey, int shmsize);
 void reload_boards(void);

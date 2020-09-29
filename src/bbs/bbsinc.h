@@ -11,6 +11,7 @@ extern int nettyNN;
 extern int selboard;           /* THis flag is true if above is active */
 extern int showansi;
 extern char IScurrBM;
+extern char quote_file[], quote_user[];
 
 void do_delay(int i);
 int underline_post(int ent, struct fileheader *fileinfo, char *direct);
