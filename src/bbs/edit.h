@@ -23,6 +23,7 @@
 #ifndef __BBS_EDIT_H
 #define __BBS_EDIT_H
 #include <stdio.h>
+extern int enabledbchar;
 
 int write_header(FILE *fp, int mode);
 void addsignature(FILE *fp, int blank);

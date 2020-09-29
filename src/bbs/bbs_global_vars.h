@@ -21,7 +21,6 @@ extern int digestmode;
 extern int digestmode2;
 extern int editansi;
 extern int effectiveline;
-extern int enabledbchar;
 extern int endlineoffset;
 extern int ERROR_READ_SYSTEM_FILE;
 extern int friendflag;
