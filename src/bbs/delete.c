@@ -37,9 +37,7 @@
 #include "bbsinc.h"
 #include "boards.h"
 
-int
-d_board()
-{
+static int d_board() {
 	struct boardheader binfo;
 	int bid, ans;
 	char bname[STRLEN];

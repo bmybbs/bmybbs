@@ -147,7 +147,6 @@ const struct scommandlist sysconf_cmdlist[] = {
 	{"OpenVote", (void *) m_vote},
 	{"NewBoard", (void *) m_newbrd},
 	{"EditBoard", (void *) m_editbrd},
-	{"DelBoard", (void *) d_board},
 	{"EditSFiles", (void *) a_edits},
 	{"EditSFiles2",(void*) a_edits2},
 	{"Announceall", (void *) wall},
