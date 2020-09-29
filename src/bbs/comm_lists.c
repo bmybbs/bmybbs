@@ -23,6 +23,31 @@
 */
 
 #include "bbs.h"
+#include "stuff.h"
+#include "xyz.h"
+#include "comm_list.h"
+#include "boards.h"
+#include "announce.h"
+#include "maintain.h"
+#include "mail.h"
+#include "list.h"
+#include "talk.h"
+#include "sendmsg.h"
+#include "userinfo.h"
+#include "vote.h"
+#include "bbsinc.h"
+#include "addressbook.h"
+#include "chat.h"
+#include "delete.h"
+#include "more.h"
+#include "convcode.h"
+#include "smth_screen.h"
+#include "main.h"
+#include "fileshm.h"
+
+extern int moneycenter(void);        // moneycenter.c
+extern int x_active_manager(void);   // identify.c
+extern int sec_hand(void);           // sec_hand.c
 
 #define SC_BUFSIZE              20480
 #define SC_KEYSIZE              256
