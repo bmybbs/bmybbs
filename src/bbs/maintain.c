@@ -881,47 +881,6 @@ struct userec *urec;
 	return 0;
 }
 
-int
-m_mclean()
-{
-	modify_user_mode(ADMIN);
-	if (!check_systempasswd()) {
-		return -1;
-	}
-	clear();
-	stand_title("清除私人信件");
-	move(1, 0);
-	prints("清除所有已读且未 mark 的信件\n");
-	if (askyn("确定吗", NA, NA) == NA) {
-		clear();
-		return -1;
-	}
-	{
-		char secu[STRLEN];
-		sprintf(secu, "清除所有使用者已读信件。");
-		securityreport(secu, secu);
-	}
-
-	cleanlog = fopen("mailclean.log", "w");
-	move(3, 0);
-	prints("请耐心等候.\n");
-	refresh();
-	if (apply_record(PASSFILE, (void *) cleanmail, sizeof (struct userec))
-	    == -1) {
-		move(4, 0);
-		prints("apply PASSFILE err...\n");
-		pressreturn();
-		clear();
-		return -1;
-	}
-	move(4, 0);
-	fclose(cleanlog);
-	prints("清除完成! 记录档 mailclean.log.\n");
-	pressreturn();
-	clear();
-	return 0;
-}
-
 static void
 trace_state(flag, name, size)
 int flag, size;

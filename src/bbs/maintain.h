@@ -8,7 +8,6 @@ void stand_title(char *title);
 int m_info(void);
 int m_newbrd(void);
 int m_editbrd(void);
-int m_mclean(void);
 int m_register(void);
 int m_ordainBM(void);
 int do_ordainBM(const char *userid, const char *abname);
