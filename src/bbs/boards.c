@@ -22,8 +22,29 @@
     GNU General Public License for more details.
 */
 #include "bbs.h"
-#include "bbstelnet.h"
+#include "bbs_global_vars.h"
 #include "editboard.h"
+#include "bbsinc.h"
+#include "io.h"
+#include "smth_screen.h"
+#include "main.h"
+#include "stuff.h"
+#include "bcache.h"
+#include "xyz.h"
+#include "sendmsg.h"
+#include "more.h"
+#include "1984.h"
+#include "read.h"
+#include "mail.h"
+#include "edit.h"
+#include "maintain.h"
+#include "namecomplete.h"
+#include "help.h"
+#include "boards.h"
+#include "talk.h"
+#include "list.h"
+#include "announce.h"
+#include "vote.h"
 
 #define BBS_PAGESIZE    (t_lines - 4)
 
