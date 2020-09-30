@@ -1,5 +1,5 @@
 /*
-    Pirate Bulletin Board System 
+    Pirate Bulletin Board System
     Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
     Eagles Bulletin Board System
     Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
@@ -9,7 +9,7 @@
     Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
                         Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
     Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
-    
+
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 1, or (at your option)
@@ -345,7 +345,7 @@ char *bname;
 	if ((i = getbnum(bname)) == 0)
 		return 0;
 	if (bcache[i - 1].header.clubnum != 0)
-		return (HAS_PERM((bcache[i - 1].header.level & ~PERM_NOZAP) & ~PERM_POSTMASK)) && 
+		return (HAS_PERM((bcache[i - 1].header.level & ~PERM_NOZAP) & ~PERM_POSTMASK)) &&
 			(HAS_CLUBRIGHT(bcache[i - 1].header.clubnum, uinfo.clubrights));
 	if (bcache[i - 1].header.level & PERM_SPECIAL3)
 		return die;
@@ -392,9 +392,7 @@ char *bname;
 		return 0;
 	if (bcache[i - 1].header.clubnum != 0)
 		return !(bcache[i - 1].header.flag & CLUBTYPE_FLAG);
-	return (bcache[i - 1].header.level & PERM_POSTMASK) ? 0 : bcache[i -
-									 1].
-	    header.level;
+	return (bcache[i - 1].header.level & PERM_POSTMASK) ? 0 : bcache[i - 1].header.level;
 }
 
 int
@@ -485,42 +483,30 @@ char *boardname;
 			memset(&(uinfo.clubrights), 0, 4 * sizeof (int));
 			while (fgets(genbuf, STRLEN, fp) != NULL) {
 				old_right = atoi(genbuf);
-				uinfo.clubrights[old_right / 32] |=
-				    (1 << old_right % 32);
+				uinfo.clubrights[old_right / 32] |= (1 << old_right % 32);
 			}
 			club_rights_time = st1.st_mtime;
 			fclose(fp);
 		} else
 			memset(&(uinfo.clubrights), 0, 4 * sizeof (int));
 	}
-	old_right =
-	    HAS_CLUBRIGHT(bcache[i - 1].header.clubnum, uinfo.clubrights);
+	old_right = HAS_CLUBRIGHT(bcache[i - 1].header.clubnum, uinfo.clubrights);
 	setbfile(fn, boardname, "club_users");
 	if (!stat(fn, &st2))
 		if (club_rights_time < st2.st_mtime) {
 			if (seek_in_file(fn, currentuser.userid))
-				uinfo.clubrights[bcache[i - 1].header.clubnum /
-						 32] |=
-				    (1 << bcache[i - 1].header.clubnum % 32);
+				uinfo.clubrights[bcache[i - 1].header.clubnum / 32] |= (1 << bcache[i - 1].header.clubnum % 32);
 			else
-				uinfo.clubrights[bcache[i - 1].header.clubnum /
-						 32] &=
-				    ~(1 << bcache[i - 1].header.clubnum % 32);
-			if (old_right !=
-			    HAS_CLUBRIGHT(bcache[i - 1].header.clubnum,
-					  uinfo.clubrights)) {
+				uinfo.clubrights[bcache[i - 1].header.clubnum / 32] &= ~(1 << bcache[i - 1].header.clubnum % 32);
+			if (old_right != HAS_CLUBRIGHT(bcache[i - 1].header.clubnum, uinfo.clubrights)) {
 				char towrite[STRLEN];
 				setuserfile(fn, "clubrights");
-				sprintf(towrite, "%d",
-					bcache[i - 1].header.clubnum);
-				old_right ? del_from_file(fn,
-							  towrite) :
-				    addtofile(fn, towrite);
+				sprintf(towrite, "%d", bcache[i - 1].header.clubnum);
+				old_right ? del_from_file(fn, towrite) : addtofile(fn, towrite);
 			}
 		}
 	if (!(bcache[i - 1].header.flag & CLUBTYPE_FLAG))
-		return HAS_CLUBRIGHT(bcache[i - 1].header.clubnum,
-				     uinfo.clubrights);
+		return HAS_CLUBRIGHT(bcache[i - 1].header.clubnum, uinfo.clubrights);
 	return 1;
 }
 
@@ -556,8 +542,7 @@ resolve_ucache()
 		char str[100];
 		/*uidshm->uptime = ftime; */
 		usernumber = 0;
-		apply_record(PASSFILE, (void *) fillucache,
-			     sizeof (struct userec));
+		apply_record(PASSFILE, (void *) fillucache, sizeof (struct userec));
 		uidshm->number = usernumber;
 		uidshm->uptime = st.st_mtime;
 		uidshm->usersum = allusers();
@@ -574,22 +559,18 @@ resolve_ucache_hash()
 {
 	char str[100];
 	if (uidhashshm == NULL) {
-		uidhashshm =
-		    attach_shm(UCACHE_HASH_SHMKEY, sizeof (*uidhashshm));
+		uidhashshm = attach_shm(UCACHE_HASH_SHMKEY, sizeof (*uidhashshm));
 	}
 	if (uidhashshm->uptime < uidshm->uptime) {
 		int i;
 		uidhashshm->uptime = uidshm->uptime;
 		usernumber = uidshm->number;
 		for (i = 0; i < usernumber; i++)
-			insertuseridhash(uidhashshm->uhi,
-					 UCACHE_HASH_SIZE,
-					 uidshm->userid[i], i + 1);
+			insertuseridhash(uidhashshm->uhi, UCACHE_HASH_SIZE, uidshm->userid[i], i + 1);
 		sprintf(str, "system reload uidhashshm %d", usernumber);
 		newtrace(str);
 		shmdt(uidhashshm);
-		uidhashshm =
-		    attach_shm(UCACHE_HASH_SHMKEY, sizeof (*uidhashshm));
+		uidhashshm = attach_shm(UCACHE_HASH_SHMKEY, sizeof (*uidhashshm));
 	}
 	return 0;
 }
@@ -755,8 +736,7 @@ struct user_info *up;
 		for (n = 0; n < USHM_SIZE; n++) {
 			uentp = &(utmpshm->uinfo[n]);
 			pid = uentp->pid;
-			if (!uentp->active || pid <= 1
-			    || now - uentp->lasttime < 120)
+			if (!uentp->active || pid <= 1 || now - uentp->lasttime < 120)
 				continue;
 			if (kill(pid, 0) == -1) {
 				remove_uindex(uentp->uid, n + 1);
@@ -849,9 +829,7 @@ int show;
 				j++;
 			else {
 				j++;
-				prints
-				    ("(%d) ƒø«∞‘⁄∏…¬Ô: %s, ¿¥◊‘: %s \n",
-				     j, ModeType(uentp->mode), uentp->from);
+				prints("(%d) ƒø«∞‘⁄∏…¬Ô: %s, ¿¥◊‘: %s \n", j, ModeType(uentp->mode), uentp->from);
 			}
 		}
 	}
@@ -877,7 +855,7 @@ int farg;
 				continue;
 			if (uentp->invisible == 1) {
 				if (HAS_PERM(PERM_SYSOP | PERM_SEECLOAK)) {
-					prints("[1;32m“˛…Ì÷–   [m");
+					prints("\033[1;32m“˛…Ì÷–   \033[m");
 					continue;
 				} else
 					continue;
@@ -885,24 +863,20 @@ int farg;
 			num++;
 			if (num == 1)
 				prints("ƒø«∞‘⁄’æ…œ£¨◊¥Ã¨»Áœ¬£∫\n");
-			if(uentp->mode!=USERDF4)                  //∑«”√ªß◊‘∂®“Â◊¥Ã¨ add by leoncom@bmy
-			{
-			 if(uentp->mode == USERDF1 || uentp->mode == USERDF2 || uentp->mode == USERDF3 )
-                         prints("%s%-16s[m ",uentp->pid == 1 ? "\033[35m" : "\033[1;34m",
-			       ModeType(uentp->mode));
-		         else
-                         prints("%s%-16s[m ",uentp->pid == 1 ? "\033[35m" : "\033[1m",
-			       ModeType(uentp->mode));
-                        }
-			else
-                        {  				       	   //”√ªß◊‘∂®“Â◊¥Ã¨
-                          if(uentp->user_state_temp[0]!='\0')
-                           prints("%s%-16s[m ",uentp->pid == 1 ? "\033[35m" : "\033[1;34m",
-			       uentp->user_state_temp);
-			  else
-                           prints("%s%-16s[m ",uentp->pid == 1 ? "\033[35m" : "\033[1m",
-			       ModeType(LOCKSCREEN));
-                       }
+
+			if (uentp->mode != USERDF4) {
+				//∑«”√ªß◊‘∂®“Â◊¥Ã¨ add by leoncom@bmy
+				if (uentp->mode == USERDF1 || uentp->mode == USERDF2 || uentp->mode == USERDF3 )
+					prints("%s%-16s\033[m ",uentp->pid == 1 ? "\033[35m" : "\033[1;34m", ModeType(uentp->mode));
+				else
+					prints("%s%-16s\033[m ",uentp->pid == 1 ? "\033[35m" : "\033[1m", ModeType(uentp->mode));
+			} else {
+				//”√ªß◊‘∂®“Â◊¥Ã¨
+				if(uentp->user_state_temp[0] != '\0')
+					prints("%s%-16s\033[m ",uentp->pid == 1 ? "\033[35m" : "\033[1;34m", uentp->user_state_temp);
+				else
+					prints("%s%-16s\033[m ",uentp->pid == 1 ? "\033[35m" : "\033[1m", ModeType(LOCKSCREEN));
+			}
 			if ((num) % 5 == 0)
 				outc('\n');
 		}
@@ -912,9 +886,8 @@ int farg;
 }
 
 
-
-int user_isonline(char* userid)				//add by mintbaggio@BMY for the person who can cloak
-{
+//add by mintbaggio@BMY for the person who can cloak
+int user_isonline(char* userid) {
 	struct user_info *uentp;
 	int i;
 
@@ -933,17 +906,14 @@ int user_isonline(char* userid)				//add by mintbaggio@BMY for the person who ca
 	}
 	return 0;
 }
-void
-update_ulist(uentp, uent)
-struct user_info *uentp;
-int uent;
-{
+
+void update_ulist(struct user_info *uentp, int uent) {
 	resolve_utmp();
 	if (uent > 0 && uent <= USHM_SIZE) {
 		memcpy(&utmpshm->uinfo[uent - 1].invisible,
-		       &(uentp->invisible),
-		       sizeof (struct user_info) -
-		       ((char *) &uentp->invisible - (char *) uentp));
+			&(uentp->invisible),
+			sizeof (struct user_info) -
+			((char *) &uentp->invisible - (char *) uentp));
 /*utmpshm->uinfo[ uent - 1 ] = *uentp;*/
 	}
 }
@@ -954,10 +924,9 @@ update_utmp()
 	extern time_t old;
 	old = uinfo.lasttime;
 	update_ulist(&uinfo, utmpent);
-} int
+}
 
-get_utmp()
-{
+int get_utmp(void) {
 	if (!strcmp(uinfo.userid, utmpshm->uinfo[utmpent - 1].userid)) {
 		memcpy(&uinfo, &utmpshm->uinfo[utmpent - 1], sizeof (uinfo));
 		return 0;
@@ -981,16 +950,12 @@ update_utmp2()
 	utmpent = -1;
 }
 
-						    /* added by djq 99.7.19 *//* function added by douglas 990305
-						       set uentp to the user who is calling me
-						       solve the "one of 2 line call sb. to five" problem
-						     */ int
-who_callme(uentp, fptr, farg, me)
-struct user_info *uentp;
-int (*fptr) (int, struct user_info *);
-int farg;
-int me;
-{
+/* added by djq 99.7.19 */
+/* function added by douglas 990305
+   set uentp to the user who is calling me
+   solve the "one of 2 line call sb. to five" problem
+*/
+int who_callme(struct user_info *uentp, int (*fptr) (int, struct user_info *), int farg, int me) {
 	int i;
 
 	resolve_utmp();
@@ -1224,10 +1189,7 @@ show_small_bm(char *board)
 		invisible = bptr->bmcloak & (1 << i);
 		if (active && !invisible)
 			prints("\033[32m%13s\033[33m", bptr->header.bm[i]);
-		else if (active && invisible && (HAS_PERM(PERM_SEECLOAK)
-						 || !strcmp(bptr->header.bm[i],
-							    currentuser.
-							    userid)))
+		else if (active && invisible && (HAS_PERM(PERM_SEECLOAK) || !strcmp(bptr->header.bm[i], currentuser.userid)))
 			prints("\033[36m%13s\033[33m", bptr->header.bm[i]);
 		else
 			prints("%13s", bptr->header.bm[i]);
@@ -1243,10 +1205,7 @@ show_small_bm(char *board)
 		invisible = bptr->bmcloak & (1 << i);
 		if (active && !invisible)
 			prints("\033[32m%13s\033[33m", bptr->header.bm[i]);
-		else if (active && invisible && (HAS_PERM(PERM_SEECLOAK)
-						 || !strcmp(bptr->header.bm[i],
-							    currentuser.
-							    userid)))
+		else if (active && invisible && (HAS_PERM(PERM_SEECLOAK) || !strcmp(bptr->header.bm[i], currentuser.userid)))
 			prints("\033[36m%13s\033[33m", bptr->header.bm[i]);
 		else
 			prints("%13s", bptr->header.bm[i]);
@@ -1264,8 +1223,7 @@ setbmstatus(int online)
 		return 0;
 	sethomefile(path, currentuser.userid, "mboard");
 	bmfilesync(&currentuser);
-	new_apply_record(path, sizeof (struct boardmanager), (void *) setbmhat,
-			 &online);
+	new_apply_record(path, sizeof (struct boardmanager), (void *) setbmhat, &online);
 	return 0;
 }
 
@@ -1273,8 +1231,7 @@ static int
 setbmhat(struct boardmanager *bm, int *online)
 {
 	if (strcmp(bcache[bm->bid].header.filename, bm->board)) {
-		errlog("error board name %s, %s",
-		       bcache[bm->bid].header.filename, bm->board);
+		errlog("error board name %s, %s", bcache[bm->bid].header.filename, bm->board);
 		return -1;
 	}
 	if (*online) {
@@ -1308,8 +1265,7 @@ bmonlinesync()
 				}
 				break;	//–°∞Ê÷˜“≤ºÏ≤ÈÕÍ¡À
 			}
-			uentp =
-			    query_uindex(searchuser(bcache[j].header.bm[k]), 0);
+			uentp = query_uindex(searchuser(bcache[j].header.bm[k]), 0);
 			if (!uentp)
 				continue;
 			bcache[j].bmonline |= (1 << k);
@@ -1320,3 +1276,4 @@ bmonlinesync()
 	sprintf(genbuf, "system reload bmonline");
 	newtrace(genbuf);
 }
+
