@@ -13,7 +13,17 @@
 char needcgi[STRLEN];
 char rframe[STRLEN];
 
-char to_hex(char code);
+static void __unhcode(char *s);
+static void extraparam_init(char *extrastr);
+static int user_init(struct userec *x, struct user_info **y, char *ub);
+static int post_imail(char *userid, char *title, char *file, char *id, char *nickname, char *ip, int sig);
+static void sig_append(FILE * fp, char *id, int sig);
+static int useridhash(char *id);
+static int checkuser(char *id, char *pw);
+static int count_id_num(char *id);
+static int count_online2();
+static int fprintf2(FILE * fp, char *s);
+static int setbmhat(struct boardmanager *bm, int *online);
 
 struct wwwstyle wwwstyle[NWWWSTYLE] = {
 	{"橘红(大字体)", CSSPATH "orab.css",
@@ -44,9 +54,7 @@ int no_cache_header = 0;
 int has_smagic = 0;
 int go_to_first_page = 0;
 
-void
-filter(char *line)
-{
+static void filter(char *line) {
 	char temp[256];
 	int i, stat, j;
 	stat = 0;
@@ -103,7 +111,7 @@ int via_proxy = 0;
 struct boardmem *getbcache();
 struct userec *getuser();
 char *anno_path_of();
-void updatelastboard(void);
+static void updatelastboard(void);
 
 int
 file_has_word(char *file, char *word)
@@ -177,8 +185,7 @@ del_record(char *file, int size, int num)
 	return !delete_file(file, size, num + 1, NULL);
 }
 
-long
-get_num_records(filename, size)
+static long get_num_records(filename, size)
 char *filename;
 int size;
 {
@@ -189,8 +196,7 @@ int size;
 	return (st.st_size / size);
 }
 
-int
-insert_record(fpath, data, size, pos, num)
+static int insert_record(fpath, data, size, pos, num)
 char *fpath;
 void *data;
 int size;
@@ -284,8 +290,7 @@ nohtml(const char *s)
 	return buf;
 }
 
-char *
-strright(char *s, int len)
+static char * strright(char *s, int len)
 {
 	int l = strlen(s);
 	if (len <= 0)
@@ -347,9 +352,7 @@ static int istitle = 0;
 
 /*modify by macintosh 050619 for Tex Math Equ*/
 /*modify by macintosh 051215 for highlight & background color*/
-void
-hsprintf(char *s, char *s0)
-{
+static void hsprintf(char *s, char *s0) {
 	char ansibuf[80], buf2[80];
 	char *tmp;
 	int c, bold, m, i, len, lsp = -1;
@@ -508,9 +511,7 @@ fqhprintf(FILE * output, char *str)
 	fputs(buf, output);
 }
 
-int
-fhhprintf(FILE * output, char *fmt, ...)
-{
+int fhhprintf(FILE * output, char *fmt, ...) {
 	char buf0[1024], buf[1024], *s;
 	int len = 0;
 	char vlink[STRLEN];
@@ -713,8 +714,7 @@ print_session_string(char *value) {
 	printf("Set-Cookie:sessionString=%s;path=/\n", value);
 }
 
-int
-contains_invliad_char(char *s) {
+static int contains_invliad_char(char *s) {
 	char *tmp;
 	int ret = 0;
 	tmp = s;
@@ -791,8 +791,7 @@ url_parse()
 	return 0;
 }
 
-void
-http_parm_free(void)
+static void http_parm_free(void)
 {
 	int i;
 	for (i = 0; i < parm_num; i++)
@@ -800,9 +799,7 @@ http_parm_free(void)
 	parm_num = 0;
 }
 
-void
-http_parm_init(void)
-{
+void http_parm_init(void) {
 	char *buf, buf2[1024], *t2, *t3;
 	int n;
 	http_parm_free();
@@ -953,9 +950,7 @@ xml_header()
 	printf("<head>");
 }
 
-int
-__to16(char c)
-{
+static int __to16(char c) {
 	if (c >= 'a' && c <= 'f')
 		return c - 'a' + 10;
 	if (c >= 'A' && c <= 'F')
@@ -965,9 +960,7 @@ __to16(char c)
 	return 0;
 }
 
-void
-__unhcode(char *s)
-{
+static void __unhcode(char *s) {
 	int m, n;
 	for (m = 0, n = 0; s[m]; m++, n++) {
 		if (s[m] == '+') {
@@ -1082,9 +1075,7 @@ addextraparam(char *ub, int size, int n, int param)
 	return 0;
 }
 
-void
-extraparam_init(char *extrastr)
-{
+static void extraparam_init(char *extrastr) {
 	int i;
 	if (*extrastr) {
 		i = *extrastr - 'A';
@@ -1097,9 +1088,7 @@ extraparam_init(char *extrastr)
 		currstyle = &wwwstyle[0];
 }
 
-int
-user_init(struct userec *x, struct user_info **y, char *ub)
-{
+static int user_init(struct userec *x, struct user_info **y, char *ub) {
 	struct userec *x2;
 	char sessionid[30];
 	int i;
@@ -1363,8 +1352,7 @@ post_mail_buf(char *userid, char *title, char *buf, char *id, char *nickname,
 	return 0;
 }
 
-int
-post_imail(char *userid, char *title, char *file, char *id,
+static int post_imail(char *userid, char *title, char *file, char *id,
 	   char *nickname, char *ip, int sig)
 {
 	FILE *fp1, *fp2;
@@ -1552,9 +1540,7 @@ securityreport(char *title, char *content)
 	return 0;
 }
 
-void
-sig_append(FILE * fp, char *id, int sig)
-{
+static void sig_append(FILE * fp, char *id, int sig) {
 	FILE *fp2;
 	char path[256];
 	char buf[256];
@@ -1923,8 +1909,7 @@ getboard(char board[80])
 	return x1;
 }
 
-int
-findnextutmp(char *id, int from)
+static int findnextutmp(char *id, int from)
 {
 	int i;
 	if (from < 0)
@@ -1964,9 +1949,7 @@ send_msg(char *myuserid, int i, char *touserid, int topid, char *msg,
 	return 1;
 }
 
-char *
-horoscope(int month, int day)
-{
+static char * horoscope(int month, int day) {
 	int date = month * 100 + day;
 	if (month < 1 || month > 12 || day < 1 || day > 31)
 		return "不详";
@@ -1997,8 +1980,7 @@ horoscope(int month, int day)
 }
 
 //add by wjbta@bmy for 666生命力
-int life_special_web(char *id)
-{
+static int life_special_web(char *id) {
 	FILE *fp;
 	char id1[80],buf[80];
 	fp=fopen("etc/life", "r");
@@ -2048,8 +2030,7 @@ int count_life_value(struct userec *urec)
 	return res;
 }
 
-int
-modify_mode(struct user_info *x, int newmode)
+static int modify_mode(struct user_info *x, int newmode)
 {
 	if (x == 0)
 		return 0;
@@ -2076,9 +2057,7 @@ save_user_data(struct userec *x)
 	return 1;
 }
 
-int
-is_bansite(char *ip)
-{
+static int is_bansite(char *ip) {
 	FILE *fp;
 	char buf3[256];
 	fp = fopen(".bansite", "r");
@@ -2099,9 +2078,7 @@ user_perm(struct userec *x, int level)
 	return (x->userlevel & level);
 }
 
-int
-useridhash(char *id)
-{
+static int useridhash(char *id) {
 	int n1 = 0;
 	int n2 = 0;
 	while (*id) {
@@ -2190,9 +2167,7 @@ getuser(char *id)
 	return &userec1;
 }
 
-int
-checkuser(char *id, char *pw)
-{
+static int checkuser(char *id, char *pw) {
 	struct userec *x;
 	x = getuser(id);
 	if (x == 0)
@@ -2200,9 +2175,7 @@ checkuser(char *id, char *pw)
 	return ytht_crypt_checkpasswd(x->passwd, pw);
 }
 
-int
-count_id_num(char *id)
-{
+static int count_id_num(char *id) {
 	int i, total = 0;
 	for (i = 0; i < MAXACTIVE; i++)
 		if (shm_utmp->uinfo[i].active
@@ -2225,9 +2198,7 @@ count_online()
 	return total;
 }
 
-int
-count_online2()
-{
+static int count_online2() {
 	int i, total = 0;
 	for (i = 0; i < MAXACTIVE; i++)
 		if (shm_utmp->uinfo[i].active
@@ -2253,10 +2224,7 @@ loadfriend(char *id)
 	return 0;
 }
 
-int
-cmpfuid(a, b)
-unsigned *a, *b;
-{
+static int cmpfuid(unsigned *a, unsigned *b) {
 	return *a - *b;
 }
 
@@ -2509,9 +2477,7 @@ userid_str(char *s)
 	return buf;
 }
 
-int
-fprintf2(FILE * fp, char *s)
-{
+static int fprintf2(FILE * fp, char *s) {
 	int i, tail = 0, sum = 0;
 	if (s[0] == ':' && s[1] == ' ' && strlen(s) > 79) {
 		sprintf(s + 76, "..\n");
@@ -2782,9 +2748,7 @@ printhr()
 	printf("<div class=\"linehr\"></div>");
 }
 
-void
-updatelastboard(void)
-{
+static void updatelastboard(void) {
 	struct boardmem *last;
 	char buf[80];
 	if (u_info->curboard) {
@@ -2805,9 +2769,7 @@ updatelastboard(void)
 	u_info->curboard = 0;
 }
 
-void
-updateinboard(struct boardmem *x)
-{
+void updateinboard(struct boardmem *x) {
 	int bnum;
 	if (!loginok)
 		return;
@@ -2955,9 +2917,7 @@ setbmstatus(struct userec *u, int online)
 	return 0;
 }
 
-int
-setbmhat(struct boardmanager *bm, int *online)
-{
+static int setbmhat(struct boardmanager *bm, int *online) {
 	if (strcmp(shm_bcache->bcache[bm->bid].header.filename, bm->board)) {
 		errlog("error board name %s, %s. user %s",
 			   shm_bcache->bcache[bm->bid].header.filename, bm->board,
