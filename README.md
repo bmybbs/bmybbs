@@ -13,7 +13,7 @@ BMYBBS 已经和最初的 YTHT 系统不兼容。由于能力和精力有限，�
 在编译过程中需要使用到的一些工具和库
 
 ```bash
-sudo apt install build-essential libtool cproto cmake gdb chrpath \
+sudo apt install build-essential libtool cmake gdb chrpath \
 	apache2 libapache2-mod-perl2 mysql-server redis-server \
 	libmysqlclient-dev libpcre3-dev libjson-c-dev libhiredis-dev \
 	libxml2-dev libgmp-dev
