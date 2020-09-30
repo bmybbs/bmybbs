@@ -96,7 +96,7 @@ static int query_active(char* userid)
     getuser(userid);
 
     if (i>0) {
-        str_to_lowercase(act_data.email);
+		ytht_str_to_lowercase(act_data.email);
 	 //if (act_data.status==MAIL_ACTIVE && !strcmp(strstr(act_data.email, "@")+1, "mails.gucas.ac.cn")) {
 	//	char gname[VALUELEN];
 	//	char gdept[VALUELEN];
@@ -280,7 +280,7 @@ static int update_active(char* userid)
     getfield(8, "", "手机号", act_data.phone, STRLEN);
     getfield(9, "", "身份证件号码", act_data.idnum, STRLEN);
     getfield(10, "", "学号", act_data.stdnum, STRLEN);
-    str_to_lowercase(act_data.email);
+	ytht_str_to_lowercase(act_data.email);
     prints("确定操作?\n");
     getdata(12, 0, "Y/N [N] >> ", an, STRLEN, DOECHO, YEA);
     if (*an == 'Y' || *an == 'y') {
@@ -307,7 +307,7 @@ static int query_value(char* value, int style)
 
     clear();
     move(5, 0);
-    str_to_lowercase(value);
+	ytht_str_to_lowercase(value);
     prints("同认证记录下的ID:\n");
     au = get_associated_userid_by_style(style, value);
     //列出同记录下的其他id

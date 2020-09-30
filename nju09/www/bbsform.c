@@ -150,7 +150,7 @@ check_submit_form()
 
 	char email[60];
 	sprintf(email, "%s@%s", user, popname);  // 注意不要将email弄溢出了
-	str_to_lowercase(email);
+	ytht_str_to_lowercase(email);
 	count = read_active(currentuser.userid, &act_data);
 	if (count == 0) {
 		mail_diff = 1;

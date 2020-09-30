@@ -153,16 +153,6 @@ static void register_fail(char *userid)
 	setuserid(id, lookupuser.userid);
 }
 
-char * str_to_upper(char *str)
-{
-	char *h = str;
-	while (*str != '\n' && *str != 0) {
-		*str = toupper(*str);
-		str++;
-	}
-	return h;
-}
-
 extern char fromhost[60];
 #endif
 // -------------------------------------------------------------------------------
@@ -712,7 +702,7 @@ void x_fillform()
 		move(11, 0);
 		clrtobot();
 		move(12, 0);
-		strcpy(email, str_to_lowercase(user));
+		strcpy(email, ytht_str_to_lowercase(user));
 		strcat(email, "@");
 		strcat(email, MAIL_DOMAINS[n]);
 

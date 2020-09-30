@@ -210,3 +210,21 @@ void ytht_normalize(char *buf)
 		i++;
 	}
 }
+
+char* ytht_str_to_uppercase(char *str) {
+	char *h = str;
+	while (*str != '\n' && *str != 0) {
+		*str = toupper(*str);
+		str++;
+	}
+	return h;
+}
+
+char* ytht_str_to_lowercase(char *str) {
+	char *h = str;
+	while (*str != '\n' && *str != 0) {
+		*str = tolower(*str);
+		str++;
+	}
+	return h;
+}

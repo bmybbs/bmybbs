@@ -44,4 +44,8 @@ char *ytht_strrtrim(char *s);
  * @warning 多线程不安全
  */
 #define ytht_strtrim(s) ytht_strltrim(ytht_strrtrim(s))
+
+char *ytht_str_to_uppercase(char *str);
+
+char *ytht_str_to_lowercase(char *str);
 #endif //BMYBBS_STRLIB_H

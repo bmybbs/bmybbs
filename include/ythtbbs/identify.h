@@ -48,8 +48,6 @@ struct associated_userid {
 	int  *status_array;
 };
 
-char* str_to_uppercase(char *str);
-char* str_to_lowercase(char *str);
 const char* style_to_str(int style);
 int send_active_mail(char *userid, char *email);
 int send_resetpass_mail(char *userid, char *email);

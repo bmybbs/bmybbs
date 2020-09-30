@@ -53,8 +53,6 @@ time_t system_time;
 
 static int valid_ident(char *ident);
 
-char * str_to_upper(char *str);
-
 /*
 返回值的说明如下:
 0	已经成功删除此条记录

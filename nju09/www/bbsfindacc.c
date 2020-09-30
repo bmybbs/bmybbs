@@ -42,7 +42,7 @@ void api_bbsfindacc() {
 
 	domain_idx = domain[0] - '0';
 	snprintf(email, 80, "%s@%s", user, MAIL_DOMAINS[domain_idx]);
-	str_to_lowercase(email);
+	ytht_str_to_lowercase(email);
 
 	au = get_associated_userid(email);
 	if (au == NULL || au->count == 0) {

@@ -1,4 +1,5 @@
 #include "bbs.h"
+#include "ytht/strlib.h"
 #include "ythtbbs/identify.h"
 #include "bmy/mysql_wrapper.h"
 //关于链接数据库的一些常量
@@ -14,26 +15,6 @@ snprintf(buf, 20,
 		"%04d-%02d-%02d %02d:%02d:%02d",
 		mt->year, mt->month, mt->day,
 		mt->hour, mt->minute, mt->second);
-}
-
-char* str_to_uppercase(char *str)
-{
-	char *h = str;
-	while (*str != '\n' && *str != 0) {
-		*str = toupper(*str);
-		str++;
-	}
-	return h;
-}
-
-char* str_to_lowercase(char *str)
-{
-	char *h = str;
-	while (*str != '\n' && *str != 0) {
-		*str = tolower(*str);
-		str++;
-	}
-	return h;
 }
 
 const char* style_to_str(int style)
@@ -222,7 +203,7 @@ int query_record_num(char* value, int style)
 
 	memset(count, 0, sizeof(count));
 	str = strdup(value);
-	str_to_lowercase(str);
+	ytht_str_to_lowercase(str);
 	memset(params, 0, sizeof(params));
 	memset(results, 0, sizeof(results));
 

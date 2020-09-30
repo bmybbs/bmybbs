@@ -50,7 +50,7 @@ void api_bbsresetpass(void) {
 	domain_idx = domain[0] - '0';
 	if (domain_idx < 0 || domain_idx > 3) domain_idx = 0;
 	snprintf(email, 80, "%s@%s", user, MAIL_DOMAINS[domain_idx]);
-	str_to_lowercase(email);
+	ytht_str_to_lowercase(email);
 
 	rc = read_active(userid, &act_data);
 	if (rc < 1) {

@@ -89,17 +89,6 @@ char *addr, char *phone, char *assoc, char *email)
 	return ;
 }
 
-
-char * str_to_upper(char *str)
-{
-	char *h = str;
-	while (*str != '\n' && *str != 0)
-	{
-		*str = toupper(*str);
-		str++;
-	}
-	return h;
-}
 #endif
 // -------------------------------------------------------------------------------
 
@@ -160,7 +149,7 @@ bbsdoreg_main()
 
 	char email[60];
 	snprintf(email, 60, "%s@%s", user, popname);  // 注意不要将email弄溢出了
-	str_to_lowercase(email);
+	ytht_str_to_lowercase(email);
 	ytht_strsncpy(x.email, email, 60);
 #endif
 
