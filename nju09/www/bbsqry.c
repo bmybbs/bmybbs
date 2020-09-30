@@ -1,5 +1,7 @@
 #include "bbslib.h"
 
+static int bm_printboard(struct boardmanager *bm, void *farg);
+static int bm_printboardapi(struct boardmanager *bm,char *farg);
 int show_special_web(char *id2) {
 	FILE *fp;
 	char id1[80], name[80], buf[256];
@@ -346,9 +348,7 @@ show_special(char *id2)
 	fclose(fp);
 }
 
-int
-bm_printboard(struct boardmanager *bm, void *farg)
-{
+static int bm_printboard(struct boardmanager *bm, void *farg) {
 	if (getboard(bm->board)){
 		printf("<a href=%s%s target=f3>", showByDefMode(), bm->board);
 		hprintf("%s", bm->board);
@@ -358,8 +358,7 @@ bm_printboard(struct boardmanager *bm, void *farg)
 	return 0;
 }
 
-int bm_printboardapi(struct boardmanager *bm,char *farg)
-{
+static int bm_printboardapi(struct boardmanager *bm,char *farg) {
 	if (getboard(bm->board)){
 		sstrcat(farg, "\"%s\",",bm->board);
 	}
