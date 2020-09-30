@@ -1,6 +1,9 @@
 #include "bbslib.h"
 #include "ythtbbs/identify.h"
 
+static void adduser(struct userec *x);
+static void newcomer(struct userec *x, char *words);
+
 #ifdef POP_CHECK
 // 登陆邮件服务器用的头文件 added by interma@BMY 2005.5.12
 #include <stdio.h>
@@ -320,7 +323,7 @@ bbsdoreg_main()
 	return 0;
 }
 
-void
+static void
 newcomer(struct userec *x, char *words)
 {
 	FILE *fp;
@@ -337,7 +340,7 @@ newcomer(struct userec *x, char *words)
 	unlink(filename);
 }
 
-void
+static void
 adduser(struct userec *x)
 {
 	int i;

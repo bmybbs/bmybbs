@@ -3,6 +3,8 @@
 
 static void check_captcha_form(void);
 static void resent_active_mail(void);
+static void check_submit_form(void);
+static void check_if_ok(void);
 
 #ifdef POP_CHECK
 
@@ -110,7 +112,7 @@ bbsform_main()
 	return 0;
 }
 
-void
+static void
 check_if_ok()
 {
 	if (user_perm(&currentuser, PERM_LOGINOK))
@@ -120,7 +122,7 @@ check_if_ok()
 		http_fatal("目前站长尚未处理您的注册单，请耐心等待.");
 }
 
-void
+static void
 check_submit_form()
 {
 
