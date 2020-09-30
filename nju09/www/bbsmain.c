@@ -8,6 +8,8 @@ int looponce = 0;
 #define FCGI_Accept() looponce--
 #endif
 
+#include "njuapi.h"
+
 struct cgi_applet applets[] = {
 //      {bbsusr_main, {"bbsusr", NULL}},
 	{bbsrss_main, {"bbsrss", "rss", NULL}, 0L, 0L, 0},
