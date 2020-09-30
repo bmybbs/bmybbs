@@ -14,4 +14,5 @@ int igetkey(void);
 int ask(char *prompt);
 int getdata(int line, int col, char *prompt, char *buf, int len, int echo, int clearlabel);
 int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len, int maxline, int clearlabel);
+void getfield(int line, char *info, char *desc, char *buf, int len);
 #endif //BMYBBS_IO_H

@@ -235,29 +235,6 @@ static int delete_active(char* userid)
     return 0;
 }
 
-static void
-getfield(line, info, desc, buf, len)
-int line, len;
-char *info, *desc, *buf;
-{
-	char prompt[STRLEN];
-	char genbuf[STRLEN];
-
-	sprintf(genbuf, "  Ô­ÏÈÉè¶¨: %-46.46s [1;32m(%s)[m",
-		(buf[0] == '\0') ? "(Î´Éè¶¨)" : buf, info);
-	move(line, 0);
-	prints("%s", genbuf);
-	sprintf(prompt, "  %s: ", desc);
-	getdata(line + 1, 0, prompt, genbuf, len, DOECHO, YEA);
-	if (genbuf[0] != '\0') {
-		strncpy(buf, genbuf, len);
-	}
-	move(line, 0);
-	clrtoeol();
-	prints("  %s: %s\n", desc, buf);
-	clrtoeol();
-}
-
 //¸üĞÂ¼¤»îĞÅÏ¢¼ÇÂ¼
 //Ò»°ãÇé¿öÏÂÓ¦¸ÃÉ¾³ı¼¤»î¼ÇÂ¼ÔÙÒªÇóÓÃ»§ÖØĞÂÊÖ¹¤¼¤»î
 //¶ø²»ÊÇÊ¹ÓÃ±¾¹¦ÄÜ

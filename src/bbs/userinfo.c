@@ -55,8 +55,6 @@
 extern time_t login_start_time;
 extern char fromhost[60];
 
-static void getfield(int line, char *info, char *desc, char *buf, int len);
-
 #ifdef POP_CHECK
 void securityreport(char *str, char *content);
 
@@ -482,26 +480,6 @@ void x_info()
 	}
 	disply_userinfo(&currentuser, 1);
 	uinfo_query(&currentuser, 0, usernum);
-}
-
-static void getfield(line, info, desc, buf, len)
-	int line, len;char *info, *desc, *buf;
-{
-	char prompt[STRLEN];
-
-	sprintf(genbuf, "  原先设定: %-46.46s \033[1;32m(%s)\033[m",
-			(buf[0] == '\0') ? "(未设定)" : buf, info);
-	move(line, 0);
-	prints("%s", genbuf);
-	sprintf(prompt, "  %s: ", desc);
-	getdata(line + 1, 0, prompt, genbuf, len, DOECHO, YEA);
-	if (genbuf[0] != '\0') {
-		strncpy(buf, genbuf, len);
-	}
-	move(line, 0);
-	clrtoeol();
-	prints("  %s: %s\n", desc, buf);
-	clrtoeol();
 }
 
 #ifdef POP_CHECK

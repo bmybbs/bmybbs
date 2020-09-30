@@ -1376,3 +1376,21 @@ multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len,
 
 	return y - starty + 1;
 }
+
+void getfield(int line, char *info, char *desc, char *buf, int len) {
+	char prompt[STRLEN];
+	char genbuf[STRLEN];
+
+	sprintf(genbuf, "  原先设定: %-46.46s \033[1;32m(%s)\033[m", (buf[0] == '\0') ? "(未设定)" : buf, info);
+	move(line, 0);
+	prints("%s", genbuf);
+	sprintf(prompt, "  %s: ", desc);
+	getdata(line + 1, 0, prompt, genbuf, len, DOECHO, YEA);
+	if (genbuf[0] != '\0') {
+		strncpy(buf, genbuf, len);
+	}
+	move(line, 0);
+	clrtoeol();
+	prints("  %s: %s\n", desc, buf);
+	clrtoeol();
+}
