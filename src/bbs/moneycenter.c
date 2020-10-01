@@ -221,9 +221,7 @@ static int stockboards();
 
 static int money_office();
 
-	static void
-showAt(int line, int col, char *str, int flag)
-{
+static void showAt(int line, int col, char *str, int flag) {
 	move(line, col);
 	prints("%s", str);
 	if (flag == 1)
@@ -232,9 +230,8 @@ showAt(int line, int col, char *str, int flag)
 		pressreturn();
 }
 
-	int
-moneycenter()  //moneycenter½øÈë½çÃæ
-{
+//moneycenter½øÈë½çÃæ
+int moneycenter() {
 	int ch;
 	int quit = 0;
 	modify_user_mode(MONEY);
@@ -273,61 +270,59 @@ moneycenter()  //moneycenter½øÈë½çÃæ
 		move(8, 4);
 		prints("Ñ§Ï°´ó¸»ÎÌÓÎÏ·¹æÔòÇëÈ¥±¾Õ¾ÏµÍ³Çømillionaires°æ¡£");
 		move(t_lines - 2, 0);
-		prints("\033[1;44m Ñ¡ \033[1;46m [1]ÒøĞĞ [2]²ÊÆ± [3]¶Ä³¡ [4]ºÚ°ï [5]Ø¤°ï [6]¹ÉÊĞ [7]ÉÌ³¡ [8]¾¯Êğ            \n"
-				"\033[1;44m µ¥ \033[1;46m [9]É±ÊÖ [C]½ÌÌÃ [A]´ó¸»ÎÌ¹ÜÀíÖĞĞÄ [Q]Àë¿ª                                                 ");
+		prints( "\033[1;44m Ñ¡ \033[1;46m [1]ÒøĞĞ [2]²ÊÆ± [3]¶Ä³¡ [4]ºÚ°ï [5]Ø¤°ï [6]¹ÉÊĞ [7]ÉÌ³¡ [8]¾¯Êğ            \n"
+				"\033[1;44m µ¥ \033[1;46m [9]É±ÊÖ [C]½ÌÌÃ [A]´ó¸»ÎÌ¹ÜÀíÖĞĞÄ [Q]Àë¿ª                                    ");
 		ch = igetkey();
 		switch (ch) {
-			case '1':
-				money_bank();
-				break;
-			case '2':
-				money_lottery();
-				break;
-			case '3':
-				money_gamble();
-				break;
-			case '4':
-				money_robber();
-				break;
-			case '5':
-				money_beggar();
-				break;
-			case '6':
-				money_stock();
-				break;
-			case '7':
-				money_shop();
-				break;
-			case '8':
-				money_cop();
-				break;
-			case '9':
-				money_killer();
-				break;
-			case '0':
-				money_admin();	//Òş²Ø£¬ÇÒÈ¨ÏŞ¼ì²é
-				break;
-			case 'c':
-			case 'C':
-				money_marry(); //added by macintosh 20051203
-				break;
-			case 'a':
-			case 'A':
-				money_office(); //added by macintosh 20071105
-				break;
-			case 'q':
-			case 'Q':
-				quit = 1;
-				break;
+		case '1':
+			money_bank();
+			break;
+		case '2':
+			money_lottery();
+			break;
+		case '3':
+			money_gamble();
+			break;
+		case '4':
+			money_robber();
+			break;
+		case '5':
+			money_beggar();
+			break;
+		case '6':
+			money_stock();
+			break;
+		case '7':
+			money_shop();
+			break;
+		case '8':
+			money_cop();
+			break;
+		case '9':
+			money_killer();
+			break;
+		case '0':
+			money_admin();	//Òş²Ø£¬ÇÒÈ¨ÏŞ¼ì²é
+			break;
+		case 'c':
+		case 'C':
+			money_marry(); //added by macintosh 20051203
+			break;
+		case 'a':
+		case 'A':
+			money_office(); //added by macintosh 20071105
+			break;
+		case 'q':
+		case 'Q':
+			quit = 1;
+			break;
 		}
 	}
 	moneycenter_byebye();
 	return 0;
 }  // moneycenter½øÈë½çÃæ
 
-	static void
-moneycenter_welcome()
-{
+static void moneycenter_welcome() {
 	clear();
 	move(4, 4);
 	prints("±øÂíÙ¸½ğÈÚÖĞĞÄÃÅ¿ÚÁ¢×ÅÒ»¿é´óÅÆ×Ó£º");
@@ -338,9 +333,7 @@ moneycenter_welcome()
 	pressanykey();
 } // »¶Ó­½çÃæ
 
-	static void
-moneycenter_byebye()
-{
+static void moneycenter_byebye() {
 	clear();
 	saveValue(currentuser.userid, "multex", -9,9);
 	move(5, 14);
@@ -405,9 +398,7 @@ int millionairesrec(char *title, char *str, char *owner) {
 	return 1;
 }//ÓÃÓÚÏµÍ³¼ÇÂ¼Çø·¢ÎÄ
 
-	static int
-limitValue(int value, int sup)
-{
+static int limitValue(int value, int sup) {
 	if (value > sup)
 		return sup;
 	if (value < 0)
@@ -415,25 +406,19 @@ limitValue(int value, int sup)
 	return value;
 }
 
-	static int
-savemoneyvalue(char *userid, char *key, char *value)
-{
+static int savemoneyvalue(char *userid, char *key, char *value) {
 	char path[256];
 	sprintf(path, DIR_MC"MoneyValues/%s", userid);
 	return savestrvalue(path, key, value);
 }
 
-	static int
-readmoneyvalue(char *userid, char *key, char *value, int size)
-{
+static int readmoneyvalue(char *userid, char *key, char *value, int size) {
 	char path[256];
 	sprintf(path, DIR_MC"MoneyValues/%s", userid);
 	return readstrvalue(path, key, value, size);
 }
 
-	static int
-loadValue(char *user, char *valueName, int sup)
-{
+static int loadValue(char *user, char *valueName, int sup) {
 	char value[20];
 	if (readmoneyvalue(user, valueName, value, 20) != 0)
 		return 0;
@@ -441,9 +426,7 @@ loadValue(char *user, char *valueName, int sup)
 		return limitValue(atoi(value), sup);
 }  //¶ÁÈ¡Ïà¹ØÊıÖµ
 
-	static int
-saveValue(char *user, char *valueName, int valueToAdd, int sup)
-{
+static int saveValue(char *user, char *valueName, int valueToAdd, int sup) {
 	int valueInt;
 	int retv;
 	char value[20];
@@ -452,8 +435,7 @@ saveValue(char *user, char *valueName, int valueToAdd, int sup)
 	valueInt = limitValue(valueInt, sup);
 	snprintf(value, 20, "%d", valueInt);
 	if ((retv = savemoneyvalue(user, valueName, value)) != 0) {
-		errlog("save %s %s %s retv=%d err=%s", currentuser.userid,
-				valueName, value, retv, strerror(errno));
+		errlog("save %s %s %s retv=%d err=%s", currentuser.userid, valueName, value, retv, strerror(errno));
 	}
 	return 0;
 }  //±£´æÏà¹ØÊıÖµ
@@ -473,30 +455,28 @@ static void saveData(void *buffer, size_t filesize) {
 		munmap(buffer, filesize);
 }
 
-	static void // ¹ÜÀíÖ°ÎñÏµÍ³
-whoTakeCharge(int pos, char *boss)
-{
-	const char feaStr[][20] =
-	{ "bank", "lottery", "gambling", "gang", "beggar", "stock", "shop",
+// ¹ÜÀíÖ°ÎñÏµÍ³
+static void whoTakeCharge(int pos, char *boss) {
+	const char feaStr[][20] = {
+		"bank", "lottery", "gambling", "gang", "beggar", "stock", "shop",
 		"police","killer","marriage","office"
 	};
 	if (readstrvalue(MC_BOSS_FILE, feaStr[pos - 1], boss, IDLEN + 1) != 0)
 		*boss = '\0';
 }
-	static void//slowaction ÃØÊéÏµÍ³
-whoTakeCharge2(int pos, char *boss)
-{
-	const char feaStr[][20] =
-	{ "bank", "lottery", "gambling", "gang", "beggar", "stock", "shop",
+
+//slowaction ÃØÊéÏµÍ³
+static void whoTakeCharge2(int pos, char *boss) {
+	const char feaStr[][20] = {
+		"bank", "lottery", "gambling", "gang", "beggar", "stock", "shop",
 		"police","killer","marriage","office"
 	};
 	if (readstrvalue(MC_ASS_FILE, feaStr[pos - 1], boss, IDLEN + 1) != 0)
 		*boss = '\0';
 }
 
-	static int //¼ì²é½øÈëÈ¨ÏŞ
-check_allow_in()
-{
+//¼ì²é½øÈëÈ¨ÏŞ
+static int check_allow_in() {
 	int backTime;
 	int freeTime;
 	int currentTime = time(0);
@@ -535,11 +515,8 @@ check_allow_in()
 		clear();
 		move(10, 10);
 		if((freeTime - currentTime) / 86400>50)
-			saveValue(currentuser.userid, "freeTime",
-					time(0) + 86400 *1,
-					2000000000);
-		prints("ÄãÒÑ¾­±»±øÂíÙ¸¾¯Êğ¼à½ûÁË¡£»¹ÓĞ%dÌìµÄ¼à½û¡£\n",
-				(freeTime - currentTime) / 86400);
+			saveValue(currentuser.userid, "freeTime", time(0) + 86400 *1, 2000000000);
+		prints("ÄãÒÑ¾­±»±øÂíÙ¸¾¯Êğ¼à½ûÁË¡£»¹ÓĞ%dÌìµÄ¼à½û¡£\n", (freeTime - currentTime) / 86400);
 		num=((freeTime - currentTime) / 86400)*25000+25000;
 		sprintf(genbuf, "ÊÇ·ñÒªÇó±£ÊÍ£¬±£ÊÍ½ğ%d",num);
 		if (askyn(genbuf, NA, NA) == YEA) {
@@ -578,11 +555,8 @@ check_allow_in()
 	int total_num, lendMoney;
 	backTime = loadValue(currentuser.userid, "back_time", 2000000000);
 	if((backTime - (int) time(0)) / 3600>5000)
-		saveValue(currentuser.userid, "back_time",
-				time(0) + 1* 86400,
-				2000000000);
-	lendMoney = loadValue(currentuser.userid, LEND_NAME,
-			MAX_MONEY_NUM);
+		saveValue(currentuser.userid, "back_time", time(0) + 1* 86400, 2000000000);
+	lendMoney = loadValue(currentuser.userid, LEND_NAME, MAX_MONEY_NUM);
 	if (backTime < 0 || lendMoney < 0 ) {
 		saveValue(currentuser.userid, LEND_NAME, -lendMoney, MAX_MONEY_NUM);
 		saveValue(currentuser.userid, "lend_time", -2000000000, 2000000000);
@@ -592,27 +566,19 @@ check_allow_in()
 		clear();
 		move(10, 10);
 		if (askyn("ÄãÇ·ÒøĞĞµÄ´û¿îµ½ÆÚÁË£¬¸Ï½ô»¹°É£¿", YEA, NA) == YEA) {
-			total_num =
-				lendMoney + makeInterest(lendMoney, "lend_time",
-						utmpshm->mc.lend_rate/10000.0);
-			money = loadValue(currentuser.userid, MONEY_NAME,
-					MAX_MONEY_NUM);
+			total_num = lendMoney + makeInterest(lendMoney, "lend_time", utmpshm->mc.lend_rate/10000.0);
+			money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
 			if (money < total_num) {
 				move(11, 10);
 				prints("ÄãµÄÇ®²»¹»³¥»¹´û¿î¡£");
 				pressanykey();
 				return 0;
 			}
-			saveValue(currentuser.userid,
-					MONEY_NAME, -total_num, MAX_MONEY_NUM);
-			saveValue(currentuser.userid, LEND_NAME,
-					-MAX_MONEY_NUM, MAX_MONEY_NUM);
-			saveValue(currentuser.userid,
-					"lend_time", -2000000000, 2000000000);
-			saveValue(currentuser.userid,
-					"back_time", -2000000000, 2000000000);
-			del_from_file(DIR_MC "special_lend",
-					currentuser.userid);
+			saveValue(currentuser.userid, MONEY_NAME, -total_num, MAX_MONEY_NUM);
+			saveValue(currentuser.userid, LEND_NAME, -MAX_MONEY_NUM, MAX_MONEY_NUM);
+			saveValue(currentuser.userid, "lend_time", -2000000000, 2000000000);
+			saveValue(currentuser.userid, "back_time", -2000000000, 2000000000);
+			del_from_file(DIR_MC "special_lend", currentuser.userid);
 			move(12, 10);
 			prints("ºÃÁË£¬ÄãÏÖÔÚÎŞÕ®Ò»ÉíÇáÀ²¡£");
 			pressanykey();
@@ -626,9 +592,8 @@ check_allow_in()
 	return 1;
 }
 
-	static int  //¼ÆËãÀûÏ¢
-makeInterest(int basicMoney, char *valueName, float rate)
-{
+//¼ÆËãÀûÏ¢
+static int makeInterest(int basicMoney, char *valueName, float rate) {
 	int lastTime;
 	int day;
 	int maxDay;
@@ -647,9 +612,7 @@ makeInterest(int basicMoney, char *valueName, float rate)
 	return 0;
 }
 
-	static int
-makeRumor(int num)
-{
+static int makeRumor(int num) {
 	if (random() % 3) {
 		num += (random() % num) / 5;
 	} else {
@@ -658,9 +621,7 @@ makeRumor(int num)
 	return limitValue(num, MAX_MONEY_NUM);
 }
 
-	static void
-time2string(int num, char *str)
-{
+static void time2string(int num, char *str) {
 	int i;
 	for (i = 0; num > 0; i++, num /= 10) {
 		str[9 - i] = num % 10 + '0';
@@ -668,9 +629,8 @@ time2string(int num, char *str)
 	str[10] = '\0';
 }
 
-	static int //¼ÆËãÊÇ·ñµ½ÁìÈ¡Ğ½Ë®µÄÊ±ºò
-newSalary()
-{
+//¼ÆËãÊÇ·ñµ½ÁìÈ¡Ğ½Ë®µÄÊ±ºò
+static int newSalary() {
 	char lastSalaryTime[20];
 	return 1;//ÔİÊ±×÷·Ï
 
@@ -689,9 +649,8 @@ newSalary()
 	return 0;
 }
 
-	static int //¼ÆËãĞ½Ë®
-makeSalary()
-{
+//¼ÆËãĞ½Ë®
+static int makeSalary() {
 	if (currentuser.userlevel & PERM_SYSOP) {
 		return SALARY_I;
 	}
@@ -708,15 +667,14 @@ makeSalary()
 	return 0;
 }
 
-	static void //Ö°ÎñÈÎÃâÏµÍ³
-sackOrAppoint(int pos, char *boss, int msgType, char *msg)
-{
+//Ö°ÎñÈÎÃâÏµÍ³
+static void sackOrAppoint(int pos, char *boss, int msgType, char *msg) {
 
 	char head[10];
 	char in[10];
 	char end[10];
-	char posDesc[][40] =
-	{ "±øÂíÙ¸ÒøĞĞĞĞ³¤", "±øÂíÙ¸²©²Ê¹«Ë¾¾­Àí", "±øÂíÙ¸¶Ä³¡¾­Àí",
+	char posDesc[][40] = {
+		"±øÂíÙ¸ÒøĞĞĞĞ³¤", "±øÂíÙ¸²©²Ê¹«Ë¾¾­Àí", "±øÂíÙ¸¶Ä³¡¾­Àí",
 		"±øÂíÙ¸ºÚ°ï°ïÖ÷", "±øÂíÙ¸Ø¤°ï°ïÖ÷", "±øÂíÙ¸Ö¤¼à»áÖ÷Ï¯",
 		"±øÂíÙ¸ÉÌ³¡¾­Àí", "±øÂíÙ¸¾¯ÊğÊğ³¤","±øÂíÙ¸É±ÊÖ°ïÖ÷",
 		"±øÂíÙ¸»éÒö¹ÜÀí°ì¹«ÊÒÖ÷ÈÎ", "±øÂíÙ¸´ó¸»ÎÌ¹ÜÀíÖĞĞÄÖ÷ÈÎ"
@@ -733,15 +691,14 @@ sackOrAppoint(int pos, char *boss, int msgType, char *msg)
 	sprintf(msg, "%s %s %s%s%s", head, boss, in, posDesc[pos - 1], end);
 
 }
-	static void //ÃØÊéÈÎÃâÏµÍ³
-sackOrAppoint2(int pos, char *boss, int msgType, char *msg)
-{
 
+//ÃØÊéÈÎÃâÏµÍ³
+static void sackOrAppoint2(int pos, char *boss, int msgType, char *msg) {
 	char head[10];
 	char in[10];
 	char end[10];
-	char posDesc[][40] =
-	{ "±øÂíÙ¸ÒøĞĞĞĞ³¤ÃØÊé", "±øÂíÙ¸²©²Ê¹«Ë¾¾­ÀíÃØÊé", "±øÂíÙ¸¶Ä³¡¾­ÀíÃØÊé",
+	char posDesc[][40] = {
+		"±øÂíÙ¸ÒøĞĞĞĞ³¤ÃØÊé", "±øÂíÙ¸²©²Ê¹«Ë¾¾­ÀíÃØÊé", "±øÂíÙ¸¶Ä³¡¾­ÀíÃØÊé",
 		"±øÂíÙ¸ºÚ°ï°ïÖ÷ÃØÊé", "±øÂíÙ¸Ø¤°ï°ïÖ÷ÃØÊé", "±øÂíÙ¸Ö¤¼à»áÖ÷Ï¯ÃØÊé",
 		"±øÂíÙ¸ÉÌ³¡¾­ÀíÃØÊé", "±øÂíÙ¸¾¯ÊğÊğ³¤ÃØÊé","±øÂíÙ¸É±ÊÖ°ïÖ÷ÃØÊé",
 		"±øÂíÙ¸»éÒö¹ÜÀí°ì¹«ÊÒÖ÷ÈÎÃØÊé", "±øÂíÙ¸´ó¸»ÎÌ¹ÜÀíÖĞĞÄÃØÊé"
@@ -759,9 +716,8 @@ sackOrAppoint2(int pos, char *boss, int msgType, char *msg)
 
 }
 
-	static int //ÒøĞĞÏµÍ³
-money_bank()
-{
+//ÒøĞĞÏµÍ³
+static int money_bank() {
 	int ch;
 	int quit = 0;
 	int num, money, credit, total_num;
@@ -780,8 +736,7 @@ money_bank()
 		move(8, 16);
 		prints("±øÂíÙ¸ÒøĞĞ»¶Ó­ÄúµÄ¹âÁÙ£¡");
 		move(t_lines - 1, 0);
-		prints
-			("\033[1;44m Ñ¡µ¥ \033[1;46m [1]»»Ç® [2]×ªÕË [3]´¢Ğî [4]´û¿î [5]¹¤×Ê [6]ĞĞ³¤°ì¹«ÊÒ [Q]Àë¿ª\033[m");
+		prints("\033[1;44m Ñ¡µ¥ \033[1;46m [1]»»Ç® [2]×ªÕË [3]´¢Ğî [4]´û¿î [5]¹¤×Ê [6]ĞĞ³¤°ì¹«ÊÒ [Q]Àë¿ª\033[m");
 		ch = igetkey();
 		switch (ch) {
 			case '1':
@@ -790,21 +745,16 @@ money_bank()
 				//			convert_rate = utmpshm->mc.ave_score / 50;
 				convert_rate = 100;
 				move(4, 4);
-				prints
-					("Äú¿ÉÒÔÍ¨¹ı±äÂôÎÄÕÂÊı»ñµÃ±øÂíÙ¸±Ò¡£½ñÌìµÄ»ãÂÊÊÇ 1:%d",
-					 convert_rate);
+				prints("Äú¿ÉÒÔÍ¨¹ı±äÂôÎÄÕÂÊı»ñµÃ±øÂíÙ¸±Ò¡£½ñÌìµÄ»ãÂÊÊÇ 1:%d", convert_rate);
 				move(5, 4);
 				prints("\033[1;31m×¢Òâ:ÎÄÕÂÊıÒ»µ©±äÂô¸Å²»ÍË»¹!\033[0m");
-				getdata(6, 4, "ÄúÒª±äÂô¶àÉÙÎÄÕÂÊı£¿[0]: ", genbuf, 7,
-						DOECHO, YEA);
+				getdata(6, 4, "ÄúÒª±äÂô¶àÉÙÎÄÕÂÊı£¿[0]: ", genbuf, 7, DOECHO, YEA);
 				num = atoi(genbuf);
 				if (num <= 0) {
 					break;
 				}
 				move(7, 4);
-				sprintf(genbuf,
-						"È·¶¨Òª±äÂô %d ÎÄÕÂÊı£¬»»È¡ %d ±øÂíÙ¸±ÒÂğ£¿",
-						num, num * convert_rate);
+				sprintf(genbuf, "È·¶¨Òª±äÂô %d ÎÄÕÂÊı£¬»»È¡ %d ±øÂíÙ¸±ÒÂğ£¿", num, num * convert_rate);
 				if (askyn(genbuf, NA, NA) == YEA) {
 					set_safe_record();
 					if (currentuser.numposts < num) {
@@ -814,14 +764,10 @@ money_bank()
 						break;
 					}
 					currentuser.numposts -= num;
-					substitute_record(PASSFILE, &currentuser,
-							sizeof (currentuser),
-							usernum);
-					saveValue(currentuser.userid, MONEY_NAME,
-							num * convert_rate, MAX_MONEY_NUM);
+					substitute_record(PASSFILE, &currentuser, sizeof (currentuser), usernum);
+					saveValue(currentuser.userid, MONEY_NAME, num * convert_rate, MAX_MONEY_NUM);
 					move(8, 4);
-					prints("½»Ò×³É¹¦£¬ÕâÀïÊÇÄúµÄ %d ±øÂíÙ¸±Ò¡£",
-							num * convert_rate);
+					prints("½»Ò×³É¹¦£¬ÕâÀïÊÇÄúµÄ %d ±øÂíÙ¸±Ò¡£", num * convert_rate);
 					sprintf(genbuf, "%s½øĞĞÒøĞĞ½»Ò×(ÂôÎÄÕÂ)", currentuser.userid);
 					sprintf(buf, "%sÂôµô%dÎÄÕÂÊı, »»µÃ %d±øÂíÙ¸±Ò", currentuser.userid, num, num * convert_rate);
 					millionairesrec(genbuf, buf, "ÒøĞĞ½»Ò×");
@@ -838,9 +784,7 @@ money_bank()
 					utmpshm->mc.transfer_rate = atoi(tmp_transfer_rate);
 				}
 				transfer_rate = utmpshm->mc.transfer_rate / 10000.0;
-				sprintf(genbuf,
-						"×îĞ¡×ªÕË½ğ¶î 1000 ±øÂíÙ¸±Ò¡£ÊÖĞø·Ñ %.2f£¥£¨×î¸ßÊÕÈ¡ 100000 ±øÂíÙ¸±Ò£©",
-						transfer_rate * 100);
+				sprintf(genbuf, "×îĞ¡×ªÕË½ğ¶î 1000 ±øÂíÙ¸±Ò¡£ÊÖĞø·Ñ %.2f£¥£¨×î¸ßÊÕÈ¡ 100000 ±øÂíÙ¸±Ò£©", transfer_rate * 100);
 				prints("%s", genbuf);
 				move(5, 4);
 				usercomplete("×ªÕË¸øË­£¿", uident);
@@ -862,14 +806,12 @@ money_bank()
 					if (seek_in_file(DIR_MC "jijin", currentuser.userid));
 					else if (!seek_in_file(DIR_MC "mingren", uident)) {
 						move(6, 4);
-						prints
-							("¶Ô²»Æğ£¬ÒøĞĞ²»ÔÊĞí»ÆÂí¹ÓÏòÍâ×ªÕÊ¡£");
+						prints("¶Ô²»Æğ£¬ÒøĞĞ²»ÔÊĞí»ÆÂí¹ÓÏòÍâ×ªÕÊ¡£");
 						pressreturn();
 						break;
 					}
 				}
-				getdata(6, 4, "×ªÕË¶àÉÙ±øÂíÙ¸±Ò£¿[0]", buf, 10,
-						DOECHO, YEA);
+				getdata(6, 4, "×ªÕË¶àÉÙ±øÂíÙ¸±Ò£¿[0]", buf, 10, DOECHO, YEA);
 				if (buf[0] == '\0') {
 					break;
 				}
@@ -882,18 +824,14 @@ money_bank()
 				}
 				if (currentuser.stay < 86400) {
 					move(7, 4);
-					prints
-						("¶Ô²»Æğ£¬ÒøĞĞ²»ÏòÎ´³ÉÄêÈËÌá¹©×ªÕÊÒµÎñ¡£");
+					prints("¶Ô²»Æğ£¬ÒøĞĞ²»ÏòÎ´³ÉÄêÈËÌá¹©×ªÕÊÒµÎñ¡£");
 					pressanykey();
 					break;
 				}
 				move(7, 4);
-				sprintf(genbuf, "È·¶¨×ªÕË¸ø %s %d ±øÂíÙ¸±ÒÂğ£¿", uident,
-						num);
+				sprintf(genbuf, "È·¶¨×ªÕË¸ø %s %d ±øÂíÙ¸±ÒÂğ£¿", uident, num);
 				if (askyn(genbuf, NA, NA) == YEA) {
-					money =
-						loadValue(currentuser.userid, MONEY_NAME,
-								MAX_MONEY_NUM);
+					money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
 					if (num * transfer_rate >= 100000) {
 						total_num = num + 100000;
 					} else {
@@ -901,16 +839,12 @@ money_bank()
 					}
 					if (money < total_num) {
 						move(8, 4);
-						prints
-							("ÄúµÄÇ®²»¹»£¬¼ÓÊÖĞø·Ñ´Ë´Î½»Ò×¹²Ğè %d ±øÂíÙ¸±Ò",
-							 total_num);
+						prints("ÄúµÄÇ®²»¹»£¬¼ÓÊÖĞø·Ñ´Ë´Î½»Ò×¹²Ğè %d ±øÂíÙ¸±Ò", total_num);
 						pressanykey();
 						break;
 					}
-					saveValue(currentuser.userid, MONEY_NAME,
-							-total_num, MAX_MONEY_NUM);
-					saveValue(uident, MONEY_NAME, num,
-							MAX_MONEY_NUM);
+					saveValue(currentuser.userid, MONEY_NAME, -total_num, MAX_MONEY_NUM);
+					saveValue(uident, MONEY_NAME, num, MAX_MONEY_NUM);
 
 					char notebuf[512];
 					char note[3][STRLEN];
@@ -925,8 +859,7 @@ money_bank()
 					}
 					move(15, 4);
 					prints("×ªÕÊ³É¹¦£¬ÎÒÃÇÒÑ¾­Í¨ÖªÁËÄúµÄÅóÓÑ¡£");
-					sprintf(title, "ÄúµÄÅóÓÑ %s ¸øÄúËÍÇ®À´ÁË",
-							currentuser.userid);
+					sprintf(title, "ÄúµÄÅóÓÑ %s ¸øÄúËÍÇ®À´ÁË", currentuser.userid);
 					sprintf(notebuf,
 							"ÄúµÄÅóÓÑ %s Í¨¹ı±øÂíÙ¸ÒøĞĞ¸øÄú×ªÕÊÁË %d ±øÂíÙ¸±Ò£¬Çë²éÊÕ¡£"
 							"\n\nÒÔÏÂÊÇ %s µÄ¸½ÑÔ:\n",
@@ -943,12 +876,8 @@ money_bank()
 						mail_buf(buf, "millionaires", title);
 					}
 					if (num >= RUMOR_MONEY && random() % 2) {
-						sprintf(genbuf,
-								"¾İËµ %s ÊÕµ½ÁËÒ»±Ê %d ±øÂíÙ¸±ÒµÄ×ªÕÊ£¡",
-								uident, makeRumor(num));
-						deliverreport
-							("[Ò¥ÑÔ]À´×Ô±øÂíÙ¸ÒøĞĞµÄÏûÏ¢",
-							 genbuf);
+						sprintf(genbuf, "¾İËµ %s ÊÕµ½ÁËÒ»±Ê %d ±øÂíÙ¸±ÒµÄ×ªÕÊ£¡", uident, makeRumor(num));
+						deliverreport("[Ò¥ÑÔ]À´×Ô±øÂíÙ¸ÒøĞĞµÄÏûÏ¢", genbuf);
 					}
 					sprintf(genbuf, "%s½øĞĞÒøĞĞ½»Ò×(×ªÕË)", currentuser.userid);
 					sprintf(buf,"%s×ªÕÊ¸ø%s %d±øÂíÙ¸±Ò", currentuser.userid, uident, num);
@@ -972,13 +901,11 @@ money_bank()
 						deposit_rate * 100);
 				prints("%s", genbuf);
 				move(t_lines - 1, 0);
-				prints
-					("\033[1;44m Ñ¡µ¥ \033[1;46m [1]´æ¿î [2]È¡¿î [Q]Àë¿ª\033[m");
+				prints("\033[1;44m Ñ¡µ¥ \033[1;46m [1]´æ¿î [2]È¡¿î [Q]Àë¿ª\033[m");
 				ch = igetkey();
 				switch (ch) {
 					case '1':
-						getdata(6, 4, "ÄúÒª´æ¶àÉÙ±øÂíÙ¸±Ò?[0]", buf,
-								10, DOECHO, YEA);
+						getdata(6, 4, "ÄúÒª´æ¶àÉÙ±øÂíÙ¸±Ò?[0]", buf, 10, DOECHO, YEA);
 						if (buf[0] == '\0') {
 							break;
 						}
@@ -994,12 +921,8 @@ money_bank()
 						if (askyn(genbuf, NA, NA) == NA) {
 							break;
 						}
-						money =
-							loadValue(currentuser.userid, MONEY_NAME,
-									MAX_MONEY_NUM);
-						credit =
-							loadValue(currentuser.userid, CREDIT_NAME,
-									MAX_MONEY_NUM);
+						money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
+						credit = loadValue(currentuser.userid, CREDIT_NAME, MAX_MONEY_NUM);
 						if (money < num) {
 							move(8, 4);
 							prints("ÄúÃ»ÓĞÕâÃ´¶àÇ®¿ÉÒÔ´æ¡£");
@@ -1013,43 +936,29 @@ money_bank()
 							break;
 						}
 						/* ¿ÛÇ® */
-						saveValue(currentuser.userid, MONEY_NAME, -num,
-								MAX_MONEY_NUM);
+						saveValue(currentuser.userid, MONEY_NAME, -num, MAX_MONEY_NUM);
 						/* ¼ÆËãÔ­ÏÈ´æ¿îµÄÀûÏ¢ */
-						saveValue(currentuser.userid, INTEREST_NAME,
-								makeInterest(credit, "deposit_time",
-									deposit_rate),
-								MAX_MONEY_NUM);
+						saveValue(currentuser.userid, INTEREST_NAME, makeInterest(credit, "deposit_time", deposit_rate), MAX_MONEY_NUM);
 						/* ´æ¿î */
-						saveValue(currentuser.userid, CREDIT_NAME,
-								num, MAX_MONEY_NUM);
-						saveValue(currentuser.userid,
-								"deposit_time", -2000000000,
-								2000000000);
+						saveValue(currentuser.userid, CREDIT_NAME, num, MAX_MONEY_NUM);
+						saveValue(currentuser.userid, "deposit_time", -2000000000, 2000000000);
 						/* ĞÂµÄ´æ¿î¿ªÊ¼Ê±¼ä */
-						saveValue(currentuser.userid, "deposit_time",
-								time(0), 2000000000);
+						saveValue(currentuser.userid, "deposit_time", time(0), 2000000000);
 						move(8, 4);
-						prints
-							("½»Ò×³É¹¦£¬ÄúÏÖÔÚ´æÓĞ %d ±øÂíÙ¸±Ò£¬ÀûÏ¢¹²¼Æ %d ±øÂíÙ¸±Ò¡£",
-							 loadValue(currentuser.userid, CREDIT_NAME,
-								 MAX_MONEY_NUM),
-							 loadValue(currentuser.userid,
-								 INTEREST_NAME, MAX_MONEY_NUM));
+						prints("½»Ò×³É¹¦£¬ÄúÏÖÔÚ´æÓĞ %d ±øÂíÙ¸±Ò£¬ÀûÏ¢¹²¼Æ %d ±øÂíÙ¸±Ò¡£",
+								loadValue(currentuser.userid, CREDIT_NAME, MAX_MONEY_NUM),
+								loadValue(currentuser.userid, INTEREST_NAME, MAX_MONEY_NUM));
 						if (num >= RUMOR_MONEY && random() % 2) {
 							sprintf(genbuf,
 									"ÓĞÈËÄ¿»÷ %s ÔÚ±øÂíÙ¸ÒøĞĞ´æÈëÁË %d µÄ±øÂíÙ¸±Ò£¡",
 									currentuser.userid,
 									makeRumor(num));
-							deliverreport
-								("[Ò¥ÑÔ]À´×Ô±øÂíÙ¸ÒøĞĞµÄÏûÏ¢",
-								 genbuf);
+							deliverreport("[Ò¥ÑÔ]À´×Ô±øÂíÙ¸ÒøĞĞµÄÏûÏ¢", genbuf);
 						}
 						pressanykey();
 						break;
 					case '2':
-						getdata(6, 4, "ÄúÒªÈ¡¶àÉÙ±øÂíÙ¸±Ò?[0]", buf,
-								10, DOECHO, YEA);
+						getdata(6, 4, "ÄúÒªÈ¡¶àÉÙ±øÂíÙ¸±Ò?[0]", buf, 10, DOECHO, YEA);
 						if (buf[0] == '\0') {
 							break;
 						}
@@ -1065,9 +974,7 @@ money_bank()
 						if (askyn(genbuf, NA, NA) == NA) {
 							break;
 						}
-						credit =
-							loadValue(currentuser.userid, CREDIT_NAME,
-									MAX_MONEY_NUM);
+						credit = loadValue(currentuser.userid, CREDIT_NAME, MAX_MONEY_NUM);
 						if (num > credit) {
 							move(8, 4);
 							prints("ÄúÃ»ÓĞÄÇÃ´¶à´æ¿î¡£");
@@ -1083,22 +990,14 @@ money_bank()
 									+ makeInterest(num, "deposit_time", deposit_rate));
 							if (askyn(genbuf, NA, NA) == YEA) {
 								/* ´æ¿î¼ÓÀûÏ¢ */
-								total_num =
-									num + makeInterest(num,
-											"deposit_time",
-											deposit_rate)
-									+
-									loadValue(currentuser.
-											userid,
-											INTEREST_NAME,
-											MAX_MONEY_NUM);
+								total_num = num
+									+ makeInterest(num, "deposit_time", deposit_rate)
+									+ loadValue(currentuser.userid, INTEREST_NAME, MAX_MONEY_NUM);
 								withdrawAll = 1;
 							}
 						}
 
-						credit =
-							loadValue(currentuser.userid, CREDIT_NAME,
-									MAX_MONEY_NUM);
+						credit = loadValue(currentuser.userid, CREDIT_NAME, MAX_MONEY_NUM);
 						if (num > credit) {
 							move(9, 4);
 							prints("ÄúÃ»ÓĞÄÇÃ´¶à´æ¿î¡£");
@@ -1106,31 +1005,20 @@ money_bank()
 							break;
 						}
 						/* ¼õÈ¥È¡¿î */
-						saveValue(currentuser.userid, CREDIT_NAME,
-								-num, MAX_MONEY_NUM);
+						saveValue(currentuser.userid, CREDIT_NAME, -num, MAX_MONEY_NUM);
 						/* È¡µÃÏÖ½ğ */
-						saveValue(currentuser.userid, MONEY_NAME,
-								total_num, MAX_MONEY_NUM);
+						saveValue(currentuser.userid, MONEY_NAME, total_num, MAX_MONEY_NUM);
 						/* ¼ÆËãËùÈ¡µÄÇ®µÄÀûÏ¢ */
 						if (withdrawAll) {
-							saveValue(currentuser.userid,
-									INTEREST_NAME, -MAX_MONEY_NUM,
-									MAX_MONEY_NUM);
+							saveValue(currentuser.userid, INTEREST_NAME, -MAX_MONEY_NUM, MAX_MONEY_NUM);
 						} else {
-							saveValue(currentuser.userid,
-									INTEREST_NAME,
-									makeInterest(num,
-										"deposit_time",
-										deposit_rate),
-									MAX_MONEY_NUM);
+							saveValue(currentuser.userid, INTEREST_NAME, makeInterest(num, "deposit_time", deposit_rate), MAX_MONEY_NUM);
 						}
 						move(8, 4);
 						prints
 							("½»Ò×³É¹¦£¬ÄúÏÖÔÚ´æÓĞ %d ±øÂíÙ¸±Ò£¬´æ¿îÀûÏ¢¹²¼Æ %d ±øÂíÙ¸±Ò¡£",
-							 loadValue(currentuser.userid, CREDIT_NAME,
-								 MAX_MONEY_NUM),
-							 loadValue(currentuser.userid,
-								 INTEREST_NAME, MAX_MONEY_NUM));
+							 loadValue(currentuser.userid, CREDIT_NAME, MAX_MONEY_NUM),
+							 loadValue(currentuser.userid, INTEREST_NAME, MAX_MONEY_NUM));
 						pressanykey();
 						break;
 					case 'Q':
@@ -1154,30 +1042,20 @@ money_bank()
 						lend_rate * 100);
 				prints("%s", genbuf);
 				move(5, 4);
-				lendMoney =
-					loadValue(currentuser.userid, LEND_NAME,
-							MAX_MONEY_NUM);
-				total_num =
-					lendMoney + makeInterest(lendMoney, "lend_time",
-							lend_rate);
-				lendTime =
-					loadValue(currentuser.userid, "lend_time",
-							2000000000);
+				lendMoney = loadValue(currentuser.userid, LEND_NAME, MAX_MONEY_NUM);
+				total_num = lendMoney + makeInterest(lendMoney, "lend_time", lend_rate);
+				lendTime = loadValue(currentuser.userid, "lend_time", 2000000000);
 				if (lendTime > 0) {
 					sprintf(genbuf,
 							"Äú´û¿î %d ±øÂíÙ¸±Ò£¬µ±Ç°±¾Ï¢¹²¼Æ %d ±øÂíÙ¸±Ò£¬¾àµ½ÆÚ %d Ğ¡Ê±¡£",
-							lendMoney,
-							total_num,
-							(loadValue
-							 (currentuser.userid, "back_time",
-							  2000000000) - (int) time(0)) / 3600);
+							lendMoney, total_num,
+							(loadValue(currentuser.userid, "back_time", 2000000000) - (int) time(0)) / 3600);
 				} else {
 					sprintf(genbuf, "ÄúÄ¿Ç°Ã»ÓĞ´û¿î¡£");
 				}
 				prints("%s", genbuf);
 				move(t_lines - 1, 0);
-				prints
-					("\033[1;44m Ñ¡µ¥ \033[1;46m [1]´û¿î [2]»¹´û [Q]Àë¿ª\033[m");
+				prints("\033[1;44m Ñ¡µ¥ \033[1;46m [1]´û¿î [2]»¹´û [Q]Àë¿ª\033[m");
 				ch = igetkey();
 				switch (ch) {
 					case '1':
@@ -1207,29 +1085,21 @@ money_bank()
 						}
 						if (num > countexp(&currentuser) * 100) {
 							move(8, 4);
-							prints
-								("¶Ô²»Æğ£¬ÄúÒªÇó´û¿îµÄ½ğ¶î³¬¹ıÒøĞĞ¹æ¶¨¡£");
+							prints("¶Ô²»Æğ£¬ÄúÒªÇó´û¿îµÄ½ğ¶î³¬¹ıÒøĞĞ¹æ¶¨¡£");
 							pressanykey();
 							break;
 						}
 						inputValid = 0;
 						while (!inputValid) {
-							getdata(8, 4,
-									"ÄúÒª´û¿î¶àÉÙÌì£¿[3-30]: ", buf,
-									3, DOECHO, YEA);
+							getdata(8, 4, "ÄúÒª´û¿î¶àÉÙÌì£¿[3-30]: ", buf, 3, DOECHO, YEA);
 							if (atoi(buf) > 2 && atoi(buf) < 31) {
 								inputValid = 1;
 							}
 						}
-						saveValue(currentuser.userid, MONEY_NAME, num,
-								MAX_MONEY_NUM);
-						saveValue(currentuser.userid, LEND_NAME, num,
-								MAX_MONEY_NUM);
-						saveValue(currentuser.userid, "lend_time",
-								time(0), 2000000000);
-						saveValue(currentuser.userid, "back_time",
-								time(0) + atoi(buf) * 86400,
-								2000000000);
+						saveValue(currentuser.userid, MONEY_NAME, num, MAX_MONEY_NUM);
+						saveValue(currentuser.userid, LEND_NAME, num, MAX_MONEY_NUM);
+						saveValue(currentuser.userid, "lend_time", time(0), 2000000000);
+						saveValue(currentuser.userid, "back_time", time(0) + atoi(buf) * 86400, 2000000000);
 						move(9, 4);
 						prints("ÄúµÄ´û¿îÊÖĞøÒÑ¾­Íê³É¡£Çëµ½ÆÚ»¹¿î¡£");
 						sprintf(genbuf, "%s½øĞĞÒøĞĞ½»Ò×(´û¿î)", currentuser.userid);
@@ -1239,51 +1109,37 @@ money_bank()
 						break;
 					case '2':
 						move(6, 4);
-						backTime =
-							loadValue(currentuser.userid, "back_time", 2000000000);
+						backTime = loadValue(currentuser.userid, "back_time", 2000000000);
 						if((backTime - (int) time(0)) / 3600>5000||(backTime - (int) time(0)) / 3600<-30)
 							saveValue(currentuser.userid, "back_time", time(0) + 1* 86400, 2000000000);
-						lendTime =
-							loadValue(currentuser.userid, "lend_time", 2000000000);
+						lendTime = loadValue(currentuser.userid, "lend_time", 2000000000);
 						if (lendTime == 0) {
 							prints("Äú¼Ç´íÁË°É£¿Ã»ÓĞÕÒµ½ÄúµÄ´û¿î¼ÇÂ¼°¡¡£");
 							pressanykey();
 							break;
 						}
 						if (time(0) - lendTime < 86400) {
-							prints ("¶Ô²»Æğ£¬ÒøĞĞ²»½ÓÊÜÎ´²úÉúÀûÏ¢µÄ»¹´û¡£");
+							prints("¶Ô²»Æğ£¬ÒøĞĞ²»½ÓÊÜÎ´²úÉúÀûÏ¢µÄ»¹´û¡£");
 							pressanykey();
 							break;
 						}
 						if (askyn("ÄúÒªÏÖÔÚ³¥»¹´û¿îÂğ£¿", NA, NA) == YEA) {
-							money = loadValue(currentuser.userid,
-									MONEY_NAME,
-									MAX_MONEY_NUM);
+							money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
 							move(7, 4);
 							if (money < total_num) {
 								prints ("¶Ô²»Æğ£¬ÄúµÄÇ®²»¹»³¥»¹´û¿î¡£");
 								pressanykey();
 								break;
 							}
-							saveValue(currentuser.userid,
-									MONEY_NAME, -total_num,
-									MAX_MONEY_NUM);
-							saveValue(currentuser.userid, LEND_NAME,
-									-MAX_MONEY_NUM,
-									MAX_MONEY_NUM);
-							saveValue(currentuser.userid,
-									"lend_time", -2000000000,
-									2000000000);
-							saveValue(currentuser.userid,
-									"back_time", -2000000000,
-									2000000000);
-							del_from_file(DIR_MC "special_lend",
-									currentuser.userid);
+							saveValue(currentuser.userid, MONEY_NAME, -total_num, MAX_MONEY_NUM);
+							saveValue(currentuser.userid, LEND_NAME, -MAX_MONEY_NUM, MAX_MONEY_NUM);
+							saveValue(currentuser.userid, "lend_time", -2000000000, 2000000000);
+							saveValue(currentuser.userid, "back_time", -2000000000, 2000000000);
+							del_from_file(DIR_MC "special_lend", currentuser.userid);
 							sprintf(genbuf, "%s½øĞĞÒøĞĞ½»Ò×(»¹´û)", currentuser.userid);
 							sprintf(buf,"%s³¥»¹´û¿î±¾Àû¹²%d±øÂíÙ¸±Ò", currentuser.userid, total_num);
 							millionairesrec(genbuf, buf, "ÒøĞĞ½»Ò×");
-							prints
-								("ÄúµÄ´û¿îÒÑ¾­»¹Çå¡£ÒøĞĞÀÖ¼û²¢Ãú¼ÇÄúµÄ³ÏĞÅ¡£");
+							prints("ÄúµÄ´û¿îÒÑ¾­»¹Çå¡£ÒøĞĞÀÖ¼û²¢Ãú¼ÇÄúµÄ³ÏĞÅ¡£");
 							pressanykey();
 						}
 						break;
@@ -1304,13 +1160,11 @@ money_bank()
 				}
 				if (utmpshm->mc.isSalaryTime == 0) {
 					move(10, 10);
-					prints
-						("¶Ô²»Æğ£¬ÒøĞĞ»¹Ã»ÓĞÊÕµ½¹¤×Ê»®¿î¡£Çë¹ı¼¸ÌìÔÙÀ´¡£");
+					prints("¶Ô²»Æğ£¬ÒøĞĞ»¹Ã»ÓĞÊÕµ½¹¤×Ê»®¿î¡£Çë¹ı¼¸ÌìÔÙÀ´¡£");
 					pressanykey();
 					break;
 				}
-				if (seek_in_file
-						(DIR_MC "salary_list", currentuser.userid)) {
+				if (seek_in_file(DIR_MC "salary_list", currentuser.userid)) {
 					move(10, 10);
 					prints("ÄúÒÑ¾­Áì¹ı±¾ÔÂ¹¤×Ê¡£»¹ÊÇÇÚ·Ü¹¤×÷°É£¡");
 					pressanykey();
@@ -1319,13 +1173,10 @@ money_bank()
 				move(6, 4);
 				sprintf(genbuf, "Äú±¾ÔÂµÄ¹¤×Ê %d ±øÂíÙ¸±ÒÒÑ¾­»®µ½ÒøĞĞ¡£ÏÖÔÚÁìÈ¡Âğ£¿",	salary);
 				if (askyn(genbuf, NA, NA) == YEA) {
-					saveValue(currentuser.userid,
-							MONEY_NAME, salary, MAX_MONEY_NUM);
-					addtofile(DIR_MC "salary_list",
-							currentuser.userid);
+					saveValue(currentuser.userid, MONEY_NAME, salary, MAX_MONEY_NUM);
+					addtofile(DIR_MC "salary_list", currentuser.userid);
 					move(8, 4);
-					prints
-						("ÕâÀïÊÇÄúµÄ¹¤×Ê¡£¸ĞĞ»ÄúÎª±øÂíÙ¸¸¶³öµÄ¹¤×÷!");
+					prints("ÕâÀïÊÇÄúµÄ¹¤×Ê¡£¸ĞĞ»ÄúÎª±øÂíÙ¸¸¶³öµÄ¹¤×÷!");
 					pressanykey();
 					break;
 				}
@@ -1338,132 +1189,86 @@ money_bank()
 				whoTakeCharge2(1, name);
 				whoTakeCharge(1, uident);
 				if (strcmp(currentuser.userid, uident)) {
-					prints
-						("ÃØÊé%sÀ¹×¡ÁËÄã£¬ÈáÉùËµµÀ:¡°ĞĞ³¤%sÕıÔÚÀïÃæ°ì¹«£¬ÇëÎğ´òÈÅ¡£¡±",
-						 name,uident);
+					prints("ÃØÊé%sÀ¹×¡ÁËÄã£¬ÈáÉùËµµÀ:¡°ĞĞ³¤%sÕıÔÚÀïÃæ°ì¹«£¬ÇëÎğ´òÈÅ¡£¡±", name,uident);
 					pressanykey();
 					break;
 				} else {
 					prints("ÇëÑ¡Ôñ²Ù×÷´úºÅ:");
 					move(7, 6);
-					prints
-						("1. µ÷Õû´æ¿îÀûÂÊ                  2. µ÷Õû´û¿îÀûÂÊ");
+					prints("1. µ÷Õû´æ¿îÀûÂÊ                  2. µ÷Õû´û¿îÀûÂÊ");
 					move(8, 6);
-					prints
-						("3. µ÷Õû×ªÕÊ·ÑÂÊ                  4. ÉóÅú´û¿î");
+					prints("3. µ÷Õû×ªÕÊ·ÑÂÊ                  4. ÉóÅú´û¿î");
 					move(9, 6);
-					prints
-						("5. µ÷²éÓÃ»§ÕÊ»§                  6. ÌØ±ğ´û¿îÃûµ¥");
+					prints("5. µ÷²éÓÃ»§ÕÊ»§                  6. ÌØ±ğ´û¿îÃûµ¥");
 					move(10, 6);
-					prints
-						("7. ·¢·Å¹¤×Ê                      8. ÌØÊâ²¦¿î");
+					prints("7. ·¢·Å¹¤×Ê                      8. ÌØÊâ²¦¿î");
 					move(11,6);
-					prints
-						("9. ´ÇÖ°                          Q. ÍË³ö");
+					prints("9. ´ÇÖ°                          Q. ÍË³ö");
 					ch = igetkey();
 					switch (ch) {
 						case '1':
-							getdata(12, 4,
-									"Éè¶¨ĞÂµÄ´æ¿îÀûÂÊ[10-250]: ",
-									buf, 4, DOECHO, YEA);
+							getdata(12, 4, "Éè¶¨ĞÂµÄ´æ¿îÀûÂÊ[10-250]: ", buf, 4, DOECHO, YEA);
 							if (atoi(buf) < 10 || atoi(buf) > 250) {
 								break;
 							}
 							move(14, 4);
-							sprintf(genbuf,
-									"ĞÂµÄ´æ¿îÀûÂÊÊÇ %.2f£¥£¬È·¶¨Âğ£¿",
-									atoi(buf) / 100.0);
+							sprintf(genbuf, "ĞÂµÄ´æ¿îÀûÂÊÊÇ %.2f£¥£¬È·¶¨Âğ£¿", atoi(buf) / 100.0);
 							if (askyn(genbuf, NA, NA) == YEA) {
-								savestrvalue(MC_RATE_FILE,
-										"deposit_rate",
-										buf);
-								utmpshm->mc.deposit_rate =
-									atoi(buf);
+								savestrvalue(MC_RATE_FILE, "deposit_rate", buf);
+								utmpshm->mc.deposit_rate = atoi(buf);
 								move(15, 4);
 								prints("ÉèÖÃÍê±Ï¡£");
-								sprintf(genbuf,
-										"ĞÂµÄ´æ¿îÀûÂÊÎª %.2f£¥ ¡£",
-										utmpshm->mc.
-										deposit_rate / 100.0);
-								deliverreport
-									("[¹«¸æ]±øÂíÙ¸ÒøĞĞµ÷Õû´æ¿îÀûÂÊ",
-									 genbuf);
+								sprintf(genbuf, "ĞÂµÄ´æ¿îÀûÂÊÎª %.2f£¥ ¡£", utmpshm->mc.  deposit_rate / 100.0);
+								deliverreport("[¹«¸æ]±øÂíÙ¸ÒøĞĞµ÷Õû´æ¿îÀûÂÊ", genbuf);
 								sprintf(genbuf, "%sĞĞÊ¹¹ÜÀíÈ¨ÏŞ",currentuser.userid);
-								sprintf(buf, "ÉèÖÃĞÂµÄ´æ¿îÀûÂÊÎª %.2f£¥ ¡£", utmpshm->mc.
-										deposit_rate / 100.0);
+								sprintf(buf, "ÉèÖÃĞÂµÄ´æ¿îÀûÂÊÎª %.2f£¥ ¡£", utmpshm->mc.  deposit_rate / 100.0);
 								millionairesrec(genbuf, buf, "");
 								pressanykey();
 							}
 							break;
 						case '2':
-							getdata(12, 4,
-									"Éè¶¨ĞÂµÄ´û¿îÀûÂÊ[10-250]: ",
-									buf, 4, DOECHO, YEA);
+							getdata(12, 4, "Éè¶¨ĞÂµÄ´û¿îÀûÂÊ[10-250]: ", buf, 4, DOECHO, YEA);
 							if (atoi(buf) < 10 || atoi(buf) > 250) {
 								break;
 							}
 							move(14, 4);
-							sprintf(genbuf,
-									"ĞÂµÄ´û¿îÀûÂÊÊÇ %.2f£¥£¬È·¶¨Âğ£¿",
-									atoi(buf) / 100.0);
+							sprintf(genbuf, "ĞÂµÄ´û¿îÀûÂÊÊÇ %.2f£¥£¬È·¶¨Âğ£¿", atoi(buf) / 100.0);
 							if (askyn(genbuf, NA, NA) == YEA) {
-								savestrvalue(MC_RATE_FILE,
-										"lend_rate", buf);
-								utmpshm->mc.lend_rate =
-									atoi(buf);
+								savestrvalue(MC_RATE_FILE, "lend_rate", buf);
+								utmpshm->mc.lend_rate = atoi(buf);
 								move(15, 4);
 								prints("ÉèÖÃÍê±Ï¡£");
-								sprintf(genbuf,
-										"ĞÂµÄ´û¿îÀûÂÊÎª %.2f£¥ ¡£",
-										utmpshm->mc.lend_rate /
-										100.0);
-								deliverreport
-									("[¹«¸æ]±øÂíÙ¸ÒøĞĞµ÷Õû´û¿îÀûÂÊ",
-									 genbuf);
+								sprintf(genbuf, "ĞÂµÄ´û¿îÀûÂÊÎª %.2f£¥ ¡£", utmpshm->mc.lend_rate / 100.0);
+								deliverreport("[¹«¸æ]±øÂíÙ¸ÒøĞĞµ÷Õû´û¿îÀûÂÊ", genbuf);
 								sprintf(genbuf, "%sĞĞÊ¹ÒøĞĞ¹ÜÀíÈ¨ÏŞ",currentuser.userid);
-								sprintf(buf, "ÉèÖÃĞÂµÄ´û¿îÀûÂÊÎª %.2f£¥ ¡£", utmpshm->mc.
-										lend_rate / 100.0);
+								sprintf(buf, "ÉèÖÃĞÂµÄ´û¿îÀûÂÊÎª %.2f£¥ ¡£", utmpshm->mc.lend_rate / 100.0);
 								millionairesrec(genbuf, buf, "");
 								pressanykey();
 							}
 							break;
 						case '3':
-							getdata(12, 4,
-									"Éè¶¨ĞÂµÄ×ªÕÊ·ÑÂÊ[10-250]: ",
-									buf, 4, DOECHO, YEA);
+							getdata(12, 4, "Éè¶¨ĞÂµÄ×ªÕÊ·ÑÂÊ[10-250]: ", buf, 4, DOECHO, YEA);
 							if (atoi(buf) < 10 || atoi(buf) > 250) {
 								break;
 							}
 							move(14, 4);
-							sprintf(genbuf,
-									"ĞÂµÄ×ªÕÊ·ÑÂÊÊÇ %.2f£¥£¬È·¶¨Âğ£¿",
-									atoi(buf) / 100.0);
+							sprintf(genbuf, "ĞÂµÄ×ªÕÊ·ÑÂÊÊÇ %.2f£¥£¬È·¶¨Âğ£¿", atoi(buf) / 100.0);
 							if (askyn(genbuf, NA, NA) == YEA) {
-								savestrvalue(MC_RATE_FILE,
-										"transfer_rate",
-										buf);
-								utmpshm->mc.transfer_rate =
-									atoi(buf);
+								savestrvalue(MC_RATE_FILE, "transfer_rate", buf);
+								utmpshm->mc.transfer_rate = atoi(buf);
 								move(15, 4);
 								prints("ÉèÖÃÍê±Ï¡£");
-								sprintf(genbuf,
-										"ĞÂµÄ×ªÕÊ·ÑÂÊÎª %.2f£¥ ¡£",
-										utmpshm->mc.
-										transfer_rate / 100.0);
-								deliverreport
-									("[¹«¸æ]±øÂíÙ¸ÒøĞĞµ÷Õû×ªÕÊ·ÑÂÊ",
-									 genbuf);
+								sprintf(genbuf, "ĞÂµÄ×ªÕÊ·ÑÂÊÎª %.2f£¥ ¡£", utmpshm->mc.transfer_rate / 100.0);
+								deliverreport("[¹«¸æ]±øÂíÙ¸ÒøĞĞµ÷Õû×ªÕÊ·ÑÂÊ", genbuf);
 								sprintf(genbuf, "%sĞĞÊ¹ÒøĞĞ¹ÜÀíÈ¨ÏŞ",currentuser.userid);
-								sprintf(buf, "ÉèÖÃĞÂµÄ×ªÕÊ·ÑÂÊÎª %.2f£¥ ¡£", utmpshm->mc.
-										transfer_rate / 100.0);
+								sprintf(buf, "ÉèÖÃĞÂµÄ×ªÕÊ·ÑÂÊÎª %.2f£¥ ¡£", utmpshm->mc.transfer_rate / 100.0);
 								millionairesrec(genbuf, buf, "");
 								pressanykey();
 							}
 							break;
 						case '4':
 							move(12, 4);
-							usercomplete("ÏòË­Ìá¹©ÌØ±ğ´û¿î£¿",
-									uident);
+							usercomplete("ÏòË­Ìá¹©ÌØ±ğ´û¿î£¿", uident);
 							if (uident[0] == '\0')
 								break;
 							if (!getuser(uident)) {
@@ -1478,11 +1283,9 @@ money_bank()
 								pressreturn();
 								break;
 							}
-							if (loadValue
-									(uident, "lend_time", 2000000000) > 0) {
+							if (loadValue(uident, "lend_time", 2000000000) > 0) {
 								move(13, 4);
-								prints
-									("¸Ã¿Í»§ÒÑ¾­´û¿î£¬²»ÒË×·¼Ó´û¿î¡£");
+								prints("¸Ã¿Í»§ÒÑ¾­´û¿î£¬²»ÒË×·¼Ó´û¿î¡£");
 								pressanykey();
 								break;
 							}
@@ -1492,15 +1295,13 @@ money_bank()
 
 							if (atoi(buf) < 100000) {
 								move(14, 4);
-								prints
-									("ÕâÃ´µãÇ®£¬ÓªÒµÌü¾Í¿ÉÒÔ°ìÀí¡£");
+								prints("ÕâÃ´µãÇ®£¬ÓªÒµÌü¾Í¿ÉÒÔ°ìÀí¡£");
 								pressanykey();
 								break;
 							}
 							if (atoi(buf) > 100000000) {
 								move(14, 4);
-								prints
-									("Èç´ËÊı¶î¾Ş´óµÄ´û¿î£¬¿ÖÅÂ¶­ÊÂ»á²»»áÍ¬ÒâµÄ¡£");
+								prints("Èç´ËÊı¶î¾Ş´óµÄ´û¿î£¬¿ÖÅÂ¶­ÊÂ»á²»»áÍ¬ÒâµÄ¡£");
 								pressanykey();
 								break;
 							}
@@ -1514,23 +1315,14 @@ money_bank()
 							time_t t = time(0) + 86400 * atoi(buf);
 							sprintf(genbuf, "%s\t%s", uident, ctime(&t));
 							addtofile(DIR_MC "special_lend", genbuf);
-							saveValue(uident, MONEY_NAME, num,
-									MAX_MONEY_NUM);
-							saveValue(uident, LEND_NAME, num,
-									MAX_MONEY_NUM);
-							saveValue(uident, "lend_time", time(0),
-									2000000000);
-							saveValue(uident, "back_time",
-									time(0) + atoi(buf) * 86400,
-									2000000000);
-							sprintf(genbuf,
-									"´û¿î½ğ¶î %d ±øÂíÙ¸±Ò£¬ÇëÎñ±ØÓÚ %s ÌìÄÚ³¥»¹´û¿î¡£",
-									num, buf);
-							mail_buf(genbuf, uident,
-									"±øÂíÙ¸ÒøĞĞĞĞ³¤Í¬ÒâÁËÄúµÄ´û¿îÉêÇë");
+							saveValue(uident, MONEY_NAME, num, MAX_MONEY_NUM);
+							saveValue(uident, LEND_NAME, num, MAX_MONEY_NUM);
+							saveValue(uident, "lend_time", time(0), 2000000000);
+							saveValue(uident, "back_time", time(0) + atoi(buf) * 86400, 2000000000);
+							sprintf(genbuf, "´û¿î½ğ¶î %d ±øÂíÙ¸±Ò£¬ÇëÎñ±ØÓÚ %s ÌìÄÚ³¥»¹´û¿î¡£", num, buf);
+							mail_buf(genbuf, uident, "±øÂíÙ¸ÒøĞĞĞĞ³¤Í¬ÒâÁËÄúµÄ´û¿îÉêÇë");
 							move(16, 4);
-							prints
-								("´û¿îÉóÅúÍê³É¡£ÇëÈ·±£¿Í»§¼°Ê±»¹¿î¡£");
+							prints("´û¿îÉóÅúÍê³É¡£ÇëÈ·±£¿Í»§¼°Ê±»¹¿î¡£");
 							sprintf(buf, "¸ø%sÌØ±ğ´û¿î£¬%s",uident, genbuf);
 							sprintf(genbuf, "%sĞĞÊ¹ÒøĞĞ¹ÜÀíÈ¨ÏŞ",currentuser.userid);
 							millionairesrec(genbuf, buf, "");
@@ -1550,12 +1342,9 @@ money_bank()
 							move(14, 4);
 							sprintf(genbuf,
 									"¸Ã¿Í»§ÓĞÏÖ½ğ%d ±øÂíÙ¸±Ò£¬´æ¿î %d ±øÂíÙ¸±Ò,´û¿î %d ±øÂíÙ¸±Ò¡£",
-									loadValue(uident, MONEY_NAME,
-										MAX_MONEY_NUM),
-									loadValue(uident, CREDIT_NAME,
-										MAX_MONEY_NUM),
-									loadValue(uident, LEND_NAME,
-										MAX_MONEY_NUM));
+									loadValue(uident, MONEY_NAME, MAX_MONEY_NUM),
+									loadValue(uident, CREDIT_NAME, MAX_MONEY_NUM),
+									loadValue(uident, LEND_NAME, MAX_MONEY_NUM));
 							prints("%s", genbuf);
 							pressanykey();
 							break;
@@ -1580,10 +1369,8 @@ money_bank()
 										break;
 									}
 									strcpy(currboard, "sysop");
-									deliverreport
-										("[¹«¸æ]±¾Õ¾¹«ÎñÔ±ÁìÈ¡±¾ÔÂ¹¤×Ê",
-										 "ÇëÓÚ7ÌìÄÚµ½±øÂíÙ¸ÒøĞĞÁìÈ¡£¬¹ıÆÚÊÓÎª·ÅÆú¡£\n");
-									strcpy(currboard,	 MC_BOARD);
+									deliverreport("[¹«¸æ]±¾Õ¾¹«ÎñÔ±ÁìÈ¡±¾ÔÂ¹¤×Ê", "ÇëÓÚ7ÌìÄÚµ½±øÂíÙ¸ÒøĞĞÁìÈ¡£¬¹ıÆÚÊÓÎª·ÅÆú¡£\n");
+									strcpy(currboard, MC_BOARD);
 									remove(DIR_MC "salary_list");
 									utmpshm->mc.isSalaryTime = 1;
 									move(14, 4);
@@ -1599,8 +1386,7 @@ money_bank()
 							break;
 						case '8':
 							move(12, 4);
-							usercomplete("ÏòË­Ìá¹©ÌØ±ğ²¦¿î£¿",
-									uident);
+							usercomplete("ÏòË­Ìá¹©ÌØ±ğ²¦¿î£¿", uident);
 							if (uident[0] == '\0')
 								break;
 							if (!getuser(uident)) {
@@ -1621,15 +1407,13 @@ money_bank()
 							}
 							if (atoi(buf) < 100000) {
 								move(14, 4);
-								prints
-									("ÕâÃ´µãÇ®£¬ÓªÒµÌü¾Í¿ÉÒÔ°ìÀí¡£");
+								prints("ÕâÃ´µãÇ®£¬ÓªÒµÌü¾Í¿ÉÒÔ°ìÀí¡£");
 								pressanykey();
 								break;
 							}
 							if (atoi(buf) > 100000000) {
 								move(14, 4);
-								prints
-									("Èç´ËÊı¶î¾Ş´óµÄ´û¿î£¬¿ÖÅÂ¶­ÊÂ»á²»»áÍ¬ÒâµÄ¡£");
+								prints("Èç´ËÊı¶î¾Ş´óµÄ´û¿î£¬¿ÖÅÂ¶­ÊÂ»á²»»áÍ¬ÒâµÄ¡£");
 								pressanykey();
 								break;
 							}
@@ -1642,8 +1426,7 @@ money_bank()
 							saveValue(uident, MONEY_NAME, num, MAX_MONEY_NUM);
 							sprintf(genbuf,"ÊÚÓè%s %d±øÂíÙ¸±ÒÔ®Öú²¦¿î",uident, num);
 							deliverreport(genbuf, letter);
-							mail_buf(genbuf, uident,
-									"±øÂíÙ¸ÒøĞĞĞĞ³¤Í¬ÒâÁËÄúµÄ²¦¿îÉêÇë");
+							mail_buf(genbuf, uident, "±øÂíÙ¸ÒøĞĞĞĞ³¤Í¬ÒâÁËÄúµÄ²¦¿îÉêÇë");
 							move(17, 4);
 							prints("²¦¿îÍê³É¡£");
 							sprintf(buf, "¸ø%sÌØ±ğ²¦¿î%d±øÂíÙ¸±Ò",uident, num);
@@ -1653,8 +1436,7 @@ money_bank()
 							break;
 						case '9':
 							move(12, 4);
-							if (askyn("ÄúÕæµÄÒª´ÇÖ°Âğ£¿", NA, NA) ==
-									YEA) {
+							if (askyn("ÄúÕæµÄÒª´ÇÖ°Âğ£¿", NA, NA) == YEA) {
 								/*	del_from_file(MC_BOSS_FILE, "bank");
 									sprintf(genbuf,
 									"%s Ğû²¼´ÇÈ¥±øÂíÙ¸ÒøĞĞĞĞ³¤Ö°Îñ",
@@ -1666,8 +1448,7 @@ money_bank()
 									("ºÃ°É£¬¼ÈÈ»ÄãÒâÒÑ¾ö£¬¶­ÊÂ»áÒ²²»±ãÇ¿Áô¡£ÔÙ¼û£¡");
 									quit = 1;
 									*/
-								sprintf(genbuf, "%s Òª´ÇÈ¥±øÂíÙ¸ÒøĞĞĞĞ³¤Ö°Îñ",
-										currentuser.userid);
+								sprintf(genbuf, "%s Òª´ÇÈ¥±øÂíÙ¸ÒøĞĞĞĞ³¤Ö°Îñ", currentuser.userid);
 								mail_buf(genbuf, "millionaires", genbuf);
 								move(14, 4);
 								prints("ºÃ°É£¬ÒÑ¾­·¢ĞÅ¸æÖª×Ü¹ÜÁË");
@@ -1690,9 +1471,8 @@ money_bank()
 	return 0;
 }
 
-	static int//²ÊÆ±ÏµÍ³
-money_lottery()
-{
+//²ÊÆ±ÏµÍ³
+static int money_lottery() {
 	int ch, money;
 	int quit = 0, quitRoom = 0;
 	int inputValid;
@@ -1711,8 +1491,7 @@ money_lottery()
 		move(8, 4);
 		prints("²ÊÆ±¹æÔòÇëµ½millionaires°æ²éÑ¯¡£");
 		move(t_lines - 1, 0);
-		prints
-			("\033[1;44m Ñ¡µ¥ \033[1;46m [1]36Ñ¡7 [2]×ã²Ê [3]¾­ÀíÊÒ [Q]Àë¿ª\033[m");
+		prints("\033[1;44m Ñ¡µ¥ \033[1;46m [1]36Ñ¡7 [2]×ã²Ê [3]¾­ÀíÊÒ [Q]Àë¿ª\033[m");
 		ch = igetkey();
 		switch (ch) {
 			case '1':
@@ -1736,39 +1515,32 @@ money_lottery()
 					money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
 					move(10, 4);
 					if (money < 10000) {
-						prints
-							("Ã»ÓĞÇ®¾Í±ğµ·ÂÒ£¬Ò»±ßÈ¥£¡ÏÂÒ»¸ö£¡");
+						prints("Ã»ÓĞÇ®¾Í±ğµ·ÂÒ£¬Ò»±ßÈ¥£¡ÏÂÒ»¸ö£¡");
 						pressanykey();
 						break;
 					}
 
 					saveValue(currentuser.userid, MONEY_NAME, -10000, MAX_MONEY_NUM);	//¿ÛÇ®
 					utmpshm->mc.prize367 += 10000;
-					utmpshm->mc.prize367 =
-						limitValue(utmpshm->mc.prize367, MAX_POOL_MONEY);
+					utmpshm->mc.prize367 = limitValue(utmpshm->mc.prize367, MAX_POOL_MONEY);
 					inputValid = 0;
 					while (!inputValid) {
 						getdata(10, 4, "ÇëÌîĞ´Âò×¢µ¥: ", buf, 21, DOECHO, YEA);	/* 2¡Á7£«6£«1£½21 */
 
 						if (!valid367Bet(buf)) {	// ¼ìÑéÏÂ×¢µÄºÏÀíĞÔ
 							move(11, 4);
-							prints
-								("¶Ô²»Æğ£¬ÄúµÄÏÂ×¢µ¥ÌîĞ´ºÃÏñÓĞÎÊÌâÒ®¡£ÇëÖØÌîÒ»´Î¡£");
+							prints("¶Ô²»Æğ£¬ÄúµÄÏÂ×¢µ¥ÌîĞ´ºÃÏñÓĞÎÊÌâÒ®¡£ÇëÖØÌîÒ»´Î¡£");
 							pressanykey();
 						} else {
 							sprintf(genbuf, "%s %s", currentuser.userid, buf);
 							addtofile(DIR_MC_TEMP "36_7_list", genbuf);
 							move(11, 4);
-							prints
-								("                                                             ");
+							prints("                                                             ");
 							move(11, 4);
-							prints
-								("¹ºÂò³É¹¦¡£×£ÄúÖĞ´ó½±£¡");
+							prints("¹ºÂò³É¹¦¡£×£ÄúÖĞ´ó½±£¡");
 							inputValid = 1;
-							sprintf(letter,
-									"Äú¹ºÂòÁËÒ»×¢36Ñ¡7¡£×¢ºÅÊÇ£º%s¡£ÇëÍ×ÉÆ±£´æ£¬µ½ÆÚ¶Ò½±¡£", buf);
-							sprintf(title,
-									"²ÊÆ±ÖĞĞÄ¹ºÂòÆ¾Ö¤");
+							sprintf(letter, "Äú¹ºÂòÁËÒ»×¢36Ñ¡7¡£×¢ºÅÊÇ£º%s¡£ÇëÍ×ÉÆ±£´æ£¬µ½ÆÚ¶Ò½±¡£", buf);
+							sprintf(title, "²ÊÆ±ÖĞĞÄ¹ºÂòÆ¾Ö¤");
 							mail_buf(letter, currentuser.userid, title);
 							pressanykey();
 						}
@@ -1793,11 +1565,9 @@ money_lottery()
 				move(4, 4);
 				prints("×ã²ÊËù²Â±ÈÈüÇë¼ûmillionaires°æ¹«¸æÎÄÕÂ¡£");
 				move(5, 4);
-				prints
-					("Ö÷³¡Ê¤Îª3£¬Ö÷³¡Æ½Îª1£¬Ö÷³¡¸ºÎª0¡£¸÷³¡±ÈÈü½á¹ûÓÃ-¸ô¿ª£¬Ö§³Ö¸´Ê½Âò×¢¡£");
+				prints("Ö÷³¡Ê¤Îª3£¬Ö÷³¡Æ½Îª1£¬Ö÷³¡¸ºÎª0¡£¸÷³¡±ÈÈü½á¹ûÓÃ-¸ô¿ª£¬Ö§³Ö¸´Ê½Âò×¢¡£");
 				move(6, 4);
-				prints
-					("ÀıÈç²Â6³¡±ÈÈüÊ±£¬Ò»¸ö½ÓÊÜµÄÂò×¢·¶ÀıÎª£º 1-310-1-10-3-0");
+				prints("ÀıÈç²Â6³¡±ÈÈüÊ±£¬Ò»¸ö½ÓÊÜµÄÂò×¢·¶ÀıÎª£º 1-310-1-10-3-0");
 				move(8, 4);
 				sprintf(genbuf,
 						"µ±Ç°½±½ğ³ØÀÛ¼Æ½±½ğ£º\033[1;31m%d\033[m  ¹Ì¶¨½±½ğ£º\033[1;31m%d\033[m",
@@ -1820,8 +1590,7 @@ money_lottery()
 						getdata(11, 4, "ÇëÌîĞ´Âò×¢µ¥: ", buf, 55, DOECHO, YEA);
 						if (!validSoccerBet(buf)) {	/* ¼ìÑéÏÂ×¢µÄºÏÀíĞÔ */
 							move(12, 4);
-							prints
-								("¶Ô²»Æğ£¬ÄúµÄÏÂ×¢µ¥ÌîĞ´ºÃÏñÓĞÎÊÌâÒ®¡£ÇëÖØÌîÒ»´Î¡£");
+							prints("¶Ô²»Æğ£¬ÄúµÄÏÂ×¢µ¥ÌîĞ´ºÃÏñÓĞÎÊÌâÒ®¡£ÇëÖØÌîÒ»´Î¡£");
 							pressanykey();
 						} else {
 							int money;
@@ -1832,9 +1601,7 @@ money_lottery()
 								move(12, 4);
 								prints("                                                     ");
 								move(12, 4);
-								sprintf(genbuf,
-										"ÄúµÄÇ®²»¹»Âò %d ×¢¡£ÔÙÕå×ÃÒ»ÏÂ°É£¡",
-										sum);
+								sprintf(genbuf, "ÄúµÄÇ®²»¹»Âò %d ×¢¡£ÔÙÕå×ÃÒ»ÏÂ°É£¡", sum);
 								prints("%s", genbuf);
 								pressanykey();
 								break;
@@ -1848,9 +1615,7 @@ money_lottery()
 							move(12, 4);
 							sprintf(genbuf,"ÄúÒ»¹²¹ºÂòÁË%d×¢¡£×£ÄúÖĞ´ó½±£¡", sum);
 							prints("%s", genbuf);
-							sprintf(letter,
-									"Äú¹ºÂòÁËÒ»×¢(¸´Ê½)×ã²Ê¡£×¢ºÅÊÇ£º%s¡£ÇëÍ×ÉÆ±£´æ£¬µ½ÆÚ¶Ò½±¡£",
-									buf);
+							sprintf(letter, "Äú¹ºÂòÁËÒ»×¢(¸´Ê½)×ã²Ê¡£×¢ºÅÊÇ£º%s¡£ÇëÍ×ÉÆ±£´æ£¬µ½ÆÚ¶Ò½±¡£", buf);
 							sprintf(title, "²ÊÆ±ÖĞĞÄ¹ºÂòÆ¾Ö¤");
 							mail_buf(letter, currentuser.userid, title);
 							pressanykey();
@@ -1864,8 +1629,7 @@ money_lottery()
 				whoTakeCharge2(2, name);
 				if (strcmp(currentuser.userid, uident)) {
 					move(6, 4);
-					prints("ÃØÊé%sÌáÊ¾Äú:¡°¾­Àí%sÍâ³ö¿¼²ìÈ¥ÁË£¬ÓĞÊÂÇëÖ±½Ó¸úËûÁªÏµ¡£¡±",
-							name, uident);
+					prints("ÃØÊé%sÌáÊ¾Äú:¡°¾­Àí%sÍâ³ö¿¼²ìÈ¥ÁË£¬ÓĞÊÂÇëÖ±½Ó¸úËûÁªÏµ¡£¡±", name, uident);
 					pressanykey();
 					break;
 				}
@@ -1874,8 +1638,7 @@ money_lottery()
 					char strTime[15];
 					nomoney_show_stat("²©²Ê¹«Ë¾¾­ÀíÊÒ");
 					move(t_lines - 1, 0);
-					prints
-						("\033[1;44m Ñ¡µ¥ \033[1;46m [1]¿ª½± [2]ĞÂ½¨ [3]Í£Ö¹×ã²ÊÏúÊÛ [4]´ÇÖ° [Q]Àë¿ª\033[m");
+					prints("\033[1;44m Ñ¡µ¥ \033[1;46m [1]¿ª½± [2]ĞÂ½¨ [3]Í£Ö¹×ã²ÊÏúÊÛ [4]´ÇÖ° [Q]Àë¿ª\033[m");
 					ch = igetkey();
 					switch (ch) {
 						case '1':
@@ -1920,9 +1683,7 @@ money_lottery()
 										openTime =atoi(strTime);
 										if (time(0) >= openTime) //||strcmp(currentuser.userid,"macintosh")==0
 										{
-											getdata(t_lines - 5, 4,
-													"ÇëÊäÈë¶Ò½±ĞòÁĞ(ÎŞĞè - )[°´\033[1;33mENTER\033[m·ÅÆú]: ",
-													buf, 55, DOECHO, YEA);
+											getdata(t_lines - 5, 4, "ÇëÊäÈë¶Ò½±ĞòÁĞ(ÎŞĞè - )[°´\033[1;33mENTER\033[m·ÅÆú]: ", buf, 55, DOECHO, YEA);
 											if (strlen(buf) == 0)
 												break;
 											if (open_soccer(buf) ==0)	{
@@ -1956,8 +1717,7 @@ money_lottery()
 							ch = igetkey();
 							switch (ch) {
 								case '1':
-									nomoney_show_stat
-										("²©²Ê¹«Ë¾¾­ÀíÊÒ");
+									nomoney_show_stat("²©²Ê¹«Ë¾¾­ÀíÊÒ");
 									move(4, 4);
 									if (!access(DIR_MC_TEMP "36_7_start",0)) {
 										prints("36Ñ¡7²ÊÆ±ÏúÊÛÕıÔÚ»ğÈÈ½øĞĞ¡£");
@@ -1974,11 +1734,8 @@ money_lottery()
 									time2string(time(0) + (buf[0] - '0') * 86400, genbuf);
 									addtofile(DIR_MC_TEMP "36_7_start", genbuf);
 
-									sprintf(genbuf,
-											"±¾ÆÚ²ÊÆ±½«ÓÚ %s Ììºó¿ª½±¡£»¶Ó­´ó¼ÒÓ»Ô¾¹ºÂò£¡",
-											buf);
-									deliverreport
-										("[¹«¸æ]ĞÂÒ»ÆÚ36Ñ¡7²ÊÆ±¿ªÊ¼ÏúÊÛ", genbuf);
+									sprintf(genbuf, "±¾ÆÚ²ÊÆ±½«ÓÚ %s Ììºó¿ª½±¡£»¶Ó­´ó¼ÒÓ»Ô¾¹ºÂò£¡", buf);
+									deliverreport("[¹«¸æ]ĞÂÒ»ÆÚ36Ñ¡7²ÊÆ±¿ªÊ¼ÏúÊÛ", genbuf);
 
 									move(10, 4);
 									prints("½¨Á¢³É¹¦£¡Çëµ½Ê±¿ª½±¡£");
@@ -2005,11 +1762,8 @@ money_lottery()
 									time2string(time(0) +(buf[0] - '0') * 86400, genbuf);
 									addtofile(DIR_MC_TEMP "soccer_start", genbuf);
 									utmpshm->mc.isSoccerSelling = 1;
-									sprintf(genbuf,
-											"±¾ÆÚ²ÊÆ±½«ÓÚ %s Ììºó¿ª½±¡£»¶Ó­´ó¼ÒÓ»Ô¾¹ºÂò£¡",
-											buf);
-									deliverreport
-										("[¹«¸æ]ĞÂÒ»ÆÚ×ãÇò²ÊÆ±¿ªÊ¼ÏúÊÛ", genbuf);
+									sprintf(genbuf, "±¾ÆÚ²ÊÆ±½«ÓÚ %s Ììºó¿ª½±¡£»¶Ó­´ó¼ÒÓ»Ô¾¹ºÂò£¡", buf);
+									deliverreport("[¹«¸æ]ĞÂÒ»ÆÚ×ãÇò²ÊÆ±¿ªÊ¼ÏúÊÛ", genbuf);
 
 									move(10, 4);
 									prints("½¨Á¢³É¹¦£¡Çëµ½Ê±¿ª½±¡£");
@@ -2029,8 +1783,7 @@ money_lottery()
 							move(6, 4);
 							if (askyn("ÄúÕæµÄÒªÍ£ÊÛ×ã²ÊÂğ£¿", NA, NA) == YEA) {
 								utmpshm->mc.isSoccerSelling = 0;
-								deliverreport("[¹«¸æ]±¾ÆÚ×ãÇò²ÊÆ±Í£Ö¹ÏúÊÛ",
-										"Çë¹ã´ó²ÊÃñÄÍĞÄµÈ´ı¿ª½±£¡");
+								deliverreport("[¹«¸æ]±¾ÆÚ×ãÇò²ÊÆ±Í£Ö¹ÏúÊÛ", "Çë¹ã´ó²ÊÃñÄÍĞÄµÈ´ı¿ª½±£¡");
 								sprintf(buf, "%sĞĞÊ¹²ÊÆ±¹ÜÀíÈ¨ÏŞ", currentuser.userid);
 								millionairesrec(buf, "Í£ÊÛ±¾ÆÚ×ã²Ê", "");
 								move(8, 4);
@@ -2042,8 +1795,7 @@ money_lottery()
 						case '4':
 							nomoney_show_stat("²©²Ê¹«Ë¾¾­ÀíÊÒ");
 							move(6, 4);
-							if (askyn("ÄúÕæµÄÒª´ÇÖ°Âğ£¿", NA, NA) ==
-									YEA) {
+							if (askyn("ÄúÕæµÄÒª´ÇÖ°Âğ£¿", NA, NA) == YEA) {
 								/*	del_from_file(MC_BOSS_FILE, "lottery");
 									sprintf(genbuf,
 									"%s Ğû²¼´ÇÈ¥±øÂíÙ¸²©²Ê¹«Ë¾¾­ÀíÖ°Îñ",
@@ -2056,8 +1808,7 @@ money_lottery()
 									pressanykey();
 									quitRoom = 1;
 									*/
-								sprintf(genbuf, "%s Òª´ÇÈ¥±øÂíÙ¸²©²Ê¹«Ë¾¾­ÀíÖ°Îñ",
-										currentuser.userid);
+								sprintf(genbuf, "%s Òª´ÇÈ¥±øÂíÙ¸²©²Ê¹«Ë¾¾­ÀíÖ°Îñ", currentuser.userid);
 								mail_buf(genbuf, "millionaires", genbuf);
 								move(8, 4);
 								prints("ºÃ°É£¬ÒÑ¾­·¢ĞÅ¸æÖª×Ü¹ÜÁË");
@@ -2087,9 +1838,7 @@ struct MC_Jijin{
 	char name[18];
 };
 
-	static int
-addOrDel_contrb()
-{
+static int addOrDel_contrb() {
 	char uident[STRLEN], ans[8];
 	int count = 0, tag = 0, i, j, fd, x=0;
 	char buf[STRLEN], title[STRLEN];
@@ -2234,18 +1983,16 @@ addOrDel_contrb()
 	return 1;
 }
 
-
-	static int
-money_sackOrAppoint(int type) //type1Ö°Î» 2ÃØÊé
-{
+//type1Ö°Î» 2ÃØÊé
+static int money_sackOrAppoint(int type) {
 	int pos, i=0 , j;
 	char buf[100], letter[100], report[100], uident[IDLEN + 1], boss[IDLEN + 1];
-	const char feaStr[][20] =
-	{ "bank", "lottery", "gambling", "gang", "beggar", "stock", "shop",
+	const char feaStr[][20] = {
+		"bank", "lottery", "gambling", "gang", "beggar", "stock", "shop",
 		"police","killer","marriage","office",""
 	};
-	const char feaStr2[][20] =
-	{ "ÒøĞĞ", "²ÊÆ±", "¶Ä³¡", "ºÚ°ï", "Ø¤°ï", "¹ÉÊĞ", "ÉÌ³¡",
+	const char feaStr2[][20] = {
+		"ÒøĞĞ", "²ÊÆ±", "¶Ä³¡", "ºÚ°ï", "Ø¤°ï", "¹ÉÊĞ", "ÉÌ³¡",
 		"¾¯Êğ","É±ÊÖ","½ÌÌÃ","ÖĞĞÄ", ""
 	};
 
@@ -2304,8 +2051,7 @@ money_sackOrAppoint(int type) //type1Ö°Î» 2ÃØÊé
 				sackOrAppoint2(pos, uident, 0, letter);
 				savestrvalue(MC_ASS_FILE, feaStr[pos - 1], uident);
 			}
-			deliverreport(letter,
-					"½÷ÍûÆäÄÜÁ®½à·î¹«£¬²»ÒÔÈ¨Ä±Ë½Àû£¬Îª±øÂíÙ¸½ğÈÚÊÂÒµµÄ·¢Õ¹¾Ï¹ª¾¡´á¡£");
+			deliverreport(letter, "½÷ÍûÆäÄÜÁ®½à·î¹«£¬²»ÒÔÈ¨Ä±Ë½Àû£¬Îª±øÂíÙ¸½ğÈÚÊÂÒµµÄ·¢Õ¹¾Ï¹ª¾¡´á¡£");
 			mail_buf(letter, uident, letter);
 			sprintf(genbuf, "%sĞĞÊ¹¹ÜÀíÈ¨ÏŞ", currentuser.userid);
 			sprintf(buf,"%sÈÎÃü%s¸ºÔğ%dÖ°Î»%s", currentuser.userid, uident, pos, (type==1)?"":"ÃØÊé");
@@ -2345,10 +2091,8 @@ money_sackOrAppoint(int type) //type1Ö°Î» 2ÃØÊé
 	return 1;
 }
 
-
-	static int //¹ÜÀíÏµÍ³  ¹ÉÆ±ÏµÍ³
-money_admin()
-{
+//¹ÜÀíÏµÍ³  ¹ÉÆ±ÏµÍ³
+static int money_admin() {
 	int ch, i, j, quit = 0;
 	char buf[100], letter[100], uident[IDLEN + 1];
 	char stockboard[STRLEN][MAX_STOCK_NUM];
@@ -2427,14 +2171,9 @@ money_admin()
 					addtofile(MC_ADMIN_FILE, uident);
 					move(17, 4);
 					prints("ÈÎÃü³É¹¦!");
-					sprintf(genbuf,
-							"[¹«¸æ]ÊÚÓè %s ±øÂíÙ¸½ğÈÚÖĞĞÄ¹ÜÀíÈ¨ÏŞ",
-							uident);
-					deliverreport(genbuf,
-							"½÷ÍûÆäÄÜÁ®½à·î¹«£¬²»ÒÔÈ¨Ä±Ë½Àû£¬Îª±øÂíÙ¸½ğÈÚÊÂÒµµÄ·¢Õ¹¾Ï¹ª¾¡´á¡£");
-					sprintf(genbuf,
-							"%s ÓÉ %s ÊÚÓè±øÂíÙ¸½ğÈÚÖĞĞÄ¹ÜÀíÈ¨ÏŞ",
-							uident, currentuser.userid);
+					sprintf(genbuf, "[¹«¸æ]ÊÚÓè %s ±øÂíÙ¸½ğÈÚÖĞĞÄ¹ÜÀíÈ¨ÏŞ", uident);
+					deliverreport(genbuf, "½÷ÍûÆäÄÜÁ®½à·î¹«£¬²»ÒÔÈ¨Ä±Ë½Àû£¬Îª±øÂíÙ¸½ğÈÚÊÂÒµµÄ·¢Õ¹¾Ï¹ª¾¡´á¡£");
+					sprintf(genbuf, "%s ÓÉ %s ÊÚÓè±øÂíÙ¸½ğÈÚÖĞĞÄ¹ÜÀíÈ¨ÏŞ", uident, currentuser.userid);
 					mail_buf(genbuf, uident, genbuf);
 					//add by macintosh for system record
 					sprintf(genbuf, "%sĞĞÊ¹¹ÜÀíÈ¨ÏŞ", currentuser.userid);
@@ -2467,8 +2206,7 @@ money_admin()
 					break;
 				}
 				if (seek_in_file(MC_ADMIN_FILE, uident)) {
-					getdata(16, 4, "È¡ÏûÔ­Òò£º", buf, 50,
-							DOECHO, YEA);
+					getdata(16, 4, "È¡ÏûÔ­Òò£º", buf, 50, DOECHO, YEA);
 					move(17, 4);
 					if (askyn("È·¶¨Âğ£¿", NA, NA) == NA) {
 						pressanykey();
@@ -2477,14 +2215,10 @@ money_admin()
 					del_from_file(MC_ADMIN_FILE, uident);
 					move(18, 4);
 					prints("È¡Ïû³É¹¦!");
-					sprintf(genbuf,
-							"[¹«¸æ]È¡Ïû %s µÄ±øÂíÙ¸½ğÈÚÖĞĞÄ¹ÜÀíÈ¨ÏŞ",
-							uident);
+					sprintf(genbuf, "[¹«¸æ]È¡Ïû %s µÄ±øÂíÙ¸½ğÈÚÖĞĞÄ¹ÜÀíÈ¨ÏŞ", uident);
 					sprintf(letter, "È¡ÏûÔ­Òò£º %s", buf);
 					deliverreport(genbuf, letter);
-					sprintf(genbuf,
-							"%s ±» %s È¡Ïû±øÂíÙ¸½ğÈÚÖĞĞÄ¹ÜÀíÈ¨ÏŞ",
-							uident, currentuser.userid);
+					sprintf(genbuf, "%s ±» %s È¡Ïû±øÂíÙ¸½ğÈÚÖĞĞÄ¹ÜÀíÈ¨ÏŞ", uident, currentuser.userid);
 					mail_buf(genbuf, uident, genbuf);
 					sprintf(genbuf, "%sĞĞÊ¹¹ÜÀíÈ¨ÏŞ", currentuser.userid);
 					sprintf(buf,"%sÈ¡Ïû%sµÄ½ğÈÚÖĞĞÄ×Ü¹ÜÈ¨ÏŞ", currentuser.userid, uident);
@@ -2503,19 +2237,14 @@ money_admin()
 					break;
 				}
 				if (askyn("ÄúÕæµÄÒª´ÇÖ°Âğ£¿", NA, NA) == YEA) {
-					del_from_file(MC_ADMIN_FILE,
-							currentuser.userid);
-					sprintf(genbuf,
-							"%s Ğû²¼´ÇÈ¥±øÂíÙ¸½ğÈÚÖĞĞÄ×Ü¹ÜÖ°Îñ",
-							currentuser.userid);
-					deliverreport(genbuf,
-							"±øÂíÙ¸½ğÈÚÖĞĞÄ¶ÔÆäÒ»Ö±ÒÔÀ´µÄ¹¤×÷±íÊ¾¸ĞĞ»£¬×£ÒÔºóË³Àû£¡");
+					del_from_file(MC_ADMIN_FILE, currentuser.userid);
+					sprintf(genbuf, "%s Ğû²¼´ÇÈ¥±øÂíÙ¸½ğÈÚÖĞĞÄ×Ü¹ÜÖ°Îñ", currentuser.userid);
+					deliverreport(genbuf, "±øÂíÙ¸½ğÈÚÖĞĞÄ¶ÔÆäÒ»Ö±ÒÔÀ´µÄ¹¤×÷±íÊ¾¸ĞĞ»£¬×£ÒÔºóË³Àû£¡");
 					sprintf(genbuf, "%sĞĞÊ¹¹ÜÀíÈ¨ÏŞ", currentuser.userid);
 					sprintf(buf,"%s´ÇÈ¥±øÂíÙ¸½ğÈÚÖĞĞÄ×Ü¹ÜÖ°Îñ", currentuser.userid);
 					millionairesrec(genbuf, buf, "");
 					move(16, 4);
-					prints
-						("ºÃ°É£¬¼ÈÈ»ÄãÒâÒÑ¾ö£¬½ğÈÚÖĞĞÄÒ²²»±ãÇ¿Áô¡£ÔÙ¼û£¡");
+					prints("ºÃ°É£¬¼ÈÈ»ÄãÒâÒÑ¾ö£¬½ğÈÚÖĞĞÄÒ²²»±ãÇ¿Áô¡£ÔÙ¼û£¡");
 					quit = 1;
 					pressanykey();
 				}
@@ -2533,23 +2262,16 @@ money_admin()
 					pressanykey();
 					break;
 				}
-				if (seek_in_file
-						(DIR_MC "mingren", uident)) {
+				if (seek_in_file(DIR_MC "mingren", uident)) {
 					prints("¸ÃIDÒÑ¾­ÊÇÃûÈËÁË¡£");
 					pressanykey();
 					break;
 				}
 				if (askyn("È·¶¨Âğ£¿", NA, NA) == YEA) {
-					addtofile(DIR_MC "mingren",
-							uident);
-					sprintf(genbuf,
-							"¹§Ï²%s½øÈë±øÂíÙ¸½ğÈÚÖĞĞÄÃûÈËÌÃ",
-							uident);
-					deliverreport(genbuf,
-							"±øÂíÙ¸½ğÈÚÖĞĞÄ¶ÔÆäÒ»Ö±ÒÔÀ´µÄ¹¤×÷±íÊ¾¸ĞĞ»£¬×£ÒÔºóË³Àû£¡");
-					mail_buf
-						("¸ĞĞ»ÄãÎªÁË´ó¸»ÎÌÓÎÏ·µÄ¸¶³ö",
-						 uident, genbuf);
+					addtofile(DIR_MC "mingren", uident);
+					sprintf(genbuf, "¹§Ï²%s½øÈë±øÂíÙ¸½ğÈÚÖĞĞÄÃûÈËÌÃ", uident);
+					deliverreport(genbuf, "±øÂíÙ¸½ğÈÚÖĞĞÄ¶ÔÆäÒ»Ö±ÒÔÀ´µÄ¹¤×÷±íÊ¾¸ĞĞ»£¬×£ÒÔºóË³Àû£¡");
+					mail_buf("¸ĞĞ»ÄãÎªÁË´ó¸»ÎÌÓÎÏ·µÄ¸¶³ö", uident, genbuf);
 					sprintf(genbuf, "%sĞĞÊ¹¹ÜÀíÈ¨ÏŞ", currentuser.userid);
 					sprintf(buf,"%sÊÚÓè%s»ÆÂí¹Ó", currentuser.userid, uident);
 					millionairesrec(genbuf, buf, "");
@@ -2572,22 +2294,15 @@ money_admin()
 					pressanykey();
 					break;
 				}
-				if (!seek_in_file
-						(DIR_MC "mingren", uident)) {
-					prints
-						("¸ÃID²»ÊÇ±øÂíÙ¸ÃûÈË¡£");
+				if (!seek_in_file(DIR_MC "mingren", uident)) {
+					prints("¸ÃID²»ÊÇ±øÂíÙ¸ÃûÈË¡£");
 					pressanykey();
 					break;
 				}
 				if (askyn("È·¶¨Âğ£¿", NA, NA) == YEA) {
-					del_from_file(DIR_MC
-							"mingren",
-							uident);
-					sprintf(genbuf,
-							"%s ÖØ³ö½­ºşÁË",
-							uident);
-					deliverreport(genbuf,
-							"½­ºşÓÖÒªÓĞÒ»³¡ÑªÓêĞÈ·çÁË");
+					del_from_file(DIR_MC "mingren", uident);
+					sprintf(genbuf, "%s ÖØ³ö½­ºşÁË", uident);
+					deliverreport(genbuf, "½­ºşÓÖÒªÓĞÒ»³¡ÑªÓêĞÈ·çÁË");
 					sprintf(genbuf, "%sĞĞÊ¹¹ÜÀíÈ¨ÏŞ", currentuser.userid);
 					sprintf(buf,"%s½â³ı%s»ÆÂí¼×", currentuser.userid, uident);
 					millionairesrec(genbuf, buf, "");
@@ -2609,23 +2324,16 @@ money_admin()
 					pressanykey();
 					break;
 				}
-				if (seek_in_file
-						(DIR_MC "chayou", uident)) {
+				if (seek_in_file(DIR_MC "chayou", uident)) {
 					prints("¸ÃIDÒÑ¾­ÊÇ²èÓÑÁË¡£");
 					pressanykey();
 					break;
 				}
 				if (askyn("È·¶¨Âğ£¿", NA, NA) == YEA) {
-					addtofile(DIR_MC "chayou",
-							uident);
-					sprintf(genbuf,
-							"¹§Ï²%s³ÉÎª±øÂíÙ¸½ğÈÚÖĞĞÄ²èÓÑ",
-							uident);
-					deliverreport(genbuf,
-							"´ó¸»ÎÌËæÊ±¹§ºòÄúÀ´ºÈ²è×ö¿Í£¡");
-					mail_buf
-						("´ó¸»ÎÌËæÊ±¹§ºòÄúÀ´ºÈ²è×ö¿Í£¡",
-						 uident, genbuf);
+					addtofile(DIR_MC "chayou", uident);
+					sprintf(genbuf, "¹§Ï²%s³ÉÎª±øÂíÙ¸½ğÈÚÖĞĞÄ²èÓÑ", uident);
+					deliverreport(genbuf, "´ó¸»ÎÌËæÊ±¹§ºòÄúÀ´ºÈ²è×ö¿Í£¡");
+					mail_buf("´ó¸»ÎÌËæÊ±¹§ºòÄúÀ´ºÈ²è×ö¿Í£¡", uident, genbuf);
 					sprintf(genbuf, "%sĞĞÊ¹¹ÜÀíÈ¨ÏŞ", currentuser.userid);
 					sprintf(buf,"%sÈÎÃü%sÎª²èÓÑ", currentuser.userid, uident);
 					millionairesrec(genbuf, buf, "");
@@ -2648,22 +2356,15 @@ money_admin()
 					pressanykey();
 					break;
 				}
-				if (!seek_in_file
-						(DIR_MC "chayou", uident)) {
-					prints
-						("¸ÃID²»ÊÇ±øÂíÙ¸½ğÈÚÖĞĞÄ²èÓÑ¡£");
+				if (!seek_in_file(DIR_MC "chayou", uident)) {
+					prints("¸ÃID²»ÊÇ±øÂíÙ¸½ğÈÚÖĞĞÄ²èÓÑ¡£");
 					pressanykey();
 					break;
 				}
 				if (askyn("È·¶¨Âğ£¿", NA, NA) == YEA) {
-					del_from_file(DIR_MC
-							"chayou",
-							uident);
-					sprintf(genbuf,
-							"%s ÖØ³ö½­ºşÁË",
-							uident);
-					deliverreport(genbuf,
-							"¸ĞĞ»ÄúÒ»Ö±ÒÔÀ´¶Ô´ó¸»ÎÌµÄ¹Ø×¢¡£");
+					del_from_file(DIR_MC "chayou", uident);
+					sprintf(genbuf, "%s ÖØ³ö½­ºşÁË", uident);
+					deliverreport(genbuf, "¸ĞĞ»ÄúÒ»Ö±ÒÔÀ´¶Ô´ó¸»ÎÌµÄ¹Ø×¢¡£");
 					sprintf(genbuf, "%sĞĞÊ¹¹ÜÀíÈ¨ÏŞ", currentuser.userid);
 					sprintf(buf,"%sÈ¡Ïû%sµÄ²èÓÑÉí·İ", currentuser.userid, uident);
 					millionairesrec(genbuf, buf, "");
@@ -2685,25 +2386,18 @@ money_admin()
 					pressanykey();
 					break;
 				}
-				if (seek_in_file
-						(DIR_MC "gongji", uident)) {
+				if (seek_in_file(DIR_MC "gongji", uident)) {
 					prints("¸ÃIDÒÑ¾­ÊÇÌú¹«¼¦ÁË¡£");
 					pressanykey();
 					break;
 				}
 				if (askyn("È·¶¨Âğ£¿", NA, NA) == YEA) {
-					addtofile(DIR_MC "gongji",
-							uident);
-					sprintf(genbuf,
-							"¹§Ï²%s»ñµÃÌú¹«¼¦³ÆºÅ",
-							uident);
-					deliverreport(genbuf,
-							"±øÂíÙ¸½ğÈÚÖĞĞÄ¶ÔÆäÒ»Ã«²»°ÎµÄĞĞÎª±íÊ¾½±Àø£¡");
+					addtofile(DIR_MC "gongji", uident);
+					sprintf(genbuf, "¹§Ï²%s»ñµÃÌú¹«¼¦³ÆºÅ", uident);
+					deliverreport(genbuf, "±øÂíÙ¸½ğÈÚÖĞĞÄ¶ÔÆäÒ»Ã«²»°ÎµÄĞĞÎª±íÊ¾½±Àø£¡");
 					//deliverreport(genbuf,
 					//"±øÂíÙ¸½ğÈÚÖĞĞÄ¶ÔÆäÒ»¹áµÄ¼è¿àÆÓËØ£¬ÇÚ¼ó½ÚÔ¼±íÊ¾ÔŞÉÍ£¡");
-					mail_buf
-						("»ñµÃÌú¹«¼¦³ÆºÅ",
-						 uident, genbuf);
+					mail_buf("»ñµÃÌú¹«¼¦³ÆºÅ", uident, genbuf);
 					sprintf(genbuf, "%sĞĞÊ¹¹ÜÀíÈ¨ÏŞ", currentuser.userid);
 					sprintf(buf,"%sÈÎÃü%sÎªÌú¹«¼¦", currentuser.userid, uident);
 					millionairesrec(genbuf, buf, "");
@@ -2726,20 +2420,14 @@ money_admin()
 					pressanykey();
 					break;
 				}
-				if (!seek_in_file
-						(DIR_MC "gongji", uident)) {
-					prints
-						("¸ÃID²»ÊÇÌú¹«¼¦¡£");
+				if (!seek_in_file(DIR_MC "gongji", uident)) {
+					prints("¸ÃID²»ÊÇÌú¹«¼¦¡£");
 					pressanykey();
 					break;
 				}
 				if (askyn("È·¶¨Âğ£¿", NA, NA) == YEA) {
-					del_from_file(DIR_MC
-							"gongji",
-							uident);
-					sprintf(genbuf,
-							"%s ¾ö¶¨»¨Ç®ÏúÔÖÁË",
-							uident);
+					del_from_file(DIR_MC "gongji", uident);
+					sprintf(genbuf, "%s ¾ö¶¨»¨Ç®ÏúÔÖÁË", uident);
 					deliverreport(genbuf, "´ÓÌú¹«¼¦ÉíÉÏÄÜÕ¥³öÓÍË®À´¡£À÷º¦À÷º¦");
 					sprintf(genbuf, "%sĞĞÊ¹¹ÜÀíÈ¨ÏŞ", currentuser.userid);
 					sprintf(buf,"%sÈ¡Ïû%sµÄÌú¹«¼¦³ÆºÅ", currentuser.userid, uident);
@@ -2763,8 +2451,7 @@ money_admin()
 					pressanykey();
 					break;
 				}
-				if (seek_in_file
-						(DIR_MC "jijin", uident)) {
+				if (seek_in_file(DIR_MC "jijin", uident)) {
 					prints("¸ÃIDÒÑ¾­ÊÇ»ù½ğIDÁË¡£");
 					pressanykey();
 					break;
@@ -2804,8 +2491,7 @@ money_admin()
 					break;
 				}
 				if (!seek_in_file(DIR_MC "jijin", uident)) {
-					prints
-						("¸ÃID²»ÊÇ»ù½ğID¡£");
+					prints("¸ÃID²»ÊÇ»ù½ğID¡£");
 					pressanykey();
 					break;
 				}
@@ -2831,7 +2517,7 @@ money_admin()
 			case 'p':
 			case 'P':
 				clear();
-				fp1 = fopen( MC_STOCK_BOARDS, "r" );
+				fp1 = fopen(MC_STOCK_BOARDS, "r" );
 				count = listfilecontent(MC_STOCK_BOARDS);
 				clear();
 				for (j = 0; j < count; j++) {
@@ -2840,12 +2526,10 @@ money_admin()
 				fclose(fp1);
 
 				move(12, 4);
-				if (askyn("È·¶¨Òª³õÊ¼»¯¹ÉÊĞÂğ£¿", NA, NA) == YEA)
-				{
+				if (askyn("È·¶¨Òª³õÊ¼»¯¹ÉÊĞÂğ£¿", NA, NA) == YEA) {
 					for (i = 0; i < numboards; i++)
 						for (j = 0; j < count; j++)
-							if (!strcmp(bcache[i].header.filename, stockboard[j]))
-							{
+							if (!strcmp(bcache[i].header.filename, stockboard[j])) {
 								//									stock_price[j] = utmpshm->ave_score / 100 + bcache[i].score / 20;
 								if (bcache[i].score > 10000)
 									bcache[i].stocknum = bcache[i].score * 2000;
@@ -2917,8 +2601,7 @@ money_admin()
 					pressanykey();
 					break;
 				}
-				prints("%sÄ¿Ç°ÓĞÏÖ½ğ%d±øÂíÙ¸±Ò¡£", uident,
-						loadValue(uident, MONEY_NAME, MAX_MONEY_NUM));
+				prints("%sÄ¿Ç°ÓĞÏÖ½ğ%d±øÂíÙ¸±Ò¡£", uident, loadValue(uident, MONEY_NAME, MAX_MONEY_NUM));
 				getdata(14, 4, "¸ÄÎª¶àÉÙ?", genbuf, 10, DOECHO, YEA);
 				num = atoi(genbuf);
 				sprintf(buf, "È·¶¨Òª¸ÄÎª%dÂğ£¿", num);
@@ -2946,8 +2629,7 @@ money_admin()
 					pressanykey();
 					break;
 				}
-				prints("%sÄ¿Ç°ÓĞ´æ¿î%d±øÂíÙ¸±Ò¡£", uident,
-						loadValue(uident, CREDIT_NAME, MAX_MONEY_NUM));
+				prints("%sÄ¿Ç°ÓĞ´æ¿î%d±øÂíÙ¸±Ò¡£", uident, loadValue(uident, CREDIT_NAME, MAX_MONEY_NUM));
 				getdata(14, 4, "¸ÄÎª¶àÉÙ?", genbuf, 10, DOECHO, YEA);
 				num = atoi(genbuf);
 				sprintf(buf, "È·¶¨Òª¸ÄÎª%dÂğ£¿", num);
@@ -2967,8 +2649,7 @@ money_admin()
 			case '0':
 				clear();
 				move(6, 4);
-				sprintf(buf, "È·¶¨Òª%s½ğÈÚÖĞĞÄÂğ£¿",
-						(utmpshm->mc.isMCclosed)?"¿ªÆô":"¹Ø±Õ");
+				sprintf(buf, "È·¶¨Òª%s½ğÈÚÖĞĞÄÂğ£¿", (utmpshm->mc.isMCclosed) ? "¿ªÆô" : "¹Ø±Õ");
 				if (askyn(buf, NA, NA) == YEA)
 					utmpshm->mc.isMCclosed = (utmpshm->mc.isMCclosed)?0:1;
 				move(9, 4);
@@ -3025,9 +2706,8 @@ valid367Bet(char *buf)
 	return 1;
 }
 
-	static int//²ÊÆ±36Ñ¡7
-make367Prize(char *bet, char *prizeSeq)
-{
+//²ÊÆ±36Ñ¡7
+static int make367Prize(char *bet, char *prizeSeq) {
 	int count = 0;
 	int i, j;
 	int len = strlen(bet);
@@ -3046,9 +2726,8 @@ make367Prize(char *bet, char *prizeSeq)
 	return count;
 }
 
-	static void//²ÊÆ±36Ñ¡7
-make367Seq(char *prizeSeq)
-{
+//²ÊÆ±36Ñ¡7
+static void make367Seq(char *prizeSeq) {
 	int i, j;
 	int num;
 	int temp[7];
@@ -3083,9 +2762,8 @@ make367Seq(char *prizeSeq)
 	deliverreport("[¹«¸æ]±¾ÆÚ36Ñ¡7²ÊÆ±Ò¡½±½á¹û", genbuf);
 }
 
-	static int/*²ÊÆ±26Ñ¡7 */
-open_36_7(void)
-{
+/*²ÊÆ±26Ñ¡7 */
+static int open_36_7(void) {
 	FILE *fp;
 	char line[MAX_RECORD_LINE];
 	char prizeSeq[MAX_BET_LENGTH];
@@ -3156,15 +2834,12 @@ open_36_7(void)
 				continue;
 			}
 			saveValue(userid, MONEY_NAME, per_bp, MAX_MONEY_NUM);
-			sprintf(genbuf,
-					"ÄúµÃµ½ÁË %d ±øÂíÙ¸±ÒµÄ½±½ğ¡£¹§Ï²£¡Ï£ÍûÏÂ´Î»¹ÓĞºÃÔË¡«¡«¡«",
-					per_bp);
+			sprintf(genbuf, "ÄúµÃµ½ÁË %d ±øÂíÙ¸±ÒµÄ½±½ğ¡£¹§Ï²£¡Ï£ÍûÏÂ´Î»¹ÓĞºÃÔË¡«¡«¡«", per_bp);
 			mail_buf(genbuf, userid, "¹§Ï²Äú»ñµÃ36Ñ¡7ÌØµÈ½±£¡");
 		}
 		fseek(fp, 0, SEEK_SET);
 		fread(buf, sizeof (char), 1024-1, fp);
-		sprintf(title, "±¾ÆÚ36Ñ¡7ÌØµÈ½±Ãûµ¥£¨Ã¿×¢½±½ğ%d±øÂíÙ¸±Ò£©",
-				per_bp);
+		sprintf(title, "±¾ÆÚ36Ñ¡7ÌØµÈ½±Ãûµ¥£¨Ã¿×¢½±½ğ%d±øÂíÙ¸±Ò£©", per_bp);
 		deliverreport(title, buf);
 		fclose(fp);
 	}
@@ -3186,15 +2861,12 @@ open_36_7(void)
 				continue;
 			}
 			saveValue(userid, MONEY_NAME, per_1p, MAX_MONEY_NUM);
-			sprintf(genbuf,
-					"ÄúµÃµ½ÁË %d ±øÂíÙ¸±ÒµÄ½±½ğ¡£¹§Ï²£¡Ï£ÍûÏÂ´Î»¹ÓĞºÃÔË¡«¡«¡«",
-					per_1p);
+			sprintf(genbuf, "ÄúµÃµ½ÁË %d ±øÂíÙ¸±ÒµÄ½±½ğ¡£¹§Ï²£¡Ï£ÍûÏÂ´Î»¹ÓĞºÃÔË¡«¡«¡«", per_1p);
 			mail_buf(genbuf, userid, "¹§Ï²Äú»ñµÃ36Ñ¡7Ò»µÈ½±£¡");
 		}
 		fseek(fp, 0, SEEK_SET);
 		fread(buf, sizeof (char), 1024-1, fp);
-		sprintf(title, "±¾ÆÚ36Ñ¡7Ò»µÈ½±Ãûµ¥£¨Ã¿×¢½±½ğ%d±øÂíÙ¸±Ò£©",
-				per_1p);
+		sprintf(title, "±¾ÆÚ36Ñ¡7Ò»µÈ½±Ãûµ¥£¨Ã¿×¢½±½ğ%d±øÂíÙ¸±Ò£©", per_1p);
 		deliverreport(title, buf);
 		fclose(fp);
 	}
@@ -3216,15 +2888,12 @@ open_36_7(void)
 				continue;
 			}
 			saveValue(userid, MONEY_NAME, per_2p, MAX_MONEY_NUM);
-			sprintf(genbuf,
-					"ÄúµÃµ½ÁË %d ±øÂíÙ¸±ÒµÄ½±½ğ¡£¹§Ï²£¡Ï£ÍûÏÂ´Î»¹ÓĞºÃÔË¡«¡«¡«",
-					per_2p);
+			sprintf(genbuf, "ÄúµÃµ½ÁË %d ±øÂíÙ¸±ÒµÄ½±½ğ¡£¹§Ï²£¡Ï£ÍûÏÂ´Î»¹ÓĞºÃÔË¡«¡«¡«", per_2p);
 			mail_buf(genbuf, userid, "¹§Ï²Äú»ñµÃ36Ñ¡7¶şµÈ½±£¡");
 		}
 		fseek(fp, 0, SEEK_SET);
 		fread(buf, sizeof (char), 1024-1, fp);
-		sprintf(title, "±¾ÆÚ36Ñ¡7¶şµÈ½±Ãûµ¥£¨Ã¿×¢½±½ğ%d±øÂíÙ¸±Ò£©",
-				per_2p);
+		sprintf(title, "±¾ÆÚ36Ñ¡7¶şµÈ½±Ãûµ¥£¨Ã¿×¢½±½ğ%d±øÂíÙ¸±Ò£©", per_2p);
 		deliverreport(title, buf);
 		fclose(fp);
 	}
@@ -3245,15 +2914,12 @@ open_36_7(void)
 				continue;
 			}
 			saveValue(userid, MONEY_NAME, per_3p, MAX_MONEY_NUM);
-			sprintf(genbuf,
-					"ÄúµÃµ½ÁË %d ±øÂíÙ¸±ÒµÄ½±½ğ¡£¹§Ï²£¡Ï£ÍûÏÂ´Î»¹ÓĞºÃÔË¡«¡«¡«",
-					per_3p);
+			sprintf(genbuf, "ÄúµÃµ½ÁË %d ±øÂíÙ¸±ÒµÄ½±½ğ¡£¹§Ï²£¡Ï£ÍûÏÂ´Î»¹ÓĞºÃÔË¡«¡«¡«", per_3p);
 			mail_buf(genbuf, userid, "¹§Ï²Äú»ñµÃ36Ñ¡7ÈıµÈ½±£¡");
 		}
 		fseek(fp, 0, SEEK_SET);
 		fread(buf, sizeof (char), 2048-1, fp);
-		sprintf(title, "±¾ÆÚ36Ñ¡7ÈıµÈ½±Ãûµ¥£¨Ã¿×¢½±½ğ%d±øÂíÙ¸±Ò£©",
-				per_3p);
+		sprintf(title, "±¾ÆÚ36Ñ¡7ÈıµÈ½±Ãûµ¥£¨Ã¿×¢½±½ğ%d±øÂíÙ¸±Ò£©", per_3p);
 		deliverreport(title, buf);
 		fclose(fp);
 
@@ -3275,15 +2941,12 @@ open_36_7(void)
 				continue;
 			}
 			saveValue(userid, MONEY_NAME, per_cp, MAX_MONEY_NUM);
-			sprintf(genbuf,
-					"ÄúµÃµ½ÁË %d ±øÂíÙ¸±ÒµÄ½±½ğ¡£¹§Ï²£¡Ï£ÍûÏÂ´Î»¹ÓĞºÃÔË¡«¡«¡«",
-					per_cp);
+			sprintf(genbuf, "ÄúµÃµ½ÁË %d ±øÂíÙ¸±ÒµÄ½±½ğ¡£¹§Ï²£¡Ï£ÍûÏÂ´Î»¹ÓĞºÃÔË¡«¡«¡«", per_cp);
 			mail_buf(genbuf, userid, "¹§Ï²Äú»ñµÃ36Ñ¡7°²Î¿½±£¡");
 		}
 		fseek(fp, 0, SEEK_SET);
 		fread(buf, sizeof (char), 2048-1, fp);
-		sprintf(title, "±¾ÆÚ36Ñ¡7°²Î¿½±Ãûµ¥£¨Ã¿×¢½±½ğ%d±øÂíÙ¸±Ò£©",
-				CMFT_PRIZE);
+		sprintf(title, "±¾ÆÚ36Ñ¡7°²Î¿½±Ãûµ¥£¨Ã¿×¢½±½ğ%d±øÂíÙ¸±Ò£©", CMFT_PRIZE);
 		deliverreport(title, buf);
 		fclose(fp);
 	}
@@ -3299,9 +2962,8 @@ open_36_7(void)
 	return 0;
 }
 
-	static int /*²ÊÆ±--×ã²Ê*/
-computeSum(char *complexBet)
-{				/*¼ÆËã¸´Ê½×¢µÄÊıÁ¿ */
+/*²ÊÆ±--×ã²Ê*//*¼ÆËã¸´Ê½×¢µÄÊıÁ¿ */
+static int computeSum(char *complexBet) {
 	int i;
 	int len;
 	int countNum = 0;
@@ -3321,9 +2983,8 @@ computeSum(char *complexBet)
 	return total;
 }
 
-	static void/*²ÊÆ±--×ã²Ê*/
-saveSoccerRecord(char *complexBet)
-{				/*±£´æ¸´Ê½×¢Îªµ¥×¢ */
+/*²ÊÆ±--×ã²Ê*//*±£´æ¸´Ê½×¢Îªµ¥×¢ */
+static void saveSoccerRecord(char *complexBet) {
 	int i, j;
 	int len;
 	int simple = 1;
@@ -3391,9 +3052,8 @@ saveSoccerRecord(char *complexBet)
 	}
 }
 
-	static int /*²ÊÆ±--×ã²Ê*/
-validSoccerBet(char *buf)
-{
+/*²ÊÆ±--×ã²Ê*/
+static int validSoccerBet(char *buf) {
 	int count = 0;
 	int meetSeperator = 1;
 	int i;
@@ -3437,10 +3097,8 @@ validSoccerBet(char *buf)
 	}
 	return 1;
 }
-
-	static int /*²ÊÆ±--×ã²Ê*/
-makeSoccerPrize(char *bet, char *prizeSeq)
-{
+/*²ÊÆ±--×ã²Ê*/
+static int makeSoccerPrize(char *bet, char *prizeSeq) {
 	int diff = 0;
 	int i;
 	int n1 = strlen(bet);
@@ -3457,9 +3115,8 @@ makeSoccerPrize(char *bet, char *prizeSeq)
 	return diff;
 }
 
-	static int /*²ÊÆ±--×ã²Ê*/
-open_soccer(char *prizeSeq)
-{
+/*²ÊÆ±--×ã²Ê*/
+static int open_soccer(char *prizeSeq) {
 	FILE *fp;
 	char line[MAX_RECORD_LINE];
 	char *bet;
@@ -3529,15 +3186,12 @@ open_soccer(char *prizeSeq)
 				continue;
 			}
 			saveValue(userid, MONEY_NAME, per_bp, MAX_MONEY_NUM);
-			sprintf(genbuf,
-					"ÄúµÃµ½ÁË %d ±øÂíÙ¸±ÒµÄ½±½ğ¡£¹§Ï²£¡Ï£ÍûÏÂ´Î»¹ÓĞºÃÔË¡«¡«¡«",
-					per_bp);
+			sprintf(genbuf, "ÄúµÃµ½ÁË %d ±øÂíÙ¸±ÒµÄ½±½ğ¡£¹§Ï²£¡Ï£ÍûÏÂ´Î»¹ÓĞºÃÔË¡«¡«¡«", per_bp);
 			mail_buf(genbuf, userid, "¹§Ï²Äú»ñµÃ×ãÇò²ÊÆ±ÌØµÈ½±£¡");
 		}
 		fseek(fp, 0, SEEK_SET);
 		fread(buf, sizeof (char), 1024-1, fp);
-		sprintf(title, "±¾ÆÚ×ã²ÊÌØµÈ½±Ãûµ¥£¨Ã¿×¢½±½ğ%d±øÂíÙ¸±Ò£©",
-				per_bp);
+		sprintf(title, "±¾ÆÚ×ã²ÊÌØµÈ½±Ãûµ¥£¨Ã¿×¢½±½ğ%d±øÂíÙ¸±Ò£©", per_bp);
 		deliverreport(title, buf);
 		fclose(fp);
 	}
@@ -3559,15 +3213,12 @@ open_soccer(char *prizeSeq)
 				continue;
 			}
 			saveValue(userid, MONEY_NAME, per_1p, MAX_MONEY_NUM);
-			sprintf(genbuf,
-					"ÄúµÃµ½ÁË %d ±øÂíÙ¸±ÒµÄ½±½ğ¡£¹§Ï²£¡Ï£ÍûÏÂ´Î»¹ÓĞºÃÔË¡«¡«¡«",
-					per_1p);
+			sprintf(genbuf, "ÄúµÃµ½ÁË %d ±øÂíÙ¸±ÒµÄ½±½ğ¡£¹§Ï²£¡Ï£ÍûÏÂ´Î»¹ÓĞºÃÔË¡«¡«¡«", per_1p);
 			mail_buf(genbuf, userid, "¹§Ï²Äú»ñµÃ×ãÇò²ÊÆ±Ò»µÈ½±£¡");
 		}
 		fseek(fp, 0, SEEK_SET);
 		fread(buf, sizeof (char), 1024-1, fp);
-		sprintf(title, "±¾ÆÚ×ã²ÊÒ»µÈ½±Ãûµ¥£¨Ã¿×¢½±½ğ%d±øÂíÙ¸±Ò£©",
-				per_1p);
+		sprintf(title, "±¾ÆÚ×ã²ÊÒ»µÈ½±Ãûµ¥£¨Ã¿×¢½±½ğ%d±øÂíÙ¸±Ò£©", per_1p);
 		deliverreport(title, buf);
 		fclose(fp);
 	}
@@ -3589,15 +3240,12 @@ open_soccer(char *prizeSeq)
 				continue;
 			}
 			saveValue(userid, MONEY_NAME, per_2p, MAX_MONEY_NUM);
-			sprintf(genbuf,
-					"ÄúµÃµ½ÁË %d ±øÂíÙ¸±ÒµÄ½±½ğ¡£¹§Ï²£¡Ï£ÍûÏÂ´Î»¹ÓĞºÃÔË¡«¡«¡«",
-					per_2p);
+			sprintf(genbuf, "ÄúµÃµ½ÁË %d ±øÂíÙ¸±ÒµÄ½±½ğ¡£¹§Ï²£¡Ï£ÍûÏÂ´Î»¹ÓĞºÃÔË¡«¡«¡«", per_2p);
 			mail_buf(genbuf, userid, "¹§Ï²Äú»ñµÃ×ãÇò²ÊÆ±¶şµÈ½±£¡");
 		}
 		fseek(fp, 0, SEEK_SET);
 		fread(buf, sizeof (char), 2048-1, fp);
-		sprintf(title, "±¾ÆÚ×ã²Ê¶şµÈ½±Ãûµ¥£¨Ã¿×¢½±½ğ%d±øÂíÙ¸±Ò£©",
-				per_2p);
+		sprintf(title, "±¾ÆÚ×ã²Ê¶şµÈ½±Ãûµ¥£¨Ã¿×¢½±½ğ%d±øÂíÙ¸±Ò£©", per_2p);
 		deliverreport(title, buf);
 		fclose(fp);
 	}
@@ -3648,15 +3296,12 @@ open_soccer(char *prizeSeq)
 				continue;
 			}
 			saveValue(userid, MONEY_NAME, per_cp, MAX_MONEY_NUM);
-			sprintf(genbuf,
-					"ÄúµÃµ½ÁË %d ±øÂíÙ¸±ÒµÄ½±½ğ¡£¹§Ï²£¡Ï£ÍûÏÂ´Î»¹ÓĞºÃÔË¡«¡«¡«",
-					per_cp);
+			sprintf(genbuf, "ÄúµÃµ½ÁË %d ±øÂíÙ¸±ÒµÄ½±½ğ¡£¹§Ï²£¡Ï£ÍûÏÂ´Î»¹ÓĞºÃÔË¡«¡«¡«", per_cp);
 			mail_buf(genbuf, userid, "¹§Ï²Äú»ñµÃ×ãÇò²ÊÆ±°²Î¿½±£¡");
 		}
 		fseek(fp, 0, SEEK_SET);
 		fread(buf, sizeof (char), 2048-1, fp);
-		sprintf(title, "±¾ÆÚ×ã²Ê°²Î¿½±Ãûµ¥£¨Ã¿×¢½±½ğ%d±øÂíÙ¸±Ò£©",
-				CMFT_PRIZE);
+		sprintf(title, "±¾ÆÚ×ã²Ê°²Î¿½±Ãûµ¥£¨Ã¿×¢½±½ğ%d±øÂíÙ¸±Ò£©", CMFT_PRIZE);
 		deliverreport(title, buf);
 		fclose(fp);
 	}
@@ -3672,10 +3317,8 @@ open_soccer(char *prizeSeq)
 	return 0;
 }
 
-
-	static int/*ÉÌ³¡--±£ïÚ*/
-money_check_guard()
-{
+/*ÉÌ³¡--±£ïÚ*/
+static int money_check_guard() {
 	int money, guard;
 	money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
 	guard = loadValue(currentuser.userid, "guard", 8);
@@ -3684,13 +3327,10 @@ money_check_guard()
 		move(9, 4);
 		if (random() % 2 == 0) {
 			prints("ÄãµÄ±£ïÚÀëÄã¶øÈ¥,²¢Ë³ÊÖÄÃÁËÄãÁ½³ÉµÄÏÖ½ğ.");
-			saveValue(currentuser.userid, MONEY_NAME, -money / 5,
-					MAX_MONEY_NUM);
+			saveValue(currentuser.userid, MONEY_NAME, -money / 5, MAX_MONEY_NUM);
 		} else {
-			prints
-				("ÄãµÄ±£ïÚÒ»°ô×ÓÇÃÔÎÁËÄã,ÄÃ×ßÁËÄãÉíÉÏÒ»°ëµÄÇ®£¬ÅÜÂ·ÁË¡£");
-			saveValue(currentuser.userid, MONEY_NAME, -money / 2,
-					MAX_MONEY_NUM);
+			prints("ÄãµÄ±£ïÚÒ»°ô×ÓÇÃÔÎÁËÄã,ÄÃ×ßÁËÄãÉíÉÏÒ»°ëµÄÇ®£¬ÅÜÂ·ÁË¡£");
+			saveValue(currentuser.userid, MONEY_NAME, -money / 2, MAX_MONEY_NUM);
 			pressanykey();
 			Q_Goodbye();
 		}
@@ -3699,9 +3339,8 @@ money_check_guard()
 	return 0;
 }
 
-	static int /*¶Ä²©--÷»±¦*/
-money_dice()
-{
+/*¶Ä²©--÷»±¦*/
+static int money_dice() {
 	int quit = 0;
 	int ch, num = 0, money;
 	int target;
@@ -3721,8 +3360,7 @@ money_dice()
 			money_show_stat("±øÂíÙ¸¶Ä³¡÷»±¦Ìü");
 		}
 		move(4, 4);
-		prints
-			("\033[1;31m¶àÂò¶à×¬£¬ÉÙÂòÉÙÅâ£¬Âò¶¨ÀëÊÖ£¬Ô¸¶Ä·şÊä\033[m");
+		prints("\033[1;31m¶àÂò¶à×¬£¬ÉÙÂòÉÙÅâ£¬Âò¶¨ÀëÊÖ£¬Ô¸¶Ä·şÊä\033[m");
 		move(5, 4);
 		prints("·Ö´óĞ¡Á½ÃÅ£¬4-10µãÊÇĞ¡£¬11-17µãÎª´ó¡£");
 		move(6, 4);
@@ -3733,22 +3371,18 @@ money_dice()
 		if (isVIP) {
 			prints("×îĞ¡Ñ¹ 100000±øÂíÙ¸±Ò,ÉÏÏŞ 10000000 ±øÂíÙ¸±Ò¡£");
 		} else {
-			prints
-				("×îĞ¡Ñ¹ 1000 ±øÂíÙ¸±Ò,ÉÏÏŞ 500000 ±øÂíÙ¸±Ò¡£ÒªÍæ´óµÄÇë½øVIPÊÒ¡£");
+			prints("×îĞ¡Ñ¹ 1000 ±øÂíÙ¸±Ò,ÉÏÏŞ 500000 ±øÂíÙ¸±Ò¡£ÒªÍæ´óµÄÇë½øVIPÊÒ¡£");
 		}
 		move(t_lines - 1, 0);
-		prints
-			("\033[1;44m Ñ¡µ¥ \033[1;46m [1]ÏÂ×¢ [Q]Àë¿ª                                                   \033[m");
+		prints("\033[1;44m Ñ¡µ¥ \033[1;46m [1]ÏÂ×¢ [Q]Àë¿ª                                                   \033[m");
 		win = 0;
 		ch = igetkey();
 		switch (ch) {
 			case '1':
 				if (isVIP) {
-					getdata(9, 4, "ÄúÑ¹¶àÉÙ±øÂíÙ¸±Ò£¿[100000]", genbuf,
-							9, DOECHO, YEA);
+					getdata(9, 4, "ÄúÑ¹¶àÉÙ±øÂíÙ¸±Ò£¿[100000]", genbuf, 9, DOECHO, YEA);
 				} else {
-					getdata(9, 4, "ÄúÑ¹¶àÉÙ±øÂíÙ¸±Ò£¿[1000]", genbuf,
-							7, DOECHO, YEA);
+					getdata(9, 4, "ÄúÑ¹¶àÉÙ±øÂíÙ¸±Ò£¿[1000]", genbuf, 7, DOECHO, YEA);
 				}
 				num = atoi(genbuf);
 				if (!genbuf[0]){
@@ -3781,20 +3415,15 @@ money_dice()
 					pressanykey();
 					break;
 				}
-				getdata(10, 4, "ÄúÑ¹´ó(L)»¹ÊÇĞ¡(S)£¿[L]", genbuf, 3,
-						DOECHO, YEA);
+				getdata(10, 4, "ÄúÑ¹´ó(L)»¹ÊÇĞ¡(S)£¿[L]", genbuf, 3, DOECHO, YEA);
 				if (genbuf[0] == 'S' || genbuf[0] == 's')
 					target = 1;
 				else
 					target = 0;
-				sprintf(genbuf,
-						"Âò¶¨ÀëÊÖ£¬ÄúÂòÁË \033[1;31m%d\033[m ±øÂíÙ¸±ÒµÄ \033[1;31m%s\033[m£¬È·¶¨Ã´£¿",
-						num, target ? "Ğ¡" : "´ó");
+				sprintf(genbuf, "Âò¶¨ÀëÊÖ£¬ÄúÂòÁË \033[1;31m%d\033[m ±øÂíÙ¸±ÒµÄ \033[1;31m%s\033[m£¬È·¶¨Ã´£¿", num, target ? "Ğ¡" : "´ó");
 				move(11, 4);
 				if (askyn(genbuf, YEA, NA) == YEA) {
-					money =
-						loadValue(currentuser.userid, MONEY_NAME,
-								MAX_MONEY_NUM);
+					money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
 					if (money < num) {
 						move(12, 4);
 						prints("È¥È¥È¥£¬Ã»ÄÇÃ´¶àÇ®µ·Ê²Ã´ÂÒ£¡      \n");
@@ -3815,15 +3444,11 @@ money_dice()
 							utmpshm->mc.prize777 = MAX_MONEY_NUM;
 						sprintf(genbuf, "\033[1;32m×¯¼ÒÍ¨É±£¡\033[m");
 					} else if (t1 + t2 + t3 < 11) {
-						sprintf(genbuf,
-								"%d µã£¬\033[1;32mĞ¡\033[m",
-								t1 + t2 + t3);
+						sprintf(genbuf, "%d µã£¬\033[1;32mĞ¡\033[m", t1 + t2 + t3);
 						if (target == 1)
 							win = 1;
 					} else if (t1 + t2 + t3 > 10) {
-						sprintf(genbuf,
-								"%d µã£¬\033[1;32m´ó\033[m",
-								t1 + t2 + t3);
+						sprintf(genbuf, "%d µã£¬\033[1;32m´ó\033[m", t1 + t2 + t3);
 						if (target == 0)
 							win = 1;
 					}
@@ -3831,35 +3456,23 @@ money_dice()
 					move(13, 4);
 					if (win) {
 						prints("¹§Ï²Äú£¬ÔÙÀ´Ò»°Ñ°É£¡");
-						saveValue(currentuser.userid,
-								MONEY_NAME, num,
-								MAX_MONEY_NUM);
+						saveValue(currentuser.userid, MONEY_NAME, num, MAX_MONEY_NUM);
 						whoTakeCharge(3, slow);//slowaction
-						saveValue(slow,
-								MONEY_NAME, -num,
-								MAX_MONEY_NUM);
+						saveValue(slow, MONEY_NAME, -num, MAX_MONEY_NUM);
 
 						if (num >= RUMOR_MONEY && random() % 2) {
 							int rumor = makeRumor(num);
-							sprintf(genbuf,
-									"ÓĞÈËÄ¿»÷ %s ÔÚ±øÂíÙ¸¶Ä³¡Ò»°ÑÓ®ÁË %d µÄ±øÂíÙ¸±Ò£¡",
-									currentuser.userid,
-									rumor);
-							deliverreport
-								("[Ò¥ÑÔ]À´×Ô±øÂíÙ¸¶Ä³¡µÄÏûÏ¢", genbuf);
+							sprintf(genbuf, "ÓĞÈËÄ¿»÷ %s ÔÚ±øÂíÙ¸¶Ä³¡Ò»°ÑÓ®ÁË %d µÄ±øÂíÙ¸±Ò£¡", currentuser.userid, rumor);
+							deliverreport("[Ò¥ÑÔ]À´×Ô±øÂíÙ¸¶Ä³¡µÄÏûÏ¢", genbuf);
 						}
 						sprintf(title, "%s²ÎÓë¶Ä²©(÷»±¦)(Ó®)", currentuser.userid);
 						sprintf(buf, "%sÔÚ÷»±¦Ó®ÁË%d±øÂíÙ¸±Ò", currentuser.userid, num);
 						millionairesrec(title, buf, "¶Ä²©÷»±¦");
 					} else {
 						prints("Ã»ÓĞ¹ØÏµ£¬ÏÈÊäºóÓ®...");
-						saveValue(currentuser.userid,
-								MONEY_NAME, -num,
-								MAX_MONEY_NUM);
+						saveValue(currentuser.userid, MONEY_NAME, -num, MAX_MONEY_NUM);
 						whoTakeCharge(3, slow);//slowaction
-						saveValue(slow,
-								MONEY_NAME, +num,
-								MAX_MONEY_NUM);
+						saveValue(slow, MONEY_NAME, +num, MAX_MONEY_NUM);
 						sprintf(title, "%s²ÎÓë¶Ä²©(÷»±¦)(Êä)", currentuser.userid);
 						sprintf(buf, "%sÔÚ÷»±¦ÊäÁË%d±øÂíÙ¸±Ò", currentuser.userid, num);
 						millionairesrec(title, buf, "¶Ä²©÷»±¦");
@@ -3877,9 +3490,8 @@ money_dice()
 	return 0;
 }
 
-	static int /*ºÚ°ï*/
-money_robber()
-{
+/*ºÚ°ï*/
+static int money_robber() {
 	int quit = 0, guard_num = 0;
 	int ch, x, y, z, ch2;
 	int num, money, r, ra, id, count = 0, rob,credit;
@@ -3890,20 +3502,17 @@ money_robber()
 	double mathtmp;
 	srandom(time(0));
 	char letter1[] = "ÏŞÄã°ëĞ¡Ê±ÄÚ¸øÎÒ¼ÄÇ®£¬²»È»ÓĞÄãºÃ¿´£¡\n";
-	char letter2[] =
-		"¿ì¸øÎÒ¼ÄÇ®£¬·ñÔòĞ¡ĞÄÄãµÄÄÔ´ü°¤°å×©¡£\nÎÒ»á¼Ç¹Ò×ÅÄãµÄ°²È«µÄ£¬ºÙºÙ...";
+	char letter2[] = "¿ì¸øÎÒ¼ÄÇ®£¬·ñÔòĞ¡ĞÄÄãµÄÄÔ´ü°¤°å×©¡£\nÎÒ»á¼Ç¹Ò×ÅÄãµÄ°²È«µÄ£¬ºÙºÙ...";
 	char letter3[] = "¿ì¸øÎÒ¼ÄÇ®£¬·ñÔòĞ¡ĞÄÎÒ°ÑÄãµÄÇ®È«²¿ÇÀ×ß£¡";
 	while (!quit) {
 		clear();
 		money_show_stat("±³ÒõÏï");
 		move(4, 4);
-		prints
-			("Á½ÄêÇ°µÄ±øÂíÙ¸ºÚ°ïÎŞ¶ñ²»×÷£¬ÃûÔëÒ»Ê±£¬²»¹ı×î½ü¾¯²ìÑÏ´ò£¬»î¶¯ÓĞËùÊÕÁ²¡£");
+		prints("Á½ÄêÇ°µÄ±øÂíÙ¸ºÚ°ïÎŞ¶ñ²»×÷£¬ÃûÔëÒ»Ê±£¬²»¹ı×î½ü¾¯²ìÑÏ´ò£¬»î¶¯ÓĞËùÊÕÁ²¡£");
 		move(5, 4);
 		prints("Ò»¸öºÚÒÂÈËĞ¡ÉùËµ£º¡°Òª°å×©Ã´£¿ÅÄÈËºÜÌÛµÄ¡£¡±");
 		move(t_lines - 1, 0);
-		prints
-			("\033[1;44m Ñ¡µ¥ \033[1;46m [1]ÅÄ×© [2]ÍµÇÔ [3]ÀÕË÷ [4]ÇÀÈË [5]ºÚ°ï°ïÖ÷ [Q]Àë¿ª\033[m");
+		prints("\033[1;44m Ñ¡µ¥ \033[1;46m [1]ÅÄ×© [2]ÍµÇÔ [3]ÀÕË÷ [4]ÇÀÈË [5]ºÚ°ï°ïÖ÷ [Q]Àë¿ª\033[m");
 		ch = igetkey();
 		switch (ch) {
 			case '1':
@@ -3962,22 +3571,16 @@ money_robber()
 					pressreturn();
 					break;
 				}
-				if ((slowclubtest("Beggar", currentuser.userid)
-							&& slowclubtest("Beggar", uident)) ||
-						(slowclubtest("Rober", currentuser.userid)
-						 && slowclubtest("Rober", uident)) ||
-						(slowclubtest("Police", currentuser.userid)
-						 && slowclubtest("Police", uident)) ||
-						(slowclubtest("killer", currentuser.userid)
-						 && slowclubtest("killer", uident)))
-				{
+				if ((slowclubtest("Beggar", currentuser.userid) && slowclubtest("Beggar", uident))
+						|| (slowclubtest("Rober", currentuser.userid) && slowclubtest("Rober", uident))
+						|| (slowclubtest("Police", currentuser.userid) && slowclubtest("Police", uident))
+						|| (slowclubtest("killer", currentuser.userid) && slowclubtest("killer", uident))) {
 					move(7, 4);
 					prints("¶¼ÊÇ×Ô¼ÒĞÖµÜ...");
 					pressreturn();
 					break;
 				}
-				getdata(7, 4, "ÄãÒªÅÄ¼¸¿é£¿ [0]", genbuf, 4,
-						DOECHO, YEA);
+				getdata(7, 4, "ÄãÒªÅÄ¼¸¿é£¿ [0]", genbuf, 4, DOECHO, YEA);
 				if (genbuf[0] == '\0')
 					break;
 				count = atoi(genbuf);
@@ -4017,29 +3620,19 @@ money_robber()
 					if (seek_in_file(DIR_MC "killer", currentuser.userid))
 						zhuannum=40;
 
-					saveValue(currentuser.userid, "last_rob",
-							-2000000000, 2000000000);
-					saveValue(currentuser.userid, "last_rob",
-							time(0), 2000000000);
-					saveValue(currentuser.userid, MONEY_NAME,
-							-num,  MAX_MONEY_NUM);
+					saveValue(currentuser.userid, "last_rob", -2000000000, 2000000000);
+					saveValue(currentuser.userid, "last_rob", time(0), 2000000000);
+					saveValue(currentuser.userid, MONEY_NAME, -num,  MAX_MONEY_NUM);
 
-					saveValue("BMYRober", MONEY_NAME,
-							+num/2, MAX_MONEY_NUM);
+					saveValue("BMYRober", MONEY_NAME, +num/2, MAX_MONEY_NUM);
 
-					prints
-						("        ¾­¹ı¼¸ÌìµÄÍµ¿úºÍ¸ú×Ù£¬Äã·¢ÏÖÃ¿ÌìÔçÉÏ7µã10·Ö%s»áÂ·¹ıÆ§¾²µÄ\n",
-						 uident);
-					prints
-						("    ¶«»¨Ô°±ß¡£½ñÌìÄãÄÃ×ÅÂòÀ´±øÂíÙ¸°å×©£¬×¼±¸ĞĞ¶¯ÁË¡£\n");
-					prints
-						("        ÅÄÈË°å×©£¬¿ÉÒÔÈÃÆä×¡Ôº»¨Ç®ÖÎÉË£¬ºÙºÙ...\n");
-					prints
-						("        µ±È»£¬ÄãÒ²¿ÉÄÜÔâµ½·´»÷£¬ÉõÖÁÖÂËÀ£¡\n");
+					prints("        ¾­¹ı¼¸ÌìµÄÍµ¿úºÍ¸ú×Ù£¬Äã·¢ÏÖÃ¿ÌìÔçÉÏ7µã10·Ö%s»áÂ·¹ıÆ§¾²µÄ\n", uident);
+					prints("    ¶«»¨Ô°±ß¡£½ñÌìÄãÄÃ×ÅÂòÀ´±øÂíÙ¸°å×©£¬×¼±¸ĞĞ¶¯ÁË¡£\n");
+					prints("        ÅÄÈË°å×©£¬¿ÉÒÔÈÃÆä×¡Ôº»¨Ç®ÖÎÉË£¬ºÙºÙ...\n");
+					prints("        µ±È»£¬ÄãÒ²¿ÉÄÜÔâµ½·´»÷£¬ÉõÖÁÖÂËÀ£¡\n");
 					if (askyn("    ·Ï»°ÉÙËµ£¬Äã»¹ÏëÅÄÃ´£¿", YEA, NA) == NA) {
 						move(15, 0);
-						prints
-							("            °¦£¬×îºó¹ØÍ·Äãº¦ÅÂÁË£¬ËùÒÔ²»ÅÄÁË¡£\n");
+						prints("            °¦£¬×îºó¹ØÍ·Äãº¦ÅÂÁË£¬ËùÒÔ²»ÅÄÁË¡£\n");
 						pressanykey();
 						break;
 					} else {
@@ -4072,16 +3665,12 @@ money_robber()
 								break;
 							}
 
-							prints
-								("       ÄãÕâ»µµ°£¬±³ºóÍµÏ®£¬ÔÒÖĞ%sµÄĞ¡ÄÔ´ü¹Ï¡£\n",
-								 uident);
+							prints("       ÄãÕâ»µµ°£¬±³ºóÍµÏ®£¬ÔÒÖĞ%sµÄĞ¡ÄÔ´ü¹Ï¡£\n", uident);
 							money = loadValue(uident, MONEY_NAME, MAX_MONEY_NUM);
 							if (money == 0) {
 								if(!Allclubtest(lookupuser.userid) || seek_in_file(DIR_MC "chayou", lookupuser.userid)){
 									showAt(17, 4, "Äã¶¼ÅÄµ½ÈË¼ÒÃ»Ç®ÖÎÉËÁË...»ıµãÒõµÂ°É£¡\n", 0);
-									sprintf(buf,
-											"Äã±»%sÅÄÁË°å×©£¬ÄãÃ»Ç®ÖÎÉË£¬Ö»ÄÜÒ§ÑÀÈÌÍ´...",
-											currentuser.userid);
+									sprintf(buf, "Äã±»%sÅÄÁË°å×©£¬ÄãÃ»Ç®ÖÎÉË£¬Ö»ÄÜÒ§ÑÀÈÌÍ´...", currentuser.userid);
 								}else{
 									saveValue(uident, MONEY_NAME, -money, MAX_MONEY_NUM);
 									move(17, 4);
@@ -4093,15 +3682,13 @@ money_robber()
 									substitute_record(PASSFILE, &lookupuser, sizeof(lookupuser), id);
 									if (seek_in_file(DIR_MC "killer", currentuser.userid)){
 										if (random()%3 == 0){
-											sprintf(genbuf, "Äã±»%sÓÃ°å×©ÔÒËÀÁË£¬ºÃ²Ò",
-													currentuser.userid);
+											sprintf(genbuf, "Äã±»%sÓÃ°å×©ÔÒËÀÁË£¬ºÃ²Ò", currentuser.userid);
 											mail_buf(genbuf, uident, "ÌæÌìĞĞµÀ");}
 										sprintf(genbuf,
 												"±¾Õ¾ÈËÊ¿%sÓÚ10·ÖÖÓÇ°ÔÚÍ­ÂàÍåµÄ\nÒ»ÆğÇ¹»÷ÊÂ¼şÖĞÒûµ¯ÉíÍö\n¾¯·½Í¸Â¶´ËÈËÓĞ°ï»á±³¾°\n\n"
 												"Ä¿Ç°±¾Õ¾¼¤½ø×éÖ¯É±ÊÖÌì¿ÕĞû²¼¶Ô´ËÊÂ¸ºÔğ£¬\nÓĞ¹ØÊÂ¼şµÄ½øÒ»²½±¨µÀÇë¹Ø×¢±¾°æĞÂÎÅ", uident);
 										deliverreport("[ĞÂÎÅ]Í­ÂàÍå·¢ÉúÒ»ÆğÇ¹»÷ÊÂ¼ş", genbuf);
-									}
-									else if (slowclubtest("Beggar", currentuser.userid)){
+									} else if (slowclubtest("Beggar", currentuser.userid)){
 										sprintf(genbuf,
 												"±¾¸ÛÈËÊ¿%sÓÚ10·ÖÖÓÇ°ÔÚ¼âÉ³¾×µÄ\nÒ»Æğ±©Á¦³åÍ»ÖĞÉËÖØ²»ÖÎ\n¾¯·½³Æ´ËÈËÓĞ°ï»á±³¾°\n\n"
 												"¾İÏûÏ¢ÁéÍ¨ÈËÊ¿Í¸Â¶£¬´ËÊÂ¼şÓë½üÆÚ\nµÄØ¤°ï»î¶¯ÓĞ¹Ø", uident);
@@ -4109,18 +3696,15 @@ money_robber()
 										sprintf(genbuf,
 												"Äã±»Ø¤°ïµÜ×Ó%sÓÃ°å×©ÔÒËÀÁË£¬ºÃ²Ò", currentuser.userid);
 										mail_buf(genbuf, uident, "ÄãËÀÁË");
-									}
-									else if (slowclubtest("Rober",currentuser.userid)){
+									} else if (slowclubtest("Rober",currentuser.userid)){
 										sprintf(genbuf,
 												"±¾¸ÛÈËÊ¿%sÓÚ10·ÖÖÓÇ°ÔÚ°ÄÃÅµÄ\nÒ»ÆğºÚ°ïĞµ¶·ÖĞÉ¥Ãü\n¾¯·½»³ÒÉ´ËÈËÓëºÚÉç»áÓĞ¹ı½Ú\n\n"
 												"¾İÒ»Î»²»Ô¸Í¸Â¶ĞÕÃûµÄ¾¯Êğ¹ÙÔ±Í¸Â¶\nÕâ´ÎÊÂ¼ş¿ÉÄÜºÍºÚ°ïÑ°³ğÓĞ¹Ø\n¾¯·½±íÊ¾Ò»¶¨´ò»÷·¸×ï£¬Î¬»¤ÖÎ°²", uident);
 										deliverreport("[ĞÂÎÅ]°ÄÃÅ·¢ÉúÒ»Æğ°ï»á³åÍ»", genbuf);
 										sprintf(genbuf,"Äã±»%sÓÃ°å×©ÔÒËÀÁË£¬ºÃ²Ò", currentuser.userid);
 										mail_buf(genbuf, uident,"ÄãËÀÁË");
-									}
-									else if (slowclubtest("killer",currentuser.userid)){
-										sprintf(genbuf,
-												"ÄãÔÚºÍºÚ°ïµÄ³åÍ»ÖĞ±»%sÓÃ°å×©ÔÒËÀÁË£¬ºÃ²Ò", currentuser.userid);
+									} else if (slowclubtest("killer",currentuser.userid)){
+										sprintf(genbuf, "ÄãÔÚºÍºÚ°ïµÄ³åÍ»ÖĞ±»%sÓÃ°å×©ÔÒËÀÁË£¬ºÃ²Ò", currentuser.userid);
 										mail_buf(genbuf, uident,"ÌæÌìĞĞµÀ");
 										sprintf(genbuf,
 												"±¾Õ¾ÈËÊ¿%sÓÚ10·ÖÖÓÇ°ÔÚ¾ÅÁúµÄ\nÒ»ÆğÇ¹»÷ÊÂ¼şÖĞÒûµ¯ÉíÍö\n¾¯·½Í¸Â¶´ËÈËÓĞ°ï»á±³¾°\n\n"
@@ -4136,18 +3720,13 @@ money_robber()
 								}
 							} else {
 								saveValue(uident, MONEY_NAME, -num, MAX_MONEY_NUM);
-								sprintf(buf,
-										"¹ş¹ş£¬%s»¨ÁË%dÔªÖÎÉË£¬ÏÖÔÚ³öÔºÁË¡£Ğ¡ĞÄ±¨¸´Äã£¡\n",
-										uident, num);
+								sprintf(buf, "¹ş¹ş£¬%s»¨ÁË%dÔªÖÎÉË£¬ÏÖÔÚ³öÔºÁË¡£Ğ¡ĞÄ±¨¸´Äã£¡\n", uident, num);
 								move(17, 4);
 								prints("%s", buf);
-								sprintf(buf,
-										"Äã±»%sÅÄÁË°å×©£¬»¨ÁË%d±øÂíÙ¸±ÒÖÎÉË£¬ÎØÎØÎØÎØ...",
-										currentuser.userid, num);
+								sprintf(buf, "Äã±»%sÅÄÁË°å×©£¬»¨ÁË%d±øÂíÙ¸±ÒÖÎÉË£¬ÎØÎØÎØÎØ...", currentuser.userid, num);
 							}
 						} else {
-							prints
-								("      ºÜ²»ĞÒ£¬ÄãÃ»ÓĞÅÄÖĞ¡£·´¶ø±»ÔÒÖĞĞ¡ÄÔ´ü¹Ï...");
+							prints("      ºÜ²»ĞÒ£¬ÄãÃ»ÓĞÅÄÖĞ¡£·´¶ø±»ÔÒÖĞĞ¡ÄÔ´ü¹Ï...");
 
 							money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
 							num *= 3;
@@ -4168,8 +3747,7 @@ money_robber()
 							} else {
 								saveValue(currentuser.userid, MONEY_NAME, -num, MAX_MONEY_NUM);
 								move(17, 4);
-								sprintf(buf, "Äã»¨ÁË%d±øÂíÙ¸±Ò²ÅÖÎºÃÁËÉË£¬¿´ÄãÏÂ´Î»¹ÅÄÈË²»¡£",
-										num);
+								sprintf(buf, "Äã»¨ÁË%d±øÂíÙ¸±Ò²ÅÖÎºÃÁËÉË£¬¿´ÄãÏÂ´Î»¹ÅÄÈË²»¡£", num);
 								prints("%s", buf);
 							}
 						}
@@ -4210,7 +3788,7 @@ money_robber()
 					break;
 				}
 				if(seek_in_file(DIR_MC "mingren", uident)){
-					showAt (7, 4, "      ËûÓĞ»ÆÂí¹Ó£¬Äã»¹ÊÇËãÁË°É\n", 1);
+					showAt(7, 4, "      ËûÓĞ»ÆÂí¹Ó£¬Äã»¹ÊÇËãÁË°É\n", 1);
 					break;
 				}
 				if (lookupuser.dietime > 0) {
@@ -4243,8 +3821,7 @@ money_robber()
 				}
 				saveValue(currentuser.userid, "last_rob", -2000000000, 2000000000);
 				saveValue(currentuser.userid, "last_rob", time(0), 2000000000);
-				showAt(9, 4,
-						"\033[1;5;31m¾¯¸æ\033[0;1;31m£º Ğ¡ĞÄ°¡£¬×î½ü¾¯ÊğÔÚÑÏ´òÅ¶£¡", 0);
+				showAt(9, 4, "\033[1;5;31m¾¯¸æ\033[0;1;31m£º Ğ¡ĞÄ°¡£¬×î½ü¾¯ÊğÔÚÑÏ´òÅ¶£¡", 0);
 				move(10, 4);
 				if (askyn("ÕæµÄÒªÍµÃ´£¿", NA, NA) == NA)
 					break;
@@ -4292,19 +3869,14 @@ money_robber()
 						r = random() % 50;
 						money = money / 100 * r;
 						saveValue(uident, MONEY_NAME, -money, MAX_MONEY_NUM);
-						saveValue(currentuser.userid, MONEY_NAME, money,
-								MAX_MONEY_NUM);
+						saveValue(currentuser.userid, MONEY_NAME, money, MAX_MONEY_NUM);
 						move(11, 4);
-						prints
-							("\033[1;31m%s\033[m µÄÇ®°üÃ»·ÅºÃ£¬Äã°ÑÊÖÉì½øÈ¥£¬Ãşµ½ÁË %d ±øÂíÙ¸±ÒÏÖ½ğ£¬¿ìÅÜ°É...",
-							 uident, money);
+						prints("\033[1;31m%s\033[m µÄÇ®°üÃ»·ÅºÃ£¬Äã°ÑÊÖÉì½øÈ¥£¬Ãşµ½ÁË %d ±øÂíÙ¸±ÒÏÖ½ğ£¬¿ìÅÜ°É...", uident, money);
 						sprintf(title, "%s½øĞĞºÚ°ï»î¶¯(ÍµÇÔ)", currentuser.userid);
 						sprintf(buf,"%sÍµÁË%s %d±øÂíÙ¸±Ò", currentuser.userid, uident, money);
 						if (money != 0)
 							millionairesrec(title, buf, "ºÚ°ï»î¶¯");
-						sprintf(buf,
-								"%s ³ÃÄú²»×¢ÒâµÄÊ±ºòÍµÁËÄú %d ±øÂíÙ¸±Ò¡£",
-								currentuser.userid, money);
+						sprintf(buf, "%s ³ÃÄú²»×¢ÒâµÄÊ±ºòÍµÁËÄú %d ±øÂíÙ¸±Ò¡£", currentuser.userid, money);
 						sprintf(title, "¶Ô²»Æğ£¬Äú±»ÍµÇÔ");
 						if(Allclubtest(uident)||loadValue(uident, "mail", 8))
 							mail_buf(buf, uident, title);
@@ -4317,13 +3889,9 @@ money_robber()
 						saveValue(currentuser.userid, MONEY_NAME, -money, MAX_MONEY_NUM);
 						saveValue(uident, MONEY_NAME, money, MAX_MONEY_NUM);
 						move(11, 4);
-						prints
-							("\033[1;31mÄãÈ¥Ãş %s µÄÇ®°ü,ÑÛ¿´ÒÑ¾­µÃÊÖÁË,ËûºöÈ»×ª¹ıÉíÀ´·¢ÏÖÁËÄã",
-							 uident);
+						prints("\033[1;31mÄãÈ¥Ãş %s µÄÇ®°ü,ÑÛ¿´ÒÑ¾­µÃÊÖÁË,ËûºöÈ»×ª¹ıÉíÀ´·¢ÏÖÁËÄã", uident);
 						move(12, 4);
-						prints
-							("\033[1;31m°¦Ñ½Ñ½,ÄãÒ»ã¶Éñ,²»½öÃ»Íµµ½ËûµÄÇ®°ü,·´¶ø±»ËûÃş×ßÁË %d ±øÂíÙ¸±Ò¡£",
-							 money);
+						prints("\033[1;31m°¦Ñ½Ñ½,ÄãÒ»ã¶Éñ,²»½öÃ»Íµµ½ËûµÄÇ®°ü,·´¶ø±»ËûÃş×ßÁË %d ±øÂíÙ¸±Ò¡£", money);
 						sprintf(title, "%s½øĞĞºÚ°ï»î¶¯(ÍµÇÔ)", currentuser.userid);
 						sprintf(buf,"%sÍµ%s, ·´±»ÇÀÁË%d±øÂíÙ¸±Ò", currentuser.userid, uident, money);
 						if (money != 0)
@@ -4344,8 +3912,7 @@ money_robber()
 					move(11, 4);
 					if (rob > 20) {
 						saveValue(currentuser.userid, "rob", -rob/2, 50);
-						prints
-							("°¡£¡ÓĞ¾¯²ì£¬ÄãÔÚÌÓÅÜµÄÊ±ºòÖ»ÌıÒ»ÉùÇ¹Ïì...");
+						prints("°¡£¡ÓĞ¾¯²ì£¬ÄãÔÚÌÓÅÜµÄÊ±ºòÖ»ÌıÒ»ÉùÇ¹Ïì...");
 						set_safe_record();
 						if (money / 200 < 3600)
 							currentuser.dietime = currentuser.stay + 1000*60;
@@ -4353,8 +3920,7 @@ money_robber()
 							mathtmp = (double)(money)/10000;
 							mathtmp = 686.3455879296685 + 4.0492760356525315 * mathtmp + 0.004264378376417802 * mathtmp * mathtmp;//ÎÒÄâºÏµÄ¶ş´Îº¯Êı
 							currentuser.dietime = currentuser.stay + (int)(mathtmp * 60);//+(money / 200)
-						}
-						else{
+						} else{
 							mathtmp = 9 + (double)(currentuser.lastlogin)/(double)(currentuser.stay + currentuser.lastlogin);
 							currentuser.dietime = currentuser.stay +(int) (1000*mathtmp*60);
 						}
@@ -4363,8 +3929,7 @@ money_robber()
 						pressanykey();
 						Q_Goodbye();
 					} else {
-						if (askyn
-								("±»¾¯²ì·¢ÏÖÁË,ÄãÒªÌÓÅÜÃ´?", YEA, NA) == NA) {
+						if (askyn("±»¾¯²ì·¢ÏÖÁË,ÄãÒªÌÓÅÜÃ´?", YEA, NA) == NA) {
 							saveValue(currentuser.userid, "rob", 1, 50);
 							move(12, 4);
 							if (askyn ("¾¯²ìÎÊÄã»°,Äã×¼±¸Ì¹°×´Ó¿íÃ´?", YEA, NA) == YEA) {
@@ -4374,15 +3939,11 @@ money_robber()
 								sprintf(buf,"%sÍµ%s, ±»¾¯²ìÃ»ÊÕ%d±øÂíÙ¸±Ò", currentuser.userid, uident, money/2);
 								if (money != 0)
 									millionairesrec(title, buf, "ºÚ°ï»î¶¯");
-								showAt
-									(13, 4, "Äã±»´øµ½¾¯²ì¾Ö,ÔÚÃ»ÊÕÁËÉíÉÏËùÓĞµÄÇ®Ö®ºó,»¹Òª¸øÄãÑµ»°Ò»·¬¡£", 0);
-								showAt
-									(14, 4, "ÏÖÔÚÊÇ¾¯²ì¸øÄãµÄ15ÃëÖÓÑµ»°Ê±¼ä£¬ÀÏÀÏÊµÊµÌı×Å°É¡£", 1);
+								showAt(13, 4, "Äã±»´øµ½¾¯²ì¾Ö,ÔÚÃ»ÊÕÁËÉíÉÏËùÓĞµÄÇ®Ö®ºó,»¹Òª¸øÄãÑµ»°Ò»·¬¡£", 0);
+								showAt(14, 4, "ÏÖÔÚÊÇ¾¯²ì¸øÄãµÄ15ÃëÖÓÑµ»°Ê±¼ä£¬ÀÏÀÏÊµÊµÌı×Å°É¡£", 1);
 								sleep(15);
 								money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
-								sprintf(genbuf,
-										"³öÁË¾¯²ì¾Ö,Äã¸ßĞËµÄ´ÓĞ¬ÀïÌÍ³ö²ØÆğÀ´µÄ%d±øÂíÙ¸±Ò¡£ÎØÎØ,Ò»¹É³ô½ÅÑ¾×ÓÎ¶...",
-										money);
+								sprintf(genbuf, "³öÁË¾¯²ì¾Ö,Äã¸ßĞËµÄ´ÓĞ¬ÀïÌÍ³ö²ØÆğÀ´µÄ%d±øÂíÙ¸±Ò¡£ÎØÎØ,Ò»¹É³ô½ÅÑ¾×ÓÎ¶...", money);
 								showAt(15, 4, genbuf, 1);
 							} else {
 								money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
@@ -4392,15 +3953,11 @@ money_robber()
 									sprintf(buf,"%sÍµ%s, ±»¾¯²ìÃ»ÊÕ%d±øÂíÙ¸±Ò(È«²¿)", currentuser.userid, uident, money);
 									if (money != 0)
 										millionairesrec(title, buf, "ºÚ°ï»î¶¯");
-									showAt
-										(13, 4, "¾¯²ìÎÊ»°Äã»¹²»ÀÏÊµ,ËûÒ»Å­Ö®ÏÂÒ»°Ñ¶á¹ıÄãµÄÇ®°ü,Ñï³¤¶øÈ¥¡£", 0);
-									showAt
-										(14, 4, "Äã×øÔÚµØÉÏ´ó¿Ş:\"¾¯·ËÒ»¼Ò°¡!ÎÒµÄÇ®,ÎÒµÄÇ®...\"", 1);
+									showAt(13, 4, "¾¯²ìÎÊ»°Äã»¹²»ÀÏÊµ,ËûÒ»Å­Ö®ÏÂÒ»°Ñ¶á¹ıÄãµÄÇ®°ü,Ñï³¤¶øÈ¥¡£", 0);
+									showAt(14, 4, "Äã×øÔÚµØÉÏ´ó¿Ş:\"¾¯·ËÒ»¼Ò°¡!ÎÒµÄÇ®,ÎÒµÄÇ®...\"", 1);
 								} else {
-									showAt
-										(13, 4, "¾¯²ìÎÊ»°Ê±Äã°Ù°ãµÖÀµ,µ½×îºóËûÒ²ÄÃÄãÃ»°ì·¨,Ö»ºÃ°ÑÄã·ÅÁË.", 0);
-									showAt
-										(14, 4, "¹ş¹ş! ¿¹¾Ü´ÓÑÏ,»Ø¼Ò¹ıÄê", 1);
+									showAt(13, 4, "¾¯²ìÎÊ»°Ê±Äã°Ù°ãµÖÀµ,µ½×îºóËûÒ²ÄÃÄãÃ»°ì·¨,Ö»ºÃ°ÑÄã·ÅÁË.", 0);
+									showAt(14, 4, "¹ş¹ş! ¿¹¾Ü´ÓÑÏ,»Ø¼Ò¹ıÄê", 1);
 								}
 							}
 						} else {
@@ -4417,8 +3974,7 @@ money_robber()
 								pressanykey();
 							} else {
 								saveValue(currentuser.userid, "rob", -rob/2, 50);
-								prints
-									("°¡£¡ÄãÔÚÌÓÅÜµÄÊ±ºòÖ»ÌıÒ»ÉùÇ¹Ïì...");
+								prints("°¡£¡ÄãÔÚÌÓÅÜµÄÊ±ºòÖ»ÌıÒ»ÉùÇ¹Ïì...");
 								set_safe_record();
 								if (money / 200 < 3600)
 									currentuser.dietime = currentuser.stay + 1000*60;
@@ -4426,8 +3982,7 @@ money_robber()
 									mathtmp = (double)(money)/10000;
 									mathtmp = 686.3455879296685 + 4.0492760356525315 * mathtmp + 0.004264378376417802 * mathtmp * mathtmp;//ÎÒÄâºÏµÄ¶ş´Îº¯Êı
 									currentuser.dietime = currentuser.stay + (int)(mathtmp * 60);//+(money / 200)
-								}
-								else{
+								} else{
 									mathtmp = 9 + (double)(currentuser.lastlogin)/(double)(currentuser.stay + currentuser.lastlogin);
 									currentuser.dietime = currentuser.stay +(int) (1000*mathtmp*60);
 								}
@@ -4445,9 +4000,7 @@ money_robber()
 					break;
 				} else {
 					move(11, 4);
-					prints
-						("\033[1;31m%s\033[m °ÑÇ®°ü¿´µÃ½ô½ôµÄ£¬Äã¼Ù×°²»Ğ¡ĞÄ×²ÁËËûÒ»ÏÂ,¿ÉÒ»·ÖÇ®¶¼Ã»Íµµ½¡£",
-						 uident);
+					prints("\033[1;31m%s\033[m °ÑÇ®°ü¿´µÃ½ô½ôµÄ£¬Äã¼Ù×°²»Ğ¡ĞÄ×²ÁËËûÒ»ÏÂ,¿ÉÒ»·ÖÇ®¶¼Ã»Íµµ½¡£", uident);
 					pressanykey();
 					break;
 				}
@@ -4455,8 +4008,7 @@ money_robber()
 			case '3':
 				clear();
 				money_show_stat("±øÂíÙ¸ºÚ°ïÑø¸ë³¡");
-				showAt
-					(4, 4, "ºÚ°ïÎªÄãÌá¹©ÀÕË÷ĞÅ¼ş·¢ËÍÒµÎñ,Ã¿´ÎÊÕ·ÑÊÓÇéĞÎ¶ø¶¨¡£", 0);
+				showAt(4, 4, "ºÚ°ïÎªÄãÌá¹©ÀÕË÷ĞÅ¼ş·¢ËÍÒµÎñ,Ã¿´ÎÊÕ·ÑÊÓÇéĞÎ¶ø¶¨¡£", 0);
 				if (currentuser.dietime > 0) {
 					showAt(5, 4, "ÄãÒÑ¾­ËÀÁË°¡£¡×¥¹í°¡£¡", 1);
 					Q_Goodbye();
@@ -4559,15 +4111,13 @@ money_robber()
 					break;
 				}
 				getdata(7, 4, "ÇëÊäÈëÄãµÄÃÜÂë: ", buf, PASSLEN, NOECHO, YEA);
-				if (*buf == '\0'
-						|| !ytht_crypt_checkpasswd(currentuser.passwd, buf)) {
+				if (*buf == '\0' || !ytht_crypt_checkpasswd(currentuser.passwd, buf)) {
 					showAt(8, 4, "ºÜ±§Ç¸, ÄúÊäÈëµÄÃÜÂë²»ÕıÈ·¡£", 2);
 					break;
 				}
 				saveValue(currentuser.userid, "last_rob", -2000000000, 2000000000);
 				saveValue(currentuser.userid, "last_rob", time(0), 2000000000);
-				showAt(9, 4,
-						"\033[1;5;31m¾¯¸æ\033[0;1;31m£º Ğ¡ĞÄ°¡£¬×î½ü¾¯ÊğÔÚÑÏ´òÅ¶£¡", 0);
+				showAt(9, 4, "\033[1;5;31m¾¯¸æ\033[0;1;31m£º Ğ¡ĞÄ°¡£¬×î½ü¾¯ÊğÔÚÑÏ´òÅ¶£¡", 0);
 				move(10, 4);
 				if (askyn("ÕæµÄÒªÇÀÃ´£¿", NA, NA) == NA)
 					break;
@@ -4601,8 +4151,7 @@ money_robber()
 							saveValue(uident, "guard", -guard_num, 50);
 						else
 							saveValue(uident, "guard", -1, 50);
-						prints
-							("Äã¸ÉµôÁËËûÒ»¸ö±£ïÚ");
+						prints("Äã¸ÉµôÁËËûÒ»¸ö±£ïÚ");
 						pressanykey();
 						break;
 					}
@@ -4614,9 +4163,7 @@ money_robber()
 						saveValue(uident, CREDIT_NAME, -money, MAX_MONEY_NUM);
 						saveValue(currentuser.userid, MONEY_NAME, money, MAX_MONEY_NUM);
 						move(11, 4);
-						prints
-							("\033[1;31m%s\033[m µÄÃÅÃ»Ëø£¬ÄãÁïÁË½øÈ¥,ÕÒ³ö´æÕÛ, »»µÃ %d ±øÂíÙ¸±ÒÏÖ½ğ£¬¿ìÅÜ°É¡£",
-							 uident, money);
+						prints("\033[1;31m%s\033[m µÄÃÅÃ»Ëø£¬ÄãÁïÁË½øÈ¥,ÕÒ³ö´æÕÛ, »»µÃ %d ±øÂíÙ¸±ÒÏÖ½ğ£¬¿ìÅÜ°É¡£", uident, money);
 						sprintf(buf,
 								"%s ³ÃÄú²»×¢ÒâµÄÊ±ºòÄÃÁËÄã¼ÒµÄ´æÕÛ,µÈÄã·¢ÏÖ¹ÒÊ§µÄÊ±ºòÒÑ¾­ËğÊ§ÁË %d ±øÂíÙ¸±Ò¡£",
 								currentuser.userid, money);
@@ -4635,16 +4182,13 @@ money_robber()
 						saveValue(currentuser.userid, CREDIT_NAME, -money, MAX_MONEY_NUM);
 						saveValue(uident, CREDIT_NAME, money, MAX_MONEY_NUM);
 						move(11, 4);
-						prints
-							("\033[1;31mÄãÁï½øÁË %s µÄÃÅ,ÕıµÃÒâÄØ,Ì§ÑÛ¿´¼ûºÚ¶´¶´µÄÇ¹¿Ú¶Ô×ÅÄã...",
+						prints("\033[1;31mÄãÁï½øÁË %s µÄÃÅ,ÕıµÃÒâÄØ,Ì§ÑÛ¿´¼ûºÚ¶´¶´µÄÇ¹¿Ú¶Ô×ÅÄã...",
 							 uident);
 						move(12, 4);
-						prints
-							("\033[1;31m°¦Ñ½Ñ½,Ã»Ïëµ½ËûÔÚ¼Ò,Äã±»ÆÈË½ÁË,´Ó´æÕÛÀïÈ¡³ö %d ±øÂíÙ¸±Ò¸øËû¡£",
+						prints("\033[1;31m°¦Ñ½Ñ½,Ã»Ïëµ½ËûÔÚ¼Ò,Äã±»ÆÈË½ÁË,´Ó´æÕÛÀïÈ¡³ö %d ±øÂíÙ¸±Ò¸øËû¡£",
 							 money);
 						sprintf(title, "ÄúÔâÓöÇÀ½Ù");
-						sprintf(buf,
-								"%s ÏëÇÀÄãµÄÇ®,½á¹ûÈÃÄã·¢ÏÖÁË,ÄãÀÕË÷ÁËËû %d ±øÂíÙ¸±Ò,ËÍÉÏÃÅµÄ·ÊÈâ°¡¡£",
+						sprintf(buf, "%s ÏëÇÀÄãµÄÇ®,½á¹ûÈÃÄã·¢ÏÖÁË,ÄãÀÕË÷ÁËËû %d ±øÂíÙ¸±Ò,ËÍÉÏÃÅµÄ·ÊÈâ°¡¡£",
 								currentuser.userid, money);
 						if(Allclubtest(uident)||loadValue(uident, "mail", 8))
 							mail_buf(buf, uident, title);
@@ -4661,8 +4205,7 @@ money_robber()
 					move(11, 4);
 					if (rob > 20) {
 						saveValue(currentuser.userid, "rob", -rob/2, 50);
-						prints
-							("°¡£¡ÓĞ¾¯²ì£¬ÄãÔÚÌÓÅÜµÄÊ±ºòÖ»ÌıÒ»ÉùÇ¹Ïì...");
+						prints("°¡£¡ÓĞ¾¯²ì£¬ÄãÔÚÌÓÅÜµÄÊ±ºòÖ»ÌıÒ»ÉùÇ¹Ïì...");
 						set_safe_record();
 						if (money / 200 < 3600)
 							currentuser.dietime = currentuser.stay + 1000*60;
@@ -4686,10 +4229,8 @@ money_robber()
 							sprintf(title, "%s½øĞĞºÚ°ï»î¶¯(ÇÀ½Ù)", currentuser.userid);
 							sprintf(buf,"%sÇÀ%s ±»¾¯²ìÃ»ÊÕ%d±øÂíÙ¸±Ò", currentuser.userid, uident, money/2);
 							millionairesrec(title, buf, "ºÚ°ï»î¶¯");
-							showAt
-								(12, 4, "Äã±»´øµ½¾¯²ì¾Ö,ÔÚÃ»ÊÕÁËÉíÉÏËùÓĞµÄÇ®Ö®ºó,ÏÖÔÚµÈ¾¯²ì¸øÄãÑµ»°", 0);
-							showAt
-								(13, 4, "ÏÖÔÚÊÇ¾¯²ì¸øÄãµÄ15ÃëÖÓÑµ»°Ê±¼ä£¬Ó²×ÅÍ·Æ¤Ìı°É¡£", 1);
+							showAt(12, 4, "Äã±»´øµ½¾¯²ì¾Ö,ÔÚÃ»ÊÕÁËÉíÉÏËùÓĞµÄÇ®Ö®ºó,ÏÖÔÚµÈ¾¯²ì¸øÄãÑµ»°", 0);
+							showAt(13, 4, "ÏÖÔÚÊÇ¾¯²ì¸øÄãµÄ15ÃëÖÓÑµ»°Ê±¼ä£¬Ó²×ÅÍ·Æ¤Ìı°É¡£", 1);
 							sleep(15);
 							money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
 							sprintf(genbuf,
@@ -4700,8 +4241,7 @@ money_robber()
 							move(12, 4);
 							if (random() % 2 == 0) {
 								saveValue(currentuser.userid, "rob", 5, 50);
-								prints
-									("ÌÓÅÜ³É¹¦,¿ÉÏ§,ÄãµÄÇ®°ü¶ªÔÚÁËÂ·ÉÏ...");
+								prints("ÌÓÅÜ³É¹¦,¿ÉÏ§,ÄãµÄÇ®°ü¶ªÔÚÁËÂ·ÉÏ...");
 								saveValue(currentuser.userid, MONEY_NAME, -money, MAX_MONEY_NUM);
 								sprintf(title, "%s½øĞĞºÚ°ï»î¶¯(ÇÀ½Ù)", currentuser.userid);
 								sprintf(buf,"%sÇÀ%s, ÌÓÅÜËğÊ§%d±øÂíÙ¸±Ò(È«²¿)", currentuser.userid, uident, money);
@@ -4734,9 +4274,7 @@ money_robber()
 					break;
 				} else {
 					move(11, 4);
-					prints
-						("\033[1;31m%s\033[m ¼ÒµÄÃÅËøµÄ½ô½ôµÄ£¬Äã¼Ù×°Â·¹ı,¿´¿´ÎŞ·¨µÃÊÖ,Ö»ºÃÀë¿ª¡£",
-						 uident);
+					prints("\033[1;31m%s\033[m ¼ÒµÄÃÅËøµÄ½ô½ôµÄ£¬Äã¼Ù×°Â·¹ı,¿´¿´ÎŞ·¨µÃÊÖ,Ö»ºÃÀë¿ª¡£", uident);
 					pressanykey();
 					break;
 				}
@@ -4747,8 +4285,7 @@ money_robber()
 				whoTakeCharge(4, uident);
 				if (strcmp(currentuser.userid, uident)) {
 					move(6, 4);
-					prints
-						("ÃØÊé%sÀ¹×¡ÁËÄã,ËµµÀ:¡°ÀÏ´ó%sÏÖÔÚºÜÃ¦,Ã»Ê±¼ä½Ó´ıÄã¡£¡±", buf,uident);
+					prints("ÃØÊé%sÀ¹×¡ÁËÄã,ËµµÀ:¡°ÀÏ´ó%sÏÖÔÚºÜÃ¦,Ã»Ê±¼ä½Ó´ıÄã¡£¡±", buf,uident);
 					move(8,4);
 					if(!slowclubtest("Rober",currentuser.userid)){
 						if (askyn("ÄãÊÇÏë¼ÓÈëºÚ°ïÂğ£¿", NA, NA) == YEA) {
@@ -4756,7 +4293,8 @@ money_robber()
 							mail_buf(genbuf, "BMYRober", genbuf);
 							move(14, 4);
 							prints("ºÃÁË£¬ÎÒ»áÍ¨ÖªÀÏ´óµÄ");
-						}}
+						}
+					}
 					pressanykey();
 					break;
 				} else {
@@ -4779,8 +4317,7 @@ money_robber()
 									quit = 1;
 									pressanykey();
 									*/
-								sprintf(genbuf, "%s Òª´ÇÈ¥ºÚ°ï°ïÖ÷Ö°Îñ",
-										currentuser.userid);
+								sprintf(genbuf, "%s Òª´ÇÈ¥ºÚ°ï°ïÖ÷Ö°Îñ", currentuser.userid);
 								mail_buf(genbuf, "millionaires", genbuf);
 								move(14, 4);
 								prints("ºÃ°É£¬ÒÑ¾­·¢ĞÅ¸æÖª×Ü¹ÜÁË");
@@ -4800,9 +4337,8 @@ money_robber()
 	return 0;
 }
 
-	static int/*Ø¤°ï*/
-money_beggar()
-{
+/*Ø¤°ï*/
+static int money_beggar() {
 	int ch,ch2;
 	int quit = 0;
 	char uident[IDLEN + 1], buf[STRLEN], title[40];
@@ -4811,14 +4347,11 @@ money_beggar()
 	while (!quit) {
 		money_show_stat("Ø¤°ï×Ü¶æ");
 		move(4, 4);
-		prints
-			("Ø¤°ï×Ô¹ÅÌìÏÂµÚÒ»´ó°ï£¬²»¹ıÄ¿Ç°¾­¼Ã»¹Ëã¾°Æø£¬×öÆòØ¤µÄÈËÒ²²»¶àÀ²¡£");
+		prints("Ø¤°ï×Ô¹ÅÌìÏÂµÚÒ»´ó°ï£¬²»¹ıÄ¿Ç°¾­¼Ã»¹Ëã¾°Æø£¬×öÆòØ¤µÄÈËÒ²²»¶àÀ²¡£");
 		move(5, 4);
-		prints
-			("Ò»¸öÆòØ¤×ß¹ıÀ´ÎÊµÀ£º¡°Òª´òÌıÏûÏ¢Ã´£¿Ø¤°ïÌìÉÏµØÏÂÎŞËù²»Öª£¬ÎŞËù²»Ïş¡£¡±");
+		prints("Ò»¸öÆòØ¤×ß¹ıÀ´ÎÊµÀ£º¡°Òª´òÌıÏûÏ¢Ã´£¿Ø¤°ïÌìÉÏµØÏÂÎŞËù²»Öª£¬ÎŞËù²»Ïş¡£¡±");
 		move(t_lines - 1, 0);
-		prints
-			("\033[1;44m Ñ¡µ¥ \033[1;46m [1]´òÌ½ [2]ÉÕÇ® [3]¸ú×Ù [4]ÆòÌÖ [5]Ø¤°ï°ïÖ÷ [Q]Àë¿ª\033[m");
+		prints("\033[1;44m Ñ¡µ¥ \033[1;46m [1]´òÌ½ [2]ÉÕÇ® [3]¸ú×Ù [4]ÆòÌÖ [5]Ø¤°ï°ïÖ÷ [Q]Àë¿ª\033[m");
 		ch = igetkey();
 		switch (ch) {
 			case '1':
@@ -4851,17 +4384,14 @@ money_beggar()
 					credit = makeRumor(credit);
 
 				move(7, 4);
-				prints
-					("\033[1;31m%s\033[m ´óÔ¼ÓĞ \033[1;31m%d\033[m ±øÂíÙ¸±ÒµÄÏÖ½ğ£¬ÒÔ¼° \033[1;31m%d\033[m ±øÂíÙ¸±ÒµÄ´æ¿î¡£",
-					 uident, money, credit);
+				prints("\033[1;31m%s\033[m ´óÔ¼ÓĞ \033[1;31m%d\033[m ±øÂíÙ¸±ÒµÄÏÖ½ğ£¬ÒÔ¼° \033[1;31m%d\033[m ±øÂíÙ¸±ÒµÄ´æ¿î¡£", uident, money, credit);
 				pressanykey();
 				break;
 			case '2':
 				clear();
 				money_show_stat("Ø¤°ïÉñÃí");
 				move(4, 4);
-				prints
-					("ÉÕÇ®×îĞ¡½ğ¶î 1000 ±øÂíÙ¸±Ò¡£¿ÉÂòÍ¨Ú¤¼ä¹ÜÊÂ£¬ÈÃËÀÕß¸´»î¡£");
+				prints("ÉÕÇ®×îĞ¡½ğ¶î 1000 ±øÂíÙ¸±Ò¡£¿ÉÂòÍ¨Ú¤¼ä¹ÜÊÂ£¬ÈÃËÀÕß¸´»î¡£");
 				move(5, 4);
 				usercomplete("¸øË­ÉÕ£¿", uident);
 				if (uident[0] == '\0')
@@ -4901,13 +4431,11 @@ money_beggar()
 					if (seek_in_file(MC_ADMIN_FILE, currentuser.userid) &&
 							((lookupuser.dietime- lookupuser.stay) > 5000*60)){
 						sprintf(title,"%sĞĞÊ¹ÉÕÇ®ÌØÈ¨", currentuser.userid);
-						sprintf(buf,"%s¸ø%sÉÕÁË%d(/60=%d)±øÂíÙ¸±Ò",
-								currentuser.userid, uident, num, num / 60);
+						sprintf(buf,"%s¸ø%sÉÕÁË%d(/60=%d)±øÂíÙ¸±Ò", currentuser.userid, uident, num, num / 60);
 						millionairesrec(title, buf, "");
 					}else{
 						sprintf(title,"%s¸ø%sÉÕÇ®", currentuser.userid, uident);
-						sprintf(buf,"%s¸ø%sÉÕÁË%d(/60=%d)±øÂíÙ¸±Ò",
-								currentuser.userid, uident, num, num / 60);
+						sprintf(buf,"%s¸ø%sÉÕÁË%d(/60=%d)±øÂíÙ¸±Ò", currentuser.userid, uident, num, num / 60);
 						millionairesrec(title, buf, "ÉÕÇ®");
 					}
 					if (lookupuser.dietime > lookupuser.stay)
@@ -4916,12 +4444,8 @@ money_beggar()
 						lookupuser.dietime = 2;
 					substitute_record(PASSFILE, &lookupuser, sizeof (lookupuser), id);
 					showAt(8, 4, "ÉÕÍêÁË£¬×ß°É¡£", 1);
-					sprintf(title,
-							"ÄúµÄÅóÓÑ %s ¸øÄúËÍÇ®À´ÁË",
-							currentuser.userid);
-					sprintf(buf,
-							"ÄúµÄÅóÓÑ %s ¸øÄúÉÕÁËµãÇ®£¬ÄúµÄËÀÆÚËõ¶ÌÁË%d·ÖÖÓ",
-							currentuser.userid, num / 60);
+					sprintf(title, "ÄúµÄÅóÓÑ %s ¸øÄúËÍÇ®À´ÁË", currentuser.userid);
+					sprintf(buf, "ÄúµÄÅóÓÑ %s ¸øÄúÉÕÁËµãÇ®£¬ÄúµÄËÀÆÚËõ¶ÌÁË%d·ÖÖÓ", currentuser.userid, num / 60);
 					mail_buf(buf, uident, title);
 					pressanykey();
 				}
@@ -4947,8 +4471,7 @@ money_beggar()
 				move(7, 4);
 				prints("¼¸Ììºó£¬ÄãÊÕµ½Ø¤°ïµÄÏûÏ¢Ëµ£º");
 				move(8, 4);
-				prints
-					("\033[1;31m%s\033[m ÓĞ \033[1;31m%s\033[m µÄµØÎ»£¬ÒÔ¼° \033[1;31m%s\033[m Ò»°ãµÄ²ÅÒÕ¡£",
+				prints("\033[1;31m%s\033[m ÓĞ \033[1;31m%s\033[m µÄµØÎ»£¬ÒÔ¼° \033[1;31m%s\033[m Ò»°ãµÄ²ÅÒÕ¡£",
 					 uident, charexp(countexp(&lookupuser)), cperf(countperf(&lookupuser)));
 				pressanykey();
 				break;
@@ -5025,8 +4548,7 @@ money_beggar()
 				saveValue(currentuser.userid, "begtime", +1, 2000000000);
 				if (!t_search(uident, NA, 1)) {
 					if (random() % 5 == 0) {
-						prints("Äã¶Ô×Å%s¿Şº°µÀ£º¡°¿ÉÁ¯¿ÉÁ¯ÎÒ°É£¬»¹ÓĞÎÒµÄĞ¡Ç¿£¡ÎØÎØÎØ...¡±",
-								uident);
+						prints("Äã¶Ô×Å%s¿Şº°µÀ£º¡°¿ÉÁ¯¿ÉÁ¯ÎÒ°É£¬»¹ÓĞÎÒµÄĞ¡Ç¿£¡ÎØÎØÎØ...¡±", uident);
 						//num = (random() % (1 + 100))*10000 + 500000;
 						if(flag==1)
 							saveValue(uident, MONEY_NAME, -num, MAX_MONEY_NUM);
@@ -5040,12 +4562,8 @@ money_beggar()
 							millionairesrec(title, buf, "Ø¤°ï»î¶¯");
 
 						move(8, 4);
-						prints
-							("%sÑÛÈ¦¶ÙÊ±ºìÁË£¬¸Ï½ô´ÓÉíÉÏÄÃ³ö %d ±øÂíÙ¸±Ò¸øÄã¡£",
-							 uident, num);
-						sprintf(genbuf,
-								"ÄãÒ»Ê±ºÃĞÄ£¬¸øÁË%s %d±øÂíÙ¸±Ò£¬¹ıºóÏëÏëÕæ²»ÊÇ×ÌÎ¶¡£",
-								currentuser.userid, num);
+						prints("%sÑÛÈ¦¶ÙÊ±ºìÁË£¬¸Ï½ô´ÓÉíÉÏÄÃ³ö %d ±øÂíÙ¸±Ò¸øÄã¡£", uident, num);
+						sprintf(genbuf, "ÄãÒ»Ê±ºÃĞÄ£¬¸øÁË%s %d±øÂíÙ¸±Ò£¬¹ıºóÏëÏëÕæ²»ÊÇ×ÌÎ¶¡£", currentuser.userid, num);
 						if(Allclubtest(uident)||loadValue(uident, "mail", 8))
 							mail_buf(genbuf, uident, "ÄãÓöµ½½Ğ»¨×Ó");
 						pressanykey();
@@ -5073,12 +4591,8 @@ money_beggar()
 							if (begmoney != 0)
 								millionairesrec(title, buf, "Ø¤°ï»î¶¯");
 
-							prints
-								("%sÑÛÈ¦¶ÙÊ±ºìÁË£¬¸Ï½ô´ÓÉíÉÏÄÃ³öËùÓĞµÄ±øÂíÙ¸±ÒÒ»¹² %d ¸øÄã¡£",
-								 uident, num);
-							sprintf(genbuf,
-									"ÄãÒ»Ê±ºÃĞÄ£¬¸øÁË%s %d±øÂíÙ¸±Ò£¬¹ıºóÏëÏëÕæ²»ÊÇ×ÌÎ¶¡£",
-									currentuser.userid, num);
+							prints("%sÑÛÈ¦¶ÙÊ±ºìÁË£¬¸Ï½ô´ÓÉíÉÏÄÃ³öËùÓĞµÄ±øÂíÙ¸±ÒÒ»¹² %d ¸øÄã¡£", uident, num);
+							sprintf(genbuf, "ÄãÒ»Ê±ºÃĞÄ£¬¸øÁË%s %d±øÂíÙ¸±Ò£¬¹ıºóÏëÏëÕæ²»ÊÇ×ÌÎ¶¡£", currentuser.userid, num);
 							if(Allclubtest(uident)||loadValue(uident, "mail", 8))
 								mail_buf(genbuf, uident, "ÄãÓöµ½½Ğ»¨×Ó");
 							pressanykey();
@@ -5086,9 +4600,7 @@ money_beggar()
 					}
 
 					if (random() % 3 == 0) {
-						prints
-							("Äã¶Ô×Å%s¿Şº°µÀ£º¡°¿ÉÁ¯¿ÉÁ¯ÎÒ°É£¬»¹ÓĞÎÒµÄĞ¡Ç¿£¡ÎØÎØÎØ...¡±",
-							 uident);
+						prints("Äã¶Ô×Å%s¿Şº°µÀ£º¡°¿ÉÁ¯¿ÉÁ¯ÎÒ°É£¬»¹ÓĞÎÒµÄĞ¡Ç¿£¡ÎØÎØÎØ...¡±", uident);
 						//num = (random() % (1 + 100))*10000 + 500000;
 						if(flag==1)
 							saveValue(uident, MONEY_NAME, -num, MAX_MONEY_NUM);
@@ -5102,12 +4614,8 @@ money_beggar()
 							millionairesrec(title, buf, "Ø¤°ï»î¶¯");
 
 						move(8, 4);
-						prints
-							("%sÑÛÈ¦¶ÙÊ±ºìÁË£¬¸Ï½ô´ÓÉíÉÏÄÃ³ö %d ±øÂíÙ¸±Ò¸øÄã¡£",
-							 uident, num);
-						sprintf(genbuf,
-								"ÄãÒ»Ê±ºÃĞÄ£¬¸øÁË%s %d±øÂíÙ¸±Ò£¬¹ıºóÏëÏëÕæ²»ÊÇ×ÌÎ¶¡£",
-								currentuser.userid, num);
+						prints("%sÑÛÈ¦¶ÙÊ±ºìÁË£¬¸Ï½ô´ÓÉíÉÏÄÃ³ö %d ±øÂíÙ¸±Ò¸øÄã¡£", uident, num);
+						sprintf(genbuf, "ÄãÒ»Ê±ºÃĞÄ£¬¸øÁË%s %d±øÂíÙ¸±Ò£¬¹ıºóÏëÏëÕæ²»ÊÇ×ÌÎ¶¡£", currentuser.userid, num);
 						if(Allclubtest(uident)||loadValue(uident, "mail", 8))
 							mail_buf(genbuf, uident, "ÄãÓöµ½½Ğ»¨×Ó");
 						pressanykey();
@@ -5157,8 +4665,7 @@ money_beggar()
 									quit = 1;
 									pressanykey();
 									*/
-								sprintf(genbuf, "%s Òª´ÇÈ¥Ø¤°ï°ïÖ÷Ö°Îñ",
-										currentuser.userid);
+								sprintf(genbuf, "%s Òª´ÇÈ¥Ø¤°ï°ïÖ÷Ö°Îñ", currentuser.userid);
 								mail_buf(genbuf, "millionaires", genbuf);
 								move(14, 4);
 								prints("ºÃ°É£¬ÒÑ¾­·¢ĞÅ¸æÖª×Ü¹ÜÁË");
@@ -5178,9 +4685,8 @@ money_beggar()
 	return 0;
 }
 
-	static int/*É±ÊÖrewrite by macintosh 20051204*/
-money_killer()
-{
+/*É±ÊÖrewrite by macintosh 20051204*/
+static int money_killer() {
 	int ch,ch2;
 	int guard_num;
 	int robTimes;
@@ -5199,8 +4705,7 @@ money_killer()
 		quit2=0;
 		nomoney_show_stat("É±ÊÖÌì¿Õ");
 		move(t_lines - 1, 0);
-		prints
-			("\033[1;44m Ñ¡µ¥ \033[1;46m [1]¹ÍÓ¶É±ÊÖ [2]¾ü»ğ [3]É±ÊÖ°ïÖ÷ [Q]Àë¿ª\033[m");
+		prints("\033[1;44m Ñ¡µ¥ \033[1;46m [1]¹ÍÓ¶É±ÊÖ [2]¾ü»ğ [3]É±ÊÖ°ïÖ÷ [Q]Àë¿ª\033[m");
 		ch = igetkey();
 		switch (ch) {
 			case '1':
@@ -5359,7 +4864,9 @@ money_killer()
 							if (!Allclubtest(uident)){
 								showAt(7, 4, "    \033[1;32m  ²»Òª²ĞÉ±ÎŞ¹¼£¡\033[m", 1);
 								break;
-							}				guard_num =loadValue(uident, "guard", 8);
+							}
+
+							guard_num =loadValue(uident, "guard", 8);
 							if (guard_num > 0) {
 								showAt(7, 4, "¶Ô·½ÓĞ±£ïÚ»¤Éí,Äã»¹ÊÇËãÁË°É...", 1);
 								break;
@@ -5372,8 +4879,7 @@ money_killer()
 							}
 							saveValue(currentuser.userid, MONEY_NAME, -100000, MAX_MONEY_NUM);
 							move(6, 4);
-							prints
-								("  \n\033[1;35m  Äã±§ÆğÕ¨Ò©°ü£¬´óº°Ò»Éù´òµ¹Ğ¡ÈÕ±¾,Ïò%s³åÁË¹ıÈ¥\033[m\n", uident);
+							prints("  \n\033[1;35m  Äã±§ÆğÕ¨Ò©°ü£¬´óº°Ò»Éù´òµ¹Ğ¡ÈÕ±¾,Ïò%s³åÁË¹ıÈ¥\033[m\n", uident);
 							sprintf(genbuf, "±¾¸ÛÈËÊ¿%sÓÚ10·ÖÖÓÇ°ÔÚ¾ÅÁúµÄ\nÒ»Æğ×ÔÉ±Ê½¹¥»÷ÖĞÉíÍö\n¾¯·½»³ÒÉ´ËÈËÓĞ°ï»á±³¾°\n\n"
 									"¾İÒ»Î»²»Ô¸Í¸Â¶ĞÕÃûµÄ¾¯Êğ¹ÙÔ±Í¸Â¶\nÕâ´ÎÊÂ¼ş¿ÉÄÜÊÇÖ°ÒµÉ±ÊÖËùÎª", uident);
 							x = countexp(&currentuser);
@@ -5423,8 +4929,7 @@ money_killer()
 				whoTakeCharge(9, uident);
 				if (strcmp(currentuser.userid, uident)) {
 					move(6, 4);
-					prints
-						("ÃØÊé%sÀ¹×¡ÁËÄã,ËµµÀ:¡°ÀÏ´ó%sÏÖÔÚºÜÃ¦,Ã»Ê±¼ä½Ó´ıÄã¡£¡±", name,uident);
+					prints("ÃØÊé%sÀ¹×¡ÁËÄã,ËµµÀ:¡°ÀÏ´ó%sÏÖÔÚºÜÃ¦,Ã»Ê±¼ä½Ó´ıÄã¡£¡±", name,uident);
 					move(8,4);
 					if (!seek_in_file(DIR_MC "killer", currentuser.userid) &&
 							!slowclubtest("killer",currentuser.userid)){
@@ -5433,7 +4938,8 @@ money_killer()
 							mail_buf(genbuf, "BMYKillersky", genbuf);
 							move(14, 4);
 							prints("ºÃÁË£¬ÎÒ»áÍ¨ÖªÀÏ´óµÄ");
-						}}
+						}
+					}
 					pressanykey();
 					break;
 				} else {
@@ -5534,8 +5040,7 @@ money_killer()
 									quit = 1;
 									pressanykey();
 									*/
-								sprintf(genbuf, "%s Òª´ÇÈ¥É±ÊÖ°ïÖ÷Ö°Îñ",
-										currentuser.userid);
+								sprintf(genbuf, "%s Òª´ÇÈ¥É±ÊÖ°ïÖ÷Ö°Îñ", currentuser.userid);
 								mail_buf(genbuf, "millionaires", genbuf);
 								move(14, 4);
 								prints("ºÃ°É£¬ÒÑ¾­·¢ĞÅ¸æÖª×Ü¹ÜÁË");
@@ -5580,9 +5085,7 @@ money_killer()
 	return 0;
 }
 
-	static int
-money_postoffice()
-{
+static int money_postoffice() {
 	int ch2, slownum=0;
 
 	nomoney_show_stat("´ó¸»ÎÌÓÊ¼şÉèÖÃ");
@@ -5631,10 +5134,8 @@ money_postoffice()
 	return 0;
 }
 
-
-	static int /*ÉÌ³¡rewrite by macintosh 20051204*/
-money_shop()
-{
+/*ÉÌ³¡rewrite by macintosh 20051204*/
+static int money_shop() {
 	int ch, money, num, ch2;
 	int guard_num;
 	char uident[IDLEN + 1], ticket_price[10], buf[STRLEN];
@@ -5646,52 +5147,41 @@ money_shop()
 		move(6, 4);
 		prints("±øÂíÙ¸ÉÌ³¡×î½üÉúÒâºì»ğ£¬´ó¼Ò¾¡ĞË£¡");
 		move(t_lines - 1, 0);
-		prints
-			("\033[1;44m Ñ¡µ¥ \033[1;46m [1]¹Í±£ïÚ [2]ÀñÆ·µê [3]¾­ÀíÊÒ [4]ÓÊ¾Ö [6]»ğ³µÆ±¼Û¼ÆËã [Q]Àë¿ª\033[m");
+		prints("\033[1;44m Ñ¡µ¥ \033[1;46m [1]¹Í±£ïÚ [2]ÀñÆ·µê [3]¾­ÀíÊÒ [4]ÓÊ¾Ö [6]»ğ³µÆ±¼Û¼ÆËã [Q]Àë¿ª\033[m");
 		// ("\033[1;44m Ñ¡µ¥ \033[1;46m [1]¹Í±£ïÚ [2]ºØ¿¨ [4]¾­ÀíÊÒ [5]hell²Î¹Û [Q]Àë¿ª\033[m");
 		ch = igetkey();
 		switch (ch) {
 			case '1':
 				nomoney_show_stat("±øÂíÙ¸±£ïÚ¹«Ë¾");
 				move(4, 4);
-				prints
-					("±øÂíÙ¸±£ïÚ¹«Ë¾¶ÔÓĞĞèÒªµÄÈËÊ¿Ìá¹©±£ïÚÒµÎñ,¼Û¸ñÊÓÇé¿ö¶ø¶¨¡£");
+				prints("±øÂíÙ¸±£ïÚ¹«Ë¾¶ÔÓĞĞèÒªµÄÈËÊ¿Ìá¹©±£ïÚÒµÎñ,¼Û¸ñÊÓÇé¿ö¶ø¶¨¡£");
 				move(5, 4);
-				prints
-					("µ«ÊÇ±»±£»¤¶ÔÏóÒ»µ©Îª¶ñ,±£ïÚ×Ô¶¯Àë¿ª,²¢¿ÉÄÜ»á¶Ô¹ÍÖ÷½øĞĞºÚ³ÔºÚÅ¶£¡");
+				prints("µ«ÊÇ±»±£»¤¶ÔÏóÒ»µ©Îª¶ñ,±£ïÚ×Ô¶¯Àë¿ª,²¢¿ÉÄÜ»á¶Ô¹ÍÖ÷½øĞĞºÚ³ÔºÚÅ¶£¡");
 				move(7, 4);
 				sprintf(genbuf, "ÄãÈ·¶¨Òª¹Í±£ïÚÃ´?");
 				if (askyn(genbuf, NA, NA) == YEA) {
-					money =
-						loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
+					money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
 					move(8, 4);
 					if (money < 10000) {
-						prints
-							("Äã»¹ÊÇÊ¡Ê¡°É£¬Ã»ÈË»á´òÄãÖ÷ÒâµÄ¡£¾ÍÄÇÃ´µãÇ®...");
+						prints("Äã»¹ÊÇÊ¡Ê¡°É£¬Ã»ÈË»á´òÄãÖ÷ÒâµÄ¡£¾ÍÄÇÃ´µãÇ®...");
 						pressanykey();
 						break;
 					}
-					guard_num =(countexp(&currentuser) / 1000) + 1 >
-						8 ? 8 : (countexp(&currentuser) / 1000) + 1;
-					prints
-						("°´ÕÕÄúÄ¿Ç°µÄÉí·İµØÎ»£¬¹ÍÓ¶%d¸ö±£ïÚ¾Í¹»ÁË¡£",
-						 guard_num);
+					guard_num =(countexp(&currentuser) / 1000) + 1 > 8 ? 8 : (countexp(&currentuser) / 1000) + 1;
+					prints("°´ÕÕÄúÄ¿Ç°µÄÉí·İµØÎ»£¬¹ÍÓ¶%d¸ö±£ïÚ¾Í¹»ÁË¡£", guard_num);
 					saveValue(currentuser.userid, MONEY_NAME, -money / 20, MAX_MONEY_NUM);
 					move(9, 4);
 					if (loadValue(currentuser.userid, "rob", 50) > 0) {
-						prints
-							("ºÙºÙ£¬ÄãÓĞ°¸µ×£¡ÄîÔÚÊÕÁËÄãÇ®µÄ·İÉÏ£¬¸Ï½ôÅÜÂ·°É...");
+						prints("ºÙºÙ£¬ÄãÓĞ°¸µ×£¡ÄîÔÚÊÕÁËÄãÇ®µÄ·İÉÏ£¬¸Ï½ôÅÜÂ·°É...");
 						pressanykey();
 						break;
 					}
 					if (loadValue(currentuser.userid, "guard", 8) > 0) {
-						prints
-							("ÄãÒÑ¾­ÓĞ±£ïÚÁË¡£Ç®ÎÒÃÇÊÕÏÂ£¬±£ïÚ²»ÄÜÔÙ¸øÁË£¬^_^");
+						prints("ÄãÒÑ¾­ÓĞ±£ïÚÁË¡£Ç®ÎÒÃÇÊÕÏÂ£¬±£ïÚ²»ÄÜÔÙ¸øÁË£¬^_^");
 						pressanykey();
 					} else {
 						saveValue(currentuser.userid, "guard", guard_num, 50);
-						prints
-							("¹ÍÓ¶±£ïÚ³É¹¦,Äã¿ÉÒÔÓĞÒ»¶ÎÊ±¼ä°²ÏíÌ«Æ½ÁË¡£");
+						prints("¹ÍÓ¶±£ïÚ³É¹¦,Äã¿ÉÒÔÓĞÒ»¶ÎÊ±¼ä°²ÏíÌ«Æ½ÁË¡£");
 						pressanykey();
 					}
 				}
@@ -5707,8 +5197,7 @@ money_shop()
 							"    ±¾Õ¾½«¼°Ê±¸ù¾İ×÷ÕßÒâÔ¸×÷³öµ÷Õû¡£\n\n"
 							"                                                   \33[1;32m±øÂíÙ¸ÀñÆ·µê\033[0m\n");
 					move(t_lines - 1, 0);
-					prints
-						("\033[1;44m Ñ¡µ¥ \033[1;46m [1]ÏÊ»¨ [2]ºØ¿¨ [Q]Àë¿ª\033[m");
+					prints("\033[1;44m Ñ¡µ¥ \033[1;46m [1]ÏÊ»¨ [2]ºØ¿¨ [Q]Àë¿ª\033[m");
 					ch2 = igetkey();
 					switch (ch2) {
 						case 'q':
@@ -5733,9 +5222,7 @@ money_shop()
 				whoTakeCharge2(7, name);
 				if (strcmp(currentuser.userid, uident)) {
 					move(6, 4);
-					prints
-						("Öµ°àÃØÊé%s½Ğ×¡ÁËÄã£¬ËµµÀ:¡°¾­Àí%sÕıÔÚ¿ª»á£¬ÓĞÊ²Ã´ÊÂ¸úÎÒËµÒ²ĞĞ¡£¡±",
-						 name,uident);
+					prints("Öµ°àÃØÊé%s½Ğ×¡ÁËÄã£¬ËµµÀ:¡°¾­Àí%sÕıÔÚ¿ª»á£¬ÓĞÊ²Ã´ÊÂ¸úÎÒËµÒ²ĞĞ¡£¡±", name,uident);
 					pressanykey();
 					break;
 				} else {
@@ -5750,8 +5237,7 @@ money_shop()
 						case '5':
 							move(12, 4);
 							if (askyn("ÄúÕæµÄÒª´ÇÖ°Âğ£¿", NA,NA) == YEA) {
-								sprintf(genbuf, "%s Òª´ÇÈ¥ÉÌ³¡¾­ÀíÖ°Îñ",
-										currentuser.userid);
+								sprintf(genbuf, "%s Òª´ÇÈ¥ÉÌ³¡¾­ÀíÖ°Îñ", currentuser.userid);
 								mail_buf(genbuf, "millionaires", genbuf);
 								move(14, 4);
 								prints("ºÃ°É£¬ÒÑ¾­·¢ĞÅ¸æÖª×Ü¹ÜÁË");
@@ -5832,10 +5318,8 @@ money_shop()
 	return 0;
 }
 
-
-	static int/*¹ÉÆ±ÏµÍ³*/
-money_stock()
-{
+/*¹ÉÆ±ÏµÍ³*/
+static int money_stock() {
 	//      moneycenter_welcome();
 	int quit = 0;
 	char ch;
@@ -5852,12 +5336,10 @@ money_stock()
 			return 0;
 		}
 
-
 		move(4, 4);
 		prints("ÇëÈ·ÈÏÄãÒÑ¾­ÔÚ"MC_BOARD"°æÔÄ¶Á¹ı±øÂíÙ¸¹ÉÊĞ¹æÔò¡£");
 		move(t_lines - 1, 0);
-		prints
-			("\033[1;44m Ñ¡µ¥ \033[1;46m [1]´«Í³°å¿é [2]ÍÆ¼ö°å¿é [3]Ö¤¼à»áÖ÷Ï¯°ì¹«ÊÒ [Q]Àë¿ª   \033[m");
+		prints("\033[1;44m Ñ¡µ¥ \033[1;46m [1]´«Í³°å¿é [2]ÍÆ¼ö°å¿é [3]Ö¤¼à»áÖ÷Ï¯°ì¹«ÊÒ [Q]Àë¿ª   \033[m");
 		ch = igetkey();
 		switch (ch) {
 			case '1':
@@ -5881,9 +5363,8 @@ money_stock()
 	return 0;
 }
 
-	static int/*¹ÉÆ±ÏµÍ³*/
-money_stock_board()
-{
+/*¹ÉÆ±ÏµÍ³*/
+static int money_stock_board() {
 	char stockname[STRLEN][MAX_STOCK_NUM];
 	char stockboard[STRLEN][MAX_STOCK_NUM];
 	int ch, i, j, quit = 0, money, count, count1;
@@ -5939,16 +5420,13 @@ money_stock_board()
 			break;
 	}//¼ÆËã¹É¼Û
 	for (i = 0; i < count; i++) {
-		stock_num[i] =
-			loadValue(currentuser.userid, stockname[i], 1000000);
+		stock_num[i] = loadValue(currentuser.userid, stockname[i], 1000000);
 	}//Í³¼Æ×Ô¼ºµÄÊıÁ¿
 	//for (i = 0; i < MAX_STOCK_NUM; i++)
 	i=0;
 	while(!quit){
-		money =
-			loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
-		persenal_stock_info(stock_num, stock_price, money, stockboard,
-				stock_board);
+		money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
+		persenal_stock_info(stock_num, stock_price, money, stockboard, stock_board);
 		move(t_lines - 1, 0);
 		prints("\033[1;44m Ñ¡µ¥ \033[1;46m [B]¹ºÂò [S]³öÊÛ [C]×ªÈÃ [Q]Àë¿ª\033[m");
 		ch = igetkey();
@@ -5963,8 +5441,7 @@ money_stock_board()
 					pressanykey();
 					break;
 				}
-				getdata(t_lines - 1, 0, "ÄúÑ¡ÔñÄÄÖ§¹ÉÆ±?[0]", genbuf, 7,
-						DOECHO, YEA);
+				getdata(t_lines - 1, 0, "ÄúÑ¡ÔñÄÄÖ§¹ÉÆ±?[0]", genbuf, 7, DOECHO, YEA);
 				getnum=atoi(genbuf);
 				if(getnum<0||getnum>count-1)
 					break; //·Ç·¨ÊäÈë
@@ -5976,8 +5453,7 @@ money_stock_board()
 					pressanykey();
 					break;
 				}
-				getdata(t_lines - 1, 0, "ÄúÒªÂò¶àÉÙ¹É?[0]", genbuf, 7,
-						DOECHO, YEA);
+				getdata(t_lines - 1, 0, "ÄúÒªÂò¶àÉÙ¹É?[0]", genbuf, 7, DOECHO, YEA);
 
 				addto_num[i] = atoi(genbuf);
 				if (!genbuf[0])
@@ -5989,8 +5465,7 @@ money_stock_board()
 					pressanykey();
 					break;
 				}
-				stock_num[i] =
-					loadValue(currentuser.userid, stockname[i], 1000000);
+				stock_num[i] = loadValue(currentuser.userid, stockname[i], 1000000);
 				if (stock_num[i] >= 1000000) {
 					move(t_lines - 2, 0);
 					prints("ÄãÒÑ¾­ÓĞºÜ¶à¹ÉÆ±ÁË,²»ÒªÔÙÂòÁË");
@@ -6016,8 +5491,7 @@ money_stock_board()
 					pressanykey();
 				}
 				move(t_lines - 2, 0);
-				sprintf(genbuf, "È·¶¨¹ºÂò %d ¹É %s Âğ£¿",
-						addto_num[i], stockname[i]);
+				sprintf(genbuf, "È·¶¨¹ºÂò %d ¹É %s Âğ£¿", addto_num[i], stockname[i]);
 				if (askyn(genbuf, NA, NA) == YEA) {
 					temp_sum = addto_num[i] * stock_price[i];
 					total_money += temp_sum;
@@ -6033,8 +5507,7 @@ money_stock_board()
 					bcache[stock_board[i]].stocknum -= addto_num[i];
 					saveValue(currentuser.userid, MONEY_NAME, -temp_sum, MAX_MONEY_NUM);
 					stock_num[i] += addto_num[i];
-					saveValue(currentuser.userid, stockname[i],
-							addto_num[i], 1000000);
+					saveValue(currentuser.userid, stockname[i], addto_num[i], 1000000);
 					if (addto_num[i]>0){
 						sprintf(genbuf, "%s½øĞĞ¹ÉÆ±½»Ò×(ÂòÈë)", currentuser.userid);
 						sprintf(buf,"%s¹ºÂòÁË%d¹É%s¹ÉÆ±(Ã¿¹É%d±øÂíÙ¸±Ò)£¬»¨·Ñ%d±øÂíÙ¸±Ò\n",
@@ -6064,8 +5537,7 @@ money_stock_board()
 					pressanykey();
 					break;
 				}
-				getdata(t_lines - 1, 0, "ÄúÑ¡ÔñÄÄÖ§¹ÉÆ±?[0]", genbuf, 7,
-						DOECHO, YEA);
+				getdata(t_lines - 1, 0, "ÄúÑ¡ÔñÄÄÖ§¹ÉÆ±?[0]", genbuf, 7, DOECHO, YEA);
 				getnum=atoi(genbuf);
 				if(getnum<0||getnum>count-1)
 					break; //·Ç·¨ÊäÈë
@@ -6078,10 +5550,8 @@ money_stock_board()
 					break;
 				}
 
-				getdata(t_lines - 1, 0, "ÄúÒªÂô¶àÉÙ¹É?[0]", genbuf, 7,
-						DOECHO, YEA);
-				stock_num[i] =
-					loadValue(currentuser.userid, stockname[i], 1000000);
+				getdata(t_lines - 1, 0, "ÄúÒªÂô¶àÉÙ¹É?[0]", genbuf, 7, DOECHO, YEA);
+				stock_num[i] = loadValue(currentuser.userid, stockname[i], 1000000);
 				addto_num[i] = atoi(genbuf);
 				if (!genbuf[0])
 					addto_num[i] = 0;
@@ -6098,24 +5568,20 @@ money_stock_board()
 				   */
 				if (stock_num[i] < addto_num[i]) {
 					move(t_lines - 2, 0);
-					prints
-						("ÄãÃ»ÓĞÕâÃ´¶à¹ÉÆ±°¡...ÊÇÄã·¸ÔÎ»¹ÊÇÎÒ·¸ÔÎ?");
+					prints("ÄãÃ»ÓĞÕâÃ´¶à¹ÉÆ±°¡...ÊÇÄã·¸ÔÎ»¹ÊÇÎÒ·¸ÔÎ?");
 					pressanykey();
 					break;
 				}
 				move(t_lines - 2, 0);
-				sprintf(genbuf, "È·¶¨³öÊÛ %d ¹É %s Âğ£¿",
-						addto_num[i], stockname[i]);
+				sprintf(genbuf, "È·¶¨³öÊÛ %d ¹É %s Âğ£¿", addto_num[i], stockname[i]);
 				if (askyn(genbuf, NA, NA) == YEA) {
 					addto_num[i] *= -1;
 					temp_sum = addto_num[i] * stock_price[i];
 					stock_num[i] += addto_num[i];
-					saveValue(currentuser.userid, MONEY_NAME, temp_sum/100-temp_sum,
-							MAX_MONEY_NUM);
+					saveValue(currentuser.userid, MONEY_NAME, temp_sum/100-temp_sum, MAX_MONEY_NUM);
 					whoTakeCharge(6, slow);//slowaction
 					saveValue(slow, MONEY_NAME, -temp_sum/100, MAX_MONEY_NUM);
-					saveValue(currentuser.userid, stockname[i],
-							addto_num[i], 1000000);
+					saveValue(currentuser.userid, stockname[i], addto_num[i], 1000000);
 					total_money += temp_sum-temp_sum/100;
 					bcache[stock_board[i]].stocknum -= addto_num[i];
 					temp_sum = bcache[stock_board[i]].score;
@@ -6163,23 +5629,19 @@ money_stock_board()
 					else if (!seek_in_file(DIR_MC "mingren", uident)) {
 						clear();
 						move(t_lines - 2, 0);
-						prints
-							("¶Ô²»Æğ£¬Ö¤¼à»á²»ÔÊĞí»ÆÂí¹ÓÏòÍâ×ªÈÃ¹ÉÆ±¡£");
+						prints("¶Ô²»Æğ£¬Ö¤¼à»á²»ÔÊĞí»ÆÂí¹ÓÏòÍâ×ªÈÃ¹ÉÆ±¡£");
 						pressreturn();
 						break;
 					}
 				}
-				getdata(t_lines - 1, 0, "ÄúÑ¡ÔñÄÄÖ§¹ÉÆ±?[0]", genbuf, 7,
-						DOECHO, YEA);
+				getdata(t_lines - 1, 0, "ÄúÑ¡ÔñÄÄÖ§¹ÉÆ±?[0]", genbuf, 7, DOECHO, YEA);
 				getnum=atoi(genbuf);
 				if(getnum<0||getnum>count-1)
 					break; //·Ç·¨ÊäÈë
 				else
 					i=getnum;
-				getdata(t_lines - 1, 0, "ÄúÒª×ªÈÃ¶àÉÙ¹É?[0]", genbuf, 7,
-						DOECHO, YEA);
-				stock_num[i] =
-					loadValue(currentuser.userid, stockname[i], 1000000);
+				getdata(t_lines - 1, 0, "ÄúÒª×ªÈÃ¶àÉÙ¹É?[0]", genbuf, 7, DOECHO, YEA);
+				stock_num[i] = loadValue(currentuser.userid, stockname[i], 1000000);
 				addto_num[i] = atoi(genbuf);
 				if (addto_num[i] < 0){
 					move(t_lines - 2, 0);
@@ -6193,19 +5655,15 @@ money_stock_board()
 				}
 				if (stock_num[i] < addto_num[i]) {
 					move(t_lines - 2, 0);
-					prints
-						("ÄãÃ»ÓĞÕâÃ´¶à¹ÉÆ±°¡...ÊÇÄã·¸ÔÎ»¹ÊÇÎÒ·¸ÔÎ?");
+					prints("ÄãÃ»ÓĞÕâÃ´¶à¹ÉÆ±°¡...ÊÇÄã·¸ÔÎ»¹ÊÇÎÒ·¸ÔÎ?");
 					pressanykey();
 					break;
 				}
 
-				sprintf(genbuf, "È·¶¨×ªÕË¸ø %s %d %sÂğ£¿",
-						uident, addto_num[i], stockname[i]);
+				sprintf(genbuf, "È·¶¨×ªÕË¸ø %s %d %sÂğ£¿", uident, addto_num[i], stockname[i]);
 				if (askyn(genbuf, NA, NA) == YEA){
-					saveValue(currentuser.userid, stockname[i],
-							-addto_num[i], 1000000);
-					saveValue(uident, stockname[i],
-							addto_num[i], 1000000);
+					saveValue(currentuser.userid, stockname[i], -addto_num[i], 1000000);
+					saveValue(uident, stockname[i], addto_num[i], 1000000);
 					sprintf(genbuf, "ÏòÄã×ªÈÃÁË%d¹É¹ÉÆ±",addto_num[i]);
 					sprintf(title, "ÄúµÄÅóÓÑ¸øÄúËÍ%s¹ÉÆ±À´ÁË", stockname[i]);
 					mail_buf(genbuf, uident, title);
@@ -6234,8 +5692,7 @@ money_stock_board()
 		limit_cpu();
 	}
 	money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
-	persenal_stock_info(stock_num, stock_price,
-			money, stockboard, stock_board);
+	persenal_stock_info(stock_num, stock_price, money, stockboard, stock_board);
 	move(t_lines - 2, 0);
 	clrtobot();
 	if (total_sum > 0)
@@ -6249,38 +5706,30 @@ money_stock_board()
 	return 0;
 }
 
-	static void /*ÏÔÊ¾money*/
-money_show_stat(char *position)
-{
+/*ÏÔÊ¾money*/
+static void money_show_stat(char *position) {
 	int money, credit;
 	money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
 	credit = loadValue(currentuser.userid, CREDIT_NAME, MAX_MONEY_NUM);
 	clear();
 	move(2, 0);
 	prints("ÄúÉíÉÏ´ø×Å \033[1;31m%d\033[m ±øÂíÙ¸±Ò£¬", money);
-	prints("´æ¿î \033[1;31m%d\033[m ±øÂíÙ¸±Ò¡£µ±Ç°Î»ÖÃ \033[1;33m%s\033[m",
-			credit, position);
+	prints("´æ¿î \033[1;31m%d\033[m ±øÂíÙ¸±Ò¡£µ±Ç°Î»ÖÃ \033[1;33m%s\033[m", credit, position);
 	move(3, 0);
-	prints
-		("\033[1m--------------------------------------------------------------------------------\033[m");
+	prints("\033[1m--------------------------------------------------------------------------------\033[m");
 }
 
-	static void /*ÏÔÊ¾µ±Ç°Î»ÖÃ*/
-nomoney_show_stat(char *position)
-{
+/*ÏÔÊ¾µ±Ç°Î»ÖÃ*/
+static void nomoney_show_stat(char *position) {
 	clear();
 	move(2, 0);
-	prints
-		("\033[1;32m»¶Ó­¹âÁÙ±øÂíÙ¸½ğÈÚÖĞĞÄ£¬µ±Ç°Î»ÖÃÊÇ\033[0m \033[1;33m%s\033[0m",
-		 position);
+	prints("\033[1;32m»¶Ó­¹âÁÙ±øÂíÙ¸½ğÈÚÖĞĞÄ£¬µ±Ç°Î»ÖÃÊÇ\033[0m \033[1;33m%s\033[0m", position);
 	move(3, 0);
-	prints
-		("\033[1m--------------------------------------------------------------------------------\033[m");
+	prints("\033[1m--------------------------------------------------------------------------------\033[m");
 }
 
-	static int /*¶Ä³¡´óÌü*/
-money_gamble()
-{
+/*¶Ä³¡´óÌü*/
+static int money_gamble() {
 	int ch;
 	int quit = 0;
 	char uident[IDLEN + 1];
@@ -6292,8 +5741,7 @@ money_gamble()
 		move(6, 4);
 		prints("±øÂíÙ¸¶Ä³¡×î½üÉúÒâºì»ğ£¬´ó¼Ò¾¡ĞË°¡");
 		move(t_lines - 1, 0);
-		prints
-			("\033[1;44m Ñ¡µ¥ \033[1;46m [1]÷»±¦ [2]777 [3]²ÂÊı×Ö [4]½ğÆË¿ËËó¹ş [5]¶íÂŞË¹ÂÖÅÌ [6]¾­ÀíÊÒ [Q]Àë¿ª\033[m");
+		prints("\033[1;44m Ñ¡µ¥ \033[1;46m [1]÷»±¦ [2]777 [3]²ÂÊı×Ö [4]½ğÆË¿ËËó¹ş [5]¶íÂŞË¹ÂÖÅÌ [6]¾­ÀíÊÒ [Q]Àë¿ª\033[m");
 		ch = igetkey();
 		switch (ch) {
 			case '1':
@@ -6320,20 +5768,16 @@ money_gamble()
 				whoTakeCharge(3, uident);
 				if (strcmp(currentuser.userid, uident)) {
 					move(6, 4);
-					prints
-						("ÃØÊé%s³åÄãºÈµÀ:¡°ËÀ¶Ä¹í£¬ÓÖÊä¹âÀ²£¿£¡ÀÏ°å%s²»»áÔÙ½èÇ®¸øÄãÁË¡£¡±",
-						 name,uident);
+					prints("ÃØÊé%s³åÄãºÈµÀ:¡°ËÀ¶Ä¹í£¬ÓÖÊä¹âÀ²£¿£¡ÀÏ°å%s²»»áÔÙ½èÇ®¸øÄãÁË¡£¡±", name,uident);
 					pressanykey();
 					break;
 				} else {
 					move(6, 4);
 					prints("ÇëÑ¡Ôñ²Ù×÷´úºÅ:");
 					move(7, 6);
-					prints
-						("1. ·¢·ÅVIP¿¨                  2. ÊÕ»ØVIP¿¨");
+					prints("1. ·¢·ÅVIP¿¨                  2. ÊÕ»ØVIP¿¨");
 					move(8, 6);
-					prints
-						("3. VIP¿Í»§                    4. ·¢ÑûÇëº¯");
+					prints("3. VIP¿Í»§                    4. ·¢ÑûÇëº¯");
 					move(9, 6);
 					prints("5. ½ğÅèÏ´ÊÖ                   6. ÍË³ö");
 					ch = igetkey();
@@ -6349,22 +5793,15 @@ money_gamble()
 								pressanykey();
 								break;
 							}
-							if (seek_in_file
-									(DIR_MC "gamble_VIP", uident)) {
-								prints
-									("¸Ã¿Í»§ÒÑ¾­ÓµÓĞ¶Ä³¡VIP¿¨¡£");
+							if (seek_in_file(DIR_MC "gamble_VIP", uident)) {
+								prints("¸Ã¿Í»§ÒÑ¾­ÓµÓĞ¶Ä³¡VIP¿¨¡£");
 								pressanykey();
 								break;
 							}
 							if (askyn("È·¶¨Âğ£¿", NA, NA) == YEA) {
-								addtofile(DIR_MC "gamble_VIP",
-										uident);
-								sprintf(genbuf,
-										"%s ÏòÄã·¢·Å±øÂíÙ¸¶Ä³¡VIP¿¨",
-										currentuser.userid);
-								mail_buf
-									("×ğ¾´µÄ¿Í»§£º »¶Ó­¶à¶à¹âÁÙ±øÂíÙ¸¶Ä³¡£¬¹§×£·¢²Æ!",
-									 uident, genbuf);
+								addtofile(DIR_MC "gamble_VIP", uident);
+								sprintf(genbuf, "%s ÏòÄã·¢·Å±øÂíÙ¸¶Ä³¡VIP¿¨", currentuser.userid);
+								mail_buf("×ğ¾´µÄ¿Í»§£º »¶Ó­¶à¶à¹âÁÙ±øÂíÙ¸¶Ä³¡£¬¹§×£·¢²Æ!", uident, genbuf);
 								move(14, 4);
 								prints("·¢·ÅÍê³É¡£");
 								sprintf(buf, "¸ø%s·¢·Å¶Ä³¡VIP¿¨",uident);
@@ -6384,22 +5821,15 @@ money_gamble()
 								pressanykey();
 								break;
 							}
-							if (!seek_in_file
-									(DIR_MC "gamble_VIP", uident)) {
+							if (!seek_in_file (DIR_MC "gamble_VIP", uident)) {
 								prints("¸Ã¿Í»§Ã»ÓĞ¶Ä³¡VIP¿¨¡£");
 								pressanykey();
 								break;
 							}
 							if (askyn("È·¶¨Âğ£¿", NA, NA) == YEA) {
-								del_from_file(DIR_MC
-										"gamble_VIP",
-										uident);
-								sprintf(genbuf,
-										"%s ÊÕ»ØÁËÄãµÄ±øÂíÙ¸¶Ä³¡VIP¿¨",
-										currentuser.userid);
-								mail_buf
-									("Çî¹í£¬Ã»Ç®ÁË»¹VIP°¡£¿ÏÂ±²×Ó°É£¡",
-									 uident, genbuf);
+								del_from_file(DIR_MC "gamble_VIP", uident);
+								sprintf(genbuf, "%s ÊÕ»ØÁËÄãµÄ±øÂíÙ¸¶Ä³¡VIP¿¨", currentuser.userid);
+								mail_buf("Çî¹í£¬Ã»Ç®ÁË»¹VIP°¡£¿ÏÂ±²×Ó°É£¡", uident, genbuf);
 								move(14, 4);
 								prints("¿¨ÒÑÊÕ»Ø¡£");
 								sprintf(buf, "ÊÕ»Ø%sµÄ¶Ä³¡VIP¿¨",uident);
@@ -6441,21 +5871,11 @@ money_gamble()
 								break;
 							}
 							if (askyn("È·¶¨Âğ£¿", NA, NA) == YEA) {
-								saveValue(uident, "invitation",
-										1, 1);
-								saveValue(currentuser.userid,
-										"last_invitation",
-										-2000000000,
-										2000000000);
-								saveValue(currentuser.userid,
-										"last_invitation",
-										time(0), 2000000000);
-								sprintf(genbuf,
-										"%s ¸øÄú·¢À´ÁË¶Ä³¡ÑûÇëº¯",
-										currentuser.userid);
-								mail_buf
-									("Äú½«ÓĞ»ú»á»ñµÃ20Íò´ó½±£¡µ«ÊÇ£¬ÄúÓĞ¸ü´óµÄ»ú»áÎª´ËËÍÃü¡££­£­ĞÄÌø¾¡ÔÚ±øÂíÙ¸¶Ä³¡¶íÂŞË¹ÂÖÅÌ¶Ä£¡",
-									 uident, genbuf);
+								saveValue(uident, "invitation", 1, 1);
+								saveValue(currentuser.userid, "last_invitation", -2000000000, 2000000000);
+								saveValue(currentuser.userid, "last_invitation", time(0), 2000000000);
+								sprintf(genbuf, "%s ¸øÄú·¢À´ÁË¶Ä³¡ÑûÇëº¯", currentuser.userid);
+								mail_buf("Äú½«ÓĞ»ú»á»ñµÃ20Íò´ó½±£¡µ«ÊÇ£¬ÄúÓĞ¸ü´óµÄ»ú»áÎª´ËËÍÃü¡££­£­ĞÄÌø¾¡ÔÚ±øÂíÙ¸¶Ä³¡¶íÂŞË¹ÂÖÅÌ¶Ä£¡", uident, genbuf);
 								move(14, 4);
 								prints("ÑûÇëº¯·¢³öÈ¥ÁË¡£");
 								sprintf(buf, "¸ø%s·¢·Å¶Ä³¡ÑûÇëº¯",uident);
@@ -6466,9 +5886,7 @@ money_gamble()
 							break;
 						case '5':
 							move(12, 4);
-							if (askyn
-									("ÄúÕæµÄÒª½ğÅèÏ´ÊÖÂğ£¿", NA,
-									 NA) == YEA) {
+							if (askyn ("ÄúÕæµÄÒª½ğÅèÏ´ÊÖÂğ£¿", NA, NA) == YEA) {
 								/*	del_from_file(MC_BOSS_FILE,
 									"gambling");
 									sprintf(genbuf,
@@ -6481,8 +5899,7 @@ money_gamble()
 									("ºÃ°É£¬¼ÈÈ»ÄãÒâÒÑ¾ö£¬µÜĞÖÃÇÖ»ÓĞËµÔÙ¼ûÁË£¡");
 									quit = 1;
 									*/
-								sprintf(genbuf, "%s Òª´ÇÈ¥¶Ä³¡¾­ÀíÖ°Îñ",
-										currentuser.userid);
+								sprintf(genbuf, "%s Òª´ÇÈ¥¶Ä³¡¾­ÀíÖ°Îñ", currentuser.userid);
 								mail_buf(genbuf, "millionaires", genbuf);
 								move(14, 4);
 								prints("ºÃ°É£¬ÒÑ¾­·¢ĞÅ¸æÖª×Ü¹ÜÁË");
@@ -6504,9 +5921,8 @@ money_gamble()
 	return 0;
 }
 
-	static int/*¶Ä²©-- 777*/
-money_777()
-{
+/*¶Ä²©-- 777*/
+static int money_777() {
 	int ch;
 	int quit = 0;
 	int bid;
@@ -6528,18 +5944,15 @@ money_777()
 		move(7, 4);
 		prints("RRR 1:10   BBB 1:20   666 1:40   677 1:60   --- 1:1");
 		move(8, 4);
-		prints
-			("         777 1:80 ÇÒÓĞ»ú»áÓ®µÃµ±Ç°ÀÛ»ı»ù½ğµÄÒ»°ë         ");
+		prints("         777 1:80 ÇÒÓĞ»ú»áÓ®µÃµ±Ç°ÀÛ»ı»ù½ğµÄÒ»°ë         ");
 		move(9, 4);
-		prints("±øÂíÙ¸Ä¿Ç°ÀÛ»ı½±½ğÊı: %d£¬ÏëÓ®´ó½±Ã´£¿Ñ¹ 100 ¿é¾ÍĞĞÅ¶¡£",
-				utmpshm->mc.prize777);
+		prints("±øÂíÙ¸Ä¿Ç°ÀÛ»ı½±½ğÊı: %d£¬ÏëÓ®´ó½±Ã´£¿Ñ¹ 100 ¿é¾ÍĞĞÅ¶¡£", utmpshm->mc.prize777);
 		r = random() % 40;
 		if (r < 1)
 			money_police();
 
 		move(t_lines - 1, 0);
-		prints
-			("\033[1;44m Ñ¡µ¥ \033[1;46m [1] Ñ¹30 [2] Ñ¹100 [Q]Àë¿ª                                          \033[m");
+		prints("\033[1;44m Ñ¡µ¥ \033[1;46m [1] Ñ¹30 [2] Ñ¹100 [Q]Àë¿ª                                          \033[m");
 		ch = igetkey();
 		switch (ch) {
 			case '1':
@@ -6592,15 +6005,13 @@ money_777()
 			millionairesrec(title, buf, "¶Ä²©777");
 
 			move(12, 4);
-			prints
-				("ÊäÁË£¬¶Ä×¢°Ù·ÖÖ®°ËÊ®¹öÈë±øÂíÙ¸ÀÛ»ı»ù½ğ£¬Ôì¸£ËûÈËµÈÓÚÔì¸£×Ô¼º¡£");
+			prints("ÊäÁË£¬¶Ä×¢°Ù·ÖÖ®°ËÊ®¹öÈë±øÂíÙ¸ÀÛ»ı»ù½ğ£¬Ôì¸£ËûÈËµÈÓÚÔì¸£×Ô¼º¡£");
 			limit_cpu();
 			pressanykey();
 			continue;
 		}
 		if (winrate > 0) {
-			saveValue(currentuser.userid, MONEY_NAME, bid * winrate,
-					MAX_MONEY_NUM);
+			saveValue(currentuser.userid, MONEY_NAME, bid * winrate, MAX_MONEY_NUM);
 			move(12, 4);
 			prints("ÄúÓ®ÁË %d Ôª", bid * (winrate - 1));
 			utmpshm->mc.prize777 -= bid * (winrate - 1);
@@ -6610,8 +6021,7 @@ money_777()
 			millionairesrec(title, buf, "¶Ä²©777");
 		}
 		if (winrate == 81 && bid == 100) {
-			saveValue(currentuser.userid, MONEY_NAME,
-					utmpshm->mc.prize777 / 2, MAX_MONEY_NUM);
+			saveValue(currentuser.userid, MONEY_NAME, utmpshm->mc.prize777 / 2, MAX_MONEY_NUM);
 			utmpshm->mc.prize777 /= 2;
 			move(13, 4);
 			prints("¹§Ï²Äú»ñµÃ±øÂíÙ¸´ó½±£¡");
@@ -6625,9 +6035,8 @@ money_777()
 	return 0;
 }
 
-	static int/*¶Ä²©--777*/
-calc777(int t1, int t2, int t3)
-{
+/*¶Ä²©--777*/
+static int calc777(int t1, int t2, int t3) {
 	if ((t1 % 2 == 0) && (t2 % 2 == 0) && (t3 % 2 == 0))
 		return 2;
 	if ((t1 % 2 == 0) && (t2 % 2 == 0) && (t3 == 1))
@@ -6653,9 +6062,8 @@ calc777(int t1, int t2, int t3)
 	return 0;
 }
 
-	static int/*¶Ä²©--²ÂÊı×Ö*/
-guess_number()
-{
+/*¶Ä²©--²ÂÊı×Ö*/
+static int guess_number() {
 	int quit = 0;
 	int ch, num, money;
 	int a, b, c;
@@ -6677,8 +6085,7 @@ guess_number()
 		move(6, 4);
 		prints("mAnB±íÊ¾ÓĞm¸öÊı×Ö²Â¶ÔÇÒÎ»ÖÃÒ²¶Ô,n¸öÊı×Ö²Â¶Ôµ«Î»ÖÃ²»¶Ô");
 		move(t_lines - 1, 0);
-		prints
-			("\033[1;44m Ñ¡µ¥ \033[1;46m [1]ÏÂ×¢ [Q]Àë¿ª                                                 \033[m");
+		prints("\033[1;44m Ñ¡µ¥ \033[1;46m [1]ÏÂ×¢ [Q]Àë¿ª                                                 \033[m");
 		if (random() % 40 < 1)
 			money_police();
 		ch = igetkey();
@@ -6698,14 +6105,10 @@ guess_number()
 					break;
 				}
 				//num = 100;
-				sprintf(genbuf,
-						"ÄúÑ¹ÁË \033[1;31m%d\033[m ±øÂíÙ¸±Ò£¬È·¶¨Ã´£¿",
-						num);
+				sprintf(genbuf, "ÄúÑ¹ÁË \033[1;31m%d\033[m ±øÂíÙ¸±Ò£¬È·¶¨Ã´£¿", num);
 				move(9, 4);
 				if (askyn(genbuf, YEA, NA) == YEA) {
-					money =
-						loadValue(currentuser.userid, MONEY_NAME,
-								MAX_MONEY_NUM);
+					money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
 					if (money < num) {
 						move(11, 4);
 						prints("È¥È¥È¥£¬Ã»ÄÇÃ´¶àÇ®µ·Ê²Ã´ÂÒ         \n");
@@ -6714,8 +6117,7 @@ guess_number()
 					}
 					//if (num > 999)
 					//num = 999;
-					saveValue(currentuser.userid, MONEY_NAME, -num,
-							MAX_MONEY_NUM);
+					saveValue(currentuser.userid, MONEY_NAME, -num, MAX_MONEY_NUM);
 					do {
 						itoa(random() % 10000, ans);
 						for (a = 0; a < 3; a++)
@@ -6726,8 +6128,7 @@ guess_number()
 					for (count = 1; count < 7; count++) {
 						do {
 							move(10, 4);
-							prints
-								("ÇëÊäÈëËÄ¸ö²»ÖØ¸´µÄÊı×Ö");
+							prints("ÇëÊäÈëËÄ¸ö²»ÖØ¸´µÄÊı×Ö");
 							getdata(11, 4, "Çë²Â[q - ÍË³ö] ¡ú ", genbuf, 5, DOECHO, YEA);
 							if (genbuf[0] == 'q' || genbuf[0] == 'Q') {
 								utmpshm->mc.prize777 += num;
@@ -6754,9 +6155,7 @@ guess_number()
 							}
 						} while (!genbuf[0]);
 						move(count + 13, 0);
-						prints("  µÚ %2d ´Î£º %s  ->  %dA %dB ",
-								count, genbuf, an(genbuf, ans),
-								bn(genbuf, ans));
+						prints("  µÚ %2d ´Î£º %s  ->  %dA %dB ", count, genbuf, an(genbuf, ans), bn(genbuf, ans));
 						if (an(genbuf, ans) == 4)
 							break;
 						sleep(1);
@@ -6764,12 +6163,8 @@ guess_number()
 
 					move(12, 4);
 					if (count > 6) {
-						sprintf(genbuf,
-								"ÄãÊäÁËßÏ£¡ÕıÈ·´ğ°¸ÊÇ %s£¬ÏÂ´ÎÔÙ¼ÓÓÍ°É!!",
-								ans);
-						sprintf(genbuf,
-								"\033[1;31m¿ÉÁ¯Ã»²Âµ½£¬ÊäÁË %d Ôª£¡\033[m",
-								num);
+						sprintf(genbuf, "ÄãÊäÁËßÏ£¡ÕıÈ·´ğ°¸ÊÇ %s£¬ÏÂ´ÎÔÙ¼ÓÓÍ°É!!", ans);
+						sprintf(genbuf, "\033[1;31m¿ÉÁ¯Ã»²Âµ½£¬ÊäÁË %d Ôª£¡\033[m", num);
 						//utmpshm->mc.prize777 += num;
 
 						sprintf(title, "%s²ÎÓë¶Ä²©(²ÂÊı×Ö)(Êä)", currentuser.userid);
@@ -6782,13 +6177,9 @@ guess_number()
 						int oldmoney = num;
 						num *= bet[count];
 						if (num - oldmoney > 0) {
-							sprintf(genbuf,
-									"¹§Ï²£¡×Ü¹²²ÂÁË %d ´Î£¬¾»×¬½±½ğ %d Ôª",
-									count, num);
+							sprintf(genbuf, "¹§Ï²£¡×Ü¹²²ÂÁË %d ´Î£¬¾»×¬½±½ğ %d Ôª", count, num);
 							num += oldmoney;
-							saveValue(currentuser.userid,
-									MONEY_NAME, num,
-									MAX_MONEY_NUM);
+							saveValue(currentuser.userid, MONEY_NAME, num, MAX_MONEY_NUM);
 							win = 1;
 
 							sprintf(title, "%s²ÎÓë¶Ä²©(²ÂÊı×Ö)(Ó®)", currentuser.userid);
@@ -6796,22 +6187,14 @@ guess_number()
 							millionairesrec(title, buf, "¶Ä²©²ÂÊı×Ö");
 
 						} else if (num - oldmoney == 0) {
-							sprintf(genbuf,
-									"°¦¡«¡«×Ü¹²²ÂÁË %d ´Î£¬Ã»ÊäÃ»Ó®£¡",
-									count);
-							saveValue(currentuser.userid,
-									MONEY_NAME, num,
-									MAX_MONEY_NUM);
+							sprintf(genbuf, "°¦¡«¡«×Ü¹²²ÂÁË %d ´Î£¬Ã»ÊäÃ»Ó®£¡", count);
+							saveValue(currentuser.userid, MONEY_NAME, num, MAX_MONEY_NUM);
 						} else {
-							utmpshm->mc.prize777 +=
-								oldmoney;
+							utmpshm->mc.prize777 += oldmoney;
 							if (utmpshm->mc.prize777 > MAX_MONEY_NUM)
 								utmpshm->mc.prize777 = MAX_MONEY_NUM;
 
-							sprintf(genbuf,
-									"°¡¡«¡«×Ü¹²²ÂÁË %d ´Î£¬ÅâÇ® %d Ôª£¡",
-									count,
-									oldmoney - money);
+							sprintf(genbuf, "°¡¡«¡«×Ü¹²²ÂÁË %d ´Î£¬ÅâÇ® %d Ôª£¡", count, oldmoney - money);
 						}
 					}
 					prints("½á¹û: %s", genbuf);
@@ -6829,10 +6212,7 @@ guess_number()
 	return 0;
 }
 
-	static int
-an(a, b)
-	char *a, *b;
-{
+static int an(char *a, char *b) {
 	int i, k = 0;
 	for (i = 0; i < 4; i++)
 		if (*(a + i) == *(b + i))
@@ -6840,10 +6220,7 @@ an(a, b)
 	return k;
 }
 
-	static int
-bn(a, b)
-	char *a, *b;
-{
+static int bn(char *a, char *b) {
 	int i, j, k = 0;
 	for (i = 0; i < 4; i++)
 		for (j = 0; j < 4; j++)
@@ -6852,11 +6229,7 @@ bn(a, b)
 	return (k - an(a, b));
 }
 
-	static void
-itoa(i, a)
-	int i;
-	char *a;
-{
+static void itoa(int i, char *a) {
 	int j, k, l = 1000;
 
 	for (j = 3; j > 0; j--) {
@@ -6868,12 +6241,10 @@ itoa(i, a)
 	}
 	a[3] = i + 48;
 	a[4] = 0;
-
 }
 
-	static int/*¾¯Êğ--¾¯²ìÁÙ¼ì*/
-money_police()
-{
+/*¾¯Êğ--¾¯²ìÁÙ¼ì*/
+static int money_police() {
 	char ch;
 	char buf[200], title[STRLEN];
 	int money = 0, quit = 1, check_num;
@@ -6883,42 +6254,13 @@ money_police()
 	money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
 	saveValue(currentuser.userid, MONEY_NAME, -money, MAX_MONEY_NUM);
 	if (random() % 4 > 0) {
-		sprintf
-			(buf,
-			 "\033[1;41m ÏµÍ³ÁÙ¼ì \033[1;46m ÇëÊäÈë×Ö·û:%c        \033[m",
-			 check_num);
+		sprintf(buf, "\033[1;41m ÏµÍ³ÁÙ¼ì \033[1;46m ÇëÊäÈë×Ö·û:%c        \033[m", check_num);
 	}
 	//else if (random() % 3 == 0)
 	else {
 		check_num = 0;
-		sprintf(buf,
-				"\033[1;41m ÏµÍ³ÁÙ¼ì \033[1;46m ÇëÊäÈëÄãµÄID(×¢Òâ´óĞ¡Ğ´!):        \033[m");
+		sprintf(buf, "\033[1;41m ÏµÍ³ÁÙ¼ì \033[1;46m ÇëÊäÈëÄãµÄID(×¢Òâ´óĞ¡Ğ´!):        \033[m");
 	}
-	/*else {
-	  mode = 1;
-	  color = (random() % 7) + 31;
-	  snprintf(buf, 200,
-	  "\033[1;41m ÏµÍ³ÁÙ¼ì \033[1;46m \033[1;%dmÎÄ×ÖÑÕÉ«\033[1;37m:[\033[1;31mºì\033[1;32mÂÌ\033[1;33m»Æ\033[1;34mÀ¶\033[1;35m×Ï\033[1;36mÇà\033[1;37m°×]\033[m",
-	  color);
-	  getdata(t_lines - 1, 4, buf, genbuf, 5, DOECHO, YEA);
-	  if (color == 31 && (!strcmp("ºì", genbuf) || !strcmp("red", genbuf)))
-	  quit = 0;
-	  if (color == 32 && (!strcmp("ÂÌ", genbuf) || !strcmp("green", genbuf)))
-	  quit = 0;
-	  if (color == 33 && (!strcmp("»Æ", genbuf) || !strcmp("yellow", genbuf)))
-	  quit = 0;
-	  if (color == 34 && (!strcmp("À¶", genbuf) || !strcmp("blue", genbuf)))
-	  quit = 0;
-	  if (color == 35 && (!strcmp("×Ï", genbuf) || !strcmp("purple", genbuf)))
-	  quit = 0;
-	  if (color == 36 && (!strcmp("Çà", genbuf) || !strcmp("cyan", genbuf)))
-	  quit = 0;
-	  if (color == 37 && (!strcmp("°×", genbuf) || !strcmp("white", genbuf)))
-	  quit = 0;
-	  quit = 0;
-	  }
-	  */
-	//if (mode == 0) {
 	getdata(t_lines - 1, 4, buf, genbuf, 13, DOECHO, YEA);
 	if (check_num > 0) {
 		ch = genbuf[0];
@@ -6945,8 +6287,7 @@ money_police()
 	} else {
 		saveValue(currentuser.userid, MONEY_NAME, money, MAX_MONEY_NUM);
 		move(t_lines - 2, 4);
-		sprintf(buf, "Äã¾ÍÊÇ´óÃû¶¦¶¦µÄ%s°¡,¼ÌĞø¼ÌĞø...",
-				currentuser.userid);
+		sprintf(buf, "Äã¾ÍÊÇ´óÃû¶¦¶¦µÄ%s°¡,¼ÌĞø¼ÌĞø...", currentuser.userid);
 		prints("%s", buf);
 		pressanykey();
 
@@ -6954,11 +6295,15 @@ money_police()
 	return 0;
 }
 
-	static void/*¸öÈË¹ÉÆ±ÏµÍ³*/
-persenal_stock_info(int stock_num[MAX_STOCK_NUM],
-		int stock_price[MAX_STOCK_NUM], int money,
-		char stockboard[STRLEN][MAX_STOCK_NUM], int stock_board[MAX_STOCK_NUM])
-{
+/*¸öÈË¹ÉÆ±ÏµÍ³*/
+/*
+int stock_num[MAX_STOCK_NUM],
+int stock_price[MAX_STOCK_NUM],
+int money,
+char stockboard[STRLEN][MAX_STOCK_NUM],
+int stock_board[MAX_STOCK_NUM]
+*/
+static void persenal_stock_info(int stock_num[], int stock_price[], int money, char *stockboard[], int stock_board[]) {
 	int i, count;
 	count = listfilecontent(MC_STOCK_BOARDS);
 	clear();
@@ -6974,8 +6319,7 @@ persenal_stock_info(int stock_num[MAX_STOCK_NUM],
 		  65 + i, stock_price[i], stock_num[i], stockboard[i],
 		  bcache[stock_board[i]].stocknum);
 		  */
-		sprintf(genbuf,
-				"±àºÅ:%2d ¼ÛÇ®:%-5d ³ÖÓĞÁ¿:%-7d °æÃû:%-18s ÏÖÓĞ¹ÉÆ±Êı:%d",
+		sprintf(genbuf, "±àºÅ:%2d ¼ÛÇ®:%-5d ³ÖÓĞÁ¿:%-7d °æÃû:%-18s ÏÖÓĞ¹ÉÆ±Êı:%d",
 				i, stock_price[i], stock_num[i], stockboard[i], bcache[stock_board[i]].stocknum);
 		if (seek_in_file(MC_STOCK_STOPBUY, stockboard[i]))
 			prints("\033[1;30m%s\033[m", genbuf);
@@ -6983,294 +6327,6 @@ persenal_stock_info(int stock_num[MAX_STOCK_NUM],
 			prints("%s", genbuf);
 	}
 }
-/*
-   static void//¸öÈË¹ÉÆ±ÏµÍ³
-   persenal_stock_info2(int stock_num[MAX_STOCK_NUM2],
-   int stock_price[MAX_STOCK_NUM2], int money,
-   char *stockboard[], int stock_board[MAX_STOCK_NUM2])
-   {
-   int i;
-   clear();
-   move(0, 4);
-   prints("±øÂíÙ¸¹ÉÊĞÊÔÓªÒµ...ÒÔÏÂÊÇÄãµÄ¸÷¹É³ÖÓĞÊı,Ã¿¹É¹ºÂòÉÏÏŞ50,000¹É");
-   move(1, 4);
-   sprintf(genbuf, "Ä¿Ç°ÄãµÄ±øÂíÙ¸±Ò½ğ¶îÎª%d", money);
-   prints("%s", genbuf);
-   for (i = 0; i < MAX_STOCK_NUM2; i++) {
-   move(3 + i, 0);
-   sprintf(genbuf,
-   "±àºÅ:%2d Stock%c¼ÛÇ®:%d\t³ÖÓĞÁ¿:%d\t°æÃû:%-10sÏÖÓĞ¹ÉÆ±Êı:%d",i,
-   65 + i, stock_price[i], stock_num[i], stockboard[i],
-   bcache[stock_board[i]].stocknum);
-   prints("%s", genbuf);
-   }
-   }*/
-
-/*-------------Å×Æú¾ÉµÄºØ¿¨ÏµÍ³-------macintosh 20051203------*/
-/*static int
-  shop_card_show(char *card[][2], int group)
-  {
-  int key, i, j, x = 0, y = 0;
-  int global_x = 0, local_x = 0, limit = 0, base = 0;
-  y = 1;
-  clear();
-  move(5, 4);
-  prints("±¾µêºØ¿¨¾ù·Ç±¾µêÖÆ×÷£¬²¿·ÖºØ¿¨ÓÉÓÚÖÖÖÖÔ­Òò£¬Î´ÄÜ±êÃ÷×÷Õß¡£\n");
-  move(6, 4);
-  prints("ÈçºØ¿¨´´×÷Õß¶ÔÆä×÷Æ·ÓÃÓÚ±¾µê³ÖÓĞÒìÒé£¬ÇëÓë±¾Õ¾´ó¸»ÎÌ×Ü¹ÜÁªÏµ¡£\n");
-  move(7, 4);
-  prints("±¾Õ¾½«¼°Ê±¸ù¾İ×÷ÕßÒâÔ¸×÷³öµ÷Õû¡£\n");
-  move(9, 20);
-  prints("±øÂíÙ¸ºØ¿¨µê \n");
-  pressanykey();
-  while (y) {
-  clear();
-  nomoney_show_stat("±øÂíÙ¸ºØ¿¨ÉÌµê");
-
-  if (y == 1) {
-  for (i = 0; i < group; i++) {
-  move(5 + i, 4);
-  if (i == x)
-  sprintf(genbuf,
-  "\033[1;41m[+]> %s\033[0m",
-  card[i][0]);
-  else
-  sprintf(genbuf,
-  "\033[1;43m[+]  %s\033[0m",
-  card[i][0]);
-  prints("%s", genbuf);
-  }
-  } else if (y == 2) {
-  i = 0;
-  for (j = 0; j < group; j++) {
-  if (6 + 2 + local_x > 22) {
-  limit = 1;
-  base = 8 + local_x - 22;
-  } else
-  limit = 0;
-  if (j == global_x) {
-  if (!limit) {
-  move(5 + j + i, 4);
-  sprintf(genbuf,
-  "\033[1;44m[-] %s\033[0m",
-  card[j][0]);
-  prints("%s", genbuf);
-  }
-  for (i = 0; i < atoi(card[x][1]); i++) {
-  if (!limit) {
-  if (6 + j + i > 23)
-  continue;
-  else {
-  move(6 + j + i,
-  8);
-  if (i ==
-  local_x)
-  sprintf
-  (genbuf,
-  "\033[1;41m>|--%s%d\033[0m",
-  card
-  [j]
-  [0],
-  i +
-  1);
-  else
-  sprintf
-  (genbuf,
-  "\033[1;42m |--%s%d\033[0m",
-  card
-[j]
-[0],
-	i +
-	1);
-	prints("%s",
-			genbuf);
-}
-} else {
-	// base = 8+local_x-22;
-	// local_x = 15; base = 1;
-	if ((i - base) > 4
-			&& (i - base) <
-			24) {
-		move(i - base,
-				8);
-		if (i ==
-				local_x)
-			sprintf
-				(genbuf,
-				 "\033[1;41m>|--%s%d\033[0m",
-				 card
-				 [j]
-				 [0],
-				 i +
-				 1);
-		else
-			sprintf
-				(genbuf,
-				 "\033[1;42m |--%s%d\033[0m",
-				 card
-				 [j]
-				 [0],
-				 i +
-				 1);
-		prints("%s",
-				genbuf);
-	} else
-		continue;
-}
-}
-} else {
-	if (!limit) {
-		if ((5 + j + i) < 24
-				&& (5 + j + i) > 4) {
-			move(5 + j + i, 4);
-			sprintf(genbuf,
-					"\033[1;43m[+] %s\033[0m",
-					card[j][0]);
-			prints("%s", genbuf);
-		}
-	}
-}
-}
-}
-move(t_lines - 1, 4);
-prints
-("\033[1;45m·½Ïò¼ü²Ù×÷£¬×ó¼ü·µ»ØÉÏÒ»²ã£¬ÓÒ¼ü½øÈë£¬ÉÏÏÂ¼üÑ¡Ôñ \033[0m");
-key = egetch();
-switch (key) {
-	case KEY_LEFT:
-	case 'q':
-	case 'Q':
-	case 'e':
-	case 'E':
-		y--;
-		global_x = x;
-		break;
-	case KEY_RIGHT:
-	case '\n':
-	case '\r':
-		if (y == 2) {
-			buy_card(card[global_x][0], local_x + 1);
-		}
-		if (y < 2) {
-			y++;
-			local_x = 0;
-		}
-		global_x = x;
-		break;
-	case KEY_UP:
-		if (y == 2) {
-			local_x--;
-			if (local_x < 0)
-				local_x = atoi(card[x][1]) - 1;
-		} else {
-			x--;
-			if (x < 0)
-				x = group - 1;
-
-		}
-		break;
-	case KEY_DOWN:
-		if (y == 2) {
-			local_x++;
-			if (local_x >= atoi(card[x][1]))
-				local_x = 0;
-		} else {
-			x++;
-			if (x > group - 1)
-				x = 0;
-
-		}
-		break;
-}
-limit_cpu();
-if (y == 0)
-	break;
-	}
-move(t_lines - 2, 5);
-prints("»¶Ó­ÄúÔÙÀ´!");
-pressanykey();
-return 0;
-}*/
-
-/*----Å×Æú¾ÉµÄºØ¿¨ÏµÍ³(¹ºÂòºØ¿¨)-----macintosh 20051203-----*/
-/*static int
-  buy_card(char *cardname, int cardnumber)
-  {
-  char card_name[20], filepath[80], uident[IDLEN + 1];
-  char note[3][STRLEN], tmpname[STRLEN];
-  int money, i;
-  bzero(card_name, sizeof (card_name));
-  sprintf(card_name, "%s%d", cardname, cardnumber);
-  sprintf(filepath, "0Announce/game/cardshop/%s/%d", cardname,
-  cardnumber);
-  ansimore2(filepath, 0, 0, 25);
-  move(2, 0);
-  prints("Preview....");
-  move(8, 20);
-  prints("Preview....");
-  move(14, 40);
-  prints("Preview....");
-//clear();
-move(t_lines - 2, 4);
-sprintf(genbuf, "ÄãÈ·¶¨ÒªÂòºØ¿¨%sÃ´?", card_name);
-if (askyn(genbuf, YEA, NA) != YEA)
-return 0;
-money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
-if (money < 1000) {
-move(t_lines - 2, 4);
-prints("ÄãµÄÇ®²»¹»°¡~~~");
-pressanykey();
-return 0;
-}
-
-saveValue(currentuser.userid, MONEY_NAME, -1000, MAX_MONEY_NUM);
-move(0, 0);
-clrtobot();
-usercomplete("Òª°ÑÕâ¿¨Æ¬ËÍ¸øË­? ", uident);
-if (uident[0] == '\0') {
-move(t_lines - 2, 4);
-clrtobot();
-prints("¾ÓÈ»²»Ğ´µØÖ·£¬ÄãÂòµÄ¿¨Æ¬¶ªÊ§ÔÚÓÊ¼ÄÍ¾ÖĞ...");
-pressanykey();
-return 0;
-}
-
-if (!getuser(uident)) {
-move(t_lines - 2, 4);
-clrtobot();
-prints("Ã»ÓĞÕâ¸öÈË°¡£¬ÄãÂòµÄ¿¨Æ¬±»ÓÊµİÔ±Ë½ÍÌÁË...");
-pressanykey();
-return 0;
-}
-move(0, 0);
-clear();
-prints("ÓĞ»°ÒªÔÚ¿¨Æ¬ÀïËµÂğ£¿");
-bzero(note, sizeof (note));
-for (i = 0; i < 3; i++) {
-getdata(1 + i, 0, ": ", note[i], STRLEN - 1, DOECHO, NA);
-if (note[i][0] == '\0')
-break;
-}
-sprintf(tmpname, "bbstmpfs/tmp/card.%s.%d", currentuser.userid,
-uinfo.pid);
-copyfile(filepath, tmpname);
-if (i > 0) {
-int j;
-FILE *fp = fopen(tmpname, "a");
-fprintf(fp, "\nÒÔÏÂÊÇ %s µÄ¸½ÑÔ:\n", currentuser.userid);
-for (j = 0; j < i; j++)
-fprintf(fp, "%s", note[j]);
-fclose(fp);
-}
-
-move(t_lines - 2, 4);
-clrtobot();
-prints("ÄãµÄºØ¿¨ÒÑ¾­·¢³öÈ¥ÁË");
-mail_file(tmpname, uident, "ÎÒ´Ó±øÂíÙ¸ÉÌµêÀïÌô¸øÄãµÄºØ¿¨£¬Äã¿´¿´ÖĞÒâÃ´?");
-unlink(tmpname);
-pressanykey();
-return 0;
-}*/
 
 //add by happybird for ÏÊ»¨µê£¬ºØ¿¨µê
 //ÏÔÊ¾»¶Ó­»­Ãæ
@@ -7306,9 +6362,7 @@ static int show_welcome(char *filepath,int startline,int endline)
 #define PATHLEN 1000
 
 //ÀñÆ·µê£¬ÏÊ»¨ºØ¿¨¶şºÏÒ»£¬macintosh@bmy 20051204
-	static int
-shop_present(int order, char *kind, char *touserid)
-{
+static int shop_present(int order, char *kind, char *touserid) {
 	char ok_filename[PATHLEN];
 	char ok_title[STRLEN];
 	int price_per=0;
@@ -7347,9 +6401,7 @@ shop_present(int order, char *kind, char *touserid)
 		while(fgets(buf, STRLEN, fp)>0 && numDir<10) {
 			if(!strncmp(buf, "Name=", 5)) {
 				sprintf(title, "%s", buf+5);
-				if(strstr(title + 38,"(BM: SYSOPS)") ||
-						strstr(title + 38,"(BM: BMS)")||
-						!strncmp(title, "<HIDE>",6))
+				if(strstr(title + 38,"(BM: SYSOPS)") || strstr(title + 38,"(BM: BMS)")|| !strncmp(title, "<HIDE>",6))
 					HIDE=1;
 				else
 					HIDE=0;
@@ -7373,18 +6425,6 @@ shop_present(int order, char *kind, char *touserid)
 		fclose(fp);
 	}
 
-	/*
-	   for (numDir = 0; (dirp = readdir(dp)) != NULL && numDir < 10; ) {
-	   snprintf(dirpath, 255,  "%s%s", dir, dirp->d_name);
-	   if (!file_isdir(dirpath) || dirp->d_name[0] == '.')
-	   continue;
-	   move(6 + numDir, 8);
-	   prints("%d. %s", numDir, dirp->d_name);
-	   strncpy(dirNameBuffer[numDir], dirp->d_name, 31);
-	   dirNameBuffer[numDir][31] = '\0';
-	   numDir++;
-	   }
-	   */
 	while(1) {
 		getdata(16, 4, "ÇëÑ¡ÔñÀàĞÍ:", buf, 3, DOECHO, YEA);
 		if (buf[0] == '\0')
@@ -7408,9 +6448,7 @@ shop_present(int order, char *kind, char *touserid)
 		while(fgets(buf, STRLEN, fp)>0 && numFile<10) {
 			if(!strncmp(buf, "Name=", 5)) {
 				sprintf(title, "%s", buf+5);
-				if(strstr(title + 38,"(BM: SYSOPS)") ||
-						strstr(title + 38,"(BM: BMS)")||
-						!strncmp(title, "<HIDE>",6))
+				if(strstr(title + 38,"(BM: SYSOPS)") || strstr(title + 38,"(BM: BMS)")|| !strncmp(title, "<HIDE>",6))
 					HIDE=1;
 				else
 					HIDE=0;
@@ -7445,8 +6483,7 @@ shop_present(int order, char *kind, char *touserid)
 	   */
 	move(17, 4);
 	while(1) {
-		getdata(18, 4, "ÇëÑ¡ÔñÒªÔ¤ÀÀµÄ±àºÅ[ENTER·ÅÆú]: ",
-				buf, 3, DOECHO, YEA);
+		getdata(18, 4, "ÇëÑ¡ÔñÒªÔ¤ÀÀµÄ±àºÅ[ENTER·ÅÆú]: ", buf, 3, DOECHO, YEA);
 		if(buf[0] == '\0')
 			return 0;
 		cardIndex = atoi(buf);
@@ -7511,16 +6548,12 @@ shop_present(int order, char *kind, char *touserid)
 	sprintf(genbuf, "ÄãÈ·¶¨Òª¸¶Ç®¹ºÂò%sÂğ",ok_title);
 	if (askyn(genbuf, YEA, NA) == NA)
 		return 0;
-	ma =
-		buy_present(order, kind, ok_title, ok_filename, price_per, touserid);
+	ma = buy_present(order, kind, ok_title, ok_filename, price_per, touserid);
 	if (ma==9) return 9;
 	return 1;
 }
 
-
-	static int
-buy_present(int order, char *kind, char *cardname, char *filepath, int price_per,char *touserid)
-{
+static int buy_present(int order, char *kind, char *cardname, char *filepath, int price_per,char *touserid) {
 	int i;
 	int inputNum=1;
 	char uident[IDLEN + 1], note[3][STRLEN], tmpname[STRLEN];
@@ -7610,8 +6643,7 @@ buy_present(int order, char *kind, char *cardname, char *filepath, int price_per
 		if (note[i][0] == '\0')
 			break;
 	}
-	sprintf(tmpname, "bbstmpfs/tmp/present.%s.%d", currentuser.userid,
-			uinfo.pid);
+	sprintf(tmpname, "bbstmpfs/tmp/present.%s.%d", currentuser.userid, uinfo.pid);
 	copyfile(filepath, tmpname);
 	if (i > 0) {
 		int j;
@@ -7645,10 +6677,7 @@ buy_present(int order, char *kind, char *cardname, char *filepath, int price_per
 //char card[52], mycard[5], cpucard[5], sty[100], now;
 char *card, *mycard, *cpucard, *sty;
 int now;
-	static int
-forq(a, b)
-	char *a, *b;
-{
+static int forq(char *a, char *b) {
 	char c = (*a) % 13;
 	char d = (*b) % 13;
 	if (!c)
@@ -7664,9 +6693,8 @@ forq(a, b)
 	return c - d;
 }
 
-	static void/*¶Ä²©--Ëó¹ş*/
-p_gp()
-{
+/*¶Ä²©--Ëó¹ş*/
+static void p_gp() {
 	char genbuf[200], hold[5];
 	int quit = 0;
 	int num, i, j, k, tmp, x, xx, doub, gw = 0, cont = 0, money = 0;
@@ -7690,8 +6718,7 @@ p_gp()
 		move(6, 4);
 		prints("´óĞ¡:");
 		move(7, 4);
-		prints
-			("Í¬»¨Ë³£¾ÌúÖ¦£¾ºùÂ«£¾Í¬»¨£¾Ë³×Ó£¾ÈıÌõ£¾ÍÃÅß£¾µ¥Åß£¾µ¥ÕÅ");
+		prints("Í¬»¨Ë³£¾ÌúÖ¦£¾ºùÂ«£¾Í¬»¨£¾Ë³×Ó£¾ÈıÌõ£¾ÍÃÅß£¾µ¥Åß£¾µ¥ÕÅ");
 		move(8, 4);
 		prints("ÌØÊâ¼Ó·Ö£º");
 		move(9, 4);
@@ -7701,8 +6728,7 @@ p_gp()
 		move(11, 4);
 		prints("ºù¡¡Â«¡¡¡¡£µ±¶");
 		move(t_lines - 1, 0);
-		prints
-			("\033[1;44m Ñ¡µ¥ \033[1;46m [1]ÏÂ×¢ [Q]Àë¿ª                                                \033[m");
+		prints("\033[1;44m Ñ¡µ¥ \033[1;46m [1]ÏÂ×¢ [Q]Àë¿ª                                                \033[m");
 		if (random() % 40 < 1)
 			money_police();
 		if (!cont)
@@ -7716,8 +6742,7 @@ p_gp()
 					move(6, 4);
 					//if (askyn("ÄúÈ·¶¨ÒªÑ¹100±øÂíÙ¸±ÒÃ´?", YEA, NA) == NA)
 					//break;
-					getdata(8, 4, "ÄúÑ¹¶àÉÙ±øÂíÙ¸±Ò£¿[100-9999]", genbuf, 5,
-							DOECHO, YEA);
+					getdata(8, 4, "ÄúÑ¹¶àÉÙ±øÂíÙ¸±Ò£¿[100-9999]", genbuf, 5, DOECHO, YEA);
 					num = atoi(genbuf);
 					if (!genbuf[0])
 						num = 999;
@@ -7727,8 +6752,7 @@ p_gp()
 						pressanykey();
 						break;
 					}
-					money = loadValue(currentuser.userid,
-							MONEY_NAME, MAX_MONEY_NUM);
+					money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
 					if (money < num) {
 						move(8, 4);
 						prints("È¥È¥È¥£¬Ã»ÄÇÃ´¶àÇ®µ·Ê²Ã´ÂÒ£¡      \n");
@@ -7736,18 +6760,15 @@ p_gp()
 						break;
 					}
 					//num = 100;
-					saveValue(currentuser.userid, MONEY_NAME, -num,
-							MAX_MONEY_NUM);
+					saveValue(currentuser.userid, MONEY_NAME, -num, MAX_MONEY_NUM);
 				}
 				clear();
 				money_show_stat("½ğÆË¿ËËó¹ş");
 				move(21, 0);
 				if (cont > 0)
-					prints
-						("\033[33;1m (¡û)(¡ú)¸Ä±äÑ¡ÅÆ  (SPACE)¸Ä±ä»»ÅÆ  (Enter)È·¶¨\033[m");
+					prints("\033[33;1m (¡û)(¡ú)¸Ä±äÑ¡ÅÆ  (SPACE)¸Ä±ä»»ÅÆ  (Enter)È·¶¨\033[m");
 				else
-					prints
-						("\033[33;1m (¡û)(¡ú)¸Ä±äÑ¡ÅÆ  (d)Double  (SPACE)¸Ä±ä»»ÅÆ  (Enter)È·¶¨\033[m");
+					prints("\033[33;1m (¡û)(¡ú)¸Ä±äÑ¡ÅÆ  (d)Double  (SPACE)¸Ä±ä»»ÅÆ  (Enter)È·¶¨\033[m");
 				move(22, 0);
 				prints("µ±Ç°ÏÂ×¢½ğ¶î: %d ±øÂíÙ¸±Ò", num);
 				for (i = 0; i < 52; i++)
@@ -7790,8 +6811,7 @@ p_gp()
 					switch (tmp) {
 #ifdef GP_DEBUG
 						case KEY_UP:
-							getdata(21, 0, "°ÑÅÆ»»³É> ", genbuf, 3,
-									DOECHO, YEA);
+							getdata(21, 0, "°ÑÅÆ»»³É> ", genbuf, 3, DOECHO, YEA);
 							mycard[x] = atoi(genbuf);
 							qsort(mycard, 5, sizeof (char), forq);
 							for (i = 0; i < 5; i++)
@@ -7810,23 +6830,15 @@ p_gp()
 							hold[x] *= -1;
 							break;
 						case 'd':
-							if (!cont && !doub
-									&& loadValue(currentuser.userid,
-										MONEY_NAME,
-										MAX_MONEY_NUM) >=
-									num) {
+							if (!cont && !doub && loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM) >= num) {
 								doub++;
 								move(21, 0);
 								clrtoeol();
-								prints
-									("\033[33;1m (¡û)(¡ú)¸Ä±äÑ¡ÅÆ  (SPACE)¸Ä±ä»»ÅÆ  (Enter)È·¶¨\033[m");
-								saveValue(currentuser.userid,
-										MONEY_NAME, -num,
-										MAX_MONEY_NUM);
+								prints("\033[33;1m (¡û)(¡ú)¸Ä±äÑ¡ÅÆ  (SPACE)¸Ä±ä»»ÅÆ  (Enter)È·¶¨\033[m");
+								saveValue(currentuser.userid, MONEY_NAME, -num, MAX_MONEY_NUM);
 								num *= 2;
 								move(22, 0);
-								prints("µ±Ç°ÏÂ×¢½ğ¶î %d ±øÂíÙ¸±Ò",
-										num);
+								prints("µ±Ç°ÏÂ×¢½ğ¶î %d ±øÂíÙ¸±Ò", num);
 								//show_money(bet, NULL, NA);
 							}
 							break;
@@ -7844,8 +6856,7 @@ p_gp()
 				money_cpu();
 #ifdef GP_DEBUG
 				for (x = 0; x < 5; x++) {
-					getdata(21, 0, "°ÑÅÆ»»³É> ", genbuf, 3, DOECHO,
-							YEA);
+					getdata(21, 0, "°ÑÅÆ»»³É> ", genbuf, 3, DOECHO, YEA);
 					cpucard[x] = atoi(genbuf);
 				}
 				qsort(cpucard, 5, sizeof (char), forq);
@@ -7855,53 +6866,38 @@ p_gp()
 				i = gp_win();
 
 				if (i < 0) {
-					saveValue(currentuser.userid, MONEY_NAME,
-							num * 2, MAX_MONEY_NUM);
+					saveValue(currentuser.userid, MONEY_NAME, num * 2, MAX_MONEY_NUM);
 
 					sprintf(title, "%s²ÎÓë¶Ä²©(Ëó¹ş)(Ó®)", currentuser.userid);
 					sprintf(buf, "%sÔÚËó¹şÓ®ÁË%d±øÂíÙ¸±Ò", currentuser.userid, num);
 					millionairesrec(title, buf, "¶Ä²©Ëó¹ş");
 
-					sprintf(genbuf,
-							"ÍÛ!ºÃ°ôà¸!!! ¾»×¬ %d Ôª...  :D", num);
+					sprintf(genbuf, "ÍÛ!ºÃ°ôà¸!!! ¾»×¬ %d Ôª...  :D", num);
 					prints("%s", genbuf);
 					if (cont > 0)
-						sprintf(genbuf,
-								"Á¬Ê¤ %d ´Î, Ó®ÁË %d Ôª",
-								cont + 1, num);
+						sprintf(genbuf, "Á¬Ê¤ %d ´Î, Ó®ÁË %d Ôª", cont + 1, num);
 					else
 						sprintf(genbuf, "Ó®ÁË %d Ôª", num);
 					num = (num > 50000 ? 100000 : num * 2);
 					gw = 1;
 				} else if (i > 1000) {
 					switch (i) {
-						case 1001:
-							doub = 15;
-							break;
-						case 1002:
-							doub = 10;
-							break;
-						case 1003:
-							doub = 5;
-							break;
+						case 1001: doub = 15; break;
+						case 1002: doub = 10; break;
+						case 1003: doub = 5; break;
 					}
-					saveValue(currentuser.userid, MONEY_NAME,
-							num * 2 * doub, MAX_MONEY_NUM);
+					saveValue(currentuser.userid, MONEY_NAME, num * 2 * doub, MAX_MONEY_NUM);
 
 					sprintf(title, "%s²ÎÓë¶Ä²©(Ëó¹ş)(Ó®)", currentuser.userid);
 					sprintf(buf, "%sÔÚËó¹şÓ®ÁË%d±øÂíÙ¸±Ò", currentuser.userid, num * 2 * doub - num);
 					millionairesrec(title, buf, "¶Ä²©Ëó¹ş");
 
-					sprintf(genbuf, "ÍÛ!ºÃ°ôà¸!!!¾»×¬ %d Ôª...  :D",
-							num * 2 * doub - num);
+					sprintf(genbuf, "ÍÛ!ºÃ°ôà¸!!!¾»×¬ %d Ôª...  :D", num * 2 * doub - num);
 					prints("%s", genbuf);
 					if (cont > 0)
-						sprintf(genbuf,
-								"Á¬Ê¤ %d ´Î, Ó®ÁË %d Ôª",
-								cont + 1, num * doub);
+						sprintf(genbuf, "Á¬Ê¤ %d ´Î, Ó®ÁË %d Ôª", cont + 1, num * doub);
 					else
-						sprintf(genbuf, "Ó®ÁË %d Ôª",
-								num * doub);
+						sprintf(genbuf, "Ó®ÁË %d Ôª", num * doub);
 					num = (num > 5000 ? 10000 : num * 2 * doub);
 					gw = 1;
 					num = (num >= 10000 ? 10000 : num);
@@ -7913,9 +6909,7 @@ p_gp()
 					millionairesrec(title, buf, "¶Ä²©Ëó¹ş");
 
 					if (cont > 1)
-						sprintf(genbuf,
-								"ÖĞÖ¹ %d Á¬Ê¤, ÊäÁË %d Ôª",
-								cont, num);
+						sprintf(genbuf, "ÖĞÖ¹ %d Á¬Ê¤, ÊäÁË %d Ôª", cont, num);
 					else
 						sprintf(genbuf, "ÊäÁË %d Ôª", num);
 					cont = 0;
@@ -7925,8 +6919,7 @@ p_gp()
 
 				if (gw == 1) {
 					gw = 0;
-					getdata(21, 0, "ÄúÒª°Ñ½±½ğ¼ÌĞøÑ¹×¢Âğ (y/n)?",
-							ans, 2, DOECHO, YEA);
+					getdata(21, 0, "ÄúÒª°Ñ½±½ğ¼ÌĞøÑ¹×¢Âğ (y/n)?", ans, 2, DOECHO, YEA);
 					if (ans[0] == 'y' || ans[0] == 'Y') {
 						saveValue(currentuser.userid, MONEY_NAME, -num, MAX_MONEY_NUM);	/* added by soff */
 						cont++;
@@ -7944,10 +6937,9 @@ p_gp()
 		limit_cpu();
 	}
 }
-	static /*¶Ä²©--Ëó¹ş--ÏÔÊ¾ÆË¿ËÅÆ*/
-void show_card(isDealer, c, x)
-	int isDealer, c, x;
-{
+
+/*¶Ä²©--Ëó¹ş--ÏÔÊ¾ÆË¿ËÅÆ*/
+static void show_card(int isDealer, int c, int x) {
 	int beginL;
 	char *suit[4] = { "£Ã", "£Ä", "£È", "£Ó" };
 	char *num[13] = { "£Ë", "£Á", "£²", "£³", "£´", "£µ", "£¶",
@@ -7976,9 +6968,8 @@ void show_card(isDealer, c, x)
 	outs("¨t©¤©¤©¤¨s");
 }
 
-	static/*¶Ä²©--Ëó¹ş*/
-void money_cpu()
-{
+/*¶Ä²©--Ëó¹ş*/
+static void money_cpu() {
 	char hold[5];
 	int i, j;
 	char p[13], q[5], r[4];
@@ -8023,9 +7014,8 @@ void money_cpu()
 		show_card(1, cpucard[i], i);
 }
 
-	static/*¶Ä²©-Ëó¹ş*/
-int gp_win()
-{
+/*¶Ä²©-Ëó¹ş*/
+static int gp_win() {
 	int my, cpu, ret = 0;
 	char myx, myy, cpux, cpuy;
 
@@ -8046,26 +7036,16 @@ int gp_win()
 
 	if (ret < 0)
 		switch (my) {
-			case 1:
-				ret = 1001;
-				break;
-			case 2:
-				ret = 1002;
-				break;
-			case 3:
-				ret = 1003;
-				break;
+			case 1: ret = 1001; break;
+			case 2: ret = 1002; break;
+			case 3: ret = 1003; break;
 		}
 
 	return ret;
 }
 
 //Í¬»¨Ë³¡¢ÌúÖ¦¡¢ºù¡¢Í¬»¨¡¢Ë³¡¢ÈıÌõ¡¢ÍÃÅß¡¢Åß¡¢Ò»Ö»
-static
-	int
-complex(cc, x, y)
-	char *cc, *x, *y;
-{
+static int complex(char *cc, char *x, char *y) {
 	char p[13], q[5], r[4];
 	char a[5], b[5], c[5], d[5];
 	int i, j, k;
@@ -8181,11 +7161,8 @@ complex(cc, x, y)
 	return 9;
 }
 
-/* a ÊÇµãÊı .. b ÊÇ»¨É« */
-	static void/*¶Ä²©--Ëó¹ş*/
-money_suoha_tran(a, b, c)
-	char *a, *b, *c;
-{
+/* a ÊÇµãÊı .. b ÊÇ»¨É« *//*¶Ä²©--Ëó¹ş*/
+static void money_suoha_tran(char *a, char *b, char *c) {
 	int i;
 	for (i = 0; i < 5; i++) {
 		a[i] = c[i] % 13;
@@ -8197,10 +7174,8 @@ money_suoha_tran(a, b, c)
 		b[i] = c[i] / 13;
 }
 
-	static void/*¶Ä²©--Ëó¹ş*/
-money_suoha_check(p, q, r, cc)
-	char *p, *q, *r, *cc;
-{
+/*¶Ä²©--Ëó¹ş*/
+static void money_suoha_check(char *p, char *q, char *r, char *cc) {
 	int i;
 
 	for (i = 0; i < 13; i++)
@@ -8221,25 +7196,21 @@ money_suoha_check(p, q, r, cc)
 }
 
 //Í¬»¨Ë³¡¢ÌúÖ¦¡¢ºù¡¢Í¬»¨¡¢Ë³¡¢ÈıÌõ¡¢ÍÃÅß¡¢Åß¡¢Ò»Ö»
-	static void/*¶Ä²©--Ëó¹ş*/
-show_style(my, cpu)
-	char my, cpu;
-{
-	char *style[9] = { "Í¬»¨Ë³", "ÌúÖ¦", "ºùÂ«", "Í¬»¨", "Ë³×Ó",
+/*¶Ä²©--Ëó¹ş*/
+static void show_style(char my, char cpu) {
+	char *style[9] = {
+		"Í¬»¨Ë³", "ÌúÖ¦", "ºùÂ«", "Í¬»¨", "Ë³×Ó",
 		"ÈıÌõ", "ÍÃÅß", "µ¥Åß", "Ò»ÕÅ"
 	};
 	move(5, 26);
 	prints("\033[41;37;1m%s\033[m", style[cpu - 1]);
 	move(15, 26);
 	prints("\033[41;37;1m%s\033[m", style[my - 1]);
-	sprintf(sty, "ÎÒµÄÅÆ\033[44;1m%s\033[m..µçÄÔµÄÅÆ\033[44;1m%s\033[m",
-			style[my - 1], style[cpu - 1]);
+	sprintf(sty, "ÎÒµÄÅÆ\033[44;1m%s\033[m..µçÄÔµÄÅÆ\033[44;1m%s\033[m", style[my - 1], style[cpu - 1]);
 }
 
-	static void/*¶Ä²©--ÂÖÅÌ*/
-russian_gun()
-{
-
+/*¶Ä²©--ÂÖÅÌ*/
+static void russian_gun() {
 	int i;
 	int line;
 	int first;
@@ -8251,8 +7222,7 @@ russian_gun()
 	////slowaction
 	if (currentuser.stay < 86400) {
 		move(7, 4);
-		prints
-			("Ğ¡º¢×ÓÀ´Æ´Ê²Ã´Ãü£¬ÕÒÄãÃÇ¼Ò´óÈËÀ´¡£\n¹Ô£¬¸øÄãÒ»¿é±øÂíÙ¸±ÒÂòÌÇ³Ô");
+		prints("Ğ¡º¢×ÓÀ´Æ´Ê²Ã´Ãü£¬ÕÒÄãÃÇ¼Ò´óÈËÀ´¡£\n¹Ô£¬¸øÄãÒ»¿é±øÂíÙ¸±ÒÂòÌÇ³Ô");
 		pressanykey();
 		return;
 	}
@@ -8260,40 +7230,31 @@ russian_gun()
 
 	move(6, 4);
 	if (!loadValue(currentuser.userid, "invitation", 1)) {
-		prints
-			("Öµ°àÃØÊéÉÏÏÂ´òÁ¿ÁËÄã°ëÉÎ£¬ËµµÀ£º¡°ÕâÀïÃ»ÓĞÕâÖÖ¶Ä·¨£¬Äã×ß°É¡£¡±");
+		prints("Öµ°àÃØÊéÉÏÏÂ´òÁ¿ÁËÄã°ëÉÎ£¬ËµµÀ£º¡°ÕâÀïÃ»ÓĞÕâÖÖ¶Ä·¨£¬Äã×ß°É¡£¡±");
 		pressanykey();
 	} else {
 		saveValue(currentuser.userid, "invitation", -1, 1);
 		whoTakeCharge(3, uident);
-		prints
-			("Öµ°à¾­Àí¿´ÍêÄãµİ¹ıµÄÑûÇëº¯£¬ÓÖËÄÏÂ¿´ÁË¿´£¬²ÅËµµÀ£º¡°ÇëËæÎÒÀ´¡£¡±");
+		prints("Öµ°à¾­Àí¿´ÍêÄãµİ¹ıµÄÑûÇëº¯£¬ÓÖËÄÏÂ¿´ÁË¿´£¬²ÅËµµÀ£º¡°ÇëËæÎÒÀ´¡£¡±");
 		pressanykey();
 		clear();
 		money_show_stat("±øÂíÙ¸¶Ä³¡ÃÜÊÒ");
 		move(4, 4);
-		prints
-			("ÕâÀïÊÇÒ»¼ä²»´óµÄÃÜÊÒ£¬ºÜ¾²£¬¾²µÃ¿ÉÅÂ¡£¿ÕÆøÖĞËÆºõÓĞÑªĞÈµÄÎ¶µÀ...");
+		prints("ÕâÀïÊÇÒ»¼ä²»´óµÄÃÜÊÒ£¬ºÜ¾²£¬¾²µÃ¿ÉÅÂ¡£¿ÕÆøÖĞËÆºõÓĞÑªĞÈµÄÎ¶µÀ...");
 		move(6, 4);
-		prints
-			("%s¾Í×øÔÚÃæÇ°£¬Î¢Ğ¦µÀ£º¡°Äã¸ÒÀ´¸°Ô¼£¬ËãÄãÓĞµ¨Á¿£¡Çë×ø¡£¡±",
-			 uident);
+		prints("%s¾Í×øÔÚÃæÇ°£¬Î¢Ğ¦µÀ£º¡°Äã¸ÒÀ´¸°Ô¼£¬ËãÄãÓĞµ¨Á¿£¡Çë×ø¡£¡±", uident);
 		pressanykey();
 		move(8, 4);
 		prints("Ò»°Ñ×óÂÖÊÖÇ¹ÈÓµ½ÁË×ÀÉÏ...Ò»¸öÃÉÃæÄĞ×Ó×øµ½ÁËÄãÃæÇ°...");
 		move(10, 4);
 		if (askyn("ÄãÖªµÀ¶íÂŞË¹ÂÖÅÌ¶ÄµÄ¹æÔòÂğ£¿", NA, NA) == NA) {
 			move(12, 4);
-			prints
-				("%sÌ¾ÁË¿ÚÆø£¬ËµµÀ£º¡°ËãÁË£¬±ğËÀÁËÁ¬ÔõÃ´»ØÊÂ¶¼²»ÖªµÀ¡£Äã×ß°É£¡¡±",
-				 uident);
+			prints("%sÌ¾ÁË¿ÚÆø£¬ËµµÀ£º¡°ËãÁË£¬±ğËÀÁËÁ¬ÔõÃ´»ØÊÂ¶¼²»ÖªµÀ¡£Äã×ß°É£¡¡±", uident);
 			pressanykey();
 			return;
 		}
 		move(12, 4);
-		if (askyn
-				("ºÃ£¡ÄÇ¾Í¿ªÊ¼°É£¬×£ÄãºÃÔË¡£ÄãÊÇ¿Í£¬ÄãÒªÏÈÀ´Âğ£¿", NA,
-				 NA) == YEA) {
+		if (askyn("ºÃ£¡ÄÇ¾Í¿ªÊ¼°É£¬×£ÄãºÃÔË¡£ÄãÊÇ¿Í£¬ÄãÒªÏÈÀ´Âğ£¿", NA, NA) == YEA) {
 			first = 1;
 		} else {
 			first = 0;
@@ -8302,49 +7263,37 @@ russian_gun()
 		money_show_stat("±øÂíÙ¸¶Ä³¡ÃÜÊÒ");
 		set_safe_record();
 		currentuser.dietime = currentuser.stay + 4444 * 60;
-		substitute_record(PASSFILE,
-				&currentuser, sizeof (currentuser), usernum);
+		substitute_record(PASSFILE, &currentuser, sizeof (currentuser), usernum);
 		for (i = 0, line = 6; i < 6; i += 2) {
 			srandom(time(0));
 			move(line++, 4);
 			if (first) {
-				prints
-					("ÄãÄÃÆğ×óÂÖÊÖÇ¹£¬¶Ô×¼×Ô¼ºµÄÌ«ÑôÑ¨£¬Ò§Ò§ÑÀ¿Û¶¯ÁË°â»ú...");
+				prints("ÄãÄÃÆğ×óÂÖÊÖÇ¹£¬¶Ô×¼×Ô¼ºµÄÌ«ÑôÑ¨£¬Ò§Ò§ÑÀ¿Û¶¯ÁË°â»ú...");
 			} else {
-				prints
-					("ÃÉÃæÄĞ×ÓÄÃÆğ×óÂÖÊÖÇ¹£¬¶Ô×¼×Ô¼ºµÄÌ«ÑôÑ¨£¬¿Û¶¯ÁË°â»ú...");
+				prints("ÃÉÃæÄĞ×ÓÄÃÆğ×óÂÖÊÖÇ¹£¬¶Ô×¼×Ô¼ºµÄÌ«ÑôÑ¨£¬¿Û¶¯ÁË°â»ú...");
 			}
 			pressanykey();
 			if (random() % (6 - i)) {
 				move(line++, 4);
 				if (first) {
-					prints
-						("\033[1;33mßÇßÕ£¡\033[mÒ»ÉùÏì¹ı£¬Äã¾ª»êÎ´¶¨Ö®Óà·¢ÏÖ×Ô¼º»¹»î×Å...");
+					prints("\033[1;33mßÇßÕ£¡\033[mÒ»ÉùÏì¹ı£¬Äã¾ª»êÎ´¶¨Ö®Óà·¢ÏÖ×Ô¼º»¹»î×Å...");
 				} else {
-					prints
-						("\033[1;33mßÇßÕ£¡\033[mÒ»ÉùÏì¹ı£¬ÃÉÃæÄĞ×ÓºÁ·¢ÎŞËğ...");
+					prints("\033[1;33mßÇßÕ£¡\033[mÒ»ÉùÏì¹ı£¬ÃÉÃæÄĞ×ÓºÁ·¢ÎŞËğ...");
 				}
 				move(line++, 4);
 				if (5 - i == 1 && first) {
 					if (first) {
 						move(line++, 4);
-						prints
-							("ÃÉÃæÄĞ×Ó¾øÍûµÄ²ü¶¶×Å£¬ÓÃ°§ÇóµÄÑÛÉñ¿´×Å%s¡£",
-							 uident);
+						prints("ÃÉÃæÄĞ×Ó¾øÍûµÄ²ü¶¶×Å£¬ÓÃ°§ÇóµÄÑÛÉñ¿´×Å%s¡£", uident);
 						move(line++, 4);
-						prints
-							("\033[1;31mÅé£¡Ò»Éù¾ŞÏì£¬ÃÉÃæÄĞ×ÓÑªÁ÷ÂúµØ...\033[m");
+						prints("\033[1;31mÅé£¡Ò»Éù¾ŞÏì£¬ÃÉÃæÄĞ×ÓÑªÁ÷ÂúµØ...\033[m");
 						pressanykey();
 						move(line++, 4);
-						prints
-							("%s²ÁÁË²Á»¹ÔÚÃ°ÑÌµÄÊÖÇ¹£¬ÓÖ·Å½øÁË¿Ú´üÀï¡£",
-							 uident);
+						prints("%s²ÁÁË²Á»¹ÔÚÃ°ÑÌµÄÊÖÇ¹£¬ÓÖ·Å½øÁË¿Ú´üÀï¡£", uident);
 						break;
 					} else {
-						prints
-							("ÃÉÃæÄĞ×ÓµÃÒâµÄÄüĞ¦×Å£¬°ÑÇ¹¿Ú¶Ô×¼ÁËÄã...");
-						prints
-							("\033[1;31mÅé£¡Ò»Éù¾ŞÏì£¬ÄãÖ»¾õµÃÒâÊ¶Ë²¼äÄ£ºı...\033[m");
+						prints("ÃÉÃæÄĞ×ÓµÃÒâµÄÄüĞ¦×Å£¬°ÑÇ¹¿Ú¶Ô×¼ÁËÄã...");
+						prints("\033[1;31mÅé£¡Ò»Éù¾ŞÏì£¬ÄãÖ»¾õµÃÒâÊ¶Ë²¼äÄ£ºı...\033[m");
 						pressanykey();
 						Q_Goodbye();
 					}
@@ -8353,28 +7302,23 @@ russian_gun()
 				if (first) {
 					prints("ÏÖÔÚÂÖµ½ÃÉÃæÄĞ×Ó...");
 				} else {
-					prints
-						("ÏÖÔÚÂÖµ½ÄãÁË...ÄãµÄĞÄÔà\033[5;31mÅéÅé\033[mÌøµÃÀ÷º¦...");
+					prints("ÏÖÔÚÂÖµ½ÄãÁË...ÄãµÄĞÄÔà\033[5;31mÅéÅé\033[mÌøµÃÀ÷º¦...");
 				}
 				pressanykey();
 				if (random() % (5 - i)) {
 					move(line++, 4);
 					if (first) {
-						prints
-							("\033[1;33mßÇßÕ£¡\033[mÒ»ÉùÏì¹ı£¬ÃÉÃæÄĞ×ÓºÁ·¢ÎŞËğ...");
+						prints("\033[1;33mßÇßÕ£¡\033[mÒ»ÉùÏì¹ı£¬ÃÉÃæÄĞ×ÓºÁ·¢ÎŞËğ...");
 					} else {
-						prints
-							("\033[1;33mßÇßÕ£¡\033[mÒ»ÉùÏì¹ı£¬Äã¾ª»êÎ´¶¨Ö®Óà·¢ÏÖ×Ô¼º»¹»î×Å...");
+						prints("\033[1;33mßÇßÕ£¡\033[mÒ»ÉùÏì¹ı£¬Äã¾ª»êÎ´¶¨Ö®Óà·¢ÏÖ×Ô¼º»¹»î×Å...");
 					}
 				} else {
 					move(line++, 4);
 					if (first) {
-						prints
-							("\033[1;31mÅé£¡Ò»Éù¾ŞÏì£¬ÃÉÃæÄĞ×ÓÑªÁ÷ÂúµØ...\033[m");
+						prints("\033[1;31mÅé£¡Ò»Éù¾ŞÏì£¬ÃÉÃæÄĞ×ÓÑªÁ÷ÂúµØ...\033[m");
 						break;
 					} else {
-						prints
-							("\033[1;31mÅé£¡Ò»Éù¾ŞÏì£¬ÄãÖ»¾õµÃÒâÊ¶Ë²¼äÄ£ºı...\033[m");
+						prints("\033[1;31mÅé£¡Ò»Éù¾ŞÏì£¬ÄãÖ»¾õµÃÒâÊ¶Ë²¼äÄ£ºı...\033[m");
 						pressanykey();
 						Q_Goodbye();
 					}
@@ -8382,13 +7326,11 @@ russian_gun()
 			} else {
 				move(line++, 4);
 				if (first) {
-					prints
-						("\033[1;31mÅé£¡Ò»Éù¾ŞÏì£¬ÄãÖ»¾õµÃÒâÊ¶Ë²¼äÄ£ºı...\033[m");
+					prints("\033[1;31mÅé£¡Ò»Éù¾ŞÏì£¬ÄãÖ»¾õµÃÒâÊ¶Ë²¼äÄ£ºı...\033[m");
 					pressanykey();
 					Q_Goodbye();
 				} else {
-					prints
-						("\033[1;31mÅé£¡Ò»Éù¾ŞÏì£¬ÃÉÃæÄĞ×ÓÑªÁ÷ÂúµØ...\033[m");
+					prints("\033[1;31mÅé£¡Ò»Éù¾ŞÏì£¬ÃÉÃæÄĞ×ÓÑªÁ÷ÂúµØ...\033[m");
 					break;
 				}
 			}
@@ -8396,12 +7338,9 @@ russian_gun()
 		move(line++, 4);
 		set_safe_record();
 		currentuser.dietime = 0;
-		substitute_record(PASSFILE,
-				&currentuser, sizeof (currentuser), usernum);
-		prints
-			("Ò»ÇĞ¶¼½áÊøÁË...ÄãÒ»¿ÌÒ²²»Ô¸ÁôÔÚÕâ¿Ö²ÀµÄµØ·½£¬¾¡¹ÜÄãµÃµ½ÁË200000 ±øÂíÙ¸±Ò¡£");
-		saveValue(currentuser.userid, MONEY_NAME,200000,
-				MAX_MONEY_NUM);
+		substitute_record(PASSFILE, &currentuser, sizeof (currentuser), usernum);
+		prints("Ò»ÇĞ¶¼½áÊøÁË...ÄãÒ»¿ÌÒ²²»Ô¸ÁôÔÚÕâ¿Ö²ÀµÄµØ·½£¬¾¡¹ÜÄãµÃµ½ÁË200000 ±øÂíÙ¸±Ò¡£");
+		saveValue(currentuser.userid, MONEY_NAME,200000, MAX_MONEY_NUM);
 
 		sprintf(title, "%s²ÎÓë¶Ä²©(ÂÖÅÌ)", currentuser.userid);
 		sprintf(buf, "%sÔÚÂÖÅÌÓ®ÁË%d±øÂíÙ¸±Ò", currentuser.userid, 200000);
@@ -8411,14 +7350,11 @@ russian_gun()
 	}
 }
 
-	static void
-policereport(char *str)
-{
+static void policereport(char *str) {
 	FILE *se;
 	char fname[STRLEN], title[STRLEN];
 
-	sprintf(fname, "bbstmpfs/tmp/police.%s.%05d", currentuser.userid,
-			uinfo.pid);
+	sprintf(fname, "bbstmpfs/tmp/police.%s.%05d", currentuser.userid, uinfo.pid);
 	if ((se = fopen(fname, "w")) != NULL) {
 		fprintf(se, "%s", "¡¾´ËÆªÎÄÕÂÓÉ±øÂíÙ¸´ó¸»ÎÌ×Ô¶¯ÕÅÌùÏµÍ³·¢±í¡¿\n\n");
 		fprintf(se, "%s", str);
@@ -8429,10 +7365,8 @@ policereport(char *str)
 	}
 }
 
-
-	static int/*¾¯Êğ*/
-money_cop()
-{
+/*¾¯Êğ*/
+static int money_cop() {
 	int ch;
 	int quit = 0;
 	char uident[IDLEN + 1];
@@ -8450,8 +7384,7 @@ money_cop()
 		move(8, 16);
 		prints("´ò»÷·¸×ï£¬Î¬³ÖÖÎ°²£¡");
 		move(t_lines - 1, 0);
-		prints
-			("\033[1;44m Ñ¡µ¥ \033[1;46m [1]±¨°¸ [2]×ÔÊ× [3]Í¨¼©°ñ [4]ĞÌ¾¯¶Ó [5]Êğ³¤°ì¹«ÊÒ [Q]Àë¿ª\033[m");
+		prints("\033[1;44m Ñ¡µ¥ \033[1;46m [1]±¨°¸ [2]×ÔÊ× [3]Í¨¼©°ñ [4]ĞÌ¾¯¶Ó [5]Êğ³¤°ì¹«ÊÒ [Q]Àë¿ª\033[m");
 		ch = igetkey();
 		switch (ch) {
 			case '1':
@@ -8490,15 +7423,13 @@ money_cop()
 					break;
 				}
 				if (loadValue(uident, "rob", 50) == 0) {
-					prints
-						("Õâ¸öÈË×î½üºÜ°²·Ö°¡£¡Äã²»Òª·Ì°ù±ğÈËÅ¶£¡");
+					prints("Õâ¸öÈË×î½üºÜ°²·Ö°¡£¡Äã²»Òª·Ì°ù±ğÈËÅ¶£¡");
 					saveValue(currentuser.userid, MONEY_NAME, -2000, MAX_MONEY_NUM);
 					pressanykey();
 					break;
 				}
 				if (seek_in_file(DIR_MC "criminals_list", uident)) {
-					prints
-						("´ËÈËÒÑ¾­±»¾¯ÊğÍ¨¼©ÁË£¬²»¹ı¾¯ÊğÈÔÈ»¶ÔÄã±íÊ¾¸ĞĞ»¡£");
+					prints("´ËÈËÒÑ¾­±»¾¯ÊğÍ¨¼©ÁË£¬²»¹ı¾¯ÊğÈÔÈ»¶ÔÄã±íÊ¾¸ĞĞ»¡£");
 					saveValue(currentuser.userid, MONEY_NAME, -2000, MAX_MONEY_NUM);
 					pressanykey();
 					break;
@@ -8515,8 +7446,7 @@ money_cop()
 				strcat(buf, genbuf);
 				addtofile(DIR_MC "criminals_list", buf);
 				move(10, 4);
-				prints
-					("¾¯·½·Ç³£¸ĞĞ»ÄúÌá¹©µÄÏßË÷£¬ÎÒÃÇ½«¾¡Á¦¾¡¿ìÆÆ°¸¡£");
+				prints("¾¯·½·Ç³£¸ĞĞ»ÄúÌá¹©µÄÏßË÷£¬ÎÒÃÇ½«¾¡Á¦¾¡¿ìÆÆ°¸¡£");
 				pressanykey();
 				sprintf(buf, "ID: %s\n°¸Çé: %s", uident, genbuf);
 				sprintf(genbuf, "%s±¨°¸",currentuser.userid);
@@ -8541,21 +7471,17 @@ money_cop()
 					pressanykey();
 					break;
 				}
-				sprintf(genbuf,
-						"\033[1;31mÄãµÄÂÉÊ¦ÌáĞÑÄã,Èç¹ûÈÏ×ïÄã½«±»´¦ÒÔ%dÌì¼à½û¡£»¹ÒªÈÏ×ïÂğ?\033[0m",
-						robTimes / 2 + 1);
+				sprintf(genbuf, "\033[1;31mÄãµÄÂÉÊ¦ÌáĞÑÄã,Èç¹ûÈÏ×ïÄã½«±»´¦ÒÔ%dÌì¼à½û¡£»¹ÒªÈÏ×ïÂğ?\033[0m", robTimes / 2 + 1);
 				move(8, 4);
 				if (askyn(genbuf, NA, NA) == YEA) {
 					move(9, 4);
 					if (loadValue(currentuser.userid, "freeTime", 2000000000) > 0) {
-						prints
-							("ÄãÒÑ¾­±»¼à½ûÁË£¬ÏëÈÏ×ïÒ²À´²»¼°ÁË¡£");
+						prints("ÄãÒÑ¾­±»¼à½ûÁË£¬ÏëÈÏ×ïÒ²À´²»¼°ÁË¡£");
 						pressanykey();
 						Q_Goodbye();
 					}
 					prints("ĞüÑÂÀÕÂí,»¹À´µÃ¼°¡£ºÃºÃ¸ÄÔì°É£¡");
-					saveValue(currentuser.userid, "freeTime",
-							time(0) + 86400 * (robTimes / 2 + 1), 2000000000);
+					saveValue(currentuser.userid, "freeTime", time(0) + 86400 * (robTimes / 2 + 1), 2000000000);
 					saveValue(currentuser.userid, "rob", -robTimes, 50);
 					del_from_file(DIR_MC "criminals_list", currentuser.userid);
 					pressanykey();
@@ -8578,18 +7504,15 @@ money_cop()
 				nomoney_show_stat("ĞÌ¾¯¶Ó");
 				move(6, 4);
 				money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
-				if (seek_in_file(DIR_MC "mingren", currentuser.userid))
-				{
+				if (seek_in_file(DIR_MC "mingren", currentuser.userid)) {
 					move(5, 4);
 					prints("    \033[1;32m  ²»ÒªÈÇÊÂ\033[m");
 					pressanykey();
 					break;
 				}
 				if (!seek_in_file(DIR_MC "policemen", currentuser.userid)||money<5000) {
-					prints
-						("ÕâÀï²»ÊÇ¹«Ô°£¡ÓĞÊÂµ½½Ó´ıÌüÈ¥,±ğµ½´¦ÂÒ´³£¡\n");
-					prints
-						("²»ÄÃÇ®¾ÍÈ¥×¥ÈË£¬³öÁËÊÂÁ¬Ò½Ò©·Ñ¶¼Ã»ÓĞ\n");
+					prints("ÕâÀï²»ÊÇ¹«Ô°£¡ÓĞÊÂµ½½Ó´ıÌüÈ¥,±ğµ½´¦ÂÒ´³£¡\n");
+					prints("²»ÄÃÇ®¾ÍÈ¥×¥ÈË£¬³öÁËÊÂÁ¬Ò½Ò©·Ñ¶¼Ã»ÓĞ\n");
 					pressanykey();
 					break;
 				}
@@ -8633,8 +7556,7 @@ money_cop()
 				}
 				escTime = loadValue(uident, "escTime", 2000000000);
 				if (escTime > 0 && time(0) < escTime + 3600) {
-					prints
-						("¸Ã·¸×ïÏÓÒÉÈË¸Õ¸ÕÌÓÍÑ,Ò»Ê±°ë»á¶ù¿ÖÅÂ»¹ÕÒ²»µ½¡£");
+					prints("¸Ã·¸×ïÏÓÒÉÈË¸Õ¸ÕÌÓÍÑ,Ò»Ê±°ë»á¶ù¿ÖÅÂ»¹ÕÒ²»µ½¡£");
 					pressanykey();
 					break;
 				}
@@ -8643,24 +7565,18 @@ money_cop()
 					saveValue(currentuser.userid, "last_catch", -2000000000, 2000000000);
 					saveValue(currentuser.userid, "last_catch", time(0), 2000000000);
 					move(10, 4);
-					prints
-						("\033[1;33m¸ù¾İÏßÈËÌá¹©µÄÏûÏ¢,ÄãÖÕÓÚÕÒµ½ÁË%s²ØÄäµÄµØ·½¡£\033[0m",
-						 uident);
+					prints("\033[1;33m¸ù¾İÏßÈËÌá¹©µÄÏûÏ¢,ÄãÖÕÓÚÕÒµ½ÁË%s²ØÄäµÄµØ·½¡£\033[0m", uident);
 					move(11, 4);
 					seized = 0;
 					srandom(time(0));
 					if (askyn("\033[5;31mÒªÆÆÃÅ¶øÈëÃ´?\033[0m", NA, NA) == YEA) {
 						move(12, 4);
-						prints
-							("\033[1;31mÄã°Î³öÊÖÇ¹£¬Ò»½Å½«ÃÅõß¿ª£¬³åÁË½øÈ¥£¬º°µÀ£º¡°¾¯²ì£¡¡±\033[0m");
+						prints("\033[1;31mÄã°Î³öÊÖÇ¹£¬Ò»½Å½«ÃÅõß¿ª£¬³åÁË½øÈ¥£¬º°µÀ£º¡°¾¯²ì£¡¡±\033[0m");
 						move(13, 4);
 						if (random() % 10 == 0) {
-							prints
-								("\033[1;32mÀïÃæ¿ÕÎŞÒ»ÈË£¬´°»§ÊÇ´ò¿ªµÄ¡£¿´À´%s¸Õ¸ÕÌø´°¶øÌÓ¡£\033[0m",
-								 uident);
+							prints("\033[1;32mÀïÃæ¿ÕÎŞÒ»ÈË£¬´°»§ÊÇ´ò¿ªµÄ¡£¿´À´%s¸Õ¸ÕÌø´°¶øÌÓ¡£\033[0m", uident);
 							move(14, 4);
-							prints
-								("ÄãÖ»ºÃ°ÃÄÕ¶ø·µ¡£´óºÃµÄ»ú»á°¡£¡");
+							prints("ÄãÖ»ºÃ°ÃÄÕ¶ø·µ¡£´óºÃµÄ»ú»á°¡£¡");
 							saveValue(uident, "escTime", -2000000000, 2000000000);
 							saveValue(uident, "escTime", time(0), 2000000000);
 							pressanykey();
@@ -8671,8 +7587,7 @@ money_cop()
 							break;
 						} else {
 							if (robTimes < 3 && random() % 10) {
-								prints("\033[1;32m%sÒ»¿´µ½Äã¶ÙÊ±ÏÅÉµÁË,¹Ô¹Ô¾ÙÆğÁËË«ÊÖ¡£\033[0m",
-										uident);
+								prints("\033[1;32m%sÒ»¿´µ½Äã¶ÙÊ±ÏÅÉµÁË,¹Ô¹Ô¾ÙÆğÁËË«ÊÖ¡£\033[0m", uident);
 								sprintf(genbuf,
 										"±øÂíÙ¸¾¯ÊğÔÚ½ñÌìµÄ×¥²¶ĞĞ¶¯ÖĞ×¥»ñÒ»Ãû´ÂºÅ%sµÄ·ËÍ½\n¾¯·½Í¸Â¶×¥²¶¹ı³Ì·Ç³£Ë³Àû\n\n"
 										"¾¯ÊğÏ£Íû²»Á¼·Ö×ÓÒıÒÔÎª½ä£¬\n ±¾Õ¾¾ÓÃñ¸ß¶ÈÔŞÑï¾¯ÊğÖ°Ô±ÎªÃñ³ıº¦ ", uident);
@@ -8681,8 +7596,7 @@ money_cop()
 								move(14, 4);
 								seized = 1;
 							} else if (robTimes >= 3 && robTimes < 6 && random() % 5) {
-								prints("\033[1;32m%sÒ»¿´µ½Äã¾ÍÒªÌø´°ÌÓÅÜ£¬µ«ÄãÑÛÃ÷ÊÖ¿ì£¬Ò»Ç¹»÷ÖĞÆäĞ¡ÍÈ¡£\033[0m",
-										uident);
+								prints("\033[1;32m%sÒ»¿´µ½Äã¾ÍÒªÌø´°ÌÓÅÜ£¬µ«ÄãÑÛÃ÷ÊÖ¿ì£¬Ò»Ç¹»÷ÖĞÆäĞ¡ÍÈ¡£\033[0m", uident);
 								sprintf(genbuf,
 										"±øÂíÙ¸¾¯ÊğÔÚ½ñÌìµÄ×¥²¶ĞĞ¶¯ÖĞ×¥»ñÒ»Ãû´ÂºÅ%sµÄ·ËÍ½\n¾¯·½Í¸Â¶´ËÈËÔÚÓë¾¯²ìµÄÇ¹Õ½ÖĞ¸ºÉË\n\n"
 										"¾¯ÊğÏ£Íû·¸×ï·Ö×Ó²»Òª¾Ü²¶£¬\n ÒÔÃâÔì³É²»±ØÒªµÄÉËÍö ", uident);
@@ -8691,12 +7605,10 @@ money_cop()
 								move(14, 4);
 								seized = 1;
 							} else if (robTimes >= 6 && robTimes < 8 && random() % 3) {
-								prints("\033[1;32m%sÏòÄãÃÍÆË¹ıÀ´£¬ÄãÀ´²»¼°¿ªÇ¹£¬Ö»ºÃºÍÆäÅ¤³ÉÒ»ÍÅ...\033[0m",
-										uident);
+								prints("\033[1;32m%sÏòÄãÃÍÆË¹ıÀ´£¬ÄãÀ´²»¼°¿ªÇ¹£¬Ö»ºÃºÍÆäÅ¤³ÉÒ»ÍÅ...\033[0m", uident);
 								pressanykey();
 								move(14, 4);
-								prints("\033[1;32m¾­¹ıÒ»·¬²«¶·£¬ÄãÖÕÓÚÖÆ·şÁË%s¡£²»¹ıÄãÒ²ÀÛµÃ¹»Çº£¬»¹±»Ò§ÁËÒ»¿Ú¡£\033[0m",
-										uident);
+								prints("\033[1;32m¾­¹ıÒ»·¬²«¶·£¬ÄãÖÕÓÚÖÆ·şÁË%s¡£²»¹ıÄãÒ²ÀÛµÃ¹»Çº£¬»¹±»Ò§ÁËÒ»¿Ú¡£\033[0m", uident);
 								sprintf(genbuf,
 										"±øÂíÙ¸¾¯ÊğÔÚ½ñÌìµÄ×¥²¶ĞĞ¶¯ÖĞ×¥»ñÒ»Ãû´ÂºÅ%sµÄ·ËÍ½\n¾¯·½Í¸Â¶ÓĞ¾¯Ô±ÔÚÇ¹Õ½ÖĞ¸ºÉË\n\n"
 										"¾¯ÊğÏ£Íû·¸×ï·Ö×Ó²»Òª¾Ü²¶£¬\n ÒÔÃâÔì³É²»±ØÒªµÄÉËÍö ", uident);
@@ -8705,24 +7617,19 @@ money_cop()
 								move(15, 4);
 								seized = 1;
 							} else if (robTimes >= 8 && random() % 2) {
-								prints("\033[5;32mÔ­À´%sÒ²ÓĞÇ¹£¡ÄãÃÇÍ¬Ê±Ãé×¼ÁË¶Ô·½£¡\033[0m",
-										uident);
+								prints("\033[5;32mÔ­À´%sÒ²ÓĞÇ¹£¡ÄãÃÇÍ¬Ê±Ãé×¼ÁË¶Ô·½£¡\033[0m", uident);
 								pressanykey();
 								move(14, 4);
-								prints("\033[1;35mÇ¹ÉùÏì¹ı£¬%sÍ´¿àµÄÎæ×¡ÁËÊÖÍó£¬ÏÊÑªÖ±Á÷¡£Äã°²È»ÎŞí¦£¬ÇìĞÒ°¡£¡\033[0m",
-										uident);
+								prints("\033[1;35mÇ¹ÉùÏì¹ı£¬%sÍ´¿àµÄÎæ×¡ÁËÊÖÍó£¬ÏÊÑªÖ±Á÷¡£Äã°²È»ÎŞí¦£¬ÇìĞÒ°¡£¡\033[0m", uident);
 								//saveValue(currentuser.userid, MONEY_NAME, robTimes*80000*0.3, MAX_MONEY_NUM);
 								move(15, 4);
 								seized = 1;
 							}
 							if (seized) {
-								prints("Äã½«%sÑº»ØÁË¾¯Êğ,Õâ¸ö»µµ°±»´¦ÒÔ%dÌì¼à½û¡£ÄãÓÖÁ¢ÁËÒ»¹¦£¡",
-										uident, robTimes);
+								prints("Äã½«%sÑº»ØÁË¾¯Êğ,Õâ¸ö»µµ°±»´¦ÒÔ%dÌì¼à½û¡£ÄãÓÖÁ¢ÁËÒ»¹¦£¡", uident, robTimes);
 								saveValue(uident, "rob", -robTimes, 50);
 								saveValue(uident, "freeTime", time(0) + 86400 * robTimes, 2000000000);
-								sprintf(genbuf,
-										"Äã±»±øÂíÙ¸¾¯Êğ×¥»ñ£¬²¢´¦ÒÔ%dÌìµÄ¼à½û¡£",
-										robTimes);
+								sprintf(genbuf, "Äã±»±øÂíÙ¸¾¯Êğ×¥»ñ£¬²¢´¦ÒÔ%dÌìµÄ¼à½û¡£", robTimes);
 								mail_buf_slow(uident, "Äã±»¾¯²ì´ş²¶", genbuf, "BMY_FBI");
 								del_from_file(DIR_MC "criminals_list", uident);
 								sprintf(buf, "%s\t%d", uident, robTimes);
@@ -8738,17 +7645,14 @@ money_cop()
 								saveValue(uident, "escTime", time(0), 2000000000);
 							}
 							if (random() % 20) {
-								prints
-									("\033[5;32mÔ­À´%sÒ²ÓĞÇ¹£¡ÄãÃÇÍ¬Ê±Ãé×¼ÁË¶Ô·½£¡\033[0m",
-									 uident);
+								prints("\033[5;32mÔ­À´%sÒ²ÓĞÇ¹£¡ÄãÃÇÍ¬Ê±Ãé×¼ÁË¶Ô·½£¡\033[0m", uident);
 								move(14, 4);
 								if (askyn("\033[1;31mÊÇ·ñ½ô¼±¶ã±Ü£¿", NA, NA) == YEA) {
 									move(15, 4);
 									if (random() %3) {
 										prints("ÄãÒ»¸öºóÑö£¬×Óµ¯´ø×Å·çÉù´ÓÄãÃæÃÅ·É¹ı¡£");
 										move(16, 4);
-										prints("%s³Ã»úÌÓ×ßÁË£¬Äã²»ÖªµÀÊÇ¸Ã°ÃÄÕ»¹ÊÇÇìĞÒ¡£",
-												uident);
+										prints("%s³Ã»úÌÓ×ßÁË£¬Äã²»ÖªµÀÊÇ¸Ã°ÃÄÕ»¹ÊÇÇìĞÒ¡£", uident);
 										pressanykey();
 										sprintf(buf,"%sÌÓ×ß", uident);
 										policereport(buf);
@@ -8768,11 +7672,9 @@ money_cop()
 									prints("\033[1;31mÏÁÂ·Ïà·êÓÂÕßÊ¤£¡ÄãºÁ²»ÓÌÔ¥µÄ¿ªÇ¹ÁË£¡\033[0m");
 									move(16, 4);
 									if (random() % 3) {
-										prints("\033[1;35mÇ¹ÉùÏì¹ı£¬%s±»»÷ÖĞÍ·²¿£¬µ±³¡ËÀÍö¡£\033[0m",
-												uident);
+										prints("\033[1;35mÇ¹ÉùÏì¹ı£¬%s±»»÷ÖĞÍ·²¿£¬µ±³¡ËÀÍö¡£\033[0m", uident);
 										move(17, 4);
-										prints("ÄãºİºİµÄÌßÁËÒ»½Å%sµÄÊ¬Ìå£¬Í¬Ê±°µ×ÔÇìĞÒ½ñÌì×ßÔË¡£",
-												uident);
+										prints("ÄãºİºİµÄÌßÁËÒ»½Å%sµÄÊ¬Ìå£¬Í¬Ê±°µ×ÔÇìĞÒ½ñÌì×ßÔË¡£", uident);
 										//saveValue(currentuser.userid, MONEY_NAME, 50000, MAX_MONEY_NUM);
 										saveValue(uident, "rob", -robTimes/2, 50);
 										lookupuser.dietime = lookupuser.stay + 999*60;
@@ -8797,12 +7699,9 @@ money_cop()
 									}
 								}
 							} else {
-								prints
-									("\033[5;32mÔ­À´%sÉí²ØÊÖÀ×£¬Ò»¼ûÌÓÅÜÎŞÍû£¬%sÖ»ºÃÒı±¬ÊÖÀ×ºÍÄãÍ¬¹éÓÚ¾¡£¡\033[0m",
-									 uident, uident);
+								prints("\033[5;32mÔ­À´%sÉí²ØÊÖÀ×£¬Ò»¼ûÌÓÅÜÎŞÍû£¬%sÖ»ºÃÒı±¬ÊÖÀ×ºÍÄãÍ¬¹éÓÚ¾¡£¡\033[0m", uident, uident);
 								move(14, 4);
-								prints
-									("\033[1;31mÄã×³ÁÒÎşÉüÁË¡£\033[0m");
+								prints ("\033[1;31mÄã×³ÁÒÎşÉüÁË¡£\033[0m");
 								die = 1;
 								saveValue(uident, "rob", -robTimes / 2,50);
 								lookupuser.dietime = lookupuser.stay + 999 * 60;
@@ -8811,8 +7710,7 @@ money_cop()
 										"±øÂíÙ¸¾¯ÊğÔÚ½ñÌìµÄ×¥²¶ĞĞ¶¯ÖĞ»÷±ĞÒ»Ãû´ÂºÅ%sµÄ·ËÍ½\n¾¯·½Í¸Â¶ÓĞ¾¯Ô±ÔÚÇ¹Õ½ÖĞÖĞµ¯ÉËÊÆÑÏÖØ\n\n"
 										"¾¯Êğ±íÊ¾Ò»¶¨È«Á¦ÇÀ¾È£¬\n  ", uident);
 								deliverreport("[ĞÂÎÅ]±øÂíÙ¸¾¯Êğ»÷±ĞÒ»Ãû·ËÍ½",genbuf);
-								mail_buf_slow(uident,
-										"Äã±»¾¯²ì´ş²¶","ÄãÔÚµÖ¿¹¾¯²ì×¥²¶µÄ¹ı³ÌÖĞ£¬Òı±¬ÉíÉÏµÄÊÖÀ×£¬Óë¾¯²ìÍ¬¹éÓÚ¾¡¡£","BMY_FBI");
+								mail_buf_slow(uident, "Äã±»¾¯²ì´ş²¶","ÄãÔÚµÖ¿¹¾¯²ì×¥²¶µÄ¹ı³ÌÖĞ£¬Òı±¬ÉíÉÏµÄÊÖÀ×£¬Óë¾¯²ìÍ¬¹éÓÚ¾¡¡£","BMY_FBI");
 								del_from_file(DIR_MC "criminals_list", uident);
 							}
 							if (die) {
@@ -8835,8 +7733,7 @@ money_cop()
 						}
 					} else {
 						move(12, 4);
-						prints
-							("Äã¾ö¶¨»¹ÊÇÏÈ²»Òª´ò²İ¾ªÉßµÄºÃ...");
+						prints("Äã¾ö¶¨»¹ÊÇÏÈ²»Òª´ò²İ¾ªÉßµÄºÃ...");
 						pressanykey();
 					}
 				}
@@ -8849,29 +7746,25 @@ money_cop()
 				whoTakeCharge(8, uident);
 				if (strcmp(currentuser.userid, uident)) {
 					move(6, 4);
-					prints
-						("¾¯»¨%sÀ¹×¡ÁËÄã,ËµµÀ:¡°Êğ³¤%sÏÖÔÚºÜÃ¦,Ã»Ê±¼ä½Ó´ıÄã¡£¡±",
-						 name,uident);
+					prints("¾¯»¨%sÀ¹×¡ÁËÄã,ËµµÀ:¡°Êğ³¤%sÏÖÔÚºÜÃ¦,Ã»Ê±¼ä½Ó´ıÄã¡£¡±", name,uident);
 					move(8, 4);
-					if (!seek_in_file(DIR_MC "policemen", currentuser.userid)
-							&& !slowclubtest("Police",currentuser.userid)){
+					if (!seek_in_file(DIR_MC "policemen", currentuser.userid) && !slowclubtest("Police",currentuser.userid)){
 						if (askyn("ÄãÊÇÏë¼ÓÈë¾¯ÊğÂğ£¿", NA, NA) == YEA) {
 							sprintf(genbuf, "%s Òª¼ÓÈë¾¯Êğ", currentuser.userid);
 							mail_buf(genbuf, "BMYpolice", genbuf);
 							move(14, 4);
 							prints("ºÃµÄ£¬ÎÒ»áÍ¨ÖªÊğ³¤µÄ¡£");
-						}}
+						}
+					}
 					pressanykey();
 					break;
 				} else {
 					move(6, 4);
 					prints("ÇëÑ¡Ôñ²Ù×÷´úºÅ:");
 					move(7, 6);
-					prints
-						("1. ÈÎÃü¾¯Ô±                  2. ½âÖ°¾¯Ô±");
+					prints("1. ÈÎÃü¾¯Ô±                  2. ½âÖ°¾¯Ô±");
 					move(8, 6);
-					prints
-						("3. ¾¯Ô±Ãûµ¥                  4. ¼à½ûÃûµ¥");
+					prints("3. ¾¯Ô±Ãûµ¥                  4. ¼à½ûÃûµ¥");
 					move(9, 6);
 					prints("5. ´ÇÖ°                      6. ÍË³ö");
 					ch = igetkey();
@@ -8887,21 +7780,15 @@ money_cop()
 								pressanykey();
 								break;
 							}
-							if (seek_in_file
-									(DIR_MC "policemen", uident)) {
+							if (seek_in_file (DIR_MC "policemen", uident)) {
 								prints("¸ÃIDÒÑ¾­ÊÇ¾¯Ô±ÁË¡£");
 								pressanykey();
 								break;
 							}
 							if (askyn("È·¶¨Âğ£¿", NA, NA) == YEA) {
-								addtofile(DIR_MC "policemen",
-										uident);
-								sprintf(genbuf,
-										"%s ÈÎÃüÄãÎª±øÂíÙ¸¾¯Êğ¾¯Ô±",
-										currentuser.userid);
-								mail_buf
-									("¾¯ÊğÏ£ÍûÄã²»Î·Ç¿±©£¬´ò»÷·¸×ï£¬¹«ÕıÎŞË½£¬²»ÅÂÎşÉü£¡",
-									 uident, genbuf);
+								addtofile(DIR_MC "policemen", uident);
+								sprintf(genbuf, "%s ÈÎÃüÄãÎª±øÂíÙ¸¾¯Êğ¾¯Ô±", currentuser.userid);
+								mail_buf("¾¯ÊğÏ£ÍûÄã²»Î·Ç¿±©£¬´ò»÷·¸×ï£¬¹«ÕıÎŞË½£¬²»ÅÂÎşÉü£¡", uident, genbuf);
 								move(14, 4);
 								prints("ÈÎÃü³É¹¦¡£");
 								sprintf(genbuf, "%sĞĞÊ¹¾¯Êğ¹ÜÀíÈ¨ÏŞ",currentuser.userid);
@@ -8921,23 +7808,15 @@ money_cop()
 								pressanykey();
 								break;
 							}
-							if (!seek_in_file
-									(DIR_MC "policemen", uident)) {
-								prints
-									("¸ÃID²»ÊÇ±øÂíÙ¸¾¯Êğ¾¯Ô±¡£");
+							if (!seek_in_file(DIR_MC "policemen", uident)) {
+								prints("¸ÃID²»ÊÇ±øÂíÙ¸¾¯Êğ¾¯Ô±¡£");
 								pressanykey();
 								break;
 							}
 							if (askyn("È·¶¨Âğ£¿", NA, NA) == YEA) {
-								del_from_file(DIR_MC
-										"policemen",
-										uident);
-								sprintf(genbuf,
-										"%s ½â³ıÄãµÄ±øÂíÙ¸¾¯Êğ¾¯Ô±Ö°Îñ",
-										currentuser.userid);
-								mail_buf
-									("¸ĞĞ»ÄãÒ»Ö±ÒÔÀ´µÄ¹¤×÷£¬²¢Ï£ÍûÄã×÷ÎªÊĞÃñ¼ÌĞøÎªÎ¬»¤ÖÎ°²¶ø¾¡ÒåÎñ¡£",
-									 uident, genbuf);
+								del_from_file(DIR_MC "policemen", uident);
+								sprintf(genbuf, "%s ½â³ıÄãµÄ±øÂíÙ¸¾¯Êğ¾¯Ô±Ö°Îñ", currentuser.userid);
+								mail_buf("¸ĞĞ»ÄãÒ»Ö±ÒÔÀ´µÄ¹¤×÷£¬²¢Ï£ÍûÄã×÷ÎªÊĞÃñ¼ÌĞøÎªÎ¬»¤ÖÎ°²¶ø¾¡ÒåÎñ¡£", uident, genbuf);
 								move(14, 4);
 								prints("½âÖ°³É¹¦¡£");
 								sprintf(genbuf, "%sĞĞÊ¹¾¯Êğ¹ÜÀíÈ¨ÏŞ",currentuser.userid);
@@ -8964,8 +7843,7 @@ money_cop()
 							break;
 						case '5':
 							move(12, 4);
-							if (askyn
-									("ÄúÕæµÄÒª´ÇÖ°Âğ£¿", NA, NA) == YEA) {
+							if (askyn("ÄúÕæµÄÒª´ÇÖ°Âğ£¿", NA, NA) == YEA) {
 								/*	del_from_file(MC_BOSS_FILE, "police");
 									sprintf(genbuf,
 									"%s Ğû²¼´ÇÈ¥±øÂíÙ¸¾¯ÊğÊğ³¤Ö°Îñ",
@@ -8978,8 +7856,7 @@ money_cop()
 									quit = 1;
 									pressanykey();
 									*/
-								sprintf(genbuf, "%s Òª´ÇÈ¥±øÂíÙ¸¾¯ÊğÊğ³¤Ö°Îñ",
-										currentuser.userid);
+								sprintf(genbuf, "%s Òª´ÇÈ¥±øÂíÙ¸¾¯ÊğÊğ³¤Ö°Îñ", currentuser.userid);
 								mail_buf(genbuf, "millionaires", genbuf);
 								move(14, 4);
 								prints("ºÃ°É£¬ÒÑ¾­·¢ĞÅ¸æÖª×Ü¹ÜÁË");
@@ -9001,11 +7878,10 @@ money_cop()
 	return 0;
 }
 
-
-static int //slowaction
+//slowaction
 /*¼ì²éÈ¨ÏŞ*/
-Allclubtest(char *id)
-{  if (slowclubtest("Beggar",id))
+static int Allclubtest(char *id) {
+	if (slowclubtest("Beggar",id))
 	return 1;
 	else if (slowclubtest("Rober",id))
 		return 1;
@@ -9016,64 +7892,28 @@ Allclubtest(char *id)
 	else  return 0;
 }
 
-	static int  //slowaction
-slowclubtest(char *board,char *id)
-{
+//slowaction
+static int slowclubtest(char *board,char *id) {
 	char buf[256];
 	sprintf(buf, "boards/%s/club_users", board);
 	return seek_in_file(buf, id);
 }
 
 //¹ÉÆ±¿ªÅÌ
-	static int
-stop_buy()
-{
+static int stop_buy() {
 	FILE *f_fp;
 	char fname[125];
 	sprintf(fname,"%s/stopbuy", DIR_MC);
 	f_fp=fopen(fname,"r");
-	if(f_fp!=NULL)
-	{
+	if(f_fp!=NULL) {
 		fclose(f_fp);
 		return 1;
 	}
 	return 0;
 }
-/*int
-  mail_buf_slow(char *userid, char *title, char *content, char *sender)
-  {
-  FILE *fp;
-  char buf[256], dir[256];
-  struct fileheader header;
-  int t;
-  int now;
-  bzero(&header, sizeof (header));
-  fh_setowner(&header, sender, 0);
-  sprintf(buf, "mail/%c/%s/", mytoupper(userid[0]), userid);
-  if (!file_isdir(buf))
-  return -1;
-  now = time(NULL);
-  t = trycreatefile(buf, "M.%d.A", now, 100);
-  if (t < 0)
-  return -1;
-  header.filetime = t;
-  ytht_strsncpy(header.title, title, sizeof (header.title));
-  fp = fopen(buf, "w");
-  if (fp == 0)
-  return -2;
-  fprintf(fp, "%s", content);
-  fclose(fp);
-  setmailfile(dir, userid, ".DIR");
-  append_record(dir, &header, sizeof (header));
-  return 0;
-  }
-///slowaction to help bm
-*/
 
 //½á»é
-	static int
-money_marry()
-{
+static int money_marry() {
 	int n, ch, quit = 0;
 	size_t filesize=0;
 	void *buffer = NULL;
@@ -9122,8 +7962,7 @@ money_marry()
 	//±ÜÃâ½ÓÊÜ¶à¸öÈËÇó»é
 	for(i=0;i<n;i++){
 		if(!strcmp(marryMem[i].bride, currentuser.userid)){
-			if(marryMem[i].status == MAR_MARRIED
-					|| marryMem[i].status == MAR_MARRYING){
+			if(marryMem[i].status == MAR_MARRIED || marryMem[i].status == MAR_MARRYING){
 				marryMem[j].status =  MAR_COURT_FAIL;
 				marryMem[j].enable = 0;
 				sprintf(genbuf, "%s ÒÑ¾­½ÓÊÜÁË±ğÈËµÄÇó»é\n",marryMem[j].bride);
@@ -9246,9 +8085,7 @@ money_marry()
 }
 
 /*add by macintosh@BMY 2006.10*/
-	static int
-marry_admin(struct MC_Marry *marryMem, int n)
-{
+static int marry_admin(struct MC_Marry *marryMem, int n) {
 	int offset, ch, quit = 0;
 	int count, count2, count3, no=0;
 	char uident[IDLEN + 1], uident2[IDLEN + 1], buf[2048], title[STRLEN], ans[8];
@@ -9267,8 +8104,7 @@ marry_admin(struct MC_Marry *marryMem, int n)
 			&& !seek_in_file(MC_MARRYADMIN_FILE, currentuser.userid)
 			&& strcmp(currentuser.userid, uident)) {
 		move(6, 4);
-		prints
-			("ÃØÊé%sÀ¹×¡ÁËÄã,ËµµÀ:¡°Ö÷ÈÎÃÇÏÖÔÚÕıÃ¦×Å´òÂé½«£¬Ã»Ê±¼ä½Ó´ı!¡±", uident2);
+		prints("ÃØÊé%sÀ¹×¡ÁËÄã,ËµµÀ:¡°Ö÷ÈÎÃÇÏÖÔÚÕıÃ¦×Å´òÂé½«£¬Ã»Ê±¼ä½Ó´ı!¡±", uident2);
 		pressanykey();
 		return 0;
 	}
@@ -9276,7 +8112,7 @@ marry_admin(struct MC_Marry *marryMem, int n)
 	while (!quit) {
 		nomoney_show_stat("±øÂíÙ¸»éÒö¹ÜÀí°ì¹«ÊÒ");
 		move(t_lines - 2, 0);
-		prints("\033[1;44m Ñ¡ \033[1;46m [1]²éÑ¯»éÒö×´¿ö [2]°ìÀíÀë»é [3]ÉèÖÃ¹ÜÀíÈËÔ± [4]·¢ËÍÀë»éÍ¨ÖªÊé             \n"
+		prints( "\033[1;44m Ñ¡ \033[1;46m [1]²éÑ¯»éÒö×´¿ö [2]°ìÀíÀë»é [3]ÉèÖÃ¹ÜÀíÈËÔ± [4]·¢ËÍÀë»éÍ¨ÖªÊé             \n"
 				"\033[1;44m µ¥ \033[1;46m [5]Ç¿ÖÆ½â³ı»éÔ¼ [Q]Àë¿ª                                               ");
 		ch = igetkey();
 		switch (ch) {
@@ -9351,8 +8187,7 @@ marry_admin(struct MC_Marry *marryMem, int n)
 						if(strcmp(mm->bridegroom, uident2))
 							continue;
 						if(mm->status==MAR_MARRIED){
-							sprintf(buf, "½á»éÊ±¼äÎª%s£¬È·¶¨Âğ£¿",
-									get_simple_date_str(&mm->marry_t));
+							sprintf(buf, "½á»éÊ±¼äÎª%s£¬È·¶¨Âğ£¿", get_simple_date_str(&mm->marry_t));
 							if (askyn(buf, NA, NA) == YEA){
 								mm->status=MAR_DIVORCE;
 								mm->divorce_t=time(NULL);
@@ -9377,27 +8212,26 @@ marry_admin(struct MC_Marry *marryMem, int n)
 						deliverreport(title, buf);
 						sprintf(title, "[¹«¸æ]%sºÍ%sÀë»é", uident, uident2);
 						sprintf(lhz,
-								"[0m               [47m                                                [40m \n"
-								"               [47m  [41m[1;32m¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î[47m  [40m \n"
-								"               [47m  [41m¡î                                        ¡î[47m  [40m \n"
-								"               [47m  [41m¡î               [37mÀë »é Ö¤                 [32m¡î[47m  [40m \n"
-								"               [47m  [41m¡î                                        ¡î[47m  [40m \n"
-								"               [47m  [41m¡î                    [34m[[37m»é×Ö[34m]µÚ [37m%5.5d [34mºÅ   [32m¡î[47m  [40m \n"
-								"               [47m  [41m¡î   [37m³ÖÖ¤ÈË                               [32m¡î[47m  [40m \n"
-								"               [47m  [41m¡î   [4;37m%-12.12s[0;1;41m£¨Å®£©[4m%-12.12s[0;1;41m£¨ÄĞ£© [32m¡î[47m  [40m \n"
-								"               [47m  [41m¡î   [37m½á»éÈÕÆÚ£º[4m%s[0;41m                 [1;32m¡î[47m  [40m \n"
-								"               [47m  [41m¡î      [37mÉêÇëÀë»é£¬¾­Éó²é·ûºÏ±øÂíÙ¸´ó¸»ÎÌ  [32m¡î[47m  [40m \n"
-								"               [47m  [41m¡î   [37m¹ØÓÚÀë»éµÄ¹æ¶¨£¬×¼ÓèµÇ¼Ç£¬·¢¸ø´ËÖ¤¡£ [32m¡î[47m  [40m \n"
-								"               [47m  [41m¡î          [37m·¢Ö¤»ú¹Ø ´ó¸»ÎÌ»éÒö¹ÜÀí°ì¹«ÊÒ [32m¡î[47m  [40m \n"
-								"               [47m  [41m¡î          [37m·¢Ö¤ÈÕÆÚ %s           [32m¡î[47m  [40m \n"
-								"               [47m  [41m¡î                                        ¡î[47m  [40m \n"
-								"               [47m  [41m¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î[47m  [40m \n"
-								"               [47m                                                [40m \n"
-								"                                                                [m\n",
+								"\033[0m               \033[47m                                                \033[40m \n"
+								"               \033[47m  \033[41m\033[1;32m¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î\033[47m  \033[40m \n"
+								"               \033[47m  \033[41m¡î                                        ¡î\033[47m  \033[40m \n"
+								"               \033[47m  \033[41m¡î               \033[37mÀë »é Ö¤                 \033[32m¡î\033[47m  \033[40m \n"
+								"               \033[47m  \033[41m¡î                                        ¡î\033[47m  \033[40m \n"
+								"               \033[47m  \033[41m¡î                    \033[34m[\033[37m»é×Ö\033[34m]µÚ \033[37m%5.5d \033[34mºÅ   \033[32m¡î\033[47m  \033[40m \n"
+								"               \033[47m  \033[41m¡î   \033[37m³ÖÖ¤ÈË                               \033[32m¡î\033[47m  \033[40m \n"
+								"               \033[47m  \033[41m¡î   \033[4;37m%-12.12s\033[0;1;41m£¨Å®£©\033[4m%-12.12s\033[0;1;41m£¨ÄĞ£© \033[32m¡î\033[47m  \033[40m \n"
+								"               \033[47m  \033[41m¡î   \033[37m½á»éÈÕÆÚ£º\033[4m%s\033[0;41m                 \033[1;32m¡î\033[47m  \033[40m \n"
+								"               \033[47m  \033[41m¡î      \033[37mÉêÇëÀë»é£¬¾­Éó²é·ûºÏ±øÂíÙ¸´ó¸»ÎÌ  \033[32m¡î\033[47m  \033[40m \n"
+								"               \033[47m  \033[41m¡î   \033[37m¹ØÓÚÀë»éµÄ¹æ¶¨£¬×¼ÓèµÇ¼Ç£¬·¢¸ø´ËÖ¤¡£ \033[32m¡î\033[47m  \033[40m \n"
+								"               \033[47m  \033[41m¡î          \033[37m·¢Ö¤»ú¹Ø ´ó¸»ÎÌ»éÒö¹ÜÀí°ì¹«ÊÒ \033[32m¡î\033[47m  \033[40m \n"
+								"               \033[47m  \033[41m¡î          \033[37m·¢Ö¤ÈÕÆÚ %s           \033[32m¡î\033[47m  \033[40m \n"
+								"               \033[47m  \033[41m¡î                                        ¡î\033[47m  \033[40m \n"
+								"               \033[47m  \033[41m¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î¡î\033[47m  \033[40m \n"
+								"               \033[47m                                                \033[40m \n"
+								"                                                                \033[m\n",
 								no, uident, uident2, jhdate, lhdate);
 						deliverreport(title, lhz);
-						sprintf(title,"»éÒö¹ÜÀí°ì¹«ÊÒÖ÷ÈÎ%s°ìÀíÀë»éÒµÎñ",
-								currentuser.userid);
+						sprintf(title,"»éÒö¹ÜÀí°ì¹«ÊÒÖ÷ÈÎ%s°ìÀíÀë»éÒµÎñ", currentuser.userid);
 						millionairesrec(title, buf, "Marriage");
 						sprintf(buf,"´ó¸»ÎÌ»éÒö¹ÜÀí°ì¹«ÊÒÍ¬ÒâÄúÓë%sµÄÀë»éÒªÇó£¬Ô¸Äú½ñºóÉú»îË³Àû¡£\n", uident);
 						mail_buf_slow(uident2, "´ó¸»ÎÌ»éÒö¹ÜÀí°ì¹«ÊÒÍ¬ÒâÄúµÄÀë»éÒªÇó", buf,"XJTU-XANET");
@@ -9568,8 +8402,7 @@ marry_admin(struct MC_Marry *marryMem, int n)
 							"ÒÑÏò%s·¢³öÁËÀë»éÍ¨ÖªÊé¡£", uident2, uident);
 					deliverreport(title, buf);
 
-					sprintf(title,"»éÒö¹ÜÀí°ì¹«ÊÒÖ÷ÈÎ%s·¢ËÍÀë»éÍ¨ÖªÊé",
-							currentuser.userid);
+					sprintf(title,"»éÒö¹ÜÀí°ì¹«ÊÒÖ÷ÈÎ%s·¢ËÍÀë»éÍ¨ÖªÊé", currentuser.userid);
 					millionairesrec(title, buf, "Marriage");
 					prints("Íê³É²Ù×÷!");
 					pressanykey();
@@ -9583,21 +8416,6 @@ marry_admin(struct MC_Marry *marryMem, int n)
 				getdata(6, 4, "ÇëÊäÈëÅ®·½ID: ", uident, 13, DOECHO, YEA);
 				getdata(7, 4, "ÇëÊäÈëÄĞ·½ID: ", uident2, 13, DOECHO, YEA);
 				if (askyn("È·¶¨Âğ£¿", NA, NA) == YEA){
-					/*if (!file_exist(MC_MARRY_RECORDS_ALL)){
-					  clear();
-					  move(9, 4);
-					  prints("Ã»ÓĞÈÎºÎ¼ÇÂ¼!");
-					  pressanykey();
-					  break;
-					  }
-					  n = get_num_records(MC_MARRY_RECORDS_ALL, sizeof(struct MC_Marry));
-					  if (n <= 0)
-					  break;
-					  filesize = sizeof(struct MC_Marry) * n;
-					  marryMem = loadData(MC_MARRY_RECORDS_ALL, buffer, filesize);
-					  if (marryMem == (void *) -1)
-					  break;
-					  */
 					count = 0;
 					for(offset = 0; ;offset++){
 						if (offset >= n || offset < 0)
@@ -9611,8 +8429,7 @@ marry_admin(struct MC_Marry *marryMem, int n)
 							continue;
 						if(strcmp(mm->bridegroom, uident2))
 							continue;
-						sprintf(buf, "¶©»éÊ±¼äÎª%s£¬È·¶¨Âğ£¿",
-								get_simple_date_str(&mm->court_t));
+						sprintf(buf, "¶©»éÊ±¼äÎª%s£¬È·¶¨Âğ£¿", get_simple_date_str(&mm->court_t));
 						if (askyn(buf, NA, NA) == YEA){
 							mm->enable=0;
 							mm->status = MAR_COURT_FAIL;
@@ -9623,10 +8440,8 @@ marry_admin(struct MC_Marry *marryMem, int n)
 					move(12, 4);
 					if (count>0){
 						saveData(marryMem, filesize);
-						sprintf(title,"»éÒö¹ÜÀí°ì¹«ÊÒÖ÷ÈÎ%sÇ¿ÖÆ½â³ı»éÔ¼",
-								currentuser.userid);
-						sprintf(buf,"Ç¿ÖÆ½â³ı%sÓë%sµÄ»éÔ¼",
-								uident, uident2);
+						sprintf(title,"»éÒö¹ÜÀí°ì¹«ÊÒÖ÷ÈÎ%sÇ¿ÖÆ½â³ı»éÔ¼", currentuser.userid);
+						sprintf(buf,"Ç¿ÖÆ½â³ı%sÓë%sµÄ»éÔ¼", uident, uident2);
 						millionairesrec(title, buf, "Marriage");
 						prints("Íê³É²Ù×÷!");
 
@@ -9692,9 +8507,7 @@ marry_admin(struct MC_Marry *marryMem, int n)
 	return 0;
 }
 
-	static int
-marry_recordlist(struct MC_Marry *marryMem, int n)
-{
+static int marry_recordlist(struct MC_Marry *marryMem, int n) {
 	int ch, quit = 0;
 	while (!quit) {
 		nomoney_show_stat("±øÂíÙ¸½ÌÌÃµµ°¸¹İ");
@@ -9725,9 +8538,7 @@ marry_recordlist(struct MC_Marry *marryMem, int n)
 
 //²éÑ¯»éÒö×´¿ö
 /*add by macintosh@BMY 2006.10*/
-	static int
-marry_query_records(char *id)
-{
+static int marry_query_records(char *id) {
 	int i,j;
 	char buf[STRLEN];
 	int offset;
@@ -9783,8 +8594,7 @@ marry_query_records(char *id)
 			mm = &marryMem[offset];
 			if(mm->enable==0) continue;
 			if(!mm->bride[0] || !mm->bridegroom[0]) continue;
-			if(strcmp(mm->bride, id)
-					&& strcmp(mm->bridegroom, id))
+			if(strcmp(mm->bride, id) && strcmp(mm->bridegroom, id))
 				continue;
 			count++;
 			switch(mm->status){
@@ -9828,9 +8638,7 @@ marry_query_records(char *id)
 }
 //×´¿ö¼ÇÂ¼±í
 //°üÀ¨½á»é£¬Àë»é£¬Çó»éÊ§°Ü
-	static int
-marry_all_records()
-{
+static int marry_all_records() {
 	int i,j;
 	char buf[STRLEN];
 	int offset;
@@ -9923,9 +8731,7 @@ marry_all_records()
 
 //Çó»é½á»éµÇ¼Ç±í
 //»éÊÂµÇ¼Ç±í
-	static int
-marry_active_records(struct MC_Marry *marryMem, int n)
-{
+static int marry_active_records(struct MC_Marry *marryMem, int n) {
 	int i,j;
 	char buf[STRLEN];
 	int offset=0;
@@ -9999,9 +8805,7 @@ marry_active_records(struct MC_Marry *marryMem, int n)
 }
 
 //±éÀú½á»é±í£¬´¦Àí¸÷ÖÖÇé¿ö±àºÅ
-	static int
-marry_refresh(struct MC_Marry *marryMem, int n)
-{
+static int marry_refresh(struct MC_Marry *marryMem, int n) {
 	int i;
 	char buf[400];
 	char filetmp[STRLEN];
@@ -10037,8 +8841,7 @@ marry_refresh(struct MC_Marry *marryMem, int n)
 				&& !(marryMem[i].marry_t > local_now_t)){
 			mm = &marryMem[i];
 			mm->unused[0]='d';
-			sprintf(filetmp, MY_BBS_HOME "/bbstmpfs/tmp/%s.%d",
-					currentuser.userid, getpid());
+			sprintf(filetmp, MY_BBS_HOME "/bbstmpfs/tmp/%s.%d", currentuser.userid, getpid());
 			fp = fopen(filetmp,"w");
 			if(!fp) continue;
 			fprintf(fp,"     \033[1;31m%s\033[mºÍ\033[1;32m%s\033[mµÄ»éÀñÕıÊ½¿ªÊ¼£¬»¶Ó­´ó¼Ò¹âÁÙ\n\n"
@@ -10059,8 +8862,7 @@ marry_refresh(struct MC_Marry *marryMem, int n)
 			sprintf(invpath,"%s/M.%d.A",DIR_MC_MARRY,mm->invitationfile);
 			sprintf(setpath,"%s/M.%d.A",DIR_MC_MARRY,mm->setfile);
 			sprintf(visitpath,"%s/M.%d.A",DIR_MC_MARRY, mm->visitfile);
-			sprintf(filetmp, MY_BBS_HOME "/bbstmpfs/tmp/%s.%d",
-					currentuser.userid, getpid());
+			sprintf(filetmp, MY_BBS_HOME "/bbstmpfs/tmp/%s.%d", currentuser.userid, getpid());
 			fp = fopen(filetmp,"w");
 			if(!fp) continue;
 			fprintf(fp,"     \033[1;31m%s\033[mºÍ\033[1;32m%s\033[mµÄ»éÀñµ½´Ë½áÊø£¬¸ĞĞ»´ó¼ÒµÄ¹âÁÙ£¬"
@@ -10103,9 +8905,7 @@ marry_refresh(struct MC_Marry *marryMem, int n)
 	return 1;
 }
 
-	static int
-marry_givemoney(struct MC_Marry *mm)
-{
+static int marry_givemoney(struct MC_Marry *mm) {
 	char uident[IDLEN + 1];
 	//	void *buffer = NULL;
 	int i;
@@ -10203,8 +9003,7 @@ marry_givemoney(struct MC_Marry *mm)
 }
 
 //¾«¼òµÄÈÕÆÚ±í
-static char *get_simple_date_str(time_t *tt)
-{
+static char *get_simple_date_str(time_t *tt) {
 	struct tm *tm;
 	static char timestr[200];
 	if(tt==0) return "------";
@@ -10216,9 +9015,7 @@ static char *get_simple_date_str(time_t *tt)
 }
 
 //²Î¼Ó»éÀñ
-	static int
-marry_attend(struct MC_Marry *marryMem, int n)
-{
+static int marry_attend(struct MC_Marry *marryMem, int n) {
 	int ch, quit = 0;
 	int i,j;
 	char buf[STRLEN];
@@ -10392,8 +9189,7 @@ marry_attend(struct MC_Marry *marryMem, int n)
 	return 0;
 }
 
-static int PutMarryRecord(struct MC_Marry *marryMem, int n, struct MC_Marry *new_mm)
-{
+static int PutMarryRecord(struct MC_Marry *marryMem, int n, struct MC_Marry *new_mm) {
 	int i, slot = -1;
 
 	for(i = 0; i < n; i++) {
@@ -10409,9 +9205,7 @@ static int PutMarryRecord(struct MC_Marry *marryMem, int n, struct MC_Marry *new
 }
 
 //Çó»é
-	static int
-marry_court(struct MC_Marry *marryMem, int n)
-{
+static int marry_court(struct MC_Marry *marryMem, int n) {
 	char note[3][STRLEN];
 	char buf[STRLEN];
 	struct MC_Marry mm;
@@ -10432,16 +9226,7 @@ marry_court(struct MC_Marry *marryMem, int n)
 				prints("Î¹£¡ÄãÕıÇó×Å»éÄØ£¬ÕâÃ´²»×¨Ò»£¬ÈÃmmÔõÃ´ÏàĞÅÄã");
 				pressanykey();
 				return 0;
-			}
-			/*
-			   else if(marryMem[i].status == MAR_MARRIED){
-			   move(5, 4);
-			   prints("ÄãÒÑ¾­½á»éÁË°¡£¬Ğ¡ĞÄ¸æÄãÖØ»é×ï£¡");
-			   pressanykey();
-			   return 0;
-			   }
-			   */
-			else if(marryMem[i].status == MAR_MARRYING){
+			} else if(marryMem[i].status == MAR_MARRYING){
 				move(5, 4);
 				prints("ÓĞÃ»¸ã´í£¬»éÀñÕıÔÚ¾ÙĞĞÄØ£¬ÓÖÒªÇó»é£¬ÄÔ´üÃ»·¢ÉÕ°É~~");
 				pressanykey();
@@ -10490,16 +9275,7 @@ marry_court(struct MC_Marry *marryMem, int n)
 				prints("ÄãËÀĞÄ°É£¬ÈË¼ÒÒÑ¾­Ïò±ğÈËÇó»éÁË....");
 				pressanykey();
 				return 0;
-			}
-			/*
-			   else if(marryMem[i].status == MAR_MARRIED){
-			   move(5, 4);
-			   prints("ÈË¼ÒÒÑ¾­½á»éÁËÑ½£¬µ±µÚÈıÕß²»ºÃµÄ£¡");
-			   pressanykey();
-			   return 0;
-			   }
-			   */
-			else if(marryMem[i].status == MAR_MARRYING){
+			} else if(marryMem[i].status == MAR_MARRYING){
 				move(5, 4);
 				prints("ÓĞÃ»¸ã´í£¬ÈË¼ÒÕı½á»éÄØ£¬µ·Ê²Ã´ÂÒ°¡~~");
 				pressanykey();
@@ -10566,8 +9342,7 @@ marry_court(struct MC_Marry *marryMem, int n)
 }
 
 
-static char *get_date_str(time_t *tt)
-{
+static char *get_date_str(time_t *tt) {
 	struct tm *tm;
 	static char timestr[200];
 	tm = localtime(tt);
@@ -10577,9 +9352,7 @@ static char *get_date_str(time_t *tt)
 	return timestr;
 }
 
-	static int
-marry_selectday(struct MC_Marry *mm)
-{
+static int marry_selectday(struct MC_Marry *mm) {
 	int ch, quit = 0;
 	time_t local_now_t = time(NULL);
 	//mm->marry_t = local_now_t;
@@ -10645,9 +9418,7 @@ marry_selectday(struct MC_Marry *mm)
 	return 0;
 }
 
-	static int
-marry_editinvitation(struct MC_Marry *mm)
-{
+static int marry_editinvitation(struct MC_Marry *mm) {
 	FILE *oldfp,*newfp;
 	char buf[400];
 	time_t t;
@@ -10707,8 +9478,7 @@ marry_editinvitation(struct MC_Marry *mm)
 
 	if (dashl(filepath) || !dashf(filepath))
 		return -1;
-	sprintf(edittmp, MY_BBS_HOME "/bbstmpfs/tmp/%s.%d",
-			currentuser.userid, getpid());
+	sprintf(edittmp, MY_BBS_HOME "/bbstmpfs/tmp/%s.%d", currentuser.userid, getpid());
 	copyfile_attach(filepath, edittmp);
 	if (vedit(edittmp, 0, YEA) < 0) {
 		unlink(edittmp);
@@ -10716,20 +9486,16 @@ marry_editinvitation(struct MC_Marry *mm)
 		do_delay(-1);	/* by ylsdd */
 		return -1;
 	}
-	snprintf(attach_path, sizeof (attach_path),
-			PATHUSERATTACH "/%s", currentuser.userid);
+	snprintf(attach_path, sizeof (attach_path), PATHUSERATTACH "/%s", currentuser.userid);
 	clearpath(attach_path);
 	decode_attach(filepath, attach_path);
-	insertattachments_byfile(filepath, edittmp,
-			currentuser.userid);
+	insertattachments_byfile(filepath, edittmp, currentuser.userid);
 	unlink(edittmp);
 	return 1;
 }
 
 
-	static int
-marry_editset(struct MC_Marry *mm)
-{
+static int marry_editset(struct MC_Marry *mm) {
 	FILE *oldfp,*newfp;
 	char buf[400];
 	time_t t;
@@ -10798,12 +9564,10 @@ marry_editset(struct MC_Marry *mm)
 		do_delay(-1);	/* by ylsdd */
 		return -1;
 	}
-	snprintf(attach_path, sizeof (attach_path),
-			PATHUSERATTACH "/%s", currentuser.userid);
+	snprintf(attach_path, sizeof (attach_path), PATHUSERATTACH "/%s", currentuser.userid);
 	clearpath(attach_path);
 	decode_attach(filepath, attach_path);
-	insertattachments_byfile(filepath, edittmp,
-			currentuser.userid);
+	insertattachments_byfile(filepath, edittmp, currentuser.userid);
 	unlink(edittmp);
 
 	return 1;
@@ -10811,9 +9575,7 @@ marry_editset(struct MC_Marry *mm)
 
 
 //×¼±¸»éÀñ
-	static int
-marry_perpare(struct MC_Marry *marryMem, int n)
-{
+static int marry_perpare(struct MC_Marry *marryMem, int n) {
 	int ch, quit = 0;
 	int i;
 	struct MC_Marry *mm;
@@ -10903,7 +9665,7 @@ marry_perpare(struct MC_Marry *marryMem, int n)
 							pressanykey();
 							continue;
 						} else if (!(lookupuser.userlevel & PERM_READMAIL)) {
-							prints("ÎŞ·¨ËÍĞÅ¸ø [1m%s[m\n", lookupuser.userid);
+							prints("ÎŞ·¨ËÍĞÅ¸ø \033[1m%s\033[m\n", lookupuser.userid);
 							pressanykey();
 							continue;
 						} else if (!strcmp(uident, currentuser.userid)) {
@@ -10968,9 +9730,7 @@ marry_perpare(struct MC_Marry *marryMem, int n)
 }
 
 //Àë»é
-	static int
-marry_divorce()
-{
+static int marry_divorce() {
 	clear();
 	move(10, 4);
 	//prints("°¥Ñ½£¬º¢×Ó¶¼ÕâÃ´´óÁË»¹ÓĞÊ²Ã´Ïë²»¿ªµÄ£¬¿ì»ØÈ¥ºÃºÃ¹ıÈÕ×Ó°É~~");
@@ -10982,9 +9742,7 @@ marry_divorce()
 }
 
 //ºÚÃûµ¥
-	static int
-money_deny()
-{
+static int money_deny() {
 	char uident[STRLEN];
 	char ans[8];
 	char msgbuf[256];
@@ -10995,11 +9753,9 @@ money_deny()
 		prints("Éè¶¨ºÚÃûµ¥\n");
 		count = listfilecontent(MC_DENY_FILE);
 		if (count)
-			getdata(1, 0, "(A)Ôö¼Ó (D)É¾³ı (C)¸Ä±ä or (E)Àë¿ª [E]: ", ans,
-					7, DOECHO, YEA);
+			getdata(1, 0, "(A)Ôö¼Ó (D)É¾³ı (C)¸Ä±ä or (E)Àë¿ª [E]: ", ans, 7, DOECHO, YEA);
 		else
-			getdata(1, 0, "(A)Ôö¼Ó or (E)Àë¿ª [E]: ", ans, 7,
-					DOECHO, YEA);
+			getdata(1, 0, "(A)Ôö¼Ó or (E)Àë¿ª [E]: ", ans, 7, DOECHO, YEA);
 		if (*ans == 'A' || *ans == 'a') {
 			move(1, 0);
 			usercomplete("°ÑË­¼ÓÈëºÚÃûµ¥: ", uident);
@@ -11027,11 +9783,7 @@ money_deny()
 	return 1;
 }
 
-
-
-	static int
-mc_addtodeny(char *uident, char *msg, int ischange)
-{
+static int mc_addtodeny(char *uident, char *msg, int ischange) {
 	char buf[50], strtosave[256];
 	char buf2[50];
 	int day;
@@ -11090,37 +9842,26 @@ mc_addtodeny(char *uident, char *msg, int ischange)
 }
 
 
-	static int
-mc_denynotice(int action, char *user, char *msgbuf)
-{
+static int mc_denynotice(int action, char *user, char *msgbuf) {
 	char repbuf[STRLEN];
 	char repuser[IDLEN + 1];
 	strcpy(repuser, user);
 	switch (action) {
 		case 1:
-			sprintf(repbuf,
-					"[ºÅÍâ]%s±»ÁĞÈë´ó¸»ÎÌºÚÃûµ¥", repuser);
+			sprintf(repbuf, "[ºÅÍâ]%s±»ÁĞÈë´ó¸»ÎÌºÚÃûµ¥", repuser);
 			deliverreport(repbuf, msgbuf);
-			sprintf(repbuf,
-					"%s±»%sÁĞÈë´ó¸»ÎÌºÚÃûµ¥",
-					user, currentuser.userid);
+			sprintf(repbuf, "%s±»%sÁĞÈë´ó¸»ÎÌºÚÃûµ¥", user, currentuser.userid);
 			mail_buf(msgbuf, user, repbuf);
 			millionairesrec(repbuf, msgbuf,"");
 			break;
 		case 3:
-			sprintf(repbuf,
-					"%s¸Ä±ä%s´ó¸»ÎÌºÚÃûµ¥µÄÊ±¼ä»òËµÃ÷",
-					currentuser.userid, user);
+			sprintf(repbuf, "%s¸Ä±ä%s´ó¸»ÎÌºÚÃûµ¥µÄÊ±¼ä»òËµÃ÷", currentuser.userid, user);
 			millionairesrec(repbuf, msgbuf,"");
 			mail_buf(msgbuf, user, repbuf);
 			break;
 		case 2:
-			sprintf(repbuf,
-					"»Ö¸´ %s ½øÈë´ó¸»ÎÌÓÎÏ·µÄÈ¨Àû",
-					repuser);
-			snprintf(msgbuf, 256, "%s %s\n"
-					"ÇëÀí½â´ó¸»ÎÌ×Ü¹Ü¹¤×÷£¬Ğ»Ğ»£¡\n",
-					currentuser.userid, repbuf);
+			sprintf(repbuf, "»Ö¸´ %s ½øÈë´ó¸»ÎÌÓÎÏ·µÄÈ¨Àû", repuser);
+			snprintf(msgbuf, 256, "%s %s\n" "ÇëÀí½â´ó¸»ÎÌ×Ü¹Ü¹¤×÷£¬Ğ»Ğ»£¡\n", currentuser.userid, repbuf);
 			deliverreport(repbuf, msgbuf);
 			millionairesrec(repbuf, msgbuf,"");
 			mail_buf(msgbuf, user, repbuf);
@@ -11129,9 +9870,7 @@ mc_denynotice(int action, char *user, char *msgbuf)
 	return 0;
 }
 
-	static int
-mc_autoundeny()
-{
+static int mc_autoundeny() {
 	char *ptr, buf[STRLEN];
 	int undenytime;
 	if (!seek_in_file(MC_DENY_FILE, currentuser.userid))
@@ -11145,9 +9884,7 @@ mc_autoundeny()
 	if (undenytime > time(0))
 		return 0;
 	if (del_from_file(MC_DENY_FILE, currentuser.userid)) {
-		sprintf(buf,
-				"»Ö¸´ %s ½øÈë´ó¸»ÎÌÓÎÏ·µÄÈ¨Àû",
-				currentuser.userid);
+		sprintf(buf, "»Ö¸´ %s ½øÈë´ó¸»ÎÌÓÎÏ·µÄÈ¨Àû", currentuser.userid);
 		//deliverreport(buf, "ÇëÀí½â´ó¸»ÎÌ×Ü¹Ü¹¤×÷£¬Ğ»Ğ»£¡\n");
 		millionairesrec(buf, "ÏµÍ³×Ô¶¯½â·â\n","");
 		mail_buf("ÇëÀí½â´ó¸»ÎÌ×Ü¹Ü¹¤×÷£¬Ğ»Ğ»£¡\n", currentuser.userid, buf);
@@ -11155,9 +9892,7 @@ mc_autoundeny()
 	return 1;
 }
 
-	static int
-addstockboard(char *sbname, char *fname)
-{
+static int addstockboard(char *sbname, char *fname) {
 	int i;
 	int seek;
 
@@ -11185,9 +9920,7 @@ addstockboard(char *sbname, char *fname)
 
 }
 
-	static int
-delstockboard(char *sbname, char *fname)
-{
+static int delstockboard(char *sbname, char *fname) {
 	int i, seek;
 	if ((i = getbnum(sbname)) == 0){
 		move(3, 0);
@@ -11212,9 +9945,7 @@ delstockboard(char *sbname, char *fname)
 	return del_from_file(fname, sbname);
 }
 
-	static int
-stockboards()
-{
+static int stockboards() {
 	char uident[STRLEN];
 	char ans[8], repbuf[200], buf[200], titlebuf[STRLEN], bname[STRLEN],  bpath[STRLEN];
 	int count, ch2;
@@ -11226,8 +9957,7 @@ stockboards()
 	whoTakeCharge(6, uident);
 	if (strcmp(currentuser.userid, uident)) {
 		move(6, 4);
-		prints
-			("ÃØÊé%sÀ¹×¡ÁËÄã,ËµµÀ:¡°Ö÷Ï¯%sÏÖÔÚºÜÃ¦,Ã»Ê±¼ä½Ó´ıÄã¡£¡±", buf,uident);
+		prints("ÃØÊé%sÀ¹×¡ÁËÄã,ËµµÀ:¡°Ö÷Ï¯%sÏÖÔÚºÜÃ¦,Ã»Ê±¼ä½Ó´ıÄã¡£¡±", buf,uident);
 		pressanykey();
 		return 0;
 	} else {
@@ -11248,11 +9978,9 @@ stockboards()
 					prints("Éè¶¨ÉÏÊĞ°æÃæÃûµ¥\n");
 					count = listfilecontent(MC_STOCK_BOARDS);
 					if (count)
-						getdata(1, 0, "(A)Ôö¼Ó (D)É¾³ı (E)Àë¿ª [E]: ",
-								ans, 7, DOECHO, YEA);
+						getdata(1, 0, "(A)Ôö¼Ó (D)É¾³ı (E)Àë¿ª [E]: ", ans, 7, DOECHO, YEA);
 					else
-						getdata(1, 0, "(A)Ôö¼Ó  (E)Àë¿ª [E]: ", ans, 7,
-								DOECHO, YEA);
+						getdata(1, 0, "(A)Ôö¼Ó  (E)Àë¿ª [E]: ", ans, 7, DOECHO, YEA);
 					if (*ans == 'A' || *ans == 'a') {
 						move(1, 0);
 						make_blist();
@@ -11320,11 +10048,9 @@ stockboards()
 					prints("±»ÔİÍ£½»Ò×µÄ°æÃæÃûµ¥\n");
 					count = listfilecontent(MC_STOCK_STOPBUY);
 					if (count)
-						getdata(1, 0, "(A)Ôö¼Ó (D)É¾³ı (E)Àë¿ª [E]: ",
-								ans, 7, DOECHO, YEA);
+						getdata(1, 0, "(A)Ôö¼Ó (D)É¾³ı (E)Àë¿ª [E]: ", ans, 7, DOECHO, YEA);
 					else
-						getdata(1, 0, "(A)Ôö¼Ó  (E)Àë¿ª [E]: ", ans, 7,
-								DOECHO, YEA);
+						getdata(1, 0, "(A)Ôö¼Ó  (E)Àë¿ª [E]: ", ans, 7, DOECHO, YEA);
 					if (*ans == 'A' || *ans == 'a') {
 						move(1, 0);
 						make_blist();
@@ -11447,8 +10173,7 @@ stockboards()
 			case '5':
 				move(12, 4);
 				if (askyn("ÄúÕæµÄÒª´ÇÖ°Âğ£¿", NA,NA) == YEA) {
-					sprintf(genbuf, "%s Òª´ÇÈ¥Ö¤¼à»áÖ÷Ï¯Ö°Îñ",
-							currentuser.userid);
+					sprintf(genbuf, "%s Òª´ÇÈ¥Ö¤¼à»áÖ÷Ï¯Ö°Îñ", currentuser.userid);
 					mail_buf(genbuf, "millionaires", genbuf);
 					move(14, 4);
 					prints("ºÃ°É£¬ÒÑ¾­·¢ĞÅ¸æÖª×Ü¹ÜÁË");
@@ -11503,8 +10228,7 @@ struct TrainInfo{
 //ÒÔÏÂ½öÁĞ³öÎ÷°²Õ¾µ½·¢³µ´Î£¬º¬¸´³µ´Î
 struct TrainInfo XianTrain[]= {
 	{"T193", 2, 0.3, 0.0},{"T194", 2, 0.3, 0.0},{"T191", 2, 0.3, 0.0},{"T192", 2, 0.3, 0.0},
-	{"T197", 2, 0.3, 0.0},{"T198", 2, 0.3, 0.0},
-	{"K5", 2, 0.4, 0.0},	{"K6", 2, 0.4, 0.0},
+	{"T197", 2, 0.3, 0.0},{"T198", 2, 0.3, 0.0}, {"K5", 2, 0.4, 0.0},{"K6", 2, 0.4, 0.0},
 	{"K165", 2, 0.4, 0.0},{"K166", 2, 0.4, 0.0},
 	{"K173", 0, 0.0, 0.0},{"K174", 0, 0.0, 0.0},{"K171", 0, 0.0, 0.0},{"K172", 0, 0.0, 0.0},
 	{"K241", 2, 0.4, 0.0},{"K242", 2, 0.4, 0.0},{"K243", 2, 0.4, 0.0},{"K244", 2, 0.4, 0.0},
@@ -11525,29 +10249,24 @@ struct TrainInfo XianTrain[]= {
 	{"1363", 2, 0.3, 0.0},{"1364", 2, 0.3, 0.0},
 	{"1433", 2, 0.3, 0.0},{"1434", 2, 0.3, 0.0},{"1432", 2, 0.3, 0.0},{"1431", 2, 0.3, 0.0},
 	{"N373", 0, 0.0, 0.0},{"N374", 0, 0.0, 0.0},
-	{"N375", 2, 0.5, -0.15},	{"N376", 2, 0.5, -0.15},	{"N376", 2, 0.5, -0.15},	{"N378", 2, 0.5, -0.15},
+	{"N375", 2, 0.5, -0.15},{"N376", 2, 0.5, -0.15},{"N376", 2, 0.5, -0.15},{"N378", 2, 0.5, -0.15},
 	{"N359", 2, 0.4, 0.0},{"N360", 2, 0.4, 0.0},{"N357", 2, 0.4, 0.0},{"N358", 2, 0.4, 0.0},
 	{"4901", 2, 0.4, 0.0},{"4902", 2, 0.4, 0.0},{"4903", 2, 0.4, 0.0},{"4904", 2, 0.4, 0.0},
 	{"4909", 2, 0.4, 0.0},{"4910", 2, 0.4, 0.0},{"4908", 2, 0.4, 0.0},{"4907", 2, 0.4, 0.0},
 	{"4911", 2, 0.3, 0.0},{"4912", 2, 0.3, 0.0},
 	{"4915", 2, 0.5, -0.3},{"4916", 2, 0.5, -0.3},{"4917", 2, 0.5, -0.3},{"4918", 2, 0.5, -0.3},
-
 	{"A351", 1, 0.0, 0.0},{"A352", 1, 0.0, 0.0},
 };
 
 //ËÄÉáÎåÈë
-	static float
-Round(float num)
-{
+static float Round(float num) {
 	num = (float)(int) (num + 0.5);
 	return num;
 }
 
 
 //¼ÆËãÓ²Ï¯»ù±¾Æ±
-	static float
-calc_basic_price(int LiCheng, int flag)
-{
+static float calc_basic_price(int LiCheng, int flag) {
 	int mininum, distance = 0, order = 0, i, j;
 	float rate=0, basic_price=0;
 	const float BASIC = 0.05861;
@@ -11599,9 +10318,7 @@ calc_basic_price(int LiCheng, int flag)
 }
 
 
-	static float
-show_ticket()
-{
+static float show_ticket() {
 	float JiBenPiao, BaoXian, KePiao, KuaiPiao, KongPiao, WoPiao, QuanJia, JiJin, CheZhan, KePiao2;
 	int YouXiaoQi=2, i;
 	float jk1=0, jk2=0;
@@ -11906,214 +10623,9 @@ show_ticket()
 
 	return QuanJia;
 }
-/*
-   static int
-   calc_ticket_price()
-   {
-   int ch, quit = 0, temp, i;
-   char buf[STRLEN], ZTK=0;
-   float tempf;
 
-   bzero(&myTicket, sizeof (struct ticket_info));
-   clear();
-   while (!quit) {
-   nomoney_show_stat("»ğ³µÆ±Æ±¼Û¼ÆËã");
-   show_ticket();
-   showAt(t_lines - 2, 0, "\033[1;44m Éè \033[1;46m [0]³µ´Î [1]Àï³Ì [2]Æ±ÖÖ [3]Ï¯±ğ [4]µÈ¼¶ [5]¿Õµ÷ [6]ÉÏ¸¡ÂÊ [7]ÎÔÆÌ [8]ÔÙ¸¡ÂÊ          \033[m", 0);
-   if (myTicket.DaoDi == 0)
-   showAt(t_lines - 1, 0, "\033[1;44m ÖÃ \033[1;46m [A]Í¨Æ± [D]¶¯³µ×éÆ±¼Û [H]°ïÖú [Q]Àë¿ª                                                          \033[m", 0);
-   else
-   showAt(t_lines - 1, 0, "\033[1;44m ÖÃ \033[1;46m [A]Í¨Æ± [B]ÖĞ×ªÇ°Àï³Ì [H]°ïÖú [Q]Àë¿ª                                             \033[m", 0);
-
-   ch = igetkey();
-   switch (ch) {
-   case '0':
-   getdata(t_lines-3, 0, "ÇëÊäÈë³µ´Î: ", buf, 5, DOECHO, YEA);
-   if (buf[0] == '\0' || buf[0] == '\n')
-   break;
-   bzero(&myTicket, sizeof (struct ticket_info));
-   sprintf(myTicket.CheCi, "%s", buf);
-   if (isalpha(buf[0])){
-   ZTK = toupper(buf[0]);
-   myTicket.CheCi[0] = ZTK;
-   }else
-   ZTK = 0;
-   temp = atoi(buf);
-
-   if (ZTK=='Z' || ZTK=='T' || ZTK=='K' || ZTK=='N'){
-   myTicket.JiaKuai = 2;
-   myTicket.KongTiao = 2;
-   myTicket.ShangFu = 0.5;
-   }else if (ZTK=='D')
-   myTicket.DongChe = 1;
-   else if (temp < 6000)
-   myTicket.JiaKuai = 1;
-   else
-   myTicket.JiaKuai = 0;
-
-   i = 0;
-   while (XianTrain[i].CheCi[0] != '\0'){
-   if (!strcmp(XianTrain[i].CheCi, myTicket.CheCi)){
-   myTicket.KongTiao = XianTrain[i].KongTiao;
-   myTicket.ShangFu = XianTrain[i].ShangFu;
-   myTicket.ZaiFu = XianTrain[i].ZaiFu;
-   break;
-   }
-   i++;
-   }
-   break;
-
-   case '1':
-   getdata(t_lines-3, 0, "ÇëÊäÈëÀï³Ì: ", buf, 5, DOECHO, YEA);
-   if (buf[0] == '\0' || buf[0] == '\n')
-   break;
-   temp = atoi(buf);
-   myTicket.LiCheng = (temp > 0) ? temp : 0;
-   myTicket.LiCheng2 = myTicket.LiCheng;
-   break;
-
-   case '2':
-   showAt(t_lines-4, 0, "0.È«¼Û 1.Ñ§ÉúÆ± 2.Ğ¡º¢Æ± 3.ÉË²Ğ¾üÈËÆ± 4.Ğ¡º¢µ¥¶ÀÊ¹ÓÃÎÔÆÌ", 0);
-   getdata(t_lines-3, 0, "ÇëÊäÈëÆ±ÖÖ: ", buf, 6, DOECHO, YEA);
-   if (buf[0] == '\0' || buf[0] == '\n')
-   break;
-temp = atoi(buf);
-myTicket.PiaoZhong = (temp > 0 && temp < 5) ? temp : 0;
-break;
-
-case '3':
-showAt(t_lines-4, 0, "0.Ó²Ï¯   1.ÈíÏ¯", 0);
-getdata(t_lines-3, 0, "ÇëÊäÈëÏ¯±ğ: ", buf, 6, DOECHO, YEA);
-if (buf[0] == '\0' || buf[0] == '\n')
-break;
-temp = atoi(buf);
-myTicket.XiBie = (temp > 0 && temp < 2) ? temp : 0;
-break;
-
-case '4':
-showAt(t_lines-4, 0, "0.ÆÕ¿Í   1.ÆÕ¿ì   2.¿ìËÙ/ÌØ¿ì/Ö±ÌØ", 0);
-getdata(t_lines-3, 0, "ÇëÊäÈëµÈ¼¶: ", buf, 6, DOECHO, YEA);
-if (buf[0] == '\0' || buf[0] == '\n')
-break;
-temp = atoi(buf);
-myTicket.JiaKuai = (temp > 0 && temp < 3) ? temp : 0;
-break;
-
-case '5':
-showAt(t_lines-4, 0, "0.ÎŞ¿Õµ÷   1.ÆÕÍ¨ÓĞ¿Õµ÷   2.ĞÂĞÍÓĞ¿Õµ÷", 0);
-getdata(t_lines-3, 0, "ÇëÊäÈëµÈ¼¶: ", buf, 6, DOECHO, YEA);
-if (buf[0] == '\0' || buf[0] == '\n')
-break;
-temp = atoi(buf);
-myTicket.KongTiao = (temp > 0 && temp < 3) ? temp : 0;
-if (myTicket.KongTiao == 1)
-	myTicket.ShangFu = 0.0;
-else if (myTicket.KongTiao == 2)
-	myTicket.ShangFu = 0.5;
-	break;
-
-	case '6':
-	getdata(t_lines-3, 0, "ÇëÊäÈëÉÏ¸¡ÂÊ: ", buf, 6, DOECHO, YEA);
-	if (buf[0] == '\0' || buf[0] == '\n')
-	break;
-	tempf = atof(buf);
-if (tempf <= 0)
-	tempf = 0;
-else if (tempf >= 2.99)
-	tempf = 2.99;
-	myTicket.ShangFu = tempf;
-	break;
-
-	case '7':
-if (myTicket.XiBie == 0)
-	showAt(t_lines-4, 0, "0.È¡Ïû   1.ÉÏÆÌ  2.ÖĞÆÌ  3.ÏÂÆÌ", 0);
-	else
-	showAt(t_lines-4, 0, "0.È¡Ïû   1.ÉÏÆÌ  2.ÏÂÆÌ", 0);
-	getdata(t_lines-3, 0, "ÇëÊäÈëÎÔÆÌÖÖÀà: ", buf, 6, DOECHO, YEA);
-	if (buf[0] == '\0' || buf[0] == '\n')
-	break;
-	temp = atoi(buf);
-	myTicket.WoPu= (temp > 0 && temp < 4) ? temp : 0;
-	break;
-
-	case '8':
-	getdata(t_lines-3, 0, "ÇëÊäÈëÔÙ¸¡ÂÊ(¿ÉÎª¸ºÖµ): ", buf, 6, DOECHO, YEA);
-	if (buf[0] == '\0' || buf[0] == '\n')
-	break;
-	tempf = atof(buf);
-if (tempf < -0.5)
-	tempf = -0.5;
-else if (tempf > 0.3)
-	tempf = 0.3;
-	myTicket.ZaiFu = tempf;
-	break;
-
-
-	case 'A':
-	case 'a':
-	if (myTicket.DongChe > 0){
-		myTicket.DaoDi = 0;
-		showAt(t_lines-4, 0, "\033[1;5;31m¶¯³µ×éÁĞ³µ³µÆ±×îÔ¶Ö»·¢ÊÛÖÁ±¾´ÎÁĞ³µÖÕµãÕ¾¡£\033[m", 0);
-		pressreturn();
-		break;
-	}	 //¶¯³µ×é²»´òÍ¨Æ±
-showAt(t_lines-4, 0, "0.È¡Ïû   1.ÆÕ¿Íµ½µ×  2.ÆÕ¿ìµ½µ×  3.ÌØ¿ìµ½µ×", 0);
-getdata(t_lines-3, 0, "ÇëÊäÈëÍ¨Æ±ÀàĞÍ: ", buf, 6, DOECHO, YEA);
-if (buf[0] == '\0' || buf[0] == '\n')
-break;
-temp = atoi(buf);
-myTicket.DaoDi= (temp > 0 && temp < 4) ? temp : 0;
-break;
-
-case 'B':
-case 'b':
-if (myTicket.DaoDi == 0)
-	break;
-	getdata(t_lines-3, 0, "ÇëÊäÈëÖĞ×ªÇ°µÄÀï³Ì: ", buf, 6, DOECHO, YEA);
-	if (buf[0] == '\0' || buf[0] == '\n')
-	break;
-	temp = atoi(buf);
-	myTicket.LiCheng2 = (temp > 0) ? temp : 0;
-if (myTicket.LiCheng2 > myTicket.LiCheng)
-	myTicket.LiCheng2 = myTicket.LiCheng;
-	break;
-
-	case 'd':
-	case 'D':
-	showAt(t_lines-4, 0, "0.È¡Ïû   1.¶şµÈ×ù   2.Ò»µÈ×ù   3.¶şµÈ×ùÑ§ÉúÆ±", 0);
-	getdata(t_lines-3, 0, "ÇëÊäÈë: ", buf, 6, DOECHO, YEA);
-	if (buf[0] == '\0' || buf[0] == '\n')
-	break;
-	temp = atoi(buf);
-	myTicket.DongChe = (temp > 0 && temp < 4) ? temp : 0;
-if (myTicket.DongChe > 0)
-	myTicket.DaoDi = 0; //¶¯³µ×é²»´òÍ¨Æ±
-	break;
-
-	case 'h':
-	case 'H':
-	clear();
-	showAt(5, 4, "Ö±´ï¡¢ÌØ¿ì¡¢¿ìËÙÁĞ³µÄ¬ÈÏÎªĞÂ¿Õµ÷ÁĞ³µ£¬ÈçĞèĞŞ¸ÄÇë°´5¡£", 0);
-	showAt(7, 4, "ĞÂ¿Õµ÷ÁĞ³µÉÏ¸¡ÂÊÎª0.5£»Ò»¡¢¶şµµÕÛ¿Û·Ö±ğÎª0.4¡¢0.3£¬ÈçĞèĞŞ¸ÄÇë°´6¡£", 0);
-	showAt(9, 4, "\033[1mÓĞ³ÌĞò·½ÃæÒÉÎÊÇëµ½\033[32m"MC_BOARD"\033[37m°æ×ÉÑ¯!\033[m", 0);
-	showAt(11, 4, "\033[1mÓĞÌúÂ·Æ±¼Û·½ÃæÒÉÎÊÇëµ½\033[32mtraffic\033[37m°æ×ÉÑ¯!\033[m", 0);
-	showAt(13, 4, "\033[1;32m¸ĞĞ»ÄúµÄÊ¹ÓÃ! »¶Ó­ÄúÏÂ´ÎÔÙÀ´!\033[m", 1);
-	break;
-
-	case 'q':
-	case 'Q':
-	quit = 1;
-	break;
-	}
-}
-return 0;
-}
-*/
 /* ¾è¿î by macintosh  */
-
-	static int
-loadContributions(char *cname, char *user)
-{
+static int loadContributions(char *cname, char *user) {
 	char value[20];
 	char path[256];
 	sprintf(path, DIR_CONTRIBUTIONS"%s", cname);
@@ -12123,9 +10635,7 @@ loadContributions(char *cname, char *user)
 		return limitValue(atoi(value), sizeof(int));
 }  //¶ÁÈ¡¸÷»ù½ğ¾è¿îÊıÖµ
 
-	static int
-saveContributions(char *cname, char *user, int valueToAdd)
-{
+static int saveContributions(char *cname, char *user, int valueToAdd) {
 	int valueInt;
 	char value[20], path[256];
 
@@ -12142,9 +10652,7 @@ saveContributions(char *cname, char *user, int valueToAdd)
 }  //±£´æ¾è¿îÊıÖµ
 
 
-	static void
-doContributions(struct MC_Jijin *clist)
-{
+static void doContributions(struct MC_Jijin *clist) {
 	int money, i=0, num=0, num2, total_num, old_num ;
 	float transfer_rate;
 	char title[80], buf[512];
@@ -12182,9 +10690,7 @@ doContributions(struct MC_Jijin *clist)
 		return;
 	}
 	transfer_rate = utmpshm->mc.transfer_rate / 10000.0;
-	sprintf(buf,
-			" ÊÖĞø·Ñ %.2f£¥£¨×î¸ßÊÕÈ¡ 100000 ±øÂíÙ¸±Ò£¬²»×ã1°´1ÊÕÈ¡¡££©",
-			transfer_rate * 100);
+	sprintf(buf, " ÊÖĞø·Ñ %.2f£¥£¨×î¸ßÊÕÈ¡ 100000 ±øÂíÙ¸±Ò£¬²»×ã1°´1ÊÕÈ¡¡££©", transfer_rate * 100);
 	showAt(t_lines-4, 2, buf, 0);
 	move(t_lines-3, 2);
 	sprintf(buf, "È·¶¨¸ø %s »ù½ğ£¨%s£©¾è%d ±øÂíÙ¸±ÒÂğ£¿", clist[num].name, clist[num].userid, num2);
@@ -12227,9 +10733,7 @@ doContributions(struct MC_Jijin *clist)
 	return;
 }
 
-	static int
-money_contributions()
-{
+static int money_contributions() {
 	int ch, money, money2, quit = 0, count = 0;
 	void *buffer = NULL;
 	size_t filesize;
@@ -12272,12 +10776,12 @@ money_contributions()
 
 			case '4':
 				showAt(5, 0,
-						"[1;32mÄúÈ·¶¨Ç®·ÅÔÚ¿Ú´üÉÕÊÖ£¬´æÔÚÒøĞĞÉÕĞÄ£¬×¼±¸¿´ÆÆºì³¾ËÄ´ó½Ô¿ÕÅ×¿ªÈ«²¿[m\n"
-						"[1;32mÉí¼ÒÉÏÉ½µ±ºÍÉĞÃ´£¿[m\n"
-						"[1;32mÄúµÄÈ«²¿²Æ²ú½«Áô¸ømillionaires×÷ÎªÌê¶È·Ñ£¬×Ê½ğ½«ÓÃÓÚ½¨ÉèÏ£ÍûĞ¡Ñ§[m\n"
-						"[1;32mºÍÔ®Öú°¬×Ì²¡»¼Õß£¬ÒÔ¼°×ÊÖúÌ¹É£ÄáÑÇ¡¢ÔŞ±ÈÑÇµÈ¹úÆ¶Ãñ[m\n"
-						"[1;31m×¢Òâ£º¹«¹«Ö»¸ºÔğÌê¶È²»¸ºÔğ»¹Ë×£¡£¡[m\n"
-						"[1;33mÇ®²»ÊÇÍòÄÜµÄ£¬Ã»ÓĞÇ®È´ÍòÍò²»ÄÜ£¬ÈıË¼¶øºóĞĞ°¡£¡[m\n"
+						"\033[1;32mÄúÈ·¶¨Ç®·ÅÔÚ¿Ú´üÉÕÊÖ£¬´æÔÚÒøĞĞÉÕĞÄ£¬×¼±¸¿´ÆÆºì³¾ËÄ´ó½Ô¿ÕÅ×¿ªÈ«²¿\033[m\n"
+						"\033[1;32mÉí¼ÒÉÏÉ½µ±ºÍÉĞÃ´£¿\033[m\n"
+						"\033[1;32mÄúµÄÈ«²¿²Æ²ú½«Áô¸ømillionaires×÷ÎªÌê¶È·Ñ£¬×Ê½ğ½«ÓÃÓÚ½¨ÉèÏ£ÍûĞ¡Ñ§\033[m\n"
+						"\033[1;32mºÍÔ®Öú°¬×Ì²¡»¼Õß£¬ÒÔ¼°×ÊÖúÌ¹É£ÄáÑÇ¡¢ÔŞ±ÈÑÇµÈ¹úÆ¶Ãñ\033[m\n"
+						"\033[1;31m×¢Òâ£º¹«¹«Ö»¸ºÔğÌê¶È²»¸ºÔğ»¹Ë×£¡£¡\033[m\n"
+						"\033[1;33mÇ®²»ÊÇÍòÄÜµÄ£¬Ã»ÓĞÇ®È´ÍòÍò²»ÄÜ£¬ÈıË¼¶øºóĞĞ°¡£¡\033[m\n"
 						, 0);
 				move(12, 0);
 				if (askyn("È·¶¨¾èÏ×È«²¿²Æ²úÂğ? ", NA, NA) == YEA) {
@@ -12301,8 +10805,7 @@ money_contributions()
 					millionairesrec(title, buf, "¾è¿î");
 
 					sprintf(title, "[¹«¸æ] ´ó¸»ÎÌ»ù½ğÊÕµ½À´×Ô%sµÄ¾è¿î", currentuser.userid);
-					sprintf(buf,"¸ĞĞ»%sÏò±øÂíÙ¸´ó¸»ÎÌ¾èÏ×ÆäÈ«²¿²Æ²ú£¬´ó¸»ÎÌÏòÆä±íÊ¾×î³ç¸ßµÄ¾´Òâ£¡\n"
-							"²¢×£Ô¸Æä½ñºóĞŞĞĞË³Àû£¡", currentuser.userid);
+					sprintf(buf,"¸ĞĞ»%sÏò±øÂíÙ¸´ó¸»ÎÌ¾èÏ×ÆäÈ«²¿²Æ²ú£¬´ó¸»ÎÌÏòÆä±íÊ¾×î³ç¸ßµÄ¾´Òâ£¡\n" "²¢×£Ô¸Æä½ñºóĞŞĞĞË³Àû£¡", currentuser.userid);
 					deliverreport(title, buf);
 
 					showAt(15, 0, "Íê³É!", 1);
@@ -12319,17 +10822,14 @@ money_contributions()
 }
 
 
-	static int
-money_office()
-{
+static int money_office() {
 	int ch, quit = 0;
 	char uident[IDLEN + 1];
 
 	while (!quit) {
 		nomoney_show_stat("±øÂíÙ¸´ó¸»ÎÌ¹ÜÀíÖĞĞÄ");
 		showAt(6, 4, "´ó¸»ÎÌ¹ÜÀíÖĞĞÄ»¶Ó­Äã£¡", 0);
-		showAt(t_lines - 1, 0,
-				"\033[1;44m Ñ¡µ¥ \033[1;46m [1]¾è¿î°ì¹«ÊÒ [2]ĞÅ·Ã°ì¹«ÊÒ [3]¼àÓü [4]ÓÊÕş¾Ö [5]×Ü¹Ü°ì¹«ÊÒ [Q]Àë¿ª       \033[m", 0);
+		showAt(t_lines - 1, 0, "\033[1;44m Ñ¡µ¥ \033[1;46m [1]¾è¿î°ì¹«ÊÒ [2]ĞÅ·Ã°ì¹«ÊÒ [3]¼àÓü [4]ÓÊÕş¾Ö [5]×Ü¹Ü°ì¹«ÊÒ [Q]Àë¿ª       \033[m", 0);
 		ch = igetkey();
 		switch (ch) {
 			case '1':
@@ -12345,8 +10845,7 @@ money_office()
 				break;
 
 			case '3':
-				showAt(6, 4, "¿´ÄãÌ½Í·Ì½ÄÔâ«â«ËöËöµÄÑù×Ó£¬´òËã½ÙÓü£¿´ø¸ö°ô°ôÌÇ¾Íµ±ÊÇAK-47£¿\n"
-						"Æ¤Ñ÷ÁË°É£¿Ğ¡ĞÄµç¾¯¹÷£¡", 1);
+				showAt(6, 4, "¿´ÄãÌ½Í·Ì½ÄÔâ«â«ËöËöµÄÑù×Ó£¬´òËã½ÙÓü£¿´ø¸ö°ô°ôÌÇ¾Íµ±ÊÇAK-47£¿\n" "Æ¤Ñ÷ÁË°É£¿Ğ¡ĞÄµç¾¯¹÷£¡", 1);
 				break;
 
 			case '4':
@@ -12358,9 +10857,7 @@ money_office()
 				whoTakeCharge2(11, uident);
 				if (strcmp(currentuser.userid, uident)) {
 					move(6, 4);
-					prints
-						("Öµ°àÃØÊé%s½Ğ×¡ÁËÄã£¬ËµµÀ:¡°¹«¹«ÃÇÕıÔÚ¿ª»á£¬ÇëÏÈËÄ´¦×ª×ª°É¡£¡±",
-						 uident);
+					prints("Öµ°àÃØÊé%s½Ğ×¡ÁËÄã£¬ËµµÀ:¡°¹«¹«ÃÇÕıÔÚ¿ª»á£¬ÇëÏÈËÄ´¦×ª×ª°É¡£¡±", uident);
 					pressanykey();
 					break;
 				}
