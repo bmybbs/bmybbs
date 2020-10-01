@@ -6303,7 +6303,7 @@ int money,
 char stockboard[STRLEN][MAX_STOCK_NUM],
 int stock_board[MAX_STOCK_NUM]
 */
-static void persenal_stock_info(int stock_num[], int stock_price[], int money, char *stockboard[], int stock_board[]) {
+static void persenal_stock_info(int stock_num[15], int stock_price[15], int money, char stockboard[STRLEN][MAX_STOCK_NUM], int stock_board[15]) {
 	int i, count;
 	count = listfilecontent(MC_STOCK_BOARDS);
 	clear();
@@ -7197,7 +7197,7 @@ static void money_suoha_check(char *p, char *q, char *r, char *cc) {
 
 //同花顺、铁枝、葫、同花、顺、三条、兔胚、胚、一只
 /*赌博--梭哈*/
-static void show_style(char my, char cpu) {
+static void show_style(int my, int cpu) {
 	char *style[9] = {
 		"同花顺", "铁枝", "葫芦", "同花", "顺子",
 		"三条", "兔胚", "单胚", "一张"
