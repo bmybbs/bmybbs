@@ -969,7 +969,7 @@ chk_friend_book()
 		} else
 			prints("\033[1m%s\033[m 找你，系统无法联络到他，请你跟他联络。\n", uid);
 		n++;
-		ytht_del_from_file("friendbook", buf);
+		ytht_del_from_file("friendbook", buf, true);
 		if (n > 15) {
 			pressanykey();
 			move(7, 0);
@@ -1473,7 +1473,7 @@ Q_Goodbye()
 				char uid[14];
 				ptr = strstr(buf, "@");
 				if (ptr == NULL) {
-					ytht_del_from_file("friendbook", buf);
+					ytht_del_from_file("friendbook", buf, true);
 					continue;
 				}
 				ptr++;
@@ -1481,7 +1481,7 @@ Q_Goodbye()
 				ptr = strstr(uid, "\n");
 				*ptr = '\0';
 				if (!strcmp(uid, currentuser.userid))
-					ytht_del_from_file("friendbook", buf);
+					ytht_del_from_file("friendbook", buf, true);
 			}
 			fclose(fp);
 		}

@@ -8,7 +8,7 @@
     Firebird Bulletin Board System
     Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
                         Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
-    
+
     Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
 
     This program is free software; you can redistribute it and/or modify
@@ -768,7 +768,7 @@ m_editbrd()
 				sprintf(tar, "vote/%s", newfh.filename);
 				rename(old, tar);
 				if (seek_in_file("etc/junkboards", fh.filename)) {
-					ytht_del_from_file("etc/junkboards", fh.filename);
+					ytht_del_from_file("etc/junkboards", fh.filename, true);
 					ytht_add_to_file("etc/junkboards", newfh.filename);
 				}
 			}
@@ -780,7 +780,7 @@ m_editbrd()
 				get_grp(fh.filename);
 				strcpy(tmp_grp, lookgrp);
 				if (strcmp(tmp_grp, group) || a_mv != 2) {
-					ytht_del_from_file("0Announce/.Search", fh.filename);
+					ytht_del_from_file("0Announce/.Search", fh.filename, true);
 					if (group != NULL) {
 						if (add_grp
 						    (group, cexplain,

@@ -535,7 +535,7 @@ static int check_allow_in() {
 				robTimes = loadValue(currentuser.userid, "rob", 50);
 				saveValue(currentuser.userid, "rob", -robTimes, 50);
 				saveValue(currentuser.userid, "freeTime", -2000000000, 2000000000);
-				ytht_del_from_file(DIR_MC "imprison_list", currentuser.userid);
+				ytht_del_from_file(DIR_MC "imprison_list", currentuser.userid, true);
 			}
 		}else{
 			pressanykey();
@@ -547,7 +547,7 @@ static int check_allow_in() {
 			move(10, 10);
 			prints("监禁期满，恭喜你重新获得自由！");
 			saveValue(currentuser.userid, "freeTime", -2000000000, 2000000000);
-			ytht_del_from_file(DIR_MC "imprison_list", currentuser.userid);
+			ytht_del_from_file(DIR_MC "imprison_list", currentuser.userid, true);
 			pressanykey();
 		}
 
@@ -578,7 +578,7 @@ static int check_allow_in() {
 			saveValue(currentuser.userid, LEND_NAME, -MAX_MONEY_NUM, MAX_MONEY_NUM);
 			saveValue(currentuser.userid, "lend_time", -2000000000, 2000000000);
 			saveValue(currentuser.userid, "back_time", -2000000000, 2000000000);
-			ytht_del_from_file(DIR_MC "special_lend", currentuser.userid);
+			ytht_del_from_file(DIR_MC "special_lend", currentuser.userid, true);
 			move(12, 10);
 			prints("好了，你现在无债一身轻啦。");
 			pressanykey();
@@ -1135,7 +1135,7 @@ static int money_bank() {
 							saveValue(currentuser.userid, LEND_NAME, -MAX_MONEY_NUM, MAX_MONEY_NUM);
 							saveValue(currentuser.userid, "lend_time", -2000000000, 2000000000);
 							saveValue(currentuser.userid, "back_time", -2000000000, 2000000000);
-							ytht_del_from_file(DIR_MC "special_lend", currentuser.userid);
+							ytht_del_from_file(DIR_MC "special_lend", currentuser.userid, true);
 							sprintf(genbuf, "%s进行银行交易(还贷)", currentuser.userid);
 							sprintf(buf,"%s偿还贷款本利共%d兵马俑币", currentuser.userid, total_num);
 							millionairesrec(genbuf, buf, "银行交易");
@@ -2073,10 +2073,10 @@ static int money_sackOrAppoint(int type) {
 		if (askyn(genbuf, NA, NA) == YEA) {
 			if (type==1){
 				sackOrAppoint(pos, boss, 1, letter);
-				ytht_del_from_file(MC_BOSS_FILE, (char *) feaStr[pos - 1]);
+				ytht_del_from_file(MC_BOSS_FILE, (char *) feaStr[pos - 1], true);
 			}else{
 				sackOrAppoint2(pos, boss, 1, letter);
-				ytht_del_from_file(MC_ASS_FILE, (char *) feaStr[pos - 1]);
+				ytht_del_from_file(MC_ASS_FILE, (char *) feaStr[pos - 1], true);
 			}
 			deliverreport(letter, report);
 			mail_buf(letter, boss, letter);
@@ -2212,7 +2212,7 @@ static int money_admin() {
 						pressanykey();
 						break;
 					}
-					ytht_del_from_file(MC_ADMIN_FILE, uident);
+					ytht_del_from_file(MC_ADMIN_FILE, uident, true);
 					move(18, 4);
 					prints("取消成功!");
 					sprintf(genbuf, "[公告]取消 %s 的兵马俑金融中心管理权限", uident);
@@ -2237,7 +2237,7 @@ static int money_admin() {
 					break;
 				}
 				if (askyn("您真的要辞职吗？", NA, NA) == YEA) {
-					ytht_del_from_file(MC_ADMIN_FILE, currentuser.userid);
+					ytht_del_from_file(MC_ADMIN_FILE, currentuser.userid, true);
 					sprintf(genbuf, "%s 宣布辞去兵马俑金融中心总管职务", currentuser.userid);
 					deliverreport(genbuf, "兵马俑金融中心对其一直以来的工作表示感谢，祝以后顺利！");
 					sprintf(genbuf, "%s行使管理权限", currentuser.userid);
@@ -2300,7 +2300,7 @@ static int money_admin() {
 					break;
 				}
 				if (askyn("确定吗？", NA, NA) == YEA) {
-					ytht_del_from_file(DIR_MC "mingren", uident);
+					ytht_del_from_file(DIR_MC "mingren", uident, true);
 					sprintf(genbuf, "%s 重出江湖了", uident);
 					deliverreport(genbuf, "江湖又要有一场血雨腥风了");
 					sprintf(genbuf, "%s行使管理权限", currentuser.userid);
@@ -2362,7 +2362,7 @@ static int money_admin() {
 					break;
 				}
 				if (askyn("确定吗？", NA, NA) == YEA) {
-					ytht_del_from_file(DIR_MC "chayou", uident);
+					ytht_del_from_file(DIR_MC "chayou", uident, true);
 					sprintf(genbuf, "%s 重出江湖了", uident);
 					deliverreport(genbuf, "感谢您一直以来对大富翁的关注。");
 					sprintf(genbuf, "%s行使管理权限", currentuser.userid);
@@ -2426,7 +2426,7 @@ static int money_admin() {
 					break;
 				}
 				if (askyn("确定吗？", NA, NA) == YEA) {
-					ytht_del_from_file(DIR_MC "gongji", uident);
+					ytht_del_from_file(DIR_MC "gongji", uident, true);
 					sprintf(genbuf, "%s 决定花钱销灾了", uident);
 					deliverreport(genbuf, "从铁公鸡身上能榨出油水来。厉害厉害");
 					sprintf(genbuf, "%s行使管理权限", currentuser.userid);
@@ -2500,8 +2500,8 @@ static int money_admin() {
 				move(16, 4);
 				if (askyn("确定吗？", NA, NA) == NA)
 					break;
-				ytht_del_from_file(DIR_MC"jijin", uident);
-				ytht_del_from_file(DIR_MC"mingren", uident);
+				ytht_del_from_file(DIR_MC"jijin", uident, true);
+				ytht_del_from_file(DIR_MC"mingren", uident, true);
 				//一并取消黄马褂
 				sprintf(genbuf, "[公告]撤销基金%s", uident);
 				deliverreport(genbuf, letter);
@@ -4798,7 +4798,7 @@ static int money_killer() {
 							count2 = 3;
 						else
 							count2 += count;
-						ytht_del_from_file(DIR_MC "killerlist", uident);
+						ytht_del_from_file(DIR_MC "killerlist", uident, true);
 						sprintf(buf, "%s\t%d",uident, count2);
 						ytht_add_to_file(DIR_MC "killerlist",buf);
 					}else{
@@ -4906,7 +4906,7 @@ static int money_killer() {
 										}
 									}
 									fclose(fp);
-									ytht_del_from_file(DIR_MC "killerlist", uident);
+									ytht_del_from_file(DIR_MC "killerlist", uident, true);
 									if (count2==2 || count2==3){
 										sprintf(buf, "%s\t%d",uident, count2-1);
 										ytht_add_to_file(DIR_MC "killerlist",buf);
@@ -5000,7 +5000,7 @@ static int money_killer() {
 								break;
 							}
 							if (askyn("确定吗？", NA, NA) == YEA) {
-								ytht_del_from_file(DIR_MC "killer", uident);
+								ytht_del_from_file(DIR_MC "killer", uident, true);
 								sprintf(genbuf, "%s 解除你的杀手职务", currentuser.userid);
 								mail_buf("感谢你完成任务。", uident, genbuf);
 								move(14, 4);
@@ -5827,7 +5827,7 @@ static int money_gamble() {
 								break;
 							}
 							if (askyn("确定吗？", NA, NA) == YEA) {
-								ytht_del_from_file(DIR_MC "gamble_VIP", uident);
+								ytht_del_from_file(DIR_MC "gamble_VIP", uident, true);
 								sprintf(genbuf, "%s 收回了你的兵马俑赌场VIP卡", currentuser.userid);
 								mail_buf("穷鬼，没钱了还VIP啊？下辈子吧！", uident, genbuf);
 								move(14, 4);
@@ -7483,7 +7483,7 @@ static int money_cop() {
 					prints("悬崖勒马,还来得及。好好改造吧！");
 					saveValue(currentuser.userid, "freeTime", time(0) + 86400 * (robTimes / 2 + 1), 2000000000);
 					saveValue(currentuser.userid, "rob", -robTimes, 50);
-					ytht_del_from_file(DIR_MC "criminals_list", currentuser.userid);
+					ytht_del_from_file(DIR_MC "criminals_list", currentuser.userid, true);
 					pressanykey();
 					Q_Goodbye();
 				} else {
@@ -7631,7 +7631,7 @@ static int money_cop() {
 								saveValue(uident, "freeTime", time(0) + 86400 * robTimes, 2000000000);
 								sprintf(genbuf, "你被兵马俑警署抓获，并处以%d天的监禁。", robTimes);
 								mail_buf_slow(uident, "你被警察逮捕", genbuf, "BMY_FBI");
-								ytht_del_from_file(DIR_MC "criminals_list", uident);
+								ytht_del_from_file(DIR_MC "criminals_list", uident, true);
 								sprintf(buf, "%s\t%d", uident, robTimes);
 								ytht_add_to_file(DIR_MC "imprison_list", buf);
 								pressanykey();
@@ -7684,7 +7684,7 @@ static int money_cop() {
 												"警署希望不良分子引以为戒，\n 本站居民高度赞扬警署职员为民除害 ", uident);
 										deliverreport("[新闻]兵马俑警署击毙一名匪徒",genbuf);
 										mail_buf_slow(uident, "你被警察击毙","你在抵抗警察抓捕的过程中，被一枪击中头部死亡。善恶终有报啊！","BMY_FBI");
-										ytht_del_from_file(DIR_MC "criminals_list", uident);
+										ytht_del_from_file(DIR_MC "criminals_list", uident, true);
 										pressanykey();
 										sprintf(buf,"击毙%s", uident);
 										policereport(buf);
@@ -7711,7 +7711,7 @@ static int money_cop() {
 										"警署表示一定全力抢救，\n  ", uident);
 								deliverreport("[新闻]兵马俑警署击毙一名匪徒",genbuf);
 								mail_buf_slow(uident, "你被警察逮捕","你在抵抗警察抓捕的过程中，引爆身上的手雷，与警察同归于尽。","BMY_FBI");
-								ytht_del_from_file(DIR_MC "criminals_list", uident);
+								ytht_del_from_file(DIR_MC "criminals_list", uident, true);
 							}
 							if (die) {
 								set_safe_record();
@@ -7814,7 +7814,7 @@ static int money_cop() {
 								break;
 							}
 							if (askyn("确定吗？", NA, NA) == YEA) {
-								ytht_del_from_file(DIR_MC "policemen", uident);
+								ytht_del_from_file(DIR_MC "policemen", uident, true);
 								sprintf(genbuf, "%s 解除你的兵马俑警署警员职务", currentuser.userid);
 								mail_buf("感谢你一直以来的工作，并希望你作为市民继续为维护治安而尽义务。", uident, genbuf);
 								move(14, 4);
@@ -8273,14 +8273,14 @@ static int marry_admin(struct MC_Marry *marryMem, int n) {
 
 						if (count2==0){
 							if (seek_in_file(MC_MARRIED_LIST, uident))
-								ytht_del_from_file(MC_MARRIED_LIST, uident);
+								ytht_del_from_file(MC_MARRIED_LIST, uident, true);
 						} else {
 							if (!seek_in_file(MC_MARRIED_LIST, uident))
 								ytht_add_to_file(MC_MARRIED_LIST, uident);
 						}
 						if (count3==0){
 							if (seek_in_file(MC_MARRIED_LIST, uident2))
-								ytht_del_from_file(MC_MARRIED_LIST, uident2);
+								ytht_del_from_file(MC_MARRIED_LIST, uident2, true);
 						} else {
 							if (!seek_in_file(MC_MARRIED_LIST, uident2))
 								ytht_add_to_file(MC_MARRIED_LIST, uident2);
@@ -8342,7 +8342,7 @@ static int marry_admin(struct MC_Marry *marryMem, int n) {
 							}
 							move(4, 0);
 							if (askyn("真的要删除么?", NA, NA)==YEA){
-								ytht_del_from_file(MC_MARRYADMIN_FILE, uident);
+								ytht_del_from_file(MC_MARRYADMIN_FILE, uident, true);
 								sprintf(title, "%s行使管理权限(婚姻)", currentuser.userid);
 								sprintf(buf, "取消%s的婚姻管理职务", uident);
 								millionairesrec(title, buf, "Marriage");
@@ -8479,14 +8479,14 @@ static int marry_admin(struct MC_Marry *marryMem, int n) {
 
 						if (count2==0){
 							if (seek_in_file(MC_MARRIED_LIST, uident))
-								ytht_del_from_file(MC_MARRIED_LIST, uident);
+								ytht_del_from_file(MC_MARRIED_LIST, uident, true);
 						} else {
 							if (!seek_in_file(MC_MARRIED_LIST, uident))
 								ytht_add_to_file(MC_MARRIED_LIST, uident);
 						}
 						if (count3==0){
 							if (seek_in_file(MC_MARRIED_LIST, uident2))
-								ytht_del_from_file(MC_MARRIED_LIST, uident2);
+								ytht_del_from_file(MC_MARRIED_LIST, uident2, true);
 						} else {
 							if (!seek_in_file(MC_MARRIED_LIST, uident2))
 								ytht_add_to_file(MC_MARRIED_LIST, uident2);
@@ -9774,7 +9774,7 @@ static int money_deny() {
 			move(1, 0);
 			clrtoeol();
 			if (uident[0] != '\0')
-				if (ytht_del_from_file(MC_DENY_FILE, uident))
+				if (ytht_del_from_file(MC_DENY_FILE, uident, true))
 					mc_denynotice(2, uident, msgbuf);
 		} else
 			break;
@@ -9837,7 +9837,7 @@ static int mc_addtodeny(char *uident, char *msg, int ischange) {
 	if ((*ans != 'Y') && (*ans != 'y'))
 		return -1;
 	if (ischange)
-		ytht_del_from_file(MC_DENY_FILE, uident);
+		ytht_del_from_file(MC_DENY_FILE, uident, true);
 	return ytht_add_to_file(MC_DENY_FILE, strtosave);
 }
 
@@ -9883,7 +9883,7 @@ static int mc_autoundeny() {
 	undenytime=atoi(buf);
 	if (undenytime > time(0))
 		return 0;
-	if (ytht_del_from_file(MC_DENY_FILE, currentuser.userid)) {
+	if (ytht_del_from_file(MC_DENY_FILE, currentuser.userid, true)) {
 		sprintf(buf, "恢复 %s 进入大富翁游戏的权利", currentuser.userid);
 		//deliverreport(buf, "请理解大富翁总管工作，谢谢！\n");
 		millionairesrec(buf, "系统自动解封\n","");
@@ -9942,7 +9942,7 @@ static int delstockboard(char *sbname, char *fname) {
 		pressanykey();
 		return 0;
 	}
-	return ytht_del_from_file(fname, sbname);
+	return ytht_del_from_file(fname, sbname, true);
 }
 
 static int stockboards() {

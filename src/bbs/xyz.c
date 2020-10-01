@@ -1383,7 +1383,7 @@ sendGoodWish(char *userid)
 				case 'D':
 				case 'd':
 					if (seek_in_file(wishlists, uident)) {
-						ytht_del_from_file(wishlists, uident);
+						ytht_del_from_file(wishlists, uident, true);
 						cnt--;
 					}
 					break;
