@@ -32,16 +32,16 @@ int crossfs_rename(const char *oldpath, const char *newpath);
 int readstrvalue(const char *filename, const char *str, char *value, int size);
 
 /**
- * ´ÓÅäÖÃÎÄ¼şÖĞ¶ÁÈ¡Öµ
- * ÅäÖÃÎÄ¼ş¸ñÊ½£º
+ * ä»é…ç½®æ–‡ä»¶ä¸­è¯»å–å€¼
+ * é…ç½®æ–‡ä»¶æ ¼å¼ï¼š
  *   key1 value1
  *   key2 value2
- * ×÷ÓÃºÍ readstrvalue Ò»Ñù£¬Çø±ğÔÚÓÚÈôÍ¬Ê±´ÓÒ»¸öÎÄ¼şÖĞ¶ÁÈ¡ÅäÖÃĞÅÏ¢£¬¼õÉÙ fopen/fclose µÄµ÷ÓÃ´ÎÊı¡£
+ * ä½œç”¨å’Œ readstrvalue ä¸€æ ·ï¼ŒåŒºåˆ«åœ¨äºè‹¥åŒæ—¶ä»ä¸€ä¸ªæ–‡ä»¶ä¸­è¯»å–é…ç½®ä¿¡æ¯ï¼Œå‡å°‘ fopen/fclose çš„è°ƒç”¨æ¬¡æ•°ã€‚
  * @see readstrvalue
- * @param[in]   fp    ÅäÖÃÎÄ¼şÃèÊö·û
- * @param[in]   str   ¼ü
- * @param[out]  value ´æ·ÅÖµµÄ»º³åÇø
- * @param[in]   size  »º³åÇø´óĞ¡
+ * @param[in]   fp    é…ç½®æ–‡ä»¶æè¿°ç¬¦
+ * @param[in]   str   é”®
+ * @param[out]  value å­˜æ”¾å€¼çš„ç¼“å†²åŒº
+ * @param[in]   size  ç¼“å†²åŒºå¤§å°
  * @return
  */
 int readstrvalue_fp(FILE *fp, const char *str, char *value, size_t size);
@@ -55,11 +55,11 @@ int checkfilename(const char *filename);
 int clearpath(const char *path);
 
 /**
- * @brief ´ÓÎÄ¼şÖĞ²éÕÒÊÇ·ñ°üº¬Ä³¸ö×Ö·û´®¡£
- * ¸Ãº¯ÊıÀ´×ÔÓÚ src/talk.c ÒÔ¼° nju09/bbssnd.c¡£
- * @param filename ÎÄ¼şÂ·¾¶Ãû³Æ
- * @param seekstr ĞèÒª²éÕÒµÄ×Ö·û´®
- * @return Èô°üº¬·µ»Ø 1£¬·ñÔò·µ»Ø 0¡£
+ * @brief ä»æ–‡ä»¶ä¸­æŸ¥æ‰¾æ˜¯å¦åŒ…å«æŸä¸ªå­—ç¬¦ä¸²ã€‚
+ * è¯¥å‡½æ•°æ¥è‡ªäº src/talk.c ä»¥åŠ nju09/bbssnd.cã€‚
+ * @param filename æ–‡ä»¶è·¯å¾„åç§°
+ * @param seekstr éœ€è¦æŸ¥æ‰¾çš„å­—ç¬¦ä¸²
+ * @return è‹¥åŒ…å«è¿”å› 1ï¼Œå¦åˆ™è¿”å› 0ã€‚
  */
 int seek_in_file(char* filename, char *seekstr);
 
@@ -103,4 +103,31 @@ struct stat *l_stat_s(struct stat *s, const char *file);
 #define file_isdir(x) ((f_stat(x)->st_mode & S_IFDIR)!=0)
 #define file_isfile(x) ((f_stat(x)->st_mode & S_IFREG)!=0)
 #define lfile_isdir(x) ((l_stat(x)->st_mode & S_IFDIR)!=0)
+
+/**
+ * @brief å°† str è¿½åŠ åˆ° filename ç»“å°¾
+ *
+ * filename å†…å®¹å½¢å¦‚ï¼š"$str1\n$str2\n"ã€‚æ“ä½œä¸­å¯¹ filename ä½¿ç”¨
+ * ç‹¬å é”ã€‚
+ * @param filename
+ * @param str
+ * @return
+ */
+int ytht_add_to_file(char *filename, char *str);
+
+/**
+ * @brief åŸºäº mmap(2) å’Œ strstr(3) å®ç°çš„ä»æ–‡ä»¶ä¸­ç§»é™¤å­—ç¬¦ä¸²ã€‚
+ *
+ * ä»…ä¼šç§»é™¤ str åœ¨æ–‡ä»¶ä¸­çš„é¦–æ¬¡å‡ºç°ã€‚strstr(3) å¯èƒ½ä¸é€‚ç”¨äºæ–‡ä»¶æˆ–è€…
+ * å¾…æœç´¢å­—ç¬¦ä¸²è¾ƒé•¿çš„æƒ…å†µï¼Œå¹¸å¥½ bbs çš„æ•°æ®æ–‡ä»¶ä¸€èˆ¬éƒ½ä¸å¤§ã€‚
+ *
+ * ç”¨äºå–ä»£åŸ src/bbs/talk.c::del_from_file() å®ç°ï¼Œå¢åŠ äº†ç‹¬å é”ã€‚
+ * @param filename
+ * @param str
+ * @return
+ *    -1 æ–‡ä»¶ä¸å­˜åœ¨ï¼Œæˆ–æ— æ³•åˆ›å»ºä¸´æ—¶æ–‡ä»¶ï¼Œæˆ–è€… str ä¸å­˜åœ¨äºåŸæ–‡ä»¶ä¸­
+ *     0 é‡å‘½åä¸´æ—¶æ–‡ä»¶æ›¿æ¢åŸæ–‡ä»¶å¤±è´¥
+ *     1 æ›¿æ¢æˆåŠŸ
+ */
+int ytht_del_from_file(char *filename, char *str);
 #endif

@@ -1,0 +1,2 @@
+add_executable(ytht_del_from_file test_ytht_del_from_file.c)
+target_link_libraries(ytht_del_from_file ytht)
