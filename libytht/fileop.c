@@ -399,13 +399,14 @@ int ytht_add_to_file(char *filename, char *str) {
 	return (rc == EOF ? -1 : 1);
 }
 
-int ytht_del_from_file(char *filename, char *str) {
+int ytht_del_from_file(char *filename, char *str, bool include_lf) {
 	int fdin, fdout;
 	void *src, *dst;
 	struct stat statbuf;
 	char fnnew[256];
 	char *p;
 	size_t len, offset;
+	char *local_buf;
 
 	if ((fdin = open(filename, O_RDONLY)) < 0) {
 		return -1;
@@ -423,23 +424,35 @@ int ytht_del_from_file(char *filename, char *str) {
 		return -1;
 	}
 
-	if ((p = strstr((char*)src, str)) == NULL) {
+	len = strlen(str);
+	if (include_lf) {
+		if ((local_buf = (char *) calloc(1, len+2)) == NULL) {
+			munmap(src, statbuf.st_size);
+			close(fdin);
+		}
+		sprintf(local_buf, "%s\n", str);
+		len++;
+	}
+
+	if ((p = strstr((char*)src, include_lf ? local_buf : str)) == NULL) {
+		if (include_lf) free(local_buf);
 		munmap(src, statbuf.st_size);
 		close(fdin);
 		return -1;
 	}
 
-	len = strlen(str);
 
 	// temporary file will be created at /tmp
 	sprintf(fnnew, "/tmp/bbs-del_from_file-XXXXXX");
 	if ((fdout = mkstemp(fnnew)) < 0) {
+		if (include_lf) free(local_buf);
 		munmap(src, statbuf.st_size);
 		close(fdin);
 		return -1;
 	}
 
 	if (lseek(fdout, statbuf.st_size - 1 - len, SEEK_SET) == -1) {
+		if (include_lf) free(local_buf);
 		close(fdout);
 		unlink(fnnew);
 		munmap(src, statbuf.st_size);
@@ -448,6 +461,7 @@ int ytht_del_from_file(char *filename, char *str) {
 	}
 
 	if (write(fdout, "", 1) != 1) {
+		if (include_lf) free(local_buf);
 		close(fdout);
 		unlink(fnnew);
 		munmap(src, statbuf.st_size);
@@ -456,6 +470,7 @@ int ytht_del_from_file(char *filename, char *str) {
 	}
 
 	if ((dst = mmap(0, statbuf.st_size - len, PROT_READ | PROT_WRITE, MAP_SHARED, fdout, 0)) == MAP_FAILED) {
+		if (include_lf) free(local_buf);
 		close(fdout);
 		unlink(fnnew);
 		munmap(src, statbuf.st_size);
@@ -467,6 +482,7 @@ int ytht_del_from_file(char *filename, char *str) {
 	memcpy(dst, src, offset);
 	memcpy(dst + offset, p + len, statbuf.st_size -  len - offset);
 
+	if (include_lf) free(local_buf);
 	munmap(dst, statbuf.st_size - len);
 	munmap(src, statbuf.st_size);
 	close(fdin);

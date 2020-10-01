@@ -2,6 +2,7 @@
 #ifndef __FILEOP_H
 #define __FILEOP_H
 #include <time.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <setjmp.h>
 #include <sys/stat.h>
@@ -124,10 +125,11 @@ int ytht_add_to_file(char *filename, char *str);
  * 用于取代原 src/bbs/talk.c::del_from_file() 实现，增加了独占锁。
  * @param filename
  * @param str
+ * @param include_lf
  * @return
  *    -1 文件不存在，或无法创建临时文件，或者 str 不存在于原文件中
  *     0 重命名临时文件替换原文件失败
  *     1 替换成功
  */
-int ytht_del_from_file(char *filename, char *str);
+int ytht_del_from_file(char *filename, char *str, bool include_lf);
 #endif
