@@ -768,10 +768,8 @@ m_editbrd()
 				sprintf(tar, "vote/%s", newfh.filename);
 				rename(old, tar);
 				if (seek_in_file("etc/junkboards", fh.filename)) {
-					del_from_file("etc/junkboards",
-						      fh.filename);
-					addtofile("etc/junkboards",
-						  newfh.filename);
+					ytht_del_from_file("etc/junkboards", fh.filename);
+					ytht_add_to_file("etc/junkboards", newfh.filename);
 				}
 			}
 			get_grp(fh.filename);
@@ -782,8 +780,7 @@ m_editbrd()
 				get_grp(fh.filename);
 				strcpy(tmp_grp, lookgrp);
 				if (strcmp(tmp_grp, group) || a_mv != 2) {
-					del_from_file("0Announce/.Search",
-						      fh.filename);
+					ytht_del_from_file("0Announce/.Search", fh.filename);
 					if (group != NULL) {
 						if (add_grp
 						    (group, cexplain,

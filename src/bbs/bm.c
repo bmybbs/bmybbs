@@ -169,7 +169,7 @@ int ischange, isglobal, isanony;
 		setbfile(genbuf, currboard, "deny_anony");
 	else
 		setbfile(genbuf, currboard, "deny_users");
-	return addtofile(genbuf, strtosave);
+	return ytht_add_to_file(genbuf, strtosave);
 }
 
 static int
@@ -186,7 +186,7 @@ int isanony;
 		setbfile(fn, currboard, "deny_anony");
 	else
 		setbfile(fn, currboard, "deny_users");
-	return del_from_file(fn, uident);
+	return ytht_del_from_file(fn, uident);
 }
 
 int
@@ -325,8 +325,8 @@ int clubnum;
 		if ((i = getbnum(currboard)) == 0)
 			return DONOTHING;
 		sprintf(genbuf2, "%d", bcache[i - 1].header.clubnum);
-		addtofile(genbuf1, genbuf2);
-		return addtofile(genbuf, uident);
+		ytht_add_to_file(genbuf1, genbuf2);
+		return ytht_add_to_file(genbuf, uident);
 	} else {
 		setbfile(genbuf, currboard, "club_users");
 		seek = seek_in_file(genbuf, uident);
@@ -334,8 +334,8 @@ int clubnum;
 			return DONOTHING;
 		sethomefile(genbuf1, uident, "clubrights");
 		sprintf(genbuf2, "%d", clubnum);
-		addtofile(genbuf1, genbuf2);
-		return addtofile(genbuf, uident);
+		ytht_add_to_file(genbuf1, genbuf2);
+		return ytht_add_to_file(genbuf, uident);
 	}
 }
 
@@ -360,8 +360,8 @@ char *uident;
 	setbfile(fn, currboard, "club_users");
 	sethomefile(genbuf1, uident, "clubrights");
 	sprintf(genbuf2, "%d", bcache[i - 1].header.clubnum);
-	del_from_file(genbuf1, genbuf2);
-	return del_from_file(fn, uident);
+	ytht_del_from_file(genbuf1, genbuf2);
+	return ytht_del_from_file(fn, uident);
 }
 
 int

@@ -86,9 +86,9 @@ static int d_board() {
 		}
 	}
 	if (seek_in_file("etc/junkboards", bname))
-		del_from_file("etc/junkboards", bname);
+		ytht_del_from_file("etc/junkboards", bname);
 	if (seek_in_file("0Announce/.Search", bname))
-		del_from_file("0Announce/.Search", bname);
+		ytht_del_from_file("0Announce/.Search", bname);
 
 	if (binfo.filename[0] == '\0')
 		return -1;	/* rrr - precaution */

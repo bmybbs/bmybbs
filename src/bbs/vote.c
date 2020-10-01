@@ -1046,7 +1046,7 @@ int num;
 			now = time(NULL);
 			sprintf(buf, "%s %s %s", currentuser.userid,
 					currentuser.lasthost, ytht_ctime(now));
-			addtofile(MY_BBS_HOME "/vote.log", buf);
+			ytht_add_to_file(MY_BBS_HOME "/vote.log", buf);
 		}
 	}
 	pressanykey();
@@ -1192,7 +1192,7 @@ char *uident;
 	if ((i = getbnum(currboard)) == 0)
 		return DONOTHING;
 	vlists[currlist]->voternum++;
-	return addtofile(buf, uident);
+	return ytht_add_to_file(buf, uident);
 
 }
 
@@ -1216,7 +1216,7 @@ char *uident;
 	setbfile(fn, currboard, vlists[currlist]->listfname);
 	if (vlists[currlist]->voternum>0)
 		vlists[currlist]->voternum--;
-	return del_from_file(fn, uident);
+	return ytht_del_from_file(fn, uident);
 }
 
 static int

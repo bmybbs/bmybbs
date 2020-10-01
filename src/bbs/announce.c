@@ -1767,7 +1767,7 @@ char group[STRLEN], bname[STRLEN], title[STRLEN], gname[STRLEN];
 		fclose(fn);
 	}
 	if (!seek_in_file("0Announce/.Search", bname))
-		addtofile("0Announce/.Search", searchname);
+		ytht_add_to_file("0Announce/.Search", searchname);
 	if (!dashd("0Announce/groups")) {
 		mkdir("0Announce/groups", 0777);
 		chmod("0Announce/groups", 0777);
