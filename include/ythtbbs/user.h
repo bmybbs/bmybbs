@@ -1,7 +1,7 @@
 /* user.c */
 #ifndef __USER_H
 #define __USER_H
-
+#include <time.h>
 #include "struct.h"
 #include "board.h"
 /** Structure used to hold information in PASSFILE
