@@ -1,0 +1,2 @@
+add_executable(userid_hash_summary userid_hash_summary.c)
+target_link_libraries(userid_hash_summary ythtbbs)

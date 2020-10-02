@@ -1,5 +1,7 @@
 include_directories(include)
 
+add_subdirectory(userid_hash_summary)
+
 #add_subdirectory(annIndex)
 add_subdirectory(averun)
 #add_subdirectory(auto_rm_fakedir)

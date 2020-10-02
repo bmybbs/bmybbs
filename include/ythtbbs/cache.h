@@ -1,7 +1,3 @@
-//
-// Created by ironblood on 2020/8/10.
-//
-
 #ifndef BMYBBS_CACHE_H
 #define BMYBBS_CACHE_H
 #include <time.h>
@@ -53,6 +49,12 @@ struct UCACHEHASH {
 };
 
 struct UINDEX {
-	int user[MAXUSERS][6];	//²»Çå³şwwwÅĞ¶Ï¶àµÇÂ¼µÄ»úÖÆÊÇ·ñÊ¹ÉÏÏŞ³¬³ötelnetÖĞµÄ5, Éè³É6
+	int user[MAXUSERS][6];	//ä¸æ¸…æ¥šwwwåˆ¤æ–­å¤šç™»å½•çš„æœºåˆ¶æ˜¯å¦ä½¿ä¸Šé™è¶…å‡ºtelnetä¸­çš„5, è®¾æˆ6
 };
+
+/**
+ * @brief å¯¹åº”äºåŸ useridhash å‡½æ•°
+ * å°†ç”¨æˆ·åæ•£åˆ—åˆ° 26*26 ä¸ª buckets ä¸­
+ */
+unsigned int ythtbbs_cache_hash_userid(char *id);
 #endif //BMYBBS_CACHE_H
