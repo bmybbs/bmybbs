@@ -9,7 +9,7 @@
     Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
                         Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
     Copyright (C) 1999, Zhou Lin, kcn@cic.tsinghua.edu.cn
-    
+
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 1, or (at your option)
@@ -511,7 +511,7 @@ char *bname;
 	if (HAS_PERM(PERM_SYSOP) || seek_in_file(MY_BBS_HOME"/etc/voteidboards", currboard)) {
 		if (askyn
 		    ("此次投票是否限制投票人? (需要先在版面按V生成名单)", NA,
-		     NA)) 
+		     NA))
 		{
 			ball->flag |= VOTE_FLAG_LIMITED;
 			getdata(5, 0, "选用名单的序号: ", buf, 4, DOECHO, YEA);
@@ -856,7 +856,7 @@ begin:
 	show_voteing_title();
 
 	strollvote(uv, &currvote, multivotestroll);
-	
+
 	uv->voted =
 	    setperms(uv->voted, "选票", currvote.totalitems, showvoteitems, 1);
 	strollvote(uv, &currvote, -multivotestroll);
@@ -866,7 +866,7 @@ begin:
 		prints("您所投票数与本投票之要求不一致!");
 		pressreturn();
 		goto begin;
-		
+
 	}
 	if (uv->voted == i)
 		return -1;
@@ -1046,7 +1046,7 @@ int num;
 			now = time(NULL);
 			sprintf(buf, "%s %s %s", currentuser.userid,
 					currentuser.lasthost, ytht_ctime(now));
-			addtofile(MY_BBS_HOME "/vote.log", buf);
+			ytht_add_to_file(MY_BBS_HOME "/vote.log", buf);
 		}
 	}
 	pressanykey();
@@ -1192,7 +1192,7 @@ char *uident;
 	if ((i = getbnum(currboard)) == 0)
 		return DONOTHING;
 	vlists[currlist]->voternum++;
-	return addtofile(buf, uident);
+	return ytht_add_to_file(buf, uident);
 
 }
 
@@ -1216,7 +1216,7 @@ char *uident;
 	setbfile(fn, currboard, vlists[currlist]->listfname);
 	if (vlists[currlist]->voternum>0)
 		vlists[currlist]->voternum--;
-	return del_from_file(fn, uident);
+	return ytht_del_from_file(fn, uident, true);
 }
 
 static int
@@ -1327,7 +1327,7 @@ voter_key(int key, int allnum, int pagenum)
 	}
 	return 0;
 }
-			
+
 
 static int
 voter_list_select(int star, int curr)
@@ -1337,7 +1337,7 @@ voter_list_select(int star, int curr)
 	return DOQUIT;
 }
 
-int 
+int
 m_voter()
 {
 	int votelist;
@@ -1360,7 +1360,7 @@ m_voter()
 			free_lists();
 			return FULLUPDATE;
 		}
-	}	
+	}
 	clear();
 	votelist =choose(NA, 0, list_refresh, voter_key,voterlist_show, voter_list_select);
 	free_lists();
@@ -1620,7 +1620,7 @@ int allnum, pagenum;
 		sprintf(buf, "强制关闭投票 %s", currvote.title);
 		securityreport(buf, buf);
 		dele_vote();
-		break;	
+		break;
 	default:
 		return 0;
 	}

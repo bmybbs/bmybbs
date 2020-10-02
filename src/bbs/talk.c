@@ -1631,22 +1631,6 @@ char *fname;
 }
 
 int
-addtofile(filename, str)
-char filename[STRLEN], str[256];
-{
-	FILE *fp;
-	int rc;
-
-	if ((fp = fopen(filename, "a")) == NULL)
-		return -1;
-	flock(fileno(fp), LOCK_EX);
-	rc = fprintf(fp, "%s\n", str);
-	flock(fileno(fp), LOCK_UN);
-	fclose(fp);
-	return (rc == EOF ? -1 : 1);
-}
-
-int
 addtooverride(uident)
 char *uident;
 {
@@ -1707,33 +1691,6 @@ char *uident;
 	else
 		errlog("append override error");
 	return n;
-}
-
-int
-del_from_file(filename, str)
-char filename[STRLEN], str[STRLEN];
-{
-	FILE *fp, *nfp;
-	int deleted = NA;
-	char fnnew[STRLEN];
-
-	if ((fp = fopen(filename, "r")) == NULL)
-		return -1;
-	sprintf(fnnew, "%s.%d", filename, getuid());
-	if ((nfp = fopen(fnnew, "w")) == NULL)
-		return -1;
-	while (fgets(genbuf, STRLEN, fp) != NULL) {
-		if ((strncmp(genbuf, str, strlen(str)) == 0)
-		    && (genbuf[strlen(str)] <= 32))
-			deleted = YEA;
-		else		/*if (*genbuf > ' ') */
-			fputs(genbuf, nfp);
-	}
-	fclose(fp);
-	fclose(nfp);
-	if (!deleted)
-		return -1;
-	return (rename(fnnew, filename) + 1);
 }
 
 int

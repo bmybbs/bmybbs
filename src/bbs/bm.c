@@ -11,7 +11,7 @@
 
     Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
 
-    
+
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 1, or (at your option)
@@ -96,7 +96,7 @@ int ischange, isglobal, isanony;
 	nowtime = time(NULL);
 	if (day) {
 		struct tm *tmtime;
-		//time_t daytime = nowtime + (day + 1) * 24 * 60 * 60; 
+		//time_t daytime = nowtime + (day + 1) * 24 * 60 * 60;
 		time_t undenytime = nowtime + day * 24 * 60 * 60;
 		//tmtime = gmtime(&daytime); by bjgyt
 		tmtime = gmtime(&undenytime);
@@ -169,7 +169,7 @@ int ischange, isglobal, isanony;
 		setbfile(genbuf, currboard, "deny_anony");
 	else
 		setbfile(genbuf, currboard, "deny_users");
-	return addtofile(genbuf, strtosave);
+	return ytht_add_to_file(genbuf, strtosave);
 }
 
 static int
@@ -186,7 +186,7 @@ int isanony;
 		setbfile(fn, currboard, "deny_anony");
 	else
 		setbfile(fn, currboard, "deny_users");
-	return del_from_file(fn, uident);
+	return ytht_del_from_file(fn, uident, true);
 }
 
 int
@@ -325,8 +325,8 @@ int clubnum;
 		if ((i = getbnum(currboard)) == 0)
 			return DONOTHING;
 		sprintf(genbuf2, "%d", bcache[i - 1].header.clubnum);
-		addtofile(genbuf1, genbuf2);
-		return addtofile(genbuf, uident);
+		ytht_add_to_file(genbuf1, genbuf2);
+		return ytht_add_to_file(genbuf, uident);
 	} else {
 		setbfile(genbuf, currboard, "club_users");
 		seek = seek_in_file(genbuf, uident);
@@ -334,8 +334,8 @@ int clubnum;
 			return DONOTHING;
 		sethomefile(genbuf1, uident, "clubrights");
 		sprintf(genbuf2, "%d", clubnum);
-		addtofile(genbuf1, genbuf2);
-		return addtofile(genbuf, uident);
+		ytht_add_to_file(genbuf1, genbuf2);
+		return ytht_add_to_file(genbuf, uident);
 	}
 }
 
@@ -360,8 +360,8 @@ char *uident;
 	setbfile(fn, currboard, "club_users");
 	sethomefile(genbuf1, uident, "clubrights");
 	sprintf(genbuf2, "%d", bcache[i - 1].header.clubnum);
-	del_from_file(genbuf1, genbuf2);
-	return del_from_file(fn, uident);
+	ytht_del_from_file(genbuf1, genbuf2, true);
+	return ytht_del_from_file(fn, uident, true);
 }
 
 int
@@ -402,7 +402,7 @@ clubmember()
 						"%s由%s授予%s俱乐部权利",
 						uident, currentuser.userid,
 						currboard);
-					sprintf(repbuf,	
+					sprintf(repbuf,
 						"%s%s%s", titlebuf, buf[0] ? "\n\n原因：":"", buf);
 					if(!strcmp(currboard, "Beggar")
 							|| !strcmp(currboard, "killer")
@@ -412,7 +412,7 @@ clubmember()
 					} else {
 						securityreport(titlebuf, buf);
 					}
-					
+
 					deliverreport(titlebuf, repbuf);
 					mail_buf(repbuf, uident, titlebuf);
 				}
@@ -431,7 +431,7 @@ clubmember()
 						sprintf(titlebuf,
 							"%s被%s取消%s俱乐部权利",
 							uident, currentuser.userid, currboard);
-						sprintf(repbuf,	
+						sprintf(repbuf,
 							"%s%s%s", titlebuf, buf[0] ? "\n\n原因：":"", buf);
 						if(!strcmp(currboard, "Beggar")
 								|| !strcmp(currboard, "killer")
@@ -441,7 +441,7 @@ clubmember()
 						} else {
 							securityreport(titlebuf, buf);
 						}
-						
+
 						deliverreport(titlebuf, repbuf);
 						mail_buf(repbuf, uident, titlebuf);
 					}
@@ -594,32 +594,32 @@ int action, isglobal, isanony;
 	return 0;
 }
 
-int                                                                                          
-mail_buf_slow(char *userid, char *title, char *content, char *sender)                        
-{                                                                                            
-        FILE *fp;                                                                            
-        char buf[256], dir[256];                                                             
-        struct fileheader header;                                                            
-        int t;                                                                               
-        int now;                                                                             
-        bzero(&header, sizeof (header));                                                     
-        fh_setowner(&header, sender, 0);                                                     
-        sprintf(buf, "mail/%c/%s/", mytoupper(userid[0]), userid);                           
-        if (!file_isdir(buf))                                                                
-                return -1;                                                                   
-        now = time(NULL);                                                                    
-        t = trycreatefile(buf, "M.%d.A", now, 100);                                          
-        if (t < 0)                                                                           
-                return -1;                                                                   
+int
+mail_buf_slow(char *userid, char *title, char *content, char *sender)
+{
+        FILE *fp;
+        char buf[256], dir[256];
+        struct fileheader header;
+        int t;
+        int now;
+        bzero(&header, sizeof (header));
+        fh_setowner(&header, sender, 0);
+        sprintf(buf, "mail/%c/%s/", mytoupper(userid[0]), userid);
+        if (!file_isdir(buf))
+                return -1;
+        now = time(NULL);
+        t = trycreatefile(buf, "M.%d.A", now, 100);
+        if (t < 0)
+                return -1;
         header.filetime = t;
 	ytht_strsncpy(header.title, title, sizeof(header.title));
-        fp = fopen(buf, "w");                                                                
-        if (fp == 0)                                                                         
-                return -2;                                                                   
-        fprintf(fp, "%s", content);                                                          
-        fclose(fp);                                                                          
-        setmailfile(dir, userid, ".DIR");                                                    
-        append_record(dir, &header, sizeof (header));                                        
-        return 0;                                                                            
-}                                                                                            
+        fp = fopen(buf, "w");
+        if (fp == 0)
+                return -2;
+        fprintf(fp, "%s", content);
+        fclose(fp);
+        setmailfile(dir, userid, ".DIR");
+        append_record(dir, &header, sizeof (header));
+        return 0;
+}
 

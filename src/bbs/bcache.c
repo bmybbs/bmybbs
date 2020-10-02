@@ -502,7 +502,7 @@ char *boardname;
 				char towrite[STRLEN];
 				setuserfile(fn, "clubrights");
 				sprintf(towrite, "%d", bcache[i - 1].header.clubnum);
-				old_right ? del_from_file(fn, towrite) : addtofile(fn, towrite);
+				old_right ? ytht_del_from_file(fn, towrite, true) : ytht_add_to_file(fn, towrite);
 			}
 		}
 	if (!(bcache[i - 1].header.flag & CLUBTYPE_FLAG))

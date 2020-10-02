@@ -1371,7 +1371,7 @@ sendGoodWish(char *userid)
 						    ("已经列为收祝福人之一 \n");
 						break;
 					}
-					addtofile(wishlists, uident);
+					ytht_add_to_file(wishlists, uident);
 					cnt++;
 					break;
 				case 'E':
@@ -1383,8 +1383,7 @@ sendGoodWish(char *userid)
 				case 'D':
 				case 'd':
 					if (seek_in_file(wishlists, uident)) {
-						del_from_file(wishlists,
-							      uident);
+						ytht_del_from_file(wishlists, uident, true);
 						cnt--;
 					}
 					break;
@@ -1427,8 +1426,7 @@ sendGoodWish(char *userid)
 								i--;
 								continue;
 							}
-							addtofile(wishlists,
-								  uident);
+							ytht_add_to_file(wishlists, uident);
 							cnt++;
 						}
 					}	//for loop

@@ -1403,7 +1403,7 @@ g_send()
 				prints("已经列为收件人之一 \n");
 				break;
 			}
-			addtofile(maillists, uident);
+			ytht_add_to_file(maillists, uident);
 			cnt++;
 			break;
 		case 'E':
@@ -1416,7 +1416,7 @@ g_send()
 		case 'd':
 			{
 				if (seek_in_file(maillists, uident)) {
-					del_from_file(maillists, uident);
+					ytht_add_to_file(maillists, uident);
 					cnt--;
 				}
 				break;
@@ -1469,7 +1469,7 @@ g_send()
 						i--;
 						continue;
 					}
-					addtofile(maillists, uident);
+					ytht_add_to_file(maillists, uident);
 					cnt++;
 				}
 			}

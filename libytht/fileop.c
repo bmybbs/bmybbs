@@ -3,7 +3,6 @@
 #include <errno.h>
 #include <sys/mman.h>
 #include <sys/file.h>
-#include <sys/types.h>
 #include <dirent.h>
 #include <setjmp.h>
 #include <stdlib.h>
@@ -385,4 +384,109 @@ int seek_in_file(char *filename, char *seekstr)
 	}
 	fclose(fp);
 	return 0;
+}
+
+int ytht_add_to_file(char *filename, char *str) {
+	FILE *fp;
+	int rc;
+
+	if ((fp = fopen(filename, "a")) == NULL)
+		return -1;
+	flock(fileno(fp), LOCK_EX);
+	rc = fprintf(fp, "%s\n", str);
+	flock(fileno(fp), LOCK_UN);
+	fclose(fp);
+	return (rc == EOF ? -1 : 1);
+}
+
+int ytht_del_from_file(char *filename, char *str, bool include_lf) {
+	int fdin, fdout;
+	void *src, *dst;
+	struct stat statbuf;
+	char fnnew[256];
+	char *p;
+	size_t len, offset;
+	char *local_buf;
+
+	if ((fdin = open(filename, O_RDONLY)) < 0) {
+		return -1;
+	}
+
+	flock(fdin, LOCK_EX); // released by close(fdin)
+
+	if (fstat(fdin, &statbuf) < 0) {
+		close(fdin);
+		return -1;
+	}
+
+	if ((src = mmap(0, statbuf.st_size, PROT_READ, MAP_SHARED, fdin, 0)) == MAP_FAILED) {
+		close(fdin);
+		return -1;
+	}
+
+	len = strlen(str);
+	if (include_lf) {
+		if ((local_buf = (char *) calloc(1, len+2)) == NULL) {
+			munmap(src, statbuf.st_size);
+			close(fdin);
+		}
+		sprintf(local_buf, "%s\n", str);
+		len++;
+	}
+
+	if ((p = strstr((char*)src, include_lf ? local_buf : str)) == NULL) {
+		if (include_lf) free(local_buf);
+		munmap(src, statbuf.st_size);
+		close(fdin);
+		return -1;
+	}
+
+
+	// temporary file will be created at /tmp
+	sprintf(fnnew, "/tmp/bbs-del_from_file-XXXXXX");
+	if ((fdout = mkstemp(fnnew)) < 0) {
+		if (include_lf) free(local_buf);
+		munmap(src, statbuf.st_size);
+		close(fdin);
+		return -1;
+	}
+
+	if (lseek(fdout, statbuf.st_size - 1 - len, SEEK_SET) == -1) {
+		if (include_lf) free(local_buf);
+		close(fdout);
+		unlink(fnnew);
+		munmap(src, statbuf.st_size);
+		close(fdin);
+		return -1;
+	}
+
+	if (write(fdout, "", 1) != 1) {
+		if (include_lf) free(local_buf);
+		close(fdout);
+		unlink(fnnew);
+		munmap(src, statbuf.st_size);
+		close(fdin);
+		return -1;
+	}
+
+	if ((dst = mmap(0, statbuf.st_size - len, PROT_READ | PROT_WRITE, MAP_SHARED, fdout, 0)) == MAP_FAILED) {
+		if (include_lf) free(local_buf);
+		close(fdout);
+		unlink(fnnew);
+		munmap(src, statbuf.st_size);
+		close(fdin);
+		return -1;
+	}
+
+	offset = (void *)p - (void *)src;
+	memcpy(dst, src, offset);
+	memcpy(dst + offset, p + len, statbuf.st_size -  len - offset);
+
+	if (include_lf) free(local_buf);
+	munmap(dst, statbuf.st_size - len);
+	munmap(src, statbuf.st_size);
+	close(fdin);
+	close(fdout);
+
+	return (rename(fnnew, filename) + 1);
 }
