@@ -188,22 +188,35 @@ You must also set "EightBitMode=pass8" in /etc/sendmail.cf
 #define BBS_BIG5_PORT 2300
 #define SMAGIC	      "BMY"
 
-#define CONVTABLE_SHMKEY 3101
-#define BCACHE_SHMKEY 7813
-#define UCACHE_SHMKEY	7912
-#define UCACHE_HASH_SHMKEY	7911
-#define UTMP_SHMKEY	3785
-#define UTMP_HASH_SHMKEY	3786
-#define UINDEX_SHMKEY   3787
-#define WWWCACHE_SHMKEY        37788
-#define ACBOARD_SHMKEY  9014
-#define GOODBYE_SHMKEY	5003
-#define WELCOME_SHMKEY	5004
-#define ENDLINE1_SHMKEY	5006
-#define STAT_SHMKEY	5100
+#define CONVTABLE_SHMKEY   3101
+#define BCACHE_SHMKEY      7813
+#define UCACHE_SHMKEY      7912
+#define UCACHE_HASH_SHMKEY 7911
+#define UTMP_SHMKEY        3785
+#define UTMP_HASH_SHMKEY   3786
+#define UINDEX_SHMKEY      3787
+#define WWWCACHE_SHMKEY   37788
+#define ACBOARD_SHMKEY     9014
+#define GOODBYE_SHMKEY     5003
+#define WELCOME_SHMKEY     5004
+#define ENDLINE1_SHMKEY    5006
+#define STAT_SHMKEY        5100
 
 #define BBSLOG_MSQKEY 3333
 #define BBSEVA_MSQKEY 3334
+
+#define PASSFILE    ".PASSWDS"              /* Name of file User records stored in */
+#define ULIST_BASE  ".UTMP"                 /* Names of users currently on line */
+#define FLUSH       ".PASSFLUSH"            /* Stores date for user cache flushing */
+#define BOARDS      ".BOARDS"               /* File containing list of boards */
+#define DOT_DIR     ".DIR"                  /* Name of Directory file info */
+#define THREAD_DIR  ".THREAD"               /* Name of Thread file info */
+#define DIGEST_DIR  ".DIGEST"               /* Name of Digest file info */
+#define TOPFILE_DIR ".TOPFILE"              //hace
+#define BADWORDS    "etc/.badwords_new"     /* word list to filter */
+#define SBADWORDS   "etc/.sbadwords_new"
+#define PBADWORDS   "etc/.pbadwords_new"
+#define APPS		".APPS"                 /* File containing list of apps */
 
 /*
  * 有关 app 的限制
