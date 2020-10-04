@@ -1,3 +1,4 @@
+#include <stdarg.h>
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
@@ -346,3 +347,41 @@ FAIL:
 	close(fd);
 	return retv;
 }
+
+int ythtbbs_record_apply_v(char *filename, ythtbbs_record_callback_v fptr, size_t size, ...) {
+	char *buf;
+	ssize_t sizeread;
+	int fd, n, i, retv;
+	va_list ap;
+
+	if ((fd = open(filename, O_RDONLY, 0)) == -1) {
+		return -1;
+	}
+
+	if ((buf = malloc(size * NUMBUFFER)) == NULL) {
+		close(fd);
+		return -1;
+	}
+
+	va_start(ap, size);
+	while ((sizeread = read(fd, buf, size * NUMBUFFER)) > 0) {
+		if (sizeread % size != 0) {
+			retv = -1;
+			goto END;
+		}
+		n = sizeread / size;
+		for (i = 0; i < n; i++) {
+			retv = fptr(buf + i * size, ap);
+			if (retv != 0) {
+				goto END;
+			}
+		}
+	}
+	retv = 0;
+END:
+	va_end(ap);
+	close(fd);
+	free(buf);
+	return retv;
+}
+
