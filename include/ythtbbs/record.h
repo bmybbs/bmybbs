@@ -1,9 +1,6 @@
 /* record.c */
 #ifndef __RECORD_H
 #define __RECORD_H
-#ifdef SYSV
-int flock(int fd, int op);
-#endif
 void tmpfilename(char *filename, char *tmpfile, char *deleted);
 int safewrite(int fd, void *buf, int size);
 int delete_record(char *filename, int size, int id);

@@ -16,22 +16,6 @@
 #define BUFSIZE (8192)
 #define PATHLEN 256
 
-#ifdef SYSV
-int
-flock(fd, op)
-int fd, op;
-{
-	switch (op) {
-	case LOCK_EX:
-		return lockf(fd, F_LOCK, 0);
-	case LOCK_UN:
-		return lockf(fd, F_ULOCK, 0);
-	default:
-		return -1;
-	}
-}
-#endif
-
 void
 tmpfilename(filename, tmpfile, deleted)
 char *filename, *tmpfile, *deleted;
