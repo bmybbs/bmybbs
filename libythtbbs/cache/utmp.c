@@ -79,3 +79,11 @@ int ythtbbs_cache_utmp_insert(struct user_info *ptr_user_info) {
 	return j;
 }
 
+int ythtbbs_cache_utmp_check_active_by_idx(int idx) {
+	return shm_utmp->uinfo[idx].active;
+}
+
+int ythtbbs_cache_utmp_check_uid_by_idx(int idx, int uid) {
+	return shm_utmp->uinfo[idx].uid == uid;
+}
+

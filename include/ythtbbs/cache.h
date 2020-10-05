@@ -90,6 +90,10 @@ struct ythtbbs_cache_UserIDHashTable {
  */
 unsigned int ythtbbs_cache_User_hash(char *userid);
 
+void ythtbbs_cache_UserTable_add_utmp_idx(int uid, int utmp_idx);
+
+void ythtbbs_cache_UserTable_remove_utmp_idx(int uid, int utmp_idx);
+
 /**
  * @brief 解析 shm_utmp
  */
@@ -104,4 +108,8 @@ void ythtbbs_cache_utmp_resolve(void);
  * @return -1 表示插入失败，否则返回索引值
  */
 int ythtbbs_cache_utmp_insert(struct user_info *ptr_user_info);
+
+int ythtbbs_cache_utmp_check_active_by_idx(int idx);
+
+int ythtbbs_cache_utmp_check_uid_by_idx(int idx, int uid);
 #endif //BMYBBS_CACHE_H

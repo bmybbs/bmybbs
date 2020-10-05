@@ -89,6 +89,28 @@ void ythtbbs_cache_UserTable_resolve() {
 	ythtbbs_cache_UserIDHashTable_resolve();
 }
 
+void ythtbbs_cache_UserTable_add_utmp_idx(int uid, int utmp_idx) {
+	int i, idx;
+
+	if (uid <= 0 || uid > MAXUSERS)
+		return;
+
+	// 检查是否已存在
+	for (i = 0; i < MAX_LOGIN_PER_USER; i++) {
+		if (shm_user_table->users[uid - 1].utmp_indices[i] == utmp_idx + 1)
+			return;
+	}
+
+	for (i = 0; i < MAX_LOGIN_PER_USER; i++) {
+		idx = shm_user_table->users[uid - 1].utmp_indices[i] - 1;
+		if (idx < 0 || !ythtbbs_cache_utmp_check_active_by_idx(idx) || !ythtbbs_cache_utmp_check_uid_by_idx(idx, uid)) {
+			// TODO check
+			shm_user_table->users[uid - 1].utmp_indices[i] = utmp_idx + 1;
+			return;
+		}
+	}
+}
+
 /***** implementations of private functions *****/
 static int ythtbbs_cache_UserTable_fill_v(void *user_ec, va_list ap) {
 	int           *ptr_local_usernumber;
