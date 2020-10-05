@@ -52,6 +52,38 @@ struct UINDEX {
 	int user[MAXUSERS][6];	//不清楚www判断多登录的机制是否使上限超出telnet中的5, 设成6
 };
 
+#define MAX_LOGIN_PER_USER 6
+/**
+ * 原 UCACHE / UINDEX 两个 item 的合并
+ */
+struct ythtbbs_cache_user {
+	char userid[IDLEN+1];
+	int  utmp_indices[MAX_LOGIN_PER_USER]; /* position in the UTFPFILE */
+};
+
+/**
+ * 对应与原 UCACHE / UINDEX 两个表
+ */
+struct ythtbbs_cache_user_table {
+	struct ythtbbs_cache_user users[MAXUSERS];
+	int number;
+	int usersum;
+	time_t update_time;
+	int nouse[10];
+};
+
+struct ythtbbs_cache_userid_hashitem {
+	int  user_num;          /* index in the .PASSWDS, STARTING from 1 */
+	char userid[IDLEN + 1]; // TODO replace with ptr?
+};
+
+/**
+ * Refactoring the UCACHEHASH structure
+ */
+struct ythtbbs_cache_userid_hashtable {
+	struct ythtbbs_cache_userid_hashitem items[UCACHE_HASH_SIZE];
+	time_t update_time;
+};
 /**
  * @brief 对应于原 useridhash 函数
  * 将用户名散列到 26*26 个 buckets 中
