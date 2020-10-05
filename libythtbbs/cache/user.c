@@ -184,7 +184,7 @@ static int ythtbbs_cache_UserTable_fill_v(void *user_ec, va_list ap) {
 	if (*ptr_local_usernumber < MAXUSERS) {
 		strncpy(shm_user_table->users[*ptr_local_usernumber].userid, ptr->userid, IDLEN+1);
 		shm_user_table->users[*ptr_local_usernumber].userid[IDLEN] = '\0';
-		memset(shm_user_table->users[*ptr_local_usernumber].utmp_indices, 0, MAX_LOGIN_PER_USER);
+		memset(shm_user_table->users[*ptr_local_usernumber].utmp_indices, 0, sizeof(int) * MAX_LOGIN_PER_USER);
 		(*ptr_local_usernumber)++;
 	}
 	return 0;
