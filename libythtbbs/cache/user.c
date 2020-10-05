@@ -111,6 +111,20 @@ void ythtbbs_cache_UserTable_add_utmp_idx(int uid, int utmp_idx) {
 	}
 }
 
+void ythtbbs_cache_UserTable_remove_utmp_idx(int uid, int utmp_idx) {
+	int i;
+
+	if (uid <= 0 || uid > MAXUSERS)
+		return;
+
+	for (i = 0; i < MAX_LOGIN_PER_USER; i++) {
+		if (shm_user_table->users[uid - 1].utmp_indices[i] == utmp_idx + 1) {
+			shm_user_table->users[uid - 1].utmp_indices[i] = 0;
+			return;
+		}
+	}
+}
+
 /***** implementations of private functions *****/
 static int ythtbbs_cache_UserTable_fill_v(void *user_ec, va_list ap) {
 	int           *ptr_local_usernumber;
