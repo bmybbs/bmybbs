@@ -2,13 +2,13 @@
 #define BMYBBS_IPHASH_H
 
 /**
- * ���� IP ����ɢ��ֵ
+ * 依据 IP 计算散列值
  *
- * �����ٶ� IP ҪôΪ IPv4���� '.' �ָ�����Ҫô IPv6���� ':' �ָ�����IPv4 ӳ�䵽 IPv6 ��
- * ��Ϊ���ߣ������ϼ���Ӧ�ü��ݣ�������ǰ�ߣ������� nju09 �б�ע�͵���ԭ�ȵ� hash �㷨��
- * ������ IPv4 ��ַ��Ϊ 32 ����������ģ���㣬��������������ࡣ
- * @param ip     [char *] IP �ַ���
- * @param nhash  [uint32] ģ
+ * 函数假定 IP 要么为 IPv4（以 '.' 分隔），要么 IPv6（以 ':' 分隔），IPv4 映射到 IPv6 的
+ * 归为后者（理论上计算应该兼容）。对于前者，调用在 nju09 中被注释掉的原先的 hash 算法，
+ * 即整个 IPv4 地址作为 32 进制数进行模运算，而后者则迭代求余。
+ * @param ip     [char *] IP 字符串
+ * @param nhash  [uint32] 模
  * @return
  */
 unsigned int bmy_iphash(const char *ip, unsigned int nhash);
