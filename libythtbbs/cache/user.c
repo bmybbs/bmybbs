@@ -125,6 +125,55 @@ void ythtbbs_cache_UserTable_remove_utmp_idx(int uid, int utmp_idx) {
 	}
 }
 
+/**
+ * @brief 将 UserTable 缓存中的用户信息序列化出来
+ * 输出形式 user_idx, userid [ session ]："0, SYSOP [ [0,42] ]\n"
+ * @warning 非公开接口
+ */
+void ythtbbs_cache_UserTable_dump(FILE *fp) {
+	int i; // MAXUSERS
+	int j;
+	struct ythtbbs_cache_User *user;
+
+	ythtbbs_cache_UserTable_resolve();
+	fprintf(fp, "===== UserTable =====");
+	for (i = 0; i < MAXUSERS; i++) {
+		user = &(shm_user_table->users[i]);
+		if (user->userid[0] == '\0')
+			continue;
+
+		fprintf(fp, "%d, %s [ ", i, user->userid);
+		for (j = 0; j < MAX_LOGIN_PER_USER; j++) {
+			if (user->utmp_indices[j] == 0)
+				continue;
+
+			fprintf(fp, "[%d,%d] ", j, user->utmp_indices[j]);
+		}
+
+		fprintf(fp, "]\n");
+	}
+}
+
+/**
+ * @brief 将 UserIDHashTable 缓存中的用户信息序列化出来
+ * 输出形式为 hashid, user_num, userid："42, 0, SYSOP\n"
+ * @warning 非公开接口
+ */
+void ythtbbs_cache_UserIDHashTable_dump(FILE *fp) {
+	int i; // UCACHE_HASH_SIZE
+	struct ythtbbs_cache_UserIDHashItem *item;
+
+	ythtbbs_cache_UserIDHashTable_resolve();
+	fprintf(fp, "===== UserIDHashTable =====");
+	for (i = 0; i < UCACHE_HASH_SIZE; i++) {
+		item = &(shm_userid_hashtable->items[i]);
+		if (item->userid[0] == '\0')
+			continue;
+
+		fprintf(fp, "%d, %d, %s\n", i, item->user_num, item->userid);
+	}
+}
+
 /***** implementations of private functions *****/
 static int ythtbbs_cache_UserTable_fill_v(void *user_ec, va_list ap) {
 	int           *ptr_local_usernumber;

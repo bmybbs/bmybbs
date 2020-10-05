@@ -87,3 +87,23 @@ int ythtbbs_cache_utmp_check_uid_by_idx(int idx, int uid) {
 	return shm_utmp->uinfo[idx].uid == uid;
 }
 
+/**
+ * @brief 将 utmp 缓存中的用户信息序列化出来
+ * 输出形式 utmp_idx, userid："0, SYSOP\n"
+ * @warning 非公开接口
+ */
+void ythtbbs_cache_utmp_dump(FILE *fp) {
+	int i;
+	struct user_info *info;
+
+	ythtbbs_cache_utmp_resolve();
+	fprintf(fp, "===== UTMP =====\n");
+	for (i = 0; i < USHM_SIZE; i++) {
+		info = &(shm_utmp->uinfo[i]);
+		if (info->userid[0] == '\0')
+			continue;
+
+		fprintf(fp, "%d, %s\n", i, info->userid);
+	}
+}
+
