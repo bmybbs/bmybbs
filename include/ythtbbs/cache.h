@@ -74,7 +74,7 @@ struct ythtbbs_cache_UserTable {
 
 struct ythtbbs_cache_UserIDHashItem {
 	int  user_num;          /* index in the .PASSWDS, STARTING from 1 */
-	char userid[IDLEN + 1]; // TODO replace with ptr?
+	char userid[IDLEN + 1];
 };
 
 /**
