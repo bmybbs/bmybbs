@@ -52,7 +52,8 @@ add_library(ythtbbs SHARED
 	notification.c
 	mailsender.c
 	captcha.c
-	cache.c
+	cache/user.c
+	cache/utmp.c
 )
 
 add_dependencies(ythtbbs sectree)

@@ -1,46 +1,40 @@
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
 #include <ctype.h>
-#include <time.h>
+#include <string.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/file.h>
-#include <sys/shm.h>
 #include <sys/stat.h>
-#include "config.h"
 #include "ytht/shmop.h"
 #include "ythtbbs/cache.h"
-#include "ythtbbs/misc.h"
 #include "ythtbbs/record.h"
 #include "ythtbbs/user.h"
+#include "cache-internal.h"
 
-static struct UTMPFILE                       *shm_utmp;
-static struct ythtbbs_cache_userid_hashtable *shm_userid_hashtable;
-static struct ythtbbs_cache_user_table       *shm_user_table;
+/***** global variables *****/
+static struct ythtbbs_cache_UserIDHashTable *shm_userid_hashtable;
+static struct ythtbbs_cache_UserTable       *shm_user_table;
 
-/**
- * @brief 输出错误并退出
- * @param key SHM 键
- */
-static void shm_err(key_t key);
+/***** prototypes of public functions TODO *****/
+int ythtbbs_cache_USerTable_resolve();
 
-static int fill_ucache_v(void *user_ec, va_list ap);
-static int ythtbbs_cache_resolve_user_hash();
-static int ythtbbs_cache_userid_hashtable_insert(struct ythtbbs_cache_userid_hashitem *ptr_items, size_t size, char *userid, int idx);
+/***** prototypes of private functions *****/
+static int ythtbbs_cache_UserTable_fill_v(void *user_ec, va_list ap);
+static int ythtbbs_cache_UserIDHashTable_resolve();
+static int ythtbbs_cache_UserIDHashTable_insert(struct ythtbbs_cache_UserIDHashItem *ptr_items, size_t size, char *userid, int idx);
 
-unsigned int ythtbbs_cache_hash_userid(char *id) {
+/***** implementations of public functions *****/
+unsigned int ythtbbs_cache_User_hash(char *userid) {
 	unsigned int n1 = 0;
 	unsigned int n2 = 0;
 	const unsigned int _HASH_SIZE = 26;
 
-	while (*id) {
-		n1 += ((unsigned int) toupper(*id)) % _HASH_SIZE;
-		id++;
-		if (!*id) break;
+	while (*userid) {
+		n1 += ((unsigned int) toupper(*userid)) % _HASH_SIZE;
+		userid++;
+		if (!*userid) break;
 
-		n2 += ((unsigned int ) toupper(*id)) % _HASH_SIZE;
-		id++;
+		n2 += ((unsigned int ) toupper(*userid)) % _HASH_SIZE;
+		userid++;
 	}
 
 	n1 %= _HASH_SIZE;
@@ -48,16 +42,7 @@ unsigned int ythtbbs_cache_hash_userid(char *id) {
 	return n1 * _HASH_SIZE + n2;
 }
 
-void ythtbbs_cache_resolve_utmp() {
-	if (shm_utmp == NULL) {
-		shm_utmp = get_shm(UTMP_SHMKEY, sizeof(*shm_utmp));
-		if (shm_utmp == NULL) {
-			shm_err(UTMP_SHMKEY);
-		}
-	}
-}
-
-void ythtbbs_cache_resolve_user() {
+void ythtbbs_cache_UserTable_resolve() {
 	int fd;
 	struct stat st;
 	static volatile time_t lasttime = -1;
@@ -89,7 +74,7 @@ void ythtbbs_cache_resolve_user() {
 
 	if (shm_user_table->update_time < st.st_mtime) {
 		local_usernumber = 0;
-		ythtbbs_record_apply_v(PASSFILE, fill_ucache_v, sizeof(struct userec), &local_usernumber);
+		ythtbbs_record_apply_v(PASSFILE, ythtbbs_cache_UserTable_fill_v, sizeof(struct userec), &local_usernumber);
 
 		shm_user_table->number = local_usernumber;
 		shm_user_table->update_time = st.st_mtime;
@@ -100,18 +85,11 @@ void ythtbbs_cache_resolve_user() {
 	}
 	close(fd);
 
-	ythtbbs_cache_resolve_user_hash();
+	ythtbbs_cache_UserIDHashTable_resolve();
 }
 
-static void shm_err(key_t key) {
-	char buf[64];
-
-	sprintf(buf, "SHM Error! key = %d.\n", key);
-	newtrace(buf);
-	exit(1);
-}
-
-static int fill_ucache_v(void *user_ec, va_list ap) {
+/***** implementations of private functions *****/
+static int ythtbbs_cache_UserTable_fill_v(void *user_ec, va_list ap) {
 	int           *ptr_local_usernumber;
 	struct userec *ptr;
 
@@ -126,7 +104,7 @@ static int fill_ucache_v(void *user_ec, va_list ap) {
 	return 0;
 }
 
-static int ythtbbs_cache_resolve_user_hash() {
+static int ythtbbs_cache_UserIDHashTable_resolve() {
 	int fd, i;
 	char local_buf[64];
 
@@ -143,7 +121,7 @@ static int ythtbbs_cache_resolve_user_hash() {
 		shm_userid_hashtable->update_time = shm_user_table->update_time;
 
 		for(i = 0; i < shm_user_table->number; i++) {
-			ythtbbs_cache_userid_hashtable_insert(shm_userid_hashtable->items, UCACHE_HASH_SIZE, shm_user_table->users[i].userid, i);
+			ythtbbs_cache_UserIDHashTable_insert(shm_userid_hashtable->items, UCACHE_HASH_SIZE, shm_user_table->users[i].userid, i);
 		}
 
 		sprintf(local_buf, "system reload shm_userid_hashtable %d", shm_user_table->number);
@@ -156,12 +134,12 @@ static int ythtbbs_cache_resolve_user_hash() {
 	return 0;
 }
 
-static int ythtbbs_cache_userid_hashtable_insert(struct ythtbbs_cache_userid_hashitem *ptr_items, size_t size, char *userid, int idx) {
+static int ythtbbs_cache_UserIDHashTable_insert(struct ythtbbs_cache_UserIDHashItem *ptr_items, size_t size, char *userid, int idx) {
 	unsigned int h, s, i, j = 0;
 	if (!*userid)
 		return -1;
 
-	h = ythtbbs_cache_hash_userid(userid);
+	h = ythtbbs_cache_User_hash(userid);
 	s = size / 26 / 26;
 	i = h * s;
 
@@ -182,4 +160,5 @@ static int ythtbbs_cache_userid_hashtable_insert(struct ythtbbs_cache_userid_has
 	strcpy(ptr_items[i].userid, userid);
 	return 0;
 }
+
 

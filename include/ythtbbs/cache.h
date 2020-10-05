@@ -56,7 +56,7 @@ struct UINDEX {
 /**
  * 原 UCACHE / UINDEX 两个 item 的合并
  */
-struct ythtbbs_cache_user {
+struct ythtbbs_cache_User {
 	char userid[IDLEN+1];
 	int  utmp_indices[MAX_LOGIN_PER_USER]; /* position in the UTFPFILE */
 };
@@ -64,15 +64,15 @@ struct ythtbbs_cache_user {
 /**
  * 对应与原 UCACHE / UINDEX 两个表
  */
-struct ythtbbs_cache_user_table {
-	struct ythtbbs_cache_user users[MAXUSERS];
+struct ythtbbs_cache_UserTable {
+	struct ythtbbs_cache_User users[MAXUSERS];
 	int number;
 	int usersum;
 	time_t update_time;
 	int nouse[10];
 };
 
-struct ythtbbs_cache_userid_hashitem {
+struct ythtbbs_cache_UserIDHashItem {
 	int  user_num;          /* index in the .PASSWDS, STARTING from 1 */
 	char userid[IDLEN + 1]; // TODO replace with ptr?
 };
@@ -80,13 +80,13 @@ struct ythtbbs_cache_userid_hashitem {
 /**
  * Refactoring the UCACHEHASH structure
  */
-struct ythtbbs_cache_userid_hashtable {
-	struct ythtbbs_cache_userid_hashitem items[UCACHE_HASH_SIZE];
+struct ythtbbs_cache_UserIDHashTable {
+	struct ythtbbs_cache_UserIDHashItem items[UCACHE_HASH_SIZE];
 	time_t update_time;
 };
 /**
  * @brief 对应于原 useridhash 函数
  * 将用户名散列到 26*26 个 buckets 中
  */
-unsigned int ythtbbs_cache_hash_userid(char *id);
+unsigned int ythtbbs_cache_User_hash(char *userid);
 #endif //BMYBBS_CACHE_H

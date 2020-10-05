@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
 
 	while(fread(&ue, sizeof(ue), 1, fp) == 1) {
 		if (ue.userid[0] == '\0') continue;
-		hash = ythtbbs_cache_hash_userid(ue.userid);
+		hash = ythtbbs_cache_User_hash(ue.userid);
 		if (hash >= TOTAL) {
 			fprintf(stderr, "out of range for user[%s]\n", ue.userid);
 			return -2;
