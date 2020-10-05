@@ -89,4 +89,19 @@ struct ythtbbs_cache_UserIDHashTable {
  * 将用户名散列到 26*26 个 buckets 中
  */
 unsigned int ythtbbs_cache_User_hash(char *userid);
+
+/**
+ * @brief 解析 shm_utmp
+ */
+void ythtbbs_cache_utmp_resolve(void);
+
+/**
+ * @brief 向 shm_utmp 中插入 user_info
+ *
+ * 对应于 src/bbs/bcache::getnewutmpent 的重构。
+ * @warning 和 getnewutmpent 所不同的是返回的是索引，从0开始计数
+ * @param ptr_user_info
+ * @return -1 表示插入失败，否则返回索引值
+ */
+int ythtbbs_cache_utmp_insert(struct user_info *ptr_user_info);
 #endif //BMYBBS_CACHE_H

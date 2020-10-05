@@ -22,6 +22,8 @@
 
 #ifndef __BBS_STRUCT_H
 #define __BBS_STRUCT_H
+#include <time.h>
+#include <stdbool.h>
 #include "config.h"
 #include "ythtbbs/boardrc.h"
 
@@ -62,7 +64,7 @@ struct user_info {		/* Structure used in UTMP file */
 	int active;		/* When allocated this field is true */
 	int uid;		/* Used to find user name in passwd file */
 	int pid;		/* kill() to notify user of talk request */
-	int invisible;		/* Used by cloaking function in Xyz menu */
+	bool invisible;		/* Used by cloaking function in Xyz menu */
 	int sockactive;		/* Used to coordinate talk requests */
 	int sockaddr;		/* ... */
 	int destuid;		/* talk uses this to identify who called */
@@ -71,7 +73,7 @@ struct user_info {		/* Structure used in UTMP file */
 	int in_chat;		/* for in_chat commands   */
 	int fnum;		/* number of friends */
 	short ext_idle;		/* has extended idle time, YEA or NA */
-	short isssh;		/* login from ssh */
+	bool isssh;		/* login from ssh */
 	time_t lasttime;	/* time of the last action */
 	unsigned int userlevel;	//change by lepton for www
 	//time_t     login_start_time; //change by lepton for www
