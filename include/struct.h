@@ -39,24 +39,5 @@ struct commend{
 	//int flag;
 	unsigned int accessed;
 };
-
-struct postlog {
-	char author[IDLEN + 1];
-	char board[18];
-	char title[66];
-	time_t date;
-	int number;
-};
-
-// unused struct
-/*
-struct {
-	char author[IDLEN + 1];
-	char board[18];
-	char title[66];
-	time_t date;
-	int number;
-} postlog;
-*/
 #endif
 
