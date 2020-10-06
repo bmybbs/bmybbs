@@ -40,12 +40,6 @@ struct commend{
 	unsigned int accessed;
 };
 
-struct one_key {		/* Used to pass commands to the readmenu */
-	int key;
-	int (*fptr) ();
-	char func[33];		//add by gluon for self-define menu
-};
-
 struct postheader {
 	char title[STRLEN];
 	char ds[40];

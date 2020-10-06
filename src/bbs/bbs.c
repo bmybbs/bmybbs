@@ -26,6 +26,7 @@
 #include <sys/mman.h>
 #include "bbs.h"
 #include "bbs_global_vars.h"
+#include "one_key.h"
 #include "talk.h"
 #include "vote.h"
 #include "bbsinc.h"

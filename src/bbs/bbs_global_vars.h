@@ -1,5 +1,7 @@
 #ifndef BMYBBS_BBS_BBSTELNET
 #define BMYBBS_BBS_BBSTELNET
+#include "config.h"
+#include "one_key.h"
 extern char save_title[STRLEN];
 extern char currboard[STRLEN];
 extern int currfiletime;

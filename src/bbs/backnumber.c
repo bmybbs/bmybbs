@@ -13,6 +13,7 @@
 #include "help.h"
 #include "maintain.h"
 #include "list.h"
+#include "one_key.h"
 
 extern char quote_file[], quote_user[];
 char currbacknumberdir[STRLEN * 2];
@@ -265,7 +266,7 @@ new_backnumber()
 	struct bknheader bn;
 	int count;
 	if (!IScurrBM)
-//by bjgyt	if (!HAS_PERM(PERM_OBOARDS) && !HAS_PERM(PERM_SYSOP)) 
+//by bjgyt	if (!HAS_PERM(PERM_OBOARDS) && !HAS_PERM(PERM_SYSOP))
 		return DONOTHING;
 	bzero(&bn, sizeof (bn));
 	getdata(t_lines - 1, 0, "输入过刊标题: ", bn.title, 50, DOECHO, YEA);

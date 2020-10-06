@@ -12,6 +12,7 @@
 #include "bcache.h"
 #include "io.h"
 #include "term.h"
+#include "one_key.h"
 
 extern struct UTMPFILE *utmpshm;
 
