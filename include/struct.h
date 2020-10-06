@@ -23,28 +23,9 @@
 #ifndef __BBS_STRUCT_H
 #define __BBS_STRUCT_H
 #include <time.h>
-#include <stdbool.h>
 #include "config.h"
-#include "ythtbbs/boardrc.h"
 
-/**
- * INET6_ADDRSTRLEN 46 longest: 0fff:1fff:2fff:3fff:4fff:5fff:255.255.255.255
- * BMY_IPV6 either "0fff:1fff:2fff:3fff:4fff:5fff:6fff:7fff" or "255.255.255.255"
- */
-#define BMY_IPV6_LEN (40)
-#define MAXFRIENDS (200)
-#define MAXREJECTS (32)
 #define BM_LEN 60
-
-struct wwwsession {
-	unsigned char used:1, show_reg:1, att_mode:1, ipmask:4, doc_mode:1;
-	unsigned char link_mode:1, def_mode:1, t_lines:6;
-	char iskicked;
-	char unused;
-	time_t login_start_time;
-	time_t lastposttime;
-	time_t lastinboardtime;
-};
 
 //modify by mintbaggio 040326 for front page commend
 struct commend{
@@ -57,47 +38,6 @@ struct commend{
 	time_t time;            //the time when the com_user commend this article
 	//int flag;
 	unsigned int accessed;
-};
-
-#define TOKENLENGTH 8
-struct user_info {		/* Structure used in UTMP file */
-	int active;		/* When allocated this field is true */
-	int uid;		/* Used to find user name in passwd file */
-	int pid;		/* kill() to notify user of talk request */
-	bool invisible;		/* Used by cloaking function in Xyz menu */
-	int sockactive;		/* Used to coordinate talk requests */
-	int sockaddr;		/* ... */
-	int destuid;		/* talk uses this to identify who called */
-	int mode;		/* UL/DL, Talk Mode, Chat Mode, ... */
-	int pager;		/* pager toggle, YEA, or NA */
-	int in_chat;		/* for in_chat commands   */
-	int fnum;		/* number of friends */
-	short ext_idle;		/* has extended idle time, YEA or NA */
-	bool isssh;		/* login from ssh */
-	time_t lasttime;	/* time of the last action */
-	unsigned int userlevel;	//change by lepton for www
-	//time_t     login_start_time; //change by lepton for www
-	int nouse1;
-	char chatid[10];	/* chat id, if in chat mode */
-	char from[BMY_IPV6_LEN];		/* machine name the user called in from */
-	char sessionid[40];	/* add by leptin for www use */
-	char token[TOKENLENGTH+1]; /* 用于防范 CSRF 攻击 */
-	char appkey[APPKEYLENGTH+1]; /* 用于存放APP来源 */
-	char userid[20];
-	char realname[20];
-	char username[NAMELEN];
-	unsigned int unreadmsg;
-	//time_t        lastposttime;
-	int nouse2;
-	short curboard;
-	//time_t  lastinboardtime;
-	int nouse3;
-	int clubrights[4];	//add by ylsdd
-	unsigned friend[MAXFRIENDS];
-	unsigned reject[MAXREJECTS];
-	struct wwwsession wwwinfo;
-	struct onebrc brc;
-	char user_state_temp[16];  //add by leoncom
 };
 
 struct one_key {		/* Used to pass commands to the readmenu */

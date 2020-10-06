@@ -2,8 +2,9 @@
 #ifndef __USER_H
 #define __USER_H
 #include <time.h>
-#include "struct.h"
+#include "config.h"
 #include "board.h"
+#include "cache.h"
 /** Structure used to hold information in PASSFILE
  *
  */
