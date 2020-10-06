@@ -27,16 +27,17 @@
 
 #define BM_LEN 60
 
-//modify by mintbaggio 040326 for front page commend
+/**
+ * @brief front page commend
+ * modify by mintbaggio 040326
+ */
 struct commend{
-	char board[24];         //the board that the article be commened is in
-	char userid[14];        //the author of the article be commended
-	char com_user[14];      //the user who commend this article
-	char title[80];         //the title of the article be commended
-	char filename[80];      //the filename of the article be commended
-	//int time;
-	time_t time;            //the time when the com_user commend this article
-	//int flag;
+	char board[24];         ///< the board that the article be commened is in
+	char userid[14];        ///< the author of the article be commended
+	char com_user[14];      ///< the user who commend this article
+	char title[80];         ///< the title of the article be commended
+	char filename[80];      ///< the filename of the article be commended
+	time_t time;            ///< the time when the com_user commend this article
 	unsigned int accessed;
 };
 #endif
