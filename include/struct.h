@@ -106,17 +106,6 @@ struct one_key {		/* Used to pass commands to the readmenu */
 	char func[33];		//add by gluon for self-define menu
 };
 
-struct moneyCenter {
-	int ave_score;
-	int prize777;
-	int prize367;
-	int prizeSoccer;
-	unsigned char transfer_rate;
-	unsigned char deposit_rate;
-	unsigned char lend_rate;
-	unsigned char isSalaryTime:1,isSoccerSelling:1,isMCclosed:1,unused:5;
-};
-
 struct postheader {
 	char title[STRLEN];
 	char ds[40];

@@ -93,6 +93,17 @@
 #define MAR_DIVORCE		4	//离婚
 #define MAR_COURT_FAIL	5	//求婚失败
 
+struct moneyCenter {
+	int ave_score;
+	int prize777;
+	int prize367;
+	int prizeSoccer;
+	unsigned char transfer_rate;
+	unsigned char deposit_rate;
+	unsigned char lend_rate;
+	unsigned char isSalaryTime:1,isSoccerSelling:1,isMCclosed:1,unused:5;
+};
+
 struct MC_Marry{
 	int enable;					//是否有效
 	char bride[14];				//新娘
@@ -111,12 +122,10 @@ struct MC_Marry{
 	char unused[18];
 }; // 150 bytes
 
-
-extern struct UTMPFILE *utmpshm;
 extern struct boardmem *bcache;
 extern int numboards;
-char marry_status[][20] = {"未知","求婚","已婚","婚礼中","已离婚","求婚失败",""};
-int multex=0;
+static char marry_status[][20] = {"未知","求婚","已婚","婚礼中","已离婚","求婚失败",""};
+static int multex=0;
 
 static void *loadData(char *filepath, void *buffer, size_t filesize);
 static void saveData(void *buffer, size_t filesize);

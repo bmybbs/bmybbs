@@ -19,7 +19,6 @@ struct UTMPFILE {
 	time_t watchman;
 	unsigned int unlock;
 	int nouse[5];
-	struct moneyCenter mc;
 };
 
 struct BCACHE {
