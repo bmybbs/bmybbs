@@ -8,7 +8,12 @@
 #include "ythtbbs/cache.h"
 #include "cache-internal.h"
 
+// 用于 iphash
 #define NHASH 67
+// 最长发呆时间，3天
+#define MAX_IDEL_TIME (3 * 24 * 3600)
+// 最长会话时间，7天强制登出
+#define MAX_SESS_TIME (7 * 24 * 3600)
 
 static struct UTMPFILE *shm_utmp;
 
@@ -27,6 +32,7 @@ int ythtbbs_cache_utmp_insert(struct user_info *ptr_user_info) {
 	time_t            local_now;
 	int               i, j, n, num[2];
 	pid_t             pid;
+	char              local_buf[64];
 
 	utmpfd = open(MY_BBS_HOME "/.CACHE.utmp.lock", O_RDWR | O_CREAT, 0600);
 	if (utmpfd < 0)
@@ -60,18 +66,29 @@ int ythtbbs_cache_utmp_insert(struct user_info *ptr_user_info) {
 
 		for (n = 0; n < USHM_SIZE; n++) {
 			ptr_utmp_entry = &(shm_utmp->uinfo[n]);
-			if (!ptr_utmp_entry->active || ptr_utmp_entry->pid <= 1 || local_now - ptr_utmp_entry->lasttime < 120) {
-				// TODO check
-				continue;
-			}
-
-			// 向该进程发送空信号
-			if (kill(ptr_utmp_entry->pid, 0) == -1) {
-				// 该进程不存在
-				ythtbbs_cache_UserTable_remove_utmp_idx(ptr_utmp_entry->uid, n);
-				memset(ptr_utmp_entry, 0, sizeof(struct user_info));
+			if (ptr_utmp_entry->pid == 1) {
+				// 对于来自 nju09 和 api 的会话清理
+				if (ptr_utmp_entry->active && (local_now - ptr_utmp_entry->lasttime > MAX_IDEL_TIME || local_now - ptr_utmp_entry->wwwinfo.login_start_time > MAX_SESS_TIME || ptr_utmp_entry->wwwinfo.iskicked)) {
+					sprintf(local_buf, "%s drop www/api", ptr_utmp_entry->userid);
+					newtrace(local_buf);
+					ythtbbs_cache_UserTable_remove_utmp_idx(ptr_utmp_entry->uid, n);
+					memset(ptr_utmp_entry, 0, sizeof(struct user_info));
+				}
 			} else {
-				num[(ptr_utmp_entry->invisible == true) ? 1 : 0]++; // TODO 尚未使用的在线/隐身人数统计
+				// 对于来自 telnet 和 ssh 的会话清理
+				if (!ptr_utmp_entry->active || local_now - ptr_utmp_entry->lasttime < 120) {
+					// TODO check
+					continue;
+				}
+
+				// 向该进程发送空信号
+				if (kill(ptr_utmp_entry->pid, 0) == -1) {
+					// 该进程不存在
+					ythtbbs_cache_UserTable_remove_utmp_idx(ptr_utmp_entry->uid, n);
+					memset(ptr_utmp_entry, 0, sizeof(struct user_info));
+				} else {
+					num[(ptr_utmp_entry->invisible == true) ? 1 : 0]++; // TODO 尚未使用的在线/隐身人数统计
+				}
 			}
 		}
 	}
