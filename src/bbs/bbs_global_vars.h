@@ -1,5 +1,6 @@
 #ifndef BMYBBS_BBS_BBSTELNET
 #define BMYBBS_BBS_BBSTELNET
+#include <time.h>
 #include "config.h"
 #include "one_key.h"
 extern char save_title[STRLEN];
