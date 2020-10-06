@@ -18,6 +18,12 @@
 #define cuser currentuser
 #define setutmpmode(a) modify_user_mode( a )
 
+struct fivechess {
+	int winner;
+	int hand, tdeadf, tlivef, livethree, threefour;
+	int playboard[15][15];
+};
+
 extern int RMSG;
 
 static void Box(int x, int y, int x1, int y1);
