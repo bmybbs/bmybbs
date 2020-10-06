@@ -40,17 +40,6 @@ struct commend{
 	unsigned int accessed;
 };
 
-struct postheader {
-	char title[STRLEN];
-	char ds[40];
-	int reply_mode;
-	char include_mode;
-	int chk_anony;
-	int postboard;
-	int canreply;
-	int mailreply;
-};
-
 struct postlog {
 	char author[IDLEN + 1];
 	char board[18];

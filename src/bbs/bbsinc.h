@@ -6,12 +6,17 @@
 
 #ifndef BMYBBS_BBSINC_H
 #define BMYBBS_BBSINC_H
+#include <stddef.h>
+#include <stdio.h>
 #include <setjmp.h>
+#include "ythtbbs/article.h"
+#include "postheader.h"
 extern int nettyNN;
 extern int selboard;           /* THis flag is true if above is active */
 extern int inBBSNET;
 extern char IScurrBM;
 extern char quote_file[], quote_user[];
+extern struct postheader header;
 
 void do_delay(int i);
 int underline_post(int ent, struct fileheader *fileinfo, char *direct);

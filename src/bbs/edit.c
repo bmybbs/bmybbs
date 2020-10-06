@@ -34,6 +34,7 @@
 #include "help.h"
 #include "bbsinc.h"
 #include "stuff.h"
+#include "postheader.h"
 
 #define WRAPMARGIN (255)
 

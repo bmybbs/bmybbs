@@ -53,7 +53,6 @@ extern struct one_key mail_comms[];
 extern const struct one_key mail_default_comms[];
 extern struct one_key read_comms[];
 extern struct one_key reject_list[];
-extern struct postheader header;
 extern struct user_info **user_record;
 extern struct UTMPFILE *utmpshm;
 extern time_t login_start_time;
