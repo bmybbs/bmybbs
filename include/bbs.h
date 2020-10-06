@@ -322,9 +322,6 @@ extern int term_convert;
 
 #define SR_BMMINUSDEL    (18)       //add by mintbaggio@BMY for minus-numposts delete
 
-#define COMMENDFILE       MY_BBS_HOME"/.COMMEND"
-#define COMMENDFILE2       MY_BBS_HOME"/.COMMEND2"
-
 enum {
 	BMY_CHARSET_GBK,
 	BMY_CHARSET_UTF8

@@ -23,7 +23,10 @@
 #ifndef BMYBBS_COMMEND_H
 #define BMYBBS_COMMEND_H
 #include <time.h>
+#include "config.h"
 
+#define COMMENDFILE      MY_BBS_HOME"/.COMMEND"
+#define COMMENDFILE2     MY_BBS_HOME"/.COMMEND2"
 /**
  * @brief front page commend
  * modify by mintbaggio 040326

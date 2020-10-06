@@ -1,8 +1,6 @@
 #include "ythtbbs/commend.h"
 #include "bbslib.h"
 //#include "struct.h"
-#define COMMENDFILE     MY_BBS_HOME"/.COMMEND"
-#define COMMENDFILE2     MY_BBS_HOME"/.COMMEND2"
 #define SHOWBOARDS 5    //add by lsssl@072706 you will see "SHOWBOARDS" boards every section at the firstlook of bmy;
 
 #define AREA_DIR		"etc/Area_Dir"	// 每个区的热门话题文件的存放目录
