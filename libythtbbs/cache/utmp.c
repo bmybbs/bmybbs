@@ -104,6 +104,14 @@ int ythtbbs_cache_utmp_check_uid_by_idx(int idx, int uid) {
 	return shm_utmp->uinfo[idx].uid == uid;
 }
 
+int ythtbbs_cache_utmp_get_ave_score() {
+	return shm_utmp->ave_score;
+}
+
+void ythtbbs_cache_utmp_set_ave_score(int value) {
+	shm_utmp->ave_score = value;
+}
+
 /**
  * @brief 将 utmp 缓存中的用户信息序列化出来
  * 输出形式 utmp_idx, userid："0, SYSOP\n"

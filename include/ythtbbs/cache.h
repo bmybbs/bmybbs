@@ -94,6 +94,17 @@ void ythtbbs_cache_UserTable_add_utmp_idx(int uid, int utmp_idx);
 void ythtbbs_cache_UserTable_remove_utmp_idx(int uid, int utmp_idx);
 
 /**
+ * @brief 获取 ave_score
+ * 目前给 moneycenter 使用
+ */
+int ythtbbs_cache_utmp_get_ave_score();
+
+/**
+ * @brief 设置 ave_score
+ * 目前给 moneycenter 使用
+ */
+void ythtbbs_cache_utmp_set_ave_score(int value);
+/**
  * @brief 解析 shm_utmp
  */
 void ythtbbs_cache_utmp_resolve(void);
