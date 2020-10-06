@@ -35,7 +35,6 @@ struct user_info {
 	bool isssh;                  ///< login from ssh
 	time_t lasttime;             ///< time of the last action
 	unsigned int userlevel;      ///< change by lepton for www
-	int nouse1;
 	char chatid[10];             ///< chat id, if in chat mode
 	char from[BMY_IPV6_LEN];     ///< machine name the user called in from
 	char sessionid[40];          ///< add by leptin for www use
@@ -45,9 +44,7 @@ struct user_info {
 	char realname[20];
 	char username[NAMELEN];
 	unsigned int unreadmsg;
-	int nouse2;
 	short curboard;
-	int nouse3;
 	int clubrights[4];	//add by ylsdd
 	unsigned friend[MAXFRIENDS];
 	unsigned reject[MAXREJECTS];
