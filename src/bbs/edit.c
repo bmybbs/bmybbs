@@ -8,9 +8,9 @@
     Firebird Bulletin Board System
     Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
                         Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
-    
+
     Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
-    
+
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 1, or (at your option)
@@ -491,7 +491,7 @@ register struct textline *p, *line;
 }
 
 /*
-  delete_line deletes 'line' from the list and maintains the lastline, and 
+  delete_line deletes 'line' from the list and maintains the lastline, and
   firstline pointers.
  */
 
@@ -557,7 +557,7 @@ register int pos;
 
 /*
   join connects 'line' and the next line.  It returns true if:
-  
+
   1) lines were joined and one was deleted
   2) lines could not be joined
   3) next line is empty
