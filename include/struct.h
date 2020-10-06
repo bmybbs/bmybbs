@@ -25,8 +25,6 @@
 #include <time.h>
 #include "config.h"
 
-#define BM_LEN 60
-
 /**
  * @brief front page commend
  * modify by mintbaggio 040326

@@ -251,4 +251,6 @@ You must also set "EightBitMode=pass8" in /etc/sendmail.cf
 #define MAXATTACHSIZE (10000000)
 #define MAXPICSIZE (1500000) // 图片最大为500kb
 #define MAX_MENTION_ID (20)  /* 最大允许 @ 的 id 个数 */
+#define BM_LEN 60
+
 #endif  /* BBS_CONFIG */
