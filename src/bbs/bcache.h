@@ -1,7 +1,7 @@
 #ifndef BMYBBS_BCACHE_H
 #define BMYBBS_BCACHE_H
 #include "ythtbbs/board.h"
-#include "struct.h"
+#include "ythtbbs/cache.h"
 
 extern struct boardmem *bcache;
 extern struct UCACHE *uidshm;

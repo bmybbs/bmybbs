@@ -1,8 +1,9 @@
+#include "ythtbbs/commend.h"
 #include "bbslib.h"
 //#include "struct.h"
 #define COMMENDFILE     MY_BBS_HOME"/.COMMEND"
 #define COMMENDFILE2     MY_BBS_HOME"/.COMMEND2"
-#define SHOWBOARDS 5    //add by lsssl@072706 you will see "SHOWBOARDS" boards every section at the firstlook of bmy; 
+#define SHOWBOARDS 5    //add by lsssl@072706 you will see "SHOWBOARDS" boards every section at the firstlook of bmy;
 
 #define AREA_DIR		"etc/Area_Dir"	// 每个区的热门话题文件的存放目录
 
@@ -44,7 +45,7 @@ bbsboa_main()
 		if (NULL != p) {
 			*p = '\0';
 		}
-		
+
 		sprintf(pname, "/%s%s/", SMAGIC, session_name);
 		print_session_string(pname);
 	}
@@ -83,7 +84,7 @@ bbsboa_main()
 	}
 	len = strlen(secstr);
 	if (sec->introstr[0])
-		hasintro = 1; 
+		hasintro = 1;
 	for (i = 0; i < MAXBOARD && i < shm_bcache->number; i++) {
 		x = &(shm_bcache->bcache[i]);
 		if (x->header.filename[0] <= 32 || x->header.filename[0] > 'z')
@@ -101,8 +102,8 @@ bbsboa_main()
 		data[total] = x;
 		total++;
 	}
-	printf("<body topmargin=0 leftMargin=1 MARGINWIDTH=1 MARGINHEIGHT=0>"); 
-	showsecpage(sec, data, total, secstr); 
+	printf("<body topmargin=0 leftMargin=1 MARGINWIDTH=1 MARGINHEIGHT=0>");
+	showsecpage(sec, data, total, secstr);
 out:
 	printf("</body></html>");
 	return 0;
@@ -134,15 +135,15 @@ showsecpage(const struct sectree *sec, struct boardmem *(data[]), int total,
 				/* modified by freely@BMY@20060525 */
 				showboardlist(data, total, secstr, sec);
 				//showboardlist(data, total, secstr);
-		} 
+		}
 
-		/* modified by freely@BMY@20060529 
+		/* modified by freely@BMY@20060529
 		 showsecintro 函数功能改变，注释掉*/
 		/*
 		else if (!strncmp(buf, "#showsecintro", 13))
 			showsecintro(sec);
 			*/
-	
+
 		else if (!strncmp(buf, "#showsecnav", 11))
 			showsecnav(sec);
 		else if (!strncmp(buf, "#showstarline ", 14))
@@ -182,7 +183,7 @@ showdefaultsecpage(const struct sectree *sec, struct boardmem *(data[]),
 	//showsecintro(sec);
 	showboardlist(data, total, secstr, sec);
 	/* modified by freely@BMY@20060525
-	if (total) {		
+	if (total) {
 		showboardlist(data, total, secstr);
 //		printf("<hr>");
 	}
@@ -336,7 +337,7 @@ showsecintro(const struct sectree *sec)
 		   " <td colspan=\"2\" class=\"level2\" ><a href=\"#\" class=\"btnsubmittheme\">二级版面</a></td>"
 		    "</tr>"
 		  "<tr>\n");
-		  
+
 
 		for (i = 0; i < sec->nsubsec; i++) {
 			 printf("<td width=\"10%\">&nbsp;</td><td width=\"90%\">\n");
@@ -360,11 +361,11 @@ showsecintro(const struct sectree *sec)
 			     sec->subsec[i]->basestr);
 			printf("<td class=tdborder>&nbsp;</td><td class=tdborder>[二级版面]</td>");
 			printf("<td class=tdborder><a href=bbsboa?secstr=%s>%s</a></td>",
-			     sec->subsec[i]->basestr, sec->subsec[i]->title);	
+			     sec->subsec[i]->basestr, sec->subsec[i]->title);
 			printf("<td class=tdborder></td><td class=tdborder></td><td class=tdborder></td><td class=tdborder></td></tr>\n");
 		}
 
-		
+
 	}
 	return 0;
 }
@@ -520,7 +521,7 @@ showsecmanager(const struct sectree *sec)
 	}
 	return 0;
 }
-int 
+int
 show_commend()
 {
 	FILE *fp;
@@ -542,13 +543,13 @@ show_commend()
         printf("<tr><td><nobr>序号test</nobr><td><nobr>推荐时间</nobr><td><nobr>标题</nobr><td><nobr>信区</nobr><td><nobr>作者</nobr>\n");
 */
 /*        total=file_size(".COMMEND")/sizeof(struct commend);
-        if (total>=20) 
+        if (total>=20)
 		end = total -20;
 */
 
 	fseek(fp, -20*sizeof(struct commend), SEEK_END);
-	
-	char* commends[20];	
+
+	char* commends[20];
 	int count=0;
 	for(i=0; i<20; i++) {
 //		fseek(fp, sizeof(struct commend)*i, SEEK_SET);
@@ -559,7 +560,7 @@ show_commend()
  			strcpy(allcanre," style='color:red;' ");
 		sprintf(commends[i], "<tr><td></td>\n");
 		char temp[1024];
-		sprintf(temp, "<td><a href=con?B=%s&F=%s%s>%-30s</a> / <a href=qry?U=%s class=linkdatetheme>%-12s</a>" 
+		sprintf(temp, "<td><a href=con?B=%s&F=%s%s>%-30s</a> / <a href=qry?U=%s class=linkdatetheme>%-12s</a>"
 			"/<a href=\"%s%s\" class=linkdatetheme>%-13s</a></td></tr>\n",
 			x.board, x.filename, allcanre, x.title,x.userid,  x.userid, showByDefMode(), x.board, x.board);
 /*			printf("<td><a href=con?B=%s&F=%s N=%dT=0>%s</a> ",x.board, x.filename,no,x.title);
@@ -575,7 +576,7 @@ show_commend()
 		free(commends[index-1]);
 	}
 	fclose(fp);
-	return 0; 
+	return 0;
 
 /*
 	printf("<table width=100% border=0 cellpadding=0 cellspacing=0>");
@@ -592,7 +593,7 @@ show_commend()
       printf("</tr></table></td><td align=right>");
       printf("&nbsp;</td></tr></table></td></tr></table>");
 */
-}	
+}
 
 int show_commend2()
 {
@@ -623,7 +624,7 @@ int show_commend2()
  			strcpy(allcanre," style='color:red;' ");
 		sprintf(commends[i], "<tr><td></td>\n");
 		char temp[1024];
-		sprintf(temp, "<td><a href=con?B=%s&F=%s%s>%-30s</a> / <a href=qry?U=%s class=linkdatetheme>%-12s</a>" 
+		sprintf(temp, "<td><a href=con?B=%s&F=%s%s>%-30s</a> / <a href=qry?U=%s class=linkdatetheme>%-12s</a>"
 			"/<a href=\"%s%s\" class=linkdatetheme>%-13s</a></td></tr>\n",
 			x.board, x.filename, allcanre, x.title,x.userid,  x.userid, showByDefMode(), x.board, x.board);
 		strcat(commends[i], temp);
@@ -635,9 +636,9 @@ int show_commend2()
                 printf("%s", commends[index-1]);
                 free(commends[index-1]);
         }
-	
+
 	fclose(fp);
-	return 0; 
+	return 0;
 
 /*
 	printf("<table width=100% border=0 cellpadding=0 cellspacing=0>");
@@ -654,7 +655,7 @@ int show_commend2()
       printf("</tr></table></td><td align=right>");
       printf("&nbsp;</td></tr></table></td></tr></table>");
 */
-}	
+}
 
 void show_banner()
 {	//add by mintbaggio 040517 for new www, modify tj's code
@@ -670,7 +671,7 @@ void show_banner()
 	printf("<tr>\n");
 	printf("<td> <input name=textfield type=text style=font-size:11px;font-family:verdana; size=20 ></td>\n");
 	printf("<td width=102 align=right> <input name=Submit type=button class=2014 value=Search>\n");
-	printf("</td><td width=802 height=20>&nbsp;</td>\n");	
+	printf("</td><td width=802 height=20>&nbsp;</td>\n");
 	printf("</tr></table></td><td align=right>\n");
 	printf("&nbsp;</td></tr></table></td></tr></table>\n");*/
 	printf("%s", "<table width=\"100%\" border=0 cellpadding=0 cellspacing=0>\n"
@@ -695,7 +696,7 @@ void show_banner()
         "<a href=\"http://www.zhongyis.com/\" target=\"_blank\">"
         "<img src=\"/images/zhongyisi.gif\" width=\"468\" height=\"60\" border=0>"
         "</img></a></td>\n"
-	
+
 	 "<td align=right width=\"468\" height=\"60\">\n"
         "<a href=\"http://uc.xjtu.edu.cn\" target=\"_blank\">"
         "<img src=\"/images/zgyd.gif\" width=\"468\" height=\"60\" border=0>"
@@ -729,7 +730,7 @@ void show_banner()
 		if (p == NULL)
 			continue;
 		*p = '\0';
-		
+
 		printf("<td align=right width=\"468\" height=\"60\">\n"
         		"<a href=\"%s\" target=\"_blank\">"
         		"<img src=\"%s\" width=\"468\" height=\"60\" border=0>"
@@ -740,7 +741,7 @@ void show_banner()
 endbanner:
 	printf("</td>\n"
 
-	
+
 	//end 广告
 	//"<td width=290><table border=0 cellpadding=0 cellspacing=0>\n"
 	//"<tr><form action=home target=f3><td colspan=2><input name=board type=text size=20>\n"
@@ -797,7 +798,7 @@ int show_content()
 	printf("<tr><td></td><td><div class=\"linediv\"></div></td></tr>");
 	printf("</table>\n");
 
-	printf("%s", 
+	printf("%s",
       		"<table width=98%% border=0 align=center cellpadding=0 cellspacing=0>\n"
        		 "<tr> \n"
 	          "<td width=7 rowspan=2 align=right><img src=\"/images/bmy_arrowdown_black.gif\" width=6 height=5></td>\n"
@@ -837,7 +838,7 @@ int show_content()
 		show_sec_by_name(secorder[sec_index]);
 	}
 
-	
+
 	//show right top header
 	printf("</table>\n<br></td>\n");
 	printf("<td width=15></td>\n"
@@ -878,13 +879,13 @@ int show_content()
 	"</td></tr></table></td></tr>\n"
 	"</table>");
 	*/
-	
+
 	//今日十大
 	printf("<table width=98%% border=0 cellpadding=0 cellspacing=0>\n"
 		"<tr>\n<td width=10 rowspan=2 align=right><img src=\"/images/bmy_arrowdown_black.gif\" width=6 height=5></td>\n"
 		"<td width=456 height=5>&nbsp;</td>\n"
 		"</tr><tr>\n<td>今日十大&nbsp;<a href=\"http://" MY_BBS_DOMAIN "/" SMAGIC "/rss?board=TOP10\" target=\"blank\"><img  src=\"/images/rss.gif\" border=\"0\" /></a></td></tr></table>\n");
-	
+
 	//show top10
 #if 0
 	printf("%s","<div id=\"topic\" style=\"display:\">\n"
@@ -931,7 +932,7 @@ int show_content()
 	"<tr><td><a href=\"http://202.117.21.253/\">Windows Update </a></td></tr>\n"
 	"<tr><td>&nbsp;</td></tr>\n"
 	"</table></div>\n");
-	
+
 	//show other
 #if 0
 	printf("%s","<div id=\"wishes\" style=\"display:none\">\n"
@@ -970,12 +971,12 @@ int show_content()
 		ytht_strtrim(buf1);
 		if (strlen(buf1) <= 1)
 			continue;
-		
+
 		char *p = strchr(buf1, ' ');
 		if (p == NULL)
 			continue;
 		*p = '\0';
-		
+
 		strcpy(buf2, p+1);
 		ytht_strtrim(buf2);
 		if (strlen(buf2) <= 1)
@@ -994,7 +995,7 @@ int show_content()
 newboard:
 	// 20121016 move this line from 2lines up; so that it can't be skipped BY liuche
 	// and i do the same thing to every "title_end();"
-	title_end(); 
+	title_end();
 	title_begin("新开版面");
 	fp = fopen("etc/newboard", "r");
 	if(!fp){
@@ -1068,7 +1069,7 @@ fail_out:
 	/*if(show_manager_team())
 		printf("fail to open team\n");
 
-	*/	
+	*/
 	title_end();
 	printf("<br></div><br><br>"
 	"</td></tr></table>\n");
@@ -1130,17 +1131,17 @@ void show_sec(const struct sectree *sec)
 		printf("<td rowspan=2 align=right valign=bottom width=45><a href=boa?secstr=%s class=linkbigtheme>%s</a></td></tr>\n",
 			sec->subsec[i]->basestr, sec->subsec[i]->basestr);
 		show_boards(sec->subsec[i]->basestr);
-		
-		
+
+
 		printf("</td></tr>\n");
-		
+
 	}
 	return;
 }
 
 /*void show_boards()
 {
-	
+
 }
 */
 void show_boards(const char *secstr)
@@ -1149,7 +1150,7 @@ void show_boards(const char *secstr)
 	int hasintro = 0;
 	int i, total = 0;
 	const struct sectree *sec;
-	
+
 	sec = getsectree(secstr);
 	if (sec->introstr[0])
 		hasintro = 1;
@@ -1211,11 +1212,11 @@ void show_sec_boards(struct boardmem *(data[]), int total)
                         printf("<a href=%s%s>%s</a>(%d) ", showByDefMode(), data[scores[i]]->header.filename, data[scores[i]]->header.title, data[scores[i]]->score);
 		printf("<a href=boa?secstr=%c> [更多版面...]</a>", data[0]->header.secnumber1);
         }
-		 
+
 		if (total == 0)
 			return;
 		show_area_top(data[0]->header.secnumber1);
-} 
+}
 
 void show_top10()
 {
@@ -1249,7 +1250,7 @@ void show_area_top(char c)
     }
     MMAP_CATCH {
     }
-    MMAP_END mmapfile(NULL, &mf);	
+    MMAP_END mmapfile(NULL, &mf);
 }
 
 void show_right_click_header(int i)

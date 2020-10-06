@@ -202,8 +202,6 @@ extern  char ULIST[];
 /* END */
 
 #endif /* BBSIRC */
-
-#include "struct.h"
 /*#ifndef BBSIRC*/
 
 #define DONOTHING       0       /* Read menu command return states */

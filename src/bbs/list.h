@@ -1,6 +1,6 @@
 #ifndef BMYBBS_LIST_H
 #define BMYBBS_LIST_H
-#include "struct.h"
+#include "ythtbbs/cache.h"
 
 int myfriend(unsigned uid);
 int hisfriend(struct user_info *uentp);

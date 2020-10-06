@@ -20,10 +20,9 @@
     GNU General Public License for more details.
 */
 
-#ifndef __BBS_STRUCT_H
-#define __BBS_STRUCT_H
+#ifndef BMYBBS_COMMEND_H
+#define BMYBBS_COMMEND_H
 #include <time.h>
-#include "config.h"
 
 /**
  * @brief front page commend

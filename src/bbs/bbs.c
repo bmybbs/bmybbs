@@ -24,6 +24,7 @@
 #include <sys/ipc.h>
 #include <sys/msg.h>
 #include <sys/mman.h>
+#include "ythtbbs/commend.h"
 #include "bbs.h"
 #include "bbs_global_vars.h"
 #include "one_key.h"

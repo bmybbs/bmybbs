@@ -1,6 +1,6 @@
 #ifndef BMYBBS_TALK_H
 #define BMYBBS_TALK_H
-#include "struct.h"
+#include "ythtbbs/cache.h"
 
 int t_pager(void);
 int t_query(char q_id[12 + 2]);

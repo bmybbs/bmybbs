@@ -1,3 +1,4 @@
+#include "ythtbbs/commend.h"
 #include "bbslib.h"
 #include "tmpl.h"
 char *size_str(int size);

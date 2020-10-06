@@ -1,6 +1,6 @@
 #ifndef BMYBBS_SENDMSG_H
 #define BMYBBS_SENDMSG_H
-#include "struct.h"
+#include "ythtbbs/cache.h"
 
 int canmsg(struct user_info *uin);
 int s_msg(void);
