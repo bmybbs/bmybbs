@@ -241,19 +241,6 @@ extern char save_filename[] ; /* header information */
 #define Ctrl(c)         ( c & 037 )
 #define isprint2(c)     ( (c & 0x80) || isprint(c) )
 
-#ifdef  SYSV
-#define bzero(tgt, len)         memset( tgt, 0, len )
-#define bcopy(src, tgt, len)    memcpy( tgt, src, len)
-
-#define usleep(usec)            {               \
-    struct timeval t;                           \
-    t.tv_sec = usec / 1000000;                  \
-    t.tv_usec = usec % 1000000;                 \
-    select( 0, NULL, NULL, NULL, &t);           \
-}
-
-#endif  /* SYSV */
-
 /* =============== ANSI EDIT ================== */
 #define   ANSI_RESET    "\033[0m"
 #define   ANSI_REVERSE  "\033[7m\033[4m"
