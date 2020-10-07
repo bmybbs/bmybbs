@@ -119,7 +119,6 @@ extern int errno ;
 
 #define MAX_DIGEST         1000    /* 最大文摘数 */
 #define MAX_POSTRETRY       100
-#define CLUB_SIZE       4          /* 4 * sizeof(int) 为完全 close club数目上限 . by clearboy*/
 #define MAXGOPHERITEMS     9999    /*max of gopher items*/
 extern  char ULIST[];
 
