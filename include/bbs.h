@@ -117,12 +117,6 @@ extern int errno ;
 #define GOOD_BRC_NUM    40      // 最多有 GOOD_BRC_NUM 个个人定制版面
 #define NUMPERMS   (31)
 
-#define FILE_BUFSIZE        250    /* max. length of a file in SHM*/
-#define FILE_MAXLINE         25    /* max. line of a file in SHM */
-#define MAX_WELCOME          15    /* 欢迎画面数 */
-#define MAX_GOODBYE          15    /* 离站画面数 */
-#define MAX_ISSUE            15    /* 最大进站画面数 */
-#define MAX_ENDLINE		15 /* 最大底线叶面数 */
 #define MAX_DIGEST         1000    /* 最大文摘数 */
 #define MAX_POSTRETRY       100
 #define MAXITEMS        1024       /* 精华区最大条目数 */
