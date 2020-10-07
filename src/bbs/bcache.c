@@ -43,6 +43,7 @@ struct boardmem *bcache;
 int usernumber;
 int numboards = -1;
 extern int die;
+extern char ULIST[]; /* main.c */
 
 static int getlastpost(char *board, int *lastpost, int *total);
 static int fillbcache(struct boardheader *fptr, int *pcountboard);

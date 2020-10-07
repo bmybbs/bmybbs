@@ -119,7 +119,6 @@ extern int errno ;
 
 #define MAX_DIGEST         1000    /* 最大文摘数 */
 #define MAX_POSTRETRY       100
-extern  char ULIST[];
 
 #ifndef BBSIRC
 
