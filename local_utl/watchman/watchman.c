@@ -1,4 +1,5 @@
 #include "bbs.h"
+#include "ytht/random.h"
 
 #define DEFAULT_ADD 600
 #define CONT MY_BBS_HOME "/help/watchmanhelp"
@@ -44,7 +45,7 @@ main(int argc, char *argv[])
 		       "★★★★★警报★★★★★政治性版面锁住了★★★★★");
 	} else {
 		shm_utmp->watchman = now_t + time_add;
-		getrandomint(&(shm_utmp->unlock));
+		ytht_get_random_int(&(shm_utmp->unlock));
 		snprintf(buf, sizeof (buf), "来来来,点卯了!现在是 %s",
 				 ytht_ctime(now_t));
 	}

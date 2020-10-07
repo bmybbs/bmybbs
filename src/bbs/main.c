@@ -24,6 +24,7 @@
 
 #include <time.h>
 #include <stdio.h>
+#include "ytht/random.h"
 #include "bbs.h"
 #include "bbs_global_vars.h"
 #include "bcache.h"
@@ -178,7 +179,7 @@ u_enter()
 	strncpy(uinfo.userid, currentuser.userid, 20);
 	strncpy(uinfo.realname, currentuser.realname, 20);
 	strncpy(uinfo.username, currentuser.username, 40);
-	getrandomstr(uinfo.sessionid);
+	ytht_get_random_str(uinfo.sessionid);
 	getfriendstr();
 	getrejectstr();
 	if (HAS_PERM(PERM_EXT_IDLE))

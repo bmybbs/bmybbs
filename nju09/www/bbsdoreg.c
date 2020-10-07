@@ -1,5 +1,6 @@
 #include "bbslib.h"
 #include "ythtbbs/identify.h"
+#include "ytht/random.h"
 
 static void adduser(struct userec *x);
 static void newcomer(struct userec *x, char *words);
@@ -196,7 +197,7 @@ bbsdoreg_main()
 		http_fatal("您的邮箱名不合法，请联系站长或至 https://github.com/bmybbs/bmybbs/issues/ 反馈问题。");
 #endif
 
-	getsalt(salt);
+	ytht_get_salt(salt);
 	ytht_strsncpy(x.passwd, ytht_crypt_crypt1(pass1, salt), 14);
 	//ipv6 by leoncom 不能赋值太多，就影响后面的数据 fixed by IronBlood 2020.09.11
 	strncpy(x.lasthost, fromhost,BMY_IPV6_LEN);

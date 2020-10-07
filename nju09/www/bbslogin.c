@@ -1,4 +1,5 @@
 #include "bbslib.h"
+#include "ytht/random.h"
 
 #define NHASH 67
 //#define NSEARCH ((MAXACTIVE / 8) > 100 ? (MAXACTIVE / 8) : 100)
@@ -180,7 +181,7 @@ wwwlogin(struct userec *user, int ipmask)
 			ytht_strsncpy(u->from, fromhost, BMY_IPV6_LEN);
 			ytht_strsncpy(u->username, user->username, NAMELEN);
 			ytht_strsncpy(u->userid, user->userid, IDLEN + 1);
-			getrandomstr(u->sessionid);
+			ytht_get_random_str(u->sessionid);
 			if (strcasecmp(user->userid, "guest")) {
 				initfriends(u);
 				urlbase = makeurlbase(n);

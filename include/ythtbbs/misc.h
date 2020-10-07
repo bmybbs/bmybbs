@@ -3,20 +3,6 @@
 #define __MISC_H
 #include <stddef.h>
 
-/**
- * @brief 给 buf 填充随机值
- * 借助 /dev/urandom 读取随机值，和其他 getrandom* 方法不同，
- * 本函数不会将 buf 最后变更为 0 作为字符串终止符。
- */
-void ythtbbs_get_random_buf(char *buf, size_t len);
-void getrandomint(unsigned int *s);
-void getrandomstr(unsigned char *s);
-/**
- * getrandomstr 方法的变种
- * @param s 字符串
- * @param len 长度
- */
-void getrandomstr_r(unsigned char *s, size_t len);
 struct mymsgbuf {
 	long int mtype;
 	char mtext[1];
@@ -28,13 +14,6 @@ int g2u(char *inbuf,size_t inlen,char *outbuf,size_t outlen);
 int code_convert(char *from_charset,char *to_charset,char *inbuf,size_t inlen,char *outbuf,size_t outlen);
 int is_utf_special_byte(unsigned char c);
 int is_utf(char * inbuf, size_t inlen);
-
-/**
- * @brief 加盐的方法
- * 来自 nju09
- * @param salt
- */
-void getsalt(char salt[3]);
 
 int badstr(char *s);
 

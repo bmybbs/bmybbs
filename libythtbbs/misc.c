@@ -8,64 +8,6 @@
 #include <string.h>
 #include "ythtbbs/ythtbbs.h"
 
-static const char *DEV_RAN = "/dev/urandom";
-
-void ythtbbs_get_random_buf(char *buf, size_t len) {
-	int fd;
-
-	fd = open(DEV_RAN, O_RDONLY);
-	read(fd, buf, len);
-	close(fd);
-}
-
-void
-getrandomint(unsigned int *s)
-{
-#ifdef LINUX
-	int fd;
-	fd = open(DEV_RAN, O_RDONLY);
-	read(fd, s, 4);
-	close(fd);
-#else
-	srandom(getpid() - 19751016);
-	*s=random();
-#endif
-}
-
-void
-getrandomstr(unsigned char *s)
-{
-	int i;
-#ifdef LINUX
-	int fd;
-	fd = open(DEV_RAN, O_RDONLY);
-	read(fd, s, 30);
-	close(fd);
-	for (i = 0; i < 30; i++)
-		s[i] = 65 + s[i] % 26;
-#else
-	time_t now_t;
-	now_t = time(NULL);
-	srandom(now_t - 19751016);
-	for (i = 0; i < 30; i++)
-		s[i] = 65 + random() % 26;
-#endif
-	s[30] = 0;
-}
-
-void getrandomstr_r(unsigned char *s, size_t len)
-{
-	int fd;
-	size_t i;
-	fd = open(DEV_RAN, O_RDONLY);
-	read(fd, s, len);
-	close(fd);
-	for(i=0; i<len; ++i) {
-		s[i] = s[i]%26 + 'A';
-	}
-	s[len-1] = 0;
-}
-
 int
 init_newtracelogmsq()
 {
@@ -296,32 +238,6 @@ char *get_no_more_than_four_login_pics()
     }
 
 	return strdup(pics_list);
-}
-
-void
-getsalt(char salt[3])
-{
-	int s, i, c;
-
-#ifdef LINUX
-	int fd;
-	fd = open(DEV_RAN, O_RDONLY);
-	read(fd, &s, 4);
-	close(fd);
-#else
-	s = random();
-#endif
-	salt[0] = s & 077;
-	salt[1] = (s >> 6) & 077;
-	salt[2] = 0;
-	for (i = 0; i < 2; i++) {
-		c = salt[i] + '.';
-		if (c > '9')
-			c += 7;
-		if (c > 'Z')
-			c += 6;
-		salt[i] = c;
-	}
 }
 
 int

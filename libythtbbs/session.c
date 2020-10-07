@@ -1,7 +1,7 @@
 #include <string.h>
 #include <stddef.h>
 #include "bmy/redis.h"
-#include "ythtbbs/misc.h"
+#include "ytht/random.h"
 
 static const char SESSION_DICT[] =
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -11,7 +11,7 @@ static const int SESSION_DICT_LEN = 62;
 
 void ythtbbs_session_generate_id(char *buf, size_t len) {
 	size_t i;
-	ythtbbs_get_random_buf(buf, len);
+	ytht_get_random_buf(buf, len);
 
 	for (i = 0; i < len; i++) {
 		buf[i] = SESSION_DICT[((unsigned char)buf[i]) % SESSION_DICT_LEN];
