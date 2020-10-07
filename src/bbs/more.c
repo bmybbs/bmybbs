@@ -34,6 +34,10 @@
 #include "xyz.h"
 #include "goodbye.h"
 
+#define MAXnettyLN            7    /* lines of  activity board  */
+#define ACBOARD_BUFSIZE     255    /* max. length of each line for activity board  */
+#define ACBOARD_MAXLINE     400    /* max. lines of  activity board  160 */
+
 static int stuffmode = 0;
 time_t calltime = 0;
 extern int isattached;
