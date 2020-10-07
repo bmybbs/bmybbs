@@ -2,7 +2,6 @@
 #ifndef __MISC_H
 #define __MISC_H
 #include <stddef.h>
-extern int pu;
 
 /**
  * @brief 给 buf 填充随机值

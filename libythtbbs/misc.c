@@ -10,8 +10,6 @@
 
 static const char *DEV_RAN = "/dev/urandom";
 
-int pu = 0;
-
 void ythtbbs_get_random_buf(char *buf, size_t len) {
 	int fd;
 
