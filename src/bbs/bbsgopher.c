@@ -36,6 +36,8 @@
 #include "record.h"
 #include "mail.h"
 
+#define MAXGOPHERITEMS     9999    /*max of gopher items*/
+
 int a;
 int inrp_by_user = YEA;
 
