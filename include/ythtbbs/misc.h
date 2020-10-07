@@ -1,13 +1,21 @@
 /* misc.c */
 #ifndef __MISC_H
 #define __MISC_H
+#include <stddef.h>
 extern int pu;
+
+/**
+ * @brief ç»™ buf å¡«å……éšæœºå€¼
+ * å€ŸåŠ© /dev/urandom è¯»å–éšæœºå€¼ï¼Œå’Œå…¶ä»– getrandom* æ–¹æ³•ä¸åŒï¼Œ
+ * æœ¬å‡½æ•°ä¸ä¼šå°† buf æœ€åå˜æ›´ä¸º 0 ä½œä¸ºå­—ç¬¦ä¸²ç»ˆæ­¢ç¬¦ã€‚
+ */
+void ythtbbs_get_random_buf(char *buf, size_t len);
 void getrandomint(unsigned int *s);
 void getrandomstr(unsigned char *s);
 /**
- * getrandomstr ·½·¨µÄ±äÖÖ
- * @param s ×Ö·û´®
- * @param len ³¤¶È
+ * getrandomstr æ–¹æ³•çš„å˜ç§
+ * @param s å­—ç¬¦ä¸²
+ * @param len é•¿åº¦
  */
 void getrandomstr_r(unsigned char *s, size_t len);
 struct mymsgbuf {
@@ -23,8 +31,8 @@ int is_utf_special_byte(unsigned char c);
 int is_utf(char * inbuf, size_t inlen);
 
 /**
- * @brief ¼ÓÑÎµÄ·½·¨
- * À´×Ô nju09
+ * @brief åŠ ç›çš„æ–¹æ³•
+ * æ¥è‡ª nju09
  * @param salt
  */
 void getsalt(char salt[3]);
@@ -32,12 +40,12 @@ void getsalt(char salt[3]);
 int badstr(char *s);
 
 /**
- * @brief »ñÈ¡²»³¬¹ı4ÕÅ½øÕ¾Í¼Æ¬
- * ¸Ã·½·¨½«°Ñµ±Ç°½øÕ¾Í¼Æ¬µÄĞÅÏ¢Êä³öµ½ pics_list ÖĞ¡£Ã¿ÌõĞÅÏ¢Ê¹ÓÃµ¥¸ö°ë½Ç·ÖºÅ½«Í¼Æ¬ºÍ
- * Á´½Ó¸ô¿ª¡£¶àÌõĞÅÏ¢Ê¹ÓÃÁ½¸ö°ë½Ç·ÖºÅ¸ô¿ª¡£
- * @warning ¸Ãº¯Êı×îÔçÓÚ 2011.09.05 ÓÉ IronBlood ±àĞ´ÔÚ nju09/bbsindex.c ÖĞ¡£ÎªÁË
- * api ¸´ÓÃ£¬µ÷Õûµ½ÁË libythtlib/misc.h ÖĞ£¬²¢±ä¸üÁËº¯ÊıÔ­ĞÍ¡£2014.10.22 ÔÙ´Î×öÁË±ä
- * ¸ü£¬¼ÇµÃÊ¹ÓÃ free() º¯ÊıÊÍ·Å·µ»ØµÄ×Ö·û´®¡£
+ * @brief è·å–ä¸è¶…è¿‡4å¼ è¿›ç«™å›¾ç‰‡
+ * è¯¥æ–¹æ³•å°†æŠŠå½“å‰è¿›ç«™å›¾ç‰‡çš„ä¿¡æ¯è¾“å‡ºåˆ° pics_list ä¸­ã€‚æ¯æ¡ä¿¡æ¯ä½¿ç”¨å•ä¸ªåŠè§’åˆ†å·å°†å›¾ç‰‡å’Œ
+ * é“¾æ¥éš”å¼€ã€‚å¤šæ¡ä¿¡æ¯ä½¿ç”¨ä¸¤ä¸ªåŠè§’åˆ†å·éš”å¼€ã€‚
+ * @warning è¯¥å‡½æ•°æœ€æ—©äº 2011.09.05 ç”± IronBlood ç¼–å†™åœ¨ nju09/bbsindex.c ä¸­ã€‚ä¸ºäº†
+ * api å¤ç”¨ï¼Œè°ƒæ•´åˆ°äº† libythtlib/misc.h ä¸­ï¼Œå¹¶å˜æ›´äº†å‡½æ•°åŸå‹ã€‚2014.10.22 å†æ¬¡åšäº†å˜
+ * æ›´ï¼Œè®°å¾—ä½¿ç”¨ free() å‡½æ•°é‡Šæ”¾è¿”å›çš„å­—ç¬¦ä¸²ã€‚
  */
 char * get_no_more_than_four_login_pics();
 #endif

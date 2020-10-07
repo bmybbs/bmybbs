@@ -8,14 +8,24 @@
 #include <string.h>
 #include "ythtbbs/ythtbbs.h"
 
+static const char *DEV_RAN = "/dev/urandom";
+
 int pu = 0;
+
+void ythtbbs_get_random_buf(char *buf, size_t len) {
+	int fd;
+
+	fd = open(DEV_RAN, O_RDONLY);
+	read(fd, buf, len);
+	close(fd);
+}
 
 void
 getrandomint(unsigned int *s)
 {
 #ifdef LINUX
 	int fd;
-	fd = open("/dev/urandom", O_RDONLY);
+	fd = open(DEV_RAN, O_RDONLY);
 	read(fd, s, 4);
 	close(fd);
 #else
@@ -30,7 +40,7 @@ getrandomstr(unsigned char *s)
 	int i;
 #ifdef LINUX
 	int fd;
-	fd = open("/dev/urandom", O_RDONLY);
+	fd = open(DEV_RAN, O_RDONLY);
 	read(fd, s, 30);
 	close(fd);
 	for (i = 0; i < 30; i++)
@@ -49,7 +59,7 @@ void getrandomstr_r(unsigned char *s, size_t len)
 {
 	int fd;
 	size_t i;
-	fd = open("/dev/urandom", O_RDONLY);
+	fd = open(DEV_RAN, O_RDONLY);
 	read(fd, s, len);
 	close(fd);
 	for(i=0; i<len; ++i) {
@@ -297,7 +307,7 @@ getsalt(char salt[3])
 
 #ifdef LINUX
 	int fd;
-	fd = open("/dev/urandom", O_RDONLY);
+	fd = open(DEV_RAN, O_RDONLY);
 	read(fd, &s, 4);
 	close(fd);
 #else
