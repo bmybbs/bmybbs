@@ -6,6 +6,7 @@ extern Suite * test_suite_identify(void);
 extern Suite * test_suite_captcha(void);
 
 extern Suite * test_suite_iphash(void);
+extern Suite * test_suite_redis(void);
 
 Suite * main_suit(void) {
 	Suite *s = suite_create("bmybbs test suite");
@@ -23,6 +24,7 @@ int main (void)
 	srunner_add_suite(sr, test_suite_captcha());
 
 	srunner_add_suite(sr, test_suite_iphash());
+	srunner_add_suite(sr, test_suite_redis());
 
 	srunner_set_log (sr, "bmybbs.test.log");
 	srunner_set_xml (sr, "bmybbs.test.xml");

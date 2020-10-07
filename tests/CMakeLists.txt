@@ -7,5 +7,6 @@ add_executable(bmybbs.test
 	libythtbbs/check_notification.c
 	libythtbbs/check_captcha.c
 	libbmy/check_iphash.c
+	libbmy/check_redis.c
 )
-target_link_libraries(bmybbs.test check ythtbbs bmy ytht)
+target_link_libraries(bmybbs.test check ythtbbs bmy ytht hiredis)
