@@ -54,9 +54,10 @@ add_library(ythtbbs SHARED
 	captcha.c
 	cache/user.c
 	cache/utmp.c
+	session.c
 )
 
 add_dependencies(ythtbbs sectree)
 add_dependencies(sectree gensectree)
-target_link_libraries(ythtbbs bmy pcre mysqlclient ${LIBXML2_LIBRARIES})
+target_link_libraries(ythtbbs bmy pcre mysqlclient ${LIBXML2_LIBRARIES} hiredis)
 
