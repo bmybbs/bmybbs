@@ -40,6 +40,7 @@
 #include "edit.h"
 #include "talk.h"
 
+#define MAXITEMS        1024       /* 精华区最大条目数 */
 #define PATHLEN         1024
 //modified by ylsdd #define A_PAGESIZE      (t_lines - 5)
 #define A_PAGESIZE      (t_lines - 4)

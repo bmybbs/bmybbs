@@ -119,7 +119,6 @@ extern int errno ;
 
 #define MAX_DIGEST         1000    /* 最大文摘数 */
 #define MAX_POSTRETRY       100
-#define MAXITEMS        1024       /* 精华区最大条目数 */
 #define CLUB_SIZE       4          /* 4 * sizeof(int) 为完全 close club数目上限 . by clearboy*/
 #define MAXnettyLN            7    /* lines of  activity board  */
 #define ACBOARD_BUFSIZE     255    /* max. length of each line for activity board  */
