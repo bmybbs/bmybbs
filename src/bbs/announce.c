@@ -10,7 +10,7 @@
                         Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
 
     Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
-    
+
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 1, or (at your option)
@@ -562,7 +562,7 @@ int nomsg;
 	a_additem(&pm, genbuf, fname, NULL, 0);
 	a_savenames(&pm);
 	/*if(in_mail)
-	   sprintf( genbuf, "/bin/cp -r mail/%c/%s/%s %s 1>/dev/null 2>/dev/null", 
+	   sprintf( genbuf, "/bin/cp -r mail/%c/%s/%s %s 1>/dev/null 2>/dev/null",
 	   mytoupper(currentuser.userid[0]), currentuser.userid, fileinfo->filename , bname );
 	   else
 	   sprintf( genbuf, "/bin/cp -r boards/%s/%s %s 1>/dev/null 2>/dev/null", key , fileinfo->filename , bname );
@@ -1491,11 +1491,11 @@ int lastlevel, lastbmonly;
 				}
 				//add by macintosh 050516
 				if (seek_in_file("deny_users", currentuser.userid)
-					&& strcmp(bname, "sysop") 
+					&& strcmp(bname, "sysop")
 					&& strcmp(bname,"committee")
 					&& strcmp(bname, "welcome")
 					&& strcmp(bname, "KaoYan")
-					&& strcmp(bname, "Appeal") 
+					&& strcmp(bname, "Appeal")
 				       && !HAS_PERM(PERM_SYSOP)) {
 					move(5, 0);
 					clrtobot();
@@ -1886,7 +1886,7 @@ Announce()
 	clear();
 }
 
-//add by gluon, modified by ylsdd*/ 
+//add by gluon, modified by ylsdd*/
 void
 Personal(cmd)
 char *cmd;
@@ -1932,7 +1932,7 @@ char *cmd;
 	clear();
 }
 
-// end 
+// end
 /*chk_currBM_Personal用于对个人精华区的支持, by ylsdd*/
 static int chk_currBM_Personal(char *BMstr) {
 	char *ptr;
