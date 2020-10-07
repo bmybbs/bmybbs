@@ -137,23 +137,6 @@ extern  char ULIST[];
 
 #define QUIT 0x666               /* Return value to abort recursive functions */
 
-#if 1
-#define FILE_READ  0x1        /* Ownership flags used in fileheader structure */
-#define FILE_OWND  0x2        /* accessed array */
-#define FILE_VISIT 0x4
-#define FILE_MARKED 0x8
-#define FILE_DIGEST 0x10      /* Digest Mode*/
-#define FILE_FORWARDED 0x20	/* undelete */
-#define FILE_NOREPLY 0x40
-#define FILE_ATTACHED 0x80
-#define FILE1_DEL 0x1        /* Marked for being deleted */ /*accessed array, the 2nd byte*/
-#define FILE1_SPEC 0x2	     /* Will be put to 0Announce, and this flag would be clear then */
-#define FILE1_INND 0x4	/* write into innd/out.bntp */
-#define FILE1_ANNOUNCE 0x8  /* have put to 0Announce */
-#define FILE1_1984 	0x10 /* have been checked to see if there is any ... */
-#define MAIL_REPLY 0x20
-#endif
-
 #define VOTE_FLAG    0x1
 #define NOZAP_FLAG   0x2
 #define OUT_FLAG     0x4
