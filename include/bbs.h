@@ -194,7 +194,6 @@ extern int scrint ;               /* Set when screen has been initialized */
 
 extern int digestmode;            /*To control Digestmode*/
 extern struct userec currentuser ;  /*  user structure is loaded from passwd */
-extern int clubrights[4];
                                   /*  file at logon, and remains for the   */
                                   /*  entire session */
 
