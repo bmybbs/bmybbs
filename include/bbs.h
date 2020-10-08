@@ -122,23 +122,6 @@ extern int errno ;
 
 #ifndef BBSIRC
 
-#define QUIT 0x666               /* Return value to abort recursive functions */
-
-#define VOTE_FLAG    0x1
-#define NOZAP_FLAG   0x2
-#define OUT_FLAG     0x4
-#define ANONY_FLAG   0x8
-#define CLUBTYPE_FLAG 0x10
-#define INNBBSD_FLAG 0x20
-#define IS1984_FLAG    0x40
-#define POLITICAL_FLAG	0x80
-#define ZAPPED  0x1           /* For boards...tells if board is Zapped */
-
-/*add by macintosh 050530 for semi-closed club */
-#define CLOSECLUB_FLAG 0x4  /* 表示版面是否可见, 1 for close club , 0 for open club */
-
-#define CLUB_FLAG (CLOSECLUB_FLAG | CLUBTYPE_FLAG) /*俱乐部*/
-
 /* these are flags in userec.flags[0] */
 #define PAGER_FLAG   0x1   /* true if pager was OFF last session */
 #define CLOAK_FLAG   0x2   /* true if cloak was ON last session */
