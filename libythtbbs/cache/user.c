@@ -14,14 +14,10 @@
 static struct ythtbbs_cache_UserIDHashTable *shm_userid_hashtable;
 static struct ythtbbs_cache_UserTable       *shm_user_table;
 
-/***** prototypes of public functions TODO *****/
-int ythtbbs_cache_USerTable_resolve();
-
 /***** prototypes of private functions *****/
 static int ythtbbs_cache_UserTable_fill_v(void *user_ec, va_list ap);
 static int ythtbbs_cache_UserIDHashTable_resolve();
 static int ythtbbs_cache_UserIDHashTable_insert(char *userid, int idx);
-static int ythtbbs_cache_UserIDHashTable_find_idx(char *userid);
 
 /***** implementations of public functions *****/
 unsigned int ythtbbs_cache_User_hash(char *userid) {
@@ -248,7 +244,7 @@ static int ythtbbs_cache_UserIDHashTable_insert(char *userid, int idx) {
 	return 0;
 }
 
-static int ythtbbs_cache_UserIDHashTable_find_idx(char *userid) {
+int ythtbbs_cache_UserIDHashTable_find_idx(char *userid) {
 	unsigned int h, s, i, j;
 	struct ythtbbs_cache_UserIDHashItem *ptr_items = shm_userid_hashtable->items;
 	if (!*userid)

@@ -131,15 +131,30 @@ struct ythtbbs_cache_UserIDHashTable {
 	struct ythtbbs_cache_UserIDHashItem items[UCACHE_HASH_SIZE];
 	time_t update_time;
 };
+
 /**
  * @brief 对应于原 useridhash 函数
  * 将用户名散列到 26*26 个 buckets 中
  */
 unsigned int ythtbbs_cache_User_hash(char *userid);
 
+/**
+ * @brief 解析 UserTable 以及 UserIDHashTable
+ *
+ * UserTable 按照 PASSWDS 文件内的结构顺序将用户 ID 插入到缓存表
+ * 中，同时关联着运行时该用户的会话位置。
+ *
+ * 更新 UserTable 的过程使用独占文件锁保护（适用于多进程/多线程），
+ * 更新完毕后释放并调用内部的解析、更新 UserIDHashTable 的过程，
+ * 该过程对外不可见，内部使用另一个独占文件锁保护。
+ */
+void ythtbbs_cache_UserTable_resolve();
+
 void ythtbbs_cache_UserTable_add_utmp_idx(int uid, int utmp_idx);
 
 void ythtbbs_cache_UserTable_remove_utmp_idx(int uid, int utmp_idx);
+
+int ythtbbs_cache_UserIDHashTable_find_idx(char *userid);
 
 /**
  * @brief 获取 ave_score
