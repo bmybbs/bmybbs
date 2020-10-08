@@ -136,7 +136,7 @@ struct ythtbbs_cache_UserIDHashTable {
  * @brief 对应于原 useridhash 函数
  * 将用户名散列到 26*26 个 buckets 中
  */
-unsigned int ythtbbs_cache_User_hash(char *userid);
+unsigned int ythtbbs_cache_User_hash(const char *userid);
 
 /**
  * @brief 解析 UserTable 以及 UserIDHashTable
@@ -154,7 +154,7 @@ void ythtbbs_cache_UserTable_add_utmp_idx(int uid, int utmp_idx);
 
 void ythtbbs_cache_UserTable_remove_utmp_idx(int uid, int utmp_idx);
 
-int ythtbbs_cache_UserIDHashTable_find_idx(char *userid);
+int ythtbbs_cache_UserIDHashTable_find_idx(const char *userid);
 
 /**
  * @brief 获取 ave_score

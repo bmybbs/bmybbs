@@ -20,7 +20,7 @@ static int ythtbbs_cache_UserIDHashTable_resolve();
 static int ythtbbs_cache_UserIDHashTable_insert(char *userid, int idx);
 
 /***** implementations of public functions *****/
-unsigned int ythtbbs_cache_User_hash(char *userid) {
+unsigned int ythtbbs_cache_User_hash(const char *userid) {
 	unsigned int n1 = 0;
 	unsigned int n2 = 0;
 	const unsigned int _HASH_SIZE = 26;
@@ -244,7 +244,7 @@ static int ythtbbs_cache_UserIDHashTable_insert(char *userid, int idx) {
 	return 0;
 }
 
-int ythtbbs_cache_UserIDHashTable_find_idx(char *userid) {
+int ythtbbs_cache_UserIDHashTable_find_idx(const char *userid) {
 	unsigned int h, s, i, j;
 	struct ythtbbs_cache_UserIDHashItem *ptr_items = shm_userid_hashtable->items;
 	if (!*userid)
