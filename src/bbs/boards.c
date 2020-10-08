@@ -45,6 +45,7 @@
 #include "list.h"
 #include "announce.h"
 #include "vote.h"
+#include "bbs-internal.h"
 
 #define BBS_PAGESIZE    (t_lines - 4)
 

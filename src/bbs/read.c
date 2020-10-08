@@ -42,6 +42,7 @@
 #include "power_select.h"
 #include "read.h"
 #include "bm.h"
+#include "bbs-internal.h"
 
 /*SREAD Define*/
 #define SR_BMBASE       (10)

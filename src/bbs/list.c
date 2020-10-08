@@ -24,7 +24,6 @@
 
 #include "bbs.h"
 #include "common.h"
-#include "term.h"
 #include "smth_screen.h"
 #include "io.h"
 #include "main.h"
@@ -40,6 +39,7 @@
 #include "talk.h"
 #include "record.h"
 #include "bbs_global_vars.h"
+#include "bbs-internal.h"
 // modified by yldsd.
 // #define BBS_PAGESIZE    (19)
 #define BBS_PAGESIZE (t_lines - 4)

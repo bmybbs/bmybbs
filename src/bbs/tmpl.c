@@ -8,7 +8,6 @@
 #include "smth_screen.h"
 #include "io.h"
 #include "bbsinc.h"
-#include "term.h"
 #include "stuff.h"
 #include "announce.h"
 #include "more.h"
@@ -17,6 +16,7 @@
 #include "list.h"
 #include "xyz.h"
 #include "bbs_global_vars.h"
+#include "bbs-internal.h"
 
 #define BBS_PAGESIZE    (t_lines - 4)
 

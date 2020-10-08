@@ -49,6 +49,7 @@
 #include "comm_list.h"
 #include "edit.h"
 #include "vote.h"
+#include "bbs-internal.h"
 
 int ERROR_READ_SYSTEM_FILE = NA;
 int RMSG = YEA;

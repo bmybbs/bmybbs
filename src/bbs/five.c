@@ -8,9 +8,10 @@
 #include "stuff.h"
 #include "io.h"
 #include "xyz.h"
-#include "term.h"
 #include "main.h"
 #include "bbs_global_vars.h"
+#include "bbs-internal.h"
+
 #define black 1
 #define white 2
 #define FDATA "five"

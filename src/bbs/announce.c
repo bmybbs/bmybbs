@@ -26,7 +26,6 @@
 #include "bbsgopher.h"
 #include "smth_screen.h"
 #include "main.h"
-#include "term.h"
 #include "stuff.h"
 #include "xyz.h"
 #include "io.h"
@@ -38,8 +37,8 @@
 #include "help.h"
 #include "maintain.h"
 #include "edit.h"
-#include "talk.h"
 #include "bbs_global_vars.h"
+#include "bbs-internal.h"
 
 #define MAXITEMS        1024       /* 精华区最大条目数 */
 #define PATHLEN         1024

@@ -8,13 +8,13 @@
 #include "read.h"
 #include "bbsinc.h"
 #include "io.h"
-#include "term.h"
 #include "sendmsg.h"
 #include "help.h"
 #include "maintain.h"
 #include "list.h"
 #include "one_key.h"
 #include "bbs_global_vars.h"
+#include "bbs-internal.h"
 
 extern char quote_file[], quote_user[];
 char currbacknumberdir[STRLEN * 2];

@@ -44,6 +44,7 @@
 #include "list.h"
 #include "main.h"
 #include "bbs_global_vars.h"
+#include "bbs-internal.h"
 
 extern int page, range;
 extern char IScurrBM;

@@ -31,6 +31,7 @@
 #include "smth_screen.h"
 #include "term.h"
 #include "bbs_global_vars.h"
+#include "bbs-internal.h"
 
 #define OBUFSIZE  (1024*4)
 #define IBUFSIZE  (256)

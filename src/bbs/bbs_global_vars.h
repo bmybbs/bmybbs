@@ -80,5 +80,10 @@ extern int utmpent;      /* Index into this users utmp file entry */
 extern int count_friends,count_users; /*Add by SmallPig for count users and friends*/
 
 extern struct userec lookupuser ; /* Used when searching for other user info */
+
+extern int digestmode;            /*To control Digestmode*/
+
+extern    int  editansi;
+extern    int  KEY_ESC_arg;
 #define ZMODEM_RATE 5000
 #endif

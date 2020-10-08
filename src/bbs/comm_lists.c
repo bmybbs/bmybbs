@@ -45,6 +45,7 @@
 #include "main.h"
 #include "fileshm.h"
 #include "bbs_global_vars.h"
+#include "bbs-internal.h"
 
 extern int moneycenter(void);        // moneycenter.c
 extern int x_active_manager(void);   // identify.c

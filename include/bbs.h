@@ -155,20 +155,6 @@ extern int errno ;
 #define FRIEND_PAGER    0x2
 #define ALLMSG_PAGER    0x4
 #define FRIENDMSG_PAGER 0x8
-
-#define SHIFTMODE(usernum,mode) ((usernum<MAXUSERS)?mode:mode<<4)
-
-#define SETFILEMODE(array,usernum,mode) \
-     (array[usernum%MAXUSERS] |= ((usernum<MAXUSERS)?mode:mode<<4))
-
-#define CLRFILEMODE(array,usernum,mode) \
-          (array[usernum%MAXUSERS] &= ((usernum<MAXUSERS)?~mode:~(mode<<4)))
-
-#define CHECKFILEMODE(array,usernum,mode) \
-       (array[usernum%MAXUSERS] & ((usernum<MAXUSERS)?mode:mode<<4))
-#define USERIDSIZE (16)
-#define USERNAMESZ (24)
-#define TERMTYPESZ (10)
 /* END */
 
 #endif /* BBSIRC */
@@ -185,43 +171,7 @@ extern int errno ;
 #define DIRCHANGED      8       /* Index file was changed */
 #define UPDATETLINE	9	/* t_lines was changed */
 
-#define I_TIMEOUT   (-2)         /* Used for the getchar routine select call */
-#define I_OTHERDATA (-333)       /* interface, (-3) will conflict with chinese */
-
-#define SCREEN_SIZE (23)         /* Used by read menu  */
-extern int scrint ;               /* Set when screen has been initialized */
-                                  /* Used by namecomplete *only* */
-
-extern int digestmode;            /*To control Digestmode*/
-
 /*#endif*/ /* !BBSIRC */
-
-#ifndef EXTEND_KEY
-#define EXTEND_KEY
-#define KEY_TAB         9
-#define KEY_ESC         27
-#define KEY_UP          0x0101
-#define KEY_DOWN        0x0102
-#define KEY_RIGHT       0x0103
-#define KEY_LEFT        0x0104
-#define KEY_HOME        0x0201
-#define KEY_INS         0x0202
-#define KEY_DEL         0x0203
-#define KEY_END         0x0204
-#define KEY_PGUP        0x0205
-#define KEY_PGDN        0x0206
-#endif
-
-#define Ctrl(c)         ( c & 037 )
-#define isprint2(c)     ( (c & 0x80) || isprint(c) )
-
-/* =============== ANSI EDIT ================== */
-#define   ANSI_RESET    "\033[0m"
-#define   ANSI_REVERSE  "\033[7m\033[4m"
-extern    int  editansi;
-extern    int  KEY_ESC_arg;
-/* ============================================ */
-
 
 /* pty exec */
 #ifdef CAN_EXEC

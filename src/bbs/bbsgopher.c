@@ -36,6 +36,7 @@
 #include "record.h"
 #include "mail.h"
 #include "bbs_global_vars.h"
+#include "bbs-internal.h"
 
 #define MAXGOPHERITEMS     9999    /*max of gopher items*/
 

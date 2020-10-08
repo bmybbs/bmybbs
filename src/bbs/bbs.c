@@ -57,6 +57,7 @@
 #include "record.h"
 #include "chat.h"
 #include "help.h"
+#include "bbs-internal.h"
 
 struct postheader header;
 int continue_flag;

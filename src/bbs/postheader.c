@@ -33,6 +33,7 @@
 #include "mail.h"
 #include "edit.h"
 #include "postheader.h"
+#include "bbs-internal.h"
 
 extern int numofsig;
 struct boardmem *getbcache();

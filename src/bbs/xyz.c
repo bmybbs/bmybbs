@@ -38,6 +38,7 @@
 #include "convcode.h"
 #include "userinfo.h"
 #include "main.h"
+#include "bbs-internal.h"
 
 pid_t childpid;
 static int loadkeys(struct one_key *key, char *name);

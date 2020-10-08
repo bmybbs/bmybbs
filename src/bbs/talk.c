@@ -40,6 +40,7 @@
 #include "help.h"
 #include "chat.h"
 #include "announce.h"
+#include "bbs-internal.h"
 
 #define M_INT 8			/* monitor mode update interval */
 #define P_INT 20		/* interval to check for page req. in talk/chat */

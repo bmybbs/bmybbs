@@ -28,6 +28,7 @@
 #include "term.h"
 #include "io.h"
 #include "bbs_global_vars.h"
+#include "bbs-internal.h"
 
 //#define SCREEN_MODIFIED 1
 #define SCREEN_BRIGHT 2

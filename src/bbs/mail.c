@@ -44,6 +44,7 @@
 #include "help.h"
 #include "talk.h"
 #include "power_select.h"
+#include "bbs-internal.h"
 
 int in_mail;
 extern int mailallmode;
