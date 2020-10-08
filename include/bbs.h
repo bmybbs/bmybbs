@@ -194,11 +194,6 @@ extern int scrint ;               /* Set when screen has been initialized */
 
 extern int digestmode;            /*To control Digestmode*/
 
-extern int usernum ;      /* Index into passwds file user record */
-extern int utmpent ;      /* Index into this users utmp file entry */
-extern int count_friends,count_users; /*Add by SmallPig for count users and friends*/
-
-extern struct userec lookupuser ; /* Used when searching for other user info */
 /*#endif*/ /* !BBSIRC */
 
 #ifndef EXTEND_KEY

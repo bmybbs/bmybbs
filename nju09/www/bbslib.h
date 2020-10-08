@@ -272,7 +272,8 @@ extern void check_msg(void); // bbsgetmsg.c
  * user structure is loaded from passwd file at logon,
  * and remains for the entire session
  */
-extern struct userec currentuser ;
+extern struct userec currentuser;
+extern int utmpent;      /* Index into this users utmp file entry */
 
 extern int readmybrd(char *userid);        /* bbsmybrd.c */
 extern int mails(char *id, int *unread);   /* bbsfoot.c  */

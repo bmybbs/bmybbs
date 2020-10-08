@@ -75,5 +75,10 @@ extern struct userec currentuser;
  * back to the utmp file when necessary (pretty darn often).
  */
 extern struct user_info uinfo;
+extern int usernum;      /* Index into passwds file user record */
+extern int utmpent;      /* Index into this users utmp file entry */
+extern int count_friends,count_users; /*Add by SmallPig for count users and friends*/
+
+extern struct userec lookupuser ; /* Used when searching for other user info */
 #define ZMODEM_RATE 5000
 #endif
