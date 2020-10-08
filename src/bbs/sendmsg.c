@@ -10,7 +10,7 @@
                         Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
 
     Copyright (C) 1999	KCN,Zhou lin,kcn@cic.tsinghua.edu.cn
-    
+
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 1, or (at your option)
@@ -169,7 +169,7 @@ int userpid;
 	if (!strcasecmp(uident, currentuser.userid))
 		return 0;
 	/*
-	 * try to send the msg 
+	 * try to send the msg
 	 */
 	result = sendmsgfunc(uident, uinptr, upid, msgstr, mode, msgerr);
 
@@ -204,7 +204,7 @@ int userpid;
 		break;
 	}
 	/*
-	 * resend the message 
+	 * resend the message
 	 */
 	result = sendmsgfunc(uident, uinptr, upid, buf, mode, msgerr);
 
