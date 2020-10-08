@@ -39,6 +39,7 @@
 #include "maintain.h"
 #include "edit.h"
 #include "talk.h"
+#include "bbs_global_vars.h"
 
 #define MAXITEMS        1024       /* 精华区最大条目数 */
 #define PATHLEN         1024

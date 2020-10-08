@@ -24,6 +24,7 @@
 
 #include "bbs.h"
 #include <sys/mman.h>
+#include "bbs_global_vars.h"
 
 #define BUFSIZE (8192)
 

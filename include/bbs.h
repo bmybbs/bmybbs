@@ -206,13 +206,6 @@ extern int utmpent ;      /* Index into this users utmp file entry */
 extern int count_friends,count_users; /*Add by SmallPig for count users and friends*/
 
 extern struct userec lookupuser ; /* Used when searching for other user info */
-
-extern char currboard[] ;       /* name of currently selected board */
-
-extern char genbuf[1024] ;      /* generally used global buffer */
-
-extern char save_title[] ;    /* These are used by the editor when inserting */
-extern char save_filename[] ; /* header information */
 /*#endif*/ /* !BBSIRC */
 
 #ifndef EXTEND_KEY

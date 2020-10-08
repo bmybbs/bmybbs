@@ -61,5 +61,7 @@ extern int scr_cols;
 extern int disable_move;
 extern char ISdelrq;
 extern int readingthread;
+extern char genbuf[1024] ;      /* generally used global buffer */
+extern char currboard[] ;       /* name of currently selected board */
 #define ZMODEM_RATE 5000
 #endif

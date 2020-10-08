@@ -33,6 +33,7 @@
 #include "bcache.h"
 #include "xyz.h"
 #include "goodbye.h"
+#include "bbs_global_vars.h"
 
 #define MAXnettyLN            7    /* lines of  activity board  */
 #define ACBOARD_BUFSIZE     255    /* max. length of each line for activity board  */

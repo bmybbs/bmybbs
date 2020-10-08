@@ -36,6 +36,7 @@
 #include "announce.h"
 #include "bbsinc.h"
 #include "boards.h"
+#include "bbs_global_vars.h"
 
 static int d_board() {
 	struct boardheader binfo;

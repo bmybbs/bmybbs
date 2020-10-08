@@ -31,6 +31,7 @@
 #include "io.h"
 #include "read.h"
 #include "boards.h"
+#include "bbs_global_vars.h"
 
 
 typedef void (*power_dofunc) (int, struct fileheader *, char *);

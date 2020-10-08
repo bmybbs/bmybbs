@@ -26,6 +26,7 @@
 #include "smth_screen.h"
 #include "main.h"
 #include "io.h"
+#include "bbs_global_vars.h"
 
 #ifdef CAN_EXEC
 char tempfile[MAXPATHLEN];

@@ -32,6 +32,7 @@
 #include "bbsinc.h"
 #include "register.h"
 #include "comm_list.h"
+#include "bbs_global_vars.h"
 
 #ifdef POP_CHECK
 // 登陆邮件服务器用的头文件 added by interma@BMY 2005.5.12

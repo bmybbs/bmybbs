@@ -13,6 +13,7 @@
 #include "io.h"
 #include "term.h"
 #include "one_key.h"
+#include "bbs_global_vars.h"
 
 extern struct UTMPFILE *utmpshm;
 

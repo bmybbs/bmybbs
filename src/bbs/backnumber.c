@@ -14,6 +14,7 @@
 #include "maintain.h"
 #include "list.h"
 #include "one_key.h"
+#include "bbs_global_vars.h"
 
 extern char quote_file[], quote_user[];
 char currbacknumberdir[STRLEN * 2];

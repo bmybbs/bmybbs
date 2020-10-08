@@ -16,6 +16,7 @@
 #include "edit.h"
 #include "list.h"
 #include "xyz.h"
+#include "bbs_global_vars.h"
 
 #define BBS_PAGESIZE    (t_lines - 4)
 

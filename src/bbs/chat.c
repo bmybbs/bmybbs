@@ -38,6 +38,7 @@
 #include "list.h"
 #include "main.h"
 #include "bbsinc.h"
+#include "bbs_global_vars.h"
 
 char chatroom[IDLEN];		/* Chat-Room Name */
 int chatline;			/* Where to display message now */

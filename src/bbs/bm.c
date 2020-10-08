@@ -34,6 +34,7 @@
 #include "more.h"
 #include "maintain.h"
 #include "mail.h"
+#include "bbs_global_vars.h"
 
 #define DENY 1
 #define UNDENY 2

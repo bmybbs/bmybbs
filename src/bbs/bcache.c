@@ -29,6 +29,7 @@
 #include "bbsinc.h"
 #include "namecomplete.h"
 #include "io.h"
+#include "bbs_global_vars.h"
 //CHINPUT_SHMKEY=5102
 
 struct BCACHE *brdshm;

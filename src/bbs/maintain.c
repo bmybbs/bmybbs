@@ -38,6 +38,7 @@
 #include "talk.h"
 #include "boards.h"
 #include "mail.h"
+#include "bbs_global_vars.h"
 
 #define        BLK_SIZ         4096  //by bjgyt
 

@@ -33,6 +33,7 @@
 #include "bcache.h"
 #include "mail.h"
 #include "maintain.h"
+#include "bbs_global_vars.h"
 /*
 #define  EMAIL          0x0001
 #define  NICK           0x0002

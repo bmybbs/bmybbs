@@ -24,6 +24,7 @@
 #define __BBS_EDIT_H
 #include <stdio.h>
 extern int enabledbchar;
+extern char save_title[] ;    /* These are used by the editor when inserting */
 
 int write_header(FILE *fp, int mode);
 void addsignature(FILE *fp, int blank);

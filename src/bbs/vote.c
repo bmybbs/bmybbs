@@ -43,6 +43,7 @@
 #include "help.h"
 #include "list.h"
 #include "main.h"
+#include "bbs_global_vars.h"
 
 extern int page, range;
 extern char IScurrBM;

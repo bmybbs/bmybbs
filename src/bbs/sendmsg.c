@@ -36,6 +36,7 @@
 #include "mail.h"
 #include "bbsinc.h"
 #include "main.h"
+#include "bbs_global_vars.h"
 
 char buf2[MAX_MSG_SIZE];
 struct user_info *t_search();
