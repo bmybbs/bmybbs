@@ -171,7 +171,7 @@ char *cmd;
 	boardprefix[0] = cmd[0];
 	boardprefix[1] = 0;
 	sec = getsectree(boardprefix);
-	choose_board(DEFINE(DEF_NEWPOST) ? 1 : 0, sec);
+	choose_board(DEFINE(DEF_NEWPOST, currentuser) ? 1 : 0, sec);
 }
 
 void
@@ -770,7 +770,7 @@ const struct sectree *sec;
 		case '!':	/* youzi leave */
 			return Q_Goodbye();
 		case 'w':
-			if ((in_mail != YEA) && HAS_PERM(PERM_READMAIL))
+			if ((in_mail != YEA) && HAS_PERM(PERM_READMAIL, currentuser))
 				m_read();
 			page = -1;
 			break;
@@ -811,7 +811,7 @@ const struct sectree *sec;
 		case 'z':
 			if (num >= secnum + brdnum || num < secnum)
 				break;
-			if (HAS_PERM(PERM_BASIC)
+			if (HAS_PERM(PERM_BASIC, currentuser)
 			    && !(nbrd[num - secnum].flag & NOZAP_FLAG)) {
 				ptr = &nbrd[num - secnum];
 				ptr->zap = !ptr->zap;
@@ -822,7 +822,7 @@ const struct sectree *sec;
 			}
 			break;
 		case 'C':
-			if (HAS_PERM(PERM_SPECIAL2)
+			if (HAS_PERM(PERM_SPECIAL2, currentuser)
 			    || clubsync("deleterequest")) {
 				do1984menu();
 				page = -1;
@@ -846,7 +846,7 @@ const struct sectree *sec;
 				ptr = &nbrd[num - secnum];
 				brc_initial(ptr->name, 1);
 				strcpy(currboard, ptr->name);
-				if (DEFINE(DEF_FIRSTNEW)) {
+				if (DEFINE(DEF_FIRSTNEW, currentuser)) {
 					char buf[STRLEN];
 					setbdir(buf, currboard, digestmode);
 					if (getkeep(buf, -1, 0) == NULL) {
@@ -897,7 +897,7 @@ const struct sectree *sec;
 			}
 			else
 			{
-				if (DEFINE(DEF_FILTERXXX))
+				if (DEFINE(DEF_FILTERXXX, currentuser))
 				{
 					// 以下为了实现telnet下边直接看10大,modified by interma@BMY 2005.6.25
 
@@ -980,13 +980,13 @@ const struct sectree *sec;
 			page = -1;
 			break;
 		case 'S':	/* sendmsg ... youzi */
-			if (!HAS_PERM(PERM_PAGE))
+			if (!HAS_PERM(PERM_PAGE, currentuser))
 				break;
 			s_msg();
 			page = -1;
 			break;
 		case 'c':	/* show friends ... youzi */
-			if (!HAS_PERM(PERM_BASIC))
+			if (!HAS_PERM(PERM_BASIC, currentuser))
 				break;
 			t_friends();
 			modify_user_mode(newflag ? READNEW : READBRD);
@@ -1012,7 +1012,7 @@ const struct sectree *sec;
 			    && !clubsync("deleterequest"))
 				break;
 			if (ptr->status == 'p') {
-				if (!HAS_PERM(PERM_BLEVELS))
+				if (!HAS_PERM(PERM_BLEVELS, currentuser))
 					break;
 			}
 			page = -1;
@@ -1066,7 +1066,7 @@ const struct sectree *sec;
 			if (num >= brdnum + secnum || num < secnum)
 				break;
 			ptr = &nbrd[num - secnum];
-			if (!HAS_PERM(PERM_BLEVELS))
+			if (!HAS_PERM(PERM_BLEVELS, currentuser))
 				break;
 			page = -1;
 			sprintf(genbuf, "确定要编辑 %s 版面转信对应列表吗?",
@@ -1374,12 +1374,12 @@ Read()
 			show_board_notes(currboard);
 			brc.notetime = now_t;
 			brc.changed = 1;
-			if (!DEFINE(DEF_INTOANN) || brc.num > 1)
+			if (!DEFINE(DEF_INTOANN, currentuser) || brc.num > 1)
 				pressanykey();
 		}
 	}
 
-	if (DEFINE(DEF_INTOANN) && brc_unreadt(&brc, 2)) {
+	if (DEFINE(DEF_INTOANN, currentuser) && brc_unreadt(&brc, 2)) {
 		char ans[3];
 		getdata(t_lines - 1, 0,
 			"\033[0m\033[1m您初次访问本版, 是否首先察看精华区?"
@@ -1460,16 +1460,10 @@ readtitle()
 			active = bp->bmonline & (1 << i);
 			invisible = bp->bmcloak & (1 << i);
 			if (active && !invisible)
-				sprintf(tmp, "\x1b[32m%s\x1b[33m ",
-					bp->header.bm[i]);
-			else if (active && invisible && (HAS_PERM(PERM_SEECLOAK)
-							 || !strcmp(bp->
-								    header.bm
-								    [i],
-								    currentuser.
-								    userid)))
-				    sprintf(tmp, "\x1b[36m%s\x1b[33m ",
-					    bp->header.bm[i]);
+				sprintf(tmp, "\x1b[32m%s\x1b[33m ", bp->header.bm[i]);
+			else if (active && invisible && (HAS_PERM(PERM_SEECLOAK, currentuser)
+							 || !strcmp(bp->header.bm[i], currentuser.userid)))
+				    sprintf(tmp, "\x1b[36m%s\x1b[33m ", bp->header.bm[i]);
 			else
 				sprintf(tmp, "%s ", bp->header.bm[i]);
 			strcat(header, tmp);
@@ -1487,7 +1481,7 @@ readtitle()
 	    ("离开[\x1b[1;32m←\x1b[m,\x1b[1;32mq\x1b[m] 选择[\x1b[1;32m↑\x1b[m,\x1b[1;32m↓\x1b[m] 阅读[\x1b[1;32m→\x1b[m,\x1b[1;32mRtn\x1b[m] 发表文章[\x1b[1;32mCtrl-P\x1b[m] 砍信[\x1b[1;32md\x1b[m] 备忘录[\x1b[1;32mTAB\x1b[m] 求助[\x1b[1;32mh\x1b[m]\n");
 	switch (digestmode) {
 	case 0:
-		if (DEFINE(DEF_THESIS))	/* youzi 1997.7.8 */
+		if (DEFINE(DEF_THESIS, currentuser))	/* youzi 1997.7.8 */
 			strcpy(readmode, "主题");
 		else
 			strcpy(readmode, "一般");
@@ -1508,7 +1502,7 @@ readtitle()
 		strcpy(readmode, "纸篓");
 		break;
 	}
-	if (DEFINE(DEF_THESIS) && digestmode == 0)
+	if (DEFINE(DEF_THESIS, currentuser) && digestmode == 0)
 		prints
 		    ("\x1b[1;37;44m 编号   %-12s %6s %-28s在线:%4d [%4s式看版] \x1b[m\n",
 		     "刊 登 者", "日  期", " 标  题", bp->inboard, readmode);
@@ -1557,13 +1551,13 @@ char buf[512];
 	}
 	if ((ent->accessed & FH_DANGEROUS) && (IScurrBM || ISdelrq))
 		danger = 1;
-	if ((ent->accessed & FH_DEL) && (IScurrBM || HAS_PERM(PERM_ARBITRATE))) {
+	if ((ent->accessed & FH_DEL) && (IScurrBM || HAS_PERM(PERM_ARBITRATE, currentuser))) {
 		if (danger)
 			type1 = "\033[1;31mX\033[0m";
 		else
 			type1 = "X";
 	} 
-	else if((ent->accessed & FH_MINUSDEL) && (IScurrBM || HAS_PERM(PERM_ARBITRATE))){	//add by mintbaggio 040322 for minus-numposts delete
+	else if((ent->accessed & FH_MINUSDEL) && (IScurrBM || HAS_PERM(PERM_ARBITRATE, currentuser))){	//add by mintbaggio 040322 for minus-numposts delete
 		if (danger)
                         type1 = "\033[1;31mx\033[0m";
                 else
@@ -1582,13 +1576,13 @@ char buf[512];
 	noreply = ent->accessed & FH_NOREPLY;
 	attached = ent->accessed & FH_ATTACHED;
 	allcanre = ent->accessed & FH_ALLREPLY;
-	if((HAS_PERM(PERM_SYSOP|PERM_OBOARDS)||has_perm_commend(currentuser.userid)) && is_in_commend(currboard, ent)){	//add by mintbaggio 040327 for front page commend
+	if((HAS_PERM(PERM_SYSOP|PERM_OBOARDS, currentuser)||has_perm_commend(currentuser.userid)) && is_in_commend(currboard, ent)){	//add by mintbaggio 040327 for front page commend
 		if(type == '*')	
 			type1 = "\033[1;45mM\033[0m";
 		else
 			type1 = "\033[1;45mm\033[0m";
 	}
-	if((HAS_PERM(PERM_SYSOP|PERM_OBOARDS)||has_perm_commend(currentuser.userid)) && is_in_commend2(currboard, ent)){	//add by mintbaggio 040327 for front page commend
+	if((HAS_PERM(PERM_SYSOP|PERM_OBOARDS, currentuser)||has_perm_commend(currentuser.userid)) && is_in_commend2(currboard, ent)){	//add by mintbaggio 040327 for front page commend
 		if(type == '*')	
 			type1 = "\033[1;42mM\033[0m";
 		else

@@ -102,7 +102,7 @@ apiqry_main()
 		u = &(shm_utmp->uinfo[i]);
 		if(!strcmp(u->userid, x->userid))
 		{
-			if(u->active == 0 || u->pid ==0 || (u->invisible && !HAS_PERM(PERM_SEECLOAK)))
+			if(u->active == 0 || u->pid ==0 || (u->invisible && !HAS_PERM(PERM_SEECLOAK, currentuser)))
 				continue;
 			++num;
 			if(num == 1)
@@ -269,7 +269,7 @@ bbsqry_main()
 		u = &(shm_utmp->uinfo[i]);
 		if (!strcmp(u->userid, x->userid)) {
 			if (u->active == 0 || u->pid == 0
-			    || (u->invisible && !HAS_PERM(PERM_SEECLOAK)))
+			    || (u->invisible && !HAS_PERM(PERM_SEECLOAK, currentuser)))
 				continue;
 			num++;
 			if (num == 1)

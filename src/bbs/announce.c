@@ -288,8 +288,8 @@ MENU *pm;
 			litem.fname[79] = '\0';
 
 			curr_board = getboardbyname(litem.fname);
-			if (((!strstr(litem.title + 38, "(BM: BMS)") || HAS_PERM(PERM_BOARDS))
-					&& (!strstr(litem.title + 38, "(BM: SYSOPS)") || HAS_PERM(PERM_SYSOP))
+			if (((!strstr(litem.title + 38, "(BM: BMS)") || HAS_PERM(PERM_BOARDS, currentuser))
+					&& (!strstr(litem.title + 38, "(BM: SYSOPS)") || HAS_PERM(PERM_SYSOP, currentuser))
 					&& (strstr(litem.title, "<HIDE>") != litem.title)
 					&& ((curr_board != NULL) ? hasreadperm(&(curr_board->header)) : 1))
 				 || ((pm->level & PERM_BOARDS) && ((curr_board != NULL) ? hasreadperm(&(curr_board->header)) : 1))) {	/*modified by ylsdd */ /* modified by IronBlood 2014.6.1 */
@@ -477,7 +477,7 @@ check_import(char *anboard)
 		if (!chk_currBM(&(bp->header), 1))
 			return -2;
 		return 0;
-	} else if (HAS_PERM(PERM_BLEVELS)) {
+	} else if (HAS_PERM(PERM_BLEVELS, currentuser)) {
 		strcpy(anboard, "noboard");
 		return 0;
 	} else
@@ -782,7 +782,7 @@ int mode;
 		sprintf(genbuf, "%-38.38s %s ", title, currentuser.userid);
 	else {
 /*Add by SmallPig*/
-		if (HAS_PERM(PERM_SYSOP) || HAS_PERM(PERM_ANNOUNCE)) {
+		if (HAS_PERM(PERM_SYSOP, currentuser) || HAS_PERM(PERM_ANNOUNCE, currentuser)) {
 			move(1, 0);
 			clrtoeol();
 /*$$$$$$$$ Multi-BM Input, Modified By Excellent $$$$$$$*/
@@ -882,8 +882,8 @@ int paste;			// -1:cut 0:copy have perm 1:paste 2:copy have no perm
 		}
 		if ((strlen(fpath) < sizeof (AN_PATH)
 		     || !strncmp(fpath, AN_PES_PATH, sizeof (AN_PES_PATH) - 1))
-		    && (HAS_PERM(PERM_ANNOUNCE) || HAS_PERM(PERM_SYSOP)
-			|| HAS_PERM(PERM_OBOARDS))) {
+		    && (HAS_PERM(PERM_ANNOUNCE, currentuser) || HAS_PERM(PERM_SYSOP, currentuser)
+			|| HAS_PERM(PERM_OBOARDS, currentuser))) {
 			prints("站长不能拷贝个人文集, 如有需求, 联系系统维护");
 			egetch();
 			return;
@@ -1159,7 +1159,7 @@ int ch;
 		a_newitem(pm, ADDMAIL);
 		break;
 	case 'G':
-		if (HAS_PERM(PERM_SYSOP))
+		if (HAS_PERM(PERM_SYSOP, currentuser))
 			a_newitem(pm, ADDGOPHER);
 		break;
 	case 'p':
@@ -1203,7 +1203,7 @@ int ch;
 			break;
 		case 'V':
 		case 'v':
-			if (HAS_PERM(PERM_SYSOP)) {
+			if (HAS_PERM(PERM_SYSOP, currentuser)) {
 				if (ch == 'v')
 					sprintf(fpath, "%s/.Names", pm->path);
 				else
@@ -1239,8 +1239,8 @@ int ch;
 				ytht_strsncpy(item->title, genbuf,
 							  sizeof(item->title));
 			} else if (dashd(fpath)) {
-				if (HAS_PERM(PERM_SYSOP)
-				    || HAS_PERM(PERM_ANNOUNCE)) {
+				if (HAS_PERM(PERM_SYSOP, currentuser)
+				    || HAS_PERM(PERM_ANNOUNCE, currentuser)) {
 					char *dir = fpath + 25;
 					char *rcon;
 					move(1, 0);
@@ -1466,7 +1466,7 @@ int lastlevel, lastbmonly;
 		case Ctrl('C'):
 			if (me.num == 0)
 				break;
-			if (!HAS_PERM(PERM_POST))
+			if (!HAS_PERM(PERM_POST, currentuser))
 				break;
 			if (snprintf
 			    (fname, PATHLEN, "%s/%s", path,
@@ -1498,7 +1498,7 @@ int lastlevel, lastbmonly;
 					&& strcmp(bname, "welcome")
 					&& strcmp(bname, "KaoYan")
 					&& strcmp(bname, "Appeal")
-				       && !HAS_PERM(PERM_SYSOP)) {
+				       && !HAS_PERM(PERM_SYSOP, currentuser)) {
 					move(5, 0);
 					clrtobot();
 					prints
@@ -1508,7 +1508,7 @@ int lastlevel, lastbmonly;
 					break;
 				}
 				if (deny_me(bname)
-				    && !HAS_PERM(PERM_SYSOP)) {
+				    && !HAS_PERM(PERM_SYSOP, currentuser)) {
 					move(5, 0);
 					clrtobot();
 					prints
@@ -1557,7 +1557,7 @@ int lastlevel, lastbmonly;
 			me.page = 9999;
 			break;
 		case 'w':
-			if ((in_mail != YEA) && HAS_PERM(PERM_READMAIL))
+			if ((in_mail != YEA) && HAS_PERM(PERM_READMAIL, currentuser))
 				m_read();
 			me.page = 9999;
 			break;
@@ -1675,7 +1675,7 @@ int lastlevel, lastbmonly;
 			break;
 		case 'F':
 		case 'U':
-			if (me.now < me.num && HAS_PERM(PERM_BASIC)) {
+			if (me.now < me.num && HAS_PERM(PERM_BASIC, currentuser)) {
 				a_forward(path, me.item[me.now], ch == 'U');
 				me.page = 9999;
 			}
@@ -1719,7 +1719,7 @@ int lastlevel, lastbmonly;
 		}
 		if (me.level & PERM_BOARDS)
 			a_manager(&me, ch);
-		else if (ch == 'a' && HAS_PERM(PERM_POST)
+		else if (ch == 'a' && HAS_PERM(PERM_POST, currentuser)
 			 && strstr(me.mtitle, "<GUESTBOOK>") == me.mtitle) {
 			a_newitem(&me, ADDITEM);
 		}
@@ -1882,8 +1882,8 @@ void
 Announce()
 {
 	sprintf(genbuf, "%s 精华区公布栏", MY_BBS_NAME);
-	a_menu(genbuf, "0Announce", (HAS_PERM(PERM_ANNOUNCE)
-				     || HAS_PERM(PERM_SYSOP)) ?
+	a_menu(genbuf, "0Announce", (HAS_PERM(PERM_ANNOUNCE, currentuser)
+				     || HAS_PERM(PERM_SYSOP, currentuser)) ?
 	       PERM_BOARDS : 0, 0);
 	clear();
 }
@@ -1921,8 +1921,8 @@ char *cmd;
 		break;
 	}
 	if (dashd(buf)) {
-		a_menu(genbuf, buf, (HAS_PERM(PERM_ANNOUNCE)
-				     || HAS_PERM(PERM_SYSOP)) ?
+		a_menu(genbuf, buf, (HAS_PERM(PERM_ANNOUNCE, currentuser)
+				     || HAS_PERM(PERM_SYSOP, currentuser)) ?
 		       PERM_BOARDS : 0, 0);
 	} else if (cmd[0] == '*') {
 		a_prompt(-1,
@@ -1956,19 +1956,19 @@ static int chk_currBM_Personal(char *BMstr) {
 		ptr = strtok(NULL, ",: ;|&()\n");
 	}
 	if (chk2 == 0) {
-		if (!HAS_PERM(PERM_BOARDS))
+		if (!HAS_PERM(PERM_BOARDS, currentuser))
 			return 0;
-		if (chk1 == 1 || HAS_PERM(PERM_BLEVELS))
+		if (chk1 == 1 || HAS_PERM(PERM_BLEVELS, currentuser))
 			return 2;
 		return 0;
 	}
 	//add by bjgyt for _Personal
-	if (HAS_PERM(PERM_SYSOP))
+	if (HAS_PERM(PERM_SYSOP, currentuser))
 		return 1;
 	//end add
-	if (chk1 == 0 && HAS_PERM(PERM_BLEVELS))
+	if (chk1 == 0 && HAS_PERM(PERM_BLEVELS, currentuser))
 		return 3;
-	if (chk1 == 1 && HAS_PERM(PERM_SPECIAL8))
+	if (chk1 == 1 && HAS_PERM(PERM_SPECIAL8, currentuser))
 		return 1;
 	return -1;
 }

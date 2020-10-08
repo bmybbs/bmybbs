@@ -1,5 +1,7 @@
 #include "bbslib.h"
 
+static int do_fwdmail(char *fn, struct fileheader *x, char *target);
+
 int
 bbsfwdmail_main()
 {
@@ -43,7 +45,7 @@ bbsfwdmail_main()
     }
 	if (!((currentuser.userlevel )& (PERM_CHAT|PERM_PAGE|PERM_POST)))
 		http_fatal("您没有权限发信");
-	if (HAS_PERM(PERM_DENYMAIL))
+	if (HAS_PERM(PERM_DENYMAIL, currentuser))
 		http_fatal( "您已经被封禁了发信权\n");
     //only check in-box
 	if (box_type == 0 && check_maxmail(dir)){
@@ -137,9 +139,7 @@ bbsfwdmail_main()
 	return 0;
 }
 
-int
-do_fwdmail(char *fn, struct fileheader *x, char *target)
-{
+static int do_fwdmail(char *fn, struct fileheader *x, char *target) {
 	char title[512];
 	if (!file_exist(fn))
 		http_fatal("信件内容已丢失, 无法转寄");

@@ -1018,7 +1018,7 @@ int blank;
 	if (blank)
 		fputs("\n", fp);
 	fputs("--\n", fp);
-	if (HAS_PERM(PERM_DENYSIG))
+	if (HAS_PERM(PERM_DENYSIG, currentuser))
 		return;
 	setuserfile(fname, "signatures");
 	if ((sigfile = fopen(fname, "r")) == NULL) {
@@ -2337,15 +2337,15 @@ int modifyheader;
 	t = showansi;
 	showansi = 0;
 	init_alarm();
-	ismsgline = (DEFINE(DEF_EDITMSG)) ? 1 : 0;
-	if (DEFINE(DEF_POSTNOMSG)) {
+	ismsgline = (DEFINE(DEF_EDITMSG, currentuser)) ? 1 : 0;
+	if (DEFINE(DEF_POSTNOMSG, currentuser)) {
 		block_msg();
 	}
 	msg();
 	ans = raw_vedit(filename, saveheader, modifyheader);
 	showansi = t;
 	signal(SIGALRM, SIG_IGN);
-	if (DEFINE(DEF_POSTNOMSG))
+	if (DEFINE(DEF_POSTNOMSG, currentuser))
 		unblock_msg();
 	return ans;
 }

@@ -39,6 +39,7 @@
 #include "bbsinc.h"
 #include "talk.h"
 #include "record.h"
+#include "bbs_global_vars.h"
 // modified by yldsd.
 // #define BBS_PAGESIZE    (19)
 #define BBS_PAGESIZE (t_lines - 4)
@@ -268,7 +269,7 @@ struct user_info *uentp;
 {
 	int i;
 
-	if (HAS_PERM(PERM_SYSOP))
+	if (HAS_PERM(PERM_SYSOP, currentuser))
 		return NA;
 	if (uentp->uid != uinfo.uid) {
 		for (i = 0; i < MAXREJECTS && uentp->reject[i]; i++) {
@@ -453,7 +454,7 @@ fill_userlist()
 					testreject = 1;
 				}
 				if (utmpshm->uinfo[uent - 1].invisible
-				    && !HAS_PERM(PERM_SYSOP | PERM_SEECLOAK))
+				    && !HAS_PERM(PERM_SYSOP | PERM_SEECLOAK, currentuser))
 					continue;
 				user_record[i2] = up;
 				i2++;
@@ -471,7 +472,7 @@ fill_userlist()
 			    || isreject(&utmpshm->uinfo[i])) {
 				continue;
 			}
-			if (!(HAS_PERM(PERM_SYSOP | PERM_SEECLOAK))
+			if (!(HAS_PERM(PERM_SYSOP | PERM_SEECLOAK, currentuser))
 			    && utmpshm->uinfo[i].invisible) {
 				continue;
 			}
@@ -733,9 +734,8 @@ int allnum, pagenum;
 		break;
 	case 'k':
 	case 'K':
-		if (!HAS_PERM(PERM_SYSOP) && strcmp(currentuser.userid,
-						    user_record
-						    [allnum]->userid)) return 1;
+		if (!HAS_PERM(PERM_SYSOP, currentuser) && strcmp(currentuser.userid, user_record[allnum]->userid))
+			return 1;
 		sprintf(buf, "ÄãÒª°Ñ %s Ìß³öÕ¾ÍâÂð",
 			user_record[allnum]->userid);
 		strcpy(tempuser, user_record[allnum]->userid);
@@ -776,7 +776,7 @@ int allnum, pagenum;
 		break;
 	case 't':
 	case 'T':
-		if (!HAS_PERM(PERM_PAGE))
+		if (!HAS_PERM(PERM_PAGE, currentuser))
 			return 1;
 		if (strcmp(currentuser.userid, user_record[allnum]->userid))
 			ttt_talk(user_record[allnum]);
@@ -785,7 +785,7 @@ int allnum, pagenum;
 		break;
 	case 'm':
 	case 'M':
-		if (!HAS_PERM(PERM_POST))
+		if (!HAS_PERM(PERM_POST, currentuser))
 			return 1;
 		m_send(user_record[allnum]->userid);
 		break;
@@ -799,7 +799,7 @@ int allnum, pagenum;
 		break;
 	case 's':
 	case 'S':
-		if (!HAS_PERM(PERM_PAGE))
+		if (!HAS_PERM(PERM_PAGE, currentuser))
 			return 1;
 		if (!canmsg(user_record[allnum])) {
 			sprintf(buf, "%s ÒÑ¾­¹Ø±ÕÑ¶Ï¢ºô½ÐÆ÷",
@@ -913,7 +913,7 @@ int allnum, pagenum;
 		break;
 	case 'm':
 	case 'M':
-		if (!HAS_PERM(PERM_POST))
+		if (!HAS_PERM(PERM_POST, currentuser))
 			return 1;
 		m_send(user_data[allnum - pagenum].userid);
 		break;
@@ -1063,13 +1063,13 @@ struct userec *uentp;
 	       (override) ? "[1;32m" : "", uentp->userid,
 	       (override) ? "[m" : "",
 #if defined(ACTS_REALNAMES)
-	       HAS_PERM(PERM_SYSOP) ? uentp->realname : uentp->username,
+	       HAS_PERM(PERM_SYSOP, currentuser) ? uentp->realname : uentp->username,
 #else
 	       uentp->username,
 #endif
 	       uentp->numlogins,
 	       (toggle2 == 0) ? uentp->numposts : uentp->stay / 3600,
-	       HAS_PERM(PERM_SEEULEVELS) ? permstr : "", msgstr);
+	       HAS_PERM(PERM_SEEULEVELS, currentuser) ? permstr : "", msgstr);
 	i++;
 	usercounter++;
 	return 0;
@@ -1399,12 +1399,12 @@ printutitle()
 	prints
 	    ("\x1b[1;44m ±à ºÅ  Ê¹ÓÃÕß´úºÅ     %-19s  #ÉÏÕ¾ #%-4s %6s %-12s   ^[[m\n",
 #if defined(ACTS_REALNAMES)
-	     HAS_PERM(PERM_SYSOP) ? "ÕæÊµÐÕÃû" : "Ê¹ÓÃÕßêÇ³Æ",
+	     HAS_PERM(PERM_SYSOP, currentuser) ? "ÕæÊµÐÕÃû" : "Ê¹ÓÃÕßêÇ³Æ",
 #else
 	     "Ê¹ÓÃÕßêÇ³Æ",
 #endif
 	     (toggle2 == 0) ? "ÎÄÕÂ" : "Ê±Êý",
-	     HAS_PERM(PERM_SEEULEVELS) ? "µÈ  ¼¶" : "",
+	     HAS_PERM(PERM_SEEULEVELS, currentuser) ? "µÈ  ¼¶" : "",
 	     (toggle1 == 0) ? "×î½ü¹âÁÙÈÕÆÚ" :
 	     (toggle1 == 1) ? "×î½ü¹âÁÙµØµã" : "ÕÊºÅ½¨Á¢ÈÕÆÚ");
 }
@@ -1509,7 +1509,7 @@ struct user_info *uentp;
 	if (!uentp->active || !uentp->pid)
 		return 0;
 	count++;
-	if (!HAS_PERM(PERM_SYSOP | PERM_SEECLOAK) && uentp->invisible)
+	if (!HAS_PERM(PERM_SYSOP | PERM_SEECLOAK, currentuser) && uentp->invisible)
 		count--;
 	return 1;
 }

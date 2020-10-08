@@ -290,9 +290,7 @@ bbspst_main()
 	return 0;
 }
 
-void
-printselsignature()
-{	//modify by mintbaggio 040809 for new www
+void printselsignature() {	//modify by mintbaggio 040809 for new www
 	int i, sigln, numofsig;
 	char path[200];
 	sprintf(path, "home/%c/%s/signatures", mytoupper(currentuser.userid[0]), currentuser.userid);
@@ -319,9 +317,7 @@ printselsignature()
 	printf("%s", "<td> [<a target=_blank href=bbssig>查看签名档</a>]");
 }
 
-void
-printuploadattach()
-{	//modify by mintbaggio 040809 for new www
+void printuploadattach() {	//modify by mintbaggio 040809 for new www
 	int i = u_info - &(shm_utmp->uinfo[0]);
 	printf(" [<a href=/cgi-bin/bbs/upload/%c%c%c%s target=uploadytht>添加/删除附件</a>]\n",
 			i / (26 * 26) + 'A', i / 26 % 26 + 'A', i % 26 + 'A',

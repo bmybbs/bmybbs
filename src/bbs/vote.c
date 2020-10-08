@@ -483,7 +483,7 @@ char *bname;
 	int aborted;
 
 	setcontrolfile();
-	if (!HAS_PERM(PERM_OVOTE))
+	if (!HAS_PERM(PERM_OVOTE, currentuser))
 		if (!IScurrBM) {
 			return 0;
 		}
@@ -509,7 +509,7 @@ char *bname;
 	else
 		ball->flag &= ~VOTE_FLAG_OPENED;
 	ball->flag &= ~VOTE_FLAG_LIMITED;
-	if (HAS_PERM(PERM_SYSOP) || seek_in_file(MY_BBS_HOME"/etc/voteidboards", currboard)) {
+	if (HAS_PERM(PERM_SYSOP, currentuser) || seek_in_file(MY_BBS_HOME"/etc/voteidboards", currboard)) {
 		if (askyn
 		    ("此次投票是否限制投票人? (需要先在版面按V生成名单)", NA,
 		     NA))
@@ -1599,7 +1599,7 @@ int allnum, pagenum;
 		break;
 	case 'D':
 	case 'd':
-		if (!HAS_PERM(PERM_OVOTE))
+		if (!HAS_PERM(PERM_OVOTE, currentuser))
 			if (!IScurrBM) {
 				return 1;
 			}
@@ -1656,7 +1656,7 @@ b_vote()
 	int num_of_vote;
 	int voting;
 
-	if (!HAS_PERM(PERM_VOTE) || (currentuser.stay < 1800)) {
+	if (!HAS_PERM(PERM_VOTE, currentuser) || (currentuser.stay < 1800)) {
 		return -1;
 	}
 	if (!haspostperm(currboard)) {

@@ -44,7 +44,7 @@ static int d_board() {
 	char bname[STRLEN];
 	extern char lookgrp[];
 
-	if (!HAS_PERM(PERM_BLEVELS)) {
+	if (!HAS_PERM(PERM_BLEVELS, currentuser)) {
 		return -1;
 	}
 	modify_user_mode(ADMIN);
@@ -121,7 +121,7 @@ offline()
 
 	modify_user_mode(OFFLINE);
 	clear();
-	if (HAS_PERM(PERM_SYSOP) || HAS_PERM(PERM_BOARDS) || HAS_PERM(PERM_ADMINMENU) || HAS_PERM(PERM_SEEULEVELS)) {
+	if (HAS_PERM(PERM_SYSOP, currentuser) || HAS_PERM(PERM_BOARDS, currentuser) || HAS_PERM(PERM_ADMINMENU, currentuser) || HAS_PERM(PERM_SEEULEVELS, currentuser)) {
 		move(1, 0);
 		prints("\n\n您有重任在身, 不能随便自杀啦!!\n");
 		pressreturn();

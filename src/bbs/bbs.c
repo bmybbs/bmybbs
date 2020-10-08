@@ -307,7 +307,7 @@ char *direct;
 }
 
 static int allcanre_post(int ent, struct fileheader *fileinfo, char *direct) {
-	if (!HAS_PERM(PERM_SYSOP))
+	if (!HAS_PERM(PERM_SYSOP, currentuser))
 		return DONOTHING;
 	change_dir(direct, fileinfo, (void *) DIR_do_allcanre, ent,
 		   digestmode, 0);
@@ -384,13 +384,13 @@ chk_currBM(bh, isbig)
 struct boardheader *bh;
 int isbig;
 {
-	if (HAS_PERM(PERM_BLEVELS))
+	if (HAS_PERM(PERM_BLEVELS, currentuser))
 		return YEA;
 
-	if (HAS_PERM(PERM_SPECIAL4) && issecm(bh->sec1, currentuser.userid))
+	if (HAS_PERM(PERM_SPECIAL4, currentuser) && issecm(bh->sec1, currentuser.userid))
 		return YEA;
 
-	return (HAS_PERM(PERM_BOARDS) && chk_BM(&currentuser, bh, isbig));
+	return (HAS_PERM(PERM_BOARDS, currentuser) && chk_BM(&currentuser, bh, isbig));
 }
 
 void
@@ -670,7 +670,7 @@ char *direct;
 	int hide1, hide2;
 	int dangerous;
 
-	if (!HAS_PERM(PERM_POST))
+	if (!HAS_PERM(PERM_POST, currentuser))
 		return DONOTHING;
 
 	if (inprison) {
@@ -741,7 +741,7 @@ char *direct;
 		islocal = 1;
 	}
 	if (ispost[0] == 's' || ispost[0] == 'S') {
-		if (deny_me(bname) && !HAS_PERM(PERM_SYSOP)) {
+		if (deny_me(bname) && !HAS_PERM(PERM_SYSOP, currentuser)) {
 			move(8, 0);
 			clrtobot();
 			prints
@@ -750,7 +750,7 @@ char *direct;
 			clear();
 			return FULLUPDATE;
 		}
-		if (deny_me_global() && !HAS_PERM(PERM_SYSOP)) {
+		if (deny_me_global() && !HAS_PERM(PERM_SYSOP, currentuser)) {
 			move(8, 0);
 			clrtobot();
 			prints
@@ -1084,7 +1084,7 @@ char *direct;
 		break;
 	case 'j':
 	case KEY_RIGHT:
-		if (DEFINE(DEF_THESIS)) {	/* youzi */
+		if (DEFINE(DEF_THESIS, currentuser)) {	/* youzi */
 			sread(0, 0, ent, 0, fileinfo);
 			break;
 		} else {
@@ -1153,7 +1153,7 @@ char *direct;
 		return READ_NEXT;
 		break;
 	case 'S':		/* by youzi */
-		if (!HAS_PERM(PERM_PAGE))
+		if (!HAS_PERM(PERM_PAGE, currentuser))
 			break;
 		clear();
 		s_msg();
@@ -1369,7 +1369,7 @@ char *direct;
 	digestmode = 0;
 	if (direct) {
 		setbdir(direct, currboard, digestmode);
-		if (DEFINE(DEF_FIRSTNEW)) {
+		if (DEFINE(DEF_FIRSTNEW, currentuser)) {
 			int tmp;
 			if (getkeep(direct, -1, 0) == NULL) {
 				tmp =
@@ -2023,7 +2023,7 @@ post_article(struct fileheader *sfh)
 			clear();
 			return FULLUPDATE;
 		}
-		if (deny_me(currboard) && !HAS_PERM(PERM_SYSOP))
+		if (deny_me(currboard) && !HAS_PERM(PERM_SYSOP, currentuser))
 		{
 			move(3, 0);
 			clrtobot();
@@ -2036,7 +2036,7 @@ post_article(struct fileheader *sfh)
 		if (deny_me_global()
 				&& strcmp(currboard, "sysop") && strcmp(currboard, "committee")
 				&& strcmp(currboard, "welcome") && strcmp(currboard, "KaoYan")
-				&& strcmp(currboard, "Appeal") && !HAS_PERM(PERM_SYSOP))
+				&& strcmp(currboard, "Appeal") && !HAS_PERM(PERM_SYSOP, currentuser))
 		{
 			move(3, 0);
 			clrtobot();
@@ -2637,7 +2637,7 @@ int has_perm_commend(char* userid)			//add by mintbaggio 040406 for front page c
 
 //add by mintbaggio 040331 for front page commend
 static int mark_commend(int ent, struct fileheader *fileinfo, char *direct) {
-	if(!HAS_PERM(PERM_SYSOP) && !has_perm_commend(currentuser.userid))
+	if(!HAS_PERM(PERM_SYSOP, currentuser) && !has_perm_commend(currentuser.userid))
 		return DONOTHING;
 	commend_article(currboard, fileinfo);
 	return PARTUPDATE;
@@ -2645,7 +2645,7 @@ static int mark_commend(int ent, struct fileheader *fileinfo, char *direct) {
 
 //add by mintbaggio 040331 for front page commend
 static int mark_commend2(int ent, struct fileheader *fileinfo, char *direct) {
-	if(!HAS_PERM(PERM_SYSOP) && !has_perm_commend(currentuser.userid))
+	if(!HAS_PERM(PERM_SYSOP, currentuser) && !has_perm_commend(currentuser.userid))
 		return DONOTHING;
 	commend_article2(currboard, fileinfo);
 	return PARTUPDATE;
@@ -2748,7 +2748,7 @@ char *direct;
 	char buf[STRLEN], content[1024];
 	if (uinfo.mode != READING || digestmode != NA || !IScurrBM)
 		return DONOTHING;
-	if (!HAS_PERM(PERM_OBOARDS) && !HAS_PERM(PERM_SYSOP))
+	if (!HAS_PERM(PERM_OBOARDS, currentuser) && !HAS_PERM(PERM_SYSOP, currentuser))
 		return DONOTHING;
 	clear();
 	memset(&atm, 0, sizeof(atm));
@@ -3347,7 +3347,7 @@ int ent;
 struct fileheader *fileinfo;
 char *direct;
 {
-	if (!HAS_PERM(PERM_BOARDS | PERM_SYSOP) && !HAS_PERM(PERM_SPECIAL8))
+	if (!HAS_PERM(PERM_BOARDS | PERM_SYSOP, currentuser) && !HAS_PERM(PERM_SPECIAL8, currentuser))
 		return FULLUPDATE;
 	a_Import(direct, fileinfo, NA);
 	change_dir(direct, fileinfo, (void *) DIR_do_import, ent, digestmode,
@@ -3458,10 +3458,10 @@ what_to_do()
 	move(t_lines - 2, 0);
 	prints("\033[m%s%s%s%s%s",
 	       "(u)查询网友",
-	       HAS_PERM(PERM_POST) ? "(m)书灯絮语" : "",
-	       HAS_PERM(PERM_POST) ? "(i)飞鸽传书" : "",
-	       HAS_PERM(PERM_CHAT) ? "(c)咖啡红茶店" : "",
-	       HAS_PERM(PERM_BASIC) ? "(o)好友名单" : "");
+	       HAS_PERM(PERM_POST, currentuser) ? "(m)书灯絮语" : "",
+	       HAS_PERM(PERM_POST, currentuser) ? "(i)飞鸽传书" : "",
+	       HAS_PERM(PERM_CHAT, currentuser) ? "(c)咖啡红茶店" : "",
+	       HAS_PERM(PERM_BASIC, currentuser) ? "(o)好友名单" : "");
 	move(t_lines - 1, 0);
 	prints("请选择功能, 或按空格键继续");
 	switch (igetkey()) {
@@ -3474,22 +3474,22 @@ what_to_do()
 		clear();
 		move(0, 0);
 		prints("发送站内信件");
-		if (HAS_PERM(PERM_POST))
+		if (HAS_PERM(PERM_POST, currentuser))
 			m_send(NULL);
 		break;
 	case 'i':
 		clear();
 		move(0, 0);
 		prints("发送Internet信件");
-		if (HAS_PERM(PERM_POST))
+		if (HAS_PERM(PERM_POST, currentuser))
 			m_internet();
 		break;
 	case 'c':
-		if (HAS_PERM(PERM_CHAT))
+		if (HAS_PERM(PERM_CHAT, currentuser))
 			ent_chat("2");
 		break;
 	case 'o':
-		if (HAS_PERM(PERM_BASIC)) {
+		if (HAS_PERM(PERM_BASIC, currentuser)) {
 			t_friend();
 			retv = 999;
 		}
@@ -3517,10 +3517,10 @@ into_backnumber()
 int
 into_announce()
 {
-	if (a_menusearch("0Announce", currboard, (HAS_PERM(PERM_ANNOUNCE)
-						  || HAS_PERM(PERM_SYSOP)
+	if (a_menusearch("0Announce", currboard, (HAS_PERM(PERM_ANNOUNCE, currentuser)
+						  || HAS_PERM(PERM_SYSOP, currentuser)
 						  ||
-						  HAS_PERM(PERM_OBOARDS)) ?
+						  HAS_PERM(PERM_OBOARDS, currentuser)) ?
 			 PERM_BOARDS : 0))
 		return 999;
 	return DONOTHING;
@@ -3728,7 +3728,7 @@ Goodbye()
 	int choose;
 	alarm(0);
 	if (strcmp(currentuser.userid, "guest") && count_uindex(usernum) == 1) {
-		if (DEFINE(DEF_MAILMSG)) {
+		if (DEFINE(DEF_MAILMSG, currentuser)) {
 			if (get_msgcount(0, currentuser.userid) > 0)
 				show_allmsgs();
 		} else {
@@ -3811,7 +3811,7 @@ Goodbye()
 		return FULLUPDATE;
 	if (strcmp(currentuser.userid, "guest") != 0) {
 		if (choose == 3)
-			if (USE_NOTEPAD == 1 && HAS_PERM(PERM_POST))
+			if (USE_NOTEPAD == 1 && HAS_PERM(PERM_POST, currentuser))
 				notepad();
 	}
 goodbye:
@@ -3951,8 +3951,8 @@ deleted_mode()
 {
 	extern char currdirect[STRLEN];
 
-	if (!IScurrBM && !HAS_PERM(PERM_ARBITRATE)
-	    && !HAS_PERM(PERM_SPECIAL5)) {
+	if (!IScurrBM && !HAS_PERM(PERM_ARBITRATE, currentuser)
+	    && !HAS_PERM(PERM_SPECIAL5, currentuser)) {
 		return DONOTHING;
 	}
 	if (digestmode == 4) {
@@ -3975,7 +3975,7 @@ junk_mode()
 {
 	extern char currdirect[STRLEN];
 
-	if (!HAS_PERM(PERM_BLEVELS) && !HAS_PERM(PERM_ARBITRATE)) {
+	if (!HAS_PERM(PERM_BLEVELS, currentuser) && !HAS_PERM(PERM_ARBITRATE, currentuser)) {
 		return DONOTHING;
 	}
 

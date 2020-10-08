@@ -35,6 +35,7 @@
 #include "list.h"
 #include "record.h"
 #include "mail.h"
+#include "bbs_global_vars.h"
 
 #define MAXGOPHERITEMS     9999    /*max of gopher items*/
 
@@ -222,7 +223,7 @@ static int deal_gopherkey(char ch, int allnum, int pagenum) {
 		break;
 	case Ctrl('P'):
 		tmpitem = nth_item(allnum - pagenum);
-		if (!HAS_PERM(PERM_POST))
+		if (!HAS_PERM(PERM_POST, currentuser))
 			break;
 		setuserfile(fname, "gopher.tmp");
 		if (tmpitem->title[0] != '0') {

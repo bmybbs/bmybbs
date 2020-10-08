@@ -247,10 +247,10 @@ hasreadperm(struct boardheader *bh)
 	if (!strcmp(currentuser.userid, "pzhgpzhg")) return 1;
 	if (bh->clubnum != 0)
 		return ((HAS_CLUBRIGHT(bh->clubnum, uinfo.clubrights))
-			|| (bh->flag & CLUBTYPE_FLAG) || HAS_PERM(PERM_SYSOP));
+			|| (bh->flag & CLUBTYPE_FLAG) || HAS_PERM(PERM_SYSOP, currentuser));
 	if (bh->level & PERM_SPECIAL3)
 		return die;
-	return (bh->level & PERM_POSTMASK) || HAS_PERM(bh->level)
+	return (bh->level & PERM_POSTMASK) || HAS_PERM(bh->level, currentuser)
 	    || (bh->level & PERM_NOZAP);
 }
 
@@ -342,17 +342,16 @@ char *bname;
 		return 1;
 	if (strcmp(bname, "Freshman")==0)
 		return 1;
-	if (!HAS_PERM(PERM_POST))
+	if (!HAS_PERM(PERM_POST, currentuser))
 		return 0;
 	if ((i = getbnum(bname)) == 0)
 		return 0;
 	if (bcache[i - 1].header.clubnum != 0)
-		return (HAS_PERM((bcache[i - 1].header.level & ~PERM_NOZAP) & ~PERM_POSTMASK)) &&
+		return (HAS_PERM((bcache[i - 1].header.level & ~PERM_NOZAP) & ~PERM_POSTMASK, currentuser)) &&
 			(HAS_CLUBRIGHT(bcache[i - 1].header.clubnum, uinfo.clubrights));
 	if (bcache[i - 1].header.level & PERM_SPECIAL3)
 		return die;
-	return (HAS_PERM
-		((bcache[i - 1].header.level & ~PERM_NOZAP) & ~PERM_POSTMASK));
+	return (HAS_PERM((bcache[i - 1].header.level & ~PERM_NOZAP) & ~PERM_POSTMASK, currentuser));
 }
 
 int
@@ -856,7 +855,7 @@ int farg;
 			if (!uentp->active || !uentp->pid || isreject(uentp))
 				continue;
 			if (uentp->invisible == 1) {
-				if (HAS_PERM(PERM_SYSOP | PERM_SEECLOAK)) {
+				if (HAS_PERM(PERM_SYSOP | PERM_SEECLOAK, currentuser)) {
 					prints("\033[1;32mÒþÉíÖÐ   \033[m");
 					continue;
 				} else
@@ -1101,7 +1100,7 @@ query_uindex(int uid, int dotest)
 			testreject = 1;
 		}
 		if (dotest && utmpshm->uinfo[uent - 1].invisible
-		    && !HAS_PERM(PERM_SYSOP | PERM_SEECLOAK))
+		    && !HAS_PERM(PERM_SYSOP | PERM_SEECLOAK, currentuser))
 			continue;
 		return uentp;
 	}
@@ -1191,7 +1190,7 @@ show_small_bm(char *board)
 		invisible = bptr->bmcloak & (1 << i);
 		if (active && !invisible)
 			prints("\033[32m%13s\033[33m", bptr->header.bm[i]);
-		else if (active && invisible && (HAS_PERM(PERM_SEECLOAK) || !strcmp(bptr->header.bm[i], currentuser.userid)))
+		else if (active && invisible && (HAS_PERM(PERM_SEECLOAK, currentuser) || !strcmp(bptr->header.bm[i], currentuser.userid)))
 			prints("\033[36m%13s\033[33m", bptr->header.bm[i]);
 		else
 			prints("%13s", bptr->header.bm[i]);
@@ -1207,7 +1206,7 @@ show_small_bm(char *board)
 		invisible = bptr->bmcloak & (1 << i);
 		if (active && !invisible)
 			prints("\033[32m%13s\033[33m", bptr->header.bm[i]);
-		else if (active && invisible && (HAS_PERM(PERM_SEECLOAK) || !strcmp(bptr->header.bm[i], currentuser.userid)))
+		else if (active && invisible && (HAS_PERM(PERM_SEECLOAK, currentuser) || !strcmp(bptr->header.bm[i], currentuser.userid)))
 			prints("\033[36m%13s\033[33m", bptr->header.bm[i]);
 		else
 			prints("%13s", bptr->header.bm[i]);

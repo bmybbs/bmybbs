@@ -12,7 +12,7 @@ bbssndmail_main()
 	ytht_strsncpy(userid, getparm("userid"), 40);
 	if (!loginok || (isguest && strcmp(userid, "SYSOP")))
 		http_fatal("匆匆过客不能写信，请先登录");
-	if (HAS_PERM(PERM_DENYMAIL))
+	if (HAS_PERM(PERM_DENYMAIL, currentuser))
 		http_fatal("您被封禁发信权");
 	sprintf(mymaildir, "mail/%c/%s/.DIR", mytoupper(currentuser.userid[0]),currentuser.userid);
 	if (check_maxmail(mymaildir))

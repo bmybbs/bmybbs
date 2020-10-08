@@ -412,7 +412,7 @@ invalid_realmail(char *userid, char *email, int msize)
 	if (sysconf_str("EMAILFILE") == NULL)
 		return 0;
 
-	if (strchr(email, '@') && valid_ident(email) && HAS_PERM(PERM_LOGINOK))
+	if (strchr(email, '@') && valid_ident(email) && HAS_PERM(PERM_LOGINOK, currentuser))
 		return 0;
 
 	sethomefile(fname, userid, "register");
@@ -664,7 +664,7 @@ check_register_info()
 			pressanykey();
 		}
 		newregfile = sysconf_str("NEWREGFILE");
-		if (!HAS_PERM(PERM_SYSOP) && newregfile != NULL) {
+		if (!HAS_PERM(PERM_SYSOP, currentuser) && newregfile != NULL) {
 			set_safe_record();
 			urec->userlevel &= ~(perm);
 			substitute_record(PASSFILE, urec, sizeof (struct userec), usernum);

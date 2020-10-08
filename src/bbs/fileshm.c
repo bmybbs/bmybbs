@@ -27,6 +27,7 @@
 #include "smth_screen.h"
 #include "stuff.h"
 #include "goodbye.h"
+#include "bbs_global_vars.h"
 
 #define FILE_BUFSIZE        250    /* max. length of a file in SHM*/
 #define FILE_MAXLINE         25    /* max. line of a file in SHM */

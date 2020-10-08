@@ -120,7 +120,7 @@ query_f(int uid)
 			testreject = 1;
 		}
 		if (shm_utmp->uinfo[uent - 1].invisible
-		    && !HAS_PERM(PERM_SYSOP | PERM_SEECLOAK))
+		    && !HAS_PERM(PERM_SYSOP | PERM_SEECLOAK, currentuser))
 			continue;
 		return uentp;
 	}
@@ -270,9 +270,7 @@ bbsfoot_main()
 	return 0;
 }
 
-int
-mails_time(char *id)
-{
+int mails_time(char *id) {
 	char path[80];
 	if (!loginok || isguest)
 		return 0;
@@ -280,9 +278,7 @@ mails_time(char *id)
 	return file_time(path);
 }
 
-int
-mails(char *id, int *unread)
-{
+int mails(char *id, int *unread) {
 	struct fileheader *x;
 	char path[80];
 	int total = 0, i;

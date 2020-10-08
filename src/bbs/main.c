@@ -147,25 +147,25 @@ u_enter()
 
 	uinfo.active = YEA;
 	uinfo.pid = getpid();
-	if ((HAS_PERM(PERM_LOGINCLOAK) && (currentuser.flags[0] & CLOAK_FLAG)) || currentuser.dietime)
+	if ((HAS_PERM(PERM_LOGINCLOAK, currentuser) && (currentuser.flags[0] & CLOAK_FLAG)) || currentuser.dietime)
 		uinfo.invisible = YEA;
 	uinfo.mode = LOGIN;
 	uinfo.pager = 0;
-	if (DEFINE(DEF_DELDBLCHAR))
+	if (DEFINE(DEF_DELDBLCHAR, currentuser))
 		enabledbchar = 1;
 	else
 		enabledbchar = 0;
-	if (DEFINE(DEF_FRIENDCALL)) {
+	if (DEFINE(DEF_FRIENDCALL, currentuser)) {
 		uinfo.pager |= FRIEND_PAGER;
 	}
 	if (currentuser.flags[0] & PAGER_FLAG) {
 		uinfo.pager |= ALL_PAGER;
 		uinfo.pager |= FRIEND_PAGER;
 	}
-	if (DEFINE(DEF_FRIENDMSG)) {
+	if (DEFINE(DEF_FRIENDMSG, currentuser)) {
 		uinfo.pager |= FRIENDMSG_PAGER;
 	}
-	if (DEFINE(DEF_ALLMSG)) {
+	if (DEFINE(DEF_ALLMSG, currentuser)) {
 		uinfo.pager |= ALLMSG_PAGER;
 		uinfo.pager |= FRIENDMSG_PAGER;
 	}
@@ -175,14 +175,14 @@ u_enter()
 	uinfo.lasttime = time(0);
 	if (runssh)
 		uinfo.isssh = 1;
-	iscolor = (DEFINE(DEF_COLOR)) ? 1 : 0;
+	iscolor = (DEFINE(DEF_COLOR, currentuser)) ? 1 : 0;
 	strncpy(uinfo.userid, currentuser.userid, 20);
 	strncpy(uinfo.realname, currentuser.realname, 20);
 	strncpy(uinfo.username, currentuser.username, 40);
 	ytht_get_random_str(uinfo.sessionid);
 	getfriendstr();
 	getrejectstr();
-	if (HAS_PERM(PERM_EXT_IDLE))
+	if (HAS_PERM(PERM_EXT_IDLE, currentuser))
 		uinfo.ext_idle = YEA;
 	uinfo.curboard = 0;
 	utmpent = getnewutmpent(&uinfo);
@@ -213,7 +213,7 @@ u_exit()
 	signal(SIGUSR1, SIG_IGN);
 	signal(SIGUSR2, SIG_IGN);
 	setflags(PAGER_FLAG, (uinfo.pager & ALL_PAGER));
-	if (HAS_PERM(PERM_LOGINCLOAK))
+	if (HAS_PERM(PERM_LOGINCLOAK, currentuser))
 		setflags(CLOAK_FLAG, uinfo.invisible);
 
 	if (currentuser.flags[0] != enter_uflags && !ERROR_READ_SYSTEM_FILE) {
@@ -311,7 +311,7 @@ multi_user_check()
 	char buffer[STRLEN];
 	int logins;
 
-	if (HAS_PERM(PERM_MULTILOG))
+	if (HAS_PERM(PERM_MULTILOG, currentuser))
 		return;		/* don't check sysops */
 
 	if (!strcmp("guest", currentuser.userid)) {
@@ -577,7 +577,7 @@ else sprintf(str1,"现在是 %s, 新世纪已经开始了%d秒\n",str,-dis);
 				prints("\033[1;31m密码输入错误...\033[m\n");
 				scroll();
 			} else {
-				if (!HAS_PERM(PERM_BASIC)) {
+				if (!HAS_PERM(PERM_BASIC, currentuser)) {
 					move(t_lines - 1, 0);
 					clrtoeol();
 					prints("\033[1;32m本帐号已停机。请向 \033[36mSYSOP\033[32m 查询原因\033[m\n");
@@ -610,7 +610,7 @@ else sprintf(str1,"现在是 %s, 新世纪已经开始了%d秒\n",str,-dis);
 		prints("\033[1;31m用户%s已经禁止从%s尝试登录\033[0m\n", currentuser.userid, fromhost);
 		exit(0);
 	}
-	if (!HAS_PERM(PERM_BASIC)) {
+	if (!HAS_PERM(PERM_BASIC, currentuser)) {
 		move(t_lines - 1, 0);
 		clrtoeol();
 		prints("\033[1;32m本帐号已停机。请向 \033[36mSYSOP\033[32m 查询原因\033[m\n");
@@ -649,7 +649,7 @@ direct_login()
 	if (strcasecmp(uinfo.userid, "guest")) {
 		currentuser.userlevel = 0;
 	} else {
-		if (!HAS_PERM(PERM_BASIC)) {
+		if (!HAS_PERM(PERM_BASIC, currentuser)) {
 			prints("\x1b[1;32m本帐号已停机。请向 \x1b[36mSYSOP\x1b[32m 查询[[m \n ");
 			refresh();
 			sleep(5);
@@ -671,7 +671,7 @@ direct_login()
 		currentuser.lastlogout = currentuser.lastlogin+randnum;
 	}else	currentuser.lastlogout = 0;
 	set_safe_record();
-	if (HAS_PERM(PERM_LOGINOK)) {
+	if (HAS_PERM(PERM_LOGINOK, currentuser)) {
 		FILE *fp;
 		int tempnum;
 		char fname[STRLEN];
@@ -774,10 +774,10 @@ user_login()
 	started = 1;
 
 	//initscr() ;
-	if (!currentuser.dietime && DEFINE(DEF_SEESTATINLOG)) {
+	if (!currentuser.dietime && DEFINE(DEF_SEESTATINLOG, currentuser)) {
 #if USE_NOTEPAD
 		notepad_init();
-		if (strcmp(currentuser.userid, "guest") || DEFINE(DEF_NOTEPAD))
+		if (strcmp(currentuser.userid, "guest") || DEFINE(DEF_NOTEPAD, currentuser))
 			shownotepad();
 #endif
 		ansimore("0Announce/bbslist/countusr", 1);
@@ -796,7 +796,7 @@ user_login()
 		}
 #endif
 		ansimore2("Welcome2", 1, 0, 24);
-		if (DEFINE(DEF_FILTERXXX))
+		if (DEFINE(DEF_FILTERXXX, currentuser))
 			ansimore("etc/dayf", 1);
 		else
 			ansimore("etc/posts/day", 1);
@@ -828,7 +828,7 @@ user_login()
 		*/
 		prints("☆ 上次连线时间为 \033[33m%s\033[m", ytht_ctime(currentuser.lastlogin));
 		igetkey();
-		if(DEFINE(DEF_NEWSTOP10))//add by bjgyt
+		if(DEFINE(DEF_NEWSTOP10, currentuser))//add by bjgyt
 			show_help("0Announce/bbslist/newsday");
 	}
 	WishNum = 9999;
@@ -869,7 +869,7 @@ user_login()
 		currentuser.lastlogout = 0;
 		//currentuser.pseudo_lastlogout = 0;
 	}
-	if (HAS_PERM(PERM_LOGINOK)) {
+	if (HAS_PERM(PERM_LOGINOK, currentuser)) {
 		FILE *fp;
 		int tempnum;
 		setuserfile(fname, "clubrights");
@@ -964,7 +964,7 @@ chk_friend_book()
 			continue;
 		uin = t_search(uid, NA, 1);
 		sprintf(msg, "%s 已经上站。", currentuser.userid);
-		if (!uinfo.invisible && uin != NULL && !DEFINE(DEF_NOLOGINSEND)
+		if (!uinfo.invisible && uin != NULL && !DEFINE(DEF_NOLOGINSEND, currentuser)
 				&& do_sendmsg(uin->userid, uin, msg, 2, uin->pid) == 1) {
 			prints("\033[1m%s\033[m 找你，系统已经告诉他你上站的消息。\n", uid);
 		} else
@@ -1102,7 +1102,7 @@ char *argv[];
 		tlog_recover();	/* 990713.edwardc for talk_log recover */
 //#endif
 		if (strcmp(currentuser.userid, "guest")) {
-			if (HAS_PERM(PERM_ACCOUNTS) && dashf("new_register")) {
+			if (HAS_PERM(PERM_ACCOUNTS, currentuser) && dashf("new_register")) {
 				prints("\033[1;33m有新使用者正在等您通过注册资料。\033[m");
 				pressanykey();
 				clear();
@@ -1111,13 +1111,13 @@ char *argv[];
 				pressanykey();
 			move(7, 0);
 			clrtobot();
-			if (!DEFINE(DEF_NOLOGINSEND))
+			if (!DEFINE(DEF_NOLOGINSEND, currentuser))
 				if (!uinfo.invisible)
 					apply_ulist(friend_login_wall);
 /*       pressanykey();
        clear();*/
 			set_numofsig();
-			if (DEFINE(DEF_INNOTE)) {
+			if (DEFINE(DEF_INNOTE, currentuser)) {
 				setuserfile(fname, "notes");
 				if (dashf(fname))
 					ansimore(fname, YEA);
@@ -1130,7 +1130,7 @@ char *argv[];
 			bmfilesync(&currentuser);
 		}
 		num_alcounter();
-		if (count_friends > 0 && DEFINE(DEF_LOGFRIEND))
+		if (count_friends > 0 && DEFINE(DEF_LOGFRIEND, currentuser))
 			t_friends();
 		loaduserkeys();
 		if ((!(currentuser.userlevel & PERM_LOGINOK))
@@ -1148,7 +1148,7 @@ char *argv[];
 		else if (currentuser.dietime)
 			domenu("DIEMENU");
 		else {
-			if (DEFINE(DEF_NORMALSCR))
+			if (DEFINE(DEF_NORMALSCR, currentuser))
 				domenu("TOPMENU");
 			else
 				domenu("TOPMENU2");
@@ -1219,7 +1219,7 @@ update_endline()
 	FILE *fp;
 	int allstay, i, foo, foo2;
 	static int linetype = 0;
-	if (!DEFINE(DEF_ENDLINE)) {
+	if (!DEFINE(DEF_ENDLINE, currentuser)) {
 		move(t_lines - 1 + endlineoffset, 0);
 		clrtoeol();
 		return;
@@ -1247,7 +1247,7 @@ nowishfile:
 		     (uinfo.pager & FRIEND_PAGER) ? "O" : "o",
 		     (uinfo.pager & ALLMSG_PAGER) ? "M" : "m",
 		     (uinfo.pager & FRIENDMSG_PAGER) ? "F" : "f",
-		     (DEFINE(DEF_MSGGETKEY)) ? "X" : "x",
+		     (DEFINE(DEF_MSGGETKEY, currentuser)) ? "X" : "x",
 		     (uinfo.invisible == 1) ? "C" : "c", buf);
 		return;
 	}
@@ -1428,12 +1428,12 @@ Q_Goodbye()
 	int logouts, mylogout = NA;
 	clear();
 	prints("\n\n\n\n");
-	if (DEFINE(DEF_OUTNOTE)) {
+	if (DEFINE(DEF_OUTNOTE, currentuser)) {
 		setuserfile(notename, "notes");
 		if (dashf(notename))
 			ansimore(notename, YEA);
 	}
-	if (DEFINE(DEF_LOGOUT)) {
+	if (DEFINE(DEF_LOGOUT, currentuser)) {
 		setuserfile(fname, "logout");
 		if (dashf(fname))
 			mylogout = YEA;

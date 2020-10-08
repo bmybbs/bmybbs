@@ -163,7 +163,7 @@ bbstmpl_main()
 		http_quit();
 	}
 	changemode(POSTING);
-	if (!HAS_PERM(PERM_POST))
+	if (!HAS_PERM(PERM_POST, currentuser))
 		http_fatal("对不起，您无权发文");
 	x = getboard(board);
 	if (!x || !has_vote_perm(&currentuser, x))

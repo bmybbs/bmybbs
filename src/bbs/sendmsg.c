@@ -87,7 +87,7 @@ struct user_info *uin;
 	if (isreject(uin))
 		return NA;
 	if ((uin->pager & ALLMSG_PAGER)
-	    || HAS_PERM(PERM_SYSOP | PERM_FORCEPAGE))
+	    || HAS_PERM(PERM_SYSOP | PERM_FORCEPAGE, currentuser))
 		return YEA;
 	if ((uin->pager & FRIENDMSG_PAGER) && hisfriend(uin))
 		return YEA;
@@ -297,7 +297,7 @@ struct user_info *uin;
 int
 wall()
 {
-	if (!HAS_PERM(PERM_SYSOP))
+	if (!HAS_PERM(PERM_SYSOP, currentuser))
 		return 0;
 	modify_user_mode(MSG);
 	move(2, 0);
@@ -318,7 +318,7 @@ wall()
 int
 wall_telnet()
 {
-	if (!HAS_PERM(PERM_SYSOP))
+	if (!HAS_PERM(PERM_SYSOP, currentuser))
 		return 0;
 	modify_user_mode(MSG);
 	move(2, 0);
@@ -442,10 +442,7 @@ r_msg2()
 					online_test = 1;
 					msgperm_test = canmsg(uin);
 					userpid = uin->pid;
-					invisible = (uin->invisible
-						     && !HAS_PERM(PERM_SEECLOAK
-								  |
-								  PERM_SYSOP));
+					invisible = (uin->invisible && !HAS_PERM(PERM_SEECLOAK | PERM_SYSOP, currentuser));
 				}
 			} else {
 				online_test = 0;
@@ -544,14 +541,14 @@ r_msg()
 	getyx(&y, &x);
 	tmpansi = showansi;
 	showansi = 1;
-	if (DEFINE(DEF_MSGGETKEY)) {
+	if (DEFINE(DEF_MSGGETKEY, currentuser)) {
 		for (i = 0; i <= 23; i++)
 			saveline(i, 0, savebuffer[i]);
 		premsg = RMSG;
 	}
 	newmsg = get_unreadcount(currentuser.userid);
 	while (newmsg) {
-		if (DEFINE(DEF_SOUNDMSG)) {
+		if (DEFINE(DEF_SOUNDMSG, currentuser)) {
 			bell();
 		}
 		count = get_unreadmsg(currentuser.userid);
@@ -568,7 +565,7 @@ r_msg()
 		prints("µÚ %d ÌõÏûÏ¢£¬¹² %d ÌõÏûÏ¢ °´r»Ø¸´", count + 1,
 		       count + 1);
 		getyx(&line, &i);
-		if (DEFINE(DEF_MSGGETKEY)) {
+		if (DEFINE(DEF_MSGGETKEY, currentuser)) {
 			RMSG = YEA;
 			ch = 0;
 			while (ch != '\r' && ch != '\n') {
@@ -586,25 +583,16 @@ r_msg()
 					send_pid = head.frompid;
 					strcpy(usid, head.id);
 					if (head.mode != 0) {
-						uin =
-						    t_search(usid, send_pid, 0);
+						uin = t_search(usid, send_pid, 0);
 						if (uin == NULL) {
 							online_test = 0;
-							msgperm_test =
-							    canmsg_offline
-							    (usid);
+							msgperm_test = canmsg_offline(usid);
 							userpid = 0;
 						} else {
 							online_test = 1;
-							msgperm_test =
-							    canmsg(uin);
+							msgperm_test = canmsg(uin);
 							userpid = uin->pid;
-							invisible =
-							    (uin->invisible
-							     &&
-							     !HAS_PERM
-							     (PERM_SEECLOAK |
-							      PERM_SYSOP));
+							invisible = (uin->invisible && !HAS_PERM(PERM_SEECLOAK | PERM_SYSOP, currentuser));
 						}
 					} else {
 						online_test = 0;
@@ -616,11 +604,8 @@ r_msg()
 					strcpy(usid, head.id);
 					if (msgperm_test) {
 						clrtoeol();
-						prints
-						    ("£¬»ØÑ¶Ï¢¸ø %s (%s)£¬Ctrl+Q»»ĞĞ: ",
-						     usid, (online_test
-						      && !invisible) ? "ÔÚÏß" :
-						     "\x1b[1;32mÀëÏß\x1b[m");
+						prints("£¬»ØÑ¶Ï¢¸ø %s (%s)£¬Ctrl+Q»»ĞĞ: ",
+						     usid, (online_test && !invisible) ? "ÔÚÏß" : "\x1b[1;32mÀëÏß\x1b[m");
 						move(line + 1, 0);
 						clrtoeol();
 						multi_getdata(line + 1, 0, 79,
@@ -631,31 +616,24 @@ r_msg()
 						if (buf[0] != '\0'
 						    && buf[0] != Ctrl('Z')
 						    && buf[0] != Ctrl('A')) {
-							if (do_sendmsg
-							    (usid, uin, buf, 2,
-							     userpid) == 1) {
+							if (do_sendmsg(usid, uin, buf, 2, userpid) == 1) {
 								prints("\n");
 								clrtoeol();
-								prints
-								    ("[1;32m°ïÄãËÍ³öÑ¶Ï¢¸ø %s ÁË![m",
-								     usid);
+								prints("[1;32m°ïÄãËÍ³öÑ¶Ï¢¸ø %s ÁË![m", usid);
 								refresh();
 								sleep(1);
 							}
 						} else {
 							prints("\n");
 							clrtoeol();
-							prints
-							    ("[1;33m¿ÕÑ¶Ï¢, ËùÒÔ²»ËÍ³ö.[m");
+							prints("[1;33m¿ÕÑ¶Ï¢, ËùÒÔ²»ËÍ³ö.[m");
 							refresh();
 							sleep(1);
 						}
 					} else {
 						prints("\n");
 						clrtoeol();
-						prints
-						    ("[1;32mÕÒ²»µ½·¢Ñ¶Ï¢µÄ %s.[m",
-						     usid);
+						prints("[1;32mÕÒ²»µ½·¢Ñ¶Ï¢µÄ %s.[m", usid);
 						refresh();
 						sleep(1);
 					}
@@ -664,13 +642,13 @@ r_msg()
 			}
 		}
 		newmsg = get_unreadcount(currentuser.userid);
-		if (DEFINE(DEF_MSGGETKEY)) {
+		if (DEFINE(DEF_MSGGETKEY, currentuser)) {
 			for (i = 0; i <= 23; i++)
 				saveline(i, 1, savebuffer[i]);
 		}
 	}
 
-	if (DEFINE(DEF_MSGGETKEY)) {
+	if (DEFINE(DEF_MSGGETKEY, currentuser)) {
 		RMSG = premsg;
 	}
 	showansi = tmpansi;
@@ -740,8 +718,7 @@ sendmsgfunc(char *uid, struct user_info *uin, int userpid, const char *msgstr,
 		return -1;
 	if (mode != 0) {
 		if (get_unreadcount(uid) > MAXMESSAGE) {
-			strcpy(msgerr,
-			       "¶Ô·½ÉĞÓĞÒ»Ğ©Ñ¶Ï¢Î´´¦Àí£¬ÇëÉÔºòÔÙ·¢»ò¸øËû(Ëı)Ğ´ĞÅ...");
+			strcpy(msgerr, "¶Ô·½ÉĞÓĞÒ»Ğ©Ñ¶Ï¢Î´´¦Àí£¬ÇëÉÔºòÔÙ·¢»ò¸øËû(Ëı)Ğ´ĞÅ...");
 			return -1;
 		}
 	}
@@ -808,7 +785,7 @@ show_allmsgs()
 	int oldmode, count, i, j, page, ch, y, all = 0, reload = 0;
 	struct msghead head;
 
-	if (!HAS_PERM(PERM_PAGE))
+	if (!HAS_PERM(PERM_PAGE, currentuser))
 		return -1;
 	oldmode = uinfo.mode;
 	modify_user_mode(LOOKMSGS);
@@ -839,8 +816,7 @@ show_allmsgs()
 				clrtoeol();
 				if (i >= count)
 					break;
-				load_msghead(all ? 2 : 0,
-					     currentuser.userid, &head, i);
+				load_msghead(all ? 2 : 0, currentuser.userid, &head, i);
 				load_msgtext(currentuser.userid, &head, buf);
 				j = translate_msg(buf, &head, showmsg, inBBSNET);
 			}

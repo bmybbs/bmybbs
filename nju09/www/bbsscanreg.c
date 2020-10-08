@@ -308,7 +308,7 @@ bbsscanreg_main()
 	html_header(1);
 	check_msg();
 	printf("<body>");
-	if (!loginok || isguest || !HAS_PERM(PERM_ACCOUNTS))
+	if (!loginok || isguest || !HAS_PERM(PERM_ACCOUNTS, currentuser))
 		http_fatal("unknown request");
 	printf("<nobr><center><div class=rhead>%s -- scan reg form</div></center><hr>\n", BBSNAME);
 	switch (atoi(getparm("STEP"))) {

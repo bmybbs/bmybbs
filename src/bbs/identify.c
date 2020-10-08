@@ -6,6 +6,7 @@
 #include "namecomplete.h"
 #include "stuff.h"
 #include "bcache.h"
+#include "bbs_global_vars.h"
 
 #ifdef POP_CHECK
 
@@ -23,7 +24,7 @@ int x_active_manager()
 //	char style[2];
     char userid[IDLEN+2];
     char value[VALUELEN];
-    if (!HAS_PERM(PERM_ACCOUNTS) && !HAS_PERM(PERM_SYSOP)) {
+    if (!HAS_PERM(PERM_ACCOUNTS, currentuser) && !HAS_PERM(PERM_SYSOP, currentuser)) {
         clear();
         move(2, 0);
         prints("你没有管理权限!");

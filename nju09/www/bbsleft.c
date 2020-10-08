@@ -260,7 +260,7 @@ bbsleft_main()
 			printf("<tr><td align=right> <img src=\"/images/list2.gif\"></td>\n"
 			"<td><a class=linkleft href=\"bbsscanreg\" target=f3>SCANREG</a></td></tr>\n");
 			*/
-		if (loginok && !isguest && HAS_PERM(PERM_SYSOP))        //add by mintbaggio@BMY for www SYSOP kick www user
+		if (loginok && !isguest && HAS_PERM(PERM_SYSOP, currentuser))        //add by mintbaggio@BMY for www SYSOP kick www user
 			printf("<tr><td align=right> <img src=\"/images/list2.gif\"></td>\n"
 					"<td><a class=linkleft href=\"kick\" target=f3>踢www下站</a></td></tr>\n");
 		//if(loginok && !isguest) printf("<br>&nbsp;&nbsp;<a href='javascript:openchat()'>bbs茶馆</a>");
@@ -342,7 +342,7 @@ endleft:
 					"return '直接关闭浏览器将不计上站时间，强烈建议您点“注销本次登录”。'}}\n"
 					"</script>\n");
 			//add by macintosh 20051216, end
-			if (HAS_PERM(PERM_LOGINOK) && !HAS_PERM(PERM_POST))
+			if (HAS_PERM(PERM_LOGINOK, currentuser) && !HAS_PERM(PERM_POST, currentuser))
 				printf("<script>alert('您被封禁了全站发表文章的权限, 请参看sysop版公告, 期满后在sysop版申请解封. 如有异议, 可在committee版提出申诉.')</script>\n");
 			mails(currentuser.userid, &i);
 			if (i > 0)

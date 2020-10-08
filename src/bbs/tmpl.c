@@ -156,7 +156,7 @@ tmpl_init(int mode){
 	int newmode=0;
 	int ret;
 
-	if(mode==1 || HAS_PERM(PERM_BLEVELS) || IScurrBM)
+	if(mode==1 || HAS_PERM(PERM_BLEVELS, currentuser) || IScurrBM)
 		newmode = 1;
 	ret = orig_tmpl_init(currboard, newmode, & ptemplate);
 	if(ret >= 0)

@@ -107,7 +107,7 @@ NNread_init()
 	}
 	nnline = 0;
 	xxxline = 0;
-	if (!DEFINE(DEF_ACBOARD)) {
+	if (!DEFINE(DEF_ACBOARD, currentuser)) {
 		nnline = 1;
 		xxxline = 1;
 		return 1;
@@ -177,7 +177,7 @@ netty_more()
 	int x, y;
 	time_t thetime = time(0);
 
-	if (!DEFINE(DEF_ACBOARD)) {
+	if (!DEFINE(DEF_ACBOARD, currentuser)) {
 		update_endline();
 		return;
 	}
@@ -255,7 +255,7 @@ void
 R_monitor()
 {
 
-	if (!DEFINE(DEF_ACBOARD) && !DEFINE(DEF_ENDLINE))
+	if (!DEFINE(DEF_ACBOARD, currentuser) && !DEFINE(DEF_ENDLINE, currentuser))
 		return;
 
 	if (uinfo.mode != MMENU)
@@ -264,7 +264,7 @@ R_monitor()
 	signal(SIGALRM, (void *) R_monitor);
 	netty_more();
 	//printacbar(); by bjgyt
-	if (!DEFINE(DEF_ACBOARD))
+	if (!DEFINE(DEF_ACBOARD, currentuser))
 		alarm(60);
 	else
 		alarm(10);

@@ -10,6 +10,7 @@
 #include "xyz.h"
 #include "term.h"
 #include "main.h"
+#include "bbs_global_vars.h"
 #define black 1
 #define white 2
 #define FDATA "five"

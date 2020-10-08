@@ -15,7 +15,7 @@ bbspstmail_main()
 		http_fatal("匆匆过客不能写信，请先登录");
 	if (!((currentuser.userlevel )& (PERM_CHAT|PERM_PAGE|PERM_POST)))
 		http_fatal("您没有权限发信");
-	if (HAS_PERM(PERM_DENYMAIL))
+	if (HAS_PERM(PERM_DENYMAIL, currentuser))
 		http_fatal("您被封禁发信权");
 	sprintf(mymaildir, "mail/%c/%s/.DIR", mytoupper(currentuser.userid[0]),
 		currentuser.userid);

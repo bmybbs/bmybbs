@@ -152,7 +152,7 @@ static char
 canpage(friend, pager)
 int friend, pager;
 {
-	if ((pager & ALL_PAGER) || HAS_PERM(PERM_SYSOP | PERM_FORCEPAGE))
+	if ((pager & ALL_PAGER) || HAS_PERM(PERM_SYSOP | PERM_FORCEPAGE, currentuser))
 		return YEA;
 	if ((pager & FRIEND_PAGER)) {
 		if (friend)
@@ -173,7 +173,7 @@ struct user_info *uentp;
 		return 0;
 	if (!uentp->active || !uentp->pid || isreject(uentp))
 		return 0;
-	if (!HAS_PERM(PERM_SYSOP | PERM_SEECLOAK) && uentp->invisible)
+	if (!HAS_PERM(PERM_SYSOP | PERM_SEECLOAK, currentuser) && uentp->invisible)
 		return 0;
 	AddNameList(uentp->userid);
 	return 0;
@@ -190,7 +190,7 @@ t_pager()
 
 	if (uinfo.pager & ALL_PAGER) {
 		uinfo.pager &= ~ALL_PAGER;
-		if (DEFINE(DEF_FRIENDCALL))
+		if (DEFINE(DEF_FRIENDCALL, currentuser))
 			uinfo.pager |= FRIEND_PAGER;
 		else
 			uinfo.pager &= ~FRIEND_PAGER;
@@ -325,7 +325,7 @@ char q_id[IDLEN + 2];
 	genbuf,  (lookupuser.lasthost[0] ==
 		'\0' ? "(²»Ïê)" : lookupuser.lasthost));
 //	show_special(lookupuser.userid); //add by wjbta@bmy
-	if(HAS_PERM(PERM_SYSOP | PERM_SEECLOAK)){		//add by mintbaggio@BMY
+	if(HAS_PERM(PERM_SYSOP | PERM_SEECLOAK, currentuser)){		//add by mintbaggio@BMY
 		if(lookupuser.userlevel&PERM_CLOAK)
 			strcpy(genbuf, (lookupuser.lastlogout>=lookupuser.lastlogin) ? (user_isonline(lookupuser.userid)? "ÒòÔÚÏßÉÏ»ò²»Õý³£¶ÏÏß²»Ïê": ytht_ctime(
 					lookupuser.lastlogout)) : "ÒòÔÚÏßÉÏ»ò²»Õý³£¶ÏÏß²»Ïê");
@@ -375,7 +375,7 @@ char q_id[IDLEN + 2];
 #if defined(QUERY_REALNAMES)
 //	if (HAS_PERM(PERM_SYSOP))  by bjgyt
 //		prints("ÕæÊµÐÕÃû: %s \n", lookupuser.realname);
-if (HAS_PERM(PERM_ACCOUNTS))
+if (HAS_PERM(PERM_ACCOUNTS, currentuser))
    {
         char secu[35];
         size_t num;
@@ -402,12 +402,12 @@ if (HAS_PERM(PERM_ACCOUNTS))
 		switch (toupper(ch)) {
 		case 'S':
 			if (strcmp(uident, "guest")
-			    && !HAS_PERM(PERM_PAGE))
+			    && !HAS_PERM(PERM_PAGE, currentuser))
 				break;
 			do_sendmsg(uident, 0, NULL, 2, 0);
 			break;
 		case 'M':
-			if (!HAS_PERM(PERM_POST))
+			if (!HAS_PERM(PERM_POST, currentuser))
 				break;
 			m_send(uident);
 			break;
@@ -489,7 +489,7 @@ if (HAS_PERM(PERM_ACCOUNTS))
 			}
 			prints("\nÉÏ´ÎÔÚ [[1;32m%s[m] ´Ó [[1;32m%s[m] µ½±¾Õ¾Ò»ÓÎ¡£\n",
 				genbuf, (lookupuser.lasthost[0] =='\0' ? "(²»Ïê)" : lookupuser.lasthost));//add for displaying exp type rbb@bmy
-			if(HAS_PERM(PERM_SYSOP | PERM_SEECLOAK)){		//add by mintbaggio@BMY
+			if(HAS_PERM(PERM_SYSOP | PERM_SEECLOAK, currentuser)){		//add by mintbaggio@BMY
 				if(lookupuser.userlevel&PERM_CLOAK)
 					strcpy(genbuf, (lookupuser.lastlogout>=lookupuser.lastlogin) ? (user_isonline(lookupuser.userid)? "ÒòÔÚÏßÉÏ»ò²»Õý³£¶ÏÏß²»Ïê": ytht_ctime(
 							lookupuser.lastlogout)) : "ÒòÔÚÏßÉÏ»ò²»Õý³£¶ÏÏß²»Ïê");
@@ -533,7 +533,7 @@ if (HAS_PERM(PERM_ACCOUNTS))
 			prints ("%s","                                              ");
 			prints("\n");
 			t_search_ulist(t_cmpuids, tuid);
-			if (HAS_PERM(PERM_ACCOUNTS))
+			if (HAS_PERM(PERM_ACCOUNTS, currentuser))
    {
         char secu[35];
         size_t num;
@@ -790,7 +790,7 @@ struct user_info *userinfo;
 		prints("¸úË­ÁÄÌì: %s", uin.userid);
 	}
 	/* youzi : check guest */
-	if (!strcmp(uin.userid, "guest") && !HAS_PERM(PERM_FORCEPAGE))
+	if (!strcmp(uin.userid, "guest") && !HAS_PERM(PERM_FORCEPAGE, currentuser))
 		return -1;
 
 	/*  check if pager on/off       --gtv */
@@ -1516,7 +1516,7 @@ int fd;
 					talkflush();
 					do_talk_char(&mywin, '\r');
 				}
-			} else if (ch == Ctrl('P') && HAS_PERM(PERM_BASIC)) {
+			} else if (ch == Ctrl('P') && HAS_PERM(PERM_BASIC, currentuser)) {
 				t_pager();
 				update_utmp();
 				update_endline();
@@ -1878,7 +1878,7 @@ int ent;
 struct override *fh;
 char *direct;
 {
-	if (!HAS_PERM(PERM_POST))
+	if (!HAS_PERM(PERM_POST, currentuser))
 		return DONOTHING;
 	m_send(fh->id);
 	return FULLUPDATE;
@@ -2052,8 +2052,7 @@ int invisible_check;
 				return (isreject(cur)
 					|| (invisible_check
 					    && (cur->invisible
-						&& !HAS_PERM(PERM_SEECLOAK |
-							     PERM_SYSOP)))) ?
+						&& !HAS_PERM(PERM_SEECLOAK | PERM_SYSOP, currentuser)))) ?
 				    NULL : cur;
 			tmp = cur;
 			if (pid == cur->pid)

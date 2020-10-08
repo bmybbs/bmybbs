@@ -9629,7 +9629,7 @@ static int marry_perpare(struct MC_Marry *marryMem, int n) {
 				marry_editinvitation(mm);
 				break;
 			case '3':
-				if (HAS_PERM(PERM_DENYMAIL)) {
+				if (HAS_PERM(PERM_DENYMAIL, currentuser)) {
 					move(5, 4);
 					prints("您被禁止发信");
 					pressanykey();
@@ -10841,7 +10841,7 @@ static int money_office() {
 				break;
 
 			case '2':
-				if (!HAS_PERM(PERM_POST))
+				if (!HAS_PERM(PERM_POST, currentuser))
 					break;
 				move(6, 4);
 				if (askyn("确定要发信吗? ", NA, NA) == YEA)

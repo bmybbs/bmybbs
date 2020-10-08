@@ -4,6 +4,7 @@
 #include "stuff.h"
 #include "maintain.h"
 #include "main.h"
+#include "bbs_global_vars.h"
 
 static int chk_editboardperm(struct boardheader *bh);
 static int isExamBoard(struct boardheader *bh);
@@ -18,11 +19,11 @@ static int isExamBoard(struct boardheader *bh)
 static int
 chk_editboardperm(struct boardheader *bh)
 {
-	if (HAS_PERM(PERM_SYSOP) || HAS_PERM(PERM_OBOARDS))
+	if (HAS_PERM(PERM_SYSOP, currentuser) || HAS_PERM(PERM_OBOARDS, currentuser))
 		return YEA;
-	if (HAS_PERM(PERM_ARBITRATE) && isExamBoard(bh))
+	if (HAS_PERM(PERM_ARBITRATE, currentuser) && isExamBoard(bh))
 		return YEA;
-	if (!HAS_PERM(PERM_SPECIAL4))
+	if (!HAS_PERM(PERM_SPECIAL4, currentuser))
 		return NA;
 	if (issecm(bh->sec1, currentuser.userid))
 		return YEA;

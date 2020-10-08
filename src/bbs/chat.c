@@ -625,7 +625,7 @@ struct user_info *uentp;
 	}
 	if (!uentp->active || !uentp->pid)
 		return 0;
-	if (!(HAS_PERM(PERM_SYSOP) || HAS_PERM(PERM_SEECLOAK))
+	if (!(HAS_PERM(PERM_SYSOP, currentuser) || HAS_PERM(PERM_SEECLOAK, currentuser))
 	    && uentp->invisible)
 		return 0;
 
@@ -1040,7 +1040,7 @@ struct user_info *uentp;
 	}
 	if (!uentp->active || !uentp->pid)
 		return 0;
-	if (!HAS_PERM(PERM_SEECLOAK) && uentp->invisible)
+	if (!HAS_PERM(PERM_SEECLOAK, currentuser) && uentp->invisible)
 		return 0;
 #if 0
 	if (kill(uentp->pid, 0) == -1)

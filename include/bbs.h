@@ -193,13 +193,7 @@ extern int scrint ;               /* Set when screen has been initialized */
                                   /* Used by namecomplete *only* */
 
 extern int digestmode;            /*To control Digestmode*/
-extern struct userec currentuser ;  /*  user structure is loaded from passwd */
-                                  /*  file at logon, and remains for the   */
-                                  /*  entire session */
 
-extern struct user_info uinfo ;   /* Ditto above...utmp entry is stored here
-                                     and written back to the utmp file when
-                                     necessary (pretty darn often). */
 extern int usernum ;      /* Index into passwds file user record */
 extern int utmpent ;      /* Index into this users utmp file entry */
 extern int count_friends,count_users; /*Add by SmallPig for count users and friends*/

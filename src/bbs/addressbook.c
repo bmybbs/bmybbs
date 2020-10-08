@@ -4,6 +4,7 @@
 #include "smth_screen.h"
 #include "stuff.h"
 #include "namecomplete.h"
+#include "bbs_global_vars.h"
 #define NADDRESSITEM 6
 static const char addressitems[NADDRESSITEM][16] = {
 	"oicqºÅÂë",

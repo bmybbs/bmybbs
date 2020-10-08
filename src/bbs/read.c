@@ -375,7 +375,7 @@ void i_read(int cmdmode, char *direct, int (*dotitle) (), char *(*doentry) (int,
 				     (uinfo.pager & FRIEND_PAGER) ? "O" : "o",
 				     (uinfo.pager & ALLMSG_PAGER) ? "M" : "m",
 				     (uinfo.pager & FRIENDMSG_PAGER) ? "F" :
-				     "f", (DEFINE(DEF_MSGGETKEY)) ? "X" : "x",
+				     "f", (DEFINE(DEF_MSGGETKEY, currentuser)) ? "X" : "x",
 				     (uinfo.invisible == 1) ? "C" : "c", buf,
 				     (allstay / 60) % 1000, allstay % 60);
 			}
@@ -643,7 +643,7 @@ char *pnt;
 		return PARTUPDATE;
 		break;
 	case 'S':		/* youzi */
-		if (!HAS_PERM(PERM_PAGE))
+		if (!HAS_PERM(PERM_PAGE, currentuser))
 			break;
 		s_msg();
 		return FULLUPDATE;
@@ -654,7 +654,7 @@ char *pnt;
 		return FULLUPDATE;
 		break;*/
 	case 'w':
-		if ((in_mail != YEA) && (HAS_PERM(PERM_READMAIL))) {
+		if ((in_mail != YEA) && (HAS_PERM(PERM_READMAIL, currentuser))) {
 			m_read();
 			return 999;
 		} else
@@ -673,7 +673,7 @@ char *pnt;
 			if (rcmdlist[i].key != ch)
 				continue;
 			if (rcmdlist[i].fptr == t_friends) {
-				if (!HAS_PERM(PERM_BASIC))
+				if (!HAS_PERM(PERM_BASIC, currentuser))
 					break;
 				t_friends();
 				return FULLUPDATE;
@@ -776,7 +776,7 @@ char *direct;
 	extern int friendflag;
 	char uident[STRLEN];
 	char *q_id = fileinfo->owner;
-	if (!HAS_PERM(PERM_BASIC)) {
+	if (!HAS_PERM(PERM_BASIC, currentuser)) {
 		return 0;
 	}
 	friendflag = YEA;
@@ -1603,10 +1603,10 @@ int from_top;
 		return 0;
 	}
 	if (val > last_line) {
-		val = DEFINE(DEF_CIRCLE) ? 1 : last_line;
+		val = DEFINE(DEF_CIRCLE, currentuser) ? 1 : last_line;
 	}
 	if (val <= 0) {
-		val = DEFINE(DEF_CIRCLE) ? last_line : 1;
+		val = DEFINE(DEF_CIRCLE, currentuser) ? last_line : 1;
 	}
 	if (val >= locmem->top_line && val < locmem->top_line + screen_len - 1) {
 		RMVCURS;

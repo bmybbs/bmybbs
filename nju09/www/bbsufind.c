@@ -52,7 +52,7 @@ bbsufind_main()
 		x = &(shm_utmp->uinfo[i]);
 		if (x->active == 0)
 			continue;
-		if (x->invisible && !HAS_PERM(PERM_SEECLOAK))
+		if (x->invisible && !HAS_PERM(PERM_SEECLOAK, currentuser))
 			continue;
 		if (mytoupper(x->userid[0]) != search && search !='*')
 			continue;

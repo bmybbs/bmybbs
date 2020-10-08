@@ -267,4 +267,18 @@ char to_hex(char code);
 void NHsprintf(char *s, char *s0);
 
 extern void check_msg(void); // bbsgetmsg.c
+
+/**
+ * user structure is loaded from passwd file at logon,
+ * and remains for the entire session
+ */
+extern struct userec currentuser ;
+
+extern int readmybrd(char *userid);        /* bbsmybrd.c */
+extern int mails(char *id, int *unread);   /* bbsfoot.c  */
+extern int mails_time(char *id);           /* bbsfoot.c  */
+extern void printselsignature();           /* bbspst.c */
+extern void printuploadattach();           /* bbspst.c */
+extern int showcon(char *filename);        /* bbscon.c */
+extern int showfile(char *fn);             /* bbsboa.c */
 #endif

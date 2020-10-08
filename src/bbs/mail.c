@@ -125,7 +125,7 @@ chkmail()
 	int accessed;
 	extern char currmaildir[STRLEN];
 
-	if (!HAS_PERM(PERM_BASIC)) {
+	if (!HAS_PERM(PERM_BASIC, currentuser)) {
 		return 0;
 	}
 	offset = offsetof(struct fileheader, accessed);
@@ -507,7 +507,7 @@ char userid[];
 int
 M_send()
 {
-	if (!HAS_PERM(PERM_LOGINOK))
+	if (!HAS_PERM(PERM_LOGINOK, currentuser))
 		return 0;
 	return m_send(NULL);
 }
@@ -866,7 +866,7 @@ struct fileheader *fileinfo;
 char *direct;
 {
 	char buf[STRLEN];
-	if (!HAS_PERM(PERM_FORWARD)) {
+	if (!HAS_PERM(PERM_FORWARD, currentuser)) {
 		return DONOTHING;
 	}
 	directfile(buf, direct, fh2fname(fileinfo));
@@ -896,7 +896,7 @@ struct fileheader *fileinfo;
 char *direct;
 {
 	char buf[STRLEN];
-	if (!HAS_PERM(PERM_FORWARD)) {
+	if (!HAS_PERM(PERM_FORWARD, currentuser)) {
 		return DONOTHING;
 	}
 	directfile(buf, direct, fh2fname(fileinfo));
@@ -1962,7 +1962,7 @@ int mode;
 		//strncpy(address, currentuser.email, STRLEN);
 		strncpy(address, currentuser.userid, STRLEN);
 	}
-	if (HAS_PERM(PERM_SETADDR)) {
+	if (HAS_PERM(PERM_SETADDR, currentuser)) {
 		prints
 		    ("请直接按 Enter 接受括号内提示的地址, 或者输入其他地址\n");
 		prints("把信件转寄给 [%s]\n", address);
@@ -2178,8 +2178,8 @@ max_mail_size()
 	    MAX_MAIL_HOLD * 8 : MAX_MAIL_HOLD;
 	maxsize = maxsize * 10;
 	return maxsize;*/
-	maxsize= (HAS_PERM(PERM_SYSOP))?MAX_SYSOPMAIL_HOLD:HAS_PERM(PERM_SPECIAL1)?MAX_MAIL_HOLD*20:
-		(HAS_PERM(PERM_BOARDS))?MAX_MAIL_HOLD*8:MAX_MAIL_HOLD*3;
+	maxsize= (HAS_PERM(PERM_SYSOP, currentuser))?MAX_SYSOPMAIL_HOLD:HAS_PERM(PERM_SPECIAL1, currentuser)?MAX_MAIL_HOLD*20:
+		(HAS_PERM(PERM_BOARDS, currentuser))?MAX_MAIL_HOLD*8:MAX_MAIL_HOLD*3;
 	maxsize=maxsize*10;
 	//modified by wjbta@bmy 修改信箱最大容量控制
 	return maxsize;
@@ -2264,7 +2264,7 @@ check_maxmail()
 {
 	int currsize, maxsize;
 	currsize = 0;
-	if(HAS_PERM(PERM_SYSOP|PERM_OBOARDS))
+	if(HAS_PERM(PERM_SYSOP|PERM_OBOARDS, currentuser))
                 return 0;//add by bjgyt
 	maxsize = max_mail_size();
 	currsize = get_mail_size();
@@ -2348,7 +2348,7 @@ char *direct;
 static int
 check_mail_perm()
 {
-	if (HAS_PERM(PERM_DENYMAIL)) {
+	if (HAS_PERM(PERM_DENYMAIL, currentuser)) {
 		prints("您被禁止发信");
 		return -1;
 	}

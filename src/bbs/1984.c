@@ -130,7 +130,7 @@ char *direct;
 		break;
 	case 'j':
 	case KEY_RIGHT:
-		if (DEFINE(DEF_THESIS)) {
+		if (DEFINE(DEF_THESIS, currentuser)) {
 			sread(0, 0, ent, 0, fileinfo);
 			break;
 		} else {

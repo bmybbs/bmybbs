@@ -142,9 +142,7 @@ bbsmybrd_main()
 	return 0;
 }
 
-int
-readmybrd(char *userid)
-{
+int readmybrd(char *userid) {
 	char file[200];
 	FILE *fp;
 	int l;

@@ -1545,7 +1545,7 @@ static void sig_append(FILE * fp, char *id, int sig) {
 	char path[256];
 	char buf[256];
 	int total, hasnl = 1, i, emptyline = 0, sigln, numofsig;
-	if (HAS_PERM(PERM_DENYSIG))
+	if (HAS_PERM(PERM_DENYSIG, currentuser))
 		return;
 	if (sig < -2 || sig > 10)
 		return;
@@ -2798,8 +2798,8 @@ max_mail_size()
 	    MAX_MAIL_HOLD * 2 : MAX_MAIL_HOLD;
 	maxsize = maxsize * 10;
 	return maxsize;*/
-	maxsize= (HAS_PERM(PERM_SYSOP))?MAX_SYSOPMAIL_HOLD:HAS_PERM(PERM_SPECIAL1)?MAX_MAIL_HOLD*20:
-                (HAS_PERM(PERM_BOARDS))?MAX_MAIL_HOLD*8:MAX_MAIL_HOLD*3;
+	maxsize= (HAS_PERM(PERM_SYSOP, currentuser))?MAX_SYSOPMAIL_HOLD:HAS_PERM(PERM_SPECIAL1, currentuser)?MAX_MAIL_HOLD*20:
+                (HAS_PERM(PERM_BOARDS, currentuser))?MAX_MAIL_HOLD*8:MAX_MAIL_HOLD*3;
         maxsize=maxsize*10;
 	//modified by wjbta@bmy 修改信箱容量控制
         return maxsize;
@@ -2849,7 +2849,7 @@ int
 check_maxmail(char *currmaildir)
 {
 	int currsize, maxsize;
-	if(HAS_PERM(PERM_SYSOP|PERM_OBOARDS))	//add by mintbaggio 040323 for unlimitted mail volum of SYSOPs
+	if(HAS_PERM(PERM_SYSOP|PERM_OBOARDS, currentuser))	//add by mintbaggio 040323 for unlimitted mail volum of SYSOPs
 		return 0;
 	currsize = 0;
 	maxsize = max_mail_size();

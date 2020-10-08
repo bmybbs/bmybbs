@@ -63,5 +63,17 @@ extern char ISdelrq;
 extern int readingthread;
 extern char genbuf[1024] ;      /* generally used global buffer */
 extern char currboard[] ;       /* name of currently selected board */
+
+/**
+ * user structure is loaded from passwd file at logon,
+ * and remains for the entire session
+ */
+extern struct userec currentuser;
+
+/**
+ * Ditto above...utmp entry is stored here and written
+ * back to the utmp file when necessary (pretty darn often).
+ */
+extern struct user_info uinfo;
 #define ZMODEM_RATE 5000
 #endif
