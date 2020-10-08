@@ -20,8 +20,8 @@ int ythtbbs_cache_USerTable_resolve();
 /***** prototypes of private functions *****/
 static int ythtbbs_cache_UserTable_fill_v(void *user_ec, va_list ap);
 static int ythtbbs_cache_UserIDHashTable_resolve();
-static int ythtbbs_cache_UserIDHashTable_insert(struct ythtbbs_cache_UserIDHashItem *ptr_items, size_t size, char *userid, int idx);
-static int ythtbbs_cache_UserIDHashTable_find_idx(struct ythtbbs_cache_UserIDHashItem *ptr_items, size_t size, char *userid);
+static int ythtbbs_cache_UserIDHashTable_insert(char *userid, int idx);
+static int ythtbbs_cache_UserIDHashTable_find_idx(char *userid);
 
 /***** implementations of public functions *****/
 unsigned int ythtbbs_cache_User_hash(char *userid) {
@@ -207,7 +207,7 @@ static int ythtbbs_cache_UserIDHashTable_resolve() {
 		shm_userid_hashtable->update_time = shm_user_table->update_time;
 
 		for(i = 0; i < shm_user_table->number; i++) {
-			ythtbbs_cache_UserIDHashTable_insert(shm_userid_hashtable->items, UCACHE_HASH_SIZE, shm_user_table->users[i].userid, i);
+			ythtbbs_cache_UserIDHashTable_insert(shm_user_table->users[i].userid, i);
 		}
 
 		sprintf(local_buf, "system reload shm_userid_hashtable %d", shm_user_table->number);
@@ -220,21 +220,22 @@ static int ythtbbs_cache_UserIDHashTable_resolve() {
 	return 0;
 }
 
-static int ythtbbs_cache_UserIDHashTable_insert(struct ythtbbs_cache_UserIDHashItem *ptr_items, size_t size, char *userid, int idx) {
+static int ythtbbs_cache_UserIDHashTable_insert(char *userid, int idx) {
 	unsigned int h, s, i, j = 0;
+	struct ythtbbs_cache_UserIDHashItem *ptr_items = shm_userid_hashtable->items;
 	if (!*userid)
 		return -1;
 
 	h = ythtbbs_cache_User_hash(userid);
-	s = size / 26 / 26;
+	s = UCACHE_HASH_SIZE / 26 / 26;
 	i = h * s;
 
 	// 找到第一个可用的位置，最多跨越 5 块区域
 	while ((j < s * 5) && ptr_items[i].user_num > 0 && ptr_items[i].user_num != idx + 1) {
 		j++;
 		i++;
-		if (i >= size)
-			i %= size;
+		if (i >= UCACHE_HASH_SIZE)
+			i %= UCACHE_HASH_SIZE;
 	}
 
 	if (j == s * 5) {
@@ -247,13 +248,14 @@ static int ythtbbs_cache_UserIDHashTable_insert(struct ythtbbs_cache_UserIDHashI
 	return 0;
 }
 
-static int ythtbbs_cache_UserIDHashTable_find_idx(struct ythtbbs_cache_UserIDHashItem *ptr_items, size_t size, char *userid) {
+static int ythtbbs_cache_UserIDHashTable_find_idx(char *userid) {
 	unsigned int h, s, i, j;
+	struct ythtbbs_cache_UserIDHashItem *ptr_items = shm_userid_hashtable->items;
 	if (!*userid)
 		return -1;
 
 	h = ythtbbs_cache_User_hash(userid);
-	s = size / 26 / 26;
+	s = UCACHE_HASH_SIZE / 26 / 26;
 	i = h * s;
 
 	for (j = 0; j < s * 5; j++) {
@@ -261,8 +263,8 @@ static int ythtbbs_cache_UserIDHashTable_find_idx(struct ythtbbs_cache_UserIDHas
 			return ptr_items[i].user_num - 1;
 
 		i++;
-		if (i >= size)
-			i %= size;
+		if (i >= UCACHE_HASH_SIZE)
+			i %= UCACHE_HASH_SIZE;
 	}
 
 	return -1;
