@@ -1,10 +1,18 @@
 #include <stdio.h>
 #include <ctype.h>
+#include <string.h>
+#include <unistd.h>
 #include <sys/file.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
-#include "bbs.h"
+#include "config.h"
+#include "ytht/timeop.h"
+#include "ytht/fileop.h"
+#include "ytht/common.h"
+#include "ythtbbs/permissions.h"
+#include "ythtbbs/user.h"
+#include "ythtbbs/record.h"
 
 static int isoverride(struct override *o, char *id);
 
@@ -533,3 +541,4 @@ fillmboard(struct boardheader *bh, struct myparam1 *mp)
 	(mp->bid)++;
 	return 0;
 }
+
