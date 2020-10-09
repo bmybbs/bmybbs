@@ -6,6 +6,7 @@
 #include "ytht/shmop.h"
 #include "bmy/iphash.h"
 #include "ythtbbs/cache.h"
+#include "ythtbbs/session.h"
 #include "cache-internal.h"
 
 // 用于 iphash
@@ -56,8 +57,10 @@ int ythtbbs_cache_utmp_insert(struct user_info *ptr_user_info) {
 		return -1;
 	}
 
+	ythtbbs_session_generate_id(ptr_user_info->sessionid, 40 /* defined in ythtbbs/cache.h */);
 	memcpy(ptr_utmp_entry, ptr_user_info, sizeof(struct user_info));
 	ythtbbs_cache_UserTable_add_utmp_idx(ptr_user_info->uid, j);
+	ythtbbs_session_set(ptr_utmp_entry->sessionid, ptr_utmp_entry->userid, j);
 
 	time(&local_now);
 	if (local_now > shm_utmp->uptime + 60) {
@@ -72,6 +75,7 @@ int ythtbbs_cache_utmp_insert(struct user_info *ptr_user_info) {
 					sprintf(local_buf, "%s drop www/api", ptr_utmp_entry->userid);
 					newtrace(local_buf);
 					ythtbbs_cache_UserTable_remove_utmp_idx(ptr_utmp_entry->uid, n);
+					ythtbbs_session_del(ptr_utmp_entry->sessionid);
 					memset(ptr_utmp_entry, 0, sizeof(struct user_info));
 				}
 			} else {
