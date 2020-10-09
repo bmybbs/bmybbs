@@ -122,17 +122,6 @@ extern int errno ;
 
 #ifndef BBSIRC
 
-/* these are flags in userec.flags[0] */
-#define PAGER_FLAG   0x1   /* true if pager was OFF last session */
-#define CLOAK_FLAG   0x2   /* true if cloak was ON last session */
-#define SIG_FLAG     0x8   /* true if sig was turned OFF last session */
-#define BRDSORT_FLAG2 0x10 /* true if the boards sorted by score */
-//#define BRDSORT_FLAG 0x20  /* true if the boards sorted alphabetical, */
-			   /* available only if FLAG2 is false */
-#define BRDSORT_MASK 0x30
-#define CURSOR_FLAG  0x80  /* true if the cursor mode open */
-#define ACTIVE_BOARD 0x200 /* true if user toggled active movie board on */
-
 /* For All Kinds of Pagers */
 #define ALL_PAGER       0x1
 #define FRIEND_PAGER    0x2

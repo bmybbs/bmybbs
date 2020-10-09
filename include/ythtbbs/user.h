@@ -5,6 +5,19 @@
 #include "config.h"
 #include "board.h"
 #include "cache.h"
+
+/* these are flags in userec.flags[0] */
+#define PAGER_FLAG     0x1   /* true if pager was OFF last session */
+#define CLOAK_FLAG     0x2   /* true if cloak was ON last session */
+#define CLOSECLUB_FLAG 0x4   /* Ë°®Á§∫ÁâàÈù¢ÊòØÂê¶ÂèØËßÅ, 1 for close club, 0 for open club, add by macintosh 050530 for semi-closed club*/
+#define SIG_FLAG       0x8   /* true if sig was turned OFF last session */
+#define BRDSORT_FLAG2 0x10   /* true if the boards sorted by score */
+//#define BRDSORT_FLAG 0x20  /* true if the boards sorted alphabetical, available only if FLAG2 is false */
+#define BRDSORT_MASK  0x30
+#define CURSOR_FLAG   0x80   /* true if the cursor mode open */
+#define ACTIVE_BOARD 0x200   /* true if user toggled active movie board on */
+#define CLUB_FLAG (CLOSECLUB_FLAG | CLUBTYPE_FLAG) /*‰ø±‰πêÈÉ®*/
+
 /** Structure used to hold information in PASSFILE
  *
  */
@@ -15,9 +28,9 @@ struct userec {
 	unsigned int numlogins;
 	unsigned int numposts;
 	char flags[2];
-	char passwd[PASSLEN];   //!<º”√‹∫Ûµƒ√‹¬Î
+	char passwd[PASSLEN];   //!<Âä†ÂØÜÂêéÁöÑÂØÜÁ†Å
 	char username[NAMELEN];
-	unsigned short numdays;	//!<‘¯æ≠µ«¬ºµƒÃÏ ˝
+	unsigned short numdays;	//!<ÊõæÁªèÁôªÂΩïÁöÑÂ§©Êï∞
 	char unuse[30];
 	time_t dietime;
 	time_t lastlogout;
@@ -62,8 +75,8 @@ int userlock(char *userid, int locktype);
 int userunlock(char *userid, int fd);
 int checkbansite(const char *addr);
 
-/** ºÏ≤È”√ªß»®œﬁ
- * ∏ƒ∑Ω∑®¥” nju09 “∆÷≤£¨≤Œº˚ int user_perm(struct userec *x, int level)°£
+/** Ê£ÄÊü•Áî®Êà∑ÊùÉÈôê
+ * ÊîπÊñπÊ≥ï‰ªé nju09 ÁßªÊ§çÔºåÂèÇËßÅ int user_perm(struct userec *x, int level)„ÄÇ
  * @param x
  * @param level
  * @return
@@ -71,10 +84,10 @@ int checkbansite(const char *addr);
 int check_user_perm(struct userec *x, int level);
 
 /**
- * @brief ºÏ≤È”√ªßµƒ‘ƒ∂¡»®œﬁ
- * ∏√∑Ω∑®¥” nju09 “∆÷≤£¨”√”⁄ºÏ≤È”√ªß∂¡»°∞Ê√Êµƒ»®œﬁ°£
+ * @brief Ê£ÄÊü•Áî®Êà∑ÁöÑÈòÖËØªÊùÉÈôê
+ * ËØ•ÊñπÊ≥ï‰ªé nju09 ÁßªÊ§çÔºåÁî®‰∫éÊ£ÄÊü•Áî®Êà∑ËØªÂèñÁâàÈù¢ÁöÑÊùÉÈôê„ÄÇ
  * @param user
- * @param board ∞Ê√Ê√˚≥∆
+ * @param board ÁâàÈù¢ÂêçÁß∞
  * @return
  * @see int has_read_perm(struct userec *user, char *board)
  * @see int has_read_perm_x(struct userec *user, struct boardmem *x)
@@ -82,33 +95,33 @@ int check_user_perm(struct userec *x, int level);
 int check_user_read_perm(struct user_info *user, char *board);
 
 /**
- * @brief ºÏ≤È”√ªßµƒ‘ƒ∂¡»®œﬁ
- * ∏√∑Ω∑®¥” nju09 “∆÷≤£¨”√”⁄ºÏ≤È”√ªß∂¡»°∞Ê√Êµƒ»®œﬁ°£
+ * @brief Ê£ÄÊü•Áî®Êà∑ÁöÑÈòÖËØªÊùÉÈôê
+ * ËØ•ÊñπÊ≥ï‰ªé nju09 ÁßªÊ§çÔºåÁî®‰∫éÊ£ÄÊü•Áî®Êà∑ËØªÂèñÁâàÈù¢ÁöÑÊùÉÈôê„ÄÇ
  * @param user
- * @param board boardmem ÷∏’Î
- * @return ”–»®œﬁ∑µªÿ 1£¨Œﬁ»®œﬁ∑µªÿ 0°£
+ * @param board boardmem ÊåáÈíà
+ * @return ÊúâÊùÉÈôêËøîÂõû 1ÔºåÊó†ÊùÉÈôêËøîÂõû 0„ÄÇ
  * @see int has_read_perm(struct userec *user, char *board)
  * @see int has_read_perm_x(struct userec *user, struct boardmem *x)
  */
 int check_user_read_perm_x(struct user_info *user, struct boardmem *board);
 
 /**
- * @brief ºÏ≤È”√ªßµƒ∑¢Ã˚»®œﬁ
- * ∏√∑Ω∑®¥” nju09 “∆÷≤£¨ª·Õ¨ ±≈–∂œ∞Ê√Ê‘ƒ∂¡»®œﬁ°£
+ * @brief Ê£ÄÊü•Áî®Êà∑ÁöÑÂèëÂ∏ñÊùÉÈôê
+ * ËØ•ÊñπÊ≥ï‰ªé nju09 ÁßªÊ§çÔºå‰ºöÂêåÊó∂Âà§Êñ≠ÁâàÈù¢ÈòÖËØªÊùÉÈôê„ÄÇ
  * @param user
  * @param board
- * @return ”–»®œﬁ∑µªÿ 1£¨Œﬁ»®œﬁ∑µªÿ 0°£
+ * @return ÊúâÊùÉÈôêËøîÂõû 1ÔºåÊó†ÊùÉÈôêËøîÂõû 0„ÄÇ
  */
 int check_user_post_perm_x(struct user_info *user, struct boardmem *board);
 int userbansite(const char *userid, const char *fromhost);
-void logattempt(char *user,char *from,char *zone,time_t time);
+void logattempt(const char *user, const char *from, const char *zone, time_t time);
 int inoverride(char *who, char *owner, char *file);
 
 /**
- * @brief ºÏ≤È id  «∑Ò∞¸∫¨ ˝◊÷
- * ∏√∑Ω∑®‘⁄ telnet/nju09 ÷–æ˘”– π”√£¨“∆∂ØµΩø‚÷–£¨∑Ω∑®√˚”–¥˝∏ƒΩ¯°£
- * @param userid ◊÷∑˚¥Æ
- * @return ∞¸∫¨‘Ú∑µªÿ
+ * @brief Ê£ÄÊü• id ÊòØÂê¶ÂåÖÂê´Êï∞Â≠ó
+ * ËØ•ÊñπÊ≥ïÂú® telnet/nju09 ‰∏≠ÂùáÊúâ‰ΩøÁî®ÔºåÁßªÂä®Âà∞Â∫ì‰∏≠ÔºåÊñπÊ≥ïÂêçÊúâÂæÖÊîπËøõ„ÄÇ
+ * @param userid Â≠óÁ¨¶‰∏≤
+ * @return ÂåÖÂê´ÂàôËøîÂõû
  */
 int id_with_num(char *userid);
 

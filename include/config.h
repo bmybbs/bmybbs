@@ -265,9 +265,5 @@ You must also set "EightBitMode=pass8" in /etc/sendmail.cf
 #define POLITICAL_FLAG	0x80
 #define ZAPPED  0x1           /* For boards...tells if board is Zapped */
 
-/*add by macintosh 050530 for semi-closed club */
-#define CLOSECLUB_FLAG 0x4  /* 表示版面是否可见, 1 for close club , 0 for open club */
-
-#define CLUB_FLAG (CLOSECLUB_FLAG | CLUBTYPE_FLAG) /*俱乐部*/
-
 #endif  /* BBS_CONFIG */
+
