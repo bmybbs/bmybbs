@@ -7,16 +7,23 @@
 #include <arpa/inet.h>
 
 #include "config.h"
+#include "ytht/crypt.h"
 #include "ytht/timeop.h"
 #include "ytht/fileop.h"
 #include "ytht/common.h"
+#include "ytht/strlib.h"
 #include "ythtbbs/permissions.h"
+#include "ythtbbs/modes.h"
 #include "ythtbbs/user.h"
 #include "ythtbbs/record.h"
+#include "ythtbbs/misc.h"
+#include "ythtbbs/msg.h"
 
 static int isoverride(struct override *o, char *id);
 
-/* mytoupper: ½«ÖĞÎÄIDÓ³Éäµ½A-ZµÄÄ¿Â¼ÖĞ */
+static bool ythtbbs_user_has_perm(struct userec *x, int level);
+
+/* mytoupper: å°†ä¸­æ–‡IDæ˜ å°„åˆ°A-Zçš„ç›®å½•ä¸­ */
 char
 mytoupper(unsigned char ch)
 {
@@ -100,46 +107,46 @@ charexp(int exp)
 	int expbase = 0;
 
 	if (exp == -9999)
-		return "Ã»µÈ¼¶";
+		return "\xC3\xBB\xB5\xC8\xBC\xB6"; // æ²¡ç­‰çº§
 	if (exp <= 100 + expbase)
-		return "ĞÂÊÖÉÏÂ·";
+		return "\xD0\xC2\xCA\xD6\xC9\xCF\xC2\xB7"; // æ–°æ‰‹ä¸Šè·¯
 	if (exp <= 450 + expbase)
-		return "Ò»°ãÕ¾ÓÑ";
+		return "\xD2\xBB\xB0\xE3\xD5\xBE\xD3\xD1"; // ä¸€èˆ¬ç«™å‹
 	if (exp <= 850 + expbase)
-		return "ÖĞ¼¶Õ¾ÓÑ";
+		return "\xD6\xD0\xBC\xB6\xD5\xBE\xD3\xD1"; // ä¸­çº§ç«™å‹
 	if (exp <= 1500 + expbase)
-		return "¸ß¼¶Õ¾ÓÑ";
+		return "\xB8\xDF\xBC\xB6\xD5\xBE\xD3\xD1"; // é«˜çº§ç«™å‹
 	if (exp <= 2500 + expbase)
-		return "ÀÏÕ¾ÓÑ";
+		return "\xC0\xCF\xD5\xBE\xD3\xD1"; // è€ç«™å‹
 	if (exp <= 3000 + expbase)
-		return "³¤ÀÏ¼¶";
+		return "\xB3\xA4\xC0\xCF\xBC\xB6"; // é•¿è€çº§
 	if (exp <= 5000 + expbase)
-		return "±¾Õ¾ÔªÀÏ";
-	return "¿ª¹ú´óÀÏ";
+		return "\xB1\xBE\xD5\xBE\xD4\xAA\xC0\xCF"; // æœ¬ç«™å…ƒè€
+	return "\xBF\xAA\xB9\xFA\xB4\xF3\xC0\xCF"; // å¼€å›½å¤§è€
 }
 
 char *
 cperf(int perf)
 {
 	if (perf == -9999)
-		return "Ã»µÈ¼¶";
+		return "\xC3\xBB\xB5\xC8\xBC\xB6"; // æ²¡ç­‰çº§
 	if (perf <= 5)
-		return "¸Ï¿ì¼ÓÓÍ";
+		return "\xB8\xCF\xBF\xEC\xBC\xD3\xD3\xCD"; // èµ¶å¿«åŠ æ²¹
 	if (perf <= 12)
-		return "Å¬Á¦ÖĞ";
+		return "\xC5\xAC\xC1\xA6\xD6\xD0"; // åŠªåŠ›ä¸­
 	if (perf <= 35)
-		return "»¹²»´í";
+		return "\xBB\xB9\xB2\xBB\xB4\xED"; // è¿˜ä¸é”™
 	if (perf <= 50)
-		return "ºÜºÃ";
+		return "\xBA\xDC\xBA\xC3"; // å¾ˆå¥½
 	if (perf <= 90)
-		return "ÓÅµÈÉú";
+		return "\xD3\xC5\xB5\xC8\xC9\xFA"; // ä¼˜ç­‰ç”Ÿ
 	if (perf <= 140)
-		return "Ì«ÓÅĞãÁË";
+		return "\xCC\xAB\xD3\xC5\xD0\xE3\xC1\xCB"; // å¤ªä¼˜ç§€äº†
 	if (perf <= 200)
-		return "±¾Õ¾Ö§Öù";
+		return "\xB1\xBE\xD5\xBE\xD6\xA7\xD6\xF9"; // æœ¬ç«™æ”¯æŸ±
 	if (perf <= 500)
-		return "Éñ¡«¡«";
-	return "»úÆ÷ÈË£¡";
+		return "\xC9\xF1\xA1\xAB\xA1\xAB"; // ç¥ï½ï½
+	return "\xBB\xFA\xC6\xF7\xC8\xCB\xA3\xA1"; // æœºå™¨äººï¼
 }
 
 int
@@ -292,7 +299,7 @@ userbansite(const char *userid, const char *fromhost)
 		return 0;
 	while (fgets(buf, STRLEN, fp) != NULL) {
 		i = ytht_strtok(buf, ' ', tmp, 3);
-		if (i == 1) {	//µ¥¶À ip
+		if (i == 1) {	//å•ç‹¬ ip
 			banaddr = inet_addr(addr);
 			banmask = inet_addr("255.255.255.255");
 			deny = 1;
@@ -300,11 +307,11 @@ userbansite(const char *userid, const char *fromhost)
 			banaddr = inet_addr(addr);
 			banmask = inet_addr(mask);
 			deny = 1;
-		} else if (i == 3) {	//´ø allow Ïî
+		} else if (i == 3) {	//å¸¦ allow é¡¹
 			banaddr = inet_addr(addr);
 			banmask = inet_addr(mask);
 			deny = !strcmp(allow, "allow");
-		} else		//¿ÕĞĞ£¿
+		} else		//ç©ºè¡Œï¼Ÿ
 			continue;
 		if ((from & banmask) == (banaddr & banmask)) {
 			fclose(fp);
@@ -316,7 +323,7 @@ userbansite(const char *userid, const char *fromhost)
 }
 
 void
-logattempt(char *user, char *from, char *zone, time_t time)
+logattempt(const char *user, const char *from, const char *zone, time_t time)
 {
 	char buf[256], filename[80];
 	int fd, len;
@@ -540,5 +547,130 @@ fillmboard(struct boardheader *bh, struct myparam1 *mp)
 	}
 	(mp->bid)++;
 	return 0;
+}
+
+static const char *get_login_type_str(enum ythtbbs_user_login_type type) {
+	switch(type) {
+	case YTHTBBS_LOGIN_TELNET: return "TELNET";
+	case YTHTBBS_LOGIN_SSH:    return "SSH";
+	case YTHTBBS_LOGIN_NJU09:  return "NJU09";
+	case YTHTBBS_LOGIN_API:    return "API";
+	default: "unknown";
+	}
+}
+
+int ythtbbs_user_login(const char *userid, const char *passwd, const char *fromhost, const enum ythtbbs_user_login_type login_type, struct user_info *out_info, struct userec *out_userec, int *out_utmp_idx) {
+	int              user_idx;
+	long             login_interval;
+	int              local_utmp_idx;
+	char             local_buf[512];
+	time_t           local_now;
+	struct userec    local_lookup_user;
+	struct user_info local_uinfo;
+
+	time(&local_now);
+	ythtbbs_cache_UserTable_resolve();
+	user_idx = ythtbbs_cache_UserIDHashTable_find_idx(userid);
+	if (user_idx < 0)
+		return YTHTBBS_USER_NOT_EXIST;
+
+	get_record(PASSFILE, &local_lookup_user, sizeof(struct userec), user_idx + 1);
+	if (out_userec) {
+		memcpy(out_userec, &local_lookup_user, sizeof(struct userec));
+	}
+
+	if (strcasecmp(userid, "guest") == 0) {
+		if(out_userec)
+			out_userec->userlevel = 0;
+		return YTHTBBS_USER_LOGIN_OK; // TODO
+	}
+
+	// TODO checkbansite
+	// TODO userbansite
+
+	if (!ytht_crypt_checkpasswd(local_lookup_user.passwd, passwd)) {
+		logattempt(local_lookup_user.userid, fromhost, get_login_type_str(login_type), local_now);
+		return YTHTBBS_USER_WRONG_PASSWORD;
+	}
+
+	if (!ythtbbs_user_has_perm(&local_lookup_user, PERM_BASIC))
+		return YTHTBBS_USER_SUSPENDED;
+
+	// TODO å¤§å¯Œç¿ç›¸å…³æ ¡éªŒ
+
+	// æ£€æŸ¥é—´éš”ä» NJU09 20s å‡å°‘ä¸º 5s
+	login_interval = local_now - local_lookup_user.lastlogin;
+	if (login_interval < 0)
+		login_interval = -login_interval;
+	if (login_interval < 5)
+		return YTHTBBS_USER_TOO_FREQUENT;
+
+	// TODO å…¶ä»–å¯¹äº struct userec æ•°æ®æ›´æ–°
+	// ä¾‹å¦‚æ—¶é—´ã€å¤©æ•°ã€ç‰¹åˆ«æ˜¯æ¥æº IP
+
+	sprintf(local_buf, "%s enter %s using %s", local_lookup_user.userid, fromhost, get_login_type_str(login_type));
+	newtrace(local_buf);
+
+	// update struct user_info
+	memset(&local_uinfo, 0, sizeof(struct user_info));
+
+	local_uinfo.active    = true;
+	local_uinfo.pid       = (login_type == YTHTBBS_LOGIN_TELNET || login_type == YTHTBBS_LOGIN_SSH) ? getpid() : 1 /* magic number for www/api */;
+	local_uinfo.mode      = LOGIN;
+	local_uinfo.pager     = 0;
+	local_uinfo.uid       = user_idx + 1;
+	local_uinfo.userlevel = local_lookup_user.userlevel;
+	local_uinfo.lasttime  = local_now;
+	local_uinfo.curboard  = 0;
+	local_uinfo.unreadmsg = strcasecmp(local_lookup_user.userid, "guest") ? get_unreadmsg(local_lookup_user.userid) : 0;
+	local_uinfo.invisible = (ythtbbs_user_has_perm(&local_lookup_user, PERM_LOGINCLOAK) && (local_lookup_user.flags[0] & CLOAK_FLAG)) ? true : false; // ç§»é™¤ term æ¨¡å¼ä¸­å¯¹ dietime > 0 çš„å¤„ç† by IronBlood 2020.10.09
+	local_uinfo.isssh     = (login_type == YTHTBBS_LOGIN_SSH) ? true : false;
+
+	// pager start
+	local_uinfo.pager = 0;
+
+	if (local_lookup_user.userdefine & DEF_FRIENDCALL)
+		local_uinfo.pager |= FRIEND_PAGER;
+	if (local_lookup_user.flags[0] & PAGER_FLAG) {
+		local_uinfo.pager |= ALL_PAGER;
+		local_uinfo.pager |= FRIEND_PAGER;
+	}
+
+	if (local_lookup_user.userdefine & DEF_FRIENDMSG)
+		local_uinfo.pager |= FRIENDMSG_PAGER;
+	if (local_lookup_user.userdefine & DEF_ALLMSG) {
+		local_uinfo.pager |= ALLMSG_PAGER;
+		local_uinfo.pager |= FRIENDMSG_PAGER;
+	}
+	// pager end
+
+	ytht_strsncpy(local_uinfo.from, fromhost, BMY_IPV6_LEN);
+	ytht_strsncpy(local_uinfo.username, local_lookup_user.username, NAMELEN);
+	ytht_strsncpy(local_uinfo.realname, local_lookup_user.realname, NAMELEN);
+	ytht_strsncpy(local_uinfo.userid, local_lookup_user.userid, IDLEN + 1);
+
+	// TODO friends
+
+	ythtbbs_cache_utmp_resolve();
+	local_utmp_idx = ythtbbs_cache_utmp_insert(&local_uinfo);
+
+	if (out_info)
+		memcpy(out_info, &local_uinfo, sizeof(struct user_info));
+	if (out_userec)
+		memcpy(out_userec, &local_lookup_user, sizeof(struct userec));
+	if (out_utmp_idx)
+		*out_utmp_idx = local_utmp_idx;
+
+	return YTHTBBS_USER_LOGIN_OK;
+}
+
+void ythtbbs_user_logout(const char *userid, int utmp_idx) {
+}
+
+/**
+ * å‚è€ƒ nju09 user_perm å®ç°ï¼Œå¯ä»¥æ›¿ä»£ HAS_PERM å®
+ */
+static bool ythtbbs_user_has_perm(struct userec *x, int level) {
+	return x && (x->userlevel & level);
 }
 

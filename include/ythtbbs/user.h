@@ -128,4 +128,21 @@ int id_with_num(char *userid);
 int chk_BM(struct userec *, struct boardheader *bh, int isbig);
 int chk_BM_id(char *, struct boardheader *);
 int bmfilesync(struct userec *);
+
+enum ythtbbs_user_login_type {
+	YTHTBBS_LOGIN_TELNET,
+	YTHTBBS_LOGIN_SSH,
+	YTHTBBS_LOGIN_NJU09,
+	YTHTBBS_LOGIN_API
+};
+
+enum ythtbbs_user_login_status {
+	YTHTBBS_USER_LOGIN_OK,
+	YTHTBBS_USER_NOT_EXIST,
+	YTHTBBS_USER_WRONG_PASSWORD,
+	YTHTBBS_USER_SUSPENDED,
+	YTHTBBS_USER_TOO_FREQUENT,
+};
+
+int ythtbbs_user_login(const char *userid, const char *passwd, const char *fromhost, const enum ythtbbs_user_login_type login_type, struct user_info *out_info, struct userec *out_userec, int *out_utmp_idx);
 #endif
