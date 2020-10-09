@@ -6,6 +6,13 @@
 #include "ythtbbs/board.h"
 #include "ythtbbs/boardrc.h"
 
+/* For All Kinds of Pagers */
+#define ALL_PAGER       0x1
+#define FRIEND_PAGER    0x2
+#define ALLMSG_PAGER    0x4
+#define FRIENDMSG_PAGER 0x8
+/* END */
+
 struct wwwsession {
 	unsigned char used:1, show_reg:1, att_mode:1, ipmask:4, doc_mode:1;
 	unsigned char link_mode:1, def_mode:1, t_lines:6;

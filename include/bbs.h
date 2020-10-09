@@ -120,18 +120,6 @@ extern int errno ;
 #define MAX_DIGEST         1000    /* 最大文摘数 */
 #define MAX_POSTRETRY       100
 
-#ifndef BBSIRC
-
-/* For All Kinds of Pagers */
-#define ALL_PAGER       0x1
-#define FRIEND_PAGER    0x2
-#define ALLMSG_PAGER    0x4
-#define FRIENDMSG_PAGER 0x8
-/* END */
-
-#endif /* BBSIRC */
-/*#ifndef BBSIRC*/
-
 #define DONOTHING       0       /* Read menu command return states */
 #define FULLUPDATE      1       /* Entire screen was destroyed in this oper*/
 #define PARTUPDATE      2       /* Only the top three lines were destroyed */
@@ -142,8 +130,6 @@ extern int errno ;
 #define GOTO_NEXT       7       /* Move cursor to next */
 #define DIRCHANGED      8       /* Index file was changed */
 #define UPDATETLINE	9	/* t_lines was changed */
-
-/*#endif*/ /* !BBSIRC */
 
 /* pty exec */
 #ifdef CAN_EXEC
