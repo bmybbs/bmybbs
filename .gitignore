@@ -18,3 +18,7 @@ proto.h
 nju09/html/js
 nju09/html/css
 
+# 开发过程中可以在本地链接 api-local，方便开发（不直接在 api 子模块中开发）
+# ln -s /path/to/cloned/api/folder api-local
+api-local
+

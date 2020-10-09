@@ -21,6 +21,12 @@ add_subdirectory(smth_sshbbsd)
 add_subdirectory(nju09)
 add_subdirectory(local_utl)
 add_subdirectory(atthttpd)
-add_subdirectory(api)
+if(EXISTS ${CMAKE_SOURCE_DIR}/api-local/CMakeLists.txt)
+	add_subdirectory(api-local) # 用于本地开发调试
+else(EXISTS ${CMAKE_SOURCE_DIR}/api-local/CMakeLists.txt)
+	if(EXISTS ${CMAKE_SOURCE_DIR}/api/CMakeLists.txt)
+		add_subdirectory(api) # 用于普通使用，在已拉取子模块的情况下
+	endif(EXISTS ${CMAKE_SOURCE_DIR}/api/CMakeLists.txt)
+endif(EXISTS ${CMAKE_SOURCE_DIR}/api-local/CMakeLists.txt)
 add_subdirectory(tests)
 
