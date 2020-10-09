@@ -1,6 +1,7 @@
 include_directories(include)
 
 add_subdirectory(userid_hash_summary)
+add_subdirectory(cache_dump)
 
 #add_subdirectory(annIndex)
 add_subdirectory(averun)
