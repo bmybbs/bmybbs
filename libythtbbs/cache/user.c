@@ -132,7 +132,7 @@ void ythtbbs_cache_UserTable_dump(FILE *fp) {
 	struct ythtbbs_cache_User *user;
 
 	ythtbbs_cache_UserTable_resolve();
-	fprintf(fp, "===== UserTable =====");
+	fprintf(fp, "===== UserTable =====\n");
 	for (i = 0; i < MAXUSERS; i++) {
 		user = &(shm_user_table->users[i]);
 		if (user->userid[0] == '\0')
@@ -160,7 +160,7 @@ void ythtbbs_cache_UserIDHashTable_dump(FILE *fp) {
 	struct ythtbbs_cache_UserIDHashItem *item;
 
 	ythtbbs_cache_UserIDHashTable_resolve();
-	fprintf(fp, "===== UserIDHashTable =====");
+	fprintf(fp, "===== UserIDHashTable =====\n");
 	for (i = 0; i < UCACHE_HASH_SIZE; i++) {
 		item = &(shm_userid_hashtable->items[i]);
 		if (item->userid[0] == '\0')
