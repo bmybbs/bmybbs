@@ -363,7 +363,6 @@ int ythtbbs_record_apply_v(char *filename, ythtbbs_record_callback_v fptr, size_
 		return -1;
 	}
 
-	va_start(ap, size);
 	while ((sizeread = read(fd, buf, size * NUMBUFFER)) > 0) {
 		if (sizeread % size != 0) {
 			retv = -1;
@@ -371,7 +370,9 @@ int ythtbbs_record_apply_v(char *filename, ythtbbs_record_callback_v fptr, size_
 		}
 		n = sizeread / size;
 		for (i = 0; i < n; i++) {
+			va_start(ap, size);
 			retv = fptr(buf + i * size, ap);
+			va_end(ap);
 			if (retv != 0) {
 				goto END;
 			}
@@ -379,7 +380,6 @@ int ythtbbs_record_apply_v(char *filename, ythtbbs_record_callback_v fptr, size_
 	}
 	retv = 0;
 END:
-	va_end(ap);
 	close(fd);
 	free(buf);
 	return retv;
