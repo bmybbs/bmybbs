@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "bmy/cookie.h"
 
-static const char SEPRATOR = ';';
+static const char SEPRATOR = '-';
 
 void bmy_cookie_parse(char *buf, struct cookie *cookie) {
 	int i, j, k;
