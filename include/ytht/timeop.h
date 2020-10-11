@@ -1,6 +1,7 @@
 /* timeop.h */
 #ifndef __TIMEOP_H
 #define __TIMEOP_H
+#include <time.h>
 
 /**
  * @brief ctime(3) 的封装
@@ -9,10 +10,11 @@
  * @warning 多线程不安全
  * @see ytht_ctime_r
  */
-char *ytht_ctime(const time_t clock);
+char *ytht_ctime(const time_t clock) __attribute__((deprecated("use ytht_ctime_r instead")));
 
 /**
  * @brief ctime_r(3) 的封装
+ * buf 至少为 26 字节
  * 会额外截断转换后字符串结尾的换行符
  * @return 时间的字符串形式
  */
@@ -24,7 +26,7 @@ char *ytht_ctime_r(const time_t clock, char *buf);
  * @return 更容易理解的文字
  * @warning 该方法不是线程安全的！并且会强制转换为 int 类型。
  */
-char *ytht_Difftime(time_t compared_time);
+char *ytht_Difftime(time_t compared_time) __attribute__((deprecated("use ytht_Difftime_s instead")));
 
 /**
  * @brief ytht_Difftime 对应的安全版本
