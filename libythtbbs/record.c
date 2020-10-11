@@ -304,6 +304,25 @@ get_record(char *filename, void *rptr, int size, int id)
 	return 0;
 }
 
+long ythtbbs_record_get_records(const char *filename, void *rptr, size_t size, int id, int count) {
+	int fd;
+	long n;
+
+	if ((fd = open(filename, O_RDONLY, 0)) == -1)
+		return -1;
+	if (lseek(fd, size * (id - 1), SEEK_SET) == -1) {
+		close(fd);
+		return 0;
+	}
+	if ((n = read(fd, rptr, size * count)) == -1) {
+		close(fd);
+		return -1;
+	}
+
+	close(fd);
+	return (n / size);
+}
+
 int
 substitute_record(char *filename, void *rptr, int size, int id) {
 	struct flock ldata;

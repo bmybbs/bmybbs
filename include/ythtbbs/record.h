@@ -48,4 +48,16 @@ int ythtbbs_record_apply_v(char *filename, ythtbbs_record_callback_v fptr, size_
  * 构中调用两次接口。
  */
 long ythtbbs_record_count_records(const char *filename, const size_t size);
+
+/**
+ * @brief 获取记录
+ * 参考了 src/bbs/record.c get_records() 的实现，但是不兼容，
+ * 没有处理 ".TOPFILE" 的内容。
+ * @param filename 需要读取记录的文件名
+ * @param rptr 存放记录的缓冲区
+ * @param size 每条记录的长度
+ * @param start_id 起始记录的编号，第一条记录从 1 开始
+ * @param count 读取记录的条数
+ */
+long ythtbbs_record_get_records(const char *filename, void *rptr, size_t size, int start_id, int count);
 #endif
