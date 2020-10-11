@@ -42,6 +42,7 @@
 #include "announce.h"
 #include "bbs-internal.h"
 #include "ythtbbs/cache.h"
+#include "ythtbbs/override.h"
 
 #define M_INT 8			/* monitor mode update interval */
 #define P_INT 20		/* interval to check for page req. in talk/chat */
@@ -80,7 +81,7 @@ static int show_user_plan(char *userid);
 static int bm_printboard(struct boardmanager *bm, void *farg);
 static int count_active(struct user_info *uentp);
 static int count_useshell(struct user_info *uentp);
-static int cmpfnames(char *userid, struct override *uv);
+static int cmpfnames(char *userid, struct ythtbbs_override *uv);
 static int cmpunums(int unum, struct user_info *up);
 static int cmpmsgnum(int unum, struct user_info *up);
 static int setpagerequest(int mode);
@@ -90,19 +91,19 @@ static void talkflush(void);
 static void moveto(int mode, struct talk_win *twin);
 static int do_talk(int fd);
 static int override_title(void);
-static char *override_doentry(int ent, struct override *fh, char buf[512]);
-static int override_edit(int ent, struct override *fh, char *direc);
-static int override_dele(int ent, struct override *fh, char *direct);
-static int friend_edit(int ent, struct override *fh, char *direct);
-static int friend_add(int ent, struct override *fh, char *direct);
-static int friend_dele(int ent, struct override *fh, char *direct);
-static int friend_mail(int ent, struct override *fh, char *direct);
-static int friend_query(int ent, struct override *fh, char *direct);
+static char *override_doentry(int ent, struct ythtbbs_override *fh, char buf[512]);
+static int override_edit(int ent, struct ythtbbs_override *fh, char *direc);
+static int override_dele(int ent, struct ythtbbs_override *fh, char *direct);
+static int friend_edit(int ent, struct ythtbbs_override *fh, char *direct);
+static int friend_add(int ent, struct ythtbbs_override *fh, char *direct);
+static int friend_dele(int ent, struct ythtbbs_override *fh, char *direct);
+static int friend_mail(int ent, struct ythtbbs_override *fh, char *direct);
+static int friend_query(int ent, struct ythtbbs_override *fh, char *direct);
 static int friend_help(void);
-static int reject_edit(int ent, struct override *fh, char *direct);
-static int reject_add(int ent, struct override *fh, char *direct);
-static int reject_dele(int ent, struct override *fh, char *direct);
-static int reject_query(int ent, struct override *fh, char *direct);
+static int reject_edit(int ent, struct ythtbbs_override *fh, char *direct);
+static int reject_add(int ent, struct ythtbbs_override *fh, char *direct);
+static int reject_dele(int ent, struct ythtbbs_override *fh, char *direct);
+static int reject_query(int ent, struct ythtbbs_override *fh, char *direct);
 static int reject_help(void);
 static int cmpfuid(unsigned *a, unsigned *b);
 static void do_log(char *msg, int who);
@@ -621,7 +622,7 @@ num_active_users()
 static int
 cmpfnames(userid, uv)
 char *userid;
-struct override *uv;
+struct ythtbbs_override *uv;
 {
 	return !strcmp(userid, uv->id);
 }
@@ -1516,22 +1517,21 @@ int
 addtooverride(uident)
 char *uident;
 {
-	struct override tmp;
+	struct ythtbbs_override tmp;
 	int n;
 	char buf[STRLEN];
 	char desc[5];
 
 	memset(&tmp, 0, sizeof (tmp));
 	if (friendflag) {
-		setuserfile(buf, "friends");
 		n = MAXFRIENDS;
 		strcpy(desc, "好友");
 	} else {
-		setuserfile(buf, "rejects");
 		n = MAXREJECTS;
 		strcpy(desc, "坏人");
 	}
-	if (get_num_records(buf, sizeof (struct override)) >= n) {
+
+	if (ythtbbs_override_count(currentuser.userid, friendflag ? YTHTBBS_OVERRIDE_FRIENDS : YTHTBBS_OVERRIDE_REJECTS) >= n) {
 		move(t_lines - 2, 0);
 		clrtoeol();
 		prints("抱歉，本站目前仅可以设定 %d 个%s, 请按任何件继续...", n, desc);
@@ -1540,18 +1540,11 @@ char *uident;
 		clrtoeol();
 		return -1;
 	} else {
-		if (friendflag) {
-			if (myfriend(searchuser(uident))) {
-				sprintf(buf, "%s 已在好友名单", uident);
-				show_message(buf);
-				return -1;
-			}
-		} else
-			if (search_record(buf, &tmp, sizeof (tmp), (void *) cmpfnames, uident) > 0) {
-				sprintf(buf, "%s 已在坏人名单", uident);
-				show_message(buf);
-				return -1;
-			}
+		if (ythtbbs_override_included(currentuser.userid, friendflag ? YTHTBBS_OVERRIDE_FRIENDS : YTHTBBS_OVERRIDE_REJECTS, uident) > 0) {
+			sprintf(buf, "%s 已在%s名单", uident, desc);
+			show_message(buf);
+			return -1;
+		}
 	}
 	if (uinfo.mode != LUSERS && uinfo.mode != LAUSERS && uinfo.mode != FRIEND)
 		n = 2;
@@ -1564,7 +1557,7 @@ char *uident;
 	sprintf(genbuf, "请输入给%s【%s】的说明: ", desc, tmp.id);
 	getdata(n, 0, genbuf, tmp.exp, 40, DOECHO, YEA);
 
-	n = append_record(buf, &tmp, sizeof (struct override));
+	n = ythtbbs_override_add(currentuser.userid, &tmp, (friendflag) ? YTHTBBS_OVERRIDE_FRIENDS : YTHTBBS_OVERRIDE_REJECTS);
 	if (n != -1)
 		(friendflag) ? getfriendstr() : getrejectstr();
 	else
@@ -1578,7 +1571,7 @@ char *uident;
 char *filename;
 {
 	int deleted;
-	struct override fh;
+	struct ythtbbs_override fh;
 	char buf[STRLEN];
 
 	setuserfile(buf, filename);
@@ -1618,7 +1611,7 @@ override_title()
 static char *
 override_doentry(ent, fh, buf)
 int ent;
-struct override *fh;
+struct ythtbbs_override *fh;
 char buf[512];
 {
 	sprintf(buf, " %4d  %-12.12s  %s", ent, fh->id, fh->exp);
@@ -1628,10 +1621,10 @@ char buf[512];
 static int
 override_edit(ent, fh, direc)
 int ent;
-struct override *fh;
+struct ythtbbs_override *fh;
 char *direc;
 {
-	struct override nh;
+	struct ythtbbs_override nh;
 	char buf[STRLEN / 2];
 	int pos;
 
@@ -1674,7 +1667,7 @@ override_add()
 static int
 override_dele(ent, fh, direct)
 int ent;
-struct override *fh;
+struct ythtbbs_override *fh;
 char *direct;
 {
 	char buf[STRLEN];
@@ -1715,7 +1708,7 @@ char *direct;
 static int
 friend_edit(ent, fh, direct)
 int ent;
-struct override *fh;
+struct ythtbbs_override *fh;
 char *direct;
 {
 	friendflag = YEA;
@@ -1725,7 +1718,7 @@ char *direct;
 static int
 friend_add(ent, fh, direct)
 int ent;
-struct override *fh;
+struct ythtbbs_override *fh;
 char *direct;
 {
 	friendflag = YEA;
@@ -1735,7 +1728,7 @@ char *direct;
 static int
 friend_dele(ent, fh, direct)
 int ent;
-struct override *fh;
+struct ythtbbs_override *fh;
 char *direct;
 {
 	friendflag = YEA;
@@ -1745,7 +1738,7 @@ char *direct;
 static int
 friend_mail(ent, fh, direct)
 int ent;
-struct override *fh;
+struct ythtbbs_override *fh;
 char *direct;
 {
 	if (!HAS_PERM(PERM_POST, currentuser))
@@ -1757,7 +1750,7 @@ char *direct;
 static int
 friend_query(ent, fh, direct)
 int ent;
-struct override *fh;
+struct ythtbbs_override *fh;
 char *direct;
 {
 	int ch;
@@ -1804,7 +1797,7 @@ friend_help()
 static int
 reject_edit(ent, fh, direct)
 int ent;
-struct override *fh;
+struct ythtbbs_override *fh;
 char *direct;
 {
 	friendflag = NA;
@@ -1814,7 +1807,7 @@ char *direct;
 static int
 reject_add(ent, fh, direct)
 int ent;
-struct override *fh;
+struct ythtbbs_override *fh;
 char *direct;
 {
 	friendflag = NA;
@@ -1824,7 +1817,7 @@ char *direct;
 static int
 reject_dele(ent, fh, direct)
 int ent;
-struct override *fh;
+struct ythtbbs_override *fh;
 char *direct;
 {
 	friendflag = NA;
@@ -1834,7 +1827,7 @@ char *direct;
 static int
 reject_query(ent, fh, direct)
 int ent;
-struct override *fh;
+struct ythtbbs_override *fh;
 char *direct;
 {
 	int ch;
@@ -1881,7 +1874,7 @@ t_friend()
 
 	friendflag = YEA;
 	setuserfile(buf, "friends");
-	i_read(GMENU, buf, override_title, (void *) override_doentry, friend_list, sizeof (struct override));
+	i_read(GMENU, buf, override_title, (void *) override_doentry, friend_list, sizeof (struct ythtbbs_override));
 	clear();
 	return;
 }
@@ -1893,7 +1886,7 @@ t_reject()
 
 	friendflag = NA;
 	setuserfile(buf, "rejects");
-	i_read(GMENU, buf, override_title, (void *) override_doentry, reject_list, sizeof (struct override));
+	i_read(GMENU, buf, override_title, (void *) override_doentry, reject_list, sizeof (struct ythtbbs_override));
 	clear();
 	return;
 }
@@ -1932,16 +1925,16 @@ int
 getfriendstr()
 {
 	int i;
-	struct override *tmp;
+	struct ythtbbs_override *tmp;
 
 	memset(uinfo.friend, 0, sizeof (uinfo.friend));
 	setuserfile(genbuf, "friends");
-	uinfo.fnum = get_num_records(genbuf, sizeof (struct override));
+	uinfo.fnum = get_num_records(genbuf, sizeof (struct ythtbbs_override));
 	if (uinfo.fnum <= 0)
 		return -1;
 	uinfo.fnum = (uinfo.fnum >= MAXFRIENDS) ? MAXFRIENDS : uinfo.fnum;
-	tmp = (struct override *) calloc(sizeof (struct override), uinfo.fnum);
-	get_records(genbuf, tmp, sizeof (struct override), 1, uinfo.fnum);
+	tmp = (struct ythtbbs_override *) calloc(sizeof (struct ythtbbs_override), uinfo.fnum);
+	get_records(genbuf, tmp, sizeof (struct ythtbbs_override), 1, uinfo.fnum);
 	for (i = 0; i < uinfo.fnum; i++) {
 		uinfo.friend[i] = searchuser(tmp[i].id);
 		if (uinfo.friend[i] == 0)
@@ -1958,16 +1951,16 @@ int
 getrejectstr()
 {
 	int nr, i;
-	struct override *tmp;
+	struct ythtbbs_override *tmp;
 
 	memset(uinfo.reject, 0, sizeof (uinfo.reject));
 	setuserfile(genbuf, "rejects");
-	nr = get_num_records(genbuf, sizeof (struct override));
+	nr = get_num_records(genbuf, sizeof (struct ythtbbs_override));
 	if (nr <= 0)
 		return -1;
 	nr = (nr >= MAXREJECTS) ? MAXREJECTS : nr;
-	tmp = (struct override *) calloc(sizeof (struct override), nr);
-	get_records(genbuf, tmp, sizeof (struct override), 1, nr);
+	tmp = (struct ythtbbs_override *) calloc(sizeof (struct ythtbbs_override), nr);
+	get_records(genbuf, tmp, sizeof (struct ythtbbs_override), 1, nr);
 	for (i = 0; i < nr; i++) {
 		uinfo.reject[i] = searchuser(tmp[i].id);
 		if (uinfo.reject[i] == 0)
