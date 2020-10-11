@@ -16,6 +16,11 @@ enum ythtbbs_override_type {
 	YTHTBBS_OVERRIDE_REJECTS
 };
 
+// 使用文件锁简单实现多线程、多进程互斥
+int ythtbbs_override_lock(const char *userid, const enum ythtbbs_override_type override_type);
+
+void ythtbbs_override_unlock(int lockfd);
+
 int ythtbbs_override_add(const char *userid, const struct ythtbbs_override *ptr_override, enum ythtbbs_override_type override_type);
 
 int ythtbbs_override_count(const char *userid, enum ythtbbs_override_type override_type);
