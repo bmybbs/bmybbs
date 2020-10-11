@@ -38,6 +38,7 @@ struct user_info {
 	int pager;                   ///< pager toggle, YEA, or NA
 	int in_chat;                 ///< for in_chat commands
 	int fnum;                    ///< number of friends
+	int rnum;                    ///< number of rejects
 	short ext_idle;              ///< has extended idle time, YEA or NA
 	bool isssh;                  ///< login from ssh
 	time_t lasttime;             ///< time of the last action
@@ -52,9 +53,9 @@ struct user_info {
 	char username[NAMELEN];
 	unsigned int unreadmsg;
 	short curboard;
-	int clubrights[4];	//add by ylsdd
-	unsigned friend[MAXFRIENDS];
-	unsigned reject[MAXREJECTS];
+	int clubrights[4];           ///< 俱乐部权限 add by ylsdd
+	unsigned friend[MAXFRIENDS]; ///< 用于存放好友的 uid 列表
+	unsigned reject[MAXREJECTS]; ///< 用于存放黑名单的 uid 列表
 	struct wwwsession wwwinfo;
 	struct onebrc brc;
 	char user_state_temp[16];  //add by leoncom
