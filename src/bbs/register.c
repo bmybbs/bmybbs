@@ -417,15 +417,6 @@ invalid_realmail(char *userid, char *email, int msize)
 
 	sethomefile(fname, userid, "register");
 	if (stat(fname, &st) == 0) {
-#ifdef REG_EXPIRED
-		now_t = time(0);
-		if (now_t - st.st_mtime >= REG_EXPIRED * 86400) {
-			sethomefile(fname, userid, "register.old");
-			if (stat(fname, &st) == -1
-			    || now_t - st.st_mtime >= REG_EXPIRED * 86400)
-				return 1;
-		}
-#endif
 	}
 	sethomefile(fname, userid, "register");
 	if ((fn = fopen(fname, "r")) != NULL) {

@@ -884,37 +884,6 @@ user_login()
 			fclose(fp);
 		}
 	}
-#ifdef REG_EXPIRED
-	/* ppfoong - 每 REG_EXPIRED 天重新进行身份确认 */
-	if (HAS_PERM(PERM_LOGINOK) && strcmp(currentuser.userid, "SYSOP") && strcmp(currentuser.userid, "guest")) {
-		struct stat st;
-		time_t now;
-		int expired = 0;
-		now = time(0);
-		setuserfile(fname, "mailcheck");
-		if (stat(fname, &st) == -1 || now - st.st_mtime >= REG_EXPIRED * 86400) {
-			setuserfile(fname, "register");
-			if (stat(fname, &st) == 0) {
-				if (now - st.st_mtime >= REG_EXPIRED * 86400) {
-					setuserfile(fname, "register.old");
-					if (stat(fname, &st) == -1 || now - st.st_mtime >= REG_EXPIRED * 86400)
-						expired = 1;
-					else
-						expired = 0;
-				}
-			} else
-				expired = 1;	/*  漏网之鱼??  */
-		}
-		if (expired) {
-			strcpy(currentuser.email, "");
-			strcpy(currentuser.address, "");
-			currentuser.userlevel &= ~(PERM_LOGINOK | PERM_PAGE);
-			mail_file("etc/expired", currentuser.userid, "更新个人资料说明。");
-			setuserfile(fname, "sucessreg");
-			unlink(fname);
-		}
-	}
-#endif
 	currentuser.numlogins++;
 	if (strcmp(currentuser.userid, "SYSOP") == 0) {
 		currentuser.userlevel = ~0; /* SYSOP gets all permission bits */
