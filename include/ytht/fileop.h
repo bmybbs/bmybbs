@@ -132,4 +132,10 @@ int ytht_add_to_file(char *filename, char *str);
  *     1 替换成功
  */
 int ytht_del_from_file(char *filename, char *str, bool include_lf);
+
+/**
+ * @brief 获取文件大小
+ * 对应于宏 file_size 的函数实现，以便多线程安全
+ */
+off_t ytht_file_size_s(const char *filepath);
 #endif
