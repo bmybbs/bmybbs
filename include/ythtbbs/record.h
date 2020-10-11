@@ -12,7 +12,7 @@ typedef int (*ythtbbs_record_callback_v)(void *, va_list);
 void tmpfilename(char *filename, char *tmpfile, char *deleted);
 int safewrite(int fd, void *buf, int size);
 int delete_record(char *filename, int size, int id);
-int append_record(char *filename, void *record, int size);
+int append_record(const char *filename, const void *record, const size_t size);
 int new_apply_record(char *filename, int size, int (*fptr) (void *, void *), void *farg);
 int new_search_record(char *filename, void *rptr, int size, int (*fptr) (void *, void *), void *farg);
 int search_record(char *filename, void *rptr, int size, int (*fptr) (void *, void *), void *farg);
@@ -40,4 +40,12 @@ int substitute_record(char *filename, void *rptr, int size, int id);
  * @param size
  */
 int ythtbbs_record_apply_v(char *filename, ythtbbs_record_callback_v fptr, size_t size, ...);
+
+/**
+ * @brief 获取记录的条数
+ * 参考了 src/bbs/record.c get_num_records() 的实现，但是不兼容，
+ * 在 get_num_records() 中额外处理了 ".TOPFILE" 的条数，在后续重
+ * 构中调用两次接口。
+ */
+long ythtbbs_record_count_records(const char *filename, const size_t size);
 #endif

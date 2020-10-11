@@ -105,7 +105,7 @@ int size, id;
 }
 
 int
-append_record(char *filename, void *record, int size)
+append_record(const char *filename, const void *record, const size_t size)
 {
 	int fd;
 	struct flock ldata;
@@ -383,5 +383,14 @@ END:
 	close(fd);
 	free(buf);
 	return retv;
+}
+
+long ythtbbs_record_count_records(const char *filename, const size_t size) {
+	struct stat st;
+
+	if (stat(filename, &st) == -1)
+		return 0;
+
+	return st.st_size / size;
 }
 
