@@ -30,6 +30,13 @@ int ythtbbs_override_included(char *userid, enum ythtbbs_override_type override_
 	return search_record(buf, &tmp_override_buf, sizeof(struct ythtbbs_override), ythtbbs_override_callback_cmp_userid, (void *) search_id);
 }
 
+long ythtbbs_override_get_records(const char *userid, struct ythtbbs_override *array, const size_t count, const enum ythtbbs_override_type override_type) {
+	char buf[128];
+
+	sethomefile_s(buf, sizeof(buf), userid, (override_type == YTHTBBS_OVERRIDE_FRIENDS) ? FRIENDS_FILE : REJECTS_FILE);
+	return ythtbbs_record_get_records(buf, array, sizeof(struct ythtbbs_override), 1, count);
+}
+
 static int ythtbbs_override_callback_cmp_userid(void *a, void *b) {
 	const char *userid = (const char *)a;
 	const struct ythtbbs_override *ptr_override = (const struct ythtbbs_override *)b;
