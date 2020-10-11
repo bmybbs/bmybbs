@@ -28,4 +28,6 @@ int ythtbbs_override_count(const char *userid, enum ythtbbs_override_type overri
 int ythtbbs_override_included(char *userid, enum ythtbbs_override_type override_type, const char *search_id);
 
 long ythtbbs_override_get_records(const char *userid, struct ythtbbs_override *array, const size_t count, const enum ythtbbs_override_type override_type);
+
+void ythtbbs_override_set_records(const char *userid, const struct ythtbbs_override *array, const size_t count, const enum ythtbbs_override_type override_type);
 #endif
