@@ -3,13 +3,18 @@
 int
 bbsball_main()
 {	//modify by mintbaggio 20040829 for new www
-	int i;
+	int i, lockfd;
 	html_header(1);
 	check_msg();
 	if (!loginok || isguest)
 		http_fatal("您尚未登录, 请先登录");
 	changemode(GMENU);
-	loadbad(currentuser.userid);
+
+	lockfd = ythtbbs_override_lock(currentuser.userid, YTHTBBS_OVERRIDE_REJECTS);
+	badnum = ythtbbs_override_count(currentuser.userid, YTHTBBS_OVERRIDE_REJECTS);
+	ythtbbs_override_get_records(currentuser.userid, bbb, badnum, YTHTBBS_OVERRIDE_REJECTS);
+	ythtbbs_override_unlock(lockfd);
+
 	printf("<body><center>\n");
 	printf("<div class=rhead>%s -- 黑名单 [使用者: <span class=h11>%s</span>]</div><hr><br>\n", BBSNAME, currentuser.userid);
 	printf("您共设定了 %d 位黑名单<br>", badnum);
@@ -25,3 +30,4 @@ bbsball_main()
 	http_quit();
 	return 0;
 }
+
