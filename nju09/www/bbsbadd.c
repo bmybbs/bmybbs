@@ -15,7 +15,6 @@ bbsbadd_main()
 	printf("<body><center>%s -- 黑名单 [使用者: %s]<hr>\n", BBSNAME, currentuser.userid);
 	ytht_strsncpy(ob.id, getparm("userid"), 13);
 	ytht_strsncpy(ob.exp, getparm("exp"), 32);
-	loadbad(currentuser.userid);
 	if (ob.id[0] == 0 || ob.exp[0] == 0) {
 		if (ob.id[0])
 			printf("<font color=red>请输入黑名单说明</font>");
