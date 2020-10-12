@@ -2283,34 +2283,8 @@ isfriend(char *id)
 	return 0;
 }
 
-struct override bbb[MAXREJECTS];
+struct ythtbbs_override bbb[MAXREJECTS];
 int badnum = 0;
-int
-loadbad(char *id)
-{
-	FILE *fp;
-	char file[256];
-	sethomefile(file, id, "rejects");
-	fp = fopen(file, "r");
-	if (fp) {
-		badnum = fread(bbb, sizeof (bbb[0]), MAXREJECTS, fp);
-		fclose(fp);
-	}
-	return 0;
-}
-
-int
-isbad(char *id)
-{
-	int n;
-	if (!loginok || isguest)
-		return 0;
-	loadbad(currentuser.userid);
-	for (n = 0; n < badnum; n++)
-		if (!strcasecmp(id, bbb[n].id))
-			return 1;
-	return 0;
-}
 
 int
 changemode(int mode)

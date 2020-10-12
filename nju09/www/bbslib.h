@@ -211,8 +211,6 @@ int count_online(void);
 int loadfriend(char *id);
 int initfriends(struct user_info *u);
 int isfriend(char *id);
-int loadbad(char *id);
-int isbad(char *id);
 int changemode(int mode);
 char *encode_url(char *s);
 char *noquote_html(char *s);
