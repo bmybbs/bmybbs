@@ -16,11 +16,11 @@ bbsbadd_main()
 	ytht_strsncpy(ob.id, getparm("userid"), 13);
 	ytht_strsncpy(ob.exp, getparm("exp"), 32);
 	if (ob.id[0] == 0 || ob.exp[0] == 0) {
-		if (ob.id[0])
+		if (ob.exp[0])
 			printf("<font color=red>请输入黑名单说明</font>");
 		printf("<form action=bbsbadd>\n");
-		printf("请输入欲加入的黑名单帐号: <input type=text name=userid><br>\n");
-		printf("请输入对这个黑名单账号的说明: <input type=text name=exp>\n");
+		printf("请输入欲加入的黑名单帐号: <input type=text name=userid value='%s'><br>\n", (ob.id[0] == 0) ? "" : ob.id);
+		printf("请输入对这个黑名单账号的说明: <input type=text name=exp value='%s'>\n", (ob.exp[0] == 0) ? "" : ob.exp);
 		printf("<br><input type=submit value=确定></form>\n");
 		http_quit();
 	}
