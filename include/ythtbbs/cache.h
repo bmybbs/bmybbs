@@ -162,6 +162,8 @@ void ythtbbs_cache_UserTable_add_utmp_idx(int uid, int utmp_idx);
 
 void ythtbbs_cache_UserTable_remove_utmp_idx(int uid, int utmp_idx);
 
+int ythtbbs_cache_UserTable_get_user_online_friends(const char *userid, bool has_see_cloak_perm, struct user_info *user_list, size_t user_list_size);
+
 int ythtbbs_cache_UserIDHashTable_find_idx(const char *userid);
 
 /**
@@ -193,4 +195,11 @@ int ythtbbs_cache_utmp_insert(struct user_info *ptr_user_info);
 int ythtbbs_cache_utmp_check_active_by_idx(int idx);
 
 int ythtbbs_cache_utmp_check_uid_by_idx(int idx, int uid);
+
+/**
+ * @brief 依据 utmp_idx 获取缓存中的结构体（只读）
+ * @param idx 在 user_info 数组中的索引，从 0 开始计数
+ * @return 结构体指针
+ */
+const struct user_info *ythtbbs_cache_utmp_get_by_idx(int idx);
 #endif //BMYBBS_CACHE_H

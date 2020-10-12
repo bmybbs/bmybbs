@@ -9,6 +9,7 @@
 #include "ythtbbs/record.h"
 #include "ythtbbs/user.h"
 #include "cache-internal.h"
+#include "ythtbbs/override.h"
 
 /***** global variables *****/
 static struct ythtbbs_cache_UserIDHashTable *shm_userid_hashtable;
@@ -168,6 +169,50 @@ void ythtbbs_cache_UserIDHashTable_dump(FILE *fp) {
 
 		fprintf(fp, "%d, %d, %s\n", i, item->user_num, item->userid);
 	}
+}
+
+int ythtbbs_cache_UserTable_get_user_online_friends(const char *userid, bool has_see_cloak_perm, struct user_info *user_list, size_t user_list_size) {
+	int lockfd;
+	unsigned int i, j, k, total, user_idx;
+	struct ythtbbs_override *override_friends = NULL;
+	const struct user_info *x;
+
+	lockfd = ythtbbs_override_lock(userid, YTHTBBS_OVERRIDE_FRIENDS);
+	total = ythtbbs_override_count(userid, YTHTBBS_OVERRIDE_FRIENDS);
+
+	if (total <= 0) {
+		ythtbbs_override_unlock(lockfd);
+		return 0;
+	}
+
+	override_friends = (struct ythtbbs_override*) calloc(total, sizeof(struct ythtbbs_override));
+	ythtbbs_override_get_records(userid, override_friends, total, YTHTBBS_OVERRIDE_FRIENDS);
+	ythtbbs_override_unlock(lockfd);
+
+	ythtbbs_cache_UserTable_resolve();
+	for (i = 0, k = 0; i < total; i++) {
+		user_idx = ythtbbs_cache_UserIDHashTable_find_idx(override_friends[i].id);
+		if (user_idx < 0)
+			continue;
+
+		for (j = 0; j < MAX_LOGIN_PER_USER; j++) {
+			if (shm_user_table->users[user_idx].utmp_indices[j] > 0) {
+				x = ythtbbs_cache_utmp_get_by_idx(shm_user_table->users[user_idx].utmp_indices[j] - 1);
+				if (x->invisible && !has_see_cloak_perm)
+					continue;
+
+				memcpy(&user_list[k], x, sizeof(struct user_info));
+				k++;
+				if (k == user_list_size)
+					goto END;
+			}
+		}
+	}
+
+END:
+	if (override_friends)
+		free(override_friends);
+	return k;
 }
 
 /***** implementations of private functions *****/

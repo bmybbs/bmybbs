@@ -136,3 +136,7 @@ void ythtbbs_cache_utmp_dump(FILE *fp) {
 	}
 }
 
+const struct user_info *ythtbbs_cache_utmp_get_by_idx(int idx) {
+	return &shm_utmp->uinfo[idx];
+}
+
