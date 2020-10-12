@@ -26,7 +26,7 @@ bbssndmail_main()
 		if (u == 0)
 			http_fatal("错误的收信人帐号");
 		strcpy(userid, u->userid);
-		if (inoverride(currentuser.userid, userid, "rejects"))
+		if (ythtbbs_override_included(userid, YTHTBBS_OVERRIDE_REJECTS, currentuser.userid))
 			http_fatal("无法发信给这个人");
 	}
 	for (i = 0; i < strlen(title); i++)
@@ -51,12 +51,11 @@ bbssndmail_main()
 			u = getuser(fff[i].id);
 			if (u == 0)
 				continue;
-			if (inoverride
-			    (currentuser.userid, fff[i].id, "rejects"))
+			if (ythtbbs_override_included(fff[i].id, YTHTBBS_OVERRIDE_REJECTS, currentuser.userid))
 				continue;
 			post_mail(fff[i].id, title2, filename,
-				  currentuser.userid, currentuser.username,
-				  fromhost, sig - 1, mark);
+					currentuser.userid, currentuser.username,
+					fromhost, sig - 1, mark);
 		}
 	}
     if (backup) {

@@ -23,6 +23,7 @@
 */
 
 #include "bbs.h"
+#include "ythtbbs/override.h"
 #include "edit.h"
 #include "smth_screen.h"
 #include "io.h"
@@ -98,14 +99,14 @@ struct user_info *uin;
 static int canmsg_offline(char *uid) {
 	if (!strcmp(uid, "guest"))
 		return NA;
-	if (inoverride(currentuser.userid, uid, "rejects"))
+	if (ythtbbs_override_included(uid, YTHTBBS_OVERRIDE_REJECTS, currentuser.userid))
 		return NA;
 	if (getuser(uid) == 0)
 		return NA;
 	if (lookupuser.userdefine & DEF_ALLMSG)
 		return YEA;
 	if ((lookupuser.userdefine & DEF_FRIENDMSG)
-	    && inoverride(currentuser.userid, uid, "friends"))
+			&& ythtbbs_override_included(uid, YTHTBBS_OVERRIDE_FRIENDS, currentuser.userid))
 		return YEA;
 	return NA;
 }

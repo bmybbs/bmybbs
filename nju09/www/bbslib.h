@@ -9,6 +9,7 @@
 #include <sys/mman.h>
 #include "bbs.h"
 #include "ythtbbs/ythtbbs.h"
+#include "ythtbbs/override.h"
 
 #define FIRST_PAGE	"/"
 #define CSS_FILE 	"/bbs.css"
@@ -105,10 +106,10 @@ extern int parm_num;
 
 int count_mails(char *id, int *total, int *unread);
 
-extern struct override fff[200];
+extern struct ythtbbs_override fff[200];
 extern size_t friendnum;
 
-extern struct override bbb[MAXREJECTS];
+extern struct ythtbbs_override bbb[MAXREJECTS];
 extern int badnum;
 
 char *sec(char);

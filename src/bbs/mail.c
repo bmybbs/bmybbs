@@ -24,6 +24,7 @@
 
 #include <stddef.h>
 #include "bbs.h"
+#include "ythtbbs/override.h"
 #include "bbs_global_vars.h"
 #include "smth_screen.h"
 #include "mail.h"
@@ -329,7 +330,7 @@ char *userid, *title;
 		return -1;
 	strncpy(uid, lookupuser.userid, IDLEN+1);
 	uid[IDLEN+1]=0;
-	if (inoverride(currentuser.userid, uid, "rejects"))
+	if (ythtbbs_override_included(uid, YTHTBBS_OVERRIDE_REJECTS, currentuser.userid))
 		return -3;
 /*add by KCN :) */
 

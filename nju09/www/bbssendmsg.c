@@ -14,7 +14,7 @@ bbssendmsg_main()
 	if (!loginok || isguest)
 		http_fatal("匆匆过客不能发讯息, 请先登录！");
 	//if (!((currentuser.userlevel )& (PERM_CHAT|PERM_PAGE)))
-	if (!((currentuser.userlevel )& (PERM_PAGE)))	
+	if (!((currentuser.userlevel )& (PERM_PAGE)))
 		http_fatal("您没有权限发讯息");
 	ytht_strsncpy(destid, getparm("destid"), 13);
 	ytht_strsncpy(msg, getparm("msg"), MAX_MSG_SIZE);
@@ -50,12 +50,11 @@ bbssendmsg_main()
 	if (!strcasecmp(destid, "guest"))
 		http_fatal("无法发讯息给这个人 1");
 	if (!((u->userdefine & DEF_ALLMSG)
-	      || ((u->userdefine & DEF_FRIENDMSG)
-		  && inoverride(currentuser.userid, destid, "friends"))))
+		|| ((u->userdefine & DEF_FRIENDMSG) && ythtbbs_override_included(destid, YTHTBBS_OVERRIDE_FRIENDS, currentuser.userid))))
 		http_fatal("无法发讯息给这个人 2");
 	if (!strcmp(destid, "SYSOP"))
 		http_fatal("无法发讯息给这个人 3");
-	if (inoverride(currentuser.userid, destid, "rejects"))
+	if (ythtbbs_override_included(destid, YTHTBBS_OVERRIDE_REJECTS, currentuser.userid))
 		http_fatal("无法发讯息给这个人 4");
 	if (get_unreadcount(destid) > MAXMESSAGE)
 		http_fatal

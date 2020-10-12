@@ -25,6 +25,7 @@
 #include <sys/msg.h>
 #include <sys/mman.h>
 #include "ythtbbs/commend.h"
+#include "ythtbbs/override.h"
 #include "bbs.h"
 #include "bbs_global_vars.h"
 #include "one_key.h"
@@ -2268,7 +2269,7 @@ post_article(struct fileheader *sfh)
 		if(strcasecmp(currentuser.userid, mention_ids[i])!=0) {
 			if(hasreadperm_ext(mention_ids[i], currboard)) {	// 该函数内调用了 getuser() 函数，因此可以直接使用 lookupuser 全局变量
 				// 用户存在的情况下，且不为当前用户的情况下，且拥有该版面阅读权限的情况下，且不在黑名单里的时候
-				if(!inoverride(currentuser.userid, lookupuser.userid, "rejects"))
+				if (!ythtbbs_override_included(lookupuser.userid, YTHTBBS_OVERRIDE_REJECTS, currentuser.userid))
 					add_mention_notification(lookupuser.userid, (header.chk_anony) ? "Anonymous" : currentuser.userid,
 							currboard, postfile.filetime, postfile.title);
 			}
