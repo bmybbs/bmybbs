@@ -13,8 +13,7 @@ bbsfdel_main()
 		http_fatal("您尚未登录，请先登录");
 	changemode(GMENU);
 	sethomefile(path, currentuser.userid, "friends");
-	printf("<center>%s -- 好友名单 [使用者: %s]<hr>\n", BBSNAME,
-	       currentuser.userid);
+	printf("<center>%s -- 好友名单 [使用者: %s]<hr>\n", BBSNAME, currentuser.userid);
 	ytht_strsncpy(userid, getparm("userid"), 13);
 	if (userid[0] == 0) {
 		printf("<form action=bbsfdel>\n");
@@ -37,9 +36,7 @@ bbsfdel_main()
 	fp = fopen(path, "w");
 	fwrite(f, sizeof (struct override), total, fp);
 	fclose(fp);
-	printf
-	    ("[%s]已从您的好友名单中删除.<br>\n <a href=bbsfall>返回好友名单</a>",
-	     userid);
+	printf("[%s]已从您的好友名单中删除.<br>\n <a href=bbsfall>返回好友名单</a>", userid);
 	http_quit();
 	return 0;
 }
