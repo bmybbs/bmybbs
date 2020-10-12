@@ -31,7 +31,7 @@ bbsbdel_main()
 	}
 
 	lookupuser = getuser(userid);
-	if (!lookupuser || ythtbbs_override_included(userid, YTHTBBS_OVERRIDE_REJECTS, lookupuser->userid)) {
+	if (!lookupuser || !ythtbbs_override_included(currentuser.userid, YTHTBBS_OVERRIDE_REJECTS, lookupuser->userid)) {
 		ythtbbs_override_unlock(lockfd);
 		http_fatal("此人本来就不在你的黑名单里");
 	}
