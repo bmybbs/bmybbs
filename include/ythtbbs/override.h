@@ -21,11 +21,11 @@ int ythtbbs_override_lock(const char *userid, const enum ythtbbs_override_type o
 
 void ythtbbs_override_unlock(int lockfd);
 
-int ythtbbs_override_add(const char *userid, const struct ythtbbs_override *ptr_override, enum ythtbbs_override_type override_type);
+int ythtbbs_override_add(const char *userid, const struct ythtbbs_override *ptr_override, const enum ythtbbs_override_type override_type);
 
-int ythtbbs_override_count(const char *userid, enum ythtbbs_override_type override_type);
+int ythtbbs_override_count(const char *userid, const enum ythtbbs_override_type override_type);
 
-int ythtbbs_override_included(char *userid, enum ythtbbs_override_type override_type, const char *search_id);
+int ythtbbs_override_included(char *userid, const enum ythtbbs_override_type override_type, const char *search_id);
 
 long ythtbbs_override_get_records(const char *userid, struct ythtbbs_override *array, const size_t count, const enum ythtbbs_override_type override_type);
 
