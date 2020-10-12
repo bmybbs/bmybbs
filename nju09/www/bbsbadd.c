@@ -11,8 +11,7 @@ bbsbadd_main()
 		http_fatal("您尚未登录，请先登录");
 	changemode(GMENU);
 	sethomefile(path, currentuser.userid, "rejects");
-	printf("<body><center>%s -- 黑名单 [使用者: %s]<hr>\n", BBSNAME,
-	       currentuser.userid);
+	printf("<body><center>%s -- 黑名单 [使用者: %s]<hr>\n", BBSNAME, currentuser.userid);
 	ytht_strsncpy(userid, getparm("userid"), 13);
 	ytht_strsncpy(exp, getparm("exp"), 32);
 	loadbad(currentuser.userid);
@@ -20,12 +19,8 @@ bbsbadd_main()
 		if (userid[0])
 			printf("<font color=red>请输入黑名单说明</font>");
 		printf("<form action=bbsbadd>\n");
-		printf
-		    ("请输入欲加入的黑名单帐号: <input type=text name=userid value='%s'><br>\n",
-		     userid);
-		printf
-		    ("请输入对这个黑名单账号的说明: <input type=text name=exp value='%s'>\n",
-		     exp);
+		printf("请输入欲加入的黑名单帐号: <input type=text name=userid value='%s'><br>\n", userid);
+		printf("请输入对这个黑名单账号的说明: <input type=text name=exp value='%s'>\n", exp);
 		printf("<br><input type=submit value=确定></form>\n");
 		http_quit();
 	}
@@ -41,8 +36,7 @@ bbsbadd_main()
 	fp = fopen(path, "w");
 	fwrite(bbb, sizeof (struct override), badnum, fp);
 	fclose(fp);
-	printf("[%s]已加入您的黑名单.<br>\n <a href=bbsball>返回黑名单</a>",
-	       userid);
+	printf("[%s]已加入您的黑名单.<br>\n <a href=bbsball>返回黑名单</a>", userid);
 	http_quit();
 	return 0;
 }
