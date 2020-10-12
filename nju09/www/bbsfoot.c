@@ -114,7 +114,7 @@ query_f(int uid)
 		if (!uentp->active || !uentp->pid || uentp->uid != uid)
 			continue;
 		if (!testreject) {
-			if (isbad(uentp->userid))
+			if (ythtbbs_override_included(currentuser.userid, YTHTBBS_OVERRIDE_REJECTS, uentp->userid))
 				return 0;
 			testreject = 1;
 		}
