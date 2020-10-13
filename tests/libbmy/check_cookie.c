@@ -20,7 +20,7 @@ START_TEST(test_bmy_cookie_gen) {
 	char *B = "B";
 	char *C = "C";
 	char *E = "E";
-	struct cookie cookie;
+	struct bmy_cookie cookie;
 
 	cookie.userid = A;
 	cookie.sessid = B;
@@ -47,11 +47,11 @@ START_TEST(test_bmy_cookie_gen) {
 }
 
 START_TEST(test_bmy_cookie_parse) {
-	struct cookie cookie;
+	struct bmy_cookie cookie;
 	char buf[60];
 
 	sprintf(buf, "A-B-C-E");
-	memset(&cookie, 0, sizeof(struct cookie));
+	memset(&cookie, 0, sizeof(struct bmy_cookie));
 	bmy_cookie_parse(buf, &cookie);
 	ck_assert_str_eq(cookie.userid, "A");
 	ck_assert_str_eq(cookie.sessid, "B");
@@ -59,7 +59,7 @@ START_TEST(test_bmy_cookie_parse) {
 	ck_assert_str_eq(cookie.extraparam, "E");
 
 	sprintf(buf, "A--C-E");
-	memset(&cookie, 0, sizeof(struct cookie));
+	memset(&cookie, 0, sizeof(struct bmy_cookie));
 	bmy_cookie_parse(buf, &cookie);
 	ck_assert_str_eq(cookie.userid, "A");
 	ck_assert_str_eq(cookie.sessid, "");
@@ -67,7 +67,7 @@ START_TEST(test_bmy_cookie_parse) {
 	ck_assert_str_eq(cookie.extraparam, "E");
 
 	sprintf(buf, "--C-E");
-	memset(&cookie, 0, sizeof(struct cookie));
+	memset(&cookie, 0, sizeof(struct bmy_cookie));
 	bmy_cookie_parse(buf, &cookie);
 	ck_assert_str_eq(cookie.userid, "");
 	ck_assert_str_eq(cookie.sessid, "");
@@ -75,7 +75,7 @@ START_TEST(test_bmy_cookie_parse) {
 	ck_assert_str_eq(cookie.extraparam, "E");
 
 	sprintf(buf, "---");
-	memset(&cookie, 0, sizeof(struct cookie));
+	memset(&cookie, 0, sizeof(struct bmy_cookie));
 	bmy_cookie_parse(buf, &cookie);
 	ck_assert_str_eq(cookie.userid, "");
 	ck_assert_str_eq(cookie.sessid, "");
@@ -83,7 +83,7 @@ START_TEST(test_bmy_cookie_parse) {
 	ck_assert_str_eq(cookie.extraparam, "");
 
 	sprintf(buf, "--");
-	memset(&cookie, 0, sizeof(struct cookie));
+	memset(&cookie, 0, sizeof(struct bmy_cookie));
 	bmy_cookie_parse(buf, &cookie);
 	ck_assert_str_eq(cookie.userid, "");
 	ck_assert_str_eq(cookie.sessid, "");
@@ -91,7 +91,7 @@ START_TEST(test_bmy_cookie_parse) {
 	ck_assert_ptr_null(cookie.extraparam);
 
 	sprintf(buf, "--");
-	memset(&cookie, 0, sizeof(struct cookie));
+	memset(&cookie, 0, sizeof(struct bmy_cookie));
 	bmy_cookie_parse(buf, &cookie);
 	ck_assert_str_eq(cookie.userid, "");
 	ck_assert_str_eq(cookie.sessid, "");
@@ -99,7 +99,7 @@ START_TEST(test_bmy_cookie_parse) {
 	ck_assert_ptr_null(cookie.extraparam);
 
 	sprintf(buf, "-");
-	memset(&cookie, 0, sizeof(struct cookie));
+	memset(&cookie, 0, sizeof(struct bmy_cookie));
 	bmy_cookie_parse(buf, &cookie);
 	ck_assert_str_eq(cookie.userid, "");
 	ck_assert_ptr_null(cookie.sessid);
@@ -107,7 +107,7 @@ START_TEST(test_bmy_cookie_parse) {
 	ck_assert_ptr_null(cookie.extraparam);
 
 	sprintf(buf, "");
-	memset(&cookie, 0, sizeof(struct cookie));
+	memset(&cookie, 0, sizeof(struct bmy_cookie));
 	bmy_cookie_parse(buf, &cookie);
 	ck_assert_str_eq(cookie.userid, "");
 	ck_assert_ptr_null(cookie.sessid);

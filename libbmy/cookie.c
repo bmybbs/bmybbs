@@ -5,7 +5,7 @@
 
 static const char SEPRATOR = '-';
 
-void bmy_cookie_parse(char *buf, struct cookie *cookie) {
+void bmy_cookie_parse(char *buf, struct bmy_cookie *cookie) {
 	int i, j, k;
 	cookie->userid = buf;
 
@@ -33,7 +33,7 @@ void bmy_cookie_parse(char *buf, struct cookie *cookie) {
 	}
 }
 
-int bmy_cookie_gen(char *buf, size_t len, const struct cookie *cookie) {
+int bmy_cookie_gen(char *buf, size_t len, const struct bmy_cookie *cookie) {
 	if (buf == NULL || len == 0)
 		return -1;
 
