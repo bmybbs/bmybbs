@@ -19,6 +19,7 @@ bbsufind_main()
 {
 	int i, total = 0, total2 = 0;
 	int limit;
+	int lockfd;
 	struct user_info *x, *user;
 	char search;
 	char buf[128];
@@ -67,7 +68,9 @@ bbsufind_main()
 	for (i = 0; i < total; i++) {
 		int dt = (now_t - user[i].lasttime) / 60;
 		printf("<tr><td>%d</td>", i + 1);
-		printf("<td>%s</td>", isfriend(user[i].userid) ? "¡Ì" : "  ");
+		lockfd = ythtbbs_override_lock(currentuser.userid, YTHTBBS_OVERRIDE_FRIENDS);
+		printf("<td>%s</td>", ythtbbs_override_included(currentuser.userid, YTHTBBS_OVERRIDE_FRIENDS, user[i].userid) ? "¡Ì" : "  ");
+		ythtbbs_override_unlock(lockfd);
 		printkick(buf, sizeof (buf), &user[i]);
 		printf("<td><a href=bbsqry?userid=%s>%s</a> %s</td>", user[i].userid, user[i].userid, buf);
 		printf("<td><a href=bbsqry?userid=%s>%24.24s</a></td>", user[i].userid, nohtml(void1(user[i].username)));
