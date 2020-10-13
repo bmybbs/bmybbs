@@ -14,7 +14,7 @@
 /* END */
 
 struct wwwsession {
-	unsigned char used:1, show_reg:1, att_mode:1, ipmask:4, doc_mode:1;
+	unsigned char used:1, show_reg:1, att_mode:1, doc_mode:1;
 	unsigned char link_mode:1, def_mode:1, t_lines:6;
 	char iskicked;
 	char unused;

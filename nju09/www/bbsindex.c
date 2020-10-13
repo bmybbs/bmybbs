@@ -119,7 +119,7 @@ void loginwindow()
 	     "function sf(){document.l.id.focus();}\n"
 	     "function st(){document.l.t.value=(new Date()).valueOf();}\n"
 	     "function lg(){self.location.href='/" SMAGIC
-	     "/bbslogin?id=guest&ipmask=8&t='+(new Date()).valueOf();}\n"
+	     "/bbslogin?id=guest&t='+(new Date()).valueOf();}\n"
 	     "</script>\n");
 	printf("<link href=\"/images/oras.css\" rel=stylesheet type=text/css>\n");
 	printf("<title>欢迎光临 "MY_BBS_NAME"</title>");
@@ -156,18 +156,6 @@ void loginwindow()
 	//add by liuche@BMY 20120205
 		"<td>&nbsp&nbsp&nbsp<a href='/findpass.html' target='_blank' class=linkindex>找回用户名或密码？</a></td>\n"
 		"</form></tr></table>\n"
-	//"<table border=0 align=center cellpadding=0 cellspacing=0>"
-	//"<tr><td><class=1004>验证客户 IP 范围到<select name=ipmask>\n"
-	//	"<option value=0 selected class=1004>单IP</option>\n"
-	//	"<option value=1 class=1004>2 IP</option>\n"
-	//	"<option value=2 class=1004>4 IP</option>\n"
-	//	"<option value=3 class=1004>8 IP</option>\n"
-	//	"<option value=4 class=1004>16 IP</option>\n"
-	//	"<option value=5 class=1004>32 IP</option>\n"
-	//	"<option value=6 class=1004>64 IP</option>\n"
-	//	"<option value=7 class=1004>128 IP</option>\n"
-	//	"<option value=8 class=1004>256 IP</option>\n"
-	//	"</select><a href=/ipmask.html target=_blank>这是什么?</a></font></td></tr></table></form>\n"
 	"</tr>\n </td>\n"
        "</tr>\n"
       "</table></td>\n"
@@ -185,78 +173,6 @@ void loginwindow()
 	printf("</body>\n</html>");
 }
 
-/*
-void
-loginwindow()
-{
-
-//int n=random()%NFACE;
-	int n = 2;
-	if (!loadoneface())
-		pface = &oneface;
-	else
-		pface = &(bbsface[n]);
-	html_header(4);
-	printf("<script language='JavaScript'> window.open('http://www.xjtu.edu.cn/xjtucert/','62','height=400,width=800,left=50,top=50,status=no,directories=no,scrollbars=no,toolbar=no,menubar=no,location=no')");
-	printf("</script>");
-	//printf("<script>document.location.href='main';</script>");
-	printf
-	    ("<STYLE type=text/css>A{COLOR: %s; text-decoration: none;}</STYLE>\n"
-	     "<script>function openreg(){open('" SMAGIC
-	     "/bbsreg', 'winREG', 'width=600,height=460,resizable=yes,scrollbars=yes');}\n"
-	     "function sf(){document.l.id.focus();}\n"
-	     "function st(){document.l.t.value=(new Date()).valueOf();}\n"
-	     "function lg(){self.location.href='/" SMAGIC
-	     "/bbslogin?id=guest&ipmask=8&t='+(new Date()).valueOf();}\n"
-	     "</script>\n"
-	     "</head>\n<BODY text=%s bgColor=%s leftmargin=1 MARGINWIDTH=1 topmargin=0>\n<br>"
-	     "<CENTER>", pface->color, pface->color, pface->bgcolor);
-	printf("<IMG src=%s border=0 alt='' width=85%%>\n", pface->figure);
-	if (pface->stamp)
-		printf
-		    ("<table width=75%%><tr><td align=right><IMG src=%s border=0 alt=''></td></tr></table>",
-		     pface->stamp);
-//by bjgyt
-	printf("<table><tr><!--td><IMG src=/ythtnet.gif border=0 alt=''></td-->"
-	       "<form name=l action=/" SMAGIC "/bbslogin method=post><td>");
-
-	if (pface->logo)
-
-	else
-		printf("<font size=+1>B M Y</font>");
-//by bjgyt
-	printf("<table><tr><td>帐号<INPUT maxLength=12 size=8 name=id>"
-	       " 密码<INPUT type=password maxLength=12 size=8 name=pw>"
-	       "<INPUT type=submit value=登录>"
-	       "<INPUT type=hidden name=t value=''></td>"
-	       "<script>sf();st();</script>"
-	       "<td><a href='javascript: openreg();'><font size=-1>新用户注册</font></a>&nbsp;"
-	       "<a href='javascript: lg();'><font size=-1>匿名登录</font></a></TD></tr>"
-	       "<tr><td><font size=-1>验证客户 IP 范围到<select name=ipmask>"
-	       "<option value=0 selected>单IP</option>"
-	       "<option value=1>2 IP</option>"
-	       "<option value=2>4 IP</option>"
-	       "<option value=3>8 IP</option>"
-	       "<option value=4>16 IP</option>"
-	       "<option value=5>32 IP</option>"
-	       "<option value=6>64 IP</option>"
-	       "<option value=7>128 IP</option>"
-	       "<option value=8>256 IP</option>"
-	       "</select><a href=/ipmask.html target=_blank>这是什么?</a></font></td></tr>"
-	       "<tr><td></td></tr></table></form>"
-	       "</TR></TABLE>\n");
-	printf("<table><tr><td><br>"
-	       "<a href='telnet://" MY_BBS_DOMAIN "'><i><u>Telnet登录" MY_BBS_ID
-	       "</u></i></a>"
-	       " &nbsp;<a href=\"javascript:window.external.AddFavorite('http://"
-	       MY_BBS_DOMAIN "/','◆" MY_BBS_LOC MY_BBS_NAME "◆')\">"
-	       "<i><u>将本站加入收藏夹</u></i></a>"
-	       " &nbsp;<a href=\"mailto:bohan@xjtu.edu.cn\"><i><u>联系站务组</u></i></a>"
-	       "</td></tr></table>");
-	showannounce();
-	printf("</CENTER></BODY></HTML>");
-}
-*/
 void
 shownologin()
 {

@@ -13,12 +13,10 @@ bbslogin_main()
 	time_t dtime;
 	char filename[128], buf[256], id[20], pw[20], url[10], *ub = FIRST_PAGE; // main_page[STRLEN];
 	struct userec *x;
-	int ipmask;
 	html_header(3);
 	ytht_strsncpy(id, getparm("id"), 13);
 	ytht_strsncpy(pw, getparm("pw"), 13);
 	ytht_strsncpy(url, getparm("url"), 3);
-	ipmask = atoi(getparm("ipmask"));
 
 	if (loginok && strcasecmp(id, currentuser.userid) && !isguest) {
 		http_fatal("系统检测到目前你的计算机上已经登录有一个帐号 %s，请先退出.(选择正常logout)", currentuser.userid);
@@ -87,7 +85,7 @@ bbslogin_main()
 		currstyle = &wwwstyle[wwwstylenum];
 	}
 
-	ub = wwwlogin(x, ipmask);
+	ub = wwwlogin(x);
 	if (!strcmp(url, "1"))
 		printf("<script>opener.parent.f2.location.href=\"%sbbsleft?t=%ld\";\n"
 				"opener.parent.fmsg.location.href=\"%sbbsgetmsg\";\n"
@@ -105,7 +103,7 @@ bbslogin_main()
 }
 
 char *
-wwwlogin(struct userec *user, int ipmask)
+wwwlogin(struct userec *user)
 {
 	FILE *fp, *fp1;
 	int n, dolog = 0, st, clubnum, uid, i, nsearch;
@@ -188,7 +186,6 @@ wwwlogin(struct userec *user, int ipmask)
 
 			w_info = &(u_info->wwwinfo);
 			w_info->login_start_time = now_t;
-			w_info->ipmask = ipmask;
 			if (strcasecmp(user->userid, "guest")) {
 				sethomefile(fname, user->userid, "clubrights");
 				if ((fp1 = fopen(fname, "r")) == NULL) {

@@ -140,7 +140,6 @@ extern int mybrdnum;
 
 void newreport(char *board, char *s);
 
-char *wwwlogin(struct userec *user, int ipmask);
 struct emotion {
 	char *(smilename[4]);
 	char *filename;
