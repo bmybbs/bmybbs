@@ -201,5 +201,5 @@ int ythtbbs_cache_utmp_check_uid_by_idx(int idx, int uid);
  * @param idx 在 user_info 数组中的索引，从 0 开始计数
  * @return 结构体指针
  */
-const struct user_info *ythtbbs_cache_utmp_get_by_idx(int idx);
+struct user_info *ythtbbs_cache_utmp_get_by_idx(int idx);
 #endif //BMYBBS_CACHE_H
