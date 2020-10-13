@@ -5,6 +5,7 @@
 static char *makeurlbase(int uent);
 static const char *makeguesturl(void);
 static char *check_multi(char *id, int uid);
+static char *wwwlogin(struct userec *user);
 
 int
 bbslogin_main()
@@ -102,9 +103,7 @@ bbslogin_main()
 	return 0;
 }
 
-char *
-wwwlogin(struct userec *user)
-{
+static char *wwwlogin(struct userec *user) {
 	FILE *fp, *fp1;
 	int n, dolog = 0, st, clubnum, uid, i, nsearch;
 	struct user_info *u;
