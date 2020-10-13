@@ -9,13 +9,15 @@
 //#else
 #include <iconv.h>
 //#endif
+#include "bmy/cookie.h"
+#include "ythtbbs/session.h"
 
 char needcgi[STRLEN];
 char rframe[STRLEN];
 
 static void __unhcode(char *s);
 static void extraparam_init(char *extrastr);
-static int user_init(struct userec *x, struct user_info **y, char *ub);
+static int user_init(struct userec *x, struct user_info **y, const char *userid, const char *sessid);
 static int post_imail(char *userid, char *title, char *file, char *id, char *nickname, char *ip, int sig);
 static void sig_append(FILE * fp, char *id, int sig);
 static int useridhash(char *id);
@@ -678,12 +680,12 @@ isaword(char *dic[], char *buf)
 }
 
 struct wwwsession guest = {
-	used:1,
-	t_lines:20,
-	link_mode:0,
-	def_mode:0,
-	att_mode:0,
-	doc_mode:1,
+	.used      = 1,
+	.t_lines   = 20,
+	.link_mode = 0,
+	.def_mode  = 0,
+	.att_mode  = 0,
+	.doc_mode  = 1,
 };
 
 
@@ -743,10 +745,47 @@ static int contains_invliad_char(char *s) {
 	return ret;
 }
 
+int cookie_parse() {
+	const char *cookie_str;
+	char cookie_buf[128];
+	struct bmy_cookie cookie;
+
+	cookie_str = getenv("HTTP_COOKIE");
+	if (cookie_str == NULL) {
+		goto GUEST;
+	} else {
+		strncpy(cookie_buf, cookie_str, sizeof(cookie_buf));
+		cookie_buf[sizeof(cookie_buf) - 1] = 0;
+
+		memset(&cookie, 0, sizeof(struct bmy_cookie));
+		bmy_cookie_parse(cookie_buf, &cookie);
+		if (cookie.sessid == NULL)
+			goto GUEST;
+
+		loginok = user_init(&currentuser, &u_info, cookie.userid, cookie.sessid);
+
+		if (cookie.extraparam == NULL)
+			cookie.extraparam = "";
+		extraparam_init(cookie.extraparam);
+
+		if (!loginok) {
+			goto GUEST;
+		}
+	}
+
+	return 0;
+GUEST:
+	loginok = false;
+	isguest = true;
+	w_info  = &guest;
+	return -1;
+}
+
 int
 url_parse()
 {
 	char *url, *end, name[STRLEN], *p, *extraparam;
+	// e.g. url = /BMY/foo
 	url = getenv("SCRIPT_URL");
 	if (NULL == url)
 		return -1;
@@ -761,17 +800,6 @@ url_parse()
 			return -1;
 	}
 
-	extraparam = strchr(name, '_');
-	if (extraparam) {
-		*extraparam = 0;
-		extraparam++;
-	} else
-		extraparam = "";
-	loginok = user_init(&currentuser, &u_info, name);
-	w_info = &guest;
-	if (loginok)
-		w_info = &(u_info->wwwinfo);
-	extraparam_init(extraparam);
 	if (!strcmp(url, "/") || nologin) {
 		strcpy(needcgi, "bbsindex");
 		strcpy(rframe, "");
@@ -1088,89 +1116,32 @@ static void extraparam_init(char *extrastr) {
 		currstyle = &wwwstyle[0];
 }
 
-static int user_init(struct userec *x, struct user_info **y, char *ub) {
+//static int user_init(struct userec *x, struct user_info **y, char *ub) {
+static int user_init(struct userec *x, struct user_info **y, const char *userid, const char *sessid) {
 	struct userec *x2;
-	char sessionid[30];
 	int i;
 	utmpent = 0;
 	isguest = 0;
 	tempuser = 0;
-	//bzero(x, sizeof (*x));
-	x2 = getuser("guest");
-	if (x2)
-		memcpy(x, x2, sizeof (*x));
-	else
-		bzero(x, sizeof (*x));
-	*y = NULL;
-	if (strlen(ub) < 33) {
-		if (strlen(ub) >= 4) {	//从 telnet 来的临时用户
-			i = (ub[0] - 'A') * 26 * 26 + (ub[1] - 'A') * 26 +
-			    ub[2] - 'A';
-			strcpy(sessionid, ub + 3);
-			if (i < 0 || i >= MAXACTIVE)
-				return 0;
-			(*y) = &(shm_utmp->uinfo[i]);
-			if (strncmp((*y)->from, fromhost, BMY_IPV6_LEN))
-				return 0;
-			if (strncmp((*y)->sessionid, sessionid, 6)) {
-				return 0;
-			}
-			if ((*y)->active == 0)
-				return 0;
-			if (!strcmp((*y)->userid, "guest"))
-				isguest = 1;
-			if (!strcasecmp((*y)->userid, "new"))
-				return 0;
-			x2 = getuser((*y)->userid);
-			if (x2 == 0)
-				return 0;
-			utmpent = i + 1;
-			memcpy(x, x2, sizeof (*x));
-			tempuser = 1;
-		} else {
-			// 认为 session 不合法，视为 guest 用户 by IronBlood
-			if (x2) {
-				isguest = 1;
-				memcpy(x, x2, sizeof(*x));
-			}
-		}
+
+	i = ythtbbs_session_get_utmp_idx(sessid, userid);
+	if (i < 0)
+		return 0;
+
+	*y = ythtbbs_cache_utmp_get_by_idx(i);
+	if (strcmp((*y)->sessionid, sessid) || strcmp((*y)->userid, userid))
+		return 0;
+
+	(*y)->lasttime = now_t;
+	if (!strcasecmp((*y)->userid, "guest")) {
+		isguest = 1;
 		return 0;
 	}
-	ub[33] = 0;
-	i = (ub[0] - 'A') * 26 * 26 + (ub[1] - 'A') * 26 + ub[2] - 'A';
-	strncpy(sessionid, ub + 3, 30);
-	if (i < 0 || i >= MAXACTIVE)
-		return 0;
-	(*y) = &(shm_utmp->uinfo[i]);
-	/*	无视ipmask ipv6 by leoncom
-	if ((*y)->wwwinfo.ipmask) {
-		struct in_addr ofip;
-		if (!inet_aton((*y)->from, &ofip))
-			return 0;
-		if ((ofip.s_addr >> (*y)->wwwinfo.ipmask) !=
-		    (from_addr.s_addr >> (*y)->wwwinfo.ipmask))
-			return 0;
-	} else
-	*/
-	if (strncmp((*y)->from, fromhost, BMY_IPV6_LEN))  //ipv6 by leoncom 24->20
-		return 0;
-	if (strcmp((*y)->sessionid, sessionid))
-		return 0;
-	if ((*y)->active == 0)
-		return 0;
-	if ((*y)->userid[0] == 0)
-		return 0;
-	if (!strcasecmp((*y)->userid, "new"))
-		return 0;
-	if (now_t - u_info->lasttime > 18 * 60 || u_info->wwwinfo.iskicked)	//18分钟是留下一个窗口,防止一个u_info被刷新为0两次
-		return 0;
-	else
-		u_info->lasttime = now_t;
-	if (!strcasecmp((*y)->userid, "guest"))
-		isguest = 1;
+
 	x2 = getuser((*y)->userid);
 	if (x2 == 0)
 		return 0;
+
 	utmpent = i + 1;
 	memcpy(x, x2, sizeof (*x));
 	return 1;

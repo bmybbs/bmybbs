@@ -10,6 +10,11 @@ int looponce = 0;
 
 #include "njuapi.h"
 
+/* BBSLIB.c */
+extern int cookie_parse();
+extern int url_parse();
+extern int http_parm_init();
+
 struct cgi_applet applets[] = {
 //      {bbsusr_main, {"bbsusr", NULL}},
 	{bbsrss_main, {"bbsrss", "rss", NULL}, 0L, 0L, 0},
@@ -123,28 +128,24 @@ struct cgi_applet applets[] = {
 	{bbsnotify_main, {"bbsnotify", NULL}, 0L, 0L, 0},
 	{bbsdelnotify_main, {"bbsdelnotify", NULL}, 0L, 0L, 0},
 //	{bbschangestyle_main, {"bbschangestyle", "changestyle", NULL}},
-	{NULL}
+	{NULL, {NULL}, 0L, 0L, 0}
 };
 
 #include <sys/times.h>
 char *cginame = NULL;
 static unsigned int rt = 0;
-void
-logtimeused()
-{
+
+void logtimeused() {
 	char buf[1024];
 	struct cgi_applet *a = applets;
 	while (a->main) {
-		sprintf(buf, "%s %d %f %f\n", a->name[0], a->count, a->utime,
-			a->stime);
+		sprintf(buf, "%s %d %f %f\n", a->name[0], a->count, a->utime, a->stime);
 		f_append(MY_BBS_HOME "/gprof/cgirtime", buf);
 		a++;
 	}
 }
 
-static void
-cgi_time(struct cgi_applet *a)
-{
+static void cgi_time(struct cgi_applet *a) {
 	static struct rusage r0, r1;
 	getrusage(RUSAGE_SELF, &r1);
 
@@ -153,18 +154,12 @@ cgi_time(struct cgi_applet *a)
 		return;
 	}
 	a->count++;
-	a->utime +=
-	    1000. * (r1.ru_utime.tv_sec - r0.ru_utime.tv_sec) +
-	    (r1.ru_utime.tv_usec - r0.ru_utime.tv_usec) / 1000.;
-	a->stime +=
-	    1000. * (r1.ru_stime.tv_sec - r0.ru_stime.tv_sec) +
-	    (r1.ru_stime.tv_usec - r0.ru_stime.tv_usec) / 1000.;
+	a->utime += 1000. * (r1.ru_utime.tv_sec - r0.ru_utime.tv_sec) + (r1.ru_utime.tv_usec - r0.ru_utime.tv_usec) / 1000.;
+	a->stime += 1000. * (r1.ru_stime.tv_sec - r0.ru_stime.tv_sec) + (r1.ru_stime.tv_usec - r0.ru_stime.tv_usec) / 1000.;
 	r0 = r1;
 }
 
-void
-wantquit(int signal)
-{
+void wantquit(int signal) {
 	if (incgiloop)
 		incgiloop = 0;
 	else
@@ -172,9 +167,7 @@ wantquit(int signal)
 }
 
 #if defined(ENABLE_GHTHASH) && defined(ENABLE_FASTCGI)
-struct cgi_applet *
-get_cgi_applet(char *needcgi)
-{
+struct cgi_applet *get_cgi_applet(char *needcgi) {
 	static ght_hash_table_t *p_table = NULL;
 	struct cgi_applet *a;
 
@@ -187,9 +180,7 @@ get_cgi_applet(char *needcgi)
 			a->utime = 0;
 			a->stime = 0;
 			for (i = 0; a->name[i] != NULL; i++)
-				ght_insert(p_table, (void *) a,
-					   strlen(a->name[i]),
-					   (void *) a->name[i]);
+				ght_insert(p_table, (void *) a, strlen(a->name[i]), (void *) a->name[i]);
 			a++;
 		}
 	}
@@ -198,9 +189,7 @@ get_cgi_applet(char *needcgi)
 	return ght_get(p_table, strlen(needcgi), needcgi);
 }
 #else
-struct cgi_applet *
-get_cgi_applet(char *needcgi)
-{
+struct cgi_applet *get_cgi_applet(char *needcgi) {
 	struct cgi_applet *a;
 	int i;
 	a = applets;
@@ -221,67 +210,7 @@ char *myoutbuf = NULL;
 int myoutsize;
 FILE oldout;
 
-#if 0
-//don't delete this function although it is unused now
-//it will perhaps be used in the furture.
-void
-start_outcache()
-{
-	if (myoutbuf) {
-		free(myoutbuf);
-		myoutbuf = NULL;
-	}
-	myout = open_memstream(&myoutbuf, &myoutsize);
-	if (NULL == myout) {
-		errlog("can't open mem stream...");
-		exit(14);
-	}
-	oldout = *stdout;
-#ifdef ENABLE_FASTCGI
-	stdout->stdio_stream = myout;
-	stdout->fcgx_stream = 0;
-#else
-	*stdout = *myout;
-#endif
-}
-#endif
-void
-no_outcache()
-{
-	fclose(stdout);
-	*stdout = oldout;
-	if (myoutbuf) {
-		free(myoutbuf);
-		myoutbuf = NULL;
-	}
-}
-
-void
-end_outcache()
-{
-	char *ptr;
-	int len;
-	fclose(stdout);
-	*stdout = oldout;
-	if (!myoutbuf)
-		return;
-	ptr = strstr(myoutbuf, "\n\n");
-	if (!ptr) {
-		printf("\n\nfaint! 出毛病了...");
-		return;
-	}
-	if (ytht_strnstr(myoutbuf, "Content-type: ", ptr - myoutbuf)) {
-		len = myoutsize - (ptr - myoutbuf) - 2;
-		printf("Content-Length: %d\n", len);
-	}
-	fputs(myoutbuf, stdout);
-	free(myoutbuf);
-	myoutbuf = NULL;
-}
-
-void
-get_att_server()
-{
+void get_att_server() {
 	FILE *fp;
 	char *ptr;
 	char buf[128];
@@ -316,7 +245,7 @@ get_att_server()
 		i++;
 	}
 	fclose(fp);
-      END:
+END:
 	wwwcache->accel_ip = accel_ip;
 	wwwcache->accel_port = accel_port;
 	for (i = 0; i < MAX_PROXY_NUM; i++)
@@ -325,9 +254,7 @@ get_att_server()
 
 time_t thisversion;
 
-int
-main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
 	struct cgi_applet *a = NULL;
 	struct rlimit rl;
 	int i;
@@ -359,14 +286,11 @@ main(int argc, char *argv[])
 		nologin = 0;
 	get_att_server();
 	while (FCGI_Accept() >= 0) {
-//              start_outcache();
 		cginame = NULL;
 		incgiloop = 1;
 		if (setjmp(cgi_start)) {
-//                      end_outcache();
 			cgi_time(a);
-			if (!incgiloop || wwwcache->www_version > thisversion
-			    || rt++ > 40000) {
+			if (!incgiloop || wwwcache->www_version > thisversion || rt++ > 40000) {
 				logtimeused();
 				exit(2);
 			}
@@ -377,46 +301,18 @@ main(int argc, char *argv[])
 		now_t = time(NULL);
 		via_proxy = 0;
 		ytht_strsncpy(fromhost, getsenv("REMOTE_ADDR"), BMY_IPV6_LEN); //ipv6 by leoncom
-		fromhost[BMY_IPV6_LEN] = '\0';
+		fromhost[BMY_IPV6_LEN - 1] = '\0';
 		inet_pton(PF_INET6,fromhost,&from_addr);
-		//inet_aton(fromhost, &from_addr);
-		/*  ipv6 by leoncom 无视validproxy
-		for (i = 0; wwwcache->validproxy[i] && i < MAX_PROXY_NUM; i++) {
-			if (from_addr.s_addr == wwwcache->validproxy[i]) {
-				via_proxy = 1;
-				break;
-			}
-		}
-		if (via_proxy) {
-			char *ptr, *p;
-			int IPLEN = 255;
-			ptr = getenv("HTTP_X_FORWARDED_FOR");
-			if (!ptr)
-				ptr = getsenv("REMOTE_ADDR");
-			p = strrchr(ptr, ',');
-			if (p != NULL) {
-				while (!isdigit(*p) && *p)
-					p++;
-				if (*p)
-					strncpy(fromhost, p, IPLEN);
-				else
-					strncpy(fromhost, ptr, IPLEN);
-			} else
-				strncpy(fromhost, ptr, IPLEN);
-			fromhost[IPLEN] = 0;
-			inet_aton(fromhost, &from_addr);
-		}
-		*/
+
+		cookie_parse();
 		if (url_parse())
 			http_fatal("%s 没有实现的功能!", getsenv("SCRIPT_URL"));
 		http_parm_init();
 		a = get_cgi_applet(needcgi);
 		if (a != NULL) {
 			cginame = a->name[0];
-			//access(getsenv("QUERY_STRING"), F_OK);
 			wwwcache->www_visit++;
 			(*(a->main)) ();
-//                      end_outcache();
 			cgi_time(a);
 			if (!incgiloop || wwwcache->www_version > thisversion) {
 				logtimeused();
@@ -426,11 +322,9 @@ main(int argc, char *argv[])
 			continue;
 		}
 		http_fatal("%s 没有实现的功能!", getsenv("SCRIPT_URL"));
-//              end_outcache();
 		incgiloop = 0;
 	}
 	munmap(ummap_ptr, ummap_size);
 	exit(5);
-
-
 }
+
