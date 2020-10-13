@@ -10,6 +10,7 @@ struct cookie {
 	char *userid;    ///< 用户 ID
 	char *sessid;    ///< 会话 ID
 	char *token;     ///< token
+	char *extraparam;
 };
 
 /**
