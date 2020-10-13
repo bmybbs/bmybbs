@@ -12,12 +12,11 @@ bbslogin_main()
 {
 	int n, t;
 	time_t dtime;
-	char filename[128], buf[256], id[20], pw[20], url[10], *ub = FIRST_PAGE; // main_page[STRLEN];
+	char filename[128], buf[256], id[20], pw[20], *ub = FIRST_PAGE; // main_page[STRLEN];
 	struct userec *x;
 	html_header(3);
 	ytht_strsncpy(id, getparm("id"), 13);
 	ytht_strsncpy(pw, getparm("pw"), 13);
-	ytht_strsncpy(url, getparm("url"), 3);
 
 	if (loginok && strcasecmp(id, currentuser.userid) && !isguest) {
 		http_fatal("系统检测到目前你的计算机上已经登录有一个帐号 %s，请先退出.(选择正常logout)", currentuser.userid);
@@ -87,18 +86,7 @@ bbslogin_main()
 	}
 
 	ub = wwwlogin(x);
-	if (!strcmp(url, "1"))
-		printf("<script>opener.parent.f2.location.href=\"%sbbsleft?t=%ld\";\n"
-				"opener.parent.fmsg.location.href=\"%sbbsgetmsg\";\n"
-				//"opener.parent.f4.location.href=\"%sbbsfoot\";\n"
-				"a=window.opener.location.href;\n" "l=a.length;\n"
-				"t=a.indexOf('/" SMAGIC "',1);\n" "t=a.indexOf('/',t+1);\n"
-				"nu=\"%s\"+a.substring(t+1,l);\n"
-				"window.opener.location.href=nu;window.close();</script>",
-				ub, now_t, ub, /*ub,*/ ub);
-
-	else
-		redirect(ub);
+	redirect(ub);
 	http_quit();
 	return 0;
 }
