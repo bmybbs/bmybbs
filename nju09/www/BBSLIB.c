@@ -2207,83 +2207,9 @@ static int count_online2() {
 	return total;
 }
 
-struct override fff[200];
-size_t friendnum = 0;
-int
-loadfriend(char *id)
-{
-	FILE *fp;
-	char file[256];
-	sethomefile(file, id, "friends");
-	fp = fopen(file, "r");
-	friendnum = 0;
-	if (fp) {
-		friendnum = fread(fff, sizeof (fff[0]), 200, fp);
-		fclose(fp);
-	}
-	return 0;
-}
-
-static int cmpfuid(unsigned *a, unsigned *b) {
-	return *a - *b;
-}
-
-int
-initfriends(struct user_info *u)
-{
-	int i, fnum = 0;
-	char buf[128];
-	FILE *fp;
-	memset(u->friend, 0, sizeof (u->friend));
-	sethomefile(buf, u->userid, "friends");
-	u->fnum = file_size(buf) / sizeof (struct override);
-	if (u->fnum <= 0)
-		return 0;
-	u->fnum = (u->fnum >= MAXFRIENDS) ? MAXFRIENDS : u->fnum;
-	loadfriend(u->userid);
-	for (i = 0; i < u->fnum; i++) {
-		u->friend[i] = getusernum(fff[i].id) + 1;
-		if (u->friend[i])
-			fnum++;
-		else
-			fff[i].id[0] = 0;
-	}
-	qsort(u->friend, u->fnum, sizeof (u->friend[0]), (void *) cmpfuid);
-	if (fnum == u->fnum)
-		return fnum;
-	fp = fopen(buf, "w");
-	for (i = 0; i < u->fnum; i++) {
-		if (fff[i].id[0])
-			fwrite(&(fff[i]), sizeof (struct override), 1, fp);
-	}
-	fclose(fp);
-	u->fnum = fnum;
-	return fnum;
-}
-
-int
-isfriend(char *id)
-{
-	int n;
-	int num;
-	if (!loginok || isguest)
-		return 0;
-	if (u_info->fnum < 40) {
-		for (n = 0; n < u_info->fnum; n++)
-			if (!strcasecmp(id, shm_ucache->userid[u_info->friend[n] - 1]))
-				return 1;
-		return 0;
-	}
-	if ((num = getusernum(id)) < 0)
-		return 0;
-	num++;
-	for (n = 0; n < u_info->fnum; n++)
-		if ((unsigned int) num == u_info->friend[n])
-			return 1;
-	return 0;
-}
-
+struct ythtbbs_override fff[MAXFRIENDS];
 struct ythtbbs_override bbb[MAXREJECTS];
+size_t friendnum = 0;
 int badnum = 0;
 
 int

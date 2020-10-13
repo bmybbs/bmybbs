@@ -15,7 +15,6 @@ bbsfadd_main()
 	printf("<body><center>%s -- 好友名单 [使用者: %s]<hr>\n", BBSNAME, currentuser.userid);
 	ytht_strsncpy(of.id, getparm("userid"), 13);
 	ytht_strsncpy(of.exp, getparm("exp"), 32);
-	loadfriend(currentuser.userid);
 	if (of.id[0] == 0 || of.exp[0] == 0) {
 		if (of.exp[0])
 			printf("<font color=red>请输入好友说明</font>");

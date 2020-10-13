@@ -183,7 +183,7 @@ wwwlogin(struct userec *user, int ipmask)
 			ytht_strsncpy(u->userid, user->userid, IDLEN + 1);
 			ytht_get_random_str(u->sessionid);
 			if (strcasecmp(user->userid, "guest")) {
-				initfriends(u);
+				//initfriends(u); // use ythtbbs_user_init_override instead
 				urlbase = makeurlbase(n);
 			} else {
 				memset(u->friend, 0, sizeof(u->friend));
