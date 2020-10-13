@@ -6,6 +6,7 @@ bbssndmail_main()
 	char mymaildir[80], userid[80], filename[80], title[80], title2[80],
 	    *content;
 	int sig, backup, allfriend, mark = 0;
+	int lockfd;
 	size_t i;
 	struct userec *u;
 	html_header(1);
@@ -45,7 +46,9 @@ bbssndmail_main()
 		post_mail(userid, title, filename, currentuser.userid,
 			  currentuser.username, fromhost, sig - 1, mark);
 	} else {
-		loadfriend(currentuser.userid);
+		lockfd = ythtbbs_override_lock(currentuser.userid, YTHTBBS_OVERRIDE_FRIENDS);
+		ythtbbs_override_get_records(currentuser.userid, fff, MAXFRIENDS, YTHTBBS_OVERRIDE_FRIENDS);
+		ythtbbs_override_unlock(lockfd);
 		snprintf(title2, sizeof (title2), "[群体信件] %.60s", title);
 		for (i = 0; i < friendnum; i++) {
 			u = getuser(fff[i].id);
@@ -58,10 +61,10 @@ bbssndmail_main()
 					fromhost, sig - 1, mark);
 		}
 	}
-    if (backup) {
-        post_mail_to_sent_box(currentuser.userid, title2, filename,
-			  currentuser.userid, currentuser.username, fromhost,
-			  sig - 1, mark);
+	if (backup) {
+		post_mail_to_sent_box(currentuser.userid, title2, filename,
+				currentuser.userid, currentuser.username, fromhost,
+				sig - 1, mark);
     }
 	unlink(filename);
 	printf("信件已寄给%s.<br>\n", allfriend ? "所有好友" : userid);
