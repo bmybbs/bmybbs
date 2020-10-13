@@ -1,13 +1,11 @@
 #include "bbslib.h"
 #include "ytht/random.h"
 
-#define NHASH 67
-//#define NSEARCH ((MAXACTIVE / 8) > 100 ? (MAXACTIVE / 8) : 100)
 #define NSEARCH MAXACTIVE
 static char *makeurlbase(int uent);
 static const char *makeguesturl(void);
 static char *check_multi(char *id, int uid);
-static int iphash(char *fromhost);
+
 int
 bbslogin_main()
 {
@@ -48,8 +46,6 @@ bbslogin_main()
 			http_fatal("此帐号已被停机, 若有疑问, 请用其他帐号在sysop版询问.");
 		if (file_has_word(MY_BBS_HOME "/etc/prisonor", x->userid))
 			http_fatal("安心改造，不要胡闹");
-		//if (x->dietime)
-		//	http_fatal("死了?还要做什么? :)");
 		t = x->lastlogin;
 		x->lastlogin = now_t;
 		if (abs(t - now_t) < 20) {
@@ -94,13 +90,13 @@ bbslogin_main()
 	ub = wwwlogin(x, ipmask);
 	if (!strcmp(url, "1"))
 		printf("<script>opener.parent.f2.location.href=\"%sbbsleft?t=%ld\";\n"
-		     "opener.parent.fmsg.location.href=\"%sbbsgetmsg\";\n"
-		     //"opener.parent.f4.location.href=\"%sbbsfoot\";\n"
-		     "a=window.opener.location.href;\n" "l=a.length;\n"
-		     "t=a.indexOf('/" SMAGIC "',1);\n" "t=a.indexOf('/',t+1);\n"
-		     "nu=\"%s\"+a.substring(t+1,l);\n"
-		     "window.opener.location.href=nu;window.close();</script>",
-		     ub, now_t, ub, /*ub,*/ ub);
+				"opener.parent.fmsg.location.href=\"%sbbsgetmsg\";\n"
+				//"opener.parent.f4.location.href=\"%sbbsfoot\";\n"
+				"a=window.opener.location.href;\n" "l=a.length;\n"
+				"t=a.indexOf('/" SMAGIC "',1);\n" "t=a.indexOf('/',t+1);\n"
+				"nu=\"%s\"+a.substring(t+1,l);\n"
+				"window.opener.location.href=nu;window.close();</script>",
+				ub, now_t, ub, /*ub,*/ ub);
 
 	else
 		redirect(ub);
@@ -274,13 +270,3 @@ check_multi(char *id, int uid)
 	return NULL;
 }
 
-static int
-iphash(char *fromhost)
-{
-	return 0;
-	/* ipv6 by leoncom 无法将in6_addr转为整形
-	struct in_addr addr;
-	inet_aton(fromhost, &addr);
-	return addr.s_addr % NHASH;
-	*/
-}
