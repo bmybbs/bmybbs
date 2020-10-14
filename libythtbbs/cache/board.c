@@ -62,7 +62,8 @@ struct boardmem *ythtbbs_cache_Board_get_bcache() {
 	return shm_board->bcache;
 }
 
-int ythtbbs_cache_Board_set_bm_hat_v(struct boardmanager *bm, va_list ap) {
+int ythtbbs_cache_Board_set_bm_hat_v(void *b, va_list ap) {
+	struct boardmanager *bm = b;
 	bool *online, *invisible;
 
 	if (shm_board == NULL)
