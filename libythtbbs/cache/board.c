@@ -63,6 +63,9 @@ struct boardmem *ythtbbs_cache_Board_get_bcache() {
 }
 
 int ythtbbs_cache_Board_set_bm_hat(struct boardmanager *bm, bool *invisible, bool *online) {
+	if (shm_board == NULL)
+		return 0;
+
 	if (strcmp(shm_board->bcache[bm->bid].header.filename, bm->board)) {
 		errlog("error board name %s, %s", shm_board->bcache[bm->bid].header.filename, bm->board);
 		return -1;
