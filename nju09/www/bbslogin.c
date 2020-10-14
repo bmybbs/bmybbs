@@ -46,6 +46,9 @@ int bbslogin_main() {
 		case YTHTBBS_USER_ONLINE_FULL:
 			http_fatal("抱歉，目前在线用户数已达上限，无法登录。请稍后再来。");
 			break;
+		default:
+			http_fatal("unknown");
+			break;
 		}
 	}
 
