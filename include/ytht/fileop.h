@@ -70,7 +70,7 @@ int seek_in_file(char* filename, char *seekstr);
  * @param file
  * @return
  */
-struct stat *f_stat(char *file) __attribute__((deprecated));
+struct stat *f_stat(char *file) __attribute__((deprecated("use f_stat_s instead")));
 
 /**
  * A wrapper of lstat(2)
@@ -78,7 +78,7 @@ struct stat *f_stat(char *file) __attribute__((deprecated));
  * @param file
  * @return
  */
-struct stat *l_stat(char *file) __attribute__((deprecated));
+struct stat *l_stat(char *file) __attribute__((deprecated("use l_stat_s instead")));
 
 /**
  * A thread-safe wrapper of stat(2)
