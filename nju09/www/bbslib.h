@@ -175,6 +175,7 @@ char *getparm(char *var);
 char *getparm2(char *v1, char *v2);
 int shm_init(void);
 int ummap(void);
+const char *getextrparam_str(unsigned int param);
 int addextraparam(char *ub, int size, int n, int param);
 int mail_file(char *filename, char *userid, char *title, char *sender);
 int post_mail_to_sent_box(char *userid, char *title, char *file, char *id, char *nickname, char *ip, int sig, int mark);

@@ -1057,6 +1057,15 @@ ummap()
 	return 0;
 }
 
+const char *getextrparam_str(unsigned int param) {
+	static const char *str_arr[] = {
+		"A", "B", "C", "D",
+		"E", "F", "G", "H",
+		"I"
+	};
+	return str_arr[param % NWWWSTYLE];
+}
+
 int
 addextraparam(char *ub, int size, int n, int param)
 {
