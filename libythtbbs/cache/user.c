@@ -215,6 +215,67 @@ END:
 	return k;
 }
 
+bool ythtbbs_cache_UserTable_is_user_online(const char *userid) {
+	int user_idx, i;
+	struct ythtbbs_cache_User *user;
+	struct user_info *info;
+	time_t t;
+
+	user_idx = ythtbbs_cache_UserIDHashTable_find_idx(userid);
+	if (user_idx < 0)
+		return false;
+
+	user = &shm_user_table->users[user_idx];
+	time(&t);
+	for (i = 0; i < MAX_LOGIN_PER_USER; i++) {
+		if (user->utmp_indices[i] == 0)
+			continue;
+
+		info = ythtbbs_cache_utmp_get_by_idx(user->utmp_indices[i] - 1);
+		if (info->active == 0)
+			continue;
+
+		if (strcmp(info->userid, user->userid) == 0) {
+			if (info->pid > 1) {
+				// telnet 或者 ssh 方式
+				return true;
+			} else {
+				// NJU09 或者 API 方式，认定为 5 分钟内
+				if (t - info->lasttime < 5 * 60) {
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+
+bool ythtbbs_cache_UserTable_is_user_invisible(const char *userid) {
+	int user_idx, i;
+	struct ythtbbs_cache_User *user;
+	struct user_info *info;
+
+	user_idx = ythtbbs_cache_UserIDHashTable_find_idx(userid);
+	if (user_idx < 0)
+		return false;
+
+	user = &shm_user_table->users[user_idx];
+	for (i = 0; i < MAX_LOGIN_PER_USER; i++) {
+		if (user->utmp_indices[i] == 0)
+			continue;
+
+		info = ythtbbs_cache_utmp_get_by_idx(user->utmp_indices[i] - 1);
+		if (info->active == 0)
+			continue;
+
+		if (strcmp(info->userid, user->userid) == 0) {
+			if (info->invisible)
+				return true;
+		}
+	}
+	return false;
+}
+
 /***** implementations of private functions *****/
 static int ythtbbs_cache_UserTable_fill_v(void *user_ec, va_list ap) {
 	int           *ptr_local_usernumber;

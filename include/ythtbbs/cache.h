@@ -164,6 +164,22 @@ void ythtbbs_cache_UserTable_remove_utmp_idx(int uid, int utmp_idx);
 
 int ythtbbs_cache_UserTable_get_user_online_friends(const char *userid, bool has_see_cloak_perm, struct user_info *user_list, size_t user_list_size);
 
+/**
+ * @brief 判断用户是否在线
+ * 遍历该 userid 对应的会话，如果用户存在且会话存在，则：
+ *   1. 对于 telnet、ssh 会话认为在线
+ *   2. 对于 www、api 会话认为上次活动在 5 分钟之内为在线
+ * 目前判定时间使用的是魔数，后期重构为宏或者常量。
+ */
+bool ythtbbs_cache_UserTable_is_user_online(const char *userid);
+
+/**
+ * @brief 判断用户是否隐身
+ * 遍历该 userid 对应的会话，如果用户存在且会话存在，则：
+ * 只要有一个为隐身，显示为隐身 (返回 true)。
+ */
+bool ythtbbs_cache_UserTable_is_user_invisible(const char *userid);
+
 int ythtbbs_cache_UserIDHashTable_find_idx(const char *userid);
 
 /**
