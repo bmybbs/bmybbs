@@ -1006,29 +1006,10 @@ getparm2(char *v1, char *v2)
 int
 shm_init()
 {
-	shm_utmp =
-	    (struct UTMPFILE *) get_old_shm(UTMP_SHMKEY,
-					    sizeof (struct UTMPFILE));
-	shm_bcache =
-	    (struct BCACHE *) get_old_shm(BCACHE_SHMKEY,
-					  sizeof (struct BCACHE));
-	shm_ucache =
-	    (struct UCACHE *) get_old_shm(UCACHE_SHMKEY,
-					  sizeof (struct UCACHE));
-	uidhashshm =
-	    (struct UCACHEHASH *) get_old_shm(UCACHE_HASH_SHMKEY,
-					      sizeof (struct UCACHEHASH));
-	uindexshm =
-	    (struct UINDEX *) get_old_shm(UINDEX_SHMKEY,
-					  sizeof (struct UINDEX));
-	if (shm_utmp == 0)
-		http_fatal("shm_utmp error");
-	if (shm_bcache == 0)
-		http_fatal("shm_bcache error");
-	if (shm_ucache == 0)
-		http_fatal("shm_ucache error");
-	if (uidhashshm == NULL)
-		http_fatal("uidhashshm error");
+	ythtbbs_cache_utmp_resolve();
+	ythtbbs_cache_UserTable_resolve();
+	ythtbbs_cache_Board_resolve();
+
 	return 0;
 }
 
