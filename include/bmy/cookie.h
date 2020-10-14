@@ -7,10 +7,10 @@
  * 配合 bmy_cookie_parse 接口，对 buf 处理后，各个字段指向 buf 内的地址。
  */
 struct bmy_cookie {
-	char *userid;    ///< 用户 ID
-	char *sessid;    ///< 会话 ID
-	char *token;     ///< token
-	char *extraparam;
+	const char *userid;    ///< 用户 ID
+	const char *sessid;    ///< 会话 ID
+	const char *token;     ///< token
+	const char *extraparam;
 };
 
 /**
