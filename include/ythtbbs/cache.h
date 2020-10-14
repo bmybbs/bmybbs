@@ -218,4 +218,8 @@ int ythtbbs_cache_utmp_check_uid_by_idx(int idx, int uid);
  * @return 结构体指针
  */
 struct user_info *ythtbbs_cache_utmp_get_by_idx(int idx);
+
+void ythtbbs_cache_Board_resolve();
+struct boardmem *ythtbbs_cache_Board_get_bcache();
+int ythtbbs_cache_Board_set_bm_hat(struct boardmanager *bm, bool *invisible, bool *online);
 #endif //BMYBBS_CACHE_H
