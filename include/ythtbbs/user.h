@@ -49,15 +49,10 @@ struct userec {
 	int notemode_nouse;
 };
 
-struct override {
-	char id[13];
-	char exp[40];
-};
-
 char mytoupper(unsigned char ch);
-char *sethomepath(char *buf, const char *userid)  __attribute__((deprecated));
-char *sethomefile(char *buf, const char *userid, const char *filename)  __attribute__((deprecated));
-char *setmailfile(char *buf, const char *userid, const char *filename)  __attribute__((deprecated));
+char *sethomepath(char *buf, const char *userid)  __attribute__((deprecated("use sethomepath_s instead")));
+char *sethomefile(char *buf, const char *userid, const char *filename)  __attribute__((deprecated("use sethomefile_s instead")));
+char *setmailfile(char *buf, const char *userid, const char *filename)  __attribute__((deprecated("use setmailfile_s instead")));
 
 char *sethomepath_s(char *buf, size_t buf_size, const char *userid);
 char *sethomefile_s(char *buf, size_t buf_size, const char *userid, const char *filename);
@@ -142,7 +137,13 @@ enum ythtbbs_user_login_status {
 	YTHTBBS_USER_WRONG_PASSWORD,
 	YTHTBBS_USER_SUSPENDED,
 	YTHTBBS_USER_TOO_FREQUENT,
+	YTHTBBS_USER_SITE_BAN,
+	YTHTBBS_USER_USER_BAN,
+	YTHTBBS_USER_IN_PRISON,
+	YTHTBBS_USER_ONLINE_FULL,
 };
 
 int ythtbbs_user_login(const char *userid, const char *passwd, const char *fromhost, const enum ythtbbs_user_login_type login_type, struct user_info *out_info, struct userec *out_userec, int *out_utmp_idx);
+
+int ythtbbs_user_logout(const char *userid, int utmp_idx);
 #endif
