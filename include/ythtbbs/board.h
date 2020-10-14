@@ -1,15 +1,20 @@
 /* board.c */
 #ifndef __BOARD_H
 #define __BOARD_H
+#include "config.h"
 
 #define BMNUM 16
-struct boardheader {		/* This structure is used to hold data in */
-	char filename[24];	/* the BOARDS files */
+
+/**
+ * This structure is used to hold data in the BOARDS files
+ */
+struct boardheader {
+	char filename[24];
 	char title[24];
 	int clubnum;
 	unsigned level;
 	char flag;
-	char secnumber1;	//Õâ¸ö¾ÍÊÇ´Ë°æÃæËùÔÚµÄÇøºÅ£¬ÀıÈç£º'2','G'µÈµÈ
+	char secnumber1;  ///< è¿™ä¸ªå°±æ˜¯æ­¤ç‰ˆé¢æ‰€åœ¨çš„åŒºå·ï¼Œä¾‹å¦‚ï¼š'2','G'ç­‰ç­‰
 	char secnumber2;
 	char type[5];
 	char bm[BMNUM][IDLEN + 1];
@@ -22,7 +27,10 @@ struct boardheader {		/* This structure is used to hold data in */
 	char unused[96];
 };
 
-struct boardmem {		/* used for caching files and boards */
+/**
+ * used for caching files and boards
+ */
+struct boardmem {
 	struct boardheader header;
 	int lastpost;
 	int total;
@@ -34,7 +42,10 @@ struct boardmem {		/* used for caching files and boards */
 	int unused[10];
 };
 
-struct boardmanager {		/* record in user directionary */
+/**
+ * record in user directionary
+ */
+struct boardmanager {
 	char board[24];
 	char bmpos;
 	char unused;
@@ -45,20 +56,21 @@ char *bm2str(char *buf, struct boardheader *bh);
 char *sbm2str(char *buf, struct boardheader *bh);
 
 /**
- * ÒÀ¾İ°æÃæÃû³Æ»ñÈ¡ boardmem ¶ÔÏó
- * ´Ó nju09/BBSLIB.c ¸´ÖÆ¶øÀ´£¬ÀíÓ¦ÊôÓÚ libythtbbs ¿âµÄÒ»²¿·Ö¡£¸Ã·½·¨½«´Ó shm_bcache
- * ÖĞµİ¹éµÄ²éÕÒ±È¶Ô board_name£¬ÈôÏàÍ¬Ôò·µ»Ø boardmem µØÖ·¡£
- * @warning ¸Ã·½·¨ÖĞ²»°üº¬ÓÃ»§È¨ÏŞµÄĞ£Ñé¡£µ÷ÓÃ½áÊøºó²»ĞèÒªÊÍ·Å boardmem µØÖ·¡£
- * @param board_name °æÃæµÄÓ¢ÎÄÃû³Æ
+ * @brief ä¾æ®ç‰ˆé¢åç§°è·å– boardmem å¯¹è±¡
+ * ä» nju09/BBSLIB.c å¤åˆ¶è€Œæ¥ï¼Œç†åº”å±äº libythtbbs åº“çš„ä¸€éƒ¨åˆ†ã€‚è¯¥æ–¹æ³•å°†ä» shm_bcache
+ * ä¸­é€’å½’çš„æŸ¥æ‰¾æ¯”å¯¹ board_nameï¼Œè‹¥ç›¸åŒåˆ™è¿”å› boardmem åœ°å€ã€‚
+ * ä» nju09 ç§»æ¤ï¼Œby IronBlood 20130805
+ * @warning è¯¥æ–¹æ³•ä¸­ä¸åŒ…å«ç”¨æˆ·æƒé™çš„æ ¡éªŒã€‚è°ƒç”¨ç»“æŸåä¸éœ€è¦é‡Šæ”¾ boardmem åœ°å€ã€‚
+ * @param board_name ç‰ˆé¢çš„è‹±æ–‡åç§°
  * @see struct boardmem * getbcache(char *board)
  * @see struct boardmem * getboard(char *board)
  */
-struct boardmem *getboardbyname(const char *board_name);  // ´Ó nju09 ÒÆÖ²£¬by IronBlood 20130805
+struct boardmem *getboardbyname(const char *board_name);
 
 /**
- * @brief ÒÀ¾İ°æÃæÃû³Æ¼ì²éÊÇ·ñÊÇ´æÔÚÓÚ etc/junkboards ÎÄ¼şÖĞ
- * @warning ¸Ã·½·¨ÒÆÖ²×Ô nju09£¬ºÍ term ÏÂÂÔÓĞ²»Í¬£¬ĞèÒª½øÒ»²½¼ì²é¡£
- * @param board_name °æÃæÃû³Æ
+ * @brief ä¾æ®ç‰ˆé¢åç§°æ£€æŸ¥æ˜¯å¦æ˜¯å­˜åœ¨äº etc/junkboards æ–‡ä»¶ä¸­
+ * @warning è¯¥æ–¹æ³•ç§»æ¤è‡ª nju09ï¼Œå’Œ term ä¸‹ç•¥æœ‰ä¸åŒï¼Œéœ€è¦è¿›ä¸€æ­¥æ£€æŸ¥ã€‚
+ * @param board_name ç‰ˆé¢åç§°
  * @return
  */
 int board_is_junkboard(char *board_name);
