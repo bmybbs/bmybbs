@@ -138,4 +138,9 @@ int ytht_del_from_file(char *filename, char *str, bool include_lf);
  * 对应于宏 file_size 的函数实现，以便多线程安全
  */
 off_t ytht_file_size_s(const char *filepath);
+
+/**
+ * @brief 来自 nju09 原 file_has_word 函数
+ */
+int ytht_file_has_word(char *file, char *word);
 #endif

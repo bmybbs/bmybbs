@@ -149,7 +149,6 @@ struct emotion {
 
 // copy from proto.h
 int junkboard(char *board);
-int file_has_word(char *file, char *word);
 int f_write(char *file, char *buf);
 int f_append(char *file, char *buf);
 int put_record(void *buf, int size, int num, char *file);

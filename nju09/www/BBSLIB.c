@@ -79,7 +79,7 @@ int
 junkboard(char *board)
 {
 	// Çë×Ô¶¨Òåjunkboard.
-	return file_has_word("etc/junkboards", board);
+	return ytht_file_has_word("etc/junkboards", board);
 }
 
 int loginok = 0;
@@ -114,28 +114,6 @@ struct boardmem *getbcache();
 struct userec *getuser();
 char *anno_path_of();
 static void updatelastboard(void);
-
-int
-file_has_word(char *file, char *word)
-{
-	FILE *fp;
-	char buf[256], buf2[256];
-	fp = fopen(file, "r");
-	if (fp == 0)
-		return 0;
-	while (1) {
-		bzero(buf, 256);
-		if (fgets(buf, 255, fp) == 0)
-			break;
-		sscanf(buf, "%s", buf2);
-		if (!strcasecmp(buf2, word)) {
-			fclose(fp);
-			return 1;
-		}
-	}
-	fclose(fp);
-	return 0;
-}
 
 int
 f_write(char *file, char *buf)
@@ -1742,10 +1720,10 @@ has_post_perm(struct userec *user, struct boardmem *x)
 		return 0;
 
 	sprintf(buf3, "boards/%s/deny_users", x->header.filename);
-	if (file_has_word(buf3, user->userid))
+	if (ytht_file_has_word(buf3, user->userid))
 		return 0;
 	sprintf(buf3, "boards/%s/deny_anony", x->header.filename);
-	if (file_has_word(buf3, user->userid))
+	if (ytht_file_has_word(buf3, user->userid))
 		return 0;
 	if (!strcasecmp(x->header.filename, "sysop"))
 		return 1;
@@ -1761,7 +1739,7 @@ has_post_perm(struct userec *user, struct boardmem *x)
 		return 1;
 	if (!strcasecmp(x->header.filename, "committee"))
 		return 1;
-	if (file_has_word("deny_users", user->userid))
+	if (ytht_file_has_word("deny_users", user->userid))
 		return 0;
 	if (x->header.clubnum != 0) {
 		if (!(x->header.level & PERM_NOZAP) && x->header.level
@@ -1793,7 +1771,7 @@ has_vote_perm(struct userec *user, struct boardmem *x)
 		return 0;
 	if (x->header.clubnum != 0) {
 		sprintf(buf3, "boards/%s/club_users", x->header.filename);
-		if (file_has_word(buf3, user->userid))
+		if (ytht_file_has_word(buf3, user->userid))
 			return 1;
 		else
 			return 0;
