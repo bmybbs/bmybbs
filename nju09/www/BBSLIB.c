@@ -2006,21 +2006,6 @@ save_user_data(struct userec *x)
 	return 1;
 }
 
-static int is_bansite(char *ip) {
-	FILE *fp;
-	char buf3[256];
-	fp = fopen(".bansite", "r");
-	if (fp == 0)
-		return 0;
-	while (fscanf(FCGI_ToFILE(fp), "%s", buf3) > 0)
-		if (!strcasecmp(buf3, ip)) {
-			fclose(fp);
-			return 1;
-		}
-	fclose(fp);
-	return 0;
-}
-
 int
 user_perm(struct userec *x, int level)
 {
