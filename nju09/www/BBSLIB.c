@@ -56,23 +56,6 @@ int no_cache_header = 0;
 int has_smagic = 0;
 int go_to_first_page = 0;
 
-static void filter(char *line) {
-	char temp[256];
-	int i, stat, j;
-	stat = 0;
-	j = 0;
-	for (i = 0; line[i] && i < 255; i++) {
-		if (line[i] == '\033')
-			stat = 1;
-		if (!stat)
-			temp[j++] = line[i];
-		if (stat && ((line[i] > 'a' && line[i] < 'z') || (line[i] > 'A' && line[i] < 'Z') || line[i] == '@'))
-			stat = 0;
-	}
-	temp[j] = 0;
-	strcpy(line, temp);
-}
-
 int
 junkboard(char *board)
 {
