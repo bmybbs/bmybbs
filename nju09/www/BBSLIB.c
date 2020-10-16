@@ -1022,7 +1022,7 @@ mail_file(char *filename, char *userid, char *title, char *sender)
 		return -1;
 	bzero(&header, sizeof (header));
 	fh_setowner(&header, sender, 0);
-	setmailfile(buf, userid, "");
+	setmailfile_s(buf, sizeof(buf), userid, "");
 	mkdir(buf, 0770);
 	t = trycreatefile(buf, "M.%d.A", now_t, 100);
 	if (t < 0)
@@ -1045,7 +1045,7 @@ mail_file(char *filename, char *userid, char *title, char *sender)
 		fclose(fp2);
 	}
 	fclose(fp);
-	setmailfile(dir, userid, ".DIR");
+	setmailfile_s(dir, sizeof(dir), userid, ".DIR");
 	append_record(dir, &header, sizeof (header));
 	return 0;
 }
@@ -1165,7 +1165,7 @@ post_mail(char *userid, char *title, char *file, char *id,
 	fprintf(fp, "\n\n\033[1;%dm\xA1\xF9 \xC0\xB4\xD4\xB4:\xA3\xAE%s %s [FROM: %.40s]\033[m\n",
 		31 + rand() % 7, BBSNAME, "http://" MY_BBS_DOMAIN, ip);
 	fclose(fp);
-	setmailfile(dir, userid, ".DIR");
+	setmailfile_s(dir, sizeof(dir), userid, ".DIR");
 	append_record(dir, &header, sizeof (header));
 	return 0;
 }
@@ -1384,7 +1384,7 @@ static void sig_append(FILE * fp, char *id, int sig) {
 		return;
 	if (sig < -2 || sig > 10)
 		return;
-	sethomefile(path, id, "signatures");
+	sethomefile_s(path, sizeof(path), id, "signatures");
 	sigln = countln(path);
 	numofsig = (sigln + MAXSIGLINES - 1) / MAXSIGLINES;
 	if (sig==-2) {
