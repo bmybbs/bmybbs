@@ -82,9 +82,9 @@ struct UCACHE *shm_ucache;
 struct UCACHEHASH *uidhashshm;
 struct UINDEX *uindexshm;
 struct WWWCACHE *wwwcache;
-struct mmapfile mf_badwords = { ptr:NULL };
-struct mmapfile mf_sbadwords = { ptr:NULL };
-struct mmapfile mf_pbadwords = { ptr:NULL };
+struct mmapfile mf_badwords  = { .ptr = NULL };
+struct mmapfile mf_sbadwords = { .ptr = NULL };
+struct mmapfile mf_pbadwords = { .ptr = NULL };
 char *ummap_ptr = NULL;
 int ummap_size = 0;
 char fromhost[BMY_IPV6_LEN]; // 从环境变量获取 IP 地址，IPv4/IPv6 已经由 apache 处理过
