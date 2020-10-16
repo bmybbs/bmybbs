@@ -2378,13 +2378,13 @@ get_mail_size()
 	struct fileheader tmpfh;
 	FILE *fp;
 	time_t t;
-	sethomefile(tmpmail, currentuser.userid, "msgindex");
+	sethomefile_s(tmpmail, sizeof(tmpmail), currentuser.userid, "msgindex");
 	if (file_time(tmpmail))
 		currsize += file_size(tmpmail);
-	sethomefile(tmpmail, currentuser.userid, "msgindex2");
+	sethomefile_s(tmpmail, sizeof(tmpmail), currentuser.userid, "msgindex2");
 	if (file_time(tmpmail))
 		currsize += file_size(tmpmail);
-	sethomefile(tmpmail, currentuser.userid, "msgcontent");
+	sethomefile_s(tmpmail, sizeof(tmpmail), currentuser.userid, "msgcontent");
 	if (file_time(tmpmail))
 		currsize += file_size(tmpmail);
 	sprintf(currmaildir, "mail/%c/%s/%s", mytoupper(currentuser.userid[0]),
@@ -2401,7 +2401,7 @@ get_mail_size()
 		return currsize;
 	}
 	while (fread(&tmpfh, 1, sizeof (tmpfh), fp) == sizeof (tmpfh)) {
-		setmailfile(tmpmail, currentuser.userid, fh2fname(&tmpfh));
+		setmailfile_s(tmpmail, sizeof(tmpmail), currentuser.userid, fh2fname(&tmpfh));
 		currsize += file_size(tmpmail);
 	}
 	fclose(fp);
@@ -2475,7 +2475,7 @@ int
 setbmstatus(struct userec *u, int online)
 {
 	char path[256];
-	sethomefile(path, u->userid, "mboard");
+	sethomefile_s(path, sizeof(path), u->userid, "mboard");
 	bmfilesync(u);
 	new_apply_record(path, sizeof (struct boardmanager), (void *) setbmhat, &online);
 	return 0;
