@@ -192,16 +192,6 @@ nohtml(const char *s)
 	return buf;
 }
 
-static char * strright(char *s, int len)
-{
-	int l = strlen(s);
-	if (len <= 0)
-		return "";
-	if (len >= l)
-		return s;
-	return s + (l - len);
-}
-
 char *
 getsenv(char *s)
 {
