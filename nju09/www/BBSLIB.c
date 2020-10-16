@@ -146,17 +146,6 @@ del_record(char *file, int size, int num)
 	return !delete_file(file, size, num + 1, NULL);
 }
 
-static long get_num_records(filename, size)
-char *filename;
-int size;
-{
-	struct stat st;
-
-	if (stat(filename, &st) == -1)
-		return 0;
-	return (st.st_size / size);
-}
-
 static int insert_record(fpath, data, size, pos, num)
 char *fpath;
 void *data;
