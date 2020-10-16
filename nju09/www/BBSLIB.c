@@ -1759,33 +1759,12 @@ send_msg(char *myuserid, int i, char *touserid, int topid, char *msg, int offlin
 	return 1;
 }
 
-//add by wjbta@bmy for 666生命力
-static int life_special_web(char *id) {
-	FILE *fp;
-	char id1[80],buf[80];
-	fp=fopen("etc/life", "r");
-	if(fp==0) return 0;
-	while(1) {
-		if(fgets(buf, 80, fp)==0) break;
-//		printf("%s",buf);
-		if(sscanf(buf, "%s", id1)<1) continue;
-//		printf("%s",id1);
-		if(!strcasecmp(id1,id)) {
-			fclose(fp);
-			return 1;
-		}
-	}
-	fclose(fp);
-	return 0;
-} //add by wjbta@bmy 666生命力
-
 int count_life_value(struct userec *urec)
 {
 	int i, res;
 //	i = (now_t - urec->lastlogin) / 60;
 	if ((urec->userlevel & PERM_XEMPT) || !strcasecmp(urec->userid, "guest"))
 		return 999;
-	//if (life_special_web(urec->userid)) return 666;
 	i = (now_t - urec->lastlogin) / 60;
 
 	/* new user should register in 30 mins */
