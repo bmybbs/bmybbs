@@ -1,6 +1,10 @@
 /* msg.h */
 #ifndef __MSG_H
 #define __MSG_H
+#include <stddef.h>
+#include <time.h>
+#include "config.h"
+
 struct msghead {
 	int pos, len;
 	char sent;
@@ -9,7 +13,7 @@ struct msghead {
 	time_t time;
 	int frompid, topid;
 };
-#define MAX_MSG_SIZE 1024  //×î´óÏûÏ¢³¤¶È
+#define MAX_MSG_SIZE 1024  //æœ€å¤§æ¶ˆæ¯é•¿åº¦
 
 int save_msgtext(char *uident, struct msghead *head, const char *msgbuf);
 int translate_msg(char *src, struct msghead *head, char *dest, int add_site);
