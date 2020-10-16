@@ -21,7 +21,6 @@ static int user_init(struct userec *x, struct user_info **y, const char *userid,
 static int post_imail(char *userid, char *title, char *file, char *id, char *nickname, char *ip, int sig);
 static void sig_append(FILE * fp, char *id, int sig);
 static int useridhash(char *id);
-static int checkuser(char *id, char *pw);
 static int count_id_num(char *id);
 static int count_online2();
 static int fprintf2(FILE * fp, char *s);
@@ -1897,14 +1896,6 @@ getuser(char *id)
 		return NULL;
 	memcpy(&userec1, ummap_ptr + sizeof (struct userec) * uid, sizeof (userec1));
 	return &userec1;
-}
-
-static int checkuser(char *id, char *pw) {
-	struct userec *x;
-	x = getuser(id);
-	if (x == 0)
-		return 0;
-	return ytht_crypt_checkpasswd(x->passwd, pw);
 }
 
 static int count_id_num(char *id) {
