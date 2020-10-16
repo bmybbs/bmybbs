@@ -1787,14 +1787,6 @@ int count_life_value(struct userec *urec)
 	return res;
 }
 
-static int modify_mode(struct user_info *x, int newmode)
-{
-	if (x == 0)
-		return 0;
-	x->mode = newmode;
-	return 0;
-}
-
 int
 save_user_data(struct userec *x)
 {
