@@ -590,35 +590,6 @@ print_session_string(char *value) {
 	printf("Set-Cookie:sessionString=%s;path=/\n", value);
 }
 
-static int contains_invliad_char(char *s) {
-	char *tmp;
-	int ret = 0;
-	tmp = s;
-	while (*s != '\0') {
-		if (!(*s == '/' ||
-			*s == '?' ||
-			*s == '=' ||
-			*s == '.' ||
-			*s == '&' ||
-			*s == '~' ||
-			*s == '_' ||
-			*s == ',' ||
-			*s == ';' ||
-			*s == ':' ||
-			*s == '-' ||
-			(*s >= 'a' && *s <= 'z') ||
-			(*s >= 'A' && *s <= 'Z') ||
-			(*s >= '0' && *s <= '9'))
-			) {
-			ret = 1;
-			break;
-		}
-		s++;
-	}
-	s = tmp;
-	return ret;
-}
-
 int cookie_parse() {
 	const char *cookie_str;
 	char cookie_buf[128];
