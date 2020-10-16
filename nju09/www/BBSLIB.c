@@ -21,7 +21,6 @@ static int user_init(struct userec *x, struct user_info **y, const char *userid,
 static int post_imail(char *userid, char *title, char *file, char *id, char *nickname, char *ip, int sig);
 static void sig_append(FILE * fp, char *id, int sig);
 static int useridhash(char *id);
-static int count_online2();
 static int fprintf2(FILE * fp, char *s);
 static int setbmhat(struct boardmanager *bm, int *online);
 
@@ -1908,14 +1907,6 @@ count_online()
 			total++;
 	shm_utmp->activetime = now_t;
 	shm_utmp->activeuser = total;
-	return total;
-}
-
-static int count_online2() {
-	int i, total = 0;
-	for (i = 0; i < MAXACTIVE; i++)
-		if (shm_utmp->uinfo[i].active && shm_utmp->uinfo[i].invisible == 0)
-			total++;
 	return total;
 }
 
