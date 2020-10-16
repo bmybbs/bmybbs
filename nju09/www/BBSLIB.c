@@ -1732,18 +1732,6 @@ getboard(char board[80])
 	return x1;
 }
 
-static int findnextutmp(char *id, int from)
-{
-	int i;
-	if (from < 0)
-		from = 0;
-	for (i = from; i < MAXACTIVE; i++)
-		if (shm_utmp->uinfo[i].active)
-			if (!strcasecmp(shm_utmp->uinfo[i].userid, id))
-				return i;
-	return -1;
-}
-
 int
 send_msg(char *myuserid, int i, char *touserid, int topid, char *msg, int offline)
 {
