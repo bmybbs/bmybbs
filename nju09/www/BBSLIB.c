@@ -2800,7 +2800,7 @@ NHsprintf(char *s, char *s0)
 			for (m = i + 2; s0[m] && m < i + 24; m++)
 				if (strchr("0123456789;", s0[m]) == 0)
 					break;
-				ytht_strsncpy(ansibuf, &s0[i + 2], m - (i + 2) + 1);
+			ytht_strsncpy(ansibuf, &s0[i + 2], m - (i + 2) + 1);
 			i = m;
 			if (s0[i] != 'm')
 				continue;
