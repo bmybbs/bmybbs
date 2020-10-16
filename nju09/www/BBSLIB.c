@@ -146,53 +146,6 @@ del_record(char *file, int size, int num)
 	return !delete_file(file, size, num + 1, NULL);
 }
 
-static int insert_record(fpath, data, size, pos, num)
-char *fpath;
-void *data;
-int size;
-int pos;
-int num;
-{
-	int fd;
-	off_t off, len;
-	struct stat st;
-	char *tmp;
-
-	if ((fd = open(fpath, O_RDWR | O_CREAT, 0600)) < 0)
-		return -1;
-
-	flock(fd, LOCK_EX);
-
-	fstat(fd, &st);
-	len = st.st_size;
-
-	/* lkchu.990428: ernie patch 如果 len=0 & pos>0 (在刚开精华区目录进去贴上，选下一个) 时会写入垃圾 */
-	off = len ? size * pos : 0;
-	lseek(fd, off, SEEK_SET);
-
-	size *= num;
-	len -= off;
-	if (len > 0) {
-		tmp = (char *) malloc(pos = len + size);
-		memcpy(tmp, data, size);
-		read(fd, tmp + size, len);
-		lseek(fd, off, SEEK_SET);
-		data = tmp;
-		size = pos;
-	}
-
-	write(fd, data, size);
-
-	flock(fd, LOCK_UN);
-
-	close(fd);
-
-	if (len > 0)
-		free(data);
-
-	return 0;
-}
-
 char *
 noansi(char *s)
 {
