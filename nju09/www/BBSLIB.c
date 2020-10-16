@@ -21,7 +21,6 @@ static int user_init(struct userec *x, struct user_info **y, const char *userid,
 static int post_imail(char *userid, char *title, char *file, char *id, char *nickname, char *ip, int sig);
 static void sig_append(FILE * fp, char *id, int sig);
 static int useridhash(char *id);
-static int fprintf2(FILE * fp, char *s);
 static int setbmhat(struct boardmanager *bm, int *online);
 
 struct wwwstyle wwwstyle[NWWWSTYLE] = {
@@ -2078,29 +2077,6 @@ userid_str(char *s)
 			strcat(buf, " ");
 	}
 	return buf;
-}
-
-static int fprintf2(FILE * fp, char *s) {
-	int i, tail = 0, sum = 0;
-	if (s[0] == ':' && s[1] == ' ' && strlen(s) > 79) {
-		sprintf(s + 76, "..\n");
-		fprintf(fp, "%s", s);
-		return 0;
-	}
-	for (i = 0; s[i]; i++) {
-		fprintf(fp, "%c", s[i]);
-		sum++;
-		if (tail) {
-			tail = 0;
-		} else if (s[i] < 0) {
-			tail = s[i];
-		}
-		if (sum >= 78 && tail == 0) {
-			fprintf(fp, "\n");
-			sum = 0;
-		}
-	}
-	return 0;
 }
 
 char *
