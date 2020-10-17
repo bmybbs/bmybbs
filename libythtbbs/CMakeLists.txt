@@ -54,7 +54,9 @@ add_library(ythtbbs SHARED
 	captcha.c
 	cache/user.c
 	cache/utmp.c
+	cache/board.c
 	session.c
+	override.c
 )
 
 add_dependencies(ythtbbs sectree)
