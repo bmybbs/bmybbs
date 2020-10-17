@@ -23,6 +23,7 @@
 */
 
 #include "bbs.h"
+#include "ythtbbs/override.h"
 #include "common.h"
 #include "smth_screen.h"
 #include "io.h"
@@ -75,7 +76,7 @@ static void change_sortmode(int mode);
 static int cmpuinfo(struct user_info **a, struct user_info **b);
 static void sort_user_record(int left, int right);
 static int fill_userlist(void);
-static int cfriendname(struct override *t1, struct override *t2);
+static int cfriendname(struct ythtbbs_override *t1, struct ythtbbs_override *t2);
 static int do_userlist(void);
 static int show_userlist(void);
 static int deal_key(int ch, int allnum, int pagenum);
@@ -488,8 +489,8 @@ fill_userlist()
 
 static int
 cfriendname(t1, t2)
-struct override *t1;
-struct override *t2;
+struct ythtbbs_override *t1;
+struct ythtbbs_override *t2;
 {
 	return !strcasecmp(t1->id, t2->id);
 }
@@ -501,7 +502,7 @@ do_userlist()
 	char user_info_str[STRLEN * 2] /*,pagec */ ;
 	int override;
 	struct user_info *uentp;
-	struct override t1, t2;
+	struct ythtbbs_override t1, t2;
 	char overridefile[256];
 
 	setuserfile(overridefile, "friends");
