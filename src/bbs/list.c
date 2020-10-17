@@ -1,5 +1,5 @@
 /*
-    Pirate Bulletin Board System 
+    Pirate Bulletin Board System
     Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
     Eagles Bulletin Board System
     Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
@@ -8,7 +8,7 @@
     Firebird Bulletin Board System
     Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
                         Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
-    
+
     Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
 
     This program is free software; you can redistribute it and/or modify
@@ -658,7 +658,7 @@ do_userlist()
 				(uentp->invisible ==
 				 YEA) ? "[1;36m" :
 				ModeColor(LOCKSCREEN),  ModeType(LOCKSCREEN),
-				idle_str(uentp));	
+				idle_str(uentp));
 			}
 		}
 		clrtoeol();
@@ -717,7 +717,7 @@ int allnum, pagenum;
 /* add by zhoulin 98.11*/
 	case 'w':
 	case 'W':
-/*                        if (!friendmode) 
+/*                        if (!friendmode)
                              return 0;*/
 		friendmode1 = ~friendmode1 & 1;
 		break;
@@ -767,7 +767,7 @@ int allnum, pagenum;
                                 user_record[allnum]->userid);
                  	}
               }
-		
+
 		msgflag = YEA;
 		break;
 	case 'h':
@@ -871,7 +871,7 @@ int allnum, pagenum;
 /*        case 'Y':
 	        if (HAS_PERM(PERM_CLOAK))
 			x_cloak();
-		break;								
+		break;
 */
 	default:
 		return 0;
@@ -980,7 +980,7 @@ int allnum, pagenum;
 		break;
 /* 	case '/':	//down search ID
 		num=ID_search(num,1);
-		break;	
+		break;
 	case '?':	//up search ID
 		num=ID_search(num,-1);
 		break;
@@ -1259,7 +1259,7 @@ int (*read) (int, int);
 				(*title_show) ();
 				update_endline();
 				continue;
-			}	
+			}
 		} else {
 			move(3 + num - page, 0);
 			prints(">", number);
