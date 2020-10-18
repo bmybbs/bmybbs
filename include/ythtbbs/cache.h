@@ -29,7 +29,7 @@ struct wwwsession {
  */
 struct user_info {
 	int active;                  ///< When allocated this field is true
-	int uid;                     ///< Used to find user name in passwd file, starting from 1
+	unsigned int uid;            ///< Used to find user name in passwd file, starting from 1
 	int pid;                     ///< kill() to notify user of talk request
 	bool invisible;              ///< Used by cloaking function in Xyz menu
 	int sockactive;              ///< Used to coordinate talk requests
