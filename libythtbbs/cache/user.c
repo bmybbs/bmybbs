@@ -151,6 +151,39 @@ void ythtbbs_cache_UserTable_dump(FILE *fp) {
 	}
 }
 
+bool ythtbbs_cache_UserTable_is_friend_online_by_uid(const char *userid, bool has_see_cloak_perm, unsigned search_uid) {
+	int i, utmp_idx, testreject = 0;
+	struct user_info *ptr_info;
+
+	if (search_uid <= 0 || search_uid > MAXUSERS)
+		return false;
+
+	for (i = 0; i < MAX_LOGIN_PER_USER; i++) {
+		utmp_idx = shm_user_table->users[search_uid - 1].utmp_indices[i] - 1;
+
+		if (utmp_idx < 0) // starts from 0
+			continue;
+
+		ptr_info = ythtbbs_cache_utmp_get_by_idx(utmp_idx);
+		if (!ptr_info->active || !ptr_info->pid || ptr_info->uid != search_uid)
+			continue;
+
+		if (!testreject) {
+			if (ythtbbs_override_included(userid, YTHTBBS_OVERRIDE_REJECTS, ptr_info->userid))
+				return true;
+
+			testreject = 1;
+		}
+
+		if (ptr_info->invisible && !has_see_cloak_perm)
+			continue;
+
+		return true;
+	}
+
+	return false;
+}
+
 /**
  * @brief 将 UserIDHashTable 缓存中的用户信息序列化出来
  * 输出形式为 hashid, user_num, userid："42, 0, SYSOP\n"

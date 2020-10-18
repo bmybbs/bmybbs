@@ -98,33 +98,6 @@ char *ret;
 	return;
 }
 
-
-struct user_info *
-query_f(int uid)
-{
-	int i, uent, testreject = 0;
-	struct user_info *uentp;
-	if (uid <= 0 || uid > MAXUSERS)
-		return 0;
-	for (i = 0; i < 6; i++) {
-		uent = uindexshm->user[uid - 1][i];
-		if (uent <= 0)
-			continue;
-		uentp = &shm_utmp->uinfo[uent - 1];
-		if (!uentp->active || !uentp->pid || uentp->uid != uid)
-			continue;
-		if (!testreject) {
-			if (ythtbbs_override_included(currentuser.userid, YTHTBBS_OVERRIDE_REJECTS, uentp->userid))
-				return 0;
-			testreject = 1;
-		}
-		if (shm_utmp->uinfo[uent - 1].invisible && !HAS_PERM(PERM_SYSOP | PERM_SEECLOAK, currentuser))
-			continue;
-		return uentp;
-	}
-	return 0;
-}
-
 //Add by liuche 20120616
 void footInfo(){
 	char buf[1030],buf2[1030];
@@ -213,7 +186,7 @@ bbsfoot_main()
 	printf("<span id='bbsfoot_online'>");
 	if (loginok && !isguest){
 		for (i = 0; i < u_info->fnum; i++)
-			count_friends += query_f(u_info->friend[i]) ? 1 : 0;
+			count_friends += ythtbbs_cache_UserTable_is_friend_online_by_uid(currentuser.userid, HAS_PERM(PERM_SYSOP | PERM_SEECLOAK, currentuser), u_info->friend[i]) ? 1 : 0;
 		printf("‘⁄œﬂ/∫√”—[<a href=bbsufind?search=A&limit=20 target=f3 class=1011>%d</a> ", count_online());
 		printf("/<a href=bbsfriend target=f3 class=1011>%d</a>] ",
 			count_friends);

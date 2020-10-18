@@ -166,6 +166,15 @@ void ythtbbs_cache_UserTable_remove_utmp_idx(int uid, int utmp_idx);
 int ythtbbs_cache_UserTable_get_user_online_friends(const char *userid, bool has_see_cloak_perm, struct user_info *user_list, size_t user_list_size);
 
 /**
+ * @brief 依据 uid 查找用户是否在线
+ * 参考了 nju09/bbsfoot.c query_f 的实现。
+ * @param userid
+ * @param has_see_cloak_perm 是否具有查看隐身的权限
+ * @param search_uid 目标用户uid（从1索引）
+ */
+bool ythtbbs_cache_UserTable_is_friend_online_by_uid(const char *userid, bool has_see_cloak_perm, unsigned int search_uid);
+
+/**
  * @brief 判断用户是否在线
  * 遍历该 userid 对应的会话，如果用户存在且会话存在，则：
  *   1. 对于 telnet、ssh 会话认为在线
