@@ -25,7 +25,7 @@ int ythtbbs_override_add(const char *userid, const struct ythtbbs_override *ptr_
 
 int ythtbbs_override_count(const char *userid, const enum ythtbbs_override_type override_type);
 
-int ythtbbs_override_included(char *userid, const enum ythtbbs_override_type override_type, const char *search_id);
+int ythtbbs_override_included(const char *userid, const enum ythtbbs_override_type override_type, const char *search_id);
 
 long ythtbbs_override_get_records(const char *userid, struct ythtbbs_override *array, const size_t count, const enum ythtbbs_override_type override_type);
 

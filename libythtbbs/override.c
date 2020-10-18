@@ -42,7 +42,7 @@ int ythtbbs_override_count(const char *userid, const enum ythtbbs_override_type 
 	return ythtbbs_record_count_records(buf, sizeof(struct ythtbbs_override));
 }
 
-int ythtbbs_override_included(char *userid, const enum ythtbbs_override_type override_type, const char *search_id) {
+int ythtbbs_override_included(const char *userid, const enum ythtbbs_override_type override_type, const char *search_id) {
 	char buf[128];
 	struct ythtbbs_override tmp_override_buf;
 
