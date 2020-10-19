@@ -34,6 +34,15 @@ char *ytht_Difftime(time_t compared_time) __attribute__((deprecated("use ytht_Di
 char *ytht_Difftime_s(time_t compared_time, char *buf, size_t buf_len);
 
 /**
+ * @brief 生成符合 RFC 7231 的日期格式
+ * 该格式广泛用于 HTTP 协议中。
+ * 参考了 https://stackoverflow.com/a/7548846/803378 的实现。在 NJU09 中亦有多处使用。
+ * 使用了多线程安全的方式。
+ * @return 返回值参见 strftime(3) 的返回值说明。若返回值为 0，说明 buf 缓冲区不够大。
+ */
+size_t ytht_utc_time_s(char *buf, const size_t len, const time_t *t);
+
+/**
  * @brief 获得某一天 0:00:00 的时间戳(UTC+8 时区)
  * @param tm
  * @return 时间戳

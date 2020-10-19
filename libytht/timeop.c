@@ -63,6 +63,13 @@ char *ytht_Difftime_s(time_t compared_time, char *buf, size_t buf_len) {
 	return buf;
 }
 
+size_t ytht_utc_time_s(char *buf, const size_t len, const time_t *t) {
+	struct tm tm;
+
+	gmtime_r(t, &tm);
+	return strftime(buf, len, "%a, %d %b %Y %H:%M:%S %Z", &tm);
+}
+
 time_t get_time_of_the_biginning_of_the_day(struct tm *tm)
 {
 	// 设置为 UTC 0:00:00

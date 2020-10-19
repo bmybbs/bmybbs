@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <check.h>
 
+extern Suite * test_suite_timeop(void);
+
 extern Suite * test_suite_mailsender(void);
 extern Suite * test_suite_identify(void);
 extern Suite * test_suite_captcha(void);
@@ -21,6 +23,9 @@ int main (void)
 
 	Suite *s = main_suit();
 	SRunner *sr = srunner_create(s);
+
+	srunner_add_suite(sr, test_suite_timeop());
+
 	srunner_add_suite(sr, test_suite_mailsender());
 	srunner_add_suite(sr, test_suite_identify());
 	srunner_add_suite(sr, test_suite_captcha());
@@ -40,3 +45,4 @@ int main (void)
 	srunner_free(sr);
 	return (number_failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
+
