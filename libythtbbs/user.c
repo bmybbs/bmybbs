@@ -775,6 +775,36 @@ int ythtbbs_user_login(const char *userid, const char *passwd, const char *fromh
 	return YTHTBBS_USER_LOGIN_OK;
 }
 
+int ythtbbs_user_logout(const char *userid, const int utmp_idx) {
+	int              user_idx;
+	struct userec    local_lookup_user;
+	struct user_info *ptr_info;
+	time_t           local_now;
+	char             local_buf[128];
+
+	ythtbbs_cache_UserTable_resolve();
+	user_idx = ythtbbs_cache_UserIDHashTable_find_idx(userid);
+	if (user_idx < 0)
+		return YTHTBBS_USER_NOT_EXIST;
+
+	ptr_info = ythtbbs_cache_utmp_get_by_idx(utmp_idx);
+	if (strcmp(userid, ptr_info->userid) != 0)
+		return YTHTBBS_USER_SESSION_ERROR;
+
+	// ptr_info belongs to this user
+	get_record(PASSFILE, &local_lookup_user, sizeof(struct userec), user_idx + 1);
+	local_lookup_user.stay += time(NULL) - ptr_info->lasttime; // TODO
+	snprintf(local_buf, sizeof(local_buf), "%s exitbbs %ld", local_lookup_user.userid, local_lookup_user.stay);
+	newtrace(local_buf);
+	ythtbbs_cache_utmp_remove(utmp_idx);
+
+	// 更新 PASSFILE 中的在线时间
+	substitute_record(PASSFILE, &local_lookup_user, sizeof(struct userec), user_idx + 1);
+
+	// TODO update bmstatus
+	return 0;
+}
+
 /**
  * 参考 nju09 user_perm 实现，可以替代 HAS_PERM 宏
  */

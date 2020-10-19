@@ -141,9 +141,10 @@ enum ythtbbs_user_login_status {
 	YTHTBBS_USER_USER_BAN,
 	YTHTBBS_USER_IN_PRISON,
 	YTHTBBS_USER_ONLINE_FULL,
+	YTHTBBS_USER_SESSION_ERROR,
 };
 
 int ythtbbs_user_login(const char *userid, const char *passwd, const char *fromhost, const enum ythtbbs_user_login_type login_type, struct user_info *out_info, struct userec *out_userec, int *out_utmp_idx);
 
-int ythtbbs_user_logout(const char *userid, int utmp_idx);
+int ythtbbs_user_logout(const char *userid, const int utmp_idx);
 #endif
