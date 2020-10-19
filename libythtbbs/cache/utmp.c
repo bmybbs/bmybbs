@@ -100,6 +100,20 @@ int ythtbbs_cache_utmp_insert(struct user_info *ptr_user_info) {
 	return j;
 }
 
+void ythtbbs_cache_utmp_remove(int utmp_idx) {
+	struct user_info *ptr_info;
+
+	if (utmp_idx < 0 || utmp_idx >= USHM_SIZE)
+		return;
+
+	ptr_info = &shm_utmp->uinfo[utmp_idx];
+	if (!ptr_info->active)
+		return;
+
+	ythtbbs_cache_UserTable_remove_utmp_idx(ptr_info->uid, utmp_idx);
+	memset(ptr_info, 0, sizeof(struct user_info));
+}
+
 int ythtbbs_cache_utmp_check_active_by_idx(int idx) {
 	return shm_utmp->uinfo[idx].active;
 }

@@ -223,6 +223,13 @@ void ythtbbs_cache_utmp_resolve(void);
  */
 int ythtbbs_cache_utmp_insert(struct user_info *ptr_user_info);
 
+/**
+ * @brief 从 shm_utmp 中移除索引
+ * 参考了 nju09 bbslogout 的实现
+ * @param utmp_idx 索引值
+ */
+void ythtbbs_cache_utmp_remove(int utmp_idx);
+
 int ythtbbs_cache_utmp_check_active_by_idx(int idx);
 
 int ythtbbs_cache_utmp_check_uid_by_idx(int idx, int uid);
