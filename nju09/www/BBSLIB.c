@@ -76,7 +76,6 @@ struct UTMPFILE *shm_utmp;
 struct BCACHE *shm_bcache;
 struct UCACHE *shm_ucache;
 struct UCACHEHASH *uidhashshm;
-struct UINDEX *uindexshm;
 struct WWWCACHE *wwwcache;
 struct mmapfile mf_badwords  = { .ptr = NULL };
 struct mmapfile mf_sbadwords = { .ptr = NULL };

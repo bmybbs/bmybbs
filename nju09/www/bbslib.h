@@ -83,7 +83,6 @@ extern struct BCACHE *shm_bcache;
 extern struct UCACHE *shm_ucache;
 extern struct UCACHEHASH *uidhashshm;
 extern struct WWWCACHE *wwwcache;
-extern struct UINDEX *uindexshm;
 extern char fromhost[BMY_IPV6_LEN];
 extern struct in6_addr from_addr; //ipv6 by leoncom
 extern int via_proxy;
