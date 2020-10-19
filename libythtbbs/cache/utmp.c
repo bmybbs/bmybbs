@@ -111,6 +111,7 @@ void ythtbbs_cache_utmp_remove(int utmp_idx) {
 		return;
 
 	ythtbbs_cache_UserTable_remove_utmp_idx(ptr_info->uid, utmp_idx);
+	ythtbbs_session_del(ptr_info->sessionid);
 	memset(ptr_info, 0, sizeof(struct user_info));
 }
 
