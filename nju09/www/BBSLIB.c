@@ -2472,62 +2472,6 @@ static int setbmhat(struct boardmanager *bm, int *online) {
 	return 0;
 }
 
-void
-add_uindex(int uid, int utmpent)
-{
-	int i, uent;
-	if (uid <= 0 || uid > MAXUSERS)
-		return;
-	for (i = 0; i < 6; i++)
-		if (uindexshm->user[uid - 1][i] == utmpent)
-			return;
-	//只放在后三个位置, 这样来保证telnet的位置总可以保留
-	for (i = 3; i < 6; i++) {
-		uent = uindexshm->user[uid - 1][i];
-		if (uent <= 0 || !shm_utmp->uinfo[uent - 1].active || shm_utmp->uinfo[uent - 1].uid != uid) {
-			uindexshm->user[uid - 1][i] = utmpent;
-			return;
-		}
-	}
-}
-
-void
-remove_uindex(int uid, int utmpent)
-{
-	int i;
-	if (uid <= 0 || uid > MAXUSERS)
-		return;
-	for (i = 0; i < 6; i++) {
-		if (uindexshm->user[uid - 1][i] == utmpent) {
-			uindexshm->user[uid - 1][i] = 0;
-			return;
-		}
-	}
-}
-
-int
-count_uindex(int uid)
-{
-	int i, uent, count = 0;
-	struct user_info *uentp;
-	if (uid <= 0 || uid > MAXUSERS)
-		return 0;
-	for (i = 0; i < 6; i++) {
-		uent = uindexshm->user[uid - 1][i];
-		if (uent <= 0)
-			continue;
-		uentp = &(shm_utmp->uinfo[uent - 1]);
-		if (!uentp->active || !uentp->pid || uentp->uid != uid)
-			continue;
-		if (uentp->pid > 1 && kill(uentp->pid, 0) < 0) {
-			uindexshm->user[uid - 1][i] = 0;
-			continue;
-		}
-		count++;
-	}
-	return count;
-}
-
 int
 cachelevel(int filetime, int attached)
 {
