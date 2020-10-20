@@ -317,9 +317,15 @@ static int ythtbbs_cache_UserTable_fill_v(void *user_ec, va_list ap) {
 	ptr_local_usernumber = va_arg(ap, int *);
 	ptr = (struct userec *)user_ec;
 	if (*ptr_local_usernumber < MAXUSERS) {
-		strncpy(shm_user_table->users[*ptr_local_usernumber].userid, ptr->userid, IDLEN+1);
-		shm_user_table->users[*ptr_local_usernumber].userid[IDLEN] = '\0';
-		memset(shm_user_table->users[*ptr_local_usernumber].utmp_indices, 0, sizeof(int) * MAX_LOGIN_PER_USER);
+		if (strcmp(shm_user_table->users[*ptr_local_usernumber].userid, ptr->userid) != 0) {
+			// shm_user_table->users[i].userid 只可能存在两种情况
+			// 1) userid 全部为 '\0' 的初始状态
+			// 2) userid 已被设置且使用 '\0' 作为终止符
+			// 因此这里使用 strcmp 应该是安全的，并且只在 userid 不相同的时候填充并初始化 utmp_indices
+			strncpy(shm_user_table->users[*ptr_local_usernumber].userid, ptr->userid, IDLEN+1);
+			shm_user_table->users[*ptr_local_usernumber].userid[IDLEN] = '\0';
+			memset(shm_user_table->users[*ptr_local_usernumber].utmp_indices, 0, sizeof(int) * MAX_LOGIN_PER_USER);
+		}
 		(*ptr_local_usernumber)++;
 	}
 	return 0;
