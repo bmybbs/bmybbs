@@ -52,11 +52,13 @@ void ythtbbs_cache_UserTable_resolve() {
 	flock(fd, LOCK_EX);
 
 	time(&local_now);
+/*
 	if (local_now - lasttime < 10) {
 		// do not update if already updated in the last 10 seconds
 		close(fd);
 		return;
 	}
+*/
 
 	lasttime = local_now;
 
