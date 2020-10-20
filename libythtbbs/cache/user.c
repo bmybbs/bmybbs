@@ -357,10 +357,23 @@ static int ythtbbs_cache_UserIDHashTable_resolve() {
 
 static int ythtbbs_cache_UserIDHashTable_insert(char *userid, int idx) {
 	unsigned int h, s, i, j = 0;
+	int old_idx;
+	char local_buf[128];
 	struct ythtbbs_cache_UserIDHashItem *ptr_items = shm_userid_hashtable->items;
 	if (!*userid)
 		return -1;
 
+	old_idx = ythtbbs_cache_UserIDHashTable_find_idx(userid);
+	if (old_idx >= 0) {
+		// 记录已存在于 UserIDHashTable 中，则不处理
+		if (old_idx != idx) {
+			// 理应相等
+			snprintf(local_buf, sizeof(local_buf), "user_idx changed? %d --> %d", old_idx, idx);
+			newtrace(local_buf);
+		}
+
+		return 0;
+	}
 	h = ythtbbs_cache_User_hash(userid);
 	s = UCACHE_HASH_SIZE / 26 / 26;
 	i = h * s;
