@@ -1,6 +1,8 @@
 /* goodgbid.c */
 #ifndef __GOODGBID_H
 #define __GOODGBID_H
+#include <stdbool.h>
+
 int goodgbid(char *userid);
-int is_bad_id(char *s);
+bool is_bad_id(const char *s);
 #endif
