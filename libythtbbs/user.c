@@ -21,6 +21,15 @@
 #include "ythtbbs/msg.h"
 #include "ythtbbs/override.h"
 
+/**
+ * just use to pass a param to fillmboard()
+ */
+struct myparam1 {
+	struct userec user;
+	int fd;
+	short bid;
+};
+
 // 用于加载好友、黑名单的条数以及用户 id 到 user_info 结构体中
 static int ythtbbs_user_init_override(struct user_info *u, enum ythtbbs_override_type override_type);
 
@@ -36,6 +45,9 @@ static int ythtbbs_user_cmp_uid(const unsigned *a, const unsigned *b);
  */
 static int ythtbbs_user_set_bm_status(const struct userec *user, bool online, bool invisible);
 /* mytoupper: 将中文ID映射到A-Z的目录中 */
+
+static int fillmboard(struct boardheader *bh, struct myparam1 *param);
+
 char
 mytoupper(unsigned char ch)
 {
@@ -101,7 +113,7 @@ int
 saveuservalue(char *userid, char *key, char *value)
 {
 	char path[256];
-	sethomefile(path, userid, "values");
+	sethomefile_s(path, sizeof(path), userid, "values");
 	return savestrvalue(path, key, value);
 }
 
@@ -218,7 +230,7 @@ countlife(struct userec *urec)
 
 	/* if (urec) has XEMPT permission, don't kick it */
 	if ((urec->userlevel & PERM_XEMPT)
-	    || strcmp(urec->userid, "guest") == 0)
+			|| strcmp(urec->userid, "guest") == 0)
 		return 999;
 //	if (life_special(urec->userid)) return 666;
 //	life_special(urec->userid);
@@ -238,8 +250,8 @@ countlife(struct userec *urec)
 	if (((time(0)-urec->firstlogin)/86400)>365*2)
 		return  365;
 
-	//if (urec->stay > 1000000)
-      	//	return (365 * 1440 - value) / 1440;
+	// if (urec->stay > 1000000)
+		// return (365 * 1440 - value) / 1440;
 	res=(180 * 1440 - value) / 1440 + urec->numdays;
 	if (res>364) res=364;
 	return res;
@@ -250,7 +262,7 @@ userlock(char *userid, int locktype)
 {
 	char path[256];
 	int fd;
-	sethomefile(path, userid, ".lock");
+	sethomefile_s(path, sizeof(path), userid, ".lock");
 	fd = open(path, O_RDONLY | O_CREAT, 0660);
 	if (fd == -1)
 		return -1;
@@ -304,7 +316,7 @@ userbansite(const char *userid, const char *fromhost)
 	unsigned int banaddr, banmask;
 	unsigned int from;
 	from = inet_addr(fromhost);
-	sethomefile(path, userid, "bansite");
+	sethomefile_s(path, sizeof(path), userid, "bansite");
 	if ((fp = fopen(path, "r")) == NULL)
 		return 0;
 	while (fgets(buf, STRLEN, fp) != NULL) {
@@ -336,18 +348,19 @@ void
 logattempt(const char *user, const char *from, const char *zone, time_t time)
 {
 	char buf[256], filename[80];
+	char time_buf[30];
 	int fd, len;
 
 	sprintf(buf, "system passerr %s", from);
 	newtrace(buf);
-	snprintf(buf, 256, "%-12.12s  %-30s %-16s %-6s\n",
-			 user, ytht_ctime(time), from, zone);
+	ytht_ctime_r(time, time_buf);
+	snprintf(buf, 256, "%-12.12s  %-30s %-16s %-6s\n", user, time_buf, from, zone);
 	len = strlen(buf);
 	if ((fd = open(MY_BBS_HOME "/" BADLOGINFILE, O_WRONLY | O_CREAT | O_APPEND, 0644)) >= 0) {
 		write(fd, buf, len);
 		close(fd);
 	}
-	sethomefile(filename, user, BADLOGINFILE);
+	sethomefile_s(filename, sizeof(filename), user, BADLOGINFILE);
 	if ((fd = open(filename, O_WRONLY | O_CREAT | O_APPEND, 0644)) >= 0) {
 		write(fd, buf, len);
 		close(fd);
@@ -497,20 +510,17 @@ chk_BM_id(char *user, struct boardheader *bh)
 	return 0;
 }
 
-struct myparam1 {		/* just use to pass a param to fillmboard() */
-	struct userec user;
-	int fd;
-	short bid;
-};
-static int fillmboard(struct boardheader *bh, struct myparam1 *param);
-
 int
 bmfilesync(struct userec *user)
 {
 	char path[256];
 	struct myparam1 mp;
-	sethomefile(path, user->userid, "mboard");
-	if (file_time(path) > file_time(".BOARDS"))
+	struct stat st_path, st_boards;
+
+	sethomefile_s(path, sizeof(path), user->userid, "mboard");
+	f_stat_s(&st_path, path);
+	f_stat_s(&st_boards, BOARDS);
+	if (st_path.st_mtime > st_boards.st_mtime)
 		return 0;
 	memcpy(&(mp.user), user, sizeof (struct userec));
 	mp.fd = open(path, O_CREAT | O_TRUNC | O_WRONLY, 0600);	//touch a new file
@@ -519,7 +529,7 @@ bmfilesync(struct userec *user)
 		return -1;
 	}
 	mp.bid = 0;
-	new_apply_record(".BOARDS", sizeof (struct boardheader), (void *)fillmboard, &mp);
+	new_apply_record(BOARDS, sizeof (struct boardheader), (void *)fillmboard, &mp);
 	close(mp.fd);
 	return 0;
 }
@@ -567,10 +577,10 @@ fillmboard(struct boardheader *bh, struct myparam1 *mp)
 static const char *get_login_type_str(enum ythtbbs_user_login_type type) {
 	switch(type) {
 	case YTHTBBS_LOGIN_TELNET: return "TELNET";
-	case YTHTBBS_LOGIN_SSH:    return "SSH";
-	case YTHTBBS_LOGIN_NJU09:  return "NJU09";
-	case YTHTBBS_LOGIN_API:    return "API";
-	default: "unknown";
+	case YTHTBBS_LOGIN_SSH   : return "SSH";
+	case YTHTBBS_LOGIN_NJU09 : return "NJU09";
+	case YTHTBBS_LOGIN_API   : return "API";
+	default                  : return "unknown";
 	}
 }
 
