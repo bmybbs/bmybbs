@@ -65,117 +65,20 @@ static int valid_ident(char *ident);
 int
 release_email(char *userid, char *email) //释放邮箱, added by interma 2006.2.21
 {
-    struct userec* cuser;
-    char an[2];
-    char genbuf[STRLEN];
-    struct active_data act_data;
+	struct userec* cuser;
+	char an[2];
+	char genbuf[STRLEN];
+	struct active_data act_data;
 
-    //getuser(userid, &cuser);
-    read_active(userid, &act_data);
-
-
-        act_data.status=NO_ACTIVE;
-       // strcpy(act_data.operator, currentuser->userid);
-        write_active(&act_data);
+	//getuser(userid, &cuser);
+	read_active(userid, &act_data);
 
 
-    return 0;
+	act_data.status=NO_ACTIVE;
+	// strcpy(act_data.operator, currentuser->userid);
+	write_active(&act_data);
 
-/*
-    char username[50];
-    char popserver[50];
-
-    char *p = strchr(email, '@');
-    if (p == NULL)
-        return -1;
-
-    memset(username, '\0', sizeof(username));
-    memset(popserver, '\0', sizeof(popserver));
-    strncpy(username, email, p - email);
-    strncpy(popserver, p + 1, strlen(email) - 1 - (p - email));
-
-    //printf("[%s][%s]", username, popserver);
-
-    FILE *fp;
-    char buf[256];
-    int isexist = 0;
-
-	fp = fopen(MY_BBS_HOME "/etc/pop_register/pop_list", "r");
-    if (fp == NULL)
-        return -2;
-    while(fgets(buf, 256, fp) != NULL)
-	{
-        if (strcmp(buf, "") == 0 || strcmp(buf, " ") == 0 || strcmp(buf, "\n") == 0)
-			break;
-
-        buf[strlen(buf) - 1] = '\0';
-        if (strcmp(buf, popserver) == 0)
-        {
-            isexist = 1;
-            break;
-        }
-
-        fgets(buf, 256, fp);
-    }
-    fclose(fp);
-
-    if (!isexist)
-        return -3;
-
-	strncpy(buf, MY_BBS_HOME "/etc/pop_register/", 256);
-	strncat(buf, popserver, 256);
-   	fp = fopen(buf, "r");
-	strncpy(buf, MY_BBS_HOME "/etc/pop_register/", 256);
-   	strncat(buf, popserver, 256);
-   	strncat(buf, "_temp", 5);
-
-	int lockfd = openlockfile(".lock_new_register", O_RDONLY, LOCK_EX); // 加锁来保证互斥操作
-	FILE *fp2 = fopen(buf, "w");
-    if (fp == NULL || fp2 == NULL)
-	{
-		close(lockfd);
-		return -4;
-    }
-    char username2[50];
-    char userid2[20];
-
-    while(fgets(buf, 256, fp) != NULL)
-	{
-	    strncpy(username2, buf, 50);
-	    username2[strlen(username2) - 1] = '\0';
-	    fgets(buf, 256, fp);
-	    strncpy(userid2, buf, 20);
-	    p = strchr(userid2, ' ');
-	    userid2[p - userid2] = '\0';
-
-	    //printf("[%s][%s]\n", userid2, username2);
-	    if (strcmp(str_to_upper(userid), str_to_upper(userid2)) == 0 &&
-            strcmp(str_to_upper(username), str_to_upper(username2)) == 0)
-	    {
-	        ;
-	    }
-        else
-        {
-            fputs(username2, fp2);
-            fputs("\n", fp2);
-            fputs(buf, fp2);
-        }
-	}
-
-    fclose(fp);
-    fclose(fp2);
-
- 	char buf2[256];
-	strncpy(buf2, MY_BBS_HOME "/etc/pop_register/", 256);
-	strncat(buf2, popserver, 256);
-
-	strncpy(buf, MY_BBS_HOME "/etc/pop_register/", 256);
-   	strncat(buf, popserver, 256);
-   	strncat(buf, "_temp", 5);
-	rename(buf, buf2);
-    close(lockfd);
-    return 0;
-    */
+	return 0;
 }
 
 
@@ -207,21 +110,14 @@ getnewuserid(struct userec *newuser)
 				break;
 			val = countlife(&utmp);
 			if (utmp.userid[0] != '\0' && val < 0) {
-				sprintf(genbuf, "system kill %s %d",
-					utmp.userid, val);
+				sprintf(genbuf, "system kill %s %d", utmp.userid, val);
 				newtrace(genbuf);
 				if (!is_bad_id(utmp.userid)) {
 					if ((utmp.userlevel & PERM_OBOARDS))
 						retire_allBM(utmp.userid);
-					sprintf(genbuf,
-						"mail/%c/%s",
-						mytoupper(utmp.userid[0]),
-						utmp.userid);
+					sprintf(genbuf, "mail/%c/%s", mytoupper(utmp.userid[0]), utmp.userid);
 					deltree(genbuf);
-					sprintf(genbuf,
-						"home/%c/%s",
-						mytoupper(utmp.userid[0]),
-						utmp.userid);
+					sprintf(genbuf, "home/%c/%s", mytoupper(utmp.userid[0]), utmp.userid);
 					deltree(genbuf);
 
 				}
@@ -232,8 +128,7 @@ getnewuserid(struct userec *newuser)
 				strncpy(email, utmp.email, 50);
 				release_email(userid, email); //id饿死了之后自动释放邮箱，added by interma 2006.2.21
 				// 给此用户发信,提醒邮箱已经释放.
-				sprintf(buf, MY_BBS_HOME "/bin/sendmail.py '%s' '%s@bmy已经死亡' '%s已经死亡，邮箱绑定已经解除，请重新用此邮箱注册id。'",
-					email, userid, userid);
+				sprintf(buf, MY_BBS_HOME "/bin/sendmail.py '%s' '%s@bmy已经死亡' '%s已经死亡，邮箱绑定已经解除，请重新用此邮箱注册id。'", email, userid, userid);
 				int ret = system(buf);
 
 			}
@@ -253,8 +148,7 @@ getnewuserid(struct userec *newuser)
 		if (dashf("etc/user_full")) {
 			ansimore("etc/user_full", NA);
 		} else {
-			prints
-			    ("抱歉, 使用者帐号已经满了, 无法注册新的帐号.\n\r");
+			prints("抱歉, 使用者帐号已经满了, 无法注册新的帐号.\n\r");
 		}
 		val = (st.st_mtime - system_time + 3660) / 60 + 1;
 		prints("请等待 %d 分钟后再试一次, 祝你好运.\n\r", val);
@@ -267,8 +161,7 @@ getnewuserid(struct userec *newuser)
 		return -1;
 	}
 	write(fd, newuser, sizeof (*newuser));
-	ytht_strsncpy(uidshm->userid[i - 1], newuser->userid,
-				  sizeof(uidshm->userid[i - 1]));
+	ytht_strsncpy(uidshm->userid[i - 1], newuser->userid, sizeof(uidshm->userid[i - 1]));
 	insertuseridhash(uidhashshm->uhi, UCACHE_HASH_SIZE, newuser->userid, i);
 	flock(fd, LOCK_UN);
 	close(fd);
@@ -283,22 +176,7 @@ new_register()
 	char passbuf[STRLEN];
 	int allocid, try;
 
-	/* unused
-	if (0) {
-		now_t = time(0);
-		sprintf(genbuf, "etc/no_register_%3.3s", ctime(&now_t));
-		if (dashf(genbuf)) {
-			ansimore(genbuf, NA);
-			pressreturn();
-			exit(1);
-		}
-	}
-	*/
 	memset(&newuser, 0, sizeof (newuser));
-	// getdata(0, 0, "使用GB编码阅读?(\xa8\xcf\xa5\xce BIG5\xbd\x58\xbe\x5c\xc5\xaa\xbd\xd0\xbf\xefN)(Y/N)? [Y]: ", passbuf, 4, DOECHO, YEA);
-	// if (*passbuf == 'n' || *passbuf == 'N')
-	//  if (!convcode)
-	//          switch_code();
 
 	ansimore("etc/register", NA);
 	try = 0;
@@ -311,13 +189,11 @@ new_register()
 		move(t_lines - 6, 0);
 		prints("帐号名称为您在本站所实际显示的用户名称，不可修改，请慎重选择 ");
 		getdata(t_lines - 5, 0,
-			"请输入帐号名称 (Enter User ID, \"0\" to abort): ",
-			newuser.userid, IDLEN + 1, DOECHO, YEA);
+				"请输入帐号名称 (Enter User ID, \"0\" to abort): ",
+				newuser.userid, IDLEN + 1, DOECHO, YEA);
 		if (newuser.userid[0] == '0') {
 			longjmp(byebye, -1);
 		}
-//		if (!goodgbid(newuser.userid)) {   by bjgyt
-//			prints("不正确的中英文帐号\n");
 		if (id_with_num(newuser.userid)) {
 			prints("帐号必须全为英文字母!\n");
 		} else if (strlen(newuser.userid) < 2) {
@@ -330,16 +206,13 @@ new_register()
 			break;
 	}
 	while (1) {
-		getdata(t_lines - 4, 0, "请设定您的密码 (Setup Password): ",
-			passbuf, PASSLEN, NOECHO, YEA);
+		getdata(t_lines - 4, 0, "请设定您的密码 (Setup Password): ", passbuf, PASSLEN, NOECHO, YEA);
 		if (strlen(passbuf) < 4 || !strcmp(passbuf, newuser.userid)) {
 			prints("密码太短或与使用者代号相同, 请重新输入\n");
 			continue;
 		}
 		strncpy(newuser.passwd, passbuf, PASSLEN);
-		getdata(t_lines - 3, 0,
-			"请再输入一次你的密码 (Reconfirm Password): ", passbuf,
-			PASSLEN, NOECHO, YEA);
+		getdata(t_lines - 3, 0, "请再输入一次你的密码 (Reconfirm Password): ", passbuf, PASSLEN, NOECHO, YEA);
 		if (strncmp(passbuf, newuser.passwd, PASSLEN) != 0) {
 			prints("密码输入错误, 请重新输入密码.\n");
 			continue;
@@ -423,8 +296,7 @@ invalid_realmail(char *userid, char *email, int msize)
 		fgets(genbuf, STRLEN, fn);
 		fclose(fn);
 		strtok(genbuf, "\n");
-		if (valid_ident(genbuf) && ((strchr(genbuf, '@') != NULL)
-					    || strstr(genbuf, "usernum"))) {
+		if (valid_ident(genbuf) && ((strchr(genbuf, '@') != NULL) || strstr(genbuf, "usernum"))) {
 			if (strchr(genbuf, '@') != NULL)
 				strncpy(email, genbuf, msize);
 			move(21, 0);
@@ -471,8 +343,8 @@ check_register_info()
 		update_utmp();
 	}
 	while ((strlen(urec->realname) < 4)
-	       || (strstr(urec->realname, "  "))
-	       || (strstr(urec->realname, "　"))) {
+			|| (strstr(urec->realname, "  "))
+			|| (strstr(urec->realname, "　"))) {
 		move(3, 0);
 		prints("请输入您的真实姓名 (Enter realname):\n");
 		getdata(4, 0, "> ", urec->realname, NAMELEN, DOECHO, YEA);
@@ -497,124 +369,76 @@ check_register_info()
 	if (!strcmp(currentuser.userid, "SYSOP")) {
 		currentuser.userlevel = ~0;
 		set_safe_record();
-		substitute_record(PASSFILE, &currentuser,
-				  sizeof (struct userec), usernum);
+		substitute_record(PASSFILE, &currentuser, sizeof (struct userec), usernum);
 	}
 	if (!(currentuser.userlevel & PERM_LOGINOK)) {
-		if (!invalid_realmail
-		    (urec->userid, urec->realmail, STRLEN - 16))
+		if (!invalid_realmail(urec->userid, urec->realmail, STRLEN - 16))
 		{
 			#ifndef POP_CHECK /* 防止拣回尸体后，不用输入信箱名。interma@BMY*/
 			sethomefile(buf, urec->userid, "sucessreg");
 			if (((dashf(buf)) && !sysconf_str("EMAILFILE"))
-			    || (sysconf_str("EMAILFILE"))) {
+					|| (sysconf_str("EMAILFILE"))) {
 				set_safe_record();
 				urec->userlevel |= PERM_DEFAULT;
-				substitute_record(PASSFILE, urec,
-						  sizeof (struct userec),
-						  usernum);
+				substitute_record(PASSFILE, urec, sizeof (struct userec), usernum);
 			}
 			#endif
 		} else {
 #ifdef EMAILREG
 			if ((!strstr(urec->email, buf)) &&
-			    (!invalidaddr(urec->email)) &&
-			    (!invalid_email(urec->email))) {
+					(!invalidaddr(urec->email)) &&
+					(!invalid_email(urec->email))) {
 				move(13, 0);
 				prints("您的电子信箱 尚须通过回信验证...  \n");
 				prints("    本站将马上寄一封验证信给您,\n");
-				prints
-				    ("    您只要从 %s 回信, 就可以成为本站合格公民.\n\n",
-				     urec->email);
-				prints
-				    ("    成为本站合格公民, 就能享有更多的权益喔!\n");
+				prints("    您只要从 %s 回信, 就可以成为本站合格公民.\n\n", urec->email);
+				prints("    成为本站合格公民, 就能享有更多的权益喔!\n");
 				move(20, 0);
-				if (askyn("您要我们现在就寄这一封信吗", YEA, NA)
-				    == YEA) {
+				if (askyn("您要我们现在就寄这一封信吗", YEA, NA) == YEA) {
 					randomize();
 					code = (time(0) / 2) + (rand() / 10);
-					sethomefile(genbuf, urec->userid,
-						    "mailcheck");
+					sethomefile(genbuf, urec->userid, "mailcheck");
 					if ((dp = fopen(genbuf, "w")) == NULL) {
 						fclose(dp);
 						return;
 					}
 					fprintf(dp, "%9.9d\n", code);
 					fclose(dp);
-					sprintf(buf,
-						"/usr/lib/sendmail -f %s.bbs@%s %s ",
-						urec->userid, email_domain(),
-						urec->email);
+					sprintf(buf, "/usr/lib/sendmail -f %s.bbs@%s %s ", urec->userid, email_domain(), urec->email);
 					fout = popen(buf, "w");
-					fin =
-					    fopen(sysconf_str("EMAILFILE"),
-						  "r");
+					fin = fopen(sysconf_str("EMAILFILE"), "r");
 					/* begin of sending a mail to user to check email-addr */
 					if ((fin != NULL) && (fout != NULL)) {
-						fprintf(fout,
-							"Reply-To: SYSOP.bbs@%s\n",
-							email_domain());
-						fprintf(fout,
-							"From: SYSOP.bbs@%s\n",
-							email_domain());
-						fprintf(fout, "To: %s\n",
-							urec->email);
-						fprintf(fout,
-							"Subject: @%s@[-%9.9d-]%s mail check.\n",
-							urec->userid, code,
-							MY_BBS_ID);
-						fprintf(fout,
-							"X-Forwarded-By: SYSOP \n");
-						fprintf(fout,
-							"X-Disclaimer: %s registration mail.\n",
-							MY_BBS_ID);
+						fprintf(fout, "Reply-To: SYSOP.bbs@%s\n", email_domain());
+						fprintf(fout, "From: SYSOP.bbs@%s\n", email_domain());
+						fprintf(fout, "To: %s\n", urec->email);
+						fprintf(fout, "Subject: @%s@[-%9.9d-]%s mail check.\n", urec->userid, code, MY_BBS_ID);
+						fprintf(fout, "X-Forwarded-By: SYSOP \n");
+						fprintf(fout, "X-Disclaimer: %s registration mail.\n", MY_BBS_ID);
 						fprintf(fout, "\n");
-						fprintf(fout,
-							"BBS LOCATION     : %s (%s)\n",
-							email_domain(),
-							MY_BBS_IP);
-						fprintf(fout,
-							"YOUR BBS USER ID : %s\n",
-							urec->userid);
-						fprintf(fout,
-							"APPLICATION DATE : %s",
-							ctime
-							(&urec->firstlogin));
-						fprintf(fout,
-							"LOGIN HOST       : %s\n",
-							fromhost);
-						fprintf(fout,
-							"YOUR NICK NAME   : %s\n",
-							urec->username);
-						fprintf(fout,
-							"YOUR NAME        : %s\n",
-							urec->realname);
-						while (fgets(buf, 255, fin) !=
-						       NULL) {
-							if (buf[0] == '.'
-							    && buf[1] == '\n')
-								fputs(". \n",
-								      fout);
+						fprintf(fout, "BBS LOCATION     : %s (%s)\n", email_domain(), MY_BBS_IP);
+						fprintf(fout, "YOUR BBS USER ID : %s\n", urec->userid);
+						fprintf(fout, "APPLICATION DATE : %s", ctime(&urec->firstlogin));
+						fprintf(fout, "LOGIN HOST       : %s\n", fromhost);
+						fprintf(fout, "YOUR NICK NAME   : %s\n", urec->username);
+						fprintf(fout, "YOUR NAME        : %s\n", urec->realname);
+						while (fgets(buf, 255, fin) != NULL) {
+							if (buf[0] == '.' && buf[1] == '\n')
+								fputs(". \n", fout);
 							else
-								fputs(buf,
-								      fout);
+								fputs(buf, fout);
 						}
 						fprintf(fout, ".\n");
 						fclose(fin);
 						fclose(fout);
 					}	/* end of sending a mail to user to check email-addr */
-					getdata(21, 0,
-						"确认信已寄出, 等您回信哦!! 请按 <Enter> : ",
-						ans, 2, DOECHO, YEA);
+					getdata(21, 0, "确认信已寄出, 等您回信哦!! 请按 <Enter> : ", ans, 2, DOECHO, YEA);
 				}
 			} else {
 				showansi = 1;
 				if (sysconf_str("EMAILFILE") != NULL) {
-					prints
-					    ("\n您所填写的电子邮件地址 【\033[1;33m%s\033[m】\n",
-					     urec->email);
-					prints
-					    ("并非合法之 UNIX 帐号，系统不会投递注册信，请到\033[1;32mInfoEdit->Info\033[m中修改...\n");
+					prints("\n您所填写的电子邮件地址 【\033[1;33m%s\033[m】\n", urec->email);
+					prints("并非合法之 UNIX 帐号，系统不会投递注册信，请到\033[1;32mInfoEdit->Info\033[m中修改...\n");
 					pressanykey();
 				}
 			}
@@ -679,3 +503,4 @@ valid_ident(char *ident)
 			return 0;
 	return 1;
 }
+
