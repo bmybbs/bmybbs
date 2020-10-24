@@ -62,6 +62,24 @@ int read_active(char* userid, struct active_data* act_data);
 int get_active_value(char* value, struct active_data* act_data);
 
 /**
+ * @brief 释放邮箱
+ * 这个函数从 src/bbs/register.c 中迁移而来，实现中仅从数据库中解除
+ * 用户名和邮箱的关联信息。
+ * TODO 发送释放邮箱的信息
+ * @author interma
+ * @date 2006.2.21
+ * @param userid
+ * @param email
+ * @return
+ *    0 - 已经成功删除此条记录
+ *   -1 - 邮件格式有误，删除失败
+ *   -2 - 找不到pop_list文件，删除失败
+ *   -3 - 没有找到这个邮件服务器，删除失败
+ *   -4 - 打开临时文件失败，删除失败
+*/
+int release_email(char *userid, char *email);
+
+/**
  * 依据邮箱地址查询关联的id列表，使用结束记得调用 free_associated_userid 释放内存。本函数属于 get_associated_userid_by_style 的封装。
  * @param email 邮件地址
  * @return struct associated_userid 指针

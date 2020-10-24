@@ -54,34 +54,6 @@ time_t system_time;
 
 static int valid_ident(char *ident);
 
-/*
-返回值的说明如下:
-0	已经成功删除此条记录
--1	邮件格式有误，删除失败
--2	找不到pop_list文件，删除失败
--3	没有找到这个邮件服务器，删除失败
--4	打开临时文件失败，删除失败
-*/
-int
-release_email(char *userid, char *email) //释放邮箱, added by interma 2006.2.21
-{
-	struct userec* cuser;
-	char an[2];
-	char genbuf[STRLEN];
-	struct active_data act_data;
-
-	//getuser(userid, &cuser);
-	read_active(userid, &act_data);
-
-
-	act_data.status=NO_ACTIVE;
-	// strcpy(act_data.operator, currentuser->userid);
-	write_active(&act_data);
-
-	return 0;
-}
-
-
 static int
 getnewuserid(struct userec *newuser)
 {
