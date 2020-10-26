@@ -147,4 +147,15 @@ enum ythtbbs_user_login_status {
 int ythtbbs_user_login(const char *userid, const char *passwd, const char *fromhost, const enum ythtbbs_user_login_type login_type, struct user_info *out_info, struct userec *out_userec, int *out_utmp_idx);
 
 int ythtbbs_user_logout(const char *userid, const int utmp_idx);
+
+/**
+ * @brief 清理 PASSWDS 文件，暂定这个函数形式
+ * 这个方法在实现的过程中判断上一次的调用时间，如果1h内已被调用过，则中断调用。
+ * 遍历 PASSFILE，生命力为负的用户依次清除版主信息（如果存在）、收件箱、
+ * 用户目录，然后使用 0 填充原数据结构空间。
+ *
+ * TODO 并未更新缓存
+ * @note 参考了 src/bbs/register.c::getnewuserid() 的实现。但是没有调用 is_bad_id() 以及 touchnew()。时间相关的函数替换了多线程安全的版本。
+ */
+void ythtbbs_user_clean(void);
 #endif

@@ -2,6 +2,7 @@
 #include <ctype.h>
 #include <string.h>
 #include <unistd.h>
+#include <dirent.h>
 #include <sys/file.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -20,6 +21,7 @@
 #include "ythtbbs/misc.h"
 #include "ythtbbs/msg.h"
 #include "ythtbbs/override.h"
+#include "ythtbbs/identify.h"
 
 /**
  * just use to pass a param to fillmboard()
@@ -48,6 +50,29 @@ static int ythtbbs_user_set_bm_status(const struct userec *user, bool online, bo
 
 static int fillmboard(struct boardheader *bh, struct myparam1 *param);
 
+
+/**
+ * @brief 删除文件夹
+ * 在 BMY 的文件结构里，用户目录和信件目录都只有一层，因此本函数
+ * 对于嵌套文件夹仅作简单的递归调用。
+ * 参考: https://stackoverflow.com/a/2256974/803378
+ * @warning 多线程不安全
+ */
+static int remove_directory(const char *path);
+
+/**
+ * @brief 更新 FLUSH 文件
+ *
+ * 这个实现来自于 src/bbs/stuff.c，意图是在新用户注册后记录最新的
+ * 用户，并更新 FLUSH 文件时间，用于缓存对比判断。
+ *
+ * 这个函数并非多线程安全的，但是在系统运行环境不产生实质性的影响。
+ *
+ * TODO 后续判断是否有 FLUSH 的使用必要，因为在原有的缓存算法中有
+ * 一个短暂的数据不同步的窗口期。
+ */
+static void touchnew(const char *userid);
+
 char
 mytoupper(unsigned char ch)
 {
@@ -68,6 +93,11 @@ char *
 sethomepath_s(char *buf, size_t buf_size, const char *userid)
 {
 	snprintf(buf, buf_size, MY_BBS_HOME "/home/%c/%s", mytoupper(userid[0]), userid);
+	return buf;
+}
+
+char *setmailpath_s(char *buf, const size_t buf_size, const char *userid) {
+	snprintf(buf, buf_size, MY_BBS_HOME "/mail/%c/%s", mytoupper(userid[0]), userid);
 	return buf;
 }
 
@@ -891,5 +921,123 @@ static int ythtbbs_user_set_bm_status(const struct userec *user, bool online, bo
 	ythtbbs_user_bmfile_sync(user);
 	ythtbbs_record_apply_v(path, ythtbbs_cache_Board_set_bm_hat_v, sizeof(struct boardmanager), &online, &invisible);
 	return 0;
+}
+
+void ythtbbs_user_clean(void) {
+	time_t local_now;
+	int fd;
+	int i;
+	int size;
+	int val;
+	struct userec utmp, zerorec;
+	struct stat st;
+	char local_buf[128];
+	const char *KILLFILE = MY_BBS_HOME "/tmp/killuser";
+
+	local_now = time(NULL);
+
+	// 这个值为0的结构体用于覆盖原有的记录
+	memset(&zerorec, 0, sizeof(struct userec));
+
+	// 只有当前系统启动后尚未清理过过期用户，或者距离上一次清理超过 1h，才会执行清理
+	if (stat(KILLFILE, &st) == -1 || st.st_mtime < local_now - 3600) {
+		if ((fd = open(KILLFILE, O_RDWR | O_CREAT, 0600)) == -1) {
+			return; // 无法记录，中断操作
+		}
+
+		ctime_r(&local_now, local_buf);
+		write(fd, local_buf, 25);
+		close(fd);
+
+		if ((fd = open(PASSFILE, O_RDWR | O_CREAT, 0600)) == -1) {
+			return; // 无法创建 TODO 返回值
+		}
+
+		flock(fd, LOCK_EX); // 给 PASSFILE 加记录锁
+
+		size = sizeof(struct userec);
+		for (i = 0; i < MAXUSERS; i++) {
+			if (read(fd, &utmp, size) != size)
+				break;
+
+			val = countlife(&utmp);
+			if (utmp.userid[0] != '\0' && val < 0) {
+				// userid 是合法字符，且生命力已小于 0
+				snprintf(local_buf, sizeof(local_buf), "system kill %s %d", utmp.userid, val);
+				newtrace(local_buf);
+
+				if (utmp.userlevel & PERM_OBOARDS) {
+					// TODO retire_allBM
+				}
+
+				sethomepath_s(local_buf, sizeof(local_buf), utmp.userid);
+				remove_directory(local_buf);
+
+				setmailpath_s(local_buf, sizeof(local_buf), utmp.userid);
+				remove_directory(local_buf);
+
+				release_email(utmp.userid, utmp.email); // TODO 通过身份验证的用户顺带发送提醒邮件
+
+				// 最后一步，清零原来的 utmp 数据
+				lseek(fd, -size, SEEK_CUR);
+				write(fd, &zerorec, sizeof (utmp));
+			}
+		}
+		close(fd);
+	}
+}
+
+static int remove_directory(const char *path) {
+	DIR *d = opendir(path);
+	size_t path_len = strlen(path);
+	int r = -1;
+
+	if (d) {
+		struct dirent *p;
+
+		r = 0;
+		while (!r && (p = readdir(d))) {
+			int r2 = -1;
+			char *buf;
+			size_t len;
+
+			if (!strcmp(p->d_name, ".") || !strcmp(p->d_name, ".."))
+				continue;
+
+			len = path_len + strlen(p->d_name) + 2;
+			buf = malloc(len);
+
+			if (buf) {
+				struct stat statbuf;
+				snprintf(buf, len, "%s/%s", path, p->d_name);
+				if (!stat(buf, &statbuf)) {
+					if (S_ISDIR(statbuf.st_mode))
+						r2 = remove_directory(buf); // 递归调用
+					else
+						r2 = unlink(buf);
+				}
+				free(buf);
+			}
+
+			r = r2;
+		}
+		closedir(d);
+	}
+
+	if (!r)
+		r = rmdir(path);
+
+	return r;
+}
+
+static void touchnew(const char *userid) {
+	int fd;
+	char local_buf[128];
+
+	snprintf(local_buf, sizeof(local_buf), "touch by: %s\n", userid);
+	if ((fd = open(FLUSH, O_WRONLY | O_CREAT, 0644)) == -1)
+		return;
+	write(fd, local_buf, strlen(local_buf));
+	close(fd);
 }
 

@@ -61,54 +61,9 @@ getnewuserid(struct userec *newuser)
 	struct stat st;
 	int fd, size, val, i;
 
-	system_time = time(NULL);
-	if (stat("tmp/killuser", &st) == -1 || st.st_mtime < system_time - 3600) {
-		if ((fd = open("tmp/killuser", O_RDWR | O_CREAT, 0600)) == -1)
-			return -1;
-		write(fd, ctime(&system_time), 25);
-		close(fd);
-		prints("寻找新帐号中, 请稍待片刻...\n\r");
-		refresh();
-		memset(&zerorec, 0, sizeof (zerorec));
-		if ((fd = open(PASSFILE, O_RDWR | O_CREAT, 0600)) == -1)
-			return -1;
-		flock(fd, LOCK_EX);
-		size = sizeof (utmp);
-		char userid[50];
-		char email[50];
-		char buf[512];
-		for (i = 0; i < MAXUSERS; i++) {
-			if (read(fd, &utmp, size) != size)
-				break;
-			val = countlife(&utmp);
-			if (utmp.userid[0] != '\0' && val < 0) {
-				sprintf(genbuf, "system kill %s %d", utmp.userid, val);
-				newtrace(genbuf);
-				if (!is_bad_id(utmp.userid)) {
-					if ((utmp.userlevel & PERM_OBOARDS))
-						retire_allBM(utmp.userid);
-					sprintf(genbuf, "mail/%c/%s", mytoupper(utmp.userid[0]), utmp.userid);
-					deltree(genbuf);
-					sprintf(genbuf, "home/%c/%s", mytoupper(utmp.userid[0]), utmp.userid);
-					deltree(genbuf);
-
-				}
-				lseek(fd, -size, SEEK_CUR);
-				write(fd, &zerorec, sizeof (utmp));
-
-				strncpy(userid, utmp.userid, 50);
-				strncpy(email, utmp.email, 50);
-				release_email(userid, email); //id饿死了之后自动释放邮箱，added by interma 2006.2.21
-				// 给此用户发信,提醒邮箱已经释放.
-				sprintf(buf, MY_BBS_HOME "/bin/sendmail.py '%s' '%s@bmy已经死亡' '%s已经死亡，邮箱绑定已经解除，请重新用此邮箱注册id。'", email, userid, userid);
-				int ret = system(buf);
-
-			}
-		}
-		flock(fd, LOCK_UN);
-		close(fd);
-		touchnew();
-	}
+	prints("寻找新帐号中, 请稍待片刻...\n\r");
+	refresh();
+	ythtbbs_user_clean();
 	if ((fd = open(PASSFILE, O_RDWR | O_CREAT, 0600)) == -1)
 		return -1;
 	flock(fd, LOCK_EX);

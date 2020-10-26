@@ -126,16 +126,6 @@ void bell() {
 	io_output(&sound, 1);
 }
 
-void touchnew() {
-	int fd;
-
-	sprintf(genbuf, "touch by: %s\n", currentuser.userid);
-	if ((fd = open(FLUSH, O_WRONLY | O_CREAT, 0644)) == -1)
-		return;
-	write(fd, genbuf, strlen(genbuf));
-	close(fd);
-}
-
 /* rrr - Snagged from pbbs 1.8 */
 
 #define LOOKFIRST  (0)
