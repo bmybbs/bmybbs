@@ -64,6 +64,7 @@ getnewuserid(struct userec *newuser)
 	prints("Ñ°ÕÒÐÂÕÊºÅÖÐ, ÇëÉÔ´ýÆ¬¿Ì...\n\r");
 	refresh();
 	ythtbbs_user_clean();
+	ythtbbs_user_touchnew(newuser->userid);
 	if ((fd = open(PASSFILE, O_RDWR | O_CREAT, 0600)) == -1)
 		return -1;
 	flock(fd, LOCK_EX);
