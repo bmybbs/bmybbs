@@ -144,6 +144,13 @@ enum ythtbbs_user_login_status {
 	YTHTBBS_USER_SESSION_ERROR,
 };
 
+enum ythtbbs_register_status {
+	YTHTBBS_REGISTER_OK,
+	YTHTBBS_REGISTER_FILE_ERROR,
+	YTHTBBS_REGISTER_FULL,
+	YTHTBBS_REGISTER_CANNOT_SEEK,
+};
+
 int ythtbbs_user_login(const char *userid, const char *passwd, const char *fromhost, const enum ythtbbs_user_login_type login_type, struct user_info *out_info, struct userec *out_userec, int *out_utmp_idx);
 
 int ythtbbs_user_logout(const char *userid, const int utmp_idx);
@@ -171,4 +178,6 @@ void ythtbbs_user_clean(void);
  * 一个短暂的数据不同步的窗口期。
  */
 void ythtbbs_user_touchnew(const char *userid);
+
+enum ythtbbs_register_status ythtbbs_user_create(const struct userec *user, int *usernum, int *time_interval);
 #endif

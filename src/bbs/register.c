@@ -57,44 +57,38 @@ static int valid_ident(char *ident);
 static int
 getnewuserid(struct userec *newuser)
 {
-	struct userec utmp, zerorec;
-	struct stat st;
-	int fd, size, val, i;
+	int val, i;
+	enum ythtbbs_register_status rc;
 
 	prints("寻找新帐号中, 请稍待片刻...\n\r");
 	refresh();
 	ythtbbs_user_clean();
 	ythtbbs_user_touchnew(newuser->userid);
-	if ((fd = open(PASSFILE, O_RDWR | O_CREAT, 0600)) == -1)
-		return -1;
-	flock(fd, LOCK_EX);
 
-	i = searchnewuser();
-	if (i <= 0 || i > MAXUSERS) {
-		flock(fd, LOCK_UN);
-		close(fd);
+	rc = ythtbbs_user_create(newuser, &i, &val);
+
+	switch(rc) {
+	case YTHTBBS_REGISTER_FILE_ERROR:
+		return -1;
+		break;
+	case YTHTBBS_REGISTER_FULL:
 		if (dashf("etc/user_full")) {
-			ansimore("etc/user_full", NA);
+			ansimore("etc/user_full", false);
 		} else {
 			prints("抱歉, 使用者帐号已经满了, 无法注册新的帐号.\n\r");
 		}
-		val = (st.st_mtime - system_time + 3660) / 60 + 1;
 		prints("请等待 %d 分钟后再试一次, 祝你好运.\n\r", val);
 		refresh();
 		exit(1);
-	}
-	if (lseek(fd, sizeof (*newuser) * (i - 1), SEEK_SET) == -1) {
-		flock(fd, LOCK_UN);
-		close(fd);
+		break;
+	default:
+	case YTHTBBS_REGISTER_CANNOT_SEEK:
 		return -1;
+		break;
+	case YTHTBBS_REGISTER_OK:
+		return i;
+		break;
 	}
-	write(fd, newuser, sizeof (*newuser));
-	ytht_strsncpy(uidshm->userid[i - 1], newuser->userid, sizeof(uidshm->userid[i - 1]));
-	insertuseridhash(uidhashshm->uhi, UCACHE_HASH_SIZE, newuser->userid, i);
-	flock(fd, LOCK_UN);
-	close(fd);
-	//touchnew();
-	return i;
 }
 
 void

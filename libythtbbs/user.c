@@ -32,6 +32,8 @@ struct myparam1 {
 	short bid;
 };
 
+static const char *KILLFILE = MY_BBS_HOME "/tmp/killuser";
+
 // 用于加载好友、黑名单的条数以及用户 id 到 user_info 结构体中
 static int ythtbbs_user_init_override(struct user_info *u, enum ythtbbs_override_type override_type);
 
@@ -919,7 +921,6 @@ void ythtbbs_user_clean(void) {
 	struct userec utmp, zerorec;
 	struct stat st;
 	char local_buf[128];
-	const char *KILLFILE = MY_BBS_HOME "/tmp/killuser";
 
 	local_now = time(NULL);
 
@@ -1026,5 +1027,41 @@ void ythtbbs_user_touchnew(const char *userid) {
 		return;
 	write(fd, local_buf, strlen(local_buf));
 	close(fd);
+}
+
+enum ythtbbs_register_status ythtbbs_user_create(const struct userec *user, int *usernum, int *time_interval) {
+	int fd, local_usernum, local_time_interval;
+	struct stat st;
+
+	if ((fd = open(PASSFILE, O_RDWR | O_CREAT, 0600)) == -1)
+		return YTHTBBS_REGISTER_FILE_ERROR;
+	flock(fd, LOCK_EX);
+
+	local_usernum = ythtbbs_cache_UserTable_searchnewuser();
+	if (local_usernum <= 0 || local_usernum > MAXUSERS) {
+		if (stat(KILLFILE, &st) == -1)
+			local_time_interval = 60;
+		else
+			local_time_interval = (st.st_mtime - time(NULL) + 3660) / 60 + 1;
+		if (time_interval != NULL)
+			*time_interval = local_time_interval;
+
+		close(fd);
+		return YTHTBBS_REGISTER_FULL;
+	}
+
+	if (lseek(fd, sizeof(struct userec) * (local_usernum - 1), SEEK_SET) == -1) {
+		close(fd);
+		return YTHTBBS_REGISTER_CANNOT_SEEK;
+	}
+
+	write(fd, user, sizeof(struct userec));
+	close(fd);
+
+	// 原实现中包含了 uidshm uidhashshm 的操作，这里暂不处理
+
+	if (usernum != NULL)
+		*usernum = local_usernum;
+	return YTHTBBS_REGISTER_OK;
 }
 
