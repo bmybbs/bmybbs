@@ -30,7 +30,6 @@ int club_board(char *bname);
 int clubsync(char *boardname);
 void resolve_ucache(void);
 void setuserid(int num, char *userid);
-int searchnewuser(void);
 void getuserid(char *userid, unsigned int uid);
 int searchuser(char *userid);
 int getuser(char *userid);

@@ -589,21 +589,6 @@ char *userid;
 	}
 }
 
-int
-searchnewuser()
-{
-	register int num, i;
-
-	resolve_ucache();
-	num = uidshm->number;
-	for (i = 0; i < num; i++)
-		if (uidshm->userid[i][0] == '\0')
-			return i + 1;
-	if (num < MAXUSERS)
-		return (num + 1);
-	return 0;
-}
-
 void
 getuserid(userid, uid)
 char *userid;

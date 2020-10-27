@@ -191,6 +191,16 @@ bool ythtbbs_cache_UserTable_is_user_online(const char *userid);
 bool ythtbbs_cache_UserTable_is_user_invisible(const char *userid);
 
 /**
+ * @brief 依据缓存寻找首个空的用户位
+ *
+ * 本方法在 term / www 下均被使用，但非多线程安全，需要进一步重构。
+ * @warning 多线程不安全
+ * @return 用户id（从 1 索引），当已达到最大用户数时，返回0
+ * TODO
+ */
+int ythtbbs_cache_UserTable_searchnewuser();
+
+/**
  * @brief 依据 userid 查找用户索引
  * 用户索引指的是在 PASSFILE 中的位置，从 0 开始索引。在 BMYBBS 环境中，遇到 uid 的地方通常是从 1 开始索引，因此需要注意相互转换。
  * 当匹配到后返回索引值。

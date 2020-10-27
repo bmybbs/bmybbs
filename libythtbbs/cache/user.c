@@ -124,6 +124,23 @@ void ythtbbs_cache_UserTable_remove_utmp_idx(int uid, int utmp_idx) {
 	}
 }
 
+int ythtbbs_cache_UserTable_searchnewuser() {
+	register int num, i;
+
+	ythtbbs_cache_UserTable_resolve();
+	num = shm_user_table->number;
+
+	for (i = 0; i < num; i++) {
+		if (shm_user_table->users[i].userid[0] == '\0')
+			return i + 1;
+	}
+
+	if (num < MAXUSERS)
+		return (num + 1);
+
+	return 0;
+}
+
 /**
  * @brief 将 UserTable 缓存中的用户信息序列化出来
  * 输出形式 user_idx, userid [ session ]："0, SYSOP [ [0,42] ]\n"
