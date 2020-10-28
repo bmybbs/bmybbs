@@ -4,8 +4,6 @@
 #include "ythtbbs/cache.h"
 
 extern struct boardmem *bcache;
-extern struct UCACHE *uidshm;
-extern struct UCACHEHASH *uidhashshm;
 
 void attach_err(int shmkey, char *name);
 void *attach_shm(int shmkey, int shmsize);
