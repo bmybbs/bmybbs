@@ -141,7 +141,6 @@ digraph G {
 	n_rcrd -> n_bcch;
 	n_list -> n_bcch;
 	n_bbs  -> n_bcch;
-	n_nmcp -> n_bcch;
 	n_io   -> n_bcch;
 
 	/* bm.c */
