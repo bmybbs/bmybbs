@@ -45,11 +45,7 @@ extern char ULIST[]; /* main.c */
 
 static int getlastpost(char *board, int *lastpost, int *total);
 static int fillbcache(struct boardheader *fptr, int *pcountboard);
-static int fillucache(struct userec *uentp);
-static int resolve_ucache_hash(void);
 static int iphash(char *fromhost);
-static int useridhash(char *id);
-static int finduseridhash(struct useridhashitem *ptr, int size, char *userid);
 static void add_uindex(int uid, int utmpent);
 static void remove_uindex(int uid, int utmpent);
 static int setbmhat(struct boardmanager *bm, int *online);
@@ -808,63 +804,6 @@ int who_callme(struct user_info *uentp, int (*fptr) (int, struct user_info *), i
 			return i + 1;
 	}
 	return 0;
-}
-
-static int
-useridhash(char *id)
-{
-	int n1 = 0;
-	int n2 = 0;
-	while (*id) {
-		n1 += ((unsigned char) toupper(*id)) % 26;
-		id++;
-		if (!*id)
-			break;
-		n2 += ((unsigned char) toupper(*id)) % 26;
-		id++;
-	} n1 %= 26;
-	n2 %= 26;
-	return n1 * 26 + n2;
-}
-
-int
-insertuseridhash(struct useridhashitem *ptr, int size, char *userid, int num)
-{
-	int h, s, i, j = 0;
-	if (!*userid)
-		return -1;
-	h = useridhash(userid);
-	s = size / 26 / 26;
-	i = h * s;
-	while (j < s * 5 && ptr[i].num > 0 && ptr[i].num != num) {
-		i++;
-		if (i >= size)
-			i %= size;
-	}
-	if (j == s * 5)
-		return -1;
-	ptr[i].num = num;
-	strcpy(ptr[i].userid, userid);
-	return 0;
-}
-
-static int
-finduseridhash(struct useridhashitem *ptr, int size, char *userid)
-{
-	int h, s, i, j;
-	h = useridhash(userid);
-	s = size / 26 / 26;
-	i = h * s;
-	for (j = 0; j < s * 5; j++) {
-		if (!strcasecmp(ptr[i].userid, userid))
-			break;
-		i++;
-		if (i >= size)
-			i %= size;
-	}
-	if (j == s * 5)
-		return -1;
-	return ptr[i].num;
 }
 
 int
