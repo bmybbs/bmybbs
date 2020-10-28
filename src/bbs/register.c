@@ -165,7 +165,7 @@ new_register()
 		refresh();
 		exit(1);
 	}
-	setuserid(allocid, newuser.userid);
+	ythtbbs_cache_UserTable_setuserid(allocid, newuser.userid);
 	if (!dosearchuser(newuser.userid)) {
 		prints("User failed to create\n");
 		refresh();

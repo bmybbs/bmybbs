@@ -1395,8 +1395,7 @@ sendGoodWish(char *userid)
 					for (i = cnt; n < uinfo.fnum; i++) {
 						int key;
 						move(2, 0);
-						getuserid(uident,
-							  uinfo.friend[n]);
+						ythtbbs_cache_UserTable_getuserid(uinfo.friend[n], uident, sizeof(uident));
 						prints("%s\n", uident);
 						move(3, 0);
 						n++;

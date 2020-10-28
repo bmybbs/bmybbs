@@ -9664,7 +9664,7 @@ static int marry_perpare(struct MC_Marry *marryMem, int n) {
 					for (i = 0; i  < uinfo.fnum; i++) {
 						move(6, 4);
 						clrtoeol();
-						getuserid(uident, uinfo.friend[i]);
+						ythtbbs_cache_UserTable_getuserid(uinfo.friend[i], uident, sizeof(uident));
 						if (!getuser(uident)) {
 							prints("%s这个使用者代号是错误的.\n",uident);
 							pressanykey();

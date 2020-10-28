@@ -29,8 +29,6 @@ int political_board(char *bname);
 int club_board(char *bname);
 int clubsync(char *boardname);
 void resolve_ucache(void);
-void setuserid(int num, char *userid);
-void getuserid(char *userid, unsigned int uid);
 int searchuser(char *userid);
 int getuser(char *userid);
 char *u_namearray(char buf[][12 + 1], int *pnum, char *tag);

@@ -141,6 +141,31 @@ int ythtbbs_cache_UserTable_searchnewuser() {
 	return 0;
 }
 
+void ythtbbs_cache_UserTable_setuserid(int usernum, char *userid) {
+	int user_idx;
+
+	if (usernum > 0 && usernum <= MAXUSERS) {
+		if (usernum > shm_user_table->number)
+			shm_user_table->number = usernum;
+
+		user_idx = usernum - 1;
+		memset(&shm_user_table->users[user_idx], 0, sizeof(struct ythtbbs_cache_User));
+		strncpy(shm_user_table->users[user_idx].userid, userid, IDLEN+1);
+		shm_user_table->users[user_idx].userid[IDLEN] = '\0';
+	}
+}
+
+void ythtbbs_cache_UserTable_getuserid(int usernum, char *userid, size_t len) {
+	ythtbbs_cache_UserTable_resolve();
+
+	if (usernum > 0 && usernum <= MAXUSERS && usernum <= shm_user_table->number) {
+		strncpy(userid, shm_user_table->users[usernum - 1].userid, len);
+		shm_user_table->users[usernum - 1].userid[len - 1] = '\0';
+	} else {
+		userid[0] = '\0';
+	}
+}
+
 /**
  * @brief 将 UserTable 缓存中的用户信息序列化出来
  * 输出形式 user_idx, userid [ session ]："0, SYSOP [ [0,42] ]\n"

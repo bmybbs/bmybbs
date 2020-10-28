@@ -576,28 +576,6 @@ resolve_ucache_hash()
 	return 0;
 }
 
-void
-setuserid(num, userid)
-int num;
-char *userid;
-{
-	if (num > 0 && num <= MAXUSERS) {
-		if (num > uidshm->number)
-			uidshm->number = num;
-		strncpy(uidshm->userid[num - 1], userid, IDLEN + 1);
-		uidshm->userid[num - 1][IDLEN] = 0;
-	}
-}
-
-void
-getuserid(userid, uid)
-char *userid;
-unsigned int uid;
-{
-	resolve_ucache();
-	strcpy(userid, uidshm->userid[uid - 1]);
-}
-
 int
 searchuser(userid)
 char *userid;

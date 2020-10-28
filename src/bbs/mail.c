@@ -1431,7 +1431,7 @@ g_send()
 				int key;
 				move(2, 0);
 				clrtoeol();
-				getuserid(uident, uinfo.friend[n]);
+				ythtbbs_cache_UserTable_getuserid(uinfo.friend[n], uident, sizeof(uident));
 				prints("%s\n", uident);
 				move(3, 0);
 				n++;
@@ -1570,7 +1570,7 @@ int num;
 		char buf[STRLEN];
 
 		if (G_SENDMODE == 1)
-			getuserid(uid, uinfo.friend[cnt]);
+			ythtbbs_cache_UserTable_getuserid(uinfo.friend[cnt], uid, sizeof(uid));
 		else if (G_SENDMODE == 2) {
 			if (fgets(buf, STRLEN, mp) != NULL) {
 				if (strtok(buf, " \n\r\t") != NULL)
@@ -1657,7 +1657,7 @@ char* fname;
 		char buf[STRLEN];
 
 		if (G_SENDMODE == 1)
-			getuserid(uid, uinfo.friend[cnt]);
+			ythtbbs_cache_UserTable_getuserid(uinfo.friend[cnt], uid, sizeof(uid));
 		else if (G_SENDMODE == 2) {
 			if (fgets(buf, STRLEN, mp) != NULL) {
 				if (strtok(buf, " \n\r\t") != NULL)
@@ -1837,7 +1837,7 @@ ov_send()
 	for (i = 0; i < all; i++) {
 		char uid[IDLEN + 2];
 
-		getuserid(uid, uinfo.friend[i]);
+		ythtbbs_cache_UserTable_getuserid(uinfo.friend[i], uid, sizeof(uid));
 		prints("%-12s ", uid);
 		if ((i + 1) % 6 == 0)
 			outc('\n');

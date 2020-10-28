@@ -201,6 +201,19 @@ bool ythtbbs_cache_UserTable_is_user_invisible(const char *userid);
 int ythtbbs_cache_UserTable_searchnewuser();
 
 /**
+ * @brief 给用户表设置 userid
+ * 来自于 src/bbs/bcache.c::setuserid，不安全的实现，需要进一步重构
+ * @warning 多线程不安全
+ */
+void ythtbbs_cache_UserTable_setuserid(int usernum, char *userid);
+
+/**
+ * @brief 从用户缓存表中复制用户名到缓冲区
+ * 来自 src/bbs/bcache.c::getuserid
+ */
+void ythtbbs_cache_UserTable_getuserid(int usernum, char *userid, size_t len);
+
+/**
  * @brief 依据 userid 查找用户索引
  * 用户索引指的是在 PASSFILE 中的位置，从 0 开始索引。在 BMYBBS 环境中，遇到 uid 的地方通常是从 1 开始索引，因此需要注意相互转换。
  * 当匹配到后返回索引值。
