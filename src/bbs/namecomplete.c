@@ -8,7 +8,7 @@
     Firebird Bulletin Board System
     Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
                         Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
-    
+
     Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
 
     This program is free software; you can redistribute it and/or modify
@@ -443,7 +443,7 @@ int usercomplete(char *prompt, char *data) {
 			break;
 		} else if (ch == ' ') {
 			int col, len;
-			
+
 			if (count < 3)
 				continue;
 			if (cwnum == 1) {
