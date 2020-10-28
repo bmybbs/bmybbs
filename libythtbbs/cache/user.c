@@ -10,6 +10,7 @@
 #include "ythtbbs/user.h"
 #include "cache-internal.h"
 #include "ythtbbs/override.h"
+#include "ythtbbs/goodgbid.h"
 
 /***** global variables *****/
 static struct ythtbbs_cache_UserIDHashTable *shm_userid_hashtable;
@@ -122,6 +123,25 @@ void ythtbbs_cache_UserTable_remove_utmp_idx(int uid, int utmp_idx) {
 			return;
 		}
 	}
+}
+
+int ythtbbs_cache_UserTable_search_usernum(const char *userid) {
+	int i;
+
+	ythtbbs_cache_UserTable_resolve();
+	i = ythtbbs_cache_UserIDHashTable_find_idx(userid);
+	if (i >= 0 && !strncasecmp(userid, shm_user_table->users[i].userid, IDLEN + 1))
+		return (i+1);
+
+	if (!goodgbid(userid))
+		return 0;
+
+	for (i = 0; i < shm_user_table->number; i++) {
+		if (!strncasecmp(userid, shm_user_table->users[i].userid, IDLEN + 1))
+			return (i+1);
+	}
+
+	return 0;
 }
 
 int ythtbbs_cache_UserTable_searchnewuser() {

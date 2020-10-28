@@ -2042,7 +2042,7 @@ static int money_sackOrAppoint(int type) {
 		move(17, 4);
 		if (uident[0] == '\0')
 			return 0;
-		if (!searchuser(uident)) {
+		if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
 			prints("错误的使用者代号...");
 			pressanykey();
 			return 0;
@@ -2164,7 +2164,7 @@ static int money_admin() {
 				move(16, 4);
 				if (uident[0] == '\0')
 					break;
-				if (!searchuser(uident)) {
+				if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
 					prints("错误的使用者代号...");
 					pressanykey();
 					break;
@@ -2205,7 +2205,7 @@ static int money_admin() {
 				move(16, 4);
 				if (uident[0] == '\0')
 					break;
-				if (!searchuser(uident)) {
+				if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
 					prints("错误的使用者代号...");
 					pressanykey();
 					break;
@@ -2262,7 +2262,7 @@ static int money_admin() {
 				move(16, 4);
 				if (uident[0] == '\0')
 					break;
-				if (!searchuser(uident)) {
+				if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
 					prints("错误的使用者代号...");
 					pressanykey();
 					break;
@@ -2294,7 +2294,7 @@ static int money_admin() {
 				move(13, 4);
 				if (uident[0] == '\0')
 					break;
-				if (!searchuser(uident)) {
+				if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
 					prints("错误的使用者代号...");
 					pressanykey();
 					break;
@@ -2324,7 +2324,7 @@ static int money_admin() {
 				move(16, 4);
 				if (uident[0] == '\0')
 					break;
-				if (!searchuser(uident)) {
+				if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
 					prints("错误的使用者代号...");
 					pressanykey();
 					break;
@@ -2356,7 +2356,7 @@ static int money_admin() {
 				move(13, 4);
 				if (uident[0] == '\0')
 					break;
-				if (!searchuser(uident)) {
+				if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
 					prints("错误的使用者代号...");
 					pressanykey();
 					break;
@@ -2386,7 +2386,7 @@ static int money_admin() {
 				move(16, 4);
 				if (uident[0] == '\0')
 					break;
-				if (!searchuser(uident)) {
+				if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
 					prints("错误的使用者代号...");
 					pressanykey();
 					break;
@@ -2420,7 +2420,7 @@ static int money_admin() {
 				move(13, 4);
 				if (uident[0] == '\0')
 					break;
-				if (!searchuser(uident)) {
+				if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
 					prints("错误的使用者代号...");
 					pressanykey();
 					break;
@@ -2451,7 +2451,7 @@ static int money_admin() {
 				move(14, 4);
 				if (uident[0] == '\0')
 					break;
-				if (!searchuser(uident)) {
+				if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
 					prints("错误的使用者代号...");
 					pressanykey();
 					break;
@@ -2490,7 +2490,7 @@ static int money_admin() {
 				move(13, 4);
 				if (uident[0] == '\0')
 					break;
-				if (!searchuser(uident)) {
+				if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
 					prints("错误的使用者代号...");
 					pressanykey();
 					break;
@@ -2601,7 +2601,7 @@ static int money_admin() {
 				move(13, 4);
 				if (uident[0] == '\0')
 					break;
-				if (!searchuser(uident)) {
+				if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
 					prints("错误的使用者代号...");
 					pressanykey();
 					break;
@@ -2629,7 +2629,7 @@ static int money_admin() {
 				move(13, 4);
 				if (uident[0] == '\0')
 					break;
-				if (!searchuser(uident)) {
+				if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
 					prints("错误的使用者代号...");
 					pressanykey();
 					break;
@@ -4364,7 +4364,7 @@ static int money_beggar() {
 				usercomplete("查谁的家底？", uident);
 				if (uident[0] == '\0')
 					break;
-				if (!searchuser(uident)) {
+				if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
 					move(7, 4);
 					prints("错误的使用者代号...");
 					pressreturn();
@@ -4496,7 +4496,7 @@ static int money_beggar() {
 				usercomplete("向谁乞讨？", uident);
 				if (uident[0] == '\0')
 					break;
-				if (!searchuser(uident)) {
+				if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
 					showAt(7, 4, "错误的使用者代号...", 2);
 					break;
 				}
@@ -4966,7 +4966,7 @@ static int money_killer() {
 							move(13, 4);
 							if (uident[0] == '\0')
 								break;
-							if (!searchuser(uident)) {
+							if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
 								prints("错误的使用者代号...");
 								pressanykey();
 								break;
@@ -4994,7 +4994,7 @@ static int money_killer() {
 							move(13, 4);
 							if (uident[0] == '\0')
 								break;
-							if (!searchuser(uident)) {
+							if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
 								prints("错误的使用者代号...");
 								pressanykey();
 								break;
@@ -5793,7 +5793,7 @@ static int money_gamble() {
 							move(13, 4);
 							if (uident[0] == '\0')
 								break;
-							if (!searchuser(uident)) {
+							if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
 								prints("错误的使用者代号...");
 								pressanykey();
 								break;
@@ -5821,7 +5821,7 @@ static int money_gamble() {
 							move(13, 4);
 							if (uident[0] == '\0')
 								break;
-							if (!searchuser(uident)) {
+							if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
 								prints("错误的使用者代号...");
 								pressanykey();
 								break;
@@ -5865,7 +5865,7 @@ static int money_gamble() {
 							move(13, 4);
 							if (uident[0] == '\0')
 								break;
-							if (!searchuser(uident)) {
+							if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
 								prints("错误的使用者代号...");
 								pressanykey();
 								break;
@@ -7780,7 +7780,7 @@ static int money_cop() {
 							move(13, 4);
 							if (uident[0] == '\0')
 								break;
-							if (!searchuser(uident)) {
+							if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
 								prints("错误的使用者代号...");
 								pressanykey();
 								break;
@@ -7808,7 +7808,7 @@ static int money_cop() {
 							move(13, 4);
 							if (uident[0] == '\0')
 								break;
-							if (!searchuser(uident)) {
+							if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
 								prints("错误的使用者代号...");
 								pressanykey();
 								break;
@@ -8127,7 +8127,7 @@ static int marry_admin(struct MC_Marry *marryMem, int n) {
 				usercomplete("查谁的情况？", uident);
 				if (uident[0] == '\0')
 					break;
-				if (!searchuser(uident)) {
+				if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
 					move(7, 4);
 					prints("错误的使用者代号...");
 					pressreturn();
@@ -8146,7 +8146,7 @@ static int marry_admin(struct MC_Marry *marryMem, int n) {
 				   usercomplete("请输入女方ID: ", uident);
 				   if (uident[0] == '\0')
 				   break;
-				   if (!searchuser(uident)) {
+				   if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
 				   move(7, 4);
 				   prints("错误的使用者代号...");
 				   pressreturn();
@@ -8156,7 +8156,7 @@ static int marry_admin(struct MC_Marry *marryMem, int n) {
 				   usercomplete("请输入男方ID: ", uident2);
 				   if (uident2[0] == '\0')
 				   break;
-				   if (!searchuser(uident2)) {
+				   if (!ythtbbs_cache_UserTable_search_usernum(uident2)) {
 				   move(8, 4);
 				   prints("错误的使用者代号...");
 				   pressreturn();
@@ -8367,7 +8367,7 @@ static int marry_admin(struct MC_Marry *marryMem, int n) {
 				usercomplete("请输入收信方ID: ", uident);
 				if (uident[0] == '\0')
 					break;
-				if (!searchuser(uident)) {
+				if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
 					move(7, 4);
 					prints("错误的使用者代号...");
 					pressreturn();
@@ -8377,7 +8377,7 @@ static int marry_admin(struct MC_Marry *marryMem, int n) {
 				usercomplete("请输入提出方ID: ", uident2);
 				if (uident2[0] == '\0')
 					break;
-				if (!searchuser(uident2)) {
+				if (!ythtbbs_cache_UserTable_search_usernum(uident2)) {
 					move(8, 4);
 					prints("错误的使用者代号...");
 					pressreturn();
@@ -9644,7 +9644,7 @@ static int marry_perpare(struct MC_Marry *marryMem, int n) {
 					usercomplete("发请柬给哪位？", uident);
 					if (uident[0] == '\0')
 						break;
-					if(!searchuser(uident)) {
+					if(!ythtbbs_cache_UserTable_search_usernum(uident)) {
 						move(7, 4);
 						prints("名字记错了吧...");
 						pressanykey();

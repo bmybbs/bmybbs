@@ -683,7 +683,7 @@ struct user_info *userinfo;
 			clear();
 			return 0;
 		}
-		if (!(tuid = searchuser(uident)) || tuid == usernum) {
+		if (!(tuid = ythtbbs_cache_UserTable_search_usernum(uident)) || tuid == usernum) {
 wrongid:
 			move(2, 0);
 			prints("错误代号\n");
@@ -1651,7 +1651,7 @@ override_add()
 	move(1, 0);
 	usercomplete("请输入要增加的代号: ", uident);
 	if (uident[0] != '\0') {
-		if (searchuser(uident) <= 0) {
+		if (ythtbbs_cache_UserTable_search_usernum(uident) <= 0) {
 			move(2, 0);
 			prints("错误的使用者代号...");
 			pressanykey();
@@ -1936,7 +1936,7 @@ getfriendstr()
 	tmp = (struct ythtbbs_override *) calloc(sizeof (struct ythtbbs_override), uinfo.fnum);
 	get_records(genbuf, tmp, sizeof (struct ythtbbs_override), 1, uinfo.fnum);
 	for (i = 0; i < uinfo.fnum; i++) {
-		uinfo.friend[i] = searchuser(tmp[i].id);
+		uinfo.friend[i] = ythtbbs_cache_UserTable_search_usernum(tmp[i].id);
 		if (uinfo.friend[i] == 0)
 			deleteoverride(tmp[i].id, "friends");
 		/* 顺便删除已不存在帐号的好友 */
@@ -1962,7 +1962,7 @@ getrejectstr()
 	tmp = (struct ythtbbs_override *) calloc(sizeof (struct ythtbbs_override), nr);
 	get_records(genbuf, tmp, sizeof (struct ythtbbs_override), 1, nr);
 	for (i = 0; i < nr; i++) {
-		uinfo.reject[i] = searchuser(tmp[i].id);
+		uinfo.reject[i] = ythtbbs_cache_UserTable_search_usernum(tmp[i].id);
 		if (uinfo.reject[i] == 0)
 			deleteoverride(tmp[i].id, "rejects");
 	}
@@ -1986,7 +1986,7 @@ wait_friend()
 		clear();
 		return 0;
 	}
-	if (!(tuid = searchuser(uid))) {
+	if (!(tuid = ythtbbs_cache_UserTable_search_usernum(uid))) {
 		move(2, 0);
 		prints("\033[1m不正确的使用者代号\033[m\n");
 		pressanykey();

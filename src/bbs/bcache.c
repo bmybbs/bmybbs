@@ -576,30 +576,10 @@ resolve_ucache_hash()
 }
 
 int
-searchuser(userid)
-char *userid;
-{
-	int i;
-
-	resolve_ucache();
-	i = finduseridhash(uidhashshm->uhi, UCACHE_HASH_SIZE, userid);
-	if (i > 0 && !strncasecmp(userid, uidshm->userid[i - 1], IDLEN + 1))
-		return i;
-
-	if (!goodgbid(userid))
-		return 0;
-
-	for (i = 0; i < uidshm->number; i++)
-		if (!strncasecmp(userid, uidshm->userid[i], IDLEN + 1))
-			return i + 1;
-	return 0;
-}
-
-int
 getuser(userid)
 char *userid;
 {
-	int uid = searchuser(userid);
+	int uid = ythtbbs_cache_UserTable_search_usernum(userid);
 
 	if (uid == 0)
 		return 0;
@@ -1195,7 +1175,7 @@ bmonlinesync()
 				}
 				break;	//小版主也检查完了
 			}
-			uentp = query_uindex(searchuser(bcache[j].header.bm[k]), 0);
+			uentp = query_uindex(ythtbbs_cache_UserTable_search_usernum(bcache[j].header.bm[k]), 0);
 			if (!uentp)
 				continue;
 			bcache[j].bmonline |= (1 << k);

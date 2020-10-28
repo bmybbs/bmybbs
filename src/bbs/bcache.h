@@ -29,7 +29,6 @@ int political_board(char *bname);
 int club_board(char *bname);
 int clubsync(char *boardname);
 void resolve_ucache(void);
-int searchuser(char *userid);
 int getuser(char *userid);
 void resolve_utmp(void);
 int getnewutmpent(struct user_info *up);

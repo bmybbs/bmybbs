@@ -1058,7 +1058,7 @@ struct userec *uentp;
 		break;
 	}
 	user_data[i - page] = *uentp;
-	override = myfriend(searchuser(uentp->userid));
+	override = myfriend(ythtbbs_cache_UserTable_search_usernum(uentp->userid));
 	prints(" %5d%2s%s%-14s%s %-19s  %5d %5d %6s %-16s\n", i + 1,
 	       (override) ? "¡õ" : "",
 	       (override) ? "[1;32m" : "", uentp->userid,

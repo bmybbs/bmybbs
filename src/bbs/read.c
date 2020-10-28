@@ -787,7 +787,7 @@ char *direct;
 		strtok(q_id, " ");
 	strncpy(uident, q_id, sizeof (uident));
 	uident[sizeof (uident) - 1] = '\0';
-	if (searchuser(uident) > 0) {
+	if (ythtbbs_cache_UserTable_search_usernum(uident) > 0) {
 		sprintf(genbuf, "加 %s 为好友么", uident);
 		if (YEA == askyn(genbuf, NA, YEA)) {
 			clear();

@@ -214,6 +214,13 @@ void ythtbbs_cache_UserTable_setuserid(int usernum, char *userid);
 void ythtbbs_cache_UserTable_getuserid(int usernum, char *userid, size_t len);
 
 /**
+ * @brief 查找 usernum
+ * 来自 src/bbs/bcache.c::searchuser
+ * 从缓存用户表中先依据散列表查找，如果没有命中，再遍历用户表。
+ */
+int ythtbbs_cache_UserTable_search_usernum(const char *userid);
+
+/**
  * @brief 获取用户名
  * 这个函数来自 src/bbs/bcache.c::u_namearray，在 src/bbs/namecomplete.c::usercomplete 函数中使用。实现中没有校验缓冲区长度。
  * 在原实现中，当 tag 为空时，直接返回缓存 ucache 中的 userid 数组，在新的实现中，不管 tag 是否为空，都将 ythtbbs_cache_UserTable 中的 userid 复制到缓冲区 buf 中。
