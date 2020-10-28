@@ -407,7 +407,6 @@ int cwnum, key, pos;
 }
 
 int usercomplete(char *prompt, char *data) {
-	char *u_namearray();
 	char *cwbuf, *cwlist, *temp;
 	int cwnum, x, y, origx, origy;
 	int clearbot = NA, count = 0, morenum = 0;
@@ -420,7 +419,7 @@ int usercomplete(char *prompt, char *data) {
 		clrtoeol();
 	}
 	temp = data;
-	cwlist = u_namearray((void *)cwbuf, &cwnum, "");
+	cwlist = ythtbbs_cache_UserTable_get_namearray((void *)cwbuf, &cwnum, "", chkstr);
 	getyx(&y, &x);
 	getyx(&origy, &origx);
 	while ((ch = igetkey()) != EOF) {
@@ -493,7 +492,7 @@ int usercomplete(char *prompt, char *data) {
 			temp--;
 			count--;
 			*temp = '\0';
-			cwlist = u_namearray((void *)cwbuf, &cwnum, data);
+			cwlist = ythtbbs_cache_UserTable_get_namearray((void *)cwbuf, &cwnum, data, chkstr);
 			morenum = 0;
 			x--;
 			move(y, x);

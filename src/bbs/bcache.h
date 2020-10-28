@@ -31,7 +31,6 @@ int clubsync(char *boardname);
 void resolve_ucache(void);
 int searchuser(char *userid);
 int getuser(char *userid);
-char *u_namearray(char buf[][12 + 1], int *pnum, char *tag);
 void resolve_utmp(void);
 int getnewutmpent(struct user_info *up);
 int apply_ulist(int (*fptr)(struct user_info *));

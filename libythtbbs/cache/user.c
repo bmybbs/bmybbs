@@ -166,6 +166,48 @@ void ythtbbs_cache_UserTable_getuserid(int usernum, char *userid, size_t len) {
 	}
 }
 
+char *ythtbbs_cache_UserTable_get_namearray(char buf[][IDLEN + 1], int *pnum, char *tag, int (*fptr)(char *, char *, char *)) {
+	register struct ythtbbs_cache_UserTable *reg_user_table;
+	register char *ptr, tmp;
+	register int n, total;
+	char tagbuf[STRLEN];
+	int ch, num = 0;
+
+	ythtbbs_cache_UserIDHashTable_resolve();
+	reg_user_table = shm_user_table;
+
+	if (tag[0] == '\0') {
+		*pnum = reg_user_table->number;
+		total = reg_user_table->number;
+		for (n = 0; n < total;) {
+			ptr = reg_user_table->users[n].userid;
+			if (ptr[0] == '\0')
+				continue;
+
+			strcpy(buf[num++], ptr);
+			n++;
+		}
+		return buf[0];
+	}
+
+	for (n = 0; tag[n] != '\0'; n++) {
+		tagbuf[n] = toupper(tag[n]);
+	}
+	tagbuf[n] = '\0';
+	ch = tagbuf[0];
+
+	total = reg_user_table->number;
+	for (n = 0; n < total; n++) {
+		ptr = reg_user_table->users[n].userid;
+		tmp = *ptr;
+		if (tmp == ch || tmp == ch - 'A' + 'a')
+			if (fptr(tag, tagbuf, ptr))
+				strcpy(buf[num++], ptr);
+	}
+	*pnum = num;
+	return buf[0];
+}
+
 /**
  * @brief 将 UserTable 缓存中的用户信息序列化出来
  * 输出形式 user_idx, userid [ session ]："0, SYSOP [ [0,42] ]\n"
