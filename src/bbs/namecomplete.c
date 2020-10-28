@@ -46,6 +46,7 @@ static int MaxLen(struct word *list, int count);
 static size_t MaxCommonStr(char str[STRLEN], struct word *list, size_t n);
 static int UserMaxLen(char cwlist[][IDLEN + 1], int cwnum, int morenum, int count);
 static int UserSubArray(char cwbuf[][IDLEN + 1], char cwlist[][IDLEN + 1], int cwnum, int key, int pos);
+static int chkstr(char *otag, char *tag, char *name);
 
 static void
 FreeNameList()
@@ -98,10 +99,7 @@ register struct word *list;
 	return i;
 }
 
-int
-chkstr(otag, tag, name)
-char *otag, *tag, *name;
-{
+static int chkstr(char *otag, char *tag, char *name) {
 	char ch, *oname = name;
 
 	while (*tag != '\0') {
