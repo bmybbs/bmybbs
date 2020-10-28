@@ -25,10 +25,10 @@ goodq(unsigned char ch)
 }
 
 int
-goodgbid(char *userid)		//by ylsdd
+goodgbid(const char *userid)		//by ylsdd
 {
 	int q = 0;
-	char *s;
+	const char *s;
 	for (s = userid; *s != '\0'; s++) {
 		switch (whatch(*s)) {
 		case 0:
