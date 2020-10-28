@@ -480,8 +480,8 @@ else sprintf(str1,"现在是 %s, 新世纪已经开始了%d秒\n",str,-dis);
 	fill_shmfile(5, "etc/endline", ENDLINE1_SHMKEY);
 	currentuser.userdefine |= DEF_COLOR;
 	ansimore2("etc/issue", NA, 0, 20);
-	if (uidshm->usersum == 0)
-		uidshm->usersum = allusers();
+	if (ythtbbs_cache_UserTable_get_usersum() == 0)
+		ythtbbs_cache_UserTable_set_usersum(allusers());
 	if (utmpshm->maxtoday < curr_login_num)
 		utmpshm->maxtoday = curr_login_num;
 	if (utmpshm->maxuser < curr_login_num) {	/* Added by deardragon 1999.12.15 保存最高人数记录到文件 */
@@ -510,7 +510,7 @@ else sprintf(str1,"现在是 %s, 新世纪已经开始了%d秒\n",str,-dis);
 	n = getuptime();
 	prints("\033[1;32m欢迎光临\033[1;33m %s\033[32m ", MY_BBS_NAME);
 	prints("目前上站人数 [\033[36m%d/%d\033[32m] WWW匿名[\033[36m%d\033[32m] ", curr_login_num, MAXACTIVERUN, utmpshm->wwwguest);
-	prints("注册用户数[\033[36m%d\033[32m]\n", uidshm->usersum);
+	prints("注册用户数[\033[36m%d\033[32m]\n", ythtbbs_cache_UserTable_get_usersum());
 	prints("系统持续运行 [\033[36m%d天%d小时%d分钟\033[32m] ", n / (3600 * 24), n % (3600 * 24) / 3600, n % 3600 / 60);
 	prints("最高人数记录 [\033[36m%d\033[32m] ", utmpshm->maxuser);
 	prints("本日最高人数 [\033[36m%d\033[32m]\n", utmpshm->maxtoday);

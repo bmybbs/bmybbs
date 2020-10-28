@@ -161,6 +161,16 @@ int ythtbbs_cache_UserTable_searchnewuser() {
 	return 0;
 }
 
+int ythtbbs_cache_UserTable_get_usersum() {
+	return shm_user_table ? shm_user_table->usersum : 0;
+}
+
+void ythtbbs_cache_UserTable_set_usersum(int usersum) {
+	if (shm_user_table) {
+		shm_user_table->usersum = usersum;
+	}
+}
+
 void ythtbbs_cache_UserTable_setuserid(int usernum, char *userid) {
 	int user_idx;
 
