@@ -6,7 +6,6 @@ int t_pager(void);
 int t_query(char q_id[12 + 2]);
 void num_alcounter(void);
 int num_useshell(void);
-int num_active_users(void);
 int t_cmpuids(int uid, struct user_info *up);
 int t_talk(void);
 int ttt_talk(struct user_info *userinfo);

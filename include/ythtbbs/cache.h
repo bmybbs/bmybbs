@@ -261,6 +261,14 @@ void ythtbbs_cache_utmp_set_ave_score(int value);
 void ythtbbs_cache_utmp_resolve(void);
 
 /**
+ * @brief 统计在线人数
+ * 来自 src/bbs/talk.c::num_active_users 实现。在原实现中，wwwguest 统计值
+ * 直接赋给 utmpshm->wwwguest (具体逻辑在 count_active 中)。随着缓存不再生
+ * 成 guest 会话，暂时不做统计。
+ */
+int ythtbbs_cache_utmp_count_active(void);
+
+/**
  * @brief 向 shm_utmp 中插入 user_info
  *
  * 对应于 src/bbs/bcache::getnewutmpent 的重构。

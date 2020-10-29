@@ -18,6 +18,9 @@
 
 static struct UTMPFILE *shm_utmp;
 
+// 不再统计 wwwguest，因为当前不再产生 wwwguest 会话
+static int count_active(const struct user_info *uentp, void *);
+
 void ythtbbs_cache_utmp_resolve() {
 	if (shm_utmp == NULL) {
 		shm_utmp = get_shm(UTMP_SHMKEY, sizeof(*shm_utmp));
@@ -144,6 +147,16 @@ void ythtbbs_cache_utmp_set_ave_score(int value) {
 	shm_utmp->ave_score = value;
 }
 
+int ythtbbs_cache_utmp_count_active(void) {
+	time_t now = time(NULL);
+	ythtbbs_cache_utmp_resolve();
+	if (now <= shm_utmp->activetime + 1)
+		return shm_utmp->activeuser;
+	shm_utmp->activetime = now;
+	ythtbbs_cache_utmp_apply(count_active, &(shm_utmp->activeuser));
+	return shm_utmp->activeuser;
+}
+
 /**
  * @brief 将 utmp 缓存中的用户信息序列化出来
  * 输出形式 utmp_idx, userid："0, SYSOP\n"
@@ -166,5 +179,12 @@ void ythtbbs_cache_utmp_dump(FILE *fp) {
 
 struct user_info *ythtbbs_cache_utmp_get_by_idx(int idx) {
 	return &shm_utmp->uinfo[idx];
+}
+
+static int count_active(const struct user_info *uentp, void *x_param) {
+	if (!uentp->active || !uentp->pid)
+		return 0;
+	*(int *)x_param++;
+	return 1;
 }
 

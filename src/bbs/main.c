@@ -470,7 +470,7 @@ else sprintf(str1,"现在是 %s, 新世纪已经开始了%d秒\n",str,-dis);
 
 	resolve_utmp();
 	ythtbbs_cache_UserTable_resolve();
-	curr_login_num = num_active_users();
+	curr_login_num = ythtbbs_cache_utmp_count_active();
 	if (curr_login_num >= MAXACTIVE || curr_login_num >= MAXACTIVERUN) {
 		ansimore("etc/loginfull", NA);
 		refresh();

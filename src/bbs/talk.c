@@ -79,7 +79,6 @@ static char canpage(int friend, int pager);
 static int listcuent(const struct user_info *uentp, void *);
 static int show_user_plan(char *userid);
 static int bm_printboard(struct boardmanager *bm, void *farg);
-static int count_active(const struct user_info *uentp, void *);
 static int count_useshell(const struct user_info *uentp, void *);
 static int cmpfnames(char *userid, struct ythtbbs_override *uv);
 static int cmpunums(int unum, struct user_info *up);
@@ -537,14 +536,6 @@ bm_printboard(struct boardmanager *bm, void *farg)
 	return 0;
 }
 
-// 不再统计 wwwguest，因为当前不再产生 wwwguest 会话
-static int count_active(const struct user_info *uentp, void *x_param) {
-	if (!uentp->active || !uentp->pid)
-		return 0;
-	*(int *)x_param++;
-	return 1;
-}
-
 static int count_useshell(const struct user_info *uentp, void *x_param) {
 	if (!uentp->active || !uentp->pid)
 		return 0;
@@ -567,7 +558,7 @@ num_alcounter()
 	count_friends = 0;
 	for (i = 0; i < uinfo.fnum; i++)
 		count_friends += query_uindex(uinfo.friend[i], 1) ? 1 : 0;
-	count_users = num_active_users();
+	count_users = ythtbbs_cache_utmp_count_active();
 }
 
 int
@@ -576,18 +567,6 @@ num_useshell()
 	int count = 0;
 	ythtbbs_cache_utmp_apply(count_useshell, &count);
 	return count;
-}
-
-int
-num_active_users()
-{
-	time_t now = time(NULL);
-	resolve_utmp();
-	if (now <= utmpshm->activetime + 1)
-		return utmpshm->activeuser;
-	utmpshm->activetime = now;
-	ythtbbs_cache_utmp_apply(count_active, &(utmpshm->activeuser));
-	return utmpshm->activeuser;
 }
 
 static int
