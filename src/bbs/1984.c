@@ -15,8 +15,6 @@
 #include "bbs_global_vars.h"
 #include "bbs-internal.h"
 
-extern struct UTMPFILE *utmpshm;
-
 static char boarddir1984[STRLEN * 2];
 static int do1984title(void);
 static char *do1984doent(int num, struct fileheader *ent, char buf[512]);
@@ -380,7 +378,7 @@ do1984menu()
 			pressreturn();
 			return;
 		}
-		sprintf(tmpid, "%u", utmpshm->unlock % 10000);
+		sprintf(tmpid, "%u", ythtbbs_cache_utmp_get_unlock() % 10000);
 		getdata(8, 0, "请输入解锁码:", buf, 5, DOECHO, YEA);
 
 		if (strcmp(tmpid, buf)) {
@@ -423,7 +421,7 @@ do1984menu()
 		}
 		ythtbbs_cache_utmp_set_watchman(time(NULL) + 600);
 		sprintf(tmpid, "用户 %s 锁版!解锁码: %u",
-			currentuser.userid, utmpshm->unlock % 10000);
+			currentuser.userid, ythtbbs_cache_utmp_get_unlock() % 10000);
 		postfile("help/watchmanhelp", "deleterequest", tmpid, 1);
 		prints("成功锁住!");
 		pressreturn();

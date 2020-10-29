@@ -44,7 +44,7 @@ main(int argc, char *argv[])
 		strcpy(buf, "★★★★★警报★★★★★政治性版面锁住了★★★★★");
 	} else {
 		ythtbbs_cache_utmp_set_watchman(now_t + time_add);
-		ytht_get_random_int(&(shm_utmp->unlock));
+		ythtbbs_cache_utmp_set_unlock();
 		snprintf(buf, sizeof (buf), "来来来,点卯了!现在是 %s", ytht_ctime(now_t));
 	}
 
@@ -63,7 +63,7 @@ main(int argc, char *argv[])
 		fprintf(fp,
 			"请在%d分钟内进行解锁操作,否则本BBS所有和政治相关的版面将被封版\n"
 			"直至有人进行了解锁操作.\n" "解锁密码: %u\n",
-			time_add / 60, shm_utmp->unlock % 10000);
+			time_add / 60, ythtbbs_cache_utmp_get_unlock() % 10000);
 	}
 	fprintf(fp, "以下是关于解锁操作的说明:\n");
 	fr = fopen(CONT, "r");

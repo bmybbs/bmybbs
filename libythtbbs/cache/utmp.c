@@ -4,6 +4,7 @@
 #include <signal.h>
 #include <sys/file.h>
 #include "ytht/shmop.h"
+#include "ytht/random.h"
 #include "bmy/iphash.h"
 #include "ythtbbs/cache.h"
 #include "ythtbbs/session.h"
@@ -194,5 +195,13 @@ time_t ythtbbs_cache_utmp_get_watchman(void) {
 
 void ythtbbs_cache_utmp_set_watchman(time_t t) {
 	shm_utmp->watchman = t;
+}
+
+unsigned int ythtbbs_cache_utmp_get_unlock(void) {
+	return shm_utmp->unlock;
+}
+
+void ythtbbs_cache_utmp_set_unlock(void) {
+	ytht_get_random_int(&(shm_utmp->unlock));
 }
 

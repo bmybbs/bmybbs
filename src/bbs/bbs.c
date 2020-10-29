@@ -3414,7 +3414,7 @@ show_b_note()
 			prints("政治性版面当前都处在解锁状态");
 		else
 			prints("政治性版面已锁定,晚于 %s 就不能发表文章了.解锁码: %d",
-				 ytht_ctime(ythtbbs_cache_utmp_get_watchman()), utmpshm->unlock % 10000);
+				 ytht_ctime(ythtbbs_cache_utmp_get_watchman()), ythtbbs_cache_utmp_get_unlock() % 10000);
 
 	}
 	return what_to_do();
