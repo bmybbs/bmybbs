@@ -95,11 +95,6 @@
 
 #define VERSION_ID "FIREBIRD 3.0K"
 
-#ifndef LOCK_EX
-#define LOCK_EX         2       /* exclusive lock */
-#define LOCK_UN         8       /* unlock */
-#endif
-
 #ifdef XINU
 extern int errno ;
 #endif
