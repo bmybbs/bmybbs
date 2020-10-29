@@ -92,7 +92,7 @@ static char msgchar(struct user_info *uin);
 static char pagerchar(int friend, int pager);
 static char *idle_str(struct user_info *uent);
 static int num_visible_users();
-static int count_visible_active(struct user_info *uentp);
+static int count_visible_active(const struct user_info *uentp, void *);
 
 static int
 friend_search(unsigned uid, const struct user_info *uentp, int tblsize)
@@ -1482,26 +1482,17 @@ struct user_info *uent;
 static int
 num_visible_users()
 {
-	count_visible_active(NULL);
-	apply_ulist(count_visible_active);
-	return count_visible_active(NULL);
+	int count = 0;
+	ythtbbs_cache_utmp_apply(count_visible_active, &count);
+	return count;
 }
 
-static int
-count_visible_active(uentp)
-struct user_info *uentp;
+static int count_visible_active(const struct user_info *uentp, void *x_param)
 {
-	static int count;
-
-	if (uentp == NULL) {
-		int c = count;
-		count = 0;
-		return c;
-	}
 	if (!uentp->active || !uentp->pid)
 		return 0;
-	count++;
+	*(int *)x_param++;
 	if (!HAS_PERM(PERM_SYSOP | PERM_SEECLOAK, currentuser) && uentp->invisible)
-		count--;
+		*(int *)x_param--;
 	return 1;
 }

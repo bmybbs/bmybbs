@@ -29,7 +29,6 @@ int clubsync(char *boardname);
 int getuser(const char *userid);
 void resolve_utmp(void);
 int getnewutmpent(struct user_info *up);
-int apply_ulist(int (*fptr)(struct user_info *));
 int search_ulist(struct user_info *uentp, int (*fptr)(int, struct user_info *), int farg);
 int search_ulistn(struct user_info *uentp, int (*fptr)(int, struct user_info *), int farg, int unum);
 int count_logins(struct user_info *uentp, int (*fptr)(int, struct user_info *), int farg, int show);

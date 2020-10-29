@@ -588,22 +588,6 @@ struct user_info *up;
 }
 
 int
-apply_ulist(fptr)
-int (*fptr) (struct user_info *);
-{
-	int i;
-
-	resolve_utmp();
-	for (i = 0; i <= USHM_SIZE - 1; i++) {
-		if (utmpshm->uinfo[i].active == 0)
-			continue;
-		if ((*fptr) (&utmpshm->uinfo[i]) == QUIT)
-			return QUIT;
-	}
-	return 0;
-}
-
-int
 search_ulist(uentp, fptr, farg)
 struct user_info *uentp;
 int (*fptr) (int, struct user_info *);

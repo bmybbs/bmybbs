@@ -69,10 +69,7 @@ CreateNameList()
 	current = NULL;
 }
 
-void
-AddNameList(name)
-char *name;
-{
+void AddNameList(const char *name) {
 	struct word *node;
 
 	node = (struct word *) malloc(sizeof (struct word));

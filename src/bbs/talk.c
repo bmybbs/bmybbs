@@ -76,11 +76,11 @@ static char *const refuse[] = {
 char save_page_requestor[STRLEN];
 
 static char canpage(int friend, int pager);
-static int listcuent(struct user_info *uentp);
+static int listcuent(const struct user_info *uentp, void *);
 static int show_user_plan(char *userid);
 static int bm_printboard(struct boardmanager *bm, void *farg);
-static int count_active(struct user_info *uentp);
-static int count_useshell(struct user_info *uentp);
+static int count_active(const struct user_info *uentp, void *);
+static int count_useshell(const struct user_info *uentp, void *);
 static int cmpfnames(char *userid, struct ythtbbs_override *uv);
 static int cmpunums(int unum, struct user_info *up);
 static int cmpmsgnum(int unum, struct user_info *up);
@@ -148,10 +148,8 @@ int friend, pager;
 	return NA;
 }
 
-static int
-listcuent(uentp)
-struct user_info *uentp;
-{
+static int listcuent(const struct user_info *uentp, void *x_param) {
+	(void) x_param;
 	if (uentp == NULL) {
 		CreateNameList();
 		return 0;
@@ -167,8 +165,8 @@ struct user_info *uentp;
 }
 
 static void creat_list() {
-	listcuent(NULL);
-	apply_ulist(listcuent);
+	listcuent(NULL, NULL);
+	ythtbbs_cache_utmp_apply(listcuent, NULL);
 }
 
 int
@@ -539,47 +537,22 @@ bm_printboard(struct boardmanager *bm, void *farg)
 	return 0;
 }
 
-static int
-count_active(uentp)
-struct user_info *uentp;
-{
-	static int count;
-	static int wwwguest;
-
-	if (uentp == NULL) {
-		int c = count;
-		count = 0;
-		if (wwwguest != 0)
-			utmpshm->wwwguest = wwwguest;
-		wwwguest = 0;
-		return c;
-	}
+// 不再统计 wwwguest，因为当前不再产生 wwwguest 会话
+static int count_active(const struct user_info *uentp, void *x_param) {
 	if (!uentp->active || !uentp->pid)
 		return 0;
-	count++;
-	if (uentp->pid == 1 && uentp->uid == 2)
-		wwwguest++;
+	*(int *)x_param++;
 	return 1;
 }
 
-static int
-count_useshell(uentp)
-struct user_info *uentp;
-{
-	static int count;
-
-	if (uentp == NULL) {
-		int c = count;
-		count = 0;
-		return c;
-	}
+static int count_useshell(const struct user_info *uentp, void *x_param) {
 	if (!uentp->active || !uentp->pid)
 		return 0;
 	if (uentp->mode == WWW || uentp->mode == SYSINFO
 			|| uentp->mode == HYTELNET || uentp->mode == DICT
 			|| uentp->mode == ARCHIE || uentp->mode == IRCCHAT
 			|| uentp->mode == BBSNET || uentp->mode == GAME)
-		count++;
+		*(int *)x_param++;
 	return 1;
 }
 
@@ -600,9 +573,9 @@ num_alcounter()
 int
 num_useshell()
 {
-	count_useshell(NULL);
-	apply_ulist(count_useshell);
-	return count_useshell(NULL);
+	int count = 0;
+	ythtbbs_cache_utmp_apply(count_useshell, &count);
+	return count;
 }
 
 int
@@ -613,9 +586,7 @@ num_active_users()
 	if (now <= utmpshm->activetime + 1)
 		return utmpshm->activeuser;
 	utmpshm->activetime = now;
-	count_active(NULL);
-	apply_ulist(count_active);
-	utmpshm->activeuser = count_active(NULL);
+	ythtbbs_cache_utmp_apply(count_active, &(utmpshm->activeuser));
 	return utmpshm->activeuser;
 }
 
