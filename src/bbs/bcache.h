@@ -26,7 +26,7 @@ int is1984_board(char *bname);
 int political_board(char *bname);
 int club_board(char *bname);
 int clubsync(char *boardname);
-int getuser(char *userid);
+int getuser(const char *userid);
 void resolve_utmp(void);
 int getnewutmpent(struct user_info *up);
 int apply_ulist(int (*fptr)(struct user_info *));

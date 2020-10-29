@@ -504,10 +504,7 @@ char *boardname;
 	return 1;
 }
 
-int
-getuser(userid)
-char *userid;
-{
+int getuser(const char *userid) {
 	int uid = ythtbbs_cache_UserTable_search_usernum(userid);
 
 	if (uid == 0)

@@ -1083,7 +1083,7 @@ char *argv[];
 			clrtobot();
 			if (!DEFINE(DEF_NOLOGINSEND, currentuser))
 				if (!uinfo.invisible)
-					apply_ulist(friend_login_wall);
+					ythtbbs_cache_utmp_apply(friend_login_wall, NULL);
 /*       pressanykey();
        clear();*/
 			set_numofsig();

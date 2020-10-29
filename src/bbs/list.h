@@ -3,8 +3,8 @@
 #include "ythtbbs/cache.h"
 
 int myfriend(unsigned uid);
-int hisfriend(struct user_info *uentp);
-int isreject(struct user_info *uentp);
+int hisfriend(const struct user_info *uentp);
+int isreject(const struct user_info *uentp);
 int allusers(void);
 void setlistrange(int i);
 void Users(void);

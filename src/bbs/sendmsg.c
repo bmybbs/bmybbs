@@ -46,10 +46,10 @@ int msg_blocked = 0;
 extern int have_msg_unread;
 
 static int get_msg(char *uid, char *msg, size_t msg_len, int line);
-static int dowall(struct user_info *uin);
-static int dowall_telnet(struct user_info *uin);
-static int myfriend_wall(struct user_info *uin);
-static int hisfriend_wall(struct user_info *uin);
+static int dowall(const struct user_info *, void *);
+static int dowall_telnet(const struct user_info *, void *);
+static int myfriend_wall(const struct user_info *, void *);
+static int hisfriend_wall(const struct user_info *, void *);
 static int sendmsgfunc(char *uid, struct user_info *uin, int userpid, const char *msgstr, int mode, char *msgerr);
 static void mail_msg(struct userec *user);
 static int canmsg_offline(char *uid);
@@ -118,14 +118,7 @@ s_msg()
 	return 0;
 }
 
-int
-do_sendmsg(uid, uentp, msgstr, mode, userpid)
-char *uid;
-struct user_info *uentp;
-char msgstr[256];
-int mode;
-int userpid;
-{
+int do_sendmsg(const char *uid, const struct user_info *uentp, char *msgstr, int mode, int userpid) {
 	char uident[STRLEN];
 	char msgerr[256];
 	struct user_info *uinptr;
@@ -233,25 +226,20 @@ int userpid;
 	return 1;
 }
 
-static int
-dowall(uin)
-struct user_info *uin;
-{
+static int dowall(const struct user_info *uin, void *x_param) {
+	(void) x_param;
 	if (!uin->active || !uin->pid)
 		return -1;
 	move(1, 0);
 	clrtoeol();
-	prints("[1;32mÕı¶Ô %s ¹ã²¥.... Ctrl-D Í£Ö¹¶Ô´ËÎ» User ¹ã²¥¡£[m",
-	       uin->userid);
+	prints("[1;32mÕı¶Ô %s ¹ã²¥.... Ctrl-D Í£Ö¹¶Ô´ËÎ» User ¹ã²¥¡£[m", uin->userid);
 	refresh();
 	do_sendmsg(uin->userid, uin, buf2, 0, uin->pid);
 	return 0;
 }
 
-static int
-dowall_telnet(uin)
-struct user_info *uin;
-{
+static int dowall_telnet(const struct user_info *uin, void *x_param) {
+	(void) x_param;
 	if (!uin->active || !uin->pid || uin->pid ==1)
 		return -1;
 	move(1, 0);
@@ -262,12 +250,9 @@ struct user_info *uin;
 	return 0;
 }
 
-static int
-myfriend_wall(uin)
-struct user_info *uin;
-{
-	if ((uin->pid - uinfo.pid == 0) || !uin->active || !uin->pid
-	    || isreject(uin))
+static int myfriend_wall(const struct user_info *uin, void *x_param) {
+	(void) x_param;
+	if ((uin->pid - uinfo.pid == 0) || !uin->active || !uin->pid || isreject(uin))
 		return -1;
 	if (myfriend(uin->uid)) {
 		move(1, 0);
@@ -279,12 +264,9 @@ struct user_info *uin;
 	return 0;
 }
 
-static int
-hisfriend_wall(uin)
-struct user_info *uin;
-{
-	if ((uin->pid - uinfo.pid == 0) || !uin->active || !uin->pid
-	    || isreject(uin))
+static int hisfriend_wall(const struct user_info *uin, void *x_param) {
+	(void) x_param;
+	if ((uin->pid - uinfo.pid == 0) || !uin->active || !uin->pid || isreject(uin))
 		return -1;
 	if (hisfriend(uin)) {
 		move(1, 0);
@@ -307,7 +289,7 @@ wall()
 	if (!get_msg("ËùÓĞÊ¹ÓÃÕß", buf2, sizeof(buf2), 1)) {
 		return 0;
 	}
-	if (apply_ulist(dowall) == 0) {
+	if (ythtbbs_cache_utmp_apply(dowall, NULL) == 0) {
 		move(2, 0);
 		prints("ÏßÉÏ¿ÕÎŞÒ»ÈË\n");
 		pressanykey();
@@ -328,7 +310,7 @@ wall_telnet()
 	if (!get_msg("telnetÓÃ»§", buf2, sizeof(buf2), 1)) {
 		return 0;
 	}
-	if (apply_ulist(dowall_telnet) == 0) {
+	if (ythtbbs_cache_utmp_apply(dowall_telnet, NULL) == 0) {
 		move(2, 0);
 		prints("ÏßÉÏ¿ÕÎŞÒ»ÈË\n");
 		pressanykey();
@@ -359,7 +341,7 @@ friend_wall()
 	case '1':
 		if (!get_msg("ÎÒµÄºÃÅóÓÑ", buf2, sizeof(buf2), 1))
 			return 0;
-		if (apply_ulist(myfriend_wall) == -1) {
+		if (ythtbbs_cache_utmp_apply(myfriend_wall, NULL) == -1) {
 			move(2, 0);
 			prints("ÏßÉÏ¿ÕÎŞÒ»ÈË\n");
 			pressanykey();
@@ -368,7 +350,7 @@ friend_wall()
 	case '2':
 		if (!get_msg("ÓëÎÒÎªÓÑÕß", buf2, sizeof(buf2), 1))
 			return 0;
-		if (apply_ulist(hisfriend_wall) == -1) {
+		if (ythtbbs_cache_utmp_apply(hisfriend_wall, NULL) == -1) {
 			move(2, 0);
 			prints("ÏßÉÏ¿ÕÎŞÒ»ÈË\n");
 			pressanykey();
@@ -676,12 +658,11 @@ unblock_msg()
 }
 
 int
-friend_login_wall(pageinfo)
-struct user_info *pageinfo;
-{
+friend_login_wall(const struct user_info *pageinfo, void *x_param) {
 	char msg[STRLEN];
 	int x, y;
 
+	(void) x_param;
 	if (!pageinfo->active || !pageinfo->pid || isreject(pageinfo))
 		return 0;
 	if (hisfriend(pageinfo)) {

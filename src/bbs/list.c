@@ -62,7 +62,7 @@ struct userec *user_data;
 /* add by KCN 1998.11 */
 int friendmode1;
 
-static int friend_search(unsigned uid, struct user_info *uentp, int tblsize);
+static int friend_search(unsigned uid, const struct user_info *uentp, int tblsize);
 static int UseronlineSearch(int curr_num, int offset);
 static int IDSearch(char query[STRLEN], int curr_num, int offset);
 static int IPSearch(char query[20], int curr_num, int offset);
@@ -95,10 +95,7 @@ static int num_visible_users();
 static int count_visible_active(struct user_info *uentp);
 
 static int
-friend_search(uid, uentp, tblsize)
-unsigned uid;
-struct user_info *uentp;
-int tblsize;
+friend_search(unsigned uid, const struct user_info *uentp, int tblsize)
 {
 	int hi, low, mid;
 	//int cmp;
@@ -255,19 +252,13 @@ unsigned uid;
 	return friend_search(uid, &uinfo, uinfo.fnum);
 }
 
-int
-hisfriend(uentp)
-struct user_info *uentp;
-{
+int hisfriend(const struct user_info *uentp) {
 	if (uentp == NULL)
 		return NA;
 	return friend_search(uinfo.uid, uentp, uentp->fnum);
 }
 
-int
-isreject(uentp)
-struct user_info *uentp;
-{
+int isreject(const struct user_info *uentp) {
 	int i;
 
 	if (HAS_PERM(PERM_SYSOP, currentuser))
