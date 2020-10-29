@@ -115,6 +115,19 @@ void ythtbbs_cache_utmp_remove(int utmp_idx) {
 	memset(ptr_info, 0, sizeof(struct user_info));
 }
 
+int ythtbbs_cache_utmp_apply(ythtbbs_cache_utmp_apply_callback fptr, void *x_param) {
+	int i;
+
+	ythtbbs_cache_utmp_resolve();
+	for (i = 0; i <= USHM_SIZE - 1; i++) {
+		if (shm_utmp->uinfo[i].active == 0)
+			continue;
+		if ((*fptr) (&shm_utmp->uinfo[i], x_param) == QUIT)
+			return QUIT;
+	}
+	return 0;
+}
+
 int ythtbbs_cache_utmp_check_active_by_idx(int idx) {
 	return shm_utmp->uinfo[idx].active;
 }

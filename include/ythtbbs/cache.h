@@ -277,6 +277,14 @@ int ythtbbs_cache_utmp_insert(struct user_info *ptr_user_info);
  */
 void ythtbbs_cache_utmp_remove(int utmp_idx);
 
+typedef int (*ythtbbs_cache_utmp_apply_callback)(const struct user_info *, void *x_param);
+
+/**
+ * @brief 提供通用的遍历 utmp 会话表的接口
+ * 来自 src/bbs/bcache.c::apply_ulist 实现。但是多了一个传入参数，可以给回调函数更大的灵活性。
+ */
+int ythtbbs_cache_utmp_apply(ythtbbs_cache_utmp_apply_callback fptr, void *x_param);
+
 int ythtbbs_cache_utmp_check_active_by_idx(int idx);
 
 int ythtbbs_cache_utmp_check_uid_by_idx(int idx, int uid);
