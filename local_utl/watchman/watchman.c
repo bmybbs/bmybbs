@@ -40,14 +40,12 @@ main(int argc, char *argv[])
 		return -1;
 	}
 	now_t = time(NULL);
-	if (shm_utmp->watchman) {
-		strcpy(buf,
-		       "★★★★★警报★★★★★政治性版面锁住了★★★★★");
+	if (ythtbbs_cache_utmp_get_watchman()) {
+		strcpy(buf, "★★★★★警报★★★★★政治性版面锁住了★★★★★");
 	} else {
-		shm_utmp->watchman = now_t + time_add;
+		ythtbbs_cache_utmp_set_watchman(now_t + time_add);
 		ytht_get_random_int(&(shm_utmp->unlock));
-		snprintf(buf, sizeof (buf), "来来来,点卯了!现在是 %s",
-				 ytht_ctime(now_t));
+		snprintf(buf, sizeof (buf), "来来来,点卯了!现在是 %s", ytht_ctime(now_t));
 	}
 
 	fp = popen("/bin/mail bbs", "w");

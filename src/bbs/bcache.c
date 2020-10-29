@@ -279,10 +279,7 @@ int hasreadperm_ext(char *username,  char *boardname)
 	return 0;
 }
 
-int
-getbnum(bname)
-char *bname;
-{
+int getbnum(const char *bname) {
 	int i;
 	static int cachei = 0;
 
@@ -312,15 +309,10 @@ char *bname;
 	return hasreadperm(&(bcache[i - 1].header));
 }
 
-int
-noadm4political(bname)
-char *bname;
-{
+int noadm4political(const char *bname) {
 	time_t now = time(NULL);
-	if (!utmpshm->watchman || now < utmpshm->watchman)
-		return 0;
-	return political_board(bname);
-
+	time_t t = ythtbbs_cache_utmp_get_watchman();
+	return (!t || now < t) ? 0 : political_board(bname);
 }
 
 int
@@ -428,10 +420,7 @@ char *bname;
 	return (bcache[i - 1].header.flag & IS1984_FLAG);
 }
 
-int
-political_board(bname)
-char *bname;
-{
+int political_board(const char *bname) {
 	register int i;
 
 	if ((i = getbnum(bname)) == 0)

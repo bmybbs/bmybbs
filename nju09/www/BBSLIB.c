@@ -1555,10 +1555,8 @@ int
 noadm4political(bname)
 char *bname;
 {
-	if (!shm_utmp->watchman || now_t < shm_utmp->watchman)
-		return 0;
-	return political_board(bname);
-
+	time_t t = ythtbbs_cache_utmp_get_watchman();
+	return (!t || now_t < t) ? 0 : political_board(bname);
 }
 
 int

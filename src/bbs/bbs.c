@@ -3410,12 +3410,11 @@ show_b_note()
 	show_small_bm(currboard);
 	if (!strcmp(currboard, "deleterequest")) {
 		move(1, 0);
-		if (!utmpshm->watchman)
+		if (!ythtbbs_cache_utmp_get_watchman())
 			prints("政治性版面当前都处在解锁状态");
 		else
-			prints
-			    ("政治性版面已锁定,晚于 %s 就不能发表文章了.解锁码: %d",
-				 ytht_ctime(utmpshm->watchman), utmpshm->unlock % 10000);
+			prints("政治性版面已锁定,晚于 %s 就不能发表文章了.解锁码: %d",
+				 ytht_ctime(ythtbbs_cache_utmp_get_watchman()), utmpshm->unlock % 10000);
 
 	}
 	return what_to_do();

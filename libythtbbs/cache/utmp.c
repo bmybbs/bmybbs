@@ -188,3 +188,11 @@ static int count_active(const struct user_info *uentp, void *x_param) {
 	return 1;
 }
 
+time_t ythtbbs_cache_utmp_get_watchman(void) {
+	return shm_utmp->watchman;
+}
+
+void ythtbbs_cache_utmp_set_watchman(time_t t) {
+	shm_utmp->watchman = t;
+}
+
