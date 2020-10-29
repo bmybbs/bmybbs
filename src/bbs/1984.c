@@ -40,9 +40,9 @@ do1984title()
 
 	showtitle("Éó²éÎÄÕÂ", MY_BBS_NAME);
 	prints(
-			"Àë¿ª[[1;32m¡û[m,[1;32me[m]  Ñ¡Ôñ[[1;32m¡ü[m,[1;32m¡ý[m]  ÔÄ¶Á"
-			"[[1;32m¡ú[m,[1;32mRtn[m] ÇóÖú[[1;32mh[m][m\n");
-	prints("[1;44m±àºÅ   %-12s %6s  %-50s[m\n", "¿¯µÇÕß", "ÈÕÆÚ", "±êÌâ");
+			"Àë¿ª[\033[1;32m¡û\033[m,\033[1;32me\033[m]  Ñ¡Ôñ[\033[1;32m¡ü\033[m,\033[1;32m¡ý\033[m]  ÔÄ¶Á"
+			"[\033[1;32m¡ú\033[m,\033[1;32mRtn\033[m] ÇóÖú[\033[1;32mh\033[m]\033[m\n");
+	prints("\033[1;44m±àºÅ   %-12s %6s  %-50s\033[m\n", "¿¯µÇÕß", "ÈÕÆÚ", "±êÌâ");
 	clrtobot();
 	return 0;
 }
@@ -72,8 +72,8 @@ char buf[512];
 	}
 
 	attached = (ent->accessed & FH_ATTACHED) ? '@' : ' ';
-	strcpy(c1, "[1;36m");
-	strcpy(c2, "[1;33m");
+	strcpy(c1, "\033[1;36m");
+	strcpy(c2, "\033[1;33m");
 	if (!strcmp(ReadPost, ent->title) || !strcmp(ReplyPost, ent->title))
 		same = YEA;
 	strncpy(b2, ent->owner, STRLEN);
@@ -81,15 +81,15 @@ char buf[512];
 		*t = '\0';
 
 	if (ent->accessed & FH_1984) {
-		sprintf(buf, " %s%3d[m %c %-12.12s %6.6s %c%s%.36s%.14s[m",
+		sprintf(buf, " %s%3d\033[m %c %-12.12s %6.6s %c%s%.36s%.14s\033[m",
 			same ? c1 : "", num, ' ', "", "", ' ', same ? c1 : "",
 			"-ÒÑ¾­Í¨¹ýÉó²é by ", ent->title + 35);
 	} else if (!strncmp("Re:", ent->title, 3)) {
-		sprintf(buf, " %s%3d[m %c %-12.12s %6.6s %c%s%.50s[m",
+		sprintf(buf, " %s%3d\033[m %c %-12.12s %6.6s %c%s%.50s\033[m",
 			same ? c1 : "", num, ' ', b2, date, attached,
 			same ? c1 : "", ent->title);
 	} else {
-		sprintf(buf, " %s%3d[m %c %-12.12s %6.6s %c%s¡ñ %.47s[m",
+		sprintf(buf, " %s%3d\033[m %c %-12.12s %6.6s %c%s¡ñ %.47s\033[m",
 			same ? c2 : "", num, ' ', b2, date, attached,
 			same ? c2 : "", ent->title);
 	}
