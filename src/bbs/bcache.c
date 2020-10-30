@@ -502,17 +502,6 @@ int getuser(const char *userid) {
 	return uid;
 }
 
-void
-resolve_utmp()
-{
-	if (utmpshm == NULL) {
-		utmpshm = attach_shm(UTMP_SHMKEY, sizeof (*utmpshm));
-	}
-	if (uindexshm == NULL) {
-		uindexshm = attach_shm(UINDEX_SHMKEY, sizeof (*uindexshm));
-	}
-}
-
 #define NHASH 67
 static int
 iphash(char *fromhost)
@@ -536,7 +525,7 @@ struct user_info *up;
 	if (utmpfd < 0)
 		return -1;
 
-	resolve_utmp();
+	ythtbbs_cache_utmp_resolve();
 	flock(utmpfd, LOCK_EX);
 	for (j = iphash(up->from) * (MAXACTIVE / NHASH), i = 0; i < USHM_SIZE;
 	     i++, j++) {
@@ -584,7 +573,7 @@ int farg;
 {
 	int i;
 
-	resolve_utmp();
+	ythtbbs_cache_utmp_resolve();
 	for (i = 0; i < USHM_SIZE; i++) {
 		if (utmpshm->uinfo[i].active == 0)
 			continue;
@@ -605,7 +594,7 @@ int unum;
 {
 	int i, j;
 	j = 1;
-	resolve_utmp();
+	ythtbbs_cache_utmp_resolve();
 	for (i = 0; i < USHM_SIZE; i++) {
 		*uentp = utmpshm->uinfo[i];
 		if ((*fptr) (farg, uentp)) {
@@ -630,7 +619,7 @@ int show;
 	int i, j;
 
 	j = 0;
-	resolve_utmp();
+	ythtbbs_cache_utmp_resolve();
 	for (i = 0; i < USHM_SIZE; i++) {
 		*uentp = utmpshm->uinfo[i];
 		if ((*fptr) (farg, uentp)) {
@@ -652,7 +641,7 @@ int farg;
 {
 	int i, num;
 	struct user_info *uentp;
-	resolve_utmp();
+	ythtbbs_cache_utmp_resolve();
 	num = 0;
 
 	for (i = 0; i < USHM_SIZE; i++) {
@@ -700,7 +689,7 @@ int user_isonline(char* userid) {
 	struct user_info *uentp;
 	int i;
 
-	resolve_utmp();
+	ythtbbs_cache_utmp_resolve();
 	for (i = 0; i < USHM_SIZE; i++) {
 		if (!utmpshm->uinfo[i].active)
 			continue;
@@ -717,7 +706,7 @@ int user_isonline(char* userid) {
 }
 
 void update_ulist(struct user_info *uentp, int uent) {
-	resolve_utmp();
+	ythtbbs_cache_utmp_resolve();
 	if (uent > 0 && uent <= USHM_SIZE) {
 		memcpy(&utmpshm->uinfo[uent - 1].invisible,
 			&(uentp->invisible),
@@ -767,7 +756,7 @@ update_utmp2()
 int who_callme(struct user_info *uentp, int (*fptr) (int, struct user_info *), int farg, int me) {
 	int i;
 
-	resolve_utmp();
+	ythtbbs_cache_utmp_resolve();
 	for (i = 0; i < USHM_SIZE; i++) {
 		*uentp = utmpshm->uinfo[i];
 		if ((*fptr) (farg, uentp) && uentp->destuid == me)

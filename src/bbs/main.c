@@ -468,7 +468,7 @@ if(dis>=0) sprintf(str1,"现在是 %s , 距2000年还有%d秒\n", str, dis);
 else sprintf(str1,"现在是 %s, 新世纪已经开始了%d秒\n",str,-dis);
 ---------------------------------*/
 
-	resolve_utmp();
+	ythtbbs_cache_utmp_resolve();
 	ythtbbs_cache_UserTable_resolve();
 	curr_login_num = ythtbbs_cache_utmp_count_active();
 	if (curr_login_num >= MAXACTIVE || curr_login_num >= MAXACTIVERUN) {
@@ -640,7 +640,7 @@ direct_login()
 {
 	int randnum;
 	fill_shmfile(5, "etc/endline", ENDLINE1_SHMKEY);
-	resolve_utmp();
+	ythtbbs_cache_utmp_resolve();
 	ythtbbs_cache_UserTable_resolve();
 	if (uinfo.userid[0] == '\0' || !dosearchuser(uinfo.userid)) {
 		prints("\x1b[1;31m错误的使用者帐号...\x1b[0m\n");
