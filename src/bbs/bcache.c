@@ -619,20 +619,16 @@ int count_logins(struct user_info *uentp, int (*fptr) (int, struct user_info *),
 	return j;
 }
 
-int
-t_search_ulist(fptr, farg)
-int (*fptr) (int, struct user_info *);
-int farg;
-{
+int t_search_ulist(int (*fptr) (int, struct user_info *), int farg) {
 	int i, num;
 	struct user_info *uentp;
 	ythtbbs_cache_utmp_resolve();
 	num = 0;
 
 	for (i = 0; i < USHM_SIZE; i++) {
-		if (!utmpshm->uinfo[i].active)
+		uentp = ythtbbs_cache_utmp_get_by_idx(i);
+		if (!uentp->active)
 			continue;
-		uentp = &utmpshm->uinfo[i];
 		if ((*fptr) (farg, uentp)) {
 			if (!uentp->active || !uentp->pid || isreject(uentp))
 				continue;
