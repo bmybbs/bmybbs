@@ -48,7 +48,6 @@
 #define refreshtime     (30)
 extern time_t login_start_time;
 extern int can_R_endline;
-extern struct UINDEX *uindexshm;
 int (*func_list_show) ();
 time_t update_time = 0;
 int freshmode = 0;
