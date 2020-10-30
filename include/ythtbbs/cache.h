@@ -306,6 +306,13 @@ void ythtbbs_cache_utmp_set_watchman(time_t t);
 unsigned int ythtbbs_cache_utmp_get_unlock(void);
 void ythtbbs_cache_utmp_set_unlock(void);
 
+unsigned short ythtbbs_cache_utmp_get_maxtoday(void);
+void ythtbbs_cache_utmp_set_maxtoday(unsigned short m);
+
+unsigned short ythtbbs_cache_utmp_get_maxuser(void);
+void ythtbbs_cache_utmp_set_maxuser(unsigned short m);
+
+unsigned short ythtbbs_cache_utmp_get_wwwguest(void);
 /**
  * @brief 依据 utmp_idx 获取缓存中的结构体（只读）
  * @param idx 在 user_info 数组中的索引，从 0 开始计数

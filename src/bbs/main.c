@@ -456,7 +456,6 @@ login_query()
 	char uid[IDLEN + 2], passbuf[PASSLEN];
 	int curr_login_num, attempts, n;
 	char buf[STRLEN];
-	extern struct UTMPFILE *utmpshm;
 /*-----------------New Century-----
 time_t timenow;
 int dis;
@@ -483,25 +482,25 @@ else sprintf(str1,"现在是 %s, 新世纪已经开始了%d秒\n",str,-dis);
 	ansimore2("etc/issue", NA, 0, 20);
 	if (ythtbbs_cache_UserTable_get_usersum() == 0)
 		ythtbbs_cache_UserTable_set_usersum(allusers());
-	if (utmpshm->maxtoday < curr_login_num)
-		utmpshm->maxtoday = curr_login_num;
-	if (utmpshm->maxuser < curr_login_num) {	/* Added by deardragon 1999.12.15 保存最高人数记录到文件 */
+	if (ythtbbs_cache_utmp_get_maxtoday() < curr_login_num)
+		ythtbbs_cache_utmp_set_maxtoday(curr_login_num);
+	if (ythtbbs_cache_utmp_get_maxuser() < curr_login_num) {	/* Added by deardragon 1999.12.15 保存最高人数记录到文件 */
 		FILE *maxfp;
-		utmpshm->maxuser = curr_login_num;
+		ythtbbs_cache_utmp_set_maxuser(curr_login_num);
 		maxfp = fopen(".max_login_num", "r");
 		if (maxfp == NULL) {
 			maxfp = fopen(".max_login_num", "w+");
-			fprintf(maxfp, "%d", utmpshm->maxuser);
+			fprintf(maxfp, "%d", curr_login_num);
 			fclose(maxfp);
 		} else {
 			int temp_max;
 			fscanf(maxfp, "%d", &temp_max);
 			fclose(maxfp);
-			if (temp_max > utmpshm->maxuser) {
-				utmpshm->maxuser = temp_max;
+			if (temp_max > ythtbbs_cache_utmp_get_maxuser()) {
+				ythtbbs_cache_utmp_set_maxuser(temp_max);
 			} else {
 				maxfp = fopen(".max_login_num", "w+");
-				fprintf(maxfp, "%d", utmpshm->maxuser);
+				fprintf(maxfp, "%d", ythtbbs_cache_utmp_get_maxuser());
 				fclose(maxfp);
 			}
 		}
@@ -510,11 +509,11 @@ else sprintf(str1,"现在是 %s, 新世纪已经开始了%d秒\n",str,-dis);
 	move(t_lines - 4, 0);
 	n = getuptime();
 	prints("\033[1;32m欢迎光临\033[1;33m %s\033[32m ", MY_BBS_NAME);
-	prints("目前上站人数 [\033[36m%d/%d\033[32m] WWW匿名[\033[36m%d\033[32m] ", curr_login_num, MAXACTIVERUN, utmpshm->wwwguest);
+	prints("目前上站人数 [\033[36m%d/%d\033[32m] WWW匿名[\033[36m%d\033[32m] ", curr_login_num, MAXACTIVERUN, ythtbbs_cache_utmp_get_wwwguest());
 	prints("注册用户数[\033[36m%d\033[32m]\n", ythtbbs_cache_UserTable_get_usersum());
 	prints("系统持续运行 [\033[36m%d天%d小时%d分钟\033[32m] ", n / (3600 * 24), n % (3600 * 24) / 3600, n % 3600 / 60);
-	prints("最高人数记录 [\033[36m%d\033[32m] ", utmpshm->maxuser);
-	prints("本日最高人数 [\033[36m%d\033[32m]\n", utmpshm->maxtoday);
+	prints("最高人数记录 [\033[36m%d\033[32m] ", ythtbbs_cache_utmp_get_maxuser());
+	prints("本日最高人数 [\033[36m%d\033[32m]\n", ythtbbs_cache_utmp_get_maxtoday());
 	prints("\033[m试用请输入 '\033[1;36mguest\033[m', 注册请输入 '\033[1;31mnew\033[m', add '.' after YourID to login for BIG5\n");
 #ifndef SSHBBS
 	attempts = 0;

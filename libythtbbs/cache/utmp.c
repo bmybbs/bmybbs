@@ -209,3 +209,23 @@ unsigned short ythtbbs_cache_utmp_get_activeuser(void) {
 	return shm_utmp->activeuser;
 }
 
+unsigned short ythtbbs_cache_utmp_get_maxtoday(void) {
+	return shm_utmp->maxtoday;
+}
+
+void ythtbbs_cache_utmp_set_maxtoday(unsigned short m) {
+	shm_utmp->maxtoday = m;
+}
+
+unsigned short ythtbbs_cache_utmp_get_maxuser(void) {
+	return shm_utmp->maxuser;
+}
+
+void ythtbbs_cache_utmp_set_maxuser(unsigned short m) {
+	shm_utmp->maxuser = m;
+}
+
+unsigned short ythtbbs_cache_utmp_get_wwwguest(void) {
+	return shm_utmp->wwwguest;
+}
+
