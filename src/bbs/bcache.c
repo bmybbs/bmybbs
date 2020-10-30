@@ -672,14 +672,12 @@ int user_isonline(char* userid) {
 
 	ythtbbs_cache_utmp_resolve();
 	for (i = 0; i < USHM_SIZE; i++) {
-		if (!utmpshm->uinfo[i].active)
+		uentp = ythtbbs_cache_utmp_get_by_idx(i);
+		if (!uentp->active)
 			continue;
-		uentp = &(utmpshm->uinfo[i]);
 		if (uentp != NULL) {
-			if (!strcmp(uentp->userid , userid)){
-				if(uentp->active && uentp->pid)
-					return 1;
-				else    return 0;
+			if (!strcmp(uentp->userid, userid)){
+				return (uentp->active && uentp->pid) ? 1 : 0;
 			}
 		}
 	}
