@@ -801,52 +801,6 @@ remove_uindex(int uid, int utmpent)
 	}
 }
 
-int
-count_uindex(int uid)
-{
-	int i, uent, count = 0;
-	struct user_info *uentp;
-	if (uid <= 0 || uid > MAXUSERS)
-		return 0;
-	for (i = 0; i < 6; i++) {
-		uent = uindexshm->user[uid - 1][i];
-		if (uent <= 0)
-			continue;
-		uentp = &utmpshm->uinfo[uent - 1];
-		if (!uentp->active || !uentp->pid || uentp->uid != uid)
-			continue;
-		if (uentp->pid > 1 && kill(uentp->pid, 0) < 0) {
-			uindexshm->user[uid - 1][i] = 0;
-			continue;
-		}
-		count++;
-	}
-	return count;
-}
-
-int
-count_uindex_telnet(int uid)
-{
-	int i, uent, count = 0;
-	struct user_info *uentp;
-	if (uid <= 0 || uid > MAXUSERS)
-		return 0;
-	for (i = 0; i < 6; i++) {
-		uent = uindexshm->user[uid - 1][i];
-		if (uent <= 0)
-			continue;
-		uentp = &utmpshm->uinfo[uent - 1];
-		if (!uentp->active || uentp->pid <= 1 || uentp->uid != uid)
-			continue;
-		if (uentp->pid > 1 && kill(uentp->pid, 0) < 0) {
-			uindexshm->user[uid - 1][i] = 0;
-			continue;
-		}
-		count++;
-	}
-	return count;
-}
-
 char *
 get_temp_sessionid(char *temp_sessionid)
 {

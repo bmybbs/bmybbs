@@ -40,8 +40,6 @@ void update_utmp2(void);
 int who_callme(struct user_info *uentp, int (*fptr)(int, struct user_info *), int farg, int me);
 int insertuseridhash(struct useridhashitem *ptr, int size, char *userid, int num);
 int getbmnum(char *userid);
-int count_uindex(int uid);
-int count_uindex_telnet(int uid);
 char *get_temp_sessionid(char *temp_sessionid);
 void show_small_bm(char *board);
 int setbmstatus(int online);

@@ -293,7 +293,7 @@ void do_abort_bbs() {
 	stay = time(0) - login_start_time;
 	sprintf(genbuf, "%s drop %ld", currentuser.userid, stay);
 	newtrace(genbuf);
-	if ((currentuser.userlevel & PERM_BOARDS) && (count_uindex(usernum) == 1))
+	if ((currentuser.userlevel & PERM_BOARDS) && (ythtbbs_cache_UserTable_count(usernum) == 1))
 		setbmstatus(0);
 	u_exit();
 }
@@ -324,7 +324,7 @@ multi_user_check()
 		}
 		return;
 	}
-	logins = count_uindex_telnet(usernum);
+	logins = ythtbbs_cache_UserTable_count_telnet(usernum);
 	if (!logins)
 		return;
 	puin = ythtbbs_cache_UserTable_query_user_by_uid(currentuser.userid, HAS_PERM(PERM_SYSOP | PERM_SEECLOAK, currentuser), usernum, false);
@@ -338,7 +338,7 @@ multi_user_check()
 			"\033[1;37mÄúÏëÉ¾³ýÖØ¸´µÄ login Âð (Y/N)? [N]\033[m",
 			buffer, 4, DOECHO, YEA);
 	if (toupper(buffer[0]) != 'Y') {
-		logins = count_uindex_telnet(usernum);
+		logins = ythtbbs_cache_UserTable_count_telnet(usernum);
 		if (logins >= 2 || (currentuser.dietime > 0 && logins >= 2)) {
 			scroll();
 			scroll();
@@ -1423,7 +1423,7 @@ Q_Goodbye()
 	if (started) {
 		sprintf(genbuf, "%s exitbbs %ld", currentuser.userid, stay);
 		newtrace(genbuf);
-		if ((currentuser.userlevel & PERM_BOARDS) && (count_uindex(usernum) == 1))
+		if ((currentuser.userlevel & PERM_BOARDS) && (ythtbbs_cache_UserTable_count(usernum) == 1))
 			setbmstatus(0);
 		u_exit();
 	}
@@ -1436,7 +1436,7 @@ Q_Goodbye()
 		currentuser.dietime = 2;
 	substitute_record(PASSFILE, &currentuser, sizeof (currentuser), usernum);
 	pressreturn();
-	if (strcmp(currentuser.userid, "guest") && count_uindex(usernum) == 0) {
+	if (strcmp(currentuser.userid, "guest") && ythtbbs_cache_UserTable_count(usernum) == 0) {
 		FILE *fp;
 		char buf[STRLEN], *ptr;
 		if ((fp = fopen("friendbook", "r")) != NULL) {

@@ -228,12 +228,26 @@ int ythtbbs_cache_UserTable_get_usersum(void);
  * 这个 API 目前仅供 src/bbs/main.c 调用
  */
 void ythtbbs_cache_UserTable_set_usersum(int usersum);
+
 /**
  * @brief 获取用户名
  * 这个函数来自 src/bbs/bcache.c::u_namearray，在 src/bbs/namecomplete.c::usercomplete 函数中使用。实现中没有校验缓冲区长度。
  * 在原实现中，当 tag 为空时，直接返回缓存 ucache 中的 userid 数组，在新的实现中，不管 tag 是否为空，都将 ythtbbs_cache_UserTable 中的 userid 复制到缓冲区 buf 中。
  */
 char *ythtbbs_cache_UserTable_get_namearray(char buf[][IDLEN + 1], int *pnum, char *tag, int (*fptr)(char *, char *, char *));
+
+/**
+ * @brief
+ * 参考 src/bbs/bcache.c::count_uindex 的实现（其实属于内部实现的调用）。
+ */
+int ythtbbs_cache_UserTable_count(int uid);
+
+/**
+ * @brief
+ * 参考 src/bbs/bcache.c::count_uindex_telnet 的实现（其实属于内部实现的调用）。
+ */
+int ythtbbs_cache_UserTable_count_telnet(int uid);
+
 /**
  * @brief 依据 userid 查找用户索引
  * 用户索引指的是在 PASSFILE 中的位置，从 0 开始索引。在 BMYBBS 环境中，遇到 uid 的地方通常是从 1 开始索引，因此需要注意相互转换。

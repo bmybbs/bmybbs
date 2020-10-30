@@ -517,7 +517,7 @@ static int check_allow_in() {
 	}
 
 	/* 避免多窗口*/
-	if (multex && count_uindex_telnet(usernum) > 1) {
+	if (multex && ythtbbs_cache_UserTable_count_telnet(usernum) > 1) {
 		clear();
 		move(10, 10);
 		prints("您已经在金融中心里啦!\n");

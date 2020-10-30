@@ -3725,7 +3725,7 @@ Goodbye()
 	char spbuf[STRLEN];
 	int choose;
 	alarm(0);
-	if (strcmp(currentuser.userid, "guest") && count_uindex(usernum) == 1) {
+	if (strcmp(currentuser.userid, "guest") && ythtbbs_cache_UserTable_count(usernum) == 1) {
 		if (DEFINE(DEF_MAILMSG, currentuser)) {
 			if (get_msgcount(0, currentuser.userid) > 0)
 				show_allmsgs();

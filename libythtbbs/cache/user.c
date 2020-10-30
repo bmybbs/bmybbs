@@ -2,6 +2,7 @@
 #include <string.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <signal.h>
 #include <sys/file.h>
 #include <sys/stat.h>
 #include "ytht/shmop.h"
@@ -423,6 +424,47 @@ bool ythtbbs_cache_UserTable_is_user_invisible(const char *userid) {
 		}
 	}
 	return false;
+}
+
+enum count_type {
+	COUNT_NORMAL,
+	COUNT_TELNET,
+};
+
+static int usertable_count(int uid, enum count_type type) {
+	int i, utmp_idx, count = 0;
+	const struct user_info *ptr_info;
+
+	if (uid <=0 || uid > MAXUSERS)
+		return 0;
+
+	for (i = 0; i < MAX_LOGIN_PER_USER; i++) {
+		utmp_idx = shm_user_table->users[uid - 1].utmp_indices[i] - 1;
+		if (utmp_idx < 0)
+			continue;
+
+		ptr_info = ythtbbs_cache_utmp_get_by_idx(utmp_idx);
+		if (!ptr_info->active || ((type == COUNT_NORMAL) ? !ptr_info->pid : (ptr_info->pid <= 1)) || ptr_info->uid != uid)
+			continue;
+
+		if (ptr_info->pid > 1 && kill(ptr_info->pid, 0) < 0) {
+			// 针对 telnet/ssh 会话检测进程是否存活，若不存活则：
+			shm_user_table->users[uid - 1].utmp_indices[i] = 0;
+			continue;
+		}
+
+		count++;
+	}
+
+	return count;
+}
+
+int ythtbbs_cache_UserTable_count(int uid) {
+	return usertable_count(uid, COUNT_NORMAL);
+}
+
+int ythtbbs_cache_UserTable_count_telnet(int uid) {
+	return usertable_count(uid, COUNT_TELNET);
 }
 
 /***** implementations of private functions *****/
