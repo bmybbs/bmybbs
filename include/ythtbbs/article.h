@@ -1,6 +1,7 @@
 /* article.c */
 #ifndef __ARTICLE_H
 #define __ARTICLE_H
+#include <time.h>
 
 struct fileheader {
 	time_t filetime;
