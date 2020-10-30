@@ -167,7 +167,8 @@ int ythtbbs_cache_UserTable_get_user_online_friends(const char *userid, bool has
 
 /**
  * @brief 依据 uid 查找用户是否在线
- * 参考了 nju09/bbsfoot.c query_f 的实现。
+ * 参考了 src/bbs/bcache.c::query_uindex 的实现。
+ * (nju09/bbsfoot.c query_f 为此版本的简化)
  * @param userid
  * @param has_see_cloak_perm 是否具有查看隐身的权限
  * @param search_uid 目标用户uid（从1索引）
