@@ -739,7 +739,7 @@ int who_callme(struct user_info *uentp, int (*fptr) (int, struct user_info *), i
 
 	ythtbbs_cache_utmp_resolve();
 	for (i = 0; i < USHM_SIZE; i++) {
-		*uentp = utmpshm->uinfo[i];
+		memcpy(uentp, ythtbbs_cache_utmp_get_by_idx(i), sizeof(struct user_info));
 		if ((*fptr) (farg, uentp) && uentp->destuid == me)
 			return i + 1;
 	}
