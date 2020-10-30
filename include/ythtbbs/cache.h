@@ -298,6 +298,8 @@ int ythtbbs_cache_utmp_check_active_by_idx(int idx);
 
 int ythtbbs_cache_utmp_check_uid_by_idx(int idx, int uid);
 
+unsigned short ythtbbs_cache_utmp_get_activeuser(void);
+
 time_t ythtbbs_cache_utmp_get_watchman(void);
 void ythtbbs_cache_utmp_set_watchman(time_t t);
 

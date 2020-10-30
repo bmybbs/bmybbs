@@ -205,3 +205,7 @@ void ythtbbs_cache_utmp_set_unlock(void) {
 	ytht_get_random_int(&(shm_utmp->unlock));
 }
 
+unsigned short ythtbbs_cache_utmp_get_activeuser(void) {
+	return shm_utmp->activeuser;
+}
+
