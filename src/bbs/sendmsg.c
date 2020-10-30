@@ -80,10 +80,7 @@ get_msg(char *uid, char *msg, size_t msg_len, int line)
 	}
 }
 
-int
-canmsg(uin)
-struct user_info *uin;
-{
+int canmsg(const struct user_info *uin) {
 	if (!strcmp(uin->userid, "guest"))	//guest 就不收 msg 了
 		return NA;
 	if (isreject(uin))

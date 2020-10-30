@@ -2,7 +2,7 @@
 #define BMYBBS_SENDMSG_H
 #include "ythtbbs/cache.h"
 
-int canmsg(struct user_info *uin);
+int canmsg(const struct user_info *uin);
 int s_msg(void);
 int do_sendmsg(const char *uid, const struct user_info *uentp, char *msgstr, int mode, int userpid);
 int wall(void);

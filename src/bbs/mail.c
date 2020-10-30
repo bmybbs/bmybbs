@@ -451,10 +451,7 @@ char *userid, *title;
 	}
 }
 
-int
-m_send(userid)
-char userid[];
-{
+int m_send(const char *userid) {
 	char uident[STRLEN];
 	// 永远可以给 SYSOP 发信
 	if (userid && strcmp(userid, "SYSOP")) {
@@ -468,13 +465,13 @@ char userid[];
 		}
 	}
 	if (check_maxmail()) {
-                        pressreturn();
-                        return FULLUPDATE;
-                }
+		pressreturn();
+		return FULLUPDATE;
+	}
 	if (check_mail_perm()) {
-                        pressreturn();
-                        return FULLUPDATE;
-                } //add by wjbta@bmy  当信件容量超过信箱最大容量时，禁止发信
+		pressreturn();
+		return FULLUPDATE;
+	} //add by wjbta@bmy  当信件容量超过信箱最大容量时，禁止发信
 	modify_user_mode(SMAIL);
 	if (			/*(uinfo.mode != LUSERS && uinfo.mode != LAUSERS
 				   && uinfo.mode != FRIEND && uinfo.mode != GMENU)

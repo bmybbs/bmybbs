@@ -80,7 +80,7 @@ static int listcuent(const struct user_info *uentp, void *);
 static int show_user_plan(char *userid);
 static int bm_printboard(struct boardmanager *bm, void *farg);
 static int count_useshell(const struct user_info *uentp, void *);
-static int cmpfnames(char *userid, struct ythtbbs_override *uv);
+static int cmpfnames(const char *userid, const struct ythtbbs_override *uv);
 static int cmpunums(int unum, struct user_info *up);
 static int cmpmsgnum(int unum, struct user_info *up);
 static int setpagerequest(int mode);
@@ -222,10 +222,7 @@ char *userid;
 }
 
 /* Modified By Excellent*/
-int
-t_query(q_id)
-char q_id[IDLEN + 2];
-{
+int t_query(const char *q_id) {
 	char uident[STRLEN];
 	int tuid = 0;
 	int exp, perf;		/*Add by SmallPig */
@@ -251,10 +248,10 @@ char q_id[IDLEN + 2];
 	} else {
 		if (*q_id == '\0')
 			return 0;
-		if (strchr(q_id, ' '))
-			strtok(q_id, " ");
 		strncpy(uident, q_id, sizeof (uident));
 		uident[sizeof (uident) - 1] = '\0';
+		if (strchr(uident, ' '))
+			strtok(uident, " ");
 	}
 	if (!(tuid = getuser(uident))) {
 		move(2, 0);
@@ -569,11 +566,7 @@ num_useshell()
 	return count;
 }
 
-static int
-cmpfnames(userid, uv)
-char *userid;
-struct ythtbbs_override *uv;
-{
+static int cmpfnames(const char *userid, const struct ythtbbs_override *uv) {
 	return !strcmp(userid, uv->id);
 }
 
@@ -600,10 +593,7 @@ t_talk()
 	return (netty_talk);
 }
 
-int
-ttt_talk(userinfo)
-struct user_info *userinfo;
-{
+int ttt_talk(const struct user_info *userinfo) {
 	char uident[STRLEN];
 	char reason[STRLEN];
 	int tuid, ucount, unum, tmp;
@@ -1463,10 +1453,7 @@ char *fname;
 	return cnt;
 }
 
-int
-addtooverride(uident)
-char *uident;
-{
+int addtooverride(const char *uident) {
 	struct ythtbbs_override tmp;
 	int n;
 	char buf[STRLEN];
@@ -1515,17 +1502,13 @@ char *uident;
 	return n;
 }
 
-int
-deleteoverride(uident, filename)
-char *uident;
-char *filename;
-{
+int deleteoverride(const char *uident, const char *filename) {
 	int deleted;
 	struct ythtbbs_override fh;
 	char buf[STRLEN];
 
 	setuserfile(buf, filename);
-	deleted = search_record(buf, &fh, sizeof (fh), (void *) cmpfnames, uident);
+	deleted = search_record(buf, &fh, sizeof (fh), (void *) cmpfnames, (void *)uident); // cmpfnames 传入 uident，此处省略 const 是安全的
 	if (deleted > 0) {
 		if (delete_record(buf, sizeof (fh), deleted) != -1) {
 			(friendflag) ? getfriendstr() : getrejectstr();

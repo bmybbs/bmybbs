@@ -402,10 +402,7 @@ char filepath[];
 	strcpy(quote_file, filepath);
 }
 
-char *
-setuserfile(buf, filename)
-char *buf, *filename;
-{
+char *setuserfile(char *buf, const char *filename) {
 	return sethomefile(buf, currentuser.userid, filename);
 }
 

@@ -141,7 +141,7 @@ online()
 }
 
 int
-kick_user(struct user_info *userinfo, int mode)
+kick_user(const struct user_info *userinfo, int mode)
 {
 	int id, ind;
 	struct user_info uin;

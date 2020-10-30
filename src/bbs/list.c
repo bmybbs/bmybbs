@@ -23,6 +23,7 @@
 */
 
 #include "bbs.h"
+#include "ythtbbs/cache.h"
 #include "ythtbbs/override.h"
 #include "common.h"
 #include "smth_screen.h"
@@ -56,7 +57,8 @@ int friendmode = 0;
 extern int usercounter;
 int range, page, readplan, num;
 int sortmode = 0;
-struct user_info **user_record;
+typedef const struct user_info* c_uin_ptr;
+static c_uin_ptr *user_record;
 struct userec *user_data;
 
 /* add by KCN 1998.11 */
@@ -88,9 +90,9 @@ static int do_query(int star, int curr);
 static int do_query2(int star, int curr);
 static int uleveltochar(char *buf, unsigned int lvl);
 static void printutitle(void);
-static char msgchar(struct user_info *uin);
+static char msgchar(const struct user_info *uin);
 static char pagerchar(int friend, int pager);
-static char *idle_str(struct user_info *uent);
+static char *idle_str(const struct user_info *uent);
 static int num_visible_users();
 static int count_visible_active(const struct user_info *uentp, void *);
 
@@ -420,37 +422,19 @@ fill_userlist()
 	int i, i2, j, uent, testreject, uid;
 	int back_sort_mode;
 	extern struct UTMPFILE *utmpshm;
-	struct user_info *up;
+	const struct user_info *up;
 
-	resolve_utmp();
+	ythtbbs_cache_utmp_resolve();
 	i2 = 0;
 	if (friendmode) {
 		for (i = 0; i < uinfo.fnum; i++) {
-			if (uinfo.friend[i] == 2)	//FIX ME   it depends on guest uid==2
-				continue;
-			up = NULL;
 			uid = uinfo.friend[i];
-			testreject = 0;
-			if (uid <= 0 || uid > MAXUSERS)
+			up = ythtbbs_cache_UserTable_query_user_by_uid(currentuser.userid, HAS_PERM(PERM_SYSOP | PERM_SEECLOAK, currentuser), uid, true);
+
+			if (up == NULL || strcasecmp(up->userid, "guest") == 0)
 				continue;
-			for (j = 0; j < 6; j++) {
-				uent = uindexshm->user[uid - 1][j];
-				if (uent <= 0)
-					continue;
-				up = &utmpshm->uinfo[uent - 1];
-				if (!up->active || !up->pid || up->uid != uid)
-					continue;
-				if (!testreject) {
-					if (isreject(up))
-						break;
-					testreject = 1;
-				}
-				if (utmpshm->uinfo[uent - 1].invisible
-				    && !HAS_PERM(PERM_SYSOP | PERM_SEECLOAK, currentuser))
-					continue;
-				user_record[i2] = up;
-				i2++;
-			}
+			user_record[i2] = up;
+			i2++;
 		}
 		back_sort_mode = sortmode;
 		if (sortmode == 0)
@@ -460,15 +444,14 @@ fill_userlist()
 		range = i2;
 	} else {
 		for (i = 0; i < USHM_SIZE; i++) {
-			if (!utmpshm->uinfo[i].active || !utmpshm->uinfo[i].pid
-			    || isreject(&utmpshm->uinfo[i])) {
+			up = ythtbbs_cache_utmp_get_by_idx(i);
+			if (!up->active || !up->pid || isreject(up)) {
 				continue;
 			}
-			if (!(HAS_PERM(PERM_SYSOP | PERM_SEECLOAK, currentuser))
-			    && utmpshm->uinfo[i].invisible) {
+			if (!(HAS_PERM(PERM_SYSOP | PERM_SEECLOAK, currentuser)) && up->invisible) {
 				continue;
 			}
-			user_record[i2] = &utmpshm->uinfo[i];
+			user_record[i2] = up;
 			i2++;
 		}
 		sort_user_record(0, i2);
@@ -492,7 +475,7 @@ do_userlist()
 	int i;
 	char user_info_str[STRLEN * 2] /*,pagec */ ;
 	int override;
-	struct user_info *uentp;
+	const struct user_info *uentp;
 	struct ythtbbs_override t1, t2;
 	char overridefile[256];
 
@@ -513,26 +496,18 @@ do_userlist()
 			{
 			strcpy(t2.id, uentp->userid);
 			t1.exp[0] = 0;
-			search_record(overridefile, &t1, sizeof (t1),
-				      (void *) cfriendname, &t2);
+			search_record(overridefile, &t1, sizeof (t1), (void *) cfriendname, &t2);
 			sprintf(user_info_str,
 				" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s[m %5.5s\n",
 				i + 1 + page, (override) ? "¡õ" : "",
 				(override) ? "[1;32m" : "",
 				uentp->userid, (override) ? "[m" : "",
-				(t1.exp[0] ==
-				 0) ? uentp->username : t1.exp,
-				(uentp->pid ==
-				 1) ? "\033[35m" : ((uentp->isssh ==
-						     1) ? "\033[32m" :
-						    ""), uentp->from,
-				(uentp->pid == 1)
-				|| (uentp->isssh == 1) ? "\033[0m" : "",
-				pagerchar(hisfriend(uentp),
-					  uentp->pager), msgchar(uentp),
-				(uentp->invisible ==
-				 YEA) ? "[1;36m" :
-				ModeColor(uentp->mode), ModeType(uentp->mode),
+				(t1.exp[0] == 0) ? uentp->username : t1.exp,
+				(uentp->pid == 1) ? "\033[35m" : ((uentp->isssh == 1) ? "\033[32m" : ""), uentp->from,
+				(uentp->pid == 1) || (uentp->isssh == 1) ? "\033[0m" : "",
+				pagerchar(hisfriend(uentp), uentp->pager),
+				msgchar(uentp),
+				(uentp->invisible == YEA) ? "[1;36m" : ModeColor(uentp->mode), ModeType(uentp->mode),
 				idle_str(uentp));
 			}
 			else if(uentp->user_state_temp[0]!='\0')
@@ -736,7 +711,7 @@ int allnum, pagenum;
 			break;
 		/*
 		if (!strcmp(user_record[allnum]->userid, tempuser)
-		    && kick_user(user_record[allnum]) == 1) {
+			&& kick_user(user_record[allnum]) == 1) {
 			sprintf(buf, "%s ÒÑ±»Ìß³öÕ¾Íâ",
 				user_record[allnum]->userid);
 		} else {
@@ -744,21 +719,15 @@ int allnum, pagenum;
 				user_record[allnum]->userid);
 		}
 		*/
-		if (!strcmp(user_record[allnum]->userid, tempuser))
-              {
-                  	if(!strcmp(currentuser.userid, tempuser))
-                          	killmode=1;
-                   	else
-                          	killmode=0;
-                   	if( kick_user(user_record[allnum],killmode) == 1)
-                    	{
-                          	sprintf(buf, "%s±»Ìß³öÕ¾Íâ",user_record[allnum]->userid);
+		if (!strcmp(user_record[allnum]->userid, tempuser)) {
+			killmode = (!strcmp(currentuser.userid, tempuser)) ? 1 : 0;
+			if(kick_user(user_record[allnum], killmode) == 1) {
+				sprintf(buf, "%s±»Ìß³öÕ¾Íâ", user_record[allnum]->userid);
 
-                  	} else {
-                		sprintf(buf, "%sÎÞ·¨Ìß³öÕ¾Íâ",
-                                user_record[allnum]->userid);
-                 	}
-              }
+			} else {
+				sprintf(buf, "%sÎÞ·¨Ìß³öÕ¾Íâ", user_record[allnum]->userid);
+			}
+		}
 
 		msgflag = YEA;
 		break;
@@ -794,13 +763,11 @@ int allnum, pagenum;
 		if (!HAS_PERM(PERM_PAGE, currentuser))
 			return 1;
 		if (!canmsg(user_record[allnum])) {
-			sprintf(buf, "%s ÒÑ¾­¹Ø±ÕÑ¶Ï¢ºô½ÐÆ÷",
-				user_record[allnum]->userid);
+			sprintf(buf, "%s ÒÑ¾­¹Ø±ÕÑ¶Ï¢ºô½ÐÆ÷", user_record[allnum]->userid);
 			msgflag = YEA;
 			break;
 		}
-		do_sendmsg(user_record[allnum]->userid, user_record[allnum],
-			   NULL, 2, user_record[allnum]->pid);
+		do_sendmsg(user_record[allnum]->userid, user_record[allnum], NULL, 2, user_record[allnum]->pid);
 		break;
 	case 'o':
 	case 'O':
@@ -820,13 +787,10 @@ int allnum, pagenum;
 		move(BBS_PAGESIZE + 3, 0);
 		if (askyn(buf, NA, NA) == NA)
 			break;
-		if (addtooverride(user_record[allnum]->userid)
-		    == -1) {
-			sprintf(buf, "%s ÒÑÔÚ%sÃûµ¥",
-				user_record[allnum]->userid, desc);
+		if (addtooverride(user_record[allnum]->userid) == -1) {
+			sprintf(buf, "%s ÒÑÔÚ%sÃûµ¥", user_record[allnum]->userid, desc);
 		} else {
-			sprintf(buf, "%s ÁÐÈë%sÃûµ¥",
-				user_record[allnum]->userid, desc);
+			sprintf(buf, "%s ÁÐÈë%sÃûµ¥", user_record[allnum]->userid, desc);
 		}
 		msgflag = YEA;
 		break;
@@ -837,13 +801,10 @@ int allnum, pagenum;
 		move(BBS_PAGESIZE + 3, 0);
 		if (askyn(buf, NA, NA) == NA)
 			break;
-		if (deleteoverride(user_record[allnum]->userid, "friends")
-		    == -1) {
-			sprintf(buf, "%s ±¾À´¾Í²»ÔÚÅóÓÑÃûµ¥ÖÐ",
-				user_record[allnum]->userid);
+		if (deleteoverride(user_record[allnum]->userid, "friends") == -1) {
+			sprintf(buf, "%s ±¾À´¾Í²»ÔÚÅóÓÑÃûµ¥ÖÐ", user_record[allnum]->userid);
 		} else {
-			sprintf(buf, "%s ÒÑ´ÓÅóÓÑÃûµ¥ÒÆ³ý",
-				user_record[allnum]->userid);
+			sprintf(buf, "%s ÒÑ´ÓÅóÓÑÃûµ¥ÒÆ³ý", user_record[allnum]->userid);
 		}
 		msgflag = YEA;
 		break;
@@ -1110,8 +1071,7 @@ int star, curr;
 		clear();
 		t_query(user_record[curr]->userid);
 		move(t_lines - 1, 0);
-		prints
-		    ("[0;1;37;44mÁÄÌì[[1;32mt[37m] ¼ÄÐÅ[[1;32mm[37m] ËÍÑ¶Ï¢[[1;32ms[37m] ¼Ó,¼õÅóÓÑ[[1;32mo[37m,[1;32md[37m] Ñ¡ÔñÊ¹ÓÃÕß[[1;32m¡ü[37m,[1;32m¡ý[37m] ÇÐ»»Ä£Ê½ [[1;32mc[37m] Çó¾È[[1;32mh[37m][m");
+		prints("[0;1;37;44mÁÄÌì[[1;32mt[37m] ¼ÄÐÅ[[1;32mm[37m] ËÍÑ¶Ï¢[[1;32ms[37m] ¼Ó,¼õÅóÓÑ[[1;32mo[37m,[1;32md[37m] Ñ¡ÔñÊ¹ÓÃÕß[[1;32m¡ü[37m,[1;32m¡ý[37m] ÇÐ»»Ä£Ê½ [[1;32mc[37m] Çó¾È[[1;32mh[37m][m");
 	}
 	return 0;
 }
@@ -1401,10 +1361,7 @@ printutitle()
 	     (toggle1 == 1) ? "×î½ü¹âÁÙµØµã" : "ÕÊºÅ½¨Á¢ÈÕÆÚ");
 }
 
-static char
-msgchar(uin)
-struct user_info *uin;
-{
+static char msgchar(const struct user_info *uin) {
 	if (isreject(uin))
 		return '*';
 	if ((uin->pager & ALLMSG_PAGER))
@@ -1433,10 +1390,7 @@ int friend, pager;
 	return '*';
 }
 
-static char *
-idle_str(uent)
-struct user_info *uent;
-{
+static char *idle_str(const struct user_info *uent) {
 	static char hh_mm_ss[32];
 	time_t diff;
 	int limit, hh, mm, temppid;
