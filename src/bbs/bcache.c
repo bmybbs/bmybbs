@@ -565,19 +565,16 @@ struct user_info *up;
 	return j + 1;
 }
 
-int
-search_ulist(uentp, fptr, farg)
-struct user_info *uentp;
-int (*fptr) (int, struct user_info *);
-int farg;
-{
+int search_ulist(struct user_info *uentp, int (*fptr) (int, struct user_info *), int farg) {
 	int i;
+	const struct user_info *ptr_user_info;
 
 	ythtbbs_cache_utmp_resolve();
 	for (i = 0; i < USHM_SIZE; i++) {
-		if (utmpshm->uinfo[i].active == 0)
+		ptr_user_info = ythtbbs_cache_utmp_get_by_idx(i);
+		if (ptr_user_info->active == 0)
 			continue;
-		*uentp = utmpshm->uinfo[i];
+		*uentp = *ptr_user_info;
 		if ((*fptr) (farg, uentp)) {
 			return i + 1;
 		}
