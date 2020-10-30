@@ -305,7 +305,7 @@ print_title()
 		break;
 	}
 	docmdtitle(buf,
-		   " ÁÄÌì[[1;32mt[m] ¼ÄĞÅ[[1;32mm[m] ËÍÑ¶Ï¢[[1;32ms[m] ¼Ó,¼õÅóÓÑ[[1;32mo[m,[1;32md[m] ¿´ËµÃ÷µµ[[1;32m¡ú[m,[1;32mRtn[m] ÇĞ»»Ä£Ê½ [[1;32mc[m] Çó¾È[[1;32mh[m]");
+			" ÁÄÌì[\033[1;32mt\033[m] ¼ÄĞÅ[\033[1;32mm\033[m] ËÍÑ¶Ï¢[\033[1;32ms\033[m] ¼Ó,¼õÅóÓÑ[\033[1;32mo\033[m,\033[1;32md\033[m] ¿´ËµÃ÷µµ[\033[1;32m¡ú\033[m,\033[1;32mRtn\033[m] ÇĞ»»Ä£Ê½ [\033[1;32mc\033[m] Çó¾È[\033[1;32mh\033[m]");
 }
 
 static void
@@ -335,7 +335,7 @@ print_title2()
 		break;
 	}
 	docmdtitle(buf,
-		   "        ¼ÄĞÅ[[1;32mm[m] ¼Ó,¼õÅóÓÑ[[1;32mo[m,[1;32md[m] ¿´ËµÃ÷µµ[[1;32m¡ú[m,[1;32mRtn[m] Ñ¡Ôñ[[1;32m¡ü[m,[1;32m¡ı[m] Çó¾È[[1;32mh[m]");
+		   "        ¼ÄĞÅ[\033[1;32mm\033[m] ¼Ó,¼õÅóÓÑ[\033[1;32mo\033[m,\033[1;32md\033[m] ¿´ËµÃ÷µµ[\033[1;32m¡ú\033[m,\033[1;32mRtn\033[m] Ñ¡Ôñ[\033[1;32m¡ü\033[m,\033[1;32m¡ı\033[m] Çó¾È[\033[1;32mh\033[m]");
 }
 
 static void
@@ -361,7 +361,7 @@ print_user_info_title()
 	clrtoeol();
 	field_2 = "Ê¹ÓÃÕßêÇ³Æ";
 	sprintf(title_str,
-		"[1;44m%s%-12.12s %-22.22s %-16.16s%c %c %-10.10s %5s[m\n",
+		"\033[1;44m%s%-12.12s %-22.22s %-16.16s%c %c %-10.10s %5s\033[m\n",
 		" ±àºÅ  ", "Ê¹ÓÃÕß´úºÅ", field_2, "À´×Ô", 'P',
 		/*((HAS_PERM(PERM_SYSOP|PERM_SEECLOAK)) ? 'C' : ' ') */ 'M',
 		"¶¯Ì¬", "Ê±:·Ö");
@@ -497,16 +497,16 @@ do_userlist()
 			t1.exp[0] = 0;
 			search_record(overridefile, &t1, sizeof (t1), (void *) cfriendname, &t2);
 			sprintf(user_info_str,
-				" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s[m %5.5s\n",
+				" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s\033[m %5.5s\n",
 				i + 1 + page, (override) ? "¡õ" : "",
-				(override) ? "[1;32m" : "",
-				uentp->userid, (override) ? "[m" : "",
+				(override) ? "\033[1;32m" : "",
+				uentp->userid, (override) ? "\033[m" : "",
 				(t1.exp[0] == 0) ? uentp->username : t1.exp,
 				(uentp->pid == 1) ? "\033[35m" : ((uentp->isssh == 1) ? "\033[32m" : ""), uentp->from,
 				(uentp->pid == 1) || (uentp->isssh == 1) ? "\033[0m" : "",
 				pagerchar(hisfriend(uentp), uentp->pager),
 				msgchar(uentp),
-				(uentp->invisible == YEA) ? "[1;36m" : ModeColor(uentp->mode), ModeType(uentp->mode),
+				(uentp->invisible == YEA) ? "\033[1;36m" : ModeColor(uentp->mode), ModeType(uentp->mode),
 				idle_str(uentp));
 			}
 			else if(uentp->user_state_temp[0]!='\0')
@@ -516,10 +516,10 @@ do_userlist()
 			search_record(overridefile, &t1, sizeof (t1),
 				      (void *) cfriendname, &t2);
 			sprintf(user_info_str,
-				" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s[m %5.5s\n",
+				" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s\033[m %5.5s\n",
 				i + 1 + page, (override) ? "¡õ" : "",
-				(override) ? "[1;32m" : "",
-				uentp->userid, (override) ? "[m" : "",
+				(override) ? "\033[1;32m" : "",
+				uentp->userid, (override) ? "\033[m" : "",
 				(t1.exp[0] ==
 				 0) ? uentp->username : t1.exp,
 				(uentp->pid ==
@@ -531,7 +531,7 @@ do_userlist()
 				pagerchar(hisfriend(uentp),
 					  uentp->pager), msgchar(uentp),
 				(uentp->invisible ==
-				 YEA) ? "[1;36m" :
+				 YEA) ? "\033[1;36m" :
 				ModeColor(uentp->mode), uentp->user_state_temp,
 				idle_str(uentp));
 			}
@@ -542,10 +542,10 @@ do_userlist()
 			search_record(overridefile, &t1, sizeof (t1),
 				      (void *) cfriendname, &t2);
 			sprintf(user_info_str,
-				" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s[m %5.5s\n",
+				" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s\033[m %5.5s\n",
 				i + 1 + page, (override) ? "¡õ" : "",
-				(override) ? "[1;32m" : "",
-				uentp->userid, (override) ? "[m" : "",
+				(override) ? "\033[1;32m" : "",
+				uentp->userid, (override) ? "\033[m" : "",
 				(t1.exp[0] ==
 				 0) ? uentp->username : t1.exp,
 				(uentp->pid ==
@@ -557,7 +557,7 @@ do_userlist()
 				pagerchar(hisfriend(uentp),
 					  uentp->pager), msgchar(uentp),
 				(uentp->invisible ==
-				 YEA) ? "[1;36m" :
+				 YEA) ? "\033[1;36m" :
 				ModeColor(LOCKSCREEN), ModeType(LOCKSCREEN),
 				idle_str(uentp));
 			}
@@ -566,10 +566,10 @@ do_userlist()
 			if(uentp->mode != 78)
 			{
 			sprintf(user_info_str,
-				" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s[m %5.5s\n",
+				" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s\033[m %5.5s\n",
 				i + 1 + page, (override) ? "¡õ" : "",
-				(override) ? "[1;32m" : "",
-				uentp->userid, (override) ? "[m" : "",
+				(override) ? "\033[1;32m" : "",
+				uentp->userid, (override) ? "\033[m" : "",
 				uentp->username,
 				(uentp->pid ==
 				 1) ? "\033[35m" : ((uentp->isssh ==
@@ -580,17 +580,17 @@ do_userlist()
 				pagerchar(hisfriend(uentp),
 					  uentp->pager), msgchar(uentp),
 				(uentp->invisible ==
-				 YEA) ? "[1;36m" :
+				 YEA) ? "\033[1;36m" :
 				ModeColor(uentp->mode), ModeType(uentp->mode),
 				idle_str(uentp));
 			}
 			else if(uentp->user_state_temp[0]!='\0')
 			{
 			sprintf(user_info_str,
-				" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s[m %5.5s\n",
+				" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s\033[m %5.5s\n",
 				i + 1 + page, (override) ? "¡õ" : "",
-				(override) ? "[1;32m" : "",
-				uentp->userid, (override) ? "[m" : "",
+				(override) ? "\033[1;32m" : "",
+				uentp->userid, (override) ? "\033[m" : "",
 				uentp->username,
 				(uentp->pid ==
 				 1) ? "\033[35m" : ((uentp->isssh ==
@@ -601,17 +601,17 @@ do_userlist()
 				pagerchar(hisfriend(uentp),
 					  uentp->pager), msgchar(uentp),
 				(uentp->invisible ==
-				 YEA) ? "[1;36m" :
+				 YEA) ? "\033[1;36m" :
 				ModeColor(uentp->mode),  uentp->user_state_temp,
 				idle_str(uentp));
 			}
 			else
 			{
 			sprintf(user_info_str,
-				" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s[m %5.5s\n",
+				" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s\033[m %5.5s\n",
 				i + 1 + page, (override) ? "¡õ" : "",
-				(override) ? "[1;32m" : "",
-				uentp->userid, (override) ? "[m" : "",
+				(override) ? "\033[1;32m" : "",
+				uentp->userid, (override) ? "\033[m" : "",
 				uentp->username,
 				(uentp->pid ==
 				 1) ? "\033[35m" : ((uentp->isssh ==
@@ -622,7 +622,7 @@ do_userlist()
 				pagerchar(hisfriend(uentp),
 					  uentp->pager), msgchar(uentp),
 				(uentp->invisible ==
-				 YEA) ? "[1;36m" :
+				 YEA) ? "\033[1;36m" :
 				ModeColor(LOCKSCREEN),  ModeType(LOCKSCREEN),
 				idle_str(uentp));
 			}
@@ -1012,8 +1012,8 @@ struct userec *uentp;
 	override = myfriend(ythtbbs_cache_UserTable_search_usernum(uentp->userid));
 	prints(" %5d%2s%s%-14s%s %-19s  %5d %5d %6s %-16s\n", i + 1,
 	       (override) ? "¡õ" : "",
-	       (override) ? "[1;32m" : "", uentp->userid,
-	       (override) ? "[m" : "",
+	       (override) ? "\033[1;32m" : "", uentp->userid,
+	       (override) ? "\033[m" : "",
 #if defined(ACTS_REALNAMES)
 	       HAS_PERM(PERM_SYSOP, currentuser) ? uentp->realname : uentp->username,
 #else
@@ -1070,7 +1070,7 @@ int star, curr;
 		clear();
 		t_query(user_record[curr]->userid);
 		move(t_lines - 1, 0);
-		prints("[0;1;37;44mÁÄÌì[[1;32mt[37m] ¼ÄĞÅ[[1;32mm[37m] ËÍÑ¶Ï¢[[1;32ms[37m] ¼Ó,¼õÅóÓÑ[[1;32mo[37m,[1;32md[37m] Ñ¡ÔñÊ¹ÓÃÕß[[1;32m¡ü[37m,[1;32m¡ı[37m] ÇĞ»»Ä£Ê½ [[1;32mc[37m] Çó¾È[[1;32mh[37m][m");
+		prints("\033[0;1;37;44mÁÄÌì[\033[1;32mt\033[37m] ¼ÄĞÅ[\033[1;32mm\033[37m] ËÍÑ¶Ï¢[\033[1;32ms\033[37m] ¼Ó,¼õÅóÓÑ[\033[1;32mo\033[37m,\033[1;32md\033[37m] Ñ¡ÔñÊ¹ÓÃÕß[\033[1;32m¡ü\033[37m,\033[1;32m¡ı\033[37m] ÇĞ»»Ä£Ê½ [\033[1;32mc\033[37m] Çó¾È[\033[1;32mh\033[37m]\033[m");
 	}
 	return 0;
 }
@@ -1083,7 +1083,7 @@ int star, curr;
 		t_query(user_data[curr - star].userid);
 		move(t_lines - 1, 0);
 		prints
-		    ("[0;1;37;44m          ¼ÄĞÅ[[1;32mm[37m] ¼Ó,¼õÅóÓÑ[[1;32mo[37m,[1;32md[37m] ¿´ËµÃ÷µµ[[1;32m¡ú[37m,[1;32mRtn[37m] Ñ¡Ôñ[[1;32m¡ü[37m,[1;32m¡ı[37m] Çó¾È[[1;32mh[37m]          [m");
+		    ("\033[0;1;37;44m          ¼ÄĞÅ[\033[1;32mm\033[37m] ¼Ó,¼õÅóÓÑ[\033[1;32mo\033[37m,\033[1;32md\033[37m] ¿´ËµÃ÷µµ[\033[1;32m¡ú\033[37m,\033[1;32mRtn\033[37m] Ñ¡Ôñ[\033[1;32m¡ü\033[37m,\033[1;32m¡ı\033[37m] Çó¾È[\033[1;32mh\033[37m]          \033[m");
 	}
 	return 0;
 }
