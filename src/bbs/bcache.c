@@ -257,7 +257,7 @@ int hasreadperm_ext(char *username,  char *boardname)
 	if(tuid == 0)	//用户不存在
 		return 0;
 
-	struct user_info *ui = query_uindex(tuid, 0); // 调用 ui 前先检查 ui 是否不在线（主要为俱乐部、封闭版面）
+	const struct user_info *ui = ythtbbs_cache_UserTable_query_user_by_uid(currentuser.userid, HAS_PERM(PERM_SYSOP | PERM_SEECLOAK, currentuser), tuid, false); // 调用 ui 前先检查 ui 是否不在线（主要为俱乐部、封闭版面）
 
 	if(x->header.flag != 0) {
 		if((x->header.flag & CLUBTYPE_FLAG))
@@ -831,33 +831,6 @@ remove_uindex(int uid, int utmpent)
 	}
 }
 
-struct user_info *
-query_uindex(int uid, int dotest)
-{
-	int i, uent, testreject = 0;
-	struct user_info *uentp;
-	if (uid <= 0 || uid > MAXUSERS)
-		return 0;
-	for (i = 0; i < 6; i++) {
-		uent = uindexshm->user[uid - 1][i];
-		if (uent <= 0)
-			continue;
-		uentp = &utmpshm->uinfo[uent - 1];
-		if (!uentp->active || !uentp->pid || uentp->uid != uid)
-			continue;
-		if (dotest && !testreject) {
-			if (isreject(uentp))
-				return 0;
-			testreject = 1;
-		}
-		if (dotest && utmpshm->uinfo[uent - 1].invisible
-		    && !HAS_PERM(PERM_SYSOP | PERM_SEECLOAK, currentuser))
-			continue;
-		return uentp;
-	}
-	return 0;
-}
-
 int
 count_uindex(int uid)
 {
@@ -1003,7 +976,7 @@ static void
 bmonlinesync()
 {
 	int j, k;
-	struct user_info *uentp;
+	const struct user_info *uentp;
 	for (j = 0; j < numboards; j++) {
 		if (!bcache[j].header.filename[0])
 			continue;
@@ -1017,7 +990,7 @@ bmonlinesync()
 				}
 				break;	//小版主也检查完了
 			}
-			uentp = query_uindex(ythtbbs_cache_UserTable_search_usernum(bcache[j].header.bm[k]), 0);
+			uentp = ythtbbs_cache_UserTable_query_user_by_uid(currentuser.userid, HAS_PERM(PERM_SYSOP | PERM_SEECLOAK, currentuser), ythtbbs_cache_UserTable_search_usernum(bcache[j].header.bm[k]), false);
 			if (!uentp)
 				continue;
 			bcache[j].bmonline |= (1 << k);

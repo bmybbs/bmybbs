@@ -308,7 +308,8 @@ abort_bbs()
 static void
 multi_user_check()
 {
-	struct user_info uin, *puin;
+	struct user_info uin;
+	const struct user_info *puin;
 	char buffer[STRLEN];
 	int logins;
 
@@ -326,7 +327,7 @@ multi_user_check()
 	logins = count_uindex_telnet(usernum);
 	if (!logins)
 		return;
-	puin = query_uindex(usernum, 0);
+	puin = ythtbbs_cache_UserTable_query_user_by_uid(currentuser.userid, HAS_PERM(PERM_SYSOP | PERM_SEECLOAK, currentuser), usernum, false);
 	if (!puin)
 		return;
 	uin = *puin;
@@ -351,7 +352,7 @@ multi_user_check()
 		return;
 	}
 	//因为问答之间可以发生很多事情, 重新读取
-	puin = query_uindex(usernum, 0);
+	puin = ythtbbs_cache_UserTable_query_user_by_uid(currentuser.userid, HAS_PERM(PERM_SYSOP | PERM_SEECLOAK, currentuser), usernum, false);
 	if (!puin)
 		return;
 	uin = *puin;

@@ -186,7 +186,7 @@ bbsfoot_main()
 	printf("<span id='bbsfoot_online'>");
 	if (loginok && !isguest){
 		for (i = 0; i < u_info->fnum; i++)
-			count_friends += ythtbbs_cache_UserTable_is_friend_online_by_uid(currentuser.userid, HAS_PERM(PERM_SYSOP | PERM_SEECLOAK, currentuser), u_info->friend[i]) ? 1 : 0;
+			count_friends += (ythtbbs_cache_UserTable_query_user_by_uid(currentuser.userid, HAS_PERM(PERM_SYSOP | PERM_SEECLOAK, currentuser), u_info->friend[i], true) != NULL) ? 1 : 0;
 		printf("‘⁄œﬂ/∫√”—[<a href=bbsufind?search=A&limit=20 target=f3 class=1011>%d</a> ", count_online());
 		printf("/<a href=bbsfriend target=f3 class=1011>%d</a>] ",
 			count_friends);

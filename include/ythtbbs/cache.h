@@ -172,7 +172,7 @@ int ythtbbs_cache_UserTable_get_user_online_friends(const char *userid, bool has
  * @param has_see_cloak_perm 是否具有查看隐身的权限
  * @param search_uid 目标用户uid（从1索引）
  */
-bool ythtbbs_cache_UserTable_is_friend_online_by_uid(const char *userid, bool has_see_cloak_perm, unsigned int search_uid);
+const struct user_info *ythtbbs_cache_UserTable_query_user_by_uid(const char *userid, bool has_see_cloak_perm, unsigned search_uid, bool dotest);
 
 /**
  * @brief 判断用户是否在线

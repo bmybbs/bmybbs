@@ -557,7 +557,7 @@ num_alcounter()
 	last_time = t;
 	count_friends = 0;
 	for (i = 0; i < uinfo.fnum; i++)
-		count_friends += query_uindex(uinfo.friend[i], 1) ? 1 : 0;
+		count_friends += (ythtbbs_cache_UserTable_query_user_by_uid(currentuser.userid, HAS_PERM(PERM_SYSOP | PERM_SEECLOAK, currentuser), uinfo.friend[i], true) != NULL) ? 1 : 0;
 	count_users = ythtbbs_cache_utmp_count_active();
 }
 

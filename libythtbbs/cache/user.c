@@ -267,12 +267,12 @@ void ythtbbs_cache_UserTable_dump(FILE *fp) {
 	}
 }
 
-bool ythtbbs_cache_UserTable_is_friend_online_by_uid(const char *userid, bool has_see_cloak_perm, unsigned search_uid) {
+const struct user_info *ythtbbs_cache_UserTable_query_user_by_uid(const char *userid, bool has_see_cloak_perm, unsigned search_uid, bool dotest) {
 	int i, utmp_idx, testreject = 0;
 	struct user_info *ptr_info;
 
 	if (search_uid <= 0 || search_uid > MAXUSERS)
-		return false;
+		return NULL;
 
 	for (i = 0; i < MAX_LOGIN_PER_USER; i++) {
 		utmp_idx = shm_user_table->users[search_uid - 1].utmp_indices[i] - 1;
@@ -284,20 +284,20 @@ bool ythtbbs_cache_UserTable_is_friend_online_by_uid(const char *userid, bool ha
 		if (!ptr_info->active || !ptr_info->pid || ptr_info->uid != search_uid)
 			continue;
 
-		if (!testreject) {
+		if (dotest && !testreject) {
 			if (ythtbbs_override_included(userid, YTHTBBS_OVERRIDE_REJECTS, ptr_info->userid))
-				return true;
+				return NULL;
 
 			testreject = 1;
 		}
 
-		if (ptr_info->invisible && !has_see_cloak_perm)
+		if (dotest && ptr_info->invisible && !has_see_cloak_perm)
 			continue;
 
-		return true;
+		return ptr_info;
 	}
 
-	return false;
+	return NULL;
 }
 
 /**
