@@ -685,13 +685,12 @@ int user_isonline(char* userid) {
 }
 
 void update_ulist(struct user_info *uentp, int uent) {
+	struct user_info *ptr;
 	ythtbbs_cache_utmp_resolve();
 	if (uent > 0 && uent <= USHM_SIZE) {
-		memcpy(&utmpshm->uinfo[uent - 1].invisible,
-			&(uentp->invisible),
-			sizeof (struct user_info) -
-			((char *) &uentp->invisible - (char *) uentp));
-/*utmpshm->uinfo[ uent - 1 ] = *uentp;*/
+		ptr = ythtbbs_cache_utmp_get_by_idx(uent - 1);
+		// 局部更新结构体
+		memcpy(&ptr->invisible, &uentp->invisible, (sizeof(struct user_info) - offsetof(struct user_info, invisible)));
 	}
 }
 
