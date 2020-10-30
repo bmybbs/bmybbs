@@ -1824,24 +1824,18 @@ t_reject()
 	return;
 }
 
-struct user_info *
-t_search(sid, pid, invisible_check)
-char *sid;
-int pid;
-int invisible_check;
-{
+struct user_info *t_search(char *sid, int pid, int invisible_check) {
 	int i;
-	extern struct UTMPFILE *utmpshm;
 	struct user_info *cur, *tmp = NULL;
 
-	resolve_utmp();
+	ythtbbs_cache_utmp_resolve();
 	for (i = 0; i < USHM_SIZE; i++) {
-		cur = &(utmpshm->uinfo[i]);
+		cur = ythtbbs_cache_utmp_get_by_idx(i);
 		if (!cur->active || !cur->pid)
 			continue;
 		if (!strcasecmp(cur->userid, sid)) {
 			if (pid == 0)
-				return (isreject(cur) || (invisible_check && (cur->invisible && !HAS_PERM(PERM_SEECLOAK | PERM_SYSOP, currentuser)))) ?  NULL : cur;
+				return (isreject(cur) || (invisible_check && (cur->invisible && !HAS_PERM(PERM_SEECLOAK | PERM_SYSOP, currentuser)))) ? NULL : cur;
 			tmp = cur;
 			if (pid == cur->pid)
 				break;
