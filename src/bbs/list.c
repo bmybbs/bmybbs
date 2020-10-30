@@ -378,7 +378,6 @@ fill_userlist()
 {
 	int i, i2, j, uent, testreject, uid;
 	int back_sort_mode;
-	extern struct UTMPFILE *utmpshm;
 	const struct user_info *up;
 
 	ythtbbs_cache_utmp_resolve();
