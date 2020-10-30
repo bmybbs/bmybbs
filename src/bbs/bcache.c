@@ -600,19 +600,13 @@ int search_ulistn(struct user_info *uentp, int (*fptr) (int, struct user_info *)
 }
 
 /*Function Add by SmallPig*/
-int
-count_logins(uentp, fptr, farg, show)
-struct user_info *uentp;
-int (*fptr) (int, struct user_info *);
-int farg;
-int show;
-{
+int count_logins(struct user_info *uentp, int (*fptr) (int, struct user_info *), int farg, int show) {
 	int i, j;
 
 	j = 0;
 	ythtbbs_cache_utmp_resolve();
 	for (i = 0; i < USHM_SIZE; i++) {
-		*uentp = utmpshm->uinfo[i];
+		memcpy(uentp, ythtbbs_cache_utmp_get_by_idx(i), sizeof(struct user_info));
 		if ((*fptr) (farg, uentp)) {
 			if (show == 0)
 				j++;
