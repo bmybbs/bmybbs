@@ -703,8 +703,11 @@ update_utmp()
 }
 
 int get_utmp(void) {
-	if (!strcmp(uinfo.userid, utmpshm->uinfo[utmpent - 1].userid)) {
-		memcpy(&uinfo, &utmpshm->uinfo[utmpent - 1], sizeof (uinfo));
+	const struct user_info *ptr;
+
+	ptr = ythtbbs_cache_utmp_get_by_idx(utmpent - 1);
+	if (!strcmp(uinfo.userid, ptr->userid)) {
+		memcpy(&uinfo, ptr, sizeof (uinfo));
 		return 0;
 	}
 	return -1;
