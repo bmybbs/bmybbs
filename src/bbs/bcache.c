@@ -582,18 +582,12 @@ int search_ulist(struct user_info *uentp, int (*fptr) (int, struct user_info *),
 	return 0;
 }
 
-int
-search_ulistn(uentp, fptr, farg, unum)
-struct user_info *uentp;
-int (*fptr) (int, struct user_info *);
-int farg;
-int unum;
-{
+int search_ulistn(struct user_info *uentp, int (*fptr) (int, struct user_info *), int farg, int unum) {
 	int i, j;
 	j = 1;
 	ythtbbs_cache_utmp_resolve();
 	for (i = 0; i < USHM_SIZE; i++) {
-		*uentp = utmpshm->uinfo[i];
+		memcpy(uentp, ythtbbs_cache_utmp_get_by_idx(i), sizeof(struct user_info));
 		if ((*fptr) (farg, uentp)) {
 			if (j == unum)
 				return i + 1;
