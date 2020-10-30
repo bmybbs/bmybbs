@@ -159,10 +159,6 @@ unsigned int ythtbbs_cache_User_hash(const char *userid);
  */
 void ythtbbs_cache_UserTable_resolve();
 
-void ythtbbs_cache_UserTable_add_utmp_idx(int uid, int utmp_idx);
-
-void ythtbbs_cache_UserTable_remove_utmp_idx(int uid, int utmp_idx);
-
 int ythtbbs_cache_UserTable_get_user_online_friends(const char *userid, bool has_see_cloak_perm, struct user_info *user_list, size_t user_list_size);
 
 /**
