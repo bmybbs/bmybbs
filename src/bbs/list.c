@@ -69,7 +69,6 @@ static int IDSearch(char query[STRLEN], int curr_num, int offset);
 static int IPSearch(char query[20], int curr_num, int offset);
 static int NickSearch(char query[STRLEN], int curr_num, int offset);
 static void print_title(void);
-static void print_title2(void);
 static void update_data(void);
 static int print_user_info_title(void);
 //static void swap_user_record(int a, int b);
@@ -81,14 +80,9 @@ static int cfriendname(struct ythtbbs_override *t1, struct ythtbbs_override *t2)
 static int do_userlist(void);
 static int show_userlist(void);
 static int deal_key(int ch, int allnum, int pagenum);
-static int deal_key2(int ch, int allnum, int pagenum);
 static int countusers(struct userec *uentp);
-static int printuent(struct userec *uentp);
-static int Show_Users(void);
 static int do_query(int star, int curr);
-static int do_query2(int star, int curr);
 static int uleveltochar(char *buf, unsigned int lvl);
-static void printutitle(void);
 static char msgchar(const struct user_info *uin);
 static char pagerchar(int friend, int pager);
 static char *idle_str(const struct user_info *uent);
@@ -125,8 +119,7 @@ UseronlineSearch(curr_num, offset)
 int curr_num;
 int offset;
 {
-	static char method[2], queryID[IDLEN + 2], queryIP[20],
-	    queryNick[NAMELEN + 2];
+	static char method[2], queryID[IDLEN + 2], queryIP[20], queryNick[NAMELEN + 2];
 	char ans[STRLEN + 1], pmt[STRLEN];
 	strcpy(ans, method);
 	sprintf(pmt, "查找方式:(A)ID (B)呢称 (C)IP [%s]:", ans);
@@ -184,15 +177,13 @@ int offset;
 		return curr_num;
 	if (offset > 0) {
 		for (i = curr_num + 1; i < range; i++) {
-			if (!strncasecmp
-			    (user_record[i]->userid, query, strlen(query)))
-				    return i;
+			if (!strncasecmp(user_record[i]->userid, query, strlen(query)))
+				return i;
 		}
 	} else if (offset < 0) {
 		for (i = curr_num - 1; i >= 0; i--) {
-			if (!strncasecmp
-			    (user_record[i]->userid, query, strlen(query)))
-				    return i;
+			if (!strncasecmp(user_record[i]->userid, query, strlen(query)))
+				return i;
 		}
 	}
 	return curr_num;
@@ -232,15 +223,13 @@ int offset;
 		return curr_num;
 	if (offset > 0) {
 		for (i = curr_num + 1; i < range; i++) {
-			if (!strncmp
-			    (user_record[i]->username, query, strlen(query)))
-				    return i;
+			if (!strncmp(user_record[i]->username, query, strlen(query)))
+				return i;
 		}
 	} else if (offset < 0) {
 		for (i = curr_num - 1; i >= 0; i--) {
-			if (!strncmp
-			    (user_record[i]->username, query, strlen(query)))
-				    return i;
+			if (!strncmp(user_record[i]->username, query, strlen(query)))
+				return i;
 		}
 	}
 	return curr_num;
@@ -306,36 +295,6 @@ print_title()
 	}
 	docmdtitle(buf,
 			" 聊天[\033[1;32mt\033[m] 寄信[\033[1;32mm\033[m] 送讯息[\033[1;32ms\033[m] 加,减朋友[\033[1;32mo\033[m,\033[1;32md\033[m] 看说明档[\033[1;32m→\033[m,\033[1;32mRtn\033[m] 切换模式 [\033[1;32mc\033[m] 求救[\033[1;32mh\033[m]");
-}
-
-static void
-print_title2()
-{
-	char buf[20];
-	switch (sortmode) {
-	case 0:
-		sprintf(buf, "%s %s",
-			(friendmode) ? "[好朋友列表]" : "[使用者列表]",
-			"[普通]");
-		break;
-	case 1:
-		sprintf(buf, "%s %s",
-			(friendmode) ? "[好朋友列表]" : "[使用者列表]",
-			"[字母]");
-		break;
-	case 2:
-		sprintf(buf, "%s %s",
-			(friendmode) ? "[好朋友列表]" : "[使用者列表]",
-			"[网址]");
-		break;
-	case 3:
-		sprintf(buf, "%s %s",
-			(friendmode) ? "[好朋友列表]" : "[使用者列表]",
-			"[动态]");
-		break;
-	}
-	docmdtitle(buf,
-		   "        寄信[\033[1;32mm\033[m] 加,减朋友[\033[1;32mo\033[m,\033[1;32md\033[m] 看说明档[\033[1;32m→\033[m,\033[1;32mRtn\033[m] 选择[\033[1;32m↑\033[m,\033[1;32m↓\033[m] 求救[\033[1;32mh\033[m]");
 }
 
 static void
@@ -411,8 +370,7 @@ static void
 sort_user_record(int left, int right)
 {
 	if (sortmode)
-		qsort(&user_record[left], right - left,
-		      sizeof (struct user_info *), (void *) cmpuinfo);
+		qsort(&user_record[left], right - left, sizeof (struct user_info *), (void *) cmpuinfo);
 }
 
 static int
@@ -491,140 +449,105 @@ do_userlist()
 		if (uentp == NULL)
 			continue;
 		if (override && friendmode1) {
-			if(uentp->mode!=78)
-			{
-			strcpy(t2.id, uentp->userid);
-			t1.exp[0] = 0;
-			search_record(overridefile, &t1, sizeof (t1), (void *) cfriendname, &t2);
-			sprintf(user_info_str,
-				" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s\033[m %5.5s\n",
-				i + 1 + page, (override) ? "□" : "",
-				(override) ? "\033[1;32m" : "",
-				uentp->userid, (override) ? "\033[m" : "",
-				(t1.exp[0] == 0) ? uentp->username : t1.exp,
-				(uentp->pid == 1) ? "\033[35m" : ((uentp->isssh == 1) ? "\033[32m" : ""), uentp->from,
-				(uentp->pid == 1) || (uentp->isssh == 1) ? "\033[0m" : "",
-				pagerchar(hisfriend(uentp), uentp->pager),
-				msgchar(uentp),
-				(uentp->invisible == YEA) ? "\033[1;36m" : ModeColor(uentp->mode), ModeType(uentp->mode),
-				idle_str(uentp));
+			if (uentp->mode!=78) {
+				strcpy(t2.id, uentp->userid);
+				t1.exp[0] = 0;
+				search_record(overridefile, &t1, sizeof (t1), (void *) cfriendname, &t2);
+				sprintf(user_info_str,
+					" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s\033[m %5.5s\n",
+					i + 1 + page, (override) ? "□" : "",
+					(override) ? "\033[1;32m" : "",
+					uentp->userid, (override) ? "\033[m" : "",
+					(t1.exp[0] == 0) ? uentp->username : t1.exp,
+					(uentp->pid == 1) ? "\033[35m" : ((uentp->isssh == 1) ? "\033[32m" : ""), uentp->from,
+					(uentp->pid == 1) || (uentp->isssh == 1) ? "\033[0m" : "",
+					pagerchar(hisfriend(uentp), uentp->pager),
+					msgchar(uentp),
+					(uentp->invisible == YEA) ? "\033[1;36m" : ModeColor(uentp->mode), ModeType(uentp->mode),
+					idle_str(uentp));
+			} else if (uentp->user_state_temp[0]!='\0') {
+				strcpy(t2.id, uentp->userid);
+				t1.exp[0] = 0;
+				search_record(overridefile, &t1, sizeof (t1), (void *) cfriendname, &t2);
+				sprintf(user_info_str,
+					" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s\033[m %5.5s\n",
+					i + 1 + page, (override) ? "□" : "",
+					(override) ? "\033[1;32m" : "",
+					uentp->userid, (override) ? "\033[m" : "",
+					(t1.exp[0] == 0) ? uentp->username : t1.exp,
+					(uentp->pid == 1) ? "\033[35m" : ((uentp->isssh == 1) ? "\033[32m" : ""),
+					uentp->from,
+					(uentp->pid == 1) || (uentp->isssh == 1) ? "\033[0m" : "",
+					pagerchar(hisfriend(uentp), uentp->pager),
+					msgchar(uentp),
+					(uentp->invisible == YEA) ? "\033[1;36m" : ModeColor(uentp->mode),
+					uentp->user_state_temp,
+					idle_str(uentp));
+			} else {
+				strcpy(t2.id, uentp->userid);
+				t1.exp[0] = 0;
+				search_record(overridefile, &t1, sizeof (t1), (void *) cfriendname, &t2);
+				sprintf(user_info_str,
+					" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s\033[m %5.5s\n",
+					i + 1 + page, (override) ? "□" : "",
+					(override) ? "\033[1;32m" : "",
+					uentp->userid, (override) ? "\033[m" : "",
+					(t1.exp[0] == 0) ? uentp->username : t1.exp,
+					(uentp->pid == 1) ? "\033[35m" : ((uentp->isssh == 1) ? "\033[32m" : ""),
+					uentp->from,
+					(uentp->pid == 1) || (uentp->isssh == 1) ? "\033[0m" : "",
+					pagerchar(hisfriend(uentp), uentp->pager),
+					msgchar(uentp),
+					(uentp->invisible == YEA) ? "\033[1;36m" : ModeColor(LOCKSCREEN),
+					ModeType(LOCKSCREEN),
+					idle_str(uentp));
 			}
-			else if(uentp->user_state_temp[0]!='\0')
-			{
-			strcpy(t2.id, uentp->userid);
-			t1.exp[0] = 0;
-			search_record(overridefile, &t1, sizeof (t1),
-				      (void *) cfriendname, &t2);
-			sprintf(user_info_str,
-				" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s\033[m %5.5s\n",
-				i + 1 + page, (override) ? "□" : "",
-				(override) ? "\033[1;32m" : "",
-				uentp->userid, (override) ? "\033[m" : "",
-				(t1.exp[0] ==
-				 0) ? uentp->username : t1.exp,
-				(uentp->pid ==
-				 1) ? "\033[35m" : ((uentp->isssh ==
-						     1) ? "\033[32m" :
-						    ""), uentp->from,
-				(uentp->pid == 1)
-				|| (uentp->isssh == 1) ? "\033[0m" : "",
-				pagerchar(hisfriend(uentp),
-					  uentp->pager), msgchar(uentp),
-				(uentp->invisible ==
-				 YEA) ? "\033[1;36m" :
-				ModeColor(uentp->mode), uentp->user_state_temp,
-				idle_str(uentp));
-			}
-			else
-			{
-			 strcpy(t2.id, uentp->userid);
-			t1.exp[0] = 0;
-			search_record(overridefile, &t1, sizeof (t1),
-				      (void *) cfriendname, &t2);
-			sprintf(user_info_str,
-				" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s\033[m %5.5s\n",
-				i + 1 + page, (override) ? "□" : "",
-				(override) ? "\033[1;32m" : "",
-				uentp->userid, (override) ? "\033[m" : "",
-				(t1.exp[0] ==
-				 0) ? uentp->username : t1.exp,
-				(uentp->pid ==
-				 1) ? "\033[35m" : ((uentp->isssh ==
-						     1) ? "\033[32m" :
-						    ""), uentp->from,
-				(uentp->pid == 1)
-				|| (uentp->isssh == 1) ? "\033[0m" : "",
-				pagerchar(hisfriend(uentp),
-					  uentp->pager), msgchar(uentp),
-				(uentp->invisible ==
-				 YEA) ? "\033[1;36m" :
-				ModeColor(LOCKSCREEN), ModeType(LOCKSCREEN),
-				idle_str(uentp));
-			}
-		} else
-		{
-			if(uentp->mode != 78)
-			{
-			sprintf(user_info_str,
-				" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s\033[m %5.5s\n",
-				i + 1 + page, (override) ? "□" : "",
-				(override) ? "\033[1;32m" : "",
-				uentp->userid, (override) ? "\033[m" : "",
-				uentp->username,
-				(uentp->pid ==
-				 1) ? "\033[35m" : ((uentp->isssh ==
-						     1) ? "\033[32m" :
-						    ""), uentp->from,
-				(uentp->pid == 1)
-				|| (uentp->isssh == 1) ? "\033[0m" : "",
-				pagerchar(hisfriend(uentp),
-					  uentp->pager), msgchar(uentp),
-				(uentp->invisible ==
-				 YEA) ? "\033[1;36m" :
-				ModeColor(uentp->mode), ModeType(uentp->mode),
-				idle_str(uentp));
-			}
-			else if(uentp->user_state_temp[0]!='\0')
-			{
-			sprintf(user_info_str,
-				" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s\033[m %5.5s\n",
-				i + 1 + page, (override) ? "□" : "",
-				(override) ? "\033[1;32m" : "",
-				uentp->userid, (override) ? "\033[m" : "",
-				uentp->username,
-				(uentp->pid ==
-				 1) ? "\033[35m" : ((uentp->isssh ==
-						     1) ? "\033[32m" :
-						    ""), uentp->from,
-				(uentp->pid == 1)
-				|| (uentp->isssh == 1) ? "\033[0m" : "",
-				pagerchar(hisfriend(uentp),
-					  uentp->pager), msgchar(uentp),
-				(uentp->invisible ==
-				 YEA) ? "\033[1;36m" :
-				ModeColor(uentp->mode),  uentp->user_state_temp,
-				idle_str(uentp));
-			}
-			else
-			{
-			sprintf(user_info_str,
-				" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s\033[m %5.5s\n",
-				i + 1 + page, (override) ? "□" : "",
-				(override) ? "\033[1;32m" : "",
-				uentp->userid, (override) ? "\033[m" : "",
-				uentp->username,
-				(uentp->pid ==
-				 1) ? "\033[35m" : ((uentp->isssh ==
-						     1) ? "\033[32m" :
-						    ""), uentp->from,
-				(uentp->pid == 1)
-				|| (uentp->isssh == 1) ? "\033[0m" : "",
-				pagerchar(hisfriend(uentp),
-					  uentp->pager), msgchar(uentp),
-				(uentp->invisible ==
-				 YEA) ? "\033[1;36m" :
-				ModeColor(LOCKSCREEN),  ModeType(LOCKSCREEN),
-				idle_str(uentp));
+		} else {
+			if(uentp->mode != 78) {
+				sprintf(user_info_str,
+					" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s\033[m %5.5s\n",
+					i + 1 + page, (override) ? "□" : "",
+					(override) ? "\033[1;32m" : "",
+					uentp->userid, (override) ? "\033[m" : "",
+					uentp->username,
+					(uentp->pid == 1) ? "\033[35m" : ((uentp->isssh == 1) ? "\033[32m" : ""),
+					uentp->from,
+					(uentp->pid == 1) || (uentp->isssh == 1) ? "\033[0m" : "",
+					pagerchar(hisfriend(uentp), uentp->pager),
+					msgchar(uentp),
+					(uentp->invisible == YEA) ? "\033[1;36m" : ModeColor(uentp->mode),
+					ModeType(uentp->mode),
+					idle_str(uentp));
+			} else if (uentp->user_state_temp[0]!='\0') {
+				sprintf(user_info_str,
+					" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s\033[m %5.5s\n",
+					i + 1 + page, (override) ? "□" : "",
+					(override) ? "\033[1;32m" : "",
+					uentp->userid, (override) ? "\033[m" : "",
+					uentp->username,
+					(uentp->pid == 1) ? "\033[35m" : ((uentp->isssh == 1) ? "\033[32m" : ""),
+					uentp->from,
+					(uentp->pid == 1) || (uentp->isssh == 1) ? "\033[0m" : "",
+					pagerchar(hisfriend(uentp), uentp->pager),
+					msgchar(uentp),
+					(uentp->invisible == YEA) ? "\033[1;36m" : ModeColor(uentp->mode),
+					uentp->user_state_temp,
+					idle_str(uentp));
+			} else {
+				sprintf(user_info_str,
+					" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s\033[m %5.5s\n",
+					i + 1 + page, (override) ? "□" : "",
+					(override) ? "\033[1;32m" : "",
+					uentp->userid, (override) ? "\033[m" : "",
+					uentp->username,
+					(uentp->pid == 1) ? "\033[35m" : ((uentp->isssh == 1) ? "\033[32m" : ""),
+					uentp->from,
+					(uentp->pid == 1) || (uentp->isssh == 1) ? "\033[0m" : "",
+					pagerchar(hisfriend(uentp), uentp->pager),
+					msgchar(uentp),
+					(uentp->invisible == YEA) ? "\033[1;36m" : ModeColor(LOCKSCREEN),
+					ModeType(LOCKSCREEN),
+					idle_str(uentp));
 			}
 		}
 		clrtoeol();
@@ -820,11 +743,6 @@ int allnum, pagenum;
 	case '?':		//up search ID
 		num = UseronlineSearch(num, -1);
 		break;
-/*        case 'Y':
-	        if (HAS_PERM(PERM_CLOAK))
-			x_cloak();
-		break;
-*/
 	default:
 		return 0;
 	}
@@ -847,113 +765,6 @@ int allnum, pagenum;
 }
 
 static int
-deal_key2(ch, allnum, pagenum)
-char ch;
-int allnum, pagenum;
-{
-	char buf[STRLEN];
-	static int msgflag;
-
-	if (msgflag == YEA) {
-		show_message(NULL);
-		msgflag = NA;
-	}
-	switch (ch) {
-	case 'h':
-	case 'H':
-		show_help("help/usershelp");
-		break;
-	case 'm':
-	case 'M':
-		if (!HAS_PERM(PERM_POST, currentuser))
-			return 1;
-		m_send(user_data[allnum - pagenum].userid);
-		break;
-	case 'o':
-	case 'O':
-		if (!strcmp("guest", currentuser.userid))
-			return 0;
-		sprintf(buf, "确定要把 %s 加入好友名单吗",
-			user_data[allnum - pagenum].userid);
-		move(BBS_PAGESIZE + 3, 0);
-		if (askyn(buf, NA, NA) == NA)
-			break;
-		if (addtooverride(user_data[allnum - pagenum].userid)
-		    == -1) {
-			sprintf(buf, "%s 已在朋友名单",
-				user_data[allnum - pagenum].userid);
-			show_message(buf);
-		} else {
-			sprintf(buf, "%s 列入朋友名单",
-				user_data[allnum - pagenum].userid);
-			show_message(buf);
-		}
-		msgflag = YEA;
-		if (!friendmode)
-			return 1;
-		break;
-	case 'f':
-	case 'F':
-		toggle1++;
-		if (toggle1 >= 3)
-			toggle1 = 0;
-		break;
-	case 't':
-	case 'T':
-		if (toggle2 == 1)
-			toggle2 = 0;
-		else
-			toggle2 = 1;
-		break;
-	case 'd':
-	case 'D':
-		sprintf(buf, "确定要把 %s 从好友名单删除吗",
-			user_data[allnum - pagenum].userid);
-		move(BBS_PAGESIZE + 3, 0);
-		if (askyn(buf, NA, NA) == NA)
-			break;
-		if (deleteoverride
-		    (user_data[allnum - pagenum].userid, "friends") == -1) {
-			sprintf(buf, "%s 本来就不在朋友名单中",
-				user_data[allnum - pagenum].userid);
-			show_message(buf);
-		} else {
-			sprintf(buf, "%s 已从朋友名单移除",
-				user_data[allnum - pagenum].userid);
-			show_message(buf);
-		}
-		msgflag = YEA;
-		if (!friendmode)
-			return 1;
-		break;
-	case 'a':
-	case 'A':
-		change_sortmode(0);
-		break;
-/* 	case '/':	//down search ID
-		num=ID_search(num,1);
-		break;
-	case '?':	//up search ID
-		num=ID_search(num,-1);
-		break;
-*/
-	default:
-		return 0;
-	}
-	modify_user_mode(LAUSERS);
-	if (readplan == NA) {
-		print_title2();
-		move(3, 0);
-		clrtobot();
-		if (Show_Users() == -1)
-			return -1;
-		update_endline();
-	}
-	redoscr();
-	return 1;
-}
-
-static int
 countusers(uentp)
 struct userec *uentp;
 {
@@ -965,65 +776,8 @@ struct userec *uentp;
 		totalusers = 0;
 		return c;
 	}
-	if (uentp->numlogins != 0
-	    && uleveltochar(permstr, uentp->userlevel) != 0) totalusers++;
-	return 0;
-}
-
-static int
-printuent(uentp)
-struct userec *uentp;
-{
-	static int i;
-	char permstr[10];
-	char msgstr[18];
-	int override;
-
-	if (uentp == NULL) {
-		printutitle();
-		i = 0;
-		return 0;
-	}
-	if (uentp->numlogins == 0 ||
-	    uleveltochar(permstr, uentp->userlevel) == 0) return 0;
-	if (i < page || i >= page + BBS_PAGESIZE || i >= range) {
-		i++;
-		if (i >= page + BBS_PAGESIZE || i >= range)
-			return QUIT;
-		else
-			return 0;
-	}
-	uleveltochar(permstr, uentp->userlevel);
-	switch (toggle1) {
-	case 0:
-		sprintf(msgstr, "%-.16s", ytht_ctime(uentp->lastlogin));
-		break;
-	case 1:
-		sprintf(msgstr, "%-.16s", uentp->lasthost);
-		break;
-	case 2:
-	default:
-		sprintf(msgstr, "%-.11s%.4s",
-				ytht_ctime(uentp->firstlogin),
-				ytht_ctime(uentp->firstlogin) + 20);
-		break;
-	}
-	user_data[i - page] = *uentp;
-	override = myfriend(ythtbbs_cache_UserTable_search_usernum(uentp->userid));
-	prints(" %5d%2s%s%-14s%s %-19s  %5d %5d %6s %-16s\n", i + 1,
-	       (override) ? "□" : "",
-	       (override) ? "\033[1;32m" : "", uentp->userid,
-	       (override) ? "\033[m" : "",
-#if defined(ACTS_REALNAMES)
-	       HAS_PERM(PERM_SYSOP, currentuser) ? uentp->realname : uentp->username,
-#else
-	       uentp->username,
-#endif
-	       uentp->numlogins,
-	       (toggle2 == 0) ? uentp->numposts : uentp->stay / 3600,
-	       HAS_PERM(PERM_SEEULEVELS, currentuser) ? permstr : "", msgstr);
-	i++;
-	usercounter++;
+	if (uentp->numlogins != 0 && uleveltochar(permstr, uentp->userlevel) != 0)
+		totalusers++;
 	return 0;
 }
 
@@ -1031,28 +785,10 @@ int
 allusers()
 {
 	countusers(NULL);
-	if (apply_record(PASSFILE, (void *) countusers, sizeof (struct userec))
-	    == -1) {
+	if (apply_record(PASSFILE, (void *) countusers, sizeof (struct userec)) == -1) {
 		return 0;
 	}
 	return countusers(NULL);
-}
-
-static int
-Show_Users()
-{
-
-	usercounter = 0;
-	modify_user_mode(LAUSERS);
-	printuent((struct userec *) NULL);
-	if (apply_record(PASSFILE, (void *) printuent, sizeof (struct userec))
-	    == -1) {
-		prints("No Users Exist");
-		pressreturn();
-		return -1;
-	}
-	clrtobot();
-	return 0;
 }
 
 void
@@ -1071,19 +807,6 @@ int star, curr;
 		t_query(user_record[curr]->userid);
 		move(t_lines - 1, 0);
 		prints("\033[0;1;37;44m聊天[\033[1;32mt\033[37m] 寄信[\033[1;32mm\033[37m] 送讯息[\033[1;32ms\033[37m] 加,减朋友[\033[1;32mo\033[37m,\033[1;32md\033[37m] 选择使用者[\033[1;32m↑\033[37m,\033[1;32m↓\033[37m] 切换模式 [\033[1;32mc\033[37m] 求救[\033[1;32mh\033[37m]\033[m");
-	}
-	return 0;
-}
-
-static int
-do_query2(star, curr)
-int star, curr;
-{
-	if (user_data != NULL) {
-		t_query(user_data[curr - star].userid);
-		move(t_lines - 1, 0);
-		prints
-		    ("\033[0;1;37;44m          寄信[\033[1;32mm\033[37m] 加,减朋友[\033[1;32mo\033[37m,\033[1;32md\033[37m] 看说明档[\033[1;32m→\033[37m,\033[1;32mRtn\033[37m] 选择[\033[1;32m↑\033[37m,\033[1;32m↓\033[37m] 求救[\033[1;32mh\033[37m]          \033[m");
 	}
 	return 0;
 }
@@ -1117,8 +840,7 @@ t_friends()
 			page = -1;
 			friendmode = NA;
 			update_time = 0;
-			choose(YEA, 0, print_title, deal_key, show_userlist,
-			       do_query);
+			choose(YEA, 0, print_title, deal_key, show_userlist, do_query);
 			clear();
 			free(user_record);
 			user_record = NULL;
@@ -1343,23 +1065,6 @@ unsigned int lvl;
 	return 1;
 }
 
-static void
-printutitle()
-{
-	move(2, 0);
-	prints
-	    ("\x1b[1;44m 编 号  使用者代号     %-19s  #上站 #%-4s %6s %-12s   ^[[m\n",
-#if defined(ACTS_REALNAMES)
-	     HAS_PERM(PERM_SYSOP, currentuser) ? "真实姓名" : "使用者昵称",
-#else
-	     "使用者昵称",
-#endif
-	     (toggle2 == 0) ? "文章" : "时数",
-	     HAS_PERM(PERM_SEEULEVELS, currentuser) ? "等  级" : "",
-	     (toggle1 == 0) ? "最近光临日期" :
-	     (toggle1 == 1) ? "最近光临地点" : "帐号建立日期");
-}
-
 static char msgchar(const struct user_info *uin) {
 	if (isreject(uin))
 		return '*';
@@ -1406,8 +1111,7 @@ static char *idle_str(const struct user_info *uent) {
 	diff = now_t - uent->lasttime;
 
 #ifdef DOTIMEOUT
-	/* the 60 * 60 * 24 * 5 is to prevent fault /dev mount from
-	   kicking out all users */
+	/* the 60 * 60 * 24 * 5 is to prevent fault /dev mount from kicking out all users */
 
 	if (uent->ext_idle)
 		limit = IDLE_TIMEOUT * 3;
@@ -1449,3 +1153,4 @@ static int count_visible_active(const struct user_info *uentp, void *x_param)
 		*(int *)x_param--;
 	return 1;
 }
+
