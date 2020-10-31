@@ -32,8 +32,6 @@
 //CHINPUT_SHMKEY=5102
 
 struct BCACHE *brdshm;
-struct UTMPFILE *utmpshm;
-struct UINDEX *uindexshm;
 struct userec lookupuser;
 struct boardmem *bcache;
 
