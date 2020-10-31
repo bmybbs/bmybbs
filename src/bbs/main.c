@@ -124,7 +124,8 @@ ifinprison(char *name)
 static void
 u_enter()
 {
-	if (currentuser.dietime) currentuser.userdefine &= ~(DEF_ANIENDLINE | DEF_ACBOARD | DEF_COLOR | DEF_ENDLINE);
+	if (currentuser.dietime)
+		currentuser.userdefine &= ~(DEF_ANIENDLINE | DEF_ACBOARD | DEF_COLOR | DEF_ENDLINE);
 	inprison = ifinprison(currentuser.userid);
 	if (inprison) {
 		currentuser.userdefine &= ~(DEF_ANIENDLINE | DEF_ACBOARD | DEF_COLOR | DEF_ENDLINE);
@@ -145,49 +146,15 @@ u_enter()
 		}
 		return;
 	}
-	memset(&uinfo, 0, sizeof (uinfo));
 
-	uinfo.active = YEA;
-	uinfo.pid = getpid();
-	if ((HAS_PERM(PERM_LOGINCLOAK, currentuser) && (currentuser.flags[0] & CLOAK_FLAG)) || currentuser.dietime)
-		uinfo.invisible = YEA;
-	uinfo.mode = LOGIN;
-	uinfo.pager = 0;
 	if (DEFINE(DEF_DELDBLCHAR, currentuser))
 		enabledbchar = 1;
 	else
 		enabledbchar = 0;
-	if (DEFINE(DEF_FRIENDCALL, currentuser)) {
-		uinfo.pager |= FRIEND_PAGER;
-	}
-	if (currentuser.flags[0] & PAGER_FLAG) {
-		uinfo.pager |= ALL_PAGER;
-		uinfo.pager |= FRIEND_PAGER;
-	}
-	if (DEFINE(DEF_FRIENDMSG, currentuser)) {
-		uinfo.pager |= FRIENDMSG_PAGER;
-	}
-	if (DEFINE(DEF_ALLMSG, currentuser)) {
-		uinfo.pager |= ALLMSG_PAGER;
-		uinfo.pager |= FRIENDMSG_PAGER;
-	}
-	uinfo.uid = usernum;
-	uinfo.userlevel = currentuser.userlevel;
-	strncpy(uinfo.from, fromhost, BMY_IPV6_LEN);
-	uinfo.lasttime = time(0);
-	if (runssh)
-		uinfo.isssh = 1;
 	iscolor = (DEFINE(DEF_COLOR, currentuser)) ? 1 : 0;
-	strncpy(uinfo.userid, currentuser.userid, 20);
-	strncpy(uinfo.realname, currentuser.realname, 20);
-	strncpy(uinfo.username, currentuser.username, 40);
-	ytht_get_random_str(uinfo.sessionid);
-	getfriendstr();
-	getrejectstr();
 	if (HAS_PERM(PERM_EXT_IDLE, currentuser))
 		uinfo.ext_idle = YEA;
 	uinfo.curboard = 0;
-	utmpent = getnewutmpent(&uinfo);
 	if (utmpent < 0) {
 		errlog("Fault: No utmpent slot for %s\n", uinfo.userid);
 	}
