@@ -45,9 +45,6 @@ extern char ULIST[]; /* main.c */
 
 static int getlastpost(char *board, int *lastpost, int *total);
 static int fillbcache(struct boardheader *fptr, int *pcountboard);
-static int iphash(char *fromhost);
-static void add_uindex(int uid, int utmpent);
-static void remove_uindex(int uid, int utmpent);
 static int setbmhat(struct boardmanager *bm, int *online);
 static void bmonlinesync(void);
 
@@ -502,69 +499,6 @@ int getuser(const char *userid) {
 	return uid;
 }
 
-#define NHASH 67
-static int
-iphash(char *fromhost)
-{
-	struct in_addr addr;
-	inet_aton(fromhost, &addr);
-	return addr.s_addr % NHASH;
-}
-
-int
-getnewutmpent(up)
-struct user_info *up;
-{
-	/* static int          utmpfd; */
-	int utmpfd;
-	struct user_info *uentp;
-	time_t now;
-	int i, j, n, num[2];
-
-	utmpfd = open(ULIST, O_RDWR | O_CREAT, 0600);
-	if (utmpfd < 0)
-		return -1;
-
-	ythtbbs_cache_utmp_resolve();
-	flock(utmpfd, LOCK_EX);
-	for (j = iphash(up->from) * (MAXACTIVE / NHASH), i = 0; i < USHM_SIZE;
-	     i++, j++) {
-		if (j >= USHM_SIZE)
-			j = 0;
-		uentp = &(utmpshm->uinfo[j]);
-		if (!uentp->active || !uentp->pid)
-			break;
-	}
-	if (j >= USHM_SIZE) {
-		flock(utmpfd, LOCK_UN);
-		close(utmpfd);
-		return -1;
-	}
-	utmpshm->uinfo[j] = *up;
-	add_uindex(up->uid, j + 1);
-	now = time(NULL);
-	if (now > utmpshm->uptime + 60) {
-		pid_t pid;
-		num[0] = num[1] = 0;
-		utmpshm->uptime = now;
-		for (n = 0; n < USHM_SIZE; n++) {
-			uentp = &(utmpshm->uinfo[n]);
-			pid = uentp->pid;
-			if (!uentp->active || pid <= 1 || now - uentp->lasttime < 120)
-				continue;
-			if (kill(pid, 0) == -1) {
-				remove_uindex(uentp->uid, n + 1);
-				memset(uentp, 0, sizeof (struct user_info));
-			} else {
-				num[(uentp->invisible == YEA) ? 1 : 0]++;
-			}
-		}
-	}
-	flock(utmpfd, LOCK_UN);	/*by ylsdd */
-	close(utmpfd);
-	return j + 1;
-}
-
 int search_ulist(struct user_info *uentp, int (*fptr) (int, struct user_info *), int farg) {
 	int i;
 	const struct user_info *ptr_user_info;
@@ -750,39 +684,6 @@ char *userid;
 		}
 	}
 	return oldbm;
-}
-
-static void
-add_uindex(int uid, int utmpent)
-{
-	int i, uent;
-	if (uid <= 0 || uid > MAXUSERS)
-		return;
-	for (i = 0; i < 6; i++)
-		if (uindexshm->user[uid - 1][i] == utmpent)
-			return;
-	for (i = 0; i < 6; i++) {
-		uent = uindexshm->user[uid - 1][i];
-		if (uent <= 0 || !utmpshm->uinfo[uent - 1].active ||
-		    utmpshm->uinfo[uent - 1].uid != uid) {
-			uindexshm->user[uid - 1][i] = utmpent;
-			return;
-		}
-	}
-}
-
-static void
-remove_uindex(int uid, int utmpent)
-{
-	int i;
-	if (uid <= 0 || uid > MAXUSERS)
-		return;
-	for (i = 0; i < 6; i++) {
-		if (uindexshm->user[uid - 1][i] == utmpent) {
-			uindexshm->user[uid - 1][i] = 0;
-			return;
-		}
-	}
 }
 
 char *
