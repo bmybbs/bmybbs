@@ -36,7 +36,6 @@ int user_isonline(char *userid);
 void update_ulist(struct user_info *uentp, int uent);
 void update_utmp(void);
 int get_utmp(void);
-void update_utmp2(void);
 int who_callme(struct user_info *uentp, int (*fptr)(int, struct user_info *), int farg, int me);
 int insertuseridhash(struct useridhashitem *ptr, int size, char *userid, int num);
 int getbmnum(char *userid);

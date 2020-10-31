@@ -31,6 +31,13 @@ void ythtbbs_cache_utmp_resolve() {
 	}
 }
 
+void ythtbbs_cache_utmp_update(int utmp_idx, const struct user_info *ptr_info) {
+	// TODO lock
+	ythtbbs_cache_UserTable_remove_utmp_idx(shm_utmp->uinfo[utmp_idx].uid, utmp_idx);
+	memcpy(&shm_utmp->uinfo[utmp_idx], ptr_info, sizeof(struct user_info));
+	// TODO unlock
+}
+
 int ythtbbs_cache_utmp_insert(struct user_info *ptr_user_info) {
 	int               utmpfd;          /* 文件锁 */
 	struct user_info *ptr_utmp_entry;  /* utmp 中的指针 */

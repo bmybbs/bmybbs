@@ -713,22 +713,6 @@ int get_utmp(void) {
 	return -1;
 }
 
-void
-update_utmp2()
-{
-	int utmpfd;
-	utmpfd = open(ULIST, O_RDWR | O_CREAT, 0600);
-	if (utmpfd < 0)
-		return;
-	if (flock(utmpfd, LOCK_EX) < 0)
-		return;
-	remove_uindex(utmpshm->uinfo[utmpent - 1].uid, utmpent);
-	memcpy(&utmpshm->uinfo[utmpent - 1], &uinfo, sizeof (uinfo));
-	flock(utmpfd, LOCK_UN);
-	close(utmpfd);
-	utmpent = -1;
-}
-
 /* added by djq 99.7.19 */
 /* function added by douglas 990305
    set uentp to the user who is calling me

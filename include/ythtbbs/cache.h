@@ -272,6 +272,12 @@ void ythtbbs_cache_utmp_set_ave_score(int value);
 void ythtbbs_cache_utmp_resolve(void);
 
 /**
+ * @brief 移除原有会话并更新为新会话
+ * 重构原 src/bbs/bcache.c::update_utmp2 实现。在 src/bbs/main.c::u_exit 中被调用，调用后全局变量 utmpent 被置为 -1。
+ */
+void ythtbbs_cache_utmp_update(int utmp_idx, const struct user_info *ptr_info);
+
+/**
  * @brief 统计在线人数
  * 来自 src/bbs/talk.c::num_active_users 实现。在原实现中，wwwguest 统计值
  * 直接赋给 utmpshm->wwwguest (具体逻辑在 count_active 中)。随着缓存不再生
