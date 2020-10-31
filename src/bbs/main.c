@@ -544,15 +544,10 @@ else sprintf(str1,"现在是 %s, 新世纪已经开始了%d秒\n",str,-dis);
 		}
 
 		if (strcmp(uid, "new") == 0) {
-#ifdef LOGINASNEW
 			memset(&currentuser, 0, sizeof (currentuser));
 			new_register();
 			ansimore("etc/firstlogin", YEA);
 			break;
-#else
-			prints("\033[1;37m本系统目前无法以 \033[36mnew\033[37m 注册, 请用\033[36m guest\033[37m 进入...\033[m\n");
-			scroll();
-#endif
 		} else if (*uid == '\0' || !dosearchuser(uid)) {
 			move(t_lines - 1, 0);
 			clrtoeol();
