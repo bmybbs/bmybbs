@@ -69,6 +69,7 @@ int enter_uflags;
 time_t lastnote;
 
 struct user_info uinfo;
+static enum ythtbbs_user_login_status login_rc; // 声明为全局变量，便于保留原有程序结构
 
 char fromhost[60];
 
@@ -528,6 +529,8 @@ else sprintf(str1,"现在是 %s, 新世纪已经开始了%d秒\n",str,-dis);
 		clrtoeol();
 		getdata(t_lines - 1, 0, "请输入帐号: ", uid, IDLEN + 1, DOECHO, YEA);
 		scroll();
+
+		// 处理编码格式
 		{
 			int l = strlen(uid);
 			if (l > 0 && uid[l - 1] == '.') {
@@ -536,6 +539,7 @@ else sprintf(str1,"现在是 %s, 新世纪已经开始了%d秒\n",str,-dis);
 					switch_code();
 			}
 		}
+
 		/* ppfoong */
 		if ((strcasecmp(uid, "guest") == 0) && (MAXACTIVE - curr_login_num < 10)) {
 			ansimore("etc/loginfull", NA);
@@ -548,16 +552,10 @@ else sprintf(str1,"现在是 %s, 新世纪已经开始了%d秒\n",str,-dis);
 			new_register();
 			ansimore("etc/firstlogin", YEA);
 			break;
-		} else if (*uid == '\0' || !dosearchuser(uid)) {
+		} else if (*uid == '\0') {
 			move(t_lines - 1, 0);
 			clrtoeol();
 			prints("\033[1;31m错误的使用者帐号...\033[0m\n");
-			scroll();
-		} else if (strcasecmp(uid, "guest") == 0) {
-			currentuser.userlevel = 0;
-			break;
-		} else if (userbansite(currentuser.userid, fromhost)) {
-			prints("\033[1;31m用户%s已经禁止从%s尝试登录\033[0m\n", currentuser.userid, fromhost);
 			scroll();
 		} else {
 			if (!g_convcode)
@@ -567,13 +565,36 @@ else sprintf(str1,"现在是 %s, 新世纪已经开始了%d秒\n",str,-dis);
 			getdata(t_lines - 1, 0, "请输入密码: ", passbuf, PASSLEN, NOECHO, YEA);
 			scroll();
 			passbuf[8] = '\0';
-			if (!ytht_crypt_checkpasswd(currentuser.passwd, passbuf)) {
-				logattempt(currentuser.userid, fromhost, "", now_t);
+
+			// 使用 ythtbbs_user_login 接口
+			login_rc = ythtbbs_user_login(uid, passbuf, fromhost, YTHTBBS_LOGIN_TELNET, &uinfo, &currentuser, &utmpent);
+
+			if (login_rc == YTHTBBS_USER_NOT_EXIST) {
+				move(t_lines - 1, 0);
+				clrtoeol();
+				prints("\033[1;31m错误的使用者帐号...\033[0m\n");
+				scroll();
+			}
+
+			if (strcasecmp(uid, "guest") == 0) {
+				currentuser.userlevel = 0;
+				break;
+			}
+
+			if (login_rc == YTHTBBS_USER_SITE_BAN) {
+				prints("\033[1;31m用户%s已经禁止从%s尝试登录\033[0m\n", currentuser.userid, fromhost);
+				scroll();
+				// TODO
+			}
+
+			if (login_rc == YTHTBBS_USER_WRONG_PASSWORD) {
+				// 在 ythtbbs_user_login 中已经调用了 logattempt，因此此处仅处理界面
 				move(t_lines - 1, 0);
 				clrtoeol();
 				prints("\033[1;31m密码输入错误...\033[m\n");
 				scroll();
 			} else {
+				// 等效 login_rc == YTHTBBS_USER_SUSPENDED？暂不变更
 				if (!HAS_PERM(PERM_BASIC, currentuser)) {
 					move(t_lines - 1, 0);
 					clrtoeol();
@@ -582,9 +603,7 @@ else sprintf(str1,"现在是 %s, 新世纪已经开始了%d秒\n",str,-dis);
 					sleep(5);
 					exit(1);
 				}
-				if (simplepasswd(passbuf, 1)
-						|| simplepasswd(passbuf, 2)
-						|| strstr(passbuf, currentuser.userid)) {
+				if (simplepasswd(passbuf, 1) || simplepasswd(passbuf, 2) || strstr(passbuf, currentuser.userid)) {
 					move(t_lines - 1, 0);
 					clrtoeol();
 					prints("\033[1;33m* 密码过于简单, 请选择一个以上的特殊字元.\033[m\n");
