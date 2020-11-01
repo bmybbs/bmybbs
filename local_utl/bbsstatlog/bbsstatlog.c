@@ -3,16 +3,12 @@
 
 struct BCACHE *shm_bcache;
 struct UCACHE *shm_ucache;
-struct UINDEX *uindexshm;
 
 struct bbsstatlogitem item;
 int
 shm_init()
 {
 	ythtbbs_cache_utmp_resolve();
-	uindexshm = (struct UINDEX *) get_old_shm(UINDEX_SHMKEY, sizeof (struct UINDEX));
-	if (uindexshm == NULL)
-		return -1;
 	shm_bcache = (struct BCACHE *) get_old_shm(BCACHE_SHMKEY, sizeof (struct BCACHE));
 	if (shm_bcache == NULL)
 		return -1;
