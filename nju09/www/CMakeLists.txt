@@ -88,7 +88,6 @@ set(SRC
 
 	bbshome.c
 	bbsindex.c
-	bbsupload.c
 	bbslform.c
 	regreq.c
 
