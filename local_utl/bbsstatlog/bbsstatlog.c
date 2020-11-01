@@ -2,7 +2,6 @@
 #include "bbsstatlog.h"
 
 struct BCACHE *shm_bcache;
-struct UCACHE *shm_ucache;
 
 struct bbsstatlogitem item;
 int
@@ -11,9 +10,6 @@ shm_init()
 	ythtbbs_cache_utmp_resolve();
 	shm_bcache = (struct BCACHE *) get_old_shm(BCACHE_SHMKEY, sizeof (struct BCACHE));
 	if (shm_bcache == NULL)
-		return -1;
-	shm_ucache = (struct UCACHE *) get_old_shm(UCACHE_SHMKEY, sizeof (struct UCACHE));
-	if (shm_ucache == NULL)
 		return -1;
 	return 0;
 }
