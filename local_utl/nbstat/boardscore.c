@@ -21,7 +21,6 @@ struct sstay {
 	int day;
 };
 
-struct UTMPFILE *shm_utmp;
 void
 bs_use(int day, char *time, char *user, char *other)
 {
@@ -149,10 +148,8 @@ bs_exit()
 	fprintf(fp, "\033[1m%4d\033[m %-15.15s%-38.38s %5d \n",
 		boards, "Average", "Æ½¾ù", count / boards);
 	fclose(fp);
-	shm_utmp =
-	    (struct UTMPFILE *) get_old_shm(UTMP_SHMKEY,
-					    sizeof (struct UTMPFILE));
-	shm_utmp->ave_score = count / boards;
+	ythtbbs_cache_utmp_resolve();
+	ythtbbs_cache_utmp_set_ave_score(count / boards);
 }
 
 void
