@@ -10,24 +10,16 @@ struct bbsstatlogitem item;
 int
 shm_init()
 {
-	shm_utmp =
-	    (struct UTMPFILE *) get_old_shm(UTMP_SHMKEY,
-					    sizeof (struct UTMPFILE));
+	shm_utmp = (struct UTMPFILE *) get_old_shm(UTMP_SHMKEY, sizeof (struct UTMPFILE));
 	if (shm_utmp == NULL)
 		return -1;
-	uindexshm =
-	    (struct UINDEX *) get_old_shm(UINDEX_SHMKEY,
-					  sizeof (struct UINDEX));
+	uindexshm = (struct UINDEX *) get_old_shm(UINDEX_SHMKEY, sizeof (struct UINDEX));
 	if (uindexshm == NULL)
 		return -1;
-	shm_bcache =
-	    (struct BCACHE *) get_old_shm(BCACHE_SHMKEY,
-					  sizeof (struct BCACHE));
+	shm_bcache = (struct BCACHE *) get_old_shm(BCACHE_SHMKEY, sizeof (struct BCACHE));
 	if (shm_bcache == NULL)
 		return -1;
-	shm_ucache =
-	    (struct UCACHE *) get_old_shm(UCACHE_SHMKEY,
-					  sizeof (struct UCACHE));
+	shm_ucache = (struct UCACHE *) get_old_shm(UCACHE_SHMKEY, sizeof (struct UCACHE));
 	if (shm_ucache == NULL)
 		return -1;
 	return 0;
@@ -123,11 +115,10 @@ main()
 		shm_utmp->maxtoday = item.nonline;
 	fd = open(BBSSTATELOGFILE, O_WRONLY | O_CREAT, 0600);
 	if (fd >= 0) {
-		lseek(fd,
-		      ((ptm->tm_mday * 24 + ptm->tm_hour) * 10 +
-		       ptm->tm_min / 6) * sizeof (item), SEEK_SET);
+		lseek(fd, ((ptm->tm_mday * 24 + ptm->tm_hour) * 10 + ptm->tm_min / 6) * sizeof (item), SEEK_SET);
 		write(fd, &item, sizeof (item));
 		close(fd);
 	}
 	bonlinesync();
 }
+
