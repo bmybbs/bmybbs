@@ -6,21 +6,7 @@
 #define MAX_PROXY_NUM 2
 #define DEBUG_MODE 0
 
-struct WWWCACHE {
-	time_t www_version;
-	unsigned int www_visit;
-	unsigned int home_visit;
-	union {
-		unsigned int accel_ip;
-		struct in_addr accel_addr;
-	};
-	unsigned int accel_port;
-	unsigned int validproxy[MAX_PROXY_NUM];
-	int nouse[27 - MAX_PROXY_NUM];
-};
-
 static struct UTMPFILE *shm_utmp;
-static struct WWWCACHE *wwwcache;
 static char *FileName;		/* The filename, as selected by the user. */
 static char *ContentStart;	/* Pointer to the file content. */
 static int ContentLength;	/* Bytecount of the content. */
@@ -342,10 +328,6 @@ main(int argc, char *argv[], char *environment[])
 	if (!shm_utmp)
 		http_fatal("内部错误 1");
 
-
-	wwwcache = get_old_shm(WWWCACHE_SHMKEY, sizeof (struct WWWCACHE));
-	if (!wwwcache)
-		http_fatal("内部错误 2");
 	ytht_strsncpy(str, getsenv("PATH_INFO"), sizeof(str));
 
 	if ((ptr = strchr(str, '&')))
@@ -373,14 +355,6 @@ main(int argc, char *argv[], char *environment[])
 	ytht_strsncpy(fromhost, getsenv("REMOTE_ADDR"), 32);
 	inet_pton(AF_INET6,fromhost,&from_addr);   //ipv6 by leoncom
 	//inet_aton(fromhost, &from_addr);
-	/* ipv6 无视这个wwwcache
-	for (i = 0; wwwcache->validproxy[i] && i < MAX_PROXY_NUM; i++) {
-		if (from_addr.s_addr == wwwcache->validproxy[i]) {
-			via_proxy = 1;
-			break;
-		}
-	}
-	*/
 	if (via_proxy) {
 		char *ptr, *p;
 		int IPLEN = 255;
