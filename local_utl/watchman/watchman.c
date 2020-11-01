@@ -12,7 +12,6 @@ usage(char *name)
 int
 main(int argc, char *argv[])
 {
-	struct UTMPFILE *shm_utmp;
 	int time_add = 0;
 	int i;
 	FILE *fp, *fr;
@@ -29,16 +28,7 @@ main(int argc, char *argv[])
 	}
 	if (!time_add)
 		time_add = DEFAULT_ADD;
-	for (i = 0; i < 10; i++) {
-		shm_utmp = get_old_shm(UTMP_SHMKEY, sizeof (struct UTMPFILE));
-		if (shm_utmp)
-			break;
-		sleep(10);
-	}
-	if (!shm_utmp) {
-		errlog("can't attach ushm!");
-		return -1;
-	}
+	ythtbbs_cache_utmp_resolve();
 	now_t = time(NULL);
 	if (ythtbbs_cache_utmp_get_watchman()) {
 		strcpy(buf, "★★★★★警报★★★★★政治性版面锁住了★★★★★");
