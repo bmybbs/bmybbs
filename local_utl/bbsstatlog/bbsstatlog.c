@@ -100,7 +100,7 @@ main()
 	item.time = time(NULL);
 	get_load(item.load);
 	item.netflow = get_netflow();
-	item.naccount = shm_ucache->number;
+	item.naccount = ythtbbs_cache_UserTable_get_number();
 	for (i = 0; i < USHM_SIZE; i++) {
 		p = &shm_utmp->uinfo[i];
 		if (!p->active)

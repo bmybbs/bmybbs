@@ -229,6 +229,8 @@ int ythtbbs_cache_UserTable_get_usersum(void);
  */
 void ythtbbs_cache_UserTable_set_usersum(int usersum);
 
+int ythtbbs_cache_UserTable_get_number(void);
+
 /**
  * @brief 获取用户名
  * 这个函数来自 src/bbs/bcache.c::u_namearray，在 src/bbs/namecomplete.c::usercomplete 函数中使用。实现中没有校验缓冲区长度。

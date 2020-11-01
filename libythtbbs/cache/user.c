@@ -172,6 +172,10 @@ void ythtbbs_cache_UserTable_set_usersum(int usersum) {
 	}
 }
 
+int ythtbbs_cache_UserTable_get_number(void) {
+	return shm_user_table ? shm_user_table->number : 0;
+}
+
 void ythtbbs_cache_UserTable_setuserid(int usernum, char *userid) {
 	int user_idx;
 
