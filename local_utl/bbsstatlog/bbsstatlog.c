@@ -34,53 +34,6 @@ shm_init()
 }
 
 void
-add_uindex(int uid, int utmpent)
-{
-	int i, uent;
-	if (uid <= 0 || uid > MAXUSERS)
-		return;
-	for (i = 0; i < 6; i++)
-		if (uindexshm->user[uid - 1][i] == utmpent)
-			return;
-	for (i = 0; i < 6; i++) {
-		uent = uindexshm->user[uid - 1][i];
-		if (uent <= 0 || !shm_utmp->uinfo[uent - 1].active ||
-		    shm_utmp->uinfo[uent - 1].uid != uid) {
-			uindexshm->user[uid - 1][i] = utmpent;
-			return;
-		}
-	}
-}
-
-void
-rmdup_uindex(int uid)
-{
-	int i, j, uent;
-	for (i = 0; i < 5; i++) {
-		uent = uindexshm->user[uid - 1][i];
-		if (uent <= 0)
-			continue;
-		for (j = i + 1; j < 6; j++) {
-			if (uent == uindexshm->user[uid - 1][j])
-				uindexshm->user[uid - 1][j] = 0;
-		}
-	}
-}
-
-void
-syn_uindxexshm()
-{
-	int i;
-	for (i = 0; i < USHM_SIZE; i++) {
-		if (shm_utmp->uinfo[i].active) {
-			add_uindex(shm_utmp->uinfo[i].uid, i + 1);
-		}
-	}
-	for (i = 0; i < MAXUSERS; i++)
-		rmdup_uindex(i + 1);
-}
-
-void
 bonlinesync()
 {
 	int i, numboards;
@@ -176,6 +129,5 @@ main()
 		write(fd, &item, sizeof (item));
 		close(fd);
 	}
-	syn_uindxexshm();
 	bonlinesync();
 }
