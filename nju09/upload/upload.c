@@ -316,7 +316,6 @@ main(int argc, char *argv[], char *environment[])
 	char str[100];
 	char fromhost[256];
 	struct in6_addr from_addr;  //ipv6 by leoncom
-	int ii=0;
 
 	html_header();
 	seteuid(BBSUID);
@@ -338,8 +337,6 @@ main(int argc, char *argv[], char *environment[])
 
 	utmpnstr[4] = 0;
 	i = myatoi(utmpnstr);
-
-	ii = myatoi("MDN");
 
 	if (i < 0 || i > USHM_SIZE)
 		http_fatal("ÇëÏÈµÇÂ¼ 2");
