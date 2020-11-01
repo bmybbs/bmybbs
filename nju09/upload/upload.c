@@ -4,7 +4,6 @@
 #include "ythtbbs/ythtbbs.h"
 
 #define MAX_PROXY_NUM 2
-#define DEBUG_MODE 0
 
 static struct UTMPFILE *shm_utmp;
 static char *FileName;		/* The filename, as selected by the user. */
@@ -342,13 +341,6 @@ main(int argc, char *argv[], char *environment[])
 
 	ii = myatoi("MDN");
 
-	if(DEBUG_MODE){
-		printf("PATH_INFO=%s\n", str);
-		printf("ptr=%s\n", ptr);
-		printf("utmpnstr=%s\n", utmpnstr);
-		printf("i=%d\n", i);
-		printf("ii=%d\n", ii);
-	}
 	if (i < 0 || i > USHM_SIZE)
 		http_fatal("ÇëÏÈµÇÂ¼ 2");
 	uin = shm_utmp->uinfo[i];
