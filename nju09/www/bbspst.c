@@ -314,9 +314,7 @@ void printselsignature() {	//modify by mintbaggio 040809 for new www
 
 void printuploadattach() {	//modify by mintbaggio 040809 for new www
 	int i = u_info - &(shm_utmp->uinfo[0]);
-	printf(" [<a href=/cgi-bin/bbs/upload/%c%c%c%s target=uploadytht>添加/删除附件</a>]\n",
-			i / (26 * 26) + 'A', i / 26 % 26 + 'A', i % 26 + 'A',
-			u_info->sessionid);
+	printf(" [<a href=/cgi-bin/bbs/upload target=uploadytht>添加/删除附件</a>]\n");
 }
 
 void
