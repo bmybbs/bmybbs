@@ -45,7 +45,6 @@ typedef struct conn_t {
 conn_t *vector[MAX_CONNECTIONS];
 time_t now_t;
 size_t num_connections;
-struct UTMPFILE *shm_utmp;
 
 void
 conn_init(void)
@@ -95,11 +94,6 @@ l_write(int fd, const void *buf, size_t size)
 	static int load_refresh = 0;
 	static double cpu_load[3];
 	int ret;
-/*
-	if (shm_utmp->with_proxy) {
-		return write(fd, buf, size);
-	}
- */
 	nowcounter = time(0);
 	if (nowcounter - load_refresh > 10) {
 		load_refresh = nowcounter;
