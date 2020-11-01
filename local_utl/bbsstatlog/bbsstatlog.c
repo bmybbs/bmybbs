@@ -1,7 +1,6 @@
 #include "bbs.h"
 #include "bbsstatlog.h"
 
-struct UTMPFILE *shm_utmp;
 struct BCACHE *shm_bcache;
 struct UCACHE *shm_ucache;
 struct UINDEX *uindexshm;
@@ -10,9 +9,7 @@ struct bbsstatlogitem item;
 int
 shm_init()
 {
-	shm_utmp = (struct UTMPFILE *) get_old_shm(UTMP_SHMKEY, sizeof (struct UTMPFILE));
-	if (shm_utmp == NULL)
-		return -1;
+	ythtbbs_cache_utmp_resolve();
 	uindexshm = (struct UINDEX *) get_old_shm(UINDEX_SHMKEY, sizeof (struct UINDEX));
 	if (uindexshm == NULL)
 		return -1;
@@ -34,7 +31,7 @@ bonlinesync()
 	for (i = 0; i < numboards; i++)
 		shm_bcache->bcache[i].inboard = 0;
 	for (i = 0; i < USHM_SIZE; i++) {
-		uentp = &(shm_utmp->uinfo[i]);
+		uentp = ythtbbs_cache_utmp_get_by_idx(i);
 		if (uentp->active && uentp->pid && uentp->curboard)
 			shm_bcache->bcache[uentp->curboard - 1].inboard++;
 	}
@@ -94,7 +91,7 @@ main()
 	item.netflow = get_netflow();
 	item.naccount = ythtbbs_cache_UserTable_get_number();
 	for (i = 0; i < USHM_SIZE; i++) {
-		p = &shm_utmp->uinfo[i];
+		p = ythtbbs_cache_utmp_get_by_idx(i);
 		if (!p->active)
 			continue;
 		item.nonline++;
@@ -112,7 +109,7 @@ main()
 	}
 	ptm = localtime(&item.time);
 	if (ptm->tm_hour == 0 && ptm->tm_min < 6)
-		shm_utmp->maxtoday = item.nonline;
+		ythtbbs_cache_utmp_set_maxtoday(item.nonline);
 	fd = open(BBSSTATELOGFILE, O_WRONLY | O_CREAT, 0600);
 	if (fd >= 0) {
 		lseek(fd, ((ptm->tm_mday * 24 + ptm->tm_hour) * 10 + ptm->tm_min / 6) * sizeof (item), SEEK_SET);
