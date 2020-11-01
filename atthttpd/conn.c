@@ -11,15 +11,19 @@
 #include <fcntl.h>
 #include <ght_hash_table.h>
 
-#define _XOPEN_SOURCE /* glibc2 needs this */
 #include <time.h>
 
 #include "config.h"
 #include "conn.h"
 #include "mimetype.h"
 
-enum { AWAITING_REQUEST, SENDING_HEADER, SENDING_DATA, SENDING_CACHE_HEADER,
-	SENDING_CACHE_HEADER_304, SENDING_ERROR_HEADER
+enum {
+	AWAITING_REQUEST,
+	SENDING_HEADER,
+	SENDING_DATA,
+	SENDING_CACHE_HEADER,
+	SENDING_CACHE_HEADER_304,
+	SENDING_ERROR_HEADER
 };
 
 typedef struct conn_t {
@@ -110,9 +114,7 @@ l_write(int fd, const void *buf, size_t size)
 			bufcounter = 0;
 		}
 	} else {
-		/*
-		 * time clocked, clear bufcounter
-		 *                           */
+		// time clocked, clear bufcounter
 		bufcounter = 0;
 	}
 	lastcounter = nowcounter;
@@ -172,15 +174,12 @@ getbcache(char *board)
 	static time_t uptime = 0;
 	static struct BCACHE *shm_bcache = NULL;
 	if (shm_bcache == NULL)
-		shm_bcache =
-		    (struct BCACHE *) get_old_shm(BCACHE_SHMKEY,
-						  sizeof (struct BCACHE));
+		shm_bcache = (struct BCACHE *) get_old_shm(BCACHE_SHMKEY, sizeof (struct BCACHE));
 	if (shm_bcache == NULL)
 		return NULL;
 	if (board[0] == 0)
 		return NULL;
-	if (p_table
-	    && (num != shm_bcache->number || shm_bcache->uptime > uptime)) {
+	if (p_table && (num != shm_bcache->number || shm_bcache->uptime > uptime)) {
 		ght_finalize(p_table);
 		p_table = NULL;
 	}
@@ -191,13 +190,10 @@ getbcache(char *board)
 			num++;
 			if (!shm_bcache->bcache[i].header.filename[0])
 				continue;
-			ytht_strsncpy(upperstr,
-						  shm_bcache->bcache[i].header.filename,
-						  sizeof(upperstr));
+			ytht_strsncpy(upperstr, shm_bcache->bcache[i].header.filename, sizeof(upperstr));
 			for (j = 0; upperstr[j]; j++)
 				upperstr[j] = toupper(upperstr[j]);
-			ght_insert(p_table, &shm_bcache->bcache[i], j,
-				   upperstr);
+			ght_insert(p_table, &shm_bcache->bcache[i], j, upperstr);
 		}
 		uptime = now_t;
 	}
@@ -350,8 +346,8 @@ getreq(conn_t * c)
 	}
 	filename = strtok(NULL, "/");
 	if (!filename
-	    || (strncmp(filename, "M.", 2) && strncmp(filename, "G.", 2))
-	    || strlen(filename) > 15 || !findarticle(board, filename)) {
+			|| (strncmp(filename, "M.", 2) && strncmp(filename, "G.", 2))
+			|| strlen(filename) > 15 || !findarticle(board, filename)) {
 		c->state = SENDING_ERROR_HEADER;
 		c->head = get_error_type(404);
 		c->hlen = strlen(c->head);
@@ -379,8 +375,7 @@ getreq(conn_t * c)
 		return 0;
 	}
 	c->pos = atoi(posstr);
-	if (c->pos < 1 || c->pos >= c->mf.size - 4
-	    || c->mf.ptr[c->pos - 1] != 0) {
+	if (c->pos < 1 || c->pos >= c->mf.size - 4 || c->mf.ptr[c->pos - 1] != 0) {
 		c->state = SENDING_ERROR_HEADER;
 		c->head = get_error_type(404);
 		c->hlen = strlen(c->head);
@@ -410,7 +405,7 @@ getreq(conn_t * c)
 		c->hlen = strlen(c->head);
 		c->hoff = 0;
 	}
-	else 
+	else
 		c->state = SENDING_DATA;
 	return 0;
 }
@@ -422,12 +417,11 @@ sendhdr(conn_t * c)
 {
 	int bc;
 
-	while ((bc = l_write(c->sd, c->head + c->hoff, c->hlen - c->hoff)) ==
-	       -1) if (errno != EINTR) {
-			if (errno == EWOULDBLOCK)
-				return 0;
-			return -1;
-		}
+	while ((bc = l_write(c->sd, c->head + c->hoff, c->hlen - c->hoff)) == -1) if (errno != EINTR) {
+		if (errno == EWOULDBLOCK)
+			return 0;
+		return -1;
+	}
 	c->hoff += bc;
 	if (c->hoff >= c->hlen)
 		c->state = SENDING_CACHE_HEADER;
@@ -440,10 +434,7 @@ sendcachehdr_304(conn_t * c)
 {
 	int bc;
 
-	while (
-	       (bc =
-		l_write(c->sd, c->cache_header + c->choff,
-			c->chlen - c->choff)) == -1) {
+	while ((bc = l_write(c->sd, c->cache_header + c->choff, c->chlen - c->choff)) == -1) {
 		if (errno != EINTR) {
 			if (errno == EWOULDBLOCK)
 				return 0;
@@ -463,8 +454,7 @@ static int
 senderrorhdr(conn_t * c)
 {
 	int bc;
-	while ((bc = l_write(c->sd, c->head + c->hoff, c->hlen - c->hoff)) ==
-	       -1) {
+	while ((bc = l_write(c->sd, c->head + c->hoff, c->hlen - c->hoff)) == -1) {
 		if (errno != EINTR) {
 			if (errno == EWOULDBLOCK)
 				return 0;
@@ -482,10 +472,7 @@ static int
 sendcachehdr(conn_t * c)
 {
 	int bc;
-	while (
-	       (bc =
-		l_write(c->sd, c->cache_header + c->choff,
-			c->chlen - c->choff)) == -1) {
+	while ((bc = l_write(c->sd, c->cache_header + c->choff, c->chlen - c->choff)) == -1) {
 		if (errno != EINTR) {
 			if (errno == EWOULDBLOCK)
 				return 0;
@@ -509,8 +496,7 @@ senddata(conn_t * c)
 		sz = c->size - c->wsize;
 	if (sz == 0)
 		return -1;
-	while ((bs = l_write(c->sd, c->mf.ptr + c->pos + 4 + c->wsize, sz)) ==
-	       -1) {
+	while ((bs = l_write(c->sd, c->mf.ptr + c->pos + 4 + c->wsize, sz)) == -1) {
 		if (errno == EWOULDBLOCK)
 			return 0;
 		return -1;
