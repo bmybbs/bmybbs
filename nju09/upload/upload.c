@@ -311,7 +311,7 @@ main(int argc, char *argv[], char *environment[])
 	char *ptr, *buf;
 	char utmpnstr[5];
 	char Boundary[1024] = "--";
-	int len, i, via_proxy = 0;
+	int len, i;
 	struct user_info uin;
 	char str[100];
 	char fromhost[256];
@@ -344,26 +344,6 @@ main(int argc, char *argv[], char *environment[])
 	ytht_strsncpy(fromhost, getsenv("REMOTE_ADDR"), 32);
 	inet_pton(AF_INET6,fromhost,&from_addr);   //ipv6 by leoncom
 	//inet_aton(fromhost, &from_addr);
-	if (via_proxy) {
-		char *ptr, *p;
-		int IPLEN = 255;
-		ptr = getenv("HTTP_X_FORWARDED_FOR");
-		if (!ptr)
-			ptr = getsenv(getsenv("REMOTE_ADDR"));
-		p = strrchr(ptr, ',');
-		if (p != NULL) {
-			while (!isdigit(*p) && *p)
-				p++;
-			if (*p)
-				strncpy(fromhost, p, IPLEN);
-			else
-				strncpy(fromhost, ptr, IPLEN);
-		} else
-			strncpy(fromhost, ptr, IPLEN);
-		fromhost[IPLEN] = 0;
-		inet_pton(AF_INET6,fromhost,&from_addr);   //ipv6 by leoncom
-		//inet_aton(fromhost, &from_addr);
-	}
 	/*
 	if (!uin.active || strcmp(uin.sessionid, str + 4) || strncmp(uin.from, fromhost,20))
 		http_fatal("ÇëÏÈµÇÂ¼ 3");
