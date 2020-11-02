@@ -308,11 +308,9 @@ int
 main(int argc, char *argv[], char *environment[])
 {
 	char *ptr, *buf;
-	char utmpnstr[5];
 	char Boundary[1024] = "--";
 	int len, i;
 	const struct user_info *ptr_info;
-	char str[100];
 	char cookie_buf[128];
 	struct bmy_cookie cookie;
 
@@ -323,32 +321,15 @@ main(int argc, char *argv[], char *environment[])
 		http_fatal("ÄÚ²¿´íÎó 0");
 	ythtbbs_cache_utmp_resolve();
 
-	ytht_strsncpy(str, getsenv("PATH_INFO"), sizeof(str));
-	ytht_strsncpy(cookie_buf, getenv("HTTP_COOKIE"), sizeof(cookie_buf));
+	ytht_strsncpy(cookie_buf, getsenv("HTTP_COOKIE"), sizeof(cookie_buf));
 	memset(&cookie, 0, sizeof(struct bmy_cookie));
 	bmy_cookie_parse(cookie_buf, &cookie);
-
-	if ((ptr = strchr(str, '&')))
-		*ptr = 0;
-
-	if (strlen(str) != 34)
-		http_fatal("ÇëÏÈµÇÂ¼ 1");
-	ytht_strsncpy(utmpnstr, str + 1, 4);
-
-	utmpnstr[4] = 0;
 
 	i = ythtbbs_session_get_utmp_idx(cookie.sessid, cookie.userid);
 	if (i < 0 || i > USHM_SIZE)
 		http_fatal("ÇëÏÈµÇÂ¼ 2");
 	ptr_info = ythtbbs_cache_utmp_get_by_idx(i);
-	/*
-	if (!uin.active || strcmp(uin.sessionid, str + 4) || strncmp(uin.from, fromhost,20))
-		http_fatal("ÇëÏÈµÇÂ¼ 3");
-	*/
-
 	if (!ptr_info->active)
-		http_fatal("ÇëÏÈµÇÂ¼ 31");
-	if (strcmp(ptr_info->sessionid, str + 4))
 		http_fatal("ÇëÏÈµÇÂ¼ 31");
 	if (!(ptr_info->userlevel & PERM_POST))
 		http_fatal("È±·¦ POST È¨ÏÞ");
