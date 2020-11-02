@@ -5,8 +5,6 @@
 #include "bmy/cookie.h"
 #include "ythtbbs/session.h"
 
-#define MAX_PROXY_NUM 2
-
 static char *FileName;		/* The filename, as selected by the user. */
 static char *ContentStart;	/* Pointer to the file content. */
 static int ContentLength;	/* Bytecount of the content. */
