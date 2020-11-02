@@ -1,5 +1,7 @@
 #include "bbslib.h"
 
+int testmozilla(void);
+
 char* userid_str_class(char *s, char* class)
 {
 	static char buf[512];
