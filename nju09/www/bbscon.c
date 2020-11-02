@@ -69,7 +69,7 @@ fprintbinaryattachlink(FILE * fp, int ano, char *attachname, int pos, int size,
 	x = getboard(board);
 	if (x && !x->header.clubnum && !x->header.level) {
 		ptr = "/" SMAGIC "/";
-		if (w_info->att_mode == 0 && !via_proxy)
+		if (w_info->att_mode == 0)
 			atthttp = 1;
 	} else {
 		ptr = "";
@@ -168,16 +168,11 @@ fshowcon(FILE * output, char *filename, int show_iframe)
 			fprintf(output, "<td class=\"bordertheme\">\n");
 		if (show_iframe == 1) {
 			char interurl[256];
-			if (via_proxy)
-				snprintf(interurl, sizeof (interurl),
-					 "/" SMAGIC "/%s+%s+%s", filename,
-					 getparm("T"), usingMath?"m":"");
-			else
-				snprintf(interurl, sizeof (interurl),
-					 "http://%s:%d/" SMAGIC "/%s+%s%s",
-					 inet_ntoa(wwwcache->accel_addr),
-					 wwwcache->accel_port, filename,
-					 getparm("T"), usingMath?"m":"");
+			snprintf(interurl, sizeof (interurl),
+					"http://%s:%d/" SMAGIC "/%s+%s%s",
+					inet_ntoa(wwwcache->accel_addr),
+					wwwcache->accel_port, filename,
+					getparm("T"), usingMath?"m":"");
 			//modify by macintosh 050619 for Tex Math Equ
 			fprintf(output, "<script src=\"%s\"></script>", interurl);
 			fputs("\n</td></tr></table>\n", output);
@@ -522,10 +517,8 @@ bbscon_main()
 		if (loginok && !isguest && (dirinfo->accessed & FH_ATTACHED))
 			printf
 			    ("<a href=bbsmywww><font color=red>看不了图片？</font></a>");
-		if (loginok && !isguest && ((!via_proxy && wwwcache->accel_ip
-		    && wwwcache->accel_port)||via_proxy) && ! w_info->doc_mode)
-			printf
-			    ("<a href=bbsmywww><font color=red>看不了文章？</font></a>");
+		if (loginok && !isguest && (wwwcache->accel_ip && wwwcache->accel_port) && ! w_info->doc_mode)
+			printf("<a href=bbsmywww><font color=red>看不了文章？</font></a>");
 
 		printf("<tr><td><a href=\"boa?secstr=%s\">%s</a> / <a href=\"%s%s\">%s</a> / 阅读文章 "
 			"</td></tr></table></td>\n", bx->header.sec1, nohtml(getsectree(bx->header.sec1)->title), showByDefMode(), board, board);
@@ -688,10 +681,7 @@ bbscon_main()
 	fputs(buf, stdout);
 	if (usexml)
 		showconxml(filename, usexml);
-	else if (hideboard(board)
-		 || (!via_proxy
-		     && (!wwwcache->accel_ip || !wwwcache->accel_port))
-		 || w_info->doc_mode)
+	else if (hideboard(board) || (!wwwcache->accel_ip || !wwwcache->accel_port) || w_info->doc_mode)
 		fshowcon(stdout, filename, 0);
 	else
 		fshowcon(stdout, filename, 1);

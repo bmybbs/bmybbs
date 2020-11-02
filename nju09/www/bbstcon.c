@@ -258,19 +258,13 @@ fshow_file(FILE * output, char *board, struct fileheader *x, int n)
 		usingMath = 0;
 	}
 	sprintf(path, "boards/%s/%s", board, fh2fname(x));
-	if (!w_info->doc_mode && !hideboard(board)
-	    && (via_proxy || (wwwcache->accel_ip && wwwcache->accel_port))) {
-		if (via_proxy)
-			snprintf(interurl, sizeof (interurl),
-				 "/" SMAGIC "/%s+%ld", path,
-				 x->edittime ? (x->edittime - x->filetime) : 0);
-		else
-			snprintf(interurl, sizeof (interurl),
-				 "http://%s:%d/" SMAGIC "/%s+%ld",
-				 inet_ntoa(wwwcache->accel_addr),
-				 wwwcache->accel_port,
-				 path,
-				 x->edittime ? (x->edittime - x->filetime) : 0);
+	if (!w_info->doc_mode && !hideboard(board) && (wwwcache->accel_ip && wwwcache->accel_port)) {
+		snprintf(interurl, sizeof (interurl),
+				"http://%s:%d/" SMAGIC "/%s+%ld",
+				inet_ntoa(wwwcache->accel_addr),
+				wwwcache->accel_port,
+				path,
+				x->edittime ? (x->edittime - x->filetime) : 0);
 
 		fprintf(output, "<script src=\"%s\"></script>", interurl);
 		return 0;

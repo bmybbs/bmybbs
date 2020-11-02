@@ -84,7 +84,6 @@ char *ummap_ptr = NULL;
 int ummap_size = 0;
 char fromhost[BMY_IPV6_LEN]; // 从环境变量获取 IP 地址，IPv4/IPv6 已经由 apache 处理过
 struct in6_addr from_addr;   //ipv6 by leoncom
-int via_proxy = 0;
 
 struct boardmem *getbcache();
 struct userec *getuser();

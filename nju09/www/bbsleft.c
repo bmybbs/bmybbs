@@ -261,13 +261,9 @@ endleft:
 						"</script>");
 			}
 		}
-		if (!via_proxy && wwwcache->accel_port && wwwcache->accel_ip)
-			printf("<script src=http://%s:%d/testdoc.js></script>",
-					inet_ntoa(wwwcache->accel_addr), wwwcache->accel_port);
-		else if (via_proxy)
-			printf("<script src=/testdoc.js></script>");
+		if (wwwcache->accel_port && wwwcache->accel_ip)
+			printf("<script src=http://%s:%d/testdoc.js></script>", inet_ntoa(wwwcache->accel_addr), wwwcache->accel_port);
 		printf("</body></html>");
-
 
 	printf("</body></html>");
 return 0;
