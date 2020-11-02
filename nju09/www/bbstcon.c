@@ -91,7 +91,7 @@ bbstcon_main()
 			"<table width=95%% height=100%%  border=0 cellpadding=0 cellspacing=0>\n"
 			"<tr><td colspan=2 valign=bottom>\n"
 			"<table width=100%% border=0 cellpadding=0 cellspacing=0>\n");
-		printf("<tr><td><DIV class=menu><span class=btncurrent>&lt;%s&gt;</span>\n", 
+		printf("<tr><td><DIV class=menu><span class=btncurrent>&lt;%s&gt;</span>\n",
 			void1(titlestr(x1->header.title)));
 #if 0
 		printf("<div><a class=N0040 href='doc?B=%s&amp;S=%d'>&lt;·µ»ØÌÖÂÛÇø&gt;</a>\n",
@@ -142,7 +142,7 @@ bbstcon_main()
 				}
 			}
 			//x->viewtime++;
-			//if ((sizeof(struct fileheader) * (num+1)) % pagesize ==0 )msync(mem, dirstat.st_size, MS_SYNC); 
+			//if ((sizeof(struct fileheader) * (num+1)) % pagesize ==0 )msync(mem, dirstat.st_size, MS_SYNC);
 //			printf("<table width=100%%><tr><td>");
 			if(article_count % 2)
 				strcpy(odd_even_class, "tdtitlegrey");
@@ -256,7 +256,7 @@ fshow_file(FILE * output, char *board, struct fileheader *x, int n)
 		withinMath = 0;
 	} else {
 		usingMath = 0;
-	}   
+	}
 	sprintf(path, "boards/%s/%s", board, fh2fname(x));
 	if (!w_info->doc_mode && !hideboard(board)
 	    && (via_proxy || (wwwcache->accel_ip && wwwcache->accel_port))) {
@@ -350,7 +350,7 @@ fshow_file(FILE * output, char *board, struct fileheader *x, int n)
 			break;
 		}
 		fhhprintf(output, "%s", buf);
-		
+
 	}
 	if (lastq)
 		fprintf(output, "</font>");
