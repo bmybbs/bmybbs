@@ -314,7 +314,6 @@ main(int argc, char *argv[], char *environment[])
 	int len, i;
 	struct user_info uin;
 	char str[100];
-	char fromhost[256];
 	struct in6_addr from_addr;  //ipv6 by leoncom
 
 	html_header();
@@ -341,9 +340,6 @@ main(int argc, char *argv[], char *environment[])
 	if (i < 0 || i > USHM_SIZE)
 		http_fatal("ÇëÏÈµÇÂ¼ 2");
 	uin = shm_utmp->uinfo[i];
-	ytht_strsncpy(fromhost, getsenv("REMOTE_ADDR"), 32);
-	inet_pton(AF_INET6,fromhost,&from_addr);   //ipv6 by leoncom
-	//inet_aton(fromhost, &from_addr);
 	/*
 	if (!uin.active || strcmp(uin.sessionid, str + 4) || strncmp(uin.from, fromhost,20))
 		http_fatal("ÇëÏÈµÇÂ¼ 3");
@@ -352,8 +348,6 @@ main(int argc, char *argv[], char *environment[])
 	if (!uin.active)
 		http_fatal("ÇëÏÈµÇÂ¼ 31");
 	if (strcmp(uin.sessionid, str + 4))
-		http_fatal("ÇëÏÈµÇÂ¼ 31");
-	if (strncmp(uin.from, fromhost,20))
 		http_fatal("ÇëÏÈµÇÂ¼ 31");
 	if (!(uin.userlevel & PERM_POST))
 		http_fatal("È±·¦ POST È¨ÏÞ");
