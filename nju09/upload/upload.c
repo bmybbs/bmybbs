@@ -2,10 +2,11 @@
 #include <dirent.h>
 #include "bbs.h"
 #include "ythtbbs/ythtbbs.h"
+#include "bmy/cookie.h"
+#include "ythtbbs/session.h"
 
 #define MAX_PROXY_NUM 2
 
-static struct UTMPFILE *shm_utmp;
 static char *FileName;		/* The filename, as selected by the user. */
 static char *ContentStart;	/* Pointer to the file content. */
 static int ContentLength;	/* Bytecount of the content. */
@@ -312,20 +313,22 @@ main(int argc, char *argv[], char *environment[])
 	char utmpnstr[5];
 	char Boundary[1024] = "--";
 	int len, i;
-	struct user_info uin;
+	const struct user_info *ptr_info;
 	char str[100];
-	struct in6_addr from_addr;  //ipv6 by leoncom
+	char cookie_buf[128];
+	struct bmy_cookie cookie;
 
 	html_header();
 	seteuid(BBSUID);
 
 	if (geteuid() != BBSUID)
 		http_fatal("ÄÚ²¿´íÎó 0");
-	shm_utmp = (struct UTMPFILE *) get_old_shm(UTMP_SHMKEY, sizeof (struct UTMPFILE));
-	if (!shm_utmp)
-		http_fatal("ÄÚ²¿´íÎó 1");
+	ythtbbs_cache_utmp_resolve();
 
 	ytht_strsncpy(str, getsenv("PATH_INFO"), sizeof(str));
+	ytht_strsncpy(cookie_buf, getenv("HTTP_COOKIE"), sizeof(cookie_buf));
+	memset(&cookie, 0, sizeof(struct bmy_cookie));
+	bmy_cookie_parse(cookie_buf, &cookie);
 
 	if ((ptr = strchr(str, '&')))
 		*ptr = 0;
@@ -335,23 +338,23 @@ main(int argc, char *argv[], char *environment[])
 	ytht_strsncpy(utmpnstr, str + 1, 4);
 
 	utmpnstr[4] = 0;
-	i = myatoi(utmpnstr);
 
+	i = ythtbbs_session_get_utmp_idx(cookie.sessid, cookie.userid);
 	if (i < 0 || i > USHM_SIZE)
 		http_fatal("ÇëÏÈµÇÂ¼ 2");
-	uin = shm_utmp->uinfo[i];
+	ptr_info = ythtbbs_cache_utmp_get_by_idx(i);
 	/*
 	if (!uin.active || strcmp(uin.sessionid, str + 4) || strncmp(uin.from, fromhost,20))
 		http_fatal("ÇëÏÈµÇÂ¼ 3");
 	*/
 
-	if (!uin.active)
+	if (!ptr_info->active)
 		http_fatal("ÇëÏÈµÇÂ¼ 31");
-	if (strcmp(uin.sessionid, str + 4))
+	if (strcmp(ptr_info->sessionid, str + 4))
 		http_fatal("ÇëÏÈµÇÂ¼ 31");
-	if (!(uin.userlevel & PERM_POST))
+	if (!(ptr_info->userlevel & PERM_POST))
 		http_fatal("È±·¦ POST È¨ÏÞ");
-	snprintf(userattachpath, sizeof (userattachpath), PATHUSERATTACH "/%s", uin.userid);
+	snprintf(userattachpath, sizeof (userattachpath), PATHUSERATTACH "/%s", ptr_info->userid);
 	mkdir(userattachpath, 0760);
 	//clearpath(userattachpath);
 	/* Test if the program was started by a METHOD=POST form. */
