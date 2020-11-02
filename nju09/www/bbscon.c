@@ -171,7 +171,7 @@ fshowcon(FILE * output, char *filename, int show_iframe)
 			if (via_proxy)
 				snprintf(interurl, sizeof (interurl),
 					 "/" SMAGIC "/%s+%s+%s", filename,
-					 getparm("T"), usingMath?"m":"");  
+					 getparm("T"), usingMath?"m":"");
 			else
 				snprintf(interurl, sizeof (interurl),
 					 "http://%s:%d/" SMAGIC "/%s+%s%s",
@@ -410,14 +410,14 @@ testxml()
 	return 0;
 }
 
-void   
-processMath()   
+void
+processMath()
 {	//add by macintosh 050619 for Tex Math Equ
 	if(usedMath) {
 		printf("<script src=/jsMath/jsMath.js></script>");
 		printf("<script>jsMath.ProcessBeforeShowing();</script>");
-	}   
-}   
+	}
+}
 
 
 int
@@ -488,14 +488,14 @@ bbscon_main()
 			http_fatal("本文不存在或者已被删除");
 		}
 
-#if 1		
-		html_header(1);		
+#if 1
+		html_header(1);
 		if (dirinfo->accessed & FH_MATH) {
-			usingMath = 1;			
-			usedMath = 1;			
-			withinMath = 0;		
+			usingMath = 1;
+			usedMath = 1;
+			withinMath = 0;
 		} else {
-			usingMath = 0;		
+			usingMath = 0;
 		}
 #else
 		if (dirinfo->accessed & FH_MATH && (usexml = testxml())) {
@@ -558,11 +558,11 @@ bbscon_main()
 			"<tr><td colspan=2 valign=bottom>\n"
 			"<table width=\"100%%\" border=0 cellpadding=0 cellspacing=0>\n");
 		nbuf = sprintf(buf, "<tr><td><div class=\"menu\">\n<DIV class=btncurrent>&lt;%s&gt;</DIV>\n", void1(titlestr(bx->header.title)));
-		nbuf += sprintf(buf+nbuf, 
+		nbuf += sprintf(buf+nbuf,
 				"<A href='fwd?B=%s&amp;F=%s' class=btnfunc>/ 转寄</A>\n",
 				board, file);
 		nbuf +=
-		    sprintf(buf + nbuf, 
+		    sprintf(buf + nbuf,
 			"<DIV><A href='ccc?B=%s&amp;F=%s' class=btnfunc>/ 转贴</a>\n",
 			board, file);
 
@@ -707,9 +707,9 @@ bbscon_main()
 		printf("<br /><script>eva('%s','%s');</script>", board, file);
 	}
 #endif
-    
-    
-	processMath();  
+
+
+	processMath();
 	printf("</body></html>\n");
 
 	return 0;
