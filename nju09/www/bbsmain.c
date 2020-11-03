@@ -127,16 +127,6 @@ struct cgi_applet applets[] = {
 char *cginame = NULL;
 static unsigned int rt = 0;
 
-void logtimeused() {
-	char buf[1024];
-	struct cgi_applet *a = applets;
-	while (a->main) {
-		sprintf(buf, "%s %d %f %f\n", a->name[0], a->count, a->utime, a->stime);
-		f_append(MY_BBS_HOME "/gprof/cgirtime", buf);
-		a++;
-	}
-}
-
 static void cgi_time(struct cgi_applet *a) {
 	static struct rusage r0, r1;
 	getrusage(RUSAGE_SELF, &r1);
@@ -211,7 +201,6 @@ int main(int argc, char *argv[]) {
 		if (setjmp(cgi_start)) {
 			cgi_time(a);
 			if (!incgiloop || wwwcache->www_version > thisversion || rt++ > 40000) {
-				logtimeused();
 				exit(2);
 			}
 			incgiloop = 0;
@@ -234,7 +223,6 @@ int main(int argc, char *argv[]) {
 			(*(a->main)) ();
 			cgi_time(a);
 			if (!incgiloop || wwwcache->www_version > thisversion) {
-				logtimeused();
 				exit(4);
 			}
 			incgiloop = 0;
