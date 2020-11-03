@@ -1,11 +1,5 @@
 #ifndef NJULIB_H
 #define NJULIB_H
-#ifndef ENABLE_FASTCGI
-#define FCGI_ToFILE(x) (x)
-//#define ENABLE_FASTCGI 1
-#define FCGI_FILE FILE
-#endif
-//#include "fcgi_stdio.h"
 #include <sys/mman.h>
 #include "bbs.h"
 #include "ythtbbs/ythtbbs.h"

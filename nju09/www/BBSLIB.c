@@ -1178,8 +1178,8 @@ static int post_imail(char *userid, char *title, char *file, char *id,
 	fprintf(fp2, "Subject: %s\n\n", title);
 
 	while (fgets(buf, sizeof (buf), fp1) != NULL) {
-		if (NULL != (ptr = checkbinaryattach(buf, FCGI_ToFILE(fp1), &len))) {
-			uuencode(FCGI_ToFILE(fp1), FCGI_ToFILE(fp2), len, ptr);
+		if (NULL != (ptr = checkbinaryattach(buf, fp1, &len))) {
+			uuencode(fp1, fp2, len, ptr);
 			continue;
 		}
 		if (buf[0] == '.' && buf[1] == '\n')
@@ -1406,7 +1406,7 @@ anno_path_of(char *board)
 		if (fp == 0)
 			return "";
 		num = 0;
-		while (num < MAXBOARD && fscanf(FCGI_ToFILE(fp), "%s %s", buf1, buf2) > 0) {
+		while (num < MAXBOARD && fscanf(fp, "%s %s", buf1, buf2) > 0) {
 			buf1[79] = 0;
 			buf1[strlen(buf1) - 1] = 0;
 			for (j = 0; buf1[j]; j++)
@@ -1435,7 +1435,7 @@ anno_path_of(char *board)
 	if (fp == 0)
 		return "";
 	while (1) {
-		if (fscanf(FCGI_ToFILE(fp), "%s %s", buf1, buf2) <= 0)
+		if (fscanf(fp, "%s %s", buf1, buf2) <= 0)
 			break;
 		buf1[79] = 0;
 		buf1[strlen(buf1) - 1] = 0;
@@ -2234,7 +2234,7 @@ fdisplay_attach(FILE * output, FILE * fp, char *currline, char *nowfile)
 	if (strlen(attachfile) < 2)
 		return;
 
-	download = attachdecode(FCGI_ToFILE(fp), nowfile, attachfile);
+	download = attachdecode(fp, nowfile, attachfile);
 	if (download == NULL) {
 		fprintf(output, "\xB2\xBB\xC4\xDC\xD5\xFD\xC8\xB7\xBD\xE2\xC2\xEB\xB5\xC4\xB8\xBD\xBC\xFE\xC4\xDA\xC8\xDD..."); // 不能正确解码的附件内容
 		return;
@@ -2420,7 +2420,7 @@ system_load()
 		load[0] = load[1] = load[2] = 0;
 	else {
 		float av[3];
-		fscanf(FCGI_ToFILE(fp), "%g %g %g", av, av + 1, av + 2);
+		fscanf(fp, "%g %g %g", av, av + 1, av + 2);
 		fclose(fp);
 		load[0] = av[0];
 		load[1] = av[1];

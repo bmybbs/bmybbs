@@ -96,7 +96,7 @@ bbseditmail_main()
 		http_fatal("文件丢失");
 	snprintf(path, sizeof (path), PATHUSERATTACH "/%s", currentuser.userid);
 	clearpath(path);
-	keepoldheader(FCGI_ToFILE(fp), SKIPHEADER);
+	keepoldheader(fp, SKIPHEADER);
 	printf("<tr><td><textarea  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.form1.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.form1.submit()' name=text rows=20 cols=76 wrap=virtual class=f2>\n");
 	while (1) {
 		if (fgets(buf, 500, fp) == 0)
@@ -109,13 +109,13 @@ bbseditmail_main()
 			base64 = 1;
 			len = 0;
 			fn = buf + 10;
-		} else if (checkbinaryattach(buf, FCGI_ToFILE(fp), &len)) {
+		} else if (checkbinaryattach(buf, fp, &len)) {
 			isa = 1;
 			base64 = 0;
 			fn = buf + 18;
 		}
 		if (isa) {
-			if (!getattach(FCGI_ToFILE(fp), buf, fn, path, base64, len, 0)) {
+			if (!getattach(fp, buf, fn, path, base64, len, 0)) {
 				printf("#attach %s\n", fn);
 			}
 		} else
@@ -190,7 +190,7 @@ update_form_mail(char *file, char *title, int box_type)
 	fp = fopen(path, "r+");
 	if (fp == 0)
 		http_fatal("无法存盘");
-	keepoldheader(FCGI_ToFILE(fp), SKIPHEADER);
+	keepoldheader(fp, SKIPHEADER);
 	mmapfile(filename, &mf);
 	fwrite(mf.ptr, mf.size, 1, fp);
 	mmapfile(NULL, &mf);

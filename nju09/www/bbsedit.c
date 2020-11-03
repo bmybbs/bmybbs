@@ -159,7 +159,7 @@ bbsedit_main()
 		http_fatal("文件丢失");
 	snprintf(path, sizeof (path), PATHUSERATTACH "/%s", currentuser.userid);
 	clearpath(path);
-	keepoldheader(FCGI_ToFILE(fp), SKIPHEADER);
+	keepoldheader(fp, SKIPHEADER);
 	printf
 	    ("<tr><td><textarea  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.form1.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.form1.submit()' name=text rows=20 cols=76 wrap=virtual class=f2>\n");
 	while (1) {
@@ -179,7 +179,7 @@ bbsedit_main()
 			fn = buf + 18;
 		}
 		if (isa) {
-			if (!getattach(FCGI_ToFILE(fp), buf, fn, path, base64, len, 0)) {
+			if (!getattach(fp, buf, fn, path, base64, len, 0)) {
 				printf("#attach %s\n", fn);
 			}
 		} else if (!strncmp(buf, "--\n", 3) || !strncmp(buf, "--\r\n", 4)) { // 签名以及变更日志单独存放 IronBlood

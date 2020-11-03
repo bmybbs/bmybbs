@@ -333,7 +333,7 @@ show_special(char *id2)
 	while (1) {
 		id1[0] = 0;
 		name[0] = 0;
-		if (fscanf(FCGI_ToFILE(fp), "%s %s", id1, name) <= 0)
+		if (fscanf(fp, "%s %s", id1, name) <= 0)
 			break;
 		if (!strcmp(id1, id2))
 			hprintf(" \033[1;31m¡ï\033[0;36m%s\033[1;31m¡ï\033[m", name);

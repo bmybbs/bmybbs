@@ -1,12 +1,5 @@
 #include "bbslib.h"
-#if defined(ENABLE_GHTHASH) && defined(ENABLE_FASTCGI)
-#include <ght_hash_table.h>
-#endif
-
-#ifndef ENABLE_FASTCGI
 int looponce = 0;
-#define FCGI_Accept() looponce--
-#endif
 
 #include "njuapi.h"
 
@@ -165,29 +158,6 @@ void wantquit(int signal) {
 		exit(6);
 }
 
-#if defined(ENABLE_GHTHASH) && defined(ENABLE_FASTCGI)
-struct cgi_applet *get_cgi_applet(char *needcgi) {
-	static ght_hash_table_t *p_table = NULL;
-	struct cgi_applet *a;
-
-	if (p_table == NULL) {
-		int i;
-		a = applets;
-		p_table = ght_create(250, NULL, 0);
-		while (a->main != NULL) {
-			a->count = 0;
-			a->utime = 0;
-			a->stime = 0;
-			for (i = 0; a->name[i] != NULL; i++)
-				ght_insert(p_table, (void *) a, strlen(a->name[i]), (void *) a->name[i]);
-			a++;
-		}
-	}
-	if (p_table == NULL)
-		return NULL;
-	return ght_get(p_table, strlen(needcgi), needcgi);
-}
-#else
 struct cgi_applet *get_cgi_applet(char *needcgi) {
 	struct cgi_applet *a;
 	int i;
@@ -200,7 +170,6 @@ struct cgi_applet *get_cgi_applet(char *needcgi) {
 	}
 	return NULL;
 }
-#endif
 
 int nologin = 1;
 
@@ -236,7 +205,7 @@ int main(int argc, char *argv[]) {
 	signal(SIGTERM, wantquit);
 	if (access("NOLOGIN", F_OK))
 		nologin = 0;
-	while (FCGI_Accept() >= 0) {
+	while (looponce-- >= 0) {
 		cginame = NULL;
 		incgiloop = 1;
 		if (setjmp(cgi_start)) {
