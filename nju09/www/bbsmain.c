@@ -219,7 +219,6 @@ int main(int argc, char *argv[]) {
 		a = get_cgi_applet(needcgi);
 		if (a != NULL) {
 			cginame = a->name[0];
-			wwwcache->www_visit++;
 			(*(a->main)) ();
 			cgi_time(a);
 			if (!incgiloop || wwwcache->www_version > thisversion) {

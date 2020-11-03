@@ -209,7 +209,6 @@ bbsindex_main()
 			redirect(FIRST_PAGE);
 			http_quit();
 		}
-		wwwcache->home_visit++;
 		loginwindow();
 		http_quit();
 	}

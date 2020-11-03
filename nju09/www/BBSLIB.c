@@ -762,8 +762,6 @@ html_header(int mode)
 		printf("<!DOCTYPE html>\n<HTML>\n");
 	else
 		printf("<HTML XMLNS:m=\"http://www.w3.org/1998/Math/MathML\">\n");
-	//printf("<!--%d;%d;%d;%d-->", thispid, sizeof (struct wwwsession),
-	//       wwwcache->www_visit, wwwcache->home_visit);
 	switch (mode) {
 	case 1:
 	case 101:

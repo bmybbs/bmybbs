@@ -15,8 +15,6 @@
 
 struct WWWCACHE {
 	time_t www_version;
-	unsigned int www_visit;
-	unsigned int home_visit;
 };
 
 struct wwwstyle {
