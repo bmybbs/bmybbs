@@ -11,29 +11,19 @@
 #include "ythtbbs/ythtbbs.h"
 #include "ythtbbs/override.h"
 
-#define FIRST_PAGE	"/"
-#define CSS_FILE 	"/bbs.css"
-#define CHARSET		"gb2312"
-#define NAVFILE		"nav.txt"
+#define FIRST_PAGE   "/"
+#define CSS_FILE     "/bbs.css"
+#define CHARSET      "gb2312"
+#define NAVFILE      "nav.txt"
 #define MAXWWWCLIENT MAXACTIVE
-#define CACHE_ABLE	0x100
 
-#define MAX_PROXY_NUM 4
-#define DEFAULT_PROXY_PORT 8080
-#define HTMPATH "/home/apache/htdocs/bbs/"
-#define CSSPATH		"/images/"
+#define HTMPATH      "/home/apache/htdocs/bbs/"
+#define CSSPATH      "/images/"
 
 struct WWWCACHE {
 	time_t www_version;
 	unsigned int www_visit;
 	unsigned int home_visit;
-	union {
-		unsigned int accel_ip;
-		struct in_addr accel_addr;
-	};
-	unsigned int accel_port;
-	unsigned int validproxy[MAX_PROXY_NUM];
-	int nouse[27 - MAX_PROXY_NUM];
 };
 
 struct wwwstyle {

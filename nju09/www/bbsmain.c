@@ -209,48 +209,6 @@ char *myoutbuf = NULL;
 int myoutsize;
 FILE oldout;
 
-void get_att_server() {
-	FILE *fp;
-	char *ptr;
-	char buf[128];
-	unsigned long accel_ip, accel_port, validproxy[MAX_PROXY_NUM];
-	int i;
-	struct in_addr proxy_ip;
-	i = accel_ip = accel_port = 0;
-	bzero(validproxy, sizeof (validproxy));
-	fp = fopen("ATT_SERVER", "r");
-	if (!fp)
-		goto END;
-
-	while (fgets(buf, sizeof (buf), fp) && i < MAX_PROXY_NUM + 1) {
-		strtok(buf, "\n");
-		if (i) {
-			if (inet_aton(buf, &proxy_ip)) {
-				validproxy[i - 1] = proxy_ip.s_addr;
-				i++;
-			}
-			continue;
-		}
-		ptr = strchr(buf, ':');
-		if (ptr)
-			*ptr = 0;
-		if (!inet_aton(buf, &proxy_ip))
-			continue;
-		accel_ip = proxy_ip.s_addr;
-		if (ptr)
-			accel_port = atoi(ptr + 1);
-		else
-			accel_port = DEFAULT_PROXY_PORT;
-		i++;
-	}
-	fclose(fp);
-END:
-	wwwcache->accel_ip = accel_ip;
-	wwwcache->accel_port = accel_port;
-	for (i = 0; i < MAX_PROXY_NUM; i++)
-		wwwcache->validproxy[i] = validproxy[i];
-}
-
 time_t thisversion;
 
 int main(int argc, char *argv[]) {
@@ -283,7 +241,6 @@ int main(int argc, char *argv[]) {
 	signal(SIGTERM, wantquit);
 	if (access("NOLOGIN", F_OK))
 		nologin = 0;
-	get_att_server();
 	while (FCGI_Accept() >= 0) {
 		cginame = NULL;
 		incgiloop = 1;

@@ -261,8 +261,6 @@ endleft:
 						"</script>");
 			}
 		}
-		if (wwwcache->accel_port && wwwcache->accel_ip)
-			printf("<script src=http://%s:%d/testdoc.js></script>", inet_ntoa(wwwcache->accel_addr), wwwcache->accel_port);
 		printf("</body></html>");
 
 	printf("</body></html>");

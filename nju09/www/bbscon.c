@@ -80,11 +80,6 @@ void fprintbinaryattachlink(FILE * fp, int ano, char *attachname, int pos, int s
 			snprintf(link, sizeof (link),
 				"%s%s&amp;attachpos=%d&amp;attachname=/%s",
 				ptr, alt, pos, attachname);
-		else if (wwwcache->accel_ip && wwwcache->accel_port)
-			snprintf(link, sizeof (link),
-				"http://%s:%d%s%s&amp;attachpos=%d&amp;attachname=/%s",
-				inet_ntoa(wwwcache->accel_addr),
-				wwwcache->accel_port, ptr, alt, pos, attachname);
 		else
 			snprintf(link, sizeof (link),"/attach/%s/%d/%s", alt1, pos, attachname);
 
@@ -93,14 +88,6 @@ void fprintbinaryattachlink(FILE * fp, int ano, char *attachname, int pos, int s
 		if (!atthttp)
 			snprintf(link, sizeof (link),
 				"%sattach/bbscon/%s?B=%s&amp;F=%s&amp;attachpos=%d&amp;attachname=/%s",
-				ptr, attachname, board, getparm2("F", "file"),
-				pos, attachname);
-
-		else if (wwwcache->accel_ip && wwwcache->accel_port)
-			snprintf(link, sizeof (link),
-				"http://%s:%d%sattach/bbscon/%s?B=%s&amp;F=%s&amp;attachpos=%d&amp;attachname=/%s",
-				inet_ntoa(wwwcache->accel_addr),
-				wwwcache->accel_port,
 				ptr, attachname, board, getparm2("F", "file"),
 				pos, attachname);
 		else
@@ -157,22 +144,7 @@ fshowcon(FILE * output, char *filename, int show_iframe)
 	if (show_iframe != 2) {
 //		fprintf(output, "<table width=100%% border=1><tr>");
 		fprintf(output, "<tr><td width=40 class=\"level1\">&nbsp;</td>\n<td class=\"level1\"><br><TABLE width=\"95%%\" cellpadding=5 cellspacing=0><TBODY>\n<tr><td class=tdtitletheme>&nbsp;</td></tr><tr>\n");
-		if (testmozilla() && wwwstylenum % 2)
-			fprintf(output, "<td class=\"bordertheme\">\n");
-		else
-			fprintf(output, "<td class=\"bordertheme\">\n");
-		if (show_iframe == 1) {
-			char interurl[256];
-			snprintf(interurl, sizeof (interurl),
-					"http://%s:%d/" SMAGIC "/%s+%s%s",
-					inet_ntoa(wwwcache->accel_addr),
-					wwwcache->accel_port, filename,
-					getparm("T"), usingMath?"m":"");
-			//modify by macintosh 050619 for Tex Math Equ
-			fprintf(output, "<script src=\"%s\"></script>", interurl);
-			fputs("\n</td></tr></table>\n", output);
-			return 0;
-		}
+		fprintf(output, "<td class=\"bordertheme\">\n");
 	}
 	fp = fopen(filename, "r");
 	if (fp == 0)
@@ -486,8 +458,6 @@ bbscon_main()
 			"<td><table width=\"100%\" border=0 align=right cellpadding=0 cellspacing=0>\n");
 		if (loginok && !isguest && (dirinfo->accessed & FH_ATTACHED))
 			printf("<a href=bbsmywww><font color=red>看不了图片？</font></a>");
-		if (loginok && !isguest && (wwwcache->accel_ip && wwwcache->accel_port) && ! w_info->doc_mode)
-			printf("<a href=bbsmywww><font color=red>看不了文章？</font></a>");
 
 		printf("<tr><td><a href=\"boa?secstr=%s\">%s</a> / <a href=\"%s%s\">%s</a> / 阅读文章 "
 			"</td></tr></table></td>\n", bx->header.sec1, nohtml(getsectree(bx->header.sec1)->title), showByDefMode(), board, board);
@@ -626,10 +596,8 @@ bbscon_main()
 	fputs(buf, stdout);
 	if (usexml)
 		showconxml(filename, usexml);
-	else if (hideboard(board) || (!wwwcache->accel_ip || !wwwcache->accel_port) || w_info->doc_mode)
-		fshowcon(stdout, filename, 0);
 	else
-		fshowcon(stdout, filename, 1);
+		fshowcon(stdout, filename, 0);
 
 	printf("<tr><td></td><td height=\"20\" valign=\"middle\">");
 	memset(fileback, 0, 80);
