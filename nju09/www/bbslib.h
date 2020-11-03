@@ -41,7 +41,6 @@ extern const char seccodes[SECNUM];
 extern const char secname[SECNUM][2][20];
 extern char needcgi[STRLEN];
 extern char rframe[STRLEN];
-extern time_t thisversion;
 
 extern int loginok;
 extern int isguest;

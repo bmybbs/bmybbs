@@ -30,25 +30,6 @@ bbsboa_main()
 
 	secstr = getparm("secstr");
 	sec = getsectree(secstr);
-	//if (secstr[0] != '*') {   ÔÝÊ±È¥µô»º´æ by IronBlood@bmy 20120329
-	////get_session_string(session_name);
-	////if (secstr[0] != '*' && !no_cache_header) {
-	//	    if (cache_header
-	//	    (max(thisversion, file_time(MY_BBS_HOME "/wwwtmp")), 120))
-	//		return 0;
-	//}
-	/*
-	if (no_cache_header) {
-		p = strchr(session_name, '.');
-		if (NULL != p) {
-			*p = '\0';
-		}
-
-		sprintf(pname, "/%s%s/", SMAGIC, session_name);
-		print_session_string(pname);
-	}
-	*/
-
 	html_header(1);
 	check_msg();
 	//printf("<style type=text/css>A {color: #0000f0}</style>");

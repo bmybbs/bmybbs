@@ -163,7 +163,6 @@ struct cgi_applet *get_cgi_applet(char *needcgi) {
 
 int nologin = 1;
 
-time_t thisversion;
 
 int main(int argc, char *argv[]) {
 	struct cgi_applet *a = NULL;
@@ -179,7 +178,6 @@ int main(int argc, char *argv[]) {
 	thispid = getpid();
 	now_t = time(NULL);
 	srand(now_t * 2 + thispid);
-	thisversion = file_time(argv[0]);
 	html_header(0);
 	if (geteuid() != BBSUID)
 		http_fatal("uid error.");
