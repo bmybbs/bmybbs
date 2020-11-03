@@ -14,7 +14,6 @@
 #define CSSPATH      "/images/"
 
 struct WWWCACHE {
-	time_t www_version;
 };
 
 struct wwwstyle {

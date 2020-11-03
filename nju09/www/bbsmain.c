@@ -183,8 +183,6 @@ int main(int argc, char *argv[]) {
 	if (NULL == wwwcache)
 		exit(0);
 	thisversion = file_time(argv[0]);
-	if (thisversion > wwwcache->www_version)
-		wwwcache->www_version = thisversion;
 	html_header(0);
 	if (geteuid() != BBSUID)
 		http_fatal("uid error.");
@@ -200,7 +198,7 @@ int main(int argc, char *argv[]) {
 		incgiloop = 1;
 		if (setjmp(cgi_start)) {
 			cgi_time(a);
-			if (!incgiloop || wwwcache->www_version > thisversion || rt++ > 40000) {
+			if (!incgiloop || rt++ > 40000) {
 				exit(2);
 			}
 			incgiloop = 0;
@@ -221,7 +219,7 @@ int main(int argc, char *argv[]) {
 			cginame = a->name[0];
 			(*(a->main)) ();
 			cgi_time(a);
-			if (!incgiloop || wwwcache->www_version > thisversion) {
+			if (!incgiloop) {
 				exit(4);
 			}
 			incgiloop = 0;
