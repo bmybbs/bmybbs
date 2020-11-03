@@ -179,9 +179,6 @@ int main(int argc, char *argv[]) {
 	thispid = getpid();
 	now_t = time(NULL);
 	srand(now_t * 2 + thispid);
-	wwwcache = get_shm(WWWCACHE_SHMKEY, sizeof (struct WWWCACHE));
-	if (NULL == wwwcache)
-		exit(0);
 	thisversion = file_time(argv[0]);
 	html_header(0);
 	if (geteuid() != BBSUID)

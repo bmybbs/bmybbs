@@ -188,7 +188,6 @@ You must also set "EightBitMode=pass8" in /etc/sendmail.cf
 #define UTMP_SHMKEY        3785
 #define UTMP_HASH_SHMKEY   3786
 #define UINDEX_SHMKEY      3787
-#define WWWCACHE_SHMKEY   37788
 #define ACBOARD_SHMKEY     9014
 #define GOODBYE_SHMKEY     5003
 #define WELCOME_SHMKEY     5004
