@@ -204,11 +204,6 @@ struct cgi_applet *get_cgi_applet(char *needcgi) {
 
 int nologin = 1;
 
-FILE *myout;
-char *myoutbuf = NULL;
-int myoutsize;
-FILE oldout;
-
 time_t thisversion;
 
 int main(int argc, char *argv[]) {
