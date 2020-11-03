@@ -14,7 +14,6 @@
 #define FIRST_PAGE   "/"
 #define CSS_FILE     "/bbs.css"
 #define CHARSET      "gb2312"
-#define NAVFILE      "nav.txt"
 #define MAXWWWCLIENT MAXACTIVE
 
 #define HTMPATH      "/home/apache/htdocs/bbs/"
