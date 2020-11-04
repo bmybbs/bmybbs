@@ -1,7 +1,6 @@
 #include "bbslib.h"
 
 static int bm_printboard(struct boardmanager *bm, void *farg);
-static int bm_printboardapi(struct boardmanager *bm,char *farg);
 int show_special_web(char *id2) {
 	FILE *fp;
 	char id1[80], name[80], buf[256];
@@ -37,7 +36,7 @@ bbsqry_main()
 	FILE *fp;
 	char userid[14], filename[80], buf[512];
 	struct userec *x;
-	struct user_info *u;
+	const struct user_info *u;
 	int i, tmp2, num;
 	html_header(1);
 	check_msg();
@@ -98,7 +97,7 @@ bbsqry_main()
 	hprintf("生命力：[\033[1;32m%d\033[m]。\n", count_life_value(x));
 	if (x->userlevel & PERM_BOARDS) {
 		hprintf("担任版务：");
-		sethomefile(filename, x->userid, "mboard");
+		sethomefile_s(filename, sizeof(filename), x->userid, "mboard");
 		new_apply_record(filename, sizeof (struct boardmanager), (void *) bm_printboard, NULL);
 		if (x->userlevel & !strcmp(x->userid, "SYSOP"))
 			hprintf("[\033[1;36m系统管理员\033[m]");
@@ -128,7 +127,7 @@ bbsqry_main()
 	}
 	num = 0;
 	for (i = 0; i < MAXACTIVE; i++) {
-		u = &(shm_utmp->uinfo[i]);
+		u = ythtbbs_cache_utmp_get_by_idx(i);
 		if (!strcmp(u->userid, x->userid)) {
 			if (u->active == 0 || u->pid == 0 || (u->invisible && !HAS_PERM(PERM_SEECLOAK, currentuser)))
 				continue;
@@ -139,8 +138,8 @@ bbsqry_main()
 				hprintf("\033[36mC\033[37m");
 			if (u->mode != USERDF4)
 				hprintf("\033[%dm%s\033[m ", u->pid == 1 ? 35 : 32, ModeType(u->mode));
-			else							/* 自定义状态 */
-				hprintf("\033[%dm%s\033[m ", u->pid == 1 ? 35 : 32, u->user_state_temp);
+			else
+				hprintf("\033[%dm%s\033[m ", u->pid == 1 ? 35 : 32, u->user_state_temp); /* 自定义状态 */
 			if (num % 5 == 0)
 				printf("\n");
 		}
@@ -152,7 +151,7 @@ bbsqry_main()
 	}
 	printf("\n");
 	printf("</pre><table width=100%%><tr><td class=f2>");
-	sethomefile(filename, x->userid, "plans");
+	sethomefile_s(filename, sizeof(filename), x->userid, "plans");
 	fp = fopen(filename, "r");
 	sprintf(filename, "00%s-plan", x->userid);
 	fdisplay_attach(NULL, NULL, NULL, NULL);
@@ -211,13 +210,6 @@ static int bm_printboard(struct boardmanager *bm, void *farg) {
 		hprintf("%s", bm->board);
 		printf("</a> ");
 		hprintf(" ");
-	}
-	return 0;
-}
-
-static int bm_printboardapi(struct boardmanager *bm,char *farg) {
-	if (getboard(bm->board)){
-		sstrcat(farg, "\"%s\",",bm->board);
 	}
 	return 0;
 }
