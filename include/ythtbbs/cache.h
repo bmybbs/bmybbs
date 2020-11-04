@@ -63,20 +63,6 @@ struct user_info {
 };
 
 #define USHM_SIZE       (MAXACTIVE + 10)
-struct UTMPFILE {
-	struct user_info uinfo[USHM_SIZE];
-	time_t uptime;
-	unsigned short activeuser;
-	unsigned short maxuser;	//add by gluon
-	unsigned short maxtoday;
-	unsigned short wwwguest;
-	time_t activetime;	//time of updating activeuser
-	int ave_score;
-	int allprize;
-	time_t watchman;
-	unsigned int unlock;
-	int nouse[5];
-};
 
 struct BCACHE {
 	struct boardmem bcache[MAXBOARD];

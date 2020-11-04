@@ -17,6 +17,21 @@
 // 最长会话时间，7天强制登出
 #define MAX_SESS_TIME (7 * 24 * 3600)
 
+struct UTMPFILE {
+	struct user_info uinfo[USHM_SIZE];
+	time_t uptime;
+	unsigned short activeuser;
+	unsigned short maxuser;	//add by gluon
+	unsigned short maxtoday;
+	unsigned short wwwguest;
+	time_t activetime;	//time of updating activeuser
+	int ave_score;
+	int allprize;
+	time_t watchman;
+	unsigned int unlock;
+	int nouse[5];
+};
+
 static struct UTMPFILE *shm_utmp;
 
 // 不再统计 wwwguest，因为当前不再产生 wwwguest 会话
