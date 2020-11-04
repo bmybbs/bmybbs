@@ -20,7 +20,8 @@ bbsufind_main()
 	int i, total = 0, total2 = 0;
 	int limit;
 	int lockfd;
-	struct user_info *x, *user;
+	struct user_info *user;
+	const struct user_info *x;
 	char search;
 	char buf[128];
 	html_header(1);
@@ -49,7 +50,7 @@ bbsufind_main()
 	if (!user)
 		http_fatal("Insufficient memory");
 	for (i = 0; i < MAXACTIVE; i++) {
-		x = &(shm_utmp->uinfo[i]);
+		x = ythtbbs_cache_utmp_get_by_idx(i);
 		if (x->active == 0)
 			continue;
 		if (x->invisible && !HAS_PERM(PERM_SEECLOAK, currentuser))
