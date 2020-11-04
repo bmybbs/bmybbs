@@ -239,7 +239,7 @@ int ythtbbs_cache_UserTable_count_telnet(int uid);
 /**
  * @brief 依据 userid 查找用户索引
  * 用户索引指的是在 PASSFILE 中的位置，从 0 开始索引。在 BMYBBS 环境中，遇到 uid 的地方通常是从 1 开始索引，因此需要注意相互转换。
- * 当匹配到后返回索引值。
+ * 当匹配到后返回索引值。出错返回 -1。
  */
 int ythtbbs_cache_UserIDHashTable_find_idx(const char *userid);
 

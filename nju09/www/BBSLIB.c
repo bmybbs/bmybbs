@@ -1798,17 +1798,7 @@ finduseridhash(struct useridhashitem *ptr, int size, char *userid)
 
 // 返回索引值，原本实现中会判断 shm_ucache->userid[i]
 int getusernum(char *id) {
-	int i;
-	if (id[0] == 0 || strchr(id, '.'))
-		return -1;
-	i = finduseridhash(uidhashshm->uhi, UCACHE_HASH_SIZE, id) - 1;
-	if (i >= 0 && !strcasecmp(shm_ucache->userid[i], id))
-		return i;
-	for (i = 0; i < MAXUSERS; i++) {
-		if (!strcasecmp(shm_ucache->userid[i], id))
-			return i;
-	}
-	return -1;
+	return ythtbbs_cache_UserIDHashTable_find_idx(id);
 }
 
 struct userec *
