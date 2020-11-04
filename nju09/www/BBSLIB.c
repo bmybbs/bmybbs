@@ -16,7 +16,7 @@ char needcgi[STRLEN];
 char rframe[STRLEN];
 
 static void __unhcode(char *s);
-static void extraparam_init(char *extrastr);
+static void extraparam_init(const char *extrastr);
 static int user_init(struct userec *x, struct user_info **y, const char *userid, const char *sessid);
 static int post_imail(char *userid, char *title, char *file, char *id, char *nickname, char *ip, int sig);
 static void sig_append(FILE * fp, char *id, int sig);
@@ -898,7 +898,7 @@ addextraparam(char *ub, int size, int n, int param)
 	return 0;
 }
 
-static void extraparam_init(char *extrastr) {
+static void extraparam_init(const char *extrastr) {
 	int i;
 	if (*extrastr) {
 		i = *extrastr - 'A';
