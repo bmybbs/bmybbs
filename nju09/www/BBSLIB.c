@@ -1065,7 +1065,7 @@ post_mail(char *userid, char *title, char *file, char *id,
 		http_fatal("\xB4\xED\xCE\xF3\xB5\xC4\xCA\xD5\xD0\xC5\xC8\xCB\xB5\xD8\xD6\xB7"); // 错误的收信人地址
 	bzero(&header, sizeof (header));
 	fh_setowner(&header, id, 0);
-	setmailfile(buf, userid, "");
+	setmailfile_s(buf, sizeof(buf), userid, "");
 	t = trycreatefile(buf, "M.%d.A", now_t, 100);
 	if (t < 0)
 		return -1;
