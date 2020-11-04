@@ -114,7 +114,6 @@ struct cgi_applet applets[] = {
 	{bbstmpl_main, {"bbstmpl", NULL}, 0L, 0L, 0},
 	{bbssbs_main, {"bbssbs", NULL}, 0L, 0L, 0},
 	{bbseditmail_main, {"bbseditmail", NULL}, 0L, 0L, 0},
-	{apiqry_main, {"apiqry", NULL}, 0L, 0L, 0},
 	{bbsresetpass_main, {"bbsresetpass", NULL}, 0L, 0L, 0},
 	{bbsfindacc_main, {"bbsfindacc", NULL}, 0L, 0L, 0},
 	{bbsnotify_main, {"bbsnotify", NULL}, 0L, 0L, 0},

@@ -14,7 +14,6 @@ NJUAPI int bbslogout_main(void);
 NJUAPI int bbsleft_main(void);
 NJUAPI int bbslogin_main(void);
 NJUAPI int bbsbadlogins_main(void);
-NJUAPI int apiqry_main(void);
 NJUAPI int bbsqry_main(void);
 NJUAPI int bbsnot_main(void);
 NJUAPI int bbsfind_main(void);
