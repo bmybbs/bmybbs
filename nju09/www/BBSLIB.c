@@ -1684,7 +1684,7 @@ send_msg(char *myuserid, int i, char *touserid, int topid, char *msg, int offlin
 	if (topid != 1)
 		kill(topid, SIGUSR2);
 	else
-		shm_utmp->uinfo[i].unreadmsg++;
+		ythtbbs_cache_utmp_get_by_idx(i)->unreadmsg++;
 	return 1;
 }
 
