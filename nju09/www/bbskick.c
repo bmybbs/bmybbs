@@ -25,12 +25,12 @@ static void printkickitem(const struct user_info *x) {
 static void
 printkicklist(const char *usertokick)
 {
-	struct user_info *x;
+	const struct user_info *x;
 	int i, multilognum = 0;
 	printf("<hr><table border=1>\n");
 	printf("<tr><td>序号</td><td>使用者代号</td><td>使用者昵称</td><td>动态</td><td>发呆</td><td>踢人</td></tr>\n");
 	for (i = 0; i < MAXACTIVE; i++) {
-		x = &(shm_utmp->uinfo[i]);
+		x = ythtbbs_cache_utmp_get_by_idx(i);
 		if (x->active == 0 || x->pid != 1)
 			continue;
 		if (!(strcasecmp(usertokick, x->userid))) {
@@ -53,7 +53,7 @@ bbskick_main()
 	char *tokick;
 	char *f;
 	int i;
-	struct user_info *x;
+	const struct user_info *x;
 	html_header(1);
 	check_msg();
 	if (!loginok || isguest)
@@ -75,10 +75,10 @@ bbskick_main()
 			return 0;
 		} else {
 			for (i = 0; i < MAXACTIVE; i++) {
-				x = &(shm_utmp->uinfo[i]);
+				x = ythtbbs_cache_utmp_get_by_idx(i);
 				if (x->active == 0 || x->pid != 1 || strcmp(x->userid, tokick) || strcmp(x->from, f))
 					continue;
-				x->wwwinfo.iskicked = 1;
+				ythtbbs_cache_utmp_set_www_kicked(i);
 				printf("已经踢出用户");
 				return 0;
 			}

@@ -331,6 +331,9 @@ unsigned short ythtbbs_cache_utmp_get_maxuser(void);
 void ythtbbs_cache_utmp_set_maxuser(unsigned short m);
 
 unsigned short ythtbbs_cache_utmp_get_wwwguest(void);
+
+void ythtbbs_cache_utmp_set_www_kicked(int utmp_idx);
+
 /**
  * @brief 依据 utmp_idx 获取缓存中的结构体（只读）
  * @param idx 在 user_info 数组中的索引，从 0 开始计数

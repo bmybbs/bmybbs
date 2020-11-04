@@ -236,3 +236,9 @@ unsigned short ythtbbs_cache_utmp_get_wwwguest(void) {
 	return shm_utmp->wwwguest;
 }
 
+void ythtbbs_cache_utmp_set_www_kicked(int utmp_idx) {
+	// TODO check null ptr
+	// TODO lock
+	shm_utmp->uinfo[utmp_idx].wwwinfo.iskicked = 1;
+}
+
