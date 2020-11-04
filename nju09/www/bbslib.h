@@ -47,7 +47,6 @@ extern jmp_buf cgi_start;
 extern struct userec currentuser;
 extern struct user_info *u_info;
 extern struct wwwsession *w_info;
-extern struct UTMPFILE *shm_utmp;
 extern struct BCACHE *shm_bcache;
 extern struct UCACHE *shm_ucache;
 extern struct UCACHEHASH *uidhashshm;

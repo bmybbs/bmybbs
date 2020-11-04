@@ -69,7 +69,6 @@ jmp_buf cgi_start;
 struct userec currentuser;
 struct user_info *u_info;
 struct wwwsession *w_info;
-struct UTMPFILE *shm_utmp;
 struct BCACHE *shm_bcache;
 struct UCACHE *shm_ucache;
 struct UCACHEHASH *uidhashshm;
