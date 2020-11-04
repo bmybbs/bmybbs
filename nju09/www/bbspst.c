@@ -197,7 +197,6 @@ bbspst_main()
 		printf("匿名<input type=checkbox name=anony>\n");
 
 	printf("</td></tr></table></td></tr>\n");
-	//printusemath(0);
 	printf("<tr><td>\n");
 	printf("使用Tex风格的数学公式<input type=checkbox name=usemath>\n");
 	printf("设为不可回复<input type=checkbox name=nore>\n");
@@ -291,15 +290,6 @@ void printselsignature() {
 
 //modify by mintbaggio 040809 for new www
 void printuploadattach() {
-	int i = u_info - &(shm_utmp->uinfo[0]);
 	printf(" [<a href=/cgi-bin/bbs/upload target=uploadytht>添加/删除附件</a>]\n");
-}
-
-void
-printusemath(int checked)
-{
-	printf("<tr><td>使用Tex风格的数学公式<input type=checkbox name=usemath%s>\n", checked ? " checked" : "");
-	//printf(" <a href=home/boards/BBSHelp/html/itex/itexintro.html target=_blank>这是什么？</a></td></tr>\n");
-	printf("设为不可回复<input type=checkbox name=nore%s></td></tr>\n", checked ? " checked" : "");
 }
 
