@@ -129,30 +129,9 @@ bbsedit_main()
 
 	printuploadattach();
 	printf("</td></tr></table></td></tr>\n");
-	printf
-	    ("<tr><td><a href=home/boards/BBSHelp/html/itex/itexintro.html target=_blank>使用Tex风格的数学公式</a><input type=checkbox name=usemath%s>\n",
-	     x->accessed & FH_MATH ? " checked" : "");
-	printf
-	    ("设为不可回复<input type=checkbox name=nore%s></td></tr>\n",
-	     x->accessed & FH_NOREPLY ? " checked" : "");
-/*
-	printf("<center>%s -- 修改文章 [使用者: %s]<hr>\n", BBSNAME,
-	       currentuser.userid);
-	if (type != 0)
-		return update_form(board, file, title);
-	printf("<table border=1>\n");
-	printf("<tr><td>");
-	printf("<tr><td><form name=form1 method=post action=bbsedit>\n");
-	printf
-	    ("使用标题：<input type=text name=title size=40 maxlength=100 value='%s'> 讨论区：%s<br>\n",
-	     void1(nohtml(x->title)), board);
-	printf("本文作者：%s<br>\n", fh2owner(x));
-	printusemath(x->accessed & FH_MATH);
-	printf
-	    ("<tr><td>设为不可回复<input type=checkbox name=nore%s></td></tr>\n",
-	     x->accessed & FH_NOREPLY ? " checked" : "");
-	printuploadattach();
-*/
+	printf("<tr><td><a href=home/boards/BBSHelp/html/itex/itexintro.html target=_blank>使用Tex风格的数学公式</a><input type=checkbox name=usemath%s>\n", x->accessed & FH_MATH ? " checked" : "");
+	printf("设为不可回复<input type=checkbox name=nore%s></td></tr>\n",
+			x->accessed & FH_NOREPLY ? " checked" : "");
 	sprintf(path, "boards/%s/%s", board, file);
 	fp = fopen(path, "r");
 	if (fp == 0)
@@ -160,8 +139,7 @@ bbsedit_main()
 	snprintf(path, sizeof (path), PATHUSERATTACH "/%s", currentuser.userid);
 	clearpath(path);
 	keepoldheader(fp, SKIPHEADER);
-	printf
-	    ("<tr><td><textarea  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.form1.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.form1.submit()' name=text rows=20 cols=76 wrap=virtual class=f2>\n");
+	printf("<tr><td><textarea  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.form1.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.form1.submit()' name=text rows=20 cols=76 wrap=virtual class=f2>\n");
 	while (1) {
 		if (fgets(buf, 500, fp) == 0)
 			break;
@@ -211,12 +189,6 @@ bbsedit_main()
 		"<tr>\n<td height=40 bgcolor=\"#FFFFFF\">　</td>\n"
 		"<td height=40 bgcolor=\"#FFFFFF\">　</td>\n"
 		"</tr></table></td></tr></table>\n");
-/*
-	printf("<tr><td class=post align=center>\n");
-	printf("<input type=submit value=存盘> \n");
-	printf("<input type=reset value=重置></form>\n");
-	printf("</table>");
-*/
 	http_quit();
 	return 0;
 }
