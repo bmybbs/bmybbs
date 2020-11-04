@@ -1828,18 +1828,9 @@ getuser(char *id)
 	return &userec1;
 }
 
-int
-count_online()
-{
-	int i, total = 0;
-	if (now_t <= shm_utmp->activetime + 60)
-		return shm_utmp->activeuser;
-	for (i = 0; i < MAXACTIVE; i++)
-		if (shm_utmp->uinfo[i].active && shm_utmp->uinfo[i].pid)
-			total++;
-	shm_utmp->activetime = now_t;
-	shm_utmp->activeuser = total;
-	return total;
+// 对 ythtbbs_cache_utmp 的更新，使用接口取代原实现
+int count_online() {
+	return ythtbbs_cache_utmp_count_active();
 }
 
 struct ythtbbs_override fff[MAXFRIENDS];
