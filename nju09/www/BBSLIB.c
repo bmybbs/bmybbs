@@ -25,32 +25,29 @@ static int setbmhat(struct boardmanager *bm, int *online);
 
 struct wwwstyle wwwstyle[NWWWSTYLE] = {
 	// 橘红(大字体)
-	{"\xE9\xD9\xBA\xEC(\xB4\xF3\xD7\xD6\xCC\xE5)", CSSPATH "orab.css", "#b3b7e6", "#abc8f2", "yellow"},
+	{"\xE9\xD9\xBA\xEC(\xB4\xF3\xD7\xD6\xCC\xE5)", CSSPATH "orab.css", "#b3b7e6", "yellow"},
 	// 橘红(小字体)
-	{"\xE9\xD9\xBA\xEC(\xD0\xA1\xD7\xD6\xCC\xE5)", CSSPATH "oras.css", "#b3b7e6", "#abc8f2", "yellow"},
+	{"\xE9\xD9\xBA\xEC(\xD0\xA1\xD7\xD6\xCC\xE5)", CSSPATH "oras.css", "#b3b7e6", "yellow"},
 	// 蓝色(大字体)
-	{"\xC0\xB6\xC9\xAB(\xB4\xF3\xD7\xD6\xCC\xE5)", CSSPATH "blub.css", "#ffc8ce", "#ffe3e7", "#ff8000"},
+	{"\xC0\xB6\xC9\xAB(\xB4\xF3\xD7\xD6\xCC\xE5)", CSSPATH "blub.css", "#ffc8ce", "#ff8000"},
 	// 蓝色(小字体)
-	{"\xC0\xB6\xC9\xAB(\xD0\xA1\xD7\xD6\xCC\xE5)", CSSPATH "blus.css", "#ffc8ce", "#ffe3e7", "#ff8000"},
+	{"\xC0\xB6\xC9\xAB(\xD0\xA1\xD7\xD6\xCC\xE5)", CSSPATH "blus.css", "#ffc8ce", "#ff8000"},
 	// 绿色(大字体)
-	{"\xC2\xCC\xC9\xAB(\xB4\xF3\xD7\xD6\xCC\xE5)", CSSPATH "greb.css", "#c0c0c0", "#d0d0d0", "yellow"},
+	{"\xC2\xCC\xC9\xAB(\xB4\xF3\xD7\xD6\xCC\xE5)", CSSPATH "greb.css", "#c0c0c0", "yellow"},
 	// 绿色(小字体)
-	{"\xC2\xCC\xC9\xAB(\xD0\xA1\xD7\xD6\xCC\xE5)", CSSPATH "gres.css", "#c0c0c0", "#d0d0d0", "yellow"},
+	{"\xC2\xCC\xC9\xAB(\xD0\xA1\xD7\xD6\xCC\xE5)", CSSPATH "gres.css", "#c0c0c0", "yellow"},
 	// 黑色(大字体)
-	{"\xBA\xDA\xC9\xAB(\xB4\xF3\xD7\xD6\xCC\xE5)", CSSPATH "blab.css", "#c0c0c0", "#d0d0d0", "yellow"},
+	{"\xBA\xDA\xC9\xAB(\xB4\xF3\xD7\xD6\xCC\xE5)", CSSPATH "blab.css", "#c0c0c0", "yellow"},
 	// 黑色(小字体)
-	{"\xBA\xDA\xC9\xAB(\xD0\xA1\xD7\xD6\xCC\xE5)", CSSPATH "blas.css", "#c0c0c0", "#d0d0d0", "yellow"},
+	{"\xBA\xDA\xC9\xAB(\xD0\xA1\xD7\xD6\xCC\xE5)", CSSPATH "blas.css", "#c0c0c0", "yellow"},
 	// 自定义的界面
-	{"\xD7\xD4\xB6\xA8\xD2\xE5\xB5\xC4\xBD\xE7\xC3\xE6", "bbsucss/ubbs.css", "", "", ""}
+	{"\xD7\xD4\xB6\xA8\xD2\xE5\xB5\xC4\xBD\xE7\xC3\xE6", "bbsucss/ubbs.css", "", ""}
 };
 struct wwwstyle *currstyle = wwwstyle;
 int wwwstylenum = 0;
 int usedMath = 0; //本页面中曾经使用数学公式
 int usingMath = 0; //当前文章（当前hsprintf方式）在使用数学公式
 int withinMath = 0; //正在数学公式中
-int no_cache_header = 0;
-int has_smagic = 0;
-int go_to_first_page = 0;
 
 int
 junkboard(char *board)
@@ -558,34 +555,6 @@ struct wwwsession guest = {
 	.att_mode  = 0,
 	.doc_mode  = 1,
 };
-
-
-void
-get_session_string(char *name) {
-	char *cookies_string, *session_string, *p;
-	cookies_string = getenv("HTTP_COOKIE");
-
-	if (NULL != cookies_string) {
-		session_string = strchr(cookies_string, '/');
-
-		snprintf(name, STRLEN, "%s", session_string + sizeof(SMAGIC));
-
-	} else {
-		strcpy(name, "/");
-	}
-	p = strchr(name, '.');
-	if (NULL != p) {
-		no_cache_header = 1;
-	} else {
-		no_cache_header = 0;
-	}
-
-}
-
-void
-print_session_string(char *value) {
-	printf("Set-Cookie:sessionString=%s;path=/\n", value);
-}
 
 int cookie_parse() {
 	const char *cookie_str;
@@ -2462,21 +2431,6 @@ static int setbmhat(struct boardmanager *bm, int *online) {
 		shm_bcache->bcache[bm->bid].bmonline &= ~(1 << bm->bmpos);
 		shm_bcache->bcache[bm->bid].bmcloak &= ~(1 << bm->bmpos);
 	}
-	return 0;
-}
-
-int
-cachelevel(int filetime, int attached)
-{
-	return 0;
-	if (attached)
-		return 2;
-/*
-	if (now_t - filetime < 2 * 24 * 60 * 60)
-		return 2;
-	if (now_t - filetime < 3 * 26 * 60 * 60)
-		return 1;
-*/
 	return 0;
 }
 

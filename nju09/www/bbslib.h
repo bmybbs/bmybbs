@@ -6,9 +6,7 @@
 #include "ythtbbs/override.h"
 
 #define FIRST_PAGE   "/"
-#define CSS_FILE     "/bbs.css"
 #define CHARSET      "gb2312"
-#define MAXWWWCLIENT MAXACTIVE
 
 #define HTMPATH      "/home/apache/htdocs/bbs/"
 #define CSSPATH      "/images/"
@@ -19,22 +17,17 @@ struct wwwstyle {
 	//char *leftcssfile;	//omit by macintosh 20060112
 	//char *lbg;
 	char *colortb1;
-	char *colortb2;
 	char *colorstar;
 };
 
 #define NWWWSTYLE (9)
 extern struct wwwstyle *currstyle, wwwstyle[];
 extern int wwwstylenum;
-//extern int no_cache_header;
-//extern int has_smagic;
-// extern int go_to_first_page;
 
 #define SECNUM 13
 #define BBSNAME MY_BBS_NAME
 #define BBSHOME MY_BBS_HOME
 #define BBSHOST MY_BBS_DOMAIN
-#define LDEB if(!strcmp(currentuser.userid,"lepton"))
 #define PATHLEN         1024
 
 extern const char seccodes[SECNUM];
@@ -63,8 +56,6 @@ extern struct in6_addr from_addr; //ipv6 by leoncom
 extern int quote_quote;
 extern char *ummap_ptr;
 extern int ummap_size;
-extern char ATT_ADDRESS[20];
-extern char ATT_PORT[10];
 /*add by macintosh 050619 for Tex Math Equ*/
 extern int usedMath;
 extern int usingMath;
@@ -107,7 +98,6 @@ extern struct deny denyuser[256];
 extern int denynum;
 extern int nologin;
 
-void display_attach(FILE * fp, char *currline, char *nowfile);
 extern char mybrd[GOOD_BRC_NUM][80];
 extern int mybrdnum;
 
@@ -138,8 +128,6 @@ int hprintf(char *fmt, ...);
 int fhhprintf(FILE * output, char *fmt, ...);
 void parm_add(char *name, char *val);
 int isaword(char *dic[], char *buf);
-void get_session_string(char *name);
-void print_session_string(char *value);
 int cache_header(time_t t, int age);
 void html_header(int mode);
 void json_header(void);
@@ -219,7 +207,6 @@ int check_maxmail(char *currmaildir);
 int countln(char *fname);
 double *system_load(void);
 int setbmstatus(struct userec *u, int online);
-int cachelevel(int filetime, int attached);
 int dofilter(char *title, char *fn, int level);
 int dofilter_edit(char *title, char *buf, int level);
 int search_filter(char *pat1, char *pat2, char *pat3);
@@ -232,13 +219,6 @@ char to_hex(char code);
 void NHsprintf(char *s, char *s0);
 
 extern void check_msg(void); // bbsgetmsg.c
-
-/**
- * user structure is loaded from passwd file at logon,
- * and remains for the entire session
- */
-extern struct userec currentuser;
-extern int utmpent;      /* Index into this users utmp file entry */
 
 extern int readmybrd(char *userid);        /* bbsmybrd.c */
 extern int mails(char *id, int *unread);   /* bbsfoot.c  */
