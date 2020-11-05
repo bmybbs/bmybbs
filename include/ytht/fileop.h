@@ -64,6 +64,7 @@ int clearpath(const char *path);
  */
 int seek_in_file(char* filename, char *seekstr);
 
+#ifdef BMYBBS_MT
 /**
  * A wrapper of stat(2)
  * @warning Thread UNsafe
@@ -71,7 +72,17 @@ int seek_in_file(char* filename, char *seekstr);
  * @return
  */
 struct stat *f_stat(char *file) __attribute__((deprecated("use f_stat_s instead")));
+#else
+/**
+ * A wrapper of stat(2)
+ * @warning Thread UNsafe
+ * @param file
+ * @return
+ */
+struct stat *f_stat(char *file);
+#endif
 
+#ifdef BMYBBS_MT
 /**
  * A wrapper of lstat(2)
  * @warning Thread UNsafe
@@ -79,6 +90,15 @@ struct stat *f_stat(char *file) __attribute__((deprecated("use f_stat_s instead"
  * @return
  */
 struct stat *l_stat(char *file) __attribute__((deprecated("use l_stat_s instead")));
+#else
+/**
+ * A wrapper of lstat(2)
+ * @warning Thread UNsafe
+ * @param file
+ * @return
+ */
+struct stat *l_stat(char *file);
+#endif
 
 /**
  * A thread-safe wrapper of stat(2)
