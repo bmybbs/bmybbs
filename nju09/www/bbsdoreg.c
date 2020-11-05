@@ -2,7 +2,6 @@
 #include "ythtbbs/identify.h"
 #include "ytht/random.h"
 
-static void adduser(struct userec *x);
 static void newcomer(struct userec *x, char *words);
 
 #ifdef POP_CHECK
@@ -10,13 +9,8 @@ static void newcomer(struct userec *x, char *words);
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <pthread.h>
 #include <unistd.h>
 #include <sys/types.h>
-#include <sys/socket.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
 // 邮件服务器上用户名和密码的长度， added by interma@BMY 2005.5.12
 #define USER_LEN 20
 #define PASS_LEN 20
@@ -117,6 +111,7 @@ bbsdoreg_main()
 {
 	FILE *fp;
 	struct userec x;
+	int time_interval, rc;
 	char buf[256], filename[80], pass1[80], pass2[80], dept[80], phone[80],
 		assoc[80], salt[3], words[1024], *ub = FIRST_PAGE;
 	int lockfd;
@@ -207,7 +202,15 @@ bbsdoreg_main()
 	x.flags[0] = CURSOR_FLAG | PAGER_FLAG;
 //      if(xz==1) currentuser.userdefine ^= DEF_COLOREDSEX;
 //      if(xz==2) currentuser.userdefine ^= DEF_S_HOROSCOPE;
-	adduser(&x);
+	rc = ythtbbs_user_create(&x, NULL, &time_interval);
+
+	if (rc == YTHTBBS_REGISTER_FULL) {
+		http_fatal("抱歉，使用者账号满了，清等待 %d 分钟后再试一次。", time_interval);
+	}
+
+	if (rc != YTHTBBS_REGISTER_OK) {
+		http_fatal("文件系统错误");
+	}
 
 #ifndef POP_CHECK
 	lockfd = openlockfile(".lock_new_register", O_RDONLY, LOCK_EX);
@@ -337,26 +340,5 @@ newcomer(struct userec *x, char *words)
 	fclose(fp);
 	post_article("newcomers", "WWW新手上路", filename, x->userid, x->username, fromhost, -1, 0, 0, x->userid, -1);
 	unlink(filename);
-}
-
-static void
-adduser(struct userec *x)
-{
-	int i;
-	FILE *fp;
-	fp = fopen(".PASSWDS", "r+");
-	flock(fileno(fp), LOCK_EX);
-	for (i = 0; i < MAXUSERS; i++) {
-		if (shm_ucache->userid[i][0] == 0) {
-			if (i + 1 > shm_ucache->number)
-				shm_ucache->number = i + 1;
-			strncpy(shm_ucache->userid[i], x->userid, 13);
-			insertuseridhash(uidhashshm->uhi, UCACHE_HASH_SIZE, x->userid, i + 1);
-			save_user_data(x);
-			break;
-		}
-	}
-	flock(fileno(fp), LOCK_UN);
-	fclose(fp);
 }
 
