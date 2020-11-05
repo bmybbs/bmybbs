@@ -37,7 +37,7 @@ char *addr, char *phone, char *assoc, char *email)
 	//int id = getuser(userid);
 	struct userec *u = getuser(userid);
 
-	sethomefile(genbuf, userid, "mailcheck");
+	sethomefile_s(genbuf, sizeof(genbuf), userid, "mailcheck");
 	//http_fatal(genbuf);
 	if ((fn = fopen(genbuf, "w")) == NULL) {
 		fclose(fn);
@@ -60,13 +60,13 @@ char *addr, char *phone, char *assoc, char *email)
 	uinfo.userlevel |= PERM_DEFAULT;	// by ylsdd
 	substitute_record(PASSFILE, &uinfo, sizeof (struct userec), usernum);
 
-	sethomefile(buf, uinfo.userid, "sucessreg");
+	sethomefile_s(buf, sizeof(buf), uinfo.userid, "sucessreg");
 	if ((fout = fopen(buf, "w")) != NULL) {
 		fprintf(fout, "\n");
 		fclose(fout);
 	}
 
-	sethomefile(buf, uinfo.userid, "register");
+	sethomefile_s(buf, sizeof(buf), uinfo.userid, "register");
 
 	if ((fout = fopen(buf, "w")) != NULL) {
 		fprintf(fout, "%s: %d\n", "usernum", usernum);
@@ -86,7 +86,7 @@ char *addr, char *phone, char *assoc, char *email)
 	mail_file("etc/s_fill", uinfo.userid, "恭禧您通过身份验证", "SYSOP");
 
 	mail_file("etc/s_fill2", uinfo.userid, "欢迎加入" MY_BBS_NAME "大家庭", "SYSOP");
-	sethomefile(buf, uinfo.userid, "mailcheck");
+	sethomefile_s(buf, sizeof(buf), uinfo.userid, "mailcheck");
 	unlink(buf);
 	sprintf(genbuf, "让 %s 通过身分确认.", uinfo.userid);
 	securityreport(genbuf, genbuf);
@@ -118,13 +118,12 @@ bbsdoreg_main()
 	FILE *fp;
 	struct userec x;
 	char buf[256], filename[80], pass1[80], pass2[80], dept[80], phone[80],
-	    assoc[80], salt[3], words[1024], *ub = FIRST_PAGE;
+		assoc[80], salt[3], words[1024], *ub = FIRST_PAGE;
 	int lockfd;
 	struct active_data act_data;
 	html_header(1);
 	printf("<body>");
 	bzero(&x, sizeof (x));
-//      xz=atoi(getparm("xz"));
 
 #ifdef POP_CHECK
 	char user[USER_LEN + 1];
@@ -161,7 +160,7 @@ bbsdoreg_main()
 	ytht_strsncpy(assoc, getparm("assoc"), 60);
 	ytht_strsncpy(words, getparm("words"), 1000);
 
-    if (id_with_num(x.userid))
+	if (id_with_num(x.userid))
 		http_fatal("帐号只能由英文字母组成");
 	if (strlen(x.userid) < 2)
 		http_fatal("帐号长度太短(2-12字符)");
@@ -214,8 +213,7 @@ bbsdoreg_main()
 	lockfd = openlockfile(".lock_new_register", O_RDONLY, LOCK_EX);
 	fp = fopen("new_register", "a");
 	if (fp) {
-		fprintf(fp, "usernum: %d, %s\n", getusernum(x.userid) + 1,
-			ytht_ctime(now_t));
+		fprintf(fp, "usernum: %d, %s\n", getusernum(x.userid) + 1, ytht_ctime(now_t));
 		fprintf(fp, "userid: %s\n", x.userid);
 		fprintf(fp, "realname: %s\n", x.realname);
 		fprintf(fp, "dept: %s\n", dept);
@@ -361,3 +359,4 @@ adduser(struct userec *x)
 	flock(fileno(fp), LOCK_UN);
 	fclose(fp);
 }
+
