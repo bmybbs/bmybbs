@@ -1,6 +1,36 @@
 #include "bbslib.h"
 
 static int bm_printboard(struct boardmanager *bm, void *farg);
+
+// const char *, int *, char *
+static int fuzzy_matching_userid_v(const struct ythtbbs_cache_User *user, va_list ap) {
+	const char *userid;
+	int *j;
+	char *buf;
+
+	userid = va_arg(ap, const char *);
+	j = va_arg(ap, int *);
+	buf = va_arg(ap, char *);
+
+	if (strcasestr(user->userid, userid) == user->userid) {
+		// user->userid 是所寻找的 userid 开头的部分
+		*j = *j + 1;
+		if (*j % 6 == 1)
+			printf("<tr>");
+
+		printf("<td>");
+		printf("<a href=bbsqry?userid=%s>%s</a>", user->userid, user->userid);
+		printf("</td>");
+		sprintf(buf, "bbsqry?userid=%s", user->userid);
+		if (*j % 6 == 0)
+			printf("</tr>");
+		if (*j >= 12 * 6)
+			return QUIT;
+	}
+
+	return 0;
+}
+
 int show_special_web(char *id2) {
 	FILE *fp;
 	char id1[80], name[80], buf[256];
@@ -55,25 +85,12 @@ bbsqry_main()
 	}
 	x = getuser(userid);
 	if (x == 0) {
-		int i, j = 0;
+		int j = 0;
 		printf("没有这个用户啊，难道是这些:<p>");
 		printf("<table width=600>");
-		for (i = 0; i < shm_ucache->number; i++)
-			if (strcasestr(shm_ucache->userid[i], userid) == shm_ucache->userid[i]) {
-				j++;
-				if (j % 6 == 1)
-					printf("<tr>");
-				printf("<td>");
-				printf("<a href=bbsqry?userid=%s>%s</a>", shm_ucache->userid[i], shm_ucache->userid[i]);
-				printf("</td>");
-				sprintf(buf, "bbsqry?userid=%s", shm_ucache->userid[i]);
-				if (j % 6 == 0)
-					printf("</tr>");
-				if (j >= 12 * 6)
-					break;
-			}
+		ythtbbs_cache_UserTable_apply_v(fuzzy_matching_userid_v, userid, &j, buf);
 		printf("</table>");
-		if (!j)
+		if (j == 0)
 			printf("不可能，肯定是你敲错了，根本没这人啊");
 		if (j == 1)
 			redirect(buf);
