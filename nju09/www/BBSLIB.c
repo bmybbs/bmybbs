@@ -2263,7 +2263,6 @@ void updateinboard(struct boardmem *x) {
 #include "bbsupdatelastpost.c"
 #include "boardrc.c"
 #include "deny_users.c"
-#include "bbsred.c"
 int
 max_mail_size()
 {

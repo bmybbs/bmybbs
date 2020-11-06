@@ -197,7 +197,6 @@ void brc_clear(void);
 int brc_un_read_time(int ftime);
 void loaddenyuser(char *board);
 void savedenyuser(char *board);
-char *bbsred(char *command);
 int max_mail_size(void);
 int get_mail_size(void);
 int check_maxmail(char *currmaildir);

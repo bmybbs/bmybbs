@@ -168,14 +168,14 @@ bbsindex_main()
 		"<frame src=bbsleft?t=%ld name=f2 frameborder=no scrolling=auto>\n"
 		"<frameset id=fs1 rows=0,*,20 frameSpacing=0 frameborder=no border=0>\n"
 			"<frame scrolling=no name=fmsg src=bbsgetmsg>\n"
-			"<frame name=f3 src=%s>\n"
+			"<frame name=f3 src=\"bbsboa?secstr=?\">\n"
 			"<frame scrolling=no name=f5 src=bbsfoot>\n"
 		"</frameset>\n"
 		"</frameset>\n"
 		"<noframes>\n"
 		"<body>\n"
 		"</body>\n"
-		"</noframes>\n", MY_BBS_NAME, now_t, bbsred(rframe));
+		"</noframes>\n", MY_BBS_NAME, now_t);
 	http_quit();
 	return 0;
 }
