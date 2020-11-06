@@ -1,4 +1,12 @@
-int
+#include <stdio.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include "config.h"
+#include "ythtbbs/article.h"
+#include "bbslib.h"
+
+static int
 getlastpost(char *board, int *lastpost, int *total)
 {
 	struct fileheader fh;
@@ -38,6 +46,5 @@ updatelastpost(char *board)
 	bptr = getbcache(board);
 	if (bptr == NULL)
 		return -1;
-	return getlastpost(bptr->header.filename, &bptr->lastpost,
-			   &bptr->total);
+	return getlastpost(bptr->header.filename, &bptr->lastpost, &bptr->total);
 }

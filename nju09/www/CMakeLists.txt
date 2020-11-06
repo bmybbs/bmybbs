@@ -125,13 +125,13 @@ set(SRC
 	bbsball.c
 
 	BBSLIB.c
+	bbsupdatelastpost.c
 )
 
 # 被 include 到 BBSLIB.c 里，有待检查
 set (OTHERS
 	boardrc.c
 	deny_users.c
-	bbsupdatelastpost.c
 )
 
 add_executable(www ${SRC})

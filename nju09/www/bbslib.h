@@ -185,7 +185,6 @@ char *utf8_decode(char *src);
 void fdisplay_attach(FILE *output, FILE *fp, char *currline, char *nowfile);
 void printhr(void);
 void updateinboard(struct boardmem *x);
-int getlastpost(char *board, int *lastpost, int *total);
 int updatelastpost(char *board);
 int readuserallbrc(char *userid, int must);
 void brc_update(char *userid);

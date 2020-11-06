@@ -2260,7 +2260,6 @@ void updateinboard(struct boardmem *x) {
 	return;
 }
 
-#include "bbsupdatelastpost.c"
 #include "boardrc.c"
 #include "deny_users.c"
 int
