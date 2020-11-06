@@ -1,25 +1,5 @@
 #include "bbslib.h"
 
-#define ONEFACEPATH "/face"
-
-#define NFACE 3
-struct wwwface {
-	char *bgcolor;
-	char *color;
-	char *figure;
-	char *stamp;
-	char *logo;
-};
-static struct wwwface *pface;
-static struct wwwface oneface = {
-	NULL, NULL, NULL, NULL, NULL
-};
-static struct wwwface bbsface[NFACE] = {
-	{"#000000", "#99ccff", "/ytht2men.jpg", NULL, NULL},
-	{"white", "#99ccff", "/ythtBlkRedGry.gif", NULL, NULL},
-	{"white", "gray", "/cai.jpg", "/stamp.gif", "/logo.gif"}
-};
-
 /**
  * 判断是否为合法的 guest 链接
  * 样式后缀允许为 _[A-H]
@@ -43,54 +23,6 @@ checkfile(char *fn, int maxsz)
 }
 
 int
-loadoneface()
-{
-	FILE *fp;
-	static char buf[256], figure[256 + 100], stamp[356], logo[356];
-	char *ptr;
-
-	fp = fopen(HTMPATH ONEFACEPATH "/config", "r");
-	if (!fp)
-		return -1;
-	if (fgets(buf, sizeof (buf), fp) == NULL) {
-		fclose(fp);
-		return -1;
-	}
-	fclose(fp);
-	ptr = buf;
-	oneface.bgcolor = strsep(&ptr, " \t\r\n");
-	oneface.color = strsep(&ptr, " \t\r\n");
-	oneface.figure = strsep(&ptr, " \t\r\n");
-	oneface.stamp = strsep(&ptr, " \t\r\n");
-	oneface.logo = strsep(&ptr, " \t\r\n");
-	if (!oneface.logo)
-		return -2;
-	if (strstr(oneface.figure, "..") || strstr(oneface.stamp, "..") || strstr(oneface.logo, ".."))
-		return -3;
-	sprintf(figure, ONEFACEPATH "/%s", oneface.figure);
-	oneface.figure = figure;
-	if (checkfile(figure, 15000))
-		return -4;
-	if (!strcasecmp(oneface.stamp, "NULL"))
-		oneface.stamp = NULL;
-	else {
-		sprintf(stamp, ONEFACEPATH "/%s", oneface.stamp);
-		oneface.stamp = stamp;
-		if (checkfile(stamp, 4000))
-			return -5;
-	}
-	if (!strcasecmp(oneface.logo, "NULL"))
-		oneface.logo = NULL;
-	else {
-		sprintf(logo, ONEFACEPATH "/%s", oneface.logo);
-		oneface.logo = logo;
-		if (checkfile(logo, 6500))
-			return -6;
-	}
-	return 0;
-}
-
-int
 showannounce()
 {
 	static struct mmapfile mf = { .ptr = NULL };
@@ -102,14 +34,8 @@ showannounce()
 	return 0;
 }
 
-
 void loginwindow()
 {
-	int n = 2;
-	if (!loadoneface())
-		pface = &oneface;
-	else
-		pface = &(bbsface[n]);
 	html_header(4);
 
 	char *fourpics=get_no_more_than_four_login_pics();
@@ -175,15 +101,15 @@ void loginwindow()
 void
 shownologin()
 {
-	int n = 0;
 	static struct mmapfile mf = {
 		.ptr = NULL
 	};
 	html_header(4);
+	// 使用 bmy 图片取代 ytht 的配置
 	printf("<STYLE type=text/css>A{COLOR: #99ccff; text-decoration: none;}</STYLE>"
-			"</head><BODY text=#99ccff bgColor=%s leftmargin=1 MARGINWIDTH=1><br>"
-			"<CENTER>", bbsface[n].bgcolor);
-	printf("<IMG src=%s border=0 alt='' width=70%%><BR>", bbsface[n].figure);
+			"</head><BODY text=#99ccff bgColor=#ffffff leftmargin=1 MARGINWIDTH=1><br>"
+			"<CENTER>");
+	printf("<IMG src=cai.jpg border=0 alt='' width=70%%><BR>");
 	printf("<b>停站通知</b><br>");
 	if (!mmapfile("NOLOGIN", &mf))
 		fwrite(mf.ptr, mf.size, 1, stdout);
