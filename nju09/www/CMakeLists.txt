@@ -127,10 +127,6 @@ set(SRC
 	BBSLIB.c
 	bbsupdatelastpost.c
 	boardrc.c
-)
-
-# 被 include 到 BBSLIB.c 里，有待检查
-set (OTHERS
 	deny_users.c
 )
 
