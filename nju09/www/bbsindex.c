@@ -65,8 +65,7 @@ loadoneface()
 	oneface.logo = strsep(&ptr, " \t\r\n");
 	if (!oneface.logo)
 		return -2;
-	if (strstr(oneface.figure, "..") ||
-	    strstr(oneface.stamp, "..") || strstr(oneface.logo, ".."))
+	if (strstr(oneface.figure, "..") || strstr(oneface.stamp, "..") || strstr(oneface.logo, ".."))
 		return -3;
 	sprintf(figure, ONEFACEPATH "/%s", oneface.figure);
 	oneface.figure = figure;
@@ -94,7 +93,7 @@ loadoneface()
 int
 showannounce()
 {
-	static struct mmapfile mf = { ptr:NULL };
+	static struct mmapfile mf = { .ptr = NULL };
 	if (mmapfile("0Announce/announce", &mf) < 0 || mf.size <= 10)
 		return -1;
 	printf("<table width=85%% border=1><tr><td>");
@@ -115,12 +114,12 @@ void loginwindow()
 
 	char *fourpics=get_no_more_than_four_login_pics();
 	printf("<script>function openreg(){open('" SMAGIC
-	     "/bbsreg', 'winREG', 'width=600,height=460,resizable=yes,scrollbars=yes');}\n"
-	     "function sf(){document.l.id.focus();}\n"
-	     "function st(){document.l.t.value=(new Date()).valueOf();}\n"
-	     "function lg(){self.location.href='/" SMAGIC
-	     "/bbslogin?id=guest&t='+(new Date()).valueOf();}\n"
-	     "</script>\n");
+			"/bbsreg', 'winREG', 'width=600,height=460,resizable=yes,scrollbars=yes');}\n"
+			"function sf(){document.l.id.focus();}\n"
+			"function st(){document.l.t.value=(new Date()).valueOf();}\n"
+			"function lg(){self.location.href='/" SMAGIC
+			"/bbslogin?id=guest&t='+(new Date()).valueOf();}\n"
+			"</script>\n");
 	printf("<link href=\"/images/oras.css\" rel=stylesheet type=text/css>\n");
 	printf("<title>欢迎光临 "MY_BBS_NAME"</title>");
 	printf("<script type=\"text/javascript\" src=\"jquery-1.6.4.min.js\"></script>");
@@ -132,7 +131,7 @@ void loginwindow()
 		"<td rowspan=4>&nbsp;</td>\n  </tr>\n  <tr> \n"
 		"<td height=264 valign=top bgcolor=#FFFFFF>\n"
 		"<table width=780 border=0 align=center cellpadding=0 cellspacing=0 bgcolor=#FFFFFF>\n"
-	        "<tr>\n<td height=35 align=right class=0004><a href='javascript:lg();' class=linkindex>匿名登录</a>"
+		"<tr>\n<td height=35 align=right class=0004><a href='javascript:lg();' class=linkindex>匿名登录</a>"
 		"/ <a href='telnet://" MY_BBS_DOMAIN "' class=linkindex>telnet登录</a> /"
 		"<a href='CTerm.rar' class=linkindex>CTerm工具下载</a> /"
 		"<a href='javascript: openreg();' class=linkindex>新用户注册</a><font color=#FFFFFF> \n"
@@ -140,31 +139,31 @@ void loginwindow()
 		"</tr>\n <tr> \n"
 		"<td width=770 height=400><div id=\"container\"></div></td>" /* modified by IronBlood 11.09.08 */
 		//"<td width=770 height=400 bgcolor=\"#ff6600\"><a href=%s><img src=%s alt=\"bmybbs\" border=0 width=770 height=400></img></a></td>"  /* modified by linux 05.9.11 */
-        "</tr>\n"
-        "<tr>\n"
-          "<td height=20><div id=\"nav\"></div></td>\n" /* modified by IronBlood 11.12.25 */
-	"</tr>\n"
-        "<tr>\n"
-          "<td height=35> <table border=0 align=center cellpadding=0 cellspacing=0>\n"
-              "<tr>\n"
+		"</tr>\n"
+		"<tr>\n"
+		"<td height=20><div id=\"nav\"></div></td>\n" /* modified by IronBlood 11.12.25 */
+		"</tr>\n"
+		"<tr>\n"
+		"<td height=35> <table border=0 align=center cellpadding=0 cellspacing=0>\n"
+		"<tr>\n"
 		"<form name=l action=/" SMAGIC "/bbslogin method=post><td>\n"
-                "<td>帐号&nbsp&nbsp&nbsp</td>\n"
-                "<td><input name=id type=text id=usrname style=\"font-size:11px;font-family:verdana\" size=10></td>\n"
-                "<td>&nbsp&nbsp&nbsp密码&nbsp&nbsp&nbsp</td>\n"
-                "<td><input name=pw type=password id=pwd style=\"font-size:11px;font-family:verdana\" size=10></td>\n"
-                "<td>&nbsp&nbsp&nbsp<input name=login_btn type=image id=login_btn src=\"images/index_log.gif\" width=40 height=18 border=0 onMouseOver=\"this.src='images/index_log2.gif'\" onMouseOut=\"this.src='images/index_log.gif'\"></td>\n"
+		"<td>帐号&nbsp&nbsp&nbsp</td>\n"
+		"<td><input name=id type=text id=usrname style=\"font-size:11px;font-family:verdana\" size=10></td>\n"
+		"<td>&nbsp&nbsp&nbsp密码&nbsp&nbsp&nbsp</td>\n"
+		"<td><input name=pw type=password id=pwd style=\"font-size:11px;font-family:verdana\" size=10></td>\n"
+		"<td>&nbsp&nbsp&nbsp<input name=login_btn type=image id=login_btn src=\"images/index_log.gif\" width=40 height=18 border=0 onMouseOver=\"this.src='images/index_log2.gif'\" onMouseOut=\"this.src='images/index_log.gif'\"></td>\n"
 	//add by liuche@BMY 20120205
 		"<td>&nbsp&nbsp&nbsp<a href='/findpass.html' target='_blank' class=linkindex>找回用户名或密码？</a></td>\n"
 		"</form></tr></table>\n"
-	"</tr>\n </td>\n"
-       "</tr>\n"
-      "</table></td>\n"
-  "</tr>\n"
-    "<tr>\n"
-    "<td align=center bgcolor=#FFFFFF><img src=\"images/index_line.gif\" name=Image1 width=650 height=20 id=Image1></td>\n"
-  "<tr><td align=center>陕ICP备 05001571号<br />"
-  //"本BBS隶属于：西安交通大学网络中心／中国教育科研网西北中心<br />"
-  "开发维护：西安交通大学网络中心  BBS程序组</td></tr>"
+		"</tr>\n </td>\n"
+		"</tr>\n"
+		"</table></td>\n"
+		"</tr>\n"
+		"<tr>\n"
+		"<td align=center bgcolor=#FFFFFF><img src=\"images/index_line.gif\" name=Image1 width=650 height=20 id=Image1></td>\n"
+		"<tr><td align=center>陕ICP备 05001571号<br />"
+		//"本BBS隶属于：西安交通大学网络中心／中国教育科研网西北中心<br />"
+		"开发维护：西安交通大学网络中心  BBS程序组</td></tr>"
 	"</tr>\n"
 "</table>");/* modified by linux 05.9.11 */
 	showannounce();
@@ -178,20 +177,17 @@ shownologin()
 {
 	int n = 0;
 	static struct mmapfile mf = {
-		ptr:NULL
+		.ptr = NULL
 	};
 	html_header(4);
-	printf
-	    ("<STYLE type=text/css>A{COLOR: #99ccff; text-decoration: none;}</STYLE>"
-	     "</head><BODY text=#99ccff bgColor=%s leftmargin=1 MARGINWIDTH=1><br>"
-	     "<CENTER>", bbsface[n].bgcolor);
-	printf("<IMG src=%s border=0 alt='' width=70%%><BR>",
-	       bbsface[n].figure);
+	printf("<STYLE type=text/css>A{COLOR: #99ccff; text-decoration: none;}</STYLE>"
+			"</head><BODY text=#99ccff bgColor=%s leftmargin=1 MARGINWIDTH=1><br>"
+			"<CENTER>", bbsface[n].bgcolor);
+	printf("<IMG src=%s border=0 alt='' width=70%%><BR>", bbsface[n].figure);
 	printf("<b>停站通知</b><br>");
 	if (!mmapfile("NOLOGIN", &mf))
 		fwrite(mf.ptr, mf.size, 1, stdout);
 	printf("</CENTER></BODY></HTML>");
-	return;
 }
 
 int
@@ -204,7 +200,7 @@ bbsindex_main()
 		return 0;
 	}
 	if (!(loginok || is_valid_guest_url(getsenv("SCRIPT_URL"))) && (rframe[0] == 0)) {
-		if (strcasecmp(FIRST_PAGE, getsenv("SCRIPT_URL"))) {
+		if (strcasecmp(FIRST_PAGE, getsenv("SCRIPT_URL")) != 0) {
 			html_header(3);
 			redirect(FIRST_PAGE);
 			http_quit();
@@ -236,9 +232,7 @@ bbsindex_main()
 		"<link rel=\"shortcut icon\" href=\"/images/favicon.ico\" type=\"/image/x-icon\" />-->\n"
 		"<link href=\"/images/oras.css\" rel=\"stylesheet\" type=\"text/css\" />\n");
 #endif
-	if (!isguest
-	    && (readuservalue(currentuser.userid, "wwwstyle", str, sizeof (str))
-		|| atoi(str) != wwwstylenum)) {
+	if (!isguest && (readuservalue(currentuser.userid, "wwwstyle", str, sizeof (str)) || atoi(str) != wwwstylenum)) {
 		sprintf(str, "%d", wwwstylenum);
 		saveuservalue(currentuser.userid, "wwwstyle", str);
 	}
