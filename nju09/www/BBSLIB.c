@@ -2260,7 +2260,6 @@ void updateinboard(struct boardmem *x) {
 	return;
 }
 
-#include "boardrc.c"
 #include "deny_users.c"
 int
 max_mail_size()
