@@ -559,10 +559,10 @@ int cookie_parse() {
 	struct bmy_cookie cookie;
 
 	cookie_str = getenv("HTTP_COOKIE");
-	if (cookie_str == NULL) {
+	if (cookie_str == NULL || strlen(cookie_str) < sizeof(SMAGIC)) {
 		goto GUEST;
 	} else {
-		strncpy(cookie_buf, cookie_str, sizeof(cookie_buf));
+		strncpy(cookie_buf, cookie_str + sizeof(SMAGIC), sizeof(cookie_buf));
 		cookie_buf[sizeof(cookie_buf) - 1] = 0;
 
 		memset(&cookie, 0, sizeof(struct bmy_cookie));
@@ -579,6 +579,7 @@ int cookie_parse() {
 		if (!loginok) {
 			goto GUEST;
 		}
+		w_info = &(u_info->wwwinfo);
 	}
 
 	return 0;
