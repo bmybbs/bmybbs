@@ -935,6 +935,7 @@ static int user_init(struct userec *x, struct user_info **y, const char *userid,
 	if (x2 == 0)
 		return 0;
 
+	ytht_strsncpy((*y)->from, fromhost, BMY_IPV6_LEN);
 	utmpent = i + 1;
 	memcpy(x, x2, sizeof (*x));
 	return 1;
