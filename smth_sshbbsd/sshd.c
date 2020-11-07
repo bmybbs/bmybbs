@@ -524,6 +524,7 @@ agent connections.
 #include "servconf.h"
 #include "userfile.h"
 #include "emulate.h"
+#include "ythtbbs/cache.h"
 
 #ifdef HAVE_ULIMIT_H
 #include <ulimit.h>
@@ -1474,6 +1475,7 @@ void do_authentication_fail_loop(void)
     }
      /*NOTREACHED*/ abort();
 }
+extern int dosearchuser(char *userid); // src/bbs/main.c
 
 /* Performs authentication of an incoming connection.  Session key has already
    been exchanged and encryption is enabled.  User is the user name to log
@@ -1494,13 +1496,14 @@ void do_authentication(char *user, int privileged_port, int cipher_type)
 
     /* Verify that the user is a valid user.  We disallow usernames starting
        with any characters that are commonly used to start NIS entries. */
-    if (user[0] == '-' || user[0] == '+' || user[0] == '@')
+    if (user[0] == '-' || user[0] == '+' || user[0] == '@') {
         do_authentication_fail_loop();
+	}
 
-    resolve_ucache();
-    resolve_utmp();
+	ythtbbs_cache_utmp_resolve();
+	ythtbbs_cache_UserTable_resolve();
     if (*user == '\0' || !dosearchuser(user) || userbansite(user,get_remote_ipaddr()))
-	do_authentication_fail_loop();
+		do_authentication_fail_loop();
 
     debug("Attempting authentication for %.100s.", user);
 
