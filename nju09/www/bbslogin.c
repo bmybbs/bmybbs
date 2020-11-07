@@ -71,7 +71,7 @@ int bbslogin_main() {
 
 	expires_time = time(NULL) + MAX_SESS_TIME - 10;
 	ytht_utc_time_s(expires_buf, sizeof(expires_buf), &expires_time);
-	printf("Set-Cookie: " SMAGIC "=%s; SameSite=Strict; HttpOnly; Expires=%s", buf, expires_buf);
+	printf("Set-Cookie: " SMAGIC "=%s; SameSite=Strict; HttpOnly; Expires=%s;\n", buf, expires_buf);
 	html_header(3);
 	redirect("/" SMAGIC "/"); // URL 不再附带 session 信息
 	http_quit();

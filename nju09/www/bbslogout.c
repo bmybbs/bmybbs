@@ -19,7 +19,7 @@ bbslogout_main()
 
 	t0 = 0;
 	ytht_utc_time_s(buf, sizeof(buf), &t0);
-	printf("Set-Cookie: " SMAGIC "=; SameSite=Strict; HttpOnly; Expires=%s", buf);
+	printf("Set-Cookie: " SMAGIC "=; SameSite=Strict; HttpOnly; Expires=%s;\n", buf);
 	html_header(1);
 	redirect(FIRST_PAGE);
 	return 0;
