@@ -124,7 +124,6 @@ char *titlestr(char *str);
 int hprintf(char *fmt, ...);
 int fhhprintf(FILE * output, char *fmt, ...);
 void parm_add(char *name, char *val);
-int isaword(char *dic[], char *buf);
 int cache_header(time_t t, int age);
 void html_header(int mode);
 void json_header(void);

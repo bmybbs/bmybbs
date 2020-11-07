@@ -519,31 +519,6 @@ parm_add(char *name, char *val)
 	parm_num++;
 }
 
-static char *domainname[] = {
-	MY_BBS_DOMAIN,
-	"bbs.xjtu.edu.cn",
-	"bbs.xanet.edu.cn",
-	NULL
-};
-
-static char *specname[] = {
-	"1999",
-	"2001",
-	"www",
-	"bbs",
-	NULL
-};
-
-int
-isaword(char *dic[], char *buf)
-{
-	char **a;
-	for (a = dic; *a != NULL; a++)
-		if (!strcmp(buf, *a))
-			return 1;
-	return 0;
-}
-
 struct wwwsession guest = {
 	.used      = 1,
 	.t_lines   = 20,
@@ -612,14 +587,6 @@ url_parse()
 	if (!strcmp(url, "/") || nologin) {
 		strcpy(needcgi, "bbsindex");
 		strcpy(rframe, "");
-		ytht_strsncpy(name, getsenv("HTTP_HOST"), 70);
-		p = strchr(name, '.');
-		if (p != NULL && isaword(domainname, p + 1)) {
-			*p = 0;
-			ytht_strsncpy(rframe, name, 60);
-		}
-		if (rframe[0] && isaword(specname, rframe))
-			rframe[0] = 0;
 		return 0;
 	}
 	snprintf(needcgi, STRLEN, "%s", url + 1);
