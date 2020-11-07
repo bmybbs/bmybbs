@@ -7,6 +7,8 @@ int bbslogin_main() {
 	char buf[128], id[20], pw[20];
 	struct user_info info;
 	struct bmy_cookie cookie;
+	time_t expires_time;
+	char   expires_buf[50];
 
 	ytht_strsncpy(id, getparm("id"), 13);
 	ytht_strsncpy(pw, getparm("pw"), 13);
@@ -67,7 +69,9 @@ int bbslogin_main() {
 	cookie.extraparam = getextrparam_str(wwwstylenum);
 	bmy_cookie_gen(buf, sizeof(buf), &cookie);
 
-	printf("Set-Cookie: " SMAGIC "=%s; SameSite=Strict; HttpOnly;", buf);
+	expires_time = time(NULL) + MAX_SESS_TIME - 10;
+	ytht_utc_time_s(expires_buf, sizeof(expires_buf), &expires_time);
+	printf("Set-Cookie: " SMAGIC "=%s; SameSite=Strict; HttpOnly; Expires=%s", buf, expires_buf);
 	html_header(3);
 	redirect("/" SMAGIC "/"); // URL 不再附带 session 信息
 	http_quit();

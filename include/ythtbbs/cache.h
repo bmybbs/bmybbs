@@ -14,6 +14,11 @@
 #define FRIENDMSG_PAGER 0x8
 /* END */
 
+// 最长发呆时间，3天
+#define MAX_IDEL_TIME (3 * 24 * 3600)
+// 最长会话时间，7天强制登出
+#define MAX_SESS_TIME (7 * 24 * 3600)
+
 struct wwwsession {
 	unsigned char used:1, show_reg:1, att_mode:1, doc_mode:1;
 	unsigned char link_mode:1, def_mode:1, t_lines:6;

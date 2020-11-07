@@ -12,10 +12,6 @@
 
 // 用于 iphash
 #define NHASH 67
-// 最长发呆时间，3天
-#define MAX_IDEL_TIME (3 * 24 * 3600)
-// 最长会话时间，7天强制登出
-#define MAX_SESS_TIME (7 * 24 * 3600)
 
 struct UTMPFILE {
 	struct user_info uinfo[USHM_SIZE];
