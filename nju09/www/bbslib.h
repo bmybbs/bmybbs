@@ -33,7 +33,6 @@ extern int wwwstylenum;
 extern const char seccodes[SECNUM];
 extern const char secname[SECNUM][2][20];
 extern char needcgi[STRLEN];
-extern char rframe[STRLEN];
 
 extern int loginok;
 extern int isguest;

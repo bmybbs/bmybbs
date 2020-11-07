@@ -125,7 +125,7 @@ bbsindex_main()
 		http_quit();
 		return 0;
 	}
-	if (!(loginok || is_valid_guest_url(getsenv("SCRIPT_URL"))) && (rframe[0] == 0)) {
+	if (!(loginok || is_valid_guest_url(getsenv("SCRIPT_URL")))) {
 		if (strcasecmp(FIRST_PAGE, getsenv("SCRIPT_URL")) != 0) {
 			html_header(3);
 			redirect(FIRST_PAGE);
@@ -134,30 +134,9 @@ bbsindex_main()
 		loginwindow();
 		http_quit();
 	}
-	if (!(loginok || is_valid_guest_url(getsenv("SCRIPT_URL")))) {
-		sprintf(redbuf, "/" SMAGIC "/bbslogin?id=guest&t=%d", (int) now_t);
-		html_header(3);
-		redirect(redbuf);
-		http_quit();
-	}
 	if (cache_header(1000000000, 86400))
 		return 0;
 	html_header(1);
-#if 0
-	printf("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Frameset//EN\"\n"
-		"\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd\">\n"
-		"<html xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"gb2312\">\n"
-		"<head>\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=gb2312\" />\n"
-		"<meta http-equiv=\"Content-Language\" content=\"gb2312\" />\n"
-		"<meta content=\"all\" name=\"robots\" />\n"
-		"<meta name=\"author\" content=\"flyinsea@bmy,Inversun@bmy, minbtaggio@bmy\" />\n"
-		"<meta name=\"Copyright\" content=\"bbs.xjtu.edu.cn,西安交大,兵马俑BBS\" />\n"
-		"<meta name=\"description\" content=\"bbs.xjtu.edu.cn,西安交大,兵马俑BBS\" />\n"
-		"<meta content=\"兵马俑BBS,bmy,bbs.xjtu.edu.cn,西安交大\" name=\"keywords\" />\n"
-		"<!--<link rel=\"icon\" href=\"/images/favicon.ico\" type=\"/image/x-icon\" />\n"
-		"<link rel=\"shortcut icon\" href=\"/images/favicon.ico\" type=\"/image/x-icon\" />-->\n"
-		"<link href=\"/images/oras.css\" rel=\"stylesheet\" type=\"text/css\" />\n");
-#endif
 	if (!isguest && (readuservalue(currentuser.userid, "wwwstyle", str, sizeof (str)) || atoi(str) != wwwstylenum)) {
 		sprintf(str, "%d", wwwstylenum);
 		saveuservalue(currentuser.userid, "wwwstyle", str);

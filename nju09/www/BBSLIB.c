@@ -13,7 +13,6 @@
 #include "ythtbbs/session.h"
 
 char needcgi[STRLEN];
-char rframe[STRLEN];
 
 static void __unhcode(char *s);
 static void extraparam_init(const char *extrastr);
@@ -586,7 +585,6 @@ url_parse()
 
 	if (!strcmp(url, "/") || nologin) {
 		strcpy(needcgi, "bbsindex");
-		strcpy(rframe, "");
 		return 0;
 	}
 	snprintf(needcgi, STRLEN, "%s", url + 1);
