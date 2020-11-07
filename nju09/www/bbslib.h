@@ -159,7 +159,6 @@ int send_msg(char *myuserid, int i, char *touserid, int topid, char *msg, int of
 int count_life_value(struct userec *urec);
 int save_user_data(struct userec *x);
 int user_perm(struct userec *x, int level);
-int insertuseridhash(struct useridhashitem *ptr, int size, char *userid, int num);
 int getusernum(char *id);
 struct userec *getuser(char *id);
 int count_online(void);

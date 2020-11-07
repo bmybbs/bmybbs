@@ -1723,27 +1723,6 @@ static int useridhash(char *id) {
 	return n1 * 26 + n2;
 }
 
-int
-insertuseridhash(struct useridhashitem *ptr, int size, char *userid, int num)
-{
-	int h, s, i, j = 0;
-	if (!*userid)
-		return -1;
-	h = useridhash(userid);
-	s = size / 26 / 26;
-	i = h * s;
-	while (j < s * 5 && ptr[i].num > 0 && ptr[i].num != num) {
-		i++;
-		if (i >= size)
-			i %= size;
-	}
-	if (j == s * 5)
-		return -1;
-	ptr[i].num = num;
-	strcpy(ptr[i].userid, userid);
-	return 0;
-}
-
 // 返回索引值，原本实现中会判断 shm_ucache->userid[i]
 int getusernum(char *id) {
 	return ythtbbs_cache_UserIDHashTable_find_idx(id);
