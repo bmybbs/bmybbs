@@ -1,13 +1,5 @@
 #include "bbslib.h"
 
-/**
- * 判断是否为合法的 guest 链接
- * 样式后缀允许为 _[A-H]
- * @param url
- * @return 0 不合法 1 合法
- */
-static int is_valid_guest_url(const char* url);
-
 char *get_login_pic_link (char *picname, char *linkback);
 
 int
@@ -125,58 +117,40 @@ bbsindex_main()
 		http_quit();
 		return 0;
 	}
-	if (!(loginok || is_valid_guest_url(getsenv("SCRIPT_URL")))) {
-		if (strcasecmp(FIRST_PAGE, getsenv("SCRIPT_URL")) != 0) {
-			html_header(3);
-			redirect(FIRST_PAGE);
-			http_quit();
-		}
+	if (strcmp(FIRST_PAGE, getsenv("SCRIPT_URL")) == 0) {
 		loginwindow();
 		http_quit();
 	}
+
 	if (cache_header(1000000000, 86400))
 		return 0;
-	html_header(1);
-	if (!isguest && (readuservalue(currentuser.userid, "wwwstyle", str, sizeof (str)) || atoi(str) != wwwstylenum)) {
-		sprintf(str, "%d", wwwstylenum);
-		saveuservalue(currentuser.userid, "wwwstyle", str);
+	if (strcmp("/" SMAGIC "/", getsenv("SCRPIT_URL")) == 0) {
+		html_header(1);
+		if (!isguest && (readuservalue(currentuser.userid, "wwwstyle", str, sizeof (str)) || atoi(str) != wwwstylenum)) {
+			sprintf(str, "%d", wwwstylenum);
+			saveuservalue(currentuser.userid, "wwwstyle", str);
+		}
+		//add by mintbaggio 040411 for new www
+		printf("<title>欢迎光临 %s</title>"
+				"<frameset cols=135,* frameSpacing=0 frameborder=no id=fs0>\n"
+				"<frame src=bbsleft?t=%ld name=f2 frameborder=no scrolling=auto>\n"
+				"<frameset id=fs1 rows=0,*,20 frameSpacing=0 frameborder=no border=0>\n"
+				"<frame scrolling=no name=fmsg src=bbsgetmsg>\n"
+				"<frame name=f3 src=\"bbsboa?secstr=?\">\n"
+				"<frame scrolling=no name=f5 src=bbsfoot>\n"
+				"</frameset>\n"
+				"</frameset>\n"
+				"<noframes>\n"
+				"<body>\n"
+				"</body>\n"
+				"</noframes>\n", MY_BBS_NAME, now_t);
+		http_quit();
 	}
-	//add by mintbaggio 040411 for new www
-	printf("<title>欢迎光临 %s</title>"
-		"<frameset cols=135,* frameSpacing=0 frameborder=no id=fs0>\n"
-		"<frame src=bbsleft?t=%ld name=f2 frameborder=no scrolling=auto>\n"
-		"<frameset id=fs1 rows=0,*,20 frameSpacing=0 frameborder=no border=0>\n"
-			"<frame scrolling=no name=fmsg src=bbsgetmsg>\n"
-			"<frame name=f3 src=\"bbsboa?secstr=?\">\n"
-			"<frame scrolling=no name=f5 src=bbsfoot>\n"
-		"</frameset>\n"
-		"</frameset>\n"
-		"<noframes>\n"
-		"<body>\n"
-		"</body>\n"
-		"</noframes>\n", MY_BBS_NAME, now_t);
+
+	// 不符合的情况
+	html_header(3);
+	redirect(FIRST_PAGE);
 	http_quit();
 	return 0;
 }
 
-static int is_valid_guest_url(const char* url) {
-	const char* patt = "/" SMAGIC "_?/";
-	size_t i, l;
-	l = strlen(patt);
-
-	if (strcmp("/" SMAGIC "/", url) == 0)
-		return 1;
-
-	if (strlen(url) != l)
-		return 0;
-
-	for(i=0; i<l; i++) {
-		if (patt[i] == '?') {
-			if(url[i] < 'A' || url[i] > 'H')
-				return 0;
-		} else if (patt[i] != url[i])
-			return 0;
-	}
-
-	return 1;
-}
