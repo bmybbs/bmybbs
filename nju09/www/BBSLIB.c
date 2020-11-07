@@ -1775,25 +1775,6 @@ insertuseridhash(struct useridhashitem *ptr, int size, char *userid, int num)
 	return 0;
 }
 
-int
-finduseridhash(struct useridhashitem *ptr, int size, char *userid)
-{
-	int h, s, i, j;
-	h = useridhash(userid);
-	s = size / 26 / 26;
-	i = h * s;
-	for (j = 0; j < s * 5; j++) {
-		if (!strcasecmp(ptr[i].userid, userid))
-			break;
-		i++;
-		if (i >= size)
-			i %= size;
-	}
-	if (j == s * 5)
-		return -1;
-	return ptr[i].num;
-}
-
 // 返回索引值，原本实现中会判断 shm_ucache->userid[i]
 int getusernum(char *id) {
 	return ythtbbs_cache_UserIDHashTable_find_idx(id);
