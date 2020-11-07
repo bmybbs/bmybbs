@@ -25,8 +25,8 @@ agent connections.
  *
  * Revision 1.1.1.1  2003/05/11 11:48:10  clearboy
  * update on 20051031
- * by clearboy 
- * for transfering the source codes from main site to the experimental site 
+ * by clearboy
+ * for transfering the source codes from main site to the experimental site
  * for the first time.
  *
  *
@@ -670,7 +670,7 @@ RETSIGTYPE sighup_handler(int sig)
     signal(SIGHUP, sighup_handler);
 }
 
-/* Called from the main program after receiving SIGHUP.  Restarts the 
+/* Called from the main program after receiving SIGHUP.  Restarts the
    server. */
 
 void sighup_restart(void)
@@ -682,7 +682,7 @@ void sighup_restart(void)
     exit(1);
 }
 
-/* Generic signal handler for terminating signals in the master daemon. 
+/* Generic signal handler for terminating signals in the master daemon.
    These close the listen socket; not closing it seems to cause "Address
    already in use" problems on some machines, which is inconvenient. */
 
@@ -702,7 +702,7 @@ RETSIGTYPE sigdanger_handler(int sig)
 }
 #endif                          /* SIGDANGER */
 
-/* SIGCHLD handler.  This is called whenever a child dies.  This will then 
+/* SIGCHLD handler.  This is called whenever a child dies.  This will then
    reap any zombies left by exited c. */
 
 RETSIGTYPE main_sigchld_handler(int sig)
@@ -764,7 +764,7 @@ int main(int ac, char **av)
     int perm_denied = 0;
     int ret;
     fd_set fdset;
-    //struct sockaddr_in sin;  
+    //struct sockaddr_in sin;
     struct sockaddr_in6 sin;    /* ipv6 */
     char buf[100];              /* Must not be larger than remote_version. */
     char remote_version[100];   /* Must be at least as big as buf. */
@@ -1321,9 +1321,9 @@ void do_connection(int privileged_port)
     unsigned int cipher_type, auth_mask, protocol_flags;
 
     /* Generate check bytes that the client must send back in the user packet
-       in order for it to be accepted; this is used to defy ip spoofing 
-       attacks.  Note that this only works against somebody doing IP spoofing 
-       from a remote machine; any machine on the local network can still see 
+       in order for it to be accepted; this is used to defy ip spoofing
+       attacks.  Note that this only works against somebody doing IP spoofing
+       from a remote machine; any machine on the local network can still see
        outgoing packets and catch the random cookie.  This only affects
        rhosts authentication, and this is one of the reasons why it is
        inherently insecure. */
@@ -1392,7 +1392,7 @@ void do_connection(int privileged_port)
     protocol_flags = packet_get_int();
     packet_set_protocol_flags(protocol_flags);
 
-    /* Decrypt it using our private server key and private host key (key with 
+    /* Decrypt it using our private server key and private host key (key with
        larger modulus first). */
     if (mpz_cmp(&sensitive_data.private_key.n, &sensitive_data.host_key.n) > 0) {
         /* Private key has bigger modulus. */
@@ -1409,8 +1409,8 @@ void do_connection(int privileged_port)
     /* Compute session id for this session. */
     compute_session_id(session_id, check_bytes, sensitive_data.host_key.bits, &sensitive_data.host_key.n, sensitive_data.private_key.bits, &sensitive_data.private_key.n);
 
-    /* Extract session key from the decrypted integer.  The key is in the 
-       least significant 256 bits of the integer; the first byte of the 
+    /* Extract session key from the decrypted integer.  The key is in the
+       least significant 256 bits of the integer; the first byte of the
        key is in the highest bits. */
     mp_linearize_msb_first(session_key, sizeof(session_key), &session_key_int);
 
@@ -1751,7 +1751,7 @@ packet_get_string(NULL);
 extern void do_abort_bbs();
 void sshbbs_end(void)
 {
-    do_abort_bbs();	
+    do_abort_bbs();
     packet_disconnect("sshd exit");
 }
 
