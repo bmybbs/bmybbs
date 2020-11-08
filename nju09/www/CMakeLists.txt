@@ -128,6 +128,8 @@ set(SRC
 	bbsupdatelastpost.c
 	boardrc.c
 	deny_users.c
+
+	api_user_check.c
 )
 
 add_executable(www ${SRC})
