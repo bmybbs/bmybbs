@@ -180,11 +180,10 @@ static char *get_login_pic_link (char *picname, char *linkback) {
 }
 
 // added by IronBlood@11.09.05
-// 修正函数返回值，记得释放 by IronBlood@2014.10.22
-char *get_no_more_than_four_login_pics() {
+void get_no_more_than_four_login_pics(char *buf, size_t len) {
 	FILE *fp;
 	if(!(fp = fopen(MY_BBS_HOME "/logpics","r")))
-		return "cai.jpg";
+		ytht_strsncpy(buf, "cai,jpg", len);
 
 	char pics[256];
 	const char *pics_dir ="bmyMainPic/using/";
@@ -227,7 +226,7 @@ char *get_no_more_than_four_login_pics() {
 		}
 	}
 
-	return strdup(pics_list);
+	ytht_strsncpy(buf, pics_list, len);
 }
 
 int

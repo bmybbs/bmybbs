@@ -29,8 +29,9 @@ showannounce()
 void loginwindow()
 {
 	html_header(4);
+	char loginpics[512];
 
-	char *fourpics=get_no_more_than_four_login_pics();
+	get_no_more_than_four_login_pics(loginpics, sizeof(loginpics));
 	printf("<script>function openreg(){open('" SMAGIC
 			"/bbsreg', 'winREG', 'width=600,height=460,resizable=yes,scrollbars=yes');}\n"
 			"function sf(){document.l.id.focus();}\n"
@@ -85,8 +86,7 @@ void loginwindow()
 	"</tr>\n"
 "</table>");/* modified by linux 05.9.11 */
 	showannounce();
-	printf("<script>showloginpics(\"%s\")</script>",fourpics);
-	free(fourpics);		// 释放资源 by IronBlood 2014.10.22 其实此处快退出了，会自动释放的 :-)
+	printf("<script>showloginpics(\"%s\")</script>", loginpics);
 	printf("</body>\n</html>");
 }
 
