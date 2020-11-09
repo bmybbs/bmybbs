@@ -130,7 +130,8 @@ set(SRC
 	deny_users.c
 
 	api_user_check.c
+	api_loginpics.c
 )
 
 add_executable(www ${SRC})
-target_link_libraries(www ythtbbs ytht ghthash)
+target_link_libraries(www ythtbbs ytht json-c)
