@@ -11,7 +11,7 @@ int api_loginpics(void) {
 	obj = json_object_new_object();
 	json_object_object_add(obj, "data", json_object_new_string(buf));
 	json_header();
-	printf("%s", json_object_to_json_string(obj));
+	printf("%s", json_object_to_json_string_ext(obj, JSON_C_TO_STRING_NOSLASHESCAPE));
 	json_object_put(obj);
 	return 0;
 }
