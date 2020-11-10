@@ -17,7 +17,7 @@
 					<div class="next" v-on:click="showNext">&#10095;</div>
 				</div>
 				<div id="pic-nav">
-					<div v-for="item in loginpics" :key="item.img_url" v-bind:class="{ active: item.display }"></div>
+					<div v-for="item in loginpics" :key="item.img_url" v-bind:class="{ active: item.display }" v-on:click="showSlides(item.index)"></div>
 				</div>
 			</div>
 		</div>
@@ -29,17 +29,15 @@ export default {
 	name: "Login",
 	data() {
 		return {
-			slideIndex: 1,
+			slideIndex: 0,
 			loginpics: [],
 			loginok: false,
 			checked: false
 		}
 	},
 	created() {
-		console.log("created");
 	},
 	mounted() {
-		console.log("mounted");
 		let that = this;
 		fetch("/BMY/loginpics")
 			.then(response => response.json())
@@ -51,6 +49,7 @@ export default {
 					let tmp = el.split(";");
 					console.log(idx);
 					that.loginpics.push({
+						index: idx,
 						display: (idx == 0),
 						img_url: tmp[0],
 						img_link: tmp[1]
@@ -60,27 +59,28 @@ export default {
 	},
 	methods: {
 		showSlides(n) {
-			let i;
+			if (this.slideIndex == n)
+				return;
 
-			if (n > this.loginpics.length) {
-				this.slideIndex = 1;
+			if (n > this.loginpics.length - 1) {
+				this.slideIndex = 0;
+			} else if (n < 0) {
+				this.slideIndex = this.loginpics.length - 1;
+			} else {
+				this.slideIndex = n;
 			}
 
-			if (n < 1) {
-				this.slideIndex = this.loginpics.length;
-			}
-
-			for (i = 0; i < this.loginpics.length; i++) {
-				this.loginpics[i].display = this.slideIndex == i + 1;
+			for (let i = 0; i < this.loginpics.length; i++) {
+				this.loginpics[i].display = this.slideIndex == i;
 			}
 		},
 
 		showPrev() {
-			this.showSlides(this.slideIndex += 1);
+			this.showSlides(this.slideIndex - 1);
 		},
 
 		showNext() {
-			this.showSlides(this.slideIndex += 1);
+			this.showSlides(this.slideIndex + 1);
 		}
 	}
 };
@@ -123,6 +123,10 @@ export default {
 	display: relative;
 }
 
+#pic-container img {
+	box-shadow: 0 10px 20px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
 .prev,
 .next {
 	cursor: pointer;
@@ -150,16 +154,19 @@ export default {
 }
 
 #pic-nav {
-	width: 100px;
+	width: 120px;
 	margin: 0 auto;
+	padding-top: 16px;
 }
 
 #pic-nav div {
+	cursor: pointer;
 	border: 1px solid #FF6600;
 	display: inline-block;
-	width: 12px;
-	height: 12px;
-	margin-right: 5px;
+	width: 16px;
+	height: 16px;
+	margin-right: 10px;
+	border-radius: 50%;
 }
 
 #pic-nav div:last-child {
