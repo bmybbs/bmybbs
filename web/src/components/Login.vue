@@ -12,9 +12,6 @@
 					<div class="slides" v-for="item in loginpics" :key="item.img_url" v-bind:style="{ display: item.display ? 'block' : 'none' }">
 						<a v-bind:href="item.img_link"><img v-bind:src="item.img_url"></a>
 					</div>
-
-					<div class="prev" v-on:click="showPrev">&#10094;</div>
-					<div class="next" v-on:click="showNext">&#10095;</div>
 				</div>
 				<div id="pic-nav">
 					<div v-for="item in loginpics" :key="item.img_url" v-bind:class="{ active: item.display }" v-on:click="showSlides(item.index)"></div>
@@ -118,14 +115,6 @@ export default {
 				this.loginpics[i].display = this.slideIndex == i;
 			}
 		},
-
-		showPrev() {
-			this.showSlides(this.slideIndex - 1);
-		},
-
-		showNext() {
-			this.showSlides(this.slideIndex + 1);
-		}
 	}
 };
 </script>
@@ -169,32 +158,6 @@ export default {
 
 #pic-container img {
 	box-shadow: 0 10px 20px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-}
-
-.prev,
-.next {
-	cursor: pointer;
-	position: absolute;
-	top: 50%;
-	width: auto;
-	padding: 16px;
-	margin-top: -20px;
-	color: white;
-	font-weight: bold;
-	font-size: 20px;
-	border-radius: 0 3px 3px 0;
-	user-select: none;
-	background: rgba(0, 0, 0, 0.1);
-	-webkit-user-select: none;
-}
-
-.next {
-	right: 0;
-	border-radius: 3px 0 0 3px;
-}
-
-.prev:hover, .next:hover {
-	background-color: rgba(0, 0, 0, 0.8);
 }
 
 #pic-nav {
