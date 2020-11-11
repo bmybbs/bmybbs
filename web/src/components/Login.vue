@@ -19,6 +19,33 @@
 				<div id="pic-nav">
 					<div v-for="item in loginpics" :key="item.img_url" v-bind:class="{ active: item.display }" v-on:click="showSlides(item.index)"></div>
 				</div>
+				<div v-if="checked">
+					<div id="welback" class="row" v-if="loginok">
+						<div class="col-sm-8">
+							{{ message }}
+						</div>
+						<div class="col-4 btn-group">
+							<button type="button" class="btn btn-sm btn-primary">进入旧版</button>
+							<button type="button" class="btn btn-sm btn-primary">进入新版</button>
+						</div>
+					</div>
+					<form ref="form" id="login-form" class="row" action="/BMY/bbslogin" method="post" v-else>
+						<div class="col-sm-4">
+							<input name="id" type="text" class="form-control form-control-sm" placeholder="账号" v-model="username">
+						</div>
+						<div class="col-sm-4">
+							<input name="pw" type="password" class="form-control form-control-sm" placeholder="密码" v-model="password">
+						</div>
+						<div class="col-4 btn-group">
+							<button type="button" class="btn btn-sm btn-primary" v-on:click="post_form">登录旧版</button>
+							<button type="button" class="btn btn-sm btn-primary">登录新版</button>
+							<button type="button" class="btn btn-sm btn-primary">忘记密码</button>
+						</div>
+					</form>
+				</div>
+				<div id="footer">
+					陕ICP备 05001571号<br>开发维护：西安交通大学网络中心 BBS程序组
+				</div>
 			</div>
 		</div>
 	</div>
@@ -29,9 +56,12 @@ export default {
 	name: "Login",
 	data() {
 		return {
+			username: "",
+			password: "",
 			slideIndex: 0,
 			loginpics: [],
 			loginok: false,
+			message: "",
 			checked: false
 		}
 	},
@@ -39,6 +69,7 @@ export default {
 	},
 	mounted() {
 		let that = this;
+
 		fetch("/BMY/loginpics")
 			.then(response => response.json())
 			.then(response => {
@@ -47,7 +78,6 @@ export default {
 
 				arr.forEach((el, idx) => {
 					let tmp = el.split(";");
-					console.log(idx);
 					that.loginpics.push({
 						index: idx,
 						display: (idx == 0),
@@ -56,8 +86,22 @@ export default {
 					});
 				});
 			});
+
+		fetch("/BMY/user_check")
+			.then(response => response.json())
+			.then(response => {
+				if (response.code == 0) {
+					that.message = "欢迎回来 " + response.userid;
+					that.loginok = true;
+				}
+
+				that.checked = true;
+			});
 	},
 	methods: {
+		post_form() {
+			this.$refs.form.submit();
+		},
 		showSlides(n) {
 			if (this.slideIndex == n)
 				return;
@@ -175,6 +219,12 @@ export default {
 
 #pic-nav div.active {
 	background-color: #FF6600;
+}
+
+#footer {
+	text-align: center;
+	font-size: 12px;
+	color: #222222;
 }
 </style>
 
