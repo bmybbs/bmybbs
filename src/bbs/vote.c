@@ -279,7 +279,7 @@ struct votelog *a, *b;
 	return cmpIP(a->ip, b->ip);
 }
 
-static int get_board_by_name(const struct boardmem *board, int curr_idx, va_list ap) {
+static int get_board_by_name(struct boardmem *board, int curr_idx, va_list ap) {
 	const char *name = va_arg(ap, const char *);
 	int *idx         = va_arg(ap, int *);
 	if (strncmp(name, board->header.filename, STRLEN) == 0) {
