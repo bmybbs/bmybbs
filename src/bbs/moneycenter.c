@@ -2088,6 +2088,18 @@ static int money_sackOrAppoint(int type) {
 	return 1;
 }
 
+static int init_stock_v(struct boardmem *board, int curr_idx, va_list ap) {
+	const char *name = va_arg(ap, const char *);
+
+	if (!strcmp(board->header.filename, name)) {
+		board->stocknum = board->score * ((board->score > 10000) ? 2000 : 1000);
+
+		if (board->stocknum < 50000)
+			board->stocknum = 50000;
+	}
+	return 0;
+}
+
 //管理系统  股票系统
 static int money_admin() {
 	int ch, i, j, quit = 0;
@@ -2524,17 +2536,9 @@ static int money_admin() {
 
 				move(12, 4);
 				if (askyn("确定要初始化股市吗？", NA, NA) == YEA) {
-					for (i = 0; i < numboards; i++)
-						for (j = 0; j < count; j++)
-							if (!strcmp(bcache[i].header.filename, stockboard[j])) {
-								// stock_price[j] = ythtbbs_cache_utmp_get_ave_score() / 100 + bcache[i].score / 20;
-								if (bcache[i].score > 10000)
-									bcache[i].stocknum = bcache[i].score * 2000;
-								else
-									bcache[i].stocknum = bcache[i].score * 1000;
-								if (bcache[i].stocknum < 50000)
-									bcache[i].stocknum = 50000;
-							}
+					for (j = 0; j < count; j++) {
+						ythtbbs_cache_Board_foreach_v(init_stock_v, stockboard[j]);
+					}
 					sprintf(genbuf, "%s行使管理权限", currentuser.userid);
 					sprintf(buf,"%s初始化股市", currentuser.userid);
 					millionairesrec(genbuf, buf, "");
@@ -2668,7 +2672,7 @@ static int money_admin() {
 	return 0;
 }
 
-	static int//彩票36选7
+static int//彩票36选7
 valid367Bet(char *buf)
 {
 	int i, j;
