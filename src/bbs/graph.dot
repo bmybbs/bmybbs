@@ -374,7 +374,6 @@ digraph G {
 	n_mntn -> n_mnct;
 	n_nmcp -> n_mnct;
 	n_main -> n_mnct;
-	n_bcch -> n_mnct;
 	n_talk -> n_mnct;
 	n_bbs  -> n_mnct;
 	n_mail -> n_mnct;
