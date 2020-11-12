@@ -5294,6 +5294,33 @@ static int money_stock() {
 	return 0;
 }
 
+static int update_stock_v(struct boardmem *board, int curr_idx, va_list ap) {
+	const char *name = va_arg(ap, const char *);
+	int *price = va_arg(ap, int*);
+	int *sboard = va_arg(ap, int*);
+	int *count1 = va_arg(ap, int*);
+
+	if (*count1 == 0) {
+		return QUIT;
+	}
+	if (!strcmp(board->header.filename, name)) {
+		*price = ythtbbs_cache_utmp_get_ave_score() / 100 + board->score / 20;
+
+		if (board->stocknum <= 0) {
+			board->stocknum = board->score * ((board->score > 10000) ? 2000 : 1000);
+
+			if (board->stocknum < 50000) {
+				board->stocknum = 50000;
+			}
+		}
+
+		*sboard = curr_idx;
+		*count1 = *count1 - 1;
+		return QUIT;
+	}
+	return 0;
+}
+
 /*股票系统*/
 static int money_stock_board() {
 	char stockname[STRLEN][MAX_STOCK_NUM];
@@ -5332,21 +5359,8 @@ static int money_stock_board() {
 	bzero(&stock_price, sizeof (stock_price));
 	bzero(&stock_num, sizeof (stock_num));
 	bzero(&addto_num, sizeof (addto_num));
-	for (i = 0; i < numboards; i++) {
-		for (j = 0; j < count; j++) {
-			if (!strcmp(bcache[i].header.filename, stockboard[j])) {
-				stock_price[j] = ythtbbs_cache_utmp_get_ave_score() / 100 + bcache[i].score / 20;
-				if (bcache[i].stocknum <= 0) {
-					if (bcache[i].score > 10000)
-						bcache[i].stocknum = bcache[i].score * 2000;
-					else
-						bcache[i].stocknum = bcache[i].score * 1000;
-				}
-				stock_board[j] = i;
-				count1--;
-				break;
-			}
-		}
+	for (j = 0; j < count; j++) {
+		ythtbbs_cache_Board_foreach_v(update_stock_v, stockboard[j], &stock_price[j], &stock_board[j], &count1);
 		if (count1 == 0)
 			break;
 	}//计算股价
