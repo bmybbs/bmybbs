@@ -107,7 +107,7 @@ void ythtbbs_cache_Board_foreach_v(ythtbbs_cache_Board_foreach_callback callback
 
 	for (i = 0; i < shm_board->number; i++) {
 		va_start(ap, callback);
-		rc = callback(&shm_board->bcache[i], ap);
+		rc = callback(&shm_board->bcache[i], i, ap);
 		va_end(ap);
 
 		if (rc == QUIT)
