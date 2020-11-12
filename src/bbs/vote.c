@@ -45,11 +45,11 @@
 #include "main.h"
 #include "bbs_global_vars.h"
 #include "bbs-internal.h"
+#include "ythtbbs/cache.h"
 
 extern int page, range;
 extern char IScurrBM;
 extern struct boardmem *bcache;
-extern struct BCACHE *brdshm;
 static char *const vote_type[] = { "是非", "单选", "复选", "数字", "问答" ,"限定票数复选"};
 struct votebal currvote;
 extern int numboards;
@@ -172,9 +172,9 @@ b_closepolls()
 	int i, end;
 
 	now = time(NULL);
-	resolve_boards();
+	ythtbbs_cache_Board_resolve();
 
-	if (now < brdshm->pollvote) {
+	if (now < ythtbbs_cache_Board_get_pollvote()) {
 		return 0;
 	}
 
@@ -185,7 +185,7 @@ b_closepolls()
 	nextpoll = now + 7 * 3600;
 
 	strcpy(buf, currboard);
-	for (i = 0; i < brdshm->number; i++) {
+	for (i = 0; i < ythtbbs_cache_Board_get_number(); i++) {
 		strcpy(currboard, (&bcache[i])->header.filename);
 		setcontrolfile();
 		end = get_num_records(controlfile, sizeof (currvote));
@@ -200,7 +200,7 @@ b_closepolls()
 		}
 	}
 	strcpy(currboard, buf);
-	brdshm->pollvote = nextpoll;
+	ythtbbs_cache_Board_set_pollvote(nextpoll);
 	return 0;
 }
 
