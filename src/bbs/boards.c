@@ -259,7 +259,7 @@ load_boards(int *brdnum, int secnum)
 	if (GoodBrd.num == 9999)	// 强制 load 订阅版面
 		load_GoodBrd();
 	for (n = 0; n < numboards; n++) {
-		bptr = &bcache[n];
+		bptr = ythtbbs_cache_Board_get_board_by_idx(n);
 		if (!(bptr->header.filename[0]))
 			continue;
 		if (goodbrd == 0) {	//如果不是阅读定制的版面, 则...
@@ -394,7 +394,7 @@ struct newpostdata *ptr;
 	}
 
 	//prints("pos=%d\n", ptr->pos);
-	bptr = &bcache[ptr->pos];
+	bptr = ythtbbs_cache_Board_get_board_by_idx(ptr->pos);
 	if (bptr->total <= 0){		//mint
 	//	prints("if");
 		ptr->unread = 0;
@@ -506,7 +506,7 @@ const struct sectree *sec;
 			}
 		} else {
 			ptr = &nbrd[n - secnum];
-			bptr = &bcache[ptr->pos];
+			bptr = ythtbbs_cache_Board_get_board_by_idx(ptr->pos);
 			if (ptr->unread == -1)
 				check_newpostt(ptr);
 			if (!newflag)
@@ -536,8 +536,8 @@ struct newpostdata *brd, *tmp;
 	unsigned char sorttype;
 	struct boardmem *bptrbrd, *bptrtmp;
 	sorttype = currentuser.flags[0] & BRDSORT_MASK;
-	bptrbrd = &bcache[brd->pos];
-	bptrtmp = &bcache[tmp->pos];
+	bptrbrd = ythtbbs_cache_Board_get_board_by_idx(brd->pos);
+	bptrtmp = ythtbbs_cache_Board_get_board_by_idx(tmp->pos);
 
 	switch (sorttype) {
 	case 0x00:
@@ -576,7 +576,7 @@ update_postboards(void)
 	}
 	fputs("#!/usr/bin/perl\n@board=(\n", fw);
 	for (i = 0; i < brdshm->number; i++) {
-		bname = &(bcache[i].header.filename[0]);
+		bname = bcache[i].header.filename;
 		if (!bname[0])
 			continue;
 		snprintf(buf, 64, "boards/%s/.POSTBOARDS", bname);
@@ -818,7 +818,7 @@ const struct sectree *sec;
 					char buf[STRLEN];
 					setbdir(buf, currboard, digestmode);
 					if (getkeep(buf, -1, 0) == NULL) {
-						tmp = unread_position(buf, &bcache[ptr->pos]);
+						tmp = unread_position(buf, ythtbbs_cache_Board_get_board_by_idx(ptr->pos));
 						page = tmp - t_lines / 2;
 						getkeep(buf, page > 1 ? page : 1, tmp + 1);
 					}
@@ -1251,11 +1251,13 @@ void
 clear_new_flag_quick(int t)
 {
 	int bnum;
+	const struct boardmem *board;
 	if (!t) {
 		t = time(NULL);
 		bnum = getbnum(brc.board);
-		if (bnum && bcache[bnum - 1].lastpost > t)
-			t = bcache[bnum - 1].lastpost;
+		board = ythtbbs_cache_Board_get_board_by_idx(bnum - 1);
+		if (bnum && board->lastpost > t)
+			t = board->lastpost;
 	}
 	brc_clearto(&brc, t);
 }
@@ -1290,6 +1292,7 @@ Read()
 	char notename[STRLEN];
 	time_t usetime;
 	struct stat st;
+	struct boardmem *board;
 	if (!selboard || !strcmp(currboard, "")) {
 		move(2, 0);
 		prints("请先选择讨论区\n");
@@ -1303,11 +1306,13 @@ Read()
 	setbdir(buf, currboard, digestmode);
 	if (!clubsync(currboard))
 		return 0;
-	if (uinfo.curboard && bcache[uinfo.curboard - 1].inboard > 0)
-		bcache[uinfo.curboard - 1].inboard--;
+
+	board = ythtbbs_cache_Board_get_board_by_idx(uinfo.curboard - 1);
+	if (uinfo.curboard && board->inboard > 0)
+		board->inboard--;
 	uinfo.curboard = getbnum(currboard);
 	update_utmp();
-	bcache[uinfo.curboard - 1].inboard++;
+	board->inboard++;
 	setvfile(notename, currboard, "notes");
 	clear();
 	if (stat(notename, &st) != -1) {
@@ -1349,8 +1354,10 @@ Read()
 		newtrace(genbuf);
 	}
 	brc_update();
-	if (uinfo.curboard && bcache[uinfo.curboard - 1].inboard > 0)
-		bcache[uinfo.curboard - 1].inboard--;
+
+	board = ythtbbs_cache_Board_get_board_by_idx(uinfo.curboard - 1);
+	if (uinfo.curboard && board->inboard > 0)
+		board->inboard--;
 	uinfo.curboard = 0;
 	update_utmp();
 	return 0;
