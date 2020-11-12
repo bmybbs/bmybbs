@@ -1252,6 +1252,7 @@ char *direct;
 	char bname[STRLEN], bpath[STRLEN];
 	struct stat st;
 	int ret;
+	struct boardmem *board;
 
 	if (currentuser.dietime || inprison)
 		return DONOTHING;
@@ -1288,13 +1289,14 @@ char *direct;
 		return FULLUPDATE;
 	}
 
-	if (uinfo.curboard && bcache[uinfo.curboard - 1].inboard > 0) {
-		bcache[uinfo.curboard - 1].inboard--;
+	board = ythtbbs_cache_Board_get_board_by_idx(uinfo.curboard - 1);
+	if (uinfo.curboard && board->inboard > 0) {
+		board->inboard--;
 	}
 	uinfo.curboard = getbnum(bname);
 	update_utmp();
 	if (uinfo.curboard)
-		bcache[uinfo.curboard - 1].inboard++;
+		board->inboard++;
 	selboard = 1;
 	brc_initial(bname, 0);
 	strcpy(currboard, bname);
@@ -1309,7 +1311,7 @@ char *direct;
 		if (DEFINE(DEF_FIRSTNEW, currentuser)) {
 			int tmp;
 			if (getkeep(direct, -1, 0) == NULL) {
-				tmp = unread_position(direct, &bcache[uinfo.curboard - 1]);
+				tmp = unread_position(direct, board);
 				page = tmp - t_lines / 2;
 				getkeep(direct, page > 1 ? page : 1, tmp + 1);
 			}
