@@ -89,6 +89,18 @@ int ythtbbs_cache_Board_set_bm_hat_v(void *b, va_list ap) {
 	return 0;
 }
 
+time_t ythtbbs_cache_Board_get_pollvote(void) {
+	return shm_board->pollvote;
+}
+
+void ythtbbs_cache_Board_set_pollvote(time_t t) {
+	shm_board->pollvote = t;
+}
+
+int ythtbbs_cache_Board_get_number(void) {
+	return shm_board->number;
+}
+
 /***** implementations of private functions *****/
 static int getlastpost(char *board, int *lastpost, int *total) {
 	struct fileheader fh;
