@@ -354,7 +354,7 @@ mk_result()
 
 	sug = NULL;
 
-	resolve_boards();
+	ythtbbs_cache_Board_resolve();
 	for (i = 0; i < numboards; i++)
 		if (!strncmp(currboard, bcache[i].header.filename, STRLEN))
 			break;
