@@ -482,8 +482,8 @@ const struct sectree *sec;
 	if (clsflag) {
 		clear();
 		docmdtitle(title,
-				"  [mÖ÷Ñ¡µ¥[[1;32m¡û[m,[1;32me[m] ÔÄ¶Á[[1;32m¡ú[m,[1;32mRtn[m] Ñ¡Ôñ[[1;32m¡ü[m,[1;32m¡ı[m] ÁĞ³ö[[1;32my[m] ÅÅĞò[[1;32ms[m] ËÑÑ°[[1;32m/[m] ÇĞ»»[[1;32mc[m] ÇóÖú[[1;32mh[m]\n");
-		prints("[1;44;37m %s ÌÖÂÛÇøÃû³Æ   V  Àà±ğ  %-21sS °æ  Ö÷      ÔÚÏß   ÈËÆø[m\n",
+				"  \033[mÖ÷Ñ¡µ¥[\033[1;32m¡û\033[m,\033[1;32me\033[m] ÔÄ¶Á[\033[1;32m¡ú\033[m,\033[1;32mRtn\033[m] Ñ¡Ôñ[\033[1;32m¡ü\033[m,\033[1;32m¡ı\033[m] ÁĞ³ö[\033[1;32my\033[m] ÅÅĞò[\033[1;32ms\033[m] ËÑÑ°[\033[1;32m/\033[m] ÇĞ»»[\033[1;32mc\033[m] ÇóÖú[\033[1;32mh\033[m]\n");
+		prints("\033[1;44;37m %s ÌÖÂÛÇøÃû³Æ   V  Àà±ğ  %-21sS °æ  Ö÷      ÔÚÏß   ÈËÆø\033[m\n",
 				newflag ? " È«²¿ Î´" : " ±àºÅ Î´", "ÖĞ  ÎÄ  Ğğ  Êö");
 	}
 
@@ -514,14 +514,14 @@ const struct sectree *sec;
 			else
 				prints(" %5d ", bptr->total);
 			prints("%s%c",
-					(ptr->flag & INNBBSD_FLAG) ? (ptr->unread ?  "[1;32m¡ñ[m" : "[1;32m¡ğ[m") : (ptr->unread ? "¡ô" : "¡ó"),
+					(ptr->flag & INNBBSD_FLAG) ? (ptr->unread ?  "\033[1;32m¡ñ\033[m" : "\033[1;32m¡ğ\033[m") : (ptr->unread ? "¡ô" : "¡ó"),
 					(ptr->zap && !(ptr->flag & NOZAP_FLAG)) ? '-' : ' ');
 			strncpy(tmpBM, bptr->header.bm[0], IDLEN);
 			sprintf(buf, "[%s] %s", bptr->header.type, bptr->header.title);
 			if (ptr->status == 'p')
 				memcpy(buf, "[Ö»¶Á]", 6);
 			prints("%-13s%s%-28s %c %-12s%4d %6d\n", ptr->name,
-					(ptr->flag & VOTE_FLAG) ? "[1;31mV[m" : " ",
+					(ptr->flag & VOTE_FLAG) ? "\033[1;31mV\033[m" : " ",
 					buf, ptr->status,
 					(tmpBM[0] == '\0' ? "³ÏÕ÷°æÖ÷ÖĞ" : tmpBM),
 					bptr->inboard, bptr->score);	//HAS_PERM(PERM_POST)?ptr->status:' ',
@@ -1068,25 +1068,25 @@ const struct sectree *sec;
 
 			clear();
 			move(1, 0);
-			prints("Ó¢ÎÄ°æÃû      [1;32m%-16s[mÖĞÎÄ°æÃû      [1;32m%s[m\n"
-				"Ö÷ ·Ö Çø      [1;32m%-16s[mÓ³Éä·ÖÇø      [1;32m%s[m\n"
-				"°æÃæÀà±ğ      [1;32m%-16s[m°æÃæÊôĞÔ      [1;32m%s[m\n"
-				"¼ÇÎÄÕÂÊı      [1;32m%-16s[m×ª    ĞÅ      [1;32m%s[m\n\n"
-				"°æÃæ¹Ø¼ü×Ö    [1;32m%s[m\n"
-				"Ïà¹Ø°æÃæ      [1;32m%s[m\n"
+			prints("Ó¢ÎÄ°æÃû      \033[1;32m%-16s\033[mÖĞÎÄ°æÃû      \033[1;32m%s\033[m\n"
+				"Ö÷ ·Ö Çø      \033[1;32m%-16s\033[mÓ³Éä·ÖÇø      \033[1;32m%s\033[m\n"
+				"°æÃæÀà±ğ      \033[1;32m%-16s\033[m°æÃæÊôĞÔ      \033[1;32m%s\033[m\n"
+				"¼ÇÎÄÕÂÊı      \033[1;32m%-16s\033[m×ª    ĞÅ      \033[1;32m%s\033[m\n\n"
+				"°æÃæ¹Ø¼ü×Ö    \033[1;32m%s\033[m\n"
+				"Ïà¹Ø°æÃæ      \033[1;32m%s\033[m\n"
 				"°æÃæ¼ò½é      ",
 				bptr->header.filename, bptr->header.title,
-				bptr->header.sec1, bptr->header.sec2[0] ? bptr->header.sec2 : "[37m(ÎŞ)",
+				bptr->header.sec1, bptr->header.sec2[0] ? bptr->header.sec2 : "\033[37m(ÎŞ)",
 				bptr->header.type,  property,
 				junkboard() ? "²»" : "ÊÇ",
 				(bptr->header.flag & INNBBSD_FLAG) ? "ÊÇ" : "²»",
-				bptr->header.keyword[0] ? bptr->header.keyword : "[37m(ÔİÎŞ)",
-				linebuf[0] ? linebuf: "[37m(ÔİÎŞ)");
+				bptr->header.keyword[0] ? bptr->header.keyword : "\033[37m(ÔİÎŞ)",
+				linebuf[0] ? linebuf: "\033[37m(ÔİÎŞ)");
 			setbfile(property, bptr->header.filename, "introduction");
 			if (file_exist(property))
 				ansimore2(property, NA, 9, 14);
 			else
-				prints("[1;37m%-16s[m\n", "(ÔİÎŞ)");
+				prints("\033[1;37m%-16s\033[m\n", "(ÔİÎŞ)");
 			pressanykey();
 			strcpy(currboard, boardbuf);
 			break;
@@ -1104,7 +1104,7 @@ const struct sectree *sec;
 					struct stat st;
 					move(0, 0);
 					clrtoeol();
-					prints("Ñ¡ÔñÌÖÂÛÇø [ [1;32m# [0;37m- [1;31m°æÃæÃû³Æ/¹Ø¼ü×ÖËÑË÷[0;37m, [1;32mSPACE [0;37m- ×Ô¶¯²¹È«, [1;32mENTER [0;37m- ÍË³ö ] [m\n");
+					prints("Ñ¡ÔñÌÖÂÛÇø [ \033[1;32m# \033[0;37m- \033[1;31m°æÃæÃû³Æ/¹Ø¼ü×ÖËÑË÷\033[0;37m, \033[1;32mSPACE \033[0;37m- ×Ô¶¯²¹È«, \033[1;32mENTER \033[0;37m- ÍË³ö ] \033[m\n");
 					prints("ÊäÈëÌÖÂÛÇøÃû (Ó¢ÎÄ×ÖÄ¸´óĞ¡Ğ´½Ô¿É): ");
 					clrtoeol();
 					make_blist();
