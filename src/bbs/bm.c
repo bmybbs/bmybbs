@@ -316,7 +316,7 @@ int clubnum;
 		sethomefile_s(genbuf1, sizeof(genbuf1), uident, "clubrights");
 		if ((i = getbnum(currboard)) == 0)
 			return DONOTHING;
-		sprintf(genbuf2, "%d", bcache[i - 1].header.clubnum);
+		sprintf(genbuf2, "%d", ythtbbs_cache_Board_get_board_by_idx(i - 1)->header.clubnum);
 		ytht_add_to_file(genbuf1, genbuf2);
 		return ytht_add_to_file(genbuf, uident);
 	} else {
@@ -351,7 +351,7 @@ char *uident;
 		return DONOTHING;
 	setbfile(fn, currboard, "club_users");
 	sethomefile_s(genbuf1, sizeof(genbuf1), uident, "clubrights");
-	sprintf(genbuf2, "%d", bcache[i - 1].header.clubnum);
+	sprintf(genbuf2, "%d", ythtbbs_cache_Board_get_board_by_idx(i - 1)->header.clubnum);
 	ytht_del_from_file(genbuf1, genbuf2, true);
 	return ytht_del_from_file(fn, uident, true);
 }
@@ -368,7 +368,7 @@ clubmember()
 	}
 	if ((i = getbnum(currboard)) == 0)
 		return DONOTHING;
-	if (bcache[i - 1].header.clubnum == 0)
+	if (ythtbbs_cache_Board_get_board_by_idx(i - 1)->header.clubnum == 0)
 		return DONOTHING;
 	setbfile(genbuf, currboard, "club_users");
 	ansimore(genbuf, YEA);
