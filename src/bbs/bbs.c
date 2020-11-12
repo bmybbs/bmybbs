@@ -1184,23 +1184,34 @@ int result[MAXBOARD];
 int super_board_count;
 int super_board_now=0;
 
+static int fill_super_board_callback(struct boardmem *board, int curr_idx, va_list ap) {
+	const char *searchname = va_arg(ap, const char *);
+	int *total = va_arg(ap, int *);
+	int *max = va_arg(ap, int *);
+	int *res_array = va_arg(ap, int *);
+
+	if (*total >= *max)
+		return QUIT;
+
+	if (board->header.filename[0] == '\0')
+		return 0;
+
+	if (hasreadperm(&(board->header))) {
+		if (strstr2(board->header.filename, searchname) || strstr2(board->header.title, searchname) || strstr2(board->header.keyword, searchname)) {
+			res_array[*total] = curr_idx;
+			*total = *total + 1;
+		}
+	}
+
+	return 0;
+}
 static int
 fill_super_board(char *searchname, int result[], int max)
 {
-	int i, total=0;
+	int total=0;
 
-	for (i = 0; i < brdshm->number && total < max ; i++){
-		if (bcache[i].header.filename[0] == '\0')
-			continue;
-		if (hasreadperm(&(bcache[i].header))) {
-			if (strstr2(bcache[i].header.filename, searchname)
-			|| strstr2(bcache[i].header.title, searchname)
-			|| strstr2(bcache[i].header.keyword, searchname)){
-				result[total] = i;
-				total ++;
-			}
-		}
-	}
+	ythtbbs_cache_Board_foreach_v(fill_super_board_callback, searchname, &total, &max, result);
+
 	return total;
 }
 
