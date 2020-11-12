@@ -13,10 +13,9 @@
 #include "ythtbbs/session.h"
 
 char needcgi[STRLEN];
-char rframe[STRLEN];
 
 static void __unhcode(char *s);
-static void extraparam_init(char *extrastr);
+static void extraparam_init(const char *extrastr);
 static int user_init(struct userec *x, struct user_info **y, const char *userid, const char *sessid);
 static int post_imail(char *userid, char *title, char *file, char *id, char *nickname, char *ip, int sig);
 static void sig_append(FILE * fp, char *id, int sig);
@@ -25,32 +24,29 @@ static int setbmhat(struct boardmanager *bm, int *online);
 
 struct wwwstyle wwwstyle[NWWWSTYLE] = {
 	// 橘红(大字体)
-	{"\xE9\xD9\xBA\xEC(\xB4\xF3\xD7\xD6\xCC\xE5)", CSSPATH "orab.css", "#b3b7e6", "#abc8f2", "yellow"},
+	{"\xE9\xD9\xBA\xEC(\xB4\xF3\xD7\xD6\xCC\xE5)", CSSPATH "orab.css", "#b3b7e6", "yellow"},
 	// 橘红(小字体)
-	{"\xE9\xD9\xBA\xEC(\xD0\xA1\xD7\xD6\xCC\xE5)", CSSPATH "oras.css", "#b3b7e6", "#abc8f2", "yellow"},
+	{"\xE9\xD9\xBA\xEC(\xD0\xA1\xD7\xD6\xCC\xE5)", CSSPATH "oras.css", "#b3b7e6", "yellow"},
 	// 蓝色(大字体)
-	{"\xC0\xB6\xC9\xAB(\xB4\xF3\xD7\xD6\xCC\xE5)", CSSPATH "blub.css", "#ffc8ce", "#ffe3e7", "#ff8000"},
+	{"\xC0\xB6\xC9\xAB(\xB4\xF3\xD7\xD6\xCC\xE5)", CSSPATH "blub.css", "#ffc8ce", "#ff8000"},
 	// 蓝色(小字体)
-	{"\xC0\xB6\xC9\xAB(\xD0\xA1\xD7\xD6\xCC\xE5)", CSSPATH "blus.css", "#ffc8ce", "#ffe3e7", "#ff8000"},
+	{"\xC0\xB6\xC9\xAB(\xD0\xA1\xD7\xD6\xCC\xE5)", CSSPATH "blus.css", "#ffc8ce", "#ff8000"},
 	// 绿色(大字体)
-	{"\xC2\xCC\xC9\xAB(\xB4\xF3\xD7\xD6\xCC\xE5)", CSSPATH "greb.css", "#c0c0c0", "#d0d0d0", "yellow"},
+	{"\xC2\xCC\xC9\xAB(\xB4\xF3\xD7\xD6\xCC\xE5)", CSSPATH "greb.css", "#c0c0c0", "yellow"},
 	// 绿色(小字体)
-	{"\xC2\xCC\xC9\xAB(\xD0\xA1\xD7\xD6\xCC\xE5)", CSSPATH "gres.css", "#c0c0c0", "#d0d0d0", "yellow"},
+	{"\xC2\xCC\xC9\xAB(\xD0\xA1\xD7\xD6\xCC\xE5)", CSSPATH "gres.css", "#c0c0c0", "yellow"},
 	// 黑色(大字体)
-	{"\xBA\xDA\xC9\xAB(\xB4\xF3\xD7\xD6\xCC\xE5)", CSSPATH "blab.css", "#c0c0c0", "#d0d0d0", "yellow"},
+	{"\xBA\xDA\xC9\xAB(\xB4\xF3\xD7\xD6\xCC\xE5)", CSSPATH "blab.css", "#c0c0c0", "yellow"},
 	// 黑色(小字体)
-	{"\xBA\xDA\xC9\xAB(\xD0\xA1\xD7\xD6\xCC\xE5)", CSSPATH "blas.css", "#c0c0c0", "#d0d0d0", "yellow"},
+	{"\xBA\xDA\xC9\xAB(\xD0\xA1\xD7\xD6\xCC\xE5)", CSSPATH "blas.css", "#c0c0c0", "yellow"},
 	// 自定义的界面
-	{"\xD7\xD4\xB6\xA8\xD2\xE5\xB5\xC4\xBD\xE7\xC3\xE6", "bbsucss/ubbs.css", "", "", ""}
+	{"\xD7\xD4\xB6\xA8\xD2\xE5\xB5\xC4\xBD\xE7\xC3\xE6", "bbsucss/ubbs.css", "", ""}
 };
 struct wwwstyle *currstyle = wwwstyle;
 int wwwstylenum = 0;
 int usedMath = 0; //本页面中曾经使用数学公式
 int usingMath = 0; //当前文章（当前hsprintf方式）在使用数学公式
 int withinMath = 0; //正在数学公式中
-int no_cache_header = 0;
-int has_smagic = 0;
-int go_to_first_page = 0;
 
 int
 junkboard(char *board)
@@ -72,11 +68,7 @@ jmp_buf cgi_start;
 struct userec currentuser;
 struct user_info *u_info;
 struct wwwsession *w_info;
-struct UTMPFILE *shm_utmp;
 struct BCACHE *shm_bcache;
-struct UCACHE *shm_ucache;
-struct UCACHEHASH *uidhashshm;
-struct WWWCACHE *wwwcache;
 struct mmapfile mf_badwords  = { .ptr = NULL };
 struct mmapfile mf_sbadwords = { .ptr = NULL };
 struct mmapfile mf_pbadwords = { .ptr = NULL };
@@ -84,7 +76,6 @@ char *ummap_ptr = NULL;
 int ummap_size = 0;
 char fromhost[BMY_IPV6_LEN]; // 从环境变量获取 IP 地址，IPv4/IPv6 已经由 apache 处理过
 struct in6_addr from_addr;   //ipv6 by leoncom
-int via_proxy = 0;
 
 struct boardmem *getbcache();
 struct userec *getuser();
@@ -527,31 +518,6 @@ parm_add(char *name, char *val)
 	parm_num++;
 }
 
-static char *domainname[] = {
-	MY_BBS_DOMAIN,
-	"bbs.xjtu.edu.cn",
-	"bbs.xanet.edu.cn",
-	NULL
-};
-
-static char *specname[] = {
-	"1999",
-	"2001",
-	"www",
-	"bbs",
-	NULL
-};
-
-int
-isaword(char *dic[], char *buf)
-{
-	char **a;
-	for (a = dic; *a != NULL; a++)
-		if (!strcmp(buf, *a))
-			return 1;
-	return 0;
-}
-
 struct wwwsession guest = {
 	.used      = 1,
 	.t_lines   = 20,
@@ -561,44 +527,16 @@ struct wwwsession guest = {
 	.doc_mode  = 1,
 };
 
-
-void
-get_session_string(char *name) {
-	char *cookies_string, *session_string, *p;
-	cookies_string = getenv("HTTP_COOKIE");
-
-	if (NULL != cookies_string) {
-		session_string = strchr(cookies_string, '/');
-
-		snprintf(name, STRLEN, "%s", session_string + sizeof(SMAGIC));
-
-	} else {
-		strcpy(name, "/");
-	}
-	p = strchr(name, '.');
-	if (NULL != p) {
-		no_cache_header = 1;
-	} else {
-		no_cache_header = 0;
-	}
-
-}
-
-void
-print_session_string(char *value) {
-	printf("Set-Cookie:sessionString=%s;path=/\n", value);
-}
-
 int cookie_parse() {
 	const char *cookie_str;
 	char cookie_buf[128];
 	struct bmy_cookie cookie;
 
 	cookie_str = getenv("HTTP_COOKIE");
-	if (cookie_str == NULL) {
+	if (cookie_str == NULL || strlen(cookie_str) < sizeof(SMAGIC)) {
 		goto GUEST;
 	} else {
-		strncpy(cookie_buf, cookie_str, sizeof(cookie_buf));
+		strncpy(cookie_buf, cookie_str + sizeof(SMAGIC), sizeof(cookie_buf));
 		cookie_buf[sizeof(cookie_buf) - 1] = 0;
 
 		memset(&cookie, 0, sizeof(struct bmy_cookie));
@@ -615,6 +553,7 @@ int cookie_parse() {
 		if (!loginok) {
 			goto GUEST;
 		}
+		w_info = &(u_info->wwwinfo);
 	}
 
 	return 0;
@@ -646,15 +585,6 @@ url_parse()
 
 	if (!strcmp(url, "/") || nologin) {
 		strcpy(needcgi, "bbsindex");
-		strcpy(rframe, "");
-		ytht_strsncpy(name, getsenv("HTTP_HOST"), 70);
-		p = strchr(name, '.');
-		if (p != NULL && isaword(domainname, p + 1)) {
-			*p = 0;
-			ytht_strsncpy(rframe, name, 60);
-		}
-		if (rframe[0] && isaword(specname, rframe))
-			rframe[0] = 0;
 		return 0;
 	}
 	snprintf(needcgi, STRLEN, "%s", url + 1);
@@ -763,8 +693,6 @@ html_header(int mode)
 		printf("<!DOCTYPE html>\n<HTML>\n");
 	else
 		printf("<HTML XMLNS:m=\"http://www.w3.org/1998/Math/MathML\">\n");
-	//printf("<!--%d;%d;%d;%d-->", thispid, sizeof (struct wwwsession),
-	//       wwwcache->www_visit, wwwcache->home_visit);
 	switch (mode) {
 	case 1:
 	case 101:
@@ -933,7 +861,7 @@ addextraparam(char *ub, int size, int n, int param)
 	return 0;
 }
 
-static void extraparam_init(char *extrastr) {
+static void extraparam_init(const char *extrastr) {
 	int i;
 	if (*extrastr) {
 		i = *extrastr - 'A';
@@ -972,6 +900,7 @@ static int user_init(struct userec *x, struct user_info **y, const char *userid,
 	if (x2 == 0)
 		return 0;
 
+	ytht_strsncpy((*y)->from, fromhost, BMY_IPV6_LEN);
 	utmpent = i + 1;
 	memcpy(x, x2, sizeof (*x));
 	return 1;
@@ -1100,7 +1029,7 @@ post_mail(char *userid, char *title, char *file, char *id,
 		http_fatal("\xB4\xED\xCE\xF3\xB5\xC4\xCA\xD5\xD0\xC5\xC8\xCB\xB5\xD8\xD6\xB7"); // 错误的收信人地址
 	bzero(&header, sizeof (header));
 	fh_setowner(&header, id, 0);
-	setmailfile(buf, userid, "");
+	setmailfile_s(buf, sizeof(buf), userid, "");
 	t = trycreatefile(buf, "M.%d.A", now_t, 100);
 	if (t < 0)
 		return -1;
@@ -1179,8 +1108,8 @@ static int post_imail(char *userid, char *title, char *file, char *id,
 	fprintf(fp2, "Subject: %s\n\n", title);
 
 	while (fgets(buf, sizeof (buf), fp1) != NULL) {
-		if (NULL != (ptr = checkbinaryattach(buf, FCGI_ToFILE(fp1), &len))) {
-			uuencode(FCGI_ToFILE(fp1), FCGI_ToFILE(fp2), len, ptr);
+		if (NULL != (ptr = checkbinaryattach(buf, fp1, &len))) {
+			uuencode(fp1, fp2, len, ptr);
 			continue;
 		}
 		if (buf[0] == '.' && buf[1] == '\n')
@@ -1407,7 +1336,7 @@ anno_path_of(char *board)
 		if (fp == 0)
 			return "";
 		num = 0;
-		while (num < MAXBOARD && fscanf(FCGI_ToFILE(fp), "%s %s", buf1, buf2) > 0) {
+		while (num < MAXBOARD && fscanf(fp, "%s %s", buf1, buf2) > 0) {
 			buf1[79] = 0;
 			buf1[strlen(buf1) - 1] = 0;
 			for (j = 0; buf1[j]; j++)
@@ -1436,7 +1365,7 @@ anno_path_of(char *board)
 	if (fp == 0)
 		return "";
 	while (1) {
-		if (fscanf(FCGI_ToFILE(fp), "%s %s", buf1, buf2) <= 0)
+		if (fscanf(fp, "%s %s", buf1, buf2) <= 0)
 			break;
 		buf1[79] = 0;
 		buf1[strlen(buf1) - 1] = 0;
@@ -1719,7 +1648,7 @@ send_msg(char *myuserid, int i, char *touserid, int topid, char *msg, int offlin
 	if (topid != 1)
 		kill(topid, SIGUSR2);
 	else
-		shm_utmp->uinfo[i].unreadmsg++;
+		ythtbbs_cache_utmp_get_by_idx(i)->unreadmsg++;
 	return 1;
 }
 
@@ -1792,59 +1721,9 @@ static int useridhash(char *id) {
 	return n1 * 26 + n2;
 }
 
-int
-insertuseridhash(struct useridhashitem *ptr, int size, char *userid, int num)
-{
-	int h, s, i, j = 0;
-	if (!*userid)
-		return -1;
-	h = useridhash(userid);
-	s = size / 26 / 26;
-	i = h * s;
-	while (j < s * 5 && ptr[i].num > 0 && ptr[i].num != num) {
-		i++;
-		if (i >= size)
-			i %= size;
-	}
-	if (j == s * 5)
-		return -1;
-	ptr[i].num = num;
-	strcpy(ptr[i].userid, userid);
-	return 0;
-}
-
-int
-finduseridhash(struct useridhashitem *ptr, int size, char *userid)
-{
-	int h, s, i, j;
-	h = useridhash(userid);
-	s = size / 26 / 26;
-	i = h * s;
-	for (j = 0; j < s * 5; j++) {
-		if (!strcasecmp(ptr[i].userid, userid))
-			break;
-		i++;
-		if (i >= size)
-			i %= size;
-	}
-	if (j == s * 5)
-		return -1;
-	return ptr[i].num;
-}
-
 // 返回索引值，原本实现中会判断 shm_ucache->userid[i]
 int getusernum(char *id) {
-	int i;
-	if (id[0] == 0 || strchr(id, '.'))
-		return -1;
-	i = finduseridhash(uidhashshm->uhi, UCACHE_HASH_SIZE, id) - 1;
-	if (i >= 0 && !strcasecmp(shm_ucache->userid[i], id))
-		return i;
-	for (i = 0; i < MAXUSERS; i++) {
-		if (!strcasecmp(shm_ucache->userid[i], id))
-			return i;
-	}
-	return -1;
+	return ythtbbs_cache_UserIDHashTable_find_idx(id);
 }
 
 struct userec *
@@ -1863,18 +1742,9 @@ getuser(char *id)
 	return &userec1;
 }
 
-int
-count_online()
-{
-	int i, total = 0;
-	if (now_t <= shm_utmp->activetime + 60)
-		return shm_utmp->activeuser;
-	for (i = 0; i < MAXACTIVE; i++)
-		if (shm_utmp->uinfo[i].active && shm_utmp->uinfo[i].pid)
-			total++;
-	shm_utmp->activetime = now_t;
-	shm_utmp->activeuser = total;
-	return total;
+// 对 ythtbbs_cache_utmp 的更新，使用接口取代原实现
+int count_online() {
+	return ythtbbs_cache_utmp_count_active();
 }
 
 struct ythtbbs_override fff[MAXFRIENDS];
@@ -2235,7 +2105,7 @@ fdisplay_attach(FILE * output, FILE * fp, char *currline, char *nowfile)
 	if (strlen(attachfile) < 2)
 		return;
 
-	download = attachdecode(FCGI_ToFILE(fp), nowfile, attachfile);
+	download = attachdecode(fp, nowfile, attachfile);
 	if (download == NULL) {
 		fprintf(output, "\xB2\xBB\xC4\xDC\xD5\xFD\xC8\xB7\xBD\xE2\xC2\xEB\xB5\xC4\xB8\xBD\xBC\xFE\xC4\xDA\xC8\xDD..."); // 不能正确解码的附件内容
 		return;
@@ -2317,10 +2187,6 @@ void updateinboard(struct boardmem *x) {
 	return;
 }
 
-#include "bbsupdatelastpost.c"
-#include "boardrc.c"
-#include "deny_users.c"
-#include "bbsred.c"
 int
 max_mail_size()
 {
@@ -2421,7 +2287,7 @@ system_load()
 		load[0] = load[1] = load[2] = 0;
 	else {
 		float av[3];
-		fscanf(FCGI_ToFILE(fp), "%g %g %g", av, av + 1, av + 2);
+		fscanf(fp, "%g %g %g", av, av + 1, av + 2);
 		fclose(fp);
 		load[0] = av[0];
 		load[1] = av[1];
@@ -2466,21 +2332,6 @@ static int setbmhat(struct boardmanager *bm, int *online) {
 		shm_bcache->bcache[bm->bid].bmonline &= ~(1 << bm->bmpos);
 		shm_bcache->bcache[bm->bid].bmcloak &= ~(1 << bm->bmpos);
 	}
-	return 0;
-}
-
-int
-cachelevel(int filetime, int attached)
-{
-	return 0;
-	if (attached)
-		return 2;
-/*
-	if (now_t - filetime < 2 * 24 * 60 * 60)
-		return 2;
-	if (now_t - filetime < 3 * 26 * 60 * 60)
-		return 1;
-*/
 	return 0;
 }
 

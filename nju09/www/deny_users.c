@@ -1,3 +1,5 @@
+#include "bbslib.h"
+
 int denynum = 0;
 struct deny denyuser[256];
 
@@ -14,9 +16,8 @@ loaddenyuser(char *board)
 	while (denynum < 100) {
 		if (fgets(buf, 200, fp) == 0)
 			break;
-		if (2 >
-		    sscanf(buf, "%s %s", denyuser[denynum].id,
-			   denyuser[denynum].exp)) continue;
+		if (2 > sscanf(buf, "%s %s", denyuser[denynum].id, denyuser[denynum].exp))
+			continue;
 		ptr = strrchr(buf, '[');
 		if (ptr == NULL)
 			continue;	//http_fatal("无法辨识的数据,请通知系统维护");

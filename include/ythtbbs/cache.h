@@ -14,6 +14,11 @@
 #define FRIENDMSG_PAGER 0x8
 /* END */
 
+// 最长发呆时间，3天
+#define MAX_IDEL_TIME (3 * 24 * 3600)
+// 最长会话时间，7天强制登出
+#define MAX_SESS_TIME (7 * 24 * 3600)
+
 struct wwwsession {
 	unsigned char used:1, show_reg:1, att_mode:1, doc_mode:1;
 	unsigned char link_mode:1, def_mode:1, t_lines:6;
@@ -63,20 +68,6 @@ struct user_info {
 };
 
 #define USHM_SIZE       (MAXACTIVE + 10)
-struct UTMPFILE {
-	struct user_info uinfo[USHM_SIZE];
-	time_t uptime;
-	unsigned short activeuser;
-	unsigned short maxuser;	//add by gluon
-	unsigned short maxtoday;
-	unsigned short wwwguest;
-	time_t activetime;	//time of updating activeuser
-	int ave_score;
-	int allprize;
-	time_t watchman;
-	unsigned int unlock;
-	int nouse[5];
-};
 
 struct BCACHE {
 	struct boardmem bcache[MAXBOARD];
@@ -158,6 +149,10 @@ unsigned int ythtbbs_cache_User_hash(const char *userid);
  * 该过程对外不可见，内部使用另一个独占文件锁保护。
  */
 void ythtbbs_cache_UserTable_resolve();
+
+// 如果返回 QUIT 则终止
+typedef int (*ythtbbs_cache_UserTable_apply_callback)(const struct ythtbbs_cache_User *user, va_list ap);
+void ythtbbs_cache_UserTable_apply_v(ythtbbs_cache_UserTable_apply_callback callback, ...);
 
 int ythtbbs_cache_UserTable_get_user_online_friends(const char *userid, bool has_see_cloak_perm, struct user_info *user_list, size_t user_list_size);
 
@@ -253,7 +248,7 @@ int ythtbbs_cache_UserTable_count_telnet(int uid);
 /**
  * @brief 依据 userid 查找用户索引
  * 用户索引指的是在 PASSFILE 中的位置，从 0 开始索引。在 BMYBBS 环境中，遇到 uid 的地方通常是从 1 开始索引，因此需要注意相互转换。
- * 当匹配到后返回索引值。
+ * 当匹配到后返回索引值。出错返回 -1。
  */
 int ythtbbs_cache_UserIDHashTable_find_idx(const char *userid);
 
@@ -331,6 +326,9 @@ unsigned short ythtbbs_cache_utmp_get_maxuser(void);
 void ythtbbs_cache_utmp_set_maxuser(unsigned short m);
 
 unsigned short ythtbbs_cache_utmp_get_wwwguest(void);
+
+void ythtbbs_cache_utmp_set_www_kicked(int utmp_idx);
+
 /**
  * @brief 依据 utmp_idx 获取缓存中的结构体（只读）
  * @param idx 在 user_info 数组中的索引，从 0 开始计数

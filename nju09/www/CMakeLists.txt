@@ -125,14 +125,13 @@ set(SRC
 	bbsball.c
 
 	BBSLIB.c
-)
-
-set (OTHERS
+	bbsupdatelastpost.c
 	boardrc.c
 	deny_users.c
-	bbsupdatelastpost.c
-	bbsred.c
+
+	api_user_check.c
+	api_loginpics.c
 )
 
 add_executable(www ${SRC})
-target_link_libraries(www ythtbbs ytht ghthash)
+target_link_libraries(www ythtbbs ytht json-c)

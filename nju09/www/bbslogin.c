@@ -67,7 +67,7 @@ int bbslogin_main() {
 	cookie.extraparam = getextrparam_str(wwwstylenum);
 	bmy_cookie_gen(buf, sizeof(buf), &cookie);
 
-	printf("Set-Cookie: " SMAGIC "=%s; SameSite=Strict; HttpOnly;", buf);
+	printf("Set-Cookie: " SMAGIC "=%s; SameSite=Strict; HttpOnly; Max-Age=%d;\n", buf, MAX_SESS_TIME - 10);
 	html_header(3);
 	redirect("/" SMAGIC "/"); // URL 不再附带 session 信息
 	http_quit();

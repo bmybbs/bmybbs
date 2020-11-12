@@ -1,4 +1,7 @@
 #include "bbslib.h"
+// bbsgetmsg
+int print_emote_table(char *form, char *input);
+static int checkmsgbuf(char *msg);
 
 int
 bbssendmsg_main()
@@ -8,6 +11,7 @@ bbssendmsg_main()
 	int direct_reply;
 	char destid[20], msg[MAX_MSG_SIZE];
 	struct userec *u;
+	const struct user_info *x;
 	int offline = 0;
 	html_header(1);
 	changemode(MSG);
@@ -24,19 +28,18 @@ bbssendmsg_main()
 		char buf3[256];
 		strcpy(buf3, "<body onload='document.form0.msg.focus()'>");
 		if (destid[0] == 0)
-			strcpy(buf3,
-			       "<body onload='document.form0.destid.focus()'>");
+			strcpy(buf3, "<body onload='document.form0.destid.focus()'>");
 		printf("%s\n", buf3);
 		printf("<div class=rhead>%s -- 发送信息</div><hr>\n", BBSNAME);
 		printf("<form name=form0 action=bbssendmsg method=post>"
-		       "<input type=hidden name=destpid value=%d>"
-		       "送讯息给: <input name=destid maxlength=12 value='%s' size=12><br>"
-		       "讯息内容:\n<br>", destpid, destid);
+				"<input type=hidden name=destpid value=%d>"
+				"送讯息给: <input name=destid maxlength=12 value='%s' size=12><br>"
+				"讯息内容:\n<br>", destpid, destid);
 		printf("<table><tr><td><textarea name=msg rows=5 cols=76>"
-		       "%s" "</textarea></td><td>", nohtml(void1(msg)));
+				"%s" "</textarea></td><td>", nohtml(void1(msg)));
 		print_emote_table("form0", "msg");
 		printf("</td></tr></table>"
-		       "<input type=submit value=确认 width=6><input type=button value=取消 width=6 onclick=\"window.location.href='bbsgetmsg'\"></form>");
+				"<input type=submit value=确认 width=6><input type=button value=取消 width=6 onclick=\"window.location.href='bbsgetmsg'\"></form>");
 		http_quit();
 	}
 	if (checkmsgbuf(msg))
@@ -57,35 +60,30 @@ bbssendmsg_main()
 	if (ythtbbs_override_included(destid, YTHTBBS_OVERRIDE_REJECTS, currentuser.userid))
 		http_fatal("无法发讯息给这个人 4");
 	if (get_unreadcount(destid) > MAXMESSAGE)
-		http_fatal
-		    ("对方尚有一些讯息未处理，请稍候再发或给他(她)写信...");
+		http_fatal("对方尚有一些讯息未处理，请稍候再发或给他(她)写信...");
 	printf("<body>\n");
-	for (i = 0; i < MAXACTIVE; i++)
-		if (shm_utmp->uinfo[i].active)
-			if (!strcasecmp(shm_utmp->uinfo[i].userid, destid)) {
-				if (destpid != 0
-				    && shm_utmp->uinfo[i].pid != destpid)
-					    continue;
-				destpid = shm_utmp->uinfo[i].pid;
-				mode = shm_utmp->uinfo[i].mode;
-				if (mode == BBSNET || mode == PAGE
-				    || mode == LOCKSCREEN) offline = 1;
-				if (send_msg
-				    (currentuser.userid, i, destid,
-				     destpid, msg, offline) == 1)
-					printf("已经帮你送出%s消息",
-					       offline ? "离线" : "");
+	for (i = 0; i < MAXACTIVE; i++) {
+		x = ythtbbs_cache_utmp_get_by_idx(i);
+		if (x->active) {
+			if (!strcasecmp(x->userid, destid)) {
+				if (destpid != 0 && x->pid != destpid)
+					continue;
+				destpid = x->pid;
+				mode = x->mode;
+				if (mode == BBSNET || mode == PAGE || mode == LOCKSCREEN) offline = 1;
+				if (send_msg(currentuser.userid, i, destid, destpid, msg, offline) == 1)
+					printf("已经帮你送出%s消息", offline ? "离线" : "");
 				else
 					printf("发送消息失败");
-				printf
-				    ("<script>top.fmsg.location='bbsgetmsg'</script>\n");
+				printf("<script>top.fmsg.location='bbsgetmsg'</script>\n");
 				if (!direct_reply) {
-					printf
-					    ("<br><form name=form1><input name=b1 type=button onclick='history.go(-2)' value='[返回]'>");
+					printf("<br><form name=form1><input name=b1 type=button onclick='history.go(-2)' value='[返回]'>");
 					printf("</form>");
 				}
 				http_quit();
 			}
+		}
+	}
 
 	if (send_msg(currentuser.userid, i, destid, destpid, msg, 1) == 1)
 		printf("已经帮你送出离线消息");
@@ -93,17 +91,14 @@ bbssendmsg_main()
 		printf("发送消息失败");
 	printf("<script>top.fmsg.location='bbsgetmsg'</script>\n");
 	if (!direct_reply) {
-		printf
-		    ("<br><form name=form1><input name=b1 type=button onclick='history.go(-2)' value='[返回]'>");
+		printf("<br><form name=form1><input name=b1 type=button onclick='history.go(-2)' value='[返回]'>");
 		printf("</form>");
 	}
 	http_quit();
 	return 0;
 }
 
-int
-checkmsgbuf(char *msg)
-{
+static int checkmsgbuf(char *msg) {
 	char *tmp2, *tmp1;
 	int line = 0;
 	tmp2 = msg;

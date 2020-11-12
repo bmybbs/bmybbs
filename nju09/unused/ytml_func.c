@@ -1,4 +1,5 @@
 #include "bbslib.h"
+#define NAVFILE      "nav.txt"
 
 struct content_files cfs = { config:C_FILES_LIST, max:CONTENT_FILE_MAX };
 

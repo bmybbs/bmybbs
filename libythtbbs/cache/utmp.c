@@ -12,10 +12,21 @@
 
 // 用于 iphash
 #define NHASH 67
-// 最长发呆时间，3天
-#define MAX_IDEL_TIME (3 * 24 * 3600)
-// 最长会话时间，7天强制登出
-#define MAX_SESS_TIME (7 * 24 * 3600)
+
+struct UTMPFILE {
+	struct user_info uinfo[USHM_SIZE];
+	time_t uptime;
+	unsigned short activeuser;
+	unsigned short maxuser;	//add by gluon
+	unsigned short maxtoday;
+	unsigned short wwwguest;
+	time_t activetime;	//time of updating activeuser
+	int ave_score;
+	int allprize;
+	time_t watchman;
+	unsigned int unlock;
+	int nouse[5];
+};
 
 static struct UTMPFILE *shm_utmp;
 
@@ -234,5 +245,11 @@ void ythtbbs_cache_utmp_set_maxuser(unsigned short m) {
 
 unsigned short ythtbbs_cache_utmp_get_wwwguest(void) {
 	return shm_utmp->wwwguest;
+}
+
+void ythtbbs_cache_utmp_set_www_kicked(int utmp_idx) {
+	// TODO check null ptr
+	// TODO lock
+	shm_utmp->uinfo[utmp_idx].wwwinfo.iskicked = 1;
 }
 

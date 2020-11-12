@@ -1,3 +1,7 @@
+#include <stdio.h>
+#include <string.h>
+#include "ytht/strlib.h"
+#include "bbslib.h"
 static struct allbrc allbrc;
 static char allbrcuser[STRLEN];
 static struct onebrc *pbrc, brc;
@@ -18,7 +22,7 @@ readuserallbrc(char *userid, int must)
 	} else {
 		if (!must && !strncmp(allbrcuser, userid, sizeof (allbrcuser)))
 			return 0;
-		sethomefile(buf, userid, "brc");
+		sethomefile_s(buf, sizeof(buf), userid, "brc");
 		ytht_strsncpy(allbrcuser, userid, sizeof(allbrcuser));
 		brc_init(&allbrc, userid, buf);
 	}
@@ -86,3 +90,4 @@ brc_un_read_time(int ftime)
 {
 	return brc_unreadt(pbrc, ftime);
 }
+

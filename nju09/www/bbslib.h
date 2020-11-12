@@ -1,40 +1,15 @@
 #ifndef NJULIB_H
 #define NJULIB_H
-#ifndef ENABLE_FASTCGI
-#define FCGI_ToFILE(x) (x)
-//#define ENABLE_FASTCGI 1
-#define FCGI_FILE FILE
-#endif
-//#include "fcgi_stdio.h"
 #include <sys/mman.h>
 #include "bbs.h"
 #include "ythtbbs/ythtbbs.h"
 #include "ythtbbs/override.h"
 
-#define FIRST_PAGE	"/"
-#define CSS_FILE 	"/bbs.css"
-#define CHARSET		"gb2312"
-#define NAVFILE		"nav.txt"
-#define MAXWWWCLIENT MAXACTIVE
-#define CACHE_ABLE	0x100
+#define FIRST_PAGE   "/"
+#define CHARSET      "gb2312"
 
-#define MAX_PROXY_NUM 4
-#define DEFAULT_PROXY_PORT 8080
-#define HTMPATH "/home/apache/htdocs/bbs/"
-#define CSSPATH		"/images/"
-
-struct WWWCACHE {
-	time_t www_version;
-	unsigned int www_visit;
-	unsigned int home_visit;
-	union {
-		unsigned int accel_ip;
-		struct in_addr accel_addr;
-	};
-	unsigned int accel_port;
-	unsigned int validproxy[MAX_PROXY_NUM];
-	int nouse[27 - MAX_PROXY_NUM];
-};
+#define HTMPATH      "/home/apache/htdocs/bbs/"
+#define CSSPATH      "/images/"
 
 struct wwwstyle {
 	char *name;
@@ -42,29 +17,22 @@ struct wwwstyle {
 	//char *leftcssfile;	//omit by macintosh 20060112
 	//char *lbg;
 	char *colortb1;
-	char *colortb2;
 	char *colorstar;
 };
 
 #define NWWWSTYLE (9)
 extern struct wwwstyle *currstyle, wwwstyle[];
 extern int wwwstylenum;
-//extern int no_cache_header;
-//extern int has_smagic;
-// extern int go_to_first_page;
 
 #define SECNUM 13
 #define BBSNAME MY_BBS_NAME
 #define BBSHOME MY_BBS_HOME
 #define BBSHOST MY_BBS_DOMAIN
-#define LDEB if(!strcmp(currentuser.userid,"lepton"))
 #define PATHLEN         1024
 
 extern const char seccodes[SECNUM];
 extern const char secname[SECNUM][2][20];
 extern char needcgi[STRLEN];
-extern char rframe[STRLEN];
-extern time_t thisversion;
 
 extern int loginok;
 extern int isguest;
@@ -78,19 +46,12 @@ extern jmp_buf cgi_start;
 extern struct userec currentuser;
 extern struct user_info *u_info;
 extern struct wwwsession *w_info;
-extern struct UTMPFILE *shm_utmp;
 extern struct BCACHE *shm_bcache;
-extern struct UCACHE *shm_ucache;
-extern struct UCACHEHASH *uidhashshm;
-extern struct WWWCACHE *wwwcache;
 extern char fromhost[BMY_IPV6_LEN];
 extern struct in6_addr from_addr; //ipv6 by leoncom
-extern int via_proxy;
 extern int quote_quote;
 extern char *ummap_ptr;
 extern int ummap_size;
-extern char ATT_ADDRESS[20];
-extern char ATT_PORT[10];
 /*add by macintosh 050619 for Tex Math Equ*/
 extern int usedMath;
 extern int usingMath;
@@ -133,7 +94,6 @@ extern struct deny denyuser[256];
 extern int denynum;
 extern int nologin;
 
-void display_attach(FILE * fp, char *currline, char *nowfile);
 extern char mybrd[GOOD_BRC_NUM][80];
 extern int mybrdnum;
 
@@ -163,9 +123,6 @@ char *titlestr(char *str);
 int hprintf(char *fmt, ...);
 int fhhprintf(FILE * output, char *fmt, ...);
 void parm_add(char *name, char *val);
-int isaword(char *dic[], char *buf);
-void get_session_string(char *name);
-void print_session_string(char *value);
 int cache_header(time_t t, int age);
 void html_header(int mode);
 void json_header(void);
@@ -201,8 +158,6 @@ int send_msg(char *myuserid, int i, char *touserid, int topid, char *msg, int of
 int count_life_value(struct userec *urec);
 int save_user_data(struct userec *x);
 int user_perm(struct userec *x, int level);
-int insertuseridhash(struct useridhashitem *ptr, int size, char *userid, int num);
-int finduseridhash(struct useridhashitem *ptr, int size, char *userid);
 int getusernum(char *id);
 struct userec *getuser(char *id);
 int count_online(void);
@@ -226,7 +181,6 @@ char *utf8_decode(char *src);
 void fdisplay_attach(FILE *output, FILE *fp, char *currline, char *nowfile);
 void printhr(void);
 void updateinboard(struct boardmem *x);
-int getlastpost(char *board, int *lastpost, int *total);
 int updatelastpost(char *board);
 int readuserallbrc(char *userid, int must);
 void brc_update(char *userid);
@@ -238,14 +192,12 @@ void brc_clear(void);
 int brc_un_read_time(int ftime);
 void loaddenyuser(char *board);
 void savedenyuser(char *board);
-char *bbsred(char *command);
 int max_mail_size(void);
 int get_mail_size(void);
 int check_maxmail(char *currmaildir);
 int countln(char *fname);
 double *system_load(void);
 int setbmstatus(struct userec *u, int online);
-int cachelevel(int filetime, int attached);
 int dofilter(char *title, char *fn, int level);
 int dofilter_edit(char *title, char *buf, int level);
 int search_filter(char *pat1, char *pat2, char *pat3);
@@ -258,13 +210,6 @@ char to_hex(char code);
 void NHsprintf(char *s, char *s0);
 
 extern void check_msg(void); // bbsgetmsg.c
-
-/**
- * user structure is loaded from passwd file at logon,
- * and remains for the entire session
- */
-extern struct userec currentuser;
-extern int utmpent;      /* Index into this users utmp file entry */
 
 extern int readmybrd(char *userid);        /* bbsmybrd.c */
 extern int mails(char *id, int *unread);   /* bbsfoot.c  */

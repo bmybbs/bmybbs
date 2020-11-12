@@ -325,6 +325,20 @@ void ythtbbs_cache_UserIDHashTable_dump(FILE *fp) {
 	}
 }
 
+void ythtbbs_cache_UserTable_apply_v(ythtbbs_cache_UserTable_apply_callback callback, ...) {
+	int rc, i;
+	va_list ap;
+
+	for (i = 0; i < shm_user_table->number; i++) {
+		va_start(ap, callback);
+		rc = callback(&shm_user_table->users[i], ap);
+		va_end(ap);
+
+		if (rc == QUIT)
+			return;
+	}
+}
+
 int ythtbbs_cache_UserTable_get_user_online_friends(const char *userid, bool has_see_cloak_perm, struct user_info *user_list, size_t user_list_size) {
 	int lockfd;
 	unsigned int i, j, k, total, user_idx;

@@ -9,7 +9,8 @@ bbspst_main()
 	char userid[80], buf[512], path[512], file[512], board[512], title[80] = "";
 	struct fileheader *dirinfo = NULL;
 	struct boardmem *x;
-	char bmbuf[IDLEN * 4 + 4];		//add by mintbaggio 040807 for new www
+	//add by mintbaggio 040807 for new www
+	char bmbuf[IDLEN * 4 + 4];
 	struct mmapfile mf = { ptr:NULL };
 	html_header(1);
 	check_msg();
@@ -124,20 +125,8 @@ bbspst_main()
 		"如需一文多发，请移步<a target=f3 href='home?B=sysop'> SYSOP </a>区申请一下。"
 		"</td>\n"
 		"</tr></table></td></table></td></tr>\n");
-/*	printf("<table border=1>\n");
-	printf("<tr><td>");
-	printf("<font color=green>发文注意事项: <br>\n");
-	printf
-	    ("发文时应慎重考虑文章内容是否适合公开场合发表，请勿肆意灌水。谢谢您的合作。<br>\n</font>");
-*/	if (file[0])
+	if (file[0])
 		snprintf(buf, sizeof (buf), "&ref=%s&rid=%d", file, num);
-/*	printf("<tr><td><form name=form1 method=post action=bbssnd?board=%s&th=%d%s>\n",
-	       board, thread, file[0] ? buf : "");
-	printf
-	    ("使用标题: <input type=text name=title size=40 maxlength=100 value='%s'>",
-	     (void1(noquote_html(title))));
-	printf(" 讨论区: [%s]\n", board);
-*/
 	printf("<tr><td width=40 class=\"level1\"></td>\n"
 		"<td class=\"level1\"><br>\n"
 		"<TABLE width=\"95%%\" cellpadding=5 cellspacing=0>\n"
@@ -195,13 +184,6 @@ bbspst_main()
 		"</tr></table></td></tr>\n", board);
 	printf("%s", "<tr><td><table border=0 cellpadding=0 cellspacing=0><tr>\n");
 	printf("<td> 作者：%s &nbsp</td>\n", currentuser.userid);
-/*	if (innd_board(board))
-		printf("转信<input type=checkbox name=outgoing %s>\n",
-		       local_article ? "" : "checked");
-	if (anony_board(board))
-		printf("匿名<input type=checkbox name=anony>\n");
-	printf("<br>作者：%s &nbsp;", currentuser.userid);
-*/
 
 	if (!isguest) {
 		printselsignature();
@@ -215,7 +197,6 @@ bbspst_main()
 		printf("匿名<input type=checkbox name=anony>\n");
 
 	printf("</td></tr></table></td></tr>\n");
-	//printusemath(0);
 	printf("<tr><td>\n");
 	printf("使用Tex风格的数学公式<input type=checkbox name=usemath>\n");
 	printf("设为不可回复<input type=checkbox name=nore>\n");
@@ -267,12 +248,6 @@ bbspst_main()
 				" document.getElementById(\"textedit\").focus(); \n"
 				"  </script>");
 
-
-/*	printf
-	    ("<tr><td class=post align=center><input type=submit value=发表> ");
-	printf("<input type=reset value=清除></form>\n");
-	printf("</table>");
-*/
 	printf("%s", "<tr><td><input name=Submit2 type=submit class=resetlong value=\"发表\" "
 			"onclick=\"if (realLen(value)>45){alert('文章标题长度不能超过22个汉字或45个英文长度,否则会丢失信息,请修改文章标题.');this.focus();return false}else{this.value='文章提交中，请稍候...';this.disabled=true;form1.submit()}\">\n"
 			"<input name=Submit3 type=reset class=sumbitlong value=\"清除\" onclick='return confirm(\"确定要全部清除吗?\")'></td>\n"
@@ -285,7 +260,8 @@ bbspst_main()
 	return 0;
 }
 
-void printselsignature() {	//modify by mintbaggio 040809 for new www
+//modify by mintbaggio 040809 for new www
+void printselsignature() {
 	int i, sigln, numofsig;
 	char path[200];
 	sprintf(path, "home/%c/%s/signatures", mytoupper(currentuser.userid[0]), currentuser.userid);
@@ -312,15 +288,8 @@ void printselsignature() {	//modify by mintbaggio 040809 for new www
 	printf("%s", "<td> [<a target=_blank href=bbssig>查看签名档</a>]");
 }
 
-void printuploadattach() {	//modify by mintbaggio 040809 for new www
-	int i = u_info - &(shm_utmp->uinfo[0]);
+//modify by mintbaggio 040809 for new www
+void printuploadattach() {
 	printf(" [<a href=/cgi-bin/bbs/upload target=uploadytht>添加/删除附件</a>]\n");
 }
 
-void
-printusemath(int checked)
-{
-	printf("<tr><td>使用Tex风格的数学公式<input type=checkbox name=usemath%s>\n", checked ? " checked" : "");
-	//printf(" <a href=home/boards/BBSHelp/html/itex/itexintro.html target=_blank>这是什么？</a></td></tr>\n");
-	printf("设为不可回复<input type=checkbox name=nore%s></td></tr>\n", checked ? " checked" : "");
-}

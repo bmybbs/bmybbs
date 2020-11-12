@@ -22,8 +22,7 @@ int badstr(char *s);
  * 该方法将把当前进站图片的信息输出到 pics_list 中。每条信息使用单个半角分号将图片和
  * 链接隔开。多条信息使用两个半角分号隔开。
  * @warning 该函数最早于 2011.09.05 由 IronBlood 编写在 nju09/bbsindex.c 中。为了
- * api 复用，调整到了 libythtlib/misc.h 中，并变更了函数原型。2014.10.22 再次做了变
- * 更，记得使用 free() 函数释放返回的字符串。
+ * api 复用，调整到了 libythtlib/misc.h 中，并变更了函数原型。
  */
-char * get_no_more_than_four_login_pics();
+void get_no_more_than_four_login_pics(char *buf, size_t len);
 #endif

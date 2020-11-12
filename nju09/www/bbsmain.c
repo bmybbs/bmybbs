@@ -1,12 +1,5 @@
 #include "bbslib.h"
-#if defined(ENABLE_GHTHASH) && defined(ENABLE_FASTCGI)
-#include <ght_hash_table.h>
-#endif
-
-#ifndef ENABLE_FASTCGI
 int looponce = 0;
-#define FCGI_Accept() looponce--
-#endif
 
 #include "njuapi.h"
 
@@ -121,11 +114,12 @@ struct cgi_applet applets[] = {
 	{bbstmpl_main, {"bbstmpl", NULL}, 0L, 0L, 0},
 	{bbssbs_main, {"bbssbs", NULL}, 0L, 0L, 0},
 	{bbseditmail_main, {"bbseditmail", NULL}, 0L, 0L, 0},
-	{apiqry_main, {"apiqry", NULL}, 0L, 0L, 0},
 	{bbsresetpass_main, {"bbsresetpass", NULL}, 0L, 0L, 0},
 	{bbsfindacc_main, {"bbsfindacc", NULL}, 0L, 0L, 0},
 	{bbsnotify_main, {"bbsnotify", NULL}, 0L, 0L, 0},
 	{bbsdelnotify_main, {"bbsdelnotify", NULL}, 0L, 0L, 0},
+	{api_user_check, {"user_check", NULL}, 0L, 0L, 0},
+	{api_loginpics, {"loginpics", NULL}, 0L, 0L, 0},
 //	{bbschangestyle_main, {"bbschangestyle", "changestyle", NULL}},
 	{NULL, {NULL}, 0L, 0L, 0}
 };
@@ -133,16 +127,6 @@ struct cgi_applet applets[] = {
 #include <sys/times.h>
 char *cginame = NULL;
 static unsigned int rt = 0;
-
-void logtimeused() {
-	char buf[1024];
-	struct cgi_applet *a = applets;
-	while (a->main) {
-		sprintf(buf, "%s %d %f %f\n", a->name[0], a->count, a->utime, a->stime);
-		f_append(MY_BBS_HOME "/gprof/cgirtime", buf);
-		a++;
-	}
-}
 
 static void cgi_time(struct cgi_applet *a) {
 	static struct rusage r0, r1;
@@ -165,29 +149,6 @@ void wantquit(int signal) {
 		exit(6);
 }
 
-#if defined(ENABLE_GHTHASH) && defined(ENABLE_FASTCGI)
-struct cgi_applet *get_cgi_applet(char *needcgi) {
-	static ght_hash_table_t *p_table = NULL;
-	struct cgi_applet *a;
-
-	if (p_table == NULL) {
-		int i;
-		a = applets;
-		p_table = ght_create(250, NULL, 0);
-		while (a->main != NULL) {
-			a->count = 0;
-			a->utime = 0;
-			a->stime = 0;
-			for (i = 0; a->name[i] != NULL; i++)
-				ght_insert(p_table, (void *) a, strlen(a->name[i]), (void *) a->name[i]);
-			a++;
-		}
-	}
-	if (p_table == NULL)
-		return NULL;
-	return ght_get(p_table, strlen(needcgi), needcgi);
-}
-#else
 struct cgi_applet *get_cgi_applet(char *needcgi) {
 	struct cgi_applet *a;
 	int i;
@@ -200,58 +161,9 @@ struct cgi_applet *get_cgi_applet(char *needcgi) {
 	}
 	return NULL;
 }
-#endif
 
 int nologin = 1;
 
-FILE *myout;
-char *myoutbuf = NULL;
-int myoutsize;
-FILE oldout;
-
-void get_att_server() {
-	FILE *fp;
-	char *ptr;
-	char buf[128];
-	unsigned long accel_ip, accel_port, validproxy[MAX_PROXY_NUM];
-	int i;
-	struct in_addr proxy_ip;
-	i = accel_ip = accel_port = 0;
-	bzero(validproxy, sizeof (validproxy));
-	fp = fopen("ATT_SERVER", "r");
-	if (!fp)
-		goto END;
-
-	while (fgets(buf, sizeof (buf), fp) && i < MAX_PROXY_NUM + 1) {
-		strtok(buf, "\n");
-		if (i) {
-			if (inet_aton(buf, &proxy_ip)) {
-				validproxy[i - 1] = proxy_ip.s_addr;
-				i++;
-			}
-			continue;
-		}
-		ptr = strchr(buf, ':');
-		if (ptr)
-			*ptr = 0;
-		if (!inet_aton(buf, &proxy_ip))
-			continue;
-		accel_ip = proxy_ip.s_addr;
-		if (ptr)
-			accel_port = atoi(ptr + 1);
-		else
-			accel_port = DEFAULT_PROXY_PORT;
-		i++;
-	}
-	fclose(fp);
-END:
-	wwwcache->accel_ip = accel_ip;
-	wwwcache->accel_port = accel_port;
-	for (i = 0; i < MAX_PROXY_NUM; i++)
-		wwwcache->validproxy[i] = validproxy[i];
-}
-
-time_t thisversion;
 
 int main(int argc, char *argv[]) {
 	struct cgi_applet *a = NULL;
@@ -267,12 +179,6 @@ int main(int argc, char *argv[]) {
 	thispid = getpid();
 	now_t = time(NULL);
 	srand(now_t * 2 + thispid);
-	wwwcache = get_shm(WWWCACHE_SHMKEY, sizeof (struct WWWCACHE));
-	if (NULL == wwwcache)
-		exit(0);
-	thisversion = file_time(argv[0]);
-	if (thisversion > wwwcache->www_version)
-		wwwcache->www_version = thisversion;
 	html_header(0);
 	if (geteuid() != BBSUID)
 		http_fatal("uid error.");
@@ -283,14 +189,12 @@ int main(int argc, char *argv[]) {
 	signal(SIGTERM, wantquit);
 	if (access("NOLOGIN", F_OK))
 		nologin = 0;
-	get_att_server();
-	while (FCGI_Accept() >= 0) {
+	while (looponce-- >= 0) {
 		cginame = NULL;
 		incgiloop = 1;
 		if (setjmp(cgi_start)) {
 			cgi_time(a);
-			if (!incgiloop || wwwcache->www_version > thisversion || rt++ > 40000) {
-				logtimeused();
+			if (!incgiloop || rt++ > 40000) {
 				exit(2);
 			}
 			incgiloop = 0;
@@ -298,7 +202,6 @@ int main(int argc, char *argv[]) {
 		}
 		html_header(0);
 		now_t = time(NULL);
-		via_proxy = 0;
 		ytht_strsncpy(fromhost, getsenv("REMOTE_ADDR"), BMY_IPV6_LEN); //ipv6 by leoncom
 		fromhost[BMY_IPV6_LEN - 1] = '\0';
 		inet_pton(PF_INET6,fromhost,&from_addr);
@@ -310,11 +213,9 @@ int main(int argc, char *argv[]) {
 		a = get_cgi_applet(needcgi);
 		if (a != NULL) {
 			cginame = a->name[0];
-			wwwcache->www_visit++;
 			(*(a->main)) ();
 			cgi_time(a);
-			if (!incgiloop || wwwcache->www_version > thisversion) {
-				logtimeused();
+			if (!incgiloop) {
 				exit(4);
 			}
 			incgiloop = 0;
