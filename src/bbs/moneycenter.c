@@ -7,7 +7,6 @@
 #include "maintain.h"
 #include "namecomplete.h"
 #include "main.h"
-#include "bcache.h"
 #include "talk.h"
 #include "bbsinc.h"
 #include "mail.h"
@@ -125,7 +124,6 @@ struct MC_Marry{
 
 #define MC_SHMKEY 38899
 static struct moneyCenter *mc;
-extern struct boardmem *bcache;
 extern int numboards;
 static char marry_status[][20] = {"未知","求婚","已婚","婚礼中","已离婚","求婚失败",""};
 static int multex=0;
@@ -5417,7 +5415,7 @@ static int money_stock_board() {
 					pressanykey();
 					break;
 				}
-				if (bcache[stock_board[i]].stocknum <= 50000) {
+				if (ythtbbs_cache_Board_get_board_by_idx(stock_board[i])->stocknum <= 50000) {
 					move(t_lines - 2, 0);
 					prints("对不起,此股目前没有可以出售的股票!");
 					pressanykey();
@@ -5429,8 +5427,8 @@ static int money_stock_board() {
 					prints("对不起,你已经有很多股票了!");
 					pressanykey();
 				}
-				if (bcache[stock_board[i]].stocknum - addto_num[i] < 50000){
-					addto_num[i] = bcache[stock_board[i]].stocknum - 50000;
+				if (ythtbbs_cache_Board_get_board_by_idx(stock_board[i])->stocknum - addto_num[i] < 50000){
+					addto_num[i] = ythtbbs_cache_Board_get_board_by_idx(stock_board[i])->stocknum - 50000;
 					move(t_lines - 2, 0);
 					prints("对不起,此股目前没有那么多股票出售!");
 					pressanykey();
@@ -5449,7 +5447,7 @@ static int money_stock_board() {
 						pressanykey();
 						break;
 					}
-					bcache[stock_board[i]].stocknum -= addto_num[i];
+					ythtbbs_cache_Board_get_board_by_idx(stock_board[i])->stocknum -= addto_num[i];
 					saveValue(currentuser.userid, MONEY_NAME, -temp_sum, MAX_MONEY_NUM);
 					stock_num[i] += addto_num[i];
 					saveValue(currentuser.userid, stockname[i], addto_num[i], 1000000);
@@ -5524,14 +5522,14 @@ static int money_stock_board() {
 					saveValue(slow, MONEY_NAME, -temp_sum/100, MAX_MONEY_NUM);
 					saveValue(currentuser.userid, stockname[i], addto_num[i], 1000000);
 					total_money += temp_sum-temp_sum/100;
-					bcache[stock_board[i]].stocknum -= addto_num[i];
-					temp_sum = bcache[stock_board[i]].score;
+					ythtbbs_cache_Board_get_board_by_idx(stock_board[i])->stocknum -= addto_num[i];
+					temp_sum = ythtbbs_cache_Board_get_board_by_idx(stock_board[i])->score;
 					if (temp_sum > 10000) {
-						if (bcache[stock_board[i]].stocknum > temp_sum * 2000)
-							bcache[stock_board[i]].stocknum = temp_sum * 2000;
+						if (ythtbbs_cache_Board_get_board_by_idx(stock_board[i])->stocknum > temp_sum * 2000)
+							ythtbbs_cache_Board_get_board_by_idx(stock_board[i])->stocknum = temp_sum * 2000;
 					} else {
-						if (bcache[stock_board[i]].stocknum > temp_sum * 1000)
-							bcache[stock_board[i]].stocknum = temp_sum * 1000;
+						if (ythtbbs_cache_Board_get_board_by_idx(stock_board[i])->stocknum > temp_sum * 1000)
+							ythtbbs_cache_Board_get_board_by_idx(stock_board[i])->stocknum = temp_sum * 1000;
 					}
 					sprintf(genbuf, "%s进行股票交易(卖出)", currentuser.userid);
 					sprintf(buf,"%s卖出了%d股%s股票(每股%d兵马俑币)，获得%d兵马俑币\n",
@@ -6240,7 +6238,7 @@ static void persenal_stock_info(int stock_num[15], int stock_price[15], int mone
 	for (i = 0; i < count; i++) {
 		move(3 + i, 0);
 		sprintf(genbuf, "编号:%2d 价钱:%-5d 持有量:%-7d 版名:%-18s 现有股票数:%d",
-				i, stock_price[i], stock_num[i], stockboard[i], bcache[stock_board[i]].stocknum);
+				i, stock_price[i], stock_num[i], stockboard[i], ythtbbs_cache_Board_get_board_by_idx(stock_board[i])->stocknum);
 		if (seek_in_file(MC_STOCK_STOPBUY, stockboard[i]))
 			prints("\033[1;30m%s\033[m", genbuf);
 		else
