@@ -1923,7 +1923,7 @@ post_article(struct fileheader *sfh)
 
 			if (digestmode == NA)
 			{
-				if (bcache[getbnum(currboard) - 1].header.secnumber2 == 'C')
+				if (ythtbbs_cache_Board_get_board_by_idx(getbnum(currboard) - 1)->header.secnumber2 == 'C')
 					prints
 					("\n\n     俱乐部版面，请联系版主，申请加入俱乐部方能发文.");
 				else
