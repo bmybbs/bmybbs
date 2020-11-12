@@ -26,7 +26,6 @@
 #include "vote.h"
 #include "common.h"
 #include "bbsinc.h"
-#include "bcache.h"
 #include "smth_screen.h"
 #include "term.h"
 #include "stuff.h"
@@ -49,7 +48,6 @@
 
 extern int page, range;
 extern char IScurrBM;
-extern struct boardmem *bcache;
 static char *const vote_type[] = { "是非", "单选", "复选", "数字", "问答" ,"限定票数复选"};
 struct votebal currvote;
 extern int numboards;
@@ -185,8 +183,9 @@ b_closepolls()
 	nextpoll = now + 7 * 3600;
 
 	strcpy(buf, currboard);
+	// TODO
 	for (i = 0; i < ythtbbs_cache_Board_get_number(); i++) {
-		strcpy(currboard, (&bcache[i])->header.filename);
+		//strcpy(currboard, (&bcache[i])->header.filename);
 		setcontrolfile();
 		end = get_num_records(controlfile, sizeof (currvote));
 		for (vnum = end; vnum >= 1; vnum--) {
@@ -280,6 +279,17 @@ struct votelog *a, *b;
 	return cmpIP(a->ip, b->ip);
 }
 
+static int get_board_by_name(const struct boardmem *board, int curr_idx, va_list ap) {
+	const char *name = va_arg(ap, const char *);
+	int *idx         = va_arg(ap, int *);
+	if (strncmp(name, board->header.filename, STRLEN) == 0) {
+		*idx = curr_idx;
+		return QUIT;
+	}
+
+	return 0;
+}
+
 static void
 mk_result()
 {
@@ -355,14 +365,12 @@ mk_result()
 	sug = NULL;
 
 	ythtbbs_cache_Board_resolve();
-	for (i = 0; i < numboards; i++)
-		if (!strncmp(currboard, bcache[i].header.filename, STRLEN))
-			break;
-	if (i != numboards)
+	ythtbbs_cache_Board_foreach_v(get_board_by_name, currboard, &i);
+	if (i != ythtbbs_cache_Board_get_number())
 		if (normal_board(currboard)) {
-			if (bcache[i].header.clubnum == 0)
+			if (ythtbbs_cache_Board_get_board_by_idx(i)->header.clubnum == 0)
 				postout = 1;
-			else if (bcache[i].header.flag & CLUBTYPE_FLAG)
+			else if (ythtbbs_cache_Board_get_board_by_idx(i)->header.flag & CLUBTYPE_FLAG)
 				postout = 1;
 		}
 	if (currvote.flag & VOTE_FLAG_OPENED) {
@@ -610,15 +618,13 @@ char *bname;
 			}
 			fclose(sug);
 			sug = NULL;
-			resolve_boards();
-			for (i = 0; i < numboards; i++)
-				if (!strncmp(currboard, bcache[i].header.filename, STRLEN))
-					break;
-			if (i != numboards)
+			ythtbbs_cache_Board_resolve();
+			ythtbbs_cache_Board_foreach_v(get_board_by_name, currboard, &i);
+			if (i != ythtbbs_cache_Board_get_number())
 				if (normal_board(currboard)) {
-					if (bcache[i].header.clubnum == 0)
+					if (ythtbbs_cache_Board_get_board_by_idx(i)->header.clubnum == 0)
 						postfile(votename, "vote", buf, 1);
-					else if (bcache[i].  header.flag & CLUBTYPE_FLAG)
+					else if (ythtbbs_cache_Board_get_board_by_idx(i)->header.flag & CLUBTYPE_FLAG)
 						postfile(votename, "vote", buf, 1);
 				}
 			postfile(votename, currboard, buf, 1);
