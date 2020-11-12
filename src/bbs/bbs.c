@@ -1229,7 +1229,7 @@ sb_show()
 	clrtoeol();
 	for (i = 0; i < BBS_PAGESIZE && i + page < range; i++) {
 		move(i+3, 0);
-		bptr = &bcache[result[i]];
+		bptr = ythtbbs_cache_Board_get_board_by_idx(result[i]);
 		ptr = &(bptr->header);
 
 		prints(" %5d  ", bptr->total);
@@ -1306,7 +1306,7 @@ super_select_board(char *bname)
 	}
 	if (super_board_now >= 0){
 		const struct boardmem*bp;
-		bp=&bcache[result[super_board_now]];
+		bp=ythtbbs_cache_Board_get_board_by_idx(result[super_board_now]);
 		if (bp==NULL){
 			bname[0]='\0';
 			return -1;
