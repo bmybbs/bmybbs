@@ -77,8 +77,7 @@ getlastpost(char *board, int *lastpost, int *total)
 	char filename[STRLEN * 2];
 	int fd, atotal;
 
-	snprintf(filename, sizeof (filename), MY_BBS_HOME "/boards/%s/.DIR",
-		 board);
+	snprintf(filename, sizeof (filename), MY_BBS_HOME "/boards/%s/.DIR", board);
 	if ((fd = open(filename, O_RDONLY)) < 0)
 		return 0;
 	fstat(fd, &st);
@@ -143,8 +142,7 @@ reload_boards()
 	if (brdshm->uptime <= st.st_mtime || brdshm->uptime < now - 3600) {
 		brdshm->uptime = now;
 		countboard = 0;
-		new_apply_record(BOARDS, sizeof (struct boardheader),
-				 (void *) fillbcache, &countboard);
+		new_apply_record(BOARDS, sizeof (struct boardheader), (void *) fillbcache, &countboard);
 		brdshm->number = countboard;
 		numboards = countboard;
 		{
@@ -238,8 +236,7 @@ hasreadperm(struct boardheader *bh)
 			|| (bh->flag & CLUBTYPE_FLAG) || HAS_PERM(PERM_SYSOP, currentuser));
 	if (bh->level & PERM_SPECIAL3)
 		return die;
-	return (bh->level & PERM_POSTMASK) || HAS_PERM(bh->level, currentuser)
-	    || (bh->level & PERM_NOZAP);
+	return (bh->level & PERM_POSTMASK) || HAS_PERM(bh->level, currentuser) || (bh->level & PERM_NOZAP);
 }
 
 int hasreadperm_ext(char *username,  char *boardname)
@@ -688,9 +685,9 @@ char *
 get_temp_sessionid(char *temp_sessionid)
 {
 	snprintf(temp_sessionid, 10, "%c%c%c%s",
-		 (utmpent - 1) / (26 * 26) + 'A',
-		 (utmpent - 1) / 26 % 26 + 'A',
-		 (utmpent - 1) % 26 + 'A', uinfo.sessionid);
+		(utmpent - 1) / (26 * 26) + 'A',
+		(utmpent - 1) / 26 % 26 + 'A',
+		(utmpent - 1) % 26 + 'A', uinfo.sessionid);
 	temp_sessionid[9] = 0;
 	return temp_sessionid;
 }
@@ -753,7 +750,7 @@ setbmstatus(int online)
 	char path[256];
 	if (bcache == NULL)
 		return 0;
-	sethomefile(path, currentuser.userid, "mboard");
+	sethomefile_s(path, sizeof(path), currentuser.userid, "mboard");
 	bmfilesync(&currentuser);
 	new_apply_record(path, sizeof (struct boardmanager), (void *) setbmhat, &online);
 	return 0;
