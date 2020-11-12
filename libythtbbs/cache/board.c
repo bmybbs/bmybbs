@@ -62,7 +62,7 @@ struct boardmem *ythtbbs_cache_Board_get_bcache() {
 	return shm_board->bcache;
 }
 
-const struct boardmem *ythtbbs_cache_Board_get_board_by_idx(int idx) {
+struct boardmem *ythtbbs_cache_Board_get_board_by_idx(int idx) {
 	if (idx < 0 || idx > shm_board->number - 1)
 		return NULL;
 
