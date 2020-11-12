@@ -522,7 +522,6 @@ digraph G {
 	/* vote.c */
 	n_cmmn -> n_vote;
 	n_bbs  -> n_vote;
-	n_bcch -> n_vote;
 	n_smth -> n_vote;
 	n_term -> n_vote;
 	n_stff -> n_vote;
