@@ -101,6 +101,20 @@ int ythtbbs_cache_Board_get_number(void) {
 	return shm_board->number;
 }
 
+void ythtbbs_cache_Board_foreach_v(ythtbbs_cache_Board_foreach_callback callback, ...) {
+	int rc, i;
+	va_list ap;
+
+	for (i = 0; i < shm_board->number; i++) {
+		va_start(ap, callback);
+		rc = callback(&shm_board->bcache[i], ap);
+		va_end(ap);
+
+		if (rc == QUIT)
+			return;
+	}
+}
+
 /***** implementations of private functions *****/
 static int getlastpost(char *board, int *lastpost, int *total) {
 	struct fileheader fh;
