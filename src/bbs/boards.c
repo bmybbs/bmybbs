@@ -202,7 +202,7 @@ load_zapbuf()
 	bzero(zapbuf, size);
 	setuserfile(fname, ".newlastread");
 	if ((fd = open(fname, O_RDONLY, 0600)) != -1) {
-		size = numboards * sizeof (int);
+		size = ythtbbs_cache_Board_get_number() * sizeof (int);
 		read(fd, zapbuf, size);
 		close(fd);
 	}
@@ -221,7 +221,7 @@ save_zapbuf()
 
 	setuserfile(fname, ".newlastread");
 	if ((fd = open(fname, O_WRONLY | O_CREAT, 0600)) != -1) {
-		size = numboards * sizeof (int);
+		size = ythtbbs_cache_Board_get_number() * sizeof (int);
 		write(fd, zapbuf, size);
 		close(fd);
 	}
@@ -258,7 +258,7 @@ load_boards(int *brdnum, int secnum)
 		goodbrd = 1;	// 表示处于阅读定制版面状态
 	if (GoodBrd.num == 9999)	// 强制 load 订阅版面
 		load_GoodBrd();
-	for (n = 0; n < numboards; n++) {
+	for (n = 0; n < ythtbbs_cache_Board_get_number(); n++) {
 		bptr = ythtbbs_cache_Board_get_board_by_idx(n);
 		if (!(bptr->header.filename[0]))
 			continue;

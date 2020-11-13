@@ -124,7 +124,6 @@ struct MC_Marry{
 
 #define MC_SHMKEY 38899
 static struct moneyCenter *mc;
-extern int numboards;
 static char marry_status[][20] = {"未知","求婚","已婚","婚礼中","已离婚","求婚失败",""};
 static int multex=0;
 

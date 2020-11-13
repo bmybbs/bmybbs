@@ -50,7 +50,6 @@ extern int page, range;
 extern char IScurrBM;
 static char *const vote_type[] = { "是非", "单选", "复选", "数字", "问答" ,"限定票数复选"};
 struct votebal currvote;
-extern int numboards;
 char controlfile[STRLEN];
 static unsigned int vote_result[33];
 int vnum;

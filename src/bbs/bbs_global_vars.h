@@ -33,7 +33,6 @@ extern int iscolor;
 extern int local_article;
 extern int msg_num;
 extern int nettyNN;
-extern int numboards;
 extern int numf, friendmode;
 extern int numofsig;
 extern int page, range;

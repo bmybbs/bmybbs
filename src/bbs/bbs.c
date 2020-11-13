@@ -317,7 +317,6 @@ char ReadPost[STRLEN] = "";
 char ReplyPost[STRLEN] = "";
 int readingthread;
 
-extern int numboards;
 extern time_t login_start_time;
 extern int toggle1, toggle2;
 extern char fromhost[];
