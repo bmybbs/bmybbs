@@ -1015,22 +1015,6 @@ const struct sectree *sec;
 			}
 			pressreturn();
 			break;
-		case 'B':
-			if (num >= brdnum + secnum || num < secnum)
-				break;
-			ptr = &nbrd[num - secnum];
-			if (!HAS_PERM(PERM_BLEVELS, currentuser))
-				break;
-			page = -1;
-			sprintf(genbuf, "确定要编辑 %s 版面转信对应列表吗?", ptr->name);
-			if (askyn(genbuf, NA, YEA) == NA)
-				break;
-			snprintf(genbuf, 64, "boards/%s/.POSTBOARDS", ptr->name);
-			if (vedit(genbuf, 0, YEA) == -1)
-				break;
-			update_postboards();
-			pressreturn();
-			break;
 
 		case Ctrl('A'):
 			if (num >= secnum + brdnum || num < secnum)
