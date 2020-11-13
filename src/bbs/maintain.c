@@ -522,7 +522,6 @@ m_newbrd()
 	}
 
 	reload_boards();
-	update_postboards();
 
 	group = chgrp();
 	sprintf(vbuf, "%-38.38s", newboard.title);
@@ -809,7 +808,6 @@ m_editbrd()
 			}
 			substitute_record(BOARDS, &newfh, sizeof (newfh), pos);
 			reload_boards();
-			update_postboards();
 		}
 	}
 	clear();

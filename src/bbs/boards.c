@@ -562,53 +562,6 @@ struct newpostdata *brd, *tmp;
 	return type;
 }
 
-void
-update_postboards(void)
-{
-	int i, begin = 0;
-	char buf[64], *bname;
-	FILE *fp, *fw;
-	sprintf(buf, "tmp/postb.pl.%d", uinfo.pid);
-	fw = fopen(buf, "w");
-	if (NULL == fw) {
-		errlog("can't open postb.pl to write!");
-		return;
-	}
-	fputs("#!/usr/bin/perl\n@board=(\n", fw);
-	for (i = 0; i < brdshm->number; i++) {
-		bname = bcache[i].header.filename;
-		if (!bname[0])
-			continue;
-		snprintf(buf, 64, "boards/%s/.POSTBOARDS", bname);
-		if (valid_fname(bname)) {
-			if (begin)
-				fputs(",\n", fw);
-			else
-				begin = 1;
-			fprintf(fw, "\" %s", bname);
-		} else
-			continue;
-		fp = fopen(buf, "r");
-		if (NULL == fp)
-			goto end;
-
-		while (fgets(buf, sizeof (buf), fp)) {
-			if ('\n' == buf[strlen(buf) - 1])
-				buf[strlen(buf) - 1] = 0;
-			if (valid_fname(buf))
-				fprintf(fw, " %s", buf);
-		}
-		fclose(fp);
-end:
-		fputs(" \"", fw);
-	}
-	fputs("\n);\n", fw);
-	fclose(fw);
-	sprintf(buf, "tmp/postb.pl.%d", uinfo.pid);
-	rename(buf, "etc/postb.pm");
-	return;
-}
-
 static int
 choose_board(newflag, sec)
 int newflag;

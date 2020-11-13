@@ -9,7 +9,6 @@ void EGroup(char *cmd);
 void Boards(void);
 void New(void);
 int unread_position(char *dirfile, struct boardmem *bptr);
-void update_postboards(void);
 int brc_initial(char *boardname, int keep);
 void clear_new_flag_quick(int t);
 void clear_all_new_flag(void);

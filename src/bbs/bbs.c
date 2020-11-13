@@ -4124,7 +4124,6 @@ b_notes_edit()
 				fh.keyword[0]='\0';
 				substitute_record(BOARDS, &fh, sizeof (fh), pos);
 				reload_boards();
-				//update_postboards();
 				sprintf(secu, "É¾³ý%s°æ°æÃæ¹Ø¼ü×Ö", fh.filename);
 				securityreport(secu, secu);
 				move(14, 0);
@@ -4143,7 +4142,6 @@ b_notes_edit()
 				strcpy(fh.keyword, buf3);
 				substitute_record(BOARDS, &fh, sizeof (fh), pos);
 				reload_boards();
-				//update_postboards();
 				sprintf(secu, "ÐÞ¸Ä%s°æ°æÃæ¹Ø¼ü×Ö", fh.filename);
 				securityreport(secu, secu);
 				move(16, 0);
