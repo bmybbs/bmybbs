@@ -237,12 +237,77 @@ zapped(int n, struct boardmem *bptr)
 	return 1;
 }
 
+static int load_boards_callback(struct boardmem *board, int curr_idx, va_list ap) {
+	int local_goodbrd = va_arg(ap, int);
+	char *local_boardprefix = va_arg(ap, char *); // TODO unsigned char *?
+	int local_yank_flag = va_arg(ap, int);
+
+	struct newpostdata *local_nbrd = va_arg(ap, struct newpostdata *);
+	int *local_brdnum = va_arg(ap, int *);
+
+	int local_addto = 0;
+	struct newpostdata *local_ptr;
+
+	if (board->header.filename[0] == '\0')
+		return 0;
+
+	if (local_goodbrd == 0) {
+		if((unsigned char)local_boardprefix[0] != 0xFF /* 255*/
+				&& local_boardprefix[0] != '*'
+				&& strcmp(local_boardprefix, board->header.sec1)
+				&& (board->header.sec2[0] == 0 || strcmp(local_boardprefix, board->header.sec2)))
+			return 0;
+
+		if (!hasreadperm(&board->header))
+			return 0;
+
+		local_addto = local_yank_flag || !zapped(curr_idx, board) || (board->header.level & PERM_NOZAP);
+	} else {
+		// 判断是否是订阅的版面
+		local_addto = inGoodBrds(board->header.filename);
+	}
+
+	if (local_addto) {
+		// addto 标志该版面应该可以阅读
+		local_ptr = &local_nbrd[*local_brdnum];
+		*local_brdnum = *local_brdnum + 1;
+
+		local_ptr->name = board->header.filename;
+		local_ptr->flag = board->header.flag | ((board->header.level & PERM_NOZAP) ? NOZAP_FLAG : 0);
+		local_ptr->pos = curr_idx;
+		local_ptr->unread = -1;
+		local_ptr->zap = zapped(curr_idx, board);
+
+		if (board->header.level & PERM_POSTMASK)
+			local_ptr->status = 'p';
+		else if (board->header.level & PERM_NOZAP)
+			local_ptr->status = 'z';
+		else if ((board->header.level & ~PERM_POSTMASK) != 0)
+			local_ptr->status = 'r';
+		else {
+			local_ptr->status = ' ';
+
+			if (board->header.clubnum != 0) {
+				if (board->header.flag & CLUBTYPE_FLAG) {
+					if (HAS_CLUBRIGHT(board->header.clubnum, uinfo.clubrights)) {
+						local_ptr->status = 'O';
+					} else {
+						local_ptr->status = 'o';
+					}
+				} else {
+					local_ptr->status = 'c';
+				}
+			}
+		}
+	}
+	return 0;
+}
+
 static int
 load_boards(int *brdnum, int secnum)
 {
 	struct boardmem *bptr;
-	struct newpostdata *ptr;
-	int n, addto = 0, goodbrd = 0;
+	int goodbrd = 0;
 	static int loadtime = 0;
 
 	resolve_boards();
@@ -258,50 +323,7 @@ load_boards(int *brdnum, int secnum)
 		goodbrd = 1;	// 表示处于阅读定制版面状态
 	if (GoodBrd.num == 9999)	// 强制 load 订阅版面
 		load_GoodBrd();
-	for (n = 0; n < ythtbbs_cache_Board_get_number(); n++) {
-		bptr = ythtbbs_cache_Board_get_board_by_idx(n);
-		if (!(bptr->header.filename[0]))
-			continue;
-		if (goodbrd == 0) {	//如果不是阅读定制的版面, 则...
-			if (boardprefix[0] != 255 && boardprefix[0] != '*' &&
-					strcmp(boardprefix, bptr->header.sec1) &&
-					(strcmp(boardprefix, bptr->header.sec2) || bptr->header.sec2[0] == 0))
-				continue;
-			if (!hasreadperm(&(bptr->header)))
-				continue;
-			addto = yank_flag || !zapped(n, bptr) || (bptr->header.level & PERM_NOZAP);
-		} else
-			addto = inGoodBrds(bptr->header.filename);	//否则判断是否是订阅的版面
-		if (addto) {	// addto 标志该版面应该可以阅读
-			ptr = &nbrd[*brdnum];
-			(*brdnum)++;
-			ptr->name = bptr->header.filename;
-			ptr->flag = bptr->header.flag | ((bptr->header.level & PERM_NOZAP) ? NOZAP_FLAG : 0);
-			ptr->pos = n;
-			ptr->unread = -1;	//设置为 -1 表示未初始化
-			ptr->zap = (zapped(n, bptr));
-			//ptr->inboard = bptr->inboard;
-			if (bptr->header.level & PERM_POSTMASK)
-				ptr->status = 'p';
-			else if (bptr->header.level & PERM_NOZAP)
-				ptr->status = 'z';
-			else if ((bptr->header.level & ~PERM_POSTMASK) != 0)
-				ptr->status = 'r';
-			else
-				ptr->status = ' ';
-			if (ptr->status == ' ') {
-				if (bptr->header.clubnum != 0) {
-					if (bptr->header.flag & CLUBTYPE_FLAG)
-						if (HAS_CLUBRIGHT(bptr->header.clubnum, uinfo.clubrights))
-							ptr->status = 'O';
-						else
-							ptr->status = 'o';
-					else
-						ptr->status = 'c';
-				}
-			}
-		}
-	}
+	ythtbbs_cache_Board_foreach_v(load_boards_callback, goodbrd, boardprefix, yank_flag, nbrd, brdnum);
 	if (*brdnum == 0 && secnum == 0 && !yank_flag) {
 		if (goodbrd) {	// 如果处于定制版面中，但没有任何版面的话，则刷新
 			GoodBrd.num = 0;
