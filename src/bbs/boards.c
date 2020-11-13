@@ -413,7 +413,6 @@ char *dirfile;
 struct boardmem *bptr;
 {
 	int fd, offset, step, num, filetime;
-	//bptr = &bcache[ptr->pos];
 
 	num = bptr->total + 1;
 	if ((fd = open(dirfile, O_RDONLY)) > 0) {

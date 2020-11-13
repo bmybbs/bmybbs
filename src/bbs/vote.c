@@ -185,7 +185,6 @@ b_closepolls()
 	strcpy(buf, currboard);
 	// TODO
 	for (i = 0; i < ythtbbs_cache_Board_get_number(); i++) {
-		//strcpy(currboard, (&bcache[i])->header.filename);
 		setcontrolfile();
 		end = get_num_records(controlfile, sizeof (currvote));
 		for (vnum = end; vnum >= 1; vnum--) {
