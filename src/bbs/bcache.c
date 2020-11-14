@@ -179,19 +179,6 @@ resolve_boards()
 
 }
 
-int
-apply_boards(func)
-int (*func) (struct boardmem *);
-{
-	register int i;
-
-	resolve_boards();
-	for (i = 0; i < numboards; i++)
-		if ((*func) (&bcache[i]) == QUIT)
-			return QUIT;
-	return 0;
-}
-
 int gbccount = 0, gbcsame = 0;
 
 struct boardmem *

@@ -85,7 +85,6 @@ static int show_cake(char *filename, int num);
 static float myexp(float x);
 static int isowner(struct userec *user, struct fileheader *fileinfo);
 
-static int g_board_names_full(struct boardmem *fhdrp);
 static int UndeleteArticle(int ent, struct fileheader *fileinfo, char *direct);
 static void cpyfilename(struct fileheader *fhdr);
 static int read_post(int ent, struct fileheader *fileinfo, char *direct);
@@ -444,10 +443,9 @@ shownotepad()
 	return;
 }
 
-static int
-g_board_names(fhdrp)
-struct boardmem *fhdrp;
-{
+static int g_board_names(struct boardmem *fhdrp, int curr_idx, va_list ap) {
+	(void) curr_idx;
+	(void) ap;
 	if (fhdrp->header.filename[0] && hasreadperm(&(fhdrp->header))) {
 		AddNameList(fhdrp->header.filename);
 	}
@@ -458,13 +456,12 @@ void
 make_blist()
 {
 	CreateNameList();
-	apply_boards(g_board_names);
+	ythtbbs_cache_Board_foreach_v(g_board_names);
 }
 
-static int
-g_board_names_full(fhdrp)
-struct boardmem *fhdrp;
-{
+static int g_board_names_full(struct boardmem *fhdrp, int curr_idx, va_list ap) {
+	(void) curr_idx;
+	(void) ap;
 	if (fhdrp->header.filename[0])
 		AddNameList(fhdrp->header.filename);
 	return 0;
@@ -474,7 +471,7 @@ void
 make_blist_full()
 {
 	CreateNameList();
-	apply_boards(g_board_names_full);
+	ythtbbs_cache_Board_foreach_v(g_board_names_full);
 }
 
 int
