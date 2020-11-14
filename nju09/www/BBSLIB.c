@@ -1,4 +1,5 @@
 #include "bbslib.h"
+#include "ythtbbs/cache.h"
 #if defined(ENABLE_GHTHASH) && defined(ENABLE_FASTCGI)
 #include <ght_hash_table.h>
 #endif
@@ -2043,7 +2044,7 @@ static void updatelastboard(void) {
 	struct boardmem *last;
 	char buf[80];
 	if (u_info->curboard) {
-		last = &(shm_bcache->bcache[u_info->curboard - 1]);
+		last = ythtbbs_cache_Board_get_board_by_idx(u_info->curboard - 1);
 		if (last->inboard > 0)
 			last->inboard--;
 		if (now_t > w_info->lastinboardtime && w_info->lastinboardtime != 0)
