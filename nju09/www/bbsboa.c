@@ -175,35 +175,55 @@ static int showsecnav(const struct sectree *sec) {
 	return 0;
 }
 
+// 这个函数就不和 filter_board_v 合并了，有些独有逻辑
+static int showhotboard_callback(struct boardmem *board, int curr_idx, va_list ap) {
+	const char *basestr = va_arg(ap, const char *);
+	struct boardmem **bmem = va_arg(ap, struct boardmem **);
+	int *count = va_arg(ap, int *);
+	int max = va_arg(ap, int);
+	int len = strlen(basestr);
+	int j;
+	struct boardmem *x1;
+
+	if (board->header.filename[0] <= 32 || board->header.filename[0] > 'z')
+		return 0;
+
+	if (hideboard_x(board))
+		return 0;
+
+	if (strncmp(basestr, board->header.sec1, len) && strncmp(basestr, board->header.sec2, len))
+		return 0;
+
+	for (j = 0; j < *count; j++) {
+		if (board->score > bmem[j]->score)
+			break;
+
+		if (board->score == bmem[j]->score && board->inboard > bmem[j]->inboard)
+			break;
+	}
+
+	for (; j < *count; j++) {
+		x1 = bmem[j];
+		bmem[j] = board;
+		board = x1;
+	}
+
+	if (*count < max) {
+		bmem[*count] = board;
+		*count = *count + 1;
+	}
+
+	return 0;
+}
+
 static int showhotboard(const struct sectree *sec, char *s) {
 	int count = 0, i, j, len, max;
-	struct boardmem *bmem[MAXBOARD], *x, *x1;
+	struct boardmem *bmem[MAXBOARD];
 	max = atoi(s);
 	if (max < 3 || max > 30)
 		max = 10;
 	len = strlen(sec->basestr);
-	for (i = 0; i < MAXBOARD && i < shm_bcache->number; i++) {
-		x = &(shm_bcache->bcache[i]);
-		if (x->header.filename[0] <= 32 || x->header.filename[0] > 'z')
-			continue;
-		if (hideboard_x(x))
-			continue;
-		if (strncmp(sec->basestr, x->header.sec1, len) && strncmp(sec->basestr, x->header.sec2, len))
-			continue;
-		for (j = 0; j < count; j++) {
-			if (x->score > bmem[j]->score)
-				break;
-			if (x->score == bmem[j]->score && x->inboard > bmem[j]->inboard)
-				break;
-		}
-		for (; j < count; j++) {
-			x1 = bmem[j];
-			bmem[j] = x;
-			x = x1;
-		}
-		if (count < max)
-			bmem[count++] = x;
-	}
+	ythtbbs_cache_Board_foreach_v(showhotboard_callback, sec->basestr, bmem, &count, max);
 	printf("<table width=588 border=1><tr><td bgcolor=%s width=55 align=center>热门讨论区推荐</td><td>", currstyle->colortb1);
 	for (i = 0; i < count; i++) {
 		if (i)
