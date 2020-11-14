@@ -43,7 +43,6 @@ bbsfind_main()
 	return 0;
 }
 
-#define NUMX 100
 int search(char *id, char *pat, char *pat2, char *pat3, int dt) {
 	char board[256], dir[256];
 	int total, i, sum = 0, nr, j;
