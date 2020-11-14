@@ -12,6 +12,33 @@ printdocform(char *cginame, char *board)
 }
 
 //吧lepton的这个代码写成一个函数
+static int nosuchboard_callback(struct boardmem *board, int curr_idx, va_list ap) {
+	const char *bname = va_arg(ap, const char *);
+	const char *cginame = va_arg(ap, const char *);
+	int *j = va_arg(ap, int *);
+	char *buf = va_arg(ap, char *);
+	size_t buflen = va_arg(ap, size_t);
+
+	if (!strcasestr(board->header.filename, bname) && !strcasestr(board->header.title, bname))
+		return 0;
+
+	if (!has_read_perm_x(&currentuser, board))
+		return 0;
+
+	printf("<tr><td>");
+	printf("<a href=%s?board=%s>%s (%s)</a>",
+			cginame, board->header.filename,
+			void1(titlestr(board->header.title)),
+			board->header.filename);
+	printf("</td></tr>");
+
+	*j = *j + 1;
+	if (*j == 1) {
+		snprintf(buf, buflen, "%s?board=%s", cginame, board->header.filename);
+	}
+	return 0;
+}
+
 void
 nosuchboard(char *board, char *cginame)
 {
@@ -19,23 +46,7 @@ nosuchboard(char *board, char *cginame)
 	char buf[128];
 	printf("没有这个讨论区啊，可能的选择:<p>");
 	printf("<table width=300>");
-	for (i = 0; i < MAXBOARD && i < shm_bcache->number; i++) {
-		if (!strcasestr(shm_bcache->bcache[i].header.filename, board) &&
-				!(strcasestr(shm_bcache->bcache[i].header.title, board)))
-			continue;
-		if (!has_read_perm_x(&currentuser, &(shm_bcache->bcache[i])))
-			continue;
-		printf("<tr><td>");
-		printf("<a href=%s?board=%s>%s (%s)</a>",
-				cginame, shm_bcache->bcache[i].header.filename,
-				void1(titlestr(shm_bcache->bcache[i].header.title)),
-				shm_bcache->bcache[i].header.filename);
-		printf("</td></tr>");
-		j++;
-		if (j == 1)
-			sprintf(buf, "%s?board=%s", cginame,
-				shm_bcache->bcache[i].header.filename);
-	}
+	ythtbbs_cache_Board_foreach_v(nosuchboard_callback, board, cginame, &j, buf, sizeof(buf));
 	printf("</table>");
 	if (!j)
 		printf("喔？我真的帮你找了，你那个讨论区一定输入错了, 没有叫做 \"%s\" 的讨论区啊", board);
