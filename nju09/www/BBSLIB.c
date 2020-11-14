@@ -19,7 +19,6 @@ static void extraparam_init(const char *extrastr);
 static int user_init(struct userec *x, struct user_info **y, const char *userid, const char *sessid);
 static int post_imail(char *userid, char *title, char *file, char *id, char *nickname, char *ip, int sig);
 static void sig_append(FILE * fp, char *id, int sig);
-static int setbmhat(struct boardmanager *bm, int *online);
 
 struct wwwstyle wwwstyle[NWWWSTYLE] = {
 	// 橘红(大字体)
@@ -2186,36 +2185,6 @@ system_load()
 	load[2] = rs.avenrun[2] / (double) (1 << 8);
 #endif
 	return load;
-}
-
-int
-setbmstatus(struct userec *u, int online)
-{
-	char path[256];
-	sethomefile_s(path, sizeof(path), u->userid, "mboard");
-	bmfilesync(u);
-	new_apply_record(path, sizeof (struct boardmanager), (void *) setbmhat, &online);
-	return 0;
-}
-
-static int setbmhat(struct boardmanager *bm, int *online) {
-	if (strcmp(shm_bcache->bcache[bm->bid].header.filename, bm->board)) {
-		errlog("error board name %s, %s. user %s",
-				shm_bcache->bcache[bm->bid].header.filename, bm->board,
-				currentuser.userid);
-		return -1;
-	}
-	if (*online) {
-		shm_bcache->bcache[bm->bid].bmonline |= (1 << bm->bmpos);
-		if (u_info->invisible)
-			shm_bcache->bcache[bm->bid].bmcloak |= (1 << bm->bmpos);
-		else
-			shm_bcache->bcache[bm->bid].bmcloak &= ~(1 << bm->bmpos);
-	} else {
-		shm_bcache->bcache[bm->bid].bmonline &= ~(1 << bm->bmpos);
-		shm_bcache->bcache[bm->bid].bmcloak &= ~(1 << bm->bmpos);
-	}
-	return 0;
 }
 
 int

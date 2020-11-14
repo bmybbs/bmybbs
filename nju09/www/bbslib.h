@@ -194,7 +194,6 @@ int get_mail_size(void);
 int check_maxmail(char *currmaildir);
 int countln(char *fname);
 double *system_load(void);
-int setbmstatus(struct userec *u, int online);
 int dofilter(char *title, char *fn, int level);
 int dofilter_edit(char *title, char *buf, int level);
 int search_filter(char *pat1, char *pat2, char *pat3);
