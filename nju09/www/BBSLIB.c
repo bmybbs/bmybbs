@@ -1574,11 +1574,10 @@ getbcache(char *board)
  * 依据版面名称获取 boardmem 对象，应逐渐采用 libythtbbs 库函数。
  * @see struct boardmem *getboardbyname(char *board_name)
  */
-struct boardmem *
-getboard(char board[80])
+struct boardmem *getboard(char *board)
 {
 	struct boardmem *x1;
-	x1 = getbcache(board);
+	x1 = ythtbbs_cache_Board_get_board_by_name(board);
 	if (x1 == 0)
 		return NULL;
 	if (!has_read_perm_x(&currentuser, x1))
