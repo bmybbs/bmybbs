@@ -77,7 +77,6 @@ int ummap_size = 0;
 char fromhost[BMY_IPV6_LEN]; // 从环境变量获取 IP 地址，IPv4/IPv6 已经由 apache 处理过
 struct in6_addr from_addr;   //ipv6 by leoncom
 
-struct boardmem *getbcache();
 struct userec *getuser();
 char *anno_path_of();
 static void updatelastboard(void);
@@ -1394,7 +1393,7 @@ has_BM_perm(struct userec *user, struct boardmem *x)
 int
 has_read_perm(struct userec *user, char *board)
 {
-	return has_read_perm_x(user, getbcache(board));
+	return has_read_perm_x(user, ythtbbs_cache_Board_get_board_by_name(board));
 }
 
 int
@@ -1431,7 +1430,7 @@ hideboard(char *bname)
 	struct boardmem *x;
 	if (bname[0] <= 32)
 		return 1;
-	x = getbcache(bname);
+	x = ythtbbs_cache_Board_get_board_by_name(bname);
 	if (x == 0)
 		return 0;
 	return hideboard_x(x);
@@ -1451,7 +1450,7 @@ int
 innd_board(char *bname)
 {
 	struct boardmem *x;
-	x = getbcache(bname);
+	x = ythtbbs_cache_Board_get_board_by_name(bname);
 	if (x == 0)
 		return 0;
 	return (x->header.flag & INNBBSD_FLAG);
@@ -1461,7 +1460,7 @@ int
 political_board(char *bname)
 {
 	struct boardmem *x;
-	x = getbcache(bname);
+	x = ythtbbs_cache_Board_get_board_by_name(bname);
 	if (x == 0)
 		return 0;
 	if (x->header.flag & POLITICAL_FLAG)
@@ -1474,7 +1473,7 @@ int
 anony_board(char *bname)
 {
 	struct boardmem *x;
-	x = getbcache(bname);
+	x = ythtbbs_cache_Board_get_board_by_name(bname);
 	if (x == 0)
 		return 0;
 	return (x->header.flag & ANONY_FLAG);
@@ -1551,23 +1550,6 @@ has_vote_perm(struct userec *user, struct boardmem *x)
 	if (!(x->header.level & PERM_NOZAP) && x->header.level && !user_perm(user, x->header.level))
 		return 0;
 	return 1;
-}
-
-struct boardmem *
-getbcache(char *board)
-{
-	int i;
-	if (board[0] == 0)
-		return 0;
-	for (i = 0; i < MAXBOARD && i < shm_bcache->number; i++)
-	{
-		//printf("board:%s, header:%s\n", board, shm_bcache->bcache[i].header.filename);   add by mint
-		if (!strcasecmp(board, shm_bcache->bcache[i].header.filename))
-			return &shm_bcache->bcache[i];
-	}
-	//modified by safari 20100102
-	//printf("end");
-	return 0;
 }
 
 /**

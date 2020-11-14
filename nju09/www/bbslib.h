@@ -57,9 +57,9 @@ extern int usedMath;
 extern int usingMath;
 extern int withinMath;
 
-#define redirect(x)	printf("<meta http-equiv='Refresh' content='0; url=%s'>\n", x)
-#define refreshto(x, t)	printf("<meta http-equiv='Refresh' content='%d; url=%s'>\n", t, x)
-#define cgi_head()	printf("Content-type: text/html; charset=%s\n\n", CHARSET)
+#define redirect(x)     printf("<meta http-equiv='Refresh' content='0; url=%s'>\n", x)
+#define refreshto(x, t) printf("<meta http-equiv='Refresh' content='%d; url=%s'>\n", t, x)
+#define cgi_head()      printf("Content-type: text/html; charset=%s\n\n", CHARSET)
 
 extern char parm_name[256][80], *parm_val[256];
 extern int parm_num;
@@ -104,8 +104,6 @@ struct emotion {
 	char *filename;
 };
 #define feditmark(x)  ((x).edittime?((x).filetime-(x).edittime):0)
-
-
 // copy from proto.h
 int junkboard(char *board);
 int f_write(char *file, char *buf);
@@ -152,8 +150,7 @@ int innd_board(char *bname);
 int political_board(char *bname);
 int anony_board(char *bname);
 int noadm4political(char *bname);
-struct boardmem *getbcache(char *board);	//·µ»ØshmÖĞÕâ¸ö board µÄÖ¸Õë
-struct boardmem *getboard(char *board);	//·µ»ØshmÖĞÕâ¸öboardµÄÖ¸Õë, Í¬Ê±°ÑshmÖĞµÄ°æÃû¿½±´µ½board, Èç¹ûÃ»ÓĞÈ¨ÏŞÔò·µ»ØNULL
+struct boardmem *getboard(char *board);	//è¿”å›shmä¸­è¿™ä¸ªboardçš„æŒ‡é’ˆ, åŒæ—¶æŠŠshmä¸­çš„ç‰ˆåæ‹·è´åˆ°board, å¦‚æœæ²¡æœ‰æƒé™åˆ™è¿”å›NULL
 int send_msg(char *myuserid, int i, char *touserid, int topid, char *msg, int offline);
 int count_life_value(struct userec *urec);
 int save_user_data(struct userec *x);

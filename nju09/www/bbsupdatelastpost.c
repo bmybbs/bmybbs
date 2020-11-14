@@ -43,7 +43,7 @@ updatelastpost(char *board)
 	struct boardmem *bptr;
 	if (shm_bcache == NULL)
 		shm_init();
-	bptr = getbcache(board);
+	bptr = ythtbbs_cache_Board_get_board_by_name(board);
 	if (bptr == NULL)
 		return -1;
 	return getlastpost(bptr->header.filename, &bptr->lastpost, &bptr->total);
