@@ -379,7 +379,7 @@ void printlastmark(char *board) {
 		n = 1;
 	}
 	fclose(fp);
-      END:
+END:
 	if (!n)
 		printf("<tr><td colspan=9 height=1></td></tr>");
 }
@@ -637,28 +637,28 @@ int show_content()
 	show_right_click_header(2);
 	//content
 	printf("<table width=275 border=0 cellpadding=0 cellspacing=0>\n"
-	"<tr><td><a href=\"http://www.xjtu.edu.cn/\">交大主页</a></td></tr>\n"
-	"<tr><td><a href=\"http://ic.xjtu.edu.cn/\">信息中心</a></td></tr>\n"
-	"<tr><td><a href=\"http://nic.xjtu.edu.cn/\">网络中心</a></td></tr>\n"
-	"<tr><td><a href=\"http://ftp.xjtu.edu.cn\">思源FTP </a></td></tr>\n"
-    "<tr><td><a href=\"http://webmail.xjtu.edu.cn\">思源WEBMAIL </a></td></tr>\n"
-	"<tr><td><a href=\"https://stu.xjtu.edu.cn\">思源学生MAIL </a></td></tr>\n"
-    "<tr><td><a href=\"http://music.xjtu.edu.cn/\">思源音乐台</a></td></tr>\n"
-	"<tr><td><a href=\"http://vod.xjtu.edu.cn/\">思源VOD </a></td></tr>\n"
-	"<tr><td><a href=\"http://202.117.21.253/\">Windows Update </a></td></tr>\n"
-	"<tr><td>&nbsp;</td></tr>\n"
-	"</table></div>\n");
+			"<tr><td><a href=\"http://www.xjtu.edu.cn/\">交大主页</a></td></tr>\n"
+			"<tr><td><a href=\"http://ic.xjtu.edu.cn/\">信息中心</a></td></tr>\n"
+			"<tr><td><a href=\"http://nic.xjtu.edu.cn/\">网络中心</a></td></tr>\n"
+			"<tr><td><a href=\"http://ftp.xjtu.edu.cn\">思源FTP </a></td></tr>\n"
+			"<tr><td><a href=\"http://webmail.xjtu.edu.cn\">思源WEBMAIL </a></td></tr>\n"
+			"<tr><td><a href=\"https://stu.xjtu.edu.cn\">思源学生MAIL </a></td></tr>\n"
+			"<tr><td><a href=\"http://music.xjtu.edu.cn/\">思源音乐台</a></td></tr>\n"
+			"<tr><td><a href=\"http://vod.xjtu.edu.cn/\">思源VOD </a></td></tr>\n"
+			"<tr><td><a href=\"http://202.117.21.253/\">Windows Update </a></td></tr>\n"
+			"<tr><td>&nbsp;</td></tr>\n"
+			"</table></div>\n");
 
 	//show other
 	show_right_click_header(3);
 	//content
 	printf("<table width=275 border=0 cellpadding=0 cellspacing=0>\n"
-	"<tr><td><a href=\"telnet://bbs.xjtu.edu.cn\">Telnet登录BMY</a></td></tr>\n"
-	"<tr><td><a href=\"javascript:window.external.AddFavorite('http://bbs.xjtu.edu.cn/','西安交通大学兵马俑BBS')\">将本站加入收藏夹</a></td>\n"
-	"</tr>\n"
-	"<tr><td><a href=\"mailto:wwwadmin@mail.xjtu.edu.cn\">联系站务组 </a></td></tr>\n"
-	"<tr><td><a href=\"javascript: openreg()\">新用户注册 </a></td></tr>\n"
-	"</table></div>\n");
+			"<tr><td><a href=\"telnet://bbs.xjtu.edu.cn\">Telnet登录BMY</a></td></tr>\n"
+			"<tr><td><a href=\"javascript:window.external.AddFavorite('http://bbs.xjtu.edu.cn/','西安交通大学兵马俑BBS')\">将本站加入收藏夹</a></td>\n"
+			"</tr>\n"
+			"<tr><td><a href=\"mailto:wwwadmin@mail.xjtu.edu.cn\">联系站务组 </a></td></tr>\n"
+			"<tr><td><a href=\"javascript: openreg()\">新用户注册 </a></td></tr>\n"
+			"</table></div>\n");
 
 	title_begin("滚动广告信息");
 	fp = fopen("etc/adpost", "r");
@@ -748,7 +748,7 @@ aboutbmy:
 	title_end();
 	title_begin("关于BMY");
 	printf("CPU: Intel<sup>&reg;</sup> Xeon<sup>&reg;</sup> E5-2620 2.1GHz ×4<br>RAM: 16GB ECC<br>HD: SAN 4000G<br>\n"
-	"网卡: 双1000Mbps NIC<br>\n");
+			"网卡: 双1000Mbps NIC<br>\n");
 	title_end();
 
 	// management team
@@ -900,7 +900,7 @@ void show_area_top(char c)
 	}
 	MMAP_CATCH {
 	}
-    MMAP_END mmapfile(NULL, &mf);
+	MMAP_END mmapfile(NULL, &mf);
 }
 
 //add by mintbaggio 041225 for new www, need modify: i==1, i==2 else下面的printf，十分不简洁
@@ -910,7 +910,7 @@ void show_right_click_header(int i) {
 		printf("<!-- begin:十大话题 -->\n<div id=layer%d style=\"display:\">\n", i);
 	else
 		printf("<!-- begin:十大话题 -->\n<div id=layer%d style=\"display:none\">\n", i);
-        printf("<!-- begin:导航栏 -->\n<table><tr>\n");
+	printf("<!-- begin:导航栏 -->\n<table><tr>\n");
 	if(i == 1)
 		printf("<td><DIV class=\"btncurrent\" title=\"话题 accesskey: t\" accesskey=\"t\">话题 / topic</DIV></td>\n"
 				"<td><DIV><A class=\"btnlinktheme\" href=\"javascript:;\" onClick=\"Tog('2')\">链接 / link</A></DIV></td>\n"
