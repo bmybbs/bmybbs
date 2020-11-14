@@ -1553,43 +1553,6 @@ has_vote_perm(struct userec *user, struct boardmem *x)
 	return 1;
 }
 
-#if defined(ENABLE_GHTHASH) && defined(ENABLE_FASTCGI)
-struct boardmem *
-getbcache(char *board)
-{
-	int i, j;
-	static int num = 0;
-	char upperstr[STRLEN];
-	static ght_hash_table_t *p_table = NULL;
-	static time_t uptime = 0;
-	if (board[0] == 0)
-		return 0;
-	if (p_table && (num != shm_bcache->number || shm_bcache->uptime > uptime)) {
-		//errlog("getbcache: num %d, bcache->number %d, would reload",
-		//       num, shm_bcache->number);
-		ght_finalize(p_table);
-		p_table = NULL;
-	}
-	if (p_table == NULL) {
-		num = 0;
-		p_table = ght_create(MAXBOARD, NULL, 0);
-		for (i = 0; i < MAXBOARD && i < shm_bcache->number; i++) {
-			num++;
-			if (!shm_bcache->bcache[i].header.filename[0])
-				continue;
-			strsncpy(upperstr, shm_bcache->bcache[i].header.filename, sizeof (upperstr));
-			for (j = 0; upperstr[j]; j++)
-				upperstr[j] = toupper(upperstr[j]);
-			ght_insert(p_table, &shm_bcache->bcache[i], j, upperstr);
-		}
-		uptime = now_t;
-	}
-	strsncpy(upperstr, board, sizeof (upperstr));
-	for (j = 0; upperstr[j]; j++)
-		upperstr[j] = toupper(upperstr[j]);
-	return ght_get(p_table, j, upperstr);
-}
-#else
 struct boardmem *
 getbcache(char *board)
 {
@@ -1606,7 +1569,6 @@ getbcache(char *board)
 	//printf("end");
 	return 0;
 }
-#endif
 
 /**
  * 依据版面名称获取 boardmem 对象，应逐渐采用 libythtbbs 库函数。
