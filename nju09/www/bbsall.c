@@ -2,7 +2,7 @@
 
 int bbsall_main() {
 	//modify by mintbaggio 20040829 for new www
-	struct boardmem *(data[MAXBOARD]), *x;
+	struct boardmem *(data[MAXBOARD]);
 	int sortmode, i, total = 0;
 	char bmbuf[IDLEN * 4 + 4];
 	html_header(1);
