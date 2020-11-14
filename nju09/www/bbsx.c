@@ -41,35 +41,44 @@ show_xsec(const struct sectree *sec)
 	return;
 }
 
+static int show_xboards_callback(struct boardmem *board, int curr_idx, va_list ap) {
+	struct boardmem **data = va_arg(ap, struct boardmem **);
+	int *total = va_arg(ap, int *);
+	int hasintro = va_arg(ap, int);
+	const char *secstr = va_arg(ap, const char *);
+
+	int len = strlen(secstr);
+	if (board->header.filename[0] <= 32 || board->header.filename[0] > 'z')
+		return 0;
+
+	if (hasintro) {
+		if (strcmp(secstr, board->header.sec1) && strcmp(secstr, board->header.sec2))
+			return 0;
+	} else {
+		if (strncmp(secstr, board->header.sec1, len) && strncmp(secstr, board->header.sec2, len))
+			return 0;
+	}
+
+	if (!has_read_perm_x(&currentuser, board))
+		return 0;
+
+	data[*total] = board;
+	*total = *total + 1;
+	return 0;
+}
+
 static void
 show_xboards(const char *secstr)
 {
-	struct boardmem *(data[MAXBOARD]), *x;
+	struct boardmem *(data[MAXBOARD]);
 	int hasintro = 0;
-	size_t len;
-	int i, total = 0;
+	int total = 0;
 	const struct sectree *sec;
 
 	sec = getsectree(secstr);
-	len = strlen(secstr);
 	if (sec->introstr[0])
 		hasintro = 1;
-	for (i = 0; i < MAXBOARD && i < shm_bcache->number; i++) {
-		x = &(shm_bcache->bcache[i]);
-		if (x->header.filename[0] <= 32 || x->header.filename[0] > 'z')
-			continue;
-		if (hasintro) {
-			if (strcmp(secstr, x->header.sec1) && strcmp(secstr, x->header.sec2))
-				continue;
-		} else {
-			if (strncmp(secstr, x->header.sec1, len) && strncmp(secstr, x->header.sec2, len))
-				continue;
-		}
-		if (!has_read_perm_x(&currentuser, x))
-			continue;
-		data[total] = x;
-		total++;
-	}
+	ythtbbs_cache_Board_foreach_v(show_xboards_callback, data, &total, hasintro, secstr);
 	show_xsec_boards(data, total);
 }
 
