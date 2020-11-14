@@ -1,6 +1,6 @@
 #include "bbslib.h"
 
-int search(char *id, char *pat, char *pat2, char *pat3, int dt);
+static int search(char *id, char *pat, char *pat2, char *pat3, int dt);
 char day[20], user[20], title[80];
 
 int
@@ -43,7 +43,7 @@ bbsfind_main()
 	return 0;
 }
 
-int search(char *id, char *pat, char *pat2, char *pat3, int dt) {
+static int search(char *id, char *pat, char *pat2, char *pat3, int dt) {
 	char board[256], dir[256];
 	int total, i, sum = 0, nr, j;
 	time_t starttime;
