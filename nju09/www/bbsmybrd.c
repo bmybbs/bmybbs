@@ -4,28 +4,38 @@ int ismybrd(char *board);
 static int read_submit();
 //secstr == NULL: all boards
 //secstr == "": boards that doesnn't belong to any group
-static void
-showlist_alphabetical(const char *secstr, int needrss)
-{
-	struct boardmem *(data[MAXBOARD]);
-	int i, len = 0, total = 0;
+static int showlist_callback(struct boardmem *board, int curr_idx, va_list ap) {
+	struct boardmem **data = va_arg(ap, struct boardmem **);
+	int *total = va_arg(ap, int *);
+	const char *secstr = va_arg(ap, const char *);
 
+	int len = 0;
 	if (secstr) {
 		len = strlen(secstr);
 		if (len == 0)
 			len = 1;
 	}
 
-	for (i = 0; i < MAXBOARD && i < shm_bcache->number; i++) {
-		if (secstr
-				&& strncmp(shm_bcache->bcache[i].header.sec1, secstr, len)
-				&& strncmp(shm_bcache->bcache[i].header.sec2, secstr, len))
-			continue;
-		if (has_read_perm_x(&currentuser, &(shm_bcache->bcache[i]))) {
-			data[total] = &(shm_bcache->bcache[i]);
-			total++;
-		}
+	if (secstr
+			&& strncmp(board->header.sec1, secstr, len)
+			&& strncmp(board->header.sec2, secstr, len))
+		return 0;
+
+	if (has_read_perm_x(&currentuser, board)) {
+		data[*total] = board;
+		*total = *total + 1;
 	}
+
+	return 0;
+}
+
+static void
+showlist_alphabetical(const char *secstr, int needrss)
+{
+	struct boardmem *(data[MAXBOARD]);
+	int i, total = 0;
+
+	ythtbbs_cache_Board_foreach_v(showlist_callback, data, &total, secstr);
 
 	if (!total)
 		return;
