@@ -84,6 +84,13 @@ struct boardmem *ythtbbs_cache_Board_get_board_by_name(const char *bname) {
 	return NULL;
 }
 
+int ythtbbs_cache_Board_get_idx_by_ptr(const struct boardmem *ptr) {
+	if (ptr < &shm_board->bcache[0] || ptr > &shm_board->bcache[MAXBOARD - 1])
+		return -1;
+	else
+		return ptr - &shm_board->bcache[0];
+}
+
 int ythtbbs_cache_Board_set_bm_hat_v(void *b, va_list ap) {
 	struct boardmanager *bm = b;
 	bool *online, *invisible;

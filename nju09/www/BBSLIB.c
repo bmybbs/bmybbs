@@ -2059,7 +2059,7 @@ void updateinboard(struct boardmem *x) {
 	int bnum;
 	if (!loginok)
 		return;
-	bnum = x - (struct boardmem *) (shm_bcache);
+	bnum = ythtbbs_cache_Board_get_idx_by_ptr(x);
 	if (bnum + 1 == u_info->curboard)
 		return;
 	updatelastboard();
