@@ -218,7 +218,8 @@ extern int showfile(char *fn);             /* bbsboa.c */
 enum FILTER_BOARD_e {
 	FILTER_BOARD_basic       = 0x00,
 	FILTER_BOARD_check_mybrd = 0x01,
-	FILTER_BOARD_with_intro  = 0x02,
+	FILTER_BOARD_with_secstr = 0x02,
+	FILTER_BOARD_with_secnum = 0x04,
 };
 
 /**

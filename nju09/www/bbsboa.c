@@ -36,7 +36,7 @@ int shownavpart(int mode, const char *secstr);
 int
 bbsboa_main()
 {
-	struct boardmem *(data[MAXBOARD]), *x;
+	struct boardmem *(data[MAXBOARD]);
 	int i, total = 0;
 	char *secstr; //, session_name[STRLEN], pname[STRLEN], *p;
 	const struct sectree *sec;
@@ -68,22 +68,7 @@ bbsboa_main()
 	len = strlen(secstr);
 	if (sec->introstr[0])
 		hasintro = 1;
-	for (i = 0; i < MAXBOARD && i < shm_bcache->number; i++) {
-		x = &(shm_bcache->bcache[i]);
-		if (x->header.filename[0] <= 32 || x->header.filename[0] > 'z')
-			continue;
-		if (hasintro) {
-			if (strcmp(secstr, x->header.sec1) && strcmp(secstr, x->header.sec2))
-				continue;
-		} else {
-			if (strncmp(secstr, x->header.sec1, len) && strncmp(secstr, x->header.sec2, len))
-				continue;
-		}
-		if (!has_read_perm_x(&currentuser, x))
-			continue;
-		data[total] = x;
-		total++;
-	}
+	ythtbbs_cache_Board_foreach_v(filter_board_v, FILTER_BOARD_with_secstr, data, &total, hasintro, secstr);
 	printf("<body topmargin=0 leftMargin=1 MARGINWIDTH=1 MARGINHEIGHT=0>");
 	showsecpage(sec, data, total, secstr);
 out:
@@ -802,7 +787,7 @@ void show_sec(const struct sectree *sec) {
 
 //add by mintbaggio 040518 for new www
 void show_boards(const char *secstr) {
-	struct boardmem *(data[MAXBOARD]), *x;
+	struct boardmem *(data[MAXBOARD]);
 	int hasintro = 0;
 	int i, total = 0;
 	const struct sectree *sec;
@@ -810,21 +795,8 @@ void show_boards(const char *secstr) {
 	sec = getsectree(secstr);
 	if (sec->introstr[0])
 		hasintro = 1;
-	for (i = 0; i < MAXBOARD && i < shm_bcache->number; i++) {
-		x = &(shm_bcache->bcache[i]);
-		if (x->header.filename[0] <= 32 || x->header.filename[0] > 'z')
-			continue;
-		if (hasintro) {
-			if (secstr[0] != x->header.secnumber1) continue;
-		} else {
-			if (secstr[0] != x->header.secnumber1) continue;
-		}
-		if (!has_read_perm_x(&currentuser, x))
-			continue;
-		data[total] = x;
-		total++;
-	}
 
+	ythtbbs_cache_Board_foreach_v(filter_board_v, FILTER_BOARD_with_secnum, data, &total, hasintro, secstr);
 
 	show_sec_boards(data, total);
 }

@@ -2475,6 +2475,8 @@ int filter_board_v(struct boardmem *board, int curr_idx, va_list ap) {
 	int *total = va_arg(ap, int *);
 
 	// 不一定会使用的变量
+	int hasintro, len;
+	const char *secstr;
 
 	if (board->header.filename[0] <= 32 || board->header.filename[0] > 'z')
 		return 0;
@@ -2485,6 +2487,33 @@ int filter_board_v(struct boardmem *board, int curr_idx, va_list ap) {
 	if (flag & FILTER_BOARD_check_mybrd) {
 		if (!ismybrd(board->header.filename))
 			return 0;
+	}
+
+	if (flag & (FILTER_BOARD_with_secnum | FILTER_BOARD_with_secstr)) {
+		hasintro = va_arg(ap, int);
+		secstr = va_arg(ap, const char *);
+		len = strlen(secstr);
+
+		if (flag & FILTER_BOARD_with_secstr) {
+			if (hasintro) {
+				if (strcmp(secstr, board->header.sec1) && strcmp(secstr, board->header.sec2))
+					return 0;
+			} else {
+				if (strncmp(secstr, board->header.sec1, len) && strncmp(secstr, board->header.sec2, len))
+					return 0;
+			}
+		}
+
+		if (flag & FILTER_BOARD_with_secnum) {
+			if (hasintro) {
+				if (secstr[0] != board->header.secnumber1)
+					return 0;
+			} else {
+				// TODO IronBlood 批注: 来自 nju09/www/bbsboa 的 show_boards 函数，这里都是只和 secnumber1 比较，是不是写错了？
+				if (secstr[0] != board->header.secnumber1)
+					return 0;
+			}
+		}
 	}
 
 	data[*total] = board;
