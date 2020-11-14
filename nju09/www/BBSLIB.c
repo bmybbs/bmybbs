@@ -2459,3 +2459,36 @@ NHsprintf(char *s, char *s0)
 	s[len] = 0;
 }
 
+int ismybrd(char *board) {
+	int i;
+
+	for (i = 0; i < mybrdnum; i++)
+		if (!strcasecmp(board, mybrd[i]))
+			return 1;
+	return 0;
+}
+
+int filter_board_v(struct boardmem *board, int curr_idx, va_list ap) {
+	// 一定会使用的变量
+	int flag = va_arg(ap, int);
+	struct boardmem **data = va_arg(ap, struct boardmem **);
+	int *total = va_arg(ap, int *);
+
+	// 不一定会使用的变量
+
+	if (board->header.filename[0] <= 32 || board->header.filename[0] > 'z')
+		return 0;
+
+	if (!has_read_perm_x(&currentuser, board))
+		return 0;
+
+	if (flag & FILTER_BOARD_check_mybrd) {
+		if (!ismybrd(board->header.filename))
+			return 0;
+	}
+
+	data[*total] = board;
+	*total = *total + 1;
+	return 0;
+}
+

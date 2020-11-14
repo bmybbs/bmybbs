@@ -1,19 +1,5 @@
 #include "bbslib.h"
 
-static int bbsall_callback(struct boardmem *board, int curr_idx, va_list ap) {
-	struct boardmem **data = va_arg(ap, struct boardmem**);
-	int *total = va_arg(ap, int *);
-	if (board->header.filename[0] <= 32 || board->header.filename[0] > 'z')
-		return 0;
-
-	if (!has_read_perm_x(&currentuser, board))
-		return 0;
-
-	data[*total] = board;
-	*total = *total + 1;
-	return 0;
-}
-
 int bbsall_main() {
 	//modify by mintbaggio 20040829 for new www
 	struct boardmem *(data[MAXBOARD]), *x;
@@ -26,7 +12,7 @@ int bbsall_main() {
 	if (sortmode <= 0 || sortmode > 3)
 		sortmode = 2;
 	printf("<style type=text/css>A {color: #0000f0}</style>");
-	ythtbbs_cache_Board_foreach_v(bbsall_callback, data, &total);
+	ythtbbs_cache_Board_foreach_v(filter_board_v, FILTER_BOARD_basic, data, &total);
 	switch (sortmode) {
 	case 1:
 		qsort(data, total, sizeof (struct boardmem *), (void *) cmpboard);

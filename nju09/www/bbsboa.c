@@ -51,17 +51,7 @@ bbsboa_main()
 	changemode(SELECT);
 	if (secstr[0] == '*') {
 		readmybrd(currentuser.userid);
-		for (i = 0; i < MAXBOARD && i < shm_bcache->number; i++) {
-			x = &(shm_bcache->bcache[i]);
-			if (x->header.filename[0] <= 32 || x->header.filename[0] > 'z')
-				continue;
-			if (!has_read_perm_x(&currentuser, x))
-				continue;
-			if (!ismybrd(x->header.filename))
-				continue;
-			data[total] = x;
-			total++;
-		}
+		ythtbbs_cache_Board_foreach_v(filter_board_v, FILTER_BOARD_check_mybrd, data, &total);
 		printf("<body><center>\n");
 		printf("<div class=rhead>%s --<span class=h11> 预定讨论区总览</span></div><hr>", BBSNAME);
 		if (total)

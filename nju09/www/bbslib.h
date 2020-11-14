@@ -214,4 +214,16 @@ extern void printselsignature();           /* bbspst.c */
 extern void printuploadattach();           /* bbspst.c */
 extern int showcon(char *filename);        /* bbscon.c */
 extern int showfile(char *fn);             /* bbsboa.c */
+
+enum FILTER_BOARD_e {
+	FILTER_BOARD_basic       = 0x00,
+	FILTER_BOARD_check_mybrd = 0x01,
+	FILTER_BOARD_with_intro  = 0x02,
+};
+
+/**
+ * @brief 用于缓存中 Board foreach 获取版面的回调函数
+ * 本函数属于位于多个代码片段中相似功能的合并。各个版本略有差别，通过 FILTER_BOARD_e 枚举控制代码逻辑。枚举采用位运算。
+ */
+int filter_board_v(struct boardmem *board, int curr_idx, va_list ap);
 #endif

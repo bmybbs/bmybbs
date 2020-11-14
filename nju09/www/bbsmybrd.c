@@ -155,14 +155,7 @@ int readmybrd(char *userid) {
 	return 0;
 }
 
-int ismybrd(char *board) {
-	int i;
-
-	for (i = 0; i < mybrdnum; i++)
-		if (!strcasecmp(board, mybrd[i]))
-			return 1;
-	return 0;
-}
+extern int ismybrd(char *board); // BBSLIC.c
 
 static int read_submit() {
 	int i;
