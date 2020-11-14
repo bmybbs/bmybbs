@@ -1312,49 +1312,6 @@ static void sig_append(FILE * fp, char *id, int sig) {
 		fputs("\n", fp);
 }
 
-#if defined(ENABLE_GHTHASH) && defined(ENABLE_FASTCGI)
-char *
-anno_path_of(char *board)
-{
-	static char annpath[MAXBOARD][80];
-	int num;
-	static time_t uptime = 0;
-	static ght_hash_table_t *p_table = NULL;
-	int j;
-	char buf1[80], *ptr;
-	if (p_table && shm_bcache->uptime > uptime) {
-		ght_finalize(p_table);
-		p_table = NULL;
-	}
-	if (p_table == NULL) {
-		FILE *fp;
-		char buf2[80];
-		uptime = now_t;
-		p_table = ght_create(MAXBOARD, NULL, 0);
-		fp = fopen("0Announce/.Search", "r");
-		if (fp == 0)
-			return "";
-		num = 0;
-		while (num < MAXBOARD && fscanf(fp, "%s %s", buf1, buf2) > 0) {
-			buf1[79] = 0;
-			buf1[strlen(buf1) - 1] = 0;
-			for (j = 0; buf1[j]; j++)
-				buf1[j] = toupper(buf1[j]);
-			sprintf(annpath[num], "/%s", buf2);
-			ght_insert(p_table, annpath[num], j, buf1);
-			num++;
-		}
-		fclose(fp);
-	}
-	strsncpy(buf1, board, sizeof (buf1));
-	for (j = 0; buf1[j]; j++)
-		buf1[j] = toupper(buf1[j]);
-	ptr = ght_get(p_table, j, buf1);
-	if (ptr)
-		return ptr;
-	return "";
-}
-#else
 char *
 anno_path_of(char *board)
 {
@@ -1377,7 +1334,7 @@ anno_path_of(char *board)
 	fclose(fp);
 	return "";
 }
-#endif
+
 int
 has_BM_perm(struct userec *user, struct boardmem *x)
 {
