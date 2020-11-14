@@ -71,6 +71,8 @@ struct boardmem *ythtbbs_cache_Board_get_board_by_idx(int idx) {
 
 struct boardmem *ythtbbs_cache_Board_get_board_by_name(const char *bname) {
 	int i;
+	if (bname == NULL || bname[0] == '\0')
+		return NULL;
 
 	ythtbbs_cache_Board_resolve();
 	for (i = 0; i < shm_board->number; i++) {
