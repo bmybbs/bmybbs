@@ -19,7 +19,6 @@ static void extraparam_init(const char *extrastr);
 static int user_init(struct userec *x, struct user_info **y, const char *userid, const char *sessid);
 static int post_imail(char *userid, char *title, char *file, char *id, char *nickname, char *ip, int sig);
 static void sig_append(FILE * fp, char *id, int sig);
-static int useridhash(char *id);
 static int setbmhat(struct boardmanager *bm, int *online);
 
 struct wwwstyle wwwstyle[NWWWSTYLE] = {
@@ -1603,22 +1602,6 @@ int
 user_perm(struct userec *x, int level)
 {
 	return (x->userlevel & level);
-}
-
-static int useridhash(char *id) {
-	int n1 = 0;
-	int n2 = 0;
-	while (*id) {
-		n1 += ((unsigned char) toupper(*id)) % 26;
-		id++;
-		if (!*id)
-			break;
-		n2 += ((unsigned char) toupper(*id)) % 26;
-		id++;
-	}
-	n1 %= 26;
-	n2 %= 26;
-	return n1 * 26 + n2;
 }
 
 // 返回索引值，原本实现中会判断 shm_ucache->userid[i]
