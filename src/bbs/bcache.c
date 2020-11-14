@@ -179,35 +179,10 @@ resolve_boards()
 
 }
 
-int gbccount = 0, gbcsame = 0;
-
-struct boardmem *
-getbcache(bname)
-char *bname;
-{
-	int i;
-	static struct boardmem *last = NULL;
-
-	gbccount++;
-
-	if (last && !strncasecmp(last->header.filename, bname, STRLEN)) {
-		gbcsame++;
-		return last;
-	}
-
-	resolve_boards();
-	for (i = 0; i < numboards; i++)
-		if (!strncasecmp(bname, bcache[i].header.filename, STRLEN)) {
-			last = &bcache[i];
-			return &bcache[i];
-		}
-	return NULL;
-}
-
 int updatelastpost(char *board)
 {
 	struct boardmem *bptr;
-	bptr = getbcache(board);
+	bptr = ythtbbs_cache_Board_get_board_by_name(board);
 	if (bptr == NULL)
 		return -1;
 	getlastpost(bptr->header.filename, &bptr->lastpost, &bptr->total);
@@ -228,7 +203,7 @@ hasreadperm(struct boardheader *bh)
 
 int hasreadperm_ext(char *username,  char *boardname)
 {
-	struct boardmem *x = getbcache(boardname);
+	struct boardmem *x = ythtbbs_cache_Board_get_board_by_name(boardname);
 	if(x==0)
 		return 0;
 
@@ -685,7 +660,7 @@ show_small_bm(char *board)
 	struct boardmem *bptr;
 	int i;
 	short active, invisible;
-	bptr = getbcache(board);
+	bptr = ythtbbs_cache_Board_get_board_by_name(board);
 	if (bptr == NULL)
 		return;
 	move(0, 0);

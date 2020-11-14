@@ -68,7 +68,6 @@ int *zapbuf;
 int zapbufchanged = 0;
 int yank_flag = 0;
 unsigned char boardprefix[5];
-struct boardmem *getbcache(char *);
 
 //定制版面的代码, 取自fb2000.dhs.org.     --ecnegrevid
 struct goodboard {
@@ -133,7 +132,7 @@ load_GoodBrd()			//从文件中获取订阅版面，填充数据结构 GoodBrd
 	}
 	if (GoodBrd.num == 0) {
 		GoodBrd.num++;
-		if (getbcache(DEFAULTBOARD))
+		if (ythtbbs_cache_Board_get_board_by_name(DEFAULTBOARD))
 			strcpy(GoodBrd.ID[0], DEFAULTBOARD);
 		else
 			strcpy(GoodBrd.ID[0], currboard);
@@ -148,7 +147,7 @@ save_GoodBrd()			// 保存用户订阅的版面
 
 	if (GoodBrd.num <= 0) {
 		GoodBrd.num = 1;
-		if (getbcache(DEFAULTBOARD))
+		if (ythtbbs_cache_Board_get_board_by_name(DEFAULTBOARD))
 			strcpy(GoodBrd.ID[0], DEFAULTBOARD);
 		else
 			strcpy(GoodBrd.ID[0], currboard);
@@ -941,7 +940,7 @@ const struct sectree *sec;
 			if (ptr->status == 'r')
 				break;
 
-			bptr = getbcache(ptr->name);
+			bptr = ythtbbs_cache_Board_get_board_by_name(ptr->name);
 			if (!bptr)
 				break;
 			if (!chk_currBM(&(bptr->header), 0) && !clubsync("deleterequest"))
@@ -994,7 +993,7 @@ const struct sectree *sec;
 			if (num >= secnum + brdnum || num < secnum)
 				break;
 			ptr = &nbrd[num - secnum];
-			bptr = getbcache(ptr->name);
+			bptr = ythtbbs_cache_Board_get_board_by_name(ptr->name);
 			if (!bptr)
 				break;
 			page = -1;
@@ -1346,7 +1345,7 @@ readtitle()
 	char readmode[10];
 	int active, invisible, i, bnum;
 	char tmp[40];
-	bp = getbcache(currboard);
+	bp = ythtbbs_cache_Board_get_board_by_name(currboard);
 	if (bp == NULL)
 		return -1;
 	IScurrBM = chk_currBM(&(bp->header), 0);

@@ -9,7 +9,6 @@ void attach_err(int shmkey, char *name);
 void *attach_shm(int shmkey, int shmsize);
 void reload_boards(void);
 void resolve_boards(void);
-struct boardmem *getbcache(char *bname);
 int updatelastpost(char *board);
 int hasreadperm(struct boardheader *bh);
 int hasreadperm_ext(char *username, char *boardname);

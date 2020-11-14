@@ -2909,7 +2909,7 @@ char *direct;
 		return DONOTHING;
 	if (fileinfo->owner[0] == '-')
 		return PARTUPDATE;
-	bp = getbcache(currboard);
+	bp = ythtbbs_cache_Board_get_board_by_name(currboard);
 	if (bp == NULL)
 		return DONOTHING;
 	keep = sysconf_eval("KEEP_DELETED_HEADER");
@@ -3303,7 +3303,7 @@ char *direct;
 	struct boardmem *bp;
 	char temp_sessionid[10];
 	time_t t = fileinfo->filetime;
-	bp = getbcache(currboard);
+	bp = ythtbbs_cache_Board_get_board_by_name(currboard);
 	if (NULL == bp)
 		return DONOTHING;
 	get_temp_sessionid(temp_sessionid);

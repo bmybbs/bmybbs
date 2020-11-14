@@ -36,7 +36,6 @@
 #include "bbs-internal.h"
 
 extern int numofsig;
-struct boardmem *getbcache();
 
 static int
 getdata_ctrl(line, col, prompt, buf, len, echo, clearlabel)
@@ -277,7 +276,7 @@ struct postheader *header;
 		header->include_mode = 'S';
 	} else
 		titlebuf[0] = '\0';
-	bp = getbcache(currboard);
+	bp = ythtbbs_cache_Board_get_board_by_name(currboard);
 	if (bp == NULL)
 		return NA;
 	if (header->postboard)

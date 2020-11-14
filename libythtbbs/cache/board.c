@@ -69,6 +69,19 @@ struct boardmem *ythtbbs_cache_Board_get_board_by_idx(int idx) {
 	return &shm_board->bcache[idx];
 }
 
+struct boardmem *ythtbbs_cache_Board_get_board_by_name(const char *bname) {
+	int i;
+
+	ythtbbs_cache_Board_resolve();
+	for (i = 0; i < shm_board->number; i++) {
+		if (!strncasecmp(bname, shm_board->bcache[i].header.filename, STRLEN)) {
+			return &shm_board->bcache[i];
+		}
+	}
+
+	return NULL;
+}
+
 int ythtbbs_cache_Board_set_bm_hat_v(void *b, va_list ap) {
 	struct boardmanager *bm = b;
 	bool *online, *invisible;

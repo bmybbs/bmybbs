@@ -339,6 +339,7 @@ struct user_info *ythtbbs_cache_utmp_get_by_idx(int idx);
 void ythtbbs_cache_Board_resolve();
 struct boardmem *ythtbbs_cache_Board_get_bcache();
 struct boardmem *ythtbbs_cache_Board_get_board_by_idx(int idx);
+struct boardmem *ythtbbs_cache_Board_get_board_by_name(const char *bname);
 int ythtbbs_cache_Board_set_bm_hat_v(void *b, va_list ap);
 
 time_t ythtbbs_cache_Board_get_pollvote(void);
