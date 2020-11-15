@@ -777,25 +777,27 @@ bmonlinesync()
 {
 	int j, k;
 	const struct user_info *uentp;
+	struct boardmem *board_ptr = NULL;
 	for (j = 0; j < numboards; j++) {
-		if (!bcache[j].header.filename[0])
+		board_ptr = ythtbbs_cache_Board_get_board_by_idx(j);
+		if (!board_ptr->header.filename[0])
 			continue;
-		bcache[j].bmonline = 0;
-		bcache[j].bmcloak = 0;
+		board_ptr->bmonline = 0;
+		board_ptr->bmcloak = 0;
 		for (k = 0; k < BMNUM; k++) {
-			if (bcache[j].header.bm[k][0] == 0) {
+			if (board_ptr->header.bm[k][0] == 0) {
 				if (k < 4) {
-					k = 3;	//继续检查小版主
+					k = 3; //继续检查小版主
 					continue;
 				}
-				break;	//小版主也检查完了
+				break; //小版主也检查完了
 			}
-			uentp = ythtbbs_cache_UserTable_query_user_by_uid(currentuser.userid, HAS_PERM(PERM_SYSOP | PERM_SEECLOAK, currentuser), ythtbbs_cache_UserTable_search_usernum(bcache[j].header.bm[k]), false);
+			uentp = ythtbbs_cache_UserTable_query_user_by_uid(currentuser.userid, HAS_PERM(PERM_SYSOP | PERM_SEECLOAK, currentuser), ythtbbs_cache_UserTable_search_usernum(board_ptr->header.bm[k]), false);
 			if (!uentp)
 				continue;
-			bcache[j].bmonline |= (1 << k);
+			board_ptr->bmonline |= (1 << k);
 			if (uentp->invisible)
-				bcache[j].bmcloak |= (1 << k);
+				board_ptr->bmcloak |= (1 << k);
 		}
 	}
 	sprintf(genbuf, "system reload bmonline");
