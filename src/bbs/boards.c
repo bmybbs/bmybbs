@@ -310,7 +310,7 @@ load_boards(int *brdnum, int secnum)
 	static int loadtime = 0;
 
 	resolve_boards();
-	if (!(GoodBrd.num == 9999 || brdshm->uptime >= loadtime || zapbuf == NULL || *brdnum <= 0))
+	if (!(GoodBrd.num == 9999 || ythtbbs_cache_Board_get_uptime() >= loadtime || zapbuf == NULL || *brdnum <= 0))
 		return 0;
 	loadtime = time(NULL);
 	if (zapbuf == NULL) {
