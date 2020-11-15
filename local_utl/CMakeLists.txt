@@ -41,7 +41,7 @@ add_subdirectory(newboards)
 add_subdirectory(newtop10)
 
 add_subdirectory(postfile)
-add_subdirectory(printSecLastMark)
+#add_subdirectory(printSecLastMark)
 add_subdirectory(printSecLastUpdate)
 add_subdirectory(ptyexec)
 

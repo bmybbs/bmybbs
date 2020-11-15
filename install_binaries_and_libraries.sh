@@ -77,7 +77,7 @@ else
 	install_binary $BUILD_DIR/local_utl/newboards/newboards                   newboards
 	install_binary $BUILD_DIR/local_utl/newtop10/newtop10                     newtop10
 	install_binary $BUILD_DIR/local_utl/postfile/postfile                     postfile
-	install_binary $BUILD_DIR/local_utl/printSecLastMark/printSecLastMark     printSecLastMark
+	#install_binary $BUILD_DIR/local_utl/printSecLastMark/printSecLastMark     printSecLastMark
 	install_binary $BUILD_DIR/local_utl/printSecLastUpdate/printSecLastUpdate printSecLastUpdate
 	install_binary $BUILD_DIR/local_utl/ptyexec/ptyexec                       ptyexec
 	install_binary $BUILD_DIR/local_utl/repsync/repsync                       repsync
