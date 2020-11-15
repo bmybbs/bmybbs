@@ -69,11 +69,6 @@ struct user_info {
 
 #define USHM_SIZE       (MAXACTIVE + 10)
 #define UCACHE_HASH_SIZE (MAXUSERS*2)
-struct useridhashitem {
-	int num;
-	char userid[IDLEN + 1];
-};
-
 #define MAX_LOGIN_PER_USER 6
 /**
  * 原 UCACHE / UINDEX 两个 item 的合并
