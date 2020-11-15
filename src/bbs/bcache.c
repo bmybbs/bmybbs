@@ -288,6 +288,7 @@ haspostperm(bname)
 char *bname;
 {
 	register int i;
+	const struct boardmem *board_ptr = NULL;
 
 	if (digestmode)
 		return 0;
@@ -299,12 +300,14 @@ char *bname;
 		return 0;
 	if ((i = getbnum(bname)) == 0)
 		return 0;
-	if (bcache[i - 1].header.clubnum != 0)
-		return (HAS_PERM((bcache[i - 1].header.level & ~PERM_NOZAP) & ~PERM_POSTMASK, currentuser)) &&
-			(HAS_CLUBRIGHT(bcache[i - 1].header.clubnum, uinfo.clubrights));
-	if (bcache[i - 1].header.level & PERM_SPECIAL3)
+
+	board_ptr = ythtbbs_cache_Board_get_board_by_idx(i - 1);
+	if (board_ptr->header.clubnum != 0)
+		return (HAS_PERM((board_ptr->header.level & ~PERM_NOZAP) & ~PERM_POSTMASK, currentuser)) &&
+			(HAS_CLUBRIGHT(board_ptr->header.clubnum, uinfo.clubrights));
+	if (board_ptr->header.level & PERM_SPECIAL3)
 		return die;
-	return (HAS_PERM((bcache[i - 1].header.level & ~PERM_NOZAP) & ~PERM_POSTMASK, currentuser));
+	return (HAS_PERM((board_ptr->header.level & ~PERM_NOZAP) & ~PERM_POSTMASK, currentuser));
 }
 
 int
