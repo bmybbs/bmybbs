@@ -43,7 +43,6 @@ extern char ULIST[]; /* main.c */
 
 static int getlastpost(char *board, int *lastpost, int *total);
 static int setbmhat(struct boardmanager *bm, int *online);
-static void bmonlinesync(void);
 
 void
 attach_err(shmkey, name)
@@ -690,37 +689,5 @@ setbmhat(struct boardmanager *bm, int *online)
 		board_ptr->bmcloak &= ~(1 << bm->bmpos);
 	}
 	return 0;
-}
-
-static void
-bmonlinesync()
-{
-	int j, k;
-	const struct user_info *uentp;
-	struct boardmem *board_ptr = NULL;
-	for (j = 0; j < numboards; j++) {
-		board_ptr = ythtbbs_cache_Board_get_board_by_idx(j);
-		if (!board_ptr->header.filename[0])
-			continue;
-		board_ptr->bmonline = 0;
-		board_ptr->bmcloak = 0;
-		for (k = 0; k < BMNUM; k++) {
-			if (board_ptr->header.bm[k][0] == 0) {
-				if (k < 4) {
-					k = 3; //继续检查小版主
-					continue;
-				}
-				break; //小版主也检查完了
-			}
-			uentp = ythtbbs_cache_UserTable_query_user_by_uid(currentuser.userid, HAS_PERM(PERM_SYSOP | PERM_SEECLOAK, currentuser), ythtbbs_cache_UserTable_search_usernum(board_ptr->header.bm[k]), false);
-			if (!uentp)
-				continue;
-			board_ptr->bmonline |= (1 << k);
-			if (uentp->invisible)
-				board_ptr->bmcloak |= (1 << k);
-		}
-	}
-	sprintf(genbuf, "system reload bmonline");
-	newtrace(genbuf);
 }
 
