@@ -129,36 +129,33 @@ draw_account()
 	}
 
 	fprintf(fp,
-		"\n[1;36m    ©°¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©´\n");
+		"\n\033[1;36m    ©°¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©´\n");
 	for (i = MAX_LINE; i >= 0; i--) {
 		if ((i + 1) * item >= 10000)
-			fprintf(fp, "[1;37m%-6d[33m", (i + 1) * item);
+			fprintf(fp, "\033[1;37m%-6d\033[33m", (i + 1) * item);
 		else
-			fprintf(fp, "[1;37m%4d[36m©¦[33m", (i + 1) * item);
+			fprintf(fp, "\033[1;37m%4d\033[36m©¦\033[33m", (i + 1) * item);
 		for (j = 0; j < 24; j++) {
 			int shownum;
 			shownum = login[j] % 1000;
-			if ((item * (i) > login[j])
-			    && (item * (i - 1) <= login[j]) && login[j]) {
-				fprintf(fp, "[35m%-3.3d[33m", (shownum));
+			if ((item * (i) > login[j]) && (item * (i - 1) <= login[j]) && login[j]) {
+				fprintf(fp, "\033[35m%-3.3d\033[33m", (shownum));
 				continue;
 			}
 			if (login[j] - item * i < item && item * i < login[j])
-				fprintf(fp, "%s ",
-					blk[((login[j] - item * i) * 10) /
-					    item]);
+				fprintf(fp, "%s ", blk[((login[j] - item * i) * 10) / item]);
 			else if (login[j] - item * i >= item)
 				fprintf(fp, "%s ", blk[9]);
 			else
 				fprintf(fp, "   ");
 		}
-		fprintf(fp, "[1;36m©¦\n");
+		fprintf(fp, "\033[1;36m©¦\n");
 	}
 	now = time(NULL);
 	fprintf(fp,
-		"   [37m0[36m©¸¡ª¡ª[37m%s Ã¿Ð¡Ê±µ½·ÃÈË´ÎÍ³¼Æ   [36m¡ª¡ª¡ª[37m%s[36m¡ª¡ª¡ª©¼\n"
-		"    [;36m  00 01 02 03 04 05 06 07 08 09 10 11 [1;31m12 13 14 15 16 17 18 19 20 21 22 23\n\n"
-		"                 [32m1 [33m¡õ [32m= [37m%-5d [32m×Ü¹²ÉÏÕ¾ÈË´Î£º[37m%-9d[32mÆ½¾ùÊ¹ÓÃÊ±¼ä£º[37m%d[m\n",
+		"   \033[37m0\033[36m©¸¡ª¡ª\033[37m%s Ã¿Ð¡Ê±µ½·ÃÈË´ÎÍ³¼Æ   \033[36m¡ª¡ª¡ª\033[37m%s\033[36m¡ª¡ª¡ª©¼\n"
+		"    \033[;36m  00 01 02 03 04 05 06 07 08 09 10 11 \033[1;31m12 13 14 15 16 17 18 19 20 21 22 23\n\n"
+		"                 \033[32m1 \033[33m¡õ \033[32m= \033[37m%-5d \033[32m×Ü¹²ÉÏÕ¾ÈË´Î£º\033[37m%-9d\033[32mÆ½¾ùÊ¹ÓÃÊ±¼ä£º\033[37m%d\033[m\n",
 			sid, ytht_ctime(now), item, total,
 		totaltime / (total ? total : 1) / 60 + 1);
 	fclose(fp);
@@ -186,33 +183,28 @@ draw_newacct()
 		exit(-1);
 	}
 	fprintf(fp,
-		"\n[1;36m   ©°¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©´\n");
+		"\n\033[1;36m   ©°¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©´\n");
 	for (i = MAX_LINE; i >= 0; i--) {
-		fprintf(fp, "[1;37m%3d[36m©¦[31m", (i + 1) * item);
+		fprintf(fp, "\033[1;37m%3d\033[36m©¦\033[31m", (i + 1) * item);
 		for (j = 0; j < 24; j++) {
-			if ((item * (i) > newaccount[j])
-			    && (item * (i - 1) <= newaccount[j])
-			    && newaccount[j]) {
-				fprintf(fp, "[35m%-3d[31m", (newaccount[j]));
+			if ((item * (i) > newaccount[j]) && (item * (i - 1) <= newaccount[j]) && newaccount[j]) {
+				fprintf(fp, "\033[35m%-3d\033[31m", (newaccount[j]));
 				continue;
 			}
-			if (newaccount[j] - item * i < item
-			    && item * i < newaccount[j])
-				fprintf(fp, "%s ",
-					blk[((newaccount[j] - item * i) * 10) /
-					    item]);
+			if (newaccount[j] - item * i < item && item * i < newaccount[j])
+				fprintf(fp, "%s ", blk[((newaccount[j] - item * i) * 10) / item]);
 			else if (newaccount[j] - item * i >= item)
 				fprintf(fp, "%s ", blk[9]);
 			else
 				fprintf(fp, "   ");
 		}
-		fprintf(fp, "[1;36m©¦\n");
+		fprintf(fp, "\033[1;36m©¦\n");
 	}
 	now = time(NULL);
 	fprintf(fp,
-		"  [37m0[36m©¸¡ª¡ª[37m%s  ±¾ÈÕÐÂÔöÈË¿ÚÍ³¼Æ  [36m¡ª¡ª¡ª¡ª[37m%s[36m¡ª¡ª¡ª©¼\n"
-		"   [;36m  00 01 02 03 04 05 06 07 08 09 10 11 [1;32m12 13 14 15 16 17 18 19 20 21 22 23\n\n"
-		"                     [33m1 [31m¡õ [33m= [37m%-5d [33m±¾ÈÕÉêÇëÐÂÕÊºÅÈËÊý£º[37m%-9d[m\n",
+		"  \033[37m0\033[36m©¸¡ª¡ª\033[37m%s  ±¾ÈÕÐÂÔöÈË¿ÚÍ³¼Æ  \033[36m¡ª¡ª¡ª¡ª\033[37m%s\033[36m¡ª¡ª¡ª©¼\n"
+		"   \033[;36m  00 01 02 03 04 05 06 07 08 09 10 11 \033[1;32m12 13 14 15 16 17 18 19 20 21 22 23\n\n"
+		"                     \033[33m1 \033[31m¡õ \033[33m= \033[37m%-5d \033[33m±¾ÈÕÉêÇëÐÂÕÊºÅÈËÊý£º\033[37m%-9d\033[m\n",
 			sid, ytht_ctime(now), item, total);
 	fclose(fp);
 }
@@ -326,10 +318,8 @@ bbslists_init()
 			exit(-1);
 		}
 		strcpy(((struct bstat *) (tmp->value))->board, tmp->str);
-		snprintf(((struct bstat *) (tmp->value))->expname,
-			 STRLEN, "%s", bcache[i].header.title);
-		((struct bstat *) (tmp->value))->noread =
-		    boardnoread(&(bcache[i].header));
+		snprintf(((struct bstat *) (tmp->value))->expname, STRLEN, "%s", bcache[i].header.title);
+		((struct bstat *) (tmp->value))->noread = boardnoread(&(bcache[i].header));
 		insertdic(busage, tmp);
 	}
 	bzero(newaccount, sizeof (newaccount));
@@ -337,3 +327,4 @@ bbslists_init()
 	bzero(stay, sizeof (stay));
 	register_stat(bbslists, bbslists_exit);
 }
+
