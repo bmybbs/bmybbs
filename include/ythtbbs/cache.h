@@ -83,28 +83,9 @@ struct ythtbbs_cache_User {
 	int  utmp_indices[MAX_LOGIN_PER_USER]; /* position in the UTFPFILE */
 };
 
-/**
- * 对应与原 UCACHE / UINDEX 两个表
- */
-struct ythtbbs_cache_UserTable {
-	struct ythtbbs_cache_User users[MAXUSERS];
-	int number;
-	int usersum;
-	time_t update_time;
-	int nouse[10];
-};
-
 struct ythtbbs_cache_UserIDHashItem {
 	int  user_num;          /* index in the .PASSWDS, STARTING from 1 */
 	char userid[IDLEN + 1];
-};
-
-/**
- * Refactoring the UCACHEHASH structure
- */
-struct ythtbbs_cache_UserIDHashTable {
-	struct ythtbbs_cache_UserIDHashItem items[UCACHE_HASH_SIZE];
-	time_t update_time;
 };
 
 /**
