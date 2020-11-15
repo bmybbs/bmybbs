@@ -6,6 +6,26 @@ void printlastmark(char *board);
 // bbscon
 int fshowcon(FILE * output, char *filename, int show_iframe);
 
+static int bbssbs_callback(struct boardmem *board, int curr_idx, va_list ap) {
+	const char *keyword = va_arg(ap, const char *);
+	int *result = va_arg(ap, int *);
+	int *total  = va_arg(ap, int *);
+
+	if (board->header.filename[0] == '\0')
+		return 0;
+
+	if (!has_read_perm_x(&currentuser, board))
+		return 0;
+
+	if (strcasestr(board->header.filename, keyword)
+			|| strcasestr(board->header.keyword, keyword)
+			|| strcasestr(board->header.title, keyword)) {
+		result[*total] = curr_idx;
+		*total = *total + 1;
+	}
+	return 0;
+}
+
 int
 bbssbs_main()
 {
@@ -21,18 +41,7 @@ bbssbs_main()
 	printf("<div class=rhead>%s -- 超级版面选择</div><hr>\n", BBSNAME);
 
 	if (strlen(ytht_strtrim(keyword))) {
-		for (i = 0; i < shm_bcache->number && total < MAXBOARD ; i++){
-			if (shm_bcache->bcache[i].header.filename[0] == '\0')
-				continue;
-			if (has_read_perm_x(&currentuser, &shm_bcache->bcache[i])) {
-				if (strcasestr(shm_bcache->bcache[i].header.filename, keyword)
-						|| strcasestr(shm_bcache->bcache[i].header.keyword, keyword)
-						|| strcasestr(shm_bcache->bcache[i].header.title, keyword) ){
-					result[total] = i;
-					total++;
-				}
-			}
-		}
+		ythtbbs_cache_Board_foreach_v(bbssbs_callback, keyword, result, &total);
 		if (total == 0){
 			printf("Sorry，我真的帮你找了，没找到符合条件的讨论区啊！");
 			printf("<p><a href=javascript:history.go(-1)>快速返回</a>");
@@ -55,7 +64,7 @@ bbssbs_main()
 				"</TR>\n");
 			printf("<tr>\n");
 			for (i = 0; i < total; i++){
-				bp=&(shm_bcache->bcache[result[i]]);
+				bp = ythtbbs_cache_Board_get_board_by_idx(result[i]);
 				printf("<td class=tdborder>%s</td>\n",
 					board_read(bp->header.filename, bp->lastpost) ? "◇" : "◆");
 				printf("<td class=tduser><a href=%s?B=%s >%s</a></td>\n",

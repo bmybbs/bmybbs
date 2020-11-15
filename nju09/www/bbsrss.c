@@ -1,13 +1,15 @@
 // BMY RSS Page
-// created by interma 
-// 2006-3-21 
+// created by interma
+// 2006-3-21
 // refer tju_bbsrss and ytht_bbsrss(thanks their works)
 
 #include <time.h>
 #include "bbslib.h"
 
+void fprintbinaryattachlink(FILE * fp, int ano, char *attachname, int pos, int size, char *alt, char *alt1); // bbscon.c
+int nosuchboard(char *board, char *cginame); // bbsdoc.c
 #define CHARSET "gb2312"
-// #define SMAGIC "BMYALLPGGUNZAIJJWPKSMZHTCMPNTOYACOOH_B" 			
+// #define SMAGIC "BMYALLPGGUNZAIJJWPKSMZHTCMPNTOYACOOH_B"
 #define TOP10MARK "TOP10"
 
 static void prt_summary(int j, int *rssform, struct fileheader *rssdata, char* board);
@@ -41,36 +43,29 @@ rss_chartrans(char *s, char *s0)  // transfer characters according to XML standa
 			for (m = i + 2; s0[m] && m < i + 24; m++)
 				if (strchr("0123456789;", s0[m]) == 0)
 					break;
-				ytht_strsncpy(ansibuf, &s0[i + 2], m - (i + 2) + 1);
+			ytht_strsncpy(ansibuf, &s0[i + 2], m - (i + 2) + 1);
 			i = m;
 			if (s0[i] != 'm')
 				continue;
 			if (strlen(ansibuf) == 0) {
 				bold = 0;
-				strnncpy2(s, &len, "</font><font class=c37>",
-					  23);
+				strnncpy2(s, &len, "</font><font class=c37>", 23);
 			}
 			tmp = strtok(ansibuf, ";");
 			while (tmp) {
 				c = atoi(tmp);
 				tmp = strtok(0, ";");
 				if (c == 0) {
-					strnncpy2(s, &len,
-						  "</font><font class=c37>",
-						  23);
+					strnncpy2(s, &len, "</font><font class=c37>", 23);
 					bold = 0;
 				}
 				if (c >= 30 && c <= 37) {
 					if (bold == 1) {
-						sprintf(buf2,
-							"</font><font class=d%d>",
-							c);
+						sprintf(buf2, "</font><font class=d%d>", c);
 						strnncpy2(s, &len, buf2, 23);
 					}
 					if (bold == 0) {
-						sprintf(buf2,
-							"</font><font class=c%d>",
-							c);
+						sprintf(buf2, "</font><font class=c%d>", c);
 						strnncpy2(s, &len, buf2, 23);
 					}
 				}
@@ -126,18 +121,14 @@ rss_fshow_file(FILE* output, char* board, struct fileheader* x, int n)
 			ptr = buf + 18;
 			fread(&len, 4, 1, fp);
 			len = ntohl(len);
-			sprintf(buf2, "attach/bbscon/%s?B=%s&F=%s", ptr,
-				board, fh2fname(x));
+			sprintf(buf2, "attach/bbscon/%s?B=%s&F=%s", ptr, board, fh2fname(x));
 			sprintf(buf3, "%s/%s", board, fh2fname(x));
-			fprintbinaryattachlink(output, ano, ptr,
-					       -4 + (int) ftell(fp), len, buf2,
-					       buf3);
+			fprintbinaryattachlink(output, ano, ptr, -4 + (int) ftell(fp), len, buf2, buf3);
 			fseek(fp, len, SEEK_CUR);
 			continue;
 		}
 		ptr = buf;
-		if (!strncmp(buf, ": : ", 4) || !strncmp(buf, ": 发信站", 8) ||
-		    !strncmp(buf, ": 标  题", 8))
+		if (!strncmp(buf, ": : ", 4) || !strncmp(buf, ": 发信站", 8) || !strncmp(buf, ": 标  题", 8))
 			continue;
 		if (!strncmp(buf, ": ", 2)) {
 			if (nquote > 3 || strlen(buf) < 4)
@@ -166,7 +157,7 @@ rss_fshow_file(FILE* output, char* board, struct fileheader* x, int n)
 static void
 prt_header()
 {
-	printf("Content-type: text/xml; charset=%s\n\n", CHARSET);  
+	printf("Content-type: text/xml; charset=%s\n\n", CHARSET);
 	printf("<?xml version=\"1.0\" encoding=\"%s\"?>\n", CHARSET);
 	printf("<?xml-stylesheet href=\"/bbsrss.xsl\" type=\"text/xsl\" media=\"screen\"?>");
 }
@@ -175,7 +166,7 @@ static void
 prt_channel(struct boardmem *x)
 {
 	char sec[10],   secname[40];  // 区号 区名
-	char board[40], brdname[40];  // 英文版名 中文版名  
+	char board[40], brdname[40];  // 英文版名 中文版名
 	char date[50];
 	time_t now = time(0);
 	sprintf(date,"%s",ctime(&now));
@@ -193,12 +184,12 @@ prt_channel(struct boardmem *x)
 	printf("<language>zh-cn</language>\n");
 	printf("<generator>http://%s %s</generator>\n", MY_BBS_DOMAIN, MY_BBS_NAME);
 	printf("<webMaster>interma@stu.xjtu.edu.cn</webMaster>\n");
-	printf("<pubDate>%s</pubDate>\n", date);  
+	printf("<pubDate>%s</pubDate>\n", date);
 }
 
 static void
 prt_top10_channel()
-{  
+{
 	char date[50];
 	time_t now = time(0);
 	sprintf(date,"%s",ctime(&now));
@@ -214,7 +205,7 @@ prt_top10_channel()
 	printf("<pubDate>%s</pubDate>\n", date);
 }
 
-static void 
+static void
 prt_item(int j, int *rssform, struct fileheader *rssdata, char* board, int nodes)
 {
 	char t[128];
@@ -223,7 +214,7 @@ prt_item(int j, int *rssform, struct fileheader *rssdata, char* board, int nodes
 	printf("<item>\n");
 	printf("<title> %s </title>\n", t);
 	printf("<link>http://" MY_BBS_DOMAIN "/" SMAGIC "/con?B=%s&amp;F=M.%ld.A</link>\n", board, rssdata[j].thread);
-	//printf("<guid isPermaLink=\"true\">http://%s/" SMAGIC "/bbstcon?board=%s&amp;start=%d&amp;th=%d</guid>\n", 
+	//printf("<guid isPermaLink=\"true\">http://%s/" SMAGIC "/bbstcon?board=%s&amp;start=%d&amp;th=%d</guid>\n",
 	//	MY_BBS_DOMAIN, board, rssform[j], rssdata[j].thread);
 	printf("<dc:creator>%s</dc:creator>\n", fh2owner(&rssdata[j]));
 	printf("<pubDate>%s</pubDate>\n", ctime((time_t*)&rssdata[j].filetime));
@@ -233,7 +224,7 @@ prt_item(int j, int *rssform, struct fileheader *rssdata, char* board, int nodes
 		prt_summary(j, rssform, rssdata, board);  // print each post as an item description
 	printf("...]]>\n");
 	printf("</description>\n");
-	printf("</item>\n");	
+	printf("</item>\n");
 }
 
 static void
@@ -245,7 +236,7 @@ prt_summary(int j, int *rssform, struct fileheader *rssdata, char* board)
 	int num = 0, found = 0, total;
 	int start, thread, floor;
 
-	struct mmapfile mf = { ptr:NULL };
+	struct mmapfile mf = { .ptr = NULL };
 
 	start = rssform[j];
 	thread = rssdata[j].thread;
@@ -265,9 +256,7 @@ prt_summary(int j, int *rssform, struct fileheader *rssdata, char* board)
 		floor = 0;
 		for (num = 0; num < start; num++)
 		{
-			x = (struct fileheader *) (mf.ptr +
-						   num *
-						   sizeof (struct fileheader));
+			x = (struct fileheader *) (mf.ptr + num * sizeof (struct fileheader));
 			if (thread != 0) {
 				if (x->thread != thread) {
 					continue;
@@ -284,9 +273,7 @@ prt_summary(int j, int *rssform, struct fileheader *rssdata, char* board)
 		}
 
 		for (num = start; num < total; num++) {
-			x = (struct fileheader *) (mf.ptr +
-						   num *
-						   sizeof (struct fileheader));
+			x = (struct fileheader *) (mf.ptr + num * sizeof (struct fileheader));
 			if (thread != 0) {
 				if (x->thread != thread) {
 					continue;
@@ -316,18 +303,18 @@ prt_summary(int j, int *rssform, struct fileheader *rssdata, char* board)
 		http_fatal("错误的文件名");
 }
 
-static void 
+static void
 prt_footer()
 {
 	printf("</channel>\n</rss>\n");
 }
 
-static void  
+static void
 showtop10(int nodes)
 {
 	char board[10][80];
 	char title[10][80];
-						
+
 	FILE *fp2 = fopen(MY_BBS_HOME "/etc/dayf_index", "r");
 	int totalnum = 0;
 	while (fgets(board[totalnum], 80, fp2) != NULL)
@@ -339,11 +326,11 @@ showtop10(int nodes)
 	}
 	fclose(fp2);
 
-	struct mmapfile mf = { ptr:NULL };
+	struct mmapfile mf = { .ptr = NULL };
 	struct fileheader *x;
 	char dir[256];
 	//int total;
-	
+
 	//html_header(1);
 	prt_header();
 	prt_top10_channel();
@@ -352,7 +339,7 @@ showtop10(int nodes)
 	for (i = 0; i < totalnum; i++)
 	{
 		sprintf(dir, MY_BBS_HOME "/boards/%s/.DIR", board[i]);
-		mmapfile(NULL, &mf);	
+		mmapfile(NULL, &mf);
 		if (mmapfile(dir, &mf) < 0)
 		{
 			continue;
@@ -367,14 +354,14 @@ showtop10(int nodes)
 		time_t now = time(0);
 
 		starttime = now - 5 * 86400; //最多查找5  天之前的
-		
+
 		//int start = 0;
 		int start = Search_Bin(mf.ptr, starttime, 0, nr - 1);
 		if (start < 0)
-			start = - (start + 1);			
+			start = - (start + 1);
 
 		size_t j;
-		for (j = start; j < nr; j++) 
+		for (j = start; j < nr; j++)
 		{
 			if (!strncmp(x[j].title, title[i], 80))
 			{
@@ -384,13 +371,13 @@ showtop10(int nodes)
 			}
 		}
 	}
-	
+
 	prt_footer();
-	
+
 }
 
 
-static void 
+static void
 showboard(char *B, int nodes)
 {
 	char board[80], buf[128];
@@ -400,7 +387,7 @@ showboard(char *B, int nodes)
 	int start, direction, num = 0;
 	int first = 0, last = 0;
 	int nothingmore = 0;
-	struct mmapfile mf = { ptr:NULL };
+	struct mmapfile mf = { .ptr = NULL };
 	static struct fileheader *rssdata = NULL;
 	static int *rssform = NULL;
 	if (NULL == rssdata) {
@@ -453,7 +440,7 @@ showboard(char *B, int nodes)
 		if (mmapfile(buf, &mf) < 0) {
 			MMAP_UNTRY;
 			html_header(1);
-			http_fatal("无法读取文章列表"); 
+			http_fatal("无法读取文章列表");
 		}
 		data = (void *) mf.ptr;
 		total = mf.size / sizeof (struct fileheader);
@@ -482,8 +469,7 @@ showboard(char *B, int nodes)
 		for (i = num; i >= 0 && i < total; i += direction) {
 			if (data[i].thread != data[i].filetime)
 				continue;
-			memcpy(&(rssdata[sum]), &(data[i]),
-			       sizeof (struct fileheader));
+			memcpy(&(rssdata[sum]), &(data[i]), sizeof (struct fileheader));
 			rssform[sum] = i;
 			last = data[i].filetime;
 			sum++;
@@ -495,7 +481,7 @@ showboard(char *B, int nodes)
 		if (i < 0 || i >= total)
 			nothingmore = 1;
 
-		prt_header();   
+		prt_header();
 		prt_channel(x1);  // print copyright of TJUBBS and board informations.
 
 		for (i = sum-1; i >= 0; i--) {
@@ -514,7 +500,7 @@ showboard(char *B, int nodes)
 	return;
 }
 
-// need parameter: mode, B 
+// need parameter: mode, B
 int
 bbsrss_main()
 {
@@ -522,7 +508,7 @@ bbsrss_main()
 	int nodes = 0;
 
 	ytht_strsncpy(board, getparm("board"), sizeof(board));
-	
+
 	if (strcmp("1", getparm("nodes")) == 0) //if nodes==1, dont show description.
 		nodes = 1;
 

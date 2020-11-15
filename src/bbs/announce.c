@@ -470,7 +470,7 @@ check_import(char *anboard)
 		//by bjgyt if (!strcmp(anboard, "Personal_Corpus"))
 		if (!strcmp(anboard, "PersonalCorpus"))
 			return 0;
-		bp = getbcache(anboard);
+		bp = ythtbbs_cache_Board_get_board_by_name(anboard);
 		if (bp == NULL)
 			return -1;
 		if (!chk_currBM(&(bp->header), 1))

@@ -60,7 +60,6 @@ struct textline {
 
 struct textline *firstline = NULL;
 struct textline *lastline = NULL;
-struct boardmem *getbcache();
 
 extern int local_article;
 struct textline *currline = NULL;
@@ -978,7 +977,7 @@ int mode;
 	else
 		ytht_strsncpy(uname, currentuser.username, NAMELEN);
 	save_title[STRLEN - 10] = '\0';
-	bp = getbcache(currboard);
+	bp = ythtbbs_cache_Board_get_board_by_name(currboard);
 	//这里bp会不存在么？fp还在那个目录里呢啊
 	//有时候就不会存在啊,比如我删除了版面 但是目录还在...
 	if (bp)

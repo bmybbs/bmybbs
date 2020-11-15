@@ -36,7 +36,7 @@ int shownavpart(int mode, const char *secstr);
 int
 bbsboa_main()
 {
-	struct boardmem *(data[MAXBOARD]), *x;
+	struct boardmem *(data[MAXBOARD]);
 	int i, total = 0;
 	char *secstr; //, session_name[STRLEN], pname[STRLEN], *p;
 	const struct sectree *sec;
@@ -51,17 +51,7 @@ bbsboa_main()
 	changemode(SELECT);
 	if (secstr[0] == '*') {
 		readmybrd(currentuser.userid);
-		for (i = 0; i < MAXBOARD && i < shm_bcache->number; i++) {
-			x = &(shm_bcache->bcache[i]);
-			if (x->header.filename[0] <= 32 || x->header.filename[0] > 'z')
-				continue;
-			if (!has_read_perm_x(&currentuser, x))
-				continue;
-			if (!ismybrd(x->header.filename))
-				continue;
-			data[total] = x;
-			total++;
-		}
+		ythtbbs_cache_Board_foreach_v(filter_board_v, FILTER_BOARD_check_mybrd, data, &total);
 		printf("<body><center>\n");
 		printf("<div class=rhead>%s --<span class=h11> 预定讨论区总览</span></div><hr>", BBSNAME);
 		if (total)
@@ -78,22 +68,7 @@ bbsboa_main()
 	len = strlen(secstr);
 	if (sec->introstr[0])
 		hasintro = 1;
-	for (i = 0; i < MAXBOARD && i < shm_bcache->number; i++) {
-		x = &(shm_bcache->bcache[i]);
-		if (x->header.filename[0] <= 32 || x->header.filename[0] > 'z')
-			continue;
-		if (hasintro) {
-			if (strcmp(secstr, x->header.sec1) && strcmp(secstr, x->header.sec2))
-				continue;
-		} else {
-			if (strncmp(secstr, x->header.sec1, len) && strncmp(secstr, x->header.sec2, len))
-				continue;
-		}
-		if (!has_read_perm_x(&currentuser, x))
-			continue;
-		data[total] = x;
-		total++;
-	}
+	ythtbbs_cache_Board_foreach_v(filter_board_v, FILTER_BOARD_with_secstr, data, &total, hasintro, secstr);
 	printf("<body topmargin=0 leftMargin=1 MARGINWIDTH=1 MARGINHEIGHT=0>");
 	showsecpage(sec, data, total, secstr);
 out:
@@ -200,35 +175,55 @@ static int showsecnav(const struct sectree *sec) {
 	return 0;
 }
 
+// 这个函数就不和 filter_board_v 合并了，有些独有逻辑
+static int showhotboard_callback(struct boardmem *board, int curr_idx, va_list ap) {
+	const char *basestr = va_arg(ap, const char *);
+	struct boardmem **bmem = va_arg(ap, struct boardmem **);
+	int *count = va_arg(ap, int *);
+	int max = va_arg(ap, int);
+	int len = strlen(basestr);
+	int j;
+	struct boardmem *x1;
+
+	if (board->header.filename[0] <= 32 || board->header.filename[0] > 'z')
+		return 0;
+
+	if (hideboard_x(board))
+		return 0;
+
+	if (strncmp(basestr, board->header.sec1, len) && strncmp(basestr, board->header.sec2, len))
+		return 0;
+
+	for (j = 0; j < *count; j++) {
+		if (board->score > bmem[j]->score)
+			break;
+
+		if (board->score == bmem[j]->score && board->inboard > bmem[j]->inboard)
+			break;
+	}
+
+	for (; j < *count; j++) {
+		x1 = bmem[j];
+		bmem[j] = board;
+		board = x1;
+	}
+
+	if (*count < max) {
+		bmem[*count] = board;
+		*count = *count + 1;
+	}
+
+	return 0;
+}
+
 static int showhotboard(const struct sectree *sec, char *s) {
 	int count = 0, i, j, len, max;
-	struct boardmem *bmem[MAXBOARD], *x, *x1;
+	struct boardmem *bmem[MAXBOARD];
 	max = atoi(s);
 	if (max < 3 || max > 30)
 		max = 10;
 	len = strlen(sec->basestr);
-	for (i = 0; i < MAXBOARD && i < shm_bcache->number; i++) {
-		x = &(shm_bcache->bcache[i]);
-		if (x->header.filename[0] <= 32 || x->header.filename[0] > 'z')
-			continue;
-		if (hideboard_x(x))
-			continue;
-		if (strncmp(sec->basestr, x->header.sec1, len) && strncmp(sec->basestr, x->header.sec2, len))
-			continue;
-		for (j = 0; j < count; j++) {
-			if (x->score > bmem[j]->score)
-				break;
-			if (x->score == bmem[j]->score && x->inboard > bmem[j]->inboard)
-				break;
-		}
-		for (; j < count; j++) {
-			x1 = bmem[j];
-			bmem[j] = x;
-			x = x1;
-		}
-		if (count < max)
-			bmem[count++] = x;
-	}
+	ythtbbs_cache_Board_foreach_v(showhotboard_callback, sec->basestr, bmem, &count, max);
 	printf("<table width=588 border=1><tr><td bgcolor=%s width=55 align=center>热门讨论区推荐</td><td>", currstyle->colortb1);
 	for (i = 0; i < count; i++) {
 		if (i)
@@ -379,7 +374,7 @@ void printlastmark(char *board) {
 		n = 1;
 	}
 	fclose(fp);
-      END:
+END:
 	if (!n)
 		printf("<tr><td colspan=9 height=1></td></tr>");
 }
@@ -637,28 +632,28 @@ int show_content()
 	show_right_click_header(2);
 	//content
 	printf("<table width=275 border=0 cellpadding=0 cellspacing=0>\n"
-	"<tr><td><a href=\"http://www.xjtu.edu.cn/\">交大主页</a></td></tr>\n"
-	"<tr><td><a href=\"http://ic.xjtu.edu.cn/\">信息中心</a></td></tr>\n"
-	"<tr><td><a href=\"http://nic.xjtu.edu.cn/\">网络中心</a></td></tr>\n"
-	"<tr><td><a href=\"http://ftp.xjtu.edu.cn\">思源FTP </a></td></tr>\n"
-    "<tr><td><a href=\"http://webmail.xjtu.edu.cn\">思源WEBMAIL </a></td></tr>\n"
-	"<tr><td><a href=\"https://stu.xjtu.edu.cn\">思源学生MAIL </a></td></tr>\n"
-    "<tr><td><a href=\"http://music.xjtu.edu.cn/\">思源音乐台</a></td></tr>\n"
-	"<tr><td><a href=\"http://vod.xjtu.edu.cn/\">思源VOD </a></td></tr>\n"
-	"<tr><td><a href=\"http://202.117.21.253/\">Windows Update </a></td></tr>\n"
-	"<tr><td>&nbsp;</td></tr>\n"
-	"</table></div>\n");
+			"<tr><td><a href=\"http://www.xjtu.edu.cn/\">交大主页</a></td></tr>\n"
+			"<tr><td><a href=\"http://ic.xjtu.edu.cn/\">信息中心</a></td></tr>\n"
+			"<tr><td><a href=\"http://nic.xjtu.edu.cn/\">网络中心</a></td></tr>\n"
+			"<tr><td><a href=\"http://ftp.xjtu.edu.cn\">思源FTP </a></td></tr>\n"
+			"<tr><td><a href=\"http://webmail.xjtu.edu.cn\">思源WEBMAIL </a></td></tr>\n"
+			"<tr><td><a href=\"https://stu.xjtu.edu.cn\">思源学生MAIL </a></td></tr>\n"
+			"<tr><td><a href=\"http://music.xjtu.edu.cn/\">思源音乐台</a></td></tr>\n"
+			"<tr><td><a href=\"http://vod.xjtu.edu.cn/\">思源VOD </a></td></tr>\n"
+			"<tr><td><a href=\"http://202.117.21.253/\">Windows Update </a></td></tr>\n"
+			"<tr><td>&nbsp;</td></tr>\n"
+			"</table></div>\n");
 
 	//show other
 	show_right_click_header(3);
 	//content
 	printf("<table width=275 border=0 cellpadding=0 cellspacing=0>\n"
-	"<tr><td><a href=\"telnet://bbs.xjtu.edu.cn\">Telnet登录BMY</a></td></tr>\n"
-	"<tr><td><a href=\"javascript:window.external.AddFavorite('http://bbs.xjtu.edu.cn/','西安交通大学兵马俑BBS')\">将本站加入收藏夹</a></td>\n"
-	"</tr>\n"
-	"<tr><td><a href=\"mailto:wwwadmin@mail.xjtu.edu.cn\">联系站务组 </a></td></tr>\n"
-	"<tr><td><a href=\"javascript: openreg()\">新用户注册 </a></td></tr>\n"
-	"</table></div>\n");
+			"<tr><td><a href=\"telnet://bbs.xjtu.edu.cn\">Telnet登录BMY</a></td></tr>\n"
+			"<tr><td><a href=\"javascript:window.external.AddFavorite('http://bbs.xjtu.edu.cn/','西安交通大学兵马俑BBS')\">将本站加入收藏夹</a></td>\n"
+			"</tr>\n"
+			"<tr><td><a href=\"mailto:wwwadmin@mail.xjtu.edu.cn\">联系站务组 </a></td></tr>\n"
+			"<tr><td><a href=\"javascript: openreg()\">新用户注册 </a></td></tr>\n"
+			"</table></div>\n");
 
 	title_begin("滚动广告信息");
 	fp = fopen("etc/adpost", "r");
@@ -748,7 +743,7 @@ aboutbmy:
 	title_end();
 	title_begin("关于BMY");
 	printf("CPU: Intel<sup>&reg;</sup> Xeon<sup>&reg;</sup> E5-2620 2.1GHz ×4<br>RAM: 16GB ECC<br>HD: SAN 4000G<br>\n"
-	"网卡: 双1000Mbps NIC<br>\n");
+			"网卡: 双1000Mbps NIC<br>\n");
 	title_end();
 
 	// management team
@@ -812,7 +807,7 @@ void show_sec(const struct sectree *sec) {
 
 //add by mintbaggio 040518 for new www
 void show_boards(const char *secstr) {
-	struct boardmem *(data[MAXBOARD]), *x;
+	struct boardmem *(data[MAXBOARD]);
 	int hasintro = 0;
 	int i, total = 0;
 	const struct sectree *sec;
@@ -820,21 +815,8 @@ void show_boards(const char *secstr) {
 	sec = getsectree(secstr);
 	if (sec->introstr[0])
 		hasintro = 1;
-	for (i = 0; i < MAXBOARD && i < shm_bcache->number; i++) {
-		x = &(shm_bcache->bcache[i]);
-		if (x->header.filename[0] <= 32 || x->header.filename[0] > 'z')
-			continue;
-		if (hasintro) {
-			if (secstr[0] != x->header.secnumber1) continue;
-		} else {
-			if (secstr[0] != x->header.secnumber1) continue;
-		}
-		if (!has_read_perm_x(&currentuser, x))
-			continue;
-		data[total] = x;
-		total++;
-	}
 
+	ythtbbs_cache_Board_foreach_v(filter_board_v, FILTER_BOARD_with_secnum, data, &total, hasintro, secstr);
 
 	show_sec_boards(data, total);
 }
@@ -900,7 +882,7 @@ void show_area_top(char c)
 	}
 	MMAP_CATCH {
 	}
-    MMAP_END mmapfile(NULL, &mf);
+	MMAP_END mmapfile(NULL, &mf);
 }
 
 //add by mintbaggio 041225 for new www, need modify: i==1, i==2 else下面的printf，十分不简洁
@@ -910,7 +892,7 @@ void show_right_click_header(int i) {
 		printf("<!-- begin:十大话题 -->\n<div id=layer%d style=\"display:\">\n", i);
 	else
 		printf("<!-- begin:十大话题 -->\n<div id=layer%d style=\"display:none\">\n", i);
-        printf("<!-- begin:导航栏 -->\n<table><tr>\n");
+	printf("<!-- begin:导航栏 -->\n<table><tr>\n");
 	if(i == 1)
 		printf("<td><DIV class=\"btncurrent\" title=\"话题 accesskey: t\" accesskey=\"t\">话题 / topic</DIV></td>\n"
 				"<td><DIV><A class=\"btnlinktheme\" href=\"javascript:;\" onClick=\"Tog('2')\">链接 / link</A></DIV></td>\n"

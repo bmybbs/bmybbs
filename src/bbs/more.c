@@ -209,7 +209,7 @@ static void printacbar() {
 	int x, y;
 	getyx(&y, &x);
 
-	bp = getbcache(DEFAULTBOARD);
+	bp = ythtbbs_cache_Board_get_board_by_name(DEFAULTBOARD);
 	if (bp == NULL)
 		return;
 	move(2, 0);

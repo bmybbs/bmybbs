@@ -1,38 +1,29 @@
 #include "bbs.h"
 #include "bbsstatlog.h"
-
-struct BCACHE *shm_bcache;
+#include "ythtbbs/cache.h"
 
 struct bbsstatlogitem item;
-int
-shm_init()
-{
+
+int shm_init() {
 	ythtbbs_cache_utmp_resolve();
-	shm_bcache = (struct BCACHE *) get_old_shm(BCACHE_SHMKEY, sizeof (struct BCACHE));
-	if (shm_bcache == NULL)
-		return -1;
+	ythtbbs_cache_Board_resolve();
 	return 0;
 }
 
-void
-bonlinesync()
-{
+void bonlinesync() {
 	int i, numboards;
 	struct user_info *uentp;
-	numboards = shm_bcache->number;
+	numboards = ythtbbs_cache_Board_get_number();
 	for (i = 0; i < numboards; i++)
-		shm_bcache->bcache[i].inboard = 0;
+		ythtbbs_cache_Board_get_board_by_idx(i)->inboard = 0;
 	for (i = 0; i < USHM_SIZE; i++) {
 		uentp = ythtbbs_cache_utmp_get_by_idx(i);
 		if (uentp->active && uentp->pid && uentp->curboard)
-			shm_bcache->bcache[uentp->curboard - 1].inboard++;
+			ythtbbs_cache_Board_get_board_by_idx(uentp->curboard - 1)->inboard++;
 	}
 }
 
-void
-get_load(load)
-float load[];
-{
+void get_load(float load[]) {
 	FILE *fp;
 	fp = fopen("/proc/loadavg", "r");
 	if (!fp)
@@ -47,9 +38,7 @@ float load[];
 	}
 }
 
-int
-get_netflow()
-{
+int get_netflow() {
 	FILE *fp;
 	float fMbit_s = 0;
 	char *ptr, buf[256];
@@ -64,14 +53,12 @@ get_netflow()
 	while (ptr > buf && isdigit(*(ptr - 1)))
 		ptr--;
 	fMbit_s = atof(ptr);
-      ERR:
+ERR:
 	fclose(fp);
 	return fMbit_s * 1024;
 }
 
-int
-main()
-{
+int main() {
 	int i, fd;
 	struct user_info *p;
 	struct tm *ptm;

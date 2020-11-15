@@ -41,12 +41,10 @@ extern int utmpent;
 extern volatile int incgiloop;
 extern int thispid;
 extern time_t now_t;
-extern time_t starttime;
 extern jmp_buf cgi_start;
 extern struct userec currentuser;
 extern struct user_info *u_info;
 extern struct wwwsession *w_info;
-extern struct BCACHE *shm_bcache;
 extern char fromhost[BMY_IPV6_LEN];
 extern struct in6_addr from_addr; //ipv6 by leoncom
 extern int quote_quote;
@@ -57,9 +55,9 @@ extern int usedMath;
 extern int usingMath;
 extern int withinMath;
 
-#define redirect(x)	printf("<meta http-equiv='Refresh' content='0; url=%s'>\n", x)
-#define refreshto(x, t)	printf("<meta http-equiv='Refresh' content='%d; url=%s'>\n", t, x)
-#define cgi_head()	printf("Content-type: text/html; charset=%s\n\n", CHARSET)
+#define redirect(x)     printf("<meta http-equiv='Refresh' content='0; url=%s'>\n", x)
+#define refreshto(x, t) printf("<meta http-equiv='Refresh' content='%d; url=%s'>\n", t, x)
+#define cgi_head()      printf("Content-type: text/html; charset=%s\n\n", CHARSET)
 
 extern char parm_name[256][80], *parm_val[256];
 extern int parm_num;
@@ -104,8 +102,6 @@ struct emotion {
 	char *filename;
 };
 #define feditmark(x)  ((x).edittime?((x).filetime-(x).edittime):0)
-
-
 // copy from proto.h
 int junkboard(char *board);
 int f_write(char *file, char *buf);
@@ -152,8 +148,7 @@ int innd_board(char *bname);
 int political_board(char *bname);
 int anony_board(char *bname);
 int noadm4political(char *bname);
-struct boardmem *getbcache(char *board);	//����shm����� board ��ָ��
-struct boardmem *getboard(char *board);	//����shm�����board��ָ��, ͬʱ��shm�еİ���������board, ���û��Ȩ���򷵻�NULL
+struct boardmem *getboard(char *board);	//返回shm中这个board的指针, 同时把shm中的版名拷贝到board, 如果没有权限则返回NULL
 int send_msg(char *myuserid, int i, char *touserid, int topid, char *msg, int offline);
 int count_life_value(struct userec *urec);
 int save_user_data(struct userec *x);
@@ -197,7 +192,6 @@ int get_mail_size(void);
 int check_maxmail(char *currmaildir);
 int countln(char *fname);
 double *system_load(void);
-int setbmstatus(struct userec *u, int online);
 int dofilter(char *title, char *fn, int level);
 int dofilter_edit(char *title, char *buf, int level);
 int search_filter(char *pat1, char *pat2, char *pat3);
@@ -218,4 +212,17 @@ extern void printselsignature();           /* bbspst.c */
 extern void printuploadattach();           /* bbspst.c */
 extern int showcon(char *filename);        /* bbscon.c */
 extern int showfile(char *fn);             /* bbsboa.c */
+
+enum FILTER_BOARD_e {
+	FILTER_BOARD_basic       = 0x00,
+	FILTER_BOARD_check_mybrd = 0x01,
+	FILTER_BOARD_with_secstr = 0x02,
+	FILTER_BOARD_with_secnum = 0x04,
+};
+
+/**
+ * @brief 用于缓存中 Board foreach 获取版面的回调函数
+ * 本函数属于位于多个代码片段中相似功能的合并。各个版本略有差别，通过 FILTER_BOARD_e 枚举控制代码逻辑。枚举采用位运算。
+ */
+int filter_board_v(struct boardmem *board, int curr_idx, va_list ap);
 #endif

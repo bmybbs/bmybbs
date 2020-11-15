@@ -9,6 +9,13 @@
 #include "ythtbbs/record.h"
 #include "cache-internal.h"
 
+struct BCACHE {
+	struct boardmem bcache[MAXBOARD];
+	int number;
+	time_t uptime;
+	time_t pollvote;
+};
+
 static struct BCACHE *shm_board;
 
 static int fillbcache(void *, void *);
@@ -27,7 +34,7 @@ void ythtbbs_cache_Board_resolve() {
 		}
 	}
 
-	lockfd = open(MY_BBS_HOME "./CACHE.board.locl", O_RDONLY | O_CREAT, 0600);
+	lockfd = open(MY_BBS_HOME "./CACHE.board.lock", O_RDONLY | O_CREAT, 0600);
 	if (lockfd < 0)
 		return;
 	flock(lockfd, LOCK_EX);
@@ -58,8 +65,33 @@ void ythtbbs_cache_Board_resolve() {
 	close(lockfd);
 }
 
-struct boardmem *ythtbbs_cache_Board_get_bcache() {
-	return shm_board->bcache;
+struct boardmem *ythtbbs_cache_Board_get_board_by_idx(int idx) {
+	if (idx < 0 || idx > shm_board->number - 1)
+		return NULL;
+
+	return &shm_board->bcache[idx];
+}
+
+struct boardmem *ythtbbs_cache_Board_get_board_by_name(const char *bname) {
+	int i;
+	if (bname == NULL || bname[0] == '\0')
+		return NULL;
+
+	ythtbbs_cache_Board_resolve();
+	for (i = 0; i < shm_board->number; i++) {
+		if (!strncasecmp(bname, shm_board->bcache[i].header.filename, STRLEN)) {
+			return &shm_board->bcache[i];
+		}
+	}
+
+	return NULL;
+}
+
+int ythtbbs_cache_Board_get_idx_by_ptr(const struct boardmem *ptr) {
+	if (ptr < &shm_board->bcache[0] || ptr > &shm_board->bcache[MAXBOARD - 1])
+		return -1;
+	else
+		return ptr - &shm_board->bcache[0];
 }
 
 int ythtbbs_cache_Board_set_bm_hat_v(void *b, va_list ap) {
@@ -87,6 +119,36 @@ int ythtbbs_cache_Board_set_bm_hat_v(void *b, va_list ap) {
 		shm_board->bcache[bm->bid].bmcloak &= ~(1 << bm->bmpos);
 	}
 	return 0;
+}
+
+time_t ythtbbs_cache_Board_get_pollvote(void) {
+	return shm_board->pollvote;
+}
+
+void ythtbbs_cache_Board_set_pollvote(time_t t) {
+	shm_board->pollvote = t;
+}
+
+int ythtbbs_cache_Board_get_number(void) {
+	return shm_board->number;
+}
+
+time_t ythtbbs_cache_Board_get_uptime(void) {
+	return shm_board->uptime;
+}
+
+void ythtbbs_cache_Board_foreach_v(ythtbbs_cache_Board_foreach_callback callback, ...) {
+	int rc, i;
+	va_list ap;
+
+	for (i = 0; i < shm_board->number; i++) {
+		va_start(ap, callback);
+		rc = callback(&shm_board->bcache[i], i, ap);
+		va_end(ap);
+
+		if (rc == QUIT)
+			return;
+	}
 }
 
 /***** implementations of private functions *****/

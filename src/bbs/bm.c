@@ -41,12 +41,10 @@
 #define CHANGEDENY 3
 
 extern int millionairesrec(char *title, char *str, char *owner);
-static int addtodeny(char *uident, char *msg, int ischange, int isglobal,
-		     int isanony);
+static int addtodeny(char *uident, char *msg, int ischange, int isglobal, int isanony);
 static int deldeny(char *uident, int isglobal, int isanony);
 static int delclubmember(char *uident);
-static int deny_notice(int action, char *user, int isglobal, int isanony,
-		       char *msgbuf);
+static int deny_notice(int action, char *user, int isglobal, int isanony, char *msgbuf);
 
 static int
 addtodeny(uident, msg, ischange, isglobal, isanony)
@@ -108,30 +106,30 @@ int ischange, isglobal, isanony;
 		if (currentuser.userlevel & PERM_SPECIAL5) {
 			if (isglobal)
 				sprintf(msg,
-	                        "封人原因: %s\n被封天数: %d%s\n解封日期: %d月%d日\n"
-	                        "本站不接受对此封禁的虚拟投诉\n", buf, day,
-	                        "(全站)" , tmtime->tm_mon + 1,
-	                        tmtime->tm_mday);
+						"封人原因: %s\n被封天数: %d%s\n解封日期: %d月%d日\n"
+						"本站不接受对此封禁的虚拟投诉\n", buf, day,
+						"(全站)" , tmtime->tm_mon + 1,
+						tmtime->tm_mday);
 			else
 				sprintf(msg,
-				"封人原因: %s\n被封天数: %d%s\n解封日期: %d月%d日\n"
-				"本站不接受对此封禁的虚拟投诉\n", buf, day,
-				isglobal ? "(全站)" : "", tmtime->tm_mon + 1,
-				tmtime->tm_mday);
+						"封人原因: %s\n被封天数: %d%s\n解封日期: %d月%d日\n"
+						"本站不接受对此封禁的虚拟投诉\n", buf, day,
+						isglobal ? "(全站)" : "", tmtime->tm_mon + 1,
+						tmtime->tm_mday);
 		}
 		else if(isglobal || day>20)
 		sprintf(msg,
-                        "封人原因: %s\n被封天数: %d%s\n解封日期: %d月%d日\n"
-                        "如有异议，可向%s提出，或到 committee 版投诉\n", buf, day,
-                        "(全站)" , tmtime->tm_mon + 1,
-                        tmtime->tm_mday, "站务");
+				"封人原因: %s\n被封天数: %d%s\n解封日期: %d月%d日\n"
+				"如有异议，可向%s提出，或到 committee 版投诉\n", buf, day,
+				"(全站)" , tmtime->tm_mon + 1,
+				tmtime->tm_mday, "站务");
 		else {
 			if (seek_in_file(MY_BBS_HOME"/etc/sysboards",currboard)) {
 				sprintf(msg,
-				"封人原因: %s\n被封天数: %d%s\n解封日期: %d月%d日\n"
-				"如有异议，可向%s提出，或到 committee 版投诉\n", buf, day,
-				isglobal ? "(全站)" : "", tmtime->tm_mon + 1,
-				tmtime->tm_mday, "站务" );
+						"封人原因: %s\n被封天数: %d%s\n解封日期: %d月%d日\n"
+						"如有异议，可向%s提出，或到 committee 版投诉\n", buf, day,
+						isglobal ? "(全站)" : "", tmtime->tm_mon + 1,
+						tmtime->tm_mday, "站务" );
 			}
 			else {
 				sprintf(msg,
@@ -234,25 +232,21 @@ deny_user()
 		if (*ans == 'A' || *ans == 'a') {
 			move(1, 0);
 			if (isglobal)
-				usercomplete("增加无法 POST 的使用者: ",
-					     uident);
+				usercomplete("增加无法 POST 的使用者: ", uident);
 			else {
 				int canpost = 0;
 				while (!canpost) {
 					move(1, 0);
 					clrtoeol();
-					usercomplete("增加无法 POST 的使用者：",
-						     uident);
+					usercomplete("增加无法 POST 的使用者：", uident);
 					if (*uident == '\0')
 						break;
 					canpost = posttest(uident, currboard);
 				}
 			}
 			if (*uident != '\0') {
-				if (addtodeny(uident, msgbuf, 0, isglobal, 0) ==
-				    1) {
-					deny_notice(DENY, uident, isglobal, 0,
-						    msgbuf);
+				if (addtodeny(uident, msgbuf, 0, isglobal, 0) == 1) {
+					deny_notice(DENY, uident, isglobal, 0, msgbuf);
 					sprintf(genbuf, "%s deny %s %s",
 						currentuser.userid, currboard,
 						uident);
@@ -264,10 +258,8 @@ deny_user()
 			move(1, 0);
 			usercomplete("改变谁的封禁时间或说明: ", uident);
 			if (*uident != '\0') {
-				if (addtodeny(uident, msgbuf, 1, isglobal, 0) ==
-				    1) {
-					deny_notice(CHANGEDENY, uident,
-						    isglobal, 0, msgbuf);
+				if (addtodeny(uident, msgbuf, 1, isglobal, 0) == 1) {
+					deny_notice(CHANGEDENY, uident, isglobal, 0, msgbuf);
 				}
 			}
 		} else if ((*ans == 'D' || *ans == 'd') && count) {
@@ -277,8 +269,7 @@ deny_user()
 			clrtoeol();
 			if (uident[0] != '\0') {
 				if (deldeny(uident, isglobal, 0)) {
-					deny_notice(UNDENY, uident, isglobal, 0,
-						    msgbuf);
+					deny_notice(UNDENY, uident, isglobal, 0, msgbuf);
 				}
 			}
 		} else
@@ -322,10 +313,10 @@ int clubnum;
 		if ((*ans != 'Y') && (*ans != 'y'))
 			return -1;
 		setbfile(genbuf, currboard, "club_users");
-		sethomefile(genbuf1, uident, "clubrights");
+		sethomefile_s(genbuf1, sizeof(genbuf1), uident, "clubrights");
 		if ((i = getbnum(currboard)) == 0)
 			return DONOTHING;
-		sprintf(genbuf2, "%d", bcache[i - 1].header.clubnum);
+		sprintf(genbuf2, "%d", ythtbbs_cache_Board_get_board_by_idx(i - 1)->header.clubnum);
 		ytht_add_to_file(genbuf1, genbuf2);
 		return ytht_add_to_file(genbuf, uident);
 	} else {
@@ -333,7 +324,7 @@ int clubnum;
 		seek = seek_in_file(genbuf, uident);
 		if (seek)
 			return DONOTHING;
-		sethomefile(genbuf1, uident, "clubrights");
+		sethomefile_s(genbuf1, sizeof(genbuf1), uident, "clubrights");
 		sprintf(genbuf2, "%d", clubnum);
 		ytht_add_to_file(genbuf1, genbuf2);
 		return ytht_add_to_file(genbuf, uident);
@@ -359,8 +350,8 @@ char *uident;
 	if ((i = getbnum(currboard)) == 0)
 		return DONOTHING;
 	setbfile(fn, currboard, "club_users");
-	sethomefile(genbuf1, uident, "clubrights");
-	sprintf(genbuf2, "%d", bcache[i - 1].header.clubnum);
+	sethomefile_s(genbuf1, sizeof(genbuf1), uident, "clubrights");
+	sprintf(genbuf2, "%d", ythtbbs_cache_Board_get_board_by_idx(i - 1)->header.clubnum);
 	ytht_del_from_file(genbuf1, genbuf2, true);
 	return ytht_del_from_file(fn, uident, true);
 }
@@ -377,7 +368,7 @@ clubmember()
 	}
 	if ((i = getbnum(currboard)) == 0)
 		return DONOTHING;
-	if (bcache[i - 1].header.clubnum == 0)
+	if (ythtbbs_cache_Board_get_board_by_idx(i - 1)->header.clubnum == 0)
 		return DONOTHING;
 	setbfile(genbuf, currboard, "club_users");
 	ansimore(genbuf, YEA);
@@ -524,9 +515,7 @@ int action, isglobal, isanony;
 			securityreport(repbuf, msgbuf);
 			deliverreport(repbuf, msgbuf);
 			mail_buf(msgbuf, user, repbuf);
-		} else if (((currentuser.userlevel & PERM_SYSOP)
-			    || (currentuser.userlevel & PERM_OBOARDS))
-			   && (msgbuf[10] == 'W' || msgbuf[10] == 'w')) {
+		} else if (((currentuser.userlevel & PERM_SYSOP) || (currentuser.userlevel & PERM_OBOARDS)) && (msgbuf[10] == 'W' || msgbuf[10] == 'w')) {
 			for (i = 10; msgbuf[i]; i++)
 				if (msgbuf[i + 1] == '\n')
 					msgbuf[i + 1] = 0;
@@ -579,16 +568,16 @@ int action, isglobal, isanony;
 			"恢复 %s 在 %s 的POST权",
 			repuser, isglobal ? "全站" : currboard);
 		snprintf(msgbuf, 256, "%s %s\n"
-			 "请理解版务管理工作,谢谢!\n", currentuser.userid,
-			 repbuf);
+			"请理解版务管理工作,谢谢!\n", currentuser.userid,
+			repbuf);
 		securityreport(repbuf, msgbuf);
 		deliverreport(repbuf, msgbuf);
 		sprintf(repbuf,
 			"恢复 %s 在 %s 的POST权",
 			user, isglobal ? "全站" : currboard);
 		snprintf(msgbuf, 256, "%s %s\n"
-			 "请理解版务管理工作,谢谢!\n", currentuser.userid,
-			 repbuf);
+			"请理解版务管理工作,谢谢!\n", currentuser.userid,
+			repbuf);
 		mail_buf(msgbuf, user, repbuf);
 		break;
 	}
@@ -598,29 +587,29 @@ int action, isglobal, isanony;
 int
 mail_buf_slow(char *userid, char *title, char *content, char *sender)
 {
-        FILE *fp;
-        char buf[256], dir[256];
-        struct fileheader header;
-        int t;
-        int now;
-        bzero(&header, sizeof (header));
-        fh_setowner(&header, sender, 0);
-        sprintf(buf, "mail/%c/%s/", mytoupper(userid[0]), userid);
-        if (!file_isdir(buf))
-                return -1;
-        now = time(NULL);
-        t = trycreatefile(buf, "M.%d.A", now, 100);
-        if (t < 0)
-                return -1;
-        header.filetime = t;
+	FILE *fp;
+	char buf[256], dir[256];
+	struct fileheader header;
+	int t;
+	int now;
+	bzero(&header, sizeof (header));
+	fh_setowner(&header, sender, 0);
+	sprintf(buf, "mail/%c/%s/", mytoupper(userid[0]), userid);
+	if (!file_isdir(buf))
+		return -1;
+	now = time(NULL);
+	t = trycreatefile(buf, "M.%d.A", now, 100);
+	if (t < 0)
+		return -1;
+	header.filetime = t;
 	ytht_strsncpy(header.title, title, sizeof(header.title));
-        fp = fopen(buf, "w");
-        if (fp == 0)
-                return -2;
-        fprintf(fp, "%s", content);
-        fclose(fp);
-        setmailfile(dir, userid, ".DIR");
-        append_record(dir, &header, sizeof (header));
-        return 0;
+	fp = fopen(buf, "w");
+	if (fp == 0)
+		return -2;
+	fprintf(fp, "%s", content);
+	fclose(fp);
+	setmailfile_s(dir, sizeof(dir), userid, ".DIR");
+	append_record(dir, &header, sizeof (header));
+	return 0;
 }
 

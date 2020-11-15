@@ -8,7 +8,7 @@
     Firebird Bulletin Board System
     Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
                         Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
-    
+
     Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
 
     This program is free software; you can redistribute it and/or modify
@@ -68,7 +68,6 @@ int *zapbuf;
 int zapbufchanged = 0;
 int yank_flag = 0;
 unsigned char boardprefix[5];
-struct boardmem *getbcache(char *);
 
 //¶¨ÖÆ°æÃæµÄ´úÂë, È¡×Ôfb2000.dhs.org.     --ecnegrevid
 struct goodboard {
@@ -85,8 +84,7 @@ static int zapped(int n, struct boardmem *bptr);
 static int load_boards(int *brdnum, int secnum);
 static int search_board(int *num, int brdnum, int secnum);
 static int check_newpostt(struct newpostdata *ptr);
-static void show_brdlist(int page, int clsflag, int newflag, int brdnum,
-			 const struct sectree *sec);
+static void show_brdlist(int page, int clsflag, int newflag, int brdnum, const struct sectree *sec);
 static int cmpboard(struct newpostdata *brd, struct newpostdata *tmp);
 static int choose_board(int newflag, const struct sectree *sec);
 static void readwritebrc(struct allbrc *allbrc);
@@ -126,8 +124,7 @@ load_GoodBrd()			//´ÓÎÄ¼þÖÐ»ñÈ¡¶©ÔÄ°æÃæ£¬Ìî³äÊý¾Ý½á¹¹ GoodBrd
 		for (GoodBrd.num = 0; GoodBrd.num < GOOD_BRC_NUM;) {
 			if (!fgets(buf, sizeof (buf), fp))
 				break;
-			ytht_strsncpy(GoodBrd.ID[GoodBrd.num], ytht_strtrim(buf),
-						  sizeof(GoodBrd.ID[GoodBrd.num]));
+			ytht_strsncpy(GoodBrd.ID[GoodBrd.num], ytht_strtrim(buf), sizeof(GoodBrd.ID[GoodBrd.num]));
 			if (canberead(GoodBrd.ID[GoodBrd.num]))
 				GoodBrd.num++;
 		}
@@ -135,7 +132,7 @@ load_GoodBrd()			//´ÓÎÄ¼þÖÐ»ñÈ¡¶©ÔÄ°æÃæ£¬Ìî³äÊý¾Ý½á¹¹ GoodBrd
 	}
 	if (GoodBrd.num == 0) {
 		GoodBrd.num++;
-		if (getbcache(DEFAULTBOARD))
+		if (ythtbbs_cache_Board_get_board_by_name(DEFAULTBOARD))
 			strcpy(GoodBrd.ID[0], DEFAULTBOARD);
 		else
 			strcpy(GoodBrd.ID[0], currboard);
@@ -150,7 +147,7 @@ save_GoodBrd()			// ±£´æÓÃ»§¶©ÔÄµÄ°æÃæ
 
 	if (GoodBrd.num <= 0) {
 		GoodBrd.num = 1;
-		if (getbcache(DEFAULTBOARD))
+		if (ythtbbs_cache_Board_get_board_by_name(DEFAULTBOARD))
 			strcpy(GoodBrd.ID[0], DEFAULTBOARD);
 		else
 			strcpy(GoodBrd.ID[0], currboard);
@@ -204,7 +201,7 @@ load_zapbuf()
 	bzero(zapbuf, size);
 	setuserfile(fname, ".newlastread");
 	if ((fd = open(fname, O_RDONLY, 0600)) != -1) {
-		size = numboards * sizeof (int);
+		size = ythtbbs_cache_Board_get_number() * sizeof (int);
 		read(fd, zapbuf, size);
 		close(fd);
 	}
@@ -223,7 +220,7 @@ save_zapbuf()
 
 	setuserfile(fname, ".newlastread");
 	if ((fd = open(fname, O_WRONLY | O_CREAT, 0600)) != -1) {
-		size = numboards * sizeof (int);
+		size = ythtbbs_cache_Board_get_number() * sizeof (int);
 		write(fd, zapbuf, size);
 		close(fd);
 	}
@@ -232,25 +229,88 @@ save_zapbuf()
 static int
 zapped(int n, struct boardmem *bptr)
 {
-	if (zapbuf[n] == 0)	//Ã»±» z 
+	if (zapbuf[n] == 0)	//Ã»±» z
 		return 0;
 	if (zapbuf[n] < bptr->header.board_ctime)	//zµôÁË£¬µ«ÊÇ²»ÊÇÕâ¸ö°æÁË
 		return 0;
 	return 1;
 }
 
+static int load_boards_callback(struct boardmem *board, int curr_idx, va_list ap) {
+	int local_goodbrd = va_arg(ap, int);
+	char *local_boardprefix = va_arg(ap, char *); // TODO unsigned char *?
+	int local_yank_flag = va_arg(ap, int);
+
+	struct newpostdata *local_nbrd = va_arg(ap, struct newpostdata *);
+	int *local_brdnum = va_arg(ap, int *);
+
+	int local_addto = 0;
+	struct newpostdata *local_ptr;
+
+	if (board->header.filename[0] == '\0')
+		return 0;
+
+	if (local_goodbrd == 0) {
+		if((unsigned char)local_boardprefix[0] != 0xFF /* 255*/
+				&& local_boardprefix[0] != '*'
+				&& strcmp(local_boardprefix, board->header.sec1)
+				&& (board->header.sec2[0] == 0 || strcmp(local_boardprefix, board->header.sec2)))
+			return 0;
+
+		if (!hasreadperm(&board->header))
+			return 0;
+
+		local_addto = local_yank_flag || !zapped(curr_idx, board) || (board->header.level & PERM_NOZAP);
+	} else {
+		// ÅÐ¶ÏÊÇ·ñÊÇ¶©ÔÄµÄ°æÃæ
+		local_addto = inGoodBrds(board->header.filename);
+	}
+
+	if (local_addto) {
+		// addto ±êÖ¾¸Ã°æÃæÓ¦¸Ã¿ÉÒÔÔÄ¶Á
+		local_ptr = &local_nbrd[*local_brdnum];
+		*local_brdnum = *local_brdnum + 1;
+
+		local_ptr->name = board->header.filename;
+		local_ptr->flag = board->header.flag | ((board->header.level & PERM_NOZAP) ? NOZAP_FLAG : 0);
+		local_ptr->pos = curr_idx;
+		local_ptr->unread = -1;
+		local_ptr->zap = zapped(curr_idx, board);
+
+		if (board->header.level & PERM_POSTMASK)
+			local_ptr->status = 'p';
+		else if (board->header.level & PERM_NOZAP)
+			local_ptr->status = 'z';
+		else if ((board->header.level & ~PERM_POSTMASK) != 0)
+			local_ptr->status = 'r';
+		else {
+			local_ptr->status = ' ';
+
+			if (board->header.clubnum != 0) {
+				if (board->header.flag & CLUBTYPE_FLAG) {
+					if (HAS_CLUBRIGHT(board->header.clubnum, uinfo.clubrights)) {
+						local_ptr->status = 'O';
+					} else {
+						local_ptr->status = 'o';
+					}
+				} else {
+					local_ptr->status = 'c';
+				}
+			}
+		}
+	}
+	return 0;
+}
+
 static int
 load_boards(int *brdnum, int secnum)
 {
 	struct boardmem *bptr;
-	struct newpostdata *ptr;
-	int n, addto = 0, goodbrd = 0;
+	int goodbrd = 0;
 	static int loadtime = 0;
 
-	resolve_boards();
-	if (!
-	    (GoodBrd.num == 9999 || brdshm->uptime >= loadtime || zapbuf == NULL
-	     || *brdnum <= 0))
+	ythtbbs_cache_Board_resolve();
+	if (!(GoodBrd.num == 9999 || ythtbbs_cache_Board_get_uptime() >= loadtime || zapbuf == NULL || *brdnum <= 0))
 		return 0;
 	loadtime = time(NULL);
 	if (zapbuf == NULL) {
@@ -262,56 +322,7 @@ load_boards(int *brdnum, int secnum)
 		goodbrd = 1;	// ±íÊ¾´¦ÓÚÔÄ¶Á¶¨ÖÆ°æÃæ×´Ì¬
 	if (GoodBrd.num == 9999)	// Ç¿ÖÆ load ¶©ÔÄ°æÃæ
 		load_GoodBrd();
-	for (n = 0; n < numboards; n++) {
-		bptr = &bcache[n];
-		if (!(bptr->header.filename[0]))
-			continue;
-		if (goodbrd == 0) {	//Èç¹û²»ÊÇÔÄ¶Á¶¨ÖÆµÄ°æÃæ, Ôò...
-			if (boardprefix[0] != 255 && boardprefix[0] != '*' &&
-			    strcmp(boardprefix, bptr->header.sec1) &&
-			    (strcmp(boardprefix, bptr->header.sec2)
-			     || bptr->header.sec2[0] == 0))
-				continue;
-			if (!hasreadperm(&(bptr->header)))
-				continue;
-			addto = yank_flag || !zapped(n, bptr)
-			    || (bptr->header.level & PERM_NOZAP);
-		} else
-			addto = inGoodBrds(bptr->header.filename);	//·ñÔòÅÐ¶ÏÊÇ·ñÊÇ¶©ÔÄµÄ°æÃæ
-		if (addto) {	// addto ±êÖ¾¸Ã°æÃæÓ¦¸Ã¿ÉÒÔÔÄ¶Á
-			ptr = &nbrd[*brdnum];
-			(*brdnum)++;
-			ptr->name = bptr->header.filename;
-			ptr->flag = bptr->header.flag |
-			    ((bptr->header.
-			      level & PERM_NOZAP) ? NOZAP_FLAG : 0);
-			ptr->pos = n;
-			ptr->unread = -1;	//ÉèÖÃÎª -1 ±íÊ¾Î´³õÊ¼»¯
-			ptr->zap = (zapped(n, bptr));
-			//ptr->inboard = bptr->inboard;
-			if (bptr->header.level & PERM_POSTMASK)
-				ptr->status = 'p';
-			else if (bptr->header.level & PERM_NOZAP)
-				ptr->status = 'z';
-			else if ((bptr->header.level & ~PERM_POSTMASK) != 0)
-				ptr->status = 'r';
-			else
-				ptr->status = ' ';
-			if (ptr->status == ' ') {
-				if (bptr->header.clubnum != 0) {
-					if (bptr->header.flag & CLUBTYPE_FLAG)
-						if (HAS_CLUBRIGHT
-						    (bptr->header.clubnum,
-						     uinfo.clubrights))
-				      ptr->status = 'O';
-						else
-							ptr->status = 'o';
-					else
-						ptr->status = 'c';
-				}
-			}
-		}
-	}
+	ythtbbs_cache_Board_foreach_v(load_boards_callback, goodbrd, boardprefix, yank_flag, nbrd, brdnum);
 	if (*brdnum == 0 && secnum == 0 && !yank_flag) {
 		if (goodbrd) {	// Èç¹û´¦ÓÚ¶¨ÖÆ°æÃæÖÐ£¬µ«Ã»ÓÐÈÎºÎ°æÃæµÄ»°£¬ÔòË¢ÐÂ
 			GoodBrd.num = 0;
@@ -354,13 +365,11 @@ int *num, brdnum, secnum;
 		if (isprint2(ch)) {
 			bname[i++] = ch;
 			for (n = secnum; n < brdnum + secnum; n++) {
-				if (!strncasecmp
-				    (nbrd[n - secnum].name, bname, i)) {
+				if (!strncasecmp(nbrd[n - secnum].name, bname, i)) {
 					tmpn = YEA;
 					*num = n;
-					if (!strcmp
-					    (nbrd[n - secnum].name,
-					     bname)) return 1;	/*ÕÒµ½ÀàËÆµÄ°æ£¬»­ÃæÖØ»­ */
+					if (!strcmp(nbrd[n - secnum].name, bname))
+						return 1;	/*ÕÒµ½ÀàËÆµÄ°æ£¬»­ÃæÖØ»­ */
 				}
 			}
 			if (tmpn)
@@ -369,8 +378,7 @@ int *num, brdnum, secnum;
 				bname[--i] = '\0';
 			}
 			continue;
-		} else if (ch == Ctrl('H') || ch == KEY_LEFT
-			   || ch == KEY_DEL || ch == '\177') {
+		} else if (ch == Ctrl('H') || ch == KEY_LEFT || ch == KEY_DEL || ch == '\177') {
 			i--;
 			if (i < 0) {
 				find = YEA;
@@ -405,17 +413,16 @@ struct newpostdata *ptr;
 		allbrc = malloc(sizeof (struct allbrc));
 		readwritebrc(allbrc);
 	}
-	
+
 	//prints("pos=%d\n", ptr->pos);
-	bptr = &bcache[ptr->pos];
+	bptr = ythtbbs_cache_Board_get_board_by_idx(ptr->pos);
 	if (bptr->total <= 0){		//mint
 	//	prints("if");
 		ptr->unread = 0;
 	}
 	else{
 	//	prints("else");
-		ptr->unread =
-		    brc_unreadt_quick(allbrc, ptr->name, bptr->lastpost);
+		ptr->unread = brc_unreadt_quick(allbrc, ptr->name, bptr->lastpost);
 	}
 	//pressanykey();
 	return 0;
@@ -427,7 +434,6 @@ char *dirfile;
 struct boardmem *bptr;
 {
 	int fd, offset, step, num, filetime;
-	//bptr = &bcache[ptr->pos];
 
 	num = bptr->total + 1;
 	if ((fd = open(dirfile, O_RDONLY)) > 0) {
@@ -438,11 +444,8 @@ struct boardmem *bptr;
 			num = bptr->total - 1;
 			step = 4;
 			while (num > 0) {
-				lseek(fd,
-				      offset + num * sizeof (struct fileheader),
-				      SEEK_SET);
-				if (read(fd, &filetime, sizeof (filetime)) <= 0
-				    || !brc_unreadt(&brc, filetime))
+				lseek(fd, offset + num * sizeof (struct fileheader), SEEK_SET);
+				if (read(fd, &filetime, sizeof (filetime)) <= 0 || !brc_unreadt(&brc, filetime))
 					break;
 				num -= step;
 				if (step < 32)
@@ -451,11 +454,8 @@ struct boardmem *bptr;
 			if (num < 0)
 				num = 0;
 			while (num < bptr->total) {
-				lseek(fd,
-				      offset + num * sizeof (struct fileheader),
-				      SEEK_SET);
-				if (read(fd, &filetime, sizeof (filetime)) <= 0
-				    || brc_unreadt(&brc, filetime))
+				lseek(fd, offset + num * sizeof (struct fileheader), SEEK_SET);
+				if (read(fd, &filetime, sizeof (filetime)) <= 0 || brc_unreadt(&brc, filetime))
 					break;
 				num++;
 			}
@@ -502,10 +502,9 @@ const struct sectree *sec;
 	if (clsflag) {
 		clear();
 		docmdtitle(title,
-			   "  [mÖ÷Ñ¡µ¥[[1;32m¡û[m,[1;32me[m] ÔÄ¶Á[[1;32m¡ú[m,[1;32mRtn[m] Ñ¡Ôñ[[1;32m¡ü[m,[1;32m¡ý[m] ÁÐ³ö[[1;32my[m] ÅÅÐò[[1;32ms[m] ËÑÑ°[[1;32m/[m] ÇÐ»»[[1;32mc[m] ÇóÖú[[1;32mh[m]\n");
-		prints
-		    ("[1;44;37m %s ÌÖÂÛÇøÃû³Æ   V  Àà±ð  %-21sS °æ  Ö÷      ÔÚÏß   ÈËÆø[m\n",
-		     newflag ? " È«²¿ Î´" : " ±àºÅ Î´", "ÖÐ  ÎÄ  Ðð  Êö");
+				"  \033[mÖ÷Ñ¡µ¥[\033[1;32m¡û\033[m,\033[1;32me\033[m] ÔÄ¶Á[\033[1;32m¡ú\033[m,\033[1;32mRtn\033[m] Ñ¡Ôñ[\033[1;32m¡ü\033[m,\033[1;32m¡ý\033[m] ÁÐ³ö[\033[1;32my\033[m] ÅÅÐò[\033[1;32ms\033[m] ËÑÑ°[\033[1;32m/\033[m] ÇÐ»»[\033[1;32mc\033[m] ÇóÖú[\033[1;32mh\033[m]\n");
+		prints("\033[1;44;37m %s ÌÖÂÛÇøÃû³Æ   V  Àà±ð  %-21sS °æ  Ö÷      ÔÚÏß   ÈËÆø\033[m\n",
+				newflag ? " È«²¿ Î´" : " ±àºÅ Î´", "ÖÐ  ÎÄ  Ðð  Êö");
 	}
 
 	if (sec)
@@ -527,7 +526,7 @@ const struct sectree *sec;
 			}
 		} else {
 			ptr = &nbrd[n - secnum];
-			bptr = &bcache[ptr->pos];
+			bptr = ythtbbs_cache_Board_get_board_by_idx(ptr->pos);
 			if (ptr->unread == -1)
 				check_newpostt(ptr);
 			if (!newflag)
@@ -535,23 +534,17 @@ const struct sectree *sec;
 			else
 				prints(" %5d ", bptr->total);
 			prints("%s%c",
-			       (ptr->flag & INNBBSD_FLAG) ? (ptr->unread ?
-							     "[1;32m¡ñ[m" :
-							     "[1;32m¡ð[m")
-			       : (ptr->unread ? "¡ô" : "¡ó"), (ptr->zap
-							       && !(ptr->flag &
-								    NOZAP_FLAG))
-			       ? '-' : ' ');
+					(ptr->flag & INNBBSD_FLAG) ? (ptr->unread ?  "\033[1;32m¡ñ\033[m" : "\033[1;32m¡ð\033[m") : (ptr->unread ? "¡ô" : "¡ó"),
+					(ptr->zap && !(ptr->flag & NOZAP_FLAG)) ? '-' : ' ');
 			strncpy(tmpBM, bptr->header.bm[0], IDLEN);
-			sprintf(buf, "[%s] %s", bptr->header.type,
-				bptr->header.title);
+			sprintf(buf, "[%s] %s", bptr->header.type, bptr->header.title);
 			if (ptr->status == 'p')
 				memcpy(buf, "[Ö»¶Á]", 6);
 			prints("%-13s%s%-28s %c %-12s%4d %6d\n", ptr->name,
-			       (ptr->flag & VOTE_FLAG) ? "[1;31mV[m" : " ",
-			       buf, ptr->status,
-			       (tmpBM[0] == '\0' ? "³ÏÕ÷°æÖ÷ÖÐ" : tmpBM),
-			       bptr->inboard, bptr->score);	//HAS_PERM(PERM_POST)?ptr->status:' ',
+					(ptr->flag & VOTE_FLAG) ? "\033[1;31mV\033[m" : " ",
+					buf, ptr->status,
+					(tmpBM[0] == '\0' ? "³ÏÕ÷°æÖ÷ÖÐ" : tmpBM),
+					bptr->inboard, bptr->score);	//HAS_PERM(PERM_POST)?ptr->status:' ',
 		}
 	}
 }
@@ -563,16 +556,14 @@ struct newpostdata *brd, *tmp;
 	unsigned char sorttype;
 	struct boardmem *bptrbrd, *bptrtmp;
 	sorttype = currentuser.flags[0] & BRDSORT_MASK;
-	bptrbrd = &bcache[brd->pos];
-	bptrtmp = &bcache[tmp->pos];
+	bptrbrd = ythtbbs_cache_Board_get_board_by_idx(brd->pos);
+	bptrtmp = ythtbbs_cache_Board_get_board_by_idx(tmp->pos);
 
 	switch (sorttype) {
 	case 0x00:
 		type = bptrbrd->header.sec1[0] - bptrtmp->header.sec1[0];
 		if (type == 0)
-			type =
-			    strncasecmp(bptrbrd->header.type,
-					bptrtmp->header.type, 4);
+			type = strncasecmp(bptrbrd->header.type, bptrtmp->header.type, 4);
 		if (type == 0)
 			type = strcasecmp(brd->name, tmp->name);
 		break;
@@ -589,53 +580,6 @@ struct newpostdata *brd, *tmp;
 		break;
 	}
 	return type;
-}
-
-void
-update_postboards(void)
-{
-	int i, begin = 0;
-	char buf[64], *bname;
-	FILE *fp, *fw;
-	sprintf(buf, "tmp/postb.pl.%d", uinfo.pid);
-	fw = fopen(buf, "w");
-	if (NULL == fw) {
-		errlog("can't open postb.pl to write!");
-		return;
-	}
-	fputs("#!/usr/bin/perl\n@board=(\n", fw);
-	for (i = 0; i < brdshm->number; i++) {
-		bname = &(bcache[i].header.filename[0]);
-		if (!bname[0])
-			continue;
-		snprintf(buf, 64, "boards/%s/.POSTBOARDS", bname);
-		if (valid_fname(bname)) {
-			if (begin)
-				fputs(",\n", fw);
-			else
-				begin = 1;
-			fprintf(fw, "\" %s", bname);
-		} else
-			continue;
-		fp = fopen(buf, "r");
-		if (NULL == fp)
-			goto end;
-
-		while (fgets(buf, sizeof (buf), fp)) {
-			if ('\n' == buf[strlen(buf) - 1])
-				buf[strlen(buf) - 1] = 0;
-			if (valid_fname(buf))
-				fprintf(fw, " %s", buf);
-		}
-		fclose(fp);
-	      end:
-		fputs(" \"", fw);
-	}
-	fputs("\n);\n", fw);
-	fclose(fw);
-	sprintf(buf, "tmp/postb.pl.%d", uinfo.pid);
-	rename(buf, "etc/postb.pm");
-	return;
 }
 
 static int
@@ -669,8 +613,7 @@ const struct sectree *sec;
 		if (brdnum + secnum <= 0)
 			break;
 		if (retv) {
-			qsort(nbrd, brdnum, sizeof (nbrd[0]),
-			      (void *) cmpboard);
+			qsort(nbrd, brdnum, sizeof (nbrd[0]), (void *) cmpboard);
 			page = -1;
 		}
 		if (num < 0)
@@ -703,7 +646,7 @@ const struct sectree *sec;
 			show_brdlist(page, 1, newflag, brdnum, sec);
 			update_endline();
 		}
-		//since allbrc is large, we should not waste too much memory on it, 
+		//since allbrc is large, we should not waste too much memory on it,
 		//free it as soon as possible
 		if (allbrc) {
 			free(allbrc);
@@ -799,8 +742,7 @@ const struct sectree *sec;
 			sorttype = sorttype % 0x40;
 			currentuser.flags[0] &= ~BRDSORT_MASK;
 			currentuser.flags[0] |= sorttype;
-			qsort(nbrd, brdnum, sizeof (nbrd[0]),
-			      (void *) cmpboard);
+			qsort(nbrd, brdnum, sizeof (nbrd[0]), (void *) cmpboard);
 			page = -1;
 			break;
 		case 'y':
@@ -812,8 +754,7 @@ const struct sectree *sec;
 		case 'z':
 			if (num >= secnum + brdnum || num < secnum)
 				break;
-			if (HAS_PERM(PERM_BASIC, currentuser)
-			    && !(nbrd[num - secnum].flag & NOZAP_FLAG)) {
+			if (HAS_PERM(PERM_BASIC, currentuser) && !(nbrd[num - secnum].flag & NOZAP_FLAG)) {
 				ptr = &nbrd[num - secnum];
 				ptr->zap = !ptr->zap;
 				ptr->unread = -1;
@@ -823,8 +764,7 @@ const struct sectree *sec;
 			}
 			break;
 		case 'C':
-			if (HAS_PERM(PERM_SPECIAL2, currentuser)
-			    || clubsync("deleterequest")) {
+			if (HAS_PERM(PERM_SPECIAL2, currentuser) || clubsync("deleterequest")) {
 				do1984menu();
 				page = -1;
 			}
@@ -851,14 +791,9 @@ const struct sectree *sec;
 					char buf[STRLEN];
 					setbdir(buf, currboard, digestmode);
 					if (getkeep(buf, -1, 0) == NULL) {
-						tmp =
-						    unread_position(buf,
-								    &bcache
-								    [ptr->pos]);
+						tmp = unread_position(buf, ythtbbs_cache_Board_get_board_by_idx(ptr->pos));
 						page = tmp - t_lines / 2;
-						getkeep(buf,
-							page > 1 ? page : 1,
-							tmp + 1);
+						getkeep(buf, page > 1 ? page : 1, tmp + 1);
 					}
 				}
 				Read();
@@ -866,8 +801,7 @@ const struct sectree *sec;
 				modify_user_mode(newflag ? READNEW : READBRD);
 			} else {
 				if (sec) {
-					strcpy(boardprefix,
-					       sec->subsec[num]->basestr);
+					strcpy(boardprefix, sec->subsec[num]->basestr);
 					choose_board(newflag, sec->subsec[num]);
 					strcpy(boardprefix, sec->basestr);
 					page = -1;
@@ -883,9 +817,9 @@ const struct sectree *sec;
 			getdata(t_lines - 2, 0, "Ñ¡ÔñÔÄ¶Á: (0)È¡Ïû (1)BMYÍÆ¼öÎÄÕÂ (2)±¾ÈÕÊ®´óÈÈÃÅ»°Ìâ [2]:", ans, 3, DOECHO, YEA);
 			if(ans[0] == '\0')
 				type = 2;
-			else	
+			else
 				type = atoi(ans);
-			
+
 			if(type>2 || type<1){
 				move(t_lines-2, 0);
 				clrtoeol();
@@ -904,7 +838,7 @@ const struct sectree *sec;
 
 					char board[10][80];
 					char title[10][80];
-						
+
 					FILE *fp2 = fopen("etc/dayf_index", "r");
 					int totalnum = 0;
 					while (fgets(board[totalnum], 80, fp2) != NULL)
@@ -915,7 +849,7 @@ const struct sectree *sec;
 						totalnum ++;
 					}
 					fclose(fp2);
-					
+
 					while (1)
 					{
 						ansimore("etc/dayf", NA);
@@ -937,10 +871,10 @@ const struct sectree *sec;
 						sprintf(dir, "boards/%s/.DIR", board[num - 1]);
 						mmapfile(dir, &mf);
 						int numrecords = mf.size / sizeof (struct fileheader);
-			 
+
 						int i;
 						int isfind = 0;
-						for (i = 0; i < numrecords; i++) 
+						for (i = 0; i < numrecords; i++)
 						{
 							x = (struct fileheader *) (mf.ptr + i * sizeof (struct fileheader));
 							if (strcmp(title[num - 1], x->title) == 0)
@@ -1006,11 +940,10 @@ const struct sectree *sec;
 			if (ptr->status == 'r')
 				break;
 
-			bptr = getbcache(ptr->name);
+			bptr = ythtbbs_cache_Board_get_board_by_name(ptr->name);
 			if (!bptr)
 				break;
-			if (!chk_currBM(&(bptr->header), 0)
-			    && !clubsync("deleterequest"))
+			if (!chk_currBM(&(bptr->header), 0) && !clubsync("deleterequest"))
 				break;
 			if (ptr->status == 'p') {
 				if (!HAS_PERM(PERM_BLEVELS, currentuser))
@@ -1026,59 +959,33 @@ const struct sectree *sec;
 			{
 				struct boardheader fh;
 				int pos;
-				if (!
-				    (pos =
-				     new_search_record(BOARDS, &fh, sizeof (fh),
-						       (void *) cmpbnames,
-						       ptr->name))) {
+				if (!(pos = new_search_record(BOARDS, &fh, sizeof (fh), (void *) cmpbnames, ptr->name))) {
 					prints("´íÎóµÄÌÖÂÛÇøÃû³Æ");
 					pressreturn();
 					break;
 				}
 				if (fh.level & ~(PERM_BLEVELS | PERM_POSTMASK)) {
-					prints
-					    ("°üº¬²»ÄÜÖ±½Ó·â°æµÄÈ¨ÏÞ, ÎÞ·¨²Ù×÷, ÇëÓÃÐÞ¸Ä°æÃæÉèÖÃ¹¦ÄÜ");
+					prints("°üº¬²»ÄÜÖ±½Ó·â°æµÄÈ¨ÏÞ, ÎÞ·¨²Ù×÷, ÇëÓÃÐÞ¸Ä°æÃæÉèÖÃ¹¦ÄÜ");
 					pressreturn();
 					break;
 				}
 				if (ptr->status == 'p') {
-					fh.level &=
-					    ~(PERM_POSTMASK | PERM_BLEVELS);
+					fh.level &= ~(PERM_POSTMASK | PERM_BLEVELS);
 					ptr->status = ' ';
 				} else {
-					fh.level |=
-					    (PERM_POSTMASK | PERM_BLEVELS);
+					fh.level |= (PERM_POSTMASK | PERM_BLEVELS);
 					ptr->status = 'p';
 				}
-				substitute_record(BOARDS, &fh, sizeof (fh),
-						  pos);
-				reload_boards();
+				substitute_record(BOARDS, &fh, sizeof (fh), pos);
+				ythtbbs_cache_Board_resolve();
 				sprintf(genbuf, "%sÌÖÂÛÇø: %s",
-					(ptr->status == 'p') ? "·â" : "½â·â",
-					ptr->name);
+						(ptr->status == 'p') ? "·â" : "½â·â",
+						ptr->name);
 				securityreport(genbuf, genbuf);
 				prints("ÒÑ¾­%sÁËÌÖÂÛÇø: %s",
-				       (ptr->status == 'p') ? "·â" : "½â·â",
-				       ptr->name);
+						(ptr->status == 'p') ? "·â" : "½â·â",
+						ptr->name);
 			}
-			pressreturn();
-			break;
-		case 'B':
-			if (num >= brdnum + secnum || num < secnum)
-				break;
-			ptr = &nbrd[num - secnum];
-			if (!HAS_PERM(PERM_BLEVELS, currentuser))
-				break;
-			page = -1;
-			sprintf(genbuf, "È·¶¨Òª±à¼­ %s °æÃæ×ªÐÅ¶ÔÓ¦ÁÐ±íÂð?",
-				ptr->name);
-			if (askyn(genbuf, NA, YEA) == NA)
-				break;
-			snprintf(genbuf, 64, "boards/%s/.POSTBOARDS",
-				 ptr->name);
-			if (vedit(genbuf, 0, YEA) == -1)
-				break;
-			update_postboards();
 			pressreturn();
 			break;
 
@@ -1086,7 +993,7 @@ const struct sectree *sec;
 			if (num >= secnum + brdnum || num < secnum)
 				break;
 			ptr = &nbrd[num - secnum];
-			bptr = getbcache(ptr->name);
+			bptr = ythtbbs_cache_Board_get_board_by_name(ptr->name);
 			if (!bptr)
 				break;
 			page = -1;
@@ -1098,7 +1005,7 @@ const struct sectree *sec;
 				sprintf(property, "ÏÞÖÆ %s È¨Àû", "READ");
 			if ((bptr->header.level & ~PERM_POSTMASK) == 0){
 				property[0] = '\0';
-				if (bptr->header.flag & ANONY_FLAG) 
+				if (bptr->header.flag & ANONY_FLAG)
 					strcat(property, "ÄäÃû");
 				if (bptr->header.flag & CLUB_FLAG)
 					strcat(property, "¾ãÀÖ²¿");
@@ -1111,33 +1018,32 @@ const struct sectree *sec;
 			sprintf(genbuf, "boards/%s/boardrelation", bptr->header.filename);
 			FILE *fp = fopen(genbuf, "r");
 			char linebuf[128] = "";
-			if (fp != NULL)
-    			{
-    				fgets(linebuf, 128, fp);
+			if (fp != NULL) {
+				fgets(linebuf, 128, fp);
 				fclose(fp);
-    			}
-			
+			}
+
 			clear();
 			move(1, 0);
-			prints("Ó¢ÎÄ°æÃû      [1;32m%-16s[mÖÐÎÄ°æÃû      [1;32m%s[m\n"
-				"Ö÷ ·Ö Çø      [1;32m%-16s[mÓ³Éä·ÖÇø      [1;32m%s[m\n"
-				"°æÃæÀà±ð      [1;32m%-16s[m°æÃæÊôÐÔ      [1;32m%s[m\n"
-				"¼ÇÎÄÕÂÊý      [1;32m%-16s[m×ª    ÐÅ      [1;32m%s[m\n\n"
-				"°æÃæ¹Ø¼ü×Ö    [1;32m%s[m\n"
-				"Ïà¹Ø°æÃæ      [1;32m%s[m\n"
+			prints("Ó¢ÎÄ°æÃû      \033[1;32m%-16s\033[mÖÐÎÄ°æÃû      \033[1;32m%s\033[m\n"
+				"Ö÷ ·Ö Çø      \033[1;32m%-16s\033[mÓ³Éä·ÖÇø      \033[1;32m%s\033[m\n"
+				"°æÃæÀà±ð      \033[1;32m%-16s\033[m°æÃæÊôÐÔ      \033[1;32m%s\033[m\n"
+				"¼ÇÎÄÕÂÊý      \033[1;32m%-16s\033[m×ª    ÐÅ      \033[1;32m%s\033[m\n\n"
+				"°æÃæ¹Ø¼ü×Ö    \033[1;32m%s\033[m\n"
+				"Ïà¹Ø°æÃæ      \033[1;32m%s\033[m\n"
 				"°æÃæ¼ò½é      ",
 				bptr->header.filename, bptr->header.title,
-				bptr->header.sec1, bptr->header.sec2[0] ? bptr->header.sec2 : "[37m(ÎÞ)",
-				bptr->header.type,  property, 
-				junkboard() ? "²»" : "ÊÇ", 
+				bptr->header.sec1, bptr->header.sec2[0] ? bptr->header.sec2 : "\033[37m(ÎÞ)",
+				bptr->header.type,  property,
+				junkboard() ? "²»" : "ÊÇ",
 				(bptr->header.flag & INNBBSD_FLAG) ? "ÊÇ" : "²»",
-				bptr->header.keyword[0] ? bptr->header.keyword : "[37m(ÔÝÎÞ)",
-				linebuf[0] ? linebuf: "[37m(ÔÝÎÞ)");
+				bptr->header.keyword[0] ? bptr->header.keyword : "\033[37m(ÔÝÎÞ)",
+				linebuf[0] ? linebuf: "\033[37m(ÔÝÎÞ)");
 			setbfile(property, bptr->header.filename, "introduction");
 			if (file_exist(property))
 				ansimore2(property, NA, 9, 14);
 			else
-				prints("[1;37m%-16s[m\n", "(ÔÝÎÞ)");
+				prints("\033[1;37m%-16s\033[m\n", "(ÔÝÎÞ)");
 			pressanykey();
 			strcpy(currboard, boardbuf);
 			break;
@@ -1148,20 +1054,19 @@ const struct sectree *sec;
 			if (GoodBrd.num) {
 				if (GoodBrd.num >= GOOD_BRC_NUM) {
 					move(t_lines - 1, 0);
-					prints("¸öÈËÈÈÃÅ°æÊýÒÑ¾­´ïÉÏÏÞ(%d)",
-					       GOOD_BRC_NUM);
+					prints("¸öÈËÈÈÃÅ°æÊýÒÑ¾­´ïÉÏÏÞ(%d)", GOOD_BRC_NUM);
 					//pressreturn();
 				} else {
 					char bname[STRLEN], bpath[STRLEN];
 					struct stat st;
 					move(0, 0);
 					clrtoeol();
-					prints("Ñ¡ÔñÌÖÂÛÇø [ [1;32m# [0;37m- [1;31m°æÃæÃû³Æ/¹Ø¼ü×ÖËÑË÷[0;37m, [1;32mSPACE [0;37m- ×Ô¶¯²¹È«, [1;32mENTER [0;37m- ÍË³ö ] [m\n");
+					prints("Ñ¡ÔñÌÖÂÛÇø [ \033[1;32m# \033[0;37m- \033[1;31m°æÃæÃû³Æ/¹Ø¼ü×ÖËÑË÷\033[0;37m, \033[1;32mSPACE \033[0;37m- ×Ô¶¯²¹È«, \033[1;32mENTER \033[0;37m- ÍË³ö ] \033[m\n");
 					prints("ÊäÈëÌÖÂÛÇøÃû (Ó¢ÎÄ×ÖÄ¸´óÐ¡Ð´½Ô¿É): ");
 					clrtoeol();
-					make_blist();	
+					make_blist();
 					if((namecomplete((char *) NULL, bname))=='#')
-						super_select_board(bname);	
+						super_select_board(bname);
 					setbpath(bpath, bname);
 					if (*bname == '\0');
 					if (stat(bpath, &st) == -1) {
@@ -1170,9 +1075,7 @@ const struct sectree *sec;
 						pressreturn();
 					} else {
 						if (!inGoodBrds(bname)) {
-							strcpy(GoodBrd.ID
-							       [GoodBrd.num++],
-							       bname);
+							strcpy(GoodBrd.ID[GoodBrd.num++], bname);
 							save_GoodBrd();
 							GoodBrd.num = 9999;
 							brdnum = -1;
@@ -1187,21 +1090,17 @@ const struct sectree *sec;
 				if (GoodBrd.num >= GOOD_BRC_NUM) {
 					move(t_lines - 1, 0);
 					clrtoeol();
-					prints("¸öÈËÈÈÃÅ°æÊýÒÑ¾­´ïÉÏÏÞ(%d)",
-					       GOOD_BRC_NUM);
+					prints("¸öÈËÈÈÃÅ°æÊýÒÑ¾­´ïÉÏÏÞ(%d)", GOOD_BRC_NUM);
 					GoodBrd.num = 0;
 					//pressreturn();
 				} else {
 					if (!inGoodBrds(ptr->name)) {
-						strcpy(GoodBrd.ID
-						       [GoodBrd.num++],
-						       ptr->name);
+						strcpy(GoodBrd.ID[GoodBrd.num++], ptr->name);
 						save_GoodBrd();
 						GoodBrd.num = 0;
 						move(t_lines - 1, 0);
 						clrtoeol();
-						prints("°æÃæ%sÒÑ±»¼ÓÈëÊÕ²Ø¼Ð",
-						       ptr->name);
+						prints("°æÃæ%sÒÑ±»¼ÓÈëÊÕ²Ø¼Ð", ptr->name);
 						break;
 					}
 					GoodBrd.num = 0;
@@ -1224,8 +1123,7 @@ const struct sectree *sec;
 				}
 				pos = inGoodBrds(nbrd[num - secnum].name);
 				for (i = pos - 1; i < GoodBrd.num - 1; i++)
-					strcpy(GoodBrd.ID[i],
-					       GoodBrd.ID[i + 1]);
+					strcpy(GoodBrd.ID[i], GoodBrd.ID[i + 1]);
 				GoodBrd.num--;
 				save_GoodBrd();
 				GoodBrd.num = 9999;
@@ -1310,11 +1208,13 @@ void
 clear_new_flag_quick(int t)
 {
 	int bnum;
+	const struct boardmem *board;
 	if (!t) {
 		t = time(NULL);
 		bnum = getbnum(brc.board);
-		if (bnum && bcache[bnum - 1].lastpost > t)
-			t = bcache[bnum - 1].lastpost;
+		board = ythtbbs_cache_Board_get_board_by_idx(bnum - 1);
+		if (bnum && board->lastpost > t)
+			t = board->lastpost;
 	}
 	brc_clearto(&brc, t);
 }
@@ -1349,6 +1249,7 @@ Read()
 	char notename[STRLEN];
 	time_t usetime;
 	struct stat st;
+	struct boardmem *board;
 	if (!selboard || !strcmp(currboard, "")) {
 		move(2, 0);
 		prints("ÇëÏÈÑ¡ÔñÌÖÂÛÇø\n");
@@ -1362,16 +1263,17 @@ Read()
 	setbdir(buf, currboard, digestmode);
 	if (!clubsync(currboard))
 		return 0;
-	if (uinfo.curboard && bcache[uinfo.curboard - 1].inboard > 0)
-		bcache[uinfo.curboard - 1].inboard--;
+
+	board = ythtbbs_cache_Board_get_board_by_idx(uinfo.curboard - 1);
+	if (uinfo.curboard && board->inboard > 0)
+		board->inboard--;
 	uinfo.curboard = getbnum(currboard);
 	update_utmp();
-	bcache[uinfo.curboard - 1].inboard++;
+	board->inboard++;
 	setvfile(notename, currboard, "notes");
 	clear();
 	if (stat(notename, &st) != -1) {
-		if (st.st_mtime > brc.notetime
-		    || now_t - brc.notetime > 7 * 86400) {
+		if (st.st_mtime > brc.notetime || now_t - brc.notetime > 7 * 86400) {
 			show_board_notes(currboard);
 			brc.notetime = now_t;
 			brc.changed = 1;
@@ -1389,31 +1291,30 @@ Read()
 		if (ans[0] == 'A' || ans[0] == 'a') {
 			set_safe_record();
 			currentuser.userdefine &= ~DEF_INTOANN;
-			substitute_record(PASSFILE, &currentuser,
-					  sizeof (currentuser), usernum);
+			substitute_record(PASSFILE, &currentuser, sizeof (currentuser), usernum);
 		} else if (ans[0] != 'N' && ans[0] != 'n') {
 			into_announce();
 			show_board_notes(currboard);
 			move(t_lines - 1, 0);
-			prints
-			    ("\033[0m\033[1m»¶Ó­¹âÁÙ, °´ÈÎÒâ¼ü½øÈë±¾°æ°æÃæ, ÔÚ°æÃæ°´'x'¿ÉÒÔËæÊ±½øÈë¾«»ªÇø");
+			prints("\033[0m\033[1m»¶Ó­¹âÁÙ, °´ÈÎÒâ¼ü½øÈë±¾°æ°æÃæ, ÔÚ°æÃæ°´'x'¿ÉÒÔËæÊ±½øÈë¾«»ªÇø");
 			egetch();
 		}
 	}
 	usetime = time(NULL);
 	ISdelrq = clubsync("deleterequest");
-	i_read(READING, buf, readtitle,
-	       (void *) readdoent, read_comms, sizeof (struct fileheader));
+	i_read(READING, buf, readtitle, (void *) readdoent, read_comms, sizeof (struct fileheader));
 	now_t = time(NULL);
 	if (now_t - usetime > 1) {
 		snprintf(genbuf, 256, "%s use %s %ld",
-			 currentuser.userid, currboard,
-			 (long int) (now_t - usetime));
+			currentuser.userid, currboard,
+			(long int) (now_t - usetime));
 		newtrace(genbuf);
 	}
 	brc_update();
-	if (uinfo.curboard && bcache[uinfo.curboard - 1].inboard > 0)
-		bcache[uinfo.curboard - 1].inboard--;
+
+	board = ythtbbs_cache_Board_get_board_by_idx(uinfo.curboard - 1);
+	if (uinfo.curboard && board->inboard > 0)
+		board->inboard--;
 	uinfo.curboard = 0;
 	update_utmp();
 	return 0;
@@ -1444,7 +1345,7 @@ readtitle()
 	char readmode[10];
 	int active, invisible, i, bnum;
 	char tmp[40];
-	bp = getbcache(currboard);
+	bp = ythtbbs_cache_Board_get_board_by_name(currboard);
 	if (bp == NULL)
 		return -1;
 	IScurrBM = chk_currBM(&(bp->header), 0);
@@ -1462,9 +1363,8 @@ readtitle()
 			invisible = bp->bmcloak & (1 << i);
 			if (active && !invisible)
 				sprintf(tmp, "\x1b[32m%s\x1b[33m ", bp->header.bm[i]);
-			else if (active && invisible && (HAS_PERM(PERM_SEECLOAK, currentuser)
-							 || !strcmp(bp->header.bm[i], currentuser.userid)))
-				    sprintf(tmp, "\x1b[36m%s\x1b[33m ", bp->header.bm[i]);
+			else if (active && invisible && (HAS_PERM(PERM_SEECLOAK, currentuser) || !strcmp(bp->header.bm[i], currentuser.userid)))
+				sprintf(tmp, "\x1b[36m%s\x1b[33m ", bp->header.bm[i]);
 			else
 				sprintf(tmp, "%s ", bp->header.bm[i]);
 			strcat(header, tmp);
@@ -1478,8 +1378,7 @@ readtitle()
 		strcpy(title, bp->header.title);
 
 	showtitle(header, title);
-	prints
-	    ("Àë¿ª[\x1b[1;32m¡û\x1b[m,\x1b[1;32mq\x1b[m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[m,\x1b[1;32m¡ý\x1b[m] ÔÄ¶Á[\x1b[1;32m¡ú\x1b[m,\x1b[1;32mRtn\x1b[m] ·¢±íÎÄÕÂ[\x1b[1;32mCtrl-P\x1b[m] ¿³ÐÅ[\x1b[1;32md\x1b[m] ±¸ÍüÂ¼[\x1b[1;32mTAB\x1b[m] ÇóÖú[\x1b[1;32mh\x1b[m]\n");
+	prints("Àë¿ª[\x1b[1;32m¡û\x1b[m,\x1b[1;32mq\x1b[m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[m,\x1b[1;32m¡ý\x1b[m] ÔÄ¶Á[\x1b[1;32m¡ú\x1b[m,\x1b[1;32mRtn\x1b[m] ·¢±íÎÄÕÂ[\x1b[1;32mCtrl-P\x1b[m] ¿³ÐÅ[\x1b[1;32md\x1b[m] ±¸ÍüÂ¼[\x1b[1;32mTAB\x1b[m] ÇóÖú[\x1b[1;32mh\x1b[m]\n");
 	switch (digestmode) {
 	case 0:
 		if (DEFINE(DEF_THESIS, currentuser))	/* youzi 1997.7.8 */
@@ -1504,13 +1403,11 @@ readtitle()
 		break;
 	}
 	if (DEFINE(DEF_THESIS, currentuser) && digestmode == 0)
-		prints
-		    ("\x1b[1;37;44m ±àºÅ   %-12s %6s %-28sÔÚÏß:%4d [%4sÊ½¿´°æ] \x1b[m\n",
-		     "¿¯ µÇ Õß", "ÈÕ  ÆÚ", " ±ê  Ìâ", bp->inboard, readmode);
+		prints("\x1b[1;37;44m ±àºÅ   %-12s %6s %-28sÔÚÏß:%4d [%4sÊ½¿´°æ] \x1b[m\n",
+				"¿¯ µÇ Õß", "ÈÕ  ÆÚ", " ±ê  Ìâ", bp->inboard, readmode);
 	else
-		prints
-		    ("\x1b[1;37;44m ±àºÅ   %-12s %6s %-30sÔÚÏß:%4d [%4sÄ£Ê½] \x1b[m\n",
-		     "¿¯ µÇ Õß", "ÈÕ  ÆÚ", " ±ê  Ìâ", bp->inboard, readmode);
+		prints("\x1b[1;37;44m ±àºÅ   %-12s %6s %-30sÔÚÏß:%4d [%4sÄ£Ê½] \x1b[m\n",
+				"¿¯ µÇ Õß", "ÈÕ  ÆÚ", " ±ê  Ìâ", bp->inboard, readmode);
 	clrtobot();
 	return 0;
 }
@@ -1540,7 +1437,7 @@ char buf[512];
 	//add by hace 2003.05.02
 //comment by bjgyt	if(ent->accessed & FILE_TOP1){
 	if(IScurrBM && (ent->accessed & FILE_TOP1)){
-	    type='#';
+		type='#';
 	}
 	//end
 
@@ -1557,12 +1454,12 @@ char buf[512];
 			type1 = "\033[1;31mX\033[0m";
 		else
 			type1 = "X";
-	} 
+	}
 	else if((ent->accessed & FH_MINUSDEL) && (IScurrBM || HAS_PERM(PERM_ARBITRATE, currentuser))){	//add by mintbaggio 040322 for minus-numposts delete
 		if (danger)
-                        type1 = "\033[1;31mx\033[0m";
-                else
-                        type1 = "x";
+			type1 = "\033[1;31mx\033[0m";
+		else
+			type1 = "x";
 	}
 	else {
 		if (danger)
@@ -1571,20 +1468,18 @@ char buf[512];
 			type1 = " ";
 	}
 	type2 = (ent->accessed & FH_SPEC) ? (IScurrBM ? '$' : ' ') : ' ';
-	danger =
-	    (ent->accessed & FH_DANGEROUS) ? ((IScurrBM || ISdelrq) ? 1 : 0) :
-	    0;
+	danger = (ent->accessed & FH_DANGEROUS) ? ((IScurrBM || ISdelrq) ? 1 : 0) : 0;
 	noreply = ent->accessed & FH_NOREPLY;
 	attached = ent->accessed & FH_ATTACHED;
 	allcanre = ent->accessed & FH_ALLREPLY;
 	if((HAS_PERM(PERM_SYSOP|PERM_OBOARDS, currentuser)||has_perm_commend(currentuser.userid)) && is_in_commend(currboard, ent)){	//add by mintbaggio 040327 for front page commend
-		if(type == '*')	
+		if(type == '*')
 			type1 = "\033[1;45mM\033[0m";
 		else
 			type1 = "\033[1;45mm\033[0m";
 	}
 	if((HAS_PERM(PERM_SYSOP|PERM_OBOARDS, currentuser)||has_perm_commend(currentuser.userid)) && is_in_commend2(currboard, ent)){	//add by mintbaggio 040327 for front page commend
-		if(type == '*')	
+		if(type == '*')
 			type1 = "\033[1;42mM\033[0m";
 		else
 			type1 = "\033[1;42mm\033[0m";
@@ -1623,8 +1518,7 @@ char buf[512];
 
 	TITLE = ent->title;
 	filter(TITLE);
-	if (uinfo.mode != RMAIL && digestmode != 1 && digestmode != 4
-	    && digestmode != 5) {	//ÓÃÐÂ·½·¨
+	if (uinfo.mode != RMAIL && digestmode != 1 && digestmode != 4 && digestmode != 5) {	//ÓÃÐÂ·½·¨
 		if (ent->thread != ent->filetime && !strncmp(TITLE, "Re: ", 4)) {	//ReÎÄ
 			if (readingthread == ent->thread)	//µ±Ç°ÕýÔÚ¶ÁµÄÖ÷Ìâ
 				sprintf(buf,
@@ -1657,8 +1551,7 @@ char buf[512];
 					TITLE);
 		}
 	} else {
-		if (!strncmp("Re:", ent->title, 3)
-		    || !strncmp("RE:", ent->title, 3)) {
+		if (!strncmp("Re:", ent->title, 3) || !strncmp("RE:", ent->title, 3)) {
 			if (strncmp(ReplyPost, ent->title, 45) == 0) {
 				sprintf(buf,
 					" \x1b[1;36m%4d\x1b[m%s%-12.12s%s\x1b[1;36m.%c%sRe:\033[0;1;36m%-.45s\033[m",
@@ -1699,14 +1592,14 @@ char buf[512];
 	setbdir(path, currboard, digestmode);
 	if(stat(path,&st)==-1 ) errlog("error");
 	if((stat(path,&st)!=-1 )&& (st.st_size/sizeof(struct fileheader))< num ){
-	    ent->accessed |= FILE_TOP1; 
-	    //errlog("slowaction");
-	    if((ent->accessed& FH_MARKED)&&(ent->accessed&FH_DIGEST)) strcpy(msg,"\033[1;31m[ÌáÊ¾]\033[0m");
-	    else if(ent->accessed & FH_DIGEST) strcpy(msg,"\033[1;33m[ÍÆ¼ö]\033[0m");
-	    else if(ent->accessed & FH_MARKED) strcpy(msg,"\033[1;36m[ÌáÊ¾]\033[0m");
-	    else strcpy(msg,"\033[1;32m[ÌáÊ¾]\033[0m");
-	    msg[31]=0;
-	    sprintf(buf, " %6s %-12.12s%s\033[m %s¡ô %-.45s ",msg,ent->owner, date," ", TITLE);
+		ent->accessed |= FILE_TOP1;
+		//errlog("slowaction");
+		if((ent->accessed& FH_MARKED)&&(ent->accessed&FH_DIGEST)) strcpy(msg,"\033[1;31m[ÌáÊ¾]\033[0m");
+		else if(ent->accessed & FH_DIGEST) strcpy(msg,"\033[1;33m[ÍÆ¼ö]\033[0m");
+		else if(ent->accessed & FH_MARKED) strcpy(msg,"\033[1;36m[ÌáÊ¾]\033[0m");
+		else strcpy(msg,"\033[1;32m[ÌáÊ¾]\033[0m");
+		msg[31]=0;
+		sprintf(buf, " %6s %-12.12s%s\033[m %s¡ô %-.45s ",msg,ent->owner, date," ", TITLE);
 	}
 	//end
 	return buf;

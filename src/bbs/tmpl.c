@@ -22,9 +22,6 @@
 
 extern int page, range;
 extern char IScurrBM;
-extern struct boardmem *bcache;
-extern struct BCACHE *brdshm;
-extern int numboards;
 
 struct a_template * ptemplate = NULL ;
 int template_num = 0;

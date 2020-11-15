@@ -3,14 +3,8 @@
 #include "ythtbbs/board.h"
 #include "ythtbbs/cache.h"
 
-extern struct boardmem *bcache;
-
 void attach_err(int shmkey, char *name);
 void *attach_shm(int shmkey, int shmsize);
-void reload_boards(void);
-void resolve_boards(void);
-int apply_boards(int (*func)(struct boardmem *));
-struct boardmem *getbcache(char *bname);
 int updatelastpost(char *board);
 int hasreadperm(struct boardheader *bh);
 int hasreadperm_ext(char *username, char *boardname);
@@ -36,7 +30,6 @@ void update_ulist(struct user_info *uentp, int uent);
 void update_utmp(void);
 int get_utmp(void);
 int who_callme(struct user_info *uentp, int (*fptr)(int, struct user_info *), int farg, int me);
-int insertuseridhash(struct useridhashitem *ptr, int size, char *userid, int num);
 int getbmnum(char *userid);
 char *get_temp_sessionid(char *temp_sessionid);
 void show_small_bm(char *board);

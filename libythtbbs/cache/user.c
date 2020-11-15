@@ -13,6 +13,25 @@
 #include "ythtbbs/override.h"
 #include "ythtbbs/goodgbid.h"
 
+/**
+ * 对应与原 UCACHE / UINDEX 两个表
+ */
+struct ythtbbs_cache_UserTable {
+	struct ythtbbs_cache_User users[MAXUSERS];
+	int number;
+	int usersum;
+	time_t update_time;
+	int nouse[10];
+};
+
+/**
+ * Refactoring the UCACHEHASH structure
+ */
+struct ythtbbs_cache_UserIDHashTable {
+	struct ythtbbs_cache_UserIDHashItem items[UCACHE_HASH_SIZE];
+	time_t update_time;
+};
+
 /***** global variables *****/
 static struct ythtbbs_cache_UserIDHashTable *shm_userid_hashtable;
 static struct ythtbbs_cache_UserTable       *shm_user_table;

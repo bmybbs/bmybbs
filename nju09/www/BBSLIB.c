@@ -1,4 +1,5 @@
 #include "bbslib.h"
+#include "ythtbbs/cache.h"
 #if defined(ENABLE_GHTHASH) && defined(ENABLE_FASTCGI)
 #include <ght_hash_table.h>
 #endif
@@ -19,8 +20,6 @@ static void extraparam_init(const char *extrastr);
 static int user_init(struct userec *x, struct user_info **y, const char *userid, const char *sessid);
 static int post_imail(char *userid, char *title, char *file, char *id, char *nickname, char *ip, int sig);
 static void sig_append(FILE * fp, char *id, int sig);
-static int useridhash(char *id);
-static int setbmhat(struct boardmanager *bm, int *online);
 
 struct wwwstyle wwwstyle[NWWWSTYLE] = {
 	// 橘红(大字体)
@@ -68,7 +67,6 @@ jmp_buf cgi_start;
 struct userec currentuser;
 struct user_info *u_info;
 struct wwwsession *w_info;
-struct BCACHE *shm_bcache;
 struct mmapfile mf_badwords  = { .ptr = NULL };
 struct mmapfile mf_sbadwords = { .ptr = NULL };
 struct mmapfile mf_pbadwords = { .ptr = NULL };
@@ -77,7 +75,6 @@ int ummap_size = 0;
 char fromhost[BMY_IPV6_LEN]; // 从环境变量获取 IP 地址，IPv4/IPv6 已经由 apache 处理过
 struct in6_addr from_addr;   //ipv6 by leoncom
 
-struct boardmem *getbcache();
 struct userec *getuser();
 char *anno_path_of();
 static void updatelastboard(void);
@@ -1313,49 +1310,6 @@ static void sig_append(FILE * fp, char *id, int sig) {
 		fputs("\n", fp);
 }
 
-#if defined(ENABLE_GHTHASH) && defined(ENABLE_FASTCGI)
-char *
-anno_path_of(char *board)
-{
-	static char annpath[MAXBOARD][80];
-	int num;
-	static time_t uptime = 0;
-	static ght_hash_table_t *p_table = NULL;
-	int j;
-	char buf1[80], *ptr;
-	if (p_table && shm_bcache->uptime > uptime) {
-		ght_finalize(p_table);
-		p_table = NULL;
-	}
-	if (p_table == NULL) {
-		FILE *fp;
-		char buf2[80];
-		uptime = now_t;
-		p_table = ght_create(MAXBOARD, NULL, 0);
-		fp = fopen("0Announce/.Search", "r");
-		if (fp == 0)
-			return "";
-		num = 0;
-		while (num < MAXBOARD && fscanf(fp, "%s %s", buf1, buf2) > 0) {
-			buf1[79] = 0;
-			buf1[strlen(buf1) - 1] = 0;
-			for (j = 0; buf1[j]; j++)
-				buf1[j] = toupper(buf1[j]);
-			sprintf(annpath[num], "/%s", buf2);
-			ght_insert(p_table, annpath[num], j, buf1);
-			num++;
-		}
-		fclose(fp);
-	}
-	strsncpy(buf1, board, sizeof (buf1));
-	for (j = 0; buf1[j]; j++)
-		buf1[j] = toupper(buf1[j]);
-	ptr = ght_get(p_table, j, buf1);
-	if (ptr)
-		return ptr;
-	return "";
-}
-#else
 char *
 anno_path_of(char *board)
 {
@@ -1378,7 +1332,7 @@ anno_path_of(char *board)
 	fclose(fp);
 	return "";
 }
-#endif
+
 int
 has_BM_perm(struct userec *user, struct boardmem *x)
 {
@@ -1394,7 +1348,7 @@ has_BM_perm(struct userec *user, struct boardmem *x)
 int
 has_read_perm(struct userec *user, char *board)
 {
-	return has_read_perm_x(user, getbcache(board));
+	return has_read_perm_x(user, ythtbbs_cache_Board_get_board_by_name(board));
 }
 
 int
@@ -1431,7 +1385,7 @@ hideboard(char *bname)
 	struct boardmem *x;
 	if (bname[0] <= 32)
 		return 1;
-	x = getbcache(bname);
+	x = ythtbbs_cache_Board_get_board_by_name(bname);
 	if (x == 0)
 		return 0;
 	return hideboard_x(x);
@@ -1451,7 +1405,7 @@ int
 innd_board(char *bname)
 {
 	struct boardmem *x;
-	x = getbcache(bname);
+	x = ythtbbs_cache_Board_get_board_by_name(bname);
 	if (x == 0)
 		return 0;
 	return (x->header.flag & INNBBSD_FLAG);
@@ -1461,7 +1415,7 @@ int
 political_board(char *bname)
 {
 	struct boardmem *x;
-	x = getbcache(bname);
+	x = ythtbbs_cache_Board_get_board_by_name(bname);
 	if (x == 0)
 		return 0;
 	if (x->header.flag & POLITICAL_FLAG)
@@ -1474,7 +1428,7 @@ int
 anony_board(char *bname)
 {
 	struct boardmem *x;
-	x = getbcache(bname);
+	x = ythtbbs_cache_Board_get_board_by_name(bname);
 	if (x == 0)
 		return 0;
 	return (x->header.flag & ANONY_FLAG);
@@ -1553,70 +1507,14 @@ has_vote_perm(struct userec *user, struct boardmem *x)
 	return 1;
 }
 
-#if defined(ENABLE_GHTHASH) && defined(ENABLE_FASTCGI)
-struct boardmem *
-getbcache(char *board)
-{
-	int i, j;
-	static int num = 0;
-	char upperstr[STRLEN];
-	static ght_hash_table_t *p_table = NULL;
-	static time_t uptime = 0;
-	if (board[0] == 0)
-		return 0;
-	if (p_table && (num != shm_bcache->number || shm_bcache->uptime > uptime)) {
-		//errlog("getbcache: num %d, bcache->number %d, would reload",
-		//       num, shm_bcache->number);
-		ght_finalize(p_table);
-		p_table = NULL;
-	}
-	if (p_table == NULL) {
-		num = 0;
-		p_table = ght_create(MAXBOARD, NULL, 0);
-		for (i = 0; i < MAXBOARD && i < shm_bcache->number; i++) {
-			num++;
-			if (!shm_bcache->bcache[i].header.filename[0])
-				continue;
-			strsncpy(upperstr, shm_bcache->bcache[i].header.filename, sizeof (upperstr));
-			for (j = 0; upperstr[j]; j++)
-				upperstr[j] = toupper(upperstr[j]);
-			ght_insert(p_table, &shm_bcache->bcache[i], j, upperstr);
-		}
-		uptime = now_t;
-	}
-	strsncpy(upperstr, board, sizeof (upperstr));
-	for (j = 0; upperstr[j]; j++)
-		upperstr[j] = toupper(upperstr[j]);
-	return ght_get(p_table, j, upperstr);
-}
-#else
-struct boardmem *
-getbcache(char *board)
-{
-	int i;
-	if (board[0] == 0)
-		return 0;
-	for (i = 0; i < MAXBOARD && i < shm_bcache->number; i++)
-	{
-		//printf("board:%s, header:%s\n", board, shm_bcache->bcache[i].header.filename);   add by mint
-		if (!strcasecmp(board, shm_bcache->bcache[i].header.filename))
-			return &shm_bcache->bcache[i];
-	}
-	//modified by safari 20100102
-	//printf("end");
-	return 0;
-}
-#endif
-
 /**
  * 依据版面名称获取 boardmem 对象，应逐渐采用 libythtbbs 库函数。
  * @see struct boardmem *getboardbyname(char *board_name)
  */
-struct boardmem *
-getboard(char board[80])
+struct boardmem *getboard(char *board)
 {
 	struct boardmem *x1;
-	x1 = getbcache(board);
+	x1 = ythtbbs_cache_Board_get_board_by_name(board);
 	if (x1 == 0)
 		return NULL;
 	if (!has_read_perm_x(&currentuser, x1))
@@ -1703,22 +1601,6 @@ int
 user_perm(struct userec *x, int level)
 {
 	return (x->userlevel & level);
-}
-
-static int useridhash(char *id) {
-	int n1 = 0;
-	int n2 = 0;
-	while (*id) {
-		n1 += ((unsigned char) toupper(*id)) % 26;
-		id++;
-		if (!*id)
-			break;
-		n2 += ((unsigned char) toupper(*id)) % 26;
-		id++;
-	}
-	n1 %= 26;
-	n2 %= 26;
-	return n1 * 26 + n2;
 }
 
 // 返回索引值，原本实现中会判断 shm_ucache->userid[i]
@@ -2161,7 +2043,7 @@ static void updatelastboard(void) {
 	struct boardmem *last;
 	char buf[80];
 	if (u_info->curboard) {
-		last = &(shm_bcache->bcache[u_info->curboard - 1]);
+		last = ythtbbs_cache_Board_get_board_by_idx(u_info->curboard - 1);
 		if (last->inboard > 0)
 			last->inboard--;
 		if (now_t > w_info->lastinboardtime && w_info->lastinboardtime != 0)
@@ -2177,7 +2059,7 @@ void updateinboard(struct boardmem *x) {
 	int bnum;
 	if (!loginok)
 		return;
-	bnum = x - (struct boardmem *) (shm_bcache);
+	bnum = ythtbbs_cache_Board_get_idx_by_ptr(x);
 	if (bnum + 1 == u_info->curboard)
 		return;
 	updatelastboard();
@@ -2303,36 +2185,6 @@ system_load()
 	load[2] = rs.avenrun[2] / (double) (1 << 8);
 #endif
 	return load;
-}
-
-int
-setbmstatus(struct userec *u, int online)
-{
-	char path[256];
-	sethomefile_s(path, sizeof(path), u->userid, "mboard");
-	bmfilesync(u);
-	new_apply_record(path, sizeof (struct boardmanager), (void *) setbmhat, &online);
-	return 0;
-}
-
-static int setbmhat(struct boardmanager *bm, int *online) {
-	if (strcmp(shm_bcache->bcache[bm->bid].header.filename, bm->board)) {
-		errlog("error board name %s, %s. user %s",
-				shm_bcache->bcache[bm->bid].header.filename, bm->board,
-				currentuser.userid);
-		return -1;
-	}
-	if (*online) {
-		shm_bcache->bcache[bm->bid].bmonline |= (1 << bm->bmpos);
-		if (u_info->invisible)
-			shm_bcache->bcache[bm->bid].bmcloak |= (1 << bm->bmpos);
-		else
-			shm_bcache->bcache[bm->bid].bmcloak &= ~(1 << bm->bmpos);
-	} else {
-		shm_bcache->bcache[bm->bid].bmonline &= ~(1 << bm->bmpos);
-		shm_bcache->bcache[bm->bid].bmcloak &= ~(1 << bm->bmpos);
-	}
-	return 0;
 }
 
 int
@@ -2604,5 +2456,67 @@ NHsprintf(char *s, char *s0)
 		}
 	}
 	s[len] = 0;
+}
+
+int ismybrd(char *board) {
+	int i;
+
+	for (i = 0; i < mybrdnum; i++)
+		if (!strcasecmp(board, mybrd[i]))
+			return 1;
+	return 0;
+}
+
+int filter_board_v(struct boardmem *board, int curr_idx, va_list ap) {
+	// 一定会使用的变量
+	int flag = va_arg(ap, int);
+	struct boardmem **data = va_arg(ap, struct boardmem **);
+	int *total = va_arg(ap, int *);
+
+	// 不一定会使用的变量
+	int hasintro, len;
+	const char *secstr;
+
+	if (board->header.filename[0] <= 32 || board->header.filename[0] > 'z')
+		return 0;
+
+	if (!has_read_perm_x(&currentuser, board))
+		return 0;
+
+	if (flag & FILTER_BOARD_check_mybrd) {
+		if (!ismybrd(board->header.filename))
+			return 0;
+	}
+
+	if (flag & (FILTER_BOARD_with_secnum | FILTER_BOARD_with_secstr)) {
+		hasintro = va_arg(ap, int);
+		secstr = va_arg(ap, const char *);
+		len = strlen(secstr);
+
+		if (flag & FILTER_BOARD_with_secstr) {
+			if (hasintro) {
+				if (strcmp(secstr, board->header.sec1) && strcmp(secstr, board->header.sec2))
+					return 0;
+			} else {
+				if (strncmp(secstr, board->header.sec1, len) && strncmp(secstr, board->header.sec2, len))
+					return 0;
+			}
+		}
+
+		if (flag & FILTER_BOARD_with_secnum) {
+			if (hasintro) {
+				if (secstr[0] != board->header.secnumber1)
+					return 0;
+			} else {
+				// TODO IronBlood 批注: 来自 nju09/www/bbsboa 的 show_boards 函数，这里都是只和 secnumber1 比较，是不是写错了？
+				if (secstr[0] != board->header.secnumber1)
+					return 0;
+			}
+		}
+	}
+
+	data[*total] = board;
+	*total = *total + 1;
+	return 0;
 }
 

@@ -60,12 +60,13 @@ char *sbm2str(char *buf, struct boardheader *bh);
  * 从 nju09/BBSLIB.c 复制而来，理应属于 libythtbbs 库的一部分。该方法将从 shm_bcache
  * 中递归的查找比对 board_name，若相同则返回 boardmem 地址。
  * 从 nju09 移植，by IronBlood 20130805
+ * 使用 ythtbbs_cache_Board_get_board_by_name，变更于 20201114
  * @warning 该方法中不包含用户权限的校验。调用结束后不需要释放 boardmem 地址。
  * @param board_name 版面的英文名称
  * @see struct boardmem * getbcache(char *board)
  * @see struct boardmem * getboard(char *board)
  */
-struct boardmem *getboardbyname(const char *board_name);
+struct boardmem *getboardbyname(const char *board_name) __attribute__((deprecated("use ythtbbs_cache_Board_get_board_by_name instead")));
 
 /**
  * @brief 依据版面名称检查是否是存在于 etc/junkboards 文件中
