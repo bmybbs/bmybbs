@@ -1,10 +1,6 @@
 #include "bbslib.h"
 #include "tmpl.h"
 
-extern struct boardmem *bcache;
-extern struct BCACHE *brdshm;
-extern int numboards;
-
 struct a_template * ptemplate = NULL ;
 int template_num = 0;
 int t_now = 0;
