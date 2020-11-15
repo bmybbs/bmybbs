@@ -55,9 +55,7 @@ bs_use(int day, char *time, char *user, char *other)
 			}
 			stay += ((struct sstay *) (a->value))->stay;
 /*			if (stay > hour * 3600) {
-				countstay =
-				    hour * 3600 -
-				    ((struct sstay *) (a->value))->stay;
+				countstay = hour * 3600 - ((struct sstay *) (a->value))->stay;
 				stay = hour * 3600;
 			}
 */
@@ -119,9 +117,7 @@ bs_exit()
 		a = finddic(bsstat, bcache[i].header.filename);
 		if (a != NULL) {
 			data = a->value;
-			data->score = bcache[i].score =
-			    data->stay / 1000 + data->person * 2 +
-			    data->post * 10;
+			data->score = bcache[i].score = data->stay / 1000 + data->person * 2 + data->post * 10;
 		}
 	}
 	fp = fopen(BSSTAT, "w");
@@ -175,10 +171,9 @@ bs_init()
 		}
 		strcpy(((struct bscore *) (tmp->value))->board, tmp->str);
 		snprintf(((struct bscore *) (tmp->value))->expname, STRLEN,
-			 "[%s] %s", bcache[i].header.type,
-			 bcache[i].header.title);
-		((struct bscore *) (tmp->value))->noread =
-		    boardnoread(&(bcache[i].header));
+			"[%s] %s", bcache[i].header.type,
+			bcache[i].header.title);
+		((struct bscore *) (tmp->value))->noread = boardnoread(&(bcache[i].header));
 		insertdic(bsstat, tmp);
 	}
 	register_stat(bs, bs_exit);
