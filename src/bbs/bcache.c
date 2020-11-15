@@ -407,13 +407,13 @@ char *bname;
 
 int political_board(const char *bname) {
 	register int i;
+	const struct boardmem *board_ptr = NULL;
 
 	if ((i = getbnum(bname)) == 0)
 		return 0;
-	if (bcache[i - 1].header.flag & POLITICAL_FLAG)
-		return 1;
-	else
-		return 0;
+
+	board_ptr = ythtbbs_cache_Board_get_board_by_idx(i - 1);
+	return (board_ptr->header.flag & POLITICAL_FLAG) ? 1 : 0;
 }
 
 int
