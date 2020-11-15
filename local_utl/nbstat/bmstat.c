@@ -346,34 +346,26 @@ bm_init()
 					errlog("Can't malloc in bm_init!");
 					exit(-1);
 				}
-				if (!strcmp(bcache[i].header.bm[k], "")
-				    || !strcmp(bcache[i].header.bm[k], "SYSOP"))
+				if (!strcmp(bcache[i].header.bm[k], "") || !strcmp(bcache[i].header.bm[k], "SYSOP"))
 					continue;
 				snprintf(tmp->str, STRLEN - 1, "%s %s",
-					 bcache[i].header.filename,
-					 bcache[i].header.bm[k]);
+					bcache[i].header.filename,
+					bcache[i].header.bm[k]);
 				tmp->value = malloc(sizeof (struct bmstat));
 				if (tmp->value == NULL) {
-					errlog
-					    ("Can't malloc value in bm_init!");
+					errlog("Can't malloc value in bm_init!");
 					exit(-1);
 				}
 				memset(tmp->value, 0, sizeof (struct bmstat));
-				strncpy(((struct bmstat *) (tmp->value))->board,
-					bcache[i].header.filename, 19);
-				strncpy(((struct bmstat *) (tmp->value))->class,
-					bcache[i].header.type, 4);
-				strncpy(
-					((struct
-					  bmstat *) (tmp->value))->userid,
-					bcache[i].header.bm[k], IDLEN);
-				((struct bmstat *) (tmp->value))->noread =
-				    boardnoread(&(bcache[i].header));
-				((struct bmstat *) (tmp->value))->boardscore =
-				    bcache[i].score;
+				strncpy(((struct bmstat *) (tmp->value))->board, bcache[i].header.filename, 19);
+				strncpy(((struct bmstat *) (tmp->value))->class, bcache[i].header.type, 4);
+				strncpy(((struct bmstat *) (tmp->value))->userid, bcache[i].header.bm[k], IDLEN);
+				((struct bmstat *) (tmp->value))->noread = boardnoread(&(bcache[i].header));
+				((struct bmstat *) (tmp->value))->boardscore = bcache[i].score;
 				insertdic(bmd, tmp);
 			}
 		}
 	}
 	register_stat(bm, bm_exit);
 }
+
