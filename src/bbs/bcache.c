@@ -31,9 +31,7 @@
 #include "bbs_global_vars.h"
 //CHINPUT_SHMKEY=5102
 
-struct BCACHE *brdshm;
 struct userec lookupuser;
-struct boardmem *bcache;
 
 //struct PINYINARRAY *pa;
 int usernumber;
@@ -662,8 +660,6 @@ int
 setbmstatus(int online)
 {
 	char path[256];
-	if (bcache == NULL)
-		return 0;
 	sethomefile_s(path, sizeof(path), currentuser.userid, "mboard");
 	bmfilesync(&currentuser);
 	new_apply_record(path, sizeof (struct boardmanager), (void *) setbmhat, &online);

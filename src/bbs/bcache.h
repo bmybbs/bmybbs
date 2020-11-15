@@ -3,8 +3,6 @@
 #include "ythtbbs/board.h"
 #include "ythtbbs/cache.h"
 
-extern struct boardmem *bcache;
-
 void attach_err(int shmkey, char *name);
 void *attach_shm(int shmkey, int shmsize);
 int updatelastpost(char *board);
