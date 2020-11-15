@@ -43,13 +43,83 @@ bbsfind_main()
 	return 0;
 }
 
-static int search(char *id, char *pat, char *pat2, char *pat3, int dt) {
-	char board[256], dir[256];
-	int total, i, sum = 0, nr, j;
-	time_t starttime;
+static int search_callback(struct boardmem *board, int curr_idx, va_list ap) {
+	const char *id = va_arg(ap, const char *);
+	const char *pat = va_arg(ap, const char *);
+	const char *pat2 = va_arg(ap, const char *);
+	const char *pat3 = va_arg(ap, const char *);
+	int dt = va_arg(ap, int);
+	time_t starttime = va_arg(ap, time_t);
+	int *sum = va_arg(ap, int *);
+
+	char dir[256];
+	int total, nr, j;
 	int start;
 	struct mmapfile mf = { .ptr = NULL };
 	struct fileheader *x;
+	if (!has_read_perm_x(&currentuser, board))
+		return 0;
+
+	snprintf(dir, sizeof(dir), "boards/%s/.DIR", board->header.filename);
+	mmapfile(NULL, &mf);
+	if (mmapfile(dir, &mf) < 0)
+		return 0;
+
+	x = (struct fileheader *) mf.ptr;
+
+	nr = mf.size / sizeof(struct fileheader);
+	if (nr == 0) {
+		mmapfile(NULL, &mf);
+		return 0;
+	}
+
+	start = Search_Bin(mf.ptr, starttime, 0, nr - 1);
+	if (start < 0)
+		start = - (start + 1);
+
+	for (total = 0, j = start; j < nr; j++) {
+		if (abs(now_t - x[j].filetime) > dt)
+			continue;
+		if (id[0] != 0 && strcasecmp(x[j].owner, id))
+			continue;
+		if (pat[0] && !strcasestr(x[j].title, pat))
+			continue;
+		if (pat2[0] && !strcasestr(x[j].title, pat2))
+			continue;
+		if (pat3[0] && strcasestr(x[j].title, pat3))
+			continue;
+		if (total == 0)
+			printf("<table border=1>\n");
+		printf("<tr><td>%d<td><a href=bbsqry?userid=%s>%s</a>",
+				j + 1, x[j].owner, x[j].owner);
+		printf("<td>%6.6s", ytht_ctime(x[j].filetime) + 4);
+		printf("<td><a href=con?B=%s&F=%s&N=%d&T=%lu>%s</a>\n",
+				board->header.filename, fh2fname(&x[j]), j + 1, feditmark(x[j]),
+				nohtml(x[j].title));
+		total++;
+		*sum = *sum + 1;
+		if (*sum > 999) {
+			break;
+		}
+	}
+
+	mmapfile(NULL, &mf);
+	if (total) {
+		printf("</table>\n");
+		printf("<br>以上%d篇来自 <a href=%s%s>%s</a><br><br>\n", total, showByDefMode(), board->header.filename, board->header.filename);
+	}
+
+	if (*sum > 999) {
+		return QUIT;
+	}
+
+	return 0;
+}
+
+static int search(char *id, char *pat, char *pat2, char *pat3, int dt) {
+	char dir[256];
+	int sum = 0;
+	time_t starttime;
 	printf("%s -- 站内文章查询结果 <br>\n", BBSNAME);
 	printf("作者: %s ", id);
 	printf("标题含有: '%s' ", nohtml(pat));
@@ -62,58 +132,7 @@ static int search(char *id, char *pat, char *pat2, char *pat3, int dt) {
 	if (starttime < 0)
 		starttime = 0;
 	if (!search_filter(pat, pat2, pat3)) {
-		for (i = 0; i < MAXBOARD && i < shm_bcache->number; i++) {
-			strcpy(board, shm_bcache->bcache[i].header.filename);
-			if (!has_read_perm_x(&currentuser, &(shm_bcache->bcache[i])))
-				continue;
-			sprintf(dir, "boards/%s/.DIR", board);
-			mmapfile(NULL, &mf);
-			if (mmapfile(dir, &mf) < 0) {
-				continue;
-			}
-			x = (struct fileheader *) mf.ptr;
-			nr = mf.size / sizeof (struct fileheader);
-			if (nr == 0)
-				continue;
-			start = Search_Bin(mf.ptr, starttime, 0, nr - 1);
-			if (start < 0)
-				start = - (start + 1);
-			for (total = 0, j = start; j < nr; j++) {
-				if (abs(now_t - x[j].filetime) > dt)
-					continue;
-				if (id[0] != 0 && strcasecmp(x[j].owner, id))
-					continue;
-				if (pat[0] && !strcasestr(x[j].title, pat))
-					continue;
-				if (pat2[0] && !strcasestr(x[j].title, pat2))
-					continue;
-				if (pat3[0] && strcasestr(x[j].title, pat3))
-					continue;
-				if (total == 0)
-					printf("<table border=1>\n");
-				printf("<tr><td>%d<td><a href=bbsqry?userid=%s>%s</a>",
-						j + 1, x[j].owner, x[j].owner);
-				printf("<td>%6.6s", ytht_ctime(x[j].filetime) + 4);
-				printf("<td><a href=con?B=%s&F=%s&N=%d&T=%lu>%s</a>\n",
-						board, fh2fname(&x[j]), j + 1,feditmark(x[j]),
-						nohtml(x[j].title));
-				total++;
-				sum++;
-				if (sum > 999) {
-					printf("</table> ....");
-					break;
-				}
-
-			}
-			if (sum > 999)
-				break;
-			if (!total)
-				continue;
-			printf("</table>\n");
-			printf("<br>以上%d篇来自 <a href=%s%s>%s</a><br><br>\n",
-					total, showByDefMode(), board, board);
-		}
-		mmapfile(NULL, &mf);
+		ythtbbs_cache_Board_foreach_v(search_callback, id, pat, pat2, pat3, dt, starttime, &sum);
 	}
 	printf("一共找到%d篇文章符合查找条件<br>\n", sum);
 	sprintf(dir, "%s bbsfind %d", currentuser.userid, sum);
