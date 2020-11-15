@@ -347,6 +347,7 @@ time_t ythtbbs_cache_Board_get_pollvote(void);
 void ythtbbs_cache_Board_set_pollvote(time_t t);
 
 int ythtbbs_cache_Board_get_number(void);
+time_t ythtbbs_cache_Board_get_uptime(void);
 
 typedef int (*ythtbbs_cache_Board_foreach_callback)(struct boardmem *board, int curr_idx, va_list ap);
 void ythtbbs_cache_Board_foreach_v(ythtbbs_cache_Board_foreach_callback callback, ...);

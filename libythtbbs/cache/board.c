@@ -130,6 +130,10 @@ int ythtbbs_cache_Board_get_number(void) {
 	return shm_board->number;
 }
 
+time_t ythtbbs_cache_Board_get_uptime(void) {
+	return shm_board->uptime;
+}
+
 void ythtbbs_cache_Board_foreach_v(ythtbbs_cache_Board_foreach_callback callback, ...) {
 	int rc, i;
 	va_list ap;

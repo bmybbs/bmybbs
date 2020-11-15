@@ -158,6 +158,26 @@ conn_insert(int sd)
 	return -1;
 }
 
+static int getbcache_callback(struct boardmem *board, int curr_idx, va_list ap) {
+	int *num = va_arg(ap, int *);
+	char *upperstr = va_arg(ap, char *);
+	size_t upperstr_size = va_arg(ap, size_t);
+	ght_hash_table_t *table = va_arg(ap, ght_hash_table_t *);
+
+	int j;
+	*num = *num + 1;
+	if (!board->header.filename[0])
+		return 0;
+
+	ytht_strsncpy(upperstr, board->header.filename, upperstr_size);
+
+	for (j = 0; upperstr[j]; j++)
+		upperstr[j] = toupper(upperstr[j]);
+
+	ght_insert(table, board, j, upperstr);
+	return 0;
+}
+
 struct boardmem *
 getbcache(char *board)
 {
@@ -166,29 +186,17 @@ getbcache(char *board)
 	char upperstr[STRLEN];
 	static ght_hash_table_t *p_table = NULL;
 	static time_t uptime = 0;
-	static struct BCACHE *shm_bcache = NULL;
-	if (shm_bcache == NULL)
-		shm_bcache = (struct BCACHE *) get_old_shm(BCACHE_SHMKEY, sizeof (struct BCACHE));
-	if (shm_bcache == NULL)
-		return NULL;
+	ythtbbs_cache_Board_resolve();
 	if (board[0] == 0)
 		return NULL;
-	if (p_table && (num != shm_bcache->number || shm_bcache->uptime > uptime)) {
+	if (p_table && (num != ythtbbs_cache_Board_get_number() || ythtbbs_cache_Board_get_uptime() > uptime)) {
 		ght_finalize(p_table);
 		p_table = NULL;
 	}
 	if (p_table == NULL) {
 		num = 0;
 		p_table = ght_create(MAXBOARD, NULL, 0);
-		for (i = 0; i < MAXBOARD && i < shm_bcache->number; i++) {
-			num++;
-			if (!shm_bcache->bcache[i].header.filename[0])
-				continue;
-			ytht_strsncpy(upperstr, shm_bcache->bcache[i].header.filename, sizeof(upperstr));
-			for (j = 0; upperstr[j]; j++)
-				upperstr[j] = toupper(upperstr[j]);
-			ght_insert(p_table, &shm_bcache->bcache[i], j, upperstr);
-		}
+		ythtbbs_cache_Board_foreach_v(getbcache_callback, &num, upperstr, sizeof(upperstr), p_table);
 		uptime = now_t;
 	}
 	ytht_strsncpy(upperstr, board, sizeof(upperstr));
