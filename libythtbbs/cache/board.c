@@ -9,6 +9,13 @@
 #include "ythtbbs/record.h"
 #include "cache-internal.h"
 
+struct BCACHE {
+	struct boardmem bcache[MAXBOARD];
+	int number;
+	time_t uptime;
+	time_t pollvote;
+};
+
 static struct BCACHE *shm_board;
 
 static int fillbcache(void *, void *);

@@ -69,13 +69,6 @@ struct user_info {
 
 #define USHM_SIZE       (MAXACTIVE + 10)
 
-struct BCACHE {
-	struct boardmem bcache[MAXBOARD];
-	int number;
-	time_t uptime;
-	time_t pollvote;
-};
-
 struct UCACHE {
 	char userid[MAXUSERS][IDLEN + 1];
 	int number;
