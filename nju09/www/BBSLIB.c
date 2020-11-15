@@ -67,7 +67,6 @@ jmp_buf cgi_start;
 struct userec currentuser;
 struct user_info *u_info;
 struct wwwsession *w_info;
-struct BCACHE *shm_bcache;
 struct mmapfile mf_badwords  = { .ptr = NULL };
 struct mmapfile mf_sbadwords = { .ptr = NULL };
 struct mmapfile mf_pbadwords = { .ptr = NULL };

@@ -45,7 +45,6 @@ extern jmp_buf cgi_start;
 extern struct userec currentuser;
 extern struct user_info *u_info;
 extern struct wwwsession *w_info;
-extern struct BCACHE *shm_bcache;
 extern char fromhost[BMY_IPV6_LEN];
 extern struct in6_addr from_addr; //ipv6 by leoncom
 extern int quote_quote;
