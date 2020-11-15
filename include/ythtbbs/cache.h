@@ -68,28 +68,10 @@ struct user_info {
 };
 
 #define USHM_SIZE       (MAXACTIVE + 10)
-
-struct UCACHE {
-	char userid[MAXUSERS][IDLEN + 1];
-	int number;
-	int usersum;
-	time_t uptime;
-	int nouse[10];
-};
-
 #define UCACHE_HASH_SIZE (MAXUSERS*2)
 struct useridhashitem {
 	int num;
 	char userid[IDLEN + 1];
-};
-
-struct UCACHEHASH {
-	struct useridhashitem uhi[UCACHE_HASH_SIZE];
-	time_t uptime;
-};
-
-struct UINDEX {
-	int user[MAXUSERS][6];	//不清楚www判断多登录的机制是否使上限超出telnet中的5, 设成6
 };
 
 #define MAX_LOGIN_PER_USER 6
