@@ -2,8 +2,6 @@
 #include "config.h"
 #include "nbstat.h"
 
-struct BCACHE *brdshm = NULL;
-struct boardmem *bcache = NULL;
 char *timeperiod;
 
 extern void bm_init();
@@ -18,27 +16,6 @@ boardnoread(struct boardheader *fptr)
 	return (((fptr->level != 0)
 		&& !(fptr->level & PERM_NOZAP || fptr->level & PERM_POSTMASK))
 		|| ((fptr->clubnum != 0) && (!(fptr->flag & CLUBTYPE_FLAG))));
-}
-
-int
-resolveshm()
-{
-	int shmid;
-	shmid = shmget(BCACHE_SHMKEY, sizeof (*brdshm), 0);
-	if (shmid < 0)
-		return -1;
-	brdshm = (struct BCACHE *) shmat(shmid, NULL, 0);
-	if (brdshm == (struct BCACHE *) -1)
-		return -1;
-	bcache = brdshm->bcache;
-	return 0;
-}
-
-void
-initbdata()
-{
-	if (brdshm == NULL)
-		resolveshm();
 }
 
 void
@@ -204,7 +181,7 @@ main(int argc, char *argv[])
 			end = 0;
 	}
 
-	initbdata();
+	ythtbbs_cache_Board_resolve();
 
 	if (strchr(target, 'm'))
 		bm_init();
