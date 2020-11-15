@@ -16,7 +16,7 @@ boardnoread(struct boardheader *fptr)
 {
 
 	return (((fptr->level != 0)
-		 && !(fptr->level & PERM_NOZAP || fptr->level & PERM_POSTMASK))
+		&& !(fptr->level & PERM_NOZAP || fptr->level & PERM_POSTMASK))
 		|| ((fptr->clubnum != 0) && (!(fptr->flag & CLUBTYPE_FLAG))));
 }
 
@@ -46,10 +46,9 @@ usage(char *progname)
 {
 	printf("Usage:\n%s action-string days [endday]\n", progname);
 	printf("actions:'m' board manager stat\n");
-	printf("	'u' board usage stat\n");
-	printf
-	    ("	's' calculate board score, must be the unique action\n");
-	printf("	'b' bbslists stat, runs every hour, day must be 1\n");
+	printf("\t'u' board usage stat\n");
+	printf("\t's' calculate board score, must be the unique action\n");
+	printf("\t'b' bbslists stat, runs every hour, day must be 1\n");
 	exit(1);
 }
 
@@ -137,7 +136,7 @@ register_stat(struct action_f *mod, void (*mod_exit) ())
 {
 	int ret;
 	while (mod->action != NULL) {
-		if (ret = register_log(mod->action, mod->f)) {
+		if ((ret = register_log(mod->action, mod->f))) {
 			errlog("Can't register %s %d", mod->action, ret);
 			return ret;
 		}
@@ -253,3 +252,4 @@ main(int argc, char *argv[])
 
 	return 0;
 }
+
