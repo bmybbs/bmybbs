@@ -295,33 +295,40 @@ bbslists_exit()
 	draw_usage();
 }
 
+static int bbslists_callback(struct boardmem *board, int curr_idx, va_list ap) {
+	(void) curr_idx;
+	(void) ap;
+	struct hword *tmp;
+
+	if (board->header.filename[0] == '\0')
+		return 0;
+
+	tmp = malloc(sizeof (struct hword));
+	if (tmp == NULL) {
+		errlog("Can't malloc in bbslists_init!");
+		exit(-1);
+	}
+	memset(tmp, 0, sizeof(struct hword));
+	tmp->value = calloc(1, sizeof (struct bstat));
+	if (tmp->value == NULL) {
+		errlog("Can't malloc value in board_init!");
+		exit(-1);
+	}
+
+	snprintf(tmp->str, 20, "%s", board->header.filename);
+	strcpy(((struct bstat *) (tmp->value))->board, tmp->str);
+	snprintf(((struct bstat *) (tmp->value))->expname, STRLEN, "%s", board->header.title);
+	((struct bstat *) (tmp->value))->noread = boardnoread(&(board->header));
+	insertdic(busage, tmp);
+
+	return 0;
+}
+
 void
 bbslists_init()
 {
-	int i;
-	struct hword *tmp;
-	int numboards;
-	numboards = brdshm->number;
 	snprintf(sid, sizeof (sid), "%10s", MY_BBS_ID " BBS");
-	for (i = 0; i < numboards; i++) {
-		if (!bcache[i].header.filename[0])
-			continue;
-		tmp = malloc(sizeof (struct hword));
-		if (tmp == NULL) {
-			errlog("Can't malloc in bbslists_init!");
-			exit(-1);
-		}
-		snprintf(tmp->str, 20, "%s", bcache[i].header.filename);
-		tmp->value = calloc(1, sizeof (struct bstat));
-		if (tmp->value == NULL) {
-			errlog("Can't malloc value in board_init!");
-			exit(-1);
-		}
-		strcpy(((struct bstat *) (tmp->value))->board, tmp->str);
-		snprintf(((struct bstat *) (tmp->value))->expname, STRLEN, "%s", bcache[i].header.title);
-		((struct bstat *) (tmp->value))->noread = boardnoread(&(bcache[i].header));
-		insertdic(busage, tmp);
-	}
+	ythtbbs_cache_Board_foreach_v(bbslists_callback);
 	bzero(newaccount, sizeof (newaccount));
 	bzero(login, sizeof (login));
 	bzero(stay, sizeof (stay));
