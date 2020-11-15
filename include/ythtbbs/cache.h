@@ -293,7 +293,6 @@ void ythtbbs_cache_utmp_set_www_kicked(int utmp_idx);
 struct user_info *ythtbbs_cache_utmp_get_by_idx(int idx);
 
 void ythtbbs_cache_Board_resolve();
-struct boardmem *ythtbbs_cache_Board_get_bcache();
 struct boardmem *ythtbbs_cache_Board_get_board_by_idx(int idx);
 struct boardmem *ythtbbs_cache_Board_get_board_by_name(const char *bname);
 int ythtbbs_cache_Board_get_idx_by_ptr(const struct boardmem *ptr);
