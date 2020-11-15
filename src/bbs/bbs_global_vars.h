@@ -46,7 +46,6 @@ extern int t_lines;
 extern int toggle1, toggle2;
 extern int WishNum;
 extern int mot;
-extern struct BCACHE *brdshm;
 extern struct one_key friend_list[];
 extern struct one_key mail_comms[];
 extern const struct one_key mail_default_comms[];
