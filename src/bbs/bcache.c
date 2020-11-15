@@ -396,10 +396,13 @@ is1984_board(bname)
 char *bname;
 {
 	register int i;
+	const struct boardmem *board_ptr = NULL;
 
 	if ((i = getbnum(bname)) == 0)
 		return 0;
-	return (bcache[i - 1].header.flag & IS1984_FLAG);
+
+	board_ptr = ythtbbs_cache_Board_get_board_by_idx(i - 1);
+	return (board_ptr->header.flag & IS1984_FLAG);
 }
 
 int political_board(const char *bname) {
