@@ -37,12 +37,9 @@ getlastpost(char *board, int *lastpost, int *total)
 	return 0;
 }
 
-int
-updatelastpost(char *board)
-{
+// 本方法在初始化之后被调用，因此移除缓存初始化
+int updatelastpost(char *board) {
 	struct boardmem *bptr;
-	if (shm_bcache == NULL)
-		shm_init();
 	bptr = ythtbbs_cache_Board_get_board_by_name(board);
 	if (bptr == NULL)
 		return -1;
