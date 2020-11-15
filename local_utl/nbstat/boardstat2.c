@@ -119,11 +119,10 @@ bu_init()
 			exit(-1);
 		}
 		strcpy(((struct buser *) (tmp->value))->board, tmp->str);
-		snprintf(((struct buser *) (tmp->value))->expname, STRLEN, "%s",
-			 bcache[i].header.title);
-		((struct buser *) (tmp->value))->noread =
-		    boardnoread(&(bcache[i].header));
+		snprintf(((struct buser *) (tmp->value))->expname, STRLEN, "%s", bcache[i].header.title);
+		((struct buser *) (tmp->value))->noread = boardnoread(&(bcache[i].header));
 		insertdic(bustat, tmp);
 	}
 	register_stat(bu, bu_exit);
 }
+
