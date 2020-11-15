@@ -316,6 +316,7 @@ char *uid;
 char *bname;
 {
 	register int i;
+	const struct boardmem *board_ptr = NULL;
 
 	i = getuser(uid);
 	if (i == 0)
@@ -324,14 +325,15 @@ char *bname;
 		return 1;
 	if ((i = getbnum(bname)) == 0)
 		return 0;
-	if (bcache[i - 1].header.clubnum != 0) {
+
+	board_ptr = ythtbbs_cache_Board_get_board_by_idx(i - 1);
+	if (board_ptr->header.clubnum != 0) {
 		setbfile(genbuf, currboard, "club_users");
 		return seek_in_file(genbuf, uid);
 	}
-	if (bcache[i - 1].header.level == 0)
+	if (board_ptr->header.level == 0)
 		return 1;
-	return (lookupuser.userlevel &
-		((bcache[i - 1].header.level & ~PERM_NOZAP) & ~PERM_POSTMASK));
+	return (lookupuser.userlevel & ((board_ptr->header.level & ~PERM_NOZAP) & ~PERM_POSTMASK));
 }
 
 
