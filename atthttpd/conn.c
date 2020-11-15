@@ -252,7 +252,7 @@ write_cache_header(conn_t * c, time_t t, int age, char *old)
 	sprintf(buf, "%d\r\n\r\n", age);
 	strcat(c_header, buf);
 	c->state = SENDING_HEADER;
-      END:
+END:
 	c->cache_header = c_header;
 	c->chlen = strlen(c->cache_header);
 	c->choff = 0;
@@ -262,7 +262,7 @@ write_cache_header(conn_t * c, time_t t, int age, char *old)
 static int
 findarticle(char *board, char *filename)
 {
-	struct mmapfile mf={ptr:NULL};
+	struct mmapfile mf={.ptr = NULL};
 	char dir[80];
 	int index;
 	int total;
