@@ -754,19 +754,20 @@ setbmstatus(int online)
 static int
 setbmhat(struct boardmanager *bm, int *online)
 {
-	if (strcmp(bcache[bm->bid].header.filename, bm->board)) {
-		errlog("error board name %s, %s", bcache[bm->bid].header.filename, bm->board);
+	struct boardmem *board_ptr = ythtbbs_cache_Board_get_board_by_idx(bm->bid);
+	if (strcmp(board_ptr->header.filename, bm->board)) {
+		errlog("error board name %s, %s", board_ptr->header.filename, bm->board);
 		return -1;
 	}
 	if (*online) {
-		bcache[bm->bid].bmonline |= (1 << bm->bmpos);
+		board_ptr->bmonline |= (1 << bm->bmpos);
 		if (uinfo.invisible)
-			bcache[bm->bid].bmcloak |= (1 << bm->bmpos);
+			board_ptr->bmcloak |= (1 << bm->bmpos);
 		else
-			bcache[bm->bid].bmcloak &= ~(1 << bm->bmpos);
+			board_ptr->bmcloak &= ~(1 << bm->bmpos);
 	} else {
-		bcache[bm->bid].bmonline &= ~(1 << bm->bmpos);
-		bcache[bm->bid].bmcloak &= ~(1 << bm->bmpos);
+		board_ptr->bmonline &= ~(1 << bm->bmpos);
+		board_ptr->bmcloak &= ~(1 << bm->bmpos);
 	}
 	return 0;
 }
