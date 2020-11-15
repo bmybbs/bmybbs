@@ -435,11 +435,12 @@ char *boardname;
 	static int club_rights_time = 0;
 	char fn[STRLEN];
 	struct stat st1, st2;
+	const struct boardmem *board_ptr = NULL;
+
 	if ((i = getbnum(boardname)) == 0)
 		return 0;
-	if (bcache[i - 1].header.clubnum == 0)
+	if (board_ptr->header.clubnum == 0)
 		return 1;
-	if (!strcmp(uinfo.userid, "pzhgpzhg")) return 1;
 
 	setuserfile(fn, "clubrights");
 	if (stat(fn, &st1))
@@ -456,23 +457,23 @@ char *boardname;
 		} else
 			memset(&(uinfo.clubrights), 0, 4 * sizeof (int));
 	}
-	old_right = HAS_CLUBRIGHT(bcache[i - 1].header.clubnum, uinfo.clubrights);
+	old_right = HAS_CLUBRIGHT(board_ptr->header.clubnum, uinfo.clubrights);
 	setbfile(fn, boardname, "club_users");
 	if (!stat(fn, &st2))
 		if (club_rights_time < st2.st_mtime) {
 			if (seek_in_file(fn, currentuser.userid))
-				uinfo.clubrights[bcache[i - 1].header.clubnum / 32] |= (1 << bcache[i - 1].header.clubnum % 32);
+				uinfo.clubrights[board_ptr->header.clubnum / 32] |= (1 << board_ptr->header.clubnum % 32);
 			else
-				uinfo.clubrights[bcache[i - 1].header.clubnum / 32] &= ~(1 << bcache[i - 1].header.clubnum % 32);
-			if (old_right != HAS_CLUBRIGHT(bcache[i - 1].header.clubnum, uinfo.clubrights)) {
+				uinfo.clubrights[board_ptr->header.clubnum / 32] &= ~(1 << board_ptr->header.clubnum % 32);
+			if (old_right != HAS_CLUBRIGHT(board_ptr->header.clubnum, uinfo.clubrights)) {
 				char towrite[STRLEN];
 				setuserfile(fn, "clubrights");
-				sprintf(towrite, "%d", bcache[i - 1].header.clubnum);
+				sprintf(towrite, "%d", board_ptr->header.clubnum);
 				old_right ? ytht_del_from_file(fn, towrite, true) : ytht_add_to_file(fn, towrite);
 			}
 		}
-	if (!(bcache[i - 1].header.flag & CLUBTYPE_FLAG))
-		return HAS_CLUBRIGHT(bcache[i - 1].header.clubnum, uinfo.clubrights);
+	if (!(board_ptr->header.flag & CLUBTYPE_FLAG))
+		return HAS_CLUBRIGHT(board_ptr->header.clubnum, uinfo.clubrights);
 	return 1;
 }
 
