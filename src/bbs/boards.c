@@ -309,7 +309,7 @@ load_boards(int *brdnum, int secnum)
 	int goodbrd = 0;
 	static int loadtime = 0;
 
-	resolve_boards();
+	ythtbbs_cache_Board_resolve();
 	if (!(GoodBrd.num == 9999 || ythtbbs_cache_Board_get_uptime() >= loadtime || zapbuf == NULL || *brdnum <= 0))
 		return 0;
 	loadtime = time(NULL);
@@ -977,7 +977,7 @@ const struct sectree *sec;
 					ptr->status = 'p';
 				}
 				substitute_record(BOARDS, &fh, sizeof (fh), pos);
-				reload_boards();
+				ythtbbs_cache_Board_resolve();
 				sprintf(genbuf, "%sÌÖÂÛÇø: %s",
 						(ptr->status == 'p') ? "·â" : "½â·â",
 						ptr->name);

@@ -4119,7 +4119,7 @@ b_notes_edit()
 				pos = new_search_record(BOARDS, &fh, sizeof (fh), (void *) cmpbnames, currboard);
 				fh.keyword[0]='\0';
 				substitute_record(BOARDS, &fh, sizeof (fh), pos);
-				reload_boards();
+				ythtbbs_cache_Board_resolve();
 				sprintf(secu, "删除%s版版面关键字", fh.filename);
 				securityreport(secu, secu);
 				move(14, 0);
@@ -4137,7 +4137,7 @@ b_notes_edit()
 			if (askyn("要保存修改后的版面关键字吗?", NA, NA)){
 				strcpy(fh.keyword, buf3);
 				substitute_record(BOARDS, &fh, sizeof (fh), pos);
-				reload_boards();
+				ythtbbs_cache_Board_resolve();
 				sprintf(secu, "修改%s版版面关键字", fh.filename);
 				securityreport(secu, secu);
 				move(16, 0);

@@ -117,7 +117,7 @@ int flag;
 		fh.flag = fh.flag | VOTE_FLAG;
 	if (substitute_record(BOARDS, &fh, sizeof (fh), pos) == -1)
 		prints("Error updating BOARDS file...\n");
-	reload_boards();
+	ythtbbs_cache_Board_resolve();
 }
 
 void

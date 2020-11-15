@@ -42,7 +42,6 @@ extern int die;
 extern char ULIST[]; /* main.c */
 
 static int getlastpost(char *board, int *lastpost, int *total);
-static int fillbcache(struct boardheader *fptr, int *pcountboard);
 static int setbmhat(struct boardmanager *bm, int *online);
 static void bmonlinesync(void);
 
@@ -98,85 +97,6 @@ getlastpost(char *board, int *lastpost, int *total)
 	}
 	close(fd);
 	return 0;
-}
-
-static int
-fillbcache(fptr, pcountboard)
-struct boardheader *fptr;
-int *pcountboard;
-{
-	struct boardmem *bptr;
-
-	if (*pcountboard >= MAXBOARD)
-		return 0;
-	bptr = &bcache[*pcountboard];
-	(*pcountboard)++;
-	memcpy(&(bptr->header), fptr, sizeof (struct boardheader));
-	getlastpost(bptr->header.filename, &bptr->lastpost, &bptr->total);
-	return 0;
-}
-
-void
-reload_boards()
-{
-	struct stat st;
-	time_t now, now2;
-	int lockfd, countboard;
-
-	if (brdshm == NULL) {
-		brdshm = attach_shm(BCACHE_SHMKEY, sizeof (*brdshm));
-	}
-	numboards = brdshm->number;
-	bcache = brdshm->bcache;
-	now = time(NULL);
-
-	lockfd = open("bcache.lock", O_RDONLY | O_CREAT, 0600);
-	if (lockfd < 0)
-		return;
-	flock(lockfd, LOCK_EX);
-
-	if (stat(BOARDS, &st) < 0) {
-		errlog("BOARDS stat error: %s", strerror(errno));
-		st.st_mtime = now - 3600;
-	}
-	if (brdshm->uptime <= st.st_mtime || brdshm->uptime < now - 3600) {
-		brdshm->uptime = now;
-		countboard = 0;
-		new_apply_record(BOARDS, sizeof (struct boardheader), (void *) fillbcache, &countboard);
-		brdshm->number = countboard;
-		numboards = countboard;
-		{
-			char str[80];
-			sprintf(str, "system reload bcache %d", numboards);
-			newtrace(str);
-		}
-		bmonlinesync();
-		time(&now2);
-		if (stat(BOARDS, &st) >= 0 && st.st_mtime < now)
-			brdshm->uptime = now2;
-	}
-	close(lockfd);
-}
-
-void
-resolve_boards()
-{
-	struct stat st;
-	time_t now;
-	static int n = 0;
-
-	if (n == 0)
-		reload_boards();
-	numboards = brdshm->number;
-	if (n++ % 30)
-		return;
-	time(&now);
-	if (stat(BOARDS, &st) < 0) {
-		st.st_mtime = now - 3600;
-	}
-	if (brdshm->uptime < st.st_mtime || brdshm->uptime < now - 3600)
-		reload_boards();
-
 }
 
 int updatelastpost(char *board)
@@ -249,10 +169,9 @@ static int getbnum_callback(struct boardmem *board, int curr_idx, va_list ap) {
 }
 
 int getbnum(const char *bname) {
-	int i;
 	static int cachei = 0;
 
-	resolve_boards();
+	ythtbbs_cache_Board_resolve();
 
 	if (!strncasecmp(bname, ythtbbs_cache_Board_get_board_by_idx(cachei)->header.filename, STRLEN))
 		if (hasreadperm(&ythtbbs_cache_Board_get_board_by_idx(cachei)->header))
@@ -439,6 +358,7 @@ char *boardname;
 
 	if ((i = getbnum(boardname)) == 0)
 		return 0;
+	board_ptr = ythtbbs_cache_Board_get_board_by_idx(i - 1);
 	if (board_ptr->header.clubnum == 0)
 		return 1;
 
@@ -656,7 +576,7 @@ getbmnum(userid)
 char *userid;
 {
 	int i, k, oldbm = 0;
-	reload_boards();
+	ythtbbs_cache_Board_resolve();
 	const struct boardmem *board_ptr = NULL;
 
 	for (k = 0; k < numboards; k++) {
