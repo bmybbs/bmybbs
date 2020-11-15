@@ -657,16 +657,19 @@ char *userid;
 {
 	int i, k, oldbm = 0;
 	reload_boards();
+	const struct boardmem *board_ptr = NULL;
+
 	for (k = 0; k < numboards; k++) {
+		board_ptr = ythtbbs_cache_Board_get_board_by_idx(k);
 		for (i = 0; i < BMNUM; i++) {
-			if (bcache[k].header.bm[i][0] == 0) {
+			if (board_ptr->header.bm[i][0] == 0) {
 				if (k < 4) {
 					k = 3;
 					continue;
 				}
 				break;
 			}
-			if (!strcmp(bcache[k].header.bm[i], userid))
+			if (!strcmp(board_ptr->header.bm[i], userid))
 				oldbm++;
 		}
 	}
