@@ -41,7 +41,6 @@ extern int utmpent;
 extern volatile int incgiloop;
 extern int thispid;
 extern time_t now_t;
-extern time_t starttime;
 extern jmp_buf cgi_start;
 extern struct userec currentuser;
 extern struct user_info *u_info;
