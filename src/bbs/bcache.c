@@ -274,7 +274,7 @@ char *bname;
 	int i;
 	if ((i = getbnum(bname)) == 0)
 		return 0;
-	return hasreadperm(&(bcache[i - 1].header));
+	return hasreadperm(&ythtbbs_cache_Board_get_board_by_idx(i - 1)->header);
 }
 
 int noadm4political(const char *bname) {
