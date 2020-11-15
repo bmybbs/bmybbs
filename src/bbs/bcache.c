@@ -233,23 +233,37 @@ int hasreadperm_ext(char *username,  char *boardname)
 	return 0;
 }
 
+static int getbnum_callback(struct boardmem *board, int curr_idx, va_list ap) {
+	const char *bname = va_arg(ap, const char *);
+	int *cache_idx = va_arg(ap, int *);
+
+	if (strncasecmp(bname, board->header.filename, STRLEN))
+		return 0;
+
+	if (hasreadperm(&board->header)) {
+		*cache_idx = curr_idx;
+		return QUIT;
+	}
+
+	return 0;
+}
+
 int getbnum(const char *bname) {
 	int i;
 	static int cachei = 0;
 
 	resolve_boards();
 
-	if (!strncasecmp(bname, bcache[cachei].header.filename, STRLEN))
-		if (hasreadperm(&(bcache[cachei].header)))
+	if (!strncasecmp(bname, ythtbbs_cache_Board_get_board_by_idx(cachei)->header.filename, STRLEN))
+		if (hasreadperm(&ythtbbs_cache_Board_get_board_by_idx(cachei)->header))
 			return cachei + 1;
-	for (i = 0; i < numboards; i++) {
-		if (strncasecmp(bname, bcache[i].header.filename, STRLEN))
-			continue;
-		if (hasreadperm(&(bcache[i].header))) {
-			cachei = i;
-			return i + 1;
-		}
-	}
+
+	ythtbbs_cache_Board_foreach_v(getbnum_callback, bname, &cachei);
+
+	if (!strncasecmp(bname, ythtbbs_cache_Board_get_board_by_idx(cachei)->header.filename, STRLEN))
+		if (hasreadperm(&ythtbbs_cache_Board_get_board_by_idx(cachei)->header))
+			return cachei + 1;
+
 	return 0;
 }
 
