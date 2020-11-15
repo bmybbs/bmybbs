@@ -423,9 +423,7 @@ char *bname;
 	register int i;
 	if ((i = getbnum(bname)) == 0)
 		return 0;
-	if (bcache[i - 1].header.clubnum != 0)
-		return 1;
-	return 0;
+	return (ythtbbs_cache_Board_get_board_by_idx(i - 1)->header.clubnum != 0) ? 1 : 0;
 }
 
 int
