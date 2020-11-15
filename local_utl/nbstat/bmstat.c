@@ -339,8 +339,13 @@ static int bm_callback(struct boardmem *board, int curr_idx, va_list ap) {
 			continue;
 
 		tmp = malloc(sizeof(struct hword));
+		if (tmp == NULL) {
+			errlog("Can't malloc in bm_init!");
+			exit(-1);
+		}
+		memset(tmp, 0, sizeof(struct hword));
 		tmp->value = malloc(sizeof(struct bmstat));
-		if (tmp == NULL || tmp->value == NULL) {
+		if (tmp->value == NULL) {
 			errlog("Can't malloc in bm_init!");
 			exit(-1);
 		}
