@@ -2,11 +2,9 @@
 #include "bbsstatlog.h"
 
 struct BCACHE *shm_bcache;
-
 struct bbsstatlogitem item;
-int
-shm_init()
-{
+
+int shm_init() {
 	ythtbbs_cache_utmp_resolve();
 	shm_bcache = (struct BCACHE *) get_old_shm(BCACHE_SHMKEY, sizeof (struct BCACHE));
 	if (shm_bcache == NULL)
@@ -14,9 +12,7 @@ shm_init()
 	return 0;
 }
 
-void
-bonlinesync()
-{
+void bonlinesync() {
 	int i, numboards;
 	struct user_info *uentp;
 	numboards = shm_bcache->number;
@@ -29,10 +25,7 @@ bonlinesync()
 	}
 }
 
-void
-get_load(load)
-float load[];
-{
+void get_load(float load[]) {
 	FILE *fp;
 	fp = fopen("/proc/loadavg", "r");
 	if (!fp)
@@ -47,9 +40,7 @@ float load[];
 	}
 }
 
-int
-get_netflow()
-{
+int get_netflow() {
 	FILE *fp;
 	float fMbit_s = 0;
 	char *ptr, buf[256];
@@ -64,14 +55,12 @@ get_netflow()
 	while (ptr > buf && isdigit(*(ptr - 1)))
 		ptr--;
 	fMbit_s = atof(ptr);
-      ERR:
+ERR:
 	fclose(fp);
 	return fMbit_s * 1024;
 }
 
-int
-main()
-{
+int main() {
 	int i, fd;
 	struct user_info *p;
 	struct tm *ptm;
