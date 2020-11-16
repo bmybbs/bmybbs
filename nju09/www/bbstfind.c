@@ -1,5 +1,6 @@
 #include "bbslib.h"
 
+char *size_str(int size); // bbsdoc.c
 int
 bbstfind_main()
 {
