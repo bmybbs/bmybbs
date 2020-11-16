@@ -525,8 +525,6 @@ else sprintf(str1,"现在是 %s, 新世纪已经开始了%d秒\n",str,-dis);
 			prints("\033[1;31m错误的使用者帐号...\033[0m\n");
 			scroll();
 		} else {
-			if (!g_convcode)
-				g_convcode = !(currentuser.userdefine & DEF_USEGB);
 			move(t_lines - 1, 0);
 			clrtoeol();
 			getdata(t_lines - 1, 0, "请输入密码: ", passbuf, PASSLEN, NOECHO, YEA);
@@ -535,6 +533,8 @@ else sprintf(str1,"现在是 %s, 新世纪已经开始了%d秒\n",str,-dis);
 
 			// 使用 ythtbbs_user_login 接口
 			login_rc = ythtbbs_user_login(uid, passbuf, fromhost, YTHTBBS_LOGIN_TELNET, &uinfo, &currentuser, &utmpent);
+			if (!g_convcode)
+				g_convcode = !(currentuser.userdefine & DEF_USEGB);
 
 			if (login_rc == YTHTBBS_USER_NOT_EXIST) {
 				move(t_lines - 1, 0);
