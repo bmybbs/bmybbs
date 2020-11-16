@@ -34,7 +34,7 @@ void ythtbbs_cache_Board_resolve() {
 		}
 	}
 
-	lockfd = open(MY_BBS_HOME "./CACHE.board.lock", O_RDONLY | O_CREAT, 0600);
+	lockfd = open(MY_BBS_HOME "/.CACHE.board.lock", O_RDONLY | O_CREAT, 0600);
 	if (lockfd < 0)
 		return;
 	flock(lockfd, LOCK_EX);
