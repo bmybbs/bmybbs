@@ -1,5 +1,12 @@
 #include "bbslib.h"
 
+// bbsdoc
+char *size_str(int size);
+void nosuchboard(char *, char *);
+int getdocstart(int total, int lines);
+void printboardtop(struct boardmem *x, int num);
+void bbsdoc_helper(char *cgistr, int start, int total, int lines);
+
 int
 bbsbkndoc_main()
 {
