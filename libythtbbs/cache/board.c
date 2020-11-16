@@ -220,3 +220,19 @@ static void bmonlinesync() {
 	newtrace("system reload bmonline");
 }
 
+void ythtbbs_cache_Board_dump(FILE *fp) {
+	int i;
+	struct boardmem *board;
+	ythtbbs_cache_Board_resolve();
+	fprintf(fp, "===== Board =====\n");
+
+	for (i = 0; i < MAXBOARD; i++) {
+		board = &shm_board->bcache[i];
+
+		if (board->header.filename[0] == '\0')
+			continue;
+
+		fprintf(fp, "%d, %s\n", i, board->header.filename);
+	}
+}
+
