@@ -533,6 +533,7 @@ else sprintf(str1,"现在是 %s, 新世纪已经开始了%d秒\n",str,-dis);
 
 			// 使用 ythtbbs_user_login 接口
 			login_rc = ythtbbs_user_login(uid, passbuf, fromhost, YTHTBBS_LOGIN_TELNET, &uinfo, &currentuser, &utmpent);
+			usernum = ythtbbs_cache_UserTable_search_usernum(uid);
 			if (!g_convcode)
 				g_convcode = !(currentuser.userdefine & DEF_USEGB);
 
