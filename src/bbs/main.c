@@ -760,20 +760,6 @@ user_login()
 			shownotepad();
 #endif
 		ansimore("0Announce/bbslist/countusr", 1);
-#if 0
-		if ((rec_flag(NULL, '\0', 2 /*检查读过新的Welcome 没 */ ) == 0)
-		    && DEFINE(DEF_SEEWELC1)) {
-			if (dashf("Welcome")) {
-				ansimore("Welcome", YEA);
-				rec_flag(NULL, 'R',
-					 2 /*写入读过新的Welcome */ );
-			}
-		} else {
-			//ansimore("HappyNewYear",YEA);
-			if (fill_shmfile(3, "Welcome2", WELCOME_SHMKEY))
-				show_welcomeshm();
-		}
-#endif
 		ansimore2("Welcome2", 1, 0, 24);
 		if (DEFINE(DEF_FILTERXXX, currentuser))
 			ansimore("etc/dayf", 1);
@@ -1007,8 +993,7 @@ char *argv[];
 	srand(time(NULL) + getpid());
 	load_sysconf();
 	conv_init();
-	if (argc < 2 || ((*argv[1] != 'h') && (*argv[1] != 'e')
-			 && (*argv[1] != 'd'))) {
+	if (argc < 2 || ((*argv[1] != 'h') && (*argv[1] != 'e') && (*argv[1] != 'd'))) {
 		prints("You cannot execute this program directly.\n");
 		refresh();
 		exit(-1);
@@ -1190,13 +1175,13 @@ nowishfile:
 		sprintf(buf, "[\033[36m%.12s\033[33m]", currentuser.userid);
 		num_alcounter();
 		prints("\033[1;44;33m时间:[\033[36m%16s\033[33m] 在线/朋友:[\033[36m%4d\033[33m/\033[1;36m%3d\033[33m] 状态:[\033[36m%1s%1s%1s%1s%1s%1s\033[33m] 使用者:%-s\033[m",
-		     ctime(&now), count_users, count_friends,
-		     (uinfo.pager & ALL_PAGER) ? "P" : "p",
-		     (uinfo.pager & FRIEND_PAGER) ? "O" : "o",
-		     (uinfo.pager & ALLMSG_PAGER) ? "M" : "m",
-		     (uinfo.pager & FRIENDMSG_PAGER) ? "F" : "f",
-		     (DEFINE(DEF_MSGGETKEY, currentuser)) ? "X" : "x",
-		     (uinfo.invisible == 1) ? "C" : "c", buf);
+				ctime(&now), count_users, count_friends,
+				(uinfo.pager & ALL_PAGER) ? "P" : "p",
+				(uinfo.pager & FRIEND_PAGER) ? "O" : "o",
+				(uinfo.pager & ALLMSG_PAGER) ? "M" : "m",
+				(uinfo.pager & FRIENDMSG_PAGER) ? "F" : "f",
+				(DEFINE(DEF_MSGGETKEY, currentuser)) ? "X" : "x",
+				(uinfo.invisible == 1) ? "C" : "c", buf);
 		return;
 	}
 	setuserfile(fname, "HaveNewWish");
@@ -1214,8 +1199,7 @@ nowishfile:
 				ptr = strtok(buf, "\n\r");
 				if (ptr == NULL || ptr[0] == '#' || ptr[0] == '\n') continue;
 				strcpy(buf, ptr);
-				for (ptr = buf; *ptr == ' ' && *ptr != 0;
-				     ptr++) ;
+				for (ptr = buf; *ptr == ' ' && *ptr != 0; ptr++) ;
 				if (*ptr == 0 || ptr[0] == '#')
 					continue;
 				for (i = strlen(ptr) - 1; i < 0; i--)
@@ -1302,23 +1286,13 @@ R_endline(int signum)
 	if (!can_R_endline)
 		return;
 	if (uinfo.mode != READBRD
-	    && uinfo.mode != READNEW
-	    && uinfo.mode != SELECT
-	    && uinfo.mode != LUSERS
-	    && uinfo.mode != FRIEND
-	    && uinfo.mode != READING
-	    && uinfo.mode != RMAIL && uinfo.mode != DIGEST) return;
-/*---------
-    if (uinfo.mode != READBRD
-        &&uinfo.mode != READNEW
-        &&uinfo.mode != SELECT
-        &&uinfo.mode != LUSERS
-        &&uinfo.mode != FRIEND
-        &&!(uinfo.mode==READING&&can_R_endline)
-        &&!(uinfo.mode==RMAIL&&can_R_endline)
-        &&!(uinfo.mode==DIGEST&&can_R_endline) )
-        return;
-----------*/
+			&& uinfo.mode != READNEW
+			&& uinfo.mode != SELECT
+			&& uinfo.mode != LUSERS
+			&& uinfo.mode != FRIEND
+			&& uinfo.mode != READING
+			&& uinfo.mode != RMAIL && uinfo.mode != DIGEST)
+		return;
 	update_endline();
 }
 
