@@ -190,6 +190,7 @@ u_exit()
 		substitute_record(PASSFILE, &currentuser, sizeof (currentuser), usernum);
 	}
 
+	ythtbbs_user_logout(uinfo.userid, utmpent);
 	uinfo.active = 0;
 	uinfo.pid = 0;
 	uinfo.invisible = true;
@@ -197,7 +198,6 @@ u_exit()
 	uinfo.sockaddr = 0;
 	uinfo.destuid = 0;
 	uinfo.lasttime = 0;
-	ythtbbs_cache_utmp_update(utmpent - 1, &uinfo);
 	utmpent = -1;
 }
 
