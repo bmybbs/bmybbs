@@ -49,7 +49,7 @@ void ythtbbs_cache_Board_resolve() {
 		shm_board->uptime = local_now;
 		countboard = 0;
 
-		new_apply_record(BOARDS, sizeof(struct boardheader), fillbcache, &countboard);
+		new_apply_record(MY_BBS_HOME "/" BOARDS, sizeof(struct boardheader), fillbcache, &countboard);
 
 		shm_board->number = countboard;
 

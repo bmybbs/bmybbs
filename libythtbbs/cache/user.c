@@ -95,7 +95,7 @@ void ythtbbs_cache_UserTable_resolve() {
 
 	if (shm_user_table->update_time < st.st_mtime) {
 		local_usernumber = 0;
-		ythtbbs_record_apply_v(PASSFILE, ythtbbs_cache_UserTable_fill_v, sizeof(struct userec), &local_usernumber);
+		ythtbbs_record_apply_v(MY_BBS_HOME "/" PASSFILE, ythtbbs_cache_UserTable_fill_v, sizeof(struct userec), &local_usernumber);
 
 		shm_user_table->number = local_usernumber;
 		shm_user_table->update_time = st.st_mtime;
