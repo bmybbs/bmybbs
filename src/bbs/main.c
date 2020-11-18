@@ -190,7 +190,7 @@ u_exit()
 		substitute_record(PASSFILE, &currentuser, sizeof (currentuser), usernum);
 	}
 
-	ythtbbs_user_logout(uinfo.userid, utmpent);
+	ythtbbs_user_logout(uinfo.userid, utmpent - 1);
 	uinfo.active = 0;
 	uinfo.pid = 0;
 	uinfo.invisible = true;
@@ -533,6 +533,7 @@ else sprintf(str1,"现在是 %s, 新世纪已经开始了%d秒\n",str,-dis);
 
 			// 使用 ythtbbs_user_login 接口
 			login_rc = ythtbbs_user_login(uid, passbuf, fromhost, YTHTBBS_LOGIN_TELNET, &uinfo, &currentuser, &utmpent);
+			utmpent++; // 在 ythtbbs_user_login 接口中获取的传出值是 utmp_idx，而 utmpent 从 1 开始索引。
 			usernum = ythtbbs_cache_UserTable_search_usernum(uid);
 			if (!g_convcode)
 				g_convcode = !(currentuser.userdefine & DEF_USEGB);
