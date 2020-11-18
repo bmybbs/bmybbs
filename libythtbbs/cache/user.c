@@ -233,13 +233,12 @@ char *ythtbbs_cache_UserTable_get_namearray(char buf[][IDLEN + 1], int *pnum, ch
 	if (tag[0] == '\0') {
 		*pnum = reg_user_table->number;
 		total = reg_user_table->number;
-		for (n = 0; n < total;) {
+		for (n = 0; n < total; n++) {
 			ptr = reg_user_table->users[n].userid;
 			if (ptr[0] == '\0')
 				continue;
 
 			strcpy(buf[num++], ptr);
-			n++;
 		}
 		return buf[0];
 	}
