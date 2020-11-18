@@ -672,11 +672,6 @@ direct_login()
 	}
 	if (strcmp(currentuser.userid, "SYSOP") == 0)
 		currentuser.userlevel = ~0;	/* SYSOP gets all permission bits */
-
-	if (strcmp(currentuser.userid, "beta") == 0) {
-		 currentuser.userlevel = ~0;     /* SYSOP gets all permission bits */
-		// currentuser.userlevel &= ~PERM_DENYMAIL;
-	}
 	substitute_record(PASSFILE, &currentuser, sizeof (currentuser), usernum);
 
 	login_start_time = time(0);
