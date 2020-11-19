@@ -315,6 +315,7 @@ multi_user_check()
 			prints("\033[1;33m很抱歉, 您已 Telnet Login 相同帐号%d次, "
 					"为确保他人上站权益,\n 此连线将被取消。\033[m\n",
 					logins);
+			ythtbbs_user_logout(uinfo.userid, utmpent - 1);
 			refresh();
 			exit(1);
 		}
