@@ -1,5 +1,5 @@
 #include "bbslib.h"
-
+#include "ytht/random.h"
 
 // 生成一个长为len的随机字符串
 char *random_str(char *buf, int len)
@@ -49,7 +49,7 @@ bbspwd_main() {
 			http_fatal("新密码太短");
 		if (!ytht_crypt_checkpasswd(currentuser.passwd, pw1))
 			http_fatal("密码不正确");
-		getsalt(salt);
+		ytht_get_salt(salt);
 		strcpy(currentuser.passwd, ytht_crypt_crypt1(pw2, salt));
 		save_user_data(&currentuser);
 		printf("[%s] 密码修改成功.", currentuser.userid);

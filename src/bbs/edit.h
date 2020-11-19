@@ -8,7 +8,7 @@
     Firebird Bulletin Board System
     Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
                         Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
-    
+
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 1, or (at your option)
@@ -24,6 +24,7 @@
 #define __BBS_EDIT_H
 #include <stdio.h>
 extern int enabledbchar;
+extern char save_title[] ;    /* These are used by the editor when inserting */
 
 int write_header(FILE *fp, int mode);
 void addsignature(FILE *fp, int blank);

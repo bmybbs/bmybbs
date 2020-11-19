@@ -27,6 +27,14 @@
 #include "smth_screen.h"
 #include "stuff.h"
 #include "goodbye.h"
+#include "bbs_global_vars.h"
+
+#define FILE_BUFSIZE        250    /* max. length of a file in SHM*/
+#define FILE_MAXLINE         25    /* max. line of a file in SHM */
+#define MAX_WELCOME          15    /* 欢迎画面数 */
+#define MAX_GOODBYE          15    /* 离站画面数 */
+#define MAX_ISSUE            15    /* 最大进站画面数 */
+#define MAX_ENDLINE          15    /* 最大底线叶面数 */
 
 struct FILESHM {
 	char line[FILE_MAXLINE][FILE_BUFSIZE];

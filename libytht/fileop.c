@@ -490,3 +490,32 @@ int ytht_del_from_file(char *filename, char *str, bool include_lf) {
 
 	return (rename(fnnew, filename) + 1);
 }
+
+off_t ytht_file_size_s(const char *filepath) {
+	struct stat buf;
+	if(stat(filepath, &buf) == -1)
+		memset(&buf, 0, sizeof(buf));
+
+	return buf.st_size;
+}
+
+int ytht_file_has_word(char *file, char *word) {
+	FILE *fp;
+	char buf[256], buf2[256];
+	fp = fopen(file, "r");
+	if (fp == 0)
+		return 0;
+	while (1) {
+		bzero(buf, 256);
+		if (fgets(buf, 255, fp) == 0)
+			break;
+		sscanf(buf, "%s", buf2);
+		if (!strcasecmp(buf2, word)) {
+			fclose(fp);
+			return 1;
+		}
+	}
+	fclose(fp);
+	return 0;
+}
+

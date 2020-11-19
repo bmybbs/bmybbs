@@ -10,7 +10,7 @@
                         Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
 
     Copyright (C) 1999	KCN,Zhou lin,kcn@cic.tsinghua.edu.cn
-    
+
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 1, or (at your option)
@@ -23,6 +23,7 @@
 */
 
 #include "bbs.h"
+#include "ythtbbs/override.h"
 #include "edit.h"
 #include "smth_screen.h"
 #include "io.h"
@@ -36,6 +37,8 @@
 #include "mail.h"
 #include "bbsinc.h"
 #include "main.h"
+#include "bbs_global_vars.h"
+#include "bbs-internal.h"
 
 char buf2[MAX_MSG_SIZE];
 struct user_info *t_search();
@@ -43,10 +46,10 @@ int msg_blocked = 0;
 extern int have_msg_unread;
 
 static int get_msg(char *uid, char *msg, size_t msg_len, int line);
-static int dowall(struct user_info *uin);
-static int dowall_telnet(struct user_info *uin);
-static int myfriend_wall(struct user_info *uin);
-static int hisfriend_wall(struct user_info *uin);
+static int dowall(const struct user_info *, void *);
+static int dowall_telnet(const struct user_info *, void *);
+static int myfriend_wall(const struct user_info *, void *);
+static int hisfriend_wall(const struct user_info *, void *);
 static int sendmsgfunc(char *uid, struct user_info *uin, int userpid, const char *msgstr, int mode, char *msgerr);
 static void mail_msg(struct userec *user);
 static int canmsg_offline(char *uid);
@@ -77,16 +80,13 @@ get_msg(char *uid, char *msg, size_t msg_len, int line)
 	}
 }
 
-int
-canmsg(uin)
-struct user_info *uin;
-{
+int canmsg(const struct user_info *uin) {
 	if (!strcmp(uin->userid, "guest"))	//guest ¾Í²»ÊÕ msg ÁË
 		return NA;
 	if (isreject(uin))
 		return NA;
 	if ((uin->pager & ALLMSG_PAGER)
-	    || HAS_PERM(PERM_SYSOP | PERM_FORCEPAGE))
+	    || HAS_PERM(PERM_SYSOP | PERM_FORCEPAGE, currentuser))
 		return YEA;
 	if ((uin->pager & FRIENDMSG_PAGER) && hisfriend(uin))
 		return YEA;
@@ -96,14 +96,14 @@ struct user_info *uin;
 static int canmsg_offline(char *uid) {
 	if (!strcmp(uid, "guest"))
 		return NA;
-	if (inoverride(currentuser.userid, uid, "rejects"))
+	if (ythtbbs_override_included(uid, YTHTBBS_OVERRIDE_REJECTS, currentuser.userid))
 		return NA;
 	if (getuser(uid) == 0)
 		return NA;
 	if (lookupuser.userdefine & DEF_ALLMSG)
 		return YEA;
 	if ((lookupuser.userdefine & DEF_FRIENDMSG)
-	    && inoverride(currentuser.userid, uid, "friends"))
+			&& ythtbbs_override_included(uid, YTHTBBS_OVERRIDE_FRIENDS, currentuser.userid))
 		return YEA;
 	return NA;
 }
@@ -115,14 +115,7 @@ s_msg()
 	return 0;
 }
 
-int
-do_sendmsg(uid, uentp, msgstr, mode, userpid)
-char *uid;
-struct user_info *uentp;
-char msgstr[256];
-int mode;
-int userpid;
-{
+int do_sendmsg(const char *uid, const struct user_info *uentp, char *msgstr, int mode, int userpid) {
 	char uident[STRLEN];
 	char msgerr[256];
 	struct user_info *uinptr;
@@ -169,7 +162,7 @@ int userpid;
 	if (!strcasecmp(uident, currentuser.userid))
 		return 0;
 	/*
-	 * try to send the msg 
+	 * try to send the msg
 	 */
 	result = sendmsgfunc(uident, uinptr, upid, msgstr, mode, msgerr);
 
@@ -204,7 +197,7 @@ int userpid;
 		break;
 	}
 	/*
-	 * resend the message 
+	 * resend the message
 	 */
 	result = sendmsgfunc(uident, uinptr, upid, buf, mode, msgerr);
 
@@ -230,25 +223,20 @@ int userpid;
 	return 1;
 }
 
-static int
-dowall(uin)
-struct user_info *uin;
-{
+static int dowall(const struct user_info *uin, void *x_param) {
+	(void) x_param;
 	if (!uin->active || !uin->pid)
 		return -1;
 	move(1, 0);
 	clrtoeol();
-	prints("[1;32mÕı¶Ô %s ¹ã²¥.... Ctrl-D Í£Ö¹¶Ô´ËÎ» User ¹ã²¥¡£[m",
-	       uin->userid);
+	prints("[1;32mÕı¶Ô %s ¹ã²¥.... Ctrl-D Í£Ö¹¶Ô´ËÎ» User ¹ã²¥¡£[m", uin->userid);
 	refresh();
 	do_sendmsg(uin->userid, uin, buf2, 0, uin->pid);
 	return 0;
 }
 
-static int
-dowall_telnet(uin)
-struct user_info *uin;
-{
+static int dowall_telnet(const struct user_info *uin, void *x_param) {
+	(void) x_param;
 	if (!uin->active || !uin->pid || uin->pid ==1)
 		return -1;
 	move(1, 0);
@@ -259,12 +247,9 @@ struct user_info *uin;
 	return 0;
 }
 
-static int
-myfriend_wall(uin)
-struct user_info *uin;
-{
-	if ((uin->pid - uinfo.pid == 0) || !uin->active || !uin->pid
-	    || isreject(uin))
+static int myfriend_wall(const struct user_info *uin, void *x_param) {
+	(void) x_param;
+	if ((uin->pid - uinfo.pid == 0) || !uin->active || !uin->pid || isreject(uin))
 		return -1;
 	if (myfriend(uin->uid)) {
 		move(1, 0);
@@ -276,12 +261,9 @@ struct user_info *uin;
 	return 0;
 }
 
-static int
-hisfriend_wall(uin)
-struct user_info *uin;
-{
-	if ((uin->pid - uinfo.pid == 0) || !uin->active || !uin->pid
-	    || isreject(uin))
+static int hisfriend_wall(const struct user_info *uin, void *x_param) {
+	(void) x_param;
+	if ((uin->pid - uinfo.pid == 0) || !uin->active || !uin->pid || isreject(uin))
 		return -1;
 	if (hisfriend(uin)) {
 		move(1, 0);
@@ -296,7 +278,7 @@ struct user_info *uin;
 int
 wall()
 {
-	if (!HAS_PERM(PERM_SYSOP))
+	if (!HAS_PERM(PERM_SYSOP, currentuser))
 		return 0;
 	modify_user_mode(MSG);
 	move(2, 0);
@@ -304,7 +286,7 @@ wall()
 	if (!get_msg("ËùÓĞÊ¹ÓÃÕß", buf2, sizeof(buf2), 1)) {
 		return 0;
 	}
-	if (apply_ulist(dowall) == 0) {
+	if (ythtbbs_cache_utmp_apply(dowall, NULL) == 0) {
 		move(2, 0);
 		prints("ÏßÉÏ¿ÕÎŞÒ»ÈË\n");
 		pressanykey();
@@ -317,7 +299,7 @@ wall()
 int
 wall_telnet()
 {
-	if (!HAS_PERM(PERM_SYSOP))
+	if (!HAS_PERM(PERM_SYSOP, currentuser))
 		return 0;
 	modify_user_mode(MSG);
 	move(2, 0);
@@ -325,7 +307,7 @@ wall_telnet()
 	if (!get_msg("telnetÓÃ»§", buf2, sizeof(buf2), 1)) {
 		return 0;
 	}
-	if (apply_ulist(dowall_telnet) == 0) {
+	if (ythtbbs_cache_utmp_apply(dowall_telnet, NULL) == 0) {
 		move(2, 0);
 		prints("ÏßÉÏ¿ÕÎŞÒ»ÈË\n");
 		pressanykey();
@@ -356,7 +338,7 @@ friend_wall()
 	case '1':
 		if (!get_msg("ÎÒµÄºÃÅóÓÑ", buf2, sizeof(buf2), 1))
 			return 0;
-		if (apply_ulist(myfriend_wall) == -1) {
+		if (ythtbbs_cache_utmp_apply(myfriend_wall, NULL) == -1) {
 			move(2, 0);
 			prints("ÏßÉÏ¿ÕÎŞÒ»ÈË\n");
 			pressanykey();
@@ -365,7 +347,7 @@ friend_wall()
 	case '2':
 		if (!get_msg("ÓëÎÒÎªÓÑÕß", buf2, sizeof(buf2), 1))
 			return 0;
-		if (apply_ulist(hisfriend_wall) == -1) {
+		if (ythtbbs_cache_utmp_apply(hisfriend_wall, NULL) == -1) {
 			move(2, 0);
 			prints("ÏßÉÏ¿ÕÎŞÒ»ÈË\n");
 			pressanykey();
@@ -441,10 +423,7 @@ r_msg2()
 					online_test = 1;
 					msgperm_test = canmsg(uin);
 					userpid = uin->pid;
-					invisible = (uin->invisible
-						     && !HAS_PERM(PERM_SEECLOAK
-								  |
-								  PERM_SYSOP));
+					invisible = (uin->invisible && !HAS_PERM(PERM_SEECLOAK | PERM_SYSOP, currentuser));
 				}
 			} else {
 				online_test = 0;
@@ -543,14 +522,14 @@ r_msg()
 	getyx(&y, &x);
 	tmpansi = showansi;
 	showansi = 1;
-	if (DEFINE(DEF_MSGGETKEY)) {
+	if (DEFINE(DEF_MSGGETKEY, currentuser)) {
 		for (i = 0; i <= 23; i++)
 			saveline(i, 0, savebuffer[i]);
 		premsg = RMSG;
 	}
 	newmsg = get_unreadcount(currentuser.userid);
 	while (newmsg) {
-		if (DEFINE(DEF_SOUNDMSG)) {
+		if (DEFINE(DEF_SOUNDMSG, currentuser)) {
 			bell();
 		}
 		count = get_unreadmsg(currentuser.userid);
@@ -567,7 +546,7 @@ r_msg()
 		prints("µÚ %d ÌõÏûÏ¢£¬¹² %d ÌõÏûÏ¢ °´r»Ø¸´", count + 1,
 		       count + 1);
 		getyx(&line, &i);
-		if (DEFINE(DEF_MSGGETKEY)) {
+		if (DEFINE(DEF_MSGGETKEY, currentuser)) {
 			RMSG = YEA;
 			ch = 0;
 			while (ch != '\r' && ch != '\n') {
@@ -585,25 +564,16 @@ r_msg()
 					send_pid = head.frompid;
 					strcpy(usid, head.id);
 					if (head.mode != 0) {
-						uin =
-						    t_search(usid, send_pid, 0);
+						uin = t_search(usid, send_pid, 0);
 						if (uin == NULL) {
 							online_test = 0;
-							msgperm_test =
-							    canmsg_offline
-							    (usid);
+							msgperm_test = canmsg_offline(usid);
 							userpid = 0;
 						} else {
 							online_test = 1;
-							msgperm_test =
-							    canmsg(uin);
+							msgperm_test = canmsg(uin);
 							userpid = uin->pid;
-							invisible =
-							    (uin->invisible
-							     &&
-							     !HAS_PERM
-							     (PERM_SEECLOAK |
-							      PERM_SYSOP));
+							invisible = (uin->invisible && !HAS_PERM(PERM_SEECLOAK | PERM_SYSOP, currentuser));
 						}
 					} else {
 						online_test = 0;
@@ -615,11 +585,8 @@ r_msg()
 					strcpy(usid, head.id);
 					if (msgperm_test) {
 						clrtoeol();
-						prints
-						    ("£¬»ØÑ¶Ï¢¸ø %s (%s)£¬Ctrl+Q»»ĞĞ: ",
-						     usid, (online_test
-						      && !invisible) ? "ÔÚÏß" :
-						     "\x1b[1;32mÀëÏß\x1b[m");
+						prints("£¬»ØÑ¶Ï¢¸ø %s (%s)£¬Ctrl+Q»»ĞĞ: ",
+						     usid, (online_test && !invisible) ? "ÔÚÏß" : "\x1b[1;32mÀëÏß\x1b[m");
 						move(line + 1, 0);
 						clrtoeol();
 						multi_getdata(line + 1, 0, 79,
@@ -630,31 +597,24 @@ r_msg()
 						if (buf[0] != '\0'
 						    && buf[0] != Ctrl('Z')
 						    && buf[0] != Ctrl('A')) {
-							if (do_sendmsg
-							    (usid, uin, buf, 2,
-							     userpid) == 1) {
+							if (do_sendmsg(usid, uin, buf, 2, userpid) == 1) {
 								prints("\n");
 								clrtoeol();
-								prints
-								    ("[1;32m°ïÄãËÍ³öÑ¶Ï¢¸ø %s ÁË![m",
-								     usid);
+								prints("[1;32m°ïÄãËÍ³öÑ¶Ï¢¸ø %s ÁË![m", usid);
 								refresh();
 								sleep(1);
 							}
 						} else {
 							prints("\n");
 							clrtoeol();
-							prints
-							    ("[1;33m¿ÕÑ¶Ï¢, ËùÒÔ²»ËÍ³ö.[m");
+							prints("[1;33m¿ÕÑ¶Ï¢, ËùÒÔ²»ËÍ³ö.[m");
 							refresh();
 							sleep(1);
 						}
 					} else {
 						prints("\n");
 						clrtoeol();
-						prints
-						    ("[1;32mÕÒ²»µ½·¢Ñ¶Ï¢µÄ %s.[m",
-						     usid);
+						prints("[1;32mÕÒ²»µ½·¢Ñ¶Ï¢µÄ %s.[m", usid);
 						refresh();
 						sleep(1);
 					}
@@ -663,13 +623,13 @@ r_msg()
 			}
 		}
 		newmsg = get_unreadcount(currentuser.userid);
-		if (DEFINE(DEF_MSGGETKEY)) {
+		if (DEFINE(DEF_MSGGETKEY, currentuser)) {
 			for (i = 0; i <= 23; i++)
 				saveline(i, 1, savebuffer[i]);
 		}
 	}
 
-	if (DEFINE(DEF_MSGGETKEY)) {
+	if (DEFINE(DEF_MSGGETKEY, currentuser)) {
 		RMSG = premsg;
 	}
 	showansi = tmpansi;
@@ -695,12 +655,11 @@ unblock_msg()
 }
 
 int
-friend_login_wall(pageinfo)
-struct user_info *pageinfo;
-{
+friend_login_wall(const struct user_info *pageinfo, void *x_param) {
 	char msg[STRLEN];
 	int x, y;
 
+	(void) x_param;
 	if (!pageinfo->active || !pageinfo->pid || isreject(pageinfo))
 		return 0;
 	if (hisfriend(pageinfo)) {
@@ -739,8 +698,7 @@ sendmsgfunc(char *uid, struct user_info *uin, int userpid, const char *msgstr,
 		return -1;
 	if (mode != 0) {
 		if (get_unreadcount(uid) > MAXMESSAGE) {
-			strcpy(msgerr,
-			       "¶Ô·½ÉĞÓĞÒ»Ğ©Ñ¶Ï¢Î´´¦Àí£¬ÇëÉÔºòÔÙ·¢»ò¸øËû(Ëı)Ğ´ĞÅ...");
+			strcpy(msgerr, "¶Ô·½ÉĞÓĞÒ»Ğ©Ñ¶Ï¢Î´´¦Àí£¬ÇëÉÔºòÔÙ·¢»ò¸øËû(Ëı)Ğ´ĞÅ...");
 			return -1;
 		}
 	}
@@ -807,7 +765,7 @@ show_allmsgs()
 	int oldmode, count, i, j, page, ch, y, all = 0, reload = 0;
 	struct msghead head;
 
-	if (!HAS_PERM(PERM_PAGE))
+	if (!HAS_PERM(PERM_PAGE, currentuser))
 		return -1;
 	oldmode = uinfo.mode;
 	modify_user_mode(LOOKMSGS);
@@ -838,8 +796,7 @@ show_allmsgs()
 				clrtoeol();
 				if (i >= count)
 					break;
-				load_msghead(all ? 2 : 0,
-					     currentuser.userid, &head, i);
+				load_msghead(all ? 2 : 0, currentuser.userid, &head, i);
 				load_msgtext(currentuser.userid, &head, buf);
 				j = translate_msg(buf, &head, showmsg, inBBSNET);
 			}

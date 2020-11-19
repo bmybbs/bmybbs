@@ -1,3 +1,4 @@
+#include <stdarg.h>
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
@@ -15,22 +16,6 @@
 #define NUMBUFFER 100
 #define BUFSIZE (8192)
 #define PATHLEN 256
-
-#ifdef SYSV
-int
-flock(fd, op)
-int fd, op;
-{
-	switch (op) {
-	case LOCK_EX:
-		return lockf(fd, F_LOCK, 0);
-	case LOCK_UN:
-		return lockf(fd, F_ULOCK, 0);
-	default:
-		return -1;
-	}
-}
-#endif
 
 void
 tmpfilename(filename, tmpfile, deleted)
@@ -120,7 +105,7 @@ int size, id;
 }
 
 int
-append_record(char *filename, void *record, int size)
+append_record(const char *filename, const void *record, const size_t size)
 {
 	int fd;
 	struct flock ldata;
@@ -319,6 +304,25 @@ get_record(char *filename, void *rptr, int size, int id)
 	return 0;
 }
 
+long ythtbbs_record_get_records(const char *filename, void *rptr, size_t size, int id, int count) {
+	int fd;
+	long n;
+
+	if ((fd = open(filename, O_RDONLY, 0)) == -1)
+		return -1;
+	if (lseek(fd, size * (id - 1), SEEK_SET) == -1) {
+		close(fd);
+		return 0;
+	}
+	if ((n = read(fd, rptr, size * count)) == -1) {
+		close(fd);
+		return -1;
+	}
+
+	close(fd);
+	return (n / size);
+}
+
 int
 substitute_record(char *filename, void *rptr, int size, int id) {
 	struct flock ldata;
@@ -362,3 +366,50 @@ FAIL:
 	close(fd);
 	return retv;
 }
+
+int ythtbbs_record_apply_v(char *filename, ythtbbs_record_callback_v fptr, size_t size, ...) {
+	char *buf;
+	ssize_t sizeread;
+	int fd, n, i, retv;
+	va_list ap;
+
+	if ((fd = open(filename, O_RDONLY, 0)) == -1) {
+		return -1;
+	}
+
+	if ((buf = malloc(size * NUMBUFFER)) == NULL) {
+		close(fd);
+		return -1;
+	}
+
+	while ((sizeread = read(fd, buf, size * NUMBUFFER)) > 0) {
+		if (sizeread % size != 0) {
+			retv = -1;
+			goto END;
+		}
+		n = sizeread / size;
+		for (i = 0; i < n; i++) {
+			va_start(ap, size);
+			retv = fptr(buf + i * size, ap);
+			va_end(ap);
+			if (retv != 0) {
+				goto END;
+			}
+		}
+	}
+	retv = 0;
+END:
+	close(fd);
+	free(buf);
+	return retv;
+}
+
+long ythtbbs_record_count_records(const char *filename, const size_t size) {
+	struct stat st;
+
+	if (stat(filename, &st) == -1)
+		return 0;
+
+	return st.st_size / size;
+}
+

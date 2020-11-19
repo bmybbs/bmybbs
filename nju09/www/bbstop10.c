@@ -1,3 +1,4 @@
+#include "ythtbbs/commend.h"
 #include "bbslib.h"
 
 /*20121014 New top10 page  Edited by liuche*/
@@ -10,7 +11,7 @@ void showTop10Table();
 |kind==2 显示通知，对应原版的commend2；
 |其实用兴趣可以把所有的commend兄弟给改写成一个函数。。。
 */
-void showCommend(int kind); 
+void showCommend(int kind);
 
 int
 bbstop10_main()
@@ -19,7 +20,7 @@ bbstop10_main()
 	check_msg();
 //main frame
 	printf("<div style=\"width=100%%; min-height:350px;\">");
-	//<!--No.1 Top 10 -->	
+	//<!--No.1 Top 10 -->
 	showTop10Table();
 	printf("</div>");
 
@@ -74,7 +75,7 @@ void showCommend(int kind){
 		 http_fatal("目前没有任何推荐文章");
 	printf("	<table border=1>");
 	printf("	<tr><td>No.</td><td>讨论区</td><td>标题</td><td>作者</td></tr>");
-	fseek(fp, -20*sizeof(struct commend), SEEK_END);	
+	fseek(fp, -20*sizeof(struct commend), SEEK_END);
 	for(i=20; i>0; i--) {
 		strcpy(allcanre, "");
 		if(fread(&x, sizeof(struct commend), 1, fp)<=0) break;

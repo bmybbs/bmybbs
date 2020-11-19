@@ -40,6 +40,9 @@
 #include "help.h"
 #include "chat.h"
 #include "announce.h"
+#include "bbs-internal.h"
+#include "ythtbbs/cache.h"
+#include "ythtbbs/override.h"
 
 #define M_INT 8			/* monitor mode update interval */
 #define P_INT 20		/* interval to check for page req. in talk/chat */
@@ -73,12 +76,11 @@ static char *const refuse[] = {
 char save_page_requestor[STRLEN];
 
 static char canpage(int friend, int pager);
-static int listcuent(struct user_info *uentp);
+static int listcuent(const struct user_info *uentp, void *);
 static int show_user_plan(char *userid);
 static int bm_printboard(struct boardmanager *bm, void *farg);
-static int count_active(struct user_info *uentp);
-static int count_useshell(struct user_info *uentp);
-static int cmpfnames(char *userid, struct override *uv);
+static int count_useshell(const struct user_info *uentp, void *);
+static int cmpfnames(const char *userid, const struct ythtbbs_override *uv);
 static int cmpunums(int unum, struct user_info *up);
 static int cmpmsgnum(int unum, struct user_info *up);
 static int setpagerequest(int mode);
@@ -88,19 +90,19 @@ static void talkflush(void);
 static void moveto(int mode, struct talk_win *twin);
 static int do_talk(int fd);
 static int override_title(void);
-static char *override_doentry(int ent, struct override *fh, char buf[512]);
-static int override_edit(int ent, struct override *fh, char *direc);
-static int override_dele(int ent, struct override *fh, char *direct);
-static int friend_edit(int ent, struct override *fh, char *direct);
-static int friend_add(int ent, struct override *fh, char *direct);
-static int friend_dele(int ent, struct override *fh, char *direct);
-static int friend_mail(int ent, struct override *fh, char *direct);
-static int friend_query(int ent, struct override *fh, char *direct);
+static char *override_doentry(int ent, struct ythtbbs_override *fh, char buf[512]);
+static int override_edit(int ent, struct ythtbbs_override *fh, char *direc);
+static int override_dele(int ent, struct ythtbbs_override *fh, char *direct);
+static int friend_edit(int ent, struct ythtbbs_override *fh, char *direct);
+static int friend_add(int ent, struct ythtbbs_override *fh, char *direct);
+static int friend_dele(int ent, struct ythtbbs_override *fh, char *direct);
+static int friend_mail(int ent, struct ythtbbs_override *fh, char *direct);
+static int friend_query(int ent, struct ythtbbs_override *fh, char *direct);
 static int friend_help(void);
-static int reject_edit(int ent, struct override *fh, char *direct);
-static int reject_add(int ent, struct override *fh, char *direct);
-static int reject_dele(int ent, struct override *fh, char *direct);
-static int reject_query(int ent, struct override *fh, char *direct);
+static int reject_edit(int ent, struct ythtbbs_override *fh, char *direct);
+static int reject_add(int ent, struct ythtbbs_override *fh, char *direct);
+static int reject_dele(int ent, struct ythtbbs_override *fh, char *direct);
+static int reject_query(int ent, struct ythtbbs_override *fh, char *direct);
 static int reject_help(void);
 static int cmpfuid(unsigned *a, unsigned *b);
 static void do_log(char *msg, int who);
@@ -132,27 +134,11 @@ struct one_key reject_list[] = {
 	{'\0', NULL, ""}
 };
 
-#if 0
-int
-ishidden(user)
-char *user;
-{
-	int tuid;
-	struct user_info uin;
-
-	if (!(tuid = searchuser(user)))
-		return 0;
-	if (!search_ulist(&uin, t_cmpuids, tuid))
-		return 0;
-	return (uin.invisible);
-}
-#endif
-
 static char
 canpage(friend, pager)
 int friend, pager;
 {
-	if ((pager & ALL_PAGER) || HAS_PERM(PERM_SYSOP | PERM_FORCEPAGE))
+	if ((pager & ALL_PAGER) || HAS_PERM(PERM_SYSOP | PERM_FORCEPAGE, currentuser))
 		return YEA;
 	if ((pager & FRIEND_PAGER)) {
 		if (friend)
@@ -161,10 +147,8 @@ int friend, pager;
 	return NA;
 }
 
-static int
-listcuent(uentp)
-struct user_info *uentp;
-{
+static int listcuent(const struct user_info *uentp, void *x_param) {
+	(void) x_param;
 	if (uentp == NULL) {
 		CreateNameList();
 		return 0;
@@ -173,15 +157,15 @@ struct user_info *uentp;
 		return 0;
 	if (!uentp->active || !uentp->pid || isreject(uentp))
 		return 0;
-	if (!HAS_PERM(PERM_SYSOP | PERM_SEECLOAK) && uentp->invisible)
+	if (!HAS_PERM(PERM_SYSOP | PERM_SEECLOAK, currentuser) && uentp->invisible)
 		return 0;
 	AddNameList(uentp->userid);
 	return 0;
 }
 
 static void creat_list() {
-	listcuent(NULL);
-	apply_ulist(listcuent);
+	listcuent(NULL, NULL);
+	ythtbbs_cache_utmp_apply(listcuent, NULL);
 }
 
 int
@@ -190,7 +174,7 @@ t_pager()
 
 	if (uinfo.pager & ALL_PAGER) {
 		uinfo.pager &= ~ALL_PAGER;
-		if (DEFINE(DEF_FRIENDCALL))
+		if (DEFINE(DEF_FRIENDCALL, currentuser))
 			uinfo.pager |= FRIEND_PAGER;
 		else
 			uinfo.pager &= ~FRIEND_PAGER;
@@ -201,8 +185,7 @@ t_pager()
 
 	if (!uinfo.in_chat && uinfo.mode != TALK) {
 		move(1, 0);
-		prints("ƒ˙µƒ∫ÙΩ–∆˜ (pager) “—æ≠[1m%s[m¡À!",
-		       (uinfo.pager & ALL_PAGER) ? "¥Úø™" : "πÿ±’");
+		prints("ƒ˙µƒ∫ÙΩ–∆˜ (pager) “—æ≠\033[1m%s\033[m¡À!", (uinfo.pager & ALL_PAGER) ? "¥Úø™" : "πÿ±’");
 		pressreturn();
 	}
 	update_utmp();
@@ -219,12 +202,12 @@ char *userid;
 	char pfile[STRLEN], pbuf[256];
 	FILE *pf;
 
-	sethomefile(pfile, userid, "plans");
+	sethomefile_s(pfile, sizeof(pfile), userid, "plans");
 	if ((pf = fopen(pfile, "r")) == NULL) {
-		prints("[1;36m√ª”–∏ˆ»ÀÀµ√˜µµ[m\n");
+		prints("\033[1;36m√ª”–∏ˆ»ÀÀµ√˜µµ\033[m\n");
 		return NA;
 	} else {
-		prints("[1;36m∏ˆ»ÀÀµ√˜µµ»Áœ¬£∫[m\n");
+		prints("\033[1;36m∏ˆ»ÀÀµ√˜µµ»Áœ¬£∫\033[m\n");
 		for (i = 1; i <= MAXQUERYLINES; i++) {
 			if (fgets(pbuf, sizeof (pbuf), pf)) {
 				disable_move = 1;
@@ -239,10 +222,7 @@ char *userid;
 }
 
 /* Modified By Excellent*/
-int
-t_query(q_id)
-char q_id[IDLEN + 2];
-{
+int t_query(const char *q_id) {
 	char uident[STRLEN];
 	int tuid = 0;
 	int exp, perf;		/*Add by SmallPig */
@@ -252,10 +232,10 @@ char q_id[IDLEN + 2];
 	char expbuf[10];  //add for displaying exp type. rbb@bmy
 
 	if ((uinfo.mode != LUSERS && uinfo.mode != LAUSERS
-	     && uinfo.mode != FRIEND && uinfo.mode != READING
-	     && uinfo.mode != MAIL && uinfo.mode != RMAIL && uinfo.mode != GMENU
-	     && uinfo.mode != BACKNUMBER && uinfo.mode != DO1984)
-	    || q_id == NULL) {
+				&& uinfo.mode != FRIEND && uinfo.mode != READING
+				&& uinfo.mode != MAIL && uinfo.mode != RMAIL && uinfo.mode != GMENU
+				&& uinfo.mode != BACKNUMBER && uinfo.mode != DO1984)
+			|| q_id == NULL) {
 		modify_user_mode(QUERY);
 		move(1, 0);
 		clrtobot();
@@ -268,15 +248,15 @@ char q_id[IDLEN + 2];
 	} else {
 		if (*q_id == '\0')
 			return 0;
-		if (strchr(q_id, ' '))
-			strtok(q_id, " ");
 		strncpy(uident, q_id, sizeof (uident));
 		uident[sizeof (uident) - 1] = '\0';
+		if (strchr(uident, ' '))
+			strtok(uident, " ");
 	}
 	if (!(tuid = getuser(uident))) {
 		move(2, 0);
 		clrtoeol();
-		prints("[1m≤ª’˝»∑µƒ π”√’ﬂ¥˙∫≈[m\n");
+		prints("\033[1m≤ª’˝»∑µƒ π”√’ﬂ¥˙∫≈\033[m\n");
 		pressanykey();
 		return -1;
 	}
@@ -285,129 +265,116 @@ char q_id[IDLEN + 2];
 
 	move(1, 0);
 	clrtobot();
-	sprintf(qry_mail_dir, "mail/%c/%s/%s", mytoupper(lookupuser.userid[0]),
-		lookupuser.userid, DOT_DIR);
+	sprintf(qry_mail_dir, "mail/%c/%s/%s", mytoupper(lookupuser.userid[0]), lookupuser.userid, DOT_DIR);
 
 	exp = countexp(&lookupuser);
 	perf = countperf(&lookupuser);
 	strcpy(expbuf,charexp(exp));	//add for displaying exp type.  rbb@bmy
-	prints
-	    ("[1m%s [m([1m%s[m) π≤…œ’æ [1;33m%d[m ¥Œ£¨∑¢±Ìπ˝ [1;33m%d[m ∆™Œƒ’¬",
-	     lookupuser.userid, lookupuser.username, lookupuser.numlogins,
-	     lookupuser.numposts);
+	prints("\033[1m%s \033[m(\033[1m%s\033[m) π≤…œ’æ \033[1;33m%d\033[m ¥Œ£¨∑¢±Ìπ˝ \033[1;33m%d\033[m ∆™Œƒ’¬",
+			lookupuser.userid, lookupuser.username, lookupuser.numlogins,
+			lookupuser.numposts);
 	show_special(lookupuser.userid); //add by wjbta@bmy
 	strcpy(planid, lookupuser.userid);
-	strcpy(genbuf,
-		   lookupuser.dietime ? ytht_ctime(lookupuser.dietime) :
-		   ytht_ctime(lookupuser.lastlogin));
+	strcpy(genbuf, lookupuser.dietime ? ytht_ctime(lookupuser.dietime) : ytht_ctime(lookupuser.lastlogin));
 	if (ifinprison(lookupuser.userid)) {
 		strcpy(genbuf, ytht_ctime(lookupuser.lastlogin));
 		prints("\n‘⁄º‡”¸∑˛–Ã£¨…œ¥Œ∑≈∑Á ±º‰[\033[1m%s\033[m]\n", genbuf);
 		if (uinfo.mode != LUSERS && uinfo.mode != LAUSERS
-		    && uinfo.mode != FRIEND && uinfo.mode != GMENU)
+				&& uinfo.mode != FRIEND && uinfo.mode != GMENU)
 			pressanykey();
 		uinfo.destuid = 0;
 		return 0;
-
 	}
 
 	if (lookupuser.dietime) {
-		prints
-		    ("\n“—æ≠¿Îø™¡À»À ¿,ŒÿŒÿ...\nªπ”– [\033[1m%d\033[m] ÃÏæÕ“™◊™ ¿Õ∂Ã•¡À\n",
-		     countlife(&lookupuser));
-		if (uinfo.mode != LUSERS && uinfo.mode != LAUSERS
-		    && uinfo.mode != FRIEND && uinfo.mode != GMENU)
+		prints("\n“—æ≠¿Îø™¡À»À ¿,ŒÿŒÿ...\nªπ”– [\033[1m%d\033[m] ÃÏæÕ“™◊™ ¿Õ∂Ã•¡À\n", countlife(&lookupuser));
+		if (uinfo.mode != LUSERS && uinfo.mode != LAUSERS && uinfo.mode != FRIEND && uinfo.mode != GMENU)
 			pressanykey();
 		uinfo.destuid = 0;
 		return 0;
 	}
-	prints("\n…œ¥Œ‘⁄ [[1;32m%s[m] ¥” [[1;32m%s[m] µΩ±æ’æ“ª”Œ°£\n",
-	genbuf,  (lookupuser.lasthost[0] ==
-		'\0' ? "(≤ªœÍ)" : lookupuser.lasthost));
-//	show_special(lookupuser.userid); //add by wjbta@bmy
-	if(HAS_PERM(PERM_SYSOP | PERM_SEECLOAK)){		//add by mintbaggio@BMY
+	prints("\n…œ¥Œ‘⁄ [\033[1;32m%s\033[m] ¥” [\033[1;32m%s\033[m] µΩ±æ’æ“ª”Œ°£\n",
+	genbuf, (lookupuser.lasthost[0] == '\0' ? "(≤ªœÍ)" : lookupuser.lasthost));
+	// show_special(lookupuser.userid); //add by wjbta@bmy
+	if(HAS_PERM(PERM_SYSOP | PERM_SEECLOAK, currentuser)){		//add by mintbaggio@BMY
 		if(lookupuser.userlevel&PERM_CLOAK)
-			strcpy(genbuf, (lookupuser.lastlogout>=lookupuser.lastlogin) ? (user_isonline(lookupuser.userid)? "“Ú‘⁄œﬂ…œªÚ≤ª’˝≥£∂œœﬂ≤ªœÍ": ytht_ctime(
-					lookupuser.lastlogout)) : "“Ú‘⁄œﬂ…œªÚ≤ª’˝≥£∂œœﬂ≤ªœÍ");
+			strcpy(genbuf, (lookupuser.lastlogout>=lookupuser.lastlogin) ? (user_isonline(lookupuser.userid) ? "“Ú‘⁄œﬂ…œªÚ≤ª’˝≥£∂œœﬂ≤ªœÍ" : ytht_ctime(lookupuser.lastlogout)) : "“Ú‘⁄œﬂ…œªÚ≤ª’˝≥£∂œœﬂ≤ªœÍ");
 		else
 			strcpy(genbuf, (lookupuser.lastlogout>=lookupuser.lastlogin) ? ytht_ctime(lookupuser.lastlogout) : "“Ú‘⁄œﬂ…œªÚ≤ª’˝≥£∂œœﬂ≤ªœÍ");
 	}
 	else
 		strcpy(genbuf, (lookupuser.lastlogout>=lookupuser.lastlogin) ? ytht_ctime(lookupuser.lastlogout) : "“Ú‘⁄œﬂ…œªÚ≤ª’˝≥£∂œœﬂ≤ªœÍ");
-/*	if(testonline(lookupuser.userid))
-		strcpy(genbuf, "“Ú‘⁄œﬂ…œªÚ≤ª’˝≥£∂œœﬂ≤ªœÍ");
-	else	strcpy(genbuf, ytht_ctime(lookupuser.lastlogout));
-*/
-	prints
-	    ("¿Î’æ ±º‰£∫[\033[1;36m%s\033[m] –≈œ‰£∫[[1;5m%2s[m]£¨…˙√¸¡¶£∫[[1;32m%d[m] Õ¯¡‰£∫[[1;32m%d[m]ÃÏ°£\n",
-	     genbuf, (check_query_mail(qry_mail_dir) == 1) ? "°—" : "  ",
-	     countlife(&lookupuser),
-	     (strcmp(lookupuser.userid, "SYSOP") == 0) ? 9999 : ((time(0)-lookupuser.firstlogin)/86400));//by bjgyt add networkage
+
+	prints("¿Î’æ ±º‰£∫[\033[1;36m%s\033[m] –≈œ‰£∫[\033[1;5m%2s\033[m]£¨…˙√¸¡¶£∫[\033[1;32m%d\033[m] Õ¯¡‰£∫[\033[1;32m%d\033[m]ÃÏ°£\n",
+			genbuf, (check_query_mail(qry_mail_dir) == 1) ? "°—" : "  ",
+			countlife(&lookupuser),
+			(strcmp(lookupuser.userid, "SYSOP") == 0) ? 9999 : ((time(0)-lookupuser.firstlogin)/86400));//by bjgyt add networkage
 	if (lookupuser.userlevel & (PERM_BOARDS | PERM_ARBITRATE | PERM_OBOARDS | PERM_SYSOP | PERM_ACCOUNTS | PERM_WELCOME | PERM_SPECIAL7 | PERM_SPECIAL4)) {
 		prints("µ£»Œ∞ÊŒÒ£∫");
-		sethomefile(path, lookupuser.userid, "mboard");
-		new_apply_record(path, sizeof (struct boardmanager),
-				 (void *) bm_printboard, NULL);
-	//	show_special(lookupuser.userid); //add by wjbta@bmy
-	if (lookupuser.userlevel & !strcmp(currentuser.userid, "SYSOP")) prints("[[1;36mœµÕ≥π‹¿Ì‘±[m]");
-	else if (lookupuser.userlevel & !strcmp(currentuser.userid, "lanboy")) prints("[[1;36mœµÕ≥π‹¿Ì‘±[m]");
-	else if ((lookupuser.userlevel&PERM_SYSOP) && (lookupuser.userlevel&PERM_ARBITRATE) )	prints("[[1;36m±æ’æπÀŒ Õ≈[m]");
-	else if (lookupuser.userlevel & PERM_SYSOP)	prints("[[1;36mœ÷»Œ’æ≥§[m]");
-	else if (lookupuser.userlevel & PERM_OBOARDS)   prints("[[1;36m µœ∞’æ≥§[m]");
-	else if (lookupuser.userlevel & PERM_ARBITRATE)	prints("[[1;36mœ÷»ŒºÕŒØ[m]");
-	else if (lookupuser.userlevel & PERM_SPECIAL4)	prints("[[1;36m«¯≥§[m]");
-	else if (lookupuser.userlevel & PERM_WELCOME) prints("[[1;36mœµÕ≥√¿π§[m]");
-	else if (lookupuser.userlevel & PERM_SPECIAL7)
-	{
-		// ¥Û–≈œ‰&&!“˛…Ì
-		if ( (lookupuser.userlevel & PERM_SPECIAL1) && !(lookupuser.userlevel & PERM_CLOAK) ) 
-			prints("[[1;36m¿Î»Œ≥Ã–Ú‘±[m]");
-		else
-			prints("[[1;36m≥Ã–Ú◊È≥…‘±[m]");
+		sethomefile_s(path, sizeof(path), lookupuser.userid, "mboard");
+		new_apply_record(path, sizeof (struct boardmanager), (void *) bm_printboard, NULL);
+		// show_special(lookupuser.userid); //add by wjbta@bmy
+		if (!strcmp(lookupuser.userid, "SYSOP") || !strcmp(lookupuser.userid, "lanboy"))
+			prints("[\033[1;36mœµÕ≥π‹¿Ì‘±\033[m]");
+		else if ((lookupuser.userlevel&PERM_SYSOP) && (lookupuser.userlevel&PERM_ARBITRATE) )
+			prints("[\033[1;36m±æ’æπÀŒ Õ≈\033[m]");
+		else if (lookupuser.userlevel & PERM_SYSOP)
+			prints("[\033[1;36mœ÷»Œ’æ≥§\033[m]");
+		else if (lookupuser.userlevel & PERM_OBOARDS)
+			prints("[\033[1;36m µœ∞’æ≥§\033[m]");
+		else if (lookupuser.userlevel & PERM_ARBITRATE)
+			prints("[\033[1;36mœ÷»ŒºÕŒØ\033[m]");
+		else if (lookupuser.userlevel & PERM_SPECIAL4)
+			prints("[\033[1;36m«¯≥§\033[m]");
+		else if (lookupuser.userlevel & PERM_WELCOME)
+			prints("[\033[1;36mœµÕ≥√¿π§\033[m]");
+		else if (lookupuser.userlevel & PERM_SPECIAL7) {
+			// ¥Û–≈œ‰&&!“˛…Ì
+			if ((lookupuser.userlevel & PERM_SPECIAL1) && !(lookupuser.userlevel & PERM_CLOAK))
+				prints("[\033[1;36m¿Î»Œ≥Ã–Ú‘±\033[m]");
+			else
+				prints("[\033[1;36m≥Ã–Ú◊È≥…‘±\033[m]");
+		}
+		else if (lookupuser.userlevel & PERM_ACCOUNTS)
+			prints ("[\033[1;36m’ ∫≈π‹¿Ì‘±\033[m]");
+		prints(" ");
 	}
-	else if (lookupuser.userlevel & PERM_ACCOUNTS) prints ("[[1;36m’ ∫≈π‹¿Ì‘±[m]");
-	prints(" ");
-	}
-	prints("º∂±£∫[[1;36m%s[m]",expbuf); //add for displaying exp type rbb@bmy
-	prints ("%s","                                              ");
+	prints("º∂±£∫[\033[1;36m%s\033[m]",expbuf); //add for displaying exp type rbb@bmy
+	prints("%s","                                              ");
 	prints("\n");
 	t_search_ulist(t_cmpuids, tuid);
 #if defined(QUERY_REALNAMES)
-//	if (HAS_PERM(PERM_SYSOP))  by bjgyt
-//		prints("’Ê µ–’√˚: %s \n", lookupuser.realname);
-if (HAS_PERM(PERM_ACCOUNTS))
-   {
-        char secu[35];
-        size_t num;
+	// if (HAS_PERM(PERM_SYSOP))  by bjgyt
+		//prints("’Ê µ–’√˚: %s \n", lookupuser.realname);
+	if (HAS_PERM(PERM_ACCOUNTS, currentuser)) {
+		char secu[35];
+		size_t num;
 
-        strcpy(secu, "bTCPRD#@XWBA#VS-DOM-F0s23456789H");
-        for (num = 0; num < strlen(secu); num++)
-               if (!(lookupuser.userlevel & (1 << num)))
-                      secu[num] = '-';
-        prints("’Ê µ–’√˚: %s (»®œﬁ: %s )\n", lookupuser.realname, secu);
-    }
+		strcpy(secu, "bTCPRD#@XWBA#VS-DOM-F0s23456789H");
+		for (num = 0; num < strlen(secu); num++)
+			if (!(lookupuser.userlevel & (1 << num)))
+				secu[num] = '-';
+		prints("’Ê µ–’√˚: %s (»®œﬁ: %s )\n", lookupuser.realname, secu);
+	}
 #endif
 	show_user_plan(planid);
-	if (uinfo.mode != LUSERS && uinfo.mode != LAUSERS
-	    && uinfo.mode != FRIEND && uinfo.mode != GMENU){
+	if (uinfo.mode != LUSERS && uinfo.mode != LAUSERS && uinfo.mode != FRIEND && uinfo.mode != GMENU){
 		int ch, oldmode;
 		char buf[STRLEN];
 		oldmode = uinfo.mode;
 		move(t_lines - 1, 0);
-		prints
-		    ("\033[m\033[44m\033[1;37mºƒ–≈[\033[1;32mm\033[1;37m] ÀÕ—∂œ¢[\033[1;32ms\033[1;37m] º”,ºı∫√”—[\033[1;32mo\033[1;37m,\033[1;32md\033[1;37m] “˛≤ÿÀµ√˜µµ[\033[1;32ma\033[1;37m] Ω¯»ÎŒƒºØ[\033[1;32mx\033[1;37m] ∆‰À¸º¸ºÃ–¯");
+		prints("\033[m\033[44m\033[1;37mºƒ–≈[\033[1;32mm\033[1;37m] ÀÕ—∂œ¢[\033[1;32ms\033[1;37m] º”,ºı∫√”—[\033[1;32mo\033[1;37m,\033[1;32md\033[1;37m] “˛≤ÿÀµ√˜µµ[\033[1;32ma\033[1;37m] Ω¯»ÎŒƒºØ[\033[1;32mx\033[1;37m] ∆‰À¸º¸ºÃ–¯");
 		clrtoeol();
 		resetcolor();
 		ch = igetkey();
 		switch (toupper(ch)) {
 		case 'S':
-			if (strcmp(uident, "guest")
-			    && !HAS_PERM(PERM_PAGE))
+			if (strcmp(uident, "guest") && !HAS_PERM(PERM_PAGE, currentuser))
 				break;
 			do_sendmsg(uident, 0, NULL, 2, 0);
 			break;
 		case 'M':
-			if (!HAS_PERM(PERM_POST))
+			if (!HAS_PERM(PERM_POST, currentuser))
 				break;
 			m_send(uident);
 			break;
@@ -432,8 +399,7 @@ if (HAS_PERM(PERM_ACCOUNTS))
 		case 'D':
 			if (!strcmp("guest", currentuser.userid))
 				break;
-			sprintf(buf, "»∑∂®“™∞— %s ¥”∫√”—√˚µ•…æ≥˝¬ (Y/N) [N]: ",
-				uident);
+			sprintf(buf, "»∑∂®“™∞— %s ¥”∫√”—√˚µ•…æ≥˝¬ (Y/N) [N]: ", uident);
 			move(t_lines - 1, 0);
 			clrtoeol();
 			getdata(t_lines - 1, 0, buf, genbuf, 4, DOECHO, YEA);
@@ -455,41 +421,33 @@ if (HAS_PERM(PERM_ACCOUNTS))
 			move(0, 0);
 			clrtobot();
 			prints("≤È—ØÕ¯”—◊¥Ã¨ (“˛≤ÿÀµ√˜µµ)\n");
-			sprintf(qry_mail_dir, "mail/%c/%s/%s", mytoupper(lookupuser.userid[0]),
-				lookupuser.userid, DOT_DIR);
+			sprintf(qry_mail_dir, "mail/%c/%s/%s", mytoupper(lookupuser.userid[0]), lookupuser.userid, DOT_DIR);
 			exp = countexp(&lookupuser);
 			perf = countperf(&lookupuser);
-			prints
-			    ("[1m%s [m([1m%s[m) π≤…œ’æ [1;33m%d[m ¥Œ£¨∑¢±Ìπ˝ [1;33m%d[m ∆™Œƒ’¬",
-			     lookupuser.userid, lookupuser.username, lookupuser.numlogins,
-			     lookupuser.numposts);
+			prints("\033[1m%s \033[m(\033[1m%s\033[m) π≤…œ’æ \033[1;33m%d\033[m ¥Œ£¨∑¢±Ìπ˝ \033[1;33m%d\033[m ∆™Œƒ’¬",
+					lookupuser.userid, lookupuser.username, lookupuser.numlogins,
+					lookupuser.numposts);
 			show_special(lookupuser.userid); //add by wjbta@bmy
 			strcpy(planid, lookupuser.userid);
-			strcpy(genbuf,
-				   lookupuser.dietime ? ytht_ctime(lookupuser.dietime) :
-				   ytht_ctime(lookupuser.lastlogin));
+			strcpy(genbuf, lookupuser.dietime ? ytht_ctime(lookupuser.dietime) : ytht_ctime(lookupuser.lastlogin));
 			if (ifinprison(lookupuser.userid)) {
 				strcpy(genbuf, ytht_ctime(lookupuser.lastlogin));
 				prints("\n‘⁄º‡”¸∑˛–Ã£¨…œ¥Œ∑≈∑Á ±º‰[\033[1m%s\033[m]\n", genbuf);
-				if (uinfo.mode != LUSERS && uinfo.mode != LAUSERS
-				    && uinfo.mode != FRIEND && uinfo.mode != GMENU)
+				if (uinfo.mode != LUSERS && uinfo.mode != LAUSERS && uinfo.mode != FRIEND && uinfo.mode != GMENU)
 					pressanykey();
 				uinfo.destuid = 0;
 				break;
 			}
 			if (lookupuser.dietime) {
-				prints
-				    ("\n“—æ≠¿Îø™¡À»À ¿,ŒÿŒÿ...\nªπ”– [\033[1m%d\033[m] ÃÏæÕ“™◊™ ¿Õ∂Ã•¡À\n",
-				     countlife(&lookupuser));
-				if (uinfo.mode != LUSERS && uinfo.mode != LAUSERS
-				    && uinfo.mode != FRIEND && uinfo.mode != GMENU)
+				prints("\n“—æ≠¿Îø™¡À»À ¿,ŒÿŒÿ...\nªπ”– [\033[1m%d\033[m] ÃÏæÕ“™◊™ ¿Õ∂Ã•¡À\n", countlife(&lookupuser));
+				if (uinfo.mode != LUSERS && uinfo.mode != LAUSERS && uinfo.mode != FRIEND && uinfo.mode != GMENU)
 					pressanykey();
 				uinfo.destuid = 0;
 				break;
 			}
-			prints("\n…œ¥Œ‘⁄ [[1;32m%s[m] ¥” [[1;32m%s[m] µΩ±æ’æ“ª”Œ°£\n",
+			prints("\n…œ¥Œ‘⁄ [\033[1;32m%s\033[m] ¥” [\033[1;32m%s\033[m] µΩ±æ’æ“ª”Œ°£\n",
 				genbuf, (lookupuser.lasthost[0] =='\0' ? "(≤ªœÍ)" : lookupuser.lasthost));//add for displaying exp type rbb@bmy
-			if(HAS_PERM(PERM_SYSOP | PERM_SEECLOAK)){		//add by mintbaggio@BMY
+			if(HAS_PERM(PERM_SYSOP | PERM_SEECLOAK, currentuser)){		//add by mintbaggio@BMY
 				if(lookupuser.userlevel&PERM_CLOAK)
 					strcpy(genbuf, (lookupuser.lastlogout>=lookupuser.lastlogin) ? (user_isonline(lookupuser.userid)? "“Ú‘⁄œﬂ…œªÚ≤ª’˝≥£∂œœﬂ≤ªœÍ": ytht_ctime(
 							lookupuser.lastlogout)) : "“Ú‘⁄œﬂ…œªÚ≤ª’˝≥£∂œœﬂ≤ªœÍ");
@@ -498,52 +456,49 @@ if (HAS_PERM(PERM_ACCOUNTS))
 			}
 			else
 				strcpy(genbuf, (lookupuser.lastlogout>=lookupuser.lastlogin) ? ytht_ctime(lookupuser.lastlogout) : "“Ú‘⁄œﬂ…œªÚ≤ª’˝≥£∂œœﬂ≤ªœÍ");
-			prints
-			    ("¿Î’æ ±º‰£∫[\033[1;36m%s\033[m] –≈œ‰£∫[[1;5m%2s[m]£¨…˙√¸¡¶£∫[[1;32m%d[m] Õ¯¡‰£∫[[1;32m%d[m]ÃÏ°£\n",
-			     genbuf, (check_query_mail(qry_mail_dir) == 1) ? "°—" : "  ",
-			     countlife(&lookupuser),
-			     (strcmp(lookupuser.userid, "SYSOP") == 0) ? 9999 : ((time(0)-lookupuser.firstlogin)/86400));//by bjgyt add networkage
+			prints ("¿Î’æ ±º‰£∫[\033[1;36m%s\033[m] –≈œ‰£∫[\033[1;5m%2s\033[m]£¨…˙√¸¡¶£∫[\033[1;32m%d\033[m] Õ¯¡‰£∫[\033[1;32m%d\033[m]ÃÏ°£\n",
+					genbuf, (check_query_mail(qry_mail_dir) == 1) ? "°—" : "  ",
+					countlife(&lookupuser),
+					(strcmp(lookupuser.userid, "SYSOP") == 0) ? 9999 : ((time(0)-lookupuser.firstlogin)/86400));//by bjgyt add networkage
 			if (lookupuser.userlevel & (PERM_BOARDS | PERM_ARBITRATE
 				| PERM_OBOARDS | PERM_SYSOP | PERM_ACCOUNTS | PERM_WELCOME
 				| PERM_SPECIAL7 | PERM_SPECIAL4)) {
 				prints("µ£»Œ∞ÊŒÒ£∫");
-				sethomefile(path, lookupuser.userid, "mboard");
-				new_apply_record(path, sizeof (struct boardmanager),
-						 (void *) bm_printboard, NULL);
-			if (lookupuser.userlevel & !strcmp(currentuser.userid, "SYSOP")) prints("[[1;36mœµÕ≥π‹¿Ì‘±[m]");
-			else if (lookupuser.userlevel & !strcmp(currentuser.userid, "lanboy")) prints("[[1;36mœµÕ≥π‹¿Ì‘±[m]");
-			else if ((lookupuser.userlevel&PERM_SYSOP) && (lookupuser.userlevel&PERM_ARBITRATE) )	prints("[[1;36m±æ’æπÀŒ Õ≈[m]");
-			else if (lookupuser.userlevel & PERM_SYSOP)	prints("[[1;36mœ÷»Œ’æ≥§[m]");
-			else if (lookupuser.userlevel & PERM_OBOARDS)   prints("[[1;36m µœ∞’æ≥§[m]");
-			else if (lookupuser.userlevel & PERM_ARBITRATE)	prints("[[1;36mœ÷»ŒºÕŒØ[m]");
-			else if (lookupuser.userlevel & PERM_SPECIAL4)	prints("[[1;36m«¯≥§[m]");
-			else if (lookupuser.userlevel & PERM_WELCOME) prints("[[1;36mœµÕ≥√¿π§[m]");
-			else if (lookupuser.userlevel & PERM_SPECIAL7)	
+				sethomefile_s(path, sizeof(path), lookupuser.userid, "mboard");
+				new_apply_record(path, sizeof (struct boardmanager), (void *) bm_printboard, NULL);
+			if (lookupuser.userlevel & !strcmp(currentuser.userid, "SYSOP")) prints("[\033[1;36mœµÕ≥π‹¿Ì‘±\033[m]");
+			else if (lookupuser.userlevel & !strcmp(currentuser.userid, "lanboy")) prints("[\033[1;36mœµÕ≥π‹¿Ì‘±\033[m]");
+			else if ((lookupuser.userlevel&PERM_SYSOP) && (lookupuser.userlevel&PERM_ARBITRATE) )	prints("[\033[1;36m±æ’æπÀŒ Õ≈\033[m]");
+			else if (lookupuser.userlevel & PERM_SYSOP)	prints("[\033[1;36mœ÷»Œ’æ≥§\033[m]");
+			else if (lookupuser.userlevel & PERM_OBOARDS)   prints("[\033[1;36m µœ∞’æ≥§\033[m]");
+			else if (lookupuser.userlevel & PERM_ARBITRATE)	prints("[\033[1;36mœ÷»ŒºÕŒØ\033[m]");
+			else if (lookupuser.userlevel & PERM_SPECIAL4)	prints("[\033[1;36m«¯≥§\033[m]");
+			else if (lookupuser.userlevel & PERM_WELCOME) prints("[\033[1;36mœµÕ≥√¿π§\033[m]");
+			else if (lookupuser.userlevel & PERM_SPECIAL7)
 			{
 				// ¥Û–≈œ‰&&!“˛…Ì
-				if ( (lookupuser.userlevel & PERM_SPECIAL1) && !(lookupuser.userlevel & PERM_CLOAK) ) 
-					prints("[[1;36m¿Î»Œ≥Ã–Ú‘±[m]");
+				if ( (lookupuser.userlevel & PERM_SPECIAL1) && !(lookupuser.userlevel & PERM_CLOAK) )
+					prints("[\033[1;36m¿Î»Œ≥Ã–Ú‘±\033[m]");
 				else
-					prints("[[1;36m≥Ã–Ú◊È≥…‘±[m]");
-			}	
-			else if (lookupuser.userlevel & PERM_ACCOUNTS) prints ("[[1;36m’ ∫≈π‹¿Ì‘±[m]");
+					prints("[\033[1;36m≥Ã–Ú◊È≥…‘±\033[m]");
+			}
+			else if (lookupuser.userlevel & PERM_ACCOUNTS) prints ("[\033[1;36m’ ∫≈π‹¿Ì‘±\033[m]");
 			prints(" ");
 			}
-			prints("º∂±£∫[[1;36m%s[m]",expbuf); 
+			prints("º∂±£∫[\033[1;36m%s\033[m]",expbuf);
 			prints ("%s","                                              ");
 			prints("\n");
 			t_search_ulist(t_cmpuids, tuid);
-			if (HAS_PERM(PERM_ACCOUNTS))
-   {
-        char secu[35];
-        size_t num;
+			if (HAS_PERM(PERM_ACCOUNTS, currentuser)) {
+				char secu[35];
+				size_t num;
 
-        strcpy(secu, "bTCPRD#@XWBA#VS-DOM-F0s23456789H");
-        for (num = 0; num < strlen(secu); num++)
-               if (!(lookupuser.userlevel & (1 << num)))
-                      secu[num] = '-';
-        prints("’Ê µ–’√˚: %s (»®œﬁ: %s )\n", lookupuser.realname, secu);
-    }
+				strcpy(secu, "bTCPRD#@XWBA#VS-DOM-F0s23456789H");
+				for (num = 0; num < strlen(secu); num++)
+					if (!(lookupuser.userlevel & (1 << num)))
+						secu[num] = '-';
+				prints("’Ê µ–’√˚: %s (»®œﬁ: %s )\n", lookupuser.realname, secu);
+			}
 			pressanykey();
 			break;
 		}
@@ -553,27 +508,6 @@ if (HAS_PERM(PERM_ACCOUNTS))
 	return 0;
 }
 
-/*int testonline(char* userid)
-{
-        struct user_info *uentp;
-        int i;
-
-        resolve_utmp();
-        for (i = 0; i < USHM_SIZE; i++) {
-        	if (!utmpshm->uinfo[i].active)
-			continue;
-                uentp = &(utmpshm->uinfo[i]);
-                if (uentp != NULL) {
-                        if (!strcmp(uentp->userid , userid)){
-                                if(uentp->active && uentp->pid)
-                                        return 1;
-                                else	return 0;
-			}
-                }
-        }
-        return 0;
-}
-*/
 
 //add by wjbta@bmy
 static int show_special(char *id2) {
@@ -582,9 +516,9 @@ static int show_special(char *id2) {
 	fp=fopen("etc/special", "r");
 	if(fp==0) return 0;
 	while(1) {
-        if(fgets(buf, 256, fp)==0) break;
-        if(sscanf(buf, "%s %s", id1, name)<2) continue;
-        if(!strcasecmp(id1, id2)) prints("[1;33m°Ô[36m%s[1;33m°Ô[m",name);
+		if(fgets(buf, 256, fp)==0) break;
+		if(sscanf(buf, "%s %s", id1, name)<2) continue;
+		if(!strcasecmp(id1, id2)) prints("\033[1;33m°Ô\033[36m%s\033[1;33m°Ô\033[m",name);
 	}
 	fclose(fp);
 
@@ -599,47 +533,14 @@ bm_printboard(struct boardmanager *bm, void *farg)
 	return 0;
 }
 
-static int
-count_active(uentp)
-struct user_info *uentp;
-{
-	static int count;
-	static int wwwguest;
-
-	if (uentp == NULL) {
-		int c = count;
-		count = 0;
-		if (wwwguest != 0)
-			utmpshm->wwwguest = wwwguest;
-		wwwguest = 0;
-		return c;
-	}
-	if (!uentp->active || !uentp->pid)
-		return 0;
-	count++;
-	if (uentp->pid == 1 && uentp->uid == 2)
-		wwwguest++;
-	return 1;
-}
-
-static int
-count_useshell(uentp)
-struct user_info *uentp;
-{
-	static int count;
-
-	if (uentp == NULL) {
-		int c = count;
-		count = 0;
-		return c;
-	}
+static int count_useshell(const struct user_info *uentp, void *x_param) {
 	if (!uentp->active || !uentp->pid)
 		return 0;
 	if (uentp->mode == WWW || uentp->mode == SYSINFO
-	    || uentp->mode == HYTELNET || uentp->mode == DICT
-	    || uentp->mode == ARCHIE || uentp->mode == IRCCHAT
-	    || uentp->mode == BBSNET || uentp->mode == GAME)
-		count++;
+			|| uentp->mode == HYTELNET || uentp->mode == DICT
+			|| uentp->mode == ARCHIE || uentp->mode == IRCCHAT
+			|| uentp->mode == BBSNET || uentp->mode == GAME)
+		*(int *)x_param++;
 	return 1;
 }
 
@@ -653,37 +554,19 @@ num_alcounter()
 	last_time = t;
 	count_friends = 0;
 	for (i = 0; i < uinfo.fnum; i++)
-		count_friends += query_uindex(uinfo.friend[i], 1) ? 1 : 0;
-	count_users = num_active_users();
+		count_friends += (ythtbbs_cache_UserTable_query_user_by_uid(currentuser.userid, HAS_PERM(PERM_SYSOP | PERM_SEECLOAK, currentuser), uinfo.friend[i], true) != NULL) ? 1 : 0;
+	count_users = ythtbbs_cache_utmp_count_active();
 }
 
 int
 num_useshell()
 {
-	count_useshell(NULL);
-	apply_ulist(count_useshell);
-	return count_useshell(NULL);
+	int count = 0;
+	ythtbbs_cache_utmp_apply(count_useshell, &count);
+	return count;
 }
 
-int
-num_active_users()
-{
-	time_t now = time(NULL);
-	resolve_utmp();
-	if (now <= utmpshm->activetime + 1)
-		return utmpshm->activeuser;
-	utmpshm->activetime = now;
-	count_active(NULL);
-	apply_ulist(count_active);
-	utmpshm->activeuser = count_active(NULL);
-	return utmpshm->activeuser;
-}
-
-static int
-cmpfnames(userid, uv)
-char *userid;
-struct override *uv;
-{
+static int cmpfnames(const char *userid, const struct ythtbbs_override *uv) {
 	return !strcmp(userid, uv->id);
 }
 
@@ -710,10 +593,7 @@ t_talk()
 	return (netty_talk);
 }
 
-int
-ttt_talk(userinfo)
-struct user_info *userinfo;
-{
+int ttt_talk(const struct user_info *userinfo) {
 	char uident[STRLEN];
 	char reason[STRLEN];
 	int tuid, ucount, unum, tmp;
@@ -743,8 +623,8 @@ struct user_info *userinfo;
 			clear();
 			return 0;
 		}
-		if (!(tuid = searchuser(uident)) || tuid == usernum) {
-		      wrongid:
+		if (!(tuid = ythtbbs_cache_UserTable_search_usernum(uident)) || tuid == usernum) {
+wrongid:
 			move(2, 0);
 			prints("¥ÌŒÛ¥˙∫≈\n");
 			pressreturn();
@@ -757,14 +637,14 @@ struct user_info *userinfo;
 		prints("ƒø«∞ %s µƒ %d logins »Áœ¬: \n", uident, ucount);
 		clrtobot();
 		if (ucount > 1) {
-		      list:move(5, 0);
+list:
+			move(5, 0);
 			prints("(0) À„¡ÀÀ„¡À£¨≤ª¡ƒ¡À°£\n");
 			ucount = count_logins(&uin, t_cmpuids, tuid, 0);
 			count_logins(&uin, t_cmpuids, tuid, 1);
 			clrtobot();
 			tmp = ucount + 8;
-			getdata(tmp, 0, "«Î—°“ª∏ˆƒ„ø¥µƒ±»ΩœÀ≥—€µƒ [0]: ",
-				genbuf, 4, DOECHO, YEA);
+			getdata(tmp, 0, "«Î—°“ª∏ˆƒ„ø¥µƒ±»ΩœÀ≥—€µƒ [0]: ", genbuf, 4, DOECHO, YEA);
 			unum = atoi(genbuf);
 			if (unum == 0) {
 				clear();
@@ -790,7 +670,7 @@ struct user_info *userinfo;
 		prints("∏˙À≠¡ƒÃÏ: %s", uin.userid);
 	}
 	/* youzi : check guest */
-	if (!strcmp(uin.userid, "guest") && !HAS_PERM(PERM_FORCEPAGE))
+	if (!strcmp(uin.userid, "guest") && !HAS_PERM(PERM_FORCEPAGE, currentuser))
 		return -1;
 
 	/*  check if pager on/off       --gtv */
@@ -803,17 +683,16 @@ struct user_info *userinfo;
 		return -1;
 	}
 	if (uin.mode == SYSINFO || uin.mode == IRCCHAT || uin.mode == BBSNET ||
-	    uin.mode == DICT || uin.mode == ADMIN || uin.mode == ARCHIE
-	    || uin.mode == LOCKSCREEN || uin.mode == GAME || uin.mode == WWW
-	    || uin.mode == HYTELNET || uin.mode == PAGE) {
+			uin.mode == DICT || uin.mode == ADMIN || uin.mode == ARCHIE
+			|| uin.mode == LOCKSCREEN || uin.mode == GAME || uin.mode == WWW
+			|| uin.mode == HYTELNET || uin.mode == PAGE) {
 		move(2, 0);
 		prints("ƒø«∞Œﬁ∑®∫ÙΩ–.\n");
 		clrtobot();
 		pressreturn();
 		return -1;
 	}
-	if (!uin.active || uin.pid <= 0 || uin.pid == 1
-	    || (kill(uin.pid, 0) == -1)) {
+	if (!uin.active || uin.pid <= 0 || uin.pid == 1 || (kill(uin.pid, 0) == -1)) {
 		move(2, 0);
 		if (uin.active && uin.pid == 1)
 			prints("∂‘∑Ω «WWW…œœﬂ£¨Œﬁ∑®∫ÙΩ–.\n");
@@ -833,33 +712,17 @@ struct user_info *userinfo;
 		move(3, 0);
 		clrtobot();
 		show_user_plan(uident);
-/* modified by djq,99.07.19,for FIVE */
-/*
-        move( 2, 0);
-        if ( askyn("»∑∂®“™∫ÕÀ˚/À˝Ã∏ÃÏ¬",NA,NA) == NA ) {
-            clear();
-            return 0;
-        }
-*/
-		getdata(2, 0,
-			"œÎ’“∂‘∑ΩÃ∏ÃÏ«Î∞¥'y'(Y/N)[N]:", answer, 4, DOECHO, YEA);
+		getdata(2, 0, "œÎ’“∂‘∑ΩÃ∏ÃÏ«Î∞¥'y'(Y/N)[N]:", answer, 4, DOECHO, YEA);
 		if (*answer != 'y') {
 			clear();
 			return 0;
 		}
-//              if (*answer == 'w')
-//                      five = 1;
 		five = 0;
 		if (five == 1)
 			sprintf(buf, "%s five %s", currentuser.userid, uident);
 		else
 			sprintf(buf, "%s talk %s", currentuser.userid, uident);
 
-/* modified end. */
-
-/*
-        sprintf(buf,"Talk to '%s'",uident) ;
-*/
 		newtrace(buf);
 		sock = socket(AF_INET, SOCK_STREAM, 0);
 		if (sock < 0) {
@@ -870,8 +733,7 @@ struct user_info *userinfo;
 		server.sin_family = AF_INET;
 		server.sin_addr.s_addr = INADDR_ANY;
 		server.sin_port = 0;
-		if (bind(sock, (struct sockaddr *) &server, sizeof (server)) <
-		    0) {
+		if (bind(sock, (struct sockaddr *) &server, sizeof (server)) < 0) {
 			perror("bind err");
 			return -1;
 		}
@@ -965,61 +827,51 @@ struct user_info *userinfo;
 			break;
 		case 'a':
 		case 'A':
-			prints("%s (%s)Àµ£∫%s\n", uin.userid, uin.username,
-			       refuse[0]);
+			prints("%s (%s)Àµ£∫%s\n", uin.userid, uin.username, refuse[0]);
 			pressreturn();
 			break;
 		case 'b':
 		case 'B':
-			prints("%s (%s)Àµ£∫%s\n", uin.userid, uin.username,
-			       refuse[1]);
+			prints("%s (%s)Àµ£∫%s\n", uin.userid, uin.username, refuse[1]);
 			pressreturn();
 			break;
 		case 'c':
 		case 'C':
-			prints("%s (%s)Àµ£∫%s\n", uin.userid, uin.username,
-			       refuse[2]);
+			prints("%s (%s)Àµ£∫%s\n", uin.userid, uin.username, refuse[2]);
 			pressreturn();
 			break;
 		case 'd':
 		case 'D':
-			prints("%s (%s)Àµ£∫%s\n", uin.userid, uin.username,
-			       refuse[3]);
+			prints("%s (%s)Àµ£∫%s\n", uin.userid, uin.username, refuse[3]);
 			pressreturn();
 			break;
 		case 'e':
 		case 'E':
-			prints("%s (%s)Àµ£∫%s\n", uin.userid, uin.username,
-			       refuse[4]);
+			prints("%s (%s)Àµ£∫%s\n", uin.userid, uin.username, refuse[4]);
 			pressreturn();
 			break;
 		case 'f':
 		case 'F':
-			prints("%s (%s)Àµ£∫%s\n", uin.userid, uin.username,
-			       refuse[5]);
+			prints("%s (%s)Àµ£∫%s\n", uin.userid, uin.username, refuse[5]);
 			pressreturn();
 			break;
 		case 'g':
 		case 'G':
-			prints("%s (%s)Àµ£∫%s\n", uin.userid, uin.username,
-			       refuse[6]);
+			prints("%s (%s)Àµ£∫%s\n", uin.userid, uin.username, refuse[6]);
 			pressreturn();
 			break;
 		case 'n':
 		case 'N':
-			prints("%s (%s)Àµ£∫%s\n", uin.userid, uin.username,
-			       refuse[7]);
+			prints("%s (%s)Àµ£∫%s\n", uin.userid, uin.username, refuse[7]);
 			pressreturn();
 			break;
 		case 'm':
 		case 'M':
 			read(msgsock, reason, sizeof (reason));
-			prints("%s (%s)Àµ£∫%s\n", uin.userid, uin.username,
-			       reason);
+			prints("%s (%s)Àµ£∫%s\n", uin.userid, uin.username, reason);
 			pressreturn();
 		default:
-			sprintf(save_page_requestor, "%s (%s)", uin.userid,
-				uin.username);
+			sprintf(save_page_requestor, "%s (%s)", uin.userid, uin.username);
 //#ifdef TALK_LOG
 			strcpy(partner, uin.userid);
 //#endif
@@ -1100,8 +952,7 @@ char *mesg;
 				printdash(mesg);
 				break;
 			default:	/* a chat mode */
-				sprintf(buf, "** %s “—Õ£÷π∫ÙΩ–.",
-					page_requestor);
+				sprintf(buf, "** %s “—Õ£÷π∫ÙΩ–.", page_requestor);
 				printchatline(buf);
 			}
 			memset(page_requestor, 0, STRLEN);
@@ -1112,20 +963,17 @@ char *mesg;
 		now = time(0);
 		if (now - last_check > P_INT) {
 			last_check = now;
-			if (!page_requestor[0]
-			    && setpagerequest(0 /*For Talk */ ))
+			if (!page_requestor[0] && setpagerequest(0 /*For Talk */ ))
 				return NA;
 			else
 				switch (uinfo.mode) {
 				case TALK:
 					move(line, 0);
-					sprintf(buf, "** %s ’˝‘⁄∫ÙΩ–ƒ„",
-						page_requestor);
+					sprintf(buf, "** %s ’˝‘⁄∫ÙΩ–ƒ„", page_requestor);
 					printdash(buf);
 					break;
 				default:	/* chat */
-					sprintf(buf, "** %s ’˝‘⁄∫ÙΩ–ƒ„",
-						page_requestor);
+					sprintf(buf, "** %s ’˝‘⁄∫ÙΩ–ƒ„", page_requestor);
 					printchatline(buf);
 				}
 		}
@@ -1208,10 +1056,10 @@ talkreply()
 		return -1;
 	}
 	if (buf[0] != 'A' && buf[0] != 'a' && buf[0] != 'B' && buf[0] != 'b'
-	    && buf[0] != 'C' && buf[0] != 'c' && buf[0] != 'D' && buf[0] != 'd'
-	    && buf[0] != 'e' && buf[0] != 'E' && buf[0] != 'f' && buf[0] != 'F'
-	    && buf[0] != 'g' && buf[0] != 'G' && buf[0] != 'n' && buf[0] != 'N'
-	    && buf[0] != 'm' && buf[0] != 'M')
+			&& buf[0] != 'C' && buf[0] != 'c' && buf[0] != 'D' && buf[0] != 'd'
+			&& buf[0] != 'e' && buf[0] != 'E' && buf[0] != 'f' && buf[0] != 'F'
+			&& buf[0] != 'g' && buf[0] != 'G' && buf[0] != 'n' && buf[0] != 'N'
+			&& buf[0] != 'm' && buf[0] != 'M')
 		buf[0] = 'y';
 	if (buf[0] == 'M' || buf[0] == 'm') {
 		move(1, 0);
@@ -1296,18 +1144,6 @@ int ch;
 	}
 	return;
 }
-
-#if 0
-static void
-do_talk_string(twin, str)
-struct talk_win *twin;
-char *str;
-{
-	while (*str) {
-		do_talk_char(twin, *str++);
-	}
-}
-#endif
 
 char talkobuf[80];
 int talkobuflen;
@@ -1418,7 +1254,7 @@ int fd;
 			page_pending = servicepage((t_lines - 1) / 2, mid_line);
 		ch = igetkey();
 		talkidletime = 0;
-		if (ch == '') {
+		if (ch == '\033') {
 			igetkey();
 			igetkey();
 			continue;
@@ -1437,15 +1273,8 @@ int fd;
 					continue;
 				}
 //#ifdef TALK_LOG
-				/*
-				 * Sonny.990514 add an robust and fix some
-				 * logic problem
-				 */
-				/*
-				 * Sonny.990606 change to different algorithm
-				 * and fix the
-				 */
-				/* existing do_log() overflow problem       */
+				/* Sonny.990514 add an robust and fix some logic problem */
+				/* Sonny.990606 change to different algorithm and fix the existing do_log() overflow problem */
 				else if (isprint2(data[i])) {
 					if (ilen >= 80) {
 						itswords[79] = '\0';
@@ -1455,12 +1284,9 @@ int fd;
 						itswords[ilen] = data[i];
 						ilen++;
 					}
-				} else if ((data[i] == Ctrl('H')
-					    || data[i] == '\177') && !ilen) {
+				} else if ((data[i] == Ctrl('H') || data[i] == '\177') && !ilen) {
 					itswords[ilen--] = '\0';
-				} else if (data[i] == Ctrl('M')
-					   || data[i] == '\r'
-					   || data[i] == '\n') {
+				} else if (data[i] == Ctrl('M') || data[i] == '\r' || data[i] == '\n') {
 					itswords[ilen] = '\0';
 					(void) do_log(itswords, 2);
 					ilen = 0;
@@ -1472,15 +1298,13 @@ int fd;
 		} else {
 			if (ch == Ctrl('D') || ch == Ctrl('C'))
 				break;
-			if (isprint2(ch) || ch == Ctrl('H') || ch == '\177'
-			    || ch == Ctrl('G') || ch == Ctrl('M')) {
+			if (isprint2(ch) || ch == Ctrl('H') || ch == '\177' || ch == Ctrl('G') || ch == Ctrl('M')) {
 				talkobuf[talkobuflen++] = ch;
 				if (talkobuflen == 80)
 					talkflush();
 //#ifdef TALK_LOG
 				if (mlen < 80) {
-					if ((ch == Ctrl('H') || ch == '\177')
-					    && mlen != 0) {
+					if ((ch == Ctrl('H') || ch == '\177') && mlen != 0) {
 						mywords[mlen--] = '\0';
 					} else {
 						mywords[mlen] = ch;
@@ -1516,7 +1340,7 @@ int fd;
 					talkflush();
 					do_talk_char(&mywin, '\r');
 				}
-			} else if (ch == Ctrl('P') && HAS_PERM(PERM_BASIC)) {
+			} else if (ch == Ctrl('P') && HAS_PERM(PERM_BASIC, currentuser)) {
 				t_pager();
 				update_utmp();
 				update_endline();
@@ -1538,11 +1362,11 @@ int fd;
 		do_log(itswords, 2);
 
 	now = time(0);
-	sprintf(talkbuf, "\n[1;34mÕ®ª∞Ω· ¯,  ±º‰: %s [m\n", Cdate(&now));
+	sprintf(talkbuf, "\n\033[1;34mÕ®ª∞Ω· ¯,  ±º‰: %s \033[m\n", Cdate(&now));
 	write(talkrec, talkbuf, strlen(talkbuf));
 	close(talkrec);
 
-	sethomefile(genbuf, currentuser.userid, "talklog");
+	sethomefile_s(genbuf, sizeof(genbuf), currentuser.userid, "talklog");
 	if (!dashf(genbuf))
 		return 0;
 
@@ -1553,9 +1377,8 @@ int fd;
 	case 'N':
 		break;
 	default:
-		sethomefile(talkbuf, currentuser.userid, "talklog");
-		sprintf(mywords, "∏˙ %s µƒ¡ƒÃÏº«¬º [%s]", partner,
-			Cdate(&now) + 4);
+		sethomefile_s(talkbuf, sizeof(talkbuf), currentuser.userid, "talklog");
+		sprintf(mywords, "∏˙ %s µƒ¡ƒÃÏº«¬º [%s]", partner, Cdate(&now) + 4);
 		{
 			char temp[STRLEN];
 			strncpy(temp, save_title, STRLEN);
@@ -1563,7 +1386,7 @@ int fd;
 			strncpy(save_title, temp, STRLEN);
 		}
 	}
-	sethomefile(talkbuf, currentuser.userid, "talklog");
+	sethomefile_s(talkbuf, sizeof(talkbuf), currentuser.userid, "talklog");
 	unlink(talkbuf);
 //#endif
 	return 0;
@@ -1630,52 +1453,38 @@ char *fname;
 	return cnt;
 }
 
-int
-addtooverride(uident)
-char *uident;
-{
-	struct override tmp;
+int addtooverride(const char *uident) {
+	struct ythtbbs_override tmp;
 	int n;
 	char buf[STRLEN];
 	char desc[5];
 
 	memset(&tmp, 0, sizeof (tmp));
 	if (friendflag) {
-		setuserfile(buf, "friends");
 		n = MAXFRIENDS;
 		strcpy(desc, "∫√”—");
 	} else {
-		setuserfile(buf, "rejects");
 		n = MAXREJECTS;
 		strcpy(desc, "ªµ»À");
 	}
-	if (get_num_records(buf, sizeof (struct override)) >= n) {
+
+	if (ythtbbs_override_count(currentuser.userid, friendflag ? YTHTBBS_OVERRIDE_FRIENDS : YTHTBBS_OVERRIDE_REJECTS) >= n) {
 		move(t_lines - 2, 0);
 		clrtoeol();
-		prints("±ß«∏£¨±æ’æƒø«∞Ωˆø…“‘…Ë∂® %d ∏ˆ%s, «Î∞¥»Œ∫Œº˛ºÃ–¯...", n,
-		       desc);
+		prints("±ß«∏£¨±æ’æƒø«∞Ωˆø…“‘…Ë∂® %d ∏ˆ%s, «Î∞¥»Œ∫Œº˛ºÃ–¯...", n, desc);
 		igetkey();
 		move(t_lines - 2, 0);
 		clrtoeol();
 		return -1;
 	} else {
-		if (friendflag) {
-			if (myfriend(searchuser(uident))) {
-				sprintf(buf, "%s “—‘⁄∫√”—√˚µ•", uident);
-				show_message(buf);
-				return -1;
-			}
-		} else
-		    if (search_record
-			(buf, &tmp, sizeof (tmp), (void *) cmpfnames,
-			 uident) > 0) {
-			sprintf(buf, "%s “—‘⁄ªµ»À√˚µ•", uident);
+		if (ythtbbs_override_included(currentuser.userid, friendflag ? YTHTBBS_OVERRIDE_FRIENDS : YTHTBBS_OVERRIDE_REJECTS, uident) > 0) {
+			sprintf(buf, "%s “—‘⁄%s√˚µ•", uident, desc);
 			show_message(buf);
 			return -1;
 		}
 	}
-	if (uinfo.mode != LUSERS && uinfo.mode != LAUSERS
-	    && uinfo.mode != FRIEND) n = 2;
+	if (uinfo.mode != LUSERS && uinfo.mode != LAUSERS && uinfo.mode != FRIEND)
+		n = 2;
 	else
 		n = t_lines - 2;
 
@@ -1685,7 +1494,7 @@ char *uident;
 	sprintf(genbuf, "«Î ‰»Î∏¯%s°æ%s°øµƒÀµ√˜: ", desc, tmp.id);
 	getdata(n, 0, genbuf, tmp.exp, 40, DOECHO, YEA);
 
-	n = append_record(buf, &tmp, sizeof (struct override));
+	n = ythtbbs_override_add(currentuser.userid, &tmp, (friendflag) ? YTHTBBS_OVERRIDE_FRIENDS : YTHTBBS_OVERRIDE_REJECTS);
 	if (n != -1)
 		(friendflag) ? getfriendstr() : getrejectstr();
 	else
@@ -1693,18 +1502,13 @@ char *uident;
 	return n;
 }
 
-int
-deleteoverride(uident, filename)
-char *uident;
-char *filename;
-{
+int deleteoverride(const char *uident, const char *filename) {
 	int deleted;
-	struct override fh;
+	struct ythtbbs_override fh;
 	char buf[STRLEN];
 
 	setuserfile(buf, filename);
-	deleted =
-	    search_record(buf, &fh, sizeof (fh), (void *) cmpfnames, uident);
+	deleted = search_record(buf, &fh, sizeof (fh), (void *) cmpfnames, (void *)uident); // cmpfnames ¥´»Î uident£¨¥À¥¶ °¬‘ const  «∞≤»´µƒ
 	if (deleted > 0) {
 		if (delete_record(buf, sizeof (fh), deleted) != -1) {
 			(friendflag) ? getfriendstr() : getrejectstr();
@@ -1732,19 +1536,15 @@ override_title()
 		showtitle("[±‡º≠ªµ»À√˚µ•]", genbuf);
 		strcpy(desc, "ªµ»À");
 	}
-	prints
-	    (" [[1;32m°˚[m,[1;32me[m] ¿Îø™ [[1;32mh[m] «Û÷˙ [[1;32m°˙[m,[1;32mRtn[m] %sÀµ√˜µµ [[1;32m°¸[m,[1;32m°˝[m] —°‘Ò [[1;32ma[m] ‘ˆº”%s [[1;32md[m] …æ≥˝%s\n",
-	     desc, desc, desc);
-	prints
-	    ("[1;44m ±‡∫≈  %s¥˙∫≈      %sÀµ√˜                                                   [m\n",
-	     desc, desc);
+	prints(" [\033[1;32m°˚\033[m,\033[1;32me\033[m] ¿Îø™ [\033[1;32mh\033[m] «Û÷˙ [\033[1;32m°˙\033[m,\033[1;32mRtn\033[m] %sÀµ√˜µµ [\033[1;32m°¸\033[m,\033[1;32m°˝\033[m] —°‘Ò [\033[1;32ma\033[m] ‘ˆº”%s [\033[1;32md\033[m] …æ≥˝%s\n", desc, desc, desc);
+	prints("\033[1;44m ±‡∫≈  %s¥˙∫≈      %sÀµ√˜                                                   \033[m\n", desc, desc);
 	return 0;
 }
 
 static char *
 override_doentry(ent, fh, buf)
 int ent;
-struct override *fh;
+struct ythtbbs_override *fh;
 char buf[512];
 {
 	sprintf(buf, " %4d  %-12.12s  %s", ent, fh->id, fh->exp);
@@ -1754,20 +1554,18 @@ char buf[512];
 static int
 override_edit(ent, fh, direc)
 int ent;
-struct override *fh;
+struct ythtbbs_override *fh;
 char *direc;
 {
-	struct override nh;
+	struct ythtbbs_override nh;
 	char buf[STRLEN / 2];
 	int pos;
 
-	pos =
-	    search_record(direc, &nh, sizeof (nh), (void *) cmpfnames, fh->id);
+	pos = search_record(direc, &nh, sizeof (nh), (void *) cmpfnames, fh->id);
 	move(t_lines - 2, 0);
 	clrtoeol();
 	if (pos > 0) {
-		sprintf(buf, "«Î ‰»Î %s µƒ–¬%sÀµ√˜: ", fh->id,
-			(friendflag) ? "∫√”—" : "ªµ»À");
+		sprintf(buf, "«Î ‰»Î %s µƒ–¬%sÀµ√˜: ", fh->id, (friendflag) ? "∫√”—" : "ªµ»À");
 		getdata(t_lines - 2, 0, buf, nh.exp, 40, DOECHO, NA);
 	}
 	if (substitute_record(direc, &nh, sizeof (nh), pos) < 0)
@@ -1786,7 +1584,7 @@ override_add()
 	move(1, 0);
 	usercomplete("«Î ‰»Î“™‘ˆº”µƒ¥˙∫≈: ", uident);
 	if (uident[0] != '\0') {
-		if (searchuser(uident) <= 0) {
+		if (ythtbbs_cache_UserTable_search_usernum(uident) <= 0) {
 			move(2, 0);
 			prints("¥ÌŒÛµƒ π”√’ﬂ¥˙∫≈...");
 			pressanykey();
@@ -1794,8 +1592,7 @@ override_add()
 		} else
 			addtooverride(uident);
 	}
-	prints("\n∞— %s º”»Î%s√˚µ•÷–...", uident,
-	       (friendflag) ? "∫√”—" : "ªµ»À");
+	prints("\n∞— %s º”»Î%s√˚µ•÷–...", uident, (friendflag) ? "∫√”—" : "ªµ»À");
 	pressanykey();
 	return FULLUPDATE;
 }
@@ -1803,7 +1600,7 @@ override_add()
 static int
 override_dele(ent, fh, direct)
 int ent;
-struct override *fh;
+struct ythtbbs_override *fh;
 char *direct;
 {
 	char buf[STRLEN];
@@ -1825,8 +1622,7 @@ char *direct;
 		move(t_lines - 2, 0);
 		clrtoeol();
 		if (deleteoverride(fh->id, fname) == 1) {
-			prints("“—¥”%s√˚µ•÷–“∆≥˝°æ%s°ø,∞¥»Œ∫Œº¸ºÃ–¯...", desc,
-			       fh->id);
+			prints("“—¥”%s√˚µ•÷–“∆≥˝°æ%s°ø,∞¥»Œ∫Œº¸ºÃ–¯...", desc, fh->id);
 			deleted = YEA;
 		} else
 			prints("’“≤ªµΩ°æ%s°ø,∞¥»Œ∫Œº¸ºÃ–¯...", fh->id);
@@ -1845,7 +1641,7 @@ char *direct;
 static int
 friend_edit(ent, fh, direct)
 int ent;
-struct override *fh;
+struct ythtbbs_override *fh;
 char *direct;
 {
 	friendflag = YEA;
@@ -1855,7 +1651,7 @@ char *direct;
 static int
 friend_add(ent, fh, direct)
 int ent;
-struct override *fh;
+struct ythtbbs_override *fh;
 char *direct;
 {
 	friendflag = YEA;
@@ -1865,7 +1661,7 @@ char *direct;
 static int
 friend_dele(ent, fh, direct)
 int ent;
-struct override *fh;
+struct ythtbbs_override *fh;
 char *direct;
 {
 	friendflag = YEA;
@@ -1875,10 +1671,10 @@ char *direct;
 static int
 friend_mail(ent, fh, direct)
 int ent;
-struct override *fh;
+struct ythtbbs_override *fh;
 char *direct;
 {
-	if (!HAS_PERM(PERM_POST))
+	if (!HAS_PERM(PERM_POST, currentuser))
 		return DONOTHING;
 	m_send(fh->id);
 	return FULLUPDATE;
@@ -1887,7 +1683,7 @@ char *direct;
 static int
 friend_query(ent, fh, direct)
 int ent;
-struct override *fh;
+struct ythtbbs_override *fh;
 char *direct;
 {
 	int ch;
@@ -1896,8 +1692,7 @@ char *direct;
 		return FULLUPDATE;
 	move(t_lines - 1, 0);
 	clrtoeol();
-	prints
-	    ("[0;1;44;31m[∂¡»°∫√”—Àµ√˜µµ][33m ºƒ–≈∏¯∫√”— m ©¶ Ω· ¯ Q,°˚ ©¶…œ“ªŒª °¸©¶œ¬“ªŒª <Space>,°˝      [m");
+	prints("\033[0;1;44;31m[∂¡»°∫√”—Àµ√˜µµ]\033[33m ºƒ–≈∏¯∫√”— m ©¶ Ω· ¯ Q,°˚ ©¶…œ“ªŒª °¸©¶œ¬“ªŒª <Space>,°˝      \033[m");
 	ch = egetch();
 	switch (ch) {
 	case 'N':
@@ -1935,7 +1730,7 @@ friend_help()
 static int
 reject_edit(ent, fh, direct)
 int ent;
-struct override *fh;
+struct ythtbbs_override *fh;
 char *direct;
 {
 	friendflag = NA;
@@ -1945,7 +1740,7 @@ char *direct;
 static int
 reject_add(ent, fh, direct)
 int ent;
-struct override *fh;
+struct ythtbbs_override *fh;
 char *direct;
 {
 	friendflag = NA;
@@ -1955,7 +1750,7 @@ char *direct;
 static int
 reject_dele(ent, fh, direct)
 int ent;
-struct override *fh;
+struct ythtbbs_override *fh;
 char *direct;
 {
 	friendflag = NA;
@@ -1965,7 +1760,7 @@ char *direct;
 static int
 reject_query(ent, fh, direct)
 int ent;
-struct override *fh;
+struct ythtbbs_override *fh;
 char *direct;
 {
 	int ch;
@@ -1974,8 +1769,7 @@ char *direct;
 		return FULLUPDATE;
 	move(t_lines - 1, 0);
 	clrtoeol();
-	prints
-	    ("[0;1;44;31m[∂¡»°ªµ»ÀÀµ√˜µµ][33m Ω· ¯ Q,°˚ ©¶…œ“ªŒª °¸©¶œ¬“ªŒª <Space>,°˝                      [m");
+	prints("\033[0;1;44;31m[∂¡»°ªµ»ÀÀµ√˜µµ]\033[33m Ω· ¯ Q,°˚ ©¶…œ“ªŒª °¸©¶œ¬“ªŒª <Space>,°˝                      \033[m");
 	ch = egetch();
 	switch (ch) {
 	case 'N':
@@ -2013,8 +1807,7 @@ t_friend()
 
 	friendflag = YEA;
 	setuserfile(buf, "friends");
-	i_read(GMENU, buf, override_title, (void *) override_doentry,
-	       friend_list, sizeof (struct override));
+	i_read(GMENU, buf, override_title, (void *) override_doentry, friend_list, sizeof (struct ythtbbs_override));
 	clear();
 	return;
 }
@@ -2026,54 +1819,32 @@ t_reject()
 
 	friendflag = NA;
 	setuserfile(buf, "rejects");
-	i_read(GMENU, buf, override_title, (void *) override_doentry,
-	       reject_list, sizeof (struct override));
+	i_read(GMENU, buf, override_title, (void *) override_doentry, reject_list, sizeof (struct ythtbbs_override));
 	clear();
 	return;
 }
 
-struct user_info *
-t_search(sid, pid, invisible_check)
-char *sid;
-int pid;
-int invisible_check;
-{
+struct user_info *t_search(char *sid, int pid, int invisible_check) {
 	int i;
-	extern struct UTMPFILE *utmpshm;
 	struct user_info *cur, *tmp = NULL;
 
-	resolve_utmp();
+	ythtbbs_cache_utmp_resolve();
 	for (i = 0; i < USHM_SIZE; i++) {
-		cur = &(utmpshm->uinfo[i]);
+		cur = ythtbbs_cache_utmp_get_by_idx(i);
 		if (!cur->active || !cur->pid)
 			continue;
 		if (!strcasecmp(cur->userid, sid)) {
-			if ((pid == 0))
-				return (isreject(cur)
-					|| (invisible_check
-					    && (cur->invisible
-						&& !HAS_PERM(PERM_SEECLOAK |
-							     PERM_SYSOP)))) ?
-				    NULL : cur;
+			if (pid == 0)
+				return (isreject(cur) || (invisible_check && (cur->invisible && !HAS_PERM(PERM_SEECLOAK | PERM_SYSOP, currentuser)))) ? NULL : cur;
 			tmp = cur;
 			if (pid == cur->pid)
 				break;
 		}
 	}
-	/* by gluon
-	   if(tmp != NULL)
-	   {
-	   if (tmp->invisible && !HAS_PERM(PERM_SEECLOAK|PERM_SYSOP))
-	   return NULL;
-	   }
-	 */
 	return isreject(cur) ? NULL : tmp;
 }
 
-static int
-cmpfuid(a, b)
-unsigned *a, *b;
-{
+static int cmpfuid(unsigned *a, unsigned *b) {
 	return *a - *b;
 }
 
@@ -2081,25 +1852,24 @@ int
 getfriendstr()
 {
 	int i;
-	struct override *tmp;
+	struct ythtbbs_override *tmp;
 
 	memset(uinfo.friend, 0, sizeof (uinfo.friend));
 	setuserfile(genbuf, "friends");
-	uinfo.fnum = get_num_records(genbuf, sizeof (struct override));
+	uinfo.fnum = get_num_records(genbuf, sizeof (struct ythtbbs_override));
 	if (uinfo.fnum <= 0)
 		return -1;
 	uinfo.fnum = (uinfo.fnum >= MAXFRIENDS) ? MAXFRIENDS : uinfo.fnum;
-	tmp = (struct override *) calloc(sizeof (struct override), uinfo.fnum);
-	get_records(genbuf, tmp, sizeof (struct override), 1, uinfo.fnum);
+	tmp = (struct ythtbbs_override *) calloc(sizeof (struct ythtbbs_override), uinfo.fnum);
+	get_records(genbuf, tmp, sizeof (struct ythtbbs_override), 1, uinfo.fnum);
 	for (i = 0; i < uinfo.fnum; i++) {
-		uinfo.friend[i] = searchuser(tmp[i].id);
+		uinfo.friend[i] = ythtbbs_cache_UserTable_search_usernum(tmp[i].id);
 		if (uinfo.friend[i] == 0)
 			deleteoverride(tmp[i].id, "friends");
 		/* À≥±„…æ≥˝“—≤ª¥Ê‘⁄’ ∫≈µƒ∫√”— */
 	}
 	free(tmp);
-	qsort(&uinfo.friend, uinfo.fnum, sizeof (uinfo.friend[0]),
-	      (void *) cmpfuid);
+	qsort(&uinfo.friend, uinfo.fnum, sizeof (uinfo.friend[0]), (void *) cmpfuid);
 	update_ulist(&uinfo, utmpent);
 	return 0;
 }
@@ -2108,18 +1878,18 @@ int
 getrejectstr()
 {
 	int nr, i;
-	struct override *tmp;
+	struct ythtbbs_override *tmp;
 
 	memset(uinfo.reject, 0, sizeof (uinfo.reject));
 	setuserfile(genbuf, "rejects");
-	nr = get_num_records(genbuf, sizeof (struct override));
+	nr = get_num_records(genbuf, sizeof (struct ythtbbs_override));
 	if (nr <= 0)
 		return -1;
 	nr = (nr >= MAXREJECTS) ? MAXREJECTS : nr;
-	tmp = (struct override *) calloc(sizeof (struct override), nr);
-	get_records(genbuf, tmp, sizeof (struct override), 1, nr);
+	tmp = (struct ythtbbs_override *) calloc(sizeof (struct ythtbbs_override), nr);
+	get_records(genbuf, tmp, sizeof (struct ythtbbs_override), 1, nr);
 	for (i = 0; i < nr; i++) {
-		uinfo.reject[i] = searchuser(tmp[i].id);
+		uinfo.reject[i] = ythtbbs_cache_UserTable_search_usernum(tmp[i].id);
 		if (uinfo.reject[i] == 0)
 			deleteoverride(tmp[i].id, "rejects");
 	}
@@ -2143,14 +1913,14 @@ wait_friend()
 		clear();
 		return 0;
 	}
-	if (!(tuid = searchuser(uid))) {
+	if (!(tuid = ythtbbs_cache_UserTable_search_usernum(uid))) {
 		move(2, 0);
-		prints("[1m≤ª’˝»∑µƒ π”√’ﬂ¥˙∫≈[m\n");
+		prints("\033[1m≤ª’˝»∑µƒ π”√’ﬂ¥˙∫≈\033[m\n");
 		pressanykey();
 		clear();
 		return -1;
 	}
-	sprintf(buf, "ƒ„»∑∂®“™∞— [1m%s[m º”»ÎœµÕ≥—∞»À√˚µ•÷–", uid);
+	sprintf(buf, "ƒ„»∑∂®“™∞— \033[1m%s\033[m º”»ÎœµÕ≥—∞»À√˚µ•÷–", uid);
 	move(2, 0);
 	if (askyn(buf, YEA, NA) == NA) {
 		clear();
@@ -2166,8 +1936,7 @@ wait_friend()
 		fprintf(fp, "%s\n", buf);
 	fclose(fp);
 	move(3, 0);
-	prints("“—æ≠∞Ôƒ„º”»Î—∞»À√˚≤·÷–£¨[1m%s[m …œ’æœµÕ≥“ª∂®ª·Õ®÷™ƒ„...\n",
-	       uid);
+	prints("“—æ≠∞Ôƒ„º”»Î—∞»À√˚≤·÷–£¨\033[1m%s\033[m …œ’æœµÕ≥“ª∂®ª·Õ®÷™ƒ„...\n", uid);
 	pressanykey();
 	clear();
 	return 0;
@@ -2193,23 +1962,21 @@ do_log(char *msg, int who)
 		return;
 
 	/* ÷ª∞Ô◊‘º∫◊ˆ */
-	sethomefile(buf, currentuser.userid, "talklog");
+	sethomefile_s(buf, sizeof(buf), currentuser.userid, "talklog");
 
 	if (!dashf(buf) || talkrec == -1) {
 		talkrec = open(buf, O_RDWR | O_CREAT | O_TRUNC, 0644);
 		buf[127] = 0;
-		snprintf(buf, 127, "[1;32m”Î %s µƒ«Èª∞√‡√‡, »’∆⁄: %s [m\n",
-			 save_page_requestor, Cdate(&now));
+		snprintf(buf, 127, "\033[1;32m”Î %s µƒ«Èª∞√‡√‡, »’∆⁄: %s \033[m\n", save_page_requestor, Cdate(&now));
 		write(talkrec, buf, strlen(buf));
-		sprintf(buf, "\t—’…´∑÷±¥˙±Ì: [1;33m%s[m [1;36m%s[m \n\n",
-			currentuser.userid, partner);
+		sprintf(buf, "\t—’…´∑÷±¥˙±Ì: \033[1;33m%s\033[m \033[1;36m%s\033[m \n\n", currentuser.userid, partner);
 		write(talkrec, buf, strlen(buf));
 	}
 	if (who == 1) {		/* ◊‘º∫Àµµƒª∞ */
-		sprintf(buf, "[1;33m-=> %s [m\n", msg);
+		sprintf(buf, "\033[1;33m-=> %s \033[m\n", msg);
 		write(talkrec, buf, strlen(buf));
 	} else if (who == 2) {	/* ±»ÀÀµµƒª∞ */
-		sprintf(buf, "[1;36m--> %s [m\n", msg);
+		sprintf(buf, "\033[1;36m--> %s \033[m\n", msg);
 		write(talkrec, buf, strlen(buf));
 	}
 }
@@ -2225,3 +1992,4 @@ time_t *clock;
 	strftime(foo, 22, "%m/%d/%Y %T %a", mytm);
 	return (foo);
 }
+

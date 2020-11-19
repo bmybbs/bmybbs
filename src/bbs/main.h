@@ -1,5 +1,6 @@
 #ifndef BMYBBS_BBS_MAIN
 #define BMYBBS_BBS_MAIN
+#include <setjmp.h>
 #include "ythtbbs/user.h"
 extern int showansi;
 extern int talkrequest;

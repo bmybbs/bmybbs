@@ -1,5 +1,5 @@
 /*
-    Pirate Bulletin Board System 
+    Pirate Bulletin Board System
     Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
     Eagles Bulletin Board System
     Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
@@ -8,7 +8,7 @@
     Firebird Bulletin Board System
     Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
                         Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
-    
+
     Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
 
     This program is free software; you can redistribute it and/or modify
@@ -23,8 +23,9 @@
 */
 
 #include "bbs.h"
+#include "ythtbbs/cache.h"
+#include "ythtbbs/override.h"
 #include "common.h"
-#include "term.h"
 #include "smth_screen.h"
 #include "io.h"
 #include "main.h"
@@ -39,13 +40,14 @@
 #include "bbsinc.h"
 #include "talk.h"
 #include "record.h"
+#include "bbs_global_vars.h"
+#include "bbs-internal.h"
 // modified by yldsd.
 // #define BBS_PAGESIZE    (19)
 #define BBS_PAGESIZE (t_lines - 4)
 #define refreshtime     (30)
 extern time_t login_start_time;
 extern int can_R_endline;
-extern struct UINDEX *uindexshm;
 int (*func_list_show) ();
 time_t update_time = 0;
 int freshmode = 0;
@@ -54,19 +56,19 @@ int friendmode = 0;
 extern int usercounter;
 int range, page, readplan, num;
 int sortmode = 0;
-struct user_info **user_record;
+typedef const struct user_info* c_uin_ptr;
+static c_uin_ptr *user_record;
 struct userec *user_data;
 
 /* add by KCN 1998.11 */
 int friendmode1;
 
-static int friend_search(unsigned uid, struct user_info *uentp, int tblsize);
+static int friend_search(unsigned uid, const struct user_info *uentp, int tblsize);
 static int UseronlineSearch(int curr_num, int offset);
 static int IDSearch(char query[STRLEN], int curr_num, int offset);
 static int IPSearch(char query[20], int curr_num, int offset);
 static int NickSearch(char query[STRLEN], int curr_num, int offset);
 static void print_title(void);
-static void print_title2(void);
 static void update_data(void);
 static int print_user_info_title(void);
 //static void swap_user_record(int a, int b);
@@ -74,29 +76,21 @@ static void change_sortmode(int mode);
 static int cmpuinfo(struct user_info **a, struct user_info **b);
 static void sort_user_record(int left, int right);
 static int fill_userlist(void);
-static int cfriendname(struct override *t1, struct override *t2);
+static int cfriendname(struct ythtbbs_override *t1, struct ythtbbs_override *t2);
 static int do_userlist(void);
 static int show_userlist(void);
 static int deal_key(int ch, int allnum, int pagenum);
-static int deal_key2(int ch, int allnum, int pagenum);
 static int countusers(struct userec *uentp);
-static int printuent(struct userec *uentp);
-static int Show_Users(void);
 static int do_query(int star, int curr);
-static int do_query2(int star, int curr);
 static int uleveltochar(char *buf, unsigned int lvl);
-static void printutitle(void);
-static char msgchar(struct user_info *uin);
+static char msgchar(const struct user_info *uin);
 static char pagerchar(int friend, int pager);
-static char *idle_str(struct user_info *uent);
+static char *idle_str(const struct user_info *uent);
 static int num_visible_users();
-static int count_visible_active(struct user_info *uentp);
+static int count_visible_active(const struct user_info *uentp, void *);
 
 static int
-friend_search(uid, uentp, tblsize)
-unsigned uid;
-struct user_info *uentp;
-int tblsize;
+friend_search(unsigned uid, const struct user_info *uentp, int tblsize)
 {
 	int hi, low, mid;
 	//int cmp;
@@ -125,8 +119,7 @@ UseronlineSearch(curr_num, offset)
 int curr_num;
 int offset;
 {
-	static char method[2], queryID[IDLEN + 2], queryIP[20],
-	    queryNick[NAMELEN + 2];
+	static char method[2], queryID[IDLEN + 2], queryIP[20], queryNick[NAMELEN + 2];
 	char ans[STRLEN + 1], pmt[STRLEN];
 	strcpy(ans, method);
 	sprintf(pmt, "²éÕÒ·½Ê½:(A)ID (B)ÄØ³Æ (C)IP [%s]:", ans);
@@ -184,15 +177,13 @@ int offset;
 		return curr_num;
 	if (offset > 0) {
 		for (i = curr_num + 1; i < range; i++) {
-			if (!strncasecmp
-			    (user_record[i]->userid, query, strlen(query)))
-				    return i;
+			if (!strncasecmp(user_record[i]->userid, query, strlen(query)))
+				return i;
 		}
 	} else if (offset < 0) {
 		for (i = curr_num - 1; i >= 0; i--) {
-			if (!strncasecmp
-			    (user_record[i]->userid, query, strlen(query)))
-				    return i;
+			if (!strncasecmp(user_record[i]->userid, query, strlen(query)))
+				return i;
 		}
 	}
 	return curr_num;
@@ -232,15 +223,13 @@ int offset;
 		return curr_num;
 	if (offset > 0) {
 		for (i = curr_num + 1; i < range; i++) {
-			if (!strncmp
-			    (user_record[i]->username, query, strlen(query)))
-				    return i;
+			if (!strncmp(user_record[i]->username, query, strlen(query)))
+				return i;
 		}
 	} else if (offset < 0) {
 		for (i = curr_num - 1; i >= 0; i--) {
-			if (!strncmp
-			    (user_record[i]->username, query, strlen(query)))
-				    return i;
+			if (!strncmp(user_record[i]->username, query, strlen(query)))
+				return i;
 		}
 	}
 	return curr_num;
@@ -253,22 +242,16 @@ unsigned uid;
 	return friend_search(uid, &uinfo, uinfo.fnum);
 }
 
-int
-hisfriend(uentp)
-struct user_info *uentp;
-{
+int hisfriend(const struct user_info *uentp) {
 	if (uentp == NULL)
 		return NA;
 	return friend_search(uinfo.uid, uentp, uentp->fnum);
 }
 
-int
-isreject(uentp)
-struct user_info *uentp;
-{
+int isreject(const struct user_info *uentp) {
 	int i;
 
-	if (HAS_PERM(PERM_SYSOP))
+	if (HAS_PERM(PERM_SYSOP, currentuser))
 		return NA;
 	if (uentp->uid != uinfo.uid) {
 		for (i = 0; i < MAXREJECTS && uentp->reject[i]; i++) {
@@ -311,37 +294,7 @@ print_title()
 		break;
 	}
 	docmdtitle(buf,
-		   " ÁÄÌì[[1;32mt[m] ¼ÄÐÅ[[1;32mm[m] ËÍÑ¶Ï¢[[1;32ms[m] ¼Ó,¼õÅóÓÑ[[1;32mo[m,[1;32md[m] ¿´ËµÃ÷µµ[[1;32m¡ú[m,[1;32mRtn[m] ÇÐ»»Ä£Ê½ [[1;32mc[m] Çó¾È[[1;32mh[m]");
-}
-
-static void
-print_title2()
-{
-	char buf[20];
-	switch (sortmode) {
-	case 0:
-		sprintf(buf, "%s %s",
-			(friendmode) ? "[ºÃÅóÓÑÁÐ±í]" : "[Ê¹ÓÃÕßÁÐ±í]",
-			"[ÆÕÍ¨]");
-		break;
-	case 1:
-		sprintf(buf, "%s %s",
-			(friendmode) ? "[ºÃÅóÓÑÁÐ±í]" : "[Ê¹ÓÃÕßÁÐ±í]",
-			"[×ÖÄ¸]");
-		break;
-	case 2:
-		sprintf(buf, "%s %s",
-			(friendmode) ? "[ºÃÅóÓÑÁÐ±í]" : "[Ê¹ÓÃÕßÁÐ±í]",
-			"[ÍøÖ·]");
-		break;
-	case 3:
-		sprintf(buf, "%s %s",
-			(friendmode) ? "[ºÃÅóÓÑÁÐ±í]" : "[Ê¹ÓÃÕßÁÐ±í]",
-			"[¶¯Ì¬]");
-		break;
-	}
-	docmdtitle(buf,
-		   "        ¼ÄÐÅ[[1;32mm[m] ¼Ó,¼õÅóÓÑ[[1;32mo[m,[1;32md[m] ¿´ËµÃ÷µµ[[1;32m¡ú[m,[1;32mRtn[m] Ñ¡Ôñ[[1;32m¡ü[m,[1;32m¡ý[m] Çó¾È[[1;32mh[m]");
+			" ÁÄÌì[\033[1;32mt\033[m] ¼ÄÐÅ[\033[1;32mm\033[m] ËÍÑ¶Ï¢[\033[1;32ms\033[m] ¼Ó,¼õÅóÓÑ[\033[1;32mo\033[m,\033[1;32md\033[m] ¿´ËµÃ÷µµ[\033[1;32m¡ú\033[m,\033[1;32mRtn\033[m] ÇÐ»»Ä£Ê½ [\033[1;32mc\033[m] Çó¾È[\033[1;32mh\033[m]");
 }
 
 static void
@@ -367,7 +320,7 @@ print_user_info_title()
 	clrtoeol();
 	field_2 = "Ê¹ÓÃÕßêÇ³Æ";
 	sprintf(title_str,
-		"[1;44m%s%-12.12s %-22.22s %-16.16s%c %c %-10.10s %5s[m\n",
+		"\033[1;44m%s%-12.12s %-22.22s %-16.16s%c %c %-10.10s %5s\033[m\n",
 		" ±àºÅ  ", "Ê¹ÓÃÕß´úºÅ", field_2, "À´×Ô", 'P',
 		/*((HAS_PERM(PERM_SYSOP|PERM_SEECLOAK)) ? 'C' : ' ') */ 'M',
 		"¶¯Ì¬", "Ê±:·Ö");
@@ -417,8 +370,7 @@ static void
 sort_user_record(int left, int right)
 {
 	if (sortmode)
-		qsort(&user_record[left], right - left,
-		      sizeof (struct user_info *), (void *) cmpuinfo);
+		qsort(&user_record[left], right - left, sizeof (struct user_info *), (void *) cmpuinfo);
 }
 
 static int
@@ -426,38 +378,19 @@ fill_userlist()
 {
 	int i, i2, j, uent, testreject, uid;
 	int back_sort_mode;
-	extern struct UTMPFILE *utmpshm;
-	struct user_info *up;
+	const struct user_info *up;
 
-	resolve_utmp();
+	ythtbbs_cache_utmp_resolve();
 	i2 = 0;
 	if (friendmode) {
 		for (i = 0; i < uinfo.fnum; i++) {
-			if (uinfo.friend[i] == 2)	//FIX ME   it depends on guest uid==2
-				continue;
-			up = NULL;
 			uid = uinfo.friend[i];
-			testreject = 0;
-			if (uid <= 0 || uid > MAXUSERS)
+			up = ythtbbs_cache_UserTable_query_user_by_uid(currentuser.userid, HAS_PERM(PERM_SYSOP | PERM_SEECLOAK, currentuser), uid, true);
+
+			if (up == NULL || strcasecmp(up->userid, "guest") == 0)
 				continue;
-			for (j = 0; j < 6; j++) {
-				uent = uindexshm->user[uid - 1][j];
-				if (uent <= 0)
-					continue;
-				up = &utmpshm->uinfo[uent - 1];
-				if (!up->active || !up->pid || up->uid != uid)
-					continue;
-				if (!testreject) {
-					if (isreject(up))
-						break;
-					testreject = 1;
-				}
-				if (utmpshm->uinfo[uent - 1].invisible
-				    && !HAS_PERM(PERM_SYSOP | PERM_SEECLOAK))
-					continue;
-				user_record[i2] = up;
-				i2++;
-			}
+			user_record[i2] = up;
+			i2++;
 		}
 		back_sort_mode = sortmode;
 		if (sortmode == 0)
@@ -467,15 +400,14 @@ fill_userlist()
 		range = i2;
 	} else {
 		for (i = 0; i < USHM_SIZE; i++) {
-			if (!utmpshm->uinfo[i].active || !utmpshm->uinfo[i].pid
-			    || isreject(&utmpshm->uinfo[i])) {
+			up = ythtbbs_cache_utmp_get_by_idx(i);
+			if (!up->active || !up->pid || isreject(up)) {
 				continue;
 			}
-			if (!(HAS_PERM(PERM_SYSOP | PERM_SEECLOAK))
-			    && utmpshm->uinfo[i].invisible) {
+			if (!(HAS_PERM(PERM_SYSOP | PERM_SEECLOAK, currentuser)) && up->invisible) {
 				continue;
 			}
-			user_record[i2] = &utmpshm->uinfo[i];
+			user_record[i2] = up;
 			i2++;
 		}
 		sort_user_record(0, i2);
@@ -487,8 +419,8 @@ fill_userlist()
 
 static int
 cfriendname(t1, t2)
-struct override *t1;
-struct override *t2;
+struct ythtbbs_override *t1;
+struct ythtbbs_override *t2;
 {
 	return !strcasecmp(t1->id, t2->id);
 }
@@ -499,8 +431,8 @@ do_userlist()
 	int i;
 	char user_info_str[STRLEN * 2] /*,pagec */ ;
 	int override;
-	struct user_info *uentp;
-	struct override t1, t2;
+	const struct user_info *uentp;
+	struct ythtbbs_override t1, t2;
 	char overridefile[256];
 
 	setuserfile(overridefile, "friends");
@@ -516,148 +448,105 @@ do_userlist()
 		if (uentp == NULL)
 			continue;
 		if (override && friendmode1) {
-			if(uentp->mode!=78)
-			{
-			strcpy(t2.id, uentp->userid);
-			t1.exp[0] = 0;
-			search_record(overridefile, &t1, sizeof (t1),
-				      (void *) cfriendname, &t2);
-			sprintf(user_info_str,
-				" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s[m %5.5s\n",
-				i + 1 + page, (override) ? "¡õ" : "",
-				(override) ? "[1;32m" : "",
-				uentp->userid, (override) ? "[m" : "",
-				(t1.exp[0] ==
-				 0) ? uentp->username : t1.exp,
-				(uentp->pid ==
-				 1) ? "\033[35m" : ((uentp->isssh ==
-						     1) ? "\033[32m" :
-						    ""), uentp->from,
-				(uentp->pid == 1)
-				|| (uentp->isssh == 1) ? "\033[0m" : "",
-				pagerchar(hisfriend(uentp),
-					  uentp->pager), msgchar(uentp),
-				(uentp->invisible ==
-				 YEA) ? "[1;36m" :
-				ModeColor(uentp->mode), ModeType(uentp->mode),
-				idle_str(uentp));
+			if (uentp->mode!=78) {
+				strcpy(t2.id, uentp->userid);
+				t1.exp[0] = 0;
+				search_record(overridefile, &t1, sizeof (t1), (void *) cfriendname, &t2);
+				sprintf(user_info_str,
+					" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s\033[m %5.5s\n",
+					i + 1 + page, (override) ? "¡õ" : "",
+					(override) ? "\033[1;32m" : "",
+					uentp->userid, (override) ? "\033[m" : "",
+					(t1.exp[0] == 0) ? uentp->username : t1.exp,
+					(uentp->pid == 1) ? "\033[35m" : ((uentp->isssh == 1) ? "\033[32m" : ""), uentp->from,
+					(uentp->pid == 1) || (uentp->isssh == 1) ? "\033[0m" : "",
+					pagerchar(hisfriend(uentp), uentp->pager),
+					msgchar(uentp),
+					(uentp->invisible == YEA) ? "\033[1;36m" : ModeColor(uentp->mode), ModeType(uentp->mode),
+					idle_str(uentp));
+			} else if (uentp->user_state_temp[0]!='\0') {
+				strcpy(t2.id, uentp->userid);
+				t1.exp[0] = 0;
+				search_record(overridefile, &t1, sizeof (t1), (void *) cfriendname, &t2);
+				sprintf(user_info_str,
+					" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s\033[m %5.5s\n",
+					i + 1 + page, (override) ? "¡õ" : "",
+					(override) ? "\033[1;32m" : "",
+					uentp->userid, (override) ? "\033[m" : "",
+					(t1.exp[0] == 0) ? uentp->username : t1.exp,
+					(uentp->pid == 1) ? "\033[35m" : ((uentp->isssh == 1) ? "\033[32m" : ""),
+					uentp->from,
+					(uentp->pid == 1) || (uentp->isssh == 1) ? "\033[0m" : "",
+					pagerchar(hisfriend(uentp), uentp->pager),
+					msgchar(uentp),
+					(uentp->invisible == YEA) ? "\033[1;36m" : ModeColor(uentp->mode),
+					uentp->user_state_temp,
+					idle_str(uentp));
+			} else {
+				strcpy(t2.id, uentp->userid);
+				t1.exp[0] = 0;
+				search_record(overridefile, &t1, sizeof (t1), (void *) cfriendname, &t2);
+				sprintf(user_info_str,
+					" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s\033[m %5.5s\n",
+					i + 1 + page, (override) ? "¡õ" : "",
+					(override) ? "\033[1;32m" : "",
+					uentp->userid, (override) ? "\033[m" : "",
+					(t1.exp[0] == 0) ? uentp->username : t1.exp,
+					(uentp->pid == 1) ? "\033[35m" : ((uentp->isssh == 1) ? "\033[32m" : ""),
+					uentp->from,
+					(uentp->pid == 1) || (uentp->isssh == 1) ? "\033[0m" : "",
+					pagerchar(hisfriend(uentp), uentp->pager),
+					msgchar(uentp),
+					(uentp->invisible == YEA) ? "\033[1;36m" : ModeColor(LOCKSCREEN),
+					ModeType(LOCKSCREEN),
+					idle_str(uentp));
 			}
-			else if(uentp->user_state_temp[0]!='\0')
-			{
-			strcpy(t2.id, uentp->userid);
-			t1.exp[0] = 0;
-			search_record(overridefile, &t1, sizeof (t1),
-				      (void *) cfriendname, &t2);
-			sprintf(user_info_str,
-				" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s[m %5.5s\n",
-				i + 1 + page, (override) ? "¡õ" : "",
-				(override) ? "[1;32m" : "",
-				uentp->userid, (override) ? "[m" : "",
-				(t1.exp[0] ==
-				 0) ? uentp->username : t1.exp,
-				(uentp->pid ==
-				 1) ? "\033[35m" : ((uentp->isssh ==
-						     1) ? "\033[32m" :
-						    ""), uentp->from,
-				(uentp->pid == 1)
-				|| (uentp->isssh == 1) ? "\033[0m" : "",
-				pagerchar(hisfriend(uentp),
-					  uentp->pager), msgchar(uentp),
-				(uentp->invisible ==
-				 YEA) ? "[1;36m" :
-				ModeColor(uentp->mode), uentp->user_state_temp,
-				idle_str(uentp));
-			}
-			else
-			{
-			 strcpy(t2.id, uentp->userid);
-			t1.exp[0] = 0;
-			search_record(overridefile, &t1, sizeof (t1),
-				      (void *) cfriendname, &t2);
-			sprintf(user_info_str,
-				" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s[m %5.5s\n",
-				i + 1 + page, (override) ? "¡õ" : "",
-				(override) ? "[1;32m" : "",
-				uentp->userid, (override) ? "[m" : "",
-				(t1.exp[0] ==
-				 0) ? uentp->username : t1.exp,
-				(uentp->pid ==
-				 1) ? "\033[35m" : ((uentp->isssh ==
-						     1) ? "\033[32m" :
-						    ""), uentp->from,
-				(uentp->pid == 1)
-				|| (uentp->isssh == 1) ? "\033[0m" : "",
-				pagerchar(hisfriend(uentp),
-					  uentp->pager), msgchar(uentp),
-				(uentp->invisible ==
-				 YEA) ? "[1;36m" :
-				ModeColor(LOCKSCREEN), ModeType(LOCKSCREEN),
-				idle_str(uentp));
-			}
-		} else
-		{
-			if(uentp->mode != 78)
-			{
-			sprintf(user_info_str,
-				" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s[m %5.5s\n",
-				i + 1 + page, (override) ? "¡õ" : "",
-				(override) ? "[1;32m" : "",
-				uentp->userid, (override) ? "[m" : "",
-				uentp->username,
-				(uentp->pid ==
-				 1) ? "\033[35m" : ((uentp->isssh ==
-						     1) ? "\033[32m" :
-						    ""), uentp->from,
-				(uentp->pid == 1)
-				|| (uentp->isssh == 1) ? "\033[0m" : "",
-				pagerchar(hisfriend(uentp),
-					  uentp->pager), msgchar(uentp),
-				(uentp->invisible ==
-				 YEA) ? "[1;36m" :
-				ModeColor(uentp->mode), ModeType(uentp->mode),
-				idle_str(uentp));
-			}
-			else if(uentp->user_state_temp[0]!='\0')
-			{
-			sprintf(user_info_str,
-				" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s[m %5.5s\n",
-				i + 1 + page, (override) ? "¡õ" : "",
-				(override) ? "[1;32m" : "",
-				uentp->userid, (override) ? "[m" : "",
-				uentp->username,
-				(uentp->pid ==
-				 1) ? "\033[35m" : ((uentp->isssh ==
-						     1) ? "\033[32m" :
-						    ""), uentp->from,
-				(uentp->pid == 1)
-				|| (uentp->isssh == 1) ? "\033[0m" : "",
-				pagerchar(hisfriend(uentp),
-					  uentp->pager), msgchar(uentp),
-				(uentp->invisible ==
-				 YEA) ? "[1;36m" :
-				ModeColor(uentp->mode),  uentp->user_state_temp,
-				idle_str(uentp));
-			}
-			else
-			{
-			sprintf(user_info_str,
-				" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s[m %5.5s\n",
-				i + 1 + page, (override) ? "¡õ" : "",
-				(override) ? "[1;32m" : "",
-				uentp->userid, (override) ? "[m" : "",
-				uentp->username,
-				(uentp->pid ==
-				 1) ? "\033[35m" : ((uentp->isssh ==
-						     1) ? "\033[32m" :
-						    ""), uentp->from,
-				(uentp->pid == 1)
-				|| (uentp->isssh == 1) ? "\033[0m" : "",
-				pagerchar(hisfriend(uentp),
-					  uentp->pager), msgchar(uentp),
-				(uentp->invisible ==
-				 YEA) ? "[1;36m" :
-				ModeColor(LOCKSCREEN),  ModeType(LOCKSCREEN),
-				idle_str(uentp));	
+		} else {
+			if(uentp->mode != 78) {
+				sprintf(user_info_str,
+					" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s\033[m %5.5s\n",
+					i + 1 + page, (override) ? "¡õ" : "",
+					(override) ? "\033[1;32m" : "",
+					uentp->userid, (override) ? "\033[m" : "",
+					uentp->username,
+					(uentp->pid == 1) ? "\033[35m" : ((uentp->isssh == 1) ? "\033[32m" : ""),
+					uentp->from,
+					(uentp->pid == 1) || (uentp->isssh == 1) ? "\033[0m" : "",
+					pagerchar(hisfriend(uentp), uentp->pager),
+					msgchar(uentp),
+					(uentp->invisible == YEA) ? "\033[1;36m" : ModeColor(uentp->mode),
+					ModeType(uentp->mode),
+					idle_str(uentp));
+			} else if (uentp->user_state_temp[0]!='\0') {
+				sprintf(user_info_str,
+					" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s\033[m %5.5s\n",
+					i + 1 + page, (override) ? "¡õ" : "",
+					(override) ? "\033[1;32m" : "",
+					uentp->userid, (override) ? "\033[m" : "",
+					uentp->username,
+					(uentp->pid == 1) ? "\033[35m" : ((uentp->isssh == 1) ? "\033[32m" : ""),
+					uentp->from,
+					(uentp->pid == 1) || (uentp->isssh == 1) ? "\033[0m" : "",
+					pagerchar(hisfriend(uentp), uentp->pager),
+					msgchar(uentp),
+					(uentp->invisible == YEA) ? "\033[1;36m" : ModeColor(uentp->mode),
+					uentp->user_state_temp,
+					idle_str(uentp));
+			} else {
+				sprintf(user_info_str,
+					" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s\033[m %5.5s\n",
+					i + 1 + page, (override) ? "¡õ" : "",
+					(override) ? "\033[1;32m" : "",
+					uentp->userid, (override) ? "\033[m" : "",
+					uentp->username,
+					(uentp->pid == 1) ? "\033[35m" : ((uentp->isssh == 1) ? "\033[32m" : ""),
+					uentp->from,
+					(uentp->pid == 1) || (uentp->isssh == 1) ? "\033[0m" : "",
+					pagerchar(hisfriend(uentp), uentp->pager),
+					msgchar(uentp),
+					(uentp->invisible == YEA) ? "\033[1;36m" : ModeColor(LOCKSCREEN),
+					ModeType(LOCKSCREEN),
+					idle_str(uentp));
 			}
 		}
 		clrtoeol();
@@ -716,7 +605,7 @@ int allnum, pagenum;
 /* add by zhoulin 98.11*/
 	case 'w':
 	case 'W':
-/*                        if (!friendmode) 
+/*                        if (!friendmode)
                              return 0;*/
 		friendmode1 = ~friendmode1 & 1;
 		break;
@@ -733,9 +622,8 @@ int allnum, pagenum;
 		break;
 	case 'k':
 	case 'K':
-		if (!HAS_PERM(PERM_SYSOP) && strcmp(currentuser.userid,
-						    user_record
-						    [allnum]->userid)) return 1;
+		if (!HAS_PERM(PERM_SYSOP, currentuser) && strcmp(currentuser.userid, user_record[allnum]->userid))
+			return 1;
 		sprintf(buf, "ÄãÒª°Ñ %s Ìß³öÕ¾ÍâÂð",
 			user_record[allnum]->userid);
 		strcpy(tempuser, user_record[allnum]->userid);
@@ -744,7 +632,7 @@ int allnum, pagenum;
 			break;
 		/*
 		if (!strcmp(user_record[allnum]->userid, tempuser)
-		    && kick_user(user_record[allnum]) == 1) {
+			&& kick_user(user_record[allnum]) == 1) {
 			sprintf(buf, "%s ÒÑ±»Ìß³öÕ¾Íâ",
 				user_record[allnum]->userid);
 		} else {
@@ -752,22 +640,16 @@ int allnum, pagenum;
 				user_record[allnum]->userid);
 		}
 		*/
-		if (!strcmp(user_record[allnum]->userid, tempuser))
-              {
-                  	if(!strcmp(currentuser.userid, tempuser))
-                          	killmode=1;
-                   	else
-                          	killmode=0;
-                   	if( kick_user(user_record[allnum],killmode) == 1)
-                    	{
-                          	sprintf(buf, "%s±»Ìß³öÕ¾Íâ",user_record[allnum]->userid);
+		if (!strcmp(user_record[allnum]->userid, tempuser)) {
+			killmode = (!strcmp(currentuser.userid, tempuser)) ? 1 : 0;
+			if(kick_user(user_record[allnum], killmode) == 1) {
+				sprintf(buf, "%s±»Ìß³öÕ¾Íâ", user_record[allnum]->userid);
 
-                  	} else {
-                		sprintf(buf, "%sÎÞ·¨Ìß³öÕ¾Íâ",
-                                user_record[allnum]->userid);
-                 	}
-              }
-		
+			} else {
+				sprintf(buf, "%sÎÞ·¨Ìß³öÕ¾Íâ", user_record[allnum]->userid);
+			}
+		}
+
 		msgflag = YEA;
 		break;
 	case 'h':
@@ -776,7 +658,7 @@ int allnum, pagenum;
 		break;
 	case 't':
 	case 'T':
-		if (!HAS_PERM(PERM_PAGE))
+		if (!HAS_PERM(PERM_PAGE, currentuser))
 			return 1;
 		if (strcmp(currentuser.userid, user_record[allnum]->userid))
 			ttt_talk(user_record[allnum]);
@@ -785,7 +667,7 @@ int allnum, pagenum;
 		break;
 	case 'm':
 	case 'M':
-		if (!HAS_PERM(PERM_POST))
+		if (!HAS_PERM(PERM_POST, currentuser))
 			return 1;
 		m_send(user_record[allnum]->userid);
 		break;
@@ -799,16 +681,14 @@ int allnum, pagenum;
 		break;
 	case 's':
 	case 'S':
-		if (!HAS_PERM(PERM_PAGE))
+		if (!HAS_PERM(PERM_PAGE, currentuser))
 			return 1;
 		if (!canmsg(user_record[allnum])) {
-			sprintf(buf, "%s ÒÑ¾­¹Ø±ÕÑ¶Ï¢ºô½ÐÆ÷",
-				user_record[allnum]->userid);
+			sprintf(buf, "%s ÒÑ¾­¹Ø±ÕÑ¶Ï¢ºô½ÐÆ÷", user_record[allnum]->userid);
 			msgflag = YEA;
 			break;
 		}
-		do_sendmsg(user_record[allnum]->userid, user_record[allnum],
-			   NULL, 2, user_record[allnum]->pid);
+		do_sendmsg(user_record[allnum]->userid, user_record[allnum], NULL, 2, user_record[allnum]->pid);
 		break;
 	case 'o':
 	case 'O':
@@ -828,13 +708,10 @@ int allnum, pagenum;
 		move(BBS_PAGESIZE + 3, 0);
 		if (askyn(buf, NA, NA) == NA)
 			break;
-		if (addtooverride(user_record[allnum]->userid)
-		    == -1) {
-			sprintf(buf, "%s ÒÑÔÚ%sÃûµ¥",
-				user_record[allnum]->userid, desc);
+		if (addtooverride(user_record[allnum]->userid) == -1) {
+			sprintf(buf, "%s ÒÑÔÚ%sÃûµ¥", user_record[allnum]->userid, desc);
 		} else {
-			sprintf(buf, "%s ÁÐÈë%sÃûµ¥",
-				user_record[allnum]->userid, desc);
+			sprintf(buf, "%s ÁÐÈë%sÃûµ¥", user_record[allnum]->userid, desc);
 		}
 		msgflag = YEA;
 		break;
@@ -845,13 +722,10 @@ int allnum, pagenum;
 		move(BBS_PAGESIZE + 3, 0);
 		if (askyn(buf, NA, NA) == NA)
 			break;
-		if (deleteoverride(user_record[allnum]->userid, "friends")
-		    == -1) {
-			sprintf(buf, "%s ±¾À´¾Í²»ÔÚÅóÓÑÃûµ¥ÖÐ",
-				user_record[allnum]->userid);
+		if (deleteoverride(user_record[allnum]->userid, "friends") == -1) {
+			sprintf(buf, "%s ±¾À´¾Í²»ÔÚÅóÓÑÃûµ¥ÖÐ", user_record[allnum]->userid);
 		} else {
-			sprintf(buf, "%s ÒÑ´ÓÅóÓÑÃûµ¥ÒÆ³ý",
-				user_record[allnum]->userid);
+			sprintf(buf, "%s ÒÑ´ÓÅóÓÑÃûµ¥ÒÆ³ý", user_record[allnum]->userid);
 		}
 		msgflag = YEA;
 		break;
@@ -868,11 +742,6 @@ int allnum, pagenum;
 	case '?':		//up search ID
 		num = UseronlineSearch(num, -1);
 		break;
-/*        case 'Y':
-	        if (HAS_PERM(PERM_CLOAK))
-			x_cloak();
-		break;								
-*/
 	default:
 		return 0;
 	}
@@ -895,113 +764,6 @@ int allnum, pagenum;
 }
 
 static int
-deal_key2(ch, allnum, pagenum)
-char ch;
-int allnum, pagenum;
-{
-	char buf[STRLEN];
-	static int msgflag;
-
-	if (msgflag == YEA) {
-		show_message(NULL);
-		msgflag = NA;
-	}
-	switch (ch) {
-	case 'h':
-	case 'H':
-		show_help("help/usershelp");
-		break;
-	case 'm':
-	case 'M':
-		if (!HAS_PERM(PERM_POST))
-			return 1;
-		m_send(user_data[allnum - pagenum].userid);
-		break;
-	case 'o':
-	case 'O':
-		if (!strcmp("guest", currentuser.userid))
-			return 0;
-		sprintf(buf, "È·¶¨Òª°Ñ %s ¼ÓÈëºÃÓÑÃûµ¥Âð",
-			user_data[allnum - pagenum].userid);
-		move(BBS_PAGESIZE + 3, 0);
-		if (askyn(buf, NA, NA) == NA)
-			break;
-		if (addtooverride(user_data[allnum - pagenum].userid)
-		    == -1) {
-			sprintf(buf, "%s ÒÑÔÚÅóÓÑÃûµ¥",
-				user_data[allnum - pagenum].userid);
-			show_message(buf);
-		} else {
-			sprintf(buf, "%s ÁÐÈëÅóÓÑÃûµ¥",
-				user_data[allnum - pagenum].userid);
-			show_message(buf);
-		}
-		msgflag = YEA;
-		if (!friendmode)
-			return 1;
-		break;
-	case 'f':
-	case 'F':
-		toggle1++;
-		if (toggle1 >= 3)
-			toggle1 = 0;
-		break;
-	case 't':
-	case 'T':
-		if (toggle2 == 1)
-			toggle2 = 0;
-		else
-			toggle2 = 1;
-		break;
-	case 'd':
-	case 'D':
-		sprintf(buf, "È·¶¨Òª°Ñ %s ´ÓºÃÓÑÃûµ¥É¾³ýÂð",
-			user_data[allnum - pagenum].userid);
-		move(BBS_PAGESIZE + 3, 0);
-		if (askyn(buf, NA, NA) == NA)
-			break;
-		if (deleteoverride
-		    (user_data[allnum - pagenum].userid, "friends") == -1) {
-			sprintf(buf, "%s ±¾À´¾Í²»ÔÚÅóÓÑÃûµ¥ÖÐ",
-				user_data[allnum - pagenum].userid);
-			show_message(buf);
-		} else {
-			sprintf(buf, "%s ÒÑ´ÓÅóÓÑÃûµ¥ÒÆ³ý",
-				user_data[allnum - pagenum].userid);
-			show_message(buf);
-		}
-		msgflag = YEA;
-		if (!friendmode)
-			return 1;
-		break;
-	case 'a':
-	case 'A':
-		change_sortmode(0);
-		break;
-/* 	case '/':	//down search ID
-		num=ID_search(num,1);
-		break;	
-	case '?':	//up search ID
-		num=ID_search(num,-1);
-		break;
-*/
-	default:
-		return 0;
-	}
-	modify_user_mode(LAUSERS);
-	if (readplan == NA) {
-		print_title2();
-		move(3, 0);
-		clrtobot();
-		if (Show_Users() == -1)
-			return -1;
-		update_endline();
-	}
-	redoscr();
-	return 1;
-}
-
-static int
 countusers(uentp)
 struct userec *uentp;
 {
@@ -1013,65 +775,8 @@ struct userec *uentp;
 		totalusers = 0;
 		return c;
 	}
-	if (uentp->numlogins != 0
-	    && uleveltochar(permstr, uentp->userlevel) != 0) totalusers++;
-	return 0;
-}
-
-static int
-printuent(uentp)
-struct userec *uentp;
-{
-	static int i;
-	char permstr[10];
-	char msgstr[18];
-	int override;
-
-	if (uentp == NULL) {
-		printutitle();
-		i = 0;
-		return 0;
-	}
-	if (uentp->numlogins == 0 ||
-	    uleveltochar(permstr, uentp->userlevel) == 0) return 0;
-	if (i < page || i >= page + BBS_PAGESIZE || i >= range) {
-		i++;
-		if (i >= page + BBS_PAGESIZE || i >= range)
-			return QUIT;
-		else
-			return 0;
-	}
-	uleveltochar(permstr, uentp->userlevel);
-	switch (toggle1) {
-	case 0:
-		sprintf(msgstr, "%-.16s", ytht_ctime(uentp->lastlogin));
-		break;
-	case 1:
-		sprintf(msgstr, "%-.16s", uentp->lasthost);
-		break;
-	case 2:
-	default:
-		sprintf(msgstr, "%-.11s%.4s",
-				ytht_ctime(uentp->firstlogin),
-				ytht_ctime(uentp->firstlogin) + 20);
-		break;
-	}
-	user_data[i - page] = *uentp;
-	override = myfriend(searchuser(uentp->userid));
-	prints(" %5d%2s%s%-14s%s %-19s  %5d %5d %6s %-16s\n", i + 1,
-	       (override) ? "¡õ" : "",
-	       (override) ? "[1;32m" : "", uentp->userid,
-	       (override) ? "[m" : "",
-#if defined(ACTS_REALNAMES)
-	       HAS_PERM(PERM_SYSOP) ? uentp->realname : uentp->username,
-#else
-	       uentp->username,
-#endif
-	       uentp->numlogins,
-	       (toggle2 == 0) ? uentp->numposts : uentp->stay / 3600,
-	       HAS_PERM(PERM_SEEULEVELS) ? permstr : "", msgstr);
-	i++;
-	usercounter++;
+	if (uentp->numlogins != 0 && uleveltochar(permstr, uentp->userlevel) != 0)
+		totalusers++;
 	return 0;
 }
 
@@ -1079,28 +784,10 @@ int
 allusers()
 {
 	countusers(NULL);
-	if (apply_record(PASSFILE, (void *) countusers, sizeof (struct userec))
-	    == -1) {
+	if (apply_record(PASSFILE, (void *) countusers, sizeof (struct userec)) == -1) {
 		return 0;
 	}
 	return countusers(NULL);
-}
-
-static int
-Show_Users()
-{
-
-	usercounter = 0;
-	modify_user_mode(LAUSERS);
-	printuent((struct userec *) NULL);
-	if (apply_record(PASSFILE, (void *) printuent, sizeof (struct userec))
-	    == -1) {
-		prints("No Users Exist");
-		pressreturn();
-		return -1;
-	}
-	clrtobot();
-	return 0;
 }
 
 void
@@ -1118,21 +805,7 @@ int star, curr;
 		clear();
 		t_query(user_record[curr]->userid);
 		move(t_lines - 1, 0);
-		prints
-		    ("[0;1;37;44mÁÄÌì[[1;32mt[37m] ¼ÄÐÅ[[1;32mm[37m] ËÍÑ¶Ï¢[[1;32ms[37m] ¼Ó,¼õÅóÓÑ[[1;32mo[37m,[1;32md[37m] Ñ¡ÔñÊ¹ÓÃÕß[[1;32m¡ü[37m,[1;32m¡ý[37m] ÇÐ»»Ä£Ê½ [[1;32mc[37m] Çó¾È[[1;32mh[37m][m");
-	}
-	return 0;
-}
-
-static int
-do_query2(star, curr)
-int star, curr;
-{
-	if (user_data != NULL) {
-		t_query(user_data[curr - star].userid);
-		move(t_lines - 1, 0);
-		prints
-		    ("[0;1;37;44m          ¼ÄÐÅ[[1;32mm[37m] ¼Ó,¼õÅóÓÑ[[1;32mo[37m,[1;32md[37m] ¿´ËµÃ÷µµ[[1;32m¡ú[37m,[1;32mRtn[37m] Ñ¡Ôñ[[1;32m¡ü[37m,[1;32m¡ý[37m] Çó¾È[[1;32mh[37m]          [m");
+		prints("\033[0;1;37;44mÁÄÌì[\033[1;32mt\033[37m] ¼ÄÐÅ[\033[1;32mm\033[37m] ËÍÑ¶Ï¢[\033[1;32ms\033[37m] ¼Ó,¼õÅóÓÑ[\033[1;32mo\033[37m,\033[1;32md\033[37m] Ñ¡ÔñÊ¹ÓÃÕß[\033[1;32m¡ü\033[37m,\033[1;32m¡ý\033[37m] ÇÐ»»Ä£Ê½ [\033[1;32mc\033[37m] Çó¾È[\033[1;32mh\033[37m]\033[m");
 	}
 	return 0;
 }
@@ -1166,8 +839,7 @@ t_friends()
 			page = -1;
 			friendmode = NA;
 			update_time = 0;
-			choose(YEA, 0, print_title, deal_key, show_userlist,
-			       do_query);
+			choose(YEA, 0, print_title, deal_key, show_userlist, do_query);
 			clear();
 			free(user_record);
 			user_record = NULL;
@@ -1259,7 +931,7 @@ int (*read) (int, int);
 				(*title_show) ();
 				update_endline();
 				continue;
-			}	
+			}
 		} else {
 			move(3 + num - page, 0);
 			prints(">", number);
@@ -1392,27 +1064,7 @@ unsigned int lvl;
 	return 1;
 }
 
-static void
-printutitle()
-{
-	move(2, 0);
-	prints
-	    ("\x1b[1;44m ±à ºÅ  Ê¹ÓÃÕß´úºÅ     %-19s  #ÉÏÕ¾ #%-4s %6s %-12s   ^[[m\n",
-#if defined(ACTS_REALNAMES)
-	     HAS_PERM(PERM_SYSOP) ? "ÕæÊµÐÕÃû" : "Ê¹ÓÃÕßêÇ³Æ",
-#else
-	     "Ê¹ÓÃÕßêÇ³Æ",
-#endif
-	     (toggle2 == 0) ? "ÎÄÕÂ" : "Ê±Êý",
-	     HAS_PERM(PERM_SEEULEVELS) ? "µÈ  ¼¶" : "",
-	     (toggle1 == 0) ? "×î½ü¹âÁÙÈÕÆÚ" :
-	     (toggle1 == 1) ? "×î½ü¹âÁÙµØµã" : "ÕÊºÅ½¨Á¢ÈÕÆÚ");
-}
-
-static char
-msgchar(uin)
-struct user_info *uin;
-{
+static char msgchar(const struct user_info *uin) {
 	if (isreject(uin))
 		return '*';
 	if ((uin->pager & ALLMSG_PAGER))
@@ -1441,10 +1093,7 @@ int friend, pager;
 	return '*';
 }
 
-static char *
-idle_str(uent)
-struct user_info *uent;
-{
+static char *idle_str(const struct user_info *uent) {
 	static char hh_mm_ss[32];
 	time_t diff;
 	int limit, hh, mm, temppid;
@@ -1461,8 +1110,7 @@ struct user_info *uent;
 	diff = now_t - uent->lasttime;
 
 #ifdef DOTIMEOUT
-	/* the 60 * 60 * 24 * 5 is to prevent fault /dev mount from
-	   kicking out all users */
+	/* the 60 * 60 * 24 * 5 is to prevent fault /dev mount from kicking out all users */
 
 	if (uent->ext_idle)
 		limit = IDLE_TIMEOUT * 3;
@@ -1490,26 +1138,18 @@ struct user_info *uent;
 static int
 num_visible_users()
 {
-	count_visible_active(NULL);
-	apply_ulist(count_visible_active);
-	return count_visible_active(NULL);
+	int count = 0;
+	ythtbbs_cache_utmp_apply(count_visible_active, &count);
+	return count;
 }
 
-static int
-count_visible_active(uentp)
-struct user_info *uentp;
+static int count_visible_active(const struct user_info *uentp, void *x_param)
 {
-	static int count;
-
-	if (uentp == NULL) {
-		int c = count;
-		count = 0;
-		return c;
-	}
 	if (!uentp->active || !uentp->pid)
 		return 0;
-	count++;
-	if (!HAS_PERM(PERM_SYSOP | PERM_SEECLOAK) && uentp->invisible)
-		count--;
+	*(int *)x_param++;
+	if (!HAS_PERM(PERM_SYSOP | PERM_SEECLOAK, currentuser) && uentp->invisible)
+		*(int *)x_param--;
 	return 1;
 }
+

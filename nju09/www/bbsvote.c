@@ -47,7 +47,7 @@ bbsvote_main()
 		http_quit();
 	}
 	changemode(VOTING);
-	if (!HAS_PERM(PERM_VOTE))
+	if (!HAS_PERM(PERM_VOTE, currentuser))
 		http_fatal("对不起，您没有投票权");
 	x = getboard(board);
 	if (!x || !has_vote_perm(&currentuser, x))

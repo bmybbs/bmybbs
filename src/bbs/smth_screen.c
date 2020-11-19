@@ -27,6 +27,8 @@
 #include "smth_screen.h"
 #include "term.h"
 #include "io.h"
+#include "bbs_global_vars.h"
+#include "bbs-internal.h"
 
 //#define SCREEN_MODIFIED 1
 #define SCREEN_BRIGHT 2
@@ -299,12 +301,12 @@ rel_changemodecolor(int mode, int color)
 	}
 	if ((tc_color & 0x0f) != (color & 0x0f)) {
 		tc_color = (tc_color & 0xf0) + (color & 0x0f);
-		if (DEFINE(DEF_COLOR))
+		if (DEFINE(DEF_COLOR, currentuser))
 			stack[stackt++] = 30 + (color & 0x0f);
 	}
 	if ((tc_color & 0xf0) != (color & 0xf0)) {
 		tc_color = (color & 0xf0) + (tc_color & 0x0f);
-		if (DEFINE(DEF_COLOR)) {
+		if (DEFINE(DEF_COLOR, currentuser)) {
 			if ((color & 0xf0) == 0x80)
 				stack[stackt++] = 40;
 			else

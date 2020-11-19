@@ -11,7 +11,7 @@ int check_query_mail(char qry_mail_dir[80]);
 int mailall(void);
 void m_internet(void);
 void m_init(void);
-int m_send(char userid[]);
+int m_send(const char *userid);
 int M_send(void);
 int m_new(void);
 int mail_reply(int ent, struct fileheader *fileinfo, char *direct);

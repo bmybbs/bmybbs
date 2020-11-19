@@ -1,4 +1,12 @@
-int
+#include <stdio.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include "config.h"
+#include "ythtbbs/article.h"
+#include "bbslib.h"
+
+static int
 getlastpost(char *board, int *lastpost, int *total)
 {
 	struct fileheader fh;
@@ -29,15 +37,11 @@ getlastpost(char *board, int *lastpost, int *total)
 	return 0;
 }
 
-int
-updatelastpost(char *board)
-{
+// 本方法在初始化之后被调用，因此移除缓存初始化
+int updatelastpost(char *board) {
 	struct boardmem *bptr;
-	if (shm_bcache == NULL)
-		shm_init();
-	bptr = getbcache(board);
+	bptr = ythtbbs_cache_Board_get_board_by_name(board);
 	if (bptr == NULL)
 		return -1;
-	return getlastpost(bptr->header.filename, &bptr->lastpost,
-			   &bptr->total);
+	return getlastpost(bptr->header.filename, &bptr->lastpost, &bptr->total);
 }

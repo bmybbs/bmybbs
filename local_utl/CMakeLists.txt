@@ -1,5 +1,8 @@
 include_directories(include)
 
+add_subdirectory(userid_hash_summary)
+add_subdirectory(cache_dump)
+
 #add_subdirectory(annIndex)
 add_subdirectory(averun)
 #add_subdirectory(auto_rm_fakedir)
@@ -38,8 +41,8 @@ add_subdirectory(newboards)
 add_subdirectory(newtop10)
 
 add_subdirectory(postfile)
-add_subdirectory(printSecLastMark)
-add_subdirectory(printSecLastUpdate)
+#add_subdirectory(printSecLastMark)
+#add_subdirectory(printSecLastUpdate)
 add_subdirectory(ptyexec)
 
 #add_subdirectory(reminder)

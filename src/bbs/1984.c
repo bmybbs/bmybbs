@@ -11,9 +11,9 @@
 #include "stuff.h"
 #include "bcache.h"
 #include "io.h"
-#include "term.h"
-
-extern struct UTMPFILE *utmpshm;
+#include "one_key.h"
+#include "bbs_global_vars.h"
+#include "bbs-internal.h"
 
 static char boarddir1984[STRLEN * 2];
 static int do1984title(void);
@@ -37,10 +37,10 @@ do1984title()
 {
 
 	showtitle("Éó²éÎÄÕÂ", MY_BBS_NAME);
-	prints
-	    ("Àë¿ª[[1;32m¡û[m,[1;32me[m]  Ñ¡Ôñ[[1;32m¡ü[m,[1;32m¡ı[m]  ÔÄ¶Á"
-	     "[[1;32m¡ú[m,[1;32mRtn[m] ÇóÖú[[1;32mh[m][m\n");
-	prints("[1;44m±àºÅ   %-12s %6s  %-50s[m\n", "¿¯µÇÕß", "ÈÕÆÚ", "±êÌâ");
+	prints(
+			"Àë¿ª[\033[1;32m¡û\033[m,\033[1;32me\033[m]  Ñ¡Ôñ[\033[1;32m¡ü\033[m,\033[1;32m¡ı\033[m]  ÔÄ¶Á"
+			"[\033[1;32m¡ú\033[m,\033[1;32mRtn\033[m] ÇóÖú[\033[1;32mh\033[m]\033[m\n");
+	prints("\033[1;44m±àºÅ   %-12s %6s  %-50s\033[m\n", "¿¯µÇÕß", "ÈÕÆÚ", "±êÌâ");
 	clrtobot();
 	return 0;
 }
@@ -70,8 +70,8 @@ char buf[512];
 	}
 
 	attached = (ent->accessed & FH_ATTACHED) ? '@' : ' ';
-	strcpy(c1, "[1;36m");
-	strcpy(c2, "[1;33m");
+	strcpy(c1, "\033[1;36m");
+	strcpy(c2, "\033[1;33m");
 	if (!strcmp(ReadPost, ent->title) || !strcmp(ReplyPost, ent->title))
 		same = YEA;
 	strncpy(b2, ent->owner, STRLEN);
@@ -79,15 +79,15 @@ char buf[512];
 		*t = '\0';
 
 	if (ent->accessed & FH_1984) {
-		sprintf(buf, " %s%3d[m %c %-12.12s %6.6s %c%s%.36s%.14s[m",
+		sprintf(buf, " %s%3d\033[m %c %-12.12s %6.6s %c%s%.36s%.14s\033[m",
 			same ? c1 : "", num, ' ', "", "", ' ', same ? c1 : "",
 			"-ÒÑ¾­Í¨¹ıÉó²é by ", ent->title + 35);
 	} else if (!strncmp("Re:", ent->title, 3)) {
-		sprintf(buf, " %s%3d[m %c %-12.12s %6.6s %c%s%.50s[m",
+		sprintf(buf, " %s%3d\033[m %c %-12.12s %6.6s %c%s%.50s\033[m",
 			same ? c1 : "", num, ' ', b2, date, attached,
 			same ? c1 : "", ent->title);
 	} else {
-		sprintf(buf, " %s%3d[m %c %-12.12s %6.6s %c%s¡ñ %.47s[m",
+		sprintf(buf, " %s%3d\033[m %c %-12.12s %6.6s %c%s¡ñ %.47s\033[m",
 			same ? c2 : "", num, ' ', b2, date, attached,
 			same ? c2 : "", ent->title);
 	}
@@ -115,11 +115,10 @@ char *direct;
 	ch = ansimore(notgenbuf, NA);
 	move(t_lines - 1, 0);
 	prints("\033[1;44;31m[ÔÄ¶ÁÎÄÕÂ] \033[33m½áÊø Q,¡û©¦ÉÏÒ»·â ¡ü,l©¦"
-	       "ÏÂÒ»·â n, <Space>,<Enter>,¡ı©¦Ö÷ÌâÔÄ¶Á x p \033[m");
+			"ÏÂÒ»·â n, <Space>,<Enter>,¡ı©¦Ö÷ÌâÔÄ¶Á x p \033[m");
 	//usleep(300000l);
-	if (!
-	    (ch == KEY_RIGHT || ch == KEY_UP || ch == KEY_PGUP
-	     || ch == KEY_DOWN) && (ch <= 0 || strchr("RrEexp", ch) == NULL))
+	if (!(ch == KEY_RIGHT || ch == KEY_UP || ch == KEY_PGUP
+			|| ch == KEY_DOWN) && (ch <= 0 || strchr("RrEexp", ch) == NULL))
 		ch = egetch();
 	switch (ch) {
 	case 'Q':
@@ -128,7 +127,7 @@ char *direct;
 		break;
 	case 'j':
 	case KEY_RIGHT:
-		if (DEFINE(DEF_THESIS)) {
+		if (DEFINE(DEF_THESIS, currentuser)) {
 			sread(0, 0, ent, 0, fileinfo);
 			break;
 		} else {
@@ -194,7 +193,7 @@ do1984(time_t dtime, int mode)
 		return -1;
 	strcat(boarddir1984, DOT_DIR);
 	i_read(DO1984, boarddir1984, do1984title,
-	       (void *) do1984doent, do1984_comms, sizeof (struct fileheader));
+			(void *) do1984doent, do1984_comms, sizeof (struct fileheader));
 	return 999;
 }
 
@@ -236,8 +235,7 @@ post_1984_to_board(char *dir, struct fileheader *fileinfo)
 {
 	char *ptr;
 	char buf[STRLEN * 2];
-	char newfilepath[STRLEN], newfname[STRLEN], targetboard[STRLEN],
-	    title[STRLEN];
+	char newfilepath[STRLEN], newfname[STRLEN], targetboard[STRLEN], title[STRLEN];
 	struct fileheader postfile;
 	time_t now;
 	int count;
@@ -271,19 +269,15 @@ post_1984_to_board(char *dir, struct fileheader *fileinfo)
 		postfile.thread = postfile.filetime;
 	setbdir(buf, targetboard, NA);
 	if (append_record(buf, &postfile, sizeof (postfile)) == -1) {
-		errlog
-		    ("checking '%s' on '%s': append_record failed!",
-		     postfile.title, targetboard);
+		errlog("checking '%s' on '%s': append_record failed!", postfile.title, targetboard);
 		pressreturn();
 		return;
 	}
 
 	if (postfile.accessed & FH_INND)
-		outgo_post(&postfile, targetboard, currentuser.userid,
-			   currentuser.username);
+		outgo_post(&postfile, targetboard, currentuser.userid, currentuser.username);
 	updatelastpost(targetboard);
-	snprintf(genbuf, 256, "%s check1984 %s %s",
-		 currentuser.userid, currboard, postfile.title);
+	snprintf(genbuf, 256, "%s check1984 %s %s", currentuser.userid, currboard, postfile.title);
 	genbuf[256] = 0;
 	newtrace(genbuf);
 
@@ -328,9 +322,7 @@ post_to_1984(char *file, struct fileheader *fileinfo, int mode)
 	}
 	strcat(buf, "/" DOT_DIR);
 	if (append_record(buf, &postfile, sizeof (postfile)) == -1) {
-		errlog
-		    ("post1984 '%s' on '%s': append_record failed!",
-		     postfile.title, currboard);
+		errlog("post1984 '%s' on '%s': append_record failed!", postfile.title, currboard);
 		pressreturn();
 		return;
 	}
@@ -342,8 +334,7 @@ post_to_1984(char *file, struct fileheader *fileinfo, int mode)
 	default:
 		break;
 	}
-	snprintf(genbuf, 256, "%s post %s %s",
-		 currentuser.userid, currboard, postfile.title);
+	snprintf(genbuf, 256, "%s post %s %s", currentuser.userid, currboard, postfile.title);
 	genbuf[256] = 0;
 	newtrace(genbuf);
 	return;
@@ -375,7 +366,7 @@ do1984menu()
 		do1984(now, 1);
 		return;
 	case 2:
-		if (!utmpshm->watchman) {
+		if (!ythtbbs_cache_utmp_get_watchman()) {
 			prints("Ä¿Ç°°æÃæ²¢Ã»ÓĞËø×¡!");
 			pressreturn();
 			return;
@@ -387,7 +378,7 @@ do1984menu()
 			pressreturn();
 			return;
 		}
-		sprintf(tmpid, "%u", utmpshm->unlock % 10000);
+		sprintf(tmpid, "%u", ythtbbs_cache_utmp_get_unlock() % 10000);
 		getdata(8, 0, "ÇëÊäÈë½âËøÂë:", buf, 5, DOECHO, YEA);
 
 		if (strcmp(tmpid, buf)) {
@@ -395,16 +386,16 @@ do1984menu()
 			pressreturn();
 			return;
 		}
-		if (!utmpshm->watchman) {
+		if (!ythtbbs_cache_utmp_get_watchman()) {
 			prints("Ä¿Ç°°æÃæ²¢Ã»ÓĞËø×¡,¿´À´ÓĞÈË±ÈÄãÏÈ½âËøÁË!");
 			pressreturn();
 			return;
 		}
-		if (time(NULL) < utmpshm->watchman)
+		if (time(NULL) < ythtbbs_cache_utmp_get_watchman())
 			strcpy(buf, "¼°Ê±");
 		else
 			buf[0] = 0;
-		utmpshm->watchman = 0;
+		ythtbbs_cache_utmp_set_watchman(0);
 		sprintf(tmpid, "ÓÃ»§ %s %s½øĞĞÁËÕşÖÎÀà°æÃæ½âËø²Ù×÷",
 			currentuser.userid, buf);
 		postfile("help/watchmanhelp", "deleterequest", tmpid, 1);
@@ -412,27 +403,25 @@ do1984menu()
 		pressreturn();
 		return;
 	case 3:
-		if (utmpshm->watchman) {
+		if (ythtbbs_cache_utmp_get_watchman()) {
 			prints("Ä¿Ç°°æÃæÒÑ¾­±»Ëø×¡ÁË!");
 			pressreturn();
 			return;
 		}
-		getdata(7, 0, "ÇëÊäÈëÄãµÄÓÃ»§µÇÂ¼ÃÜÂë: ", buf, PASSLEN, NOECHO,
-			YEA);
+		getdata(7, 0, "ÇëÊäÈëÄãµÄÓÃ»§µÇÂ¼ÃÜÂë: ", buf, PASSLEN, NOECHO, YEA);
 		if (*buf == '\0' || !ytht_crypt_checkpasswd(currentuser.passwd, buf)) {
 			prints("\n\nºÜ±§Ç¸, ÄúÊäÈëµÄÃÜÂë²»ÕıÈ·¡£\n");
 			pressreturn();
 			return;
 		}
-		if (utmpshm->watchman) {
-			prints
-			    ("Ä¿Ç°°æÃæÒÑ¾­±»Ëø×¡ÁË,¿´À´ÓĞÈË±ÈÄãÏÈËø×¡°æÃæÁË!");
+		if (ythtbbs_cache_utmp_get_watchman()) {
+			prints("Ä¿Ç°°æÃæÒÑ¾­±»Ëø×¡ÁË,¿´À´ÓĞÈË±ÈÄãÏÈËø×¡°æÃæÁË!");
 			pressreturn();
 			return;
 		}
-		utmpshm->watchman = time(NULL) + 600;
+		ythtbbs_cache_utmp_set_watchman(time(NULL) + 600);
 		sprintf(tmpid, "ÓÃ»§ %s Ëø°æ!½âËøÂë: %u",
-			currentuser.userid, utmpshm->unlock % 10000);
+			currentuser.userid, ythtbbs_cache_utmp_get_unlock() % 10000);
 		postfile("help/watchmanhelp", "deleterequest", tmpid, 1);
 		prints("³É¹¦Ëø×¡!");
 		pressreturn();

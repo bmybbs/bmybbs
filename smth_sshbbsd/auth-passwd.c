@@ -192,6 +192,7 @@ the password is valid for the user.
 #include "xmalloc.h"
 #include "bbs.h"
 
+extern struct userec currentuser;
 /* Tries to authenticate the user using password.  Returns true if
    authentication succeeds. */
 int auth_password(const char *server_user, const char *password)
@@ -199,7 +200,7 @@ int auth_password(const char *server_user, const char *password)
     if (password[0] == '\0'||!strcasecmp(server_user,"guest")||!strcasecmp(server_user,"new"))
         return 0;
 
-    if( !access("NOLOGIN",F_OK) && !HAS_PERM(PERM_SPEC))
+    if( !access("NOLOGIN",F_OK) && !HAS_PERM(PERM_SPEC, currentuser))
 	return 0;
 
     if (!ytht_crypt_checkpasswd(currentuser.passwd, password)) {

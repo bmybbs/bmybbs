@@ -38,6 +38,7 @@
 #include "convcode.h"
 #include "userinfo.h"
 #include "main.h"
+#include "bbs-internal.h"
 
 pid_t childpid;
 static int loadkeys(struct one_key *key, char *name);
@@ -223,7 +224,7 @@ x_csh()
 
 	return -1;
 
-	if (!HAS_PERM(PERM_SYSOP)) {
+	if (!HAS_PERM(PERM_SYSOP, currentuser)) {
 		return -1;
 	}
 	if (!check_systempasswd()) {
@@ -691,28 +692,28 @@ x_userdefine()
 				  id);
 		uinfo.pager |= FRIEND_PAGER;
 		if (!(uinfo.pager & ALL_PAGER)) {
-			if (!DEFINE(DEF_FRIENDCALL))
+			if (!DEFINE(DEF_FRIENDCALL, currentuser))
 				uinfo.pager &= ~FRIEND_PAGER;
 		}
 		uinfo.pager &= ~ALLMSG_PAGER;
 		uinfo.pager &= ~FRIENDMSG_PAGER;
-		if (DEFINE(DEF_DELDBLCHAR))
+		if (DEFINE(DEF_DELDBLCHAR, currentuser))
 			enabledbchar = 1;
 		else
 			enabledbchar = 0;
-		if (DEFINE(DEF_FRIENDMSG)) {
+		if (DEFINE(DEF_FRIENDMSG, currentuser)) {
 			uinfo.pager |= FRIENDMSG_PAGER;
 		}
-		if (DEFINE(DEF_ALLMSG)) {
+		if (DEFINE(DEF_ALLMSG, currentuser)) {
 			uinfo.pager |= ALLMSG_PAGER;
 			uinfo.pager |= FRIENDMSG_PAGER;
 		}
 		update_utmp();
-		if (DEFINE(DEF_ACBOARD))
+		if (DEFINE(DEF_ACBOARD, currentuser))
 			nettyNN = NNread_init();
 		prints("新的参数设定完成...\n\n");
 	}
-	iscolor = (DEFINE(DEF_COLOR)) ? 1 : 0;
+	iscolor = (DEFINE(DEF_COLOR, currentuser)) ? 1 : 0;
 	pressreturn();
 	clear();
 	return 0;
@@ -856,7 +857,7 @@ a_edits()
 	move(0, 0);
 	prints("编修系统档案\n\n");
 	for (num = 0;
-	     HAS_PERM(PERM_SYSOP) ? e_file[num] != NULL
+	     HAS_PERM(PERM_SYSOP, currentuser) ? e_file[num] != NULL
 	     && explain_file[num] != NULL : strcasecmp(explain_file[num], "menu.ini") != 0;
 	     num++) {
 		if (num >= 20)
@@ -941,7 +942,7 @@ a_edits2()
 	move(0, 0);
 	prints("编修系统档案2\n\n");
 	for (num = 0;
-	     HAS_PERM(PERM_SYSOP) ? e_file[num] != NULL
+	     HAS_PERM(PERM_SYSOP, currentuser) ? e_file[num] != NULL
 	     && explain_file[num] != NULL : strcasecmp(explain_file[num], "menu.ini") != 0;
 	     num++) {
 		if (num >= 20)
@@ -1034,7 +1035,7 @@ x_lockscreen()
 			move(17,0);
 			clrtobot();
 			update_endline();
-			if(HAS_PERM(PERM_SELFLOCK))
+			if(HAS_PERM(PERM_SELFLOCK, currentuser))
             {
 			uinfo.user_state_temp[0]='\0';                  //清除上次记录
 			update_ulist(&uinfo,utmpent);
@@ -1127,7 +1128,7 @@ const char *cmdfile, *param;
 		}
 	}
 
-	if (!HAS_PERM(PERM_SYSOP) && heavyload(0)) {
+	if (!HAS_PERM(PERM_SYSOP, currentuser) && heavyload(0)) {
 		clear();
 		prints("抱歉，目前系统负荷过重，此功能暂时不能执行...");
 		pressanykey();
@@ -1264,7 +1265,7 @@ char *cmdfile, *param1;
 		pressanykey();
 		return;
 	}
-	if (!HAS_PERM(PERM_SYSOP) && heavyload(0)) {
+	if (!HAS_PERM(PERM_SYSOP, currentuser) && heavyload(0)) {
 		clear();
 		prints("抱歉，目前系统负荷过重，此功能暂时不能执行...");
 		pressanykey();
@@ -1394,8 +1395,7 @@ sendGoodWish(char *userid)
 					for (i = cnt; n < uinfo.fnum; i++) {
 						int key;
 						move(2, 0);
-						getuserid(uident,
-							  uinfo.friend[n]);
+						ythtbbs_cache_UserTable_getuserid(uinfo.friend[n], uident, sizeof(uident));
 						prints("%s\n", uident);
 						move(3, 0);
 						n++;

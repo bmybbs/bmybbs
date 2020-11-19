@@ -31,6 +31,7 @@
 #include "smth_screen.h"
 #include "term.h"
 #include "bbs_global_vars.h"
+#include "bbs-internal.h"
 
 #define OBUFSIZE  (1024*4)
 #define IBUFSIZE  (256)
@@ -91,7 +92,7 @@ oflush()
 static void
 hit_alarm_clock()
 {
-	if (HAS_PERM(PERM_NOTIMEOUT))
+	if (HAS_PERM(PERM_NOTIMEOUT, currentuser))
 		return;
 	if (i_mode == INPUT_IDLE) {
 		clear();

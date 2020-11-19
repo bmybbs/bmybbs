@@ -38,6 +38,8 @@
 #include "list.h"
 #include "main.h"
 #include "bbsinc.h"
+#include "bbs_global_vars.h"
+#include "bbs-internal.h"
 
 char chatroom[IDLEN];		/* Chat-Room Name */
 int chatline;			/* Where to display message now */
@@ -69,7 +71,7 @@ static void chat_load_alias(void);
 static int chat_send(int fd, char *buf);
 static int chat_recv(int fd, char *chatid);
 static void fixchatid(char *chatid);
-static int printuserent(struct user_info *uentp);
+static int printuserent(const struct user_info *uentp, void *);
 static void chat_help(char *arg);
 static void query_user(char *arg);
 static void call_user(char *arg);
@@ -78,7 +80,7 @@ static void chat_users(void);
 static void set_rec(void);
 static void define_alias(char *arg);
 static int use_alias(char *arg, int cfd);
-static int print_friend_ent(struct user_info *uentp);
+static int print_friend_ent(const struct user_info *uentp, void *);
 static void chat_friends(void);
 static void chat_sendmsg(char *arg);
 static int chat_cmd_match(char *buf, char *str);
@@ -607,10 +609,8 @@ char *chatbuf;
 	return 0;
 }
 
-static int
-printuserent(uentp)
-struct user_info *uentp;
-{
+static int printuserent(const struct user_info *uentp, void *x_param) {
+	(void) x_param;
 	static char uline[256];
 	static int cnt;
 	char pline[50];
@@ -624,7 +624,7 @@ struct user_info *uentp;
 	}
 	if (!uentp->active || !uentp->pid)
 		return 0;
-	if (!(HAS_PERM(PERM_SYSOP) || HAS_PERM(PERM_SEECLOAK))
+	if (!(HAS_PERM(PERM_SYSOP, currentuser) || HAS_PERM(PERM_SEECLOAK, currentuser))
 	    && uentp->invisible)
 		return 0;
 
@@ -786,10 +786,10 @@ chat_users()
 	printchatline(genbuf);
 	printchatline(msg_shortulist);
 
-	if (apply_ulist(printuserent) == -1) {
+	if (ythtbbs_cache_utmp_apply(printuserent, NULL) == -1) {
 		printchatline("\033[1m空无一人\033[m");
 	}
-	printuserent(NULL);
+	printuserent(NULL, NULL);
 }
 
 static void
@@ -1022,10 +1022,9 @@ int cfd;
 }
 
 /* add from SMTH BBS source */
-static int
-print_friend_ent(uentp)		/* print one user & status if he is a friend */
-struct user_info *uentp;
-{
+/* print one user & status if he is a friend */
+static int print_friend_ent(const struct user_info *uentp, void *x_param) {
+	(void) x_param;
 	static char uline[256];
 	static int cnt;
 	char pline[50];
@@ -1039,7 +1038,7 @@ struct user_info *uentp;
 	}
 	if (!uentp->active || !uentp->pid)
 		return 0;
-	if (!HAS_PERM(PERM_SEECLOAK) && uentp->invisible)
+	if (!HAS_PERM(PERM_SEECLOAK, currentuser) && uentp->invisible)
 		return 0;
 #if 0
 	if (kill(uentp->pid, 0) == -1)
@@ -1072,10 +1071,10 @@ chat_friends()
 	printchatline(genbuf);
 	printchatline(msg_shortulist);
 
-	if (apply_ulist(print_friend_ent) == -1) {
+	if (ythtbbs_cache_utmp_apply(print_friend_ent, NULL) == -1) {
 		printchatline("\033[1m没有朋友在线上\033[m");
 	}
-	print_friend_ent(NULL);
+	print_friend_ent(NULL, NULL);
 }
 
 static void

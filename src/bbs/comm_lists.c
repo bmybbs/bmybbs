@@ -44,6 +44,8 @@
 #include "smth_screen.h"
 #include "main.h"
 #include "fileshm.h"
+#include "bbs_global_vars.h"
+#include "bbs-internal.h"
 
 extern int moneycenter(void);        // moneycenter.c
 extern int x_active_manager(void);   // identify.c
@@ -599,7 +601,7 @@ struct menupos *pos;
 			pos[num].line = -1;
 			break;
 		default:
-			if (pm->line >= 0 && HAS_PERM(pm->level)) {
+			if (pm->line >= 0 && HAS_PERM(pm->level, currentuser)) {
 				if (pm->line != 0) {
 					line = pm->line;
 					col = pm->col;
@@ -656,7 +658,7 @@ char *menu_name;
 	}
 	while (1) {
 		//printacbar();  by bjgyt
-		while (pm[now].level < 0 || !HAS_PERM(pm[now].level)) {
+		while (pm[now].level < 0 || !HAS_PERM(pm[now].level, currentuser)) {
 			now++;
 			if (now >= size)
 				now = 0;
@@ -686,7 +688,7 @@ char *menu_name;
 				if (pos[i].line == pos[now].line
 				    && pm[i].level >= 0
 				    && pos[i].col > pos[now].col
-				    && HAS_PERM(pm[i].level))
+				    && HAS_PERM(pm[i].level, currentuser))
 					break;
 			}
 			if (i < size) {
@@ -750,7 +752,7 @@ char *menu_name;
 			break;
 			/* add end */
 		case '~':
-			if (!HAS_PERM(PERM_SYSOP)) {
+			if (!HAS_PERM(PERM_SYSOP, currentuser)) {
 				break;
 			}
 			newtrace("system reload sysconf.img2");

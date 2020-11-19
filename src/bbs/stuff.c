@@ -22,10 +22,11 @@
 */
 
 #include "bbs.h"
-#include "term.h"
 #include "smth_screen.h"
 #include "main.h"
 #include "io.h"
+#include "bbs_global_vars.h"
+#include "bbs-internal.h"
 
 #ifdef CAN_EXEC
 char tempfile[MAXPATHLEN];
@@ -123,16 +124,6 @@ void bell() {
 
 	sound = Ctrl('G');
 	io_output(&sound, 1);
-}
-
-void touchnew() {
-	int fd;
-
-	sprintf(genbuf, "touch by: %s\n", currentuser.userid);
-	if ((fd = open(FLUSH, O_WRONLY | O_CREAT, 0644)) == -1)
-		return;
-	write(fd, genbuf, strlen(genbuf));
-	close(fd);
 }
 
 /* rrr - Snagged from pbbs 1.8 */

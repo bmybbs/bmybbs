@@ -3,40 +3,25 @@
 int
 bbslogout_main()
 {
-	struct userec *tmp;
-	int st;
 	char buf[50];
-	int uid;
-	html_header(1);
+	time_t t0;
+
 	//modified by safari@20091222
 	if (!loginok) {
 		redirect(FIRST_PAGE);
 		http_quit();
-		//http_fatal("ÄãÃ»ÓĞµÇÂ¼");
+		//http_fatal("ä½ æ²¡æœ‰ç™»å½•");
 	}
 	if (isguest)
-		http_fatal("guest²»´ø×¢ÏúµÄ");
-	tmp = getuser(currentuser.userid);
-	currentuser.numposts = tmp->numposts;
-	currentuser.userlevel = tmp->userlevel;
-	currentuser.numlogins = tmp->numlogins;
-	currentuser.stay = tmp->stay;
-	if (now_t > w_info->login_start_time) {
-		st = now_t - w_info->login_start_time;
-		if (st > 86400)
-			errlog("Strange long stay time,%d!, logout, %s", st, currentuser.userid);
-		else {
-			currentuser.stay += st;
-			sprintf(buf, "%s exitbbs %d", currentuser.userid, st);
-			newtrace(buf);
-		}
-	}
-	save_user_data(&currentuser);
-	uid = u_info->uid;
-	remove_uindex(u_info->uid, utmpent);
-	bzero(u_info, sizeof (struct user_info));
-	if ((currentuser.userlevel & PERM_BOARDS) && count_uindex(uid)==0)
-		setbmstatus(&currentuser, 0);
+		http_fatal("guest\xB2\xBB\xB4\xF8\xD7\xA2\xCF\xFA"); // guestä¸å¸¦æ³¨é”€çš„
+
+	ythtbbs_user_logout(currentuser.userid, utmpent - 1);
+
+	t0 = 0;
+	ytht_utc_time_s(buf, sizeof(buf), &t0);
+	printf("Set-Cookie: " SMAGIC "=; SameSite=Strict; HttpOnly; Expires=%s;\n", buf);
+	html_header(1);
 	redirect(FIRST_PAGE);
 	return 0;
 }
+

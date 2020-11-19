@@ -8,8 +8,10 @@
 #include "stuff.h"
 #include "io.h"
 #include "xyz.h"
-#include "term.h"
 #include "main.h"
+#include "bbs_global_vars.h"
+#include "bbs-internal.h"
+
 #define black 1
 #define white 2
 #define FDATA "five"
@@ -17,6 +19,12 @@
 #define LCECHO (2)
 #define cuser currentuser
 #define setutmpmode(a) modify_user_mode( a )
+
+struct fivechess {
+	int winner;
+	int hand, tdeadf, tlivef, livethree, threefour;
+	int playboard[15][15];
+};
 
 extern int RMSG;
 

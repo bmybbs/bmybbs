@@ -32,6 +32,7 @@
 #include "bbsinc.h"
 #include "register.h"
 #include "comm_list.h"
+#include "bbs_global_vars.h"
 
 #ifdef POP_CHECK
 // 登陆邮件服务器用的头文件 added by interma@BMY 2005.5.12
@@ -148,7 +149,7 @@ static void register_fail(char *userid)
 	strcpy(lookupuser.realmail, "");
 	lookupuser.userid[0] = '\0';
 	substitute_record(PASSFILE, &lookupuser, sizeof(lookupuser), id);
-	setuserid(id, lookupuser.userid);
+	ythtbbs_cache_UserTable_setuserid(id, lookupuser.userid);
 }
 
 extern char fromhost[60];
@@ -396,7 +397,7 @@ int uinfo_query(struct userec *u, int real, int unum)
 			unlink(src);
 			sethomefile(src, u->userid, "register.old");
 			unlink(src);
-			setuserid(unum, newinfo.userid);
+			ythtbbs_cache_UserTable_setuserid(unum, newinfo.userid);
 		}
 		if (!strcmp(u->userid, currentuser.userid)) {
 			extern int WishNum;

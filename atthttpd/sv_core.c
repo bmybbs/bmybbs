@@ -76,25 +76,17 @@ getcl(int sv)
 }
 
 /* sv_core_httpd - wait on file descriptors */
-//extern struct UTMPFILE *shm_utmp;
 
 void
 sv_core_httpd(void)
 {
 	int sv;
 
-	if (chdir(MY_BBS_HOME)) 
+	if (chdir(MY_BBS_HOME))
 		return;
 	signal(SIGPIPE, dopipesig);
 	signal(SIGBUS, dosigbus);
-/*
-	shm_utmp = (struct UTMPFILE *) get_old_shm(UTMP_SHMKEY, sizeof (struct UTMPFILE));
-	if (shm_utmp == NULL) {
-		printf("shm_utmp error ");
-		exit(-1);
-	}
- */		
-	if ((sv = bindport(SERVER_PORT)) == -1) 
+	if ((sv = bindport(SERVER_PORT)) == -1)
 		return;
 	while (1) {
 		int maxfd;

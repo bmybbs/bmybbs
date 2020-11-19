@@ -8,11 +8,13 @@
 #include "read.h"
 #include "bbsinc.h"
 #include "io.h"
-#include "term.h"
 #include "sendmsg.h"
 #include "help.h"
 #include "maintain.h"
 #include "list.h"
+#include "one_key.h"
+#include "bbs_global_vars.h"
+#include "bbs-internal.h"
 
 extern char quote_file[], quote_user[];
 char currbacknumberdir[STRLEN * 2];
@@ -133,7 +135,7 @@ char *direct;
 		break;
 	case 'j':
 	case KEY_RIGHT:
-		if (DEFINE(DEF_THESIS)) {
+		if (DEFINE(DEF_THESIS, currentuser)) {
 			sread(0, 0, ent, 0, fileinfo);
 			break;
 		} else {
@@ -265,7 +267,7 @@ new_backnumber()
 	struct bknheader bn;
 	int count;
 	if (!IScurrBM)
-//by bjgyt	if (!HAS_PERM(PERM_OBOARDS) && !HAS_PERM(PERM_SYSOP)) 
+//by bjgyt	if (!HAS_PERM(PERM_OBOARDS) && !HAS_PERM(PERM_SYSOP))
 		return DONOTHING;
 	bzero(&bn, sizeof (bn));
 	getdata(t_lines - 1, 0, "输入过刊标题: ", bn.title, 50, DOECHO, YEA);

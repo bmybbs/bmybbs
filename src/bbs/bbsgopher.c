@@ -10,7 +10,7 @@
                         Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
 
     Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
-    
+
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 1, or (at your option)
@@ -35,6 +35,10 @@
 #include "list.h"
 #include "record.h"
 #include "mail.h"
+#include "bbs_global_vars.h"
+#include "bbs-internal.h"
+
+#define MAXGOPHERITEMS     9999    /*max of gopher items*/
 
 int a;
 int inrp_by_user = YEA;
@@ -220,7 +224,7 @@ static int deal_gopherkey(char ch, int allnum, int pagenum) {
 		break;
 	case Ctrl('P'):
 		tmpitem = nth_item(allnum - pagenum);
-		if (!HAS_PERM(PERM_POST))
+		if (!HAS_PERM(PERM_POST, currentuser))
 			break;
 		setuserfile(fname, "gopher.tmp");
 		if (tmpitem->title[0] != '0') {

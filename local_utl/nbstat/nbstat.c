@@ -2,8 +2,6 @@
 #include "config.h"
 #include "nbstat.h"
 
-struct BCACHE *brdshm = NULL;
-struct boardmem *bcache = NULL;
 char *timeperiod;
 
 extern void bm_init();
@@ -16,29 +14,8 @@ boardnoread(struct boardheader *fptr)
 {
 
 	return (((fptr->level != 0)
-		 && !(fptr->level & PERM_NOZAP || fptr->level & PERM_POSTMASK))
+		&& !(fptr->level & PERM_NOZAP || fptr->level & PERM_POSTMASK))
 		|| ((fptr->clubnum != 0) && (!(fptr->flag & CLUBTYPE_FLAG))));
-}
-
-int
-resolveshm()
-{
-	int shmid;
-	shmid = shmget(BCACHE_SHMKEY, sizeof (*brdshm), 0);
-	if (shmid < 0)
-		return -1;
-	brdshm = (struct BCACHE *) shmat(shmid, NULL, 0);
-	if (brdshm == (struct BCACHE *) -1)
-		return -1;
-	bcache = brdshm->bcache;
-	return 0;
-}
-
-void
-initbdata()
-{
-	if (brdshm == NULL)
-		resolveshm();
 }
 
 void
@@ -46,10 +23,9 @@ usage(char *progname)
 {
 	printf("Usage:\n%s action-string days [endday]\n", progname);
 	printf("actions:'m' board manager stat\n");
-	printf("	'u' board usage stat\n");
-	printf
-	    ("	's' calculate board score, must be the unique action\n");
-	printf("	'b' bbslists stat, runs every hour, day must be 1\n");
+	printf("\t'u' board usage stat\n");
+	printf("\t's' calculate board score, must be the unique action\n");
+	printf("\t'b' bbslists stat, runs every hour, day must be 1\n");
 	exit(1);
 }
 
@@ -137,7 +113,7 @@ register_stat(struct action_f *mod, void (*mod_exit) ())
 {
 	int ret;
 	while (mod->action != NULL) {
-		if (ret = register_log(mod->action, mod->f)) {
+		if ((ret = register_log(mod->action, mod->f))) {
 			errlog("Can't register %s %d", mod->action, ret);
 			return ret;
 		}
@@ -205,7 +181,7 @@ main(int argc, char *argv[])
 			end = 0;
 	}
 
-	initbdata();
+	ythtbbs_cache_Board_resolve();
 
 	if (strchr(target, 'm'))
 		bm_init();
@@ -253,3 +229,4 @@ main(int argc, char *argv[])
 
 	return 0;
 }
+

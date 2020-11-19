@@ -55,7 +55,6 @@ digraph G {
 	n_stff -> n_1984;
 	n_bcch -> n_1984;
 	n_io   -> n_1984;
-	n_term -> n_1984;
 
 	/* addressbook.c */
 	n_xyz  -> n_addr;
@@ -69,7 +68,6 @@ digraph G {
 	n_bbsg -> n_anno;
 	n_smth -> n_anno;
 	n_main -> n_anno;
-	n_term -> n_anno;
 	n_stff -> n_anno;
 	n_xyz  -> n_anno;
 	n_io   -> n_anno;
@@ -79,7 +77,6 @@ digraph G {
 	n_help -> n_anno;
 	n_mntn -> n_anno;
 	n_edit -> n_anno;
-	n_talk -> n_anno;
 
 	/* backnumber.c */
 	n_smth -> n_bckn;
@@ -90,7 +87,6 @@ digraph G {
 	n_read -> n_bckn;
 	n_bbs  -> n_bckn;
 	n_io   -> n_bckn;
-	n_term -> n_bckn;
 	n_smsg -> n_bckn;
 	n_help -> n_bckn;
 	n_mntn -> n_bckn;
@@ -145,7 +141,6 @@ digraph G {
 	n_rcrd -> n_bcch;
 	n_list -> n_bcch;
 	n_bbs  -> n_bcch;
-	n_nmcp -> n_bcch;
 	n_io   -> n_bcch;
 
 	/* bm.c */
@@ -270,7 +265,6 @@ digraph G {
 	n_stff -> n_five;
 	n_io   -> n_five;
 	n_xyz  -> n_five;
-	n_term -> n_five;
 	n_main -> n_five;
 
 	/* goodbye.c */
@@ -299,7 +293,6 @@ digraph G {
 
 	/* list.c */
 	n_cmmn -> n_list;
-	n_term -> n_list;
 	n_smth -> n_list;
 	n_io   -> n_list;
 	n_main -> n_list;
@@ -381,7 +374,6 @@ digraph G {
 	n_mntn -> n_mnct;
 	n_nmcp -> n_mnct;
 	n_main -> n_mnct;
-	n_bcch -> n_mnct;
 	n_talk -> n_mnct;
 	n_bbs  -> n_mnct;
 	n_mail -> n_mnct;
@@ -395,7 +387,6 @@ digraph G {
 
 	/* more.c */
 	n_smth -> n_more;
-	n_term -> n_more;
 	n_io   -> n_more;
 	n_stff -> n_more;
 	n_main -> n_more;
@@ -481,7 +472,6 @@ digraph G {
 	n_io   -> n_smth;
 
 	/* stuff.c */
-	n_term -> n_stff;
 	n_smth -> n_stff;
 	n_main -> n_stff;
 	n_io   -> n_stff;
@@ -508,7 +498,6 @@ digraph G {
 	n_smth -> n_tmpl;
 	n_io   -> n_tmpl;
 	n_bbs  -> n_tmpl;
-	n_term -> n_tmpl;
 	n_stff -> n_tmpl;
 	n_anno -> n_tmpl;
 	n_more -> n_tmpl;
@@ -532,7 +521,6 @@ digraph G {
 	/* vote.c */
 	n_cmmn -> n_vote;
 	n_bbs  -> n_vote;
-	n_bcch -> n_vote;
 	n_smth -> n_vote;
 	n_term -> n_vote;
 	n_stff -> n_vote;

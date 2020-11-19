@@ -38,6 +38,7 @@
 #include "talk.h"
 #include "boards.h"
 #include "mail.h"
+#include "bbs_global_vars.h"
 
 #define        BLK_SIZ         4096  //by bjgyt
 
@@ -520,8 +521,7 @@ m_newbrd()
 		return -1;
 	}
 
-	reload_boards();
-	update_postboards();
+	ythtbbs_cache_Board_resolve();
 
 	group = chgrp();
 	sprintf(vbuf, "%-38.38s", newboard.title);
@@ -807,8 +807,7 @@ m_editbrd()
 				}
 			}
 			substitute_record(BOARDS, &newfh, sizeof (newfh), pos);
-			reload_boards();
-			update_postboards();
+			ythtbbs_cache_Board_resolve();
 		}
 	}
 	clear();
@@ -1132,7 +1131,7 @@ do_ordainBM(const char *userid, const char *abname)
 		addclubmember(lookupuser.userid, fh.clubnum);
 		ytht_strsncpy(currboard, tmpb, 30);
 	}
-	reload_boards();
+	ythtbbs_cache_Board_resolve();
 	sprintf(genbuf, "任命 %s 为 %s 讨论区版主", lookupuser.userid,
 		fh.filename);
 	securityreport(genbuf, genbuf);
@@ -1282,7 +1281,7 @@ do_retireBM(const char *userid, const char *abname)
 		edit_grp(fh.filename, lookgrp, title, tmp);
 	}
 	substitute_record(BOARDS, &fh, sizeof (fh), pos);
-	reload_boards();
+	ythtbbs_cache_Board_resolve();
 	sprintf(genbuf, "取消 %s 的 %s 讨论区版主职务", lookupuser.userid,
 		fh.filename);
 	securityreport(genbuf, genbuf);
@@ -1405,7 +1404,7 @@ char *bname;
 		edit_grp(fh.filename, lookgrp, title, tmp);
 	}
 	substitute_record(BOARDS, &fh, sizeof (fh), pos);
-	reload_boards();
+	ythtbbs_cache_Board_resolve();
 	sprintf(genbuf, "取消 %s 的 %s 讨论区版主职务", lookupuser.userid,
 		fh.filename);
 	securityreport(genbuf, genbuf);

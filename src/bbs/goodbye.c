@@ -25,6 +25,7 @@
 #include "bbs.h"
 #include "smth_screen.h"
 #include "goodbye.h"
+#include "bbs_global_vars.h"
 
 typedef struct {
 	char *match;

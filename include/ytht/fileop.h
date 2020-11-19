@@ -64,21 +64,41 @@ int clearpath(const char *path);
  */
 int seek_in_file(char* filename, char *seekstr);
 
+#ifdef BMYBBS_MT
 /**
  * A wrapper of stat(2)
  * @warning Thread UNsafe
  * @param file
  * @return
  */
-struct stat *f_stat(char *file) __attribute__((deprecated));
+struct stat *f_stat(char *file) __attribute__((deprecated("use f_stat_s instead")));
+#else
+/**
+ * A wrapper of stat(2)
+ * @warning Thread UNsafe
+ * @param file
+ * @return
+ */
+struct stat *f_stat(char *file);
+#endif
 
+#ifdef BMYBBS_MT
 /**
  * A wrapper of lstat(2)
  * @warning Thread UNsafe
  * @param file
  * @return
  */
-struct stat *l_stat(char *file) __attribute__((deprecated));
+struct stat *l_stat(char *file) __attribute__((deprecated("use l_stat_s instead")));
+#else
+/**
+ * A wrapper of lstat(2)
+ * @warning Thread UNsafe
+ * @param file
+ * @return
+ */
+struct stat *l_stat(char *file);
+#endif
 
 /**
  * A thread-safe wrapper of stat(2)
@@ -132,4 +152,15 @@ int ytht_add_to_file(char *filename, char *str);
  *     1 替换成功
  */
 int ytht_del_from_file(char *filename, char *str, bool include_lf);
+
+/**
+ * @brief 获取文件大小
+ * 对应于宏 file_size 的函数实现，以便多线程安全
+ */
+off_t ytht_file_size_s(const char *filepath);
+
+/**
+ * @brief 来自 nju09 原 file_has_word 函数
+ */
+int ytht_file_has_word(char *file, char *word);
 #endif

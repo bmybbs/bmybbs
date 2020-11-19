@@ -8,9 +8,9 @@
     Firebird Bulletin Board System
     Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
                         Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
-    
+
     Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
-    
+
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 1, or (at your option)
@@ -34,6 +34,8 @@
 #include "help.h"
 #include "bbsinc.h"
 #include "stuff.h"
+#include "postheader.h"
+#include "bbs-internal.h"
 
 #define WRAPMARGIN (255)
 
@@ -58,7 +60,6 @@ struct textline {
 
 struct textline *firstline = NULL;
 struct textline *lastline = NULL;
-struct boardmem *getbcache();
 
 extern int local_article;
 struct textline *currline = NULL;
@@ -491,7 +492,7 @@ register struct textline *p, *line;
 }
 
 /*
-  delete_line deletes 'line' from the list and maintains the lastline, and 
+  delete_line deletes 'line' from the list and maintains the lastline, and
   firstline pointers.
  */
 
@@ -557,7 +558,7 @@ register int pos;
 
 /*
   join connects 'line' and the next line.  It returns true if:
-  
+
   1) lines were joined and one was deleted
   2) lines could not be joined
   3) next line is empty
@@ -976,7 +977,7 @@ int mode;
 	else
 		ytht_strsncpy(uname, currentuser.username, NAMELEN);
 	save_title[STRLEN - 10] = '\0';
-	bp = getbcache(currboard);
+	bp = ythtbbs_cache_Board_get_board_by_name(currboard);
 	//这里bp会不存在么？fp还在那个目录里呢啊
 	//有时候就不会存在啊,比如我删除了版面 但是目录还在...
 	if (bp)
@@ -1017,7 +1018,7 @@ int blank;
 	if (blank)
 		fputs("\n", fp);
 	fputs("--\n", fp);
-	if (HAS_PERM(PERM_DENYSIG))
+	if (HAS_PERM(PERM_DENYSIG, currentuser))
 		return;
 	setuserfile(fname, "signatures");
 	if ((sigfile = fopen(fname, "r")) == NULL) {
@@ -2336,15 +2337,15 @@ int modifyheader;
 	t = showansi;
 	showansi = 0;
 	init_alarm();
-	ismsgline = (DEFINE(DEF_EDITMSG)) ? 1 : 0;
-	if (DEFINE(DEF_POSTNOMSG)) {
+	ismsgline = (DEFINE(DEF_EDITMSG, currentuser)) ? 1 : 0;
+	if (DEFINE(DEF_POSTNOMSG, currentuser)) {
 		block_msg();
 	}
 	msg();
 	ans = raw_vedit(filename, saveheader, modifyheader);
 	showansi = t;
 	signal(SIGALRM, SIG_IGN);
-	if (DEFINE(DEF_POSTNOMSG))
+	if (DEFINE(DEF_POSTNOMSG, currentuser))
 		unblock_msg();
 	return ans;
 }

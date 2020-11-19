@@ -1,10 +1,7 @@
-#include <string.h>
-#include <sys/ipc.h>
+#include <stddef.h>
 #include <sys/shm.h>
 
-void *
-try_get_shm(int key, size_t size, int flag)
-{
+void *try_get_shm(key_t key, size_t size, int flag) {
 	int id;
 	void *ptr;
 	id = shmget(key, size, flag);
@@ -17,14 +14,10 @@ try_get_shm(int key, size_t size, int flag)
 		return ptr;
 }
 
-void *
-get_shm(int key, size_t size)
-{
+void *get_shm(key_t key, size_t size) {
 	void *ptr;
 	ptr = try_get_shm(key, size, IPC_CREAT | IPC_EXCL | 0600);
-	if (ptr != NULL)
-		memset(ptr, 0, size);
-	else
+	if (ptr == NULL)
 		ptr = try_get_shm(key, size, 0);
 	return ptr;
 }

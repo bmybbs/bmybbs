@@ -1,4 +1,8 @@
 #include "bbslib.h"
+
+int shownavpart(int mode, const char *secstr);
+void shownavpartline(char *buf, int mode);
+
 int
 bbsshownav_main()
 {
@@ -17,9 +21,8 @@ bbsshownav_main()
 	http_quit();
 	return 0;
 }
-int
-shownavpart(int mode, const char *secstr)
-{
+
+int shownavpart(int mode, const char *secstr) {
 	char buf[2048]="wwwtmp/navpart.txt";
 	FILE *fp;
 	int j = 0, r;
@@ -29,8 +32,7 @@ shownavpart(int mode, const char *secstr)
 	if (mode == 0) {
 		printf("<table>");	//<tr><td>评分</td><td>人数</td><td>讨论区</td><td>标题</td></tr>");
 	} else
-		printf
-		    ("<table><tr><td>评分</td><td>人数</td><td>讨论区</td><td>作者</td><td>标题</td></tr>");
+		printf("<table><tr><td>评分</td><td>人数</td><td>讨论区</td><td>作者</td><td>标题</td></tr>");
 	r = now_t % 6;
 	while (fgets(buf, sizeof (buf), fp) != NULL) {
 		if (mode == 0 && j++ % 6 != r)
@@ -42,9 +44,7 @@ shownavpart(int mode, const char *secstr)
 	return 0;
 }
 
-void
-shownavpartline(char *buf, int mode)
-{
+void shownavpartline(char *buf, int mode) {
 	char *numstr, *board, *author, *title, *boardstr, *ptr;
 	int star, thread;
 	struct boardmem *x1;
@@ -77,8 +77,7 @@ shownavpartline(char *buf, int mode)
 		boardstr = x1->header.title;
 	}
 	if (mode == 0) {
-		printf("<tr><td><li> <a href='tfind?B=%s&th=%s&T=%s'>",
-		       board, ptr ,encode_url(title));
+		printf("<tr><td><li> <a href='tfind?B=%s&th=%s&T=%s'>", board, ptr ,encode_url(title));
 		if (!strncmp(title, "[转载] ", 7) && strlen(title) > 20)
 			title += 7;
 		if (strlen(title) > 45)
@@ -88,20 +87,16 @@ shownavpartline(char *buf, int mode)
 			*++ptr = 0;
 			printf(" [作者: %s]", author);
 		} else {
-			printf(" [作者: <a href=qry?U=%s class=blk>%s</a>]",
-			       author, author);
+			printf(" [作者: <a href=qry?U=%s class=blk>%s</a>]", author, author);
 		}
-		printf(" &lt;<a href='%s%s' class=blk>%s</a>&gt;",
-		       showByDefMode(), board, boardstr);
+		printf(" &lt;<a href='%s%s' class=blk>%s</a>&gt;", showByDefMode(), board, boardstr);
 		printf("</td></tr>");
 	} else {
-		printf
-		    ("<tr><td>%d</td><td>%s</td><td><a href='%s%s'>%s</a></td>"
-		     "<td>", star, numstr,showByDefMode(), board, boardstr);
+		printf("<tr><td>%d</td><td>%s</td><td><a href='%s%s'>%s</a></td>"
+				"<td>", star, numstr,showByDefMode(), board, boardstr);
 		printf("%s</td><td><a href='tfind?B=%s&th=%d&T=%s'>%s</a>"
-		       "</td></tr>", userid_str(author), board, thread,
-		       encode_url(title), void1(titlestr(title)));
+				"</td></tr>", userid_str(author), board, thread,
+				encode_url(title), void1(titlestr(title)));
 	}
 }
-
 

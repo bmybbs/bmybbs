@@ -1,29 +1,31 @@
 #ifndef _LIBIDEN__H
 #define _LIBIDEN__H
+#include <stddef.h>
+#include "config.h"
 
-//Ò»Ğ©·µ»ØÖµ
+//ä¸€äº›è¿”å›å€¼
 #define TOO_MUCH_RECORDS 3
 #define WRITE_SUCCESS    2
 #define UPDATE_SUCCESS   1
 #define WRITE_FAIL       0
 #define FILE_NOT_FOUND  -1
 
-//Ò»¸ö¼ÇÂ¼×î¶à°ó¶àÉÙid
+//ä¸€ä¸ªè®°å½•æœ€å¤šç»‘å¤šå°‘id
 #define MAX_USER_PER_RECORD 4
 
-//ÔÊĞíµÄÓÊÏäÓò
+//å…è®¸çš„é‚®ç®±åŸŸ
 #define DOMAIN_COUNT 3
 extern const char *MAIL_DOMAINS[];
 
-//°ó¶¨µÄ·½Ê½
-#define DIED_ACIVE -1 /* ¹ÒÁË*/
-#define NO_ACTIVE      0  /*Î´°ó¶¨*/
-#define MAIL_ACTIVE    1  /*ĞÅÏäÑéÖ¤*/
-#define PHONE_ACTIVE   2  /*ÊÖ»úÑéÖ¤*/
-#define IDCARD_ACTIVE  3  /*ÊÖ¹¤ÉÏ´«Éí·İÖ¤*/
-#define FORCE_ACTIVE   4  /*Õ¾ÎñÇ¿ÖÆ¼¤»î*/
+//ç»‘å®šçš„æ–¹å¼
+#define DIED_ACIVE    -1  /* æŒ‚äº†*/
+#define NO_ACTIVE      0  /*æœªç»‘å®š*/
+#define MAIL_ACTIVE    1  /*ä¿¡ç®±éªŒè¯*/
+#define PHONE_ACTIVE   2  /*æ‰‹æœºéªŒè¯*/
+#define IDCARD_ACTIVE  3  /*æ‰‹å·¥ä¸Šä¼ èº«ä»½è¯*/
+#define FORCE_ACTIVE   4  /*ç«™åŠ¡å¼ºåˆ¶æ¿€æ´»*/
 
-//ÑéÖ¤ÂëµÄ³¤¶È
+//éªŒè¯ç çš„é•¿åº¦
 #define CODELEN 8
 #define VALUELEN 80
 
@@ -60,22 +62,40 @@ int read_active(char* userid, struct active_data* act_data);
 int get_active_value(char* value, struct active_data* act_data);
 
 /**
- * ÒÀ¾İÓÊÏäµØÖ·²éÑ¯¹ØÁªµÄidÁĞ±í£¬Ê¹ÓÃ½áÊø¼ÇµÃµ÷ÓÃ free_associated_userid ÊÍ·ÅÄÚ´æ¡£±¾º¯ÊıÊôÓÚ get_associated_userid_by_style µÄ·â×°¡£
- * @param email ÓÊ¼şµØÖ·
- * @return struct associated_userid Ö¸Õë
+ * @brief é‡Šæ”¾é‚®ç®±
+ * è¿™ä¸ªå‡½æ•°ä» src/bbs/register.c ä¸­è¿ç§»è€Œæ¥ï¼Œå®ç°ä¸­ä»…ä»æ•°æ®åº“ä¸­è§£é™¤
+ * ç”¨æˆ·åå’Œé‚®ç®±çš„å…³è”ä¿¡æ¯ã€‚
+ * TODO å‘é€é‡Šæ”¾é‚®ç®±çš„ä¿¡æ¯
+ * @author interma
+ * @date 2006.2.21
+ * @param userid
+ * @param email
+ * @return
+ *    0 - å·²ç»æˆåŠŸåˆ é™¤æ­¤æ¡è®°å½•
+ *   -1 - é‚®ä»¶æ ¼å¼æœ‰è¯¯ï¼Œåˆ é™¤å¤±è´¥
+ *   -2 - æ‰¾ä¸åˆ°pop_listæ–‡ä»¶ï¼Œåˆ é™¤å¤±è´¥
+ *   -3 - æ²¡æœ‰æ‰¾åˆ°è¿™ä¸ªé‚®ä»¶æœåŠ¡å™¨ï¼Œåˆ é™¤å¤±è´¥
+ *   -4 - æ‰“å¼€ä¸´æ—¶æ–‡ä»¶å¤±è´¥ï¼Œåˆ é™¤å¤±è´¥
+*/
+int release_email(char *userid, char *email);
+
+/**
+ * ä¾æ®é‚®ç®±åœ°å€æŸ¥è¯¢å…³è”çš„idåˆ—è¡¨ï¼Œä½¿ç”¨ç»“æŸè®°å¾—è°ƒç”¨ free_associated_userid é‡Šæ”¾å†…å­˜ã€‚æœ¬å‡½æ•°å±äº get_associated_userid_by_style çš„å°è£…ã€‚
+ * @param email é‚®ä»¶åœ°å€
+ * @return struct associated_userid æŒ‡é’ˆ
  */
 struct associated_userid *get_associated_userid(const char *email);
 
 /**
- * ÒÀ¾İÈÏÖ¤·½Ê½¹ØÁªµÄidÁĞ±í£¬Ê¹ÓÃ½áÊø¼ÇµÃµ÷ÓÃ free_associated_userid ÊÍ·ÅÄÚ´æ¡£
- * @param style ÈÏÖ¤·½Ê½£¬MAIL_ACTIVE | PHONE_ACTIVE | IDCARD_ACTIVE | FORCE_ACTIVE
- * @param value ¹ØÁªÖµ
- * @return struct associated_userid Ö¸Õë
+ * ä¾æ®è®¤è¯æ–¹å¼å…³è”çš„idåˆ—è¡¨ï¼Œä½¿ç”¨ç»“æŸè®°å¾—è°ƒç”¨ free_associated_userid é‡Šæ”¾å†…å­˜ã€‚
+ * @param style è®¤è¯æ–¹å¼ï¼ŒMAIL_ACTIVE | PHONE_ACTIVE | IDCARD_ACTIVE | FORCE_ACTIVE
+ * @param value å…³è”å€¼
+ * @return struct associated_userid æŒ‡é’ˆ
  */
 struct associated_userid *get_associated_userid_by_style(int style, const char *value);
 
 /**
- * ÊÍ·ÅÓÉ get_associated_userid ²úÉúµÄÄÚ´æ¿Õ¼ä¡£
+ * é‡Šæ”¾ç”± get_associated_userid äº§ç”Ÿçš„å†…å­˜ç©ºé—´ã€‚
  * @param au
  */
 void free_associated_userid(struct associated_userid* au);

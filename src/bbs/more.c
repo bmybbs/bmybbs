@@ -25,7 +25,6 @@
 #include <sys/mman.h>
 #include "bbs.h"
 #include "smth_screen.h"
-#include "term.h"
 #include "io.h"
 #include "stuff.h"
 #include "main.h"
@@ -33,6 +32,12 @@
 #include "bcache.h"
 #include "xyz.h"
 #include "goodbye.h"
+#include "bbs_global_vars.h"
+#include "bbs-internal.h"
+
+#define MAXnettyLN            7    /* lines of  activity board  */
+#define ACBOARD_BUFSIZE     255    /* max. length of each line for activity board  */
+#define ACBOARD_MAXLINE     400    /* max. lines of  activity board  160 */
 
 static int stuffmode = 0;
 time_t calltime = 0;
@@ -102,7 +107,7 @@ NNread_init()
 	}
 	nnline = 0;
 	xxxline = 0;
-	if (!DEFINE(DEF_ACBOARD)) {
+	if (!DEFINE(DEF_ACBOARD, currentuser)) {
 		nnline = 1;
 		xxxline = 1;
 		return 1;
@@ -172,7 +177,7 @@ netty_more()
 	int x, y;
 	time_t thetime = time(0);
 
-	if (!DEFINE(DEF_ACBOARD)) {
+	if (!DEFINE(DEF_ACBOARD, currentuser)) {
 		update_endline();
 		return;
 	}
@@ -204,7 +209,7 @@ static void printacbar() {
 	int x, y;
 	getyx(&y, &x);
 
-	bp = getbcache(DEFAULTBOARD);
+	bp = ythtbbs_cache_Board_get_board_by_name(DEFAULTBOARD);
 	if (bp == NULL)
 		return;
 	move(2, 0);
@@ -250,7 +255,7 @@ void
 R_monitor()
 {
 
-	if (!DEFINE(DEF_ACBOARD) && !DEFINE(DEF_ENDLINE))
+	if (!DEFINE(DEF_ACBOARD, currentuser) && !DEFINE(DEF_ENDLINE, currentuser))
 		return;
 
 	if (uinfo.mode != MMENU)
@@ -259,7 +264,7 @@ R_monitor()
 	signal(SIGALRM, (void *) R_monitor);
 	netty_more();
 	//printacbar(); by bjgyt
-	if (!DEFINE(DEF_ACBOARD))
+	if (!DEFINE(DEF_ACBOARD, currentuser))
 		alarm(60);
 	else
 		alarm(10);

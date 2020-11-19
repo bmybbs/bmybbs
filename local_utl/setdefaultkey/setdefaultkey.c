@@ -5,6 +5,7 @@
 
 #include "bbs.h"
 #define Ctrl(c)         ( c & 037 )
+#define KEY_TAB         9
 
 int key[] = {
 	'_', 'r', 'u', 'd', 'D', 'm', 't', 'n', 'E', 'Y', Ctrl('G'), Ctrl('T'), Ctrl('Y'), 

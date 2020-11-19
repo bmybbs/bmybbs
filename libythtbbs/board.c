@@ -38,18 +38,7 @@ struct boardheader *bh;
 }
 
 struct boardmem * getboardbyname(const char *board_name) {
-	int i;
-	if (board_name[0] == 0)
-		return NULL;
-
-	struct BCACHE * shm_bcache = (struct BCACHE *) get_old_shm(BCACHE_SHMKEY, sizeof (struct BCACHE));
-	// ¥” shm_bcache ÷–µ›πÈ≤È’“
-	for (i=0; i<MAXBOARD && i<shm_bcache->number; ++i) {
-		if(!strcasecmp(board_name, shm_bcache->bcache[i].header.filename))
-			return &shm_bcache->bcache[i];
-	}
-
-	return NULL;
+	return ythtbbs_cache_Board_get_board_by_name(board_name);
 }
 
 int board_is_junkboard(char *board_name)

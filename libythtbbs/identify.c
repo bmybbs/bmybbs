@@ -450,6 +450,16 @@ struct associated_userid *get_associated_userid_by_style(int style, const char *
 	return au;
 }
 
+int release_email(char *userid, char *email) {
+	struct active_data act_data;
+
+	read_active(userid, &act_data);
+	act_data.status = NO_ACTIVE;
+	write_active(&act_data);
+
+	return 0;
+}
+
 void free_associated_userid(struct associated_userid *au) {
 	size_t i;
 	if (au == NULL) return;

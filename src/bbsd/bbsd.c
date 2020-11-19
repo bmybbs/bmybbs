@@ -31,7 +31,6 @@ static int mport;
 int max_load = 20;
 int csock;			/* socket for Master and Child */
 
-int killer();
 int checkaddr(struct in6_addr addr, int csock);//ipv6
 
 extern int is4map6addr(char *s);
@@ -164,7 +163,6 @@ int port;
 	if (fork()) {
 		setgid(BBSGID);
 		setuid(BBSUID);
-		killer();
 		exit(0);
 	}
 	//ipv6
@@ -606,36 +604,3 @@ checkaddr(struct in6_addr addr, int csock)
 	return 0;
 }
 
-int
-killer()
-{
-	int shmid, i, j, k, pid, fd;
-	struct UTMPFILE *utmpshm;
-	exit(1);
-	fd = open(".killerlock", O_RDONLY | O_CREAT, 0600);
-	if (fd < 0)
-		return -1;
-	if (flock(fd, LOCK_EX | LOCK_NB) < 0)
-		return -1;
-	shmid = shmget(UTMP_SHMKEY, sizeof (struct UTMPFILE), 0);
-	if (shmid < 0)
-		return -1;
-	utmpshm = (struct UTMPFILE *) shmat(shmid, NULL, 0);
-	if (utmpshm == (struct UTMPFILE *) -1)
-		return -1;
-	while (1) {
-		for (i = 0, j = 0, k = 0; i < USHM_SIZE; i++) {
-			if (utmpshm->uinfo[i].active != 1)
-				continue;
-			if ((pid = utmpshm->uinfo[i].pid) <= 0)
-				continue;
-			kill(pid, SIGTTOU);
-			k++;
-			if (k % ((USHM_SIZE / 18 == 0) ? 1 : (USHM_SIZE / 18)))
-				continue;
-			j++;
-			sleep(1);
-		}
-		sleep((j > 20) ? 0 : 20 - j);
-	}
-}
