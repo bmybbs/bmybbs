@@ -23,6 +23,37 @@
 */
 
 #include "bbs.h"
+#include "smth_screen.h"
+#include "stuff.h"
+#include "backnumber.h"
+#include "io.h"
+#include "talk.h"
+#include "bbs_global_vars.h"
+#include "main.h"
+#include "bbsinc.h"
+#include "sendmsg.h"
+#include "mail.h"
+#include "bcache.h"
+#include "announce.h"
+#include "1984.h"
+#include "more.h"
+#include "record.h"
+#include "xyz.h"
+#include "power_select.h"
+#include "read.h"
+#include "bm.h"
+#include "bbs-internal.h"
+
+/*SREAD Define*/
+#define SR_BMBASE       (10)
+#define SR_BMDEL        (11)
+#define SR_BMMARK       (12)
+#define SR_BMDIGEST     (13)
+#define SR_BMIMPORT     (14)
+#define SR_BMTMP        (15)
+#define SR_BMNOREPLY    (16)
+#define SR_BMCOMBINE    (17)
+/*SREAD Define*/
 
 #define PUTCURS   move(3+locmem->crs_line-locmem->top_line,0);prints(">");move(3+locmem->crs_line-locmem->top_line,0);
 //#define PUTCURS   move(3+locmem->crs_line-locmem->top_line,0);prints(">");
@@ -208,15 +239,7 @@ doquickview(int i)
 			  quickviewdata.currdirect);
 }
 
-void
-i_read(cmdmode, direct, dotitle, doentry, rcmdlist, ssize)
-int cmdmode;
-char *direct;
-int (*dotitle) ();
-char *(*doentry) (int, void *, char *);
-const struct one_key *rcmdlist;
-int ssize;
-{
+void i_read(int cmdmode, char *direct, int (*dotitle) (), char *(*doentry) (int, void *, char *), const struct one_key *rcmdlist, int ssize) {
 	extern int talkrequest;
 	extern int friendflag;
 	extern time_t login_start_time;
@@ -353,7 +376,7 @@ int ssize;
 				     (uinfo.pager & FRIEND_PAGER) ? "O" : "o",
 				     (uinfo.pager & ALLMSG_PAGER) ? "M" : "m",
 				     (uinfo.pager & FRIENDMSG_PAGER) ? "F" :
-				     "f", (DEFINE(DEF_MSGGETKEY)) ? "X" : "x",
+				     "f", (DEFINE(DEF_MSGGETKEY, currentuser)) ? "X" : "x",
 				     (uinfo.invisible == 1) ? "C" : "c", buf,
 				     (allstay / 60) % 1000, allstay % 60);
 			}
@@ -621,7 +644,7 @@ char *pnt;
 		return PARTUPDATE;
 		break;
 	case 'S':		/* youzi */
-		if (!HAS_PERM(PERM_PAGE))
+		if (!HAS_PERM(PERM_PAGE, currentuser))
 			break;
 		s_msg();
 		return FULLUPDATE;
@@ -632,7 +655,7 @@ char *pnt;
 		return FULLUPDATE;
 		break;*/
 	case 'w':
-		if ((in_mail != YEA) && (HAS_PERM(PERM_READMAIL))) {
+		if ((in_mail != YEA) && (HAS_PERM(PERM_READMAIL, currentuser))) {
 			m_read();
 			return 999;
 		} else
@@ -651,7 +674,7 @@ char *pnt;
 			if (rcmdlist[i].key != ch)
 				continue;
 			if (rcmdlist[i].fptr == t_friends) {
-				if (!HAS_PERM(PERM_BASIC))
+				if (!HAS_PERM(PERM_BASIC, currentuser))
 					break;
 				t_friends();
 				return FULLUPDATE;
@@ -754,7 +777,7 @@ char *direct;
 	extern int friendflag;
 	char uident[STRLEN];
 	char *q_id = fileinfo->owner;
-	if (!HAS_PERM(PERM_BASIC)) {
+	if (!HAS_PERM(PERM_BASIC, currentuser)) {
 		return 0;
 	}
 	friendflag = YEA;
@@ -764,7 +787,7 @@ char *direct;
 		strtok(q_id, " ");
 	strncpy(uident, q_id, sizeof (uident));
 	uident[sizeof (uident) - 1] = '\0';
-	if (searchuser(uident) > 0) {
+	if (ythtbbs_cache_UserTable_search_usernum(uident) > 0) {
 		sprintf(genbuf, "加 %s 为好友么", uident);
 		if (YEA == askyn(genbuf, NA, YEA)) {
 			clear();
@@ -1125,11 +1148,7 @@ char *title;
 }
 
 /*Add by SmallPig*/
-int
-sread(passonly, readfirst, pnum, auser, ptitle)
-int passonly, readfirst, auser, pnum;
-struct fileheader *ptitle;
-{
+int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *ptitle) {
 	struct keeploc *locmem;
 	int rem_top, rem_crs;	/* youzi 1997.7.7 */
 	extern int readingthread;
@@ -1462,7 +1481,7 @@ char *query;
 		close(fd);
 		if (ptr == NULL)
 			MMAP_RETURN(0);
-		if (strncasestr(ptr, query, st.st_size))
+		if (ytht_strncasestr(ptr, query, st.st_size))
 			ret = 1;
 		else
 			ret = 0;
@@ -1585,10 +1604,10 @@ int from_top;
 		return 0;
 	}
 	if (val > last_line) {
-		val = DEFINE(DEF_CIRCLE) ? 1 : last_line;
+		val = DEFINE(DEF_CIRCLE, currentuser) ? 1 : last_line;
 	}
 	if (val <= 0) {
-		val = DEFINE(DEF_CIRCLE) ? last_line : 1;
+		val = DEFINE(DEF_CIRCLE, currentuser) ? last_line : 1;
 	}
 	if (val >= locmem->top_line && val < locmem->top_line + screen_len - 1) {
 		RMVCURS;
@@ -1710,11 +1729,7 @@ search_threadid(struct keeploc *locmem, int offset, int thread, int mode)
 	return match;
 }
 
-static int
-digest_mode()
-{
-	extern char currdirect[STRLEN];
-
+static int digest_mode() {
 	if (digestmode == YEA) {
 		digestmode = NA;
 		setbdir(currdirect, currboard, digestmode);

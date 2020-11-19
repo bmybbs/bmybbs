@@ -22,8 +22,7 @@
     GNU General Public License for more details.
 */
 
-#include "modes.h"
-#include "ythtbbs.h"
+#include "ythtbbs/modes.h"
 
 char *
 ModeType(int mode)

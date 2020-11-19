@@ -1,6 +1,6 @@
-#include "ythtlib.h"
 #include "nbstat.h"
 #include "bbs.h"
+#include "strhash.h"
 
 #define BUSTAT MY_BBS_HOME"/0Announce/bbslist/board3"
 #define BUSSTAT MY_BBS_HOME"/0Announce/groups/GROUP_0/syssecurity/board3"
@@ -23,7 +23,7 @@ bu_use(int day, char *time, char *user, char *other)
 	char board[30], staytime[10];
 	char *temp[2] = { board, staytime };
 	int i;
-	i = mystrtok(other, ' ', temp, 2);
+	i = ytht_strtok(other, ' ', temp, 2);
 	a = finddic(bustat, board);
 	if (a != NULL) {
 		data = a->value;
@@ -96,34 +96,41 @@ bu_exit()
 	fclose(fp2);
 }
 
+static int bu_callback(struct boardmem *board, int curr_idx, va_list ap) {
+	(void) curr_idx;
+	(void) ap;
+
+	struct hword *tmp;
+
+	if (board->header.filename[0] == '\0')
+		return 0;
+
+	tmp = malloc(sizeof (struct hword));
+	if (tmp == NULL) {
+		errlog("Can't malloc in board_init!");
+		exit(-1);
+	}
+	memset(tmp, 0, sizeof(struct hword));
+	tmp->value = calloc(1, sizeof (struct buser));
+	if (tmp->value == NULL) {
+		errlog("Can't malloc value in board_init!");
+		exit(-1);
+	}
+
+	snprintf(tmp->str, 20, "%s", board->header.filename);
+	strcpy(((struct buser *) (tmp->value))->board, tmp->str);
+	snprintf(((struct buser *) (tmp->value))->expname, STRLEN, "%s", board->header.title);
+	((struct buser *) (tmp->value))->noread = boardnoread(&(board->header));
+	insertdic(bustat, tmp);
+
+	return 0;
+}
+
 void
 bu_init()
 {
 	int i, j, k;
-	struct hword *tmp;
-	char *p;
-	int numboards;
-	numboards = brdshm->number;
-	for (i = 0; i < numboards; i++) {
-		if (!bcache[i].header.filename[0])
-			continue;
-		tmp = malloc(sizeof (struct hword));
-		if (tmp == NULL) {
-			errlog("Can't malloc in board_init!");
-			exit(-1);
-		}
-		snprintf(tmp->str, 20, "%s", bcache[i].header.filename);
-		tmp->value = calloc(1, sizeof (struct buser));
-		if (tmp->value == NULL) {
-			errlog("Can't malloc value in board_init!");
-			exit(-1);
-		}
-		strcpy(((struct buser *) (tmp->value))->board, tmp->str);
-		snprintf(((struct buser *) (tmp->value))->expname, STRLEN, "%s",
-			 bcache[i].header.title);
-		((struct buser *) (tmp->value))->noread =
-		    boardnoread(&(bcache[i].header));
-		insertdic(bustat, tmp);
-	}
+	ythtbbs_cache_Board_foreach_v(bu_callback);
 	register_stat(bu, bu_exit);
 }
+

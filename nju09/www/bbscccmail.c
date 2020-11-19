@@ -11,10 +11,10 @@ bbscccmail_main()
 	int num;
 	html_header(1);
 	check_msg();
-	strsncpy(file, getparm("F"), 30);
+	ytht_strsncpy(file, getparm("F"), 30);
 	if (!file[0])
-		strsncpy(file, getparm("file"), 30);
-	strsncpy(target, getparm("target"), 30);
+		ytht_strsncpy(file, getparm("file"), 30);
+	ytht_strsncpy(target, getparm("target"), 30);
 	if (!loginok || isguest)
 		http_fatal("´Ò´Ò¹ý¿Í²»ÄÜ½øÐÐ±¾Ïî²Ù×÷");
 	changemode(POSTING);
@@ -95,7 +95,7 @@ do_cccmail(struct fileheader *x, struct boardmem *brd)
 		"\033[m\033[1m¡¾ ÒÔÏÂÎÄ×Ö×ªÔØ×Ô \033[32m%s \033[m\033[1mµÄÐÅÏä ¡¿\n",
 		currentuser.userid);
 	fprintf(fp2, "[37;1m¡¾ Ô­ÎÄÓÉ [32m%s [37mÓÚ [32m%s [37m·¢±í ¡¿[m\n\n",
-		fh2owner(x) ,Ctime(x->filetime));
+			fh2owner(x) , ytht_ctime(x->filetime));
 	while (1) {
 		retv = fread(buf, 1, sizeof (buf), fp);
 		if (retv <= 0)
@@ -105,7 +105,7 @@ do_cccmail(struct fileheader *x, struct boardmem *brd)
 	fclose(fp);
 	fclose(fp2);
 	if (!strncmp(x->title, "[×ªÔØ]", 6)) {
-		strsncpy(title, x->title, sizeof (title));
+		ytht_strsncpy(title, x->title, sizeof(title));
 	} else {
 		sprintf(title, "[×ªÔØ] %.55s", x->title);
 	}

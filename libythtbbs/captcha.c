@@ -1,5 +1,15 @@
-#include "ythtbbs.h"
-#include "mysql_wrapper.h"
+#include <string.h>
+#include <stdio.h>
+#include <time.h>
+#include <unistd.h>
+#include "config.h"
+#include "ytht/fileop.h"
+#include "ytht/random.h"
+#include "bmy/mysql_wrapper.h"
+#include "ythtbbs/captcha.h"
+#include "ythtbbs/boardrc.h"
+#include "ythtbbs/user.h"
+#include "ythtbbs/misc.h"
 
 static const unsigned int TOTAL_CAPTCHA_NUMS = 500000;
 static const unsigned int MAX_ATTEMPTS       = 5;
@@ -155,7 +165,7 @@ int gen_captcha_for_user(const char *userid, struct BMYCaptcha *captcha, enum CA
 	}
 
 CREATE:
-	getrandomint(&cap_id);
+	ytht_get_random_int(&cap_id);
 	cap_id = 1 + (cap_id % TOTAL_CAPTCHA_NUMS);
 	query_captcha_by_id(cap_id, captcha);
 	store_captcha(captcha_filename, captcha);

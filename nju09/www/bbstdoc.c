@@ -11,9 +11,9 @@ bbstdoc_main()
 	struct fileheader *data = NULL;
 	int i, start = 0, total2 = 0, total = 0, sum = 0, fd, size;
 	changemode(READING);
-	strsncpy(board, getparm("B"), 32);
+	ytht_strsncpy(board, getparm("B"), 32);
 	if (!board[0])
-		strsncpy(board, getparm("board"), 32);
+		ytht_strsncpy(board, getparm("board"), 32);
 	x1 = getboard(board);
 	if (x1 == 0) {
 		html_header(1);
@@ -123,7 +123,7 @@ bbstdoc_main()
 					"<td class=tduser>%s</td>",		// 作者
 			       sum, flag_str(data[i].accessed)[0] == ' ' ? "&nbsp;" : flag_str(data[i].accessed),
 			       userid_str(fh2owner(&data[i])));
-			printf("<td align=center class=tdborder>%6.6s</td>", Ctime(data[i].filetime) + 4); // 日期
+			printf("<td align=center class=tdborder>%6.6s</td>", ytht_ctime(data[i].filetime) + 4); // 日期
 			printf
 			    ("<td class=tdborder><a href=bbstcon?board=%s&start=%d&th=%ld %s>○ %s </a></td><td class=tdborder>%s</td>\n",
 			     board, i, data[i].thread, only_for_b,void1(titlestr(data[i].title)),
@@ -161,7 +161,7 @@ bbstdoc_main()
 	else
 	printf(" Page: %d/%d\n",(start-1)/w_info->t_lines+2,(total-1)/w_info->t_lines+1);
 	printf("</td></tr></form></table>");
-	sprintf(buf, "%s", strtrim(x1->header.keyword));
+	sprintf(buf, "%s", ytht_strtrim(x1->header.keyword));
 	if (strlen(buf)){
 		printf("<table width=\"100%%\" cellpadding=2 cellspacing=0><tr><td class=tdtitle align=center>\n");
 		printf("本版关键字: ");

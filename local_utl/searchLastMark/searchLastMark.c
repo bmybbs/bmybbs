@@ -1,6 +1,14 @@
 //查找版面最靠后的mark文章      ylsdd 2002/4/3
-#include "ythtlib.h"
-#include "ythtbbs.h"
+#include <stdio.h>
+#include <string.h>
+#include <time.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include "config.h"
+#include "ytht/fileop.h"
+#include "ytht/strlib.h"
+#include "ythtbbs/article.h"
+#include "ythtbbs/board.h"
 
 #define MAXFOUNDD 9
 #define MAXAUTHOR 5
@@ -28,7 +36,7 @@ addmiauthor(struct markeditem *mi, char *author)
 	}
 	if (i >= MAXAUTHOR)
 		return -1;
-	strsncpy(mi->author[i], author, sizeof (mi->author[i]));
+	ytht_strsncpy(mi->author[i], author, sizeof(mi->author[i]));
 	mi->n++;
 	return mi->n;
 }
@@ -45,7 +53,7 @@ addmarkedlist(struct markedlist *ml, char *title, char *author, int thread)
 	}
 	if (i >= MAXFOUNDD)
 		return ml->n;
-	strsncpy(ml->mi[i].title, title, sizeof (ml->mi[0].title));
+	ytht_strsncpy(ml->mi[i].title, title, sizeof(ml->mi[0].title));
 	addmiauthor(&ml->mi[i], author);
 	ml->mi[i].thread = thread;
 	ml->n++;

@@ -1,6 +1,4 @@
 #include "bbs.h"
-#include "stdio.h"
-#include "ythtbbs.h"
 
 int main(int argc, char *argv[])
 {

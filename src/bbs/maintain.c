@@ -8,7 +8,7 @@
     Firebird Bulletin Board System
     Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
                         Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
-    
+
     Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
 
     This program is free software; you can redistribute it and/or modify
@@ -22,6 +22,23 @@
     GNU General Public License for more details.
 */
 #include "bbs.h"
+#include "smth_screen.h"
+#include "io.h"
+#include "maintain.h"
+#include "stuff.h"
+#include "xyz.h"
+#include "namecomplete.h"
+#include "bcache.h"
+#include "userinfo.h"
+#include "more.h"
+#include "record.h"
+#include "bm.h"
+#include "bbsinc.h"
+#include "announce.h"
+#include "talk.h"
+#include "boards.h"
+#include "mail.h"
+#include "bbs_global_vars.h"
 
 #define        BLK_SIZ         4096  //by bjgyt
 
@@ -55,7 +72,7 @@ check_systempasswd()
 		getdata(1, 0, "请输入系统密码: ", passbuf, 19, NOECHO, YEA);
 		if (passbuf[0] == '\0' || passbuf[0] == '\n')
 			return NA;
-		if (!checkpasswd(prepass, passbuf)) {
+		if (!ytht_crypt_checkpasswd(prepass, passbuf)) {
 			move(2, 0);
 			prints("错误的系统密码...");
 			securityreport("系统密码输入错误...",
@@ -65,37 +82,6 @@ check_systempasswd()
 		}
 	}
 	return YEA;
-}
-
-int
-setsystempasswd()
-{
-	FILE *pass;
-	char passbuf[20], prepass[20];
-
-	modify_user_mode(ADMIN);
-	if (strcmp(currentuser.userid, "SYSOP"))
-		return -1;
-	if (!check_systempasswd())
-		return -1;
-	getdata(2, 0, "请输入新的系统密码: ", passbuf, 19, NOECHO, YEA);
-	getdata(3, 0, "确认新的系统密码: ", prepass, 19, NOECHO, YEA);
-	if (strcmp(passbuf, prepass))
-		return -1;
-	if (passbuf[0] == '\0' || passbuf[0] == '\n')
-		return NA;
-	if ((pass = fopen("etc/.syspasswd", "w")) == NULL) {
-		move(4, 0);
-		prints("系统密码无法设定....");
-		pressanykey();
-		return -1;
-	}
-	fprintf(pass, "%s\n", genpasswd(passbuf));
-	fclose(pass);
-	move(4, 0);
-	prints("系统密码设定完成....");
-	pressanykey();
-	return 0;
 }
 
 void
@@ -451,7 +437,7 @@ m_newbrd()
 	move(12, 0);
 	prints("主分区设定: %s", genbuf);
 	newboard.secnumber1 = genbuf[0];
-	strsncpy(newboard.sec1, genbuf, sizeof (newboard.sec1));
+	ytht_strsncpy(newboard.sec1, genbuf, sizeof(newboard.sec1));
 	move(12, 30);
 	prints("选择分区链接: ");
 	genbuf[0] = 0;
@@ -459,7 +445,7 @@ m_newbrd()
 	move(12, 30);
 	prints("分区链接设定: %s", genbuf);
 	newboard.secnumber2 = genbuf[0];
-	strsncpy(newboard.sec2, genbuf, sizeof (newboard.sec2));
+	ytht_strsncpy(newboard.sec2, genbuf, sizeof(newboard.sec2));
 	move(13, 0);
 	while (1) {
 		getdata(13, 0, "讨论区分类(4字):", newboard.type,
@@ -535,8 +521,7 @@ m_newbrd()
 		return -1;
 	}
 
-	reload_boards();
-	update_postboards();
+	ythtbbs_cache_Board_resolve();
 
 	group = chgrp();
 	sprintf(vbuf, "%-38.38s", newboard.title);
@@ -651,8 +636,8 @@ m_editbrd()
 				goto enterbname;
 			}
 			if (valid_brdname(genbuf)) {
-				strsncpy(newfh.filename, genbuf,
-					 sizeof (newfh.filename));
+				ytht_strsncpy(newfh.filename, genbuf,
+							  sizeof(newfh.filename));
 				strcpy(bname, genbuf);
 			} else {
 				move(2, 0);
@@ -664,7 +649,7 @@ m_editbrd()
 		}
 		getdata(8, 0, "新讨论区中文名: ", genbuf, 24, DOECHO, YEA);
 		if (genbuf[0] != 0)
-			strsncpy(newfh.title, genbuf, sizeof (newfh.title));
+			ytht_strsncpy(newfh.title, genbuf, sizeof(newfh.title));
 		ansimore2("etc/boardref", NA, 9, 7);
 		strcpy(genbuf, newfh.sec1);
 		move(16, 0);
@@ -672,7 +657,7 @@ m_editbrd()
 		setsecstr(genbuf, 17);
 		if (genbuf[0] != 0) {
 			newfh.secnumber1 = genbuf[0];
-			strsncpy(newfh.sec1, genbuf, sizeof (newfh.sec1));
+			ytht_strsncpy(newfh.sec1, genbuf, sizeof(newfh.sec1));
 		}
 		move(16, 0);
 		prints("新分区设定: %s", genbuf);
@@ -681,12 +666,12 @@ m_editbrd()
 		prints("选择新分区链接: %s", genbuf);
 		setsecstr(genbuf, 17);
 		newfh.secnumber2 = genbuf[0];
-		strsncpy(newfh.sec2, genbuf, sizeof (newfh.sec2));
+		ytht_strsncpy(newfh.sec2, genbuf, sizeof(newfh.sec2));
 		move(16, 40);
 		prints("新分区链接设定: %s", genbuf);
 		getdata(17, 0, "新讨论区分类(4字): ", genbuf, 5, DOECHO, YEA);
 		if (genbuf[0] != 0)
-			strsncpy(newfh.type, genbuf, sizeof (newfh.type));
+			ytht_strsncpy(newfh.type, genbuf, sizeof(newfh.type));
 		move(18, 0);
 		if (askyn("是否是转信版面", innboard, NA) == YEA)
 			newfh.flag |= INNBBSD_FLAG;
@@ -783,10 +768,8 @@ m_editbrd()
 				sprintf(tar, "vote/%s", newfh.filename);
 				rename(old, tar);
 				if (seek_in_file("etc/junkboards", fh.filename)) {
-					del_from_file("etc/junkboards",
-						      fh.filename);
-					addtofile("etc/junkboards",
-						  newfh.filename);
+					ytht_del_from_file("etc/junkboards", fh.filename, true);
+					ytht_add_to_file("etc/junkboards", newfh.filename);
 				}
 			}
 			get_grp(fh.filename);
@@ -797,8 +780,7 @@ m_editbrd()
 				get_grp(fh.filename);
 				strcpy(tmp_grp, lookgrp);
 				if (strcmp(tmp_grp, group) || a_mv != 2) {
-					del_from_file("0Announce/.Search",
-						      fh.filename);
+					ytht_del_from_file("0Announce/.Search", fh.filename, true);
 					if (group != NULL) {
 						if (add_grp
 						    (group, cexplain,
@@ -825,8 +807,7 @@ m_editbrd()
 				}
 			}
 			substitute_record(BOARDS, &newfh, sizeof (newfh), pos);
-			reload_boards();
-			update_postboards();
+			ythtbbs_cache_Board_resolve();
 		}
 	}
 	clear();
@@ -895,47 +876,6 @@ struct userec *urec;
 	return 0;
 }
 
-int
-m_mclean()
-{
-	modify_user_mode(ADMIN);
-	if (!check_systempasswd()) {
-		return -1;
-	}
-	clear();
-	stand_title("清除私人信件");
-	move(1, 0);
-	prints("清除所有已读且未 mark 的信件\n");
-	if (askyn("确定吗", NA, NA) == NA) {
-		clear();
-		return -1;
-	}
-	{
-		char secu[STRLEN];
-		sprintf(secu, "清除所有使用者已读信件。");
-		securityreport(secu, secu);
-	}
-
-	cleanlog = fopen("mailclean.log", "w");
-	move(3, 0);
-	prints("请耐心等候.\n");
-	refresh();
-	if (apply_record(PASSFILE, (void *) cleanmail, sizeof (struct userec))
-	    == -1) {
-		move(4, 0);
-		prints("apply PASSFILE err...\n");
-		pressreturn();
-		clear();
-		return -1;
-	}
-	move(4, 0);
-	fclose(cleanlog);
-	prints("清除完成! 记录档 mailclean.log.\n");
-	pressreturn();
-	clear();
-	return 0;
-}
-
 static void
 trace_state(flag, name, size)
 int flag, size;
@@ -963,67 +903,8 @@ char *filename;
 	return fd;
 }
 
-int
-m_trace()
-{
-	struct stat ostatb, cstatb;
-	int otflag, ctflag, done = 0;
-	char ans[3];
-	char *msg;
-
-	modify_user_mode(ADMIN);
-	if (!check_systempasswd()) {
-		return -1;
-	}
-	clear();
-	stand_title("Set Trace Options");
-	while (!done) {
-		move(2, 0);
-		otflag = stat("trace", &ostatb);
-		ctflag = stat("trace.chatd", &cstatb);
-		prints("目前设定:\n");
-		trace_state(otflag, "一般", ostatb.st_size);
-		trace_state(ctflag, "聊天", cstatb.st_size);
-		move(9, 0);
-		prints("<1> 切换一般记录\n");
-		prints("<2> 切换聊天记录\n");
-		getdata(12, 0, "请选择 (1/2/Exit) [E]: ", ans, 2, DOECHO, YEA);
-
-		switch (ans[0]) {
-		case '1':
-			if (otflag) {
-				touchfile("trace");
-				msg = "一般记录 ON";
-			} else {
-				rename("trace", "trace.old");
-				msg = "一般记录 OFF";
-			}
-			break;
-		case '2':
-			if (ctflag) {
-				touchfile("trace.chatd");
-				msg = "聊天记录 ON";
-			} else {
-				rename("trace.chatd", "trace.chatd.old");
-				msg = "聊天记录 OFF";
-			}
-			break;
-		default:
-			msg = NULL;
-			done = 1;
-		}
-		move(t_lines - 2, 0);
-		if (msg) {
-			prints("%s\n", msg);
-			//report(msg);
-		}
-	}
-	clear();
-	return 0;
-}
-
 /* mode == O_EXCL / O_APPEND / O_TRUNC by bjgyt*/
-int f_cp(char *src, char *dst, int mode)
+static int f_cp(char *src, char *dst, int mode)
 {
    int     fsrc, fdst, ret;
    ret = 0;
@@ -1128,7 +1009,7 @@ do_ordainBM(const char *userid, const char *abname)
 	clrtoeol();
 	move(2, 0);
 	if (userid)
-		strsncpy(genbuf, userid, sizeof (genbuf));
+		ytht_strsncpy(genbuf, userid, sizeof(genbuf));
 	else
 		usercomplete("输入欲任命的使用者帐号: ", genbuf);
 	if (genbuf[0] == '\0') {
@@ -1144,7 +1025,7 @@ do_ordainBM(const char *userid, const char *abname)
 		return 0;
 	}
 	if (abname)
-		strsncpy(bname, abname, sizeof (bname));
+		ytht_strsncpy(bname, abname, sizeof(bname));
 	else {
 		make_blist_full();
 		namecomplete("输入该使用者将管理的讨论区名称: ", bname);
@@ -1245,12 +1126,12 @@ do_ordainBM(const char *userid, const char *abname)
 	substitute_record(BOARDS, &fh, sizeof (fh), pos);
 	if (fh.clubnum) {
 		char tmpb[30];
-		strsncpy(tmpb, currboard, 30);
-		strsncpy(currboard, fh.filename, 30);
+		ytht_strsncpy(tmpb, currboard, 30);
+		ytht_strsncpy(currboard, fh.filename, 30);
 		addclubmember(lookupuser.userid, fh.clubnum);
-		strsncpy(currboard, tmpb, 30);
+		ytht_strsncpy(currboard, tmpb, 30);
 	}
-	reload_boards();
+	ythtbbs_cache_Board_resolve();
 	sprintf(genbuf, "任命 %s 为 %s 讨论区版主", lookupuser.userid,
 		fh.filename);
 	securityreport(genbuf, genbuf);
@@ -1314,7 +1195,7 @@ do_retireBM(const char *userid, const char *abname)
 	stand_title("版主离职\n");
 	clrtoeol();
 	if (userid)
-		strsncpy(genbuf, userid, sizeof (genbuf));
+		ytht_strsncpy(genbuf, userid, sizeof(genbuf));
 	else
 		usercomplete("输入欲离任的使用者帐号: ", genbuf);
 	if (genbuf[0] == '\0') {
@@ -1330,7 +1211,7 @@ do_retireBM(const char *userid, const char *abname)
 		return 0;
 	}
 	if (abname)
-		strsncpy(bname, abname, sizeof (bname));
+		ytht_strsncpy(bname, abname, sizeof(bname));
 	else {
 		make_blist_full();
 		namecomplete("输入该使用者将管理的讨论区名称: ", bname);
@@ -1400,7 +1281,7 @@ do_retireBM(const char *userid, const char *abname)
 		edit_grp(fh.filename, lookgrp, title, tmp);
 	}
 	substitute_record(BOARDS, &fh, sizeof (fh), pos);
-	reload_boards();
+	ythtbbs_cache_Board_resolve();
 	sprintf(genbuf, "取消 %s 的 %s 讨论区版主职务", lookupuser.userid,
 		fh.filename);
 	securityreport(genbuf, genbuf);
@@ -1523,7 +1404,7 @@ char *bname;
 		edit_grp(fh.filename, lookgrp, title, tmp);
 	}
 	substitute_record(BOARDS, &fh, sizeof (fh), pos);
-	reload_boards();
+	ythtbbs_cache_Board_resolve();
 	sprintf(genbuf, "取消 %s 的 %s 讨论区版主职务", lookupuser.userid,
 		fh.filename);
 	securityreport(genbuf, genbuf);

@@ -64,7 +64,6 @@ SET(BBS_SRCS
 	../src/bbs/addressbook.c
 	../src/bbs/backnumber.c
 	../src/bbs/common.c
-	../src/bbs/sec_hand.c
 	../src/bbs/regular.c
 	../src/bbs/1984.c
 	../src/bbs/moneycenter.c
@@ -93,7 +92,6 @@ SET(SERVER_CONFIG_FILE ${ETCDIR}/sshd_config)
 SET(HOST_KEY_FILE      ${ETCDIR}/ssh_host_key)
 
 add_definitions(-DBBSMAIN -DBACK_DELETE_RANGE -DSSHBBS -DHOST_KEY_FILE=\"${HOST_KEY_FILE}\" -DSERVER_CONFIG_FILE=\"${SERVER_CONFIG_FILE}\" -DETCDIR=\"${ETCDIR}\" -DPIDDIR=\"${BBSHOME}\")
-add_compile_options(-include ../src/bbs/proto.h)
 
 add_executable(sshbbsd ${SSHD_SRCS} ${CONFSRCS})
 target_link_libraries(sshbbsd ythtbbs ytht m gmp z)

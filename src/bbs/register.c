@@ -22,8 +22,18 @@
 */
 
 #include "bbs.h"
-#include "bbstelnet.h"
-#include "identify.h"
+#include "ythtbbs/identify.h"
+#include "smth_screen.h"
+#include "io.h"
+#include "stuff.h"
+#include "more.h"
+#include "main.h"
+#include "term.h"
+#include "bbsinc.h"
+#include "bcache.h"
+#include "mail.h"
+#include "maintain.h"
+#include "bbs_global_vars.h"
 /*
 #define  EMAIL          0x0001
 #define  NICK           0x0002
@@ -38,234 +48,47 @@ char *genpasswd();
 
 extern char fromhost[60];
 extern time_t login_start_time;
-extern int convcode;
+extern int g_convcode;
 
 time_t system_time;
 
 static int valid_ident(char *ident);
 
-char * str_to_upper(char *str);
-
-/*
-·µ»ØÖµµÄËµÃ÷ÈçÏÂ:
-0	ÒÑ¾­³É¹¦É¾³ı´ËÌõ¼ÇÂ¼
--1	ÓÊ¼ş¸ñÊ½ÓĞÎó£¬É¾³ıÊ§°Ü
--2	ÕÒ²»µ½pop_listÎÄ¼ş£¬É¾³ıÊ§°Ü
--3	Ã»ÓĞÕÒµ½Õâ¸öÓÊ¼ş·şÎñÆ÷£¬É¾³ıÊ§°Ü
--4	´ò¿ªÁÙÊ±ÎÄ¼şÊ§°Ü£¬É¾³ıÊ§°Ü
-*/
-int
-release_email(char *userid, char *email) //ÊÍ·ÅÓÊÏä, added by interma 2006.2.21
-{
-    struct userec* cuser;
-    char an[2];
-    char genbuf[STRLEN];
-    struct active_data act_data;
-
-    //getuser(userid, &cuser);
-    read_active(userid, &act_data);
-
-
-        act_data.status=NO_ACTIVE;
-       // strcpy(act_data.operator, currentuser->userid);
-        write_active(&act_data);
-
-
-    return 0;
-
-/*
-    char username[50];
-    char popserver[50];
-
-    char *p = strchr(email, '@');
-    if (p == NULL)
-        return -1;
-
-    memset(username, '\0', sizeof(username));
-    memset(popserver, '\0', sizeof(popserver));
-    strncpy(username, email, p - email);
-    strncpy(popserver, p + 1, strlen(email) - 1 - (p - email));
-
-    //printf("[%s][%s]", username, popserver);
-
-    FILE *fp;
-    char buf[256];
-    int isexist = 0;
-
-	fp = fopen(MY_BBS_HOME "/etc/pop_register/pop_list", "r");
-    if (fp == NULL)
-        return -2;
-    while(fgets(buf, 256, fp) != NULL)
-	{
-        if (strcmp(buf, "") == 0 || strcmp(buf, " ") == 0 || strcmp(buf, "\n") == 0)
-			break;
-
-        buf[strlen(buf) - 1] = '\0';
-        if (strcmp(buf, popserver) == 0)
-        {
-            isexist = 1;
-            break;
-        }
-
-        fgets(buf, 256, fp);
-    }
-    fclose(fp);
-
-    if (!isexist)
-        return -3;
-
-	strncpy(buf, MY_BBS_HOME "/etc/pop_register/", 256);
-	strncat(buf, popserver, 256);
-   	fp = fopen(buf, "r");
-	strncpy(buf, MY_BBS_HOME "/etc/pop_register/", 256);
-   	strncat(buf, popserver, 256);
-   	strncat(buf, "_temp", 5);
-
-	int lockfd = openlockfile(".lock_new_register", O_RDONLY, LOCK_EX); // ¼ÓËøÀ´±£Ö¤»¥³â²Ù×÷
-	FILE *fp2 = fopen(buf, "w");
-    if (fp == NULL || fp2 == NULL)
-	{
-		close(lockfd);
-		return -4;
-    }
-    char username2[50];
-    char userid2[20];
-
-    while(fgets(buf, 256, fp) != NULL)
-	{
-	    strncpy(username2, buf, 50);
-	    username2[strlen(username2) - 1] = '\0';
-	    fgets(buf, 256, fp);
-	    strncpy(userid2, buf, 20);
-	    p = strchr(userid2, ' ');
-	    userid2[p - userid2] = '\0';
-
-	    //printf("[%s][%s]\n", userid2, username2);
-	    if (strcmp(str_to_upper(userid), str_to_upper(userid2)) == 0 &&
-            strcmp(str_to_upper(username), str_to_upper(username2)) == 0)
-	    {
-	        ;
-	    }
-        else
-        {
-            fputs(username2, fp2);
-            fputs("\n", fp2);
-            fputs(buf, fp2);
-        }
-	}
-
-    fclose(fp);
-    fclose(fp2);
-
- 	char buf2[256];
-	strncpy(buf2, MY_BBS_HOME "/etc/pop_register/", 256);
-	strncat(buf2, popserver, 256);
-
-	strncpy(buf, MY_BBS_HOME "/etc/pop_register/", 256);
-   	strncat(buf, popserver, 256);
-   	strncat(buf, "_temp", 5);
-	rename(buf, buf2);
-    close(lockfd);
-    return 0;
-    */
-}
-
-
 static int
 getnewuserid(struct userec *newuser)
 {
-	struct userec utmp, zerorec;
-	struct stat st;
-	int fd, size, val, i;
+	int val, i;
+	enum ythtbbs_register_status rc;
 
-	system_time = time(NULL);
-	if (stat("tmp/killuser", &st) == -1 || st.st_mtime < system_time - 3600) {
-		if ((fd = open("tmp/killuser", O_RDWR | O_CREAT, 0600)) == -1)
-			return -1;
-		write(fd, ctime(&system_time), 25);
-		close(fd);
-		prints("Ñ°ÕÒĞÂÕÊºÅÖĞ, ÇëÉÔ´ıÆ¬¿Ì...\n\r");
-		refresh();
-		memset(&zerorec, 0, sizeof (zerorec));
-		if ((fd = open(PASSFILE, O_RDWR | O_CREAT, 0600)) == -1)
-			return -1;
-		flock(fd, LOCK_EX);
-		size = sizeof (utmp);
-		char userid[50];
-		char email[50];
-		char buf[512];
-		for (i = 0; i < MAXUSERS; i++) {
-			if (read(fd, &utmp, size) != size)
-				break;
-			val = countlife(&utmp);
-			if (utmp.userid[0] != '\0' && val < 0) {
-				sprintf(genbuf, "system kill %s %d",
-					utmp.userid, val);
-				newtrace(genbuf);
-				if (!is_bad_id(utmp.userid)) {
-					if ((utmp.userlevel & PERM_OBOARDS))
-						retire_allBM(utmp.userid);
-					sprintf(genbuf,
-						"mail/%c/%s",
-						mytoupper(utmp.userid[0]),
-						utmp.userid);
-					deltree(genbuf);
-					sprintf(genbuf,
-						"home/%c/%s",
-						mytoupper(utmp.userid[0]),
-						utmp.userid);
-					deltree(genbuf);
+	prints("Ñ°ÕÒĞÂÕÊºÅÖĞ, ÇëÉÔ´ıÆ¬¿Ì...\n\r");
+	refresh();
+	ythtbbs_user_clean();
+	ythtbbs_user_touchnew(newuser->userid);
 
-				}
-				lseek(fd, -size, SEEK_CUR);
-				write(fd, &zerorec, sizeof (utmp));
+	rc = ythtbbs_user_create(newuser, &i, &val);
 
-				strncpy(userid, utmp.userid, 50);
-				strncpy(email, utmp.email, 50);
-				release_email(userid, email); //id¶öËÀÁËÖ®ºó×Ô¶¯ÊÍ·ÅÓÊÏä£¬added by interma 2006.2.21
-				// ¸ø´ËÓÃ»§·¢ĞÅ,ÌáĞÑÓÊÏäÒÑ¾­ÊÍ·Å.
-				sprintf(buf, MY_BBS_HOME "/bin/sendmail.py '%s' '%s@bmyÒÑ¾­ËÀÍö' '%sÒÑ¾­ËÀÍö£¬ÓÊÏä°ó¶¨ÒÑ¾­½â³ı£¬ÇëÖØĞÂÓÃ´ËÓÊÏä×¢²áid¡£'",
-					email, userid, userid);
-				int ret = system(buf);
-
-			}
-		}
-		flock(fd, LOCK_UN);
-		close(fd);
-		touchnew();
-	}
-	if ((fd = open(PASSFILE, O_RDWR | O_CREAT, 0600)) == -1)
+	switch(rc) {
+	case YTHTBBS_REGISTER_FILE_ERROR:
 		return -1;
-	flock(fd, LOCK_EX);
-
-	i = searchnewuser();
-	if (i <= 0 || i > MAXUSERS) {
-		flock(fd, LOCK_UN);
-		close(fd);
+		break;
+	case YTHTBBS_REGISTER_FULL:
 		if (dashf("etc/user_full")) {
-			ansimore("etc/user_full", NA);
+			ansimore("etc/user_full", false);
 		} else {
-			prints
-			    ("±§Ç¸, Ê¹ÓÃÕßÕÊºÅÒÑ¾­ÂúÁË, ÎŞ·¨×¢²áĞÂµÄÕÊºÅ.\n\r");
+			prints("±§Ç¸, Ê¹ÓÃÕßÕÊºÅÒÑ¾­ÂúÁË, ÎŞ·¨×¢²áĞÂµÄÕÊºÅ.\n\r");
 		}
-		val = (st.st_mtime - system_time + 3660) / 60 + 1;
 		prints("ÇëµÈ´ı %d ·ÖÖÓºóÔÙÊÔÒ»´Î, ×£ÄãºÃÔË.\n\r", val);
 		refresh();
 		exit(1);
-	}
-	if (lseek(fd, sizeof (*newuser) * (i - 1), SEEK_SET) == -1) {
-		flock(fd, LOCK_UN);
-		close(fd);
+		break;
+	default:
+	case YTHTBBS_REGISTER_CANNOT_SEEK:
 		return -1;
+		break;
+	case YTHTBBS_REGISTER_OK:
+		return i;
+		break;
 	}
-	write(fd, newuser, sizeof (*newuser));
-	strsncpy(uidshm->userid[i - 1], newuser->userid,
-		 sizeof (uidshm->userid[i - 1]));
-	insertuseridhash(uidhashshm->uhi, UCACHE_HASH_SIZE, newuser->userid, i);
-	flock(fd, LOCK_UN);
-	close(fd);
-	//touchnew();
-	return i;
 }
 
 void
@@ -275,22 +98,7 @@ new_register()
 	char passbuf[STRLEN];
 	int allocid, try;
 
-	/* unused
-	if (0) {
-		now_t = time(0);
-		sprintf(genbuf, "etc/no_register_%3.3s", ctime(&now_t));
-		if (dashf(genbuf)) {
-			ansimore(genbuf, NA);
-			pressreturn();
-			exit(1);
-		}
-	}
-	*/
 	memset(&newuser, 0, sizeof (newuser));
-	// getdata(0, 0, "Ê¹ÓÃGB±àÂëÔÄ¶Á?(\xa8\xcf\xa5\xce BIG5\xbd\x58\xbe\x5c\xc5\xaa\xbd\xd0\xbf\xefN)(Y/N)? [Y]: ", passbuf, 4, DOECHO, YEA);
-	// if (*passbuf == 'n' || *passbuf == 'N')
-	//  if (!convcode)
-	//          switch_code();
 
 	ansimore("etc/register", NA);
 	try = 0;
@@ -303,13 +111,11 @@ new_register()
 		move(t_lines - 6, 0);
 		prints("ÕÊºÅÃû³ÆÎªÄúÔÚ±¾Õ¾ËùÊµ¼ÊÏÔÊ¾µÄÓÃ»§Ãû³Æ£¬²»¿ÉĞŞ¸Ä£¬ÇëÉ÷ÖØÑ¡Ôñ ");
 		getdata(t_lines - 5, 0,
-			"ÇëÊäÈëÕÊºÅÃû³Æ (Enter User ID, \"0\" to abort): ",
-			newuser.userid, IDLEN + 1, DOECHO, YEA);
+				"ÇëÊäÈëÕÊºÅÃû³Æ (Enter User ID, \"0\" to abort): ",
+				newuser.userid, IDLEN + 1, DOECHO, YEA);
 		if (newuser.userid[0] == '0') {
 			longjmp(byebye, -1);
 		}
-//		if (!goodgbid(newuser.userid)) {   by bjgyt
-//			prints("²»ÕıÈ·µÄÖĞÓ¢ÎÄÕÊºÅ\n");
 		if (id_with_num(newuser.userid)) {
 			prints("ÕÊºÅ±ØĞëÈ«ÎªÓ¢ÎÄ×ÖÄ¸!\n");
 		} else if (strlen(newuser.userid) < 2) {
@@ -322,22 +128,19 @@ new_register()
 			break;
 	}
 	while (1) {
-		getdata(t_lines - 4, 0, "ÇëÉè¶¨ÄúµÄÃÜÂë (Setup Password): ",
-			passbuf, PASSLEN, NOECHO, YEA);
+		getdata(t_lines - 4, 0, "ÇëÉè¶¨ÄúµÄÃÜÂë (Setup Password): ", passbuf, PASSLEN, NOECHO, YEA);
 		if (strlen(passbuf) < 4 || !strcmp(passbuf, newuser.userid)) {
 			prints("ÃÜÂëÌ«¶Ì»òÓëÊ¹ÓÃÕß´úºÅÏàÍ¬, ÇëÖØĞÂÊäÈë\n");
 			continue;
 		}
 		strncpy(newuser.passwd, passbuf, PASSLEN);
-		getdata(t_lines - 3, 0,
-			"ÇëÔÙÊäÈëÒ»´ÎÄãµÄÃÜÂë (Reconfirm Password): ", passbuf,
-			PASSLEN, NOECHO, YEA);
+		getdata(t_lines - 3, 0, "ÇëÔÙÊäÈëÒ»´ÎÄãµÄÃÜÂë (Reconfirm Password): ", passbuf, PASSLEN, NOECHO, YEA);
 		if (strncmp(passbuf, newuser.passwd, PASSLEN) != 0) {
 			prints("ÃÜÂëÊäÈë´íÎó, ÇëÖØĞÂÊäÈëÃÜÂë.\n");
 			continue;
 		}
 		passbuf[8] = '\0';
-		strncpy(newuser.passwd, genpasswd(passbuf), PASSLEN);
+		strncpy(newuser.passwd, ytht_crypt_genpasswd(passbuf), PASSLEN);
 		break;
 	}
 	strcpy(newuser.ip, "");
@@ -350,7 +153,7 @@ new_register()
 		newuser.flags[0] = PAGER_FLAG | BRDSORT_FLAG2;
 	}
 	newuser.userdefine &= ~(DEF_MAILMSG | DEF_NOLOGINSEND);
-	if (convcode)
+	if (g_convcode)
 		newuser.userdefine &= ~DEF_USEGB;
 
 	newuser.flags[1] = 0;
@@ -362,7 +165,7 @@ new_register()
 		refresh();
 		exit(1);
 	}
-	setuserid(allocid, newuser.userid);
+	ythtbbs_cache_UserTable_setuserid(allocid, newuser.userid);
 	if (!dosearchuser(newuser.userid)) {
 		prints("User failed to create\n");
 		refresh();
@@ -404,28 +207,18 @@ invalid_realmail(char *userid, char *email, int msize)
 	if (sysconf_str("EMAILFILE") == NULL)
 		return 0;
 
-	if (strchr(email, '@') && valid_ident(email) && HAS_PERM(PERM_LOGINOK))
+	if (strchr(email, '@') && valid_ident(email) && HAS_PERM(PERM_LOGINOK, currentuser))
 		return 0;
 
 	sethomefile(fname, userid, "register");
 	if (stat(fname, &st) == 0) {
-#ifdef REG_EXPIRED
-		now_t = time(0);
-		if (now_t - st.st_mtime >= REG_EXPIRED * 86400) {
-			sethomefile(fname, userid, "register.old");
-			if (stat(fname, &st) == -1
-			    || now_t - st.st_mtime >= REG_EXPIRED * 86400)
-				return 1;
-		}
-#endif
 	}
 	sethomefile(fname, userid, "register");
 	if ((fn = fopen(fname, "r")) != NULL) {
 		fgets(genbuf, STRLEN, fn);
 		fclose(fn);
 		strtok(genbuf, "\n");
-		if (valid_ident(genbuf) && ((strchr(genbuf, '@') != NULL)
-					    || strstr(genbuf, "usernum"))) {
+		if (valid_ident(genbuf) && ((strchr(genbuf, '@') != NULL) || strstr(genbuf, "usernum"))) {
 			if (strchr(genbuf, '@') != NULL)
 				strncpy(email, genbuf, msize);
 			move(21, 0);
@@ -472,8 +265,8 @@ check_register_info()
 		update_utmp();
 	}
 	while ((strlen(urec->realname) < 4)
-	       || (strstr(urec->realname, "  "))
-	       || (strstr(urec->realname, "¡¡"))) {
+			|| (strstr(urec->realname, "  "))
+			|| (strstr(urec->realname, "¡¡"))) {
 		move(3, 0);
 		prints("ÇëÊäÈëÄúµÄÕæÊµĞÕÃû (Enter realname):\n");
 		getdata(4, 0, "> ", urec->realname, NAMELEN, DOECHO, YEA);
@@ -486,7 +279,7 @@ check_register_info()
 	#ifndef POP_CHECK
 	if (strchr(urec->email, '@') == NULL) {
 		move(8, 0);
-		prints("µç×ÓĞÅÏä¸ñÊ½Îª: [1;37muserid@your.domain.name[m\n");
+		prints("µç×ÓĞÅÏä¸ñÊ½Îª: \033[1;37muserid@your.domain.name\033[m\n");
 		prints("ÇëÊäÈëµç×ÓĞÅÏä (²»ÄÜÌá¹©Õß°´ <Enter>)");
 		getdata(10, 0, "> ", urec->email, STRLEN - 10, DOECHO, YEA);
 		if (strchr(urec->email, '@') == NULL) {
@@ -498,124 +291,76 @@ check_register_info()
 	if (!strcmp(currentuser.userid, "SYSOP")) {
 		currentuser.userlevel = ~0;
 		set_safe_record();
-		substitute_record(PASSFILE, &currentuser,
-				  sizeof (struct userec), usernum);
+		substitute_record(PASSFILE, &currentuser, sizeof (struct userec), usernum);
 	}
 	if (!(currentuser.userlevel & PERM_LOGINOK)) {
-		if (!invalid_realmail
-		    (urec->userid, urec->realmail, STRLEN - 16))
+		if (!invalid_realmail(urec->userid, urec->realmail, STRLEN - 16))
 		{
 			#ifndef POP_CHECK /* ·ÀÖ¹¼ğ»ØÊ¬Ìåºó£¬²»ÓÃÊäÈëĞÅÏäÃû¡£interma@BMY*/
 			sethomefile(buf, urec->userid, "sucessreg");
 			if (((dashf(buf)) && !sysconf_str("EMAILFILE"))
-			    || (sysconf_str("EMAILFILE"))) {
+					|| (sysconf_str("EMAILFILE"))) {
 				set_safe_record();
 				urec->userlevel |= PERM_DEFAULT;
-				substitute_record(PASSFILE, urec,
-						  sizeof (struct userec),
-						  usernum);
+				substitute_record(PASSFILE, urec, sizeof (struct userec), usernum);
 			}
 			#endif
 		} else {
 #ifdef EMAILREG
 			if ((!strstr(urec->email, buf)) &&
-			    (!invalidaddr(urec->email)) &&
-			    (!invalid_email(urec->email))) {
+					(!invalidaddr(urec->email)) &&
+					(!invalid_email(urec->email))) {
 				move(13, 0);
 				prints("ÄúµÄµç×ÓĞÅÏä ÉĞĞëÍ¨¹ı»ØĞÅÑéÖ¤...  \n");
 				prints("    ±¾Õ¾½«ÂíÉÏ¼ÄÒ»·âÑéÖ¤ĞÅ¸øÄú,\n");
-				prints
-				    ("    ÄúÖ»Òª´Ó %s »ØĞÅ, ¾Í¿ÉÒÔ³ÉÎª±¾Õ¾ºÏ¸ñ¹«Ãñ.\n\n",
-				     urec->email);
-				prints
-				    ("    ³ÉÎª±¾Õ¾ºÏ¸ñ¹«Ãñ, ¾ÍÄÜÏíÓĞ¸ü¶àµÄÈ¨Òæà¸!\n");
+				prints("    ÄúÖ»Òª´Ó %s »ØĞÅ, ¾Í¿ÉÒÔ³ÉÎª±¾Õ¾ºÏ¸ñ¹«Ãñ.\n\n", urec->email);
+				prints("    ³ÉÎª±¾Õ¾ºÏ¸ñ¹«Ãñ, ¾ÍÄÜÏíÓĞ¸ü¶àµÄÈ¨Òæà¸!\n");
 				move(20, 0);
-				if (askyn("ÄúÒªÎÒÃÇÏÖÔÚ¾Í¼ÄÕâÒ»·âĞÅÂğ", YEA, NA)
-				    == YEA) {
+				if (askyn("ÄúÒªÎÒÃÇÏÖÔÚ¾Í¼ÄÕâÒ»·âĞÅÂğ", YEA, NA) == YEA) {
 					randomize();
 					code = (time(0) / 2) + (rand() / 10);
-					sethomefile(genbuf, urec->userid,
-						    "mailcheck");
+					sethomefile(genbuf, urec->userid, "mailcheck");
 					if ((dp = fopen(genbuf, "w")) == NULL) {
 						fclose(dp);
 						return;
 					}
 					fprintf(dp, "%9.9d\n", code);
 					fclose(dp);
-					sprintf(buf,
-						"/usr/lib/sendmail -f %s.bbs@%s %s ",
-						urec->userid, email_domain(),
-						urec->email);
+					sprintf(buf, "/usr/lib/sendmail -f %s.bbs@%s %s ", urec->userid, email_domain(), urec->email);
 					fout = popen(buf, "w");
-					fin =
-					    fopen(sysconf_str("EMAILFILE"),
-						  "r");
+					fin = fopen(sysconf_str("EMAILFILE"), "r");
 					/* begin of sending a mail to user to check email-addr */
 					if ((fin != NULL) && (fout != NULL)) {
-						fprintf(fout,
-							"Reply-To: SYSOP.bbs@%s\n",
-							email_domain());
-						fprintf(fout,
-							"From: SYSOP.bbs@%s\n",
-							email_domain());
-						fprintf(fout, "To: %s\n",
-							urec->email);
-						fprintf(fout,
-							"Subject: @%s@[-%9.9d-]%s mail check.\n",
-							urec->userid, code,
-							MY_BBS_ID);
-						fprintf(fout,
-							"X-Forwarded-By: SYSOP \n");
-						fprintf(fout,
-							"X-Disclaimer: %s registration mail.\n",
-							MY_BBS_ID);
+						fprintf(fout, "Reply-To: SYSOP.bbs@%s\n", email_domain());
+						fprintf(fout, "From: SYSOP.bbs@%s\n", email_domain());
+						fprintf(fout, "To: %s\n", urec->email);
+						fprintf(fout, "Subject: @%s@[-%9.9d-]%s mail check.\n", urec->userid, code, MY_BBS_ID);
+						fprintf(fout, "X-Forwarded-By: SYSOP \n");
+						fprintf(fout, "X-Disclaimer: %s registration mail.\n", MY_BBS_ID);
 						fprintf(fout, "\n");
-						fprintf(fout,
-							"BBS LOCATION     : %s (%s)\n",
-							email_domain(),
-							MY_BBS_IP);
-						fprintf(fout,
-							"YOUR BBS USER ID : %s\n",
-							urec->userid);
-						fprintf(fout,
-							"APPLICATION DATE : %s",
-							ctime
-							(&urec->firstlogin));
-						fprintf(fout,
-							"LOGIN HOST       : %s\n",
-							fromhost);
-						fprintf(fout,
-							"YOUR NICK NAME   : %s\n",
-							urec->username);
-						fprintf(fout,
-							"YOUR NAME        : %s\n",
-							urec->realname);
-						while (fgets(buf, 255, fin) !=
-						       NULL) {
-							if (buf[0] == '.'
-							    && buf[1] == '\n')
-								fputs(". \n",
-								      fout);
+						fprintf(fout, "BBS LOCATION     : %s (%s)\n", email_domain(), MY_BBS_IP);
+						fprintf(fout, "YOUR BBS USER ID : %s\n", urec->userid);
+						fprintf(fout, "APPLICATION DATE : %s", ctime(&urec->firstlogin));
+						fprintf(fout, "LOGIN HOST       : %s\n", fromhost);
+						fprintf(fout, "YOUR NICK NAME   : %s\n", urec->username);
+						fprintf(fout, "YOUR NAME        : %s\n", urec->realname);
+						while (fgets(buf, 255, fin) != NULL) {
+							if (buf[0] == '.' && buf[1] == '\n')
+								fputs(". \n", fout);
 							else
-								fputs(buf,
-								      fout);
+								fputs(buf, fout);
 						}
 						fprintf(fout, ".\n");
 						fclose(fin);
 						fclose(fout);
 					}	/* end of sending a mail to user to check email-addr */
-					getdata(21, 0,
-						"È·ÈÏĞÅÒÑ¼Ä³ö, µÈÄú»ØĞÅÅ¶!! Çë°´ <Enter> : ",
-						ans, 2, DOECHO, YEA);
+					getdata(21, 0, "È·ÈÏĞÅÒÑ¼Ä³ö, µÈÄú»ØĞÅÅ¶!! Çë°´ <Enter> : ", ans, 2, DOECHO, YEA);
 				}
 			} else {
 				showansi = 1;
 				if (sysconf_str("EMAILFILE") != NULL) {
-					prints
-					    ("\nÄúËùÌîĞ´µÄµç×ÓÓÊ¼şµØÖ· ¡¾[1;33m%s[m¡¿\n",
-					     urec->email);
-					prints
-					    ("²¢·ÇºÏ·¨Ö® UNIX ÕÊºÅ£¬ÏµÍ³²»»áÍ¶µİ×¢²áĞÅ£¬Çëµ½[1;32mInfoEdit->Info[mÖĞĞŞ¸Ä...\n");
+					prints("\nÄúËùÌîĞ´µÄµç×ÓÓÊ¼şµØÖ· ¡¾\033[1;33m%s\033[m¡¿\n", urec->email);
+					prints("²¢·ÇºÏ·¨Ö® UNIX ÕÊºÅ£¬ÏµÍ³²»»áÍ¶µİ×¢²áĞÅ£¬Çëµ½\033[1;32mInfoEdit->Info\033[mÖĞĞŞ¸Ä...\n");
 					pressanykey();
 				}
 			}
@@ -656,7 +401,7 @@ check_register_info()
 			pressanykey();
 		}
 		newregfile = sysconf_str("NEWREGFILE");
-		if (!HAS_PERM(PERM_SYSOP) && newregfile != NULL) {
+		if (!HAS_PERM(PERM_SYSOP, currentuser) && newregfile != NULL) {
 			set_safe_record();
 			urec->userlevel &= ~(perm);
 			substitute_record(PASSFILE, urec, sizeof (struct userec), usernum);
@@ -680,3 +425,4 @@ valid_ident(char *ident)
 			return 0;
 	return 1;
 }
+

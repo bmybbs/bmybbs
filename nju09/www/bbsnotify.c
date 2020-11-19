@@ -38,14 +38,14 @@ int bbsnotify_main() {
 				printf("<div class=\"notify-item\">[<a href=\"bbsdelnotify?type=0&amp;B=%s&amp;ID=%d\">忽略</a>] "
 					   "网友<a href=\"qry?U=%s\">%s</a>%s在<a href=\"bbscon?B=%s&amp;F=M.%d.A\">%s</a>中回复了您</div>",
 					    currItem->board, (int)currItem->noti_time,
-					    currItem->from_userid, currItem->from_userid, Difftime(currItem->noti_time),
+					    currItem->from_userid, currItem->from_userid, ytht_Difftime(currItem->noti_time),
 						currItem->board, (int)currItem->noti_time, currItem->title_gbk);
 				break;
 			case NOTIFY_TYPE_MENTION:
 				printf("<div class=\"notify-item mention-item\">[<a href=\"bbsdelnotify?type=0&amp;B=%s&amp;ID=%d\">忽略</a>] "
 					   "网友<a href=\"qry?U=%s\">%s</a>%s在<a href=\"bbscon?B=%s&amp;F=M.%d.A\">%s</a>中&nbsp;<strong>@</strong>&nbsp;了您</div>",
 						currItem->board, (int)currItem->noti_time,
-						currItem->from_userid, currItem->from_userid, Difftime(currItem->noti_time),
+						currItem->from_userid, currItem->from_userid, ytht_Difftime(currItem->noti_time),
 						currItem->board, (int)currItem->noti_time, currItem->title_gbk);
 				break;
 			default : break;

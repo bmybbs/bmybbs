@@ -1,12 +1,13 @@
 language: c
 compiler: gcc
+dist: focal
 script:
   - (mkdir ght_build && cd ght_build && tar xf ../software/libghthash-0.5.0-x86_64.tar.gz && cd libghthash-0.5.0-x86_64 && ./configure && make && sudo make install)
   - (sudo ldconfig)
   - (mkdir build && cd build && cmake .. && make)
 before_script:
   - sudo apt-get update -qq
-  - sudo apt-get install -qq libmysqlclient-dev cproto cmake libxml2-dev libhiredis-dev libjson-c-dev libpcre3-dev
+  - sudo apt-get install -qq libmysqlclient-dev cmake libxml2-dev libhiredis-dev libjson-c-dev libpcre3-dev
   - git submodule update --init
   - git clone https://github.com/libcheck/check
   - (cd check; autoreconf --install; ./configure; make; sudo make install; sudo cp check_stdint.h /usr/local/include; sudo ldconfig)

@@ -20,8 +20,9 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 */
-
-/* chat.h - port numbers for the chat rooms -- changing them is wise. */
+#ifndef BMYBBS_CHAT_H
+#define BMYBBS_CHAT_H
+/* port numbers for the chat rooms -- changing them is wise. */
 #define CHATPORT1 7201
 #define CHATPORT2 7202
 #define CHATPORT3 7203
@@ -50,11 +51,15 @@
 #define CHAT_LOGIN_INVALID  "IN"
 #define CHAT_LOGIN_BOGUS    "BG"
 
-/* 
+/*
    This defines the set of characters disallowed in chat id's. These
    characters get translated to underscores (_) when someone tries to use
    them. At the very least you should disallow spaces and '*'.
-*/ 
+*/
 
 #define BADCIDCHARS " *:/"
 
+void printchatline(const char *str);
+int ent_chat(char *chatbuf);
+void setpager(void);
+#endif

@@ -1,6 +1,21 @@
 //writen by ecnegrevid, 2001.7
 #include "bbs.h"
-#include "bbstelnet.h"
+#include "smth_screen.h"
+#include "main.h"
+#include "xyz.h"
+#include "stuff.h"
+#include "more.h"
+#include "read.h"
+#include "bbsinc.h"
+#include "io.h"
+#include "sendmsg.h"
+#include "help.h"
+#include "maintain.h"
+#include "list.h"
+#include "one_key.h"
+#include "bbs_global_vars.h"
+#include "bbs-internal.h"
+
 extern char quote_file[], quote_user[];
 char currbacknumberdir[STRLEN * 2];
 static int backnumbertitle(void);
@@ -120,7 +135,7 @@ char *direct;
 		break;
 	case 'j':
 	case KEY_RIGHT:
-		if (DEFINE(DEF_THESIS)) {
+		if (DEFINE(DEF_THESIS, currentuser)) {
 			sread(0, 0, ent, 0, fileinfo);
 			break;
 		} else {
@@ -195,12 +210,7 @@ static const struct one_key backnumber_comms[] = {
 	{'\0', NULL, ""}
 };
 
-int
-readbacknumber(ent, bkninfo, direct)
-int ent;
-struct bknheader *bkninfo;
-char *direct;
-{
+static int readbacknumber(int ent, struct bknheader *bkninfo, char *direct) {
 	char buf[MAXPATHLEN], *t;
 	strcpy(buf, direct);
 	if ((t = strrchr(buf, '/')) != NULL)
@@ -257,7 +267,7 @@ new_backnumber()
 	struct bknheader bn;
 	int count;
 	if (!IScurrBM)
-//by bjgyt	if (!HAS_PERM(PERM_OBOARDS) && !HAS_PERM(PERM_SYSOP)) 
+//by bjgyt	if (!HAS_PERM(PERM_OBOARDS) && !HAS_PERM(PERM_SYSOP))
 		return DONOTHING;
 	bzero(&bn, sizeof (bn));
 	getdata(t_lines - 1, 0, "输入过刊标题: ", bn.title, 50, DOECHO, YEA);
@@ -276,7 +286,7 @@ new_backnumber()
 		}
 	}
 	bn.filetime = now;
-	strsncpy(bn.boardname, currboard, sizeof (bn.boardname));
+	ytht_strsncpy(bn.boardname, currboard, sizeof(bn.boardname));
 	sprintf(backnumberboarddir, "boards/.backnumbers/%s/%s", currboard,
 		DOT_DIR);
 	append_record(backnumberboarddir, &bn, sizeof (bn));
@@ -318,10 +328,10 @@ char *direct;
 	if (!IScurrBM)
 //by bjgyt        if (!HAS_PERM(PERM_OBOARDS) && !HAS_PERM(PERM_SYSOP))
                 return DONOTHING;
-	strsncpy(buf, bkninfo->title, 60);
+	ytht_strsncpy(buf, bkninfo->title, 60);
 	getdata(t_lines - 1, 0, "新过刊标题: ", buf, 50, DOECHO, NA);
 	if (buf[0] != '\0') {
-		strsncpy(bkninfo->title, buf, sizeof (bkninfo->title));
+		ytht_strsncpy(bkninfo->title, buf, sizeof(bkninfo->title));
 		substitute_record(direct, bkninfo, sizeof (*bkninfo), ent);
 		//change_dir(direct, bkninfo, (void *)DIR_do_changetitle, ent, digestmode, 1);
 	}

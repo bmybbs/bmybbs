@@ -22,9 +22,11 @@
 */
 
 #include "bbs.h"
-
-extern char fromhost[];
-extern int convcode;
+#include "smth_screen.h"
+#include "main.h"
+#include "io.h"
+#include "bbs_global_vars.h"
+#include "bbs-internal.h"
 
 #ifdef CAN_EXEC
 char tempfile[MAXPATHLEN];
@@ -32,36 +34,25 @@ char tempfile[MAXPATHLEN];
 
 extern void io_output(const char *s, int len);
 
-int
-dashf(fname)
-const char *fname;
-{
+int dashf(const char *fname) {
 	struct stat st;
 
 	return (stat(fname, &st) == 0 && S_ISREG(st.st_mode));
 }
 
-int
-dashd(fname)
-char *fname;
-{
+int dashd(const char *fname) {
 	struct stat st;
 
 	return (stat(fname, &st) == 0 && S_ISDIR(st.st_mode));
 }
 
-int
-dashl(fname)
-char *fname;
-{
+int dashl(const char *fname) {
 	struct stat st;
 
 	return (lstat(fname, &st) == 0 && S_ISLNK(st.st_mode));
 }
 
-int
-pressanykey()
-{
+int pressanykey() {
 	extern int showansi;
 
 	showansi = 1;
@@ -75,9 +66,7 @@ pressanykey()
 	return 0;
 }
 
-int
-pressreturn()
-{
+int pressreturn() {
 	extern int showansi;
 	char buf[3];
 
@@ -92,11 +81,7 @@ pressreturn()
 	return 0;
 }
 
-int
-askyn(str, defa, gobottom)
-char str[STRLEN];
-int defa, gobottom;
-{
+int askyn(char *str, int defa, int gobottom) {
 	int x, y;
 	char realstr[280];
 	char ans[3];
@@ -116,10 +101,7 @@ int defa, gobottom;
 		return 0;
 }
 
-void
-printdash(mesg)
-char *mesg;
-{
+void printdash(char *mesg) {
 	char buf[80], *ptr;
 	int len;
 
@@ -137,25 +119,11 @@ char *mesg;
 	prints("%s\n", buf);
 }
 
-void
-bell()
-{
+void bell() {
 	char sound;
 
 	sound = Ctrl('G');
 	io_output(&sound, 1);
-}
-
-void
-touchnew()
-{
-	int fd;
-
-	sprintf(genbuf, "touch by: %s\n", currentuser.userid);
-	if ((fd = open(FLUSH, O_WRONLY | O_CREAT, 0644)) == -1)
-		return;
-	write(fd, genbuf, strlen(genbuf));
-	close(fd);
 }
 
 /* rrr - Snagged from pbbs 1.8 */
@@ -171,19 +139,13 @@ touchnew()
 char *bbsenv[MAXENVS];
 int numbbsenvs = 0;
 
-void
-strtolower(dst, src)
-char *dst, *src;
-{
+static void strtolower(char *dst, char *src) {
 	for (; *src; src++)
 		*dst++ = tolower(*src);
 	*dst = '\0';
 }
 
-int
-deltree(dst)
-char *dst;
-{
+int deltree(char *dst) {
 	char rpath[PATH_MAX + 1 + 10], buf[PATH_MAX + 1];
 	int i = 0, j = 0, isdir = 0, fd;
 	static char *const (disks[]) = {
@@ -214,7 +176,7 @@ char *dst;
 	memmove(rpath + j + 6, rpath + j, sizeof (rpath) - j - 6);
 	memcpy(rpath + j, ".junk/", 6);
 	j += 6;
-	normalize(rpath + j);
+	ytht_normalize(rpath + j);
 	rpath[PATH_MAX - 10] = 0;
 	j = strlen(rpath);
 	i = 0;
@@ -266,10 +228,7 @@ char *env, *val;
 }
 #endif
 
-int
-do_exec(com, wd)
-char *com, *wd;
-{
+int do_exec(char *com, char *wd) {
 #if defined(CAN_EXEC) && ! defined(SSHBBS)
 	char exec_param[256];
 	char path[MAXPATHLEN];
@@ -390,77 +349,4 @@ char *com, *wd;
 	prints("不能执行外部命令，您是SSH用户?\n\r");
 	pressanykey();
 	return -1;
-}
-
-char   *
-horoscope(month, day)
-char    month, day;
-{
-        char   *name[12] = {
-                "摩羯", "水瓶", "双鱼", "牡羊", "金牛", "双子",
-                "巨蟹", "狮子", "处女", "天秤", "天蝎", "射手"
-        };
-        switch (month) {
-        case 1:
-                if (day < 21)
-                        return (name[0]);
-                else
-                        return (name[1]);
-        case 2:
-                if (day < 19)
-                        return (name[1]);
-                else
-                        return (name[2]);
-        case 3:
-                if (day < 21)
-                        return (name[2]);
-                else
-                        return (name[3]);
-        case 4:
-                if (day < 21)
-                        return (name[3]);
-                else
-                        return (name[4]);
-        case 5:
-                if (day < 21)
-                        return (name[4]);
-                else
-                        return (name[5]);
-        case 6:
-                if (day < 22)
-                        return (name[5]);
-                else
-                        return (name[6]);
-        case 7:
-                if (day < 23)
-                        return (name[6]);
-                else
-                        return (name[7]);
-        case 8:
-                if (day < 23)
-                        return (name[7]);
-                else
-                        return (name[8]);
-        case 9:
-                if (day < 23)
-                        return (name[8]);
-                else
-                        return (name[9]);
-        case 10:
-                if (day < 24)
-                        return (name[9]);
-                else
-                        return (name[10]);
-        case 11:
-                if (day < 23)
-                        return (name[10]);
-                else
-                        return (name[11]);
-        case 12:
-                if (day < 22)
-                        return (name[11]);
-                else
-                        return (name[0]);
-        }
-        return ("不详");
 }

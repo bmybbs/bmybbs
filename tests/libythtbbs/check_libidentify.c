@@ -4,7 +4,7 @@
 
 #define IDLEN 12
 #define STRLEN 80
-#include "identify.h"
+#include "ythtbbs/identify.h"
 
 struct active_data ad;
 

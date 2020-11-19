@@ -1,5 +1,7 @@
-#include "ythtbbs.h"
-//#include <string.h>
+#include <string.h>
+#include <unistd.h>
+#include "ythtbbs/ythtbbs.h"
+
 #define BINSECMFILE MY_BBS_HOME "/etc/secmlist.data"
 const struct sectree *
 getsectree(const char *s)
@@ -36,12 +38,12 @@ gensecm(const char *txtfile)
 		if (!ptr)
 			continue;
 		bzero(&secm, sizeof (secm));
-		strsncpy(secm.secstr, ptr, sizeof (secm.secstr));
+		ytht_strsncpy(secm.secstr, ptr, sizeof(secm.secstr));
 		for (i = 0; i < MAXSECM; i++) {
 			ptr = strsep(&p0, "\t\r\n ");
 			if (ptr == NULL)
 				break;
-			strsncpy(secm.secm[i], ptr, sizeof (secm.secm));
+			ytht_strsncpy(secm.secm[i], ptr, sizeof(secm.secm));
 		}
 		if (i == 0)
 			continue;

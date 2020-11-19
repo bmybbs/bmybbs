@@ -1,4 +1,9 @@
-#include "ythtbbs.h"
+#include <stdbool.h>
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+
+#include "config.h"
 
 static int
 whatch(unsigned char ch)
@@ -20,10 +25,10 @@ goodq(unsigned char ch)
 }
 
 int
-goodgbid(char *userid)		//by ylsdd
+goodgbid(const char *userid)		//by ylsdd
 {
 	int q = 0;
-	char *s;
+	const char *s;
 	for (s = userid; *s != '\0'; s++) {
 		switch (whatch(*s)) {
 		case 0:
@@ -44,9 +49,7 @@ goodgbid(char *userid)		//by ylsdd
 	return 1;
 }
 
-int
-is_bad_id(char *s)
-{
+bool is_bad_id(const char *s) {
 	FILE *fp;
 	char buf[80], buf2[80];
 
@@ -57,7 +60,7 @@ is_bad_id(char *s)
 				continue;
 			if (!strcasecmp(s, buf2)) {
 				fclose(fp);
-				return 1;
+				return true;
 			}
 		}
 		fclose(fp);
@@ -65,15 +68,16 @@ is_bad_id(char *s)
 
 	fp = fopen(MY_BBS_HOME "/etc/badname", "r");
 	if (fp == 0)
-		return 0;
+		return false;
 	while (fgets(buf, sizeof (buf), fp)) {
 		if (sscanf(buf, "%s", buf2) != 1)
 			continue;
 		if (strcasestr(s, buf2)) {
 			fclose(fp);
-			return 1;
+			return true;
 		}
 	}
 	fclose(fp);
-	return 0;
+	return false;
 }
+

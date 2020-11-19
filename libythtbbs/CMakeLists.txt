@@ -41,7 +41,6 @@ add_library(ythtbbs SHARED
 	politics.c
 	goodgbid.c
 	binaryattach.c
-	permissions.c
 	bbseva.c
 	attach.c
 	regform.c
@@ -49,13 +48,18 @@ add_library(ythtbbs SHARED
 	board.c
 	sectree.c
 	sectreeop.c
-	libiden.c
+	identify.c
 	notification.c
 	mailsender.c
 	captcha.c
+	cache/user.c
+	cache/utmp.c
+	cache/board.c
+	session.c
+	override.c
 )
 
 add_dependencies(ythtbbs sectree)
 add_dependencies(sectree gensectree)
-target_link_libraries(ythtbbs bmy pcre mysqlclient ${LIBXML2_LIBRARIES})
+target_link_libraries(ythtbbs bmy pcre mysqlclient ${LIBXML2_LIBRARIES} hiredis)
 

@@ -1,4 +1,7 @@
-#include "ythtbbs.h"
+#include <fcntl.h>
+#include <unistd.h>
+#include <string.h>
+#include "ythtbbs/ythtbbs.h"
 
 int
 save_msgtext(char *uident, struct msghead *head, const char *msgbuf)

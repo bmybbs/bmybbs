@@ -12,9 +12,9 @@ bbsmdoc_main()
 	if (!loginok || isguest)
 		http_fatal("ÇëÏÈµÇÂ¼");
 	changemode(READING);
-	strsncpy(board, getparm("B"), 32);
+	ytht_strsncpy(board, getparm("B"), 32);
 	if (!board[0])
-		strsncpy(board, getparm("board"), 32);
+		ytht_strsncpy(board, getparm("board"), 32);
 	x1 = getboard(board);
 	if (x1 == 0) {
 		html_header(1);
@@ -62,7 +62,7 @@ bbsmdoc_main()
 		     fh2fname(&x));
 		printf("<td>%s<td>%s", flag_str_bm(x.accessed),
 		       userid_str(fh2owner(&x)));
-		printf("<td>%12.12s", Ctime(x.filetime) + 4);
+		printf("<td>%12.12s", ytht_ctime(x.filetime) + 4);
 		x.title[40] = 0;
 		printf("<td><a href=con?B=%s&F=%s&N=%d&T=%ld>%s%s </a>\n",
 		       board, fh2fname(&x), start + i + 1, feditmark(x),

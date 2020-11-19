@@ -1,5 +1,6 @@
 #include "bbslib.h"
-#include "identify.h"
+#include "ythtbbs/identify.h"
+#include "ytht/random.h"
 
 #ifdef POP_CHECK
 // 登陆邮件服务器用的头文件 added by interma@BMY 2005.5.12
@@ -50,7 +51,7 @@ void api_bbsresetpass(void) {
 	domain_idx = domain[0] - '0';
 	if (domain_idx < 0 || domain_idx > 3) domain_idx = 0;
 	snprintf(email, 80, "%s@%s", user, MAIL_DOMAINS[domain_idx]);
-	str_to_lowercase(email);
+	ytht_str_to_lowercase(email);
 
 	rc = read_active(userid, &act_data);
 	if (rc < 1) {
@@ -117,8 +118,8 @@ void api_do_bbsresetpass(void) {
 		goto OUTPUT;
 	}
 
-	getsalt(salt);
-	strcpy(x->passwd, crypt1(pass2, salt));
+	ytht_get_salt(salt);
+	strcpy(x->passwd, ytht_crypt_crypt1(pass2, salt));
 	save_user_data(x);
 	rc = 0;
 OUTPUT:

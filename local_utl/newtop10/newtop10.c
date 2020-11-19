@@ -1,5 +1,5 @@
 #include "bbs.h"
-#include "ythtbbs.h"
+
 #include <time.h>
 #include <sys/types.h>
 #include <sys/mman.h>
@@ -49,7 +49,7 @@ filtertitle(char *tofilter)
 {
 	if(filtermf.ptr==NULL)
 		return 0;
-	return filter_string(tofilter, &filtermf);
+	return ytht_smth_filter_string(tofilter, &filtermf);
 }
  
 int

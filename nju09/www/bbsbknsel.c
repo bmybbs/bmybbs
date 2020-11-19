@@ -12,9 +12,9 @@ bbsbknsel_main()
 	printf("<script src=/function.js></script>\n");
 	check_msg();
 	changemode(SELBACKNUMBER);
-	strsncpy(board, getparm("B"), 32);
+	ytht_strsncpy(board, getparm("B"), 32);
 	if (!board[0])
-		strsncpy(board, getparm("board"), 32);
+		ytht_strsncpy(board, getparm("board"), 32);
 	x1 = getboard(board);
 	if (x1 == 0)
 		nosuchboard(board, "bbsbknsel");
@@ -49,10 +49,10 @@ bbsbknsel_main()
 				       start + i, x.boardname);
 				if (!i)
 					printf("<td><nobr>%12.12s</td>",
-					       Ctime(x.filetime) + 4);
+						   ytht_ctime(x.filetime) + 4);
 				else
 					printf("<td>%12.12s</td>",
-					       Ctime(x.filetime) + 4);
+						   ytht_ctime(x.filetime) + 4);
 				printf
 				    ("<td><a href=bbsbkndoc?board=%s&bkn=%s&num=%d>¡ð %s </a></td></tr>",
 				     board, bknh2bknname(&x), start + i - 1,

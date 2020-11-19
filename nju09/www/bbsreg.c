@@ -1,5 +1,5 @@
 #include "bbslib.h"
-#include "identify.h"
+#include "ythtbbs/identify.h"
 
 int
 bbsreg_main()

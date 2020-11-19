@@ -6,7 +6,7 @@ anc_readtitle(FILE * fp, char *title, int size)
 	char buf[512];
 	while (fgets(buf, sizeof (buf), fp)) {
 		if (!strncmp(buf, "# Title=", 8)) {
-			strsncpy(title, buf + 8, size);
+			ytht_strsncpy(title, buf + 8, size);
 			return 0;
 		}
 	}
@@ -20,14 +20,14 @@ anc_readitem(FILE * fp, char *path, int sizepath, char *name, int sizename)
 	int hasname = 0;
 	while (fgets(buf, sizeof (buf), fp)) {
 		if (!strncmp(buf, "Name=", 5)) {
-			strsncpy(name, buf + 5, sizename);
+			ytht_strsncpy(name, buf + 5, sizename);
 			hasname = 1;
 		}
 		if (!hasname)
 			continue;
 		if (strncmp(buf, "Path=~", 6))
 			continue;
-		strsncpy(path, strtrim(buf + 6), sizepath);
+		ytht_strsncpy(path, ytht_strtrim(buf + 6), sizepath);
 		hasname = 2;
 		break;
 	}
@@ -64,7 +64,7 @@ bbs0an_main()
 	printf("<table width=100%% border=0 cellpadding=0 cellspacing=0><tr><td height=30 colspan=2></td></tr>\n");
 	printf("<tr><td height=70 colspan=2> <table width=100%% height=100%% border=0 cellpadding=0 cellspacing=0 class=level2><tr><td width=40 rowspan=2></td>\n");
 
-	strsncpy(path, getparm("path"), PATHLEN - 1);
+	ytht_strsncpy(path, getparm("path"), PATHLEN - 1);
 	if (strstr(path, ".."))
 		http_fatal("此目录不存在");
 	snprintf(names, PATHLEN, "0Announce%s/.Names", path);
@@ -156,8 +156,8 @@ L:	fp = fopen(names, "r");
 		printf("<td class=tdborder>%s</td>", userid_str(id));
 	else
 		printf("<td  class=tdborder> </td>");
-	printf("<td>%6.6s %s</td></tr>", Ctime(file_time(buf)) + 4,
-	       Ctime(file_time(buf)) + 20);
+	printf("<td>%6.6s %s</td></tr>", ytht_ctime(file_time(buf)) + 4,
+		   ytht_ctime(file_time(buf)) + 20);
 
 }
 fclose(fp);

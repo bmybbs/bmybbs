@@ -14,7 +14,6 @@
 */
 
 #include "bbs.h"
-#include "ythtbbs.h"
 
 /* Edit these lines to fit the configuration of your server */
 
@@ -813,7 +812,7 @@ Pass()
 		return -1;
 	}
 
-	if (!checkpasswd(currentuser.passwd, cmd)) {
+	if (!ytht_crypt_checkpasswd(currentuser.passwd, cmd)) {
 		time_t t = time(0);
 		logattempt(currentuser.userid, fromhost, "POP3", t);
 		sprintf(genbuf,

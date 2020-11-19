@@ -8,7 +8,7 @@
     Firebird Bulletin Board System
     Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
                         Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
-    
+
     Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
 
     This program is free software; you can redistribute it and/or modify
@@ -24,6 +24,7 @@
 
 #include "bbs.h"
 #include <sys/mman.h>
+#include "bbs_global_vars.h"
 
 #define BUFSIZE (8192)
 
@@ -81,7 +82,7 @@ int size;
 
 	if (stat(filename, &st) == -1)
 		return 0;
-	//add by hace 2003.05.05 
+	//add by hace 2003.05.05
 	char *s,buf[64];
 	int num=st.st_size;
 	strcpy(buf,filename);
@@ -89,7 +90,7 @@ int size;
 	strcpy(s,".TOPFILE");
 	if(stat(buf,&st)==-1)
 	    return num/size;
-	else 
+	else
 	    return (num+st.st_size)/size;
 	//end
 }
@@ -99,12 +100,12 @@ long
 get_num_records_excludeBottom(filename, size)  //返回不包含置底的帖子数，added by interma@bmy 2005.11.21
 char *filename;
 int size;
-{	
+{
 	struct stat st;
 
 	if (stat(filename, &st) == -1)
 		return 0;
-	//add by hace 2003.05.05 
+	//add by hace 2003.05.05
 	char *s,buf[64];
 	int num=st.st_size;
 	return num/size;
@@ -208,7 +209,7 @@ int num;
 	fstat(fd, &st);
 	len = st.st_size;
 
-	/* lkchu.990428: ernie patch 如果 len=0 & pos>0 
+	/* lkchu.990428: ernie patch 如果 len=0 & pos>0
 	   (在刚开精华区目录进去贴上，选下一个) 时会写入垃圾 */
 	off = len ? size * pos : 0;
 	lseek(fd, off, SEEK_SET);
@@ -276,7 +277,7 @@ int id1, id2;
 			count++;
 			continue;
 		}
-		if ((id2 == -1 && !(fhdr.accessed & FH_DEL) && !(fhdr.accessed & FH_MINUSDEL)) || //modify by mintbaggio for minus-numposts delete 
+		if ((id2 == -1 && !(fhdr.accessed & FH_DEL) && !(fhdr.accessed & FH_MINUSDEL)) || //modify by mintbaggio for minus-numposts delete
 		    (id2 != -1
 		     && (count < id1 || count > id2
 			 || fhdr.accessed & FH_MARKED || fhdr.accessed & FILE_TOP1))) {
@@ -328,7 +329,7 @@ int id1, id2;
 							substitute_record(PASSFILE,&lookupuser,sizeof(struct userec),owned);
 						}
 					}
-				}	
+				}
 			}
 #endif
 		}

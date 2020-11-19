@@ -1,6 +1,4 @@
 #include "bbs.h"
-#include "ythtlib.h"
-#include "ythtbbs.h"
 
 int
 copy_brc(char *ent, char *toent)

@@ -12,7 +12,7 @@ bbsmmdoc_main()
 	check_msg();
 	printf("<script src=/function.js></script>\n");
 	changemode(READING);
-	strsncpy(board, getparm2("B", "board"), 32);
+	ytht_strsncpy(board, getparm2("B", "board"), 32);
 	x1 = getboard(board);
 	if (x1 == 0)
 		nosuchboard(board, "bbsmmdoc");
@@ -83,7 +83,7 @@ bbsmmdoc_main()
 		       start + i, 
 		       //flag_str(x.accessed) , 
 		       userid_str(x.owner));
-		printf("<td align=center class=tdborder>%12.12s</td>", Ctime(x.filetime) + 4);
+		printf("<td align=center class=tdborder>%12.12s</td>", ytht_ctime(x.filetime) + 4);
 		printf
 		    ("<td class=tdborder><a href=con?B=%s&F=%s>%s%s</a></td><td class=tdborder>%d</td><td class=tdborder>%d»À</td></tr>\n",
 		     board, fh2fname(&x),  strncmp(x.title,

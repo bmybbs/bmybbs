@@ -1,3 +1,7 @@
+#include <stdio.h>
+#include <string.h>
+#include "ytht/strlib.h"
+#include "bbslib.h"
 static struct allbrc allbrc;
 static char allbrcuser[STRLEN];
 static struct onebrc *pbrc, brc;
@@ -12,14 +16,14 @@ readuserallbrc(char *userid, int must)
 		snprintf(buf, sizeof (buf), "guest.%s", fromhost);
 		if (!must && !strncmp(allbrcuser, buf, sizeof (allbrcuser)))
 			return 0;
-		strsncpy(allbrcuser, buf, sizeof (allbrcuser));
+		ytht_strsncpy(allbrcuser, buf, sizeof(allbrcuser));
 		brc_init(&allbrc, allbrcuser, NULL);
 
 	} else {
 		if (!must && !strncmp(allbrcuser, userid, sizeof (allbrcuser)))
 			return 0;
-		sethomefile(buf, userid, "brc");
-		strsncpy(allbrcuser, userid, sizeof (allbrcuser));
+		sethomefile_s(buf, sizeof(buf), userid, "brc");
+		ytht_strsncpy(allbrcuser, userid, sizeof(allbrcuser));
 		brc_init(&allbrc, userid, buf);
 	}
 	return 0;
@@ -86,3 +90,4 @@ brc_un_read_time(int ftime)
 {
 	return brc_unreadt(pbrc, ftime);
 }
+

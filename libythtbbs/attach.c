@@ -1,7 +1,10 @@
 #include <stdio.h>
 #include <sys/file.h>
 #include <sys/mman.h>
-#include "ythtbbs.h"
+#include <limits.h>
+#include <string.h>
+#include <unistd.h>
+#include "ythtbbs/ythtbbs.h"
 
 static int comfakedecode(FILE * fp, int base64, int len);
 static int comdecode(FILE * fp, char *filename, int base64, int len);

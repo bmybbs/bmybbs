@@ -8,9 +8,9 @@ bbsbrdadd_main()
 	int i;
 	html_header(1);
 	changemode(ZAP);
-	strsncpy(board, getparm("B"), 32);
+	ytht_strsncpy(board, getparm("B"), 32);
 	if (!board[0])
-		strsncpy(board, getparm("board"), 32);
+		ytht_strsncpy(board, getparm("board"), 32);
 	if (!loginok)
 		http_fatal("超时或未登录，请重新login");
 	readmybrd(currentuser.userid);

@@ -10,7 +10,7 @@ bbsdenyall_main()
 	if (!loginok)
 		http_fatal("您尚未登录, 请先登录");
 	changemode(READING);
-	strsncpy(board, getparm("board"), 30);
+	ytht_strsncpy(board, getparm("board"), 30);
 	if (!(x = getboard(board)))
 		http_fatal("错误的讨论区");
 	if (!has_BM_perm(&currentuser, x))
@@ -26,7 +26,7 @@ bbsdenyall_main()
 		printf("<td><a href=bbsqry?userid=%s>%s</a>", denyuser[i].id,
 		       denyuser[i].id);
 		printf("<td>%s\n", nohtml(denyuser[i].exp));
-		printf("<td>%s\n", Ctime(denyuser[i].free_time) + 4);
+		printf("<td>%s\n", ytht_ctime(denyuser[i].free_time) + 4);
 		printf
 		    ("<td>[<a onclick='return confirm(\"确实解封吗?\")' href=bbsdenydel?board=%s&userid=%s>解封</a>]",
 		     board, denyuser[i].id);

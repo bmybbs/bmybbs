@@ -1,6 +1,5 @@
 #include <stdio.h>
-#include "bbs.h"
-#include "ythtlib.h"
+#include "bbs.h"v
 #include "www.h"
 #define MAXFILTER 100
 #define MAXUPDATE 200

@@ -1,5 +1,5 @@
 #include "bbslib.h"
-#include "identify.h"
+#include "ythtbbs/identify.h"
 
 #ifdef POP_CHECK
 // 登陆邮件服务器用的头文件 added by interma@BMY 2005.5.12
@@ -42,7 +42,7 @@ void api_bbsfindacc() {
 
 	domain_idx = domain[0] - '0';
 	snprintf(email, 80, "%s@%s", user, MAIL_DOMAINS[domain_idx]);
-	str_to_lowercase(email);
+	ytht_str_to_lowercase(email);
 
 	au = get_associated_userid(email);
 	if (au == NULL || au->count == 0) {

@@ -1,6 +1,6 @@
 #include <string.h>
 #include <stdio.h>
-#include "ythtlib.h"
+#include "ytht/strlib.h"
 
 char *
 encode_url(unsigned char *s)
@@ -79,7 +79,7 @@ userid_str(char *s)
 {
 	static char buf[512];
 	char buf2[256], tmp[256], *ptr, *ptr2;
-	strsncpy(tmp, s, 255);
+	ytht_strsncpy(tmp, s, 255);
 	buf[0] = 0;
 	ptr = strtok(tmp, " ,();\r\n\t");
 	while (ptr && strlen(buf) < 400) {

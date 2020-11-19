@@ -12,7 +12,7 @@ bbsgdoc_main()
 	check_msg();
 	printf("<script src=/function.js></script>\n");
 	changemode(READING);
-	strsncpy(board, getparm2("B", "board"), 32);
+	ytht_strsncpy(board, getparm2("B", "board"), 32);
 	x1 = getboard(board);
 	if (x1 == 0)
 		nosuchboard(board, "bbsgdoc");
@@ -77,7 +77,7 @@ bbsgdoc_main()
 		if (fread(&x, sizeof (x), 1, fp) <= 0)
 			break;
 		printf("<tr><td class=tdborder>%d</td><td class=tdborder>%s</td><td class=tduser>%s</td>", start + i, flag_str(x.accessed), userid_str(x.owner));
-		printf("<td align=center class=tdborder>%12.12s</td>", Ctime(x.filetime) + 4);
+		printf("<td align=center class=tdborder>%12.12s</td>", ytht_ctime(x.filetime) + 4);
 		printf("<td class=tdborder><a href=bbsgcon?board=%s&file=%s&num=%d>%s%s</a></td><td class=tdborder>%d</td><td class=tdborder>%d»À</td></tr>\n", board, fh2fname(&x), start + i - 1, strncmp(x.title, "Re: ", 4) ? "°Ò " : "", void1(titlestr(x.title)), x.staravg50 / 50, x.hasvoted);
 	}
 	printf("</TR> </TBODY></TABLE></td></tr>\n");

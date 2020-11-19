@@ -31,9 +31,9 @@ bbssnd_main()
 	struct mmapfile mf = { ptr:NULL };
 	html_header(1);
 
-	strsncpy(board, getparm("board"), 18);
-	strsncpy(title, getparm("title"), 60);
-	strsncpy(userid, getparm("replyto"), 14);
+	ytht_strsncpy(board, getparm("board"), 18);
+	ytht_strsncpy(title, getparm("title"), 60);
+	ytht_strsncpy(userid, getparm("replyto"), 14);
 	outgoing = strlen(getparm("outgoing"));
 	anony = strlen(getparm("anony"));
 	usemath = strlen(getparm("usemath"));
@@ -141,7 +141,7 @@ bbssnd_main()
 			mark |= FH_DANGEROUS;
 		}
 	}
-	
+
 	if (userid[0])
 		post_mail(userid, title, filename, currentuser.userid, currentuser.username, currentuser.lasthost, sig-1, 0);
 
@@ -205,7 +205,7 @@ bbssnd_main()
 	while(i!=MAX_MENTION_ID && mention_ids[i][0] != 0) {
 		// 因为mention_ids 可能大小写和本站用户 ID 不同，需要特殊处理
 		ue = getuser(mention_ids[i]);
-		if(ue!=NULL && strcmp(currentuser.userid, ue->userid)!=0 && has_read_perm(ue, board) && !inoverride(currentuser.userid, ue->userid, "rejects"))
+		if(ue!=NULL && strcmp(currentuser.userid, ue->userid)!=0 && has_read_perm(ue, board) && !ythtbbs_override_included(ue->userid, YTHTBBS_OVERRIDE_REJECTS, currentuser.userid))
 			add_mention_notification(ue->userid, (anony) ? "Anonymous" : currentuser.userid, board, r, title);
 		++i;
 	}

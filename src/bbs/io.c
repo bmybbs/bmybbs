@@ -1,4 +1,4 @@
- /*
+/*
     Pirate Bulletin Board System
     Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
     Eagles Bulletin Board System
@@ -20,11 +20,18 @@
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-  */
+*/
 
 #include "bbs.h"
-#include "bbstelnet.h"
 #include "edit.h"
+#include "convcode.h"
+#include "bcache.h"
+#include "main.h"
+#include "sendmsg.h"
+#include "smth_screen.h"
+#include "term.h"
+#include "bbs_global_vars.h"
+#include "bbs-internal.h"
 
 #define OBUFSIZE  (1024*4)
 #define IBUFSIZE  (256)
@@ -63,7 +70,7 @@ void
 oflush()
 {
 	if (obufsize) {
-		if (convcode) {
+		if (g_convcode) {
 			char *out;
 			out = gb2big(outbuf, &obufsize, 0);
 #ifdef SSHBBS
@@ -85,7 +92,7 @@ oflush()
 static void
 hit_alarm_clock()
 {
-	if (HAS_PERM(PERM_NOTIMEOUT))
+	if (HAS_PERM(PERM_NOTIMEOUT, currentuser))
 		return;
 	if (i_mode == INPUT_IDLE) {
 		clear();
@@ -349,7 +356,7 @@ igetch2()
 			goto igetagain2;
 		}
 		/* add by KCN for GB/BIG5 encode */
-		if (convcode) {
+		if (g_convcode) {
 			inbuf = big2gb(inbuffer2 + 1, &ibufsize2, 0);
 			if (ibufsize2 == 0) {
 				icurrchar2 = 0;
@@ -662,7 +669,7 @@ igetch_org()
 			goto igetagain;
 		}
 		/* add by KCN for GB/BIG5 encode */
-		if (!convcode) {
+		if (!g_convcode) {
 			inbuf = inbuffer + 1;
 		} else {
 			inbuf = big2gb(inbuffer + 1, &ibufsize, 0);
@@ -784,11 +791,7 @@ char *prompt;
 	return (ch);
 }
 
-int
-getdata(line, col, prompt, buf, len, echo, clearlabel)
-int line, col, len, echo, clearlabel;
-char *prompt, *buf;
-{
+int getdata(int line, int col, char *prompt, char *buf, int len, int echo, int clearlabel) {
 	int ch, clen = 0, curr = 0, x, y;
 	char tmp[STRLEN];
 	int dbchar, i;
@@ -997,9 +1000,8 @@ char *prompt, *buf;
 }
 
 int ZmodemRateLimit = 0;
-int
-raw_write(int fd, char *buf, int len)
-{
+
+static int raw_write(int fd, char *buf, int len) {
 	static int lastcounter = 0;
 	int nowcounter, i;
 	static int bufcounter;
@@ -1046,9 +1048,7 @@ raw_write(int fd, char *buf, int len)
 #endif
 }
 
-int
-raw_read(int fd, char *buf, int len)
-{
+static int raw_read(int fd, char *buf, int len) {
 #ifdef SSHBBS
 	return ssh_read(fd, buf, len);
 #else
@@ -1376,4 +1376,22 @@ multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len,
 	}
 
 	return y - starty + 1;
+}
+
+void getfield(int line, char *info, char *desc, char *buf, int len) {
+	char prompt[STRLEN];
+	char genbuf[STRLEN];
+
+	sprintf(genbuf, "  原先设定: %-46.46s \033[1;32m(%s)\033[m", (buf[0] == '\0') ? "(未设定)" : buf, info);
+	move(line, 0);
+	prints("%s", genbuf);
+	sprintf(prompt, "  %s: ", desc);
+	getdata(line + 1, 0, prompt, genbuf, len, DOECHO, YEA);
+	if (genbuf[0] != '\0') {
+		strncpy(buf, genbuf, len);
+	}
+	move(line, 0);
+	clrtoeol();
+	prints("  %s: %s\n", desc, buf);
+	clrtoeol();
 }

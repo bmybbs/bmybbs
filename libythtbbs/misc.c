@@ -1,62 +1,15 @@
-#include <sys/ipc.h>
-#include <sys/msg.h>
-#include "ythtbbs.h"
 #include <time.h>
 #include <stdlib.h>
 #include <iconv.h>
-int pu = 0;
-
-void
-getrandomint(unsigned int *s)
-{
-#ifdef LINUX
-	int fd;
-	fd = open("/dev/urandom", O_RDONLY);
-	read(fd, s, 4);
-	close(fd);
-#else
-	srandom(getpid() - 19751016);
-	*s=random();
-#endif
-}
-
-void
-getrandomstr(unsigned char *s)
-{
-	int i;
-#ifdef LINUX
-	int fd;
-	fd = open("/dev/urandom", O_RDONLY);
-	read(fd, s, 30);
-	close(fd);
-	for (i = 0; i < 30; i++)
-		s[i] = 65 + s[i] % 26;
-#else
-	time_t now_t;
-	now_t = time(NULL);
-	srandom(now_t - 19751016);
-	for (i = 0; i < 30; i++)
-		s[i] = 65 + random() % 26;
-#endif
-	s[30] = 0;
-}
-
-void getrandomstr_r(unsigned char *s, size_t len)
-{
-	int fd;
-	size_t i;
-	fd = open("/dev/urandom", O_RDONLY);
-	read(fd, s, len);
-	close(fd);
-	for(i=0; i<len; ++i) {
-		s[i] = s[i]%26 + 'A';
-	}
-	s[len-1] = 0;
-}
+#include <sys/ipc.h>
+#include <sys/msg.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <string.h>
+#include "ythtbbs/ythtbbs.h"
 
 int
-init_newtracelogmsq()
-{
+init_newtracelogmsq() {
 	int msqid;
 	struct msqid_ds buf;
 	msqid = msgget(BBSLOG_MSQKEY, IPC_CREAT | 0664);
@@ -68,10 +21,7 @@ init_newtracelogmsq()
 	return msqid;
 }
 
-void
-newtrace(s)
-char *s;
-{
+void newtrace(char *s) {
 	static int disable = 0;
 	static int msqid = -1;
 	time_t dtime;
@@ -105,8 +55,7 @@ char *s;
 	return;
 }
 
-int code_convert(char *from_charset,char *to_charset,char *inbuf,size_t inlen,char *outbuf,size_t outlen)
-{
+int code_convert(char *from_charset,char *to_charset,char *inbuf,size_t inlen,char *outbuf,size_t outlen) {
 	iconv_t cd;
 	size_t rc;
 	char **pin = &inbuf;
@@ -122,14 +71,12 @@ int code_convert(char *from_charset,char *to_charset,char *inbuf,size_t inlen,ch
 	return (rc == (size_t) -1) ? -1 : 0;
 }
 
-//UNICODEÂë×ªÎªGBKÂë
-int u2g(char *inbuf,size_t inlen,char *outbuf,size_t outlen)
-{
+//UNICODEç è½¬ä¸ºGBKç 
+int u2g(char *inbuf,size_t inlen,char *outbuf,size_t outlen) {
 	return code_convert("utf-8","gbk",inbuf,inlen,outbuf,outlen);
 }
-//GBKÂë×ªÎªUNICODEÂë
-int g2u(char *inbuf,size_t inlen,char *outbuf,size_t outlen)
-{
+//GBKç è½¬ä¸ºUNICODEç 
+int g2u(char *inbuf,size_t inlen,char *outbuf,size_t outlen) {
 	return code_convert("gbk","utf-8",inbuf,inlen,outbuf,outlen);
 }
 
@@ -140,85 +87,83 @@ int is_utf_special_byte(unsigned char c){
 	else
 		return 0;
 }
-//ÅĞ¶ÏÊÇ·ñÎªUNICODE±àÂë
-int is_utf(char * inbuf, size_t inlen)
-{
-    unsigned one_byte 	= 0X00; 	//binary 00000000
-    unsigned two_byte 	= 0X06; 	//binary 00000110
-    unsigned three_byte = 0X0E; 	//binary 00001110
-    unsigned four_byte 	= 0X1E; 	//binary 00011110
-    unsigned five_byte 	= 0X3E; 	//binary 00111110
-    unsigned six_byte 	= 0X7E; 	//binary 01111110
 
-    unsigned int i;
-    unsigned int c;
+//åˆ¤æ–­æ˜¯å¦ä¸ºUNICODEç¼–ç 
+int is_utf(char * inbuf, size_t inlen) {
+	unsigned one_byte   = 0X00; 	//binary 00000000
+	unsigned two_byte   = 0X06; 	//binary 00000110
+	unsigned three_byte = 0X0E; 	//binary 00001110
+	unsigned four_byte  = 0X1E; 	//binary 00011110
+	unsigned five_byte  = 0X3E; 	//binary 00111110
+	unsigned six_byte   = 0X7E; 	//binary 01111110
 
-    unsigned char k = 0;
-    unsigned char m = 0;
-    unsigned char n = 0;
-    unsigned char p = 0;
-    unsigned char q = 0;
+	unsigned int i;
+	unsigned int c;
 
-    int utf_yes = 0;
+	unsigned char k = 0;
+	unsigned char m = 0;
+	unsigned char n = 0;
+	unsigned char p = 0;
+	unsigned char q = 0;
 
-    for (i=0;i<inlen;){
-    	c=(unsigned char)inbuf[i];
-    	if(c>>7==one_byte){
-    		i++;
-    		continue;
-    	} else if(c>>5==two_byte){
-    		k = (unsigned char)inbuf[i+1];
-    		if(is_utf_special_byte(k)){
-    			return 1;
-    		}
-    	} else if(c>>4==three_byte){
-    		m = (unsigned char)inbuf[i+1];
-    		n = (unsigned char)inbuf[i+2];
-    		if(is_utf_special_byte(m)
-    				&& is_utf_special_byte(n)){
-    			return 1;
-    		}
-    	} else if(c>>3==four_byte){
-    		k = (unsigned char)inbuf[i+1];
-    		m = (unsigned char)inbuf[i+2];
-    		n = (unsigned char)inbuf[i+3];
-    		if(is_utf_special_byte(k)
-    				&& is_utf_special_byte(m)
-    				&& is_utf_special_byte(n)){
-    			return 1;
-    		}
-    	} else if(c>>2 == five_byte){
-            k = (unsigned char)inbuf[i+1];
-            m = (unsigned char)inbuf[i+2];
-            n = (unsigned char)inbuf[i+3];
-            p = (unsigned char)inbuf[i+4];
-    		if(is_utf_special_byte(k)
-    				&& is_utf_special_byte(m)
-    				&& is_utf_special_byte(n)
-    				&& is_utf_special_byte(p)){
-    			return 1;
-    		}
-    	} else if(c>>1==six_byte){
-            k = (unsigned char)inbuf[i+1];
-            m = (unsigned char)inbuf[i+2];
-            n = (unsigned char)inbuf[i+3];
-            p = (unsigned char)inbuf[i+4];
-            q = (unsigned char)inbuf[i+5];
-            if ( is_utf_special_byte(k)
-                    && is_utf_special_byte(m)
-                    && is_utf_special_byte(n)
-                    && is_utf_special_byte(p)
-                    && is_utf_special_byte(q) ) {
-            	return 1;
-            }
-    	}
-    }
-    return 0;
+	int utf_yes = 0;
+
+	for (i=0;i<inlen;){
+		c=(unsigned char)inbuf[i];
+		if(c>>7==one_byte){
+			i++;
+			continue;
+		} else if(c>>5==two_byte){
+			k = (unsigned char)inbuf[i+1];
+			if(is_utf_special_byte(k)){
+				return 1;
+			}
+		} else if(c>>4==three_byte){
+			m = (unsigned char)inbuf[i+1];
+			n = (unsigned char)inbuf[i+2];
+			if(is_utf_special_byte(m) && is_utf_special_byte(n)){
+				return 1;
+			}
+		} else if(c>>3==four_byte){
+			k = (unsigned char)inbuf[i+1];
+			m = (unsigned char)inbuf[i+2];
+			n = (unsigned char)inbuf[i+3];
+			if(is_utf_special_byte(k)
+					&& is_utf_special_byte(m)
+					&& is_utf_special_byte(n)){
+				return 1;
+			}
+		} else if(c>>2 == five_byte){
+			k = (unsigned char)inbuf[i+1];
+			m = (unsigned char)inbuf[i+2];
+			n = (unsigned char)inbuf[i+3];
+			p = (unsigned char)inbuf[i+4];
+			if(is_utf_special_byte(k)
+					&& is_utf_special_byte(m)
+					&& is_utf_special_byte(n)
+					&& is_utf_special_byte(p)){
+				return 1;
+			}
+		} else if(c>>1==six_byte){
+			k = (unsigned char)inbuf[i+1];
+			m = (unsigned char)inbuf[i+2];
+			n = (unsigned char)inbuf[i+3];
+			p = (unsigned char)inbuf[i+4];
+			q = (unsigned char)inbuf[i+5];
+			if ( is_utf_special_byte(k)
+					&& is_utf_special_byte(m)
+					&& is_utf_special_byte(n)
+					&& is_utf_special_byte(p)
+					&& is_utf_special_byte(q) ) {
+				return 1;
+			}
+		}
+	}
+	return 0;
 }
 
 // add by IronBlood@bmy 20120107
-static char *get_login_pic_link (char *picname, char *linkback)
-{
+static char *get_login_pic_link (char *picname, char *linkback) {
 	FILE *fp;
 	char link[256];
 	memset(link, '\0',sizeof(link));
@@ -235,22 +180,20 @@ static char *get_login_pic_link (char *picname, char *linkback)
 }
 
 // added by IronBlood@11.09.05
-// ĞŞÕıº¯Êı·µ»ØÖµ£¬¼ÇµÃÊÍ·Å by IronBlood@2014.10.22
-char *get_no_more_than_four_login_pics()
-{
+void get_no_more_than_four_login_pics(char *buf, size_t len) {
 	FILE *fp;
 	if(!(fp = fopen(MY_BBS_HOME "/logpics","r")))
-		return "cai.jpg";
+		ytht_strsncpy(buf, "cai,jpg", len);
 
 	char pics[256];
 	const char *pics_dir ="bmyMainPic/using/";
 	char pics_list[4096];
 	char file[16][256];
 	int file_line=0;
-    char link[256];
-    memset(pics_list, '\0', sizeof(pics_list));
+	char link[256];
+	memset(pics_list, '\0', sizeof(pics_list));
 
-	// ¶ÁÈ¡ÎÄ¼ş
+	// è¯»å–æ–‡ä»¶
 	while(fgets(pics,sizeof(pics),fp)!=NULL)
 	{
 		char *tmp=file[file_line];
@@ -259,57 +202,31 @@ char *get_no_more_than_four_login_pics()
 		strcpy(tmp,pics);
 		++file_line;
 	}
-	// ÊÍ·Å¾ä±ú
+	// é‡Šæ”¾å¥æŸ„
 	fclose(fp);
 
 	int i=0;
 
-    while( (i != file_line - 1) && i !=4) // ²»³¬¹ı×ÜÍ¼Æ¬¸öÊı¡¢²»³¬¹ı×î´óÉÏÏŞ
-    {
-        srand(time(NULL)+rand()%100); // ¼ÓÖÖ×Ó
-        int randnum = 1 + rand()%file_line; // Éú³ÉËæ»úÊı
-        char *tmp = file[randnum];
+	while( (i != file_line - 1) && i !=4) // ä¸è¶…è¿‡æ€»å›¾ç‰‡ä¸ªæ•°ã€ä¸è¶…è¿‡æœ€å¤§ä¸Šé™
+	{
+		srand(time(NULL)+rand()%100); // åŠ ç§å­
+		int randnum = 1 + rand()%file_line; // ç”Ÿæˆéšæœºæ•°
+		char *tmp = file[randnum];
 
-        if( strstr(pics_list,tmp)==NULL ) //²»°üº¬Í¼Æ¬×Ö·û´®£¬²ÅÖ´ĞĞÏÂÃæµÄ²Ù×÷
-        {
-            get_login_pic_link(tmp,link);
-            if(i>0)
-                strcat(pics_list, ";;");
-            strcat(pics_list, pics_dir);
-            strcat(pics_list, tmp);
-            strcat(pics_list, ";");
-            strcat(pics_list, link);
-            ++i;
-        }
-    }
-
-	return strdup(pics_list);
-}
-
-void
-getsalt(char salt[3])
-{
-	int s, i, c;
-
-#ifdef LINUX
-	int fd;
-	fd = open("/dev/urandom", O_RDONLY);
-	read(fd, &s, 4);
-	close(fd);
-#else
-	s = random();
-#endif
-	salt[0] = s & 077;
-	salt[1] = (s >> 6) & 077;
-	salt[2] = 0;
-	for (i = 0; i < 2; i++) {
-		c = salt[i] + '.';
-		if (c > '9')
-			c += 7;
-		if (c > 'Z')
-			c += 6;
-		salt[i] = c;
+		if( strstr(pics_list,tmp)==NULL ) //ä¸åŒ…å«å›¾ç‰‡å­—ç¬¦ä¸²ï¼Œæ‰æ‰§è¡Œä¸‹é¢çš„æ“ä½œ
+		{
+			get_login_pic_link(tmp,link);
+			if(i>0)
+				strcat(pics_list, ";;");
+			strcat(pics_list, pics_dir);
+			strcat(pics_list, tmp);
+			strcat(pics_list, ";");
+			strcat(pics_list, link);
+			++i;
+		}
 	}
+
+	ytht_strsncpy(buf, pics_list, len);
 }
 
 int
@@ -322,3 +239,4 @@ badstr(char *s)
 			return 1;
 	return 0;
 }
+

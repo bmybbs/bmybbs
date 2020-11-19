@@ -15,7 +15,7 @@ bbsnick_main()
 	if (!loginok || isguest)
 		http_fatal("匆匆过客无法改变昵称");
 	changemode(GMENU);
-	strsncpy(nick, getparm("nick"), 30);
+	ytht_strsncpy(nick, getparm("nick"), 30);
 	if (nick[0] == 0) {
 		printf("<tr><td height=70 colspan=2> \n"
 			"<table width=100%% height=100%% border=0 cellpadding=0 cellspacing=0 class=\"level2\">\n"
@@ -33,7 +33,7 @@ bbsnick_main()
 	for (i = 0, c = (unsigned char) nick[i]; nick[i]; i++)
 		if (c < 32 || c == 255)
 			nick[i] = ' ';
-	strsncpy(u_info->username, nick, 32);
+	ytht_strsncpy(u_info->username, nick, 32);
 	printf("临时变更昵称成功");
 	printf("</table></body></html>");
 	return 0;

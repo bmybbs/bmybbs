@@ -1,6 +1,13 @@
-#include "ythtlib.h"
-#include "ythtbbs.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+#include <string.h>
+#include <unistd.h>
 #include <ftw.h>
+#include "config.h"
+#include "ytht/fileop.h"
+#include "ytht/uudecode.h"
+#include "ythtbbs/binaryattach.h"
 
 int
 attachuu2bin(char *filename)	//将老格式的uuencode附件变成bin格式的附件

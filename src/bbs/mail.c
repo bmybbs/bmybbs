@@ -24,8 +24,30 @@
 
 #include <stddef.h>
 #include "bbs.h"
-#include "bbstelnet.h"
+#include "ythtbbs/override.h"
+#include "bbs_global_vars.h"
+#include "smth_screen.h"
+#include "mail.h"
+#include "postheader.h"
+#include "io.h"
+#include "xyz.h"
+#include "stuff.h"
+#include "read.h"
+#include "more.h"
+#include "record.h"
+#include "main.h"
+#include "list.h"
+#include "namecomplete.h"
+#include "bcache.h"
+#include "edit.h"
+#include "bbsinc.h"
+#include "sendmsg.h"
+#include "help.h"
+#include "talk.h"
+#include "power_select.h"
+#include "bbs-internal.h"
 
+int in_mail;
 extern int mailallmode;
 int G_SENDMODE = NA;
 
@@ -54,6 +76,7 @@ static int check_maxmail();
 static int check_mail_perm();
 static int show_user_notes();
 static int mailto(struct userec *uentp);
+static int mailtoall(int mode, int hour);
 
 #ifdef INTERNET_EMAIL
 
@@ -104,7 +127,7 @@ chkmail()
 	int accessed;
 	extern char currmaildir[STRLEN];
 
-	if (!HAS_PERM(PERM_BASIC)) {
+	if (!HAS_PERM(PERM_BASIC, currentuser)) {
 		return 0;
 	}
 	offset = offsetof(struct fileheader, accessed);
@@ -307,7 +330,7 @@ char *userid, *title;
 		return -1;
 	strncpy(uid, lookupuser.userid, IDLEN+1);
 	uid[IDLEN+1]=0;
-	if (inoverride(currentuser.userid, uid, "rejects"))
+	if (ythtbbs_override_included(uid, YTHTBBS_OVERRIDE_REJECTS, currentuser.userid))
 		return -3;
 /*add by KCN :) */
 
@@ -337,8 +360,8 @@ char *userid, *title;
 	close(fp);
 	newmessage.filetime = now;
 	newmessage.thread = now;
-	strsncpy(newmessage.owner, currentuser.userid,
-		 sizeof (newmessage.owner));
+	ytht_strsncpy(newmessage.owner, currentuser.userid,
+				  sizeof(newmessage.owner));
 
       edit_mail_file:
 	if (title == NULL) {
@@ -356,9 +379,9 @@ char *userid, *title;
 	ansimore2(genbuf, NA, 0, 18);
 	strcpy(header.ds, uid);
 	if (post_header(&header)) {
-		strsncpy(newmessage.title, header.title,
-			 sizeof (newmessage.title));
-		strsncpy(save_title, newmessage.title, sizeof (save_title));
+		ytht_strsncpy(newmessage.title, header.title,
+					  sizeof(newmessage.title));
+		ytht_strsncpy(save_title, newmessage.title, sizeof(save_title));
 		sprintf(save_title2, "{%.16s} %.60s", uid, newmessage.title);
 	}
 	do_quote(filepath, header.include_mode);
@@ -428,10 +451,7 @@ char *userid, *title;
 	}
 }
 
-int
-m_send(userid)
-char userid[];
-{
+int m_send(const char *userid) {
 	char uident[STRLEN];
 	// 永远可以给 SYSOP 发信
 	if (userid && strcmp(userid, "SYSOP")) {
@@ -445,13 +465,13 @@ char userid[];
 		}
 	}
 	if (check_maxmail()) {
-                        pressreturn();
-                        return FULLUPDATE;
-                }
+		pressreturn();
+		return FULLUPDATE;
+	}
 	if (check_mail_perm()) {
-                        pressreturn();
-                        return FULLUPDATE;
-                } //add by wjbta@bmy  当信件容量超过信箱最大容量时，禁止发信
+		pressreturn();
+		return FULLUPDATE;
+	} //add by wjbta@bmy  当信件容量超过信箱最大容量时，禁止发信
 	modify_user_mode(SMAIL);
 	if (			/*(uinfo.mode != LUSERS && uinfo.mode != LAUSERS
 				   && uinfo.mode != FRIEND && uinfo.mode != GMENU)
@@ -486,7 +506,7 @@ char userid[];
 int
 M_send()
 {
-	if (!HAS_PERM(PERM_LOGINOK))
+	if (!HAS_PERM(PERM_LOGINOK, currentuser))
 		return 0;
 	return m_send(NULL);
 }
@@ -643,7 +663,7 @@ char buf[512];
 	strcpy(c1, "\033[1;36m");
 	if (!strcmp(ReadPost, ent->title) || !strcmp(ReplyPost, ent->title))
 		same = YEA;
-	strsncpy(b2, ent->owner, sizeof (b2));
+	ytht_strsncpy(b2, ent->owner, sizeof(b2));
 
 	//add by gluon
 	/* Added by deardragon 1999.11.15 给已回信件加上 "回信" 标记 ('R') */
@@ -758,7 +778,7 @@ char *direct;
 	}
 	clear();
 	modify_user_mode(SMAIL);
-	strsncpy(uid, fh2owner(fileinfo), sizeof (uid));
+	ytht_strsncpy(uid, fh2owner(fileinfo), sizeof(uid));
 	if (strchr(uid, '.')) {
 		char filename[STRLEN];
 		directfile(filename, direct, fh2fname(fileinfo));
@@ -845,7 +865,7 @@ struct fileheader *fileinfo;
 char *direct;
 {
 	char buf[STRLEN];
-	if (!HAS_PERM(PERM_FORWARD)) {
+	if (!HAS_PERM(PERM_FORWARD, currentuser)) {
 		return DONOTHING;
 	}
 	directfile(buf, direct, fh2fname(fileinfo));
@@ -875,7 +895,7 @@ struct fileheader *fileinfo;
 char *direct;
 {
 	char buf[STRLEN];
-	if (!HAS_PERM(PERM_FORWARD)) {
+	if (!HAS_PERM(PERM_FORWARD, currentuser)) {
 		return DONOTHING;
 	}
 	directfile(buf, direct, fh2fname(fileinfo));
@@ -1382,7 +1402,7 @@ g_send()
 				prints("已经列为收件人之一 \n");
 				break;
 			}
-			addtofile(maillists, uident);
+			ytht_add_to_file(maillists, uident);
 			cnt++;
 			break;
 		case 'E':
@@ -1395,7 +1415,7 @@ g_send()
 		case 'd':
 			{
 				if (seek_in_file(maillists, uident)) {
-					del_from_file(maillists, uident);
+					ytht_add_to_file(maillists, uident);
 					cnt--;
 				}
 				break;
@@ -1408,7 +1428,7 @@ g_send()
 				int key;
 				move(2, 0);
 				clrtoeol();
-				getuserid(uident, uinfo.friend[n]);
+				ythtbbs_cache_UserTable_getuserid(uinfo.friend[n], uident, sizeof(uident));
 				prints("%s\n", uident);
 				move(3, 0);
 				n++;
@@ -1448,7 +1468,7 @@ g_send()
 						i--;
 						continue;
 					}
-					addtofile(maillists, uident);
+					ytht_add_to_file(maillists, uident);
 					cnt++;
 				}
 			}
@@ -1547,7 +1567,7 @@ int num;
 		char buf[STRLEN];
 
 		if (G_SENDMODE == 1)
-			getuserid(uid, uinfo.friend[cnt]);
+			ythtbbs_cache_UserTable_getuserid(uinfo.friend[cnt], uid, sizeof(uid));
 		else if (G_SENDMODE == 2) {
 			if (fgets(buf, STRLEN, mp) != NULL) {
 				if (strtok(buf, " \n\r\t") != NULL)
@@ -1634,7 +1654,7 @@ char* fname;
 		char buf[STRLEN];
 
 		if (G_SENDMODE == 1)
-			getuserid(uid, uinfo.friend[cnt]);
+			ythtbbs_cache_UserTable_getuserid(uinfo.friend[cnt], uid, sizeof(uid));
 		else if (G_SENDMODE == 2) {
 			if (fgets(buf, STRLEN, mp) != NULL) {
 				if (strtok(buf, " \n\r\t") != NULL)
@@ -1683,10 +1703,10 @@ char tmpfile[STRLEN], userid[STRLEN], title[STRLEN];
 	int fp, count, now;
 
 	memset(&newmessage, 0, sizeof (newmessage));
-	strsncpy(newmessage.owner, currentuser.userid,
-		 sizeof (newmessage.owner));
-	strsncpy(newmessage.title, title, sizeof (newmessage.title));
-	strsncpy(save_title, newmessage.title, sizeof (save_title));
+	ytht_strsncpy(newmessage.owner, currentuser.userid,
+				  sizeof(newmessage.owner));
+	ytht_strsncpy(newmessage.title, title, sizeof(newmessage.title));
+	ytht_strsncpy(save_title, newmessage.title, sizeof(save_title));
 
 	setmailfile(filepath, userid, "");
 	if (stat(filepath, &st) == -1) {
@@ -1736,10 +1756,10 @@ char *buf, userid[], title[];
 	FILE *fp;
 
 	memset(&newmessage, 0, sizeof (newmessage));
-	strsncpy(newmessage.owner, currentuser.userid,
-		 sizeof (newmessage.owner));
-	strsncpy(newmessage.title, title, sizeof (newmessage.title));
-	strsncpy(save_title, newmessage.title, sizeof (save_title));
+	ytht_strsncpy(newmessage.owner, currentuser.userid,
+				  sizeof(newmessage.owner));
+	ytht_strsncpy(newmessage.title, title, sizeof(newmessage.title));
+	ytht_strsncpy(save_title, newmessage.title, sizeof(save_title));
 
 	setmailfile(filepath, userid, "");
 	if (stat(filepath, &st) == -1) {
@@ -1814,7 +1834,7 @@ ov_send()
 	for (i = 0; i < all; i++) {
 		char uid[IDLEN + 2];
 
-		getuserid(uid, uinfo.friend[i]);
+		ythtbbs_cache_UserTable_getuserid(uinfo.friend[i], uid, sizeof(uid));
 		prints("%-12s ", uid);
 		if ((i + 1) % 6 == 0)
 			outc('\n');
@@ -1941,7 +1961,7 @@ int mode;
 		//strncpy(address, currentuser.email, STRLEN);
 		strncpy(address, currentuser.userid, STRLEN);
 	}
-	if (HAS_PERM(PERM_SETADDR)) {
+	if (HAS_PERM(PERM_SETADDR, currentuser)) {
 		prints
 		    ("请直接按 Enter 接受括号内提示的地址, 或者输入其他地址\n");
 		prints("把信件转寄给 [%s]\n", address);
@@ -2061,7 +2081,7 @@ getmailinfo(char *path, struct fileheader *rst)
 			*p = 0;
 		if ((p = strchr(buf2 + 8, '\r')))
 			*p = 0;
-		strsncpy(rst->title, buf2 + 8, sizeof (rst->title));
+		ytht_strsncpy(rst->title, buf2 + 8, sizeof(rst->title));
 		break;
 	}
 	fclose(fp);
@@ -2088,7 +2108,7 @@ mail_rjunk()
 	}
 
 	len = sprintf(buf, "%c/%s/", mytoupper(currentuser.userid[0]), currentuser.userid);
-	normalize(buf);
+	ytht_normalize(buf);
 	dirp = opendir(MY_BBS_HOME "/mail/.junk");
 	if (dirp == NULL)
 		return -2;
@@ -2137,8 +2157,8 @@ m_cancel_1(struct fileheader *fh, char *receiver)
 		}
 		keepoldheader(fp, SKIPHEADER);
 		now = time(0);
-		fprintf(fp, "本文已经于 %s 被 %s 撤回\n", Ctime(now),
-			currentuser.userid);
+		fprintf(fp, "本文已经于 %s 被 %s 撤回\n", ytht_ctime(now),
+				currentuser.userid);
 		ftruncate(fileno(fp), ftell(fp));
 		fclose(fp);
 		return 1;
@@ -2157,8 +2177,8 @@ max_mail_size()
 	    MAX_MAIL_HOLD * 8 : MAX_MAIL_HOLD;
 	maxsize = maxsize * 10;
 	return maxsize;*/
-	maxsize= (HAS_PERM(PERM_SYSOP))?MAX_SYSOPMAIL_HOLD:HAS_PERM(PERM_SPECIAL1)?MAX_MAIL_HOLD*20:
-		(HAS_PERM(PERM_BOARDS))?MAX_MAIL_HOLD*8:MAX_MAIL_HOLD*3;
+	maxsize= (HAS_PERM(PERM_SYSOP, currentuser))?MAX_SYSOPMAIL_HOLD:HAS_PERM(PERM_SPECIAL1, currentuser)?MAX_MAIL_HOLD*20:
+		(HAS_PERM(PERM_BOARDS, currentuser))?MAX_MAIL_HOLD*8:MAX_MAIL_HOLD*3;
 	maxsize=maxsize*10;
 	//modified by wjbta@bmy 修改信箱最大容量控制
 	return maxsize;
@@ -2243,7 +2263,7 @@ check_maxmail()
 {
 	int currsize, maxsize;
 	currsize = 0;
-	if(HAS_PERM(PERM_SYSOP|PERM_OBOARDS))
+	if(HAS_PERM(PERM_SYSOP|PERM_OBOARDS, currentuser))
                 return 0;//add by bjgyt
 	maxsize = max_mail_size();
 	currsize = get_mail_size();
@@ -2298,7 +2318,7 @@ char *direct;
 			pressreturn();
 		}
 	} else
-		strsncpy(uid, quote_user, sizeof (uid));
+		ytht_strsncpy(uid, quote_user, sizeof(uid));
 	/* make the title */
 	if (toupper(fileinfo->title[0]) != 'R'
 	    || fileinfo->title[1] != 'e' || fileinfo->title[2] != ':')
@@ -2327,7 +2347,7 @@ char *direct;
 static int
 check_mail_perm()
 {
-	if (HAS_PERM(PERM_DENYMAIL)) {
+	if (HAS_PERM(PERM_DENYMAIL, currentuser)) {
 		prints("您被禁止发信");
 		return -1;
 	}
@@ -2373,10 +2393,7 @@ struct userec *uentp;
 	return 1;
 }
 
-int
-mailtoall(mode, hour)
-int mode, hour;
-{
+static int mailtoall(int mode, int hour) {
 	char filename[STRLEN];
 	sprintf(filename, "tmp/mailall.%s", currentuser.userid);
 	mailmode = mode;

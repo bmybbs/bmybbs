@@ -35,7 +35,7 @@ bbsnewmail_main()
 			continue;
 		printf("<tr><td>%d</td><td>N</td>", total);
 		printf("<td>%s</td>", userid_str(fh2owner(&x)));
-		printf("<td>%6.6s</td>", Ctime(x.filetime) + 4);
+		printf("<td>%6.6s</td>", ytht_ctime(x.filetime) + 4);
 		printf("<td><a href=bbsmailcon?file=%s&num=%d>", fh2fname(&x),
 		       total - 1);
 		if (strncmp("Re: ", x.title, 4))

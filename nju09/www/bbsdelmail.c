@@ -13,19 +13,19 @@ bbsdelmail_main()
 		http_fatal("ÄúÉÐÎ´µÇÂ¼");
 	changemode(RMAIL);
 
-	strsncpy(list[ndelfile], getparm("file"), 20);
+	ytht_strsncpy(list[ndelfile], getparm("file"), 20);
 	if (list[ndelfile][0] == 'M')
 		ndelfile++;
 	for (num = 0; num < 40 && ndelfile < 40; num++) {
 		sprintf(file, "F%d", num);
-		strsncpy(list[ndelfile], getparm(file), 20);
+		ytht_strsncpy(list[ndelfile], getparm(file), 20);
 		if (list[ndelfile][0] == 'M' || list[ndelfile][0] == 'G')
 			ndelfile++;
 	}
 
     int box_type = 0;
-    char type_string[20]; 
-    strsncpy(type_string, getparm("box_type"), 20);
+    char type_string[20];
+	ytht_strsncpy(type_string, getparm("box_type"), 20);
     if(type_string[0] != 0) {
         box_type = atoi(type_string);
     }

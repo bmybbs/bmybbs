@@ -21,11 +21,30 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#include <stdarg.h>
 #include "bbs.h"
 #include "edit.h"
 #include "smth_screen.h"
-#include <sys/param.h>
-#include <stdarg.h>
+#include "term.h"
+#include "io.h"
+#include "bbs_global_vars.h"
+#include "bbs-internal.h"
+
+//#define SCREEN_MODIFIED 1
+#define SCREEN_BRIGHT 2
+#define SCREEN_LINE 4
+#define SCREEN_BLINK 8
+#define SCREEN_BACK 16
+//#define SCREEN_NOTMOD 30
+//#define SCREEN_ALL 31
+
+struct screenline {
+	unsigned char data[LINELEN];
+	unsigned char mode[LINELEN];
+	unsigned char color[LINELEN];
+	unsigned char changed[LINELEN];
+	int lchanged;
+};
 
 extern void io_output(const char *s, int len);
 extern void ochar(int c);
@@ -47,24 +66,6 @@ static /*struct screenline old_line; */ char tmpbuffer[LINELEN * 3];
 
 static void init_screen(int slns, int scols);
 static void rel_move(int was_col, int was_ln, int new_col, int new_ln);
-
-void
-setfcolor(int i, int j)
-{
-	cur_color = i + cur_color / 16 * 16;
-	if (j)
-		cur_mode |= SCREEN_BRIGHT;
-	else
-		cur_mode &= ~SCREEN_BRIGHT;
-}
-
-void
-setbcolor(int i)
-{
-	if (i == 0)
-		i = 8;
-	cur_color = cur_color % 16 + i * 16;
-}
 
 void
 resetcolor()
@@ -129,9 +130,7 @@ init_screen(int slns, int scols)
 	free(oldp);
 }
 
-void
-clear()
-{
+void clear() {
 	int i;
 	struct screenline *slp;
 
@@ -302,12 +301,12 @@ rel_changemodecolor(int mode, int color)
 	}
 	if ((tc_color & 0x0f) != (color & 0x0f)) {
 		tc_color = (tc_color & 0xf0) + (color & 0x0f);
-		if (DEFINE(DEF_COLOR))
+		if (DEFINE(DEF_COLOR, currentuser))
 			stack[stackt++] = 30 + (color & 0x0f);
 	}
 	if ((tc_color & 0xf0) != (color & 0xf0)) {
 		tc_color = (color & 0xf0) + (tc_color & 0x0f);
-		if (DEFINE(DEF_COLOR)) {
+		if (DEFINE(DEF_COLOR, currentuser)) {
 			if ((color & 0xf0) == 0x80)
 				stack[stackt++] = 40;
 			else
@@ -430,8 +429,7 @@ redoscr()
 	refresh();
 }
 
-void
-move(int y, int x)
+void move(int y, int x)
 {
 	cur_col = x /*+c_shift(y,x) */ ;
 	cur_ln = y;
@@ -472,9 +470,7 @@ clrtoeol()
 	}
 }
 
-void
-clrtobot()
-{
+void clrtobot() {
 	int i;
 	clrtoeol();
 	for (i = cur_ln + 1; i < scr_lns; i++)
@@ -726,13 +722,20 @@ outs(const char *str)
 	outns(str, 4096);
 }
 
-int dec[] =
-    { 1000000000, 100000000, 10000000, 1000000, 100000, 10000, 1000, 100, 10,
+static const int dec[] = {
+	1000000000,
+	100000000,
+	10000000,
+	1000000,
+	100000,
+	10000,
+	1000,
+	100,
+	10,
 	1
 };
 
-void
-prints(char *format, ...)
+void prints(char *format, ...)
 {
 	va_list ap;
 	char *fmt;
@@ -889,6 +892,7 @@ rscroll()
 	slp->lchanged = 1;
 }
 
+/*
 void
 noscroll()
 {
@@ -900,7 +904,7 @@ noscroll()
 	for (i = 0; i < scr_lns; i++)
 		memcpy(big_picture + i, bp + i, sizeof (struct screenline));
 	roll = 0;
-}
+}*/
 
 void
 saveline(int line, int mode, char *buffer)

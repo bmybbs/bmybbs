@@ -22,6 +22,17 @@
  */
 
 #include "bbs.h"
+#include "bcache.h"
+#include "smth_screen.h"
+#include "term.h"
+#include "stuff.h"
+#include "io.h"
+#include "mail.h"
+#include "xyz.h"
+#include "bbsinc.h"
+#include "register.h"
+#include "comm_list.h"
+#include "bbs_global_vars.h"
 
 #ifdef POP_CHECK
 // 登陆邮件服务器用的头文件 added by interma@BMY 2005.5.12
@@ -36,7 +47,7 @@
 #include <netdb.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include "identify.h"
+#include "ythtbbs/identify.h"
 // 邮件服务器上用户名和密码的长度， added by interma@BMY 2005.5.12
 #define USER_LEN 20
 #define PASS_LEN 20
@@ -44,8 +55,6 @@
 
 extern time_t login_start_time;
 extern char fromhost[60];
-
-static void getfield(int line, char *info, char *desc, char *buf, int len);
 
 #ifdef POP_CHECK
 void securityreport(char *str, char *content);
@@ -72,13 +81,13 @@ static void register_success(int usernum, char *userid, char *realname,
 
 	memcpy(&uinfo, &lookupuser, sizeof(uinfo));
 
-	strsncpy(uinfo.userid, userid, sizeof(uinfo.userid));
-	strsncpy(uinfo.realname, realname, sizeof(uinfo.realname));
-	strsncpy(uinfo.address, addr, sizeof(uinfo.address));
+	ytht_strsncpy(uinfo.userid, userid, sizeof(uinfo.userid));
+	ytht_strsncpy(uinfo.realname, realname, sizeof(uinfo.realname));
+	ytht_strsncpy(uinfo.address, addr, sizeof(uinfo.address));
 	sprintf(genbuf, "%s$%s@%s", dept, phone, userid);
-	strsncpy(uinfo.realmail, genbuf, sizeof(uinfo.realmail));
+	ytht_strsncpy(uinfo.realmail, genbuf, sizeof(uinfo.realmail));
 
-	strsncpy(uinfo.email, email, sizeof(uinfo.email));
+	ytht_strsncpy(uinfo.email, email, sizeof(uinfo.email));
 
 	uinfo.userlevel |= PERM_DEFAULT;	// by ylsdd
 	substitute_record(PASSFILE, &uinfo, sizeof(struct userec), usernum);
@@ -140,17 +149,7 @@ static void register_fail(char *userid)
 	strcpy(lookupuser.realmail, "");
 	lookupuser.userid[0] = '\0';
 	substitute_record(PASSFILE, &lookupuser, sizeof(lookupuser), id);
-	setuserid(id, lookupuser.userid);
-}
-
-char * str_to_upper(char *str)
-{
-	char *h = str;
-	while (*str != '\n' && *str != 0) {
-		*str = toupper(*str);
-		str++;
-	}
-	return h;
+	ythtbbs_cache_UserTable_setuserid(id, lookupuser.userid);
 }
 
 extern char fromhost[60];
@@ -326,7 +325,7 @@ int uinfo_query(struct userec *u, int real, int unum)
 	case '2':
 		if (!real) {
 			getdata(i++, 0, "请输入原密码: ", buf, PASSLEN, NOECHO, YEA);
-			if (*buf == '\0' || !checkpasswd(u->passwd, buf)) {
+			if (*buf == '\0' || !ytht_crypt_checkpasswd(u->passwd, buf)) {
 				prints("\n\n很抱歉, 您输入的密码不正确。\n");
 				fail++;
 				break;
@@ -348,7 +347,7 @@ int uinfo_query(struct userec *u, int real, int unum)
 			break;
 		}
 		buf[8] = '\0';
-		strncpy(newinfo.passwd, genpasswd(buf), PASSLEN);
+		strncpy(newinfo.passwd, ytht_crypt_genpasswd(buf), PASSLEN);
 		break;
 	case '3':
 		if (!real) {
@@ -398,7 +397,7 @@ int uinfo_query(struct userec *u, int real, int unum)
 			unlink(src);
 			sethomefile(src, u->userid, "register.old");
 			unlink(src);
-			setuserid(unum, newinfo.userid);
+			ythtbbs_cache_UserTable_setuserid(unum, newinfo.userid);
 		}
 		if (!strcmp(u->userid, currentuser.userid)) {
 			extern int WishNum;
@@ -482,26 +481,6 @@ void x_info()
 	}
 	disply_userinfo(&currentuser, 1);
 	uinfo_query(&currentuser, 0, usernum);
-}
-
-static void getfield(line, info, desc, buf, len)
-	int line, len;char *info, *desc, *buf;
-{
-	char prompt[STRLEN];
-
-	sprintf(genbuf, "  原先设定: %-46.46s \033[1;32m(%s)\033[m",
-			(buf[0] == '\0') ? "(未设定)" : buf, info);
-	move(line, 0);
-	prints("%s", genbuf);
-	sprintf(prompt, "  %s: ", desc);
-	getdata(line + 1, 0, prompt, genbuf, len, DOECHO, YEA);
-	if (genbuf[0] != '\0') {
-		strncpy(buf, genbuf, len);
-	}
-	move(line, 0);
-	clrtoeol();
-	prints("  %s: %s\n", desc, buf);
-	clrtoeol();
 }
 
 #ifdef POP_CHECK
@@ -702,7 +681,7 @@ void x_fillform()
 		move(11, 0);
 		clrtobot();
 		move(12, 0);
-		strcpy(email, str_to_lowercase(user));
+		strcpy(email, ytht_str_to_lowercase(user));
 		strcat(email, "@");
 		strcat(email, MAIL_DOMAINS[n]);
 

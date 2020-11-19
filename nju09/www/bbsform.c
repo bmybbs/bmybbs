@@ -1,8 +1,10 @@
 #include "bbslib.h"
-#include "identify.h"
+#include "ythtbbs/identify.h"
 
 static void check_captcha_form(void);
 static void resent_active_mail(void);
+static void check_submit_form(void);
+static void check_if_ok(void);
 
 #ifdef POP_CHECK
 
@@ -110,7 +112,7 @@ bbsform_main()
 	return 0;
 }
 
-void
+static void
 check_if_ok()
 {
 	if (user_perm(&currentuser, PERM_LOGINOK))
@@ -120,7 +122,7 @@ check_if_ok()
 		http_fatal("目前站长尚未处理您的注册单，请耐心等待.");
 }
 
-void
+static void
 check_submit_form()
 {
 
@@ -136,9 +138,9 @@ check_submit_form()
 	char pass[PASS_LEN + 1];
 	char popserver[4];
 	int popserver_index;
-	strsncpy(popserver, getparm("popserver"), 4);
-	strsncpy(user, getparm("user"), USER_LEN);
-	strsncpy(pass, getparm("pass"), PASS_LEN);
+	ytht_strsncpy(popserver, getparm("popserver"), 4);
+	ytht_strsncpy(user, getparm("user"), USER_LEN);
+	ytht_strsncpy(pass, getparm("pass"), PASS_LEN);
 
 	if (strlen(user) == 0)
 		http_fatal("邮箱用户名没添啊");
@@ -150,7 +152,7 @@ check_submit_form()
 
 	char email[60];
 	sprintf(email, "%s@%s", user, popname);  // 注意不要将email弄溢出了
-	str_to_lowercase(email);
+	ytht_str_to_lowercase(email);
 	count = read_active(currentuser.userid, &act_data);
 	if (count == 0) {
 		mail_diff = 1;
@@ -159,17 +161,17 @@ check_submit_form()
 			mail_diff = 1;
 		}
 	}
-	strsncpy(currentuser.email, email, 60);
+	ytht_strsncpy(currentuser.email, email, 60);
 
 	if (check_mail_to_address(email) == MAIL_SENDER_WRONG_EMAIL)
 		http_fatal("您的邮箱名不合法，请联系站长或至 https://github.com/bmybbs/bmybbs/issues/ 反馈问题。");
 #endif
 
-	strsncpy(currentuser.realname, getparm("realname"), 20);
-	strsncpy(dept, getparm("dept"), 60);
-	strsncpy(currentuser.address, getparm("address"), 60);
-	strsncpy(phone, getparm("phone"), 60);
-	strsncpy(assoc, getparm("assoc"), 60);
+	ytht_strsncpy(currentuser.realname, getparm("realname"), 20);
+	ytht_strsncpy(dept, getparm("dept"), 60);
+	ytht_strsncpy(currentuser.address, getparm("address"), 60);
+	ytht_strsncpy(phone, getparm("phone"), 60);
+	ytht_strsncpy(assoc, getparm("assoc"), 60);
 	memset(&act_data, 0, sizeof(act_data));
 	snprintf(act_data.name, NAMELEN, "%s", currentuser.realname);
 	act_data.name[NAMELEN-1] = '\0';

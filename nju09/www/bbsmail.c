@@ -19,7 +19,7 @@ bbsmail_main()
     int box_type = 0; 
 	if (!loginok || isguest)
 		http_fatal("ÄúÉÐÎ´µÇÂ¼, ÇëÏÈµÇÂ¼");
-    strsncpy(buf, getparm("box_type"), 10);
+	ytht_strsncpy(buf, getparm("box_type"), 10);
     if(buf[0] != 0) {
         box_type = atoi(buf);
     }
@@ -34,7 +34,7 @@ bbsmail_main()
 	html_header(1);
 	check_msg();
 	changemode(RMAIL);
-	strsncpy(buf, getparm("start"), 10);
+	ytht_strsncpy(buf, getparm("start"), 10);
 	start = atoi(buf);
 	if (buf[0] == 0)
 		start = 999999;
@@ -136,7 +136,7 @@ bbsmail_main()
 		printf("<td class=tdborder>%c%c</td>", type,
 		       x.accessed & FH_ATTACHED ? '@' : ' ');
 		printf("<td class=tdborder>%s</td>", userid_str(fh2owner(&x)));
-		printf("<td class=tdborder>%12.12s</td>", Ctime(x.filetime) + 4);
+		printf("<td class=tdborder>%12.12s</td>", ytht_ctime(x.filetime) + 4);
 		printf("<td class=tdborder><a href=bbsmailcon?file=%s&num=%d&%s>", fh2fname(&x),
 		       i + start - 1, type_string);
 		if (strncmp("Re: ", x.title, 4))

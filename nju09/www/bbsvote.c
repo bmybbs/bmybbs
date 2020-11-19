@@ -32,9 +32,9 @@ bbsvote_main()
 	struct boardmem *x;
 	html_header(1);
 	check_msg();
-	strsncpy(board, getparm("B"), 32);
+	ytht_strsncpy(board, getparm("B"), 32);
 	if (!board[0])
-		strsncpy(board, getparm("board"), 32);
+		ytht_strsncpy(board, getparm("board"), 32);
 	votenum = atoi(getparm("votenum"));
 	procvote = atoi(getparm("procvote"));
 	if (getboard(board) == NULL)
@@ -47,7 +47,7 @@ bbsvote_main()
 		http_quit();
 	}
 	changemode(VOTING);
-	if (!HAS_PERM(PERM_VOTE))
+	if (!HAS_PERM(PERM_VOTE, currentuser))
 		http_fatal("对不起，您没有投票权");
 	x = getboard(board);
 	if (!x || !has_vote_perm(&currentuser, x))
@@ -273,7 +273,7 @@ bbsvote_main()
 					fseek(fp, 0, SEEK_END);
 				strncpy(uservote.uid, currentuser.userid, IDLEN);
 				uservote.voted = votevalue;
-				strsncpy(buf1, getparm("sug"), 500);
+				ytht_strsncpy(buf1, getparm("sug"), 500);
 				tmp2 = buf1;
 				if (pos > 0)
 					uservote.msg[0][0] =
@@ -283,7 +283,7 @@ bbsvote_main()
 					tmp1 = strchr(tmp2, '\n');
 					if (tmp1 != NULL)
 						*tmp1 = 0;
-					strsncpy(uservote.msg[i], tmp2, 70);
+					ytht_strsncpy(uservote.msg[i], tmp2, 70);
 					if (tmp1 == NULL)
 						break;
 					tmp2 = tmp1 + 1;
@@ -305,7 +305,7 @@ bbsvote_main()
 				}
 				printf("<p>已经帮您投入投票箱中...</p>");
 				if (!strcmp(board, "SM_Election")) {
-					sprintf(buf, "%s %s %s", currentuser.userid, currentuser.lasthost, Ctime(now_t));
+					sprintf(buf, "%s %s %s", currentuser.userid, currentuser.lasthost, ytht_ctime(now_t));
 					addtofile(MY_BBS_HOME "/vote.log", buf);
 				}
 			}

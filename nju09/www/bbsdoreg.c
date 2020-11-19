@@ -1,18 +1,16 @@
 #include "bbslib.h"
-#include "identify.h"
+#include "ythtbbs/identify.h"
+#include "ytht/random.h"
+
+static void newcomer(struct userec *x, char *words);
 
 #ifdef POP_CHECK
 // 登陆邮件服务器用的头文件 added by interma@BMY 2005.5.12
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <pthread.h>
 #include <unistd.h>
 #include <sys/types.h>
-#include <sys/socket.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
 // 邮件服务器上用户名和密码的长度， added by interma@BMY 2005.5.12
 #define USER_LEN 20
 #define PASS_LEN 20
@@ -33,7 +31,7 @@ char *addr, char *phone, char *assoc, char *email)
 	//int id = getuser(userid);
 	struct userec *u = getuser(userid);
 
-	sethomefile(genbuf, userid, "mailcheck");
+	sethomefile_s(genbuf, sizeof(genbuf), userid, "mailcheck");
 	//http_fatal(genbuf);
 	if ((fn = fopen(genbuf, "w")) == NULL) {
 		fclose(fn);
@@ -45,24 +43,24 @@ char *addr, char *phone, char *assoc, char *email)
 
 	memcpy(&uinfo, u, sizeof (uinfo));
 
-	strsncpy(uinfo.userid, userid, sizeof (uinfo.userid));
-	strsncpy(uinfo.realname, realname, sizeof (uinfo.realname));
-	strsncpy(uinfo.address, addr, sizeof (uinfo.address));
+	ytht_strsncpy(uinfo.userid, userid, sizeof(uinfo.userid));
+	ytht_strsncpy(uinfo.realname, realname, sizeof(uinfo.realname));
+	ytht_strsncpy(uinfo.address, addr, sizeof(uinfo.address));
 	sprintf(genbuf, "%s$%s@%s", dept, phone, userid);
-	strsncpy(uinfo.realmail, genbuf, sizeof (uinfo.realmail));
+	ytht_strsncpy(uinfo.realmail, genbuf, sizeof(uinfo.realmail));
 
-	strsncpy(uinfo.email, email, sizeof (uinfo.email));
+	ytht_strsncpy(uinfo.email, email, sizeof(uinfo.email));
 
 	uinfo.userlevel |= PERM_DEFAULT;	// by ylsdd
 	substitute_record(PASSFILE, &uinfo, sizeof (struct userec), usernum);
 
-	sethomefile(buf, uinfo.userid, "sucessreg");
+	sethomefile_s(buf, sizeof(buf), uinfo.userid, "sucessreg");
 	if ((fout = fopen(buf, "w")) != NULL) {
 		fprintf(fout, "\n");
 		fclose(fout);
 	}
 
-	sethomefile(buf, uinfo.userid, "register");
+	sethomefile_s(buf, sizeof(buf), uinfo.userid, "register");
 
 	if ((fout = fopen(buf, "w")) != NULL) {
 		fprintf(fout, "%s: %d\n", "usernum", usernum);
@@ -82,24 +80,13 @@ char *addr, char *phone, char *assoc, char *email)
 	mail_file("etc/s_fill", uinfo.userid, "恭禧您通过身份验证", "SYSOP");
 
 	mail_file("etc/s_fill2", uinfo.userid, "欢迎加入" MY_BBS_NAME "大家庭", "SYSOP");
-	sethomefile(buf, uinfo.userid, "mailcheck");
+	sethomefile_s(buf, sizeof(buf), uinfo.userid, "mailcheck");
 	unlink(buf);
 	sprintf(genbuf, "让 %s 通过身分确认.", uinfo.userid);
 	securityreport(genbuf, genbuf);
 	return ;
 }
 
-
-char * str_to_upper(char *str)
-{
-	char *h = str;
-	while (*str != '\n' && *str != 0)
-	{
-		*str = toupper(*str);
-		str++;
-	}
-	return h;
-}
 #endif
 // -------------------------------------------------------------------------------
 
@@ -124,30 +111,30 @@ bbsdoreg_main()
 {
 	FILE *fp;
 	struct userec x;
+	int time_interval, rc;
 	char buf[256], filename[80], pass1[80], pass2[80], dept[80], phone[80],
-	    assoc[80], salt[3], words[1024], *ub = FIRST_PAGE;
+		assoc[80], salt[3], words[1024], *ub = FIRST_PAGE;
 	int lockfd;
 	struct active_data act_data;
 	html_header(1);
 	printf("<body>");
 	bzero(&x, sizeof (x));
-//      xz=atoi(getparm("xz"));
 
 #ifdef POP_CHECK
 	char user[USER_LEN + 1];
 	char popserver[4];
 	int popserver_index;
-	strsncpy(popserver, getparm("popserver"), 4);
-	strsncpy(user, getparm("user"), USER_LEN);
+	ytht_strsncpy(popserver, getparm("popserver"), 4);
+	ytht_strsncpy(user, getparm("user"), USER_LEN);
 #endif
 
-	strsncpy(x.userid, getparm("userid"), 13);
-	strsncpy(pass1, getparm("pass1"), 13);
-	strsncpy(pass2, getparm("pass2"), 13);
-	strsncpy(x.username, getparm("username"), 32);
-	strsncpy(x.realname, getparm("realname"), 32);
-	strsncpy(dept, getparm("dept"), 60);
-	strsncpy(x.address, getparm("address"), 60);
+	ytht_strsncpy(x.userid, getparm("userid"), 13);
+	ytht_strsncpy(pass1, getparm("pass1"), 13);
+	ytht_strsncpy(pass2, getparm("pass2"), 13);
+	ytht_strsncpy(x.username, getparm("username"), 32);
+	ytht_strsncpy(x.realname, getparm("realname"), 32);
+	ytht_strsncpy(dept, getparm("dept"), 60);
+	ytht_strsncpy(x.address, getparm("address"), 60);
 
 #ifndef POP_CHECK
 	strsncpy(x.email, getparm("email"), 60);
@@ -160,15 +147,15 @@ bbsdoreg_main()
 
 	char email[60];
 	snprintf(email, 60, "%s@%s", user, popname);  // 注意不要将email弄溢出了
-	str_to_lowercase(email);
-	strsncpy(x.email, email, 60);
+	ytht_str_to_lowercase(email);
+	ytht_strsncpy(x.email, email, 60);
 #endif
 
-	strsncpy(phone, getparm("phone"), 60);
-	strsncpy(assoc, getparm("assoc"), 60);
-	strsncpy(words, getparm("words"), 1000);
+	ytht_strsncpy(phone, getparm("phone"), 60);
+	ytht_strsncpy(assoc, getparm("assoc"), 60);
+	ytht_strsncpy(words, getparm("words"), 1000);
 
-    if (id_with_num(x.userid))
+	if (id_with_num(x.userid))
 		http_fatal("帐号只能由英文字母组成");
 	if (strlen(x.userid) < 2)
 		http_fatal("帐号长度太短(2-12字符)");
@@ -204,8 +191,8 @@ bbsdoreg_main()
 		http_fatal("您的邮箱名不合法，请联系站长或至 https://github.com/bmybbs/bmybbs/issues/ 反馈问题。");
 #endif
 
-	getsalt(salt);
-	strsncpy(x.passwd, crypt1(pass1, salt), 14);
+	ytht_get_salt(salt);
+	ytht_strsncpy(x.passwd, ytht_crypt_crypt1(pass1, salt), 14);
 	//ipv6 by leoncom 不能赋值太多，就影响后面的数据 fixed by IronBlood 2020.09.11
 	strncpy(x.lasthost, fromhost,BMY_IPV6_LEN);
 	x.userlevel = PERM_BASIC;
@@ -215,14 +202,21 @@ bbsdoreg_main()
 	x.flags[0] = CURSOR_FLAG | PAGER_FLAG;
 //      if(xz==1) currentuser.userdefine ^= DEF_COLOREDSEX;
 //      if(xz==2) currentuser.userdefine ^= DEF_S_HOROSCOPE;
-	adduser(&x);
+	rc = ythtbbs_user_create(&x, NULL, &time_interval);
+
+	if (rc == YTHTBBS_REGISTER_FULL) {
+		http_fatal("抱歉，使用者账号满了，清等待 %d 分钟后再试一次。", time_interval);
+	}
+
+	if (rc != YTHTBBS_REGISTER_OK) {
+		http_fatal("文件系统错误");
+	}
 
 #ifndef POP_CHECK
 	lockfd = openlockfile(".lock_new_register", O_RDONLY, LOCK_EX);
 	fp = fopen("new_register", "a");
 	if (fp) {
-		fprintf(fp, "usernum: %d, %s\n", getusernum(x.userid) + 1,
-			Ctime(now_t));
+		fprintf(fp, "usernum: %d, %s\n", getusernum(x.userid) + 1, ytht_ctime(now_t));
 		fprintf(fp, "userid: %s\n", x.userid);
 		fprintf(fp, "realname: %s\n", x.realname);
 		fprintf(fp, "dept: %s\n", dept);
@@ -317,7 +311,7 @@ bbsdoreg_main()
 	newcomer(&x, words);
 
 
-//      sprintf(buf, "%s %-12s %d\n", Ctime(now_t)+4, x.userid, getusernum(x.userid));
+//      sprintf(buf, "%s %-12s %d\n", ytht_ctime(now_t)+4, x.userid, getusernum(x.userid));
 //      f_append("wwwreg.log", buf);
 	sprintf(buf, "%s newaccount %d %s www", x.userid, getusernum(x.userid), fromhost);
 	newtrace(buf);
@@ -331,7 +325,7 @@ bbsdoreg_main()
 	return 0;
 }
 
-void
+static void
 newcomer(struct userec *x, char *words)
 {
 	FILE *fp;
@@ -348,23 +342,3 @@ newcomer(struct userec *x, char *words)
 	unlink(filename);
 }
 
-void
-adduser(struct userec *x)
-{
-	int i;
-	FILE *fp;
-	fp = fopen(".PASSWDS", "r+");
-	flock(fileno(fp), LOCK_EX);
-	for (i = 0; i < MAXUSERS; i++) {
-		if (shm_ucache->userid[i][0] == 0) {
-			if (i + 1 > shm_ucache->number)
-				shm_ucache->number = i + 1;
-			strncpy(shm_ucache->userid[i], x->userid, 13);
-			insertuseridhash(uidhashshm->uhi, UCACHE_HASH_SIZE, x->userid, i + 1);
-			save_user_data(x);
-			break;
-		}
-	}
-	flock(fileno(fp), LOCK_UN);
-	fclose(fp);
-}

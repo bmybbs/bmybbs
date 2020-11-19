@@ -21,12 +21,17 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 */
-#include "bbs.h"
-#include "bbstelnet.h"
-#include "regular.h"
 #include <stdlib.h>
 #include <string.h>
-
+#include "bbs.h"
+#include "regular.h"
+#include "smth_screen.h"
+#include "bbsinc.h"
+#include "stuff.h"
+#include "io.h"
+#include "read.h"
+#include "boards.h"
+#include "bbs_global_vars.h"
 
 
 typedef void (*power_dofunc) (int, struct fileheader *, char *);
@@ -102,13 +107,7 @@ char *direct;
 }
 
 static struct fileheader *select_cur;
-static void
-power_dir(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
-	extern char currdirect[STRLEN];
+static void power_dir(int ent, struct fileheader *fileinfo, char *direct) {
 	append_record(currdirect, fileinfo, sizeof (struct fileheader));
 }
 
@@ -180,15 +179,15 @@ int full_search_action(char *whattosearch)
     char o_buf[16];
 
     int len = strlen(line);
-    strsncpy(f_buf, line, 15);
+	  ytht_strsncpy(f_buf, line, 15);
     sscanf(f_buf, "M.%ld.A", &(fh.filetime));
     sscanf(f_buf, "M.%ld.A", &(fh.edittime));
 
     char *p2s = strchr(line+15, ' ');
     int owner_len = p2s-line-15;
-    strsncpy(fh.owner, line+15, owner_len+1);
+	  ytht_strsncpy(fh.owner, line + 15, owner_len + 1);
 
-    strsncpy(fh.title, p2s+1, len-2-owner_len-14+1);
+	  ytht_strsncpy(fh.title, p2s + 1, len - 2 - owner_len - 14 + 1);
     fh.title[strlen(fh.title)-1] = 0;
     fh.thread = nr++;
     append_record(currdirect, &fh, sizeof(struct fileheader));
@@ -218,7 +217,6 @@ power_action(char *filename, unsigned int id1, int id2, char *select, int action
 	power_dofunc function;
 	int shoot;
 	int ret;
-	extern char currdirect[STRLEN];
 	extstru = myextstru;
 	switch (action) {
 	case 9:

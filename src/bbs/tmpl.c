@@ -2,18 +2,26 @@
  * add by macintosh 2006.3,  模板发文
  ***************************************************************************/
 
+#include <sys/mman.h>
 #include "bbs.h"
 #include "tmpl.h"
-#include "common.h"
-#include <sys/mman.h>
+#include "smth_screen.h"
+#include "io.h"
+#include "bbsinc.h"
+#include "stuff.h"
+#include "announce.h"
+#include "more.h"
+#include "main.h"
+#include "edit.h"
+#include "list.h"
+#include "xyz.h"
+#include "bbs_global_vars.h"
+#include "bbs-internal.h"
 
 #define BBS_PAGESIZE    (t_lines - 4)
 
 extern int page, range;
 extern char IScurrBM;
-extern struct boardmem *bcache;
-extern struct BCACHE *brdshm;
-extern int numboards;
 
 struct a_template * ptemplate = NULL ;
 int template_num = 0;
@@ -42,7 +50,7 @@ static int choose_tmpl_post(int star, int curr);
 int choose_tmpl(void);
 static int tmpl_edit(int allnum);
 
-static int 
+static int
 orig_tmpl_init(char * nboard, int mode, struct a_template ** pptemp){
 		/***********
 		 * mode 0: 用户看，不显示有斑竹权限的
@@ -103,7 +111,7 @@ orig_tmpl_init(char * nboard, int mode, struct a_template ** pptemp){
 	return templ_num;
 }
 
-static int 
+static int
 orig_tmpl_free(struct a_template ** pptemp, int temp_num){
 
 	int i;
@@ -118,7 +126,7 @@ orig_tmpl_free(struct a_template ** pptemp, int temp_num){
     return 0;
 }
 
-static int 
+static int
 orig_tmpl_save(struct a_template * ptemp, int temp_num, char *board){
 
 	int i;
@@ -140,31 +148,31 @@ orig_tmpl_save(struct a_template * ptemp, int temp_num, char *board){
 	return 0;
 }
 
-static int 
+static int
 tmpl_init(int mode){
 	int newmode=0;
 	int ret;
 
-	if(mode==1 || HAS_PERM(PERM_BLEVELS) || IScurrBM)
+	if(mode==1 || HAS_PERM(PERM_BLEVELS, currentuser) || IScurrBM)
 		newmode = 1;
 	ret = orig_tmpl_init(currboard, newmode, & ptemplate);
-	if(ret >= 0) 
+	if(ret >= 0)
 		template_num = ret;
 	return ret;
 }
 
-static void 
+static void
 tmpl_free(){
 	orig_tmpl_free( & ptemplate, template_num );
 	template_num = 0;
 }
 
-static int 
+static int
 tmpl_save(){
 	return orig_tmpl_save(ptemplate, template_num, currboard);
 }
 
-static int 
+static int
 tmpl_add(){
 	char buf[60];
 	struct s_template tmpl;
@@ -191,7 +199,7 @@ tmpl_add(){
 	return 0;
 }
 
-static int 
+static int
 content_add(){
 	struct s_content ct;
 	char buf[60];
@@ -252,9 +260,9 @@ tmpl_edit(int allnum)
 	prints("编辑/删除模板正文");
 
 	setbfile(filepath, currboard , ptemplate[allnum].tmpl->filename);
-	
+
 	getdata(3, 0, "(E)编辑 (D)删除 (Q)取消? [E]: ", ans, 2, DOECHO, YEA);
-	if (ans[0] == 'Q' || ans[0] == 'q') 
+	if (ans[0] == 'Q' || ans[0] == 'q')
 		aborted = -1;
 	else if (ans[0] == 'D' || ans[0] == 'd') {
 		move(6, 0);
@@ -269,7 +277,7 @@ tmpl_edit(int allnum)
 			aborted = -1;
 	} else
 		aborted = vedit(filepath, NA, YEA);
-	if (aborted == -1) 
+	if (aborted == -1)
 		pressreturn();
 	return 1;
 }
@@ -292,7 +300,7 @@ content_show()
 	return 0;
 }
 
-static void 
+static void
 tmpl_refresh(){
 	//clear();
 	docmdtitle("[版面模板设置]",
@@ -303,7 +311,7 @@ tmpl_refresh(){
 	update_endline();
 }
 
-static void 
+static void
 content_refresh(){
     //clear();
     docmdtitle("[版面模板问题设置]",
@@ -370,7 +378,7 @@ content_key(int key, int allnum, int pagenum)
 		content_add();
 		return 1;
 		break;
-	case 'D':	
+	case 'D':
 	case 'd':
 		if (askyn("确实要删除吗", NA, YEA)) {
 			int i=0;
@@ -382,7 +390,7 @@ content_key(int key, int allnum, int pagenum)
 				return 1;
 			}
 			ct = (struct s_content *) malloc( sizeof(struct s_content) * (ptemplate[t_now].tmpl->content_num-1));
-			
+
 			memcpy(ct+i,&(ptemplate[t_now].cont[i]),sizeof(struct s_content) * (allnum));
                	for(i=allnum; i<ptemplate[t_now].tmpl->content_num-1;i++)
                     		memcpy(ct+i, &(ptemplate[t_now].cont[i+1]), sizeof(struct s_content));
@@ -395,7 +403,7 @@ content_key(int key, int allnum, int pagenum)
 			return 1;
 		}
 		return 0;
-	case 'T':	
+	case 'T':
 	case 't' :
 		{
 		char newtitle[60];
@@ -411,7 +419,7 @@ content_key(int key, int allnum, int pagenum)
 		return 1;
 		}
 		break;
-	case 'L':	
+	case 'L':
 	case 'l' :
 		{
 		char newlen[10];
@@ -428,11 +436,11 @@ content_key(int key, int allnum, int pagenum)
 		break;
 	default:
 		break;
-	}	
+	}
 	return 0;
 }
 
-static int 
+static int
 tmpl_key(int key, int allnum, int pagenum)
 {
 	switch (key) {
@@ -452,7 +460,7 @@ tmpl_key(int key, int allnum, int pagenum)
 		return -1;
 		}
 		break;
-		
+
 	case 'd' :
 		if (askyn("确实要删除吗", NA, YEA)) {
 			int i;
@@ -496,7 +504,7 @@ tmpl_key(int key, int allnum, int pagenum)
 		return 1;
 		}
 		break;
-		
+
 	case 'f' :
 		{
 		char filepath[STRLEN];
@@ -519,14 +527,14 @@ tmpl_key(int key, int allnum, int pagenum)
 					fail = 1;
 			}
 			fail = 0;
-			close(fp);	
+			close(fp);
    	 		if (fail) {
 				clear();
 				move(3,0);
 				prints("创建模板文件失败!");
 				pressanykey();
 				return -1;
-			}	
+			}
 			tmpl_save();
 		}
 		tmpl_edit(allnum);
@@ -534,7 +542,7 @@ tmpl_key(int key, int allnum, int pagenum)
 		tmpl_show();
 		return 1;
 		}
-	
+
 	case 's' :
 		{
 		char filepath[STRLEN];
@@ -544,7 +552,7 @@ tmpl_key(int key, int allnum, int pagenum)
 		tmpl_show();
 		return 1;
 		}
-	
+
 	case 'b' :
 		if( ptemplate[allnum].tmpl->flag & TMPL_BM_FLAG )
 			ptemplate[allnum].tmpl->flag &= ~TMPL_BM_FLAG ;
@@ -553,7 +561,7 @@ tmpl_key(int key, int allnum, int pagenum)
 		tmpl_save();
 		tmpl_show();
 		return 1;
-		
+
 	case 'i' :
 		{
 		char newtitle[STRLEN];
@@ -567,7 +575,7 @@ tmpl_key(int key, int allnum, int pagenum)
 		tmpl_show();
 		return 1;
 		}
-	
+
 	case 'x' :
 		clear();
 		move(2,0);
@@ -577,7 +585,7 @@ tmpl_key(int key, int allnum, int pagenum)
 		pressanykey();
 		tmpl_show();
 		return 1;
-/*		
+/*
 	case 'h':
 		clear();
 		move(1,0);
@@ -594,7 +602,7 @@ tmpl_key(int key, int allnum, int pagenum)
 }
 
 
-static int 
+static int
 tmpl_select(int star, int curr)
 {
 	int ch, deal;
@@ -604,7 +612,7 @@ tmpl_select(int star, int curr)
 
 	t_now = curr;
 	setlistrange(ptemplate[t_now].tmpl->content_num);
-	
+
 	if(range == 0 ){
 		clear();
 	       if (!askyn("本模板现在没有内容，需要现在增加吗", NA, NA))
@@ -612,7 +620,7 @@ tmpl_select(int star, int curr)
 		if(content_add() < 0 )
 			return DOQUIT;
 	}
-	
+
 	content_refresh();
 	while (1) {
 		if (num <= 0)
@@ -634,7 +642,7 @@ tmpl_select(int star, int curr)
 			update_endline();
 			continue;
 		}
-		
+
 		move(3 + num - page, 0);
 		prints(">", number);
 		move(3 + num - page, 0);
@@ -689,7 +697,7 @@ tmpl_select(int star, int curr)
 				break;
 			case '\n':
 			case '\r':
-				if (number > 0) 
+				if (number > 0)
 					num = number - 1;
 				break;
 			case KEY_LEFT:
@@ -700,13 +708,13 @@ tmpl_select(int star, int curr)
 			if (ch >= '0' && ch <= '9') {
 				number = number * 10 + (ch - '0');
 				ch = '\0';
-			} else 
+			} else
 				number = 0;
 	}
 	return DOQUIT;
 }
 
-int 
+int
 m_template()
 {
 	int tmplist;
@@ -714,7 +722,7 @@ m_template()
 		return DONOTHING;
 	if( tmpl_init(1) < 0 )
 		return FULLUPDATE;
-	
+
 	setlistrange(template_num);
 	if(range == 0 ){
 		clear();
@@ -726,7 +734,7 @@ m_template()
 			tmpl_free();
 			return FULLUPDATE;
 		}
-	}	
+	}
 	clear();
 	tmplist =
 	    choose(NA, 0, tmpl_refresh, tmpl_key, tmpl_show, tmpl_select);
@@ -736,7 +744,7 @@ m_template()
 
 
 /***********普通用户模板选择**************/
-static void 
+static void
 choose_tmpl_refresh(){
     //clear();
     docmdtitle("[版面模板选择]",
@@ -747,7 +755,7 @@ choose_tmpl_refresh(){
     update_endline();
 }
 
-static int 
+static int
 choose_tmpl_key(int key, int allnum, int pagenum){
 	switch (key) {
 	case 's' :
@@ -765,7 +773,7 @@ choose_tmpl_key(int key, int allnum, int pagenum){
 		return 0;
 		}
 		break;
-	
+
 	case 'w':
 		clear();
 		if( ptemplate[allnum].tmpl->content_num <= 0 ){
@@ -781,8 +789,8 @@ choose_tmpl_key(int key, int allnum, int pagenum){
 		pressanykey();
 		tmpl_show();
 		return 1;
-		
-	case 'x' :		
+
+	case 'x' :
 		clear();
 		move(2,0);
 		prints("此模版的标题设置为");
@@ -791,7 +799,7 @@ choose_tmpl_key(int key, int allnum, int pagenum){
 		pressanykey();
 		tmpl_show();
 		return 1;
-		
+
 	default:
 		break;
 	}
@@ -800,7 +808,7 @@ choose_tmpl_key(int key, int allnum, int pagenum){
 
 char fname[STRLEN];
 
-static int 
+static int
 choose_tmpl_post(int star, int curr){
 
 	FILE *fp;
@@ -828,7 +836,7 @@ choose_tmpl_post(int star, int curr){
 
 	/*add a loop by macintosh 06.12.10*/
 	while(loop) {
-	
+
 	if((fp = fopen(fname, "w"))==NULL){
 		move(5,0);
 		prints("文件错误!请联系系统维护!\n");
@@ -956,7 +964,7 @@ choose_tmpl_post(int star, int curr){
 						newtitle[newl] = currentuser.userid[ti] ;
 						newtitle[newl+1]='\0';
 					}
-				} else				
+				} else
 				if( l == 0 ){
 					int ti;
 					for( ti=0; title[ti]!='\0' && newl < STRLEN - 1; ti++, newl++ ){
@@ -1020,14 +1028,14 @@ choose_tmpl_post(int star, int curr){
 	for(i=0; i< ptemplate[t_now].tmpl->content_num; i++)
 		free( tmp[i] );
 
-	if (ret == 1) {	
+	if (ret == 1) {
 		if((fp = fopen(fname, "a"))==NULL)
 			return -1;
-		if (!(currentuser.signature == 0)) 
+		if (!(currentuser.signature == 0))
 			addsignature(fp, 1);
 		fclose(fp);
 		add_loginfo(fname);
-		if (postfile(fname, currboard, title, 2) == -1) 
+		if (postfile(fname, currboard, title, 2) == -1)
 			return -1;
 		else
 			unlink(fname);
@@ -1035,7 +1043,7 @@ choose_tmpl_post(int star, int curr){
 	return -1;
 }
 
-int 
+int
 choose_tmpl()
 {
  	int tmpllist;

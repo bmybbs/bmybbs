@@ -23,38 +23,30 @@
 */
 
 #include "bbs.h"
-void
-show_help(fname)
-char *fname;
-{
+#include "more.h"
+#include "smth_screen.h"
+
+void show_help(char *fname) {
 	ansimore(fname, YEA);
 	clear();
 }
 
-int
-mainreadhelp()
-{
+int mainreadhelp() {
 	show_help("help/mainreadhelp");
 	return FULLUPDATE;
 }
 
-int
-mailreadhelp()
-{
+int mailreadhelp() {
 	show_help("help/mailreadhelp");
 	return FULLUPDATE;
 }
 
-int
-selbacknumberhelp()
-{
+int selbacknumberhelp() {
 	show_help("help/selbacknumberhelp");
 	return FULLUPDATE;
 }
 
-int
-backnumberhelp()
-{
+int backnumberhelp() {
 	show_help("help/backnumberhelp");
 	return FULLUPDATE;
 }

@@ -1,5 +1,6 @@
 #include <stdio.h>
-#include "ythtbbs.h"
+#include <string.h>
+#include "ythtbbs/ythtbbs.h"
 
 int
 eff_size(char *file)
@@ -22,7 +23,7 @@ eff_size(char *file)
 			*ptr = 0;
 		if ((ptr = strchr(buf, '\n')))
 			*ptr = 0;
-		if (!strlen(strtrim(buf)))
+		if (!strlen(ytht_strtrim(buf)))
 			break;
 	}
 	while (1) {
@@ -39,7 +40,7 @@ eff_size(char *file)
 		for (i = 0; buf[i]; i++)
 			if (buf[i] < 0)
 				size2++;
-		size += strlen(strtrim(buf));
+		size += strlen(ytht_strtrim(buf));
 	}
 	fclose(fp);
       E:
@@ -67,12 +68,12 @@ getdocauthor(char *filename, char *author, int len)
 		ptr = buf + 8;
 		f1 = strsep(&ptr, " ,\n\r\t");
 		if (f1)
-			strsncpy(author, f1, len);
+			ytht_strsncpy(author, f1, len);
 		f2 = strsep(&ptr, " ,\n\r\t");
 		if (f2 && f2[0] == '<' && f2[strlen(f2) - 1] == '>'
 		    && strchr(f2, '@')) {
 			f2[strlen(f2) - 1] = 0;
-			strsncpy(author, f2 + 1, len);
+			ytht_strsncpy(author, f2 + 1, len);
 		}
 		ptr = strpbrk(author, "();:!#$\"\'");
 		if (ptr)

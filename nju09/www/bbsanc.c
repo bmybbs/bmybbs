@@ -9,8 +9,8 @@ bbsanc_main()
 	int index = 0, found = 0;
 	FILE *fp;
 	changemode(DIGEST);
-	strsncpy(path, getparm("path"), PATHLEN - 1);
-	strsncpy(item, getparm("item"), PATHLEN - 1);
+	ytht_strsncpy(path, getparm("path"), PATHLEN - 1);
+	ytht_strsncpy(item, getparm("item"), PATHLEN - 1);
 	board = getbfroma(path);
 	if(!strcasecmp(board, "PersonalCorpus"))		//add by mintbaggio@BMY for the reason of www PersonalCorpus
 		goto L;

@@ -3,7 +3,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdio.h>
-#include "ythtbbs.h"
+#include "ythtbbs/ythtbbs.h"
 
 static void
 shorter_brc(struct onebrc *brc)

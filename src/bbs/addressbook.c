@@ -1,4 +1,11 @@
 #include "bbs.h"
+#include "ythtbbs/override.h"
+#include "xyz.h"
+#include "io.h"
+#include "smth_screen.h"
+#include "stuff.h"
+#include "namecomplete.h"
+#include "bbs_global_vars.h"
 #define NADDRESSITEM 6
 static const char addressitems[NADDRESSITEM][16] = {
 	"oicqºÅÂë",
@@ -106,9 +113,9 @@ addressbookmode(char *me, char *him)
 {
 	if (!strcasecmp(me, him))
 		return 3;
-	if (inoverride(him, me, "friends"))
+	if (ythtbbs_override_included(me, YTHTBBS_OVERRIDE_FRIENDS, him))
 		return 2;
-	if (inoverride(me, him, "friends"))
+	if (ythtbbs_override_included(him, YTHTBBS_OVERRIDE_FRIENDS, me))
 		return 1;
 	return 0;
 }

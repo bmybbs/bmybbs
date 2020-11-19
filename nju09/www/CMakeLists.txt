@@ -88,8 +88,6 @@ set(SRC
 
 	bbshome.c
 	bbsindex.c
-	bbssechand.c
-	bbsupload.c
 	bbslform.c
 	regreq.c
 
@@ -127,37 +125,13 @@ set(SRC
 	bbsball.c
 
 	BBSLIB.c
-)
-
-set (OTHERS
+	bbsupdatelastpost.c
 	boardrc.c
 	deny_users.c
-	bbsupdatelastpost.c
-	bbsred.c
+
+	api_user_check.c
+	api_loginpics.c
 )
 
-set(PROTO_FILE ${CMAKE_CURRENT_SOURCE_DIR}/proto.h)
-set(SHOULD_GENERATE_PROTO FALSE)
-
-if(NOT EXISTS ${PROTO_FILE})
-	set(SHOULD_GENERATE_PROTO TRUE)
-else(NOT EXISTS ${PROTO_FILE})
-	foreach(file ${SRC})
-		if(${CMAKE_CURRENT_SOURCE_DIR}/${file} IS_NEWER_THAN ${PROTO_FILE})
-			set(SHOULD_GENERATE_PROTO TRUE)
-		endif(${CMAKE_CURRENT_SOURCE_DIR}/${file} IS_NEWER_THAN ${PROTO_FILE})
-	endforeach(file)
-endif(NOT EXISTS ${PROTO_FILE})
-
-if(SHOULD_GENERATE_PROTO)
-	execute_process(
-		COMMAND bash -c "cproto -DMAKE_PROTO `echo \"${SRC}\" | sed 's/;/ /g'` -I ../../include -I ../../ythtlib -I ../../libythtbbs > proto.h"
-		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-	)
-	message(STATUS "${PROTO_FILE} has been generated successfully")
-else(SHOULD_GENERATE_PROTO)
-	message(STATUS "there's no need to regenerate ${PROTO_FILE}")
-endif(SHOULD_GENERATE_PROTO)
-
 add_executable(www ${SRC})
-target_link_libraries(www ythtbbs ytht ghthash)
+target_link_libraries(www ythtbbs ytht json-c)

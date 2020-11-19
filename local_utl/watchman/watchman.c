@@ -1,4 +1,5 @@
 #include "bbs.h"
+#include "ytht/random.h"
 
 #define DEFAULT_ADD 600
 #define CONT MY_BBS_HOME "/help/watchmanhelp"
@@ -11,7 +12,6 @@ usage(char *name)
 int
 main(int argc, char *argv[])
 {
-	struct UTMPFILE *shm_utmp;
 	int time_add = 0;
 	int i;
 	FILE *fp, *fr;
@@ -28,25 +28,14 @@ main(int argc, char *argv[])
 	}
 	if (!time_add)
 		time_add = DEFAULT_ADD;
-	for (i = 0; i < 10; i++) {
-		shm_utmp = get_old_shm(UTMP_SHMKEY, sizeof (struct UTMPFILE));
-		if (shm_utmp)
-			break;
-		sleep(10);
-	}
-	if (!shm_utmp) {
-		errlog("can't attach ushm!");
-		return -1;
-	}
+	ythtbbs_cache_utmp_resolve();
 	now_t = time(NULL);
-	if (shm_utmp->watchman) {
-		strcpy(buf,
-		       "★★★★★警报★★★★★政治性版面锁住了★★★★★");
+	if (ythtbbs_cache_utmp_get_watchman()) {
+		strcpy(buf, "★★★★★警报★★★★★政治性版面锁住了★★★★★");
 	} else {
-		shm_utmp->watchman = now_t + time_add;
-		getrandomint(&(shm_utmp->unlock));
-		snprintf(buf, sizeof (buf), "来来来,点卯了!现在是 %s",
-			 Ctime(now_t));
+		ythtbbs_cache_utmp_set_watchman(now_t + time_add);
+		ythtbbs_cache_utmp_set_unlock();
+		snprintf(buf, sizeof (buf), "来来来,点卯了!现在是 %s", ytht_ctime(now_t));
 	}
 
 	fp = popen("/bin/mail bbs", "w");
@@ -64,7 +53,7 @@ main(int argc, char *argv[])
 		fprintf(fp,
 			"请在%d分钟内进行解锁操作,否则本BBS所有和政治相关的版面将被封版\n"
 			"直至有人进行了解锁操作.\n" "解锁密码: %u\n",
-			time_add / 60, shm_utmp->unlock % 10000);
+			time_add / 60, ythtbbs_cache_utmp_get_unlock() % 10000);
 	}
 	fprintf(fp, "以下是关于解锁操作的说明:\n");
 	fr = fopen(CONT, "r");

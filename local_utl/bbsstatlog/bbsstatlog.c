@@ -1,104 +1,29 @@
 #include "bbs.h"
 #include "bbsstatlog.h"
-
-struct UTMPFILE *shm_utmp;
-struct BCACHE *shm_bcache;
-struct UCACHE *shm_ucache;
-struct UINDEX *uindexshm;
+#include "ythtbbs/cache.h"
 
 struct bbsstatlogitem item;
-int
-shm_init()
-{
-	shm_utmp =
-	    (struct UTMPFILE *) get_old_shm(UTMP_SHMKEY,
-					    sizeof (struct UTMPFILE));
-	if (shm_utmp == NULL)
-		return -1;
-	uindexshm =
-	    (struct UINDEX *) get_old_shm(UINDEX_SHMKEY,
-					  sizeof (struct UINDEX));
-	if (uindexshm == NULL)
-		return -1;
-	shm_bcache =
-	    (struct BCACHE *) get_old_shm(BCACHE_SHMKEY,
-					  sizeof (struct BCACHE));
-	if (shm_bcache == NULL)
-		return -1;
-	shm_ucache =
-	    (struct UCACHE *) get_old_shm(UCACHE_SHMKEY,
-					  sizeof (struct UCACHE));
-	if (shm_ucache == NULL)
-		return -1;
+
+int shm_init() {
+	ythtbbs_cache_utmp_resolve();
+	ythtbbs_cache_Board_resolve();
 	return 0;
 }
 
-void
-add_uindex(int uid, int utmpent)
-{
-	int i, uent;
-	if (uid <= 0 || uid > MAXUSERS)
-		return;
-	for (i = 0; i < 6; i++)
-		if (uindexshm->user[uid - 1][i] == utmpent)
-			return;
-	for (i = 0; i < 6; i++) {
-		uent = uindexshm->user[uid - 1][i];
-		if (uent <= 0 || !shm_utmp->uinfo[uent - 1].active ||
-		    shm_utmp->uinfo[uent - 1].uid != uid) {
-			uindexshm->user[uid - 1][i] = utmpent;
-			return;
-		}
-	}
-}
-
-void
-rmdup_uindex(int uid)
-{
-	int i, j, uent;
-	for (i = 0; i < 5; i++) {
-		uent = uindexshm->user[uid - 1][i];
-		if (uent <= 0)
-			continue;
-		for (j = i + 1; j < 6; j++) {
-			if (uent == uindexshm->user[uid - 1][j])
-				uindexshm->user[uid - 1][j] = 0;
-		}
-	}
-}
-
-void
-syn_uindxexshm()
-{
-	int i;
-	for (i = 0; i < USHM_SIZE; i++) {
-		if (shm_utmp->uinfo[i].active) {
-			add_uindex(shm_utmp->uinfo[i].uid, i + 1);
-		}
-	}
-	for (i = 0; i < MAXUSERS; i++)
-		rmdup_uindex(i + 1);
-}
-
-void
-bonlinesync()
-{
+void bonlinesync() {
 	int i, numboards;
 	struct user_info *uentp;
-	numboards = shm_bcache->number;
+	numboards = ythtbbs_cache_Board_get_number();
 	for (i = 0; i < numboards; i++)
-		shm_bcache->bcache[i].inboard = 0;
+		ythtbbs_cache_Board_get_board_by_idx(i)->inboard = 0;
 	for (i = 0; i < USHM_SIZE; i++) {
-		uentp = &(shm_utmp->uinfo[i]);
+		uentp = ythtbbs_cache_utmp_get_by_idx(i);
 		if (uentp->active && uentp->pid && uentp->curboard)
-			shm_bcache->bcache[uentp->curboard - 1].inboard++;
+			ythtbbs_cache_Board_get_board_by_idx(uentp->curboard - 1)->inboard++;
 	}
 }
 
-void
-get_load(load)
-float load[];
-{
+void get_load(float load[]) {
 	FILE *fp;
 	fp = fopen("/proc/loadavg", "r");
 	if (!fp)
@@ -113,9 +38,7 @@ float load[];
 	}
 }
 
-int
-get_netflow()
-{
+int get_netflow() {
 	FILE *fp;
 	float fMbit_s = 0;
 	char *ptr, buf[256];
@@ -130,14 +53,12 @@ get_netflow()
 	while (ptr > buf && isdigit(*(ptr - 1)))
 		ptr--;
 	fMbit_s = atof(ptr);
-      ERR:
+ERR:
 	fclose(fp);
 	return fMbit_s * 1024;
 }
 
-int
-main()
-{
+int main() {
 	int i, fd;
 	struct user_info *p;
 	struct tm *ptm;
@@ -147,9 +68,9 @@ main()
 	item.time = time(NULL);
 	get_load(item.load);
 	item.netflow = get_netflow();
-	item.naccount = shm_ucache->number;
+	item.naccount = ythtbbs_cache_UserTable_get_number();
 	for (i = 0; i < USHM_SIZE; i++) {
-		p = &shm_utmp->uinfo[i];
+		p = ythtbbs_cache_utmp_get_by_idx(i);
 		if (!p->active)
 			continue;
 		item.nonline++;
@@ -167,15 +88,13 @@ main()
 	}
 	ptm = localtime(&item.time);
 	if (ptm->tm_hour == 0 && ptm->tm_min < 6)
-		shm_utmp->maxtoday = item.nonline;
+		ythtbbs_cache_utmp_set_maxtoday(item.nonline);
 	fd = open(BBSSTATELOGFILE, O_WRONLY | O_CREAT, 0600);
 	if (fd >= 0) {
-		lseek(fd,
-		      ((ptm->tm_mday * 24 + ptm->tm_hour) * 10 +
-		       ptm->tm_min / 6) * sizeof (item), SEEK_SET);
+		lseek(fd, ((ptm->tm_mday * 24 + ptm->tm_hour) * 10 + ptm->tm_min / 6) * sizeof (item), SEEK_SET);
 		write(fd, &item, sizeof (item));
 		close(fd);
 	}
-	syn_uindxexshm();
 	bonlinesync();
 }
+

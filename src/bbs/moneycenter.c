@@ -1,7 +1,23 @@
-#include "bbs.h"
-#include "bbstelnet.h"
 #include <sys/mman.h>	// for mmap
 #include <math.h>
+#include "bbs.h"
+#include "bbs_global_vars.h"
+#include "stuff.h"
+#include "smth_screen.h"
+#include "maintain.h"
+#include "namecomplete.h"
+#include "main.h"
+#include "talk.h"
+#include "bbsinc.h"
+#include "mail.h"
+#include "bm.h"
+#include "io.h"
+#include "record.h"
+#include "more.h"
+#include "xyz.h"
+#include "boards.h"
+#include "edit.h"
+#include "bbs-internal.h"
 
 #define MC_BOARD        "millionaires"
 #define DIR_MC          MY_BBS_HOME "/etc/moneyCenter/"
@@ -50,17 +66,17 @@
 
 //婚礼数据结构及定义
 /*
-结婚程序是这样的:
-男方选择"求婚"向女方求婚,这时登记结婚记录，状态为 MAR_COURT，一星期后自动失败
-女方去教堂，自动提示是否接受求婚？
-    如果不接受，结婚记录enable设为0,宣告失败
-	如果接受，结婚记录状态设为 MAR_MARRYING 结婚中,结婚日期默认设为1天后
-然后男女方都可以到教堂准备婚礼，包括设置结婚日期，写请柬，发请柬，布置背景等
-此时可以在参加婚礼时的婚礼等级表中看到这条记录，时间一到，婚礼自动开始
-朋友们可以来参见他们的婚礼了，参见婚礼时可以送礼金，送花，送贺卡
-婚礼在四小时后自动结束，发信到金融中心版面
-在MC_MARRY_RECORDS(100条记录)中保存求婚COURT和在婚MARRYING的记录
-在刷新记录时把求婚失败和结婚成功的记录转到MC_MARRY_RECORDS_ALL
+   结婚程序是这样的:
+   男方选择"求婚"向女方求婚,这时登记结婚记录，状态为 MAR_COURT，一星期后自动失败
+   女方去教堂，自动提示是否接受求婚？
+   如果不接受，结婚记录enable设为0,宣告失败
+   如果接受，结婚记录状态设为 MAR_MARRYING 结婚中,结婚日期默认设为1天后
+   然后男女方都可以到教堂准备婚礼，包括设置结婚日期，写请柬，发请柬，布置背景等
+   此时可以在参加婚礼时的婚礼等级表中看到这条记录，时间一到，婚礼自动开始
+   朋友们可以来参见他们的婚礼了，参见婚礼时可以送礼金，送花，送贺卡
+   婚礼在四小时后自动结束，发信到金融中心版面
+   在MC_MARRY_RECORDS(100条记录)中保存求婚COURT和在婚MARRYING的记录
+   在刷新记录时把求婚失败和结婚成功的记录转到MC_MARRY_RECORDS_ALL
 
 */
 #define DIR_MC_MARRY			MY_BBS_HOME"/etc/moneyCenter/marry"
@@ -76,6 +92,17 @@
 #define MAR_MARRYING	3	//结婚中		//婚礼在marry_t四小时后结束
 #define MAR_DIVORCE		4	//离婚
 #define MAR_COURT_FAIL	5	//求婚失败
+
+struct moneyCenter {
+	int ave_score;
+	int prize777;
+	int prize367;
+	int prizeSoccer;
+	unsigned char transfer_rate;
+	unsigned char deposit_rate;
+	unsigned char lend_rate;
+	unsigned char isSalaryTime:1,isSoccerSelling:1,isMCclosed:1,unused:5;
+};
 
 struct MC_Marry{
 	int enable;					//是否有效
@@ -95,18 +122,17 @@ struct MC_Marry{
 	char unused[18];
 }; // 150 bytes
 
+#define MC_SHMKEY 38899
+static struct moneyCenter *mc;
+static char marry_status[][20] = {"未知","求婚","已婚","婚礼中","已离婚","求婚失败",""};
+static int multex=0;
 
-extern struct UTMPFILE *utmpshm;
-extern struct boardmem *bcache;
-extern int numboards;
-char marry_status[][20] = {"未知","求婚","已婚","婚礼中","已离婚","求婚失败",""};
-int multex=0;
-
-void *loadData(char *filepath, void *buffer, size_t filesize);
-void saveData(void *buffer, size_t filesize);
+static void mc_shm_init(void);
+static void *loadData(char *filepath, void *buffer, size_t filesize);
+static void saveData(void *buffer, size_t filesize);
 static int loadValue(char *user, char *valueName, int sup);
 static int saveValue(char *user, char *valueName, int valueToAdd, int sup);
-int show_welcome(char *filepath,int startline,int endline);
+static int show_welcome(char *filepath,int startline,int endline);
 static int shop_present(int order, char *kind, char *touserid);
 static int buy_present(int order, char *kind, char *cardname, char *filepath, int price_per,char *touserid);
 
@@ -137,11 +163,11 @@ static void itoa(int i, char *a);
 static void time2string(int num, char *str);
 static int money_police(void);
 static void persenal_stock_info(int stock_num[15], int stock_price[15],
-				int money, char stockboard[STRLEN][MAX_STOCK_NUM],
-				int stock_board[15]);
+		int money, char stockboard[STRLEN][MAX_STOCK_NUM],
+		int stock_board[15]);
 /*atic void persenal_stock_info2(int stock_num[15], int stock_price[15],
-				int money, char *stockboard[],
-				int stock_board[15]);*/
+  int money, char *stockboard[],
+  int stock_board[15]);*/
 //static int shop_card_show(char *card[][2], int group);
 //static int buy_card(char *cardname, int cardnumber);
 static int forq(char *a, char *b);
@@ -185,8 +211,8 @@ static int marry_attend(struct MC_Marry *marryMem, int n);
 static int marry_court(struct MC_Marry *marryMem, int n);
 static int marry_perpare(struct MC_Marry *marryMem, int n);
 static int marry_divorce();
-char *get_date_str(time_t *tt);
-char *get_simple_date_str(time_t *tt);
+static char *get_date_str(time_t *tt);
+static char *get_simple_date_str(time_t *tt);
 static int marry_refresh(struct MC_Marry *marryMem, int n);
 static int marry_recordlist(struct MC_Marry *marryMem, int n);
 static int marry_all_records();
@@ -205,9 +231,7 @@ static int stockboards();
 
 static int money_office();
 
-static void
-showAt(int line, int col, char *str, int flag)
-{
+static void showAt(int line, int col, char *str, int flag) {
 	move(line, col);
 	prints("%s", str);
 	if (flag == 1)
@@ -216,9 +240,8 @@ showAt(int line, int col, char *str, int flag)
 		pressreturn();
 }
 
-int
-moneycenter()  //moneycenter进入界面
-{
+//moneycenter进入界面
+int moneycenter() {
 	int ch;
 	int quit = 0;
 	modify_user_mode(MONEY);
@@ -227,10 +250,21 @@ moneycenter()  //moneycenter进入界面
 		mkdir(DIR_MC"MoneyValues", 0770);
 	if (!file_exist(DIR_CONTRIBUTIONS))
 		mkdir(DIR_CONTRIBUTIONS, 0770);
+
+	mc_shm_init();
+	if (mc == NULL) {
+		// 系统故障
+		clear();
+		move(6, 4);
+		prints("\033[1;31m金融中心系统故障\033[m");
+		pressanykey();
+		return 0;
+	}
+
 	if (!seek_in_file(MC_ADMIN_FILE, currentuser.userid)
-		&& !(currentuser.userlevel & PERM_SYSOP)
-		&& strcmp(currentuser.userid, "macintosh"))
-		if (utmpshm->mc.isMCclosed){
+			&& !(currentuser.userlevel & PERM_SYSOP)
+			&& strcmp(currentuser.userid, "macintosh"))
+		if (mc->isMCclosed){
 			clear();
 			move(6, 4);
 			prints("\033[1;31m兵马俑金融中心今天休息\033[m");
@@ -244,7 +278,7 @@ moneycenter()  //moneycenter进入界面
 	saveValue(currentuser.userid,"multex",1, 9);
 
 	if (seek_in_file(DIR_MC "jijin", currentuser.userid))
-       {
+	{
 		money_bank();
 		moneycenter_byebye();
 		return 0;
@@ -257,8 +291,8 @@ moneycenter()  //moneycenter进入界面
 		move(8, 4);
 		prints("学习大富翁游戏规则请去本站系统区millionaires版。");
 		move(t_lines - 2, 0);
-		prints("\033[1;44m 选 \033[1;46m [1]银行 [2]彩票 [3]赌场 [4]黑帮 [5]丐帮 [6]股市 [7]商场 [8]警署            \n"
-			   "\033[1;44m 单 \033[1;46m [9]杀手 [C]教堂 [A]大富翁管理中心 [Q]离开                                                 ");
+		prints( "\033[1;44m 选 \033[1;46m [1]银行 [2]彩票 [3]赌场 [4]黑帮 [5]丐帮 [6]股市 [7]商场 [8]警署            \n"
+				"\033[1;44m 单 \033[1;46m [9]杀手 [C]教堂 [A]大富翁管理中心 [Q]离开                                    ");
 		ch = igetkey();
 		switch (ch) {
 		case '1':
@@ -309,9 +343,7 @@ moneycenter()  //moneycenter进入界面
 	return 0;
 }  // moneycenter进入界面
 
-static void
-moneycenter_welcome()
-{
+static void moneycenter_welcome() {
 	clear();
 	move(4, 4);
 	prints("兵马俑金融中心门口立着一块大牌子：");
@@ -322,9 +354,7 @@ moneycenter_welcome()
 	pressanykey();
 } // 欢迎界面
 
-static void
-moneycenter_byebye()
-{
+static void moneycenter_byebye() {
 	clear();
 	saveValue(currentuser.userid, "multex", -9,9);
 	move(5, 14);
@@ -333,9 +363,7 @@ moneycenter_byebye()
 } //离开界面
 
 //added by macintosh 20051202
-int
-millionairesrec(char *title, char *str, char *owner)
-{
+int millionairesrec(char *title, char *str, char *owner) {
 	struct fileheader postfile;
 	char filepath[STRLEN], fname[STRLEN];
 	char buf[256];
@@ -358,7 +386,7 @@ millionairesrec(char *title, char *str, char *owner)
 	postfile.filetime = now;
 	postfile.thread = now;
 	fh_setowner(&postfile, owner[0] ? owner : "millionaires", 0);
-	strsncpy(postfile.title, title, sizeof (postfile.title));
+	ytht_strsncpy(postfile.title, title, sizeof(postfile.title));
 
 	//getcross(filepath, fname, "millionairesrec", title);
 	now = time(0);
@@ -391,9 +419,7 @@ millionairesrec(char *title, char *str, char *owner)
 	return 1;
 }//用于系统记录区发文
 
-static int
-limitValue(int value, int sup)
-{
+static int limitValue(int value, int sup) {
 	if (value > sup)
 		return sup;
 	if (value < 0)
@@ -401,25 +427,19 @@ limitValue(int value, int sup)
 	return value;
 }
 
-static int
-savemoneyvalue(char *userid, char *key, char *value)
-{
+static int savemoneyvalue(char *userid, char *key, char *value) {
 	char path[256];
 	sprintf(path, DIR_MC"MoneyValues/%s", userid);
 	return savestrvalue(path, key, value);
 }
 
-static int
-readmoneyvalue(char *userid, char *key, char *value, int size)
-{
+static int readmoneyvalue(char *userid, char *key, char *value, int size) {
 	char path[256];
 	sprintf(path, DIR_MC"MoneyValues/%s", userid);
 	return readstrvalue(path, key, value, size);
 }
 
-static int
-loadValue(char *user, char *valueName, int sup)
-{
+static int loadValue(char *user, char *valueName, int sup) {
 	char value[20];
 	if (readmoneyvalue(user, valueName, value, 20) != 0)
 		return 0;
@@ -427,9 +447,7 @@ loadValue(char *user, char *valueName, int sup)
 		return limitValue(atoi(value), sup);
 }  //读取相关数值
 
-static int
-saveValue(char *user, char *valueName, int valueToAdd, int sup)
-{
+static int saveValue(char *user, char *valueName, int valueToAdd, int sup) {
 	int valueInt;
 	int retv;
 	char value[20];
@@ -438,13 +456,12 @@ saveValue(char *user, char *valueName, int valueToAdd, int sup)
 	valueInt = limitValue(valueInt, sup);
 	snprintf(value, 20, "%d", valueInt);
 	if ((retv = savemoneyvalue(user, valueName, value)) != 0) {
-		errlog("save %s %s %s retv=%d err=%s", currentuser.userid,
-		       valueName, value, retv, strerror(errno));
+		errlog("save %s %s %s retv=%d err=%s", currentuser.userid, valueName, value, retv, strerror(errno));
 	}
 	return 0;
 }  //保存相关数值
 
-void *loadData(char *filepath, void *buffer, size_t filesize) {
+static void *loadData(char *filepath, void *buffer, size_t filesize) {
 	int fd;
 
 	if ((fd = open(filepath, O_RDWR, 0660)) == -1)
@@ -454,35 +471,33 @@ void *loadData(char *filepath, void *buffer, size_t filesize) {
 	return buffer;
 }
 
-void saveData(void *buffer, size_t filesize) {
+static void saveData(void *buffer, size_t filesize) {
 	if (buffer != NULL)
 		munmap(buffer, filesize);
 }
 
-static void // 管理职务系统
-whoTakeCharge(int pos, char *boss)
-{
-	const char feaStr[][20] =
-	    { "bank", "lottery", "gambling", "gang", "beggar", "stock", "shop",
+// 管理职务系统
+static void whoTakeCharge(int pos, char *boss) {
+	const char feaStr[][20] = {
+		"bank", "lottery", "gambling", "gang", "beggar", "stock", "shop",
 		"police","killer","marriage","office"
 	};
 	if (readstrvalue(MC_BOSS_FILE, feaStr[pos - 1], boss, IDLEN + 1) != 0)
 		*boss = '\0';
 }
-static void//slowaction 秘书系统
-whoTakeCharge2(int pos, char *boss)
-{
-	const char feaStr[][20] =
-	    { "bank", "lottery", "gambling", "gang", "beggar", "stock", "shop",
+
+//slowaction 秘书系统
+static void whoTakeCharge2(int pos, char *boss) {
+	const char feaStr[][20] = {
+		"bank", "lottery", "gambling", "gang", "beggar", "stock", "shop",
 		"police","killer","marriage","office"
 	};
 	if (readstrvalue(MC_ASS_FILE, feaStr[pos - 1], boss, IDLEN + 1) != 0)
 		*boss = '\0';
 }
 
-static int //检查进入权限
-check_allow_in()
-{
+//检查进入权限
+static int check_allow_in() {
 	int backTime;
 	int freeTime;
 	int currentTime = time(0);
@@ -499,7 +514,7 @@ check_allow_in()
 	}
 
 	/* 避免多窗口*/
-	if (multex && count_uindex_telnet(usernum) > 1) {
+	if (multex && ythtbbs_cache_UserTable_count_telnet(usernum) > 1) {
 		clear();
 		move(10, 10);
 		prints("您已经在金融中心里啦!\n");
@@ -520,85 +535,71 @@ check_allow_in()
 	if (currentTime < freeTime) {
 		clear();
 		move(10, 10);
-        if((freeTime - currentTime) / 86400>50)
-         saveValue(currentuser.userid, "freeTime",
-					  time(0) + 86400 *1,
-					  2000000000);
-	prints("你已经被兵马俑警署监禁了。还有%d天的监禁。\n",
-	       (freeTime - currentTime) / 86400);
-	num=((freeTime - currentTime) / 86400)*25000+25000;
-	sprintf(genbuf, "是否要求保释，保释金%d",num);
-	if (askyn(genbuf, NA, NA) == YEA) {
-		money =	loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
-		 if (money < num) {
-			move(8, 4);
-			prints ("您的钱不够，共需 %d 兵马俑币", num);
+		if((freeTime - currentTime) / 86400>50)
+			saveValue(currentuser.userid, "freeTime", time(0) + 86400 *1, 2000000000);
+		prints("你已经被兵马俑警署监禁了。还有%d天的监禁。\n", (freeTime - currentTime) / 86400);
+		num=((freeTime - currentTime) / 86400)*25000+25000;
+		sprintf(genbuf, "是否要求保释，保释金%d",num);
+		if (askyn(genbuf, NA, NA) == YEA) {
+			money =	loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
+			if (money < num) {
+				move(8, 4);
+				prints ("您的钱不够，共需 %d 兵马俑币", num);
+				pressanykey();
+				return 0;
+			}
+			else {
+				saveValue(currentuser.userid, MONEY_NAME, -num, MAX_MONEY_NUM);
+				saveValue("BMYpolice", MONEY_NAME, +num, MAX_MONEY_NUM);
+				move(8, 4);
+				prints("保释成功");
+				robTimes = loadValue(currentuser.userid, "rob", 50);
+				saveValue(currentuser.userid, "rob", -robTimes, 50);
+				saveValue(currentuser.userid, "freeTime", -2000000000, 2000000000);
+				ytht_del_from_file(DIR_MC "imprison_list", currentuser.userid, true);
+			}
+		}else{
 			pressanykey();
 			return 0;
-		 	}
-		 else {
-		 	saveValue(currentuser.userid, MONEY_NAME, -num, MAX_MONEY_NUM);
-		  	saveValue("BMYpolice", MONEY_NAME, +num, MAX_MONEY_NUM);
-			move(8, 4);
-			prints("保释成功");
-			robTimes = loadValue(currentuser.userid, "rob", 50);
-                	saveValue(currentuser.userid, "rob", -robTimes, 50);
-			saveValue(currentuser.userid, "freeTime", -2000000000, 2000000000);
-			del_from_file(DIR_MC "imprison_list", currentuser.userid);
-		 	}
-		}else{
-		pressanykey();
-		return 0;
 		}
 	} else
-	if (currentTime > freeTime && freeTime > 0) {
-		clear();
-		move(10, 10);
-		prints("监禁期满，恭喜你重新获得自由！");
-		saveValue(currentuser.userid, "freeTime", -2000000000, 2000000000);
-		del_from_file(DIR_MC "imprison_list", currentuser.userid);
-		pressanykey();
+		if (currentTime > freeTime && freeTime > 0) {
+			clear();
+			move(10, 10);
+			prints("监禁期满，恭喜你重新获得自由！");
+			saveValue(currentuser.userid, "freeTime", -2000000000, 2000000000);
+			ytht_del_from_file(DIR_MC "imprison_list", currentuser.userid, true);
+			pressanykey();
 		}
 
 	/* 欠款不还 */
 	int total_num, lendMoney;
 	backTime = loadValue(currentuser.userid, "back_time", 2000000000);
 	if((backTime - (int) time(0)) / 3600>5000)
-	saveValue(currentuser.userid, "back_time",
-					  time(0) + 1* 86400,
-					  2000000000);
-	lendMoney = loadValue(currentuser.userid, LEND_NAME,
-				  		  MAX_MONEY_NUM);
+		saveValue(currentuser.userid, "back_time", time(0) + 1* 86400, 2000000000);
+	lendMoney = loadValue(currentuser.userid, LEND_NAME, MAX_MONEY_NUM);
 	if (backTime < 0 || lendMoney < 0 ) {
 		saveValue(currentuser.userid, LEND_NAME, -lendMoney, MAX_MONEY_NUM);
 		saveValue(currentuser.userid, "lend_time", -2000000000, 2000000000);
 		saveValue(currentuser.userid, "back_time", -2000000000, 2000000000);
-		}
+	}
 	if (currentTime > backTime && backTime > 0) {
 		clear();
 		move(10, 10);
 		if (askyn("你欠银行的贷款到期了，赶紧还吧？", YEA, NA) == YEA) {
-			total_num =
-			    lendMoney + makeInterest(lendMoney, "lend_time",
-						     utmpshm->mc.lend_rate/10000.0);
-			money = loadValue(currentuser.userid, MONEY_NAME,
-					  MAX_MONEY_NUM);
+			total_num = lendMoney + makeInterest(lendMoney, "lend_time", mc->lend_rate/10000.0);
+			money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
 			if (money < total_num) {
 				move(11, 10);
 				prints("你的钱不够偿还贷款。");
 				pressanykey();
 				return 0;
 			}
-			saveValue(currentuser.userid,
-				  MONEY_NAME, -total_num, MAX_MONEY_NUM);
-			saveValue(currentuser.userid, LEND_NAME,
-				  -MAX_MONEY_NUM, MAX_MONEY_NUM);
-			saveValue(currentuser.userid,
-				  "lend_time", -2000000000, 2000000000);
-			saveValue(currentuser.userid,
-				  "back_time", -2000000000, 2000000000);
-			del_from_file(DIR_MC "special_lend",
-				      currentuser.userid);
+			saveValue(currentuser.userid, MONEY_NAME, -total_num, MAX_MONEY_NUM);
+			saveValue(currentuser.userid, LEND_NAME, -MAX_MONEY_NUM, MAX_MONEY_NUM);
+			saveValue(currentuser.userid, "lend_time", -2000000000, 2000000000);
+			saveValue(currentuser.userid, "back_time", -2000000000, 2000000000);
+			ytht_del_from_file(DIR_MC "special_lend", currentuser.userid, true);
 			move(12, 10);
 			prints("好了，你现在无债一身轻啦。");
 			pressanykey();
@@ -612,9 +613,8 @@ check_allow_in()
 	return 1;
 }
 
-static int  //计算利息
-makeInterest(int basicMoney, char *valueName, float rate)
-{
+//计算利息
+static int makeInterest(int basicMoney, char *valueName, float rate) {
 	int lastTime;
 	int day;
 	int maxDay;
@@ -633,9 +633,7 @@ makeInterest(int basicMoney, char *valueName, float rate)
 	return 0;
 }
 
-static int
-makeRumor(int num)
-{
+static int makeRumor(int num) {
 	if (random() % 3) {
 		num += (random() % num) / 5;
 	} else {
@@ -644,9 +642,7 @@ makeRumor(int num)
 	return limitValue(num, MAX_MONEY_NUM);
 }
 
-static void
-time2string(int num, char *str)
-{
+static void time2string(int num, char *str) {
 	int i;
 	for (i = 0; num > 0; i++, num /= 10) {
 		str[9 - i] = num % 10 + '0';
@@ -654,9 +650,8 @@ time2string(int num, char *str)
 	str[10] = '\0';
 }
 
-static int //计算是否到领取薪水的时候
-newSalary()
-{
+//计算是否到领取薪水的时候
+static int newSalary() {
 	char lastSalaryTime[20];
 	return 1;//暂时作废
 
@@ -664,45 +659,36 @@ newSalary()
 		if (time(0) < atoi(lastSalaryTime) + 30 * 86400)
 			return 0;
 		return 1;
-/*
-		time2string(time(0), genbuf);
-		if (savestrvalue(DIR_MC "etc_time", "salary_time", genbuf) == 0) {
-			return 1;
-		}
-		return 0;
-*/
 	}
 	return 0;
 }
 
-static int //计算薪水
-makeSalary()
-{
+//计算薪水
+static int makeSalary() {
 	if (currentuser.userlevel & PERM_SYSOP) {
-                return SALARY_I;
-		}
+		return SALARY_I;
+	}
 	if (currentuser.userlevel & PERM_BOARDS) {
 		return SALARY_III;
-		}
+	}
 	if (currentuser.userlevel & PERM_OBOARDS ||
-            currentuser.userlevel & PERM_ACCOUNTS ||
-            currentuser.userlevel & PERM_ARBITRATE ||
-            currentuser.userlevel & PERM_SPECIAL7 ||
-            currentuser.userlevel & PERM_ACBOARD) {
-                return SALARY_II;
-		}
+			currentuser.userlevel & PERM_ACCOUNTS ||
+			currentuser.userlevel & PERM_ARBITRATE ||
+			currentuser.userlevel & PERM_SPECIAL7 ||
+			currentuser.userlevel & PERM_ACBOARD) {
+		return SALARY_II;
+	}
 	return 0;
 }
 
-static void //职务任免系统
-sackOrAppoint(int pos, char *boss, int msgType, char *msg)
-{
+//职务任免系统
+static void sackOrAppoint(int pos, char *boss, int msgType, char *msg) {
 
 	char head[10];
 	char in[10];
 	char end[10];
-	char posDesc[][40] =
-	    { "兵马俑银行行长", "兵马俑博彩公司经理", "兵马俑赌场经理",
+	char posDesc[][40] = {
+		"兵马俑银行行长", "兵马俑博彩公司经理", "兵马俑赌场经理",
 		"兵马俑黑帮帮主", "兵马俑丐帮帮主", "兵马俑证监会主席",
 		"兵马俑商场经理", "兵马俑警署署长","兵马俑杀手帮主",
 		"兵马俑婚姻管理办公室主任", "兵马俑大富翁管理中心主任"
@@ -719,15 +705,14 @@ sackOrAppoint(int pos, char *boss, int msgType, char *msg)
 	sprintf(msg, "%s %s %s%s%s", head, boss, in, posDesc[pos - 1], end);
 
 }
-static void //秘书任免系统
-sackOrAppoint2(int pos, char *boss, int msgType, char *msg)
-{
 
+//秘书任免系统
+static void sackOrAppoint2(int pos, char *boss, int msgType, char *msg) {
 	char head[10];
 	char in[10];
 	char end[10];
-	char posDesc[][40] =
-	    { "兵马俑银行行长秘书", "兵马俑博彩公司经理秘书", "兵马俑赌场经理秘书",
+	char posDesc[][40] = {
+		"兵马俑银行行长秘书", "兵马俑博彩公司经理秘书", "兵马俑赌场经理秘书",
 		"兵马俑黑帮帮主秘书", "兵马俑丐帮帮主秘书", "兵马俑证监会主席秘书",
 		"兵马俑商场经理秘书", "兵马俑警署署长秘书","兵马俑杀手帮主秘书",
 		"兵马俑婚姻管理办公室主任秘书", "兵马俑大富翁管理中心秘书"
@@ -745,9 +730,8 @@ sackOrAppoint2(int pos, char *boss, int msgType, char *msg)
 
 }
 
-static int //银行系统
-money_bank()
-{
+//银行系统
+static int money_bank() {
 	int ch;
 	int quit = 0;
 	int num, money, credit, total_num;
@@ -766,205 +750,75 @@ money_bank()
 		move(8, 16);
 		prints("兵马俑银行欢迎您的光临！");
 		move(t_lines - 1, 0);
-		prints
-		    ("\033[1;44m 选单 \033[1;46m [1]换钱 [2]转账 [3]储蓄 [4]贷款 [5]工资 [6]行长办公室 [Q]离开\033[m");
+		prints("\033[1;44m 选单 \033[1;46m [1]换钱 [2]转账 [3]储蓄 [4]贷款 [5]工资 [6]行长办公室 [Q]离开\033[m");
 		ch = igetkey();
 		switch (ch) {
-		case '1':
-			clear();
-			money_show_stat("兵马俑银行兑换窗口");
-//			convert_rate = utmpshm->mc.ave_score / 50;
-			convert_rate = 100;
-			move(4, 4);
-			prints
-			    ("您可以通过变卖文章数获得兵马俑币。今天的汇率是 1:%d",
-			     convert_rate);
-			move(5, 4);
-			prints("\033[1;31m注意:文章数一旦变卖概不退还!\033[0m");
-			getdata(6, 4, "您要变卖多少文章数？[0]: ", genbuf, 7,
-				DOECHO, YEA);
-			num = atoi(genbuf);
-			if (num <= 0) {
-				break;
-			}
-			move(7, 4);
-			sprintf(genbuf,
-				"确定要变卖 %d 文章数，换取 %d 兵马俑币吗？",
-				num, num * convert_rate);
-			if (askyn(genbuf, NA, NA) == YEA) {
-				set_safe_record();
-				if (currentuser.numposts < num) {
-					move(8, 4);
-					prints("您没有那么多文章数...");
-					pressanykey();
+			case '1':
+				clear();
+				money_show_stat("兵马俑银行兑换窗口");
+				convert_rate = 100;
+				move(4, 4);
+				prints("您可以通过变卖文章数获得兵马俑币。今天的汇率是 1:%d", convert_rate);
+				move(5, 4);
+				prints("\033[1;31m注意:文章数一旦变卖概不退还!\033[0m");
+				getdata(6, 4, "您要变卖多少文章数？[0]: ", genbuf, 7, DOECHO, YEA);
+				num = atoi(genbuf);
+				if (num <= 0) {
 					break;
 				}
-				currentuser.numposts -= num;
-				substitute_record(PASSFILE, &currentuser,
-						  sizeof (currentuser),
-						  usernum);
-				saveValue(currentuser.userid, MONEY_NAME,
-					  num * convert_rate, MAX_MONEY_NUM);
-				move(8, 4);
-				prints("交易成功，这里是您的 %d 兵马俑币。",
-				       num * convert_rate);
-				sprintf(genbuf, "%s进行银行交易(卖文章)", currentuser.userid);
-				sprintf(buf, "%s卖掉%d文章数, 换得 %d兵马俑币", currentuser.userid, num, num * convert_rate);
-				millionairesrec(genbuf, buf, "银行交易");
-				pressanykey();
-			}
-			break;
-		case '2':
-			money_show_stat("兵马俑银行转账窗口");
-			move(4, 4);
-            if(utmpshm->mc.transfer_rate == 0){
-                // 重启bbsd后重新读取转账手续费到内存中 by IronBlood@bmy 20120118
-                char tmp_transfer_rate[512];
-                readstrvalue(MC_RATE_FILE, "transfer_rate", tmp_transfer_rate, sizeof(512));
-                utmpshm->mc.transfer_rate = atoi(tmp_transfer_rate);
-            }
-			transfer_rate = utmpshm->mc.transfer_rate / 10000.0;
-			sprintf(genbuf,
-				"最小转账金额 1000 兵马俑币。手续费 %.2f％（最高收取 100000 兵马俑币）",
-				transfer_rate * 100);
-			prints("%s", genbuf);
-			move(5, 4);
-			usercomplete("转账给谁？", uident);
-			if (uident[0] == '\0')
+				move(7, 4);
+				sprintf(genbuf, "确定要变卖 %d 文章数，换取 %d 兵马俑币吗？", num, num * convert_rate);
+				if (askyn(genbuf, NA, NA) == YEA) {
+					set_safe_record();
+					if (currentuser.numposts < num) {
+						move(8, 4);
+						prints("您没有那么多文章数...");
+						pressanykey();
+						break;
+					}
+					currentuser.numposts -= num;
+					substitute_record(PASSFILE, &currentuser, sizeof (currentuser), usernum);
+					saveValue(currentuser.userid, MONEY_NAME, num * convert_rate, MAX_MONEY_NUM);
+					move(8, 4);
+					prints("交易成功，这里是您的 %d 兵马俑币。", num * convert_rate);
+					sprintf(genbuf, "%s进行银行交易(卖文章)", currentuser.userid);
+					sprintf(buf, "%s卖掉%d文章数, 换得 %d兵马俑币", currentuser.userid, num, num * convert_rate);
+					millionairesrec(genbuf, buf, "银行交易");
+					pressanykey();
+				}
 				break;
-			if (!getuser(uident)) {
-				move(6, 4);
-				prints("错误的使用者代号...");
-				pressreturn();
-				break;
-			}
-			if (lookupuser.dietime > 0) {
-				move(6, 4);
-				prints("阳间的钱只有烧才能给死人...");
-				pressreturn();
-				break;
-			}
-			if (seek_in_file(DIR_MC "mingren", currentuser.userid)){
-				if (seek_in_file(DIR_MC "jijin", currentuser.userid));
-				else if (!seek_in_file(DIR_MC "mingren", uident)) {
+			case '2':
+				money_show_stat("兵马俑银行转账窗口");
+				move(4, 4);
+				transfer_rate = mc->transfer_rate / 10000.0;
+				sprintf(genbuf, "最小转账金额 1000 兵马俑币。手续费 %.2f％（最高收取 100000 兵马俑币）", transfer_rate * 100);
+				prints("%s", genbuf);
+				move(5, 4);
+				usercomplete("转账给谁？", uident);
+				if (uident[0] == '\0')
+					break;
+				if (!getuser(uident)) {
 					move(6, 4);
-					prints
-					    ("对不起，银行不允许黄马褂向外转帐。");
+					prints("错误的使用者代号...");
 					pressreturn();
 					break;
 				}
-			}
-			getdata(6, 4, "转账多少兵马俑币？[0]", buf, 10,
-				DOECHO, YEA);
-			if (buf[0] == '\0') {
-				break;
-			}
-			num = atoi(buf);
-			if (num < 1000) {
-				move(7, 4);
-				prints("对不起，未达到最小交易金额。");
-				pressanykey();
-				break;
-			}
-			if (currentuser.stay < 86400) {
-				move(7, 4);
-				prints
-				    ("对不起，银行不向未成年人提供转帐业务。");
-				pressanykey();
-				break;
-			}
-			move(7, 4);
-			sprintf(genbuf, "确定转账给 %s %d 兵马俑币吗？", uident,
-				num);
-			if (askyn(genbuf, NA, NA) == YEA) {
-				money =
-				    loadValue(currentuser.userid, MONEY_NAME,
-					      MAX_MONEY_NUM);
-				if (num * transfer_rate >= 100000) {
-					total_num = num + 100000;
-				} else {
-					total_num = num * (1.0 + transfer_rate);
-				}
-				if (money < total_num) {
-					move(8, 4);
-					prints
-					    ("您的钱不够，加手续费此次交易共需 %d 兵马俑币",
-					     total_num);
-					pressanykey();
+				if (lookupuser.dietime > 0) {
+					move(6, 4);
+					prints("阳间的钱只有烧才能给死人...");
+					pressreturn();
 					break;
 				}
-				saveValue(currentuser.userid, MONEY_NAME,
-					  -total_num, MAX_MONEY_NUM);
-				saveValue(uident, MONEY_NAME, num,
-					  MAX_MONEY_NUM);
-
-				char notebuf[512];
-		 		char note[3][STRLEN];
-				int i, j;
-				move(9, 0);
-				prints("还有什么话要附上吗？[可以写3行]");
-				bzero(note, sizeof (note));
-				for (i = 0; i < 3; i++) {
-					getdata(10 + i, 0, ": ", note[i], STRLEN - 1, DOECHO, NA);
-					if (note[i][0] == '\0')
+				if (seek_in_file(DIR_MC "mingren", currentuser.userid)){
+					if (seek_in_file(DIR_MC "jijin", currentuser.userid));
+					else if (!seek_in_file(DIR_MC "mingren", uident)) {
+						move(6, 4);
+						prints("对不起，银行不允许黄马褂向外转帐。");
+						pressreturn();
 						break;
+					}
 				}
-		 		move(15, 4);
-				prints("转帐成功，我们已经通知了您的朋友。");
-				sprintf(title, "您的朋友 %s 给您送钱来了",
-					currentuser.userid);
-				sprintf(notebuf,
-					"您的朋友 %s 通过兵马俑银行给您转帐了 %d 兵马俑币，请查收。"
-					"\n\n以下是 %s 的附言:\n",
-					currentuser.userid, num, currentuser.userid);
-				for (j = 0; j < i; j++){
-					strcat(notebuf, note[j]);
-					strcat(notebuf, "\n");
-				}
-				mail_buf(notebuf, uident, title);
-				if (seek_in_file(DIR_MC "mingren", currentuser.userid))
-				{
-					sprintf(title, "%s 向 %s 转帐", currentuser.userid, uident);
-					sprintf(buf, " %s 通过兵马俑银行向 %s 转帐了 %d 兵马俑币", currentuser.userid, uident, num);
-					mail_buf(buf, "millionaires", title);
-				}
-				if (num >= RUMOR_MONEY && random() % 2) {
-					sprintf(genbuf,
-						"据说 %s 收到了一笔 %d 兵马俑币的转帐！",
-						uident, makeRumor(num));
-					deliverreport
-					    ("[谣言]来自兵马俑银行的消息",
-					     genbuf);
-				}
-				sprintf(genbuf, "%s进行银行交易(转账)", currentuser.userid);
-				sprintf(buf,"%s转帐给%s %d兵马俑币", currentuser.userid, uident, num);
-				millionairesrec(genbuf, buf, "银行交易");
-				pressanykey();
-			}
-			break;
-		case '3':
-			clear();
-			money_show_stat("兵马俑银行储蓄窗口");
-			move(4, 4);
-            if(utmpshm->mc.deposit_rate == 0){
-                // 重启bbsd后重新读取存款利率到内存中 by IronBlood@bmy 20120118
-                char tmp_deposit_rate[512];
-                readstrvalue(MC_RATE_FILE, "deposit_rate", tmp_deposit_rate, sizeof(512));
-                utmpshm->mc.deposit_rate = atoi(tmp_deposit_rate);
-            }
-			deposit_rate = utmpshm->mc.deposit_rate / 10000.0;
-			sprintf(genbuf,
-				"最小存取款金额 1000 兵马俑币。存款利率（日）为 %.2f％",
-				deposit_rate * 100);
-			prints("%s", genbuf);
-			move(t_lines - 1, 0);
-			prints
-			    ("\033[1;44m 选单 \033[1;46m [1]存款 [2]取款 [Q]离开\033[m");
-			ch = igetkey();
-			switch (ch) {
-			case '1':
-				getdata(6, 4, "您要存多少兵马俑币?[0]", buf,
-					10, DOECHO, YEA);
+				getdata(6, 4, "转账多少兵马俑币？[0]", buf, 10, DOECHO, YEA);
 				if (buf[0] == '\0') {
 					break;
 				}
@@ -972,713 +826,647 @@ money_bank()
 				if (num < 1000) {
 					move(7, 4);
 					prints("对不起，未达到最小交易金额。");
+					pressanykey();
+					break;
+				}
+				if (currentuser.stay < 86400) {
+					move(7, 4);
+					prints("对不起，银行不向未成年人提供转帐业务。");
 					pressanykey();
 					break;
 				}
 				move(7, 4);
-				sprintf(genbuf, "确定存 %d 兵马俑币吗?", num);
-				if (askyn(genbuf, NA, NA) == NA) {
-					break;
-				}
-				money =
-				    loadValue(currentuser.userid, MONEY_NAME,
-					      MAX_MONEY_NUM);
-				credit =
-				    loadValue(currentuser.userid, CREDIT_NAME,
-					      MAX_MONEY_NUM);
-				if (money < num) {
-					move(8, 4);
-					prints("您没有这么多钱可以存。");
-					pressanykey();
-					break;
-				}
-				if (credit + num > MAX_MONEY_NUM) {
-					move(8, 4);
-					prints("空守着这么多存款做什么呢？");
-					pressanykey();
-					break;
-				}
-				/* 扣钱 */
-				saveValue(currentuser.userid, MONEY_NAME, -num,
-					  MAX_MONEY_NUM);
-				/* 计算原先存款的利息 */
-				saveValue(currentuser.userid, INTEREST_NAME,
-					  makeInterest(credit, "deposit_time",
-						       deposit_rate),
-					  MAX_MONEY_NUM);
-				/* 存款 */
-				saveValue(currentuser.userid, CREDIT_NAME,
-					  num, MAX_MONEY_NUM);
-				saveValue(currentuser.userid,
-					  "deposit_time", -2000000000,
-					  2000000000);
-				/* 新的存款开始时间 */
-				saveValue(currentuser.userid, "deposit_time",
-					  time(0), 2000000000);
-				move(8, 4);
-				prints
-				    ("交易成功，您现在存有 %d 兵马俑币，利息共计 %d 兵马俑币。",
-				     loadValue(currentuser.userid, CREDIT_NAME,
-					       MAX_MONEY_NUM),
-				     loadValue(currentuser.userid,
-					       INTEREST_NAME, MAX_MONEY_NUM));
-				if (num >= RUMOR_MONEY && random() % 2) {
-					sprintf(genbuf,
-						"有人目击 %s 在兵马俑银行存入了 %d 的兵马俑币！",
-						currentuser.userid,
-						makeRumor(num));
-					deliverreport
-					    ("[谣言]来自兵马俑银行的消息",
-					     genbuf);
-				}
-				pressanykey();
-				break;
-			case '2':
-				getdata(6, 4, "您要取多少兵马俑币?[0]", buf,
-					10, DOECHO, YEA);
-				if (buf[0] == '\0') {
-					break;
-				}
-				num = atoi(buf);
-				if (num < 1000) {
-					move(7, 4);
-					prints("对不起，未达到最小交易金额。");
-					pressanykey();
-					break;
-				}
-				move(7, 4);
-				sprintf(genbuf, "确定取 %d 兵马俑币吗?", num);
-				if (askyn(genbuf, NA, NA) == NA) {
-					break;
-				}
-				credit =
-				    loadValue(currentuser.userid, CREDIT_NAME,
-					      MAX_MONEY_NUM);
-				if (num > credit) {
-					move(8, 4);
-					prints("您没有那么多存款。");
-					pressanykey();
-					break;
-				}
-				withdrawAll = 0;
-				total_num = num;
-				if (num == credit) {
-					move(8, 4);
-					sprintf(genbuf,	"是否一并取出 %d 兵马俑币的存款利息？",
-						loadValue(currentuser.userid, INTEREST_NAME, MAX_MONEY_NUM)
-                        + makeInterest(num, "deposit_time", deposit_rate));
-					if (askyn(genbuf, NA, NA) == YEA) {
-						/* 存款加利息 */
-						total_num =
-						    num + makeInterest(num,
-								       "deposit_time",
-								       deposit_rate)
-						    +
-						    loadValue(currentuser.
-							      userid,
-							      INTEREST_NAME,
-							      MAX_MONEY_NUM);
-						withdrawAll = 1;
+				sprintf(genbuf, "确定转账给 %s %d 兵马俑币吗？", uident, num);
+				if (askyn(genbuf, NA, NA) == YEA) {
+					money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
+					if (num * transfer_rate >= 100000) {
+						total_num = num + 100000;
+					} else {
+						total_num = num * (1.0 + transfer_rate);
 					}
-				}
-
-				credit =
-				    loadValue(currentuser.userid, CREDIT_NAME,
-					      MAX_MONEY_NUM);
-				if (num > credit) {
-					move(9, 4);
-					prints("您没有那么多存款。");
-					pressanykey();
-					break;
-				}
-				/* 减去取款 */
-				saveValue(currentuser.userid, CREDIT_NAME,
-					  -num, MAX_MONEY_NUM);
-				/* 取得现金 */
-				saveValue(currentuser.userid, MONEY_NAME,
-					  total_num, MAX_MONEY_NUM);
-				/* 计算所取的钱的利息 */
-				if (withdrawAll) {
-					saveValue(currentuser.userid,
-						  INTEREST_NAME, -MAX_MONEY_NUM,
-						  MAX_MONEY_NUM);
-				} else {
-					saveValue(currentuser.userid,
-						  INTEREST_NAME,
-						  makeInterest(num,
-							       "deposit_time",
-							       deposit_rate),
-						  MAX_MONEY_NUM);
-				}
-				move(8, 4);
-				prints
-				    ("交易成功，您现在存有 %d 兵马俑币，存款利息共计 %d 兵马俑币。",
-				     loadValue(currentuser.userid, CREDIT_NAME,
-					       MAX_MONEY_NUM),
-				     loadValue(currentuser.userid,
-					       INTEREST_NAME, MAX_MONEY_NUM));
-				pressanykey();
-				break;
-			case 'Q':
-			case 'q':
-				break;
-			}
-			break;
-		case '4':
-			clear();
-			money_show_stat("兵马俑银行贷款窗口");
-			move(4, 4);
-            if(utmpshm->mc.lend_rate == 0){
-                // 重启bbsd后重新读取贷款利率到内存中 by IronBlood@bmy 20120118
-                char tmp_lend_rate[512];
-                readstrvalue(MC_RATE_FILE, "lend_rate", tmp_lend_rate, sizeof(512));
-                utmpshm->mc.lend_rate = atoi(tmp_lend_rate);
-            }
-			lend_rate = utmpshm->mc.lend_rate / 10000.0;
-			sprintf(genbuf,
-				"最小交易金额 1000 兵马俑币。贷款利率（日）为 %.2f％",
-				lend_rate * 100);
-			prints("%s", genbuf);
-			move(5, 4);
-			lendMoney =
-			    loadValue(currentuser.userid, LEND_NAME,
-				      MAX_MONEY_NUM);
-			total_num =
-			    lendMoney + makeInterest(lendMoney, "lend_time",
-						     lend_rate);
-			lendTime =
-			    loadValue(currentuser.userid, "lend_time",
-				      2000000000);
-			if (lendTime > 0) {
-				sprintf(genbuf,
-					"您贷款 %d 兵马俑币，当前本息共计 %d 兵马俑币，距到期 %d 小时。",
-					lendMoney,
-					total_num,
-					(loadValue
-					 (currentuser.userid, "back_time",
-					  2000000000) - (int) time(0)) / 3600);
-			} else {
-				sprintf(genbuf, "您目前没有贷款。");
-			}
-			prints("%s", genbuf);
-			move(t_lines - 1, 0);
-			prints
-			    ("\033[1;44m 选单 \033[1;46m [1]贷款 [2]还贷 [Q]离开\033[m");
-			ch = igetkey();
-			switch (ch) {
-			case '1':
-				move(6, 4);
-				sprintf(genbuf,
-					"按照银行的规定，您目前最多可以申请贷款 %d 兵马俑币。",
-					countexp(&currentuser) * 100);
-				prints("%s", genbuf);
-				getdata(7, 4, "您要贷款多少兵马俑币?[0]", buf,
-					10, DOECHO, YEA);
-				if (buf[0] == '\0') {
-					break;
-				}
-				num = atoi(buf);
-
-				if (lendMoney > 0) {
-					move(8, 4);
-					prints("请先还清贷款。");
-					pressanykey();
-					break;
-				}
-				if (num < 1000) {
-					move(8, 4);
-					prints("对不起，未达到最小交易金额。");
-					pressanykey();
-					break;
-				}
-				if (num > countexp(&currentuser) * 100) {
-					move(8, 4);
-					prints
-					    ("对不起，您要求贷款的金额超过银行规定。");
-					pressanykey();
-					break;
-				}
-				inputValid = 0;
-				while (!inputValid) {
-					getdata(8, 4,
-						"您要贷款多少天？[3-30]: ", buf,
-						3, DOECHO, YEA);
-					if (atoi(buf) > 2 && atoi(buf) < 31) {
-						inputValid = 1;
-					}
-				}
-				saveValue(currentuser.userid, MONEY_NAME, num,
-					  MAX_MONEY_NUM);
-				saveValue(currentuser.userid, LEND_NAME, num,
-					  MAX_MONEY_NUM);
-				saveValue(currentuser.userid, "lend_time",
-					  time(0), 2000000000);
-				saveValue(currentuser.userid, "back_time",
-					  time(0) + atoi(buf) * 86400,
-					  2000000000);
-				move(9, 4);
-				prints("您的贷款手续已经完成。请到期还款。");
-				sprintf(genbuf, "%s进行银行交易(贷款)", currentuser.userid);
-				sprintf(buf, "%s贷款%d兵马俑币%d天", currentuser.userid, num, atoi(buf));
-				millionairesrec(genbuf, buf, "银行交易");
-				pressanykey();
-				break;
-			case '2':
-				move(6, 4);
-				backTime =
-				    loadValue(currentuser.userid, "back_time", 2000000000);
-				if((backTime - (int) time(0)) / 3600>5000||(backTime - (int) time(0)) / 3600<-30)
-                			saveValue(currentuser.userid, "back_time", time(0) + 1* 86400, 2000000000);
-				lendTime =
-				    loadValue(currentuser.userid, "lend_time", 2000000000);
-				if (lendTime == 0) {
-					prints("您记错了吧？没有找到您的贷款记录啊。");
-					pressanykey();
-					break;
-				}
-				if (time(0) - lendTime < 86400) {
-					prints ("对不起，银行不接受未产生利息的还贷。");
-					pressanykey();
-					break;
-				}
-				if (askyn("您要现在偿还贷款吗？", NA, NA) == YEA) {
-					money = loadValue(currentuser.userid,
-						      MONEY_NAME,
-						      MAX_MONEY_NUM);
-					move(7, 4);
 					if (money < total_num) {
-						prints ("对不起，您的钱不够偿还贷款。");
+						move(8, 4);
+						prints("您的钱不够，加手续费此次交易共需 %d 兵马俑币", total_num);
 						pressanykey();
 						break;
 					}
-					saveValue(currentuser.userid,
-						  MONEY_NAME, -total_num,
-						  MAX_MONEY_NUM);
-					saveValue(currentuser.userid, LEND_NAME,
-						  -MAX_MONEY_NUM,
-						  MAX_MONEY_NUM);
-					saveValue(currentuser.userid,
-						  "lend_time", -2000000000,
-						  2000000000);
-					saveValue(currentuser.userid,
-						  "back_time", -2000000000,
-						  2000000000);
-					del_from_file(DIR_MC "special_lend",
-						      currentuser.userid);
-					sprintf(genbuf, "%s进行银行交易(还贷)", currentuser.userid);
-					sprintf(buf,"%s偿还贷款本利共%d兵马俑币", currentuser.userid, total_num);
+					saveValue(currentuser.userid, MONEY_NAME, -total_num, MAX_MONEY_NUM);
+					saveValue(uident, MONEY_NAME, num, MAX_MONEY_NUM);
+
+					char notebuf[512];
+					char note[3][STRLEN];
+					int i, j;
+					move(9, 0);
+					prints("还有什么话要附上吗？[可以写3行]");
+					bzero(note, sizeof (note));
+					for (i = 0; i < 3; i++) {
+						getdata(10 + i, 0, ": ", note[i], STRLEN - 1, DOECHO, NA);
+						if (note[i][0] == '\0')
+							break;
+					}
+					move(15, 4);
+					prints("转帐成功，我们已经通知了您的朋友。");
+					sprintf(title, "您的朋友 %s 给您送钱来了", currentuser.userid);
+					sprintf(notebuf,
+							"您的朋友 %s 通过兵马俑银行给您转帐了 %d 兵马俑币，请查收。"
+							"\n\n以下是 %s 的附言:\n",
+							currentuser.userid, num, currentuser.userid);
+					for (j = 0; j < i; j++){
+						strcat(notebuf, note[j]);
+						strcat(notebuf, "\n");
+					}
+					mail_buf(notebuf, uident, title);
+					if (seek_in_file(DIR_MC "mingren", currentuser.userid))
+					{
+						sprintf(title, "%s 向 %s 转帐", currentuser.userid, uident);
+						sprintf(buf, " %s 通过兵马俑银行向 %s 转帐了 %d 兵马俑币", currentuser.userid, uident, num);
+						mail_buf(buf, "millionaires", title);
+					}
+					if (num >= RUMOR_MONEY && random() % 2) {
+						sprintf(genbuf, "据说 %s 收到了一笔 %d 兵马俑币的转帐！", uident, makeRumor(num));
+						deliverreport("[谣言]来自兵马俑银行的消息", genbuf);
+					}
+					sprintf(genbuf, "%s进行银行交易(转账)", currentuser.userid);
+					sprintf(buf,"%s转帐给%s %d兵马俑币", currentuser.userid, uident, num);
 					millionairesrec(genbuf, buf, "银行交易");
-					prints
-					    ("您的贷款已经还清。银行乐见并铭记您的诚信。");
 					pressanykey();
 				}
 				break;
-			case 'q':
-			case 'Q':
-				break;
-			}
-			break;
-		case '5':
-			clear();
-			money_show_stat("兵马俑银行工资代办窗口");
-			salary = makeSalary();
-			if (salary == 0) {
-				move(10, 10);
-				prints("对不起，您不是本站公务员，没有工资。");
-				pressanykey();
-				break;
-			}
-			if (utmpshm->mc.isSalaryTime == 0) {
-				move(10, 10);
-				prints
-				    ("对不起，银行还没有收到工资划款。请过几天再来。");
-				pressanykey();
-				break;
-			}
-			if (seek_in_file
-			    (DIR_MC "salary_list", currentuser.userid)) {
-				move(10, 10);
-				prints("您已经领过本月工资。还是勤奋工作吧！");
-				pressanykey();
-				break;
-			}
-			move(6, 4);
-			sprintf(genbuf, "您本月的工资 %d 兵马俑币已经划到银行。现在领取吗？",	salary);
-			if (askyn(genbuf, NA, NA) == YEA) {
-				saveValue(currentuser.userid,
-					  MONEY_NAME, salary, MAX_MONEY_NUM);
-				addtofile(DIR_MC "salary_list",
-					  currentuser.userid);
-				move(8, 4);
-				prints
-				    ("这里是您的工资。感谢您为兵马俑付出的工作!");
-				pressanykey();
-				break;
-			}
-			break;
-		case '6':
-			clear();
-			money_show_stat("兵马俑银行行长办公室");
-			move(6, 4);
-			char name[20];
-			whoTakeCharge2(1, name);
-			whoTakeCharge(1, uident);
-			if (strcmp(currentuser.userid, uident)) {
-				prints
-				    ("秘书%s拦住了你，柔声说道:“行长%s正在里面办公，请勿打扰。”",
-				    name,uident);
-				pressanykey();
-				break;
-			} else {
-				prints("请选择操作代号:");
-				move(7, 6);
-				prints
-				    ("1. 调整存款利率                  2. 调整贷款利率");
-				move(8, 6);
-				prints
-				    ("3. 调整转帐费率                  4. 审批贷款");
-				move(9, 6);
-				prints
-				    ("5. 调查用户帐户                  6. 特别贷款名单");
-				move(10, 6);
-				prints
-				    ("7. 发放工资                      8. 特殊拨款");
-				move(11,6);
-				prints
-				    ("9. 辞职                          Q. 退出");
+			case '3':
+				clear();
+				money_show_stat("兵马俑银行储蓄窗口");
+				move(4, 4);
+				deposit_rate = mc->deposit_rate / 10000.0;
+				sprintf(genbuf,
+						"最小存取款金额 1000 兵马俑币。存款利率（日）为 %.2f％",
+						deposit_rate * 100);
+				prints("%s", genbuf);
+				move(t_lines - 1, 0);
+				prints("\033[1;44m 选单 \033[1;46m [1]存款 [2]取款 [Q]离开\033[m");
 				ch = igetkey();
 				switch (ch) {
-				case '1':
-					getdata(12, 4,
-						"设定新的存款利率[10-250]: ",
-						buf, 4, DOECHO, YEA);
-					if (atoi(buf) < 10 || atoi(buf) > 250) {
-						break;
-					}
-					move(14, 4);
-					sprintf(genbuf,
-						"新的存款利率是 %.2f％，确定吗？",
-						atoi(buf) / 100.0);
-					if (askyn(genbuf, NA, NA) == YEA) {
-						savestrvalue(MC_RATE_FILE,
-							     "deposit_rate",
-							     buf);
-						utmpshm->mc.deposit_rate =
-						    atoi(buf);
-						move(15, 4);
-						prints("设置完毕。");
-						sprintf(genbuf,
-							"新的存款利率为 %.2f％ 。",
-							utmpshm->mc.
-							deposit_rate / 100.0);
-						deliverreport
-						    ("[公告]兵马俑银行调整存款利率",
-						     genbuf);
-						sprintf(genbuf, "%s行使管理权限",currentuser.userid);
-						sprintf(buf, "设置新的存款利率为 %.2f％ 。", utmpshm->mc.
-							deposit_rate / 100.0);
-						millionairesrec(genbuf, buf, "");
-						pressanykey();
-					}
-					break;
-				case '2':
-					getdata(12, 4,
-						"设定新的贷款利率[10-250]: ",
-						buf, 4, DOECHO, YEA);
-					if (atoi(buf) < 10 || atoi(buf) > 250) {
-						break;
-					}
-					move(14, 4);
-					sprintf(genbuf,
-						"新的贷款利率是 %.2f％，确定吗？",
-						atoi(buf) / 100.0);
-					if (askyn(genbuf, NA, NA) == YEA) {
-						savestrvalue(MC_RATE_FILE,
-							     "lend_rate", buf);
-						utmpshm->mc.lend_rate =
-						    atoi(buf);
-						move(15, 4);
-						prints("设置完毕。");
-						sprintf(genbuf,
-							"新的贷款利率为 %.2f％ 。",
-							utmpshm->mc.lend_rate /
-							100.0);
-						deliverreport
-						    ("[公告]兵马俑银行调整贷款利率",
-						     genbuf);
-						sprintf(genbuf, "%s行使银行管理权限",currentuser.userid);
-						sprintf(buf, "设置新的贷款利率为 %.2f％ 。", utmpshm->mc.
-							lend_rate / 100.0);
-						millionairesrec(genbuf, buf, "");
-						pressanykey();
-					}
-					break;
-				case '3':
-					getdata(12, 4,
-						"设定新的转帐费率[10-250]: ",
-						buf, 4, DOECHO, YEA);
-					if (atoi(buf) < 10 || atoi(buf) > 250) {
-						break;
-					}
-					move(14, 4);
-					sprintf(genbuf,
-						"新的转帐费率是 %.2f％，确定吗？",
-						atoi(buf) / 100.0);
-					if (askyn(genbuf, NA, NA) == YEA) {
-						savestrvalue(MC_RATE_FILE,
-							     "transfer_rate",
-							     buf);
-						utmpshm->mc.transfer_rate =
-						    atoi(buf);
-						move(15, 4);
-						prints("设置完毕。");
-						sprintf(genbuf,
-							"新的转帐费率为 %.2f％ 。",
-							utmpshm->mc.
-							transfer_rate / 100.0);
-						deliverreport
-						    ("[公告]兵马俑银行调整转帐费率",
-						     genbuf);
-						sprintf(genbuf, "%s行使银行管理权限",currentuser.userid);
-						sprintf(buf, "设置新的转帐费率为 %.2f％ 。", utmpshm->mc.
-							transfer_rate / 100.0);
-						millionairesrec(genbuf, buf, "");
-						pressanykey();
-					}
-					break;
-				case '4':
-					move(12, 4);
-					usercomplete("向谁提供特别贷款？",
-						     uident);
-					if (uident[0] == '\0')
-						break;
-					if (!getuser(uident)) {
-						move(13, 4);
-						prints("错误的使用者代号...");
-						pressreturn();
-						break;
-					}
-					if (lookupuser.dietime > 0) {
-						move(13, 4);
-						prints("这个是死人...");
-						pressreturn();
-						break;
-					}
-					if (loadValue
-					    (uident, "lend_time", 2000000000) > 0) {
-						move(13, 4);
-						prints
-						    ("该客户已经贷款，不宜追加贷款。");
+					case '1':
+						getdata(6, 4, "您要存多少兵马俑币?[0]", buf, 10, DOECHO, YEA);
+						if (buf[0] == '\0') {
+							break;
+						}
+						num = atoi(buf);
+						if (num < 1000) {
+							move(7, 4);
+							prints("对不起，未达到最小交易金额。");
+							pressanykey();
+							break;
+						}
+						move(7, 4);
+						sprintf(genbuf, "确定存 %d 兵马俑币吗?", num);
+						if (askyn(genbuf, NA, NA) == NA) {
+							break;
+						}
+						money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
+						credit = loadValue(currentuser.userid, CREDIT_NAME, MAX_MONEY_NUM);
+						if (money < num) {
+							move(8, 4);
+							prints("您没有这么多钱可以存。");
+							pressanykey();
+							break;
+						}
+						if (credit + num > MAX_MONEY_NUM) {
+							move(8, 4);
+							prints("空守着这么多存款做什么呢？");
+							pressanykey();
+							break;
+						}
+						/* 扣钱 */
+						saveValue(currentuser.userid, MONEY_NAME, -num, MAX_MONEY_NUM);
+						/* 计算原先存款的利息 */
+						saveValue(currentuser.userid, INTEREST_NAME, makeInterest(credit, "deposit_time", deposit_rate), MAX_MONEY_NUM);
+						/* 存款 */
+						saveValue(currentuser.userid, CREDIT_NAME, num, MAX_MONEY_NUM);
+						saveValue(currentuser.userid, "deposit_time", -2000000000, 2000000000);
+						/* 新的存款开始时间 */
+						saveValue(currentuser.userid, "deposit_time", time(0), 2000000000);
+						move(8, 4);
+						prints("交易成功，您现在存有 %d 兵马俑币，利息共计 %d 兵马俑币。",
+								loadValue(currentuser.userid, CREDIT_NAME, MAX_MONEY_NUM),
+								loadValue(currentuser.userid, INTEREST_NAME, MAX_MONEY_NUM));
+						if (num >= RUMOR_MONEY && random() % 2) {
+							sprintf(genbuf,
+									"有人目击 %s 在兵马俑银行存入了 %d 的兵马俑币！",
+									currentuser.userid,
+									makeRumor(num));
+							deliverreport("[谣言]来自兵马俑银行的消息", genbuf);
+						}
 						pressanykey();
 						break;
-					}
-					getdata(13, 4, "贷款金额[0]: ", buf, 10, DOECHO, YEA);
-					if (buf[0] == '\0')
-						break;
+					case '2':
+						getdata(6, 4, "您要取多少兵马俑币?[0]", buf, 10, DOECHO, YEA);
+						if (buf[0] == '\0') {
+							break;
+						}
+						num = atoi(buf);
+						if (num < 1000) {
+							move(7, 4);
+							prints("对不起，未达到最小交易金额。");
+							pressanykey();
+							break;
+						}
+						move(7, 4);
+						sprintf(genbuf, "确定取 %d 兵马俑币吗?", num);
+						if (askyn(genbuf, NA, NA) == NA) {
+							break;
+						}
+						credit = loadValue(currentuser.userid, CREDIT_NAME, MAX_MONEY_NUM);
+						if (num > credit) {
+							move(8, 4);
+							prints("您没有那么多存款。");
+							pressanykey();
+							break;
+						}
+						withdrawAll = 0;
+						total_num = num;
+						if (num == credit) {
+							move(8, 4);
+							sprintf(genbuf,	"是否一并取出 %d 兵马俑币的存款利息？",
+									loadValue(currentuser.userid, INTEREST_NAME, MAX_MONEY_NUM)
+									+ makeInterest(num, "deposit_time", deposit_rate));
+							if (askyn(genbuf, NA, NA) == YEA) {
+								/* 存款加利息 */
+								total_num = num
+									+ makeInterest(num, "deposit_time", deposit_rate)
+									+ loadValue(currentuser.userid, INTEREST_NAME, MAX_MONEY_NUM);
+								withdrawAll = 1;
+							}
+						}
 
-					if (atoi(buf) < 100000) {
-						move(14, 4);
-						prints
-						    ("这么点钱，营业厅就可以办理。");
+						credit = loadValue(currentuser.userid, CREDIT_NAME, MAX_MONEY_NUM);
+						if (num > credit) {
+							move(9, 4);
+							prints("您没有那么多存款。");
+							pressanykey();
+							break;
+						}
+						/* 减去取款 */
+						saveValue(currentuser.userid, CREDIT_NAME, -num, MAX_MONEY_NUM);
+						/* 取得现金 */
+						saveValue(currentuser.userid, MONEY_NAME, total_num, MAX_MONEY_NUM);
+						/* 计算所取的钱的利息 */
+						if (withdrawAll) {
+							saveValue(currentuser.userid, INTEREST_NAME, -MAX_MONEY_NUM, MAX_MONEY_NUM);
+						} else {
+							saveValue(currentuser.userid, INTEREST_NAME, makeInterest(num, "deposit_time", deposit_rate), MAX_MONEY_NUM);
+						}
+						move(8, 4);
+						prints("交易成功，您现在存有 %d 兵马俑币，存款利息共计 %d 兵马俑币。",
+							loadValue(currentuser.userid, CREDIT_NAME, MAX_MONEY_NUM),
+							loadValue(currentuser.userid, INTEREST_NAME, MAX_MONEY_NUM));
 						pressanykey();
 						break;
-					}
-					if (atoi(buf) > 100000000) {
-						move(14, 4);
-						prints
-						    ("如此数额巨大的贷款，恐怕董事会不会同意的。");
+					case 'Q':
+					case 'q':
+						break;
+				}
+				break;
+			case '4':
+				clear();
+				money_show_stat("兵马俑银行贷款窗口");
+				move(4, 4);
+				lend_rate = mc->lend_rate / 10000.0;
+				sprintf(genbuf,
+						"最小交易金额 1000 兵马俑币。贷款利率（日）为 %.2f％",
+						lend_rate * 100);
+				prints("%s", genbuf);
+				move(5, 4);
+				lendMoney = loadValue(currentuser.userid, LEND_NAME, MAX_MONEY_NUM);
+				total_num = lendMoney + makeInterest(lendMoney, "lend_time", lend_rate);
+				lendTime = loadValue(currentuser.userid, "lend_time", 2000000000);
+				if (lendTime > 0) {
+					sprintf(genbuf,
+							"您贷款 %d 兵马俑币，当前本息共计 %d 兵马俑币，距到期 %d 小时。",
+							lendMoney, total_num,
+							(loadValue(currentuser.userid, "back_time", 2000000000) - (int) time(0)) / 3600);
+				} else {
+					sprintf(genbuf, "您目前没有贷款。");
+				}
+				prints("%s", genbuf);
+				move(t_lines - 1, 0);
+				prints("\033[1;44m 选单 \033[1;46m [1]贷款 [2]还贷 [Q]离开\033[m");
+				ch = igetkey();
+				switch (ch) {
+					case '1':
+						move(6, 4);
+						sprintf(genbuf,
+								"按照银行的规定，您目前最多可以申请贷款 %d 兵马俑币。",
+								countexp(&currentuser) * 100);
+						prints("%s", genbuf);
+						getdata(7, 4, "您要贷款多少兵马俑币?[0]", buf,
+								10, DOECHO, YEA);
+						if (buf[0] == '\0') {
+							break;
+						}
+						num = atoi(buf);
+
+						if (lendMoney > 0) {
+							move(8, 4);
+							prints("请先还清贷款。");
+							pressanykey();
+							break;
+						}
+						if (num < 1000) {
+							move(8, 4);
+							prints("对不起，未达到最小交易金额。");
+							pressanykey();
+							break;
+						}
+						if (num > countexp(&currentuser) * 100) {
+							move(8, 4);
+							prints("对不起，您要求贷款的金额超过银行规定。");
+							pressanykey();
+							break;
+						}
+						inputValid = 0;
+						while (!inputValid) {
+							getdata(8, 4, "您要贷款多少天？[3-30]: ", buf, 3, DOECHO, YEA);
+							if (atoi(buf) > 2 && atoi(buf) < 31) {
+								inputValid = 1;
+							}
+						}
+						saveValue(currentuser.userid, MONEY_NAME, num, MAX_MONEY_NUM);
+						saveValue(currentuser.userid, LEND_NAME, num, MAX_MONEY_NUM);
+						saveValue(currentuser.userid, "lend_time", time(0), 2000000000);
+						saveValue(currentuser.userid, "back_time", time(0) + atoi(buf) * 86400, 2000000000);
+						move(9, 4);
+						prints("您的贷款手续已经完成。请到期还款。");
+						sprintf(genbuf, "%s进行银行交易(贷款)", currentuser.userid);
+						sprintf(buf, "%s贷款%d兵马俑币%d天", currentuser.userid, num, atoi(buf));
+						millionairesrec(genbuf, buf, "银行交易");
 						pressanykey();
 						break;
-					}
-					num = atoi(buf);
-					getdata(14, 4, "贷款天数[3-30]: ", buf, 3, DOECHO, YEA);
-					if (atoi(buf) < 1 || atoi(buf) > 30)
-						break;
-					move(15, 4);
-					if (askyn("确定向该客户提供贷款吗？", NA, NA) == NA)
-						break;
-					time_t t = time(0) + 86400 * atoi(buf);
-					sprintf(genbuf, "%s\t%s", uident, ctime(&t));
-					addtofile(DIR_MC "special_lend", genbuf);
-					saveValue(uident, MONEY_NAME, num,
-						  MAX_MONEY_NUM);
-					saveValue(uident, LEND_NAME, num,
-						  MAX_MONEY_NUM);
-					saveValue(uident, "lend_time", time(0),
-						  2000000000);
-					saveValue(uident, "back_time",
-						  time(0) + atoi(buf) * 86400,
-						  2000000000);
-					sprintf(genbuf,
-						"贷款金额 %d 兵马俑币，请务必于 %s 天内偿还贷款。",
-						num, buf);
-					mail_buf(genbuf, uident,
-						 "兵马俑银行行长同意了您的贷款申请");
-					move(16, 4);
-					prints
-					    ("贷款审批完成。请确保客户及时还款。");
-					sprintf(buf, "给%s特别贷款，%s",uident, genbuf);
-					sprintf(genbuf, "%s行使银行管理权限",currentuser.userid);
-					millionairesrec(genbuf, buf, "");
-					pressanykey();
-					break;
-				case '5':
-					move(12, 4);
-					usercomplete("调查谁的帐户：", uident);
-					if (uident[0] == '\0')
-						break;
-					if (!getuser(uident)) {
-						move(13, 4);
-						prints("错误的使用者代号...");
-						pressreturn();
-						break;
-					}
-					move(14, 4);
-					sprintf(genbuf,
-						"该客户有现金%d 兵马俑币，存款 %d 兵马俑币,贷款 %d 兵马俑币。",
-						loadValue(uident, MONEY_NAME,
-							MAX_MONEY_NUM),
-						loadValue(uident, CREDIT_NAME,
-							MAX_MONEY_NUM),
-						loadValue(uident, LEND_NAME,
-							MAX_MONEY_NUM));
-					prints("%s", genbuf);
-					pressanykey();
-					break;
-				case '6':
-					clear();
-					move(1, 0);
-					prints("目前银行的特别贷款情况：");
-					move(2, 0);
-					prints("客户ID\t还款时间");
-					listfilecontent(DIR_MC "special_lend");
-					pressanykey();
-					break;
-				case '7':
-					move(12, 4);
-					if (newSalary()) {
-						if (askyn("确定发放本月工资吗？", NA, NA) == YEA) {
-							time2string(time(0), genbuf);
-							if (savestrvalue(DIR_MC "etc_time", "salary_time", genbuf)){
-								move(14, 4);
-								prints("错误!不能写文件!");
+					case '2':
+						move(6, 4);
+						backTime = loadValue(currentuser.userid, "back_time", 2000000000);
+						if((backTime - (int) time(0)) / 3600>5000||(backTime - (int) time(0)) / 3600<-30)
+							saveValue(currentuser.userid, "back_time", time(0) + 1* 86400, 2000000000);
+						lendTime = loadValue(currentuser.userid, "lend_time", 2000000000);
+						if (lendTime == 0) {
+							prints("您记错了吧？没有找到您的贷款记录啊。");
+							pressanykey();
+							break;
+						}
+						if (time(0) - lendTime < 86400) {
+							prints("对不起，银行不接受未产生利息的还贷。");
+							pressanykey();
+							break;
+						}
+						if (askyn("您要现在偿还贷款吗？", NA, NA) == YEA) {
+							money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
+							move(7, 4);
+							if (money < total_num) {
+								prints ("对不起，您的钱不够偿还贷款。");
 								pressanykey();
 								break;
 							}
-							strcpy(currboard, "sysop");
-							deliverreport
-							    ("[公告]本站公务员领取本月工资",
-							     "请于7天内到兵马俑银行领取，过期视为放弃。\n");
-							strcpy(currboard,	 MC_BOARD);
-							remove(DIR_MC "salary_list");
-							utmpshm->mc.isSalaryTime = 1;
-							move(14, 4);
-							prints("操作完成。");
-							sprintf(genbuf, "%s行使银行管理权限", currentuser.userid);
-							millionairesrec(genbuf, "发放工资", "");
+							saveValue(currentuser.userid, MONEY_NAME, -total_num, MAX_MONEY_NUM);
+							saveValue(currentuser.userid, LEND_NAME, -MAX_MONEY_NUM, MAX_MONEY_NUM);
+							saveValue(currentuser.userid, "lend_time", -2000000000, 2000000000);
+							saveValue(currentuser.userid, "back_time", -2000000000, 2000000000);
+							ytht_del_from_file(DIR_MC "special_lend", currentuser.userid, true);
+							sprintf(genbuf, "%s进行银行交易(还贷)", currentuser.userid);
+							sprintf(buf,"%s偿还贷款本利共%d兵马俑币", currentuser.userid, total_num);
+							millionairesrec(genbuf, buf, "银行交易");
+							prints("您的贷款已经还清。银行乐见并铭记您的诚信。");
 							pressanykey();
 						}
-					} else {
-						prints("还未到发放时间。");
-						pressanykey();
-					}
-					break;
-				case '8':
-					move(12, 4);
-					usercomplete("向谁提供特别拨款？",
-						     uident);
-					if (uident[0] == '\0')
 						break;
-					if (!getuser(uident)) {
-						move(13, 4);
-						prints("错误的使用者代号...");
-						pressreturn();
+					case 'q':
+					case 'Q':
 						break;
-					}
-					if (lookupuser.dietime > 0) {
-						move(13, 4);
-						prints("这个是死人...");
-						pressreturn();
-						break;
-					}
-					getdata(13, 4,"拨款金额[0]: ", buf, 10, DOECHO, YEA);
-					if (buf[0] == '\0') {
-						break;
-					}
-					if (atoi(buf) < 100000) {
-						move(14, 4);
-						prints
-						    ("这么点钱，营业厅就可以办理。");
-						pressanykey();
-						break;
-					}
-					if (atoi(buf) > 100000000) {
-						move(14, 4);
-						prints
-						    ("如此数额巨大的贷款，恐怕董事会不会同意的。");
-						pressanykey();
-						break;
-					}
-					num = atoi(buf);
-					getdata(15, 4, "拨款原因：", buf, 50, DOECHO, YEA);
-					sprintf(letter, "拨款用于自身的建设发展，望其按照规定使用，不得进行违法乱纪活动！\n\n拨款原因：%s", buf);
-					move(16, 4);
-					if (askyn("确定向该客户拨款吗？", NA, NA) == NA)
-						break;
-					saveValue(uident, MONEY_NAME, num, MAX_MONEY_NUM);
-					sprintf(genbuf,"授予%s %d兵马俑币援助拨款",uident, num);
-					deliverreport(genbuf, letter);
-					mail_buf(genbuf, uident,
-						 "兵马俑银行行长同意了您的拨款申请");
-					move(17, 4);
-					prints("拨款完成。");
-					sprintf(buf, "给%s特别拨款%d兵马俑币",uident, num);
-					sprintf(genbuf, "%s行使银行管理权限", currentuser.userid);
-					millionairesrec(genbuf, buf, "");
+				}
+				break;
+			case '5':
+				clear();
+				money_show_stat("兵马俑银行工资代办窗口");
+				salary = makeSalary();
+				if (salary == 0) {
+					move(10, 10);
+					prints("对不起，您不是本站公务员，没有工资。");
 					pressanykey();
 					break;
-				case '9':
-					move(12, 4);
-					if (askyn("您真的要辞职吗？", NA, NA) ==
-					    YEA) {
-					/*	del_from_file(MC_BOSS_FILE, "bank");
-						sprintf(genbuf,
-							"%s 宣布辞去兵马俑银行行长职务",
-							currentuser.userid);
-						deliverreport(genbuf,
-							      "兵马俑金融中心对其一直以来的工作表示感谢，祝以后顺利！");
-						move(14, 4);
-						prints
-						    ("好吧，既然你意已决，董事会也不便强留。再见！");
-						quit = 1;
-					*/
-						sprintf(genbuf, "%s 要辞去兵马俑银行行长职务",
-							currentuser.userid);
-						mail_buf(genbuf, "millionaires", genbuf);
-						move(14, 4);
-						prints("好吧，已经发信告知总管了");
-						pressanykey();
-					}
-					break;
-				case 'q':
-				case 'Q':
+				}
+				if (mc->isSalaryTime == 0) {
+					move(10, 10);
+					prints("对不起，银行还没有收到工资划款。请过几天再来。");
+					pressanykey();
 					break;
 				}
-			}
-			break;
-		case 'q':
-		case 'Q':
-			quit = 1;
-			break;
+				if (seek_in_file(DIR_MC "salary_list", currentuser.userid)) {
+					move(10, 10);
+					prints("您已经领过本月工资。还是勤奋工作吧！");
+					pressanykey();
+					break;
+				}
+				move(6, 4);
+				sprintf(genbuf, "您本月的工资 %d 兵马俑币已经划到银行。现在领取吗？",	salary);
+				if (askyn(genbuf, NA, NA) == YEA) {
+					saveValue(currentuser.userid, MONEY_NAME, salary, MAX_MONEY_NUM);
+					ytht_add_to_file(DIR_MC "salary_list", currentuser.userid);
+					move(8, 4);
+					prints("这里是您的工资。感谢您为兵马俑付出的工作!");
+					pressanykey();
+					break;
+				}
+				break;
+			case '6':
+				clear();
+				money_show_stat("兵马俑银行行长办公室");
+				move(6, 4);
+				char name[20];
+				whoTakeCharge2(1, name);
+				whoTakeCharge(1, uident);
+				if (strcmp(currentuser.userid, uident)) {
+					prints("秘书%s拦住了你，柔声说道:“行长%s正在里面办公，请勿打扰。”", name,uident);
+					pressanykey();
+					break;
+				} else {
+					prints("请选择操作代号:");
+					move(7, 6);
+					prints("1. 调整存款利率                  2. 调整贷款利率");
+					move(8, 6);
+					prints("3. 调整转帐费率                  4. 审批贷款");
+					move(9, 6);
+					prints("5. 调查用户帐户                  6. 特别贷款名单");
+					move(10, 6);
+					prints("7. 发放工资                      8. 特殊拨款");
+					move(11,6);
+					prints("9. 辞职                          Q. 退出");
+					ch = igetkey();
+					switch (ch) {
+						case '1':
+							getdata(12, 4, "设定新的存款利率[10-250]: ", buf, 4, DOECHO, YEA);
+							if (atoi(buf) < 10 || atoi(buf) > 250) {
+								break;
+							}
+							move(14, 4);
+							sprintf(genbuf, "新的存款利率是 %.2f％，确定吗？", atoi(buf) / 100.0);
+							if (askyn(genbuf, NA, NA) == YEA) {
+								savestrvalue(MC_RATE_FILE, "deposit_rate", buf);
+								mc->deposit_rate = atoi(buf);
+								move(15, 4);
+								prints("设置完毕。");
+								sprintf(genbuf, "新的存款利率为 %.2f％ 。", mc->deposit_rate / 100.0);
+								deliverreport("[公告]兵马俑银行调整存款利率", genbuf);
+								sprintf(genbuf, "%s行使管理权限",currentuser.userid);
+								sprintf(buf, "设置新的存款利率为 %.2f％ 。", mc->deposit_rate / 100.0);
+								millionairesrec(genbuf, buf, "");
+								pressanykey();
+							}
+							break;
+						case '2':
+							getdata(12, 4, "设定新的贷款利率[10-250]: ", buf, 4, DOECHO, YEA);
+							if (atoi(buf) < 10 || atoi(buf) > 250) {
+								break;
+							}
+							move(14, 4);
+							sprintf(genbuf, "新的贷款利率是 %.2f％，确定吗？", atoi(buf) / 100.0);
+							if (askyn(genbuf, NA, NA) == YEA) {
+								savestrvalue(MC_RATE_FILE, "lend_rate", buf);
+								mc->lend_rate = atoi(buf);
+								move(15, 4);
+								prints("设置完毕。");
+								sprintf(genbuf, "新的贷款利率为 %.2f％ 。", mc->lend_rate / 100.0);
+								deliverreport("[公告]兵马俑银行调整贷款利率", genbuf);
+								sprintf(genbuf, "%s行使银行管理权限",currentuser.userid);
+								sprintf(buf, "设置新的贷款利率为 %.2f％ 。", mc->lend_rate / 100.0);
+								millionairesrec(genbuf, buf, "");
+								pressanykey();
+							}
+							break;
+						case '3':
+							getdata(12, 4, "设定新的转帐费率[10-250]: ", buf, 4, DOECHO, YEA);
+							if (atoi(buf) < 10 || atoi(buf) > 250) {
+								break;
+							}
+							move(14, 4);
+							sprintf(genbuf, "新的转帐费率是 %.2f％，确定吗？", atoi(buf) / 100.0);
+							if (askyn(genbuf, NA, NA) == YEA) {
+								savestrvalue(MC_RATE_FILE, "transfer_rate", buf);
+								mc->transfer_rate = atoi(buf);
+								move(15, 4);
+								prints("设置完毕。");
+								sprintf(genbuf, "新的转帐费率为 %.2f％ 。", mc->transfer_rate / 100.0);
+								deliverreport("[公告]兵马俑银行调整转帐费率", genbuf);
+								sprintf(genbuf, "%s行使银行管理权限",currentuser.userid);
+								sprintf(buf, "设置新的转帐费率为 %.2f％ 。", mc->transfer_rate / 100.0);
+								millionairesrec(genbuf, buf, "");
+								pressanykey();
+							}
+							break;
+						case '4':
+							move(12, 4);
+							usercomplete("向谁提供特别贷款？", uident);
+							if (uident[0] == '\0')
+								break;
+							if (!getuser(uident)) {
+								move(13, 4);
+								prints("错误的使用者代号...");
+								pressreturn();
+								break;
+							}
+							if (lookupuser.dietime > 0) {
+								move(13, 4);
+								prints("这个是死人...");
+								pressreturn();
+								break;
+							}
+							if (loadValue(uident, "lend_time", 2000000000) > 0) {
+								move(13, 4);
+								prints("该客户已经贷款，不宜追加贷款。");
+								pressanykey();
+								break;
+							}
+							getdata(13, 4, "贷款金额[0]: ", buf, 10, DOECHO, YEA);
+							if (buf[0] == '\0')
+								break;
+
+							if (atoi(buf) < 100000) {
+								move(14, 4);
+								prints("这么点钱，营业厅就可以办理。");
+								pressanykey();
+								break;
+							}
+							if (atoi(buf) > 100000000) {
+								move(14, 4);
+								prints("如此数额巨大的贷款，恐怕董事会不会同意的。");
+								pressanykey();
+								break;
+							}
+							num = atoi(buf);
+							getdata(14, 4, "贷款天数[3-30]: ", buf, 3, DOECHO, YEA);
+							if (atoi(buf) < 1 || atoi(buf) > 30)
+								break;
+							move(15, 4);
+							if (askyn("确定向该客户提供贷款吗？", NA, NA) == NA)
+								break;
+							time_t t = time(0) + 86400 * atoi(buf);
+							sprintf(genbuf, "%s\t%s", uident, ctime(&t));
+							ytht_add_to_file(DIR_MC "special_lend", genbuf);
+							saveValue(uident, MONEY_NAME, num, MAX_MONEY_NUM);
+							saveValue(uident, LEND_NAME, num, MAX_MONEY_NUM);
+							saveValue(uident, "lend_time", time(0), 2000000000);
+							saveValue(uident, "back_time", time(0) + atoi(buf) * 86400, 2000000000);
+							sprintf(genbuf, "贷款金额 %d 兵马俑币，请务必于 %s 天内偿还贷款。", num, buf);
+							mail_buf(genbuf, uident, "兵马俑银行行长同意了您的贷款申请");
+							move(16, 4);
+							prints("贷款审批完成。请确保客户及时还款。");
+							sprintf(buf, "给%s特别贷款，%s",uident, genbuf);
+							sprintf(genbuf, "%s行使银行管理权限",currentuser.userid);
+							millionairesrec(genbuf, buf, "");
+							pressanykey();
+							break;
+						case '5':
+							move(12, 4);
+							usercomplete("调查谁的帐户：", uident);
+							if (uident[0] == '\0')
+								break;
+							if (!getuser(uident)) {
+								move(13, 4);
+								prints("错误的使用者代号...");
+								pressreturn();
+								break;
+							}
+							move(14, 4);
+							sprintf(genbuf,
+									"该客户有现金%d 兵马俑币，存款 %d 兵马俑币,贷款 %d 兵马俑币。",
+									loadValue(uident, MONEY_NAME, MAX_MONEY_NUM),
+									loadValue(uident, CREDIT_NAME, MAX_MONEY_NUM),
+									loadValue(uident, LEND_NAME, MAX_MONEY_NUM));
+							prints("%s", genbuf);
+							pressanykey();
+							break;
+						case '6':
+							clear();
+							move(1, 0);
+							prints("目前银行的特别贷款情况：");
+							move(2, 0);
+							prints("客户ID\t还款时间");
+							listfilecontent(DIR_MC "special_lend");
+							pressanykey();
+							break;
+						case '7':
+							move(12, 4);
+							if (newSalary()) {
+								if (askyn("确定发放本月工资吗？", NA, NA) == YEA) {
+									time2string(time(0), genbuf);
+									if (savestrvalue(DIR_MC "etc_time", "salary_time", genbuf)){
+										move(14, 4);
+										prints("错误!不能写文件!");
+										pressanykey();
+										break;
+									}
+									strcpy(currboard, "sysop");
+									deliverreport("[公告]本站公务员领取本月工资", "请于7天内到兵马俑银行领取，过期视为放弃。\n");
+									strcpy(currboard, MC_BOARD);
+									remove(DIR_MC "salary_list");
+									mc->isSalaryTime = 1;
+									move(14, 4);
+									prints("操作完成。");
+									sprintf(genbuf, "%s行使银行管理权限", currentuser.userid);
+									millionairesrec(genbuf, "发放工资", "");
+									pressanykey();
+								}
+							} else {
+								prints("还未到发放时间。");
+								pressanykey();
+							}
+							break;
+						case '8':
+							move(12, 4);
+							usercomplete("向谁提供特别拨款？", uident);
+							if (uident[0] == '\0')
+								break;
+							if (!getuser(uident)) {
+								move(13, 4);
+								prints("错误的使用者代号...");
+								pressreturn();
+								break;
+							}
+							if (lookupuser.dietime > 0) {
+								move(13, 4);
+								prints("这个是死人...");
+								pressreturn();
+								break;
+							}
+							getdata(13, 4,"拨款金额[0]: ", buf, 10, DOECHO, YEA);
+							if (buf[0] == '\0') {
+								break;
+							}
+							if (atoi(buf) < 100000) {
+								move(14, 4);
+								prints("这么点钱，营业厅就可以办理。");
+								pressanykey();
+								break;
+							}
+							if (atoi(buf) > 100000000) {
+								move(14, 4);
+								prints("如此数额巨大的贷款，恐怕董事会不会同意的。");
+								pressanykey();
+								break;
+							}
+							num = atoi(buf);
+							getdata(15, 4, "拨款原因：", buf, 50, DOECHO, YEA);
+							sprintf(letter, "拨款用于自身的建设发展，望其按照规定使用，不得进行违法乱纪活动！\n\n拨款原因：%s", buf);
+							move(16, 4);
+							if (askyn("确定向该客户拨款吗？", NA, NA) == NA)
+								break;
+							saveValue(uident, MONEY_NAME, num, MAX_MONEY_NUM);
+							sprintf(genbuf,"授予%s %d兵马俑币援助拨款",uident, num);
+							deliverreport(genbuf, letter);
+							mail_buf(genbuf, uident, "兵马俑银行行长同意了您的拨款申请");
+							move(17, 4);
+							prints("拨款完成。");
+							sprintf(buf, "给%s特别拨款%d兵马俑币",uident, num);
+							sprintf(genbuf, "%s行使银行管理权限", currentuser.userid);
+							millionairesrec(genbuf, buf, "");
+							pressanykey();
+							break;
+						case '9':
+							move(12, 4);
+							if (askyn("您真的要辞职吗？", NA, NA) == YEA) {
+								/*	ytht_del_from_file(MC_BOSS_FILE, "bank");
+									sprintf(genbuf,
+									"%s 宣布辞去兵马俑银行行长职务",
+									currentuser.userid);
+									deliverreport(genbuf,
+									"兵马俑金融中心对其一直以来的工作表示感谢，祝以后顺利！");
+									move(14, 4);
+									prints
+									("好吧，既然你意已决，董事会也不便强留。再见！");
+									quit = 1;
+									*/
+								sprintf(genbuf, "%s 要辞去兵马俑银行行长职务", currentuser.userid);
+								mail_buf(genbuf, "millionaires", genbuf);
+								move(14, 4);
+								prints("好吧，已经发信告知总管了");
+								pressanykey();
+							}
+							break;
+						case 'q':
+						case 'Q':
+							break;
+					}
+				}
+				break;
+			case 'q':
+			case 'Q':
+				quit = 1;
+				break;
 		}
 		limit_cpu();
 	}
 	return 0;
 }
 
-static int//彩票系统
-money_lottery()
-{
+//彩票系统
+static int money_lottery() {
 	int ch, money;
 	int quit = 0, quitRoom = 0;
 	int inputValid;
@@ -1697,370 +1485,341 @@ money_lottery()
 		move(8, 4);
 		prints("彩票规则请到millionaires版查询。");
 		move(t_lines - 1, 0);
-		prints
-		    ("\033[1;44m 选单 \033[1;46m [1]36选7 [2]足彩 [3]经理室 [Q]离开\033[m");
+		prints("\033[1;44m 选单 \033[1;46m [1]36选7 [2]足彩 [3]经理室 [Q]离开\033[m");
 		ch = igetkey();
 		switch (ch) {
-		case '1':
-			nomoney_show_stat("36选7");
-			if (access(DIR_MC_TEMP "36_7_start", 0)) {
-				move(6, 4);
-				prints("抱歉！新一期的36选7彩票还未开始销售。");
-				pressanykey();
+			case '1':
+				nomoney_show_stat("36选7");
+				if (access(DIR_MC_TEMP "36_7_start", 0)) {
+					move(6, 4);
+					prints("抱歉！新一期的36选7彩票还未开始销售。");
+					pressanykey();
+					break;
+				}
+				move(5, 4);
+				prints("数字间用-隔开，例如 08-13-01-25-34-17-18");
+				move(7, 4);
+				sprintf(genbuf,
+						"当前奖金池累积奖金：\033[1;31m%d\033[m   固定奖金：\033[1;31m%d\033[m",
+						mc->prize367, PRIZE_PER);
+				prints("%s", genbuf);
+				move(9, 4);
+				sprintf(genbuf, "每注 10000 兵马俑币。确定买注吗?");
+				if (askyn(genbuf, NA, NA) == YEA) {
+					money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
+					move(10, 4);
+					if (money < 10000) {
+						prints("没有钱就别捣乱，一边去！下一个！");
+						pressanykey();
+						break;
+					}
+
+					saveValue(currentuser.userid, MONEY_NAME, -10000, MAX_MONEY_NUM);	//扣钱
+					mc->prize367 += 10000;
+					mc->prize367 = limitValue(mc->prize367, MAX_POOL_MONEY);
+					inputValid = 0;
+					while (!inputValid) {
+						getdata(10, 4, "请填写买注单: ", buf, 21, DOECHO, YEA);	/* 2×7＋6＋1＝21 */
+
+						if (!valid367Bet(buf)) {	// 检验下注的合理性
+							move(11, 4);
+							prints("对不起，您的下注单填写好像有问题耶。请重填一次。");
+							pressanykey();
+						} else {
+							sprintf(genbuf, "%s %s", currentuser.userid, buf);
+							ytht_add_to_file(DIR_MC_TEMP "36_7_list", genbuf);
+							move(11, 4);
+							prints("                                                             ");
+							move(11, 4);
+							prints("购买成功。祝您中大奖！");
+							inputValid = 1;
+							sprintf(letter, "您购买了一注36选7。注号是：%s。请妥善保存，到期兑奖。", buf);
+							sprintf(title, "彩票中心购买凭证");
+							mail_buf(letter, currentuser.userid, title);
+							pressanykey();
+						}
+
+					}
+
+				}
 				break;
-			}
-			move(5, 4);
-			prints("数字间用-隔开，例如 08-13-01-25-34-17-18");
-			move(7, 4);
-			sprintf(genbuf,
-				"当前奖金池累积奖金：\033[1;31m%d\033[m   固定奖金：\033[1;31m%d\033[m",
-				utmpshm->mc.prize367, PRIZE_PER);
-			prints("%s", genbuf);
-			move(9, 4);
-			sprintf(genbuf, "每注 10000 兵马俑币。确定买注吗?");
-			if (askyn(genbuf, NA, NA) == YEA) {
-				money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
+			case '2':
+				nomoney_show_stat("足彩");
+				move(6, 4);
+				if (access(DIR_MC_TEMP "soccer_start", 0)) {
+					prints("抱歉！新一期的足球彩票还未开始销售。");
+					pressanykey();
+					break;
+				}
+				if (mc->isSoccerSelling == 0) {
+					prints("抱歉！销售期已经结束，请等待开奖。");
+					pressanykey();
+					break;
+				}
+				move(4, 4);
+				prints("足彩所猜比赛请见millionaires版公告文章。");
+				move(5, 4);
+				prints("主场胜为3，主场平为1，主场负为0。各场比赛结果用-隔开，支持复式买注。");
+				move(6, 4);
+				prints("例如猜6场比赛时，一个接受的买注范例为： 1-310-1-10-3-0");
+				move(8, 4);
+				sprintf(genbuf,
+						"当前奖金池累计奖金：\033[1;31m%d\033[m  固定奖金：\033[1;31m%d\033[m",
+						mc->prizeSoccer, PRIZE_PER);
+				prints("%s", genbuf);
 				move(10, 4);
-				if (money < 10000) {
-					prints
-					    ("没有钱就别捣乱，一边去！下一个！");
-					pressanykey();
-					break;
-				}
-
-				saveValue(currentuser.userid, MONEY_NAME, -10000, MAX_MONEY_NUM);	//扣钱
-				utmpshm->mc.prize367 += 10000;
-				utmpshm->mc.prize367 =
-				    limitValue(utmpshm->mc.prize367, MAX_POOL_MONEY);
-				inputValid = 0;
-				while (!inputValid) {
-					getdata(10, 4, "请填写买注单: ", buf, 21, DOECHO, YEA);	/* 2×7＋6＋1＝21 */
-
-					if (!valid367Bet(buf)) {	// 检验下注的合理性
-						move(11, 4);
-						prints
-						    ("对不起，您的下注单填写好像有问题耶。请重填一次。");
+				sprintf(genbuf, "每注10000兵马俑币。确定买注吗?");
+				if (askyn(genbuf, NA, NA) == YEA) {
+					money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
+					move(11, 4);
+					if (money < 10000) {
+						prints("没有钱就别捣乱，一边去！下一个！");
 						pressanykey();
-					} else {
-						sprintf(genbuf, "%s %s", currentuser.userid, buf);
-						addtofile(DIR_MC_TEMP "36_7_list", genbuf);
-						move(11, 4);
-						prints
-						    ("                                                             ");
-						move(11, 4);
-						prints
-						    ("购买成功。祝您中大奖！");
-						inputValid = 1;
-						sprintf(letter,
-							"您购买了一注36选7。注号是：%s。请妥善保存，到期兑奖。", buf);
-						sprintf(title,
-							"彩票中心购买凭证");
-						mail_buf(letter, currentuser.userid, title);
-						pressanykey();
+						break;
 					}
 
-				}
-
-			}
-			break;
-		case '2':
-			nomoney_show_stat("足彩");
-			move(6, 4);
-			if (access(DIR_MC_TEMP "soccer_start", 0)) {
-				prints("抱歉！新一期的足球彩票还未开始销售。");
-				pressanykey();
-				break;
-			}
-			if (utmpshm->mc.isSoccerSelling == 0) {
-				prints("抱歉！销售期已经结束，请等待开奖。");
-				pressanykey();
-				break;
-			}
-			move(4, 4);
-			prints("足彩所猜比赛请见millionaires版公告文章。");
-			move(5, 4);
-			prints
-			    ("主场胜为3，主场平为1，主场负为0。各场比赛结果用-隔开，支持复式买注。");
-			move(6, 4);
-			prints
-			    ("例如猜6场比赛时，一个接受的买注范例为： 1-310-1-10-3-0");
-			move(8, 4);
-			sprintf(genbuf,
-				"当前奖金池累计奖金：\033[1;31m%d\033[m  固定奖金：\033[1;31m%d\033[m",
-				utmpshm->mc.prizeSoccer, PRIZE_PER);
-			prints("%s", genbuf);
-			move(10, 4);
-			sprintf(genbuf, "每注10000兵马俑币。确定买注吗?");
-			if (askyn(genbuf, NA, NA) == YEA) {
-				money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
-				move(11, 4);
-				if (money < 10000) {
-					prints("没有钱就别捣乱，一边去！下一个！");
-					pressanykey();
-					break;
-				}
-
-				inputValid = 0;
-				while (!inputValid) {
-					int sum;
-					getdata(11, 4, "请填写买注单: ", buf, 55, DOECHO, YEA);
-					if (!validSoccerBet(buf)) {	/* 检验下注的合理性 */
-						move(12, 4);
-						prints
-						    ("对不起，您的下注单填写好像有问题耶。请重填一次。");
-						pressanykey();
-					} else {
-						int money;
-						inputValid = 1;
-						sum = computeSum(buf);	/*计算复式买注的注数 */
-						money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
-						if (sum > money / 10000) {
+					inputValid = 0;
+					while (!inputValid) {
+						int sum;
+						getdata(11, 4, "请填写买注单: ", buf, 55, DOECHO, YEA);
+						if (!validSoccerBet(buf)) {	/* 检验下注的合理性 */
 							move(12, 4);
-							prints("                                                     ");
+							prints("对不起，您的下注单填写好像有问题耶。请重填一次。");
+							pressanykey();
+						} else {
+							int money;
+							inputValid = 1;
+							sum = computeSum(buf);	/*计算复式买注的注数 */
+							money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
+							if (sum > money / 10000) {
+								move(12, 4);
+								prints("                                                     ");
+								move(12, 4);
+								sprintf(genbuf, "您的钱不够买 %d 注。再斟酌一下吧！", sum);
+								prints("%s", genbuf);
+								pressanykey();
+								break;
+							}
+							saveValue(currentuser.userid, MONEY_NAME, -sum * 10000, MAX_MONEY_NUM);	/*扣钱 */
+							mc->prizeSoccer += sum * 10000;
+							mc->prizeSoccer = limitValue(mc->prizeSoccer, MAX_POOL_MONEY);
+							saveSoccerRecord(buf);	/*处理并保存复式买注记录 */
 							move(12, 4);
-							sprintf(genbuf,
-								"您的钱不够买 %d 注。再斟酌一下吧！",
-								sum);
+							prints("                                                             ");
+							move(12, 4);
+							sprintf(genbuf,"您一共购买了%d注。祝您中大奖！", sum);
 							prints("%s", genbuf);
+							sprintf(letter, "您购买了一注(复式)足彩。注号是：%s。请妥善保存，到期兑奖。", buf);
+							sprintf(title, "彩票中心购买凭证");
+							mail_buf(letter, currentuser.userid, title);
 							pressanykey();
-							break;
 						}
-						saveValue(currentuser.userid, MONEY_NAME, -sum * 10000, MAX_MONEY_NUM);	/*扣钱 */
-						utmpshm->mc.prizeSoccer += sum * 10000;
-						utmpshm->mc.prizeSoccer = limitValue(utmpshm->mc.prizeSoccer, MAX_POOL_MONEY);
-						saveSoccerRecord(buf);	/*处理并保存复式买注记录 */
-						move(12, 4);
-						prints("                                                             ");
-						move(12, 4);
-						sprintf(genbuf,"您一共购买了%d注。祝您中大奖！", sum);
-						prints("%s", genbuf);
-						sprintf(letter,
-							"您购买了一注(复式)足彩。注号是：%s。请妥善保存，到期兑奖。",
-							buf);
-						sprintf(title, "彩票中心购买凭证");
-						mail_buf(letter, currentuser.userid, title);
-						pressanykey();
 					}
 				}
-			}
-			break;
-		case '3':
-			nomoney_show_stat("博彩公司经理室");
-			whoTakeCharge(2, uident);
-			whoTakeCharge2(2, name);
-			if (strcmp(currentuser.userid, uident)) {
-				move(6, 4);
-				prints("秘书%s提示您:“经理%s外出考察去了，有事请直接跟他联系。”",
-				    name, uident);
-				pressanykey();
 				break;
-			}
-			quitRoom = 0;
-			while (!quitRoom) {
-				char strTime[15];
+			case '3':
 				nomoney_show_stat("博彩公司经理室");
-				move(t_lines - 1, 0);
-				prints
-				    ("\033[1;44m 选单 \033[1;46m [1]开奖 [2]新建 [3]停止足彩销售 [4]辞职 [Q]离开\033[m");
-				ch = igetkey();
-				switch (ch) {
-				case '1':
-					nomoney_show_stat("博彩公司经理室");
-					move(6, 10);
-					prints("1.  36选7");
-					move(7, 10);
-					prints("2.  足球彩票");
-					move(8, 10);
-					prints("Q.  退出");
-					move(4, 4);
-					prints("请选择要开奖的彩票代号：");
-					move(12, 4);
-					ch = igetkey();
-					move(t_lines - 5, 15);
-					switch (ch) {
-					case '1':
-						fp = fopen(DIR_MC_TEMP "36_7_start", "r");
-						if (fp) {
-							fgets(strTime, 15, fp);
-							openTime = atoi(strTime);
-							fclose(fp);
-							if (time(0) >= openTime) //||strcmp(currentuser.userid,"macintosh")==0
-								if (open_36_7() == 0) {
-									prints("开奖成功！");
-									sprintf(genbuf, "%s行使彩票管理权限",currentuser.userid);
-									millionairesrec(genbuf, "36选7开奖", "");
-								}
-								else prints("发生意外错误...");
-							else
-								prints("开奖时间还没有到啊！");
-
-						} else
-							prints("没有该彩票的记录。");
-						pressanykey();
-						break;
-					case '2':
-						fp = fopen(DIR_MC_TEMP "soccer_start", "r");
-						if (fp) {
-							fgets(strTime, 15, fp);
-							fclose(fp);
-							openTime =atoi(strTime);
-							if (time(0) >= openTime) //||strcmp(currentuser.userid,"macintosh")==0
-							{
-								getdata(t_lines - 5, 4,
-									"请输入兑奖序列(无需 - )[按\033[1;33mENTER\033[m放弃]: ",
-									buf, 55, DOECHO, YEA);
-								if (strlen(buf) == 0)
-									break;
-								if (open_soccer(buf) ==0)	{
-									prints("开奖成功！");
-									sprintf(genbuf, "%s行使彩票管理权限",currentuser.userid);
-									millionairesrec(genbuf, "足彩开奖", "");
-								}
-								else prints("发生意外错误...");
-
-							} else
-								prints ("开奖时间还没有到啊！");
-						} else
-							prints ("没有该彩票的记录。");
-						pressanykey();
-						break;
-					case 'q':
-					case 'Q':
-						break;
-					}
-					break;
-				case '2':
-					nomoney_show_stat("博彩公司经理室");
-					move(6, 10);
-					prints("1. 36选7 ");
-					move(7, 10);
-					prints("2. 足彩");
-					move(8, 10);
-					prints("Q. 退出");
-					move(4, 4);
-					prints("请选择开奖种类或操作：");
-					ch = igetkey();
-					switch (ch) {
-					case '1':
-						nomoney_show_stat
-						    ("博彩公司经理室");
-						move(4, 4);
-						if (!access(DIR_MC_TEMP "36_7_start",0)) {
-							prints("36选7彩票销售正在火热进行。");
-							pressanykey();
-							break;
-						}
-						prints("新建36选7");
-						inputValid = 0;
-						while (!inputValid) {
-							getdata(8, 4,"彩票销售天数[1-7]: ",buf, 2, DOECHO,YEA);
-							if (buf[0] > '0' && buf[0] < '8')
-								inputValid = 1;
-						}
-						time2string(time(0) + (buf[0] - '0') * 86400, genbuf);
-						addtofile(DIR_MC_TEMP "36_7_start", genbuf);
-
-						sprintf(genbuf,
-							"本期彩票将于 %s 天后开奖。欢迎大家踊跃购买！",
-							buf);
-						deliverreport
-						    ("[公告]新一期36选7彩票开始销售", genbuf);
-
-						move(10, 4);
-						prints("建立成功！请到时开奖。");
-						sprintf(genbuf, "新建36选7，%s天后开奖。",buf);
-						sprintf(buf, "%s行使彩票管理权限",currentuser.userid);
-						millionairesrec(buf, genbuf, "");
-						pressanykey();
-						break;
-					case '2':
-						nomoney_show_stat("博彩公司经理室");
-						move(4, 4);
-						if (!access(DIR_MC_TEMP "soccer_start",0)) {
-							prints("足球彩票销售正在火热进行。");
-							pressanykey();
-							break;
-						}
-						prints("新建足彩");
-						inputValid = 0;
-						while (!inputValid) {
-							getdata(8, 4,"彩票销售天数[1-7]: ",buf, 2, DOECHO,YEA);
-							if (buf[0] > '0' && buf[0] < '8')
-								inputValid = 1;
-						}
-						time2string(time(0) +(buf[0] - '0') * 86400, genbuf);
-						addtofile(DIR_MC_TEMP "soccer_start", genbuf);
-						utmpshm->mc.isSoccerSelling = 1;
-						sprintf(genbuf,
-							"本期彩票将于 %s 天后开奖。欢迎大家踊跃购买！",
-							buf);
-						deliverreport
-						    ("[公告]新一期足球彩票开始销售", genbuf);
-
-						move(10, 4);
-						prints("建立成功！请到时开奖。");
-						sprintf(genbuf, "新建足彩，%s天后开奖。",buf);
-						sprintf(buf, "%s行使彩票管理权限",currentuser.userid);
-						millionairesrec(buf, genbuf, "");
-						pressanykey();
-						break;
-					case 'q':
-					case 'Q':
-						break;
-					}
-					break;
-
-				case '3':
-					nomoney_show_stat("博彩公司经理室");
+				whoTakeCharge(2, uident);
+				whoTakeCharge2(2, name);
+				if (strcmp(currentuser.userid, uident)) {
 					move(6, 4);
-					if (askyn("您真的要停售足彩吗？", NA, NA) == YEA) {
-						utmpshm->mc.isSoccerSelling = 0;
-						deliverreport("[公告]本期足球彩票停止销售",
-							      "请广大彩民耐心等待开奖！");
-						sprintf(buf, "%s行使彩票管理权限", currentuser.userid);
-						millionairesrec(buf, "停售本期足彩", "");
-						move(8, 4);
-						prints("已经停售！请到时开奖。");
-						pressanykey();
-					}
-					break;
-
-				case '4':
-					nomoney_show_stat("博彩公司经理室");
-					move(6, 4);
-					if (askyn("您真的要辞职吗？", NA, NA) ==
-					    YEA) {
-					/*	del_from_file(MC_BOSS_FILE, "lottery");
-						sprintf(genbuf,
-							"%s 宣布辞去兵马俑博彩公司经理职务",
-							currentuser.userid);
-						deliverreport(genbuf,
-							      "兵马俑金融中心对其一直以来的工作表示感谢，祝以后顺利！");
-						move(8, 4);
-						prints
-						    ("好吧，既然你意已决，董事会也不便强留。再见！");
-						pressanykey();
-						quitRoom = 1;
-					*/
-						sprintf(genbuf, "%s 要辞去兵马俑博彩公司经理职务",
-							currentuser.userid);
-						mail_buf(genbuf, "millionaires", genbuf);
-						move(8, 4);
-						prints("好吧，已经发信告知总管了");
-						pressanykey();
-					}
-					break;
-				case 'q':
-				case 'Q':
-					quitRoom = 1;
+					prints("秘书%s提示您:“经理%s外出考察去了，有事请直接跟他联系。”", name, uident);
+					pressanykey();
 					break;
 				}
-			}
-			break;
-		case 'q':
-		case 'Q':
-			quit = 1;
-			break;
+				quitRoom = 0;
+				while (!quitRoom) {
+					char strTime[15];
+					nomoney_show_stat("博彩公司经理室");
+					move(t_lines - 1, 0);
+					prints("\033[1;44m 选单 \033[1;46m [1]开奖 [2]新建 [3]停止足彩销售 [4]辞职 [Q]离开\033[m");
+					ch = igetkey();
+					switch (ch) {
+						case '1':
+							nomoney_show_stat("博彩公司经理室");
+							move(6, 10);
+							prints("1.  36选7");
+							move(7, 10);
+							prints("2.  足球彩票");
+							move(8, 10);
+							prints("Q.  退出");
+							move(4, 4);
+							prints("请选择要开奖的彩票代号：");
+							move(12, 4);
+							ch = igetkey();
+							move(t_lines - 5, 15);
+							switch (ch) {
+								case '1':
+									fp = fopen(DIR_MC_TEMP "36_7_start", "r");
+									if (fp) {
+										fgets(strTime, 15, fp);
+										openTime = atoi(strTime);
+										fclose(fp);
+										if (time(0) >= openTime) //||strcmp(currentuser.userid,"macintosh")==0
+											if (open_36_7() == 0) {
+												prints("开奖成功！");
+												sprintf(genbuf, "%s行使彩票管理权限",currentuser.userid);
+												millionairesrec(genbuf, "36选7开奖", "");
+											}
+											else prints("发生意外错误...");
+										else
+											prints("开奖时间还没有到啊！");
+
+									} else
+										prints("没有该彩票的记录。");
+									pressanykey();
+									break;
+								case '2':
+									fp = fopen(DIR_MC_TEMP "soccer_start", "r");
+									if (fp) {
+										fgets(strTime, 15, fp);
+										fclose(fp);
+										openTime =atoi(strTime);
+										if (time(0) >= openTime) //||strcmp(currentuser.userid,"macintosh")==0
+										{
+											getdata(t_lines - 5, 4, "请输入兑奖序列(无需 - )[按\033[1;33mENTER\033[m放弃]: ", buf, 55, DOECHO, YEA);
+											if (strlen(buf) == 0)
+												break;
+											if (open_soccer(buf) ==0)	{
+												prints("开奖成功！");
+												sprintf(genbuf, "%s行使彩票管理权限",currentuser.userid);
+												millionairesrec(genbuf, "足彩开奖", "");
+											}
+											else prints("发生意外错误...");
+
+										} else
+											prints ("开奖时间还没有到啊！");
+									} else
+										prints ("没有该彩票的记录。");
+									pressanykey();
+									break;
+								case 'q':
+								case 'Q':
+									break;
+							}
+							break;
+						case '2':
+							nomoney_show_stat("博彩公司经理室");
+							move(6, 10);
+							prints("1. 36选7 ");
+							move(7, 10);
+							prints("2. 足彩");
+							move(8, 10);
+							prints("Q. 退出");
+							move(4, 4);
+							prints("请选择开奖种类或操作：");
+							ch = igetkey();
+							switch (ch) {
+								case '1':
+									nomoney_show_stat("博彩公司经理室");
+									move(4, 4);
+									if (!access(DIR_MC_TEMP "36_7_start",0)) {
+										prints("36选7彩票销售正在火热进行。");
+										pressanykey();
+										break;
+									}
+									prints("新建36选7");
+									inputValid = 0;
+									while (!inputValid) {
+										getdata(8, 4,"彩票销售天数[1-7]: ",buf, 2, DOECHO,YEA);
+										if (buf[0] > '0' && buf[0] < '8')
+											inputValid = 1;
+									}
+									time2string(time(0) + (buf[0] - '0') * 86400, genbuf);
+									ytht_add_to_file(DIR_MC_TEMP "36_7_start", genbuf);
+
+									sprintf(genbuf, "本期彩票将于 %s 天后开奖。欢迎大家踊跃购买！", buf);
+									deliverreport("[公告]新一期36选7彩票开始销售", genbuf);
+
+									move(10, 4);
+									prints("建立成功！请到时开奖。");
+									sprintf(genbuf, "新建36选7，%s天后开奖。",buf);
+									sprintf(buf, "%s行使彩票管理权限",currentuser.userid);
+									millionairesrec(buf, genbuf, "");
+									pressanykey();
+									break;
+								case '2':
+									nomoney_show_stat("博彩公司经理室");
+									move(4, 4);
+									if (!access(DIR_MC_TEMP "soccer_start",0)) {
+										prints("足球彩票销售正在火热进行。");
+										pressanykey();
+										break;
+									}
+									prints("新建足彩");
+									inputValid = 0;
+									while (!inputValid) {
+										getdata(8, 4,"彩票销售天数[1-7]: ",buf, 2, DOECHO,YEA);
+										if (buf[0] > '0' && buf[0] < '8')
+											inputValid = 1;
+									}
+									time2string(time(0) +(buf[0] - '0') * 86400, genbuf);
+									ytht_add_to_file(DIR_MC_TEMP "soccer_start", genbuf);
+									mc->isSoccerSelling = 1;
+									sprintf(genbuf, "本期彩票将于 %s 天后开奖。欢迎大家踊跃购买！", buf);
+									deliverreport("[公告]新一期足球彩票开始销售", genbuf);
+
+									move(10, 4);
+									prints("建立成功！请到时开奖。");
+									sprintf(genbuf, "新建足彩，%s天后开奖。",buf);
+									sprintf(buf, "%s行使彩票管理权限",currentuser.userid);
+									millionairesrec(buf, genbuf, "");
+									pressanykey();
+									break;
+								case 'q':
+								case 'Q':
+									break;
+							}
+							break;
+
+						case '3':
+							nomoney_show_stat("博彩公司经理室");
+							move(6, 4);
+							if (askyn("您真的要停售足彩吗？", NA, NA) == YEA) {
+								mc->isSoccerSelling = 0;
+								deliverreport("[公告]本期足球彩票停止销售", "请广大彩民耐心等待开奖！");
+								sprintf(buf, "%s行使彩票管理权限", currentuser.userid);
+								millionairesrec(buf, "停售本期足彩", "");
+								move(8, 4);
+								prints("已经停售！请到时开奖。");
+								pressanykey();
+							}
+							break;
+
+						case '4':
+							nomoney_show_stat("博彩公司经理室");
+							move(6, 4);
+							if (askyn("您真的要辞职吗？", NA, NA) == YEA) {
+								/*	ytht_del_from_file(MC_BOSS_FILE, "lottery");
+									sprintf(genbuf,
+									"%s 宣布辞去兵马俑博彩公司经理职务",
+									currentuser.userid);
+									deliverreport(genbuf,
+									"兵马俑金融中心对其一直以来的工作表示感谢，祝以后顺利！");
+									move(8, 4);
+									prints
+									("好吧，既然你意已决，董事会也不便强留。再见！");
+									pressanykey();
+									quitRoom = 1;
+									*/
+								sprintf(genbuf, "%s 要辞去兵马俑博彩公司经理职务", currentuser.userid);
+								mail_buf(genbuf, "millionaires", genbuf);
+								move(8, 4);
+								prints("好吧，已经发信告知总管了");
+								pressanykey();
+							}
+							break;
+						case 'q':
+						case 'Q':
+							quitRoom = 1;
+							break;
+					}
+				}
+				break;
+			case 'q':
+			case 'Q':
+				quit = 1;
+				break;
 		}
 		limit_cpu();
 	}
@@ -2073,9 +1832,7 @@ struct MC_Jijin{
 	char name[18];
 };
 
-static int
-addOrDel_contrb()
-{
+static int addOrDel_contrb() {
 	char uident[STRLEN], ans[8];
 	int count = 0, tag = 0, i, j, fd, x=0;
 	char buf[STRLEN], title[STRLEN];
@@ -2220,18 +1977,16 @@ addOrDel_contrb()
 	return 1;
 }
 
-
-static int
-money_sackOrAppoint(int type) //type1职位 2秘书
-{
+//type1职位 2秘书
+static int money_sackOrAppoint(int type) {
 	int pos, i=0 , j;
 	char buf[100], letter[100], report[100], uident[IDLEN + 1], boss[IDLEN + 1];
-	const char feaStr[][20] =
-	    { "bank", "lottery", "gambling", "gang", "beggar", "stock", "shop",
+	const char feaStr[][20] = {
+		"bank", "lottery", "gambling", "gang", "beggar", "stock", "shop",
 		"police","killer","marriage","office",""
 	};
-	const char feaStr2[][20] =
-	    { "银行", "彩票", "赌场", "黑帮", "丐帮", "股市", "商场",
+	const char feaStr2[][20] = {
+		"银行", "彩票", "赌场", "黑帮", "丐帮", "股市", "商场",
 		"警署","杀手","教堂","中心", ""
 	};
 
@@ -2276,7 +2031,7 @@ money_sackOrAppoint(int type) //type1职位 2秘书
 		move(17, 4);
 		if (uident[0] == '\0')
 			return 0;
-		if (!searchuser(uident)) {
+		if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
 			prints("错误的使用者代号...");
 			pressanykey();
 			return 0;
@@ -2290,8 +2045,7 @@ money_sackOrAppoint(int type) //type1职位 2秘书
 				sackOrAppoint2(pos, uident, 0, letter);
 				savestrvalue(MC_ASS_FILE, feaStr[pos - 1], uident);
 			}
-			deliverreport(letter,
-				      "谨望其能廉洁奉公，不以权谋私利，为兵马俑金融事业的发展鞠躬尽瘁。");
+			deliverreport(letter, "谨望其能廉洁奉公，不以权谋私利，为兵马俑金融事业的发展鞠躬尽瘁。");
 			mail_buf(letter, uident, letter);
 			sprintf(genbuf, "%s行使管理权限", currentuser.userid);
 			sprintf(buf,"%s任命%s负责%d职位%s", currentuser.userid, uident, pos, (type==1)?"":"秘书");
@@ -2313,10 +2067,10 @@ money_sackOrAppoint(int type) //type1职位 2秘书
 		if (askyn(genbuf, NA, NA) == YEA) {
 			if (type==1){
 				sackOrAppoint(pos, boss, 1, letter);
-				del_from_file(MC_BOSS_FILE, (char *) feaStr[pos - 1]);
+				ytht_del_from_file(MC_BOSS_FILE, (char *) feaStr[pos - 1], true);
 			}else{
 				sackOrAppoint2(pos, boss, 1, letter);
-				del_from_file(MC_ASS_FILE, (char *) feaStr[pos - 1]);
+				ytht_del_from_file(MC_ASS_FILE, (char *) feaStr[pos - 1], true);
 			}
 			deliverreport(letter, report);
 			mail_buf(letter, boss, letter);
@@ -2331,10 +2085,20 @@ money_sackOrAppoint(int type) //type1职位 2秘书
 	return 1;
 }
 
+static int init_stock_v(struct boardmem *board, int curr_idx, va_list ap) {
+	const char *name = va_arg(ap, const char *);
 
-static int //管理系统  股票系统
-money_admin()
-{
+	if (!strcmp(board->header.filename, name)) {
+		board->stocknum = board->score * ((board->score > 10000) ? 2000 : 1000);
+
+		if (board->stocknum < 50000)
+			board->stocknum = 50000;
+	}
+	return 0;
+}
+
+//管理系统  股票系统
+static int money_admin() {
 	int ch, i, j, quit = 0;
 	char buf[100], letter[100], uident[IDLEN + 1];
 	char stockboard[STRLEN][MAX_STOCK_NUM];
@@ -2342,7 +2106,7 @@ money_admin()
 	int count;
 
 	if (!seek_in_file(MC_ADMIN_FILE, currentuser.userid)
-	    && !(currentuser.userlevel & PERM_SPECIAL5) && strcmp(currentuser.userid, "macintosh")) {
+			&& !(currentuser.userlevel & PERM_SPECIAL5) && strcmp(currentuser.userid, "macintosh")) {
 		return 0;
 	}
 	clear();
@@ -2383,129 +2147,114 @@ money_admin()
 
 		ch = igetkey();
 		switch (ch) {
-		case 'e':
-		case 'E':
-			money_sackOrAppoint(1);
-			break;
-
-		case 'f':
-		case 'F':
-			money_sackOrAppoint(2);//秘书
-			break;
-
-		case 'a':
-		case 'A':
-			clear();
-			move(15, 4);
-			usercomplete("授予谁金融中心总管权限？", uident);
-			move(16, 4);
-			if (uident[0] == '\0')
+			case 'e':
+			case 'E':
+				money_sackOrAppoint(1);
 				break;
-			if (!searchuser(uident)) {
-				prints("错误的使用者代号...");
-				pressanykey();
+
+			case 'f':
+			case 'F':
+				money_sackOrAppoint(2);//秘书
 				break;
-			}
-			if (!seek_in_file(MC_ADMIN_FILE, uident)) {
-				if (askyn("确定吗？", NA, NA) == NA) {
+
+			case 'a':
+			case 'A':
+				clear();
+				move(15, 4);
+				usercomplete("授予谁金融中心总管权限？", uident);
+				move(16, 4);
+				if (uident[0] == '\0')
 					break;
-				}
-				addtofile(MC_ADMIN_FILE, uident);
-				move(17, 4);
-				prints("任命成功!");
-				sprintf(genbuf,
-					"[公告]授予 %s 兵马俑金融中心管理权限",
-					uident);
-				deliverreport(genbuf,
-					      "谨望其能廉洁奉公，不以权谋私利，为兵马俑金融事业的发展鞠躬尽瘁。");
-				sprintf(genbuf,
-					"%s 由 %s 授予兵马俑金融中心管理权限",
-					uident, currentuser.userid);
-				mail_buf(genbuf, uident, genbuf);
-				//add by macintosh for system record
-				sprintf(genbuf, "%s行使管理权限", currentuser.userid);
-				sprintf(buf,"%s任命%s为金融中心总管", currentuser.userid, uident);
-				millionairesrec(genbuf, buf, "");
-			} else {
-				prints("该ID已经具有金融中心管理权限");
-			}
-			pressanykey();
-			break;
-		case 'c':
-		case 'C':
-			clear();
-			move(1, 0);
-			prints("目前具有管理权限的ID列表：");
-			listfilecontent(MC_ADMIN_FILE);
-			pressanykey();
-			break;
-		case 'b':
-		case 'B':
-			clear();
-			move(15, 4);
-			usercomplete("取消谁的金融中心总管权限？", uident);
-			move(16, 4);
-			if (uident[0] == '\0')
-				break;
-			if (!searchuser(uident)) {
-				prints("错误的使用者代号...");
-				pressanykey();
-				break;
-			}
-			if (seek_in_file(MC_ADMIN_FILE, uident)) {
-				getdata(16, 4, "取消原因：", buf, 50,
-					DOECHO, YEA);
-				move(17, 4);
-				if (askyn("确定吗？", NA, NA) == NA) {
+				if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
+					prints("错误的使用者代号...");
 					pressanykey();
 					break;
 				}
-				del_from_file(MC_ADMIN_FILE, uident);
-				move(18, 4);
-				prints("取消成功!");
-				sprintf(genbuf,
-					"[公告]取消 %s 的兵马俑金融中心管理权限",
-					uident);
-				sprintf(letter, "取消原因： %s", buf);
-				deliverreport(genbuf, letter);
-				sprintf(genbuf,
-					"%s 被 %s 取消兵马俑金融中心管理权限",
-					uident, currentuser.userid);
-				mail_buf(genbuf, uident, genbuf);
-				sprintf(genbuf, "%s行使管理权限", currentuser.userid);
-				sprintf(buf,"%s取消%s的金融中心总管权限", currentuser.userid, uident);
-				millionairesrec(genbuf, buf, "");
-			} else {
-				prints("该ID没有此权限。");
-			}
-			pressanykey();
-			break;
-
-		case 'g':
-		case 'G':
-			clear();
-			move(15, 4);
-			if (!seek_in_file(MC_ADMIN_FILE, currentuser.userid)) {
-				break;
-			}
-			if (askyn("您真的要辞职吗？", NA, NA) == YEA) {
-				del_from_file(MC_ADMIN_FILE,
-					      currentuser.userid);
-				sprintf(genbuf,
-					"%s 宣布辞去兵马俑金融中心总管职务",
-					currentuser.userid);
-				deliverreport(genbuf,
-					      "兵马俑金融中心对其一直以来的工作表示感谢，祝以后顺利！");
-				sprintf(genbuf, "%s行使管理权限", currentuser.userid);
-				sprintf(buf,"%s辞去兵马俑金融中心总管职务", currentuser.userid);
-				millionairesrec(genbuf, buf, "");
-				move(16, 4);
-				prints
-				    ("好吧，既然你意已决，金融中心也不便强留。再见！");
-				quit = 1;
+				if (!seek_in_file(MC_ADMIN_FILE, uident)) {
+					if (askyn("确定吗？", NA, NA) == NA) {
+						break;
+					}
+					ytht_add_to_file(MC_ADMIN_FILE, uident);
+					move(17, 4);
+					prints("任命成功!");
+					sprintf(genbuf, "[公告]授予 %s 兵马俑金融中心管理权限", uident);
+					deliverreport(genbuf, "谨望其能廉洁奉公，不以权谋私利，为兵马俑金融事业的发展鞠躬尽瘁。");
+					sprintf(genbuf, "%s 由 %s 授予兵马俑金融中心管理权限", uident, currentuser.userid);
+					mail_buf(genbuf, uident, genbuf);
+					//add by macintosh for system record
+					sprintf(genbuf, "%s行使管理权限", currentuser.userid);
+					sprintf(buf,"%s任命%s为金融中心总管", currentuser.userid, uident);
+					millionairesrec(genbuf, buf, "");
+				} else {
+					prints("该ID已经具有金融中心管理权限");
+				}
 				pressanykey();
-			}
-			break;
+				break;
+			case 'c':
+			case 'C':
+				clear();
+				move(1, 0);
+				prints("目前具有管理权限的ID列表：");
+				listfilecontent(MC_ADMIN_FILE);
+				pressanykey();
+				break;
+			case 'b':
+			case 'B':
+				clear();
+				move(15, 4);
+				usercomplete("取消谁的金融中心总管权限？", uident);
+				move(16, 4);
+				if (uident[0] == '\0')
+					break;
+				if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
+					prints("错误的使用者代号...");
+					pressanykey();
+					break;
+				}
+				if (seek_in_file(MC_ADMIN_FILE, uident)) {
+					getdata(16, 4, "取消原因：", buf, 50, DOECHO, YEA);
+					move(17, 4);
+					if (askyn("确定吗？", NA, NA) == NA) {
+						pressanykey();
+						break;
+					}
+					ytht_del_from_file(MC_ADMIN_FILE, uident, true);
+					move(18, 4);
+					prints("取消成功!");
+					sprintf(genbuf, "[公告]取消 %s 的兵马俑金融中心管理权限", uident);
+					sprintf(letter, "取消原因： %s", buf);
+					deliverreport(genbuf, letter);
+					sprintf(genbuf, "%s 被 %s 取消兵马俑金融中心管理权限", uident, currentuser.userid);
+					mail_buf(genbuf, uident, genbuf);
+					sprintf(genbuf, "%s行使管理权限", currentuser.userid);
+					sprintf(buf,"%s取消%s的金融中心总管权限", currentuser.userid, uident);
+					millionairesrec(genbuf, buf, "");
+				} else {
+					prints("该ID没有此权限。");
+				}
+				pressanykey();
+				break;
+
+			case 'g':
+			case 'G':
+				clear();
+				move(15, 4);
+				if (!seek_in_file(MC_ADMIN_FILE, currentuser.userid)) {
+					break;
+				}
+				if (askyn("您真的要辞职吗？", NA, NA) == YEA) {
+					ytht_del_from_file(MC_ADMIN_FILE, currentuser.userid, true);
+					sprintf(genbuf, "%s 宣布辞去兵马俑金融中心总管职务", currentuser.userid);
+					deliverreport(genbuf, "兵马俑金融中心对其一直以来的工作表示感谢，祝以后顺利！");
+					sprintf(genbuf, "%s行使管理权限", currentuser.userid);
+					sprintf(buf,"%s辞去兵马俑金融中心总管职务", currentuser.userid);
+					millionairesrec(genbuf, buf, "");
+					move(16, 4);
+					prints("好吧，既然你意已决，金融中心也不便强留。再见！");
+					quit = 1;
+					pressanykey();
+				}
+				break;
 			case 'j':
 			case 'J':
 				clear();
@@ -2514,28 +2263,21 @@ money_admin()
 				move(16, 4);
 				if (uident[0] == '\0')
 					break;
-				if (!searchuser(uident)) {
+				if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
 					prints("错误的使用者代号...");
 					pressanykey();
 					break;
 				}
-				if (seek_in_file
-				    (DIR_MC "mingren", uident)) {
+				if (seek_in_file(DIR_MC "mingren", uident)) {
 					prints("该ID已经是名人了。");
 					pressanykey();
 					break;
 				}
 				if (askyn("确定吗？", NA, NA) == YEA) {
-					addtofile(DIR_MC "mingren",
-						  uident);
-					sprintf(genbuf,
-						"恭喜%s进入兵马俑金融中心名人堂",
-						uident);
-					deliverreport(genbuf,
-				      "兵马俑金融中心对其一直以来的工作表示感谢，祝以后顺利！");
-					mail_buf
-					    ("感谢你为了大富翁游戏的付出",
-					     uident, genbuf);
+					ytht_add_to_file(DIR_MC "mingren", uident);
+					sprintf(genbuf, "恭喜%s进入兵马俑金融中心名人堂", uident);
+					deliverreport(genbuf, "兵马俑金融中心对其一直以来的工作表示感谢，祝以后顺利！");
+					mail_buf("感谢你为了大富翁游戏的付出", uident, genbuf);
 					sprintf(genbuf, "%s行使管理权限", currentuser.userid);
 					sprintf(buf,"%s授予%s黄马褂", currentuser.userid, uident);
 					millionairesrec(genbuf, buf, "");
@@ -2545,432 +2287,383 @@ money_admin()
 					pressanykey();
 				}
 				break;
-		case 'k':
-		case 'K':
-			clear();
-			move(12, 4);
-			usercomplete("解除哪位？", uident);
-			move(13, 4);
-			if (uident[0] == '\0')
+			case 'k':
+			case 'K':
+				clear();
+				move(12, 4);
+				usercomplete("解除哪位？", uident);
+				move(13, 4);
+				if (uident[0] == '\0')
+					break;
+				if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
+					prints("错误的使用者代号...");
+					pressanykey();
+					break;
+				}
+				if (!seek_in_file(DIR_MC "mingren", uident)) {
+					prints("该ID不是兵马俑名人。");
+					pressanykey();
+					break;
+				}
+				if (askyn("确定吗？", NA, NA) == YEA) {
+					ytht_del_from_file(DIR_MC "mingren", uident, true);
+					sprintf(genbuf, "%s 重出江湖了", uident);
+					deliverreport(genbuf, "江湖又要有一场血雨腥风了");
+					sprintf(genbuf, "%s行使管理权限", currentuser.userid);
+					sprintf(buf,"%s解除%s黄马甲", currentuser.userid, uident);
+					millionairesrec(genbuf, buf, "");
+					move(14, 4);
+					prints("解职成功。");
+					pressanykey();
+				}
 				break;
-			if (!searchuser(uident)) {
-				prints("错误的使用者代号...");
-				pressanykey();
-				break;
-			}
-			if (!seek_in_file
-			    (DIR_MC "mingren", uident)) {
-				prints
-				    ("该ID不是兵马俑名人。");
-				pressanykey();
-				break;
-			}
-			if (askyn("确定吗？", NA, NA) == YEA) {
-				del_from_file(DIR_MC
-					      "mingren",
-					      uident);
-				sprintf(genbuf,
-					"%s 重出江湖了",
-					uident);
-				deliverreport(genbuf,
-			      "江湖又要有一场血雨腥风了");
-				sprintf(genbuf, "%s行使管理权限", currentuser.userid);
-				sprintf(buf,"%s解除%s黄马甲", currentuser.userid, uident);
-				millionairesrec(genbuf, buf, "");
-				move(14, 4);
-				prints("解职成功。");
-				pressanykey();
-			}
-			break;
-		case 'l':
-		case 'L':
-			clear();
-			move(15, 4);
-			usercomplete("任命谁为兵马俑金融中心茶友？", uident);
-			move(16, 4);
-			if (uident[0] == '\0')
-				break;
-			if (!searchuser(uident)) {
-				prints("错误的使用者代号...");
-				pressanykey();
-				break;
-			}
-			if (seek_in_file
-			    (DIR_MC "chayou", uident)) {
-				prints("该ID已经是茶友了。");
-				pressanykey();
-				break;
-			}
-			if (askyn("确定吗？", NA, NA) == YEA) {
-				addtofile(DIR_MC "chayou",
-					  uident);
-				sprintf(genbuf,
-					"恭喜%s成为兵马俑金融中心茶友",
-					uident);
-				deliverreport(genbuf,
-			      "大富翁随时恭候您来喝茶做客！");
-				mail_buf
-				    ("大富翁随时恭候您来喝茶做客！",
-				     uident, genbuf);
-				sprintf(genbuf, "%s行使管理权限", currentuser.userid);
-				sprintf(buf,"%s任命%s为茶友", currentuser.userid, uident);
-				millionairesrec(genbuf, buf, "");
+			case 'l':
+			case 'L':
+				clear();
+				move(15, 4);
+				usercomplete("任命谁为兵马俑金融中心茶友？", uident);
+				move(16, 4);
+				if (uident[0] == '\0')
+					break;
+				if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
+					prints("错误的使用者代号...");
+					pressanykey();
+					break;
+				}
+				if (seek_in_file(DIR_MC "chayou", uident)) {
+					prints("该ID已经是茶友了。");
+					pressanykey();
+					break;
+				}
+				if (askyn("确定吗？", NA, NA) == YEA) {
+					ytht_add_to_file(DIR_MC "chayou", uident);
+					sprintf(genbuf, "恭喜%s成为兵马俑金融中心茶友", uident);
+					deliverreport(genbuf, "大富翁随时恭候您来喝茶做客！");
+					mail_buf("大富翁随时恭候您来喝茶做客！", uident, genbuf);
+					sprintf(genbuf, "%s行使管理权限", currentuser.userid);
+					sprintf(buf,"%s任命%s为茶友", currentuser.userid, uident);
+					millionairesrec(genbuf, buf, "");
 
+					move(17, 4);
+					prints("任命成功。");
+					pressanykey();
+				}
+				break;
+			case 'm':
+			case 'M':
+				clear();
+				move(12, 4);
+				usercomplete("解除哪位？", uident);
+				move(13, 4);
+				if (uident[0] == '\0')
+					break;
+				if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
+					prints("错误的使用者代号...");
+					pressanykey();
+					break;
+				}
+				if (!seek_in_file(DIR_MC "chayou", uident)) {
+					prints("该ID不是兵马俑金融中心茶友。");
+					pressanykey();
+					break;
+				}
+				if (askyn("确定吗？", NA, NA) == YEA) {
+					ytht_del_from_file(DIR_MC "chayou", uident, true);
+					sprintf(genbuf, "%s 重出江湖了", uident);
+					deliverreport(genbuf, "感谢您一直以来对大富翁的关注。");
+					sprintf(genbuf, "%s行使管理权限", currentuser.userid);
+					sprintf(buf,"%s取消%s的茶友身份", currentuser.userid, uident);
+					millionairesrec(genbuf, buf, "");
+					move(14, 4);
+					prints("解职成功。");
+					pressanykey();
+				}
+				break;
+			case 'n':
+			case 'N':
+				clear();
+				move(15, 4);
+				usercomplete("任命谁为铁公鸡？", uident);
+				move(16, 4);
+				if (uident[0] == '\0')
+					break;
+				if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
+					prints("错误的使用者代号...");
+					pressanykey();
+					break;
+				}
+				if (seek_in_file(DIR_MC "gongji", uident)) {
+					prints("该ID已经是铁公鸡了。");
+					pressanykey();
+					break;
+				}
+				if (askyn("确定吗？", NA, NA) == YEA) {
+					ytht_add_to_file(DIR_MC "gongji", uident);
+					sprintf(genbuf, "恭喜%s获得铁公鸡称号", uident);
+					deliverreport(genbuf, "兵马俑金融中心对其一毛不拔的行为表示奖励！");
+					//deliverreport(genbuf,
+					//"兵马俑金融中心对其一贯的艰苦朴素，勤俭节约表示赞赏！");
+					mail_buf("获得铁公鸡称号", uident, genbuf);
+					sprintf(genbuf, "%s行使管理权限", currentuser.userid);
+					sprintf(buf,"%s任命%s为铁公鸡", currentuser.userid, uident);
+					millionairesrec(genbuf, buf, "");
+
+					move(17, 4);
+					prints("任命成功。");
+					pressanykey();
+				}
+				break;
+			case 'o':
+			case 'O':
+				clear();
+				move(12, 4);
+				usercomplete("解除哪位？", uident);
+				move(13, 4);
+				if (uident[0] == '\0')
+					break;
+				if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
+					prints("错误的使用者代号...");
+					pressanykey();
+					break;
+				}
+				if (!seek_in_file(DIR_MC "gongji", uident)) {
+					prints("该ID不是铁公鸡。");
+					pressanykey();
+					break;
+				}
+				if (askyn("确定吗？", NA, NA) == YEA) {
+					ytht_del_from_file(DIR_MC "gongji", uident, true);
+					sprintf(genbuf, "%s 决定花钱销灾了", uident);
+					deliverreport(genbuf, "从铁公鸡身上能榨出油水来。厉害厉害");
+					sprintf(genbuf, "%s行使管理权限", currentuser.userid);
+					sprintf(buf,"%s取消%s的铁公鸡称号", currentuser.userid, uident);
+					millionairesrec(genbuf, buf, "");
+					move(14, 4);
+					prints("解职成功。");
+					pressanykey();
+				}
+				break;
+
+			case 'y':
+			case 'Y':
+				clear();
+				move(13, 4);
+				usercomplete("任命谁为基金id？", uident);
+				move(14, 4);
+				if (uident[0] == '\0')
+					break;
+				if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
+					prints("错误的使用者代号...");
+					pressanykey();
+					break;
+				}
+				if (seek_in_file(DIR_MC "jijin", uident)) {
+					prints("该ID已经是基金ID了。");
+					pressanykey();
+					break;
+				}
+				getdata(14, 4, "基金名称：", buf, 50, DOECHO, YEA);
+				sprintf(genbuf, "[公告]成立%s基金%s", buf, uident);
+				getdata(15, 4, "原因：", buf, 50, DOECHO, YEA);
+				sprintf(letter, "成立原因：%s\n希望基金管理者忠于职守，建设廉洁高效的基金体系。", buf);
+				move(16, 4);
+				if (askyn("确定吗？", NA, NA) == NA)
+					break;
+				ytht_add_to_file(DIR_MC "jijin",uident);
+				if (!seek_in_file(DIR_MC "mingren", uident))
+					ytht_add_to_file(DIR_MC "mingren",uident);
+				//基金id是给予特殊的黄马褂
+				deliverreport(genbuf, letter);
+				mail_buf (letter, uident, genbuf);
+				sprintf(genbuf, "%s行使管理权限", currentuser.userid);
+				sprintf(buf,"%s任命%s为基金ID", currentuser.userid, uident);
+				millionairesrec(genbuf, buf, "");
 				move(17, 4);
 				prints("任命成功。");
 				pressanykey();
-			}
-			break;
-		case 'm':
-		case 'M':
-			clear();
-			move(12, 4);
-			usercomplete("解除哪位？", uident);
-			move(13, 4);
-			if (uident[0] == '\0')
 				break;
-			if (!searchuser(uident)) {
-				prints("错误的使用者代号...");
-				pressanykey();
-				break;
-			}
-			if (!seek_in_file
-			    (DIR_MC "chayou", uident)) {
-				prints
-				    ("该ID不是兵马俑金融中心茶友。");
-				pressanykey();
-				break;
-			}
-			if (askyn("确定吗？", NA, NA) == YEA) {
-				del_from_file(DIR_MC
-					      "chayou",
-					      uident);
-				sprintf(genbuf,
-					"%s 重出江湖了",
-					uident);
-				deliverreport(genbuf,
-			      "感谢您一直以来对大富翁的关注。");
+
+			case 'z':
+			case 'Z':
+				clear();
+				move(12, 4);
+				usercomplete("解除哪位？", uident);
+				move(13, 4);
+				if (uident[0] == '\0')
+					break;
+				if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
+					prints("错误的使用者代号...");
+					pressanykey();
+					break;
+				}
+				if (!seek_in_file(DIR_MC "jijin", uident)) {
+					prints("该ID不是基金ID。");
+					pressanykey();
+					break;
+				}
+				getdata(15, 4, "原因：", buf, 50, DOECHO, YEA);
+				sprintf(letter, "撤销原因：%s", buf);
+				move(16, 4);
+				if (askyn("确定吗？", NA, NA) == NA)
+					break;
+				ytht_del_from_file(DIR_MC"jijin", uident, true);
+				ytht_del_from_file(DIR_MC"mingren", uident, true);
+				//一并取消黄马褂
+				sprintf(genbuf, "[公告]撤销基金%s", uident);
+				deliverreport(genbuf, letter);
+				mail_buf (letter, uident, genbuf);
 				sprintf(genbuf, "%s行使管理权限", currentuser.userid);
-				sprintf(buf,"%s取消%s的茶友身份", currentuser.userid, uident);
-				millionairesrec(genbuf, buf, "");
-				move(14, 4);
-				prints("解职成功。");
-				pressanykey();
-			}
-			break;
-	       case 'n':
-		case 'N':
-			clear();
-			move(15, 4);
-			usercomplete("任命谁为铁公鸡？", uident);
-			move(16, 4);
-			if (uident[0] == '\0')
-				break;
-			if (!searchuser(uident)) {
-				prints("错误的使用者代号...");
-				pressanykey();
-				break;
-			}
-			if (seek_in_file
-			    (DIR_MC "gongji", uident)) {
-				prints("该ID已经是铁公鸡了。");
-				pressanykey();
-				break;
-			}
-			if (askyn("确定吗？", NA, NA) == YEA) {
-				addtofile(DIR_MC "gongji",
-					  uident);
-				sprintf(genbuf,
-					"恭喜%s获得铁公鸡称号",
-					uident);
-				 deliverreport(genbuf,
-			      "兵马俑金融中心对其一毛不拔的行为表示奖励！");
-				 //deliverreport(genbuf,
-			      //"兵马俑金融中心对其一贯的艰苦朴素，勤俭节约表示赞赏！");
-				 mail_buf
-				    ("获得铁公鸡称号",
-				     uident, genbuf);
-				sprintf(genbuf, "%s行使管理权限", currentuser.userid);
-				sprintf(buf,"%s任命%s为铁公鸡", currentuser.userid, uident);
-				millionairesrec(genbuf, buf, "");
-
-				move(17, 4);
-				prints("任命成功。");
-				pressanykey();
-			}
-			break;
-		case 'o':
-		case 'O':
-			clear();
-			move(12, 4);
-			usercomplete("解除哪位？", uident);
-			move(13, 4);
-			if (uident[0] == '\0')
-				break;
-			if (!searchuser(uident)) {
-				prints("错误的使用者代号...");
-				pressanykey();
-				break;
-			}
-			if (!seek_in_file
-			    (DIR_MC "gongji", uident)) {
-				prints
-				    ("该ID不是铁公鸡。");
-				pressanykey();
-				break;
-			}
-			if (askyn("确定吗？", NA, NA) == YEA) {
-				del_from_file(DIR_MC
-					      "gongji",
-					      uident);
-				sprintf(genbuf,
-					"%s 决定花钱销灾了",
-					uident);
-				deliverreport(genbuf, "从铁公鸡身上能榨出油水来。厉害厉害");
-				sprintf(genbuf, "%s行使管理权限", currentuser.userid);
-				sprintf(buf,"%s取消%s的铁公鸡称号", currentuser.userid, uident);
-				millionairesrec(genbuf, buf, "");
-				move(14, 4);
-				prints("解职成功。");
-				pressanykey();
-			}
-			break;
-
-		case 'y':
-		case 'Y':
-			clear();
-			move(13, 4);
-			usercomplete("任命谁为基金id？", uident);
-			move(14, 4);
-			if (uident[0] == '\0')
-				break;
-			if (!searchuser(uident)) {
-				prints("错误的使用者代号...");
-				pressanykey();
-				break;
-			}
-			if (seek_in_file
-			    (DIR_MC "jijin", uident)) {
-				prints("该ID已经是基金ID了。");
-				pressanykey();
-				break;
-			}
-			getdata(14, 4, "基金名称：", buf, 50, DOECHO, YEA);
-			sprintf(genbuf, "[公告]成立%s基金%s", buf, uident);
-			getdata(15, 4, "原因：", buf, 50, DOECHO, YEA);
-			sprintf(letter, "成立原因：%s\n希望基金管理者忠于职守，建设廉洁高效的基金体系。", buf);
-			move(16, 4);
-			if (askyn("确定吗？", NA, NA) == NA)
-				break;
-			addtofile(DIR_MC "jijin",uident);
-			if (!seek_in_file(DIR_MC "mingren", uident))
-				addtofile(DIR_MC "mingren",uident);
-			//基金id是给予特殊的黄马褂
-			 deliverreport(genbuf, letter);
-			 mail_buf (letter, uident, genbuf);
-			sprintf(genbuf, "%s行使管理权限", currentuser.userid);
-			sprintf(buf,"%s任命%s为基金ID", currentuser.userid, uident);
-			millionairesrec(genbuf, buf, "");
-			move(17, 4);
-			prints("任命成功。");
-			pressanykey();
-			break;
-
-		case 'z':
-		case 'Z':
-			clear();
-			move(12, 4);
-			usercomplete("解除哪位？", uident);
-			move(13, 4);
-			if (uident[0] == '\0')
-				break;
-			if (!searchuser(uident)) {
-				prints("错误的使用者代号...");
-				pressanykey();
-				break;
-			}
-			if (!seek_in_file(DIR_MC "jijin", uident)) {
-				prints
-				    ("该ID不是基金ID。");
-				pressanykey();
-				break;
-			}
-			getdata(15, 4, "原因：", buf, 50, DOECHO, YEA);
-			sprintf(letter, "撤销原因：%s", buf);
-			move(16, 4);
-			if (askyn("确定吗？", NA, NA) == NA)
-				break;
-			del_from_file(DIR_MC"jijin", uident);
-			del_from_file(DIR_MC"mingren", uident);
-			//一并取消黄马褂
-			sprintf(genbuf, "[公告]撤销基金%s", uident);
-			 deliverreport(genbuf, letter);
-			 mail_buf (letter, uident, genbuf);
-			sprintf(genbuf, "%s行使管理权限", currentuser.userid);
-			sprintf(buf,"%s撤销基金%s", currentuser.userid, uident);
-			millionairesrec(genbuf, buf, "");
-			move(17, 4);
-			prints("解除成功。");
-			pressanykey();
-			break;
-
-		case 'p':
-		case 'P':
-			clear();
-			fp1 = fopen( MC_STOCK_BOARDS, "r" );
-			count = listfilecontent(MC_STOCK_BOARDS);
-			clear();
-			for (j = 0; j < count; j++) {
-				fscanf(fp1, "%s", stockboard[j]);
-			}
-			fclose(fp1);
-
-			move(12, 4);
-			if (askyn("确定要初始化股市吗？", NA, NA) == YEA)
-			{
-				for (i = 0; i < numboards; i++)
-					for (j = 0; j < count; j++)
-						if (!strcmp(bcache[i].header.filename, stockboard[j]))
-						{
-//									stock_price[j] = utmpshm->ave_score / 100 + bcache[i].score / 20;
-							if (bcache[i].score > 10000)
-									bcache[i].stocknum = bcache[i].score * 2000;
-								else
-									bcache[i].stocknum = bcache[i].score * 1000;
-							if (bcache[i].stocknum < 50000)
-								bcache[i].stocknum = 50000;
-						}
-				sprintf(genbuf, "%s行使管理权限", currentuser.userid);
-				sprintf(buf,"%s初始化股市", currentuser.userid);
-				millionairesrec(genbuf, buf, "");
-				move(14, 4);
-				prints("股市初始化成功。");
-				pressanykey();
-			}
-			break;
-
-		case 'r':
-		case 'R':
-                        clear();
-                        move(1, 0);
-                        prints("目前名人堂的ID列表：");
-                        listfilecontent(DIR_MC "mingren");
-                        pressanykey();
-                        break;
-
-		case 's':
-              case 'S':
-                        clear();
-                        move(1, 0);
-                        prints("目前茶友的ID列表：");
-                        listfilecontent(DIR_MC "chayou");
-                        pressanykey();
-                        break;
-
-                case 't':
-                case 'T':
-                        clear();
-                        move(1, 0);
-                        prints("目前铁公鸡的ID列表：");
-                        listfilecontent(DIR_MC "gongji");
-                        pressanykey();
-                        break;
-
-		  case 'u':
-                case 'U':
-                        clear();
-                        move(1, 0);
-                        prints("目前基金ID列表：");
-                        listfilecontent(DIR_MC "jijin");
-                        pressanykey();
-                        break;
-
-		case 'X':
-		case 'x':
-			money_deny();
-			break;
-
-		int num=0;
-		case '1':
-			clear();
-			move(12, 4);
-			usercomplete("更改谁的现金数额？", uident);
-			move(13, 4);
-			if (uident[0] == '\0')
-				break;
-			if (!searchuser(uident)) {
-				prints("错误的使用者代号...");
-				pressanykey();
-				break;
-			}
-			prints("%s目前有现金%d兵马俑币。", uident,
-				loadValue(uident, MONEY_NAME, MAX_MONEY_NUM));
-			getdata(14, 4, "改为多少?", genbuf, 10, DOECHO, YEA);
-			num = atoi(genbuf);
-			sprintf(buf, "确定要改为%d吗？", num);
-			move(15, 4);
-			if (askyn(buf, NA, NA) == YEA) {
-				saveValue(uident ,MONEY_NAME, -MAX_MONEY_NUM, MAX_MONEY_NUM);
-				saveValue(uident ,MONEY_NAME, num, MAX_MONEY_NUM);
-				sprintf(genbuf, "%s行使管理权限", currentuser.userid);
-				sprintf(buf,"更改%s现金数额为%d", uident, num);
+				sprintf(buf,"%s撤销基金%s", currentuser.userid, uident);
 				millionairesrec(genbuf, buf, "");
 				move(17, 4);
+				prints("解除成功。");
+				pressanykey();
+				break;
+
+			case 'p':
+			case 'P':
+				clear();
+				fp1 = fopen(MC_STOCK_BOARDS, "r" );
+				count = listfilecontent(MC_STOCK_BOARDS);
+				clear();
+				for (j = 0; j < count; j++) {
+					fscanf(fp1, "%s", stockboard[j]);
+				}
+				fclose(fp1);
+
+				move(12, 4);
+				if (askyn("确定要初始化股市吗？", NA, NA) == YEA) {
+					for (j = 0; j < count; j++) {
+						ythtbbs_cache_Board_foreach_v(init_stock_v, stockboard[j]);
+					}
+					sprintf(genbuf, "%s行使管理权限", currentuser.userid);
+					sprintf(buf,"%s初始化股市", currentuser.userid);
+					millionairesrec(genbuf, buf, "");
+					move(14, 4);
+					prints("股市初始化成功。");
+					pressanykey();
+				}
+				break;
+
+			case 'r':
+			case 'R':
+				clear();
+				move(1, 0);
+				prints("目前名人堂的ID列表：");
+				listfilecontent(DIR_MC "mingren");
+				pressanykey();
+				break;
+
+			case 's':
+			case 'S':
+				clear();
+				move(1, 0);
+				prints("目前茶友的ID列表：");
+				listfilecontent(DIR_MC "chayou");
+				pressanykey();
+				break;
+
+			case 't':
+			case 'T':
+				clear();
+				move(1, 0);
+				prints("目前铁公鸡的ID列表：");
+				listfilecontent(DIR_MC "gongji");
+				pressanykey();
+				break;
+
+			case 'u':
+			case 'U':
+				clear();
+				move(1, 0);
+				prints("目前基金ID列表：");
+				listfilecontent(DIR_MC "jijin");
+				pressanykey();
+				break;
+
+			case 'X':
+			case 'x':
+				money_deny();
+				break;
+
+				int num=0;
+			case '1':
+				clear();
+				move(12, 4);
+				usercomplete("更改谁的现金数额？", uident);
+				move(13, 4);
+				if (uident[0] == '\0')
+					break;
+				if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
+					prints("错误的使用者代号...");
+					pressanykey();
+					break;
+				}
+				prints("%s目前有现金%d兵马俑币。", uident, loadValue(uident, MONEY_NAME, MAX_MONEY_NUM));
+				getdata(14, 4, "改为多少?", genbuf, 10, DOECHO, YEA);
+				num = atoi(genbuf);
+				sprintf(buf, "确定要改为%d吗？", num);
+				move(15, 4);
+				if (askyn(buf, NA, NA) == YEA) {
+					saveValue(uident ,MONEY_NAME, -MAX_MONEY_NUM, MAX_MONEY_NUM);
+					saveValue(uident ,MONEY_NAME, num, MAX_MONEY_NUM);
+					sprintf(genbuf, "%s行使管理权限", currentuser.userid);
+					sprintf(buf,"更改%s现金数额为%d", uident, num);
+					millionairesrec(genbuf, buf, "");
+					move(17, 4);
+					prints("修改成功。");
+					pressanykey();
+				}
+				break;
+			case '2':
+				clear();
+				move(12, 4);
+				usercomplete("更改谁的存款数额？", uident);
+				move(13, 4);
+				if (uident[0] == '\0')
+					break;
+				if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
+					prints("错误的使用者代号...");
+					pressanykey();
+					break;
+				}
+				prints("%s目前有存款%d兵马俑币。", uident, loadValue(uident, CREDIT_NAME, MAX_MONEY_NUM));
+				getdata(14, 4, "改为多少?", genbuf, 10, DOECHO, YEA);
+				num = atoi(genbuf);
+				sprintf(buf, "确定要改为%d吗？", num);
+				move(15, 4);
+				if (askyn(buf, NA, NA) == YEA) {
+					saveValue(uident, CREDIT_NAME, -MAX_MONEY_NUM, MAX_MONEY_NUM);
+					saveValue(uident, CREDIT_NAME, num, MAX_MONEY_NUM);
+					sprintf(genbuf, "%s行使管理权限", currentuser.userid);
+					sprintf(buf,"更改%s存款数额为%d", uident, num);
+					millionairesrec(genbuf, buf, "");
+					move(17, 4);
+					prints("修改成功。");
+					pressanykey();
+				}
+				break;
+
+			case '0':
+				clear();
+				move(6, 4);
+				sprintf(buf, "确定要%s金融中心吗？", (mc->isMCclosed) ? "开启" : "关闭");
+				if (askyn(buf, NA, NA) == YEA)
+					mc->isMCclosed = (mc->isMCclosed)?0:1;
+				move(9, 4);
 				prints("修改成功。");
 				pressanykey();
-			}
-			break;
-		case '2':
-			clear();
-			move(12, 4);
-			usercomplete("更改谁的存款数额？", uident);
-			move(13, 4);
-			if (uident[0] == '\0')
 				break;
-			if (!searchuser(uident)) {
-				prints("错误的使用者代号...");
-				pressanykey();
+
+			case 'i':
+			case 'I':
+				addOrDel_contrb();
 				break;
-			}
-			prints("%s目前有存款%d兵马俑币。", uident,
-				loadValue(uident, CREDIT_NAME, MAX_MONEY_NUM));
-			getdata(14, 4, "改为多少?", genbuf, 10, DOECHO, YEA);
-			num = atoi(genbuf);
-			sprintf(buf, "确定要改为%d吗？", num);
-			move(15, 4);
-			if (askyn(buf, NA, NA) == YEA) {
-				saveValue(uident, CREDIT_NAME, -MAX_MONEY_NUM, MAX_MONEY_NUM);
-				saveValue(uident, CREDIT_NAME, num, MAX_MONEY_NUM);
-				sprintf(genbuf, "%s行使管理权限", currentuser.userid);
-				sprintf(buf,"更改%s存款数额为%d", uident, num);
-				millionairesrec(genbuf, buf, "");
-				move(17, 4);
-				prints("修改成功。");
-				pressanykey();
-			}
-			break;
 
-		case '0':
-			clear();
-			move(6, 4);
-			sprintf(buf, "确定要%s金融中心吗？",
-				(utmpshm->mc.isMCclosed)?"开启":"关闭");
-			if (askyn(buf, NA, NA) == YEA)
-				utmpshm->mc.isMCclosed = (utmpshm->mc.isMCclosed)?0:1;
-			move(9, 4);
-			prints("修改成功。");
-			pressanykey();
-			break;
-
-		case 'i':
-		case 'I':
-			addOrDel_contrb();
-			break;
-
-		case 'Q':
-		case 'q':
-			quit = 1;
-			break;
+			case 'Q':
+			case 'q':
+				quit = 1;
+				break;
 		}
 	}
 	return 0;
@@ -3011,9 +2704,8 @@ valid367Bet(char *buf)
 	return 1;
 }
 
-static int//彩票36选7
-make367Prize(char *bet, char *prizeSeq)
-{
+//彩票36选7
+static int make367Prize(char *bet, char *prizeSeq) {
 	int count = 0;
 	int i, j;
 	int len = strlen(bet);
@@ -3024,7 +2716,7 @@ make367Prize(char *bet, char *prizeSeq)
 	for (i = 0; i + 1 < len; i = i + 3) {
 		for (j = 0; j + 1 < len; j = j + 3) {
 			if (bet[i] == prizeSeq[j]
-			    && bet[i + 1] == prizeSeq[j + 1]) {
+					&& bet[i + 1] == prizeSeq[j + 1]) {
 				count++;
 			}
 		}
@@ -3032,9 +2724,8 @@ make367Prize(char *bet, char *prizeSeq)
 	return count;
 }
 
-static void//彩票36选7
-make367Seq(char *prizeSeq)
-{
+//彩票36选7
+static void make367Seq(char *prizeSeq) {
 	int i, j;
 	int num;
 	int temp[7];
@@ -3069,9 +2760,8 @@ make367Seq(char *prizeSeq)
 	deliverreport("[公告]本期36选7彩票摇奖结果", genbuf);
 }
 
-static int/*彩票26选7 */
-open_36_7(void)
-{
+/*彩票26选7 */
+static int open_36_7(void) {
 	FILE *fp;
 	char line[MAX_RECORD_LINE];
 	char prizeSeq[MAX_BET_LENGTH];
@@ -3096,34 +2786,34 @@ open_36_7(void)
 		/*   ---------------------计算奖励----------------------- */
 		prizeType = make367Prize(bet, prizeSeq);
 		switch (prizeType) {
-		case 7:
-			addtofile(DIR_MC_TEMP "36_7_bp", userid);
-			num_bp++;
-			break;
-		case 6:
-			addtofile(DIR_MC_TEMP "36_7_1p", userid);
-			num_1p++;
-			break;
-		case 5:
-			addtofile(DIR_MC_TEMP "36_7_2p", userid);
-			num_2p++;
-			break;
-		case 4:
-			addtofile(DIR_MC_TEMP "36_7_3p", userid);
-			num_3p++;
-			break;
-		case 3:
-			addtofile(DIR_MC_TEMP "36_7_cp", userid);
-			num_cp++;
-			break;
-		default:
-			break;
+			case 7:
+				ytht_add_to_file(DIR_MC_TEMP "36_7_bp", userid);
+				num_bp++;
+				break;
+			case 6:
+				ytht_add_to_file(DIR_MC_TEMP "36_7_1p", userid);
+				num_1p++;
+				break;
+			case 5:
+				ytht_add_to_file(DIR_MC_TEMP "36_7_2p", userid);
+				num_2p++;
+				break;
+			case 4:
+				ytht_add_to_file(DIR_MC_TEMP "36_7_3p", userid);
+				num_3p++;
+				break;
+			case 3:
+				ytht_add_to_file(DIR_MC_TEMP "36_7_cp", userid);
+				num_cp++;
+				break;
+			default:
+				break;
 		}
 	}			/* end of while */
 	fclose(fp);
 
 	/*  ------------------------ 发奖 --------------------- */
-	totalMoney = utmpshm->mc.prize367 + PRIZE_PER;
+	totalMoney = mc->prize367 + PRIZE_PER;
 	remainMoney = totalMoney;
 	if (num_bp > 0) {
 		int per_bp = (BIG_PRIZE * totalMoney) / num_bp;
@@ -3142,15 +2832,12 @@ open_36_7(void)
 				continue;
 			}
 			saveValue(userid, MONEY_NAME, per_bp, MAX_MONEY_NUM);
-			sprintf(genbuf,
-				"您得到了 %d 兵马俑币的奖金。恭喜！希望下次还有好运～～～",
-				per_bp);
+			sprintf(genbuf, "您得到了 %d 兵马俑币的奖金。恭喜！希望下次还有好运～～～", per_bp);
 			mail_buf(genbuf, userid, "恭喜您获得36选7特等奖！");
 		}
 		fseek(fp, 0, SEEK_SET);
 		fread(buf, sizeof (char), 1024-1, fp);
-		sprintf(title, "本期36选7特等奖名单（每注奖金%d兵马俑币）",
-			per_bp);
+		sprintf(title, "本期36选7特等奖名单（每注奖金%d兵马俑币）", per_bp);
 		deliverreport(title, buf);
 		fclose(fp);
 	}
@@ -3172,15 +2859,12 @@ open_36_7(void)
 				continue;
 			}
 			saveValue(userid, MONEY_NAME, per_1p, MAX_MONEY_NUM);
-			sprintf(genbuf,
-				"您得到了 %d 兵马俑币的奖金。恭喜！希望下次还有好运～～～",
-				per_1p);
+			sprintf(genbuf, "您得到了 %d 兵马俑币的奖金。恭喜！希望下次还有好运～～～", per_1p);
 			mail_buf(genbuf, userid, "恭喜您获得36选7一等奖！");
 		}
 		fseek(fp, 0, SEEK_SET);
 		fread(buf, sizeof (char), 1024-1, fp);
-		sprintf(title, "本期36选7一等奖名单（每注奖金%d兵马俑币）",
-			per_1p);
+		sprintf(title, "本期36选7一等奖名单（每注奖金%d兵马俑币）", per_1p);
 		deliverreport(title, buf);
 		fclose(fp);
 	}
@@ -3202,15 +2886,12 @@ open_36_7(void)
 				continue;
 			}
 			saveValue(userid, MONEY_NAME, per_2p, MAX_MONEY_NUM);
-			sprintf(genbuf,
-				"您得到了 %d 兵马俑币的奖金。恭喜！希望下次还有好运～～～",
-				per_2p);
+			sprintf(genbuf, "您得到了 %d 兵马俑币的奖金。恭喜！希望下次还有好运～～～", per_2p);
 			mail_buf(genbuf, userid, "恭喜您获得36选7二等奖！");
 		}
 		fseek(fp, 0, SEEK_SET);
 		fread(buf, sizeof (char), 1024-1, fp);
-		sprintf(title, "本期36选7二等奖名单（每注奖金%d兵马俑币）",
-			per_2p);
+		sprintf(title, "本期36选7二等奖名单（每注奖金%d兵马俑币）", per_2p);
 		deliverreport(title, buf);
 		fclose(fp);
 	}
@@ -3231,15 +2912,12 @@ open_36_7(void)
 				continue;
 			}
 			saveValue(userid, MONEY_NAME, per_3p, MAX_MONEY_NUM);
-			sprintf(genbuf,
-				"您得到了 %d 兵马俑币的奖金。恭喜！希望下次还有好运～～～",
-				per_3p);
+			sprintf(genbuf, "您得到了 %d 兵马俑币的奖金。恭喜！希望下次还有好运～～～", per_3p);
 			mail_buf(genbuf, userid, "恭喜您获得36选7三等奖！");
 		}
 		fseek(fp, 0, SEEK_SET);
 		fread(buf, sizeof (char), 2048-1, fp);
-		sprintf(title, "本期36选7三等奖名单（每注奖金%d兵马俑币）",
-			per_3p);
+		sprintf(title, "本期36选7三等奖名单（每注奖金%d兵马俑币）", per_3p);
 		deliverreport(title, buf);
 		fclose(fp);
 
@@ -3261,20 +2939,17 @@ open_36_7(void)
 				continue;
 			}
 			saveValue(userid, MONEY_NAME, per_cp, MAX_MONEY_NUM);
-			sprintf(genbuf,
-				"您得到了 %d 兵马俑币的奖金。恭喜！希望下次还有好运～～～",
-				per_cp);
+			sprintf(genbuf, "您得到了 %d 兵马俑币的奖金。恭喜！希望下次还有好运～～～", per_cp);
 			mail_buf(genbuf, userid, "恭喜您获得36选7安慰奖！");
 		}
 		fseek(fp, 0, SEEK_SET);
 		fread(buf, sizeof (char), 2048-1, fp);
-		sprintf(title, "本期36选7安慰奖名单（每注奖金%d兵马俑币）",
-			CMFT_PRIZE);
+		sprintf(title, "本期36选7安慰奖名单（每注奖金%d兵马俑币）", CMFT_PRIZE);
 		deliverreport(title, buf);
 		fclose(fp);
 	}
 	remainMoney = limitValue(remainMoney, MAX_POOL_MONEY);
-	utmpshm->mc.prize367 = remainMoney;
+	mc->prize367 = remainMoney;
 	remove(DIR_MC_TEMP "36_7_list");
 	remove(DIR_MC_TEMP "36_7_bp");
 	remove(DIR_MC_TEMP "36_7_1p");
@@ -3285,9 +2960,8 @@ open_36_7(void)
 	return 0;
 }
 
-static int /*彩票--足彩*/
-computeSum(char *complexBet)
-{				/*计算复式注的数量 */
+/*彩票--足彩*//*计算复式注的数量 */
+static int computeSum(char *complexBet) {
 	int i;
 	int len;
 	int countNum = 0;
@@ -3307,9 +2981,8 @@ computeSum(char *complexBet)
 	return total;
 }
 
-static void/*彩票--足彩*/
-saveSoccerRecord(char *complexBet)
-{				/*保存复式注为单注 */
+/*彩票--足彩*//*保存复式注为单注 */
+static void saveSoccerRecord(char *complexBet) {
 	int i, j;
 	int len;
 	int simple = 1;
@@ -3335,7 +3008,7 @@ saveSoccerRecord(char *complexBet)
 		}
 		genbuf[j] = '\0';
 		sprintf(buf, "%s %s", currentuser.userid, genbuf);
-		addtofile(DIR_MC_TEMP "soccer_list", buf);
+		ytht_add_to_file(DIR_MC_TEMP "soccer_list", buf);
 	} else {
 		for (i = 0; i < len; i++) {	/*寻找第一个复式单元 */
 			if (complexBet[i] == '-') {
@@ -3377,9 +3050,8 @@ saveSoccerRecord(char *complexBet)
 	}
 }
 
-static int /*彩票--足彩*/
-validSoccerBet(char *buf)
-{
+/*彩票--足彩*/
+static int validSoccerBet(char *buf) {
 	int count = 0;
 	int meetSeperator = 1;
 	int i;
@@ -3423,10 +3095,8 @@ validSoccerBet(char *buf)
 	}
 	return 1;
 }
-
-static int /*彩票--足彩*/
-makeSoccerPrize(char *bet, char *prizeSeq)
-{
+/*彩票--足彩*/
+static int makeSoccerPrize(char *bet, char *prizeSeq) {
 	int diff = 0;
 	int i;
 	int n1 = strlen(bet);
@@ -3443,9 +3113,8 @@ makeSoccerPrize(char *bet, char *prizeSeq)
 	return diff;
 }
 
-static int /*彩票--足彩*/
-open_soccer(char *prizeSeq)
-{
+/*彩票--足彩*/
+static int open_soccer(char *prizeSeq) {
 	FILE *fp;
 	char line[MAX_RECORD_LINE];
 	char *bet;
@@ -3470,33 +3139,33 @@ open_soccer(char *prizeSeq)
 		/*   ---------------------计算奖励----------------------- */
 		prizeType = makeSoccerPrize(bet, prizeSeq);
 		switch (prizeType) {
-		case 0:	/*完全相同 */
-			addtofile(DIR_MC_TEMP "soccer_bp", userid);
-			num_bp++;
-			break;
-		case 1:	/*有一个不同 */
-			addtofile(DIR_MC_TEMP "soccer_1p", userid);
-			num_1p++;
-			break;
-		case 2:	/*有二个不同 */
-			addtofile(DIR_MC_TEMP "soccer_2p", userid);
-			num_2p++;
-			break;
-		case 3:	/*有三个不同 */
-			addtofile(DIR_MC_TEMP "soccer_3p", userid);
-			num_3p++;
-			break;
-		case 4:	/*有四个不同 */
-			addtofile(DIR_MC_TEMP "soccer_cp", userid);
-			num_cp++;
-			break;
-		default:
-			break;
+			case 0:	/*完全相同 */
+				ytht_add_to_file(DIR_MC_TEMP "soccer_bp", userid);
+				num_bp++;
+				break;
+			case 1:	/*有一个不同 */
+				ytht_add_to_file(DIR_MC_TEMP "soccer_1p", userid);
+				num_1p++;
+				break;
+			case 2:	/*有二个不同 */
+				ytht_add_to_file(DIR_MC_TEMP "soccer_2p", userid);
+				num_2p++;
+				break;
+			case 3:	/*有三个不同 */
+				ytht_add_to_file(DIR_MC_TEMP "soccer_3p", userid);
+				num_3p++;
+				break;
+			case 4:	/*有四个不同 */
+				ytht_add_to_file(DIR_MC_TEMP "soccer_cp", userid);
+				num_cp++;
+				break;
+			default:
+				break;
 		}
 	}			/* end of while */
 	fclose(fp);
 	/*  ------------------------ 发奖 --------------------- */
-	totalMoney = utmpshm->mc.prizeSoccer + PRIZE_PER;
+	totalMoney = mc->prizeSoccer + PRIZE_PER;
 	remainMoney = totalMoney;
 	if (num_bp > 0) {
 		int per_bp = (BIG_PRIZE * totalMoney) / num_bp;
@@ -3515,15 +3184,12 @@ open_soccer(char *prizeSeq)
 				continue;
 			}
 			saveValue(userid, MONEY_NAME, per_bp, MAX_MONEY_NUM);
-			sprintf(genbuf,
-				"您得到了 %d 兵马俑币的奖金。恭喜！希望下次还有好运～～～",
-				per_bp);
+			sprintf(genbuf, "您得到了 %d 兵马俑币的奖金。恭喜！希望下次还有好运～～～", per_bp);
 			mail_buf(genbuf, userid, "恭喜您获得足球彩票特等奖！");
 		}
 		fseek(fp, 0, SEEK_SET);
 		fread(buf, sizeof (char), 1024-1, fp);
-		sprintf(title, "本期足彩特等奖名单（每注奖金%d兵马俑币）",
-			per_bp);
+		sprintf(title, "本期足彩特等奖名单（每注奖金%d兵马俑币）", per_bp);
 		deliverreport(title, buf);
 		fclose(fp);
 	}
@@ -3545,15 +3211,12 @@ open_soccer(char *prizeSeq)
 				continue;
 			}
 			saveValue(userid, MONEY_NAME, per_1p, MAX_MONEY_NUM);
-			sprintf(genbuf,
-				"您得到了 %d 兵马俑币的奖金。恭喜！希望下次还有好运～～～",
-				per_1p);
+			sprintf(genbuf, "您得到了 %d 兵马俑币的奖金。恭喜！希望下次还有好运～～～", per_1p);
 			mail_buf(genbuf, userid, "恭喜您获得足球彩票一等奖！");
 		}
 		fseek(fp, 0, SEEK_SET);
 		fread(buf, sizeof (char), 1024-1, fp);
-		sprintf(title, "本期足彩一等奖名单（每注奖金%d兵马俑币）",
-			per_1p);
+		sprintf(title, "本期足彩一等奖名单（每注奖金%d兵马俑币）", per_1p);
 		deliverreport(title, buf);
 		fclose(fp);
 	}
@@ -3575,48 +3238,15 @@ open_soccer(char *prizeSeq)
 				continue;
 			}
 			saveValue(userid, MONEY_NAME, per_2p, MAX_MONEY_NUM);
-			sprintf(genbuf,
-				"您得到了 %d 兵马俑币的奖金。恭喜！希望下次还有好运～～～",
-				per_2p);
+			sprintf(genbuf, "您得到了 %d 兵马俑币的奖金。恭喜！希望下次还有好运～～～", per_2p);
 			mail_buf(genbuf, userid, "恭喜您获得足球彩票二等奖！");
 		}
 		fseek(fp, 0, SEEK_SET);
 		fread(buf, sizeof (char), 2048-1, fp);
-		sprintf(title, "本期足彩二等奖名单（每注奖金%d兵马俑币）",
-			per_2p);
+		sprintf(title, "本期足彩二等奖名单（每注奖金%d兵马俑币）", per_2p);
 		deliverreport(title, buf);
 		fclose(fp);
 	}
-	/*if (num_3p > 0) {
-		int per_3p = (III_PRIZE * totalMoney) / num_3p;
-		char buf[2048];
-		char title[80];
-
-		remainMoney -= III_PRIZE * totalMoney;
-
-		fp = fopen(DIR_MC_TEMP "soccer_3p", "r");
-		if (!fp) {
-			return -1;
-		}
-		while (fgets(line, MAX_RECORD_LINE, fp)) {
-			userid = strtok(line, "\n");
-			if (!userid) {
-				continue;
-			}
-			saveValue(userid, MONEY_NAME, per_3p, MAX_MONEY_NUM);
-			sprintf(genbuf,
-				"您得到了 %d 兵马俑币的奖金。恭喜！希望下次还有好运～～～",
-				per_3p);
-			mail_buf(genbuf, userid, "恭喜您获得足球彩票三等奖！");
-		}
-		fseek(fp, 0, SEEK_SET);
-		fread(buf, sizeof (char), 2048, fp);
-		sprintf(title, "本期足彩三等奖名单（每注奖金%d兵马俑币）",
-			per_3p);
-		deliverreport(title, buf);
-		fclose(fp);
-
-	}*/
 	if (num_cp > 0) {
 		int per_cp = CMFT_PRIZE;
 		char buf[2048];
@@ -3634,20 +3264,17 @@ open_soccer(char *prizeSeq)
 				continue;
 			}
 			saveValue(userid, MONEY_NAME, per_cp, MAX_MONEY_NUM);
-			sprintf(genbuf,
-				"您得到了 %d 兵马俑币的奖金。恭喜！希望下次还有好运～～～",
-				per_cp);
+			sprintf(genbuf, "您得到了 %d 兵马俑币的奖金。恭喜！希望下次还有好运～～～", per_cp);
 			mail_buf(genbuf, userid, "恭喜您获得足球彩票安慰奖！");
 		}
 		fseek(fp, 0, SEEK_SET);
 		fread(buf, sizeof (char), 2048-1, fp);
-		sprintf(title, "本期足彩安慰奖名单（每注奖金%d兵马俑币）",
-			CMFT_PRIZE);
+		sprintf(title, "本期足彩安慰奖名单（每注奖金%d兵马俑币）", CMFT_PRIZE);
 		deliverreport(title, buf);
 		fclose(fp);
 	}
 	remainMoney = limitValue(remainMoney, MAX_POOL_MONEY);
-	utmpshm->mc.prizeSoccer = remainMoney;
+	mc->prizeSoccer = remainMoney;
 	remove(DIR_MC_TEMP "soccer_list");
 	remove(DIR_MC_TEMP "soccer_bp");
 	remove(DIR_MC_TEMP "soccer_1p");
@@ -3658,10 +3285,8 @@ open_soccer(char *prizeSeq)
 	return 0;
 }
 
-
-static int/*商场--保镖*/
-money_check_guard()
-{
+/*商场--保镖*/
+static int money_check_guard() {
 	int money, guard;
 	money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
 	guard = loadValue(currentuser.userid, "guard", 8);
@@ -3670,13 +3295,10 @@ money_check_guard()
 		move(9, 4);
 		if (random() % 2 == 0) {
 			prints("你的保镖离你而去,并顺手拿了你两成的现金.");
-			saveValue(currentuser.userid, MONEY_NAME, -money / 5,
-				  MAX_MONEY_NUM);
+			saveValue(currentuser.userid, MONEY_NAME, -money / 5, MAX_MONEY_NUM);
 		} else {
-			prints
-			    ("你的保镖一棒子敲晕了你,拿走了你身上一半的钱，跑路了。");
-			saveValue(currentuser.userid, MONEY_NAME, -money / 2,
-				  MAX_MONEY_NUM);
+			prints("你的保镖一棒子敲晕了你,拿走了你身上一半的钱，跑路了。");
+			saveValue(currentuser.userid, MONEY_NAME, -money / 2, MAX_MONEY_NUM);
 			pressanykey();
 			Q_Goodbye();
 		}
@@ -3685,9 +3307,8 @@ money_check_guard()
 	return 0;
 }
 
-static int /*赌博--骰宝*/
-money_dice()
-{
+/*赌博--骰宝*/
+static int money_dice() {
 	int quit = 0;
 	int ch, num = 0, money;
 	int target;
@@ -3698,7 +3319,7 @@ money_dice()
 	char title[STRLEN], buf[256];
 
 	isVIP = seek_in_file(DIR_MC "gamble_VIP", currentuser.userid);
-       //isVIP=1;
+	//isVIP=1;
 	while (!quit) {
 		clear();
 		if (isVIP) {
@@ -3707,8 +3328,7 @@ money_dice()
 			money_show_stat("兵马俑赌场骰宝厅");
 		}
 		move(4, 4);
-		prints
-		    ("\033[1;31m多买多赚，少买少赔，买定离手，愿赌服输\033[m");
+		prints("\033[1;31m多买多赚，少买少赔，买定离手，愿赌服输\033[m");
 		move(5, 4);
 		prints("分大小两门，4-10点是小，11-17点为大。");
 		move(6, 4);
@@ -3719,153 +3339,127 @@ money_dice()
 		if (isVIP) {
 			prints("最小压 100000兵马俑币,上限 10000000 兵马俑币。");
 		} else {
-			prints
-			    ("最小压 1000 兵马俑币,上限 500000 兵马俑币。要玩大的请进VIP室。");
+			prints("最小压 1000 兵马俑币,上限 500000 兵马俑币。要玩大的请进VIP室。");
 		}
 		move(t_lines - 1, 0);
-		prints
-		    ("\033[1;44m 选单 \033[1;46m [1]下注 [Q]离开                                                   \033[m");
+		prints("\033[1;44m 选单 \033[1;46m [1]下注 [Q]离开                                                   \033[m");
 		win = 0;
 		ch = igetkey();
 		switch (ch) {
-		case '1':
-			if (isVIP) {
-				getdata(9, 4, "您压多少兵马俑币？[100000]", genbuf,
-					9, DOECHO, YEA);
-			} else {
-				getdata(9, 4, "您压多少兵马俑币？[1000]", genbuf,
-					7, DOECHO, YEA);
-			}
-			num = atoi(genbuf);
-			if (!genbuf[0]){
-				if (!isVIP)
-					num = 1000;
-				else
-					num = 100000;
-			}
-			if (isVIP && num < 100000) {
-				move(11, 4);
-				prints("这里是VIP室，压注有下限。");
-				pressanykey();
-				break;
-			}
-			if (!isVIP && num > 500000) {
-				move(11, 4);
-				prints("要玩的大的，请进VIP室。");
-				pressanykey();
-				break;
-			}
-			if (num < 1000) {
-				move(11, 4);
-				prints("有没有钱啊？那么点钱我们不带玩的。");
-				pressanykey();
-				break;
-			}
-			if (num > 10000000) {
-				move(11,4);
-				prints("超过了最大赌注，请重新下注。");
-				pressanykey();
-				break;
-			}
-			getdata(10, 4, "您压大(L)还是小(S)？[L]", genbuf, 3,
-				DOECHO, YEA);
-			if (genbuf[0] == 'S' || genbuf[0] == 's')
-				target = 1;
-			else
-				target = 0;
-			sprintf(genbuf,
-				"买定离手，您买了 \033[1;31m%d\033[m 兵马俑币的 \033[1;31m%s\033[m，确定么？",
-				num, target ? "小" : "大");
-			move(11, 4);
-			if (askyn(genbuf, YEA, NA) == YEA) {
-				money =
-				    loadValue(currentuser.userid, MONEY_NAME,
-					      MAX_MONEY_NUM);
-				if (money < num) {
-					move(12, 4);
-					prints("去去去，没那么多钱捣什么乱！      \n");
+			case '1':
+				if (isVIP) {
+					getdata(9, 4, "您压多少兵马俑币？[100000]", genbuf, 9, DOECHO, YEA);
+				} else {
+					getdata(9, 4, "您压多少兵马俑币？[1000]", genbuf, 7, DOECHO, YEA);
+				}
+				num = atoi(genbuf);
+				if (!genbuf[0]){
+					if (!isVIP)
+						num = 1000;
+					else
+						num = 100000;
+				}
+				if (isVIP && num < 100000) {
+					move(11, 4);
+					prints("这里是VIP室，压注有下限。");
 					pressanykey();
 					break;
 				}
-				//srandom(time(0));
-				t1 = random() % 6 + 1;
-				t2 = random() % 6 + 1;
-				t3 = random() % 6 + 1;
-				move(12, 4);
-				if ((t1 == t2) && (t2 == t3)) {
-					if (num > 2000000)
-						utmpshm->mc.prize777 += 1000000;
-					else
-						utmpshm->mc.prize777 += num * 50 / 100;
-					if (utmpshm->mc.prize777 > MAX_MONEY_NUM)
-						utmpshm->mc.prize777 = MAX_MONEY_NUM;
-					sprintf(genbuf, "\033[1;32m庄家通杀！\033[m");
-				} else if (t1 + t2 + t3 < 11) {
-					sprintf(genbuf,
-						"%d 点，\033[1;32m小\033[m",
-						t1 + t2 + t3);
-					if (target == 1)
-						win = 1;
-				} else if (t1 + t2 + t3 > 10) {
-					sprintf(genbuf,
-						"%d 点，\033[1;32m大\033[m",
-						t1 + t2 + t3);
-					if (target == 0)
-						win = 1;
+				if (!isVIP && num > 500000) {
+					move(11, 4);
+					prints("要玩的大的，请进VIP室。");
+					pressanykey();
+					break;
 				}
-				prints("开了开了，%d %d %d，%s", t1, t2, t3, genbuf);
-				move(13, 4);
-				if (win) {
-					prints("恭喜您，再来一把吧！");
-					saveValue(currentuser.userid,
-						  MONEY_NAME, num,
-						  MAX_MONEY_NUM);
-					whoTakeCharge(3, slow);//slowaction
-                     		saveValue(slow,
-						  MONEY_NAME, -num,
-						  MAX_MONEY_NUM);
-
-					if (num >= RUMOR_MONEY && random() % 2) {
-						int rumor = makeRumor(num);
-						sprintf(genbuf,
-							"有人目击 %s 在兵马俑赌场一把赢了 %d 的兵马俑币！",
-							currentuser.userid,
-							rumor);
-						deliverreport
-						    ("[谣言]来自兵马俑赌场的消息", genbuf);
+				if (num < 1000) {
+					move(11, 4);
+					prints("有没有钱啊？那么点钱我们不带玩的。");
+					pressanykey();
+					break;
+				}
+				if (num > 10000000) {
+					move(11,4);
+					prints("超过了最大赌注，请重新下注。");
+					pressanykey();
+					break;
+				}
+				getdata(10, 4, "您压大(L)还是小(S)？[L]", genbuf, 3, DOECHO, YEA);
+				if (genbuf[0] == 'S' || genbuf[0] == 's')
+					target = 1;
+				else
+					target = 0;
+				sprintf(genbuf, "买定离手，您买了 \033[1;31m%d\033[m 兵马俑币的 \033[1;31m%s\033[m，确定么？", num, target ? "小" : "大");
+				move(11, 4);
+				if (askyn(genbuf, YEA, NA) == YEA) {
+					money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
+					if (money < num) {
+						move(12, 4);
+						prints("去去去，没那么多钱捣什么乱！      \n");
+						pressanykey();
+						break;
 					}
-					sprintf(title, "%s参与赌博(骰宝)(赢)", currentuser.userid);
-					sprintf(buf, "%s在骰宝赢了%d兵马俑币", currentuser.userid, num);
-					millionairesrec(title, buf, "赌博骰宝");
-				} else {
-					prints("没有关系，先输后赢...");
-					saveValue(currentuser.userid,
-						  MONEY_NAME, -num,
-						  MAX_MONEY_NUM);
-					whoTakeCharge(3, slow);//slowaction
-                    			saveValue(slow,
-						MONEY_NAME, +num,
-						MAX_MONEY_NUM);
-					sprintf(title, "%s参与赌博(骰宝)(输)", currentuser.userid);
-					sprintf(buf, "%s在骰宝输了%d兵马俑币", currentuser.userid, num);
-					millionairesrec(title, buf, "赌博骰宝");
+					//srandom(time(0));
+					t1 = random() % 6 + 1;
+					t2 = random() % 6 + 1;
+					t3 = random() % 6 + 1;
+					move(12, 4);
+					if ((t1 == t2) && (t2 == t3)) {
+						if (num > 2000000)
+							mc->prize777 += 1000000;
+						else
+							mc->prize777 += num * 50 / 100;
+						if (mc->prize777 > MAX_MONEY_NUM)
+							mc->prize777 = MAX_MONEY_NUM;
+						sprintf(genbuf, "\033[1;32m庄家通杀！\033[m");
+					} else if (t1 + t2 + t3 < 11) {
+						sprintf(genbuf, "%d 点，\033[1;32m小\033[m", t1 + t2 + t3);
+						if (target == 1)
+							win = 1;
+					} else if (t1 + t2 + t3 > 10) {
+						sprintf(genbuf, "%d 点，\033[1;32m大\033[m", t1 + t2 + t3);
+						if (target == 0)
+							win = 1;
+					}
+					prints("开了开了，%d %d %d，%s", t1, t2, t3, genbuf);
+					move(13, 4);
+					if (win) {
+						prints("恭喜您，再来一把吧！");
+						saveValue(currentuser.userid, MONEY_NAME, num, MAX_MONEY_NUM);
+						whoTakeCharge(3, slow);//slowaction
+						saveValue(slow, MONEY_NAME, -num, MAX_MONEY_NUM);
+
+						if (num >= RUMOR_MONEY && random() % 2) {
+							int rumor = makeRumor(num);
+							sprintf(genbuf, "有人目击 %s 在兵马俑赌场一把赢了 %d 的兵马俑币！", currentuser.userid, rumor);
+							deliverreport("[谣言]来自兵马俑赌场的消息", genbuf);
+						}
+						sprintf(title, "%s参与赌博(骰宝)(赢)", currentuser.userid);
+						sprintf(buf, "%s在骰宝赢了%d兵马俑币", currentuser.userid, num);
+						millionairesrec(title, buf, "赌博骰宝");
+					} else {
+						prints("没有关系，先输后赢...");
+						saveValue(currentuser.userid, MONEY_NAME, -num, MAX_MONEY_NUM);
+						whoTakeCharge(3, slow);//slowaction
+						saveValue(slow, MONEY_NAME, +num, MAX_MONEY_NUM);
+						sprintf(title, "%s参与赌博(骰宝)(输)", currentuser.userid);
+						sprintf(buf, "%s在骰宝输了%d兵马俑币", currentuser.userid, num);
+						millionairesrec(title, buf, "赌博骰宝");
+					}
+					pressanykey();
 				}
-				pressanykey();
-			}
-			break;
-		case 'Q':
-		case 'q':
-			quit = 1;
-			break;
+				break;
+			case 'Q':
+			case 'q':
+				quit = 1;
+				break;
 		}
 		limit_cpu();
 	}
 	return 0;
 }
 
-static int /*黑帮*/
-money_robber()
-{
+/*黑帮*/
+static int money_robber() {
 	int quit = 0, guard_num = 0;
 	int ch, x, y, z, ch2;
 	int num, money, r, ra, id, count = 0, rob,credit;
@@ -3876,873 +3470,786 @@ money_robber()
 	double mathtmp;
 	srandom(time(0));
 	char letter1[] = "限你半小时内给我寄钱，不然有你好看！\n";
-	char letter2[] =
-	    "快给我寄钱，否则小心你的脑袋挨板砖。\n我会记挂着你的安全的，嘿嘿...";
+	char letter2[] = "快给我寄钱，否则小心你的脑袋挨板砖。\n我会记挂着你的安全的，嘿嘿...";
 	char letter3[] = "快给我寄钱，否则小心我把你的钱全部抢走！";
 	while (!quit) {
 		clear();
 		money_show_stat("背阴巷");
 		move(4, 4);
-		prints
-		    ("两年前的兵马俑黑帮无恶不作，名噪一时，不过最近警察严打，活动有所收敛。");
+		prints("两年前的兵马俑黑帮无恶不作，名噪一时，不过最近警察严打，活动有所收敛。");
 		move(5, 4);
 		prints("一个黑衣人小声说：“要板砖么？拍人很疼的。”");
 		move(t_lines - 1, 0);
-		prints
-		    ("\033[1;44m 选单 \033[1;46m [1]拍砖 [2]偷窃 [3]勒索 [4]抢人 [5]黑帮帮主 [Q]离开\033[m");
+		prints("\033[1;44m 选单 \033[1;46m [1]拍砖 [2]偷窃 [3]勒索 [4]抢人 [5]黑帮帮主 [Q]离开\033[m");
 		ch = igetkey();
 		switch (ch) {
-		case '1':
-			clear();
+			case '1':
+				clear();
 
-		       if(!Allclubtest(currentuser.userid)){
-			   	move(5, 4);
-				prints("    \033[1;32m  普通市民不要惹事\033[m");
-				pressanykey();
-				break;
-			}
-			if (seek_in_file(DIR_MC "chayou", currentuser.userid)){
-				move(5, 4);
-				prints("    \033[1;32m  茶友不要惹事\033[m");
-				pressanykey();
-				break;
-			}
-			if (seek_in_file(DIR_MC "mingren", currentuser.userid)) {
-				move(5, 4);
-				prints("    \033[1;32m  不要惹事\033[m");
-				pressanykey();
-				break;
-			}
-			r = random() % 40;
-			if (r < 1)
-				money_police();
-			money_show_stat("黑帮板砖生产基地");
-			move(4, 4);
-			prints("这里的板砖质地优良，拿去拍人一定痛快。");
-			move(5, 4);
-			prints("一块板砖 1000 兵马俑币。");
-			move(6, 4);
-			if (currentuser.dietime > 0) {
-				prints("你已经死了啊！抓鬼啊！");
-				pressanykey();
-				Q_Goodbye();
-				break;
-			}
-			usercomplete("你要拍谁:", uident);
-			if (uident[0] == '\0')
-				break;
-			freeTime = loadValue(currentuser.userid, "freeTime", 2000000000);
-	       	if (currentTime < freeTime){
-				pressreturn();
-				break;
-			}
-			if (!(id = getuser(uident))) {
-				move(7, 4);
-				prints("错误的使用者代号...");
-				pressreturn();
-				break;
-			}
-			if (lookupuser.dietime > 0) {
-				move(7, 4);
-				prints("死人你也不放过，太狠了吧？");
-				pressreturn();
-				break;
-			}
-			if ((slowclubtest("Beggar", currentuser.userid)
-				&& slowclubtest("Beggar", uident)) ||
-				(slowclubtest("Rober", currentuser.userid)
-				&& slowclubtest("Rober", uident)) ||
-				(slowclubtest("Police", currentuser.userid)
-				&& slowclubtest("Police", uident)) ||
-				(slowclubtest("killer", currentuser.userid)
-				&& slowclubtest("killer", uident)))
-			{
-				move(7, 4);
-				prints("都是自家兄弟...");
-				pressreturn();
-				break;
-			}
-			getdata(7, 4, "你要拍几块？ [0]", genbuf, 4,
-				DOECHO, YEA);
-			if (genbuf[0] == '\0')
-				break;
-			count = atoi(genbuf);
-			if (count < 1) {
-				move(8, 4);
-				prints("没有板砖你拿什么拍？");
-				pressanykey();
-				break;
-			}
-			if (currentuser.dietime > 0) {
-				prints("你已经死了啊！抓鬼啊！");
-				pressanykey();
-				Q_Goodbye();
-				break;
-			}
-			move(8, 4);
-			num = count * 1000;
-			sprintf(genbuf, "总共需要 %d 兵马俑币。", num);
-			if (askyn(genbuf, NA, NA) == YEA) {
-				money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
-				if (money < num) {
-					move(9, 4);
-					prints("您的钱不够...");
+				if(!Allclubtest(currentuser.userid)){
+					move(5, 4);
+					prints("    \033[1;32m  普通市民不要惹事\033[m");
 					pressanykey();
+					break;
+				}
+				if (seek_in_file(DIR_MC "chayou", currentuser.userid)){
+					move(5, 4);
+					prints("    \033[1;32m  茶友不要惹事\033[m");
+					pressanykey();
+					break;
+				}
+				if (seek_in_file(DIR_MC "mingren", currentuser.userid)) {
+					move(5, 4);
+					prints("    \033[1;32m  不要惹事\033[m");
+					pressanykey();
+					break;
+				}
+				r = random() % 40;
+				if (r < 1)
+					money_police();
+				money_show_stat("黑帮板砖生产基地");
+				move(4, 4);
+				prints("这里的板砖质地优良，拿去拍人一定痛快。");
+				move(5, 4);
+				prints("一块板砖 1000 兵马俑币。");
+				move(6, 4);
+				if (currentuser.dietime > 0) {
+					prints("你已经死了啊！抓鬼啊！");
+					pressanykey();
+					Q_Goodbye();
+					break;
+				}
+				usercomplete("你要拍谁:", uident);
+				if (uident[0] == '\0')
+					break;
+				freeTime = loadValue(currentuser.userid, "freeTime", 2000000000);
+				if (currentTime < freeTime){
+					pressreturn();
+					break;
+				}
+				if (!(id = getuser(uident))) {
+					move(7, 4);
+					prints("错误的使用者代号...");
+					pressreturn();
+					break;
+				}
+				if (lookupuser.dietime > 0) {
+					move(7, 4);
+					prints("死人你也不放过，太狠了吧？");
+					pressreturn();
+					break;
+				}
+				if ((slowclubtest("Beggar", currentuser.userid) && slowclubtest("Beggar", uident))
+						|| (slowclubtest("Rober", currentuser.userid) && slowclubtest("Rober", uident))
+						|| (slowclubtest("Police", currentuser.userid) && slowclubtest("Police", uident))
+						|| (slowclubtest("killer", currentuser.userid) && slowclubtest("killer", uident))) {
+					move(7, 4);
+					prints("都是自家兄弟...");
+					pressreturn();
+					break;
+				}
+				getdata(7, 4, "你要拍几块？ [0]", genbuf, 4, DOECHO, YEA);
+				if (genbuf[0] == '\0')
+					break;
+				count = atoi(genbuf);
+				if (count < 1) {
+					move(8, 4);
+					prints("没有板砖你拿什么拍？");
+					pressanykey();
+					break;
+				}
+				if (currentuser.dietime > 0) {
+					prints("你已经死了啊！抓鬼啊！");
+					pressanykey();
+					Q_Goodbye();
+					break;
+				}
+				move(8, 4);
+				num = count * 1000;
+				sprintf(genbuf, "总共需要 %d 兵马俑币。", num);
+				if (askyn(genbuf, NA, NA) == YEA) {
+					money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
+					if (money < num) {
+						move(9, 4);
+						prints("您的钱不够...");
+						pressanykey();
+						break;
+					}
+					if (money_check_guard()) {
+						pressanykey();
+						break;
+					}
+					if(seek_in_file(DIR_MC "mingren", uident)) {
+						prints ("      他有黄马褂，你还是算了吧\n");
+						pressanykey();
+						break;
+					}
+
+					if (seek_in_file(DIR_MC "killer", currentuser.userid))
+						zhuannum=40;
+
+					saveValue(currentuser.userid, "last_rob", -2000000000, 2000000000);
+					saveValue(currentuser.userid, "last_rob", time(0), 2000000000);
+					saveValue(currentuser.userid, MONEY_NAME, -num,  MAX_MONEY_NUM);
+
+					saveValue("BMYRober", MONEY_NAME, +num/2, MAX_MONEY_NUM);
+
+					prints("        经过几天的偷窥和跟踪，你发现每天早上7点10分%s会路过僻静的\n", uident);
+					prints("    东花园边。今天你拿着买来兵马俑板砖，准备行动了。\n");
+					prints("        拍人板砖，可以让其住院花钱治伤，嘿嘿...\n");
+					prints("        当然，你也可能遭到反击，甚至致死！\n");
+					if (askyn("    废话少说，你还想拍么？", YEA, NA) == NA) {
+						move(15, 0);
+						prints("            唉，最后关头你害怕了，所以不拍了。\n");
+						pressanykey();
+						break;
+					} else {
+						if(!seek_in_file(DIR_MC "gongji", uident))
+							saveValue(currentuser.userid, "rob", 1, 50);
+						if (currentuser.dietime > 0) {
+							prints("你已经死了啊！抓鬼啊！");
+							pressanykey();
+							Q_Goodbye();
+							break;
+						}
+						sleep(5);
+						x = countexp(&currentuser);
+						y = countexp(&lookupuser);
+						r = random() % 2;
+						if (r == 0)
+							z = x;
+						else
+							z = y;
+						r = random() % 100;
+						num = 1000 + random() % 2000;
+						move(16, 4);
+						if (r < 100 * z / (x + x + y + y) +zhuannum+ count)	//拍人成功
+						{
+							guard_num = loadValue(uident, "guard", 8);
+							if (guard_num > 0) {
+								saveValue(uident, "guard", -1, 50);
+								prints("你干掉了他一个保镖");
+								pressanykey();
+								break;
+							}
+
+							prints("       你这坏蛋，背后偷袭，砸中%s的小脑袋瓜。\n", uident);
+							money = loadValue(uident, MONEY_NAME, MAX_MONEY_NUM);
+							if (money == 0) {
+								if(!Allclubtest(lookupuser.userid) || seek_in_file(DIR_MC "chayou", lookupuser.userid)){
+									showAt(17, 4, "你都拍到人家没钱治伤了...积点阴德吧！\n", 0);
+									sprintf(buf, "你被%s拍了板砖，你没钱治伤，只能咬牙忍痛...", currentuser.userid);
+								}else{
+									saveValue(uident, MONEY_NAME, -money, MAX_MONEY_NUM);
+									move(17, 4);
+									prints ("       你拍了%s板转，他死了。", uident);
+									sprintf(genbuf, "%s进行黑帮活动(拍砖)", currentuser.userid);
+									sprintf(buf,"%s拍死了%s ", currentuser.userid, uident);
+									millionairesrec(genbuf, buf, "黑帮活动");
+									lookupuser.dietime = lookupuser.stay + 999 * 60;
+									substitute_record(PASSFILE, &lookupuser, sizeof(lookupuser), id);
+									if (seek_in_file(DIR_MC "killer", currentuser.userid)){
+										if (random()%3 == 0){
+											sprintf(genbuf, "你被%s用板砖砸死了，好惨", currentuser.userid);
+											mail_buf(genbuf, uident, "替天行道");}
+										sprintf(genbuf,
+												"本站人士%s于10分钟前在铜锣湾的\n一起枪击事件中饮弹身亡\n警方透露此人有帮会背景\n\n"
+												"目前本站激进组织杀手天空宣布对此事负责，\n有关事件的进一步报道请关注本版新闻", uident);
+										deliverreport("[新闻]铜锣湾发生一起枪击事件", genbuf);
+									} else if (slowclubtest("Beggar", currentuser.userid)){
+										sprintf(genbuf,
+												"本港人士%s于10分钟前在尖沙咀的\n一起暴力冲突中伤重不治\n警方称此人有帮会背景\n\n"
+												"据消息灵通人士透露，此事件与近期\n的丐帮活动有关", uident);
+										deliverreport("[新闻]尖沙咀发生一起暴力事件",genbuf);
+										sprintf(genbuf,
+												"你被丐帮弟子%s用板砖砸死了，好惨", currentuser.userid);
+										mail_buf(genbuf, uident, "你死了");
+									} else if (slowclubtest("Rober",currentuser.userid)){
+										sprintf(genbuf,
+												"本港人士%s于10分钟前在澳门的\n一起黑帮械斗中丧命\n警方怀疑此人与黑社会有过节\n\n"
+												"据一位不愿透露姓名的警署官员透露\n这次事件可能和黑帮寻仇有关\n警方表示一定打击犯罪，维护治安", uident);
+										deliverreport("[新闻]澳门发生一起帮会冲突", genbuf);
+										sprintf(genbuf,"你被%s用板砖砸死了，好惨", currentuser.userid);
+										mail_buf(genbuf, uident,"你死了");
+									} else if (slowclubtest("killer",currentuser.userid)){
+										sprintf(genbuf, "你在和黑帮的冲突中被%s用板砖砸死了，好惨", currentuser.userid);
+										mail_buf(genbuf, uident,"替天行道");
+										sprintf(genbuf,
+												"本站人士%s于10分钟前在九龙的\n一起枪击事件中饮弹身亡\n警方透露此人有帮会背景\n\n"
+												"警方怀疑死者与杀手有私人恩怨，\n有关事件的进一步报道请关注本版新闻", uident);
+										deliverreport("[新闻]九龙发生一起枪击事件", genbuf);
+									}
+									else{
+										sprintf(genbuf, "你被%s用板砖砸死了，好惨", currentuser.userid);
+										mail_buf(genbuf, uident, "你死了");
+									}
+									//saveValue(lookupuser.userid, MONEY_NAME, -MAX_MONEY_NUM, MAX_MONEY_NUM);
+									pressanykey();
+								}
+							} else {
+								saveValue(uident, MONEY_NAME, -num, MAX_MONEY_NUM);
+								sprintf(buf, "哈哈，%s花了%d元治伤，现在出院了。小心报复你！\n", uident, num);
+								move(17, 4);
+								prints("%s", buf);
+								sprintf(buf, "你被%s拍了板砖，花了%d兵马俑币治伤，呜呜呜呜...", currentuser.userid, num);
+							}
+						} else {
+							prints("      很不幸，你没有拍中。反而被砸中小脑袋瓜...");
+
+							money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
+							num *= 3;
+							if (money < num) {
+								saveValue (currentuser.userid, MONEY_NAME, -money, MAX_MONEY_NUM);
+								showAt(17, 4, "你鲜血直流，可是钱不够治疗，被医院扔了出来。", 0);
+								showAt(18, 4, "最后伤势恶化，你死了...", 0);
+								sprintf(genbuf, "%s进行黑帮活动(拍砖)", currentuser.userid);
+								sprintf(buf,"%s拍%s, 自己挂了, 瓜 ", currentuser.userid, uident);
+								millionairesrec(genbuf, buf, "黑帮活动");
+								set_safe_record();
+								currentuser.dietime = currentuser.stay + (num - money);
+								substitute_record (PASSFILE, &currentuser, sizeof(currentuser), usernum);
+								saveValue(currentuser.userid, MONEY_NAME,  -MAX_MONEY_NUM,  MAX_MONEY_NUM);
+								saveValue(currentuser.userid, CREDIT_NAME,  -MAX_MONEY_NUM,  MAX_MONEY_NUM);
+								pressanykey();
+								Q_Goodbye();
+							} else {
+								saveValue(currentuser.userid, MONEY_NAME, -num, MAX_MONEY_NUM);
+								move(17, 4);
+								sprintf(buf, "你花了%d兵马俑币才治好了伤，看你下次还拍人不。", num);
+								prints("%s", buf);
+							}
+						}
+					}
+					pressanykey();
+				}
+				break;
+			case '2':
+				clear();
+				if(!Allclubtest(currentuser.userid)){
+					showAt(5, 4, "    \033[1;32m  普通市民不要惹事\033[m", 1);
+					break;
+				}
+				if (seek_in_file(DIR_MC "chayou", currentuser.userid)){
+					showAt(5, 4, "    \033[1;32m  茶友不要惹事\033[m", 1);
+					break;
+				}
+				if (seek_in_file(DIR_MC "mingren", currentuser.userid)){
+					showAt(5, 4, "    \033[1;32m  不要惹事\033[m", 1);
+					break;
+				}
+				move(6, 4);
+				usercomplete("偷谁？", uident);
+				if (uident[0] == '\0')
+					break;
+				freeTime = loadValue(currentuser.userid, "freeTime", 2000000000);
+				if (currentTime < freeTime){
+					pressreturn();
+					break;
+				}
+				if (!getuser(uident)) {
+					showAt(7, 4, "错误的使用者代号...", 2);
+					break;
+				}
+				if(seek_in_file(DIR_MC "mingren", uident)){
+					showAt(7, 4, "      他有黄马褂，你还是算了吧\n", 1);
+					break;
+				}
+				if (lookupuser.dietime > 0) {
+					showAt(7, 4, "死人你也不放过，太狠了吧？", 1);
+					break;
+				}
+				if(strcmp(lookupuser.userid,"BMYpolice")==0||strcmp(lookupuser.userid,"BMYbeg")==0||
+						strcmp(lookupuser.userid,"BMYRober")==0||strcmp(lookupuser.userid,"BMYboss")==0||
+						strcmp(lookupuser.userid,"BMYKillersky")==0){
+					showAt(7, 4, "这个人是我亲戚，不许抢", 2);
+					break;
+				}
+				credit = loadValue(currentuser.userid, CREDIT_NAME, MAX_MONEY_NUM);
+				if(credit<2000){
+					showAt(7, 4, "保证金都没有，还是不要偷了!", 2);
+					break;
+				}
+
+				money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
+
+				if (currentuser.stay < 86400) {
+					showAt(7, 4, "小孩子家别学坏了!", 2);
+					break;
+				}
+				getdata(7, 4, "请输入你的密码: ", buf, PASSLEN, NOECHO, YEA);
+				if (*buf == '\0'
+						|| !ytht_crypt_checkpasswd(currentuser.passwd, buf)) {
+					showAt(8, 4, "很抱歉, 您输入的密码不正确。", 2);
+					break;
+				}
+				saveValue(currentuser.userid, "last_rob", -2000000000, 2000000000);
+				saveValue(currentuser.userid, "last_rob", time(0), 2000000000);
+				showAt(9, 4, "\033[1;5;31m警告\033[0;1;31m： 小心啊，最近警署在严打哦！", 0);
+				move(10, 4);
+				if (askyn("真的要偷么？", NA, NA) == NA)
+					break;
+				set_safe_record();
+				if (currentuser.dietime > 0) {
+					showAt(11, 4, "你已经死了啊！抓鬼啊！", 1);
+					Q_Goodbye();
 					break;
 				}
 				if (money_check_guard()) {
 					pressanykey();
 					break;
 				}
-				if(seek_in_file(DIR_MC "mingren", uident)) {
-					prints ("      他有黄马褂，你还是算了吧\n");
-					pressanykey();
-					break;
+				//currentuser.stay -= 3600 * 1;
+				//substitute_record(PASSFILE, &currentuser, sizeof (currentuser), usernum);
+				r = random() % 100;
+				x = countexp(&currentuser);
+				y = countexp(&lookupuser);
+				if(random() % x *0.7<random() % y)
+				{
+					//saveValue(currentuser.userid, CREDIT_NAME, -2000, MAX_MONEY_NUM);
+					//saveValue("police", MONEY_NAME, +2000, MAX_MONEY_NUM);
 				}
 
-				if (seek_in_file(DIR_MC "killer", currentuser.userid))
-					zhuannum=40;
-
-				saveValue(currentuser.userid, "last_rob",
-					  -2000000000, 2000000000);
-                		saveValue(currentuser.userid, "last_rob",
-					  time(0), 2000000000);
-				saveValue(currentuser.userid, MONEY_NAME,
-					-num,  MAX_MONEY_NUM);
-
-				saveValue("BMYRober", MONEY_NAME,
-					+num/2, MAX_MONEY_NUM);
-
-				prints
-				    ("        经过几天的偷窥和跟踪，你发现每天早上7点10分%s会路过僻静的\n",
-				     uident);
-				prints
-				    ("    东花园边。今天你拿着买来兵马俑板砖，准备行动了。\n");
-				prints
-				    ("        拍人板砖，可以让其住院花钱治伤，嘿嘿...\n");
-				prints
-				    ("        当然，你也可能遭到反击，甚至致死！\n");
-				if (askyn("    废话少说，你还想拍么？", YEA, NA) == NA) {
-					move(15, 0);
-					prints
-					    ("            唉，最后关头你害怕了，所以不拍了。\n");
-					pressanykey();
-					break;
-				} else {
-					if(!seek_in_file(DIR_MC "gongji", uident))
-						saveValue(currentuser.userid, "rob", 1, 50);
-					if (currentuser.dietime > 0) {
-						prints("你已经死了啊！抓鬼啊！");
-						pressanykey();
-						Q_Goodbye();
+				if (NULL == t_search(uident, NA, 1))
+					ra = 1;
+				else
+					ra = 10;
+				if (r < 100 * x / (x + x + y + y) / ra) {
+					guard_num = loadValue(uident, "guard", 8);
+					if (guard_num > 0) {
+						if (loadValue(uident, MONEY_NAME, MAX_MONEY_NUM) > guard_num * 1000000) {
+							if (random() % 2 == 0)
+								saveValue(uident, "guard", -2, 50);
+							else
+								saveValue(uident, "guard", -1, 50);
+						} else {
+							saveValue(uident, "guard", -1, 50);
+						}
+						showAt(11, 4, "你干掉了他一个保镖", 1);
 						break;
 					}
-					sleep(5);
-					x = countexp(&currentuser);
-					y = countexp(&lookupuser);
-					r = random() % 2;
-					if (r == 0)
-						z = x;
-					else
-						z = y;
-					r = random() % 100;
-					num = 1000 + random() % 2000;
-					move(16, 4);
-					if (r < 100 * z / (x + x + y + y) +zhuannum+ count)	//拍人成功
-					{
-						guard_num = loadValue(uident, "guard", 8);
-						if (guard_num > 0) {
-							saveValue(uident, "guard", -1, 50);
-							prints("你干掉了他一个保镖");
-							pressanykey();
-							break;
-						}
-
-						prints
-						    ("       你这坏蛋，背后偷袭，砸中%s的小脑袋瓜。\n",
-						     uident);
+					if (random() % 2 == 0) {
 						money = loadValue(uident, MONEY_NAME, MAX_MONEY_NUM);
-						if (money == 0) {
-							if(!Allclubtest(lookupuser.userid) || seek_in_file(DIR_MC "chayou", lookupuser.userid)){
-								showAt(17, 4, "你都拍到人家没钱治伤了...积点阴德吧！\n", 0);
-								sprintf(buf,
-									"你被%s拍了板砖，你没钱治伤，只能咬牙忍痛...",
-									currentuser.userid);
-							}else{
-								saveValue(uident, MONEY_NAME, -money, MAX_MONEY_NUM);
-								move(17, 4);
-								prints ("       你拍了%s板转，他死了。", uident);
-								sprintf(genbuf, "%s进行黑帮活动(拍砖)", currentuser.userid);
-								sprintf(buf,"%s拍死了%s ", currentuser.userid, uident);
-								millionairesrec(genbuf, buf, "黑帮活动");
-								lookupuser.dietime = lookupuser.stay + 999 * 60;
-								substitute_record(PASSFILE, &lookupuser, sizeof(lookupuser), id);
-								if (seek_in_file(DIR_MC "killer", currentuser.userid)){
-									if (random()%3 == 0){
-										sprintf(genbuf, "你被%s用板砖砸死了，好惨",
-											currentuser.userid);
-										mail_buf(genbuf, uident, "替天行道");}
-                                  						sprintf(genbuf,
-											"本站人士%s于10分钟前在铜锣湾的\n一起枪击事件中饮弹身亡\n警方透露此人有帮会背景\n\n"
-									 		"目前本站激进组织杀手天空宣布对此事负责，\n有关事件的进一步报道请关注本版新闻", uident);
-                                   					deliverreport("[新闻]铜锣湾发生一起枪击事件", genbuf);
+						r = random() % 50;
+						money = money / 100 * r;
+						saveValue(uident, MONEY_NAME, -money, MAX_MONEY_NUM);
+						saveValue(currentuser.userid, MONEY_NAME, money, MAX_MONEY_NUM);
+						move(11, 4);
+						prints("\033[1;31m%s\033[m 的钱包没放好，你把手伸进去，摸到了 %d 兵马俑币现金，快跑吧...", uident, money);
+						sprintf(title, "%s进行黑帮活动(偷窃)", currentuser.userid);
+						sprintf(buf,"%s偷了%s %d兵马俑币", currentuser.userid, uident, money);
+						if (money != 0)
+							millionairesrec(title, buf, "黑帮活动");
+						sprintf(buf, "%s 趁您不注意的时候偷了您 %d 兵马俑币。", currentuser.userid, money);
+						sprintf(title, "对不起，您被偷窃");
+						if(Allclubtest(uident)||loadValue(uident, "mail", 8))
+							mail_buf(buf, uident, title);
+						pressanykey();
+						break;
+					} else {
+						money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
+						r = random() % 70;
+						money = money / 100 * r;
+						saveValue(currentuser.userid, MONEY_NAME, -money, MAX_MONEY_NUM);
+						saveValue(uident, MONEY_NAME, money, MAX_MONEY_NUM);
+						move(11, 4);
+						prints("\033[1;31m你去摸 %s 的钱包,眼看已经得手了,他忽然转过身来发现了你", uident);
+						move(12, 4);
+						prints("\033[1;31m唉呀呀,你一愣神,不仅没偷到他的钱包,反而被他摸走了 %d 兵马俑币。", money);
+						sprintf(title, "%s进行黑帮活动(偷窃)", currentuser.userid);
+						sprintf(buf,"%s偷%s, 反被抢了%d兵马俑币", currentuser.userid, uident, money);
+						if (money != 0)
+							millionairesrec(title, buf, "黑帮活动");
+						sprintf(title, "您遇到小偷");
+						sprintf(buf,
+								"%s 想趁您不注意偷您的钱包,结果让你发现了。你反抢了他 %d 兵马俑币。这把赚翻了,^_^",
+								currentuser.userid, money);
+						if(Allclubtest(uident)||loadValue(uident, "mail", 8))
+							mail_buf(buf, uident, title);
+						pressanykey();
+						break;
+					}
+
+				} else if (r < 90) {
+					money = loadValue(uident, MONEY_NAME, MAX_MONEY_NUM);
+					rob = loadValue(currentuser.userid, "rob", 50);
+					move(11, 4);
+					if (rob > 20) {
+						saveValue(currentuser.userid, "rob", -rob/2, 50);
+						prints("啊！有警察，你在逃跑的时候只听一声枪响...");
+						set_safe_record();
+						if (money / 200 < 3600)
+							currentuser.dietime = currentuser.stay + 1000*60;
+						else if (money < 10000000){
+							mathtmp = (double)(money)/10000;
+							mathtmp = 686.3455879296685 + 4.0492760356525315 * mathtmp + 0.004264378376417802 * mathtmp * mathtmp;//我拟合的二次函数
+							currentuser.dietime = currentuser.stay + (int)(mathtmp * 60);//+(money / 200)
+						} else{
+							mathtmp = 9 + (double)(currentuser.lastlogin)/(double)(currentuser.stay + currentuser.lastlogin);
+							currentuser.dietime = currentuser.stay +(int) (1000*mathtmp*60);
+						}
+						substitute_record(PASSFILE, &currentuser, sizeof (currentuser), usernum);
+						saveValue(currentuser.userid, MONEY_NAME, -MAX_MONEY_NUM, MAX_MONEY_NUM);
+						pressanykey();
+						Q_Goodbye();
+					} else {
+						if (askyn("被警察发现了,你要逃跑么?", YEA, NA) == NA) {
+							saveValue(currentuser.userid, "rob", 1, 50);
+							move(12, 4);
+							if (askyn ("警察问你话,你准备坦白从宽么?", YEA, NA) == YEA) {
+								money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
+								saveValue(currentuser.userid, MONEY_NAME, -money * 50 /100, MAX_MONEY_NUM);
+								sprintf(title, "%s进行黑帮活动(偷窃)", currentuser.userid);
+								sprintf(buf,"%s偷%s, 被警察没收%d兵马俑币", currentuser.userid, uident, money/2);
+								if (money != 0)
+									millionairesrec(title, buf, "黑帮活动");
+								showAt(13, 4, "你被带到警察局,在没收了身上所有的钱之后,还要给你训话一番。", 0);
+								showAt(14, 4, "现在是警察给你的15秒钟训话时间，老老实实听着吧。", 1);
+								sleep(15);
+								money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
+								sprintf(genbuf, "出了警察局,你高兴的从鞋里掏出藏起来的%d兵马俑币。呜呜,一股臭脚丫子味...", money);
+								showAt(15, 4, genbuf, 1);
+							} else {
+								money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
+								if (random() % 2 == 0) {
+									saveValue(currentuser.userid, MONEY_NAME, -money, MAX_MONEY_NUM);
+									sprintf(title, "%s进行黑帮活动(偷窃)", currentuser.userid);
+									sprintf(buf,"%s偷%s, 被警察没收%d兵马俑币(全部)", currentuser.userid, uident, money);
+									if (money != 0)
+										millionairesrec(title, buf, "黑帮活动");
+									showAt(13, 4, "警察问话你还不老实,他一怒之下一把夺过你的钱包,扬长而去。", 0);
+									showAt(14, 4, "你坐在地上大哭:\"警匪一家啊!我的钱,我的钱...\"", 1);
+								} else {
+									showAt(13, 4, "警察问话时你百般抵赖,到最后他也拿你没办法,只好把你放了.", 0);
+									showAt(14, 4, "哈哈! 抗拒从严,回家过年", 1);
 								}
-								else if (slowclubtest("Beggar", currentuser.userid)){
-									sprintf(genbuf,
-										"本港人士%s于10分钟前在尖沙咀的\n一起暴力冲突中伤重不治\n警方称此人有帮会背景\n\n"
-									 	"据消息灵通人士透露，此事件与近期\n的丐帮活动有关", uident);
-                                   				deliverreport("[新闻]尖沙咀发生一起暴力事件",genbuf);
-								   	sprintf(genbuf,
-										"你被丐帮弟子%s用板砖砸死了，好惨", currentuser.userid);
-									mail_buf(genbuf, uident, "你死了");
-								}
-								else if (slowclubtest("Rober",currentuser.userid)){
-									sprintf(genbuf,
-										"本港人士%s于10分钟前在澳门的\n一起黑帮械斗中丧命\n警方怀疑此人与黑社会有过节\n\n"
-									 	"据一位不愿透露姓名的警署官员透露\n这次事件可能和黑帮寻仇有关\n警方表示一定打击犯罪，维护治安", uident);
-                                   				deliverreport("[新闻]澳门发生一起帮会冲突", genbuf);
-									sprintf(genbuf,"你被%s用板砖砸死了，好惨", currentuser.userid);
-									mail_buf(genbuf, uident,"你死了");
-								}
-								else if (slowclubtest("killer",currentuser.userid)){
-									sprintf(genbuf,
-									"你在和黑帮的冲突中被%s用板砖砸死了，好惨", currentuser.userid);
-									mail_buf(genbuf, uident,"替天行道");
-                                  					sprintf(genbuf,
-										"本站人士%s于10分钟前在九龙的\n一起枪击事件中饮弹身亡\n警方透露此人有帮会背景\n\n"
-									 	"警方怀疑死者与杀手有私人恩怨，\n有关事件的进一步报道请关注本版新闻", uident);
-                                   				deliverreport("[新闻]九龙发生一起枪击事件", genbuf);
-							     }
-								else{
-									sprintf(genbuf, "你被%s用板砖砸死了，好惨", currentuser.userid);
-									mail_buf(genbuf, uident, "你死了");
-								}
-								//saveValue(lookupuser.userid, MONEY_NAME, -MAX_MONEY_NUM, MAX_MONEY_NUM);
-								pressanykey();
 							}
 						} else {
-							saveValue(uident, MONEY_NAME, -num, MAX_MONEY_NUM);
-							sprintf(buf,
-								"哈哈，%s花了%d元治伤，现在出院了。小心报复你！\n",
-								uident, num);
-							move(17, 4);
-							prints("%s", buf);
-							sprintf(buf,
-								"你被%s拍了板砖，花了%d兵马俑币治伤，呜呜呜呜...",
-								currentuser.userid, num);
-						}
-					} else {
-						prints
-						    ("      很不幸，你没有拍中。反而被砸中小脑袋瓜...");
-
-						money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
-						num *= 3;
-						if (money < num) {
-							saveValue (currentuser.userid, MONEY_NAME, -money, MAX_MONEY_NUM);
-							showAt(17, 4, "你鲜血直流，可是钱不够治疗，被医院扔了出来。", 0);
-							showAt(18, 4, "最后伤势恶化，你死了...", 0);
-							sprintf(genbuf, "%s进行黑帮活动(拍砖)", currentuser.userid);
-							sprintf(buf,"%s拍%s, 自己挂了, 瓜 ", currentuser.userid, uident);
-							millionairesrec(genbuf, buf, "黑帮活动");
-							set_safe_record();
-							currentuser.dietime = currentuser.stay + (num - money);
-							substitute_record (PASSFILE, &currentuser, sizeof(currentuser), usernum);
-							saveValue(currentuser.userid, MONEY_NAME,  -MAX_MONEY_NUM,  MAX_MONEY_NUM);
-							saveValue(currentuser.userid, CREDIT_NAME,  -MAX_MONEY_NUM,  MAX_MONEY_NUM);
-							pressanykey();
-							Q_Goodbye();
-						} else {
-							saveValue(currentuser.userid, MONEY_NAME, -num, MAX_MONEY_NUM);
-							move(17, 4);
-							sprintf(buf, "你花了%d兵马俑币才治好了伤，看你下次还拍人不。",
-								num);
-							prints("%s", buf);
+							move(12, 4);
+							if (random() % 2 == 0) {
+								saveValue(currentuser.userid, "rob", 5, 50);
+								prints("你没命地逃跑,可惜,钱包丢在了路上...");
+								money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
+								saveValue(currentuser.userid, MONEY_NAME, -money, MAX_MONEY_NUM);
+								sprintf(title, "%s进行黑帮活动(偷窃)", currentuser.userid);
+								sprintf(buf,"%s偷%s, 逃跑中损失%d兵马俑币(全部)", currentuser.userid, uident, money);
+								if (money != 0)
+									millionairesrec(title, buf, "黑帮活动");
+								pressanykey();
+							} else {
+								saveValue(currentuser.userid, "rob", -rob/2, 50);
+								prints("啊！你在逃跑的时候只听一声枪响...");
+								set_safe_record();
+								if (money / 200 < 3600)
+									currentuser.dietime = currentuser.stay + 1000*60;
+								else if (money < 10000000){
+									mathtmp = (double)(money)/10000;
+									mathtmp = 686.3455879296685 + 4.0492760356525315 * mathtmp + 0.004264378376417802 * mathtmp * mathtmp;//我拟合的二次函数
+									currentuser.dietime = currentuser.stay + (int)(mathtmp * 60);//+(money / 200)
+								} else{
+									mathtmp = 9 + (double)(currentuser.lastlogin)/(double)(currentuser.stay + currentuser.lastlogin);
+									currentuser.dietime = currentuser.stay +(int) (1000*mathtmp*60);
+								}
+								substitute_record(PASSFILE, &currentuser, sizeof(currentuser), usernum);
+								pressanykey();
+								saveValue(currentuser.userid, MONEY_NAME, -MAX_MONEY_NUM, MAX_MONEY_NUM);
+								sprintf(title, "%s进行黑帮活动(偷窃)", currentuser.userid);
+								sprintf(buf,"%s偷%s, 被击毙, 损失%d兵马俑币(全部)", currentuser.userid, uident, money);
+								if (money != 0)
+									millionairesrec(title, buf, "黑帮活动");
+								Q_Goodbye();
+							}
 						}
 					}
+					break;
+				} else {
+					move(11, 4);
+					prints("\033[1;31m%s\033[m 把钱包看得紧紧的，你假装不小心撞了他一下,可一分钱都没偷到。", uident);
+					pressanykey();
+					break;
 				}
-				pressanykey();
-			}
-			break;
-		case '2':
-			clear();
-			if(!Allclubtest(currentuser.userid)){
-				showAt(5, 4, "    \033[1;32m  普通市民不要惹事\033[m", 1);
 				break;
-			}
-			if (seek_in_file(DIR_MC "chayou", currentuser.userid)){
-				showAt(5, 4, "    \033[1;32m  茶友不要惹事\033[m", 1);
+			case '3':
+				clear();
+				money_show_stat("兵马俑黑帮养鸽场");
+				showAt(4, 4, "黑帮为你提供勒索信件发送业务,每次收费视情形而定。", 0);
+				if (currentuser.dietime > 0) {
+					showAt(5, 4, "你已经死了啊！抓鬼啊！", 1);
+					Q_Goodbye();
+					break;
+				}
+				if (seek_in_file(DIR_MC "mingren", currentuser.userid)){
+					clear();
+					showAt(5, 4, "    \033[1;32m  不要惹事\033[m", 1);
+					break;
+				}
+				usercomplete("你要勒索谁:", uident);
+				if (uident[0] == '\0')
+					break;
+				if (!(id = getuser(uident))) {
+					showAt(7, 4, "错误的使用者代号...", 2);
+					break;
+				}
+				if (lookupuser.dietime > 0) {
+					showAt(7, 4, "鬼你也敢勒索啊...", 1);
+					break;
+				}
+				move(8, 4);
+				sprintf(genbuf, "确定要勒索么?");
+				if (askyn(genbuf, NA, NA) == YEA) {
+					money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
+					if (money < 100) {
+						showAt(9, 4, "您的钱不够。", 1);
+						break;
+					}
+					if (money < 1000) {
+						saveValue(currentuser.userid, MONEY_NAME, -100, MAX_MONEY_NUM);
+						sprintf(title, "%s管你要几千块兵马俑币", currentuser.userid);
+						mail_buf(letter1, uident, title);
+					} else if (money < 100000) {
+						saveValue(currentuser.userid, MONEY_NAME, -1000, MAX_MONEY_NUM);
+						sprintf(title, "%s管你要几万块兵马俑币", currentuser.userid);
+						mail_buf(letter2, uident, title);
+					} else if (money < 10000000) {
+						saveValue(currentuser.userid, MONEY_NAME, -100000, MAX_MONEY_NUM);
+						sprintf(title, "%s管你要一百万兵马俑币", currentuser.userid);
+						mail_buf(letter3, uident, title);
+					} else {
+						saveValue(currentuser.userid, MONEY_NAME, -500000, MAX_MONEY_NUM);
+						sprintf(title, "%s管你要一千万兵马俑币", currentuser.userid);
+						mail_buf(letter3, uident, title);
+					}
+					showAt(10, 4, "信发出去了，回去等消息吧。", 1);
+				}
 				break;
-			}
-			if (seek_in_file(DIR_MC "mingren", currentuser.userid)){
-				showAt(5, 4, "    \033[1;32m  不要惹事\033[m", 1);
-				break;
-			}
-			move(6, 4);
-			usercomplete("偷谁？", uident);
-			if (uident[0] == '\0')
-				break;
-			/*if(!Allclubtest(uident)){
-				prints("    \033[1;32m  不要残杀无辜！\033[m");
-				pressanykey();
-				break;
-			}*/
-			freeTime = loadValue(currentuser.userid, "freeTime", 2000000000);
-			if (currentTime < freeTime){
-				pressreturn();
-				break;
-			}
-			if (!getuser(uident)) {
-				showAt(7, 4, "错误的使用者代号...", 2);
-				break;
-			}
-			if(seek_in_file(DIR_MC "mingren", uident)){
-				showAt (7, 4, "      他有黄马褂，你还是算了吧\n", 1);
-				break;
-			}
-			if (lookupuser.dietime > 0) {
-				showAt(7, 4, "死人你也不放过，太狠了吧？", 1);
-				break;
-			}
-			if(strcmp(lookupuser.userid,"BMYpolice")==0||strcmp(lookupuser.userid,"BMYbeg")==0||
-				strcmp(lookupuser.userid,"BMYRober")==0||strcmp(lookupuser.userid,"BMYboss")==0||
-                		strcmp(lookupuser.userid,"BMYKillersky")==0){
-				showAt(7, 4, "这个人是我亲戚，不许抢", 2);
-				break;
-			}
-			credit = loadValue(currentuser.userid, CREDIT_NAME, MAX_MONEY_NUM);
-			if(credit<2000){
-				showAt(7, 4, "保证金都没有，还是不要偷了!", 2);
-				break;
-			}
+			case '4':
+				clear();
+				if (seek_in_file(DIR_MC "chayou", currentuser.userid)){
+					showAt(5, 4, "    \033[1;32m  茶友不要惹事\033[m", 1);
+					break;
+				}
+				if (seek_in_file(DIR_MC "mingren", currentuser.userid)){
+					showAt(5, 4, "    \033[1;32m  不要惹事\033[m", 1);
+					break;
+				}
+				move(6, 4);
+				usercomplete("抢谁？", uident);
+				if (uident[0] == '\0')
+					break;
+				freeTime = loadValue(currentuser.userid, "freeTime", 2000000000);
+				if (currentTime < freeTime){
+					pressreturn();
+					break;
+				}
+				if (!getuser(uident)) {
+					showAt(7, 4, "错误的使用者代号...", 2);
+					break;
+				}
+				if(seek_in_file(DIR_MC "mingren", uident)){
+					showAt(7, 4, "      他有黄马褂，你还是算了吧\n", 1);
+					break;
+				}
+				if (lookupuser.dietime > 0) {
+					showAt(7, 4, "死人你也不放过，太狠了吧？", 1);
+					break;
+				}
+				if(strcmp(lookupuser.userid,"BMYpolice")==0||strcmp(lookupuser.userid,"BMYbeg")==0||
+						strcmp(lookupuser.userid,"BMYRober")==0||strcmp(lookupuser.userid,"BMYboss")==0||
+						strcmp(lookupuser.userid,"BMYKillersky")==0){
+					showAt(7, 4, "这个人是我亲戚，不许抢", 2);
+					break;
+				}
+				money = loadValue(currentuser.userid, CREDIT_NAME, MAX_MONEY_NUM);
 
-			money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
-
-			if (currentuser.stay < 86400) {
-				showAt(7, 4, "小孩子家别学坏了!", 2);
-				break;
-			}
-			getdata(7, 4, "请输入你的密码: ", buf, PASSLEN, NOECHO, YEA);
-			if (*buf == '\0'
-			    || !checkpasswd(currentuser.passwd, buf)) {
-				showAt(8, 4, "很抱歉, 您输入的密码不正确。", 2);
-				break;
-			}
-			  saveValue(currentuser.userid, "last_rob", -2000000000, 2000000000);
-			  saveValue(currentuser.userid, "last_rob", time(0), 2000000000);
-			showAt(9, 4,
-				"\033[1;5;31m警告\033[0;1;31m： 小心啊，最近警署在严打哦！", 0);
-			move(10, 4);
-			if (askyn("真的要偷么？", NA, NA) == NA)
-				break;
-			set_safe_record();
-			if (currentuser.dietime > 0) {
-				showAt(11, 4, "你已经死了啊！抓鬼啊！", 1);
-				Q_Goodbye();
-				break;
-			}
-			if (money_check_guard()) {
-				pressanykey();
-				break;
-			}
-			//currentuser.stay -= 3600 * 1;
-			//substitute_record(PASSFILE, &currentuser, sizeof (currentuser), usernum);
-			r = random() % 100;
-			x = countexp(&currentuser);
-			y = countexp(&lookupuser);
-			if(random() % x *0.7<random() % y)
-			{
-			//saveValue(currentuser.userid, CREDIT_NAME, -2000, MAX_MONEY_NUM);
-			//saveValue("police", MONEY_NAME, +2000, MAX_MONEY_NUM);
-			}
-
-			if (NULL == t_search(uident, NA, 1))
-				ra = 1;
-			else
-				ra = 10;
-			if (r < 100 * x / (x + x + y + y) / ra) {
-				guard_num = loadValue(uident, "guard", 8);
-				if (guard_num > 0) {
-					if (loadValue(uident, MONEY_NAME, MAX_MONEY_NUM) > guard_num * 1000000) {
-						if (random() % 2 == 0)
-							saveValue(uident, "guard", -2, 50);
+				if (currentuser.stay < 3600 + 86400) {
+					showAt(7, 4, "小孩子家不要学坏了!", 2);
+					break;
+				}
+				if (!clubtest("Rober")) {
+					showAt(7, 4, "怎么看你也不像是作奸犯科的人啊！", 2);
+					break;
+				}
+				getdata(7, 4, "请输入你的密码: ", buf, PASSLEN, NOECHO, YEA);
+				if (*buf == '\0' || !ytht_crypt_checkpasswd(currentuser.passwd, buf)) {
+					showAt(8, 4, "很抱歉, 您输入的密码不正确。", 2);
+					break;
+				}
+				saveValue(currentuser.userid, "last_rob", -2000000000, 2000000000);
+				saveValue(currentuser.userid, "last_rob", time(0), 2000000000);
+				showAt(9, 4, "\033[1;5;31m警告\033[0;1;31m： 小心啊，最近警署在严打哦！", 0);
+				move(10, 4);
+				if (askyn("真的要抢么？", NA, NA) == NA)
+					break;
+				set_safe_record();
+				if (currentuser.dietime > 0) {
+					showAt(11, 4, "你已经死了啊！抓鬼啊！", 1);
+					Q_Goodbye();
+					break;
+				}
+				if (money_check_guard()) {
+					pressanykey();
+					break;
+				}
+				if (lookupuser.dietime > 0) {
+					showAt(11, 4, "人都死了,让他安息吧.", 1);
+					break;
+				}
+				//currentuser.stay -= 3600 * 1;
+				//substitute_record(PASSFILE, &currentuser, sizeof (currentuser), usernum);
+				r = random() % 100;
+				x = countexp(&currentuser);
+				y = countexp(&lookupuser);
+				if (NULL == t_search(uident, NA, 1))
+					ra = 1;//ra = 10;
+				else
+					ra = 2;
+				if (r < 100 * x / (x + x + y + y) / ra) {
+					guard_num = loadValue(uident, "guard", 8);
+					if (guard_num > 0) {
+						if (loadValue(uident, MONEY_NAME, MAX_MONEY_NUM) > guard_num * 1000000)
+							saveValue(uident, "guard", -guard_num, 50);
 						else
 							saveValue(uident, "guard", -1, 50);
-					} else {
-							saveValue(uident, "guard", -1, 50);
+						prints("你干掉了他一个保镖");
+						pressanykey();
+						break;
 					}
-					showAt(11, 4, "你干掉了他一个保镖", 1);
-					break;
-				}
-				if (random() % 2 == 0) {
-					money = loadValue(uident, MONEY_NAME, MAX_MONEY_NUM);
-					r = random() % 50;
-					money = money / 100 * r;
-					saveValue(uident, MONEY_NAME, -money, MAX_MONEY_NUM);
-					saveValue(currentuser.userid, MONEY_NAME, money,
-						  MAX_MONEY_NUM);
-					move(11, 4);
-					prints
-					    ("\033[1;31m%s\033[m 的钱包没放好，你把手伸进去，摸到了 %d 兵马俑币现金，快跑吧...",
-					     uident, money);
-					sprintf(title, "%s进行黑帮活动(偷窃)", currentuser.userid);
-					sprintf(buf,"%s偷了%s %d兵马俑币", currentuser.userid, uident, money);
-					if (money != 0)
-						millionairesrec(title, buf, "黑帮活动");
-					sprintf(buf,
-						"%s 趁您不注意的时候偷了您 %d 兵马俑币。",
-						currentuser.userid, money);
-					sprintf(title, "对不起，您被偷窃");
-					if(Allclubtest(uident)||loadValue(uident, "mail", 8))
-					mail_buf(buf, uident, title);
-					pressanykey();
-					break;
-				} else {
-					money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
-					r = random() % 70;
-					money = money / 100 * r;
-					saveValue(currentuser.userid, MONEY_NAME, -money, MAX_MONEY_NUM);
-					saveValue(uident, MONEY_NAME, money, MAX_MONEY_NUM);
-					move(11, 4);
-					prints
-					    ("\033[1;31m你去摸 %s 的钱包,眼看已经得手了,他忽然转过身来发现了你",
-					     uident);
-					move(12, 4);
-					prints
-					    ("\033[1;31m唉呀呀,你一愣神,不仅没偷到他的钱包,反而被他摸走了 %d 兵马俑币。",
-					     money);
-					sprintf(title, "%s进行黑帮活动(偷窃)", currentuser.userid);
-					sprintf(buf,"%s偷%s, 反被抢了%d兵马俑币", currentuser.userid, uident, money);
-					if (money != 0)
-						millionairesrec(title, buf, "黑帮活动");
-					sprintf(title, "您遇到小偷");
-					sprintf(buf,
-						"%s 想趁您不注意偷您的钱包,结果让你发现了。你反抢了他 %d 兵马俑币。这把赚翻了,^_^",
-						currentuser.userid, money);
-					if(Allclubtest(uident)||loadValue(uident, "mail", 8))
-					mail_buf(buf, uident, title);
-					pressanykey();
-					break;
-				}
 
-			} else if (r < 90) {
-				money = loadValue(uident, MONEY_NAME, MAX_MONEY_NUM);
-				rob = loadValue(currentuser.userid, "rob", 50);
-				move(11, 4);
-				if (rob > 20) {
-					saveValue(currentuser.userid, "rob", -rob/2, 50);
-					prints
-					    ("啊！有警察，你在逃跑的时候只听一声枪响...");
-					set_safe_record();
-					if (money / 200 < 3600)
-						currentuser.dietime = currentuser.stay + 1000*60;
-					else if (money < 10000000){
-						mathtmp = (double)(money)/10000;
-						mathtmp = 686.3455879296685 + 4.0492760356525315 * mathtmp + 0.004264378376417802 * mathtmp * mathtmp;//我拟合的二次函数
-						currentuser.dietime = currentuser.stay + (int)(mathtmp * 60);//+(money / 200)
-					}
-					else{
-						mathtmp = 9 + (double)(currentuser.lastlogin)/(double)(currentuser.stay + currentuser.lastlogin);
-						currentuser.dietime = currentuser.stay +(int) (1000*mathtmp*60);
-					}
-					substitute_record(PASSFILE, &currentuser, sizeof (currentuser), usernum);
-					saveValue(currentuser.userid, MONEY_NAME, -MAX_MONEY_NUM, MAX_MONEY_NUM);
-					pressanykey();
-					Q_Goodbye();
-				} else {
-					if (askyn
-					    ("被警察发现了,你要逃跑么?", YEA, NA) == NA) {
-						saveValue(currentuser.userid, "rob", 1, 50);
+					if (random() % 2 == 0) {
+						money = loadValue(uident, CREDIT_NAME, MAX_MONEY_NUM);
+						r = random() % 50;
+						money = money / 100 * r;
+						saveValue(uident, CREDIT_NAME, -money, MAX_MONEY_NUM);
+						saveValue(currentuser.userid, MONEY_NAME, money, MAX_MONEY_NUM);
+						move(11, 4);
+						prints("\033[1;31m%s\033[m 的门没锁，你溜了进去,找出存折, 换得 %d 兵马俑币现金，快跑吧。", uident, money);
+						sprintf(buf,
+								"%s 趁您不注意的时候拿了你家的存折,等你发现挂失的时候已经损失了 %d 兵马俑币。",
+								currentuser.userid, money);
+						sprintf(title, "对不起，您被抢劫");
+						if(Allclubtest(uident)||loadValue(uident, "mail", 8))
+							mail_buf(buf, uident, title);
+						sprintf(title, "%s进行黑帮活动(抢劫)", currentuser.userid);
+						sprintf(buf,"%s抢%s  %d兵马俑币", currentuser.userid, uident, money);
+						millionairesrec(title, buf, "黑帮活动");
+						pressanykey();
+						break;
+					} else {
+						money = loadValue(currentuser.userid, CREDIT_NAME, MAX_MONEY_NUM);
+						r = random() % 70;
+						money = money / 100 * r;
+						saveValue(currentuser.userid, CREDIT_NAME, -money, MAX_MONEY_NUM);
+						saveValue(uident, CREDIT_NAME, money, MAX_MONEY_NUM);
+						move(11, 4);
+						prints("\033[1;31m你溜进了 %s 的门,正得意呢,抬眼看见黑洞洞的枪口对着你...", uident);
 						move(12, 4);
-						if (askyn ("警察问你话,你准备坦白从宽么?", YEA, NA) == YEA) {
-							money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
-							saveValue(currentuser.userid, MONEY_NAME, -money * 50 /100, MAX_MONEY_NUM);
-							sprintf(title, "%s进行黑帮活动(偷窃)", currentuser.userid);
-							sprintf(buf,"%s偷%s, 被警察没收%d兵马俑币", currentuser.userid, uident, money/2);
-							if (money != 0)
-								millionairesrec(title, buf, "黑帮活动");
-							showAt
-							    (13, 4, "你被带到警察局,在没收了身上所有的钱之后,还要给你训话一番。", 0);
-							showAt
-							    (14, 4, "现在是警察给你的15秒钟训话时间，老老实实听着吧。", 1);
+						prints("\033[1;31m唉呀呀,没想到他在家,你被迫私了,从存折里取出 %d 兵马俑币给他。", money);
+						sprintf(title, "您遭遇抢劫");
+						sprintf(buf, "%s 想抢你的钱,结果让你发现了,你勒索了他 %d 兵马俑币,送上门的肥肉啊。", currentuser.userid, money);
+						if(Allclubtest(uident)||loadValue(uident, "mail", 8))
+							mail_buf(buf, uident, title);
+						sprintf(title, "%s进行黑帮活动(抢劫)", currentuser.userid);
+						sprintf(buf,"%s抢%s , 反被勒索%d兵马俑币", currentuser.userid, uident, money);
+						millionairesrec(title, buf, "黑帮活动");
+						pressanykey();
+						break;
+					}
+
+				} else if (r < 90) {
+					money = loadValue(uident, MONEY_NAME, MAX_MONEY_NUM);
+					rob = loadValue(currentuser.userid, "rob", 50);
+					move(11, 4);
+					if (rob > 20) {
+						saveValue(currentuser.userid, "rob", -rob/2, 50);
+						prints("啊！有警察，你在逃跑的时候只听一声枪响...");
+						set_safe_record();
+						if (money / 200 < 3600)
+							currentuser.dietime = currentuser.stay + 1000*60;
+						else if (money < 10000000){
+							mathtmp = (double)(money)/10000;
+							mathtmp = 686.3455879296685 + 4.0492760356525315 * mathtmp + 0.004264378376417802 * mathtmp * mathtmp;//我拟合的二次函数
+							currentuser.dietime = currentuser.stay + (int)(mathtmp * 60);//+(money / 200)
+						}else{
+							mathtmp = 9 + (double)(currentuser.lastlogin)/(double)(currentuser.stay + currentuser.lastlogin);
+							currentuser.dietime = currentuser.stay +(int) (1000*mathtmp*60);
+						}
+						substitute_record(PASSFILE, &currentuser, sizeof (currentuser), usernum);
+						saveValue(currentuser.userid, MONEY_NAME, -MAX_MONEY_NUM, MAX_MONEY_NUM);
+						pressanykey();
+						Q_Goodbye();
+					} else {
+						if (askyn("被警察发现了,你要逃跑么?", YEA, NA) == NA) {
+							saveValue(currentuser.userid, "rob", 1, 50);
+							money = loadValue(currentuser.userid, MONEY_NAME,  MAX_MONEY_NUM);
+							saveValue(currentuser.userid, MONEY_NAME, -money * 50 / 100, MAX_MONEY_NUM);
+							sprintf(title, "%s进行黑帮活动(抢劫)", currentuser.userid);
+							sprintf(buf,"%s抢%s 被警察没收%d兵马俑币", currentuser.userid, uident, money/2);
+							millionairesrec(title, buf, "黑帮活动");
+							showAt(12, 4, "你被带到警察局,在没收了身上所有的钱之后,现在等警察给你训话", 0);
+							showAt(13, 4, "现在是警察给你的15秒钟训话时间，硬着头皮听吧。", 1);
 							sleep(15);
 							money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
 							sprintf(genbuf,
-								"出了警察局,你高兴的从鞋里掏出藏起来的%d兵马俑币。呜呜,一股臭脚丫子味...",
-								money);
-							showAt(15, 4, genbuf, 1);
+									"出了警察局了,你高兴的从鞋里掏出藏起来的%d兵马俑币。呜呜,一股臭脚丫子味...",
+									money);
+							showAt(14, 4, genbuf, 1);
 						} else {
-							money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
+							move(12, 4);
 							if (random() % 2 == 0) {
+								saveValue(currentuser.userid, "rob", 5, 50);
+								prints("逃跑成功,可惜,你的钱包丢在了路上...");
 								saveValue(currentuser.userid, MONEY_NAME, -money, MAX_MONEY_NUM);
-								sprintf(title, "%s进行黑帮活动(偷窃)", currentuser.userid);
-								sprintf(buf,"%s偷%s, 被警察没收%d兵马俑币(全部)", currentuser.userid, uident, money);
-								if (money != 0)
-									millionairesrec(title, buf, "黑帮活动");
-								showAt
-								    (13, 4, "警察问话你还不老实,他一怒之下一把夺过你的钱包,扬长而去。", 0);
-								showAt
-								    (14, 4, "你坐在地上大哭:\"警匪一家啊!我的钱,我的钱...\"", 1);
+								sprintf(title, "%s进行黑帮活动(抢劫)", currentuser.userid);
+								sprintf(buf,"%s抢%s, 逃跑损失%d兵马俑币(全部)", currentuser.userid, uident, money);
+								millionairesrec(title, buf, "黑帮活动");
+								pressanykey();
 							} else {
-								showAt
-								    (13, 4, "警察问话时你百般抵赖,到最后他也拿你没办法,只好把你放了.", 0);
-								showAt
-								    (14, 4, "哈哈! 抗拒从严,回家过年", 1);
-							}
-						}
-					} else {
-						move(12, 4);
-						if (random() % 2 == 0) {
-							saveValue(currentuser.userid, "rob", 5, 50);
-							prints("你没命地逃跑,可惜,钱包丢在了路上...");
-							money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
-							saveValue(currentuser.userid, MONEY_NAME, -money, MAX_MONEY_NUM);
-							sprintf(title, "%s进行黑帮活动(偷窃)", currentuser.userid);
-							sprintf(buf,"%s偷%s, 逃跑中损失%d兵马俑币(全部)", currentuser.userid, uident, money);
-							if (money != 0)
+								saveValue(currentuser.userid, "rob", -rob/2, 50);
+								prints("啊！你在逃跑的时候只听一声枪响...");
+								set_safe_record();
+								if (money / 200 < 3600)
+									currentuser.dietime = currentuser.stay + 1000*60;
+								else if (money < 10000000){
+									mathtmp = (double)(money)/10000;
+									mathtmp = 686.3455879296685 + 4.0492760356525315 * mathtmp + 0.004264378376417802 * mathtmp * mathtmp;//我拟合的二次函数
+									currentuser.dietime = currentuser.stay + (int)(mathtmp * 60);//+(money / 200)
+								}else{
+									mathtmp = 9 + (double)(currentuser.lastlogin)/(double)(currentuser.stay + currentuser.lastlogin);
+									currentuser.dietime = currentuser.stay +(int) (1000*mathtmp*60);
+								}
+								substitute_record(PASSFILE, &currentuser, sizeof(currentuser), usernum);
+								pressanykey();
+								saveValue(currentuser.userid, MONEY_NAME, -money, MAX_MONEY_NUM);
+								sprintf(title, "%s进行黑帮活动(抢劫)", currentuser.userid);
+								sprintf(buf,"%s抢%s, 被击毙, 损失%d兵马俑币(全部)", currentuser.userid, uident, money);
 								millionairesrec(title, buf, "黑帮活动");
-							pressanykey();
-						} else {
-							saveValue(currentuser.userid, "rob", -rob/2, 50);
-							prints
-							    ("啊！你在逃跑的时候只听一声枪响...");
-							set_safe_record();
-							if (money / 200 < 3600)
-								currentuser.dietime = currentuser.stay + 1000*60;
-							else if (money < 10000000){
-								mathtmp = (double)(money)/10000;
-								mathtmp = 686.3455879296685 + 4.0492760356525315 * mathtmp + 0.004264378376417802 * mathtmp * mathtmp;//我拟合的二次函数
-								currentuser.dietime = currentuser.stay + (int)(mathtmp * 60);//+(money / 200)
+								Q_Goodbye();
 							}
-							else{
-								mathtmp = 9 + (double)(currentuser.lastlogin)/(double)(currentuser.stay + currentuser.lastlogin);
-								currentuser.dietime = currentuser.stay +(int) (1000*mathtmp*60);
-							}
-							substitute_record(PASSFILE, &currentuser, sizeof(currentuser), usernum);
-							pressanykey();
-							saveValue(currentuser.userid, MONEY_NAME, -MAX_MONEY_NUM, MAX_MONEY_NUM);
-							sprintf(title, "%s进行黑帮活动(偷窃)", currentuser.userid);
-							sprintf(buf,"%s偷%s, 被击毙, 损失%d兵马俑币(全部)", currentuser.userid, uident, money);
-							if (money != 0)
-								millionairesrec(title, buf, "黑帮活动");
-							Q_Goodbye();
 						}
 					}
-				}
-				break;
-			} else {
-				move(11, 4);
-				prints
-				    ("\033[1;31m%s\033[m 把钱包看得紧紧的，你假装不小心撞了他一下,可一分钱都没偷到。",
-				     uident);
-				pressanykey();
-				break;
-			}
-			break;
-		case '3':
-			clear();
-			money_show_stat("兵马俑黑帮养鸽场");
-			showAt
-			    (4, 4, "黑帮为你提供勒索信件发送业务,每次收费视情形而定。", 0);
-			if (currentuser.dietime > 0) {
-				showAt(5, 4, "你已经死了啊！抓鬼啊！", 1);
-				Q_Goodbye();
-				break;
-			}
-			if (seek_in_file(DIR_MC "mingren", currentuser.userid)){
-				clear();
-				showAt(5, 4, "    \033[1;32m  不要惹事\033[m", 1);
-				break;
-			}
-			usercomplete("你要勒索谁:", uident);
-			if (uident[0] == '\0')
-				break;
-			if (!(id = getuser(uident))) {
-				showAt(7, 4, "错误的使用者代号...", 2);
-				break;
-			}
-			if (lookupuser.dietime > 0) {
-				showAt(7, 4, "鬼你也敢勒索啊...", 1);
-				break;
-			}
-			move(8, 4);
-			sprintf(genbuf, "确定要勒索么?");
-			if (askyn(genbuf, NA, NA) == YEA) {
-				money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
-				if (money < 100) {
-					showAt(9, 4, "您的钱不够。", 1);
 					break;
-				}
-				if (money < 1000) {
-					saveValue(currentuser.userid, MONEY_NAME, -100, MAX_MONEY_NUM);
-					sprintf(title, "%s管你要几千块兵马俑币", currentuser.userid);
-					mail_buf(letter1, uident, title);
-				} else if (money < 100000) {
-					saveValue(currentuser.userid, MONEY_NAME, -1000, MAX_MONEY_NUM);
-					sprintf(title, "%s管你要几万块兵马俑币", currentuser.userid);
-					mail_buf(letter2, uident, title);
-				} else if (money < 10000000) {
-					saveValue(currentuser.userid, MONEY_NAME, -100000, MAX_MONEY_NUM);
-					sprintf(title, "%s管你要一百万兵马俑币", currentuser.userid);
-					mail_buf(letter3, uident, title);
 				} else {
-					saveValue(currentuser.userid, MONEY_NAME, -500000, MAX_MONEY_NUM);
-					sprintf(title, "%s管你要一千万兵马俑币", currentuser.userid);
-					mail_buf(letter3, uident, title);
-				}
-				showAt(10, 4, "信发出去了，回去等消息吧。", 1);
-			}
-			break;
-		case '4':
-			clear();
-			if (seek_in_file(DIR_MC "chayou", currentuser.userid)){
-				showAt(5, 4, "    \033[1;32m  茶友不要惹事\033[m", 1);
-				break;
-			}
-			if (seek_in_file(DIR_MC "mingren", currentuser.userid)){
-				showAt(5, 4, "    \033[1;32m  不要惹事\033[m", 1);
-				break;
-			}
-			move(6, 4);
-			usercomplete("抢谁？", uident);
-			if (uident[0] == '\0')
-				break;
-			/*if(!Allclubtest(uident)){
-				prints("    \033[1;32m  不要残杀无辜！\033[m");
-				pressanykey();
-				break;
-			}*/
-			freeTime = loadValue(currentuser.userid, "freeTime", 2000000000);
-			if (currentTime < freeTime){
-				pressreturn();
-				break;
-			}
-			if (!getuser(uident)) {
-				showAt(7, 4, "错误的使用者代号...", 2);
-				break;
-			}
-			if(seek_in_file(DIR_MC "mingren", uident)){
-				showAt(7, 4, "      他有黄马褂，你还是算了吧\n", 1);
-				break;
-			}
-			if (lookupuser.dietime > 0) {
-				showAt(7, 4, "死人你也不放过，太狠了吧？", 1);
-				break;
-			}
-			if(strcmp(lookupuser.userid,"BMYpolice")==0||strcmp(lookupuser.userid,"BMYbeg")==0||
-				strcmp(lookupuser.userid,"BMYRober")==0||strcmp(lookupuser.userid,"BMYboss")==0||
-                		strcmp(lookupuser.userid,"BMYKillersky")==0){
-				showAt(7, 4, "这个人是我亲戚，不许抢", 2);
-				break;
-			}
-			money = loadValue(currentuser.userid, CREDIT_NAME, MAX_MONEY_NUM);
-
-			if (currentuser.stay < 3600 + 86400) {
-				showAt(7, 4, "小孩子家不要学坏了!", 2);
-				break;
-			}
-			if (!clubtest("Rober")) {
-				showAt(7, 4, "怎么看你也不像是作奸犯科的人啊！", 2);
-				break;
-			}
-			getdata(7, 4, "请输入你的密码: ", buf, PASSLEN, NOECHO, YEA);
-			if (*buf == '\0'
-			    || !checkpasswd(currentuser.passwd, buf)) {
-				showAt(8, 4, "很抱歉, 您输入的密码不正确。", 2);
-				break;
-			}
-			saveValue(currentuser.userid, "last_rob", -2000000000, 2000000000);
-			saveValue(currentuser.userid, "last_rob", time(0), 2000000000);
-			showAt(9, 4,
-				"\033[1;5;31m警告\033[0;1;31m： 小心啊，最近警署在严打哦！", 0);
-			move(10, 4);
-			if (askyn("真的要抢么？", NA, NA) == NA)
-				break;
-			set_safe_record();
-			if (currentuser.dietime > 0) {
-				showAt(11, 4, "你已经死了啊！抓鬼啊！", 1);
-				Q_Goodbye();
-				break;
-			}
-			if (money_check_guard()) {
-				pressanykey();
-				break;
-			}
-			if (lookupuser.dietime > 0) {
-				showAt(11, 4, "人都死了,让他安息吧.", 1);
-				break;
-			}
-			//currentuser.stay -= 3600 * 1;
-			//substitute_record(PASSFILE, &currentuser, sizeof (currentuser), usernum);
-			r = random() % 100;
-			x = countexp(&currentuser);
-			y = countexp(&lookupuser);
-			if (NULL == t_search(uident, NA, 1))
-				ra = 1;//ra = 10;
-			else
-				ra = 2;
-			if (r < 100 * x / (x + x + y + y) / ra) {
-				guard_num = loadValue(uident, "guard", 8);
-				if (guard_num > 0) {
-					if (loadValue(uident, MONEY_NAME, MAX_MONEY_NUM) > guard_num * 1000000)
-						saveValue(uident, "guard", -guard_num, 50);
-					else
-						saveValue(uident, "guard", -1, 50);
-					prints
-					    ("你干掉了他一个保镖");
-					pressanykey();
-					break;
-				}
-
-				if (random() % 2 == 0) {
-					money = loadValue(uident, CREDIT_NAME, MAX_MONEY_NUM);
-					r = random() % 50;
-					money = money / 100 * r;
-					saveValue(uident, CREDIT_NAME, -money, MAX_MONEY_NUM);
-					saveValue(currentuser.userid, MONEY_NAME, money, MAX_MONEY_NUM);
 					move(11, 4);
-					prints
-					    ("\033[1;31m%s\033[m 的门没锁，你溜了进去,找出存折, 换得 %d 兵马俑币现金，快跑吧。",
-					     uident, money);
-					sprintf(buf,
-						"%s 趁您不注意的时候拿了你家的存折,等你发现挂失的时候已经损失了 %d 兵马俑币。",
-						currentuser.userid, money);
-					sprintf(title, "对不起，您被抢劫");
-					if(Allclubtest(uident)||loadValue(uident, "mail", 8))
-					mail_buf(buf, uident, title);
-					sprintf(title, "%s进行黑帮活动(抢劫)", currentuser.userid);
-					sprintf(buf,"%s抢%s  %d兵马俑币", currentuser.userid, uident, money);
-					millionairesrec(title, buf, "黑帮活动");
-					pressanykey();
-					break;
-				} else {
-					money = loadValue(currentuser.userid, CREDIT_NAME, MAX_MONEY_NUM);
-					r = random() % 70;
-					money = money / 100 * r;
-					saveValue(currentuser.userid, CREDIT_NAME, -money, MAX_MONEY_NUM);
-					saveValue(uident, CREDIT_NAME, money, MAX_MONEY_NUM);
-					move(11, 4);
-					prints
-					    ("\033[1;31m你溜进了 %s 的门,正得意呢,抬眼看见黑洞洞的枪口对着你...",
-					     uident);
-					move(12, 4);
-					prints
-					    ("\033[1;31m唉呀呀,没想到他在家,你被迫私了,从存折里取出 %d 兵马俑币给他。",
-					     money);
-					sprintf(title, "您遭遇抢劫");
-					sprintf(buf,
-						"%s 想抢你的钱,结果让你发现了,你勒索了他 %d 兵马俑币,送上门的肥肉啊。",
-						currentuser.userid, money);
-					if(Allclubtest(uident)||loadValue(uident, "mail", 8))
-					mail_buf(buf, uident, title);
-					sprintf(title, "%s进行黑帮活动(抢劫)", currentuser.userid);
-					sprintf(buf,"%s抢%s , 反被勒索%d兵马俑币", currentuser.userid, uident, money);
-					millionairesrec(title, buf, "黑帮活动");
+					prints("\033[1;31m%s\033[m 家的门锁的紧紧的，你假装路过,看看无法得手,只好离开。", uident);
 					pressanykey();
 					break;
 				}
-
-			} else if (r < 90) {
-				money = loadValue(uident, MONEY_NAME, MAX_MONEY_NUM);
-				rob = loadValue(currentuser.userid, "rob", 50);
-				move(11, 4);
-				if (rob > 20) {
-					saveValue(currentuser.userid, "rob", -rob/2, 50);
-					prints
-					    ("啊！有警察，你在逃跑的时候只听一声枪响...");
-					set_safe_record();
-					if (money / 200 < 3600)
-						currentuser.dietime = currentuser.stay + 1000*60;
-					else if (money < 10000000){
-						mathtmp = (double)(money)/10000;
-						mathtmp = 686.3455879296685 + 4.0492760356525315 * mathtmp + 0.004264378376417802 * mathtmp * mathtmp;//我拟合的二次函数
-						currentuser.dietime = currentuser.stay + (int)(mathtmp * 60);//+(money / 200)
-					}else{
-						mathtmp = 9 + (double)(currentuser.lastlogin)/(double)(currentuser.stay + currentuser.lastlogin);
-						currentuser.dietime = currentuser.stay +(int) (1000*mathtmp*60);
-					}
-					substitute_record(PASSFILE, &currentuser, sizeof (currentuser), usernum);
-					saveValue(currentuser.userid, MONEY_NAME, -MAX_MONEY_NUM, MAX_MONEY_NUM);
-					pressanykey();
-					Q_Goodbye();
-				} else {
-					if (askyn("被警察发现了,你要逃跑么?", YEA, NA) == NA) {
-						saveValue(currentuser.userid, "rob", 1, 50);
-						money = loadValue(currentuser.userid, MONEY_NAME,  MAX_MONEY_NUM);
-						saveValue(currentuser.userid, MONEY_NAME, -money * 50 / 100, MAX_MONEY_NUM);
-						sprintf(title, "%s进行黑帮活动(抢劫)", currentuser.userid);
-						sprintf(buf,"%s抢%s 被警察没收%d兵马俑币", currentuser.userid, uident, money/2);
-						millionairesrec(title, buf, "黑帮活动");
-						showAt
-						    (12, 4, "你被带到警察局,在没收了身上所有的钱之后,现在等警察给你训话", 0);
-						showAt
-						    (13, 4, "现在是警察给你的15秒钟训话时间，硬着头皮听吧。", 1);
-						sleep(15);
-						money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
-						sprintf(genbuf,
-							"出了警察局了,你高兴的从鞋里掏出藏起来的%d兵马俑币。呜呜,一股臭脚丫子味...",
-							money);
-						showAt(14, 4, genbuf, 1);
-					} else {
-						move(12, 4);
-						if (random() % 2 == 0) {
-							saveValue(currentuser.userid, "rob", 5, 50);
-							prints
-							    ("逃跑成功,可惜,你的钱包丢在了路上...");
-							saveValue(currentuser.userid, MONEY_NAME, -money, MAX_MONEY_NUM);
-							sprintf(title, "%s进行黑帮活动(抢劫)", currentuser.userid);
-							sprintf(buf,"%s抢%s, 逃跑损失%d兵马俑币(全部)", currentuser.userid, uident, money);
-							millionairesrec(title, buf, "黑帮活动");
-							pressanykey();
-						} else {
-							saveValue(currentuser.userid, "rob", -rob/2, 50);
-							prints("啊！你在逃跑的时候只听一声枪响...");
-							set_safe_record();
-							if (money / 200 < 3600)
-								currentuser.dietime = currentuser.stay + 1000*60;
-							else if (money < 10000000){
-								mathtmp = (double)(money)/10000;
-								mathtmp = 686.3455879296685 + 4.0492760356525315 * mathtmp + 0.004264378376417802 * mathtmp * mathtmp;//我拟合的二次函数
-								currentuser.dietime = currentuser.stay + (int)(mathtmp * 60);//+(money / 200)
-							}else{
-								mathtmp = 9 + (double)(currentuser.lastlogin)/(double)(currentuser.stay + currentuser.lastlogin);
-								currentuser.dietime = currentuser.stay +(int) (1000*mathtmp*60);
-							}
-							substitute_record(PASSFILE, &currentuser, sizeof(currentuser), usernum);
-							pressanykey();
-							saveValue(currentuser.userid, MONEY_NAME, -money, MAX_MONEY_NUM);
-							sprintf(title, "%s进行黑帮活动(抢劫)", currentuser.userid);
-							sprintf(buf,"%s抢%s, 被击毙, 损失%d兵马俑币(全部)", currentuser.userid, uident, money);
-							millionairesrec(title, buf, "黑帮活动");
-							Q_Goodbye();
-						}
-					}
-				}
 				break;
-			} else {
-				move(11, 4);
-				prints
-				    ("\033[1;31m%s\033[m 家的门锁的紧紧的，你假装路过,看看无法得手,只好离开。",
-				     uident);
-				pressanykey();
-				break;
-			}
-			break;
 			case '5':
 				nomoney_show_stat("黑帮帮主办公室");
 				whoTakeCharge2(4, buf);
 				whoTakeCharge(4, uident);
 				if (strcmp(currentuser.userid, uident)) {
 					move(6, 4);
-					prints
-				  	  ("秘书%s拦住了你,说道:“老大%s现在很忙,没时间接待你。”", buf,uident);
+					prints("秘书%s拦住了你,说道:“老大%s现在很忙,没时间接待你。”", buf,uident);
 					move(8,4);
 					if(!slowclubtest("Rober",currentuser.userid)){
-					if (askyn("你是想加入黑帮吗？", NA, NA) == YEA) {
-						sprintf(genbuf, "%s 要加入黑帮", currentuser.userid);
-						mail_buf(genbuf, "BMYRober", genbuf);
-						move(14, 4);
-						prints("好了，我会通知老大的");
-					}}
+						if (askyn("你是想加入黑帮吗？", NA, NA) == YEA) {
+							sprintf(genbuf, "%s 要加入黑帮", currentuser.userid);
+							mail_buf(genbuf, "BMYRober", genbuf);
+							move(14, 4);
+							prints("好了，我会通知老大的");
+						}
+					}
 					pressanykey();
 					break;
 				} else {
@@ -4752,43 +4259,41 @@ money_robber()
 					prints("5. 辞职                      6. 退出");
 					ch2 = igetkey();
 					switch (ch2) {
-					case '5':
-						move(12, 4);
-						if (askyn("您真的要辞职吗？", NA,NA) == YEA) {
-						/*	del_from_file(MC_BOSS_FILE,"gang");
-							sprintf(genbuf, "%s 宣布辞去黑帮帮主职务", currentuser.userid);
-							deliverreport(genbuf,
-							      "兵马俑金融中心对其一直以来的工作表示感谢，祝以后顺利！");
-							move(14, 4);
-							prints
-							    ("好吧，既然你意已决，中心也只有批准。");
-							quit = 1;
-							pressanykey();
-						*/
-						sprintf(genbuf, "%s 要辞去黑帮帮主职务",
-							currentuser.userid);
-						mail_buf(genbuf, "millionaires", genbuf);
-						move(14, 4);
-						prints("好吧，已经发信告知总管了");
-						pressanykey();
-						}
-						break;
+						case '5':
+							move(12, 4);
+							if (askyn("您真的要辞职吗？", NA,NA) == YEA) {
+								/*	ytht_del_from_file(MC_BOSS_FILE,"gang");
+									sprintf(genbuf, "%s 宣布辞去黑帮帮主职务", currentuser.userid);
+									deliverreport(genbuf,
+									"兵马俑金融中心对其一直以来的工作表示感谢，祝以后顺利！");
+									move(14, 4);
+									prints
+									("好吧，既然你意已决，中心也只有批准。");
+									quit = 1;
+									pressanykey();
+									*/
+								sprintf(genbuf, "%s 要辞去黑帮帮主职务", currentuser.userid);
+								mail_buf(genbuf, "millionaires", genbuf);
+								move(14, 4);
+								prints("好吧，已经发信告知总管了");
+								pressanykey();
+							}
+							break;
 					}
 				}
 				break;
-		case 'q':
-		case 'Q':
-			quit = 1;
-			break;
+			case 'q':
+			case 'Q':
+				quit = 1;
+				break;
 		}
 		limit_cpu();
 	}
 	return 0;
 }
 
-static int/*丐帮*/
-money_beggar()
-{
+/*丐帮*/
+static int money_beggar() {
 	int ch,ch2;
 	int quit = 0;
 	char uident[IDLEN + 1], buf[STRLEN], title[40];
@@ -4797,222 +4302,198 @@ money_beggar()
 	while (!quit) {
 		money_show_stat("丐帮总舵");
 		move(4, 4);
-		prints
-		    ("丐帮自古天下第一大帮，不过目前经济还算景气，做乞丐的人也不多啦。");
+		prints("丐帮自古天下第一大帮，不过目前经济还算景气，做乞丐的人也不多啦。");
 		move(5, 4);
-		prints
-		    ("一个乞丐走过来问道：“要打听消息么？丐帮天上地下无所不知，无所不晓。”");
+		prints("一个乞丐走过来问道：“要打听消息么？丐帮天上地下无所不知，无所不晓。”");
 		move(t_lines - 1, 0);
-		prints
-		    ("\033[1;44m 选单 \033[1;46m [1]打探 [2]烧钱 [3]跟踪 [4]乞讨 [5]丐帮帮主 [Q]离开\033[m");
+		prints("\033[1;44m 选单 \033[1;46m [1]打探 [2]烧钱 [3]跟踪 [4]乞讨 [5]丐帮帮主 [Q]离开\033[m");
 		ch = igetkey();
 		switch (ch) {
-		case '1':
-			move(6, 4);
-			usercomplete("查谁的家底？", uident);
-			if (uident[0] == '\0')
-				break;
-			if (!searchuser(uident)) {
-				move(7, 4);
-				prints("错误的使用者代号...");
-				pressreturn();
-				break;
-			}
-			money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
-
-			if (money < 1000) {
-				showAt(7, 4, "啊，你只带了这么点钱吗？", 0);
-				showAt(8, 4, "那乞丐接过钱转身就走了，再也没了下文。", 1);
-				break;
-			}
-			saveValue(currentuser.userid, MONEY_NAME, -1000, MAX_MONEY_NUM);
-			saveValue("BMYbeg", MONEY_NAME, 500, MAX_MONEY_NUM);
-			saveValue("millionaires", MONEY_NAME, 500, MAX_MONEY_NUM);
-			money = loadValue(uident, MONEY_NAME, MAX_MONEY_NUM);
-			if (money >= 100)
-				money = makeRumor(money);
-
-			credit = loadValue(uident, CREDIT_NAME, MAX_MONEY_NUM);
-			if (credit >= 100)
-				credit = makeRumor(credit);
-
-			move(7, 4);
-			prints
-			    ("\033[1;31m%s\033[m 大约有 \033[1;31m%d\033[m 兵马俑币的现金，以及 \033[1;31m%d\033[m 兵马俑币的存款。",
-			     uident, money, credit);
-			pressanykey();
-			break;
-		case '2':
-			clear();
-			money_show_stat("丐帮神庙");
-			move(4, 4);
-			prints
-			    ("烧钱最小金额 1000 兵马俑币。可买通冥间管事，让死者复活。");
-			move(5, 4);
-			usercomplete("给谁烧？", uident);
-			if (uident[0] == '\0')
-				break;
-			if (!(id = getuser(uident))) {
+			case '1':
 				move(6, 4);
-				prints("错误的使用者代号...");
-				pressreturn();
-				break;
-			}
-			if (!seek_in_file(MC_ADMIN_FILE, currentuser.userid) &&
-				((lookupuser.dietime- lookupuser.stay) > 10000*60) ) {//5000->10000
-				showAt(6, 4, "自杀的人怎么复活？死了就放心的去吧！！！", 1);
-				break;
-			}
-			getdata(6, 4, "您打算烧多少兵马俑币？[0]", genbuf, 10, DOECHO, YEA);
-			num = atoi(genbuf);
-			if (num < 1000) {
-				showAt(7, 4, "那么点钱，怎么贿赂冥间管事啊？", 1);
-				break;
-			}
-			move(7, 4);
-			sprintf(genbuf, "您确认给 %s 烧 %d 兵马俑币？", uident, num);
-			if (askyn(genbuf, NA, NA) == YEA) {
-				money = loadValue(currentuser.userid, MONEY_NAME,  MAX_MONEY_NUM);
-				if (money < num) {
-					showAt(8, 4, "您的钱不够", 1);
+				usercomplete("查谁的家底？", uident);
+				if (uident[0] == '\0')
+					break;
+				if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
+					move(7, 4);
+					prints("错误的使用者代号...");
+					pressreturn();
 					break;
 				}
-				saveValue(currentuser.userid, MONEY_NAME, -num, MAX_MONEY_NUM);
-				saveValue("millionaires", MONEY_NAME, +num/2, MAX_MONEY_NUM);
-				saveValue("BMYboss", MONEY_NAME, +num/2, MAX_MONEY_NUM);
-				if (lookupuser.dietime == 2 || lookupuser.dietime == 0) {
-					showAt(8, 4, "啊！不是死鬼，白烧了...", 1);
+				money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
+
+				if (money < 1000) {
+					showAt(7, 4, "啊，你只带了这么点钱吗？", 0);
+					showAt(8, 4, "那乞丐接过钱转身就走了，再也没了下文。", 1);
 					break;
 				}
-				if (seek_in_file(MC_ADMIN_FILE, currentuser.userid) &&
-					((lookupuser.dietime- lookupuser.stay) > 5000*60)){
-					sprintf(title,"%s行使烧钱特权", currentuser.userid);
-					sprintf(buf,"%s给%s烧了%d(/60=%d)兵马俑币",
-						currentuser.userid, uident, num, num / 60);
-					millionairesrec(title, buf, "");
+				saveValue(currentuser.userid, MONEY_NAME, -1000, MAX_MONEY_NUM);
+				saveValue("BMYbeg", MONEY_NAME, 500, MAX_MONEY_NUM);
+				saveValue("millionaires", MONEY_NAME, 500, MAX_MONEY_NUM);
+				money = loadValue(uident, MONEY_NAME, MAX_MONEY_NUM);
+				if (money >= 100)
+					money = makeRumor(money);
+
+				credit = loadValue(uident, CREDIT_NAME, MAX_MONEY_NUM);
+				if (credit >= 100)
+					credit = makeRumor(credit);
+
+				move(7, 4);
+				prints("\033[1;31m%s\033[m 大约有 \033[1;31m%d\033[m 兵马俑币的现金，以及 \033[1;31m%d\033[m 兵马俑币的存款。", uident, money, credit);
+				pressanykey();
+				break;
+			case '2':
+				clear();
+				money_show_stat("丐帮神庙");
+				move(4, 4);
+				prints("烧钱最小金额 1000 兵马俑币。可买通冥间管事，让死者复活。");
+				move(5, 4);
+				usercomplete("给谁烧？", uident);
+				if (uident[0] == '\0')
+					break;
+				if (!(id = getuser(uident))) {
+					move(6, 4);
+					prints("错误的使用者代号...");
+					pressreturn();
+					break;
+				}
+				if (!seek_in_file(MC_ADMIN_FILE, currentuser.userid) &&
+						((lookupuser.dietime- lookupuser.stay) > 10000*60) ) {//5000->10000
+					showAt(6, 4, "自杀的人怎么复活？死了就放心的去吧！！！", 1);
+					break;
+				}
+				getdata(6, 4, "您打算烧多少兵马俑币？[0]", genbuf, 10, DOECHO, YEA);
+				num = atoi(genbuf);
+				if (num < 1000) {
+					showAt(7, 4, "那么点钱，怎么贿赂冥间管事啊？", 1);
+					break;
+				}
+				move(7, 4);
+				sprintf(genbuf, "您确认给 %s 烧 %d 兵马俑币？", uident, num);
+				if (askyn(genbuf, NA, NA) == YEA) {
+					money = loadValue(currentuser.userid, MONEY_NAME,  MAX_MONEY_NUM);
+					if (money < num) {
+						showAt(8, 4, "您的钱不够", 1);
+						break;
+					}
+					saveValue(currentuser.userid, MONEY_NAME, -num, MAX_MONEY_NUM);
+					saveValue("millionaires", MONEY_NAME, +num/2, MAX_MONEY_NUM);
+					saveValue("BMYboss", MONEY_NAME, +num/2, MAX_MONEY_NUM);
+					if (lookupuser.dietime == 2 || lookupuser.dietime == 0) {
+						showAt(8, 4, "啊！不是死鬼，白烧了...", 1);
+						break;
+					}
+					if (seek_in_file(MC_ADMIN_FILE, currentuser.userid) &&
+							((lookupuser.dietime- lookupuser.stay) > 5000*60)){
+						sprintf(title,"%s行使烧钱特权", currentuser.userid);
+						sprintf(buf,"%s给%s烧了%d(/60=%d)兵马俑币", currentuser.userid, uident, num, num / 60);
+						millionairesrec(title, buf, "");
+					}else{
+						sprintf(title,"%s给%s烧钱", currentuser.userid, uident);
+						sprintf(buf,"%s给%s烧了%d(/60=%d)兵马俑币", currentuser.userid, uident, num, num / 60);
+						millionairesrec(title, buf, "烧钱");
+					}
+					if (lookupuser.dietime > lookupuser.stay)
+						lookupuser.dietime -= num;
+					if (lookupuser.dietime <= lookupuser.stay)
+						lookupuser.dietime = 2;
+					substitute_record(PASSFILE, &lookupuser, sizeof (lookupuser), id);
+					showAt(8, 4, "烧完了，走吧。", 1);
+					sprintf(title, "您的朋友 %s 给您送钱来了", currentuser.userid);
+					sprintf(buf, "您的朋友 %s 给您烧了点钱，您的死期缩短了%d分钟", currentuser.userid, num / 60);
+					mail_buf(buf, uident, title);
+					pressanykey();
+				}
+				break;
+			case '3':
+				move(6, 4);
+				usercomplete("要跟踪谁？", uident);
+				if (uident[0] == '\0')
+					break;
+				if (!getuser(uident)) {
+					showAt(7, 4, "错误的使用者代号...", 2);
+					break;
+				}
+				money =  loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
+				if (money < 1000) {
+					showAt(7, 4, "你身上这点钱还不够跑路费啊。", 0);
+					showAt(8, 4, "那乞丐接过钱转身就走了，再也没了下文。", 1);
+					break;
+				}
+				saveValue(currentuser.userid, MONEY_NAME, -1000, MAX_MONEY_NUM);
+				saveValue("BMYbeg", MONEY_NAME, 500, MAX_MONEY_NUM);
+				saveValue("millionaires", MONEY_NAME, 500, MAX_MONEY_NUM);
+				move(7, 4);
+				prints("几天后，你收到丐帮的消息说：");
+				move(8, 4);
+				prints("\033[1;31m%s\033[m 有 \033[1;31m%s\033[m 的地位，以及 \033[1;31m%s\033[m 一般的才艺。",
+					uident, charexp(countexp(&lookupuser)), cperf(countperf(&lookupuser)));
+				pressanykey();
+				break;
+			case '4':
+				clear();
+				if (seek_in_file(DIR_MC "chayou", currentuser.userid)){
+					showAt(5, 4, "    \033[1;32m  茶友不要惹事\033[m", 1);
+					break;
+				}
+				if (seek_in_file(DIR_MC "mingren", currentuser.userid)){
+					showAt(5, 4, "    \033[1;32m  不要惹事\033[m", 1);
+					break;
+				}
+				money_show_stat("兵马俑小区");
+				showAt(4, 4, "这里是兵马俑的富人区，乞讨的好地方。", 0);
+				move(6, 4);
+				usercomplete("向谁乞讨？", uident);
+				if (uident[0] == '\0')
+					break;
+				if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
+					showAt(7, 4, "错误的使用者代号...", 2);
+					break;
+				}
+				if (!getuser(uident)) {
+					showAt(7, 4, "错误的使用者代号...", 2);
+					break;
+				}
+				if(seek_in_file(DIR_MC "mingren", uident)){
+					showAt(7, 4, "      他有黄马褂，你还是算了吧\n", 1);
+					break;
+				}
+				if (!clubtest("Beggar")) {
+					showAt(7, 4, "怎么看你也不像是丐帮的啊！", 1);
+					break;
+				}
+				if (lookupuser.dietime>0) {
+					showAt(7, 4, "人都死了,让他安息吧.", 1);
+					break;
+				}
+				money = loadValue(uident, MONEY_NAME, MAX_MONEY_NUM);
+				credit = loadValue(uident, CREDIT_NAME, MAX_MONEY_NUM);
+				int flag;
+				if (money/2>credit/9){
+					num=random() % (money/2);
+					flag=1;
 				}else{
-					sprintf(title,"%s给%s烧钱", currentuser.userid, uident);
-					sprintf(buf,"%s给%s烧了%d(/60=%d)兵马俑币",
-						currentuser.userid, uident, num, num / 60);
-					millionairesrec(title, buf, "烧钱");
+					num=credit/9;
+					if(num>money)
+						num=random() % (num/2);
+					flag=0;
 				}
-				if (lookupuser.dietime > lookupuser.stay)
-					lookupuser.dietime -= num;
-				if (lookupuser.dietime <= lookupuser.stay)
-					lookupuser.dietime = 2;
-				substitute_record(PASSFILE, &lookupuser, sizeof (lookupuser), id);
-				showAt(8, 4, "烧完了，走吧。", 1);
-				sprintf(title,
-					"您的朋友 %s 给您送钱来了",
-					currentuser.userid);
-				sprintf(buf,
-					"您的朋友 %s 给您烧了点钱，您的死期缩短了%d分钟",
-					currentuser.userid, num / 60);
-				mail_buf(buf, uident, title);
-				pressanykey();
-			}
-			break;
-		case '3':
-			move(6, 4);
-			usercomplete("要跟踪谁？", uident);
-			if (uident[0] == '\0')
-				break;
-			if (!getuser(uident)) {
-				showAt(7, 4, "错误的使用者代号...", 2);
-				break;
-			}
-			money =  loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
-			if (money < 1000) {
-				showAt(7, 4, "你身上这点钱还不够跑路费啊。", 0);
-				showAt(8, 4, "那乞丐接过钱转身就走了，再也没了下文。", 1);
-				break;
-			}
-			saveValue(currentuser.userid, MONEY_NAME, -1000, MAX_MONEY_NUM);
-			saveValue("BMYbeg", MONEY_NAME, 500, MAX_MONEY_NUM);
-			saveValue("millionaires", MONEY_NAME, 500, MAX_MONEY_NUM);
-			move(7, 4);
-			prints("几天后，你收到丐帮的消息说：");
-			move(8, 4);
-			prints
-			    ("\033[1;31m%s\033[m 有 \033[1;31m%s\033[m 的地位，以及 \033[1;31m%s\033[m 一般的才艺。",
-			     uident, charexp(countexp(&lookupuser)), cperf(countperf(&lookupuser)));
-			pressanykey();
-			break;
-		case '4':
-			clear();
-			if (seek_in_file(DIR_MC "chayou", currentuser.userid)){
-				showAt(5, 4, "    \033[1;32m  茶友不要惹事\033[m", 1);
-				break;
-			}
-			if (seek_in_file(DIR_MC "mingren", currentuser.userid)){
-				showAt(5, 4, "    \033[1;32m  不要惹事\033[m", 1);
-				break;
-			}
-			money_show_stat("兵马俑小区");
-			showAt(4, 4, "这里是兵马俑的富人区，乞讨的好地方。", 0);
-			move(6, 4);
-			usercomplete("向谁乞讨？", uident);
-			if (uident[0] == '\0')
-				break;
-			if (!searchuser(uident)) {
-				showAt(7, 4, "错误的使用者代号...", 2);
-				break;
-			}
-			if (!getuser(uident)) {
-				showAt(7, 4, "错误的使用者代号...", 2);
-				break;
-			}
-			/*if(!Allclubtest(uident)){
-				prints("    \033[1;32m  不要残杀无辜！\033[m");
-				pressanykey();
-				break;
-			}*/
-			if(seek_in_file(DIR_MC "mingren", uident)){
-				showAt(7, 4, "      他有黄马褂，你还是算了吧\n", 1);
-				break;
-			}
-			if (!clubtest("Beggar")) {
-				showAt(7, 4, "怎么看你也不像是丐帮的啊！", 1);
-				break;
-			}
-			if (lookupuser.dietime>0) {
-				showAt(7, 4, "人都死了,让他安息吧.", 1);
-				break;
-			}
-			money = loadValue(uident, MONEY_NAME, MAX_MONEY_NUM);
-			credit = loadValue(uident, CREDIT_NAME, MAX_MONEY_NUM);
-			int flag;
-			if (money/2>credit/9){
-				num=random() % (money/2);
-		    		flag=1;
-			}else{
-				num=credit/9;
-			if(num>money)
-				num=random() % (num/2);
-		    		flag=0;
-			}
-		   	if(num>500000)
-				num=random() % 500000;
-			/*if (money >= 100 || credit >= 100) {
-				prints("你还有钱，干嘛乞讨？");
-				pressanykey();
-				break;
-			}*/
-			if (loadValue(currentuser.userid, "begtime", 2000000000) >=12) {
-				if(time(0) > 24*3600 + loadValue(currentuser.userid, "last_beg", 2000000000)){
-				  	saveValue(currentuser.userid, "begtime", -12, 2000000000);
-					saveValue(currentuser.userid, "last_beg", time(0), 2000000000);
-					saveValue(currentuser.userid, "begtime", +1, 2000000000);
-				}else
-					prints("%s怒不可遏，冲你骂道：“臭要饭的，烦死了，还不快滚！”", uident);
+				if(num>500000)
+					num=random() % 500000;
+				if (loadValue(currentuser.userid, "begtime", 2000000000) >=12) {
+					if(time(0) > 24*3600 + loadValue(currentuser.userid, "last_beg", 2000000000)){
+						saveValue(currentuser.userid, "begtime", -12, 2000000000);
+						saveValue(currentuser.userid, "last_beg", time(0), 2000000000);
+						saveValue(currentuser.userid, "begtime", +1, 2000000000);
+					}else
+						prints("%s怒不可遏，冲你骂道：“臭要饭的，烦死了，还不快滚！”", uident);
 					pressanykey();
 					break;
 				}
 				saveValue(currentuser.userid, "begtime", +1, 2000000000);
 				if (!t_search(uident, NA, 1)) {
 					if (random() % 5 == 0) {
-						prints("你对着%s哭喊道：“可怜可怜我吧，还有我的小强！呜呜呜...”",
-							 uident);
+						prints("你对着%s哭喊道：“可怜可怜我吧，还有我的小强！呜呜呜...”", uident);
 						//num = (random() % (1 + 100))*10000 + 500000;
 						if(flag==1)
 							saveValue(uident, MONEY_NAME, -num, MAX_MONEY_NUM);
@@ -5026,14 +4507,10 @@ money_beggar()
 							millionairesrec(title, buf, "丐帮活动");
 
 						move(8, 4);
-						prints
-							("%s眼圈顿时红了，赶紧从身上拿出 %d 兵马俑币给你。",
-							 uident, num);
-						sprintf(genbuf,
-							"你一时好心，给了%s %d兵马俑币，过后想想真不是滋味。",
-							currentuser.userid, num);
+						prints("%s眼圈顿时红了，赶紧从身上拿出 %d 兵马俑币给你。", uident, num);
+						sprintf(genbuf, "你一时好心，给了%s %d兵马俑币，过后想想真不是滋味。", currentuser.userid, num);
 						if(Allclubtest(uident)||loadValue(uident, "mail", 8))
-						mail_buf(genbuf, uident, "你遇到叫花子");
+							mail_buf(genbuf, uident, "你遇到叫花子");
 						pressanykey();
 					} else {
 						prints("你对着%s哭泣道：“官人，我要！”", uident);
@@ -5041,70 +4518,56 @@ money_beggar()
 						prints("%s一脚把你踹了出来。", uident);
 						pressanykey();
 					}
-				/*prints("%s不在家，你敲了半天门也没人应。",
-				       uident);
-				pressanykey();
-				break;*/
-			}
+				}
 
-			else {
-				int begmoney= loadValue(uident, MONEY_NAME, MAX_MONEY_NUM);
-				if (seek_in_file(DIR_MC "gongji", uident)){
-					if(random() % 3 == 0){
-						saveValue(uident, MONEY_NAME, -begmoney, MAX_MONEY_NUM);
-						saveValue(currentuser.userid, MONEY_NAME, begmoney, MAX_MONEY_NUM);
+				else {
+					int begmoney= loadValue(uident, MONEY_NAME, MAX_MONEY_NUM);
+					if (seek_in_file(DIR_MC "gongji", uident)){
+						if(random() % 3 == 0){
+							saveValue(uident, MONEY_NAME, -begmoney, MAX_MONEY_NUM);
+							saveValue(currentuser.userid, MONEY_NAME, begmoney, MAX_MONEY_NUM);
+
+							sprintf(title, "%s参与丐帮活动", currentuser.userid);
+							sprintf(buf, "%s乞讨了%s %d兵马俑币", currentuser.userid, uident, begmoney);
+							if (begmoney != 0)
+								millionairesrec(title, buf, "丐帮活动");
+
+							prints("%s眼圈顿时红了，赶紧从身上拿出所有的兵马俑币一共 %d 给你。", uident, num);
+							sprintf(genbuf, "你一时好心，给了%s %d兵马俑币，过后想想真不是滋味。", currentuser.userid, num);
+							if(Allclubtest(uident)||loadValue(uident, "mail", 8))
+								mail_buf(genbuf, uident, "你遇到叫花子");
+							pressanykey();
+						}
+					}
+
+					if (random() % 3 == 0) {
+						prints("你对着%s哭喊道：“可怜可怜我吧，还有我的小强！呜呜呜...”", uident);
+						//num = (random() % (1 + 100))*10000 + 500000;
+						if(flag==1)
+							saveValue(uident, MONEY_NAME, -num, MAX_MONEY_NUM);
+						else
+							saveValue(uident, CREDIT_NAME, -num, MAX_MONEY_NUM);
+						saveValue(currentuser.userid, MONEY_NAME, num, MAX_MONEY_NUM);
 
 						sprintf(title, "%s参与丐帮活动", currentuser.userid);
-						sprintf(buf, "%s乞讨了%s %d兵马俑币", currentuser.userid, uident, begmoney);
-						if (begmoney != 0)
+						sprintf(buf, "%s乞讨了%s %d兵马俑币", currentuser.userid, uident, num);
+						if (num != 0)
 							millionairesrec(title, buf, "丐帮活动");
 
-						prints
-							("%s眼圈顿时红了，赶紧从身上拿出所有的兵马俑币一共 %d 给你。",
-							 uident, num);
-						sprintf(genbuf,
-							"你一时好心，给了%s %d兵马俑币，过后想想真不是滋味。",
-							currentuser.userid, num);
+						move(8, 4);
+						prints("%s眼圈顿时红了，赶紧从身上拿出 %d 兵马俑币给你。", uident, num);
+						sprintf(genbuf, "你一时好心，给了%s %d兵马俑币，过后想想真不是滋味。", currentuser.userid, num);
 						if(Allclubtest(uident)||loadValue(uident, "mail", 8))
-						mail_buf(genbuf, uident, "你遇到叫花子");
+							mail_buf(genbuf, uident, "你遇到叫花子");
+						pressanykey();
+					} else {
+						prints("你对着%s哭泣道：“官人，我要！”", uident);
+						move(8, 4);
+						prints("%s一脚把你踹了出来。", uident);
 						pressanykey();
 					}
-			  	}
-
-				if (random() % 3 == 0) {
-					prints
-					    ("你对着%s哭喊道：“可怜可怜我吧，还有我的小强！呜呜呜...”",
-					     uident);
-					//num = (random() % (1 + 100))*10000 + 500000;
-					if(flag==1)
-						saveValue(uident, MONEY_NAME, -num, MAX_MONEY_NUM);
-					else
-						saveValue(uident, CREDIT_NAME, -num, MAX_MONEY_NUM);
-					saveValue(currentuser.userid, MONEY_NAME, num, MAX_MONEY_NUM);
-
-					sprintf(title, "%s参与丐帮活动", currentuser.userid);
-					sprintf(buf, "%s乞讨了%s %d兵马俑币", currentuser.userid, uident, num);
-					if (num != 0)
-						millionairesrec(title, buf, "丐帮活动");
-
-					move(8, 4);
-					prints
-					    ("%s眼圈顿时红了，赶紧从身上拿出 %d 兵马俑币给你。",
-					     uident, num);
-					sprintf(genbuf,
-						"你一时好心，给了%s %d兵马俑币，过后想想真不是滋味。",
-						currentuser.userid, num);
-					if(Allclubtest(uident)||loadValue(uident, "mail", 8))
-					mail_buf(genbuf, uident, "你遇到叫花子");
-					pressanykey();
-				} else {
-					prints("你对着%s哭泣道：“官人，我要！”", uident);
-					move(8, 4);
-					prints("%s一脚把你踹了出来。", uident);
-					pressanykey();
 				}
-			}
-			break;
+				break;
 			case '5':
 				nomoney_show_stat("丐帮帮主办公室");
 				whoTakeCharge2(5, buf);
@@ -5112,15 +4575,15 @@ money_beggar()
 				if (strcmp(currentuser.userid, uident)) {
 					move(6, 4);
 					prints
-				  	  ("秘书%s拦住了你,说道:“老大%s现在很忙,没时间接待你。”", buf,uident);
+						("秘书%s拦住了你,说道:“老大%s现在很忙,没时间接待你。”", buf,uident);
 					move(8,4);
 					if(!slowclubtest("Beggar",currentuser.userid)){
-					if (askyn("你是想加入丐帮吗？", NA, NA) == YEA) {
-						sprintf(genbuf, "%s 要加入丐帮", currentuser.userid);
-						mail_buf(genbuf, "BMYbeg", genbuf);
-						move(14, 4);
-						prints("好了，我会通知老大的");
-					}}
+						if (askyn("你是想加入丐帮吗？", NA, NA) == YEA) {
+							sprintf(genbuf, "%s 要加入丐帮", currentuser.userid);
+							mail_buf(genbuf, "BMYbeg", genbuf);
+							move(14, 4);
+							prints("好了，我会通知老大的");
+						}}
 					pressanykey();
 					break;
 				} else {
@@ -5130,43 +4593,41 @@ money_beggar()
 					prints("5. 辞职                      6. 退出");
 					ch2 = igetkey();
 					switch (ch2) {
-					case '5':
-						move(12, 4);
-						if (askyn("您真的要辞职吗？", NA,NA) == YEA) {
-						/*	del_from_file(MC_BOSS_FILE,"beggar");
-							sprintf(genbuf, "%s 宣布辞去丐帮帮主职务", currentuser.userid);
-							deliverreport(genbuf,
-							      "兵马俑金融中心对其一直以来的工作表示感谢，祝以后顺利！");
-							move(14, 4);
-							prints
-							    ("好吧，既然你意已决，中心也只有批准。");
-							quit = 1;
-							pressanykey();
-						*/
-						sprintf(genbuf, "%s 要辞去丐帮帮主职务",
-							currentuser.userid);
-						mail_buf(genbuf, "millionaires", genbuf);
-						move(14, 4);
-						prints("好吧，已经发信告知总管了");
-						pressanykey();
-						}
-						break;
+						case '5':
+							move(12, 4);
+							if (askyn("您真的要辞职吗？", NA,NA) == YEA) {
+								/*	ytht_del_from_file(MC_BOSS_FILE,"beggar");
+									sprintf(genbuf, "%s 宣布辞去丐帮帮主职务", currentuser.userid);
+									deliverreport(genbuf,
+									"兵马俑金融中心对其一直以来的工作表示感谢，祝以后顺利！");
+									move(14, 4);
+									prints
+									("好吧，既然你意已决，中心也只有批准。");
+									quit = 1;
+									pressanykey();
+									*/
+								sprintf(genbuf, "%s 要辞去丐帮帮主职务", currentuser.userid);
+								mail_buf(genbuf, "millionaires", genbuf);
+								move(14, 4);
+								prints("好吧，已经发信告知总管了");
+								pressanykey();
+							}
+							break;
 					}
 				}
 				break;
-		case 'q':
-		case 'Q':
-			quit = 1;
-			break;
+			case 'q':
+			case 'Q':
+				quit = 1;
+				break;
 		}
 		limit_cpu();
 	}
 	return 0;
 }
 
-static int/*杀手rewrite by macintosh 20051204*/
-money_killer()
-{
+/*杀手rewrite by macintosh 20051204*/
+static int money_killer() {
 	int ch,ch2;
 	int guard_num;
 	int robTimes;
@@ -5185,223 +4646,223 @@ money_killer()
 		quit2=0;
 		nomoney_show_stat("杀手天空");
 		move(t_lines - 1, 0);
-		prints
-		    ("\033[1;44m 选单 \033[1;46m [1]雇佣杀手 [2]军火 [3]杀手帮主 [Q]离开\033[m");
+		prints("\033[1;44m 选单 \033[1;46m [1]雇佣杀手 [2]军火 [3]杀手帮主 [Q]离开\033[m");
 		ch = igetkey();
 		switch (ch) {
-		case '1':
-			if (seek_in_file(DIR_MC "chayou", currentuser.userid)){
-				showAt(5, 4, "    \033[1;32m  茶友不要惹事\033[m", 1);
-				break;
-			}
-			if (seek_in_file(DIR_MC "mingren", currentuser.userid)){
-				showAt(5, 4, "    \033[1;32m  黄马褂不要惹事\033[m", 1);
-				break;
-			}
-			money_show_stat("杀手之家");
-			readstrvalue(MC_PRICE_FILE, "c4_price", c4_price, 10);
-			price = atoi(c4_price);
-			if (price==0)
-				price=300000;
-			move(4, 4);
-			prints("我们这里杀一次 %d 兵马俑币。", price);
-			move(5, 4);
-			prints("每个人每天只能杀一次，每次最多可以买杀他三次。");
-			if (currentuser.dietime > 0) {
-				showAt(7, 4, "你已经死了啊！抓鬼啊！", 1);
-				Q_Goodbye();
-				break;
-			}
-			move(6, 4);
-			usercomplete("你要杀谁:", uident);
-			if (uident[0] == '\0')
-				break;
-			if (!(id = getuser(uident))) {
-				showAt(7, 4, "错误的使用者代号...", 2);
-				break;
-			}
-			if (lookupuser.dietime > 0) {
-				showAt(7, 4, "死人你也不放过，太狠了吧？", 1);
-				break;
-			}
-			if(seek_in_file(DIR_MC "mingren", uident)){
-				showAt(7, 4, "他有黄马褂，你还是算了吧", 1);
-				break;
-			}
-		       if(!Allclubtest(uident)){
-			   	showAt(7, 4, "杀手不杀无辜百姓...", 1);
-				break;
-			}
- 			getdata(7, 4, "你要杀几次？ [1-3]", genbuf, 2, DOECHO, YEA);
-			if (genbuf[0] == '\0')
-				break;
-			count = atoi(genbuf);
-			if (count < 1) {
-				showAt(8, 4, "狠不下心动手了？", 1);
-				break;
-			}
-			if (count > 3) {
-				move(8, 4);
-				sprintf(genbuf, "要杀%d次？杀手最多杀3次，他要把钱私吞了", count);
-				if (askyn(genbuf, NA, NA) == NA){
-					showAt(9, 4, "重新想想吧？", 1);
-					break;
-				}
-			}
-			move(8, 4);
-			num = count * price;
-			sprintf(genbuf, "总共需要 %d 兵马俑币。", num);
-			if (askyn(genbuf, NA, NA) == YEA) {
-				money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
-				if (money < num) {
-					showAt(9, 4, "你的钱不够...", 1);
-					break;
-				}
-				saveValue(currentuser.userid, MONEY_NAME, -num, MAX_MONEY_NUM);
-				saveValue("BMYKillersky", MONEY_NAME, num, MAX_MONEY_NUM);
-				sprintf(buf,"%s花了%d兵马俑币要杀%s%d次",currentuser.userid,num,uident, count);
-				mail_buf(buf, "BMYKillersky","[任务]杀手有生意了");
-
-				if (seek_in_file(DIR_MC "killerlist", uident)){
-					FILE *fp;
-					char *ptr;
-					int count2=0;
-					fp = fopen(DIR_MC "killerlist","r");
-					while (fgets(buf,sizeof(buf),fp)) {
-						ptr= strstr(buf,uident);
-						if(ptr){
-							count2 = atoi(ptr+strlen(uident)+1);
-							break;
-						}
-					}
-					fclose(fp);
-					if (count2+count>3)
-						count2 = 3;
-					else
-						count2 += count;
-					del_from_file(DIR_MC "killerlist", uident);
-					sprintf(buf, "%s\t%d",uident, count2);
-					addtofile(DIR_MC "killerlist",buf);
-				}else{
-					sprintf(buf, "%s\t%d",uident, (count>3)?3:count);
-					addtofile(DIR_MC "killerlist",buf);
-				}
-				showAt(10, 4, "您已经成功购买了这个人的人头，请静候佳音", 1);
-			}
-			break;
-
-		case '2':
-			while (!quit2) {
-			nomoney_show_stat("地下军火交易市场");
-			move(t_lines - 1, 0);
-		     	prints
-			    ("\033[1;44m 选单 \033[1;46m [1]c4  [Q]离开\033[m");
-			ch2 = igetkey();
-			switch (ch2) {
-			case 'q':
-			case 'Q':
-				quit2 = 1;
-			  	break;
 			case '1':
+				if (seek_in_file(DIR_MC "chayou", currentuser.userid)){
+					showAt(5, 4, "    \033[1;32m  茶友不要惹事\033[m", 1);
+					break;
+				}
 				if (seek_in_file(DIR_MC "mingren", currentuser.userid)){
-					showAt(5, 4, "    \033[1;32m  不要惹事\033[m", 1);
+					showAt(5, 4, "    \033[1;32m  黄马褂不要惹事\033[m", 1);
 					break;
 				}
-				if (!seek_in_file(DIR_MC "killer", currentuser.userid)
-					||!slowclubtest("killer", currentuser.userid)){
-					showAt(7, 4, "\033[1;31m要拼命去找杀手\033[m", 1);
-					break;
-				}
-				if (loadValue(currentuser.userid, "guard", 8) > 0) {
-					showAt(7, 4, "你总不能带着兄弟一起死吧，^_^", 1);
-					break;
-				}
-				showAt(4, 4,"\033[1;35m你决定发动自杀式攻击。\033[m", 0);
-                		money =loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
-				if (money <10000) {
-					showAt(9, 4, "您的钱不够...", 1);
-					break;
-				}
+				money_show_stat("杀手之家");
+				readstrvalue(MC_PRICE_FILE, "c4_price", c4_price, 10);
+				price = atoi(c4_price);
+				if (price==0)
+					price=300000;
+				move(4, 4);
+				prints("我们这里杀一次 %d 兵马俑币。", price);
+				move(5, 4);
+				prints("每个人每天只能杀一次，每次最多可以买杀他三次。");
 				if (currentuser.dietime > 0) {
-					showAt(9, 4, "你已经死了啊！抓鬼啊！", 1);
+					showAt(7, 4, "你已经死了啊！抓鬼啊！", 1);
 					Q_Goodbye();
 					break;
 				}
-				usercomplete("你要炸谁:", uident);
+				move(6, 4);
+				usercomplete("你要杀谁:", uident);
 				if (uident[0] == '\0')
 					break;
 				if (!(id = getuser(uident))) {
-					showAt(7, 4,"错误的使用者代号...", 1);
+					showAt(7, 4, "错误的使用者代号...", 2);
 					break;
 				}
 				if (lookupuser.dietime > 0) {
-					showAt(7, 4,"死人你也不放过，太狠了吧？", 1);
+					showAt(7, 4, "死人你也不放过，太狠了吧？", 1);
 					break;
 				}
-				if (seek_in_file(DIR_MC "mingren", uident)){
-					showAt(7, 4, "      他有黄马褂，你还是算了吧\n", 1);
+				if(seek_in_file(DIR_MC "mingren", uident)){
+					showAt(7, 4, "他有黄马褂，你还是算了吧", 1);
 					break;
 				}
-				if (!Allclubtest(uident)){
-					showAt(7, 4, "    \033[1;32m  不要残杀无辜！\033[m", 1);
-					break;
-				}				guard_num =loadValue(uident, "guard", 8);
-				if (guard_num > 0) {
-					showAt(7, 4, "对方有保镖护身,你还是算了吧...", 1);
+				if(!Allclubtest(uident)){
+					showAt(7, 4, "杀手不杀无辜百姓...", 1);
 					break;
 				}
+				getdata(7, 4, "你要杀几次？ [1-3]", genbuf, 2, DOECHO, YEA);
+				if (genbuf[0] == '\0')
+					break;
+				count = atoi(genbuf);
+				if (count < 1) {
+					showAt(8, 4, "狠不下心动手了？", 1);
+					break;
+				}
+				if (count > 3) {
+					move(8, 4);
+					sprintf(genbuf, "要杀%d次？杀手最多杀3次，他要把钱私吞了", count);
+					if (askyn(genbuf, NA, NA) == NA){
+						showAt(9, 4, "重新想想吧？", 1);
+						break;
+					}
+				}
+				move(8, 4);
+				num = count * price;
+				sprintf(genbuf, "总共需要 %d 兵马俑币。", num);
+				if (askyn(genbuf, NA, NA) == YEA) {
+					money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
+					if (money < num) {
+						showAt(9, 4, "你的钱不够...", 1);
+						break;
+					}
+					saveValue(currentuser.userid, MONEY_NAME, -num, MAX_MONEY_NUM);
+					saveValue("BMYKillersky", MONEY_NAME, num, MAX_MONEY_NUM);
+					sprintf(buf,"%s花了%d兵马俑币要杀%s%d次",currentuser.userid,num,uident, count);
+					mail_buf(buf, "BMYKillersky","[任务]杀手有生意了");
 
-				freeTime = loadValue(currentuser.userid, "freeTime", 2000000000);
-				if (currentTime < freeTime){
-					pressreturn();
-					break;
-				}
-				saveValue(currentuser.userid, MONEY_NAME, -100000, MAX_MONEY_NUM);
-				move(6, 4);
-				prints
-				    ("  \n\033[1;35m  你抱起炸药包，大喊一声打倒小日本,向%s冲了过去\033[m\n", uident);
-				sprintf(genbuf, "本港人士%s于10分钟前在九龙的\n一起自杀式攻击中身亡\n警方怀疑此人有帮会背景\n\n"
-							"据一位不愿透露姓名的警署官员透露\n这次事件可能是职业杀手所为", uident);
-				x = countexp(&currentuser);
-				y = countexp(&lookupuser);
-				robTimes = loadValue(currentuser.userid, "rob", 50);
-				saveValue(currentuser.userid, "rob", -robTimes, 50);
-				if(random()/x>(random()/y)/3||(random() % 3==0)){
-					lookupuser.dietime = lookupuser.stay + 4500 * 60;
-					substitute_record(PASSFILE, &lookupuser, sizeof(lookupuser), id);
-					deliverreport("[新闻]本站发生自杀攻击",genbuf);
-					mail_buf_slow(uident,	 "你挂了","有人对你发动了自杀式攻击。","BMYKillersky");
-					sprintf(buf,"对 %s 发动了自杀式攻击",uident);
-					mail_buf(buf, "BMYKillersky","任务完成");
 					if (seek_in_file(DIR_MC "killerlist", uident)){
 						FILE *fp;
 						char *ptr;
 						int count2=0;
 						fp = fopen(DIR_MC "killerlist","r");
 						while (fgets(buf,sizeof(buf),fp)) {
-							ptr = strstr(buf,uident);
+							ptr= strstr(buf,uident);
 							if(ptr){
 								count2 = atoi(ptr+strlen(uident)+1);
 								break;
 							}
 						}
 						fclose(fp);
-						del_from_file(DIR_MC "killerlist", uident);
-						if (count2==2 || count2==3){
-							sprintf(buf, "%s\t%d",uident, count2-1);
-							addtofile(DIR_MC "killerlist",buf);
-						}
+						if (count2+count>3)
+							count2 = 3;
+						else
+							count2 += count;
+						ytht_del_from_file(DIR_MC "killerlist", uident, true);
+						sprintf(buf, "%s\t%d",uident, count2);
+						ytht_add_to_file(DIR_MC "killerlist",buf);
+					}else{
+						sprintf(buf, "%s\t%d",uident, (count>3)?3:count);
+						ytht_add_to_file(DIR_MC "killerlist",buf);
 					}
+					showAt(10, 4, "您已经成功购买了这个人的人头，请静候佳音", 1);
 				}
-				set_safe_record();
-				currentuser.dietime = currentuser.stay +1000 * 60;
-				substitute_record (PASSFILE, &currentuser, sizeof(currentuser), usernum);
-				pressanykey();
-				Q_Goodbye();
+				break;
+
+			case '2':
+				while (!quit2) {
+					nomoney_show_stat("地下军火交易市场");
+					move(t_lines - 1, 0);
+					prints
+						("\033[1;44m 选单 \033[1;46m [1]c4  [Q]离开\033[m");
+					ch2 = igetkey();
+					switch (ch2) {
+						case 'q':
+						case 'Q':
+							quit2 = 1;
+							break;
+						case '1':
+							if (seek_in_file(DIR_MC "mingren", currentuser.userid)){
+								showAt(5, 4, "    \033[1;32m  不要惹事\033[m", 1);
+								break;
+							}
+							if (!seek_in_file(DIR_MC "killer", currentuser.userid)
+									||!slowclubtest("killer", currentuser.userid)){
+								showAt(7, 4, "\033[1;31m要拼命去找杀手\033[m", 1);
+								break;
+							}
+							if (loadValue(currentuser.userid, "guard", 8) > 0) {
+								showAt(7, 4, "你总不能带着兄弟一起死吧，^_^", 1);
+								break;
+							}
+							showAt(4, 4,"\033[1;35m你决定发动自杀式攻击。\033[m", 0);
+							money =loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
+							if (money <10000) {
+								showAt(9, 4, "您的钱不够...", 1);
+								break;
+							}
+							if (currentuser.dietime > 0) {
+								showAt(9, 4, "你已经死了啊！抓鬼啊！", 1);
+								Q_Goodbye();
+								break;
+							}
+							usercomplete("你要炸谁:", uident);
+							if (uident[0] == '\0')
+								break;
+							if (!(id = getuser(uident))) {
+								showAt(7, 4,"错误的使用者代号...", 1);
+								break;
+							}
+							if (lookupuser.dietime > 0) {
+								showAt(7, 4,"死人你也不放过，太狠了吧？", 1);
+								break;
+							}
+							if (seek_in_file(DIR_MC "mingren", uident)){
+								showAt(7, 4, "      他有黄马褂，你还是算了吧\n", 1);
+								break;
+							}
+							if (!Allclubtest(uident)){
+								showAt(7, 4, "    \033[1;32m  不要残杀无辜！\033[m", 1);
+								break;
+							}
+
+							guard_num =loadValue(uident, "guard", 8);
+							if (guard_num > 0) {
+								showAt(7, 4, "对方有保镖护身,你还是算了吧...", 1);
+								break;
+							}
+
+							freeTime = loadValue(currentuser.userid, "freeTime", 2000000000);
+							if (currentTime < freeTime){
+								pressreturn();
+								break;
+							}
+							saveValue(currentuser.userid, MONEY_NAME, -100000, MAX_MONEY_NUM);
+							move(6, 4);
+							prints("  \n\033[1;35m  你抱起炸药包，大喊一声打倒小日本,向%s冲了过去\033[m\n", uident);
+							sprintf(genbuf, "本港人士%s于10分钟前在九龙的\n一起自杀式攻击中身亡\n警方怀疑此人有帮会背景\n\n"
+									"据一位不愿透露姓名的警署官员透露\n这次事件可能是职业杀手所为", uident);
+							x = countexp(&currentuser);
+							y = countexp(&lookupuser);
+							robTimes = loadValue(currentuser.userid, "rob", 50);
+							saveValue(currentuser.userid, "rob", -robTimes, 50);
+							if(random()/x>(random()/y)/3||(random() % 3==0)){
+								lookupuser.dietime = lookupuser.stay + 4500 * 60;
+								substitute_record(PASSFILE, &lookupuser, sizeof(lookupuser), id);
+								deliverreport("[新闻]本站发生自杀攻击",genbuf);
+								mail_buf_slow(uident,	 "你挂了","有人对你发动了自杀式攻击。","BMYKillersky");
+								sprintf(buf,"对 %s 发动了自杀式攻击",uident);
+								mail_buf(buf, "BMYKillersky","任务完成");
+								if (seek_in_file(DIR_MC "killerlist", uident)){
+									FILE *fp;
+									char *ptr;
+									int count2=0;
+									fp = fopen(DIR_MC "killerlist","r");
+									while (fgets(buf,sizeof(buf),fp)) {
+										ptr = strstr(buf,uident);
+										if(ptr){
+											count2 = atoi(ptr+strlen(uident)+1);
+											break;
+										}
+									}
+									fclose(fp);
+									ytht_del_from_file(DIR_MC "killerlist", uident, true);
+									if (count2==2 || count2==3){
+										sprintf(buf, "%s\t%d",uident, count2-1);
+										ytht_add_to_file(DIR_MC "killerlist",buf);
+									}
+								}
+							}
+							set_safe_record();
+							currentuser.dietime = currentuser.stay +1000 * 60;
+							substitute_record (PASSFILE, &currentuser, sizeof(currentuser), usernum);
+							pressanykey();
+							Q_Goodbye();
+					}
+					limit_cpu();
 				}
-			limit_cpu();
-			}
-			break;
+				break;
 
 			case '3':
 				nomoney_show_stat("杀手帮主办公室");
@@ -5409,17 +4870,17 @@ money_killer()
 				whoTakeCharge(9, uident);
 				if (strcmp(currentuser.userid, uident)) {
 					move(6, 4);
-					prints
-				  	  ("秘书%s拦住了你,说道:“老大%s现在很忙,没时间接待你。”", name,uident);
+					prints("秘书%s拦住了你,说道:“老大%s现在很忙,没时间接待你。”", name,uident);
 					move(8,4);
 					if (!seek_in_file(DIR_MC "killer", currentuser.userid) &&
-						!slowclubtest("killer",currentuser.userid)){
-					if (askyn("你是想成为杀手吗？", NA, NA) == YEA) {
-						sprintf(genbuf, "%s 要加入杀手", currentuser.userid);
-						mail_buf(genbuf, "BMYKillersky", genbuf);
-						move(14, 4);
-						prints("好了，我会通知老大的");
-					}}
+							!slowclubtest("killer",currentuser.userid)){
+						if (askyn("你是想成为杀手吗？", NA, NA) == YEA) {
+							sprintf(genbuf, "%s 要加入杀手", currentuser.userid);
+							mail_buf(genbuf, "BMYKillersky", genbuf);
+							move(14, 4);
+							prints("好了，我会通知老大的");
+						}
+					}
 					pressanykey();
 					break;
 				} else {
@@ -5435,123 +4896,122 @@ money_killer()
 					prints("7. 退出");
 					ch2 = igetkey();
 					switch (ch2) {
-					case '1':
-						move(12, 4);
-						usercomplete("任命谁为杀手？", uident);
-						move(13, 4);
-						if (uident[0] == '\0')
-							break;
-						if (!searchuser(uident)) {
-							prints("错误的使用者代号...");
-							pressanykey();
-							break;
-							}
-						if (seek_in_file(DIR_MC "killer", uident)) {
-							prints("该ID已经是杀手了。");
-							pressanykey();
-							break;
-							}
-						if (askyn("确定吗？", NA, NA) == YEA) {
-							addtofile(DIR_MC "killer", uident);
-							sprintf(genbuf, "%s 任命你为杀手",currentuser.userid);
-							mail_buf("希望你不辜负大家的希望，完成任务！",uident, genbuf);
-							move(14, 4);
-							prints("任命成功。");
-							sprintf(genbuf, "%s行使杀手管理权限",currentuser.userid);
-							sprintf(buf, "任命%s为杀手", uident);
-							millionairesrec(genbuf, buf, "BMYKillersky");
-							pressanykey();
-							}
-						break;
-					case '2':
-						move(12, 4);
-						usercomplete("解职哪位杀手？", uident);
-						move(13, 4);
-						if (uident[0] == '\0')
-							break;
-						if (!searchuser(uident)) {
-							prints("错误的使用者代号...");
-							pressanykey();
-							break;
-						}
-						if (!seek_in_file(DIR_MC "killer", uident)) {
-							prints("该ID不是杀手。");
-							pressanykey();
-							break;
-							}
-						if (askyn("确定吗？", NA, NA) == YEA) {
-							del_from_file(DIR_MC "killer", uident);
-							sprintf(genbuf, "%s 解除你的杀手职务", currentuser.userid);
-							mail_buf("感谢你完成任务。", uident, genbuf);
-							move(14, 4);
-							prints("解职成功。");
-							sprintf(genbuf, "%s行使杀手管理权限",currentuser.userid);
-							sprintf(buf, "解除%s的杀手职务", uident);
-							millionairesrec(genbuf, buf, "BMYKillersky");
-							pressanykey();
-							}
-						break;
-					case '3':
-						clear();
-						move(1, 0);
-						prints("目前兵马俑杀手名单：");
-						listfilecontent(DIR_MC "killer");
-						pressanykey();
-						break;
-					case '4':
-						clear();
-						move(1, 0);
-						prints("目前兵马俑追杀名单：");
-						move(2, 0);
-						prints("目标ID\t次数");
-						listfilecontent(DIR_MC "killerlist");
-						pressanykey();
-						break;
-					case '5':
-						move(12, 4);
-						if (askyn("您真的要辞职吗？", NA,NA) == YEA) {
-						/*	del_from_file(MC_BOSS_FILE,"killer");
-							sprintf(genbuf, "%s 宣布辞去杀手帮主职务", currentuser.userid);
-							deliverreport(genbuf,
-							      "兵马俑金融中心对其一直以来的工作表示感谢，祝以后顺利！");
-							move(14, 4);
-							prints
-							    ("好吧，既然你意已决，中心也只有批准。");
-							quit = 1;
-							pressanykey();
-						*/
-							sprintf(genbuf, "%s 要辞去杀手帮主职务",
-								currentuser.userid);
-							mail_buf(genbuf, "millionaires", genbuf);
-							move(14, 4);
-							prints("好吧，已经发信告知总管了");
-							pressanykey();
-						}
-						break;
-					case '6':
-						move(12, 4);
-						readstrvalue(MC_PRICE_FILE, "c4_price", c4_price, 10);
-						price = atoi(c4_price);
-						prints("现在的价格是%d", price ? price : 300000);
-						getdata(13, 4, "设定新的价格: ", buf, 10, DOECHO, YEA);
-						move(14, 4);
-						sprintf(genbuf, "新的价格是 %d，确定吗？", atoi(buf));
-						if (askyn(genbuf, NA, NA) == YEA) {
-							if (atoi(buf)>MAX_MONEY_NUM){
-								move(15, 4);
-								prints("不要太狠了...");
+						case '1':
+							move(12, 4);
+							usercomplete("任命谁为杀手？", uident);
+							move(13, 4);
+							if (uident[0] == '\0')
+								break;
+							if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
+								prints("错误的使用者代号...");
 								pressanykey();
-								sprintf(buf, "%d", MAX_MONEY_NUM);
+								break;
 							}
-							savestrvalue(MC_PRICE_FILE, "c4_price", buf);
-							move(15, 4);
-							prints("设置完毕。    ");
-							sprintf(genbuf, "设置c4价格为%s。", buf);
-							sprintf(buf, "%s行使杀手管理权限", currentuser.userid);
-							millionairesrec(buf, genbuf, "BMYKillersky");
+							if (seek_in_file(DIR_MC "killer", uident)) {
+								prints("该ID已经是杀手了。");
+								pressanykey();
+								break;
+							}
+							if (askyn("确定吗？", NA, NA) == YEA) {
+								ytht_add_to_file(DIR_MC "killer", uident);
+								sprintf(genbuf, "%s 任命你为杀手",currentuser.userid);
+								mail_buf("希望你不辜负大家的希望，完成任务！",uident, genbuf);
+								move(14, 4);
+								prints("任命成功。");
+								sprintf(genbuf, "%s行使杀手管理权限",currentuser.userid);
+								sprintf(buf, "任命%s为杀手", uident);
+								millionairesrec(genbuf, buf, "BMYKillersky");
+								pressanykey();
+							}
+							break;
+						case '2':
+							move(12, 4);
+							usercomplete("解职哪位杀手？", uident);
+							move(13, 4);
+							if (uident[0] == '\0')
+								break;
+							if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
+								prints("错误的使用者代号...");
+								pressanykey();
+								break;
+							}
+							if (!seek_in_file(DIR_MC "killer", uident)) {
+								prints("该ID不是杀手。");
+								pressanykey();
+								break;
+							}
+							if (askyn("确定吗？", NA, NA) == YEA) {
+								ytht_del_from_file(DIR_MC "killer", uident, true);
+								sprintf(genbuf, "%s 解除你的杀手职务", currentuser.userid);
+								mail_buf("感谢你完成任务。", uident, genbuf);
+								move(14, 4);
+								prints("解职成功。");
+								sprintf(genbuf, "%s行使杀手管理权限",currentuser.userid);
+								sprintf(buf, "解除%s的杀手职务", uident);
+								millionairesrec(genbuf, buf, "BMYKillersky");
+								pressanykey();
+							}
+							break;
+						case '3':
+							clear();
+							move(1, 0);
+							prints("目前兵马俑杀手名单：");
+							listfilecontent(DIR_MC "killer");
 							pressanykey();
-						}
-						break;
+							break;
+						case '4':
+							clear();
+							move(1, 0);
+							prints("目前兵马俑追杀名单：");
+							move(2, 0);
+							prints("目标ID\t次数");
+							listfilecontent(DIR_MC "killerlist");
+							pressanykey();
+							break;
+						case '5':
+							move(12, 4);
+							if (askyn("您真的要辞职吗？", NA,NA) == YEA) {
+								/*	ytht_del_from_file(MC_BOSS_FILE,"killer");
+									sprintf(genbuf, "%s 宣布辞去杀手帮主职务", currentuser.userid);
+									deliverreport(genbuf,
+									"兵马俑金融中心对其一直以来的工作表示感谢，祝以后顺利！");
+									move(14, 4);
+									prints
+									("好吧，既然你意已决，中心也只有批准。");
+									quit = 1;
+									pressanykey();
+									*/
+								sprintf(genbuf, "%s 要辞去杀手帮主职务", currentuser.userid);
+								mail_buf(genbuf, "millionaires", genbuf);
+								move(14, 4);
+								prints("好吧，已经发信告知总管了");
+								pressanykey();
+							}
+							break;
+						case '6':
+							move(12, 4);
+							readstrvalue(MC_PRICE_FILE, "c4_price", c4_price, 10);
+							price = atoi(c4_price);
+							prints("现在的价格是%d", price ? price : 300000);
+							getdata(13, 4, "设定新的价格: ", buf, 10, DOECHO, YEA);
+							move(14, 4);
+							sprintf(genbuf, "新的价格是 %d，确定吗？", atoi(buf));
+							if (askyn(genbuf, NA, NA) == YEA) {
+								if (atoi(buf)>MAX_MONEY_NUM){
+									move(15, 4);
+									prints("不要太狠了...");
+									pressanykey();
+									sprintf(buf, "%d", MAX_MONEY_NUM);
+								}
+								savestrvalue(MC_PRICE_FILE, "c4_price", buf);
+								move(15, 4);
+								prints("设置完毕。    ");
+								sprintf(genbuf, "设置c4价格为%s。", buf);
+								sprintf(buf, "%s行使杀手管理权限", currentuser.userid);
+								millionairesrec(buf, genbuf, "BMYKillersky");
+								pressanykey();
+							}
+							break;
 					}
 				}
 				break;
@@ -5566,9 +5026,7 @@ money_killer()
 	return 0;
 }
 
-static int
-money_postoffice()
-{
+static int money_postoffice() {
 	int ch2, slownum=0;
 
 	nomoney_show_stat("大富翁邮件设置");
@@ -5593,34 +5051,32 @@ money_postoffice()
 	}
 	ch2 = igetkey();
 	switch (ch2) {
-	  	case '1':
-	    		if(slownum==0){
+		case '1':
+			if(slownum==0){
 				saveValue(currentuser.userid, "mail", 1, 50);
 				nomoney_show_stat("大富翁邮件设置");
 				move(6, 4);
 				prints("欢迎使用兵马俑邮局邮件服务系统，我们将在第一时间将各大帮派");
 				move(7, 4);
 				prints("给您的信件递到您的信箱。再见。");
-	    		}else{
+			}else{
 				saveValue(currentuser.userid, "mail", -slownum, 50);
 				nomoney_show_stat("大富翁邮件设置");
 				move(6,4);
 				prints("欢迎您下次继续使用本邮局的各项服务，谢谢您的光顾，再见。");
-	    		}
+			}
 			pressanykey();
 			break;
 
 		case 'q':
 		case 'Q':
-	    	 	break;
-		}
+			break;
+	}
 	return 0;
 }
 
-
-static int /*商场rewrite by macintosh 20051204*/
-money_shop()
-{
+/*商场rewrite by macintosh 20051204*/
+static int money_shop() {
 	int ch, money, num, ch2;
 	int guard_num;
 	char uident[IDLEN + 1], ticket_price[10], buf[STRLEN];
@@ -5632,99 +5088,85 @@ money_shop()
 		move(6, 4);
 		prints("兵马俑商场最近生意红火，大家尽兴！");
 		move(t_lines - 1, 0);
-		prints
-	    ("\033[1;44m 选单 \033[1;46m [1]雇保镖 [2]礼品店 [3]经理室 [4]邮局 [6]火车票价计算 [Q]离开\033[m");
-		   // ("\033[1;44m 选单 \033[1;46m [1]雇保镖 [2]贺卡 [4]经理室 [5]hell参观 [Q]离开\033[m");
+		prints("\033[1;44m 选单 \033[1;46m [1]雇保镖 [2]礼品店 [3]经理室 [4]邮局 [6]火车票价计算 [Q]离开\033[m");
+		// ("\033[1;44m 选单 \033[1;46m [1]雇保镖 [2]贺卡 [4]经理室 [5]hell参观 [Q]离开\033[m");
 		ch = igetkey();
 		switch (ch) {
-		case '1':
-			nomoney_show_stat("兵马俑保镖公司");
-			move(4, 4);
-			prints
-			    ("兵马俑保镖公司对有需要的人士提供保镖业务,价格视情况而定。");
-			move(5, 4);
-			prints
-			    ("但是被保护对象一旦为恶,保镖自动离开,并可能会对雇主进行黑吃黑哦！");
-			move(7, 4);
-			sprintf(genbuf, "你确定要雇保镖么?");
-			if (askyn(genbuf, NA, NA) == YEA) {
-				money =
-				    loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
-				move(8, 4);
-				if (money < 10000) {
-					prints
-					    ("你还是省省吧，没人会打你主意的。就那么点钱...");
-					pressanykey();
-					break;
-				}
-				guard_num =(countexp(&currentuser) / 1000) + 1 >
-				    8 ? 8 : (countexp(&currentuser) / 1000) + 1;
-				prints
-				    ("按照您目前的身份地位，雇佣%d个保镖就够了。",
-				     guard_num);
-				saveValue(currentuser.userid, MONEY_NAME, -money / 20, MAX_MONEY_NUM);
-				move(9, 4);
-				if (loadValue(currentuser.userid, "rob", 50) > 0) {
-					prints
-					    ("嘿嘿，你有案底！念在收了你钱的份上，赶紧跑路吧...");
-					pressanykey();
-					break;
-				}
-				if (loadValue(currentuser.userid, "guard", 8) > 0) {
-					prints
-					    ("你已经有保镖了。钱我们收下，保镖不能再给了，^_^");
-					pressanykey();
-				} else {
-					saveValue(currentuser.userid, "guard", guard_num, 50);
-					prints
-					    ("雇佣保镖成功,你可以有一段时间安享太平了。");
-					pressanykey();
-				}
-			}
-			break;
-
-		case '2':
-			while (!quit2) {
-				nomoney_show_stat("兵马俑礼品店");
-				move(6, 4);
-				//prints ("欢迎光临兵马俑礼品店！");
-				prints("本店ASCII作品均非本店制作，部分作品由于种种原因，未能标明作者。\n"
-					"    如作品创作者对其作品用于本店持有异议，请与本站大富翁总管联系。\n"
-					"    本站将及时根据作者意愿作出调整。\n\n"
-					"                                                   \33[1;32m兵马俑礼品店\033[0m\n");
-				move(t_lines - 1, 0);
-				prints
-				    ("\033[1;44m 选单 \033[1;46m [1]鲜花 [2]贺卡 [Q]离开\033[m");
-				ch2 = igetkey();
-				switch (ch2) {
-					case 'q':
-					case 'Q':
-						quit2=1;
-						break;
-					case '1':
-						shop_present(1, "鲜花", NULL);
-						break;
-					case '2':
-						shop_present(2, "贺卡", NULL);
+			case '1':
+				nomoney_show_stat("兵马俑保镖公司");
+				move(4, 4);
+				prints("兵马俑保镖公司对有需要的人士提供保镖业务,价格视情况而定。");
+				move(5, 4);
+				prints("但是被保护对象一旦为恶,保镖自动离开,并可能会对雇主进行黑吃黑哦！");
+				move(7, 4);
+				sprintf(genbuf, "你确定要雇保镖么?");
+				if (askyn(genbuf, NA, NA) == YEA) {
+					money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
+					move(8, 4);
+					if (money < 10000) {
+						prints("你还是省省吧，没人会打你主意的。就那么点钱...");
+						pressanykey();
 						break;
 					}
-				limit_cpu();
+					guard_num =(countexp(&currentuser) / 1000) + 1 > 8 ? 8 : (countexp(&currentuser) / 1000) + 1;
+					prints("按照您目前的身份地位，雇佣%d个保镖就够了。", guard_num);
+					saveValue(currentuser.userid, MONEY_NAME, -money / 20, MAX_MONEY_NUM);
+					move(9, 4);
+					if (loadValue(currentuser.userid, "rob", 50) > 0) {
+						prints("嘿嘿，你有案底！念在收了你钱的份上，赶紧跑路吧...");
+						pressanykey();
+						break;
+					}
+					if (loadValue(currentuser.userid, "guard", 8) > 0) {
+						prints("你已经有保镖了。钱我们收下，保镖不能再给了，^_^");
+						pressanykey();
+					} else {
+						saveValue(currentuser.userid, "guard", guard_num, 50);
+						prints("雇佣保镖成功,你可以有一段时间安享太平了。");
+						pressanykey();
+					}
 				}
-			break;
-
-		case '3':
-			nomoney_show_stat("兵马俑商场经理室");
-			whoTakeCharge(7, uident);
-			char name[20];
-			whoTakeCharge2(7, name);
-			if (strcmp(currentuser.userid, uident)) {
-				move(6, 4);
-				prints
-				    ("值班秘书%s叫住了你，说道:“经理%s正在开会，有什么事跟我说也行。”",
-				     name,uident);
-				pressanykey();
 				break;
-			} else {
+
+			case '2':
+				while (!quit2) {
+					nomoney_show_stat("兵马俑礼品店");
+					move(6, 4);
+					//prints ("欢迎光临兵马俑礼品店！");
+					prints("本店ASCII作品均非本店制作，部分作品由于种种原因，未能标明作者。\n"
+							"    如作品创作者对其作品用于本店持有异议，请与本站大富翁总管联系。\n"
+							"    本站将及时根据作者意愿作出调整。\n\n"
+							"                                                   \33[1;32m兵马俑礼品店\033[0m\n");
+					move(t_lines - 1, 0);
+					prints("\033[1;44m 选单 \033[1;46m [1]鲜花 [2]贺卡 [Q]离开\033[m");
+					ch2 = igetkey();
+					switch (ch2) {
+						case 'q':
+						case 'Q':
+							quit2=1;
+							break;
+						case '1':
+							shop_present(1, "鲜花", NULL);
+							break;
+						case '2':
+							shop_present(2, "贺卡", NULL);
+							break;
+					}
+					limit_cpu();
+				}
+				break;
+
+			case '3':
+				nomoney_show_stat("兵马俑商场经理室");
+				whoTakeCharge(7, uident);
+				char name[20];
+				whoTakeCharge2(7, name);
+				if (strcmp(currentuser.userid, uident)) {
+					move(6, 4);
+					prints("值班秘书%s叫住了你，说道:“经理%s正在开会，有什么事跟我说也行。”", name,uident);
+					pressanykey();
+					break;
+				} else {
 					move(6, 4);
 					prints("请选择操作代号:");
 					move(9, 6);
@@ -5733,96 +5175,80 @@ money_shop()
 					prints("7. 退出");
 					ch2 = igetkey();
 					switch (ch2) {
-					case '5':
-						move(12, 4);
-						if (askyn("您真的要辞职吗？", NA,NA) == YEA) {
-							sprintf(genbuf, "%s 要辞去商场经理职务",
-								currentuser.userid);
-							mail_buf(genbuf, "millionaires", genbuf);
-							move(14, 4);
-							prints("好吧，已经发信告知总管了");
-							pressanykey();
-						}
-						break;
-					case '6':
-						move(12, 4);
-						readstrvalue(MC_PRICE_FILE, "ticket_price", ticket_price, 10);
-						price = atoi(ticket_price);
-						prints("现在的价格是%d", price);
-						getdata(13, 4, "设定新的价格: ", ticket_price, 10, DOECHO, YEA);
-						move(14, 4);
-						sprintf(genbuf, "新的价格是 %d，确定吗？", atoi(ticket_price));
-						if (askyn(genbuf, NA, NA) == YEA) {
-							if (atoi(ticket_price)>MAX_MONEY_NUM){
-								move(15, 4);
-								prints("不要太狠了...");
+						case '5':
+							move(12, 4);
+							if (askyn("您真的要辞职吗？", NA,NA) == YEA) {
+								sprintf(genbuf, "%s 要辞去商场经理职务", currentuser.userid);
+								mail_buf(genbuf, "millionaires", genbuf);
+								move(14, 4);
+								prints("好吧，已经发信告知总管了");
 								pressanykey();
-								sprintf(ticket_price, "%d", MAX_MONEY_NUM);
 							}
-							savestrvalue(MC_PRICE_FILE, "ticket_price", ticket_price);
-							move(15, 4);
-							prints("设置完毕。    ");
-							sprintf(genbuf, "设置算票价价格为%s。", ticket_price);
-							sprintf(buf, "%s行使商场经理管理权限", currentuser.userid);
-							millionairesrec(buf, genbuf, "");
-							pressanykey();
-						}
-						break;
+							break;
+						case '6':
+							move(12, 4);
+							readstrvalue(MC_PRICE_FILE, "ticket_price", ticket_price, 10);
+							price = atoi(ticket_price);
+							prints("现在的价格是%d", price);
+							getdata(13, 4, "设定新的价格: ", ticket_price, 10, DOECHO, YEA);
+							move(14, 4);
+							sprintf(genbuf, "新的价格是 %d，确定吗？", atoi(ticket_price));
+							if (askyn(genbuf, NA, NA) == YEA) {
+								if (atoi(ticket_price)>MAX_MONEY_NUM){
+									move(15, 4);
+									prints("不要太狠了...");
+									pressanykey();
+									sprintf(ticket_price, "%d", MAX_MONEY_NUM);
+								}
+								savestrvalue(MC_PRICE_FILE, "ticket_price", ticket_price);
+								move(15, 4);
+								prints("设置完毕。    ");
+								sprintf(genbuf, "设置算票价价格为%s。", ticket_price);
+								sprintf(buf, "%s行使商场经理管理权限", currentuser.userid);
+								millionairesrec(buf, genbuf, "");
+								pressanykey();
+							}
+							break;
 					}
 				}
 				break;
 
-		/*case '5':
-			 sprintf(genbuf, "真的要去hell");
-			move(11, 4);
-			if (askyn(genbuf, NA, NA) == YEA){
-				set_safe_record();
-				currentuser.dietime = currentuser.stay + 1;
-				substitute_record(PASSFILE,&currentuser,sizeof(currentuser),usernum);
-				pressanykey();
-				Q_Goodbye();
-			}
-			break;
-		*/
-
-		case '6':
-			money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
-			readstrvalue(MC_PRICE_FILE, "ticket_price", ticket_price, 10);
-			num = atoi(ticket_price);
-			clear();
-			move(5, 4);
-			if (askyn("本服务收费，确定要算吗? ", YEA, NA) == YEA){
-				if (money < num) {
-					move(9, 4);
-					prints("对不起，您的金额不足。");
-					pressanykey();
-					break;
-				}else{
-					saveValue(currentuser.userid, MONEY_NAME, -num, MAX_MONEY_NUM);
-					//calc_ticket_price();
+			case '6':
+				money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
+				readstrvalue(MC_PRICE_FILE, "ticket_price", ticket_price, 10);
+				num = atoi(ticket_price);
+				clear();
+				move(5, 4);
+				if (askyn("本服务收费，确定要算吗? ", YEA, NA) == YEA){
+					if (money < num) {
+						move(9, 4);
+						prints("对不起，您的金额不足。");
+						pressanykey();
+						break;
+					}else{
+						saveValue(currentuser.userid, MONEY_NAME, -num, MAX_MONEY_NUM);
+						//calc_ticket_price();
+					}
 				}
-			}
-			break;
+				break;
 
-		case '4':
-			money_postoffice();
-			break;
+			case '4':
+				money_postoffice();
+				break;
 
-		case 'q':
-		case 'Q':
-			quit = 1;
-			break;
+			case 'q':
+			case 'Q':
+				quit = 1;
+				break;
 		}
 		limit_cpu();
 	}
 	return 0;
 }
 
-
-static int/*股票系统*/
-money_stock()
-{
-//      moneycenter_welcome();
+/*股票系统*/
+static int money_stock() {
+	//      moneycenter_welcome();
 	int quit = 0;
 	char ch;
 
@@ -5830,7 +5256,7 @@ money_stock()
 		clear();
 		money_show_stat("兵马俑股市");
 
-		if (utmpshm->ave_score == 0) {
+		if (ythtbbs_cache_utmp_get_ave_score() == 0) {
 			clear();
 			move(7, 10);
 			prints("\033[1;31m兵马俑股市今天休市\033[0m");
@@ -5838,43 +5264,67 @@ money_stock()
 			return 0;
 		}
 
-
 		move(4, 4);
 		prints("请确认你已经在"MC_BOARD"版阅读过兵马俑股市规则。");
 		move(t_lines - 1, 0);
-		prints
-		    ("\033[1;44m 选单 \033[1;46m [1]传统板块 [2]推荐板块 [3]证监会主席办公室 [Q]离开   \033[m");
+		prints("\033[1;44m 选单 \033[1;46m [1]传统板块 [2]推荐板块 [3]证监会主席办公室 [Q]离开   \033[m");
 		ch = igetkey();
 		switch (ch) {
-		case '1':
-			money_stock_board();
-			break;
-		case '2':
-			clear();
-			move(7, 10);
-			prints("\033[1;32m尚未开放\033[0m");
-			pressanykey();
-			break;
-		case '3':
-			stockboards();
-			break;
-		case 'q':
-		case 'Q':
-			quit = 1;
-			break;
+			case '1':
+				money_stock_board();
+				break;
+			case '2':
+				clear();
+				move(7, 10);
+				prints("\033[1;32m尚未开放\033[0m");
+				pressanykey();
+				break;
+			case '3':
+				stockboards();
+				break;
+			case 'q':
+			case 'Q':
+				quit = 1;
+				break;
 		}
 	}
 	return 0;
 }
 
-static int/*股票系统*/
-money_stock_board()
-{
+static int update_stock_v(struct boardmem *board, int curr_idx, va_list ap) {
+	const char *name = va_arg(ap, const char *);
+	int *price = va_arg(ap, int*);
+	int *sboard = va_arg(ap, int*);
+	int *count1 = va_arg(ap, int*);
+
+	if (*count1 == 0) {
+		return QUIT;
+	}
+	if (!strcmp(board->header.filename, name)) {
+		*price = ythtbbs_cache_utmp_get_ave_score() / 100 + board->score / 20;
+
+		if (board->stocknum <= 0) {
+			board->stocknum = board->score * ((board->score > 10000) ? 2000 : 1000);
+
+			if (board->stocknum < 50000) {
+				board->stocknum = 50000;
+			}
+		}
+
+		*sboard = curr_idx;
+		*count1 = *count1 - 1;
+		return QUIT;
+	}
+	return 0;
+}
+
+/*股票系统*/
+static int money_stock_board() {
 	char stockname[STRLEN][MAX_STOCK_NUM];
 	char stockboard[STRLEN][MAX_STOCK_NUM];
 	int ch, i, j, quit = 0, money, count, count1;
 	int stock_num[MAX_STOCK_NUM], addto_num[MAX_STOCK_NUM],
-	    stock_board[MAX_STOCK_NUM];
+	stock_board[MAX_STOCK_NUM];
 	int stock_price[MAX_STOCK_NUM];
 	int total_money = 0, temp_sum = 0, total_sum = 0;
 	char slow[IDLEN + 1];
@@ -5906,322 +5356,274 @@ money_stock_board()
 	bzero(&stock_price, sizeof (stock_price));
 	bzero(&stock_num, sizeof (stock_num));
 	bzero(&addto_num, sizeof (addto_num));
-	for (i = 0; i < numboards; i++) {
-		for (j = 0; j < count; j++) {
-			if (!strcmp(bcache[i].header.filename, stockboard[j])) {
-				stock_price[j] = utmpshm->ave_score / 100 + bcache[i].score / 20;
-				if (bcache[i].stocknum <= 0) {
-					if (bcache[i].score > 10000)
-						bcache[i].stocknum = bcache[i].score * 2000;
-					else
-						bcache[i].stocknum = bcache[i].score * 1000;
-				}
-				stock_board[j] = i;
-				count1--;
-				break;
-			}
-		}
+	for (j = 0; j < count; j++) {
+		ythtbbs_cache_Board_foreach_v(update_stock_v, stockboard[j], &stock_price[j], &stock_board[j], &count1);
 		if (count1 == 0)
 			break;
 	}//计算股价
 	for (i = 0; i < count; i++) {
-		stock_num[i] =
-		    loadValue(currentuser.userid, stockname[i], 1000000);
+		stock_num[i] = loadValue(currentuser.userid, stockname[i], 1000000);
 	}//统计自己的数量
 	//for (i = 0; i < MAX_STOCK_NUM; i++)
-	 i=0;
+	i=0;
 	while(!quit){
-		money =
-		    loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
-		persenal_stock_info(stock_num, stock_price, money, stockboard,
-				    stock_board);
+		money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
+		persenal_stock_info(stock_num, stock_price, money, stockboard, stock_board);
 		move(t_lines - 1, 0);
 		prints("\033[1;44m 选单 \033[1;46m [B]购买 [S]出售 [C]转让 [Q]离开\033[m");
 		ch = igetkey();
 		switch (ch){
-		case 'B':
-		case 'b':
-			total_money = 0;
-			if (stop_buy()) {
-				clear();
-				move(7, 10);
-				prints("\033[1;31m兵马俑股市尚未开盘\033[0m");
-				pressanykey();
-				break;
-			}
-			getdata(t_lines - 1, 0, "您选择哪支股票?[0]", genbuf, 7,
-				DOECHO, YEA);
-			getnum=atoi(genbuf);
-			if(getnum<0||getnum>count-1)
-				break; //非法输入
-			else
-				i=getnum;
-			if (seek_in_file(MC_STOCK_STOPBUY, stockboard[i])){
-				move(t_lines - 2, 0);
-				prints("本支股票已被暂停交易!");
-				pressanykey();
-				break;
-			}
-			getdata(t_lines - 1, 0, "您要买多少股?[0]", genbuf, 7,
-				DOECHO, YEA);
-
-			addto_num[i] = atoi(genbuf);
-			if (!genbuf[0])
-				addto_num[i] = 0;
-			//addto_num[i] = abs(addto_num[i]);
-			if (addto_num[i] <= 0){
-				move(t_lines - 2, 0);
-				prints("到底是要买还是卖...");
-				pressanykey();
-				break;
-			}
-			stock_num[i] =
-			    loadValue(currentuser.userid, stockname[i], 1000000);
-			if (stock_num[i] >= 1000000) {
-				move(t_lines - 2, 0);
-				prints("你已经有很多股票了,不要再买了");
-				pressanykey();
-				break;
-			}
-			if (bcache[stock_board[i]].stocknum <= 50000) {
-				move(t_lines - 2, 0);
-				prints("对不起,此股目前没有可以出售的股票!");
-				pressanykey();
-				break;
-			}
-			if (stock_num[i] + addto_num[i] > 1000000){
-				addto_num[i] = 1000000 - stock_num[i];
-				move(t_lines - 2, 0);
-				prints("对不起,你已经有很多股票了!");
-				pressanykey();
-			}
-			if (bcache[stock_board[i]].stocknum - addto_num[i] < 50000){
-				addto_num[i] = bcache[stock_board[i]].stocknum - 50000;
-				move(t_lines - 2, 0);
-				prints("对不起,此股目前没有那么多股票出售!");
-				pressanykey();
-			}
-			move(t_lines - 2, 0);
-			sprintf(genbuf, "确定购买 %d 股 %s 吗？",
-				addto_num[i], stockname[i]);
-			if (askyn(genbuf, NA, NA) == YEA) {
-				temp_sum = addto_num[i] * stock_price[i];
-				total_money += temp_sum;
-				money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
-				if (money - temp_sum < 0) {
-					total_money -= addto_num[i] * stock_price[i];
-					addto_num[i] = 0;
-					move(t_lines - 2, 0);
-					prints("你当前的兵马俑币不够完成此项操作!");
+			case 'B':
+			case 'b':
+				total_money = 0;
+				if (stop_buy()) {
+					clear();
+					move(7, 10);
+					prints("\033[1;31m兵马俑股市尚未开盘\033[0m");
 					pressanykey();
 					break;
 				}
-				bcache[stock_board[i]].stocknum -= addto_num[i];
-				saveValue(currentuser.userid, MONEY_NAME, -temp_sum, MAX_MONEY_NUM);
-				stock_num[i] += addto_num[i];
-				saveValue(currentuser.userid, stockname[i],
-					  addto_num[i], 1000000);
-				if (addto_num[i]>0){
-					sprintf(genbuf, "%s进行股票交易(买入)", currentuser.userid);
-					sprintf(buf,"%s购买了%d股%s股票(每股%d兵马俑币)，花费%d兵马俑币\n",
-						currentuser.userid, addto_num[i], stockname[i], stock_price[i], temp_sum);
+				getdata(t_lines - 1, 0, "您选择哪支股票?[0]", genbuf, 7, DOECHO, YEA);
+				getnum=atoi(genbuf);
+				if(getnum<0||getnum>count-1)
+					break; //非法输入
+				else
+					i=getnum;
+				if (seek_in_file(MC_STOCK_STOPBUY, stockboard[i])){
+					move(t_lines - 2, 0);
+					prints("本支股票已被暂停交易!");
+					pressanykey();
+					break;
+				}
+				getdata(t_lines - 1, 0, "您要买多少股?[0]", genbuf, 7, DOECHO, YEA);
+
+				addto_num[i] = atoi(genbuf);
+				if (!genbuf[0])
+					addto_num[i] = 0;
+				//addto_num[i] = abs(addto_num[i]);
+				if (addto_num[i] <= 0){
+					move(t_lines - 2, 0);
+					prints("到底是要买还是卖...");
+					pressanykey();
+					break;
+				}
+				stock_num[i] = loadValue(currentuser.userid, stockname[i], 1000000);
+				if (stock_num[i] >= 1000000) {
+					move(t_lines - 2, 0);
+					prints("你已经有很多股票了,不要再买了");
+					pressanykey();
+					break;
+				}
+				if (ythtbbs_cache_Board_get_board_by_idx(stock_board[i])->stocknum <= 50000) {
+					move(t_lines - 2, 0);
+					prints("对不起,此股目前没有可以出售的股票!");
+					pressanykey();
+					break;
+				}
+				if (stock_num[i] + addto_num[i] > 1000000){
+					addto_num[i] = 1000000 - stock_num[i];
+					move(t_lines - 2, 0);
+					prints("对不起,你已经有很多股票了!");
+					pressanykey();
+				}
+				if (ythtbbs_cache_Board_get_board_by_idx(stock_board[i])->stocknum - addto_num[i] < 50000){
+					addto_num[i] = ythtbbs_cache_Board_get_board_by_idx(stock_board[i])->stocknum - 50000;
+					move(t_lines - 2, 0);
+					prints("对不起,此股目前没有那么多股票出售!");
+					pressanykey();
+				}
+				move(t_lines - 2, 0);
+				sprintf(genbuf, "确定购买 %d 股 %s 吗？", addto_num[i], stockname[i]);
+				if (askyn(genbuf, NA, NA) == YEA) {
+					temp_sum = addto_num[i] * stock_price[i];
+					total_money += temp_sum;
+					money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
+					if (money - temp_sum < 0) {
+						total_money -= addto_num[i] * stock_price[i];
+						addto_num[i] = 0;
+						move(t_lines - 2, 0);
+						prints("你当前的兵马俑币不够完成此项操作!");
+						pressanykey();
+						break;
+					}
+					ythtbbs_cache_Board_get_board_by_idx(stock_board[i])->stocknum -= addto_num[i];
+					saveValue(currentuser.userid, MONEY_NAME, -temp_sum, MAX_MONEY_NUM);
+					stock_num[i] += addto_num[i];
+					saveValue(currentuser.userid, stockname[i], addto_num[i], 1000000);
+					if (addto_num[i]>0){
+						sprintf(genbuf, "%s进行股票交易(买入)", currentuser.userid);
+						sprintf(buf,"%s购买了%d股%s股票(每股%d兵马俑币)，花费%d兵马俑币\n",
+								currentuser.userid, addto_num[i], stockname[i], stock_price[i], temp_sum);
+						millionairesrec(genbuf, buf, "股票交易");
+						sprintf(buf,"您购买了%d股%s股票，成交价%d兵马俑币每股，花费%d兵马俑币。\n",
+								addto_num[i], stockname[i], stock_price[i], temp_sum);
+						sprintf(title,"股票购买凭证");
+						mail_buf(buf, currentuser.userid, title);
+						total_sum -= temp_sum;
+						sprintf(genbuf, "你花掉了%d兵马俑币", temp_sum);
+						move(t_lines - 2, 0);
+						clrtoeol();
+						prints("%s", genbuf);
+						pressanykey();
+					}
+				}
+				sleep(1);
+				break;
+			case 'S':
+			case 's':
+				total_money= 0;
+				if (stop_buy()) {
+					clear();
+					move(7, 10);
+					prints("\033[1;31m兵马俑股市尚未开盘\033[0m");
+					pressanykey();
+					break;
+				}
+				getdata(t_lines - 1, 0, "您选择哪支股票?[0]", genbuf, 7, DOECHO, YEA);
+				getnum=atoi(genbuf);
+				if(getnum<0||getnum>count-1)
+					break; //非法输入
+				else
+					i=getnum;
+				if (seek_in_file(MC_STOCK_STOPBUY, stockboard[i])){
+					move(t_lines - 2, 0);
+					prints("本支股票已被暂停交易!");
+					pressanykey();
+					break;
+				}
+
+				getdata(t_lines - 1, 0, "您要卖多少股?[0]", genbuf, 7, DOECHO, YEA);
+				stock_num[i] = loadValue(currentuser.userid, stockname[i], 1000000);
+				addto_num[i] = atoi(genbuf);
+				if (!genbuf[0])
+					addto_num[i] = 0;
+				//addto_num[i] = abs(addto_num[i]);
+				if (addto_num[i] <= 0){
+					move(t_lines - 2, 0);
+					prints("到底是要买还是卖...");
+					pressanykey();
+					break;
+				}
+				if (stock_num[i] < addto_num[i]) {
+					move(t_lines - 2, 0);
+					prints("你没有这么多股票啊...是你犯晕还是我犯晕?");
+					pressanykey();
+					break;
+				}
+				move(t_lines - 2, 0);
+				sprintf(genbuf, "确定出售 %d 股 %s 吗？", addto_num[i], stockname[i]);
+				if (askyn(genbuf, NA, NA) == YEA) {
+					addto_num[i] *= -1;
+					temp_sum = addto_num[i] * stock_price[i];
+					stock_num[i] += addto_num[i];
+					saveValue(currentuser.userid, MONEY_NAME, temp_sum/100-temp_sum, MAX_MONEY_NUM);
+					whoTakeCharge(6, slow);//slowaction
+					saveValue(slow, MONEY_NAME, -temp_sum/100, MAX_MONEY_NUM);
+					saveValue(currentuser.userid, stockname[i], addto_num[i], 1000000);
+					total_money += temp_sum-temp_sum/100;
+					ythtbbs_cache_Board_get_board_by_idx(stock_board[i])->stocknum -= addto_num[i];
+					temp_sum = ythtbbs_cache_Board_get_board_by_idx(stock_board[i])->score;
+					if (temp_sum > 10000) {
+						if (ythtbbs_cache_Board_get_board_by_idx(stock_board[i])->stocknum > temp_sum * 2000)
+							ythtbbs_cache_Board_get_board_by_idx(stock_board[i])->stocknum = temp_sum * 2000;
+					} else {
+						if (ythtbbs_cache_Board_get_board_by_idx(stock_board[i])->stocknum > temp_sum * 1000)
+							ythtbbs_cache_Board_get_board_by_idx(stock_board[i])->stocknum = temp_sum * 1000;
+					}
+					sprintf(genbuf, "%s进行股票交易(卖出)", currentuser.userid);
+					sprintf(buf,"%s卖出了%d股%s股票(每股%d兵马俑币)，获得%d兵马俑币\n",
+							currentuser.userid, -addto_num[i], stockname[i], stock_price[i], -total_money);
 					millionairesrec(genbuf, buf, "股票交易");
-					sprintf(buf,"您购买了%d股%s股票，成交价%d兵马俑币每股，花费%d兵马俑币。\n",
-						addto_num[i], stockname[i], stock_price[i], temp_sum);
-					sprintf(title,"股票购买凭证");
-					mail_buf(buf, currentuser.userid, title);
-					total_sum -= temp_sum;
-					sprintf(genbuf, "你花掉了%d兵马俑币", temp_sum);
+					total_sum -= total_money;
+					sprintf(genbuf, "扣除手续费后你拿回了%d兵马俑币", (-1) * total_money);
 					move(t_lines - 2, 0);
 					clrtoeol();
 					prints("%s", genbuf);
 					pressanykey();
 				}
-			}
-			sleep(1);
-			break;
-		case 'S':
-		case 's':
-			total_money= 0;
-			if (stop_buy()) {
-				clear();
-				move(7, 10);
-				prints("\033[1;31m兵马俑股市尚未开盘\033[0m");
-				pressanykey();
+				sleep(1);
 				break;
-			}
-			getdata(t_lines - 1, 0, "您选择哪支股票?[0]", genbuf, 7,
-				DOECHO, YEA);
-			getnum=atoi(genbuf);
-			if(getnum<0||getnum>count-1)
-				break; //非法输入
-			else
-				i=getnum;
-			if (seek_in_file(MC_STOCK_STOPBUY, stockboard[i])){
-				move(t_lines - 2, 0);
-				prints("本支股票已被暂停交易!");
-				pressanykey();
-				break;
-			}
-
-			getdata(t_lines - 1, 0, "您要卖多少股?[0]", genbuf, 7,
-				DOECHO, YEA);
-			stock_num[i] =
-			    loadValue(currentuser.userid, stockname[i], 1000000);
-			addto_num[i] = atoi(genbuf);
-			if (!genbuf[0])
-				addto_num[i] = 0;
-			//addto_num[i] = abs(addto_num[i]);
-			if (addto_num[i] <= 0){
-				move(t_lines - 2, 0);
-				prints("到底是要买还是卖...");
-				pressanykey();
-				break;
-			}
-			/*
-			if (stock_num[i] - addto_num[i] < 0)
-				addto_num[i] = stock_num[i];
-			*/
-			if (stock_num[i] < addto_num[i]) {
-				move(t_lines - 2, 0);
-				prints
-				    ("你没有这么多股票啊...是你犯晕还是我犯晕?");
-				pressanykey();
-				break;
-			}
-			move(t_lines - 2, 0);
-			sprintf(genbuf, "确定出售 %d 股 %s 吗？",
-				addto_num[i], stockname[i]);
-			if (askyn(genbuf, NA, NA) == YEA) {
-				addto_num[i] *= -1;
-				temp_sum = addto_num[i] * stock_price[i];
-				stock_num[i] += addto_num[i];
-				saveValue(currentuser.userid, MONEY_NAME, temp_sum/100-temp_sum,
-									  MAX_MONEY_NUM);
-				whoTakeCharge(6, slow);//slowaction
-	                     saveValue(slow, MONEY_NAME, -temp_sum/100, MAX_MONEY_NUM);
-				saveValue(currentuser.userid, stockname[i],
-					  addto_num[i], 1000000);
-				total_money += temp_sum-temp_sum/100;
-				bcache[stock_board[i]].stocknum -= addto_num[i];
-				temp_sum = bcache[stock_board[i]].score;
-				if (temp_sum > 10000) {
-					if (bcache[stock_board[i]].stocknum > temp_sum * 2000)
-						bcache[stock_board[i]].stocknum = temp_sum * 2000;
-				} else {
-					if (bcache[stock_board[i]].stocknum > temp_sum * 1000)
-						bcache[stock_board[i]].stocknum = temp_sum * 1000;
-				}
-				sprintf(genbuf, "%s进行股票交易(卖出)", currentuser.userid);
-				sprintf(buf,"%s卖出了%d股%s股票(每股%d兵马俑币)，获得%d兵马俑币\n",
-					currentuser.userid, -addto_num[i], stockname[i], stock_price[i], -total_money);
-				millionairesrec(genbuf, buf, "股票交易");
-				total_sum -= total_money;
-				sprintf(genbuf, "扣除手续费后你拿回了%d兵马俑币", (-1) * total_money);
-				move(t_lines - 2, 0);
-				clrtoeol();
-				prints("%s", genbuf);
-				pressanykey();
-			}
-			sleep(1);
-			break;
-		case 'c':
-		case 'C':
-			/*if (stop_buy()) {
-				clear();
-				move(7, 10);
-				prints("\033[1;31m兵马俑股市尚未开盘\033[0m");
-				pressanykey();
-				break;
-			}*/
-			move(t_lines - 1, 0);
-       		usercomplete("转让股票给谁？", uident);
-			if (uident[0] == '\0')
-				return 0;
-			if (!getuser(uident)) {
-				move(t_lines - 2, 0);
-				prints("错误的使用者代号...");
-				pressreturn();
-				return 0;
-			}
-			if (seek_in_file(DIR_MC "mingren", currentuser.userid)){
-				if (seek_in_file(DIR_MC "jijin", currentuser.userid));
-				else if (!seek_in_file(DIR_MC "mingren", uident)) {
-					clear();
+			case 'c':
+			case 'C':
+				move(t_lines - 1, 0);
+				usercomplete("转让股票给谁？", uident);
+				if (uident[0] == '\0')
+					return 0;
+				if (!getuser(uident)) {
 					move(t_lines - 2, 0);
-					prints
-					    ("对不起，证监会不允许黄马褂向外转让股票。");
+					prints("错误的使用者代号...");
 					pressreturn();
+					return 0;
+				}
+				if (seek_in_file(DIR_MC "mingren", currentuser.userid)){
+					if (seek_in_file(DIR_MC "jijin", currentuser.userid));
+					else if (!seek_in_file(DIR_MC "mingren", uident)) {
+						clear();
+						move(t_lines - 2, 0);
+						prints("对不起，证监会不允许黄马褂向外转让股票。");
+						pressreturn();
+						break;
+					}
+				}
+				getdata(t_lines - 1, 0, "您选择哪支股票?[0]", genbuf, 7, DOECHO, YEA);
+				getnum=atoi(genbuf);
+				if(getnum<0||getnum>count-1)
+					break; //非法输入
+				else
+					i=getnum;
+				getdata(t_lines - 1, 0, "您要转让多少股?[0]", genbuf, 7, DOECHO, YEA);
+				stock_num[i] = loadValue(currentuser.userid, stockname[i], 1000000);
+				addto_num[i] = atoi(genbuf);
+				if (addto_num[i] < 0){
+					move(t_lines - 2, 0);
+					prints("想转让负的？醒醒...");
+					pressanykey();
 					break;
 				}
-			}
-			getdata(t_lines - 1, 0, "您选择哪支股票?[0]", genbuf, 7,
-				DOECHO, YEA);
-			getnum=atoi(genbuf);
-			if(getnum<0||getnum>count-1)
-				break; //非法输入
-			else
-				i=getnum;
-			getdata(t_lines - 1, 0, "您要转让多少股?[0]", genbuf, 7,
-				DOECHO, YEA);
-			stock_num[i] =
-			    loadValue(currentuser.userid, stockname[i], 1000000);
-			addto_num[i] = atoi(genbuf);
-			if (addto_num[i] < 0){
-				move(t_lines - 2, 0);
-				prints("想转让负的？醒醒...");
-				pressanykey();
-				break;
-			}
-			if (addto_num[i] == 0){
-				pressanykey();
-				break;
-			}
-			if (stock_num[i] < addto_num[i]) {
-				move(t_lines - 2, 0);
-				prints
-				    ("你没有这么多股票啊...是你犯晕还是我犯晕?");
-				pressanykey();
-				break;
-			}
+				if (addto_num[i] == 0){
+					pressanykey();
+					break;
+				}
+				if (stock_num[i] < addto_num[i]) {
+					move(t_lines - 2, 0);
+					prints("你没有这么多股票啊...是你犯晕还是我犯晕?");
+					pressanykey();
+					break;
+				}
 
-			sprintf(genbuf, "确定转账给 %s %d %s吗？",
-				uident, addto_num[i], stockname[i]);
-			if (askyn(genbuf, NA, NA) == YEA){
-				saveValue(currentuser.userid, stockname[i],
-					-addto_num[i], 1000000);
-				saveValue(uident, stockname[i],
-					addto_num[i], 1000000);
-				sprintf(genbuf, "向你转让了%d股股票",addto_num[i]);
-	            		sprintf(title, "您的朋友给您送%s股票来了", stockname[i]);
-				mail_buf(genbuf, uident, title);
-				sprintf(genbuf, "%s进行股票交易(转让)", currentuser.userid);
-				sprintf(buf,"%s向%s转让了%d股%s股票(每股价值%d兵马俑币)",
-					currentuser.userid, uident, addto_num[i], stockname[i], stock_price[i]);
-				millionairesrec(genbuf, buf, "股票交易");
-				move(t_lines - 2, 0);
-				clrtoeol();
-				prints("转让成功", genbuf);
-				pressanykey();
-			}
-			sleep(1);
-			//quit=1;
-			break;
+				sprintf(genbuf, "确定转账给 %s %d %s吗？", uident, addto_num[i], stockname[i]);
+				if (askyn(genbuf, NA, NA) == YEA){
+					saveValue(currentuser.userid, stockname[i], -addto_num[i], 1000000);
+					saveValue(uident, stockname[i], addto_num[i], 1000000);
+					sprintf(genbuf, "向你转让了%d股股票",addto_num[i]);
+					sprintf(title, "您的朋友给您送%s股票来了", stockname[i]);
+					mail_buf(genbuf, uident, title);
+					sprintf(genbuf, "%s进行股票交易(转让)", currentuser.userid);
+					sprintf(buf,"%s向%s转让了%d股%s股票(每股价值%d兵马俑币)",
+							currentuser.userid, uident, addto_num[i], stockname[i], stock_price[i]);
+					millionairesrec(genbuf, buf, "股票交易");
+					move(t_lines - 2, 0);
+					clrtoeol();
+					prints("转让成功", genbuf);
+					pressanykey();
+				}
+				sleep(1);
+				//quit=1;
+				break;
 
-		case 'Q':
-		case 'q':
-			quit = 1;
-			break;
-		default:
-			break;
+			case 'Q':
+			case 'q':
+				quit = 1;
+				break;
+			default:
+				break;
 		}
 		//if (quit)
 		//	return 0;
 		limit_cpu();
 	}
 	money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
-	persenal_stock_info(stock_num, stock_price,
-			    money, stockboard, stock_board);
+	persenal_stock_info(stock_num, stock_price, money, stockboard, stock_board);
 	move(t_lines - 2, 0);
 	clrtobot();
 	if (total_sum > 0)
@@ -6235,38 +5637,30 @@ money_stock_board()
 	return 0;
 }
 
-static void /*显示money*/
-money_show_stat(char *position)
-{
+/*显示money*/
+static void money_show_stat(char *position) {
 	int money, credit;
 	money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
 	credit = loadValue(currentuser.userid, CREDIT_NAME, MAX_MONEY_NUM);
 	clear();
 	move(2, 0);
 	prints("您身上带着 \033[1;31m%d\033[m 兵马俑币，", money);
-	prints("存款 \033[1;31m%d\033[m 兵马俑币。当前位置 \033[1;33m%s\033[m",
-	       credit, position);
+	prints("存款 \033[1;31m%d\033[m 兵马俑币。当前位置 \033[1;33m%s\033[m", credit, position);
 	move(3, 0);
-	prints
-	    ("\033[1m--------------------------------------------------------------------------------\033[m");
+	prints("\033[1m--------------------------------------------------------------------------------\033[m");
 }
 
-static void /*显示当前位置*/
-nomoney_show_stat(char *position)
-{
+/*显示当前位置*/
+static void nomoney_show_stat(char *position) {
 	clear();
 	move(2, 0);
-	prints
-	    ("\033[1;32m欢迎光临兵马俑金融中心，当前位置是\033[0m \033[1;33m%s\033[0m",
-	     position);
+	prints("\033[1;32m欢迎光临兵马俑金融中心，当前位置是\033[0m \033[1;33m%s\033[0m", position);
 	move(3, 0);
-	prints
-	    ("\033[1m--------------------------------------------------------------------------------\033[m");
+	prints("\033[1m--------------------------------------------------------------------------------\033[m");
 }
 
-static int /*赌场大厅*/
-money_gamble()
-{
+/*赌场大厅*/
+static int money_gamble() {
 	int ch;
 	int quit = 0;
 	char uident[IDLEN + 1];
@@ -6278,221 +5672,179 @@ money_gamble()
 		move(6, 4);
 		prints("兵马俑赌场最近生意红火，大家尽兴啊");
 		move(t_lines - 1, 0);
-		prints
-		    ("\033[1;44m 选单 \033[1;46m [1]骰宝 [2]777 [3]猜数字 [4]金扑克梭哈 [5]俄罗斯轮盘 [6]经理室 [Q]离开\033[m");
+		prints("\033[1;44m 选单 \033[1;46m [1]骰宝 [2]777 [3]猜数字 [4]金扑克梭哈 [5]俄罗斯轮盘 [6]经理室 [Q]离开\033[m");
 		ch = igetkey();
 		switch (ch) {
-		case '1':
-			money_dice();
-			break;
-		case '2':
-			money_777();
-			break;
-		case '3':
-			//guess_number();
-			russian_gun();
-			break;
-		case '4':
-			p_gp();
-			break;
-		case '5':
-			russian_gun();
-			break;
-		case '6':
-			clear();
-		    char name[20];
-            whoTakeCharge2(3, name);
-		    nomoney_show_stat("兵马俑赌场经理室");
-			whoTakeCharge(3, uident);
-			if (strcmp(currentuser.userid, uident)) {
-				move(6, 4);
-				prints
-				    ("秘书%s冲你喝道:“死赌鬼，又输光啦？！老板%s不会再借钱给你了。”",
-				     name,uident);
-				pressanykey();
+			case '1':
+				money_dice();
 				break;
-			} else {
-				move(6, 4);
-				prints("请选择操作代号:");
-				move(7, 6);
-				prints
-				    ("1. 发放VIP卡                  2. 收回VIP卡");
-				move(8, 6);
-				prints
-				    ("3. VIP客户                    4. 发邀请函");
-				move(9, 6);
-				prints("5. 金盆洗手                   6. 退出");
-				ch = igetkey();
-				switch (ch) {
-				case '1':
-					move(12, 4);
-					usercomplete("向谁发放VIP卡？", uident);
-					move(13, 4);
-					if (uident[0] == '\0')
-						break;
-					if (!searchuser(uident)) {
-						prints("错误的使用者代号...");
-						pressanykey();
-						break;
-					}
-					if (seek_in_file
-					    (DIR_MC "gamble_VIP", uident)) {
-						prints
-						    ("该客户已经拥有赌场VIP卡。");
-						pressanykey();
-						break;
-					}
-					if (askyn("确定吗？", NA, NA) == YEA) {
-						addtofile(DIR_MC "gamble_VIP",
-							  uident);
-						sprintf(genbuf,
-							"%s 向你发放兵马俑赌场VIP卡",
-							currentuser.userid);
-						mail_buf
-						    ("尊敬的客户： 欢迎多多光临兵马俑赌场，恭祝发财!",
-						     uident, genbuf);
-						move(14, 4);
-						prints("发放完成。");
-						sprintf(buf, "给%s发放赌场VIP卡",uident);
-						sprintf(genbuf, "%s行使赌场管理权限",currentuser.userid);
-						millionairesrec(genbuf, buf, "BMYboss");
-						pressanykey();
-					}
-					break;
-				case '2':
-					move(12, 4);
-					usercomplete("收回谁的VIP卡？", uident);
-					move(13, 4);
-					if (uident[0] == '\0')
-						break;
-					if (!searchuser(uident)) {
-						prints("错误的使用者代号...");
-						pressanykey();
-						break;
-					}
-					if (!seek_in_file
-					    (DIR_MC "gamble_VIP", uident)) {
-						prints("该客户没有赌场VIP卡。");
-						pressanykey();
-						break;
-					}
-					if (askyn("确定吗？", NA, NA) == YEA) {
-						del_from_file(DIR_MC
-							      "gamble_VIP",
-							      uident);
-						sprintf(genbuf,
-							"%s 收回了你的兵马俑赌场VIP卡",
-							currentuser.userid);
-						mail_buf
-						    ("穷鬼，没钱了还VIP啊？下辈子吧！",
-						     uident, genbuf);
-						move(14, 4);
-						prints("卡已收回。");
-						sprintf(buf, "收回%s的赌场VIP卡",uident);
-						sprintf(genbuf, "%s行使赌场管理权限",currentuser.userid);
-						millionairesrec(genbuf, buf, "BMYboss");
-						pressanykey();
-					}
-					break;
-				case '3':
-					clear();
-					move(1, 0);
-					prints("目前拥有赌场VIP卡的客户：");
-					listfilecontent(DIR_MC "gamble_VIP");
+			case '2':
+				money_777();
+				break;
+			case '3':
+				//guess_number();
+				russian_gun();
+				break;
+			case '4':
+				p_gp();
+				break;
+			case '5':
+				russian_gun();
+				break;
+			case '6':
+				clear();
+				char name[20];
+				whoTakeCharge2(3, name);
+				nomoney_show_stat("兵马俑赌场经理室");
+				whoTakeCharge(3, uident);
+				if (strcmp(currentuser.userid, uident)) {
+					move(6, 4);
+					prints("秘书%s冲你喝道:“死赌鬼，又输光啦？！老板%s不会再借钱给你了。”", name,uident);
 					pressanykey();
 					break;
-				case '4':
-					move(12, 4);
-					/*if (time(0) <
-					    3600 +
-					    loadValue(currentuser.userid,
-						      "last_invitation",
-						      2000000000)) {
-						prints("搞出太多人命不好吧？");
-						pressanykey();
-						break;
-					}*/
-					usercomplete("给谁发邀请函？", uident);
-					move(13, 4);
-					if (uident[0] == '\0')
-						break;
-					if (!searchuser(uident)) {
-						prints("错误的使用者代号...");
-						pressanykey();
-						break;
+				} else {
+					move(6, 4);
+					prints("请选择操作代号:");
+					move(7, 6);
+					prints("1. 发放VIP卡                  2. 收回VIP卡");
+					move(8, 6);
+					prints("3. VIP客户                    4. 发邀请函");
+					move(9, 6);
+					prints("5. 金盆洗手                   6. 退出");
+					ch = igetkey();
+					switch (ch) {
+						case '1':
+							move(12, 4);
+							usercomplete("向谁发放VIP卡？", uident);
+							move(13, 4);
+							if (uident[0] == '\0')
+								break;
+							if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
+								prints("错误的使用者代号...");
+								pressanykey();
+								break;
+							}
+							if (seek_in_file(DIR_MC "gamble_VIP", uident)) {
+								prints("该客户已经拥有赌场VIP卡。");
+								pressanykey();
+								break;
+							}
+							if (askyn("确定吗？", NA, NA) == YEA) {
+								ytht_add_to_file(DIR_MC "gamble_VIP", uident);
+								sprintf(genbuf, "%s 向你发放兵马俑赌场VIP卡", currentuser.userid);
+								mail_buf("尊敬的客户： 欢迎多多光临兵马俑赌场，恭祝发财!", uident, genbuf);
+								move(14, 4);
+								prints("发放完成。");
+								sprintf(buf, "给%s发放赌场VIP卡",uident);
+								sprintf(genbuf, "%s行使赌场管理权限",currentuser.userid);
+								millionairesrec(genbuf, buf, "BMYboss");
+								pressanykey();
+							}
+							break;
+						case '2':
+							move(12, 4);
+							usercomplete("收回谁的VIP卡？", uident);
+							move(13, 4);
+							if (uident[0] == '\0')
+								break;
+							if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
+								prints("错误的使用者代号...");
+								pressanykey();
+								break;
+							}
+							if (!seek_in_file (DIR_MC "gamble_VIP", uident)) {
+								prints("该客户没有赌场VIP卡。");
+								pressanykey();
+								break;
+							}
+							if (askyn("确定吗？", NA, NA) == YEA) {
+								ytht_del_from_file(DIR_MC "gamble_VIP", uident, true);
+								sprintf(genbuf, "%s 收回了你的兵马俑赌场VIP卡", currentuser.userid);
+								mail_buf("穷鬼，没钱了还VIP啊？下辈子吧！", uident, genbuf);
+								move(14, 4);
+								prints("卡已收回。");
+								sprintf(buf, "收回%s的赌场VIP卡",uident);
+								sprintf(genbuf, "%s行使赌场管理权限",currentuser.userid);
+								millionairesrec(genbuf, buf, "BMYboss");
+								pressanykey();
+							}
+							break;
+						case '3':
+							clear();
+							move(1, 0);
+							prints("目前拥有赌场VIP卡的客户：");
+							listfilecontent(DIR_MC "gamble_VIP");
+							pressanykey();
+							break;
+						case '4':
+							move(12, 4);
+							usercomplete("给谁发邀请函？", uident);
+							move(13, 4);
+							if (uident[0] == '\0')
+								break;
+							if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
+								prints("错误的使用者代号...");
+								pressanykey();
+								break;
+							}
+							if (loadValue(uident, "invitation", 1)) {
+								prints("已经发过了。");
+								pressanykey();
+								break;
+							}
+							if (askyn("确定吗？", NA, NA) == YEA) {
+								saveValue(uident, "invitation", 1, 1);
+								saveValue(currentuser.userid, "last_invitation", -2000000000, 2000000000);
+								saveValue(currentuser.userid, "last_invitation", time(0), 2000000000);
+								sprintf(genbuf, "%s 给您发来了赌场邀请函", currentuser.userid);
+								mail_buf("您将有机会获得20万大奖！但是，您有更大的机会为此送命。－－心跳尽在兵马俑赌场俄罗斯轮盘赌！", uident, genbuf);
+								move(14, 4);
+								prints("邀请函发出去了。");
+								sprintf(buf, "给%s发放赌场邀请函",uident);
+								sprintf(genbuf, "%s行使赌场管理权限",currentuser.userid);
+								millionairesrec(genbuf, buf, "BMYboss");
+								pressanykey();
+							}
+							break;
+						case '5':
+							move(12, 4);
+							if (askyn ("您真的要金盆洗手吗？", NA, NA) == YEA) {
+								/*	ytht_del_from_file(MC_BOSS_FILE,
+									"gambling");
+									sprintf(genbuf,
+									"%s 宣布辞去兵马俑赌场经理职务",
+									currentuser.userid);
+									deliverreport(genbuf,
+									"兵马俑金融中心对其一直以来的工作表示感谢，祝以后顺利！");
+									move(14, 4);
+									prints
+									("好吧，既然你意已决，弟兄们只有说再见了！");
+									quit = 1;
+									*/
+								sprintf(genbuf, "%s 要辞去赌场经理职务", currentuser.userid);
+								mail_buf(genbuf, "millionaires", genbuf);
+								move(14, 4);
+								prints("好吧，已经发信告知总管了");
+								pressanykey();
+							}
+							break;
+						case 'q':
+						case 'Q':
+							break;
 					}
-					if (loadValue(uident, "invitation", 1)) {
-						prints("已经发过了。");
-						pressanykey();
-						break;
-					}
-					if (askyn("确定吗？", NA, NA) == YEA) {
-						saveValue(uident, "invitation",
-							  1, 1);
-						saveValue(currentuser.userid,
-							  "last_invitation",
-							  -2000000000,
-							  2000000000);
-						saveValue(currentuser.userid,
-							  "last_invitation",
-							  time(0), 2000000000);
-						sprintf(genbuf,
-							"%s 给您发来了赌场邀请函",
-							currentuser.userid);
-						mail_buf
-						    ("您将有机会获得20万大奖！但是，您有更大的机会为此送命。－－心跳尽在兵马俑赌场俄罗斯轮盘赌！",
-						     uident, genbuf);
-						move(14, 4);
-						prints("邀请函发出去了。");
-						sprintf(buf, "给%s发放赌场邀请函",uident);
-						sprintf(genbuf, "%s行使赌场管理权限",currentuser.userid);
-						millionairesrec(genbuf, buf, "BMYboss");
-						pressanykey();
-					}
-					break;
-				case '5':
-					move(12, 4);
-					if (askyn
-					    ("您真的要金盆洗手吗？", NA,
-					     NA) == YEA) {
-					/*	del_from_file(MC_BOSS_FILE,
-							      "gambling");
-						sprintf(genbuf,
-							"%s 宣布辞去兵马俑赌场经理职务",
-							currentuser.userid);
-						deliverreport(genbuf,
-							      "兵马俑金融中心对其一直以来的工作表示感谢，祝以后顺利！");
-						move(14, 4);
-						prints
-						    ("好吧，既然你意已决，弟兄们只有说再见了！");
-						quit = 1;
-					*/
-						sprintf(genbuf, "%s 要辞去赌场经理职务",
-							currentuser.userid);
-						mail_buf(genbuf, "millionaires", genbuf);
-						move(14, 4);
-						prints("好吧，已经发信告知总管了");
-						pressanykey();
-					}
-					break;
-				case 'q':
-				case 'Q':
-					break;
 				}
-			}
-			break;
-		case 'q':
-		case 'Q':
-			quit = 1;
-			break;
+				break;
+			case 'q':
+			case 'Q':
+				quit = 1;
+				break;
 		}
 	}
 	return 0;
 }
 
-static int/*赌博-- 777*/
-money_777()
-{
+/*赌博-- 777*/
+static int money_777() {
 	int ch;
 	int quit = 0;
 	int bid;
@@ -6504,8 +5856,8 @@ money_777()
 	clear();
 	srandom(time(0));
 	while (!quit) {
-		if (utmpshm->mc.prize777 <= 0)
-			utmpshm->mc.prize777 = 30000;
+		if (mc->prize777 <= 0)
+			mc->prize777 = 30000;
 		bid = 0;
 		clear();
 		money_show_stat("兵马俑赌场777");
@@ -6514,37 +5866,34 @@ money_777()
 		move(7, 4);
 		prints("RRR 1:10   BBB 1:20   666 1:40   677 1:60   --- 1:1");
 		move(8, 4);
-		prints
-		    ("         777 1:80 且有机会赢得当前累积基金的一半         ");
+		prints("         777 1:80 且有机会赢得当前累积基金的一半         ");
 		move(9, 4);
-		prints("兵马俑目前累积奖金数: %d，想赢大奖么？压 100 块就行哦。",
-		       utmpshm->mc.prize777);
+		prints("兵马俑目前累积奖金数: %d，想赢大奖么？压 100 块就行哦。", mc->prize777);
 		r = random() % 40;
 		if (r < 1)
 			money_police();
 
 		move(t_lines - 1, 0);
-		prints
-		    ("\033[1;44m 选单 \033[1;46m [1] 压30 [2] 压100 [Q]离开                                          \033[m");
+		prints("\033[1;44m 选单 \033[1;46m [1] 压30 [2] 压100 [Q]离开                                          \033[m");
 		ch = igetkey();
 		switch (ch) {
-		case '1':
-			bid = 30;
-			break;
-		case '2':
-			bid = 100;
-			break;
-		case 'q':
-		case 'Q':
-			quit = 1;
-			break;
+			case '1':
+				bid = 30;
+				break;
+			case '2':
+				bid = 100;
+				break;
+			case 'q':
+			case 'Q':
+				quit = 1;
+				break;
 		}
 		if (quit)
 			break;
 		if (bid == 0)
 			continue;
 		money =
-		    loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
+			loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
 		if (money < bid) {
 			move(11, 4);
 			prints("没钱就别赌了...");
@@ -6569,40 +5918,37 @@ money_777()
 		sleep(1);
 		winrate = calc777(t1, t2, t3);
 		if (winrate <= 0) {
-			utmpshm->mc.prize777 += bid * 80 / 100;
-			if (utmpshm->mc.prize777 >= MAX_MONEY_NUM)
-				utmpshm->mc.prize777 = MAX_MONEY_NUM;
+			mc->prize777 += bid * 80 / 100;
+			if (mc->prize777 >= MAX_MONEY_NUM)
+				mc->prize777 = MAX_MONEY_NUM;
 
 			sprintf(title, "%s参与赌博(777)(输)", currentuser.userid);
 			sprintf(buf, "%s在777 输了%d兵马俑币", currentuser.userid, bid);
 			millionairesrec(title, buf, "赌博777");
 
 			move(12, 4);
-			prints
-			    ("输了，赌注百分之八十滚入兵马俑累积基金，造福他人等于造福自己。");
+			prints("输了，赌注百分之八十滚入兵马俑累积基金，造福他人等于造福自己。");
 			limit_cpu();
 			pressanykey();
 			continue;
 		}
 		if (winrate > 0) {
-			saveValue(currentuser.userid, MONEY_NAME, bid * winrate,
-				  MAX_MONEY_NUM);
+			saveValue(currentuser.userid, MONEY_NAME, bid * winrate, MAX_MONEY_NUM);
 			move(12, 4);
 			prints("您赢了 %d 元", bid * (winrate - 1));
-			utmpshm->mc.prize777 -= bid * (winrate - 1);
+			mc->prize777 -= bid * (winrate - 1);
 
 			sprintf(title, "%s参与赌博(777)(赢)", currentuser.userid);
 			sprintf(buf, "%s在777 赢了%d兵马俑币", currentuser.userid, bid * (winrate - 1));
 			millionairesrec(title, buf, "赌博777");
 		}
 		if (winrate == 81 && bid == 100) {
-			saveValue(currentuser.userid, MONEY_NAME,
-				  utmpshm->mc.prize777 / 2, MAX_MONEY_NUM);
-			utmpshm->mc.prize777 /= 2;
+			saveValue(currentuser.userid, MONEY_NAME, mc->prize777 / 2, MAX_MONEY_NUM);
+			mc->prize777 /= 2;
 			move(13, 4);
 			prints("恭喜您获得兵马俑大奖！");
 			sprintf(title, "%s参与赌博(777)(赢成马了)", currentuser.userid);
-			sprintf(buf, "%s在777 赢了%d兵马俑币", currentuser.userid, utmpshm->mc.prize777 / 2);
+			sprintf(buf, "%s在777 赢了%d兵马俑币", currentuser.userid, mc->prize777 / 2);
 			millionairesrec(title, buf, "赌博777");
 		}
 		limit_cpu();
@@ -6611,9 +5957,8 @@ money_777()
 	return 0;
 }
 
-static int/*赌博--777*/
-calc777(int t1, int t2, int t3)
-{
+/*赌博--777*/
+static int calc777(int t1, int t2, int t3) {
 	if ((t1 % 2 == 0) && (t2 % 2 == 0) && (t3 % 2 == 0))
 		return 2;
 	if ((t1 % 2 == 0) && (t2 % 2 == 0) && (t3 == 1))
@@ -6639,9 +5984,8 @@ calc777(int t1, int t2, int t3)
 	return 0;
 }
 
-static int/*赌博--猜数字*/
-guess_number()
-{
+/*赌博--猜数字*/
+static int guess_number() {
 	int quit = 0;
 	int ch, num, money;
 	int a, b, c;
@@ -6663,162 +6007,134 @@ guess_number()
 		move(6, 4);
 		prints("mAnB表示有m个数字猜对且位置也对,n个数字猜对但位置不对");
 		move(t_lines - 1, 0);
-		prints
-		    ("\033[1;44m 选单 \033[1;46m [1]下注 [Q]离开                                                 \033[m");
+		prints("\033[1;44m 选单 \033[1;46m [1]下注 [Q]离开                                                 \033[m");
 		if (random() % 40 < 1)
 			money_police();
 		ch = igetkey();
 		switch (ch) {
-		case '1':
-			win = 0;
+			case '1':
+				win = 0;
 
-			getdata(8, 4, "您压多少兵马俑币？[100]", genbuf, 5,
-			   DOECHO, YEA);
-			   num = atoi(genbuf);
-			   if (!genbuf[0])
-			   num = 100;
-			   if (num < 100) {
-			   move(9, 4);
-			   prints("有没有钱啊？那么点钱我们不带玩的");
-			   pressanykey();
-			   break;
-			   }
-			//num = 100;
-			sprintf(genbuf,
-				"您压了 \033[1;31m%d\033[m 兵马俑币，确定么？",
-				num);
-			move(9, 4);
-			if (askyn(genbuf, YEA, NA) == YEA) {
-				money =
-				    loadValue(currentuser.userid, MONEY_NAME,
-					      MAX_MONEY_NUM);
-				if (money < num) {
-					move(11, 4);
-					prints("去去去，没那么多钱捣什么乱         \n");
+				getdata(8, 4, "您压多少兵马俑币？[100]", genbuf, 5,
+						DOECHO, YEA);
+				num = atoi(genbuf);
+				if (!genbuf[0])
+					num = 100;
+				if (num < 100) {
+					move(9, 4);
+					prints("有没有钱啊？那么点钱我们不带玩的");
 					pressanykey();
 					break;
 				}
-				//if (num > 999)
+				//num = 100;
+				sprintf(genbuf, "您压了 \033[1;31m%d\033[m 兵马俑币，确定么？", num);
+				move(9, 4);
+				if (askyn(genbuf, YEA, NA) == YEA) {
+					money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
+					if (money < num) {
+						move(11, 4);
+						prints("去去去，没那么多钱捣什么乱         \n");
+						pressanykey();
+						break;
+					}
+					//if (num > 999)
 					//num = 999;
-				saveValue(currentuser.userid, MONEY_NAME, -num,
-					  MAX_MONEY_NUM);
-				do {
-					itoa(random() % 10000, ans);
-					for (a = 0; a < 3; a++)
-						for (b = a + 1; b < 4; b++)
-							if (ans[a] == ans[b])
-								ans[0] = 0;
-				} while (!ans[0]);
-				for (count = 1; count < 7; count++) {
+					saveValue(currentuser.userid, MONEY_NAME, -num, MAX_MONEY_NUM);
 					do {
-						move(10, 4);
-						prints
-						    ("请输入四个不重复的数字");
-						getdata(11, 4, "请猜[q - 退出] → ", genbuf, 5, DOECHO, YEA);
-						if (genbuf[0] == 'q' || genbuf[0] == 'Q') {
-							utmpshm->mc.prize777 += num;
-							if (utmpshm->mc.prize777 > MAX_MONEY_NUM)
-								utmpshm->mc.prize777 = MAX_MONEY_NUM;
-							move(12, 4);
-							prints("byebye!");
-							pressanykey();
-							quit = 1;
-							return 0;
-						}
-						c = atoi(genbuf);
-						itoa(c, genbuf);
+						itoa(random() % 10000, ans);
 						for (a = 0; a < 3; a++)
 							for (b = a + 1; b < 4; b++)
-								if (genbuf[a] == genbuf[b])
-									genbuf[0] = 0;
-						if (!genbuf[0]) {
-							move(12, 4);
-							prints ("输入数字有问题!!");
-							pressanykey();
-							move(12, 4);
-							prints ("                ");
-						}
-					} while (!genbuf[0]);
-					move(count + 13, 0);
-					prints("  第 %2d 次： %s  ->  %dA %dB ",
-					       count, genbuf, an(genbuf, ans),
-					       bn(genbuf, ans));
-					if (an(genbuf, ans) == 4)
-						break;
-					sleep(1);
-				}
+								if (ans[a] == ans[b])
+									ans[0] = 0;
+					} while (!ans[0]);
+					for (count = 1; count < 7; count++) {
+						do {
+							move(10, 4);
+							prints("请输入四个不重复的数字");
+							getdata(11, 4, "请猜[q - 退出] → ", genbuf, 5, DOECHO, YEA);
+							if (genbuf[0] == 'q' || genbuf[0] == 'Q') {
+								mc->prize777 += num;
+								if (mc->prize777 > MAX_MONEY_NUM)
+									mc->prize777 = MAX_MONEY_NUM;
+								move(12, 4);
+								prints("byebye!");
+								pressanykey();
+								quit = 1;
+								return 0;
+							}
+							c = atoi(genbuf);
+							itoa(c, genbuf);
+							for (a = 0; a < 3; a++)
+								for (b = a + 1; b < 4; b++)
+									if (genbuf[a] == genbuf[b])
+										genbuf[0] = 0;
+							if (!genbuf[0]) {
+								move(12, 4);
+								prints ("输入数字有问题!!");
+								pressanykey();
+								move(12, 4);
+								prints ("                ");
+							}
+						} while (!genbuf[0]);
+						move(count + 13, 0);
+						prints("  第 %2d 次： %s  ->  %dA %dB ", count, genbuf, an(genbuf, ans), bn(genbuf, ans));
+						if (an(genbuf, ans) == 4)
+							break;
+						sleep(1);
+					}
 
-				move(12, 4);
-				if (count > 6) {
-					sprintf(genbuf,
-						"你输了呦！正确答案是 %s，下次再加油吧!!",
-						ans);
-					sprintf(genbuf,
-						"\033[1;31m可怜没猜到，输了 %d 元！\033[m",
-						num);
-					//utmpshm->mc.prize777 += num;
+					move(12, 4);
+					if (count > 6) {
+						sprintf(genbuf, "你输了呦！正确答案是 %s，下次再加油吧!!", ans);
+						sprintf(genbuf, "\033[1;31m可怜没猜到，输了 %d 元！\033[m", num);
+						//mc->prize777 += num;
 
-					sprintf(title, "%s参与赌博(猜数字)(输)", currentuser.userid);
-					sprintf(buf, "%s在猜数字输了%d兵马俑币", currentuser.userid, num);
-					millionairesrec(title, buf, "赌博猜数字");
-
-					if (utmpshm->mc.prize777 > MAX_MONEY_NUM)
-						utmpshm->mc.prize777 = MAX_MONEY_NUM;
-				} else {
-					int oldmoney = num;
-					num *= bet[count];
-					if (num - oldmoney > 0) {
-						sprintf(genbuf,
-							"恭喜！总共猜了 %d 次，净赚奖金 %d 元",
-							count, num);
-						num += oldmoney;
-						saveValue(currentuser.userid,
-							  MONEY_NAME, num,
-							  MAX_MONEY_NUM);
-						win = 1;
-
-						sprintf(title, "%s参与赌博(猜数字)(赢)", currentuser.userid);
-						sprintf(buf, "%s在猜数字赢了%d兵马俑币", currentuser.userid, num);
+						sprintf(title, "%s参与赌博(猜数字)(输)", currentuser.userid);
+						sprintf(buf, "%s在猜数字输了%d兵马俑币", currentuser.userid, num);
 						millionairesrec(title, buf, "赌博猜数字");
 
-					} else if (num - oldmoney == 0) {
-						sprintf(genbuf,
-							"唉～～总共猜了 %d 次，没输没赢！",
-							count);
-						saveValue(currentuser.userid,
-							  MONEY_NAME, num,
-							  MAX_MONEY_NUM);
+						if (mc->prize777 > MAX_MONEY_NUM)
+							mc->prize777 = MAX_MONEY_NUM;
 					} else {
-						utmpshm->mc.prize777 +=
-						    oldmoney;
-						if (utmpshm->mc.prize777 > MAX_MONEY_NUM)
-							utmpshm->mc.prize777 = MAX_MONEY_NUM;
+						int oldmoney = num;
+						num *= bet[count];
+						if (num - oldmoney > 0) {
+							sprintf(genbuf, "恭喜！总共猜了 %d 次，净赚奖金 %d 元", count, num);
+							num += oldmoney;
+							saveValue(currentuser.userid, MONEY_NAME, num, MAX_MONEY_NUM);
+							win = 1;
 
-						sprintf(genbuf,
-							"啊～～总共猜了 %d 次，赔钱 %d 元！",
-							count,
-							oldmoney - money);
+							sprintf(title, "%s参与赌博(猜数字)(赢)", currentuser.userid);
+							sprintf(buf, "%s在猜数字赢了%d兵马俑币", currentuser.userid, num);
+							millionairesrec(title, buf, "赌博猜数字");
+
+						} else if (num - oldmoney == 0) {
+							sprintf(genbuf, "唉～～总共猜了 %d 次，没输没赢！", count);
+							saveValue(currentuser.userid, MONEY_NAME, num, MAX_MONEY_NUM);
+						} else {
+							mc->prize777 += oldmoney;
+							if (mc->prize777 > MAX_MONEY_NUM)
+								mc->prize777 = MAX_MONEY_NUM;
+
+							sprintf(genbuf, "啊～～总共猜了 %d 次，赔钱 %d 元！", count, oldmoney - money);
+						}
 					}
+					prints("结果: %s", genbuf);
+					move(13, 4);
+					pressanykey();
 				}
-				prints("结果: %s", genbuf);
-				move(13, 4);
-				pressanykey();
-			}
-			break;
-		case 'Q':
-		case 'q':
-			quit = 1;
-			break;
+				break;
+			case 'Q':
+			case 'q':
+				quit = 1;
+				break;
 		}
 		limit_cpu();
 	}
 	return 0;
 }
 
-static int
-an(a, b)
-char *a, *b;
-{
+static int an(char *a, char *b) {
 	int i, k = 0;
 	for (i = 0; i < 4; i++)
 		if (*(a + i) == *(b + i))
@@ -6826,10 +6142,7 @@ char *a, *b;
 	return k;
 }
 
-static int
-bn(a, b)
-char *a, *b;
-{
+static int bn(char *a, char *b) {
 	int i, j, k = 0;
 	for (i = 0; i < 4; i++)
 		for (j = 0; j < 4; j++)
@@ -6838,11 +6151,7 @@ char *a, *b;
 	return (k - an(a, b));
 }
 
-static void
-itoa(i, a)
-int i;
-char *a;
-{
+static void itoa(int i, char *a) {
 	int j, k, l = 1000;
 
 	for (j = 3; j > 0; j--) {
@@ -6854,12 +6163,10 @@ char *a;
 	}
 	a[3] = i + 48;
 	a[4] = 0;
-
 }
 
-static int/*警署--警察临检*/
-money_police()
-{
+/*警署--警察临检*/
+static int money_police() {
 	char ch;
 	char buf[200], title[STRLEN];
 	int money = 0, quit = 1, check_num;
@@ -6869,55 +6176,26 @@ money_police()
 	money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
 	saveValue(currentuser.userid, MONEY_NAME, -money, MAX_MONEY_NUM);
 	if (random() % 4 > 0) {
-		sprintf
-		    (buf,
-		     "\033[1;41m 系统临检 \033[1;46m 请输入字符:%c        \033[m",
-		     check_num);
+		sprintf(buf, "\033[1;41m 系统临检 \033[1;46m 请输入字符:%c        \033[m", check_num);
 	}
 	//else if (random() % 3 == 0)
 	else {
 		check_num = 0;
-		sprintf(buf,
-			"\033[1;41m 系统临检 \033[1;46m 请输入你的ID(注意大小写!):        \033[m");
+		sprintf(buf, "\033[1;41m 系统临检 \033[1;46m 请输入你的ID(注意大小写!):        \033[m");
 	}
-	/*else {
-		mode = 1;
-		color = (random() % 7) + 31;
-		snprintf(buf, 200,
-			 "\033[1;41m 系统临检 \033[1;46m \033[1;%dm文字颜色\033[1;37m:[\033[1;31m红\033[1;32m绿\033[1;33m黄\033[1;34m蓝\033[1;35m紫\033[1;36m青\033[1;37m白]\033[m",
-			 color);
-		getdata(t_lines - 1, 4, buf, genbuf, 5, DOECHO, YEA);
-		if (color == 31 && (!strcmp("红", genbuf) || !strcmp("red", genbuf)))
+	getdata(t_lines - 1, 4, buf, genbuf, 13, DOECHO, YEA);
+	if (check_num > 0) {
+		ch = genbuf[0];
+		if (ch == check_num)
 			quit = 0;
-		if (color == 32 && (!strcmp("绿", genbuf) || !strcmp("green", genbuf)))
-			quit = 0;
-		if (color == 33 && (!strcmp("黄", genbuf) || !strcmp("yellow", genbuf)))
-			quit = 0;
-		if (color == 34 && (!strcmp("蓝", genbuf) || !strcmp("blue", genbuf)))
-			quit = 0;
-		if (color == 35 && (!strcmp("紫", genbuf) || !strcmp("purple", genbuf)))
-			quit = 0;
-		if (color == 36 && (!strcmp("青", genbuf) || !strcmp("cyan", genbuf)))
-			quit = 0;
-		if (color == 37 && (!strcmp("白", genbuf) || !strcmp("white", genbuf)))
-			quit = 0;
+		else
+			quit = 1;
+	} else {
+		if (strcmp(genbuf, currentuser.userid))
+			quit = 1;
+		else
 			quit = 0;
 	}
-	*/
-	//if (mode == 0) {
-		getdata(t_lines - 1, 4, buf, genbuf, 13, DOECHO, YEA);
-		if (check_num > 0) {
-			ch = genbuf[0];
-			if (ch == check_num)
-				quit = 0;
-			else
-				quit = 1;
-		} else {
-			if (strcmp(genbuf, currentuser.userid))
-				quit = 1;
-			else
-				quit = 0;
-		}
 	//}
 	if (quit) {
 		move(t_lines - 2, 4);
@@ -6931,8 +6209,7 @@ money_police()
 	} else {
 		saveValue(currentuser.userid, MONEY_NAME, money, MAX_MONEY_NUM);
 		move(t_lines - 2, 4);
-		sprintf(buf, "你就是大名鼎鼎的%s啊,继续继续...",
-			currentuser.userid);
+		sprintf(buf, "你就是大名鼎鼎的%s啊,继续继续...", currentuser.userid);
 		prints("%s", buf);
 		pressanykey();
 
@@ -6940,11 +6217,15 @@ money_police()
 	return 0;
 }
 
-static void/*个人股票系统*/
-persenal_stock_info(int stock_num[MAX_STOCK_NUM],
-		    int stock_price[MAX_STOCK_NUM], int money,
-		    char stockboard[STRLEN][MAX_STOCK_NUM], int stock_board[MAX_STOCK_NUM])
-{
+/*个人股票系统*/
+/*
+int stock_num[MAX_STOCK_NUM],
+int stock_price[MAX_STOCK_NUM],
+int money,
+char stockboard[STRLEN][MAX_STOCK_NUM],
+int stock_board[MAX_STOCK_NUM]
+*/
+static void persenal_stock_info(int stock_num[15], int stock_price[15], int money, char stockboard[STRLEN][MAX_STOCK_NUM], int stock_board[15]) {
 	int i, count;
 	count = listfilecontent(MC_STOCK_BOARDS);
 	clear();
@@ -6955,313 +6236,19 @@ persenal_stock_info(int stock_num[MAX_STOCK_NUM],
 	prints("%s", genbuf);
 	for (i = 0; i < count; i++) {
 		move(3 + i, 0);
-		/*sprintf(genbuf,
-			"编号:%2d Stock%c价钱:%d\t持有量:%d\t版名:%-10s 现有股票数:%d",i,
-			65 + i, stock_price[i], stock_num[i], stockboard[i],
-			bcache[stock_board[i]].stocknum);
-		*/
-		sprintf(genbuf,
-			"编号:%2d 价钱:%-5d 持有量:%-7d 版名:%-18s 现有股票数:%d",
- 			i, stock_price[i], stock_num[i], stockboard[i], bcache[stock_board[i]].stocknum);
+		sprintf(genbuf, "编号:%2d 价钱:%-5d 持有量:%-7d 版名:%-18s 现有股票数:%d",
+				i, stock_price[i], stock_num[i], stockboard[i], ythtbbs_cache_Board_get_board_by_idx(stock_board[i])->stocknum);
 		if (seek_in_file(MC_STOCK_STOPBUY, stockboard[i]))
 			prints("\033[1;30m%s\033[m", genbuf);
 		else
 			prints("%s", genbuf);
 	}
 }
-/*
-static void//个人股票系统
-persenal_stock_info2(int stock_num[MAX_STOCK_NUM2],
-		    int stock_price[MAX_STOCK_NUM2], int money,
-		    char *stockboard[], int stock_board[MAX_STOCK_NUM2])
-{
-	int i;
-	clear();
-	move(0, 4);
-	prints("兵马俑股市试营业...以下是你的各股持有数,每股购买上限50,000股");
-	move(1, 4);
-	sprintf(genbuf, "目前你的兵马俑币金额为%d", money);
-	prints("%s", genbuf);
-	for (i = 0; i < MAX_STOCK_NUM2; i++) {
-		move(3 + i, 0);
-		sprintf(genbuf,
-			"编号:%2d Stock%c价钱:%d\t持有量:%d\t版名:%-10s现有股票数:%d",i,
-			65 + i, stock_price[i], stock_num[i], stockboard[i],
-			bcache[stock_board[i]].stocknum);
-		prints("%s", genbuf);
-	}
-}*/
-
-/*-------------抛弃旧的贺卡系统-------macintosh 20051203------*/
-/*static int
-shop_card_show(char *card[][2], int group)
-{
-	int key, i, j, x = 0, y = 0;
-	int global_x = 0, local_x = 0, limit = 0, base = 0;
-	y = 1;
-	clear();
-	move(5, 4);
-	prints("本店贺卡均非本店制作，部分贺卡由于种种原因，未能标明作者。\n");
-	move(6, 4);
-	prints("如贺卡创作者对其作品用于本店持有异议，请与本站大富翁总管联系。\n");
-	move(7, 4);
-	prints("本站将及时根据作者意愿作出调整。\n");
-	move(9, 20);
-	prints("兵马俑贺卡店 \n");
-	pressanykey();
-	while (y) {
-		clear();
-		nomoney_show_stat("兵马俑贺卡商店");
-
-		if (y == 1) {
-			for (i = 0; i < group; i++) {
-				move(5 + i, 4);
-				if (i == x)
-					sprintf(genbuf,
-						"\033[1;41m[+]> %s\033[0m",
-						card[i][0]);
-				else
-					sprintf(genbuf,
-						"\033[1;43m[+]  %s\033[0m",
-						card[i][0]);
-				prints("%s", genbuf);
-			}
-		} else if (y == 2) {
-			i = 0;
-			for (j = 0; j < group; j++) {
-				if (6 + 2 + local_x > 22) {
-					limit = 1;
-					base = 8 + local_x - 22;
-				} else
-					limit = 0;
-				if (j == global_x) {
-					if (!limit) {
-						move(5 + j + i, 4);
-						sprintf(genbuf,
-							"\033[1;44m[-] %s\033[0m",
-							card[j][0]);
-						prints("%s", genbuf);
-					}
-					for (i = 0; i < atoi(card[x][1]); i++) {
-						if (!limit) {
-							if (6 + j + i > 23)
-								continue;
-							else {
-								move(6 + j + i,
-								     8);
-								if (i ==
-								    local_x)
-									sprintf
-									    (genbuf,
-									     "\033[1;41m>|--%s%d\033[0m",
-									     card
-									     [j]
-									     [0],
-									     i +
-									     1);
-								else
-									sprintf
-									    (genbuf,
-									     "\033[1;42m |--%s%d\033[0m",
-									     card
-									     [j]
-									     [0],
-									     i +
-									     1);
-								prints("%s",
-								       genbuf);
-							}
-						} else {
-							// base = 8+local_x-22;
-							// local_x = 15; base = 1;
-							if ((i - base) > 4
-							    && (i - base) <
-							    24) {
-								move(i - base,
-								     8);
-								if (i ==
-								    local_x)
-									sprintf
-									    (genbuf,
-									     "\033[1;41m>|--%s%d\033[0m",
-									     card
-									     [j]
-									     [0],
-									     i +
-									     1);
-								else
-									sprintf
-									    (genbuf,
-									     "\033[1;42m |--%s%d\033[0m",
-									     card
-									     [j]
-									     [0],
-									     i +
-									     1);
-								prints("%s",
-								       genbuf);
-							} else
-								continue;
-						}
-					}
-				} else {
-					if (!limit) {
-						if ((5 + j + i) < 24
-						    && (5 + j + i) > 4) {
-							move(5 + j + i, 4);
-							sprintf(genbuf,
-								"\033[1;43m[+] %s\033[0m",
-								card[j][0]);
-							prints("%s", genbuf);
-						}
-					}
-				}
-			}
-		}
-		move(t_lines - 1, 4);
-		prints
-		    ("\033[1;45m方向键操作，左键返回上一层，右键进入，上下键选择 \033[0m");
-		key = egetch();
-		switch (key) {
-		case KEY_LEFT:
-		case 'q':
-		case 'Q':
-		case 'e':
-		case 'E':
-			y--;
-			global_x = x;
-			break;
-		case KEY_RIGHT:
-		case '\n':
-		case '\r':
-			if (y == 2) {
-				buy_card(card[global_x][0], local_x + 1);
-			}
-			if (y < 2) {
-				y++;
-				local_x = 0;
-			}
-			global_x = x;
-			break;
-		case KEY_UP:
-			if (y == 2) {
-				local_x--;
-				if (local_x < 0)
-					local_x = atoi(card[x][1]) - 1;
-			} else {
-				x--;
-				if (x < 0)
-					x = group - 1;
-
-			}
-			break;
-		case KEY_DOWN:
-			if (y == 2) {
-				local_x++;
-				if (local_x >= atoi(card[x][1]))
-					local_x = 0;
-			} else {
-				x++;
-				if (x > group - 1)
-					x = 0;
-
-			}
-			break;
-		}
-		limit_cpu();
-		if (y == 0)
-			break;
-	}
-	move(t_lines - 2, 5);
-	prints("欢迎您再来!");
-	pressanykey();
-	return 0;
-}*/
-
-/*----抛弃旧的贺卡系统(购买贺卡)-----macintosh 20051203-----*/
-/*static int
-buy_card(char *cardname, int cardnumber)
-{
-	char card_name[20], filepath[80], uident[IDLEN + 1];
-	char note[3][STRLEN], tmpname[STRLEN];
-	int money, i;
-	bzero(card_name, sizeof (card_name));
-	sprintf(card_name, "%s%d", cardname, cardnumber);
-	sprintf(filepath, "0Announce/game/cardshop/%s/%d", cardname,
-		cardnumber);
-	ansimore2(filepath, 0, 0, 25);
-	move(2, 0);
-	prints("Preview....");
-	move(8, 20);
-	prints("Preview....");
-	move(14, 40);
-	prints("Preview....");
-	//clear();
-	move(t_lines - 2, 4);
-	sprintf(genbuf, "你确定要买贺卡%s么?", card_name);
-	if (askyn(genbuf, YEA, NA) != YEA)
-		return 0;
-	money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
-	if (money < 1000) {
-		move(t_lines - 2, 4);
-		prints("你的钱不够啊~~~");
-		pressanykey();
-		return 0;
-	}
-
-	saveValue(currentuser.userid, MONEY_NAME, -1000, MAX_MONEY_NUM);
-	move(0, 0);
-	clrtobot();
-	usercomplete("要把这卡片送给谁? ", uident);
-	if (uident[0] == '\0') {
-		move(t_lines - 2, 4);
-		clrtobot();
-		prints("居然不写地址，你买的卡片丢失在邮寄途中...");
-		pressanykey();
-		return 0;
-	}
-
-	if (!getuser(uident)) {
-		move(t_lines - 2, 4);
-		clrtobot();
-		prints("没有这个人啊，你买的卡片被邮递员私吞了...");
-		pressanykey();
-		return 0;
-	}
-	move(0, 0);
-	clear();
-	prints("有话要在卡片里说吗？");
-	bzero(note, sizeof (note));
-	for (i = 0; i < 3; i++) {
-		getdata(1 + i, 0, ": ", note[i], STRLEN - 1, DOECHO, NA);
-		if (note[i][0] == '\0')
-			break;
-	}
-	sprintf(tmpname, "bbstmpfs/tmp/card.%s.%d", currentuser.userid,
-		uinfo.pid);
-	copyfile(filepath, tmpname);
-	if (i > 0) {
-		int j;
-		FILE *fp = fopen(tmpname, "a");
-		fprintf(fp, "\n以下是 %s 的附言:\n", currentuser.userid);
-		for (j = 0; j < i; j++)
-			fprintf(fp, "%s", note[j]);
-		fclose(fp);
-	}
-
-	move(t_lines - 2, 4);
-	clrtobot();
-	prints("你的贺卡已经发出去了");
-	mail_file(tmpname, uident, "我从兵马俑商店里挑给你的贺卡，你看看中意么?");
-	unlink(tmpname);
-	pressanykey();
-	return 0;
-}*/
 
 //add by happybird for 鲜花店，贺卡店
 //显示欢迎画面
 //这个要读文件可能会造成损耗，小心使用
-int show_welcome(char *filepath,int startline,int endline)
+static int show_welcome(char *filepath,int startline,int endline)
 {
 	FILE *fp;
 	char buf[400];
@@ -7292,9 +6279,7 @@ int show_welcome(char *filepath,int startline,int endline)
 #define PATHLEN 1000
 
 //礼品店，鲜花贺卡二合一，macintosh@bmy 20051204
-static int
-shop_present(int order, char *kind, char *touserid)
-{
+static int shop_present(int order, char *kind, char *touserid) {
 	char ok_filename[PATHLEN];
 	char ok_title[STRLEN];
 	int price_per=0;
@@ -7311,7 +6296,7 @@ shop_present(int order, char *kind, char *touserid)
 	pressanykey();
 
 	DIR *dp;
-//	struct dirent *dirp;
+	//	struct dirent *dirp;
 	char dirNameBuffer[10][PATHLEN], dirTitleBuffer[10][STRLEN];
 	char fileNameBuffer[10][PATHLEN],  fileTitleBuffer[10][STRLEN];
 	char dirpath[PATHLEN], filepath[PATHLEN], dir[PATHLEN], indexpath[PATHLEN], title[STRLEN];
@@ -7333,9 +6318,7 @@ shop_present(int order, char *kind, char *touserid)
 		while(fgets(buf, STRLEN, fp)>0 && numDir<10) {
 			if(!strncmp(buf, "Name=", 5)) {
 				sprintf(title, "%s", buf+5);
-				if(strstr(title + 38,"(BM: SYSOPS)") ||
-					strstr(title + 38,"(BM: BMS)")||
-					!strncmp(title, "<HIDE>",6))
+				if(strstr(title + 38,"(BM: SYSOPS)") || strstr(title + 38,"(BM: BMS)")|| !strncmp(title, "<HIDE>",6))
 					HIDE=1;
 				else
 					HIDE=0;
@@ -7359,18 +6342,6 @@ shop_present(int order, char *kind, char *touserid)
 		fclose(fp);
 	}
 
-/*
-	for (numDir = 0; (dirp = readdir(dp)) != NULL && numDir < 10; ) {
-		snprintf(dirpath, 255,  "%s%s", dir, dirp->d_name);
-		if (!file_isdir(dirpath) || dirp->d_name[0] == '.')
-			continue;
-		move(6 + numDir, 8);
-		prints("%d. %s", numDir, dirp->d_name);
-		strncpy(dirNameBuffer[numDir], dirp->d_name, 31);
-		dirNameBuffer[numDir][31] = '\0';
-		numDir++;
-	}
-*/
 	while(1) {
 		getdata(16, 4, "请选择类型:", buf, 3, DOECHO, YEA);
 		if (buf[0] == '\0')
@@ -7394,9 +6365,7 @@ shop_present(int order, char *kind, char *touserid)
 		while(fgets(buf, STRLEN, fp)>0 && numFile<10) {
 			if(!strncmp(buf, "Name=", 5)) {
 				sprintf(title, "%s", buf+5);
-				if(strstr(title + 38,"(BM: SYSOPS)") ||
-					strstr(title + 38,"(BM: BMS)")||
-					!strncmp(title, "<HIDE>",6))
+				if(strstr(title + 38,"(BM: SYSOPS)") || strstr(title + 38,"(BM: BMS)")|| !strncmp(title, "<HIDE>",6))
 					HIDE=1;
 				else
 					HIDE=0;
@@ -7422,17 +6391,9 @@ shop_present(int order, char *kind, char *touserid)
 
 	move(4,4);
 	prints("本店 %s 类%s共有 %d 种: ", dirTitleBuffer[dirIndex], kind, numFile);
-/*
-	for (numFile = 0; (dirp = readdir(dp)) != NULL; ) {
-		snprintf(filepath, PATHLEN, "%s/%s", dirpath, dirp->d_name);
-		if(file_isfile(filepath) && dirp->d_name[0] != '.')
-			numFile++;
-	}
-*/
 	move(17, 4);
 	while(1) {
-		getdata(18, 4, "请选择要预览的编号[ENTER放弃]: ",
-			buf, 3, DOECHO, YEA);
+		getdata(18, 4, "请选择要预览的编号[ENTER放弃]: ", buf, 3, DOECHO, YEA);
 		if(buf[0] == '\0')
 			return 0;
 		cardIndex = atoi(buf);
@@ -7479,14 +6440,14 @@ shop_present(int order, char *kind, char *touserid)
 	price_per = atoi(ptr1);
 	*ptr2='b';
 	if(price_per<0){
-			move(7,10);
-			prints("My God! 本商品定价有问题，赶快去告诉礼品店老板吧");
-			pressanykey();
-			return 0;
+		move(7,10);
+		prints("My God! 本商品定价有问题，赶快去告诉礼品店老板吧");
+		pressanykey();
+		return 0;
 	}else if(price_per == 0){
-			move(7,10);
-			prints("嘿嘿! 本商品免费赠送，以后要多多支持本店喔");
-			pressanykey();
+		move(7,10);
+		prints("嘿嘿! 本商品免费赠送，以后要多多支持本店喔");
+		pressanykey();
 	}
 
 	ptr1-=4;
@@ -7497,16 +6458,12 @@ shop_present(int order, char *kind, char *touserid)
 	sprintf(genbuf, "你确定要付钱购买%s吗",ok_title);
 	if (askyn(genbuf, YEA, NA) == NA)
 		return 0;
-	ma =
-		buy_present(order, kind, ok_title, ok_filename, price_per, touserid);
+	ma = buy_present(order, kind, ok_title, ok_filename, price_per, touserid);
 	if (ma==9) return 9;
 	return 1;
 }
 
-
-static int
-buy_present(int order, char *kind, char *cardname, char *filepath, int price_per,char *touserid)
-{
+static int buy_present(int order, char *kind, char *cardname, char *filepath, int price_per,char *touserid) {
 	int i;
 	int inputNum=1;
 	char uident[IDLEN + 1], note[3][STRLEN], tmpname[STRLEN];
@@ -7546,12 +6503,12 @@ buy_present(int order, char *kind, char *cardname, char *filepath, int price_per
 		else{
 			*ptr2='\0';
 			strncpy(buf, ptr1, STRLEN);
-			}
+		}
 		if (!strlen(buf))
 			sprintf(buf,"%s","份");
 		ptr1--;
 		*ptr1='\0';
-		}
+	}
 	sprintf(unit,"%s",buf);
 	sprintf(genbuf, "你确定要花费%d兵马俑币购买%d%s%s吗",price,inputNum,unit,cardname);
 	if (askyn(genbuf, YEA, NA) == NA)
@@ -7578,7 +6535,7 @@ buy_present(int order, char *kind, char *cardname, char *filepath, int price_per
 			prints(buf);
 			pressanykey();
 			return 0;
-			}
+		}
 		if (!getuser(uident)) {
 			move(t_lines - 2, 4);
 			clrtobot();
@@ -7586,8 +6543,8 @@ buy_present(int order, char *kind, char *cardname, char *filepath, int price_per
 			prints(buf);
 			pressanykey();
 			return 0;
-			}
 		}
+	}
 	move(2, 0);
 	prints("还有什么话要附上吗？[可以写3行喔]");
 	bzero(note, sizeof (note));
@@ -7596,8 +6553,7 @@ buy_present(int order, char *kind, char *cardname, char *filepath, int price_per
 		if (note[i][0] == '\0')
 			break;
 	}
-	sprintf(tmpname, "bbstmpfs/tmp/present.%s.%d", currentuser.userid,
-		uinfo.pid);
+	sprintf(tmpname, "bbstmpfs/tmp/present.%s.%d", currentuser.userid, uinfo.pid);
 	copyfile(filepath, tmpname);
 	if (i > 0) {
 		int j;
@@ -7631,10 +6587,7 @@ buy_present(int order, char *kind, char *cardname, char *filepath, int price_per
 //char card[52], mycard[5], cpucard[5], sty[100], now;
 char *card, *mycard, *cpucard, *sty;
 int now;
-static int
-forq(a, b)
-char *a, *b;
-{
+static int forq(char *a, char *b) {
 	char c = (*a) % 13;
 	char d = (*b) % 13;
 	if (!c)
@@ -7650,13 +6603,12 @@ char *a, *b;
 	return c - d;
 }
 
-static void/*赌博--梭哈*/
-p_gp()
-{
+/*赌博--梭哈*/
+static void p_gp() {
 	char genbuf[200], hold[5];
 	int quit = 0;
 	int num, i, j, k, tmp, x, xx, doub, gw = 0, cont = 0, money = 0;
-//      int game_times = 0;
+	//      int game_times = 0;
 	char ans[5] = "", ch = ' ';
 	char c1[52], mycard1[5], cpucard1[5], sty1[100];
 	char title[STRLEN], buf[256];
@@ -7676,8 +6628,7 @@ p_gp()
 		move(6, 4);
 		prints("大小:");
 		move(7, 4);
-		prints
-		    ("同花顺＞铁枝＞葫芦＞同花＞顺子＞三条＞兔胚＞单胚＞单张");
+		prints("同花顺＞铁枝＞葫芦＞同花＞顺子＞三条＞兔胚＞单胚＞单张");
 		move(8, 4);
 		prints("特殊加分：");
 		move(9, 4);
@@ -7687,253 +6638,218 @@ p_gp()
 		move(11, 4);
 		prints("葫　芦　　５倍");
 		move(t_lines - 1, 0);
-		prints
-		    ("\033[1;44m 选单 \033[1;46m [1]下注 [Q]离开                                                \033[m");
+		prints("\033[1;44m 选单 \033[1;46m [1]下注 [Q]离开                                                \033[m");
 		if (random() % 40 < 1)
 			money_police();
 		if (!cont)
 			ch = igetkey();
 		switch (ch) {
-		case '1':
-			clear();
-			money_show_stat("金扑克梭哈");
-			if (!cont) {
-				ans[0] = 0;
-				move(6, 4);
-				//if (askyn("您确定要压100兵马俑币么?", YEA, NA) == NA)
+			case '1':
+				clear();
+				money_show_stat("金扑克梭哈");
+				if (!cont) {
+					ans[0] = 0;
+					move(6, 4);
+					//if (askyn("您确定要压100兵马俑币么?", YEA, NA) == NA)
 					//break;
-				getdata(8, 4, "您压多少兵马俑币？[100-9999]", genbuf, 5,
-					DOECHO, YEA);
-				num = atoi(genbuf);
-				if (!genbuf[0])
-				num = 999;
-				if (num < 100) {
-				   move(9, 4);
-				   prints("有没有钱啊？那么点钱我们不带玩的");
-				   pressanykey();
-				   break;
-				}
-				money = loadValue(currentuser.userid,
-					MONEY_NAME, MAX_MONEY_NUM);
-				if (money < num) {
-					move(8, 4);
-					prints("去去去，没那么多钱捣什么乱！      \n");
-					pressanykey();
-					break;
-				}
-				//num = 100;
-				saveValue(currentuser.userid, MONEY_NAME, -num,
-						  MAX_MONEY_NUM);
-			}
-			clear();
-			money_show_stat("金扑克梭哈");
-			move(21, 0);
-			if (cont > 0)
-				prints
-				    ("\033[33;1m (←)(→)改变选牌  (SPACE)改变换牌  (Enter)确定\033[m");
-			else
-				prints
-				    ("\033[33;1m (←)(→)改变选牌  (d)Double  (SPACE)改变换牌  (Enter)确定\033[m");
-			move(22, 0);
-			prints("当前下注金额: %d 兵马俑币", num);
-			for (i = 0; i < 52; i++)
-				card[i] = i;	/* 0~51 ..黑杰克是 1~52 */
-
-			for (i = 0; i < 1000; i++) {
-				j = random() % 52;
-				k = random() % 52;
-				tmp = card[j];
-				card[j] = card[k];
-				card[k] = tmp;
-			}
-
-			now = doub = 0;
-			for (i = 0; i < 5; i++) {
-				mycard[i] = card[now++];
-				hold[i] = 1;
-			}
-			qsort(mycard, 5, sizeof (char), (void *) forq);
-
-			for (i = 0; i < 5; i++)
-				show_card(0, mycard[i], i);
-
-			x = xx = tmp = 0;
-			while (tmp != '\r' && tmp != '\n' && tmp != 'k') {
-				for (i = 0; i < 5; i++) {
-					move(16, i * 4 + 2);
-					outs(hold[i] < 0 ? "保" : "  ");
-					move(17, i * 4 + 2);
-					outs(hold[i] < 0 ? "留" : "  ");
-				}
-				move(8, xx * 4 + 2);
-				outs("  ");
-				move(8, x * 4 + 2);
-				outs("↓");
-				move(t_lines - 1, 0);
-				xx = x;
-
-				tmp = egetch();
-				switch (tmp) {
-#ifdef GP_DEBUG
-				case KEY_UP:
-					getdata(21, 0, "把牌换成> ", genbuf, 3,
-						DOECHO, YEA);
-					mycard[x] = atoi(genbuf);
-					qsort(mycard, 5, sizeof (char), forq);
-					for (i = 0; i < 5; i++)
-						show_card(0, mycard[i], i);
-					break;
-#endif
-				case KEY_LEFT:
-				case 'l':
-					x = x ? x - 1 : 4;
-					break;
-				case KEY_RIGHT:
-				case 'r':
-					x = (x == 4) ? 0 : x + 1;
-					break;
-				case ' ':
-					hold[x] *= -1;
-					break;
-				case 'd':
-					if (!cont && !doub
-					    && loadValue(currentuser.userid,
-							 MONEY_NAME,
-							 MAX_MONEY_NUM) >=
-					    num) {
-						doub++;
-						move(21, 0);
-						clrtoeol();
-						prints
-						    ("\033[33;1m (←)(→)改变选牌  (SPACE)改变换牌  (Enter)确定\033[m");
-						saveValue(currentuser.userid,
-							  MONEY_NAME, -num,
-							  MAX_MONEY_NUM);
-						num *= 2;
-						move(22, 0);
-						prints("当前下注金额 %d 兵马俑币",
-						       num);
-						//show_money(bet, NULL, NA);
+					getdata(8, 4, "您压多少兵马俑币？[100-9999]", genbuf, 5, DOECHO, YEA);
+					num = atoi(genbuf);
+					if (!genbuf[0])
+						num = 999;
+					if (num < 100) {
+						move(9, 4);
+						prints("有没有钱啊？那么点钱我们不带玩的");
+						pressanykey();
+						break;
 					}
-					break;
+					money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
+					if (money < num) {
+						move(8, 4);
+						prints("去去去，没那么多钱捣什么乱！      \n");
+						pressanykey();
+						break;
+					}
+					//num = 100;
+					saveValue(currentuser.userid, MONEY_NAME, -num, MAX_MONEY_NUM);
 				}
-			}
+				clear();
+				money_show_stat("金扑克梭哈");
+				move(21, 0);
+				if (cont > 0)
+					prints("\033[33;1m (←)(→)改变选牌  (SPACE)改变换牌  (Enter)确定\033[m");
+				else
+					prints("\033[33;1m (←)(→)改变选牌  (d)Double  (SPACE)改变换牌  (Enter)确定\033[m");
+				move(22, 0);
+				prints("当前下注金额: %d 兵马俑币", num);
+				for (i = 0; i < 52; i++)
+					card[i] = i;	/* 0~51 ..黑杰克是 1~52 */
 
-			for (i = 0; i < 5; i++)
-				if (hold[i] == 1)
+				for (i = 0; i < 1000; i++) {
+					j = random() % 52;
+					k = random() % 52;
+					tmp = card[j];
+					card[j] = card[k];
+					card[k] = tmp;
+				}
+
+				now = doub = 0;
+				for (i = 0; i < 5; i++) {
 					mycard[i] = card[now++];
-			qsort(mycard, 5, sizeof (char), (void *) forq);
-			for (i = 0; i < 5; i++)
-				show_card(0, mycard[i], i);
-			move(11, x * 4 + 2);
-			outs("  ");
-			money_cpu();
-#ifdef GP_DEBUG
-			for (x = 0; x < 5; x++) {
-				getdata(21, 0, "把牌换成> ", genbuf, 3, DOECHO,
-					YEA);
-				cpucard[x] = atoi(genbuf);
-			}
-			qsort(cpucard, 5, sizeof (char), forq);
-			for (i = 0; i < 5; i++)
-				show_card(1, cpucard[i], i);
-#endif
-			i = gp_win();
-
-			if (i < 0) {
-				saveValue(currentuser.userid, MONEY_NAME,
-					  num * 2, MAX_MONEY_NUM);
-
-				sprintf(title, "%s参与赌博(梭哈)(赢)", currentuser.userid);
-				sprintf(buf, "%s在梭哈赢了%d兵马俑币", currentuser.userid, num);
-				millionairesrec(title, buf, "赌博梭哈");
-
-				sprintf(genbuf,
-					"哇!好棒喔!!! 净赚 %d 元...  :D", num);
-				prints("%s", genbuf);
-				if (cont > 0)
-					sprintf(genbuf,
-						"连胜 %d 次, 赢了 %d 元",
-						cont + 1, num);
-				else
-					sprintf(genbuf, "赢了 %d 元", num);
-				num = (num > 50000 ? 100000 : num * 2);
-				gw = 1;
-			} else if (i > 1000) {
-				switch (i) {
-				case 1001:
-					doub = 15;
-					break;
-				case 1002:
-					doub = 10;
-					break;
-				case 1003:
-					doub = 5;
-					break;
+					hold[i] = 1;
 				}
-				saveValue(currentuser.userid, MONEY_NAME,
-					  num * 2 * doub, MAX_MONEY_NUM);
+				qsort(mycard, 5, sizeof (char), (void *) forq);
 
-				sprintf(title, "%s参与赌博(梭哈)(赢)", currentuser.userid);
-				sprintf(buf, "%s在梭哈赢了%d兵马俑币", currentuser.userid, num * 2 * doub - num);
-				millionairesrec(title, buf, "赌博梭哈");
+				for (i = 0; i < 5; i++)
+					show_card(0, mycard[i], i);
 
-				sprintf(genbuf, "哇!好棒喔!!!净赚 %d 元...  :D",
-					num * 2 * doub - num);
-				prints("%s", genbuf);
-				if (cont > 0)
-					sprintf(genbuf,
-						"连胜 %d 次, 赢了 %d 元",
-						cont + 1, num * doub);
-				else
-					sprintf(genbuf, "赢了 %d 元",
-						num * doub);
-				num = (num > 5000 ? 10000 : num * 2 * doub);
-				gw = 1;
-				num = (num >= 10000 ? 10000 : num);
-			} else {
-				prints("输了...:~~~");
+				x = xx = tmp = 0;
+				while (tmp != '\r' && tmp != '\n' && tmp != 'k') {
+					for (i = 0; i < 5; i++) {
+						move(16, i * 4 + 2);
+						outs(hold[i] < 0 ? "保" : "  ");
+						move(17, i * 4 + 2);
+						outs(hold[i] < 0 ? "留" : "  ");
+					}
+					move(8, xx * 4 + 2);
+					outs("  ");
+					move(8, x * 4 + 2);
+					outs("↓");
+					move(t_lines - 1, 0);
+					xx = x;
 
-				sprintf(title, "%s参与赌博(梭哈)(输)", currentuser.userid);
-				sprintf(buf, "%s在梭哈输了%d兵马俑币", currentuser.userid, num);
-				millionairesrec(title, buf, "赌博梭哈");
+					tmp = egetch();
+					switch (tmp) {
+#ifdef GP_DEBUG
+						case KEY_UP:
+							getdata(21, 0, "把牌换成> ", genbuf, 3, DOECHO, YEA);
+							mycard[x] = atoi(genbuf);
+							qsort(mycard, 5, sizeof (char), forq);
+							for (i = 0; i < 5; i++)
+								show_card(0, mycard[i], i);
+							break;
+#endif
+						case KEY_LEFT:
+						case 'l':
+							x = x ? x - 1 : 4;
+							break;
+						case KEY_RIGHT:
+						case 'r':
+							x = (x == 4) ? 0 : x + 1;
+							break;
+						case ' ':
+							hold[x] *= -1;
+							break;
+						case 'd':
+							if (!cont && !doub && loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM) >= num) {
+								doub++;
+								move(21, 0);
+								clrtoeol();
+								prints("\033[33;1m (←)(→)改变选牌  (SPACE)改变换牌  (Enter)确定\033[m");
+								saveValue(currentuser.userid, MONEY_NAME, -num, MAX_MONEY_NUM);
+								num *= 2;
+								move(22, 0);
+								prints("当前下注金额 %d 兵马俑币", num);
+								//show_money(bet, NULL, NA);
+							}
+							break;
+					}
+				}
 
-				if (cont > 1)
-					sprintf(genbuf,
-						"中止 %d 连胜, 输了 %d 元",
-						cont, num);
-				else
-					sprintf(genbuf, "输了 %d 元", num);
-				cont = 0;
-				num = 0;
-				pressanykey();
-			}
+				for (i = 0; i < 5; i++)
+					if (hold[i] == 1)
+						mycard[i] = card[now++];
+				qsort(mycard, 5, sizeof (char), (void *) forq);
+				for (i = 0; i < 5; i++)
+					show_card(0, mycard[i], i);
+				move(11, x * 4 + 2);
+				outs("  ");
+				money_cpu();
+#ifdef GP_DEBUG
+				for (x = 0; x < 5; x++) {
+					getdata(21, 0, "把牌换成> ", genbuf, 3, DOECHO, YEA);
+					cpucard[x] = atoi(genbuf);
+				}
+				qsort(cpucard, 5, sizeof (char), forq);
+				for (i = 0; i < 5; i++)
+					show_card(1, cpucard[i], i);
+#endif
+				i = gp_win();
 
-			if (gw == 1) {
-				gw = 0;
-				getdata(21, 0, "您要把奖金继续压注吗 (y/n)?",
-					ans, 2, DOECHO, YEA);
-				if (ans[0] == 'y' || ans[0] == 'Y') {
-					saveValue(currentuser.userid, MONEY_NAME, -num, MAX_MONEY_NUM);	/* added by soff */
-					cont++;
+				if (i < 0) {
+					saveValue(currentuser.userid, MONEY_NAME, num * 2, MAX_MONEY_NUM);
+
+					sprintf(title, "%s参与赌博(梭哈)(赢)", currentuser.userid);
+					sprintf(buf, "%s在梭哈赢了%d兵马俑币", currentuser.userid, num);
+					millionairesrec(title, buf, "赌博梭哈");
+
+					sprintf(genbuf, "哇!好棒喔!!! 净赚 %d 元...  :D", num);
+					prints("%s", genbuf);
+					if (cont > 0)
+						sprintf(genbuf, "连胜 %d 次, 赢了 %d 元", cont + 1, num);
+					else
+						sprintf(genbuf, "赢了 %d 元", num);
+					num = (num > 50000 ? 100000 : num * 2);
+					gw = 1;
+				} else if (i > 1000) {
+					switch (i) {
+						case 1001: doub = 15; break;
+						case 1002: doub = 10; break;
+						case 1003: doub = 5; break;
+					}
+					saveValue(currentuser.userid, MONEY_NAME, num * 2 * doub, MAX_MONEY_NUM);
+
+					sprintf(title, "%s参与赌博(梭哈)(赢)", currentuser.userid);
+					sprintf(buf, "%s在梭哈赢了%d兵马俑币", currentuser.userid, num * 2 * doub - num);
+					millionairesrec(title, buf, "赌博梭哈");
+
+					sprintf(genbuf, "哇!好棒喔!!!净赚 %d 元...  :D", num * 2 * doub - num);
+					prints("%s", genbuf);
+					if (cont > 0)
+						sprintf(genbuf, "连胜 %d 次, 赢了 %d 元", cont + 1, num * doub);
+					else
+						sprintf(genbuf, "赢了 %d 元", num * doub);
+					num = (num > 5000 ? 10000 : num * 2 * doub);
+					gw = 1;
+					num = (num >= 10000 ? 10000 : num);
 				} else {
+					prints("输了...:~~~");
+
+					sprintf(title, "%s参与赌博(梭哈)(输)", currentuser.userid);
+					sprintf(buf, "%s在梭哈输了%d兵马俑币", currentuser.userid, num);
+					millionairesrec(title, buf, "赌博梭哈");
+
+					if (cont > 1)
+						sprintf(genbuf, "中止 %d 连胜, 输了 %d 元", cont, num);
+					else
+						sprintf(genbuf, "输了 %d 元", num);
 					cont = 0;
 					num = 0;
+					pressanykey();
 				}
-			}
-			break;
-		case 'Q':
-		case 'q':
-			quit = 1;
-			break;
+
+				if (gw == 1) {
+					gw = 0;
+					getdata(21, 0, "您要把奖金继续压注吗 (y/n)?", ans, 2, DOECHO, YEA);
+					if (ans[0] == 'y' || ans[0] == 'Y') {
+						saveValue(currentuser.userid, MONEY_NAME, -num, MAX_MONEY_NUM);	/* added by soff */
+						cont++;
+					} else {
+						cont = 0;
+						num = 0;
+					}
+				}
+				break;
+			case 'Q':
+			case 'q':
+				quit = 1;
+				break;
 		}
 		limit_cpu();
 	}
 }
-static /*赌博--梭哈--显示扑克牌*/
-void show_card(isDealer, c, x)
-int isDealer, c, x;
-{
+
+/*赌博--梭哈--显示扑克牌*/
+static void show_card(int isDealer, int c, int x) {
 	int beginL;
 	char *suit[4] = { "Ｃ", "Ｄ", "Ｈ", "Ｓ" };
 	char *num[13] = { "Ｋ", "Ａ", "２", "３", "４", "５", "６",
@@ -7962,9 +6878,8 @@ int isDealer, c, x;
 	outs("╰───╯");
 }
 
-static/*赌博--梭哈*/
-void money_cpu()
-{
+/*赌博--梭哈*/
+static void money_cpu() {
 	char hold[5];
 	int i, j;
 	char p[13], q[5], r[4];
@@ -8009,9 +6924,8 @@ void money_cpu()
 		show_card(1, cpucard[i], i);
 }
 
-static/*赌博-梭哈*/
-int gp_win()
-{
+/*赌博-梭哈*/
+static int gp_win() {
 	int my, cpu, ret = 0;
 	char myx, myy, cpux, cpuy;
 
@@ -8032,26 +6946,16 @@ int gp_win()
 
 	if (ret < 0)
 		switch (my) {
-		case 1:
-			ret = 1001;
-			break;
-		case 2:
-			ret = 1002;
-			break;
-		case 3:
-			ret = 1003;
-			break;
+			case 1: ret = 1001; break;
+			case 2: ret = 1002; break;
+			case 3: ret = 1003; break;
 		}
 
 	return ret;
 }
 
 //同花顺、铁枝、葫、同花、顺、三条、兔胚、胚、一只
-static
-    int
-complex(cc, x, y)
-char *cc, *x, *y;
-{
+static int complex(char *cc, char *x, char *y) {
 	char p[13], q[5], r[4];
 	char a[5], b[5], c[5], d[5];
 	int i, j, k;
@@ -8061,20 +6965,20 @@ char *cc, *x, *y;
 
 	/* 同花顺 */
 	if ((a[0] == a[1] - 1 && a[1] == a[2] - 1 && a[2] == a[3] - 1
-	     && a[3] == a[4] - 1) && (b[0] == b[1] && b[1] == b[2]
-				      && b[2] == b[3] && b[3] == b[4])) {
+				&& a[3] == a[4] - 1) && (b[0] == b[1] && b[1] == b[2]
+					&& b[2] == b[3] && b[3] == b[4])) {
 		*x = a[4];
 		*y = b[4];
 		return 1;
 	}
 	if (a[4] == 1 && a[0] == 2 && a[1] == 3 && a[2] == 4 && a[3] == 5 &&
-	    (b[0] == b[1] && b[1] == b[2] && b[2] == b[3] && b[3] == b[4])) {
+			(b[0] == b[1] && b[1] == b[2] && b[2] == b[3] && b[3] == b[4])) {
 		*x = a[3];
 		*y = b[4];
 		return 1;
 	}
 	if (a[4] == 1 && a[0] == 10 && a[1] == 11 && a[2] == 12 && a[3] == 13 &&
-	    (b[0] == b[1] && b[1] == b[2] && b[2] == b[3] && b[3] == b[4])) {
+			(b[0] == b[1] && b[1] == b[2] && b[2] == b[3] && b[3] == b[4])) {
 		*x = 1;
 		*y = b[4];
 		return 1;
@@ -8113,13 +7017,13 @@ char *cc, *x, *y;
 				d[j] = k;
 			}
 	if (10 == c[1] && c[1] == c[2] - 1 && c[2] == c[3] - 1
-	    && c[3] == c[4] - 1 && c[0] == 1) {
+			&& c[3] == c[4] - 1 && c[0] == 1) {
 		*x = 1;
 		*y = d[0];
 		return 5;
 	}
 	if (c[0] == c[1] - 1 && c[1] == c[2] - 1 && c[2] == c[3] - 1
-	    && c[3] == c[4] - 1) {
+			&& c[3] == c[4] - 1) {
 		*x = c[4];
 		*y = d[4];
 		return 5;
@@ -8167,11 +7071,8 @@ char *cc, *x, *y;
 	return 9;
 }
 
-/* a 是点数 .. b 是花色 */
-static void/*赌博--梭哈*/
-money_suoha_tran(a, b, c)
-char *a, *b, *c;
-{
+/* a 是点数 .. b 是花色 *//*赌博--梭哈*/
+static void money_suoha_tran(char *a, char *b, char *c) {
 	int i;
 	for (i = 0; i < 5; i++) {
 		a[i] = c[i] % 13;
@@ -8183,10 +7084,8 @@ char *a, *b, *c;
 		b[i] = c[i] / 13;
 }
 
-static void/*赌博--梭哈*/
-money_suoha_check(p, q, r, cc)
-char *p, *q, *r, *cc;
-{
+/*赌博--梭哈*/
+static void money_suoha_check(char *p, char *q, char *r, char *cc) {
 	int i;
 
 	for (i = 0; i < 13; i++)
@@ -8207,25 +7106,21 @@ char *p, *q, *r, *cc;
 }
 
 //同花顺、铁枝、葫、同花、顺、三条、兔胚、胚、一只
-static void/*赌博--梭哈*/
-show_style(my, cpu)
-char my, cpu;
-{
-	char *style[9] = { "同花顺", "铁枝", "葫芦", "同花", "顺子",
+/*赌博--梭哈*/
+static void show_style(int my, int cpu) {
+	char *style[9] = {
+		"同花顺", "铁枝", "葫芦", "同花", "顺子",
 		"三条", "兔胚", "单胚", "一张"
 	};
 	move(5, 26);
 	prints("\033[41;37;1m%s\033[m", style[cpu - 1]);
 	move(15, 26);
 	prints("\033[41;37;1m%s\033[m", style[my - 1]);
-	sprintf(sty, "我的牌\033[44;1m%s\033[m..电脑的牌\033[44;1m%s\033[m",
-		style[my - 1], style[cpu - 1]);
+	sprintf(sty, "我的牌\033[44;1m%s\033[m..电脑的牌\033[44;1m%s\033[m", style[my - 1], style[cpu - 1]);
 }
 
-static void/*赌博--轮盘*/
-russian_gun()
-{
-
+/*赌博--轮盘*/
+static void russian_gun() {
 	int i;
 	int line;
 	int first;
@@ -8237,8 +7132,7 @@ russian_gun()
 	////slowaction
 	if (currentuser.stay < 86400) {
 		move(7, 4);
-		prints
-		    ("小孩子来拼什么命，找你们家大人来。\n乖，给你一块兵马俑币买糖吃");
+		prints("小孩子来拼什么命，找你们家大人来。\n乖，给你一块兵马俑币买糖吃");
 		pressanykey();
 		return;
 	}
@@ -8246,40 +7140,31 @@ russian_gun()
 
 	move(6, 4);
 	if (!loadValue(currentuser.userid, "invitation", 1)) {
-		prints
-		    ("值班秘书上下打量了你半晌，说道：“这里没有这种赌法，你走吧。”");
+		prints("值班秘书上下打量了你半晌，说道：“这里没有这种赌法，你走吧。”");
 		pressanykey();
 	} else {
 		saveValue(currentuser.userid, "invitation", -1, 1);
 		whoTakeCharge(3, uident);
-		prints
-		    ("值班经理看完你递过的邀请函，又四下看了看，才说道：“请随我来。”");
+		prints("值班经理看完你递过的邀请函，又四下看了看，才说道：“请随我来。”");
 		pressanykey();
 		clear();
 		money_show_stat("兵马俑赌场密室");
 		move(4, 4);
-		prints
-		    ("这里是一间不大的密室，很静，静得可怕。空气中似乎有血腥的味道...");
+		prints("这里是一间不大的密室，很静，静得可怕。空气中似乎有血腥的味道...");
 		move(6, 4);
-		prints
-		    ("%s就坐在面前，微笑道：“你敢来赴约，算你有胆量！请坐。”",
-		     uident);
+		prints("%s就坐在面前，微笑道：“你敢来赴约，算你有胆量！请坐。”", uident);
 		pressanykey();
 		move(8, 4);
 		prints("一把左轮手枪扔到了桌上...一个蒙面男子坐到了你面前...");
 		move(10, 4);
 		if (askyn("你知道俄罗斯轮盘赌的规则吗？", NA, NA) == NA) {
 			move(12, 4);
-			prints
-			    ("%s叹了口气，说道：“算了，别死了连怎么回事都不知道。你走吧！”",
-			     uident);
+			prints("%s叹了口气，说道：“算了，别死了连怎么回事都不知道。你走吧！”", uident);
 			pressanykey();
 			return;
 		}
 		move(12, 4);
-		if (askyn
-		    ("好！那就开始吧，祝你好运。你是客，你要先来吗？", NA,
-		     NA) == YEA) {
+		if (askyn("好！那就开始吧，祝你好运。你是客，你要先来吗？", NA, NA) == YEA) {
 			first = 1;
 		} else {
 			first = 0;
@@ -8288,49 +7173,37 @@ russian_gun()
 		money_show_stat("兵马俑赌场密室");
 		set_safe_record();
 		currentuser.dietime = currentuser.stay + 4444 * 60;
-		substitute_record(PASSFILE,
-				  &currentuser, sizeof (currentuser), usernum);
+		substitute_record(PASSFILE, &currentuser, sizeof (currentuser), usernum);
 		for (i = 0, line = 6; i < 6; i += 2) {
 			srandom(time(0));
 			move(line++, 4);
 			if (first) {
-				prints
-				    ("你拿起左轮手枪，对准自己的太阳穴，咬咬牙扣动了扳机...");
+				prints("你拿起左轮手枪，对准自己的太阳穴，咬咬牙扣动了扳机...");
 			} else {
-				prints
-				    ("蒙面男子拿起左轮手枪，对准自己的太阳穴，扣动了扳机...");
+				prints("蒙面男子拿起左轮手枪，对准自己的太阳穴，扣动了扳机...");
 			}
 			pressanykey();
 			if (random() % (6 - i)) {
 				move(line++, 4);
 				if (first) {
-					prints
-					    ("\033[1;33m咔哒！\033[m一声响过，你惊魂未定之余发现自己还活着...");
+					prints("\033[1;33m咔哒！\033[m一声响过，你惊魂未定之余发现自己还活着...");
 				} else {
-					prints
-					    ("\033[1;33m咔哒！\033[m一声响过，蒙面男子毫发无损...");
+					prints("\033[1;33m咔哒！\033[m一声响过，蒙面男子毫发无损...");
 				}
 				move(line++, 4);
 				if (5 - i == 1 && first) {
 					if (first) {
 						move(line++, 4);
-						prints
-						    ("蒙面男子绝望的颤抖着，用哀求的眼神看着%s。",
-						     uident);
+						prints("蒙面男子绝望的颤抖着，用哀求的眼神看着%s。", uident);
 						move(line++, 4);
-						prints
-						    ("\033[1;31m砰！一声巨响，蒙面男子血流满地...\033[m");
+						prints("\033[1;31m砰！一声巨响，蒙面男子血流满地...\033[m");
 						pressanykey();
 						move(line++, 4);
-						prints
-						    ("%s擦了擦还在冒烟的手枪，又放进了口袋里。",
-						     uident);
+						prints("%s擦了擦还在冒烟的手枪，又放进了口袋里。", uident);
 						break;
 					} else {
-						prints
-						    ("蒙面男子得意的狞笑着，把枪口对准了你...");
-						prints
-						    ("\033[1;31m砰！一声巨响，你只觉得意识瞬间模糊...\033[m");
+						prints("蒙面男子得意的狞笑着，把枪口对准了你...");
+						prints("\033[1;31m砰！一声巨响，你只觉得意识瞬间模糊...\033[m");
 						pressanykey();
 						Q_Goodbye();
 					}
@@ -8339,28 +7212,23 @@ russian_gun()
 				if (first) {
 					prints("现在轮到蒙面男子...");
 				} else {
-					prints
-					    ("现在轮到你了...你的心脏\033[5;31m砰砰\033[m跳得厉害...");
+					prints("现在轮到你了...你的心脏\033[5;31m砰砰\033[m跳得厉害...");
 				}
 				pressanykey();
 				if (random() % (5 - i)) {
 					move(line++, 4);
 					if (first) {
-						prints
-						    ("\033[1;33m咔哒！\033[m一声响过，蒙面男子毫发无损...");
+						prints("\033[1;33m咔哒！\033[m一声响过，蒙面男子毫发无损...");
 					} else {
-						prints
-						    ("\033[1;33m咔哒！\033[m一声响过，你惊魂未定之余发现自己还活着...");
+						prints("\033[1;33m咔哒！\033[m一声响过，你惊魂未定之余发现自己还活着...");
 					}
 				} else {
 					move(line++, 4);
 					if (first) {
-						prints
-						    ("\033[1;31m砰！一声巨响，蒙面男子血流满地...\033[m");
+						prints("\033[1;31m砰！一声巨响，蒙面男子血流满地...\033[m");
 						break;
 					} else {
-						prints
-						    ("\033[1;31m砰！一声巨响，你只觉得意识瞬间模糊...\033[m");
+						prints("\033[1;31m砰！一声巨响，你只觉得意识瞬间模糊...\033[m");
 						pressanykey();
 						Q_Goodbye();
 					}
@@ -8368,13 +7236,11 @@ russian_gun()
 			} else {
 				move(line++, 4);
 				if (first) {
-					prints
-					    ("\033[1;31m砰！一声巨响，你只觉得意识瞬间模糊...\033[m");
+					prints("\033[1;31m砰！一声巨响，你只觉得意识瞬间模糊...\033[m");
 					pressanykey();
 					Q_Goodbye();
 				} else {
-					prints
-					    ("\033[1;31m砰！一声巨响，蒙面男子血流满地...\033[m");
+					prints("\033[1;31m砰！一声巨响，蒙面男子血流满地...\033[m");
 					break;
 				}
 			}
@@ -8382,12 +7248,9 @@ russian_gun()
 		move(line++, 4);
 		set_safe_record();
 		currentuser.dietime = 0;
-		substitute_record(PASSFILE,
-				  &currentuser, sizeof (currentuser), usernum);
-		prints
-		    ("一切都结束了...你一刻也不愿留在这恐怖的地方，尽管你得到了200000 兵马俑币。");
-		saveValue(currentuser.userid, MONEY_NAME,200000,
-			  MAX_MONEY_NUM);
+		substitute_record(PASSFILE, &currentuser, sizeof (currentuser), usernum);
+		prints("一切都结束了...你一刻也不愿留在这恐怖的地方，尽管你得到了200000 兵马俑币。");
+		saveValue(currentuser.userid, MONEY_NAME,200000, MAX_MONEY_NUM);
 
 		sprintf(title, "%s参与赌博(轮盘)", currentuser.userid);
 		sprintf(buf, "%s在轮盘赢了%d兵马俑币", currentuser.userid, 200000);
@@ -8397,14 +7260,11 @@ russian_gun()
 	}
 }
 
-static void
-policereport(char *str)
-{
+static void policereport(char *str) {
 	FILE *se;
 	char fname[STRLEN], title[STRLEN];
 
-	sprintf(fname, "bbstmpfs/tmp/police.%s.%05d", currentuser.userid,
-		uinfo.pid);
+	sprintf(fname, "bbstmpfs/tmp/police.%s.%05d", currentuser.userid, uinfo.pid);
 	if ((se = fopen(fname, "w")) != NULL) {
 		fprintf(se, "%s", "【此篇文章由兵马俑大富翁自动张贴系统发表】\n\n");
 		fprintf(se, "%s", str);
@@ -8415,10 +7275,8 @@ policereport(char *str)
 	}
 }
 
-
-static int/*警署*/
-money_cop()
-{
+/*警署*/
+static int money_cop() {
 	int ch;
 	int quit = 0;
 	char uident[IDLEN + 1];
@@ -8436,630 +7294,536 @@ money_cop()
 		move(8, 16);
 		prints("打击犯罪，维持治安！");
 		move(t_lines - 1, 0);
-		prints
-		    ("\033[1;44m 选单 \033[1;46m [1]报案 [2]自首 [3]通缉榜 [4]刑警队 [5]署长办公室 [Q]离开\033[m");
+		prints("\033[1;44m 选单 \033[1;46m [1]报案 [2]自首 [3]通缉榜 [4]刑警队 [5]署长办公室 [Q]离开\033[m");
 		ch = igetkey();
 		switch (ch) {
-		case '1':
-			clear();
-			nomoney_show_stat("兵马俑警署接待厅");
-			move(4, 4);
-			prints("如果您遭遇抢劫或偷窃，如果您有任何犯罪嫌疑人的线索，请向警方报告。\n    正确举报有奖，诽谤他人受罚");
-			money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
-			if(money<5000)
-			{
-				break;
-				return 0;
-			}
-			move(6, 4);
-			prints("警民合作，共创安定大好局面！");
-			move(7, 4);
-			usercomplete("举报谁？", uident);
-			move(8, 4);
-			if (uident[0] == '\0')
-				break;
-			if (!getuser(uident)) {
-				prints("错误的使用者代号...");
-				pressreturn();
-				break;
-			}
-			if (lookupuser.dietime > 0) {
-				prints("人都死了，警察也没办法...");
-				//saveValue(currentuser.userid, MONEY_NAME,-2000, MAX_MONEY_NUM);
-				pressreturn();
-				break;
-			}
-			if (loadValue(uident, "freeTime", 2000000000) > 0) {
-				prints("这个人已经被警署监禁了。");
-				//saveValue(currentuser.userid, MONEY_NAME, -2000, MAX_MONEY_NUM);
-				pressanykey();
-				break;
-			}
-			if (loadValue(uident, "rob", 50) == 0) {
-				prints
-				    ("这个人最近很安分啊！你不要诽谤别人哦！");
-				saveValue(currentuser.userid, MONEY_NAME, -2000, MAX_MONEY_NUM);
-				pressanykey();
-				break;
-			}
-			if (seek_in_file(DIR_MC "criminals_list", uident)) {
-				prints
-				    ("此人已经被警署通缉了，不过警署仍然对你表示感谢。");
-				saveValue(currentuser.userid, MONEY_NAME, -2000, MAX_MONEY_NUM);
-				pressanykey();
-				break;
-			}
-			getdata(8, 4, "简述案情：", genbuf, 40, DOECHO, YEA);
-			if (genbuf[0] == '\0')
-				break;
-			move(9, 4);
-			if (askyn("\033[1;33m你向警方提供的上述信息真实吗？\033[0m", NA, NA) == NA)
-				break;
-			saveValue(currentuser.userid, MONEY_NAME, +2000, MAX_MONEY_NUM);
-			strcpy(buf, uident);
-			strcat(buf, "\t");
-			strcat(buf, genbuf);
-			addtofile(DIR_MC "criminals_list", buf);
-			move(10, 4);
-			prints
-			    ("警方非常感谢您提供的线索，我们将尽力尽快破案。");
-			pressanykey();
-			sprintf(buf, "ID: %s\n案情: %s", uident, genbuf);
-			sprintf(genbuf, "%s报案",currentuser.userid);
-			millionairesrec(genbuf, buf, "");
-			break;
-		case '2':
-			clear();
-			nomoney_show_stat("兵马俑警署接待厅");
-			move(4, 4);
-			prints("坦白从宽，抗拒从严。");
-			move(5, 4);
-			prints("主动交代自己的罪行,将减轻一半的处罚。");
-			move(7, 4);
-			robTimes = loadValue(currentuser.userid, "rob", 50);
-			if (robTimes == 0) {
-				prints("你有病啊？没事跑来认罪...");
-				pressanykey();
-				break;
-			}
-			if (time(0) <12*3600 + loadValue(currentuser.userid, "last_rob", 2000000000)) {
-				prints("这么快就来认罪，不行");
-				pressanykey();
-				break;
-			}
-			sprintf(genbuf,
-				"\033[1;31m你的律师提醒你,如果认罪你将被处以%d天监禁。还要认罪吗?\033[0m",
-				robTimes / 2 + 1);
-			move(8, 4);
-			if (askyn(genbuf, NA, NA) == YEA) {
+			case '1':
+				clear();
+				nomoney_show_stat("兵马俑警署接待厅");
+				move(4, 4);
+				prints("如果您遭遇抢劫或偷窃，如果您有任何犯罪嫌疑人的线索，请向警方报告。\n    正确举报有奖，诽谤他人受罚");
+				money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
+				if(money<5000)
+				{
+					break;
+					return 0;
+				}
+				move(6, 4);
+				prints("警民合作，共创安定大好局面！");
+				move(7, 4);
+				usercomplete("举报谁？", uident);
+				move(8, 4);
+				if (uident[0] == '\0')
+					break;
+				if (!getuser(uident)) {
+					prints("错误的使用者代号...");
+					pressreturn();
+					break;
+				}
+				if (lookupuser.dietime > 0) {
+					prints("人都死了，警察也没办法...");
+					//saveValue(currentuser.userid, MONEY_NAME,-2000, MAX_MONEY_NUM);
+					pressreturn();
+					break;
+				}
+				if (loadValue(uident, "freeTime", 2000000000) > 0) {
+					prints("这个人已经被警署监禁了。");
+					//saveValue(currentuser.userid, MONEY_NAME, -2000, MAX_MONEY_NUM);
+					pressanykey();
+					break;
+				}
+				if (loadValue(uident, "rob", 50) == 0) {
+					prints("这个人最近很安分啊！你不要诽谤别人哦！");
+					saveValue(currentuser.userid, MONEY_NAME, -2000, MAX_MONEY_NUM);
+					pressanykey();
+					break;
+				}
+				if (seek_in_file(DIR_MC "criminals_list", uident)) {
+					prints("此人已经被警署通缉了，不过警署仍然对你表示感谢。");
+					saveValue(currentuser.userid, MONEY_NAME, -2000, MAX_MONEY_NUM);
+					pressanykey();
+					break;
+				}
+				getdata(8, 4, "简述案情：", genbuf, 40, DOECHO, YEA);
+				if (genbuf[0] == '\0')
+					break;
 				move(9, 4);
-				if (loadValue(currentuser.userid, "freeTime", 2000000000) > 0) {
-					prints
-					    ("你已经被监禁了，想认罪也来不及了。");
+				if (askyn("\033[1;33m你向警方提供的上述信息真实吗？\033[0m", NA, NA) == NA)
+					break;
+				saveValue(currentuser.userid, MONEY_NAME, +2000, MAX_MONEY_NUM);
+				strcpy(buf, uident);
+				strcat(buf, "\t");
+				strcat(buf, genbuf);
+				ytht_add_to_file(DIR_MC "criminals_list", buf);
+				move(10, 4);
+				prints("警方非常感谢您提供的线索，我们将尽力尽快破案。");
+				pressanykey();
+				sprintf(buf, "ID: %s\n案情: %s", uident, genbuf);
+				sprintf(genbuf, "%s报案",currentuser.userid);
+				millionairesrec(genbuf, buf, "");
+				break;
+			case '2':
+				clear();
+				nomoney_show_stat("兵马俑警署接待厅");
+				move(4, 4);
+				prints("坦白从宽，抗拒从严。");
+				move(5, 4);
+				prints("主动交代自己的罪行,将减轻一半的处罚。");
+				move(7, 4);
+				robTimes = loadValue(currentuser.userid, "rob", 50);
+				if (robTimes == 0) {
+					prints("你有病啊？没事跑来认罪...");
+					pressanykey();
+					break;
+				}
+				if (time(0) <12*3600 + loadValue(currentuser.userid, "last_rob", 2000000000)) {
+					prints("这么快就来认罪，不行");
+					pressanykey();
+					break;
+				}
+				sprintf(genbuf, "\033[1;31m你的律师提醒你,如果认罪你将被处以%d天监禁。还要认罪吗?\033[0m", robTimes / 2 + 1);
+				move(8, 4);
+				if (askyn(genbuf, NA, NA) == YEA) {
+					move(9, 4);
+					if (loadValue(currentuser.userid, "freeTime", 2000000000) > 0) {
+						prints("你已经被监禁了，想认罪也来不及了。");
+						pressanykey();
+						Q_Goodbye();
+					}
+					prints("悬崖勒马,还来得及。好好改造吧！");
+					saveValue(currentuser.userid, "freeTime", time(0) + 86400 * (robTimes / 2 + 1), 2000000000);
+					saveValue(currentuser.userid, "rob", -robTimes, 50);
+					ytht_del_from_file(DIR_MC "criminals_list", currentuser.userid, true);
 					pressanykey();
 					Q_Goodbye();
+				} else {
+					move(9, 4);
+					prints("躲得了初一，躲不过十五。好自为知吧！");
+					pressanykey();
 				}
-				prints("悬崖勒马,还来得及。好好改造吧！");
-				saveValue(currentuser.userid, "freeTime",
-					  time(0) + 86400 * (robTimes / 2 + 1), 2000000000);
-				saveValue(currentuser.userid, "rob", -robTimes, 50);
-				del_from_file(DIR_MC "criminals_list", currentuser.userid);
-				pressanykey();
-				Q_Goodbye();
-			} else {
-				move(9, 4);
-				prints("躲得了初一，躲不过十五。好自为知吧！");
-				pressanykey();
-			}
-			break;
-		case '3':
-			clear();
-			move(1, 0);
-			prints("兵马俑警署当前通缉的犯罪嫌疑人:");
-			listfilecontent(DIR_MC "criminals_list");
-			pressanykey();
-			break;
-		case '4':
-			clear();
-			nomoney_show_stat("刑警队");
-			move(6, 4);
-			money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
-			if (seek_in_file(DIR_MC "mingren", currentuser.userid))
-			{
-				move(5, 4);
-				prints("    \033[1;32m  不要惹事\033[m");
+				break;
+			case '3':
+				clear();
+				move(1, 0);
+				prints("兵马俑警署当前通缉的犯罪嫌疑人:");
+				listfilecontent(DIR_MC "criminals_list");
 				pressanykey();
 				break;
-			}
-			if (!seek_in_file(DIR_MC "policemen", currentuser.userid)||money<5000) {
-				prints
-				    ("这里不是公园！有事到接待厅去,别到处乱闯！\n");
-                		prints
-				    ("不拿钱就去抓人，出了事连医药费都没有\n");
-				pressanykey();
-				break;
-			}
-			usercomplete("今次行动的目标犯罪嫌疑人是:", uident);
-			move(7, 4);
-			if (uident[0] == '\0')
-				break;
-			if (!(id = getuser(uident))) {
-				prints("错误的使用者代号...");
-				pressreturn();
-				break;
-			}
-			if(ifinprison(lookupuser.userid))
-			{prints("都已经在监狱了，还要抓他去那里。。。。");
-				pressreturn();
-				break;
-			}
-			if (lookupuser.dietime > 0) {
-				prints("人都死了，警察也没办法...");
-				pressreturn();
-				break;
-			}
-			if (loadValue(uident, "freeTime", 2000000000) > 0) {
-				prints("这个人已经被警署监禁了。");
-				pressanykey();
-				break;
-			}
-			if (time(0) < 5*60 + loadValue(currentuser.userid, "last_catch", 2000000000)) {
-				prints("抓人不用这么积极吧");
-				pressanykey();
-				break;
-			}
-			robTimes = loadValue(uident, "rob", 50);
-			if (robTimes == 0) {
-				prints("这个人最近很安分啊！会不会是搞错了?\n");
-                		prints("他告你们滥用职权，你赔了他5000的精神损失费");
-                		saveValue(currentuser.userid, MONEY_NAME, -5000, MAX_MONEY_NUM);
-                		saveValue(uident, MONEY_NAME, +5000, MAX_MONEY_NUM);
-				pressanykey();
-				break;
-			}
-			escTime = loadValue(uident, "escTime", 2000000000);
-			if (escTime > 0 && time(0) < escTime + 3600) {
-				prints
-				    ("该犯罪嫌疑人刚刚逃脱,一时半会儿恐怕还找不到。");
-				pressanykey();
-				break;
-			}
-			move(8, 4);
-			if (askyn("准备好了吗?", NA, NA) == YEA) {
-				saveValue(currentuser.userid, "last_catch", -2000000000, 2000000000);
-				saveValue(currentuser.userid, "last_catch", time(0), 2000000000);
-				move(10, 4);
-				prints
-				    ("\033[1;33m根据线人提供的消息,你终于找到了%s藏匿的地方。\033[0m",
-				     uident);
-				move(11, 4);
-				seized = 0;
-				srandom(time(0));
-				if (askyn("\033[5;31m要破门而入么?\033[0m", NA, NA) == YEA) {
-					move(12, 4);
-					prints
-					    ("\033[1;31m你拔出手枪，一脚将门踹开，冲了进去，喊道：“警察！”\033[0m");
-					move(13, 4);
-					if (random() % 10 == 0) {
-						prints
-						    ("\033[1;32m里面空无一人，窗户是打开的。看来%s刚刚跳窗而逃。\033[0m",
-						     uident);
-						move(14, 4);
-						prints
-						    ("你只好懊恼而返。大好的机会啊！");
-						saveValue(uident, "escTime", -2000000000, 2000000000);
-						saveValue(uident, "escTime", time(0), 2000000000);
-						pressanykey();
-						sprintf(buf,"%s逃脱",uident);
-						policereport(buf);
-						sprintf(title, "%s参与抓人", currentuser.userid);
-						millionairesrec(title, buf, "警署活动");
-						break;
-					} else {
-						if (robTimes < 3 && random() % 10) {
-							prints("\033[1;32m%s一看到你顿时吓傻了,乖乖举起了双手。\033[0m",
-							     uident);
-                           				sprintf(genbuf,
-									"兵马俑警署在今天的抓捕行动中抓获一名绰号%s的匪徒\n警方透露抓捕过程非常顺利\n\n"
-									 "警署希望不良分子引以为戒，\n 本站居民高度赞扬警署职员为民除害 ", uident);
-                                   		deliverreport("[新闻]兵马俑警署擒获一名匪徒",genbuf);
-							//saveValue(currentuser.userid, MONEY_NAME, robTimes*80000*0.3, MAX_MONEY_NUM);
+			case '4':
+				clear();
+				nomoney_show_stat("刑警队");
+				move(6, 4);
+				money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
+				if (seek_in_file(DIR_MC "mingren", currentuser.userid)) {
+					move(5, 4);
+					prints("    \033[1;32m  不要惹事\033[m");
+					pressanykey();
+					break;
+				}
+				if (!seek_in_file(DIR_MC "policemen", currentuser.userid)||money<5000) {
+					prints("这里不是公园！有事到接待厅去,别到处乱闯！\n");
+					prints("不拿钱就去抓人，出了事连医药费都没有\n");
+					pressanykey();
+					break;
+				}
+				usercomplete("今次行动的目标犯罪嫌疑人是:", uident);
+				move(7, 4);
+				if (uident[0] == '\0')
+					break;
+				if (!(id = getuser(uident))) {
+					prints("错误的使用者代号...");
+					pressreturn();
+					break;
+				}
+				if(ifinprison(lookupuser.userid))
+				{prints("都已经在监狱了，还要抓他去那里。。。。");
+					pressreturn();
+					break;
+				}
+				if (lookupuser.dietime > 0) {
+					prints("人都死了，警察也没办法...");
+					pressreturn();
+					break;
+				}
+				if (loadValue(uident, "freeTime", 2000000000) > 0) {
+					prints("这个人已经被警署监禁了。");
+					pressanykey();
+					break;
+				}
+				if (time(0) < 5*60 + loadValue(currentuser.userid, "last_catch", 2000000000)) {
+					prints("抓人不用这么积极吧");
+					pressanykey();
+					break;
+				}
+				robTimes = loadValue(uident, "rob", 50);
+				if (robTimes == 0) {
+					prints("这个人最近很安分啊！会不会是搞错了?\n");
+					prints("他告你们滥用职权，你赔了他5000的精神损失费");
+					saveValue(currentuser.userid, MONEY_NAME, -5000, MAX_MONEY_NUM);
+					saveValue(uident, MONEY_NAME, +5000, MAX_MONEY_NUM);
+					pressanykey();
+					break;
+				}
+				escTime = loadValue(uident, "escTime", 2000000000);
+				if (escTime > 0 && time(0) < escTime + 3600) {
+					prints("该犯罪嫌疑人刚刚逃脱,一时半会儿恐怕还找不到。");
+					pressanykey();
+					break;
+				}
+				move(8, 4);
+				if (askyn("准备好了吗?", NA, NA) == YEA) {
+					saveValue(currentuser.userid, "last_catch", -2000000000, 2000000000);
+					saveValue(currentuser.userid, "last_catch", time(0), 2000000000);
+					move(10, 4);
+					prints("\033[1;33m根据线人提供的消息,你终于找到了%s藏匿的地方。\033[0m", uident);
+					move(11, 4);
+					seized = 0;
+					srandom(time(0));
+					if (askyn("\033[5;31m要破门而入么?\033[0m", NA, NA) == YEA) {
+						move(12, 4);
+						prints("\033[1;31m你拔出手枪，一脚将门踹开，冲了进去，喊道：“警察！”\033[0m");
+						move(13, 4);
+						if (random() % 10 == 0) {
+							prints("\033[1;32m里面空无一人，窗户是打开的。看来%s刚刚跳窗而逃。\033[0m", uident);
 							move(14, 4);
-							seized = 1;
-						} else if (robTimes >= 3 && robTimes < 6 && random() % 5) {
-							prints("\033[1;32m%s一看到你就要跳窗逃跑，但你眼明手快，一枪击中其小腿。\033[0m",
-							     uident);
-							sprintf(genbuf,
-									"兵马俑警署在今天的抓捕行动中抓获一名绰号%s的匪徒\n警方透露此人在与警察的枪战中负伤\n\n"
-									 "警署希望犯罪分子不要拒捕，\n 以免造成不必要的伤亡 ", uident);
-	                               		deliverreport("[新闻]兵马俑警署擒获一名匪徒",genbuf);
-							//saveValue(currentuser.userid, MONEY_NAME, robTimes*80000*0.3, MAX_MONEY_NUM);
-							move(14, 4);
-							seized = 1;
-						} else if (robTimes >= 6 && robTimes < 8 && random() % 3) {
-							prints("\033[1;32m%s向你猛扑过来，你来不及开枪，只好和其扭成一团...\033[0m",
-							     uident);
+							prints("你只好懊恼而返。大好的机会啊！");
+							saveValue(uident, "escTime", -2000000000, 2000000000);
+							saveValue(uident, "escTime", time(0), 2000000000);
 							pressanykey();
-							move(14, 4);
-							prints("\033[1;32m经过一番搏斗，你终于制服了%s。不过你也累得够呛，还被咬了一口。\033[0m",
-							     uident);
-							sprintf(genbuf,
-								"兵马俑警署在今天的抓捕行动中抓获一名绰号%s的匪徒\n警方透露有警员在枪战中负伤\n\n"
-								 "警署希望犯罪分子不要拒捕，\n 以免造成不必要的伤亡 ", uident);
-                         			      deliverreport("[新闻]兵马俑警署擒获一名匪徒",genbuf);
-							//saveValue(currentuser.userid, MONEY_NAME, robTimes*80000*0.3, MAX_MONEY_NUM);
-							move(15, 4);
-							seized = 1;
-						} else if (robTimes >= 8 && random() % 2) {
-							prints("\033[5;32m原来%s也有枪！你们同时瞄准了对方！\033[0m",
-							     uident);
-							pressanykey();
-							move(14, 4);
-							prints("\033[1;35m枪声响过，%s痛苦的捂住了手腕，鲜血直流。你安然无恙，庆幸啊！\033[0m",
-							     uident);
-							//saveValue(currentuser.userid, MONEY_NAME, robTimes*80000*0.3, MAX_MONEY_NUM);
-							move(15, 4);
-							seized = 1;
-						}
-						if (seized) {
-							prints("你将%s押回了警署,这个坏蛋被处以%d天监禁。你又立了一功！",
-							     uident, robTimes);
-							saveValue(uident, "rob", -robTimes, 50);
-							saveValue(uident, "freeTime", time(0) + 86400 * robTimes, 2000000000);
-							sprintf(genbuf,
-								"你被兵马俑警署抓获，并处以%d天的监禁。",
-								robTimes);
-							mail_buf_slow(uident, "你被警察逮捕", genbuf, "BMY_FBI");
-							del_from_file(DIR_MC "criminals_list", uident);
-							sprintf(buf, "%s\t%d", uident, robTimes);
-							addtofile(DIR_MC "imprison_list", buf);
-							pressanykey();
-							sprintf(buf,"抓获%s，并监禁%d天", uident, robTimes);
+							sprintf(buf,"%s逃脱",uident);
 							policereport(buf);
 							sprintf(title, "%s参与抓人", currentuser.userid);
 							millionairesrec(title, buf, "警署活动");
 							break;
 						} else {
-							saveValue(uident, "escTime", -2000000000, 2000000000);
-							saveValue(uident, "escTime", time(0), 2000000000);
-						}
-						if (random() % 20) {
-							prints
-							    ("\033[5;32m原来%s也有枪！你们同时瞄准了对方！\033[0m",
-							     uident);
-							move(14, 4);
-							if (askyn("\033[1;31m是否紧急躲避？", NA, NA) == YEA) {
+							if (robTimes < 3 && random() % 10) {
+								prints("\033[1;32m%s一看到你顿时吓傻了,乖乖举起了双手。\033[0m", uident);
+								sprintf(genbuf,
+										"兵马俑警署在今天的抓捕行动中抓获一名绰号%s的匪徒\n警方透露抓捕过程非常顺利\n\n"
+										"警署希望不良分子引以为戒，\n 本站居民高度赞扬警署职员为民除害 ", uident);
+								deliverreport("[新闻]兵马俑警署擒获一名匪徒",genbuf);
+								//saveValue(currentuser.userid, MONEY_NAME, robTimes*80000*0.3, MAX_MONEY_NUM);
+								move(14, 4);
+								seized = 1;
+							} else if (robTimes >= 3 && robTimes < 6 && random() % 5) {
+								prints("\033[1;32m%s一看到你就要跳窗逃跑，但你眼明手快，一枪击中其小腿。\033[0m", uident);
+								sprintf(genbuf,
+										"兵马俑警署在今天的抓捕行动中抓获一名绰号%s的匪徒\n警方透露此人在与警察的枪战中负伤\n\n"
+										"警署希望犯罪分子不要拒捕，\n 以免造成不必要的伤亡 ", uident);
+								deliverreport("[新闻]兵马俑警署擒获一名匪徒",genbuf);
+								//saveValue(currentuser.userid, MONEY_NAME, robTimes*80000*0.3, MAX_MONEY_NUM);
+								move(14, 4);
+								seized = 1;
+							} else if (robTimes >= 6 && robTimes < 8 && random() % 3) {
+								prints("\033[1;32m%s向你猛扑过来，你来不及开枪，只好和其扭成一团...\033[0m", uident);
+								pressanykey();
+								move(14, 4);
+								prints("\033[1;32m经过一番搏斗，你终于制服了%s。不过你也累得够呛，还被咬了一口。\033[0m", uident);
+								sprintf(genbuf,
+										"兵马俑警署在今天的抓捕行动中抓获一名绰号%s的匪徒\n警方透露有警员在枪战中负伤\n\n"
+										"警署希望犯罪分子不要拒捕，\n 以免造成不必要的伤亡 ", uident);
+								deliverreport("[新闻]兵马俑警署擒获一名匪徒",genbuf);
+								//saveValue(currentuser.userid, MONEY_NAME, robTimes*80000*0.3, MAX_MONEY_NUM);
 								move(15, 4);
-								if (random() %3) {
-									prints("你一个后仰，子弹带着风声从你面门飞过。");
+								seized = 1;
+							} else if (robTimes >= 8 && random() % 2) {
+								prints("\033[5;32m原来%s也有枪！你们同时瞄准了对方！\033[0m", uident);
+								pressanykey();
+								move(14, 4);
+								prints("\033[1;35m枪声响过，%s痛苦的捂住了手腕，鲜血直流。你安然无恙，庆幸啊！\033[0m", uident);
+								//saveValue(currentuser.userid, MONEY_NAME, robTimes*80000*0.3, MAX_MONEY_NUM);
+								move(15, 4);
+								seized = 1;
+							}
+							if (seized) {
+								prints("你将%s押回了警署,这个坏蛋被处以%d天监禁。你又立了一功！", uident, robTimes);
+								saveValue(uident, "rob", -robTimes, 50);
+								saveValue(uident, "freeTime", time(0) + 86400 * robTimes, 2000000000);
+								sprintf(genbuf, "你被兵马俑警署抓获，并处以%d天的监禁。", robTimes);
+								mail_buf_slow(uident, "你被警察逮捕", genbuf, "BMY_FBI");
+								ytht_del_from_file(DIR_MC "criminals_list", uident, true);
+								sprintf(buf, "%s\t%d", uident, robTimes);
+								ytht_add_to_file(DIR_MC "imprison_list", buf);
+								pressanykey();
+								sprintf(buf,"抓获%s，并监禁%d天", uident, robTimes);
+								policereport(buf);
+								sprintf(title, "%s参与抓人", currentuser.userid);
+								millionairesrec(title, buf, "警署活动");
+								break;
+							} else {
+								saveValue(uident, "escTime", -2000000000, 2000000000);
+								saveValue(uident, "escTime", time(0), 2000000000);
+							}
+							if (random() % 20) {
+								prints("\033[5;32m原来%s也有枪！你们同时瞄准了对方！\033[0m", uident);
+								move(14, 4);
+								if (askyn("\033[1;31m是否紧急躲避？", NA, NA) == YEA) {
+									move(15, 4);
+									if (random() %3) {
+										prints("你一个后仰，子弹带着风声从你面门飞过。");
+										move(16, 4);
+										prints("%s趁机逃走了，你不知道是该懊恼还是庆幸。", uident);
+										pressanykey();
+										sprintf(buf,"%s逃走", uident);
+										policereport(buf);
+										sprintf(title, "%s参与抓人", currentuser.userid);
+										millionairesrec(title, buf, "警署活动");
+										break;
+									} else {
+										prints("你想躲避，但是已经来不及了。你只觉得胸口一股热血喷了出来...");
+										move(16,4);
+										//saveValue(currentuser.userid, MONEY_NAME, 50000, MAX_MONEY_NUM);
+										prints("\033[1;31m你壮烈牺牲了。\033[0m");
+										die = 1;
+									}
+								}
+								else {
+									move(15, 4);
+									prints("\033[1;31m狭路相逢勇者胜！你毫不犹豫的开枪了！\033[0m");
 									move(16, 4);
-									prints("%s趁机逃走了，你不知道是该懊恼还是庆幸。",
-									     uident);
-									pressanykey();
-									sprintf(buf,"%s逃走", uident);
-									policereport(buf);
-									sprintf(title, "%s参与抓人", currentuser.userid);
-									millionairesrec(title, buf, "警署活动");
-									break;
-								} else {
-									prints("你想躲避，但是已经来不及了。你只觉得胸口一股热血喷了出来...");
-									move(16,4);
-									//saveValue(currentuser.userid, MONEY_NAME, 50000, MAX_MONEY_NUM);
-									prints("\033[1;31m你壮烈牺牲了。\033[0m");
-									die = 1;
+									if (random() % 3) {
+										prints("\033[1;35m枪声响过，%s被击中头部，当场死亡。\033[0m", uident);
+										move(17, 4);
+										prints("你狠狠的踢了一脚%s的尸体，同时暗自庆幸今天走运。", uident);
+										//saveValue(currentuser.userid, MONEY_NAME, 50000, MAX_MONEY_NUM);
+										saveValue(uident, "rob", -robTimes/2, 50);
+										lookupuser.dietime = lookupuser.stay + 999*60;
+										substitute_record(PASSFILE, &lookupuser, sizeof(lookupuser), id);
+										sprintf(genbuf,
+												"兵马俑警署在今天的抓捕行动中击毙一名绰号%s的匪徒\n警方透露此人有持枪拒捕行为\n\n"
+												"警署希望不良分子引以为戒，\n 本站居民高度赞扬警署职员为民除害 ", uident);
+										deliverreport("[新闻]兵马俑警署击毙一名匪徒",genbuf);
+										mail_buf_slow(uident, "你被警察击毙","你在抵抗警察抓捕的过程中，被一枪击中头部死亡。善恶终有报啊！","BMY_FBI");
+										ytht_del_from_file(DIR_MC "criminals_list", uident, true);
+										pressanykey();
+										sprintf(buf,"击毙%s", uident);
+										policereport(buf);
+										sprintf(title, "%s参与抓人", currentuser.userid);
+										millionairesrec(title, buf, "警署活动");
+										break;
+									} else {
+										prints("枪声响过，你只觉得胸口一股热血喷了出来...");
+										move(17, 4);
+										prints("\033[1;31m你壮烈牺牲了。\033[0m");
+										die = 1;
+									}
 								}
+							} else {
+								prints("\033[5;32m原来%s身藏手雷，一见逃跑无望，%s只好引爆手雷和你同归于尽！\033[0m", uident, uident);
+								move(14, 4);
+								prints ("\033[1;31m你壮烈牺牲了。\033[0m");
+								die = 1;
+								saveValue(uident, "rob", -robTimes / 2,50);
+								lookupuser.dietime = lookupuser.stay + 999 * 60;
+								substitute_record(PASSFILE, &lookupuser, sizeof(lookupuser), id);
+								sprintf(genbuf,
+										"兵马俑警署在今天的抓捕行动中击毙一名绰号%s的匪徒\n警方透露有警员在枪战中中弹伤势严重\n\n"
+										"警署表示一定全力抢救，\n  ", uident);
+								deliverreport("[新闻]兵马俑警署击毙一名匪徒",genbuf);
+								mail_buf_slow(uident, "你被警察逮捕","你在抵抗警察抓捕的过程中，引爆身上的手雷，与警察同归于尽。","BMY_FBI");
+								ytht_del_from_file(DIR_MC "criminals_list", uident, true);
 							}
-							else {
-								move(15, 4);
-								prints("\033[1;31m狭路相逢勇者胜！你毫不犹豫的开枪了！\033[0m");
-								move(16, 4);
-								if (random() % 3) {
-									prints("\033[1;35m枪声响过，%s被击中头部，当场死亡。\033[0m",
-									     uident);
-									move(17, 4);
-									prints("你狠狠的踢了一脚%s的尸体，同时暗自庆幸今天走运。",
-									     uident);
- 									//saveValue(currentuser.userid, MONEY_NAME, 50000, MAX_MONEY_NUM);
-									saveValue(uident, "rob", -robTimes/2, 50);
-									lookupuser.dietime = lookupuser.stay + 999*60;
-									substitute_record(PASSFILE, &lookupuser, sizeof(lookupuser), id);
-									sprintf(genbuf,
-										"兵马俑警署在今天的抓捕行动中击毙一名绰号%s的匪徒\n警方透露此人有持枪拒捕行为\n\n"
-										 "警署希望不良分子引以为戒，\n 本站居民高度赞扬警署职员为民除害 ", uident);
-                                   				deliverreport("[新闻]兵马俑警署击毙一名匪徒",genbuf);
-									mail_buf_slow(uident, "你被警察击毙","你在抵抗警察抓捕的过程中，被一枪击中头部死亡。善恶终有报啊！","BMY_FBI");
-									del_from_file(DIR_MC "criminals_list", uident);
-									pressanykey();
-									sprintf(buf,"击毙%s", uident);
-									policereport(buf);
-									sprintf(title, "%s参与抓人", currentuser.userid);
-									millionairesrec(title, buf, "警署活动");
-									break;
-								} else {
-									prints("枪声响过，你只觉得胸口一股热血喷了出来...");
-									move(17, 4);
-									prints("\033[1;31m你壮烈牺牲了。\033[0m");
-									die = 1;
-								}
+							if (die) {
+								set_safe_record();
+								saveValue(uident, "rob", -robTimes/2, 50);
+								currentuser.dietime = currentuser.stay + 999 * 60;
+								substitute_record(PASSFILE, &currentuser, sizeof(currentuser), usernum);
+								set_safe_record();
+								sprintf(buf,
+										"一名警署警员在今天的抓捕行动中不幸殉职。兵马俑警署谨向英雄致以最高的敬意，"
+										"\n并发誓将严惩罪犯。警署没有透露警员的真实姓名");
+								deliverreport("[新闻]兵马俑警署一名警察殉职", buf);
+								pressanykey();
+								sprintf(buf,"%s在抓捕%s时英勇牺牲了", currentuser.userid, uident);
+								policereport(buf);
+								sprintf(title, "%s参与抓人", currentuser.userid);
+								millionairesrec(title, buf, "警署活动");
+								Q_Goodbye();
 							}
-						} else {
-							prints
-							    ("\033[5;32m原来%s身藏手雷，一见逃跑无望，%s只好引爆手雷和你同归于尽！\033[0m",
-							     uident, uident);
+						}
+					} else {
+						move(12, 4);
+						prints("你决定还是先不要打草惊蛇的好...");
+						pressanykey();
+					}
+				}
+				break;
+			case '5':
+				clear();
+				nomoney_show_stat("署长办公室");
+				char name[20];
+				whoTakeCharge2(8, name);
+				whoTakeCharge(8, uident);
+				if (strcmp(currentuser.userid, uident)) {
+					move(6, 4);
+					prints("警花%s拦住了你,说道:“署长%s现在很忙,没时间接待你。”", name,uident);
+					move(8, 4);
+					if (!seek_in_file(DIR_MC "policemen", currentuser.userid) && !slowclubtest("Police",currentuser.userid)){
+						if (askyn("你是想加入警署吗？", NA, NA) == YEA) {
+							sprintf(genbuf, "%s 要加入警署", currentuser.userid);
+							mail_buf(genbuf, "BMYpolice", genbuf);
 							move(14, 4);
-							prints
-							    ("\033[1;31m你壮烈牺牲了。\033[0m");
-							die = 1;
-							saveValue(uident, "rob", -robTimes / 2,50);
-							lookupuser.dietime = lookupuser.stay + 999 * 60;
-							substitute_record(PASSFILE, &lookupuser, sizeof(lookupuser), id);
-							sprintf(genbuf,
-									"兵马俑警署在今天的抓捕行动中击毙一名绰号%s的匪徒\n警方透露有警员在枪战中中弹伤势严重\n\n"
-									 "警署表示一定全力抢救，\n  ", uident);
-							deliverreport("[新闻]兵马俑警署击毙一名匪徒",genbuf);
-							mail_buf_slow(uident,
-								 "你被警察逮捕","你在抵抗警察抓捕的过程中，引爆身上的手雷，与警察同归于尽。","BMY_FBI");
-							del_from_file(DIR_MC "criminals_list", uident);
-						}
-						if (die) {
-							set_safe_record();
-							saveValue(uident, "rob", -robTimes/2, 50);
-							currentuser.dietime = currentuser.stay + 999 * 60;
-							substitute_record(PASSFILE, &currentuser, sizeof(currentuser), usernum);
-							set_safe_record();
-							sprintf(buf,
-								"一名警署警员在今天的抓捕行动中不幸殉职。兵马俑警署谨向英雄致以最高的敬意，"
-							"\n并发誓将严惩罪犯。警署没有透露警员的真实姓名");
-							deliverreport("[新闻]兵马俑警署一名警察殉职", buf);
-							pressanykey();
-							sprintf(buf,"%s在抓捕%s时英勇牺牲了", currentuser.userid, uident);
-							policereport(buf);
-							sprintf(title, "%s参与抓人", currentuser.userid);
-							millionairesrec(title, buf, "警署活动");
-							Q_Goodbye();
+							prints("好的，我会通知署长的。");
 						}
 					}
+					pressanykey();
+					break;
 				} else {
-					move(12, 4);
-					prints
-					    ("你决定还是先不要打草惊蛇的好...");
-					pressanykey();
-				}
-			}
-			break;
-		case '5':
-			clear();
-			nomoney_show_stat("署长办公室");
-			char name[20];
-			whoTakeCharge2(8, name);
-			whoTakeCharge(8, uident);
-			if (strcmp(currentuser.userid, uident)) {
-				move(6, 4);
-				prints
-				    ("警花%s拦住了你,说道:“署长%s现在很忙,没时间接待你。”",
-				     name,uident);
-				move(8, 4);
-				if (!seek_in_file(DIR_MC "policemen", currentuser.userid)
-					&& !slowclubtest("Police",currentuser.userid)){
-				if (askyn("你是想加入警署吗？", NA, NA) == YEA) {
-						sprintf(genbuf, "%s 要加入警署", currentuser.userid);
-						mail_buf(genbuf, "BMYpolice", genbuf);
-						move(14, 4);
-						prints("好的，我会通知署长的。");
-					}}
-				pressanykey();
-				break;
-			} else {
-				move(6, 4);
-				prints("请选择操作代号:");
-				move(7, 6);
-				prints
-				    ("1. 任命警员                  2. 解职警员");
-				move(8, 6);
-				prints
-				    ("3. 警员名单                  4. 监禁名单");
-				move(9, 6);
-				prints("5. 辞职                      6. 退出");
-				ch = igetkey();
-				switch (ch) {
-				case '1':
-					move(12, 4);
-					usercomplete("任命谁为警员？", uident);
-					move(13, 4);
-					if (uident[0] == '\0')
-						break;
-					if (!searchuser(uident)) {
-						prints("错误的使用者代号...");
-						pressanykey();
-						break;
+					move(6, 4);
+					prints("请选择操作代号:");
+					move(7, 6);
+					prints("1. 任命警员                  2. 解职警员");
+					move(8, 6);
+					prints("3. 警员名单                  4. 监禁名单");
+					move(9, 6);
+					prints("5. 辞职                      6. 退出");
+					ch = igetkey();
+					switch (ch) {
+						case '1':
+							move(12, 4);
+							usercomplete("任命谁为警员？", uident);
+							move(13, 4);
+							if (uident[0] == '\0')
+								break;
+							if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
+								prints("错误的使用者代号...");
+								pressanykey();
+								break;
+							}
+							if (seek_in_file (DIR_MC "policemen", uident)) {
+								prints("该ID已经是警员了。");
+								pressanykey();
+								break;
+							}
+							if (askyn("确定吗？", NA, NA) == YEA) {
+								ytht_add_to_file(DIR_MC "policemen", uident);
+								sprintf(genbuf, "%s 任命你为兵马俑警署警员", currentuser.userid);
+								mail_buf("警署希望你不畏强暴，打击犯罪，公正无私，不怕牺牲！", uident, genbuf);
+								move(14, 4);
+								prints("任命成功。");
+								sprintf(genbuf, "%s行使警署管理权限",currentuser.userid);
+								sprintf(buf, "任命%s为警署警员", uident);
+								millionairesrec(genbuf, buf, "BMYpolice");
+								pressanykey();
+							}
+							break;
+						case '2':
+							move(12, 4);
+							usercomplete("解职哪位警员？", uident);
+							move(13, 4);
+							if (uident[0] == '\0')
+								break;
+							if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
+								prints("错误的使用者代号...");
+								pressanykey();
+								break;
+							}
+							if (!seek_in_file(DIR_MC "policemen", uident)) {
+								prints("该ID不是兵马俑警署警员。");
+								pressanykey();
+								break;
+							}
+							if (askyn("确定吗？", NA, NA) == YEA) {
+								ytht_del_from_file(DIR_MC "policemen", uident, true);
+								sprintf(genbuf, "%s 解除你的兵马俑警署警员职务", currentuser.userid);
+								mail_buf("感谢你一直以来的工作，并希望你作为市民继续为维护治安而尽义务。", uident, genbuf);
+								move(14, 4);
+								prints("解职成功。");
+								sprintf(genbuf, "%s行使警署管理权限",currentuser.userid);
+								sprintf(buf, "解除%s的警署警员身份", uident);
+								millionairesrec(genbuf, buf, "BMYpolice");
+								pressanykey();
+							}
+							break;
+						case '3':
+							clear();
+							move(1, 0);
+							prints("目前兵马俑警署警员名单：");
+							listfilecontent(DIR_MC "policemen");
+							pressanykey();
+							break;
+						case '4':
+							clear();
+							move(1, 0);
+							prints("目前兵马俑警署监禁罪犯名单：");
+							move(2, 0);
+							prints("罪犯ID\t监禁天数");
+							listfilecontent(DIR_MC "imprison_list");
+							pressanykey();
+							break;
+						case '5':
+							move(12, 4);
+							if (askyn("您真的要辞职吗？", NA, NA) == YEA) {
+								/*	ytht_del_from_file(MC_BOSS_FILE, "police");
+									sprintf(genbuf,
+									"%s 宣布辞去兵马俑警署署长职务",
+									currentuser.userid);
+									deliverreport(genbuf,
+									"兵马俑金融中心对其一直以来的工作表示感谢，祝以后顺利！");
+									move(14, 4);
+									prints
+									("好吧，既然你意已决，警署也只有批准。");
+									quit = 1;
+									pressanykey();
+									*/
+								sprintf(genbuf, "%s 要辞去兵马俑警署署长职务", currentuser.userid);
+								mail_buf(genbuf, "millionaires", genbuf);
+								move(14, 4);
+								prints("好吧，已经发信告知总管了");
+								pressanykey();
+							}
+							break;
 					}
-					if (seek_in_file
-					    (DIR_MC "policemen", uident)) {
-						prints("该ID已经是警员了。");
-						pressanykey();
-						break;
-					}
-					if (askyn("确定吗？", NA, NA) == YEA) {
-						addtofile(DIR_MC "policemen",
-							  uident);
-						sprintf(genbuf,
-							"%s 任命你为兵马俑警署警员",
-							currentuser.userid);
-						mail_buf
-						    ("警署希望你不畏强暴，打击犯罪，公正无私，不怕牺牲！",
-						     uident, genbuf);
-						move(14, 4);
-						prints("任命成功。");
-						sprintf(genbuf, "%s行使警署管理权限",currentuser.userid);
-						sprintf(buf, "任命%s为警署警员", uident);
-						millionairesrec(genbuf, buf, "BMYpolice");
-						pressanykey();
-					}
-					break;
-				case '2':
-					move(12, 4);
-					usercomplete("解职哪位警员？", uident);
-					move(13, 4);
-					if (uident[0] == '\0')
-						break;
-					if (!searchuser(uident)) {
-						prints("错误的使用者代号...");
-						pressanykey();
-						break;
-					}
-					if (!seek_in_file
-					    (DIR_MC "policemen", uident)) {
-						prints
-						    ("该ID不是兵马俑警署警员。");
-						pressanykey();
-						break;
-					}
-					if (askyn("确定吗？", NA, NA) == YEA) {
-						del_from_file(DIR_MC
-							      "policemen",
-							      uident);
-						sprintf(genbuf,
-							"%s 解除你的兵马俑警署警员职务",
-							currentuser.userid);
-						mail_buf
-						    ("感谢你一直以来的工作，并希望你作为市民继续为维护治安而尽义务。",
-						     uident, genbuf);
-						move(14, 4);
-						prints("解职成功。");
-						sprintf(genbuf, "%s行使警署管理权限",currentuser.userid);
-						sprintf(buf, "解除%s的警署警员身份", uident);
-						millionairesrec(genbuf, buf, "BMYpolice");
-						pressanykey();
-					}
-					break;
-				case '3':
-					clear();
-					move(1, 0);
-					prints("目前兵马俑警署警员名单：");
-					listfilecontent(DIR_MC "policemen");
-					pressanykey();
-					break;
-				case '4':
-					clear();
-					move(1, 0);
-					prints("目前兵马俑警署监禁罪犯名单：");
-					move(2, 0);
-					prints("罪犯ID\t监禁天数");
-					listfilecontent(DIR_MC "imprison_list");
-					pressanykey();
-					break;
-				case '5':
-					move(12, 4);
-					if (askyn
-					    ("您真的要辞职吗？", NA, NA) == YEA) {
-					/*	del_from_file(MC_BOSS_FILE, "police");
-						sprintf(genbuf,
-							"%s 宣布辞去兵马俑警署署长职务",
-							currentuser.userid);
-						deliverreport(genbuf,
-							      "兵马俑金融中心对其一直以来的工作表示感谢，祝以后顺利！");
-						move(14, 4);
-						prints
-						    ("好吧，既然你意已决，警署也只有批准。");
-						quit = 1;
-						pressanykey();
-					*/
-						sprintf(genbuf, "%s 要辞去兵马俑警署署长职务",
-							currentuser.userid);
-						mail_buf(genbuf, "millionaires", genbuf);
-						move(14, 4);
-						prints("好吧，已经发信告知总管了");
-						pressanykey();
-					}
+					case '6':
 					break;
 				}
-		case '6':
 				break;
-			}
-			break;
-		case 'q':
-		case 'Q':
-			quit = 1;
-			break;
+			case 'q':
+			case 'Q':
+				quit = 1;
+				break;
 		}
 		limit_cpu();
 	}
 	return 0;
 }
 
-
-static int //slowaction
+//slowaction
 /*检查权限*/
-Allclubtest(char *id)
-{  if (slowclubtest("Beggar",id))
-        return 1;
-    else if (slowclubtest("Rober",id))
-         return 1;
-        else if (slowclubtest("Police",id))
-             return 1;
-			  else if (slowclubtest("killer",id))
-				   return 1;
-              else  return 0;
+static int Allclubtest(char *id) {
+	if (slowclubtest("Beggar",id))
+	return 1;
+	else if (slowclubtest("Rober",id))
+		return 1;
+	else if (slowclubtest("Police",id))
+		return 1;
+	else if (slowclubtest("killer",id))
+		return 1;
+	else  return 0;
 }
 
-static int  //slowaction
-slowclubtest(char *board,char *id)
-{
+//slowaction
+static int slowclubtest(char *board,char *id) {
 	char buf[256];
 	sprintf(buf, "boards/%s/club_users", board);
 	return seek_in_file(buf, id);
 }
 
 //股票开盘
-static int
-stop_buy()
-{
+static int stop_buy() {
 	FILE *f_fp;
 	char fname[125];
 	sprintf(fname,"%s/stopbuy", DIR_MC);
 	f_fp=fopen(fname,"r");
-	if(f_fp!=NULL)
-	{
+	if(f_fp!=NULL) {
 		fclose(f_fp);
 		return 1;
 	}
-		return 0;
+	return 0;
 }
-/*int
-mail_buf_slow(char *userid, char *title, char *content, char *sender)
-{
-        FILE *fp;
-        char buf[256], dir[256];
-        struct fileheader header;
-        int t;
-	int now;
-        bzero(&header, sizeof (header));
-        fh_setowner(&header, sender, 0);
-        sprintf(buf, "mail/%c/%s/", mytoupper(userid[0]), userid);
-	if (!file_isdir(buf))
-		return -1;
-	now = time(NULL);
-        t = trycreatefile(buf, "M.%d.A", now, 100);
-        if (t < 0)
-                return -1;
-        header.filetime = t;
-        strsncpy(header.title, title, sizeof (header.title));
-        fp = fopen(buf, "w");
-        if (fp == 0)
-                return -2;
-	fprintf(fp, "%s", content);
-        fclose(fp);
-        setmailfile(dir, userid, ".DIR");
-        append_record(dir, &header, sizeof (header));
-        return 0;
-}
-///slowaction to help bm
-*/
 
 //结婚
-static int
-money_marry()
-{
+static int money_marry() {
 	int n, ch, quit = 0;
 	size_t filesize=0;
 	void *buffer = NULL;
@@ -9081,20 +7845,20 @@ money_marry()
 			return -1;
 		write(fd, ptr, filesize);
 		close(fd);
-		}
+	}
 	n = get_num_records(MC_MARRY_RECORDS, sizeof(struct MC_Marry));
 	if (n < 0)
 		return 0;
-/*	if(n<100){
+	/*	if(n<100){
 		n=100;		//一次载入一百条
 		truncate(MC_MARRY_RECORDS,100*sizeof(struct MC_Marry));
-	}
-*/
+		}
+		*/
 	filesize = sizeof(struct MC_Marry) * n;
 	//加载信息
 	marryMem = loadData(MC_MARRY_RECORDS, buffer, filesize);
 	if (marryMem == (void *) -1)
-                return -1;
+		return -1;
 	//处理各种婚姻状态变化
 	marry_refresh(marryMem,n);
 	//查看是否有求婚申请
@@ -9108,8 +7872,7 @@ money_marry()
 	//避免接受多个人求婚
 	for(i=0;i<n;i++){
 		if(!strcmp(marryMem[i].bride, currentuser.userid)){
-			if(marryMem[i].status == MAR_MARRIED
-					|| marryMem[i].status == MAR_MARRYING){
+			if(marryMem[i].status == MAR_MARRIED || marryMem[i].status == MAR_MARRYING){
 				marryMem[j].status =  MAR_COURT_FAIL;
 				marryMem[j].enable = 0;
 				sprintf(genbuf, "%s 已经接受了别人的求婚\n",marryMem[j].bride);
@@ -9165,7 +7928,7 @@ money_marry()
 		mail_buf(genbuf, marryMem[j].bridegroom, buf);
 		if (flag){
 			if (i > 0) {
-			sprintf(genbuf, "\033[1;33m%s\033[m羞答答的说:\n", marryMem[j].bride);
+				sprintf(genbuf, "\033[1;33m%s\033[m羞答答的说:\n", marryMem[j].bride);
 				for (k = 0; k < i; k++){
 					strcat(genbuf,note[k]);
 					strcat(genbuf,"\n");
@@ -9175,12 +7938,12 @@ money_marry()
 			if (note[0][0] == '\0')
 				deliverreport(buf,"\n");
 			else
-	 			deliverreport(buf, genbuf);
+				deliverreport(buf, genbuf);
 		}
 		move(13, 4);
 		prints("我们已经发信通知了对方");
 		pressanykey();
-		}
+	}
 
 
 	while (!quit) {
@@ -9196,34 +7959,34 @@ money_marry()
 		prints("\033[1;44m 选单 \033[1;46m [1]参加婚礼 [2]求婚 [3]准备婚礼 [4]离婚 [5]登记表 [6]婚姻管理办 [Q]离开\033[m");
 		ch = igetkey();
 		switch (ch) {
-		case '1':
-			freshflag = 1;
-			marry_attend(marryMem, n);
-			break;
-		case '2':
-			freshflag = 1;
-			marry_court(marryMem, n);
-			break;
-		case '3':
-			freshflag = 1;
-			marry_perpare(marryMem, n);
-			break;
-		case '4':
-			freshflag = 1;
-			marry_divorce();
-			break;
-		case '5':
-			freshflag = 1;
-			marry_recordlist(marryMem, n);
-			break;
-		case '6':
-			freshflag = 1;
-			marry_admin(marryMem, n);
-			break;
-		case 'q':
-		case 'Q':
-			quit = 1;
-			break;
+			case '1':
+				freshflag = 1;
+				marry_attend(marryMem, n);
+				break;
+			case '2':
+				freshflag = 1;
+				marry_court(marryMem, n);
+				break;
+			case '3':
+				freshflag = 1;
+				marry_perpare(marryMem, n);
+				break;
+			case '4':
+				freshflag = 1;
+				marry_divorce();
+				break;
+			case '5':
+				freshflag = 1;
+				marry_recordlist(marryMem, n);
+				break;
+			case '6':
+				freshflag = 1;
+				marry_admin(marryMem, n);
+				break;
+			case 'q':
+			case 'Q':
+				quit = 1;
+				break;
 		}
 		limit_cpu();
 	}
@@ -9232,9 +7995,7 @@ money_marry()
 }
 
 /*add by macintosh@BMY 2006.10*/
-static int
-marry_admin(struct MC_Marry *marryMem, int n)
-{
+static int marry_admin(struct MC_Marry *marryMem, int n) {
 	int offset, ch, quit = 0;
 	int count, count2, count3, no=0;
 	char uident[IDLEN + 1], uident2[IDLEN + 1], buf[2048], title[STRLEN], ans[8];
@@ -9250,11 +8011,10 @@ marry_admin(struct MC_Marry *marryMem, int n)
 	whoTakeCharge(10, uident);
 
 	if (!seek_in_file(MC_ADMIN_FILE, currentuser.userid)
-		&& !seek_in_file(MC_MARRYADMIN_FILE, currentuser.userid)
-		&& strcmp(currentuser.userid, uident)) {
+			&& !seek_in_file(MC_MARRYADMIN_FILE, currentuser.userid)
+			&& strcmp(currentuser.userid, uident)) {
 		move(6, 4);
-		prints
-		  ("秘书%s拦住了你,说道:“主任们现在正忙着打麻将，没时间接待!”", uident2);
+		prints("秘书%s拦住了你,说道:“主任们现在正忙着打麻将，没时间接待!”", uident2);
 		pressanykey();
 		return 0;
 	}
@@ -9262,361 +8022,38 @@ marry_admin(struct MC_Marry *marryMem, int n)
 	while (!quit) {
 		nomoney_show_stat("兵马俑婚姻管理办公室");
 		move(t_lines - 2, 0);
-		prints("\033[1;44m 选 \033[1;46m [1]查询婚姻状况 [2]办理离婚 [3]设置管理人员 [4]发送离婚通知书             \n"
-			   "\033[1;44m 单 \033[1;46m [5]强制解除婚约 [Q]离开                                               ");
+		prints( "\033[1;44m 选 \033[1;46m [1]查询婚姻状况 [2]办理离婚 [3]设置管理人员 [4]发送离婚通知书             \n"
+				"\033[1;44m 单 \033[1;46m [5]强制解除婚约 [Q]离开                                               ");
 		ch = igetkey();
 		switch (ch) {
-		case '1':
-			clear();
-			move(6, 4);
-			usercomplete("查谁的情况？", uident);
-			if (uident[0] == '\0')
-				break;
-			if (!searchuser(uident)) {
-				move(7, 4);
-				prints("错误的使用者代号...");
-				pressreturn();
-				break;
-			}
-			marry_query_records(uident);
-			break;
-		case '2':
-			clear();
-			move(4, 4);
-			prints("\033[1;31;5m输入ID时请注意大小写\033[m");
-			getdata(6, 4, "请输入女方ID: ", uident, 13, DOECHO, YEA);
-			getdata(7, 4, "请输入男方ID: ", uident2, 13, DOECHO, YEA);
-			/*
-			move(6, 4);
-			usercomplete("请输入女方ID: ", uident);
-			if (uident[0] == '\0')
-				break;
-			if (!searchuser(uident)) {
-				move(7, 4);
-				prints("错误的使用者代号...");
-				pressreturn();
-				break;
-			}
-			move(7, 4);
-			usercomplete("请输入男方ID: ", uident2);
-			if (uident2[0] == '\0')
-				break;
-			if (!searchuser(uident2)) {
-				move(8, 4);
-				prints("错误的使用者代号...");
-				pressreturn();
-				break;
-			}
-			*/
-			if (askyn("确定吗？", NA, NA) == YEA){
-				if (!file_exist(MC_MARRY_RECORDS_ALL)){
-					clear();
-					move(9, 4);
-					prints("没有任何记录!");
-					pressanykey();
-					break;
-				}
-				n = get_num_records(MC_MARRY_RECORDS_ALL, sizeof(struct MC_Marry));
-				if (n <= 0)
-					break;
-				filesize = sizeof(struct MC_Marry) * n;
-				marryMem = loadData(MC_MARRY_RECORDS_ALL, buffer, filesize);
-				if (marryMem == (void *) -1)
-					break;
-				count = 0;
-				for(offset = 0; ;offset++){
-					if (offset >= n || offset < 0)
-						break;
-					mm = &marryMem[offset];
-					if(mm->enable==0)
-						continue;
-					if(!mm->bride[0] || !mm->bridegroom[0])
-						continue;
-					if(strcmp(mm->bride, uident))
-						continue;
-					if(strcmp(mm->bridegroom, uident2))
-						continue;
-					if(mm->status==MAR_MARRIED){
-						sprintf(buf, "结婚时间为%s，确定吗？",
-							get_simple_date_str(&mm->marry_t));
-						if (askyn(buf, NA, NA) == YEA){
-							mm->status=MAR_DIVORCE;
-							mm->divorce_t=time(NULL);
-							count++;
-							sprintf(jhdate, "%s", get_simple_date_str(&mm->marry_t));
-							jhdate[10]=0;
-							sprintf(lhdate, "%s", get_simple_date_str(&mm->divorce_t));
-							lhdate[10]=0;
-							no=offset;
-						}
-					}
-				}
-				move(12, 4);
-				if (count>0){
-					saveData(marryMem, filesize);
-					sprintf(title, "%s和%s劳燕分飞", uident, uident2);
-					sprintf(buf,"　　虽然大富翁婚姻管理办公室主任%s多次调解，"
-						"但是%s（女方）和%s（男方）的爱情已经走到尽头，"
-						"征询双方意见后，大富翁婚姻管理办公室决定批准"
-						"二人离婚，愿二人今后生活顺利。\n",
-						currentuser.userid, uident, uident2);
-					deliverreport(title, buf);
-					sprintf(title, "[公告]%s和%s离婚", uident, uident2);
-					sprintf(lhz,
-							"[0m               [47m                                                [40m \n"
-							"               [47m  [41m[1;32m☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆[47m  [40m \n"
-							"               [47m  [41m☆                                        ☆[47m  [40m \n"
-							"               [47m  [41m☆               [37m离 婚 证                 [32m☆[47m  [40m \n"
-							"               [47m  [41m☆                                        ☆[47m  [40m \n"
-							"               [47m  [41m☆                    [34m[[37m婚字[34m]第 [37m%5.5d [34m号   [32m☆[47m  [40m \n"
-							"               [47m  [41m☆   [37m持证人                               [32m☆[47m  [40m \n"
-							"               [47m  [41m☆   [4;37m%-12.12s[0;1;41m（女）[4m%-12.12s[0;1;41m（男） [32m☆[47m  [40m \n"
-							"               [47m  [41m☆   [37m结婚日期：[4m%s[0;41m                 [1;32m☆[47m  [40m \n"
-							"               [47m  [41m☆      [37m申请离婚，经审查符合兵马俑大富翁  [32m☆[47m  [40m \n"
-							"               [47m  [41m☆   [37m关于离婚的规定，准予登记，发给此证。 [32m☆[47m  [40m \n"
-							"               [47m  [41m☆          [37m发证机关 大富翁婚姻管理办公室 [32m☆[47m  [40m \n"
-							"               [47m  [41m☆          [37m发证日期 %s           [32m☆[47m  [40m \n"
-							"               [47m  [41m☆                                        ☆[47m  [40m \n"
-							"               [47m  [41m☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆[47m  [40m \n"
-							"               [47m                                                [40m \n"
-							"                                                                [m\n",
-							no, uident, uident2, jhdate, lhdate);
-					deliverreport(title, lhz);
-					sprintf(title,"婚姻管理办公室主任%s办理离婚业务",
-						currentuser.userid);
-					millionairesrec(title, buf, "Marriage");
-					sprintf(buf,"大富翁婚姻管理办公室同意您与%s的离婚要求，愿您今后生活顺利。\n", uident);
-					mail_buf_slow(uident2, "大富翁婚姻管理办公室同意您的离婚要求", buf,"XJTU-XANET");
-					sprintf(buf,"大富翁婚姻管理办公室同意您与%s的离婚要求，愿您今后生活顺利。\n", uident2);
-					mail_buf_slow(uident, "大富翁婚姻管理办公室同意您的离婚要求", buf,"XJTU-XANET");
-					prints("完成操作!");
-
-					//再次确认是不是已经结婚，决定是否从已结婚名单删除
-					n = get_num_records(MC_MARRY_RECORDS_ALL, sizeof(struct MC_Marry));
-					if (n <= 0)
-						break;
-					filesize = sizeof(struct MC_Marry) * n;
-					marryMem = loadData(MC_MARRY_RECORDS_ALL, buffer, filesize);
-					if (marryMem == (void *) -1)
-						break;
-					count2 = 0;
-					count3 = 0;
-					for(offset = 0; ;offset++){
-						if (offset >= n || offset < 0)
-							break;
-						mm = &marryMem[offset];
-						if(mm->enable==0)
-							continue;
-						if(!mm->bride[0] || !mm->bridegroom[0])
-							continue;
-						if(!strcmp(mm->bride, uident))
-							if(mm->status==MAR_MARRIED)
-								count2++;
-						if(!strcmp(mm->bridegroom, uident))
-							if(mm->status==MAR_MARRIED)
-								count2++;
-						if(!strcmp(mm->bride, uident2))
-							if(mm->status==MAR_MARRIED)
-								count3++;
-						if(!strcmp(mm->bridegroom, uident2))
-							if(mm->status==MAR_MARRIED)
-								count3++;
-					}
-
-					if (count2==0){
-						if (seek_in_file(MC_MARRIED_LIST, uident))
-							del_from_file(MC_MARRIED_LIST, uident);
-					} else {
-						if (!seek_in_file(MC_MARRIED_LIST, uident))
-							addtofile(MC_MARRIED_LIST, uident);
-					}
-					if (count3==0){
-						if (seek_in_file(MC_MARRIED_LIST, uident2))
-							del_from_file(MC_MARRIED_LIST, uident2);
-					} else {
-						if (!seek_in_file(MC_MARRIED_LIST, uident2))
-							addtofile(MC_MARRIED_LIST, uident2);
-					}
-				} else
-					prints("没有找到任何相关记录!");
-				pressreturn();
-			}
-			break;
-
-		case '3':
-			clear();
-			if (!seek_in_file(MC_ADMIN_FILE, currentuser.userid)) {
-				move(6, 4);
-				prints("总管才可以操作哟");
-				pressanykey();
-				break;
-			}
-
-			while (1) {
+			case '1':
 				clear();
-				prints("设定婚姻管理办公室人员\n");
-				count = listfilecontent(MC_MARRYADMIN_FILE);
-				if (count)
-					getdata(1, 0, "(A)增加 (D)删除 (E)离开 [E]: ", ans, 7, DOECHO, YEA);
-				else
-					getdata(1, 0, "(A)增加  (E)离开[E]: ", ans, 7, DOECHO, YEA);
-				if (*ans == 'A' || *ans == 'a') {
-					move(1, 0);
-					usercomplete("增加人员: ", uident);
-					if (*uident != '\0') {
-						if (seek_in_file(MC_MARRYADMIN_FILE, uident)) {
-							move(2, 0);
-							prints("输入的ID 已经存在!");
-							pressreturn();
-							break;
-						}
-						move(4, 0);
-						if (askyn("真的要添加么?", NA, NA) == YEA){
-							addtofile(MC_MARRYADMIN_FILE, uident);
-							sprintf(title, "%s行使管理权限(婚姻)", currentuser.userid);
-							sprintf(buf, "添加%s为婚姻管理人员", uident);
-							millionairesrec(title, buf, "Marriage");
-							//deliverreport(titlebuf, repbuf);
-							//mail_buf(repbuf, uident, titlebuf);
-						}
-					}
-				} else if ((*ans == 'D' || *ans == 'd') && count) {
-					move(1, 0);
-					namecomplete("删除人员: ", uident);
-					move(1, 0);
-					clrtoeol();
-					if (uident[0] != '\0') {
-						if (!seek_in_file(MC_MARRYADMIN_FILE, uident)) {
-							move(2, 0);
-							prints("输入的ID 不存在!");
-							pressreturn();
-							break;
-						}
-						move(4, 0);
-						if (askyn("真的要删除么?", NA, NA)==YEA){
-							del_from_file(MC_MARRYADMIN_FILE, uident);
-							sprintf(title, "%s行使管理权限(婚姻)", currentuser.userid);
-							sprintf(buf, "取消%s的婚姻管理职务", uident);
-							millionairesrec(title, buf, "Marriage");
-							//deliverreport(titlebuf, repbuf);
-							//mail_buf(repbuf, uident, titlebuf);
-						}
-					}
-				}  else
+				move(6, 4);
+				usercomplete("查谁的情况？", uident);
+				if (uident[0] == '\0')
 					break;
-			}
-			clear();
-			break;
-
-		case '4':
-			clear();
-			move(6, 4);
-			usercomplete("请输入收信方ID: ", uident);
-			if (uident[0] == '\0')
-				break;
-			if (!searchuser(uident)) {
-				move(7, 4);
-				prints("错误的使用者代号...");
-				pressreturn();
-				break;
-			}
-			move(7, 4);
-			usercomplete("请输入提出方ID: ", uident2);
-			if (uident2[0] == '\0')
-				break;
-			if (!searchuser(uident2)) {
-				move(8, 4);
-				prints("错误的使用者代号...");
-				pressreturn();
-				break;
-			}
-
-			if (askyn("确定吗？", NA, NA) == YEA){
-				sprintf(lhdate, "%s", get_simple_date_str(&local_now_t));
-				lhdate[10]=0;
-				sprintf(buf,"尊敬的%s：\n"
-					"　　本婚姻管理中心受理原告%s"
-					"诉你离婚纠纷一案，现依大富翁"
-					"关于离婚的规定向你送达。自本"
-					"通知发出之日起经过6日即视为送达。"
-					"请你认真阅读兵马俑大富翁关于离婚的"
-					"相关规定，并在6日内做出答复，规定外的"
-					"财产分割及损失赔偿请与原告联系，"
-					"定于第7日（遇节假日顺延）审核此诉讼"
-					"请求，逾期（以30日为限）将依照有关规定"
-					"判决。\n\n%80.80s\n%80.80s\n",
-					uident, uident2, " 兵马俑大富翁婚姻管理中心", lhdate);
-				mail_buf_slow(uident, "离婚通知书", buf, "Marriage");
-
-				sprintf(title, "%s诉%s离婚纠纷一案开庭审理", uident2, uident);
-				sprintf(buf,
-					"兵马俑婚姻办公室受理%s离婚请求，"
-					"已向%s发出了离婚通知书。", uident2, uident);
-				deliverreport(title, buf);
-
-				sprintf(title,"婚姻管理办公室主任%s发送离婚通知书",
-					currentuser.userid);
-				millionairesrec(title, buf, "Marriage");
-				prints("完成操作!");
-				pressanykey();
-			}
-			break;
-
-		case '5':
-			clear();
-			showAt(2, 4, "\033[1;31m此功能慎用! \033[m", 0);
-			showAt(4, 4, "\033[1;32m输入ID时请注意大小写\033[m", 0);
-			getdata(6, 4, "请输入女方ID: ", uident, 13, DOECHO, YEA);
-			getdata(7, 4, "请输入男方ID: ", uident2, 13, DOECHO, YEA);
-			if (askyn("确定吗？", NA, NA) == YEA){
-				/*if (!file_exist(MC_MARRY_RECORDS_ALL)){
-					clear();
-					move(9, 4);
-					prints("没有任何记录!");
-					pressanykey();
+				if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
+					move(7, 4);
+					prints("错误的使用者代号...");
+					pressreturn();
 					break;
 				}
-				n = get_num_records(MC_MARRY_RECORDS_ALL, sizeof(struct MC_Marry));
-				if (n <= 0)
-					break;
-				filesize = sizeof(struct MC_Marry) * n;
-				marryMem = loadData(MC_MARRY_RECORDS_ALL, buffer, filesize);
-				if (marryMem == (void *) -1)
-					break;
-				*/
-				count = 0;
-				for(offset = 0; ;offset++){
-					if (offset >= n || offset < 0)
+				marry_query_records(uident);
+				break;
+			case '2':
+				clear();
+				move(4, 4);
+				prints("\033[1;31;5m输入ID时请注意大小写\033[m");
+				getdata(6, 4, "请输入女方ID: ", uident, 13, DOECHO, YEA);
+				getdata(7, 4, "请输入男方ID: ", uident2, 13, DOECHO, YEA);
+				if (askyn("确定吗？", NA, NA) == YEA){
+					if (!file_exist(MC_MARRY_RECORDS_ALL)){
+						clear();
+						move(9, 4);
+						prints("没有任何记录!");
+						pressanykey();
 						break;
-					mm = &marryMem[offset];
-					if(mm->enable==0)
-						continue;
-					if(!mm->bride[0] || !mm->bridegroom[0])
-						continue;
-					if(strcmp(mm->bride, uident))
-						continue;
-					if(strcmp(mm->bridegroom, uident2))
-						continue;
-					sprintf(buf, "订婚时间为%s，确定吗？",
-						get_simple_date_str(&mm->court_t));
-					if (askyn(buf, NA, NA) == YEA){
-						mm->enable=0;
-						mm->status = MAR_COURT_FAIL;
-						count++;
 					}
-
-				}
-				move(12, 4);
-				if (count>0){
-					saveData(marryMem, filesize);
-					sprintf(title,"婚姻管理办公室主任%s强制解除婚约",
-						currentuser.userid);
-					sprintf(buf,"强制解除%s与%s的婚约",
-						uident, uident2);
-					millionairesrec(title, buf, "Marriage");
-					prints("完成操作!");
-
-					//再次确认是不是已经结婚，决定是否从已结婚名单删除
 					n = get_num_records(MC_MARRY_RECORDS_ALL, sizeof(struct MC_Marry));
 					if (n <= 0)
 						break;
@@ -9624,8 +8061,7 @@ marry_admin(struct MC_Marry *marryMem, int n)
 					marryMem = loadData(MC_MARRY_RECORDS_ALL, buffer, filesize);
 					if (marryMem == (void *) -1)
 						break;
-					count2 = 0;
-					count3 = 0;
+					count = 0;
 					for(offset = 0; ;offset++){
 						if (offset >= n || offset < 0)
 							break;
@@ -9634,53 +8070,332 @@ marry_admin(struct MC_Marry *marryMem, int n)
 							continue;
 						if(!mm->bride[0] || !mm->bridegroom[0])
 							continue;
-						if(!strcmp(mm->bride, uident))
-							if(mm->status==MAR_MARRIED)
-								count2++;
-						if(!strcmp(mm->bridegroom, uident))
-							if(mm->status==MAR_MARRIED)
-								count2++;
-						if(!strcmp(mm->bride, uident2))
-							if(mm->status==MAR_MARRIED)
-								count3++;
-						if(!strcmp(mm->bridegroom, uident2))
-							if(mm->status==MAR_MARRIED)
-								count3++;
+						if(strcmp(mm->bride, uident))
+							continue;
+						if(strcmp(mm->bridegroom, uident2))
+							continue;
+						if(mm->status==MAR_MARRIED){
+							sprintf(buf, "结婚时间为%s，确定吗？", get_simple_date_str(&mm->marry_t));
+							if (askyn(buf, NA, NA) == YEA){
+								mm->status=MAR_DIVORCE;
+								mm->divorce_t=time(NULL);
+								count++;
+								sprintf(jhdate, "%s", get_simple_date_str(&mm->marry_t));
+								jhdate[10]=0;
+								sprintf(lhdate, "%s", get_simple_date_str(&mm->divorce_t));
+								lhdate[10]=0;
+								no=offset;
+							}
+						}
 					}
+					move(12, 4);
+					if (count>0){
+						saveData(marryMem, filesize);
+						sprintf(title, "%s和%s劳燕分飞", uident, uident2);
+						sprintf(buf,"　　虽然大富翁婚姻管理办公室主任%s多次调解，"
+								"但是%s（女方）和%s（男方）的爱情已经走到尽头，"
+								"征询双方意见后，大富翁婚姻管理办公室决定批准"
+								"二人离婚，愿二人今后生活顺利。\n",
+								currentuser.userid, uident, uident2);
+						deliverreport(title, buf);
+						sprintf(title, "[公告]%s和%s离婚", uident, uident2);
+						sprintf(lhz,
+								"\033[0m               \033[47m                                                \033[40m \n"
+								"               \033[47m  \033[41m\033[1;32m☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆\033[47m  \033[40m \n"
+								"               \033[47m  \033[41m☆                                        ☆\033[47m  \033[40m \n"
+								"               \033[47m  \033[41m☆               \033[37m离 婚 证                 \033[32m☆\033[47m  \033[40m \n"
+								"               \033[47m  \033[41m☆                                        ☆\033[47m  \033[40m \n"
+								"               \033[47m  \033[41m☆                    \033[34m[\033[37m婚字\033[34m]第 \033[37m%5.5d \033[34m号   \033[32m☆\033[47m  \033[40m \n"
+								"               \033[47m  \033[41m☆   \033[37m持证人                               \033[32m☆\033[47m  \033[40m \n"
+								"               \033[47m  \033[41m☆   \033[4;37m%-12.12s\033[0;1;41m（女）\033[4m%-12.12s\033[0;1;41m（男） \033[32m☆\033[47m  \033[40m \n"
+								"               \033[47m  \033[41m☆   \033[37m结婚日期：\033[4m%s\033[0;41m                 \033[1;32m☆\033[47m  \033[40m \n"
+								"               \033[47m  \033[41m☆      \033[37m申请离婚，经审查符合兵马俑大富翁  \033[32m☆\033[47m  \033[40m \n"
+								"               \033[47m  \033[41m☆   \033[37m关于离婚的规定，准予登记，发给此证。 \033[32m☆\033[47m  \033[40m \n"
+								"               \033[47m  \033[41m☆          \033[37m发证机关 大富翁婚姻管理办公室 \033[32m☆\033[47m  \033[40m \n"
+								"               \033[47m  \033[41m☆          \033[37m发证日期 %s           \033[32m☆\033[47m  \033[40m \n"
+								"               \033[47m  \033[41m☆                                        ☆\033[47m  \033[40m \n"
+								"               \033[47m  \033[41m☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆\033[47m  \033[40m \n"
+								"               \033[47m                                                \033[40m \n"
+								"                                                                \033[m\n",
+								no, uident, uident2, jhdate, lhdate);
+						deliverreport(title, lhz);
+						sprintf(title,"婚姻管理办公室主任%s办理离婚业务", currentuser.userid);
+						millionairesrec(title, buf, "Marriage");
+						sprintf(buf,"大富翁婚姻管理办公室同意您与%s的离婚要求，愿您今后生活顺利。\n", uident);
+						mail_buf_slow(uident2, "大富翁婚姻管理办公室同意您的离婚要求", buf,"XJTU-XANET");
+						sprintf(buf,"大富翁婚姻管理办公室同意您与%s的离婚要求，愿您今后生活顺利。\n", uident2);
+						mail_buf_slow(uident, "大富翁婚姻管理办公室同意您的离婚要求", buf,"XJTU-XANET");
+						prints("完成操作!");
 
-					if (count2==0){
-						if (seek_in_file(MC_MARRIED_LIST, uident))
-							del_from_file(MC_MARRIED_LIST, uident);
-					} else {
-						if (!seek_in_file(MC_MARRIED_LIST, uident))
-							addtofile(MC_MARRIED_LIST, uident);
-					}
-					if (count3==0){
-						if (seek_in_file(MC_MARRIED_LIST, uident2))
-							del_from_file(MC_MARRIED_LIST, uident2);
-					} else {
-						if (!seek_in_file(MC_MARRIED_LIST, uident2))
-							addtofile(MC_MARRIED_LIST, uident2);
-					}
-				} else
-					prints("没有找到任何相关记录!");
-				pressreturn();
-			}
-			break;
+						//再次确认是不是已经结婚，决定是否从已结婚名单删除
+						n = get_num_records(MC_MARRY_RECORDS_ALL, sizeof(struct MC_Marry));
+						if (n <= 0)
+							break;
+						filesize = sizeof(struct MC_Marry) * n;
+						marryMem = loadData(MC_MARRY_RECORDS_ALL, buffer, filesize);
+						if (marryMem == (void *) -1)
+							break;
+						count2 = 0;
+						count3 = 0;
+						for(offset = 0; ;offset++){
+							if (offset >= n || offset < 0)
+								break;
+							mm = &marryMem[offset];
+							if(mm->enable==0)
+								continue;
+							if(!mm->bride[0] || !mm->bridegroom[0])
+								continue;
+							if(!strcmp(mm->bride, uident))
+								if(mm->status==MAR_MARRIED)
+									count2++;
+							if(!strcmp(mm->bridegroom, uident))
+								if(mm->status==MAR_MARRIED)
+									count2++;
+							if(!strcmp(mm->bride, uident2))
+								if(mm->status==MAR_MARRIED)
+									count3++;
+							if(!strcmp(mm->bridegroom, uident2))
+								if(mm->status==MAR_MARRIED)
+									count3++;
+						}
 
-		case 'q':
-		case 'Q':
-			quit = 1;
-			break;
+						if (count2==0){
+							if (seek_in_file(MC_MARRIED_LIST, uident))
+								ytht_del_from_file(MC_MARRIED_LIST, uident, true);
+						} else {
+							if (!seek_in_file(MC_MARRIED_LIST, uident))
+								ytht_add_to_file(MC_MARRIED_LIST, uident);
+						}
+						if (count3==0){
+							if (seek_in_file(MC_MARRIED_LIST, uident2))
+								ytht_del_from_file(MC_MARRIED_LIST, uident2, true);
+						} else {
+							if (!seek_in_file(MC_MARRIED_LIST, uident2))
+								ytht_add_to_file(MC_MARRIED_LIST, uident2);
+						}
+					} else
+						prints("没有找到任何相关记录!");
+					pressreturn();
+				}
+				break;
+
+			case '3':
+				clear();
+				if (!seek_in_file(MC_ADMIN_FILE, currentuser.userid)) {
+					move(6, 4);
+					prints("总管才可以操作哟");
+					pressanykey();
+					break;
+				}
+
+				while (1) {
+					clear();
+					prints("设定婚姻管理办公室人员\n");
+					count = listfilecontent(MC_MARRYADMIN_FILE);
+					if (count)
+						getdata(1, 0, "(A)增加 (D)删除 (E)离开 [E]: ", ans, 7, DOECHO, YEA);
+					else
+						getdata(1, 0, "(A)增加  (E)离开[E]: ", ans, 7, DOECHO, YEA);
+					if (*ans == 'A' || *ans == 'a') {
+						move(1, 0);
+						usercomplete("增加人员: ", uident);
+						if (*uident != '\0') {
+							if (seek_in_file(MC_MARRYADMIN_FILE, uident)) {
+								move(2, 0);
+								prints("输入的ID 已经存在!");
+								pressreturn();
+								break;
+							}
+							move(4, 0);
+							if (askyn("真的要添加么?", NA, NA) == YEA){
+								ytht_add_to_file(MC_MARRYADMIN_FILE, uident);
+								sprintf(title, "%s行使管理权限(婚姻)", currentuser.userid);
+								sprintf(buf, "添加%s为婚姻管理人员", uident);
+								millionairesrec(title, buf, "Marriage");
+								//deliverreport(titlebuf, repbuf);
+								//mail_buf(repbuf, uident, titlebuf);
+							}
+						}
+					} else if ((*ans == 'D' || *ans == 'd') && count) {
+						move(1, 0);
+						namecomplete("删除人员: ", uident);
+						move(1, 0);
+						clrtoeol();
+						if (uident[0] != '\0') {
+							if (!seek_in_file(MC_MARRYADMIN_FILE, uident)) {
+								move(2, 0);
+								prints("输入的ID 不存在!");
+								pressreturn();
+								break;
+							}
+							move(4, 0);
+							if (askyn("真的要删除么?", NA, NA)==YEA){
+								ytht_del_from_file(MC_MARRYADMIN_FILE, uident, true);
+								sprintf(title, "%s行使管理权限(婚姻)", currentuser.userid);
+								sprintf(buf, "取消%s的婚姻管理职务", uident);
+								millionairesrec(title, buf, "Marriage");
+								//deliverreport(titlebuf, repbuf);
+								//mail_buf(repbuf, uident, titlebuf);
+							}
+						}
+					}  else
+						break;
+				}
+				clear();
+				break;
+
+			case '4':
+				clear();
+				move(6, 4);
+				usercomplete("请输入收信方ID: ", uident);
+				if (uident[0] == '\0')
+					break;
+				if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
+					move(7, 4);
+					prints("错误的使用者代号...");
+					pressreturn();
+					break;
+				}
+				move(7, 4);
+				usercomplete("请输入提出方ID: ", uident2);
+				if (uident2[0] == '\0')
+					break;
+				if (!ythtbbs_cache_UserTable_search_usernum(uident2)) {
+					move(8, 4);
+					prints("错误的使用者代号...");
+					pressreturn();
+					break;
+				}
+
+				if (askyn("确定吗？", NA, NA) == YEA){
+					sprintf(lhdate, "%s", get_simple_date_str(&local_now_t));
+					lhdate[10]=0;
+					sprintf(buf,"尊敬的%s：\n"
+							"　　本婚姻管理中心受理原告%s"
+							"诉你离婚纠纷一案，现依大富翁"
+							"关于离婚的规定向你送达。自本"
+							"通知发出之日起经过6日即视为送达。"
+							"请你认真阅读兵马俑大富翁关于离婚的"
+							"相关规定，并在6日内做出答复，规定外的"
+							"财产分割及损失赔偿请与原告联系，"
+							"定于第7日（遇节假日顺延）审核此诉讼"
+							"请求，逾期（以30日为限）将依照有关规定"
+							"判决。\n\n%80.80s\n%80.80s\n",
+							uident, uident2, " 兵马俑大富翁婚姻管理中心", lhdate);
+					mail_buf_slow(uident, "离婚通知书", buf, "Marriage");
+
+					sprintf(title, "%s诉%s离婚纠纷一案开庭审理", uident2, uident);
+					sprintf(buf,
+							"兵马俑婚姻办公室受理%s离婚请求，"
+							"已向%s发出了离婚通知书。", uident2, uident);
+					deliverreport(title, buf);
+
+					sprintf(title,"婚姻管理办公室主任%s发送离婚通知书", currentuser.userid);
+					millionairesrec(title, buf, "Marriage");
+					prints("完成操作!");
+					pressanykey();
+				}
+				break;
+
+			case '5':
+				clear();
+				showAt(2, 4, "\033[1;31m此功能慎用! \033[m", 0);
+				showAt(4, 4, "\033[1;32m输入ID时请注意大小写\033[m", 0);
+				getdata(6, 4, "请输入女方ID: ", uident, 13, DOECHO, YEA);
+				getdata(7, 4, "请输入男方ID: ", uident2, 13, DOECHO, YEA);
+				if (askyn("确定吗？", NA, NA) == YEA){
+					count = 0;
+					for(offset = 0; ;offset++){
+						if (offset >= n || offset < 0)
+							break;
+						mm = &marryMem[offset];
+						if(mm->enable==0)
+							continue;
+						if(!mm->bride[0] || !mm->bridegroom[0])
+							continue;
+						if(strcmp(mm->bride, uident))
+							continue;
+						if(strcmp(mm->bridegroom, uident2))
+							continue;
+						sprintf(buf, "订婚时间为%s，确定吗？", get_simple_date_str(&mm->court_t));
+						if (askyn(buf, NA, NA) == YEA){
+							mm->enable=0;
+							mm->status = MAR_COURT_FAIL;
+							count++;
+						}
+
+					}
+					move(12, 4);
+					if (count>0){
+						saveData(marryMem, filesize);
+						sprintf(title,"婚姻管理办公室主任%s强制解除婚约", currentuser.userid);
+						sprintf(buf,"强制解除%s与%s的婚约", uident, uident2);
+						millionairesrec(title, buf, "Marriage");
+						prints("完成操作!");
+
+						//再次确认是不是已经结婚，决定是否从已结婚名单删除
+						n = get_num_records(MC_MARRY_RECORDS_ALL, sizeof(struct MC_Marry));
+						if (n <= 0)
+							break;
+						filesize = sizeof(struct MC_Marry) * n;
+						marryMem = loadData(MC_MARRY_RECORDS_ALL, buffer, filesize);
+						if (marryMem == (void *) -1)
+							break;
+						count2 = 0;
+						count3 = 0;
+						for(offset = 0; ;offset++){
+							if (offset >= n || offset < 0)
+								break;
+							mm = &marryMem[offset];
+							if(mm->enable==0)
+								continue;
+							if(!mm->bride[0] || !mm->bridegroom[0])
+								continue;
+							if(!strcmp(mm->bride, uident))
+								if(mm->status==MAR_MARRIED)
+									count2++;
+							if(!strcmp(mm->bridegroom, uident))
+								if(mm->status==MAR_MARRIED)
+									count2++;
+							if(!strcmp(mm->bride, uident2))
+								if(mm->status==MAR_MARRIED)
+									count3++;
+							if(!strcmp(mm->bridegroom, uident2))
+								if(mm->status==MAR_MARRIED)
+									count3++;
+						}
+
+						if (count2==0){
+							if (seek_in_file(MC_MARRIED_LIST, uident))
+								ytht_del_from_file(MC_MARRIED_LIST, uident, true);
+						} else {
+							if (!seek_in_file(MC_MARRIED_LIST, uident))
+								ytht_add_to_file(MC_MARRIED_LIST, uident);
+						}
+						if (count3==0){
+							if (seek_in_file(MC_MARRIED_LIST, uident2))
+								ytht_del_from_file(MC_MARRIED_LIST, uident2, true);
+						} else {
+							if (!seek_in_file(MC_MARRIED_LIST, uident2))
+								ytht_add_to_file(MC_MARRIED_LIST, uident2);
+						}
+					} else
+						prints("没有找到任何相关记录!");
+					pressreturn();
+				}
+				break;
+
+			case 'q':
+			case 'Q':
+				quit = 1;
+				break;
 		}
 		limit_cpu();
 	}
 	return 0;
 }
 
-static int
-marry_recordlist(struct MC_Marry *marryMem, int n)
-{
+static int marry_recordlist(struct MC_Marry *marryMem, int n) {
 	int ch, quit = 0;
 	while (!quit) {
 		nomoney_show_stat("兵马俑教堂档案馆");
@@ -9690,19 +8405,19 @@ marry_recordlist(struct MC_Marry *marryMem, int n)
 		prints("\033[1;44m 选单 \033[1;46m [1]婚事登记表 [2]状况记录表 [3]个人查询 [Q]离开\033[m");
 		ch = igetkey();
 		switch (ch) {
-		case '1':
-			marry_active_records(marryMem, n);
-			break;
-		case '2':
-			marry_all_records();
-			break;
-		case '3':
-			marry_query_records(currentuser.userid);
-			break;
-		case 'q':
-		case 'Q':
-			quit = 1;
-			break;
+			case '1':
+				marry_active_records(marryMem, n);
+				break;
+			case '2':
+				marry_all_records();
+				break;
+			case '3':
+				marry_query_records(currentuser.userid);
+				break;
+			case 'q':
+			case 'Q':
+				quit = 1;
+				break;
 		}
 		limit_cpu();
 	}
@@ -9711,9 +8426,7 @@ marry_recordlist(struct MC_Marry *marryMem, int n)
 
 //查询婚姻状况
 /*add by macintosh@BMY 2006.10*/
-static int
-marry_query_records(char *id)
-{
+static int marry_query_records(char *id) {
 	int i,j;
 	char buf[STRLEN];
 	int offset;
@@ -9754,8 +8467,8 @@ marry_query_records(char *id)
 	for(i = 0; ;i++) {	//i用于控制页数
 		local_now_t = time(NULL);
 		for(j=0; j<10; j++){
-				move(8 + j , 0);
-				clrtoeol();
+			move(8 + j , 0);
+			clrtoeol();
 		}
 		count = 0;
 		for(j = 0; count < 10; j++) {	//每屏显示最多10
@@ -9769,8 +8482,7 @@ marry_query_records(char *id)
 			mm = &marryMem[offset];
 			if(mm->enable==0) continue;
 			if(!mm->bride[0] || !mm->bridegroom[0]) continue;
-			if(strcmp(mm->bride, id)
-				&& strcmp(mm->bridegroom, id))
+			if(strcmp(mm->bride, id) && strcmp(mm->bridegroom, id))
 				continue;
 			count++;
 			switch(mm->status){
@@ -9789,10 +8501,10 @@ marry_query_records(char *id)
 					strcpy(timestr,get_simple_date_str(&mm->marry_t));
 			}
 			sprintf(buf, "[%4d] %-20.20s %-10.10s %-10.10s %-16.16s %4d \033[1;%dm%-6.6s\033[m",
-				offset,mm->subject,mm->bride,mm->bridegroom,timestr,mm->visitcount,
-				(mm->status ==MAR_MARRYING)?32:37,marry_status[mm->status]);
+					offset,mm->subject,mm->bride,mm->bridegroom,timestr,mm->visitcount,
+					(mm->status ==MAR_MARRYING)?32:37,marry_status[mm->status]);
 			prints("%s", buf);
-			}
+		}
 		if ((offset >= n ) && (count <= 0)){
 			move(9, 0);
 			prints("没有找到任何相关记录!");
@@ -9814,9 +8526,7 @@ marry_query_records(char *id)
 }
 //状况记录表
 //包括结婚，离婚，求婚失败
-static int
-marry_all_records()
-{
+static int marry_all_records() {
 	int i,j;
 	char buf[STRLEN];
 	int offset;
@@ -9857,8 +8567,8 @@ marry_all_records()
 	for(i = 0; ;i++) {	//i用于控制页数
 		local_now_t = time(NULL);
 		for(j=0; j<10; j++){
-				move(8 + j , 0);
-				clrtoeol();
+			move(8 + j , 0);
+			clrtoeol();
 		}
 		count = 0;
 		for(j = 0; count < 10; j++) {	//每屏显示最多10
@@ -9889,8 +8599,8 @@ marry_all_records()
 					strcpy(timestr,get_simple_date_str(&mm->marry_t));
 			}
 			sprintf(buf, "[%4d] %-20.20s %-10.10s %-10.10s %-16.16s %4d \033[1;%dm%-6.6s\033[m",
-				offset,mm->subject,mm->bride,mm->bridegroom,timestr,mm->visitcount,
-				(mm->status ==MAR_MARRYING)?32:37,marry_status[mm->status]);
+					offset,mm->subject,mm->bride,mm->bridegroom,timestr,mm->visitcount,
+					(mm->status ==MAR_MARRYING)?32:37,marry_status[mm->status]);
 			prints("%s", buf);
 			//offset++;
 		}
@@ -9909,9 +8619,7 @@ marry_all_records()
 
 //求婚结婚登记表
 //婚事登记表
-static int
-marry_active_records(struct MC_Marry *marryMem, int n)
-{
+static int marry_active_records(struct MC_Marry *marryMem, int n) {
 	int i,j;
 	char buf[STRLEN];
 	int offset=0;
@@ -9934,8 +8642,8 @@ marry_active_records(struct MC_Marry *marryMem, int n)
 		local_now_t = time(NULL);
 		count = 0;
 		for(j=0;j<10;j++) {
-				move(8 + j , 0);
-				clrtoeol();
+			move(8 + j , 0);
+			clrtoeol();
 		}
 		for(j = 0; count < 10; j++) {	//每屏显示最多10
 			offset = i * 10 + j;
@@ -9965,9 +8673,9 @@ marry_active_records(struct MC_Marry *marryMem, int n)
 					strcpy(timestr,get_simple_date_str(&mm->marry_t));
 			}
 			sprintf(buf, "[%4d] %-20.20s %-10.10s %-10.10s %-16.16s %4d \033[1;%dm%-6.6s\033[m",
-				offset,mm->subject,mm->bride,mm->bridegroom,timestr,mm->visitcount,
-				(mm->status ==MAR_MARRYING)?32:37,
-				(mm->status ==MAR_MARRYING)?((mm->marry_t > time(NULL))?"筹备中":"婚礼中"):(marry_status[mm->status]));
+					offset,mm->subject,mm->bride,mm->bridegroom,timestr,mm->visitcount,
+					(mm->status ==MAR_MARRYING)?32:37,
+					(mm->status ==MAR_MARRYING)?((mm->marry_t > time(NULL))?"筹备中":"婚礼中"):(marry_status[mm->status]));
 			prints("%s", buf);
 			//offset++;
 		}
@@ -9985,9 +8693,7 @@ marry_active_records(struct MC_Marry *marryMem, int n)
 }
 
 //遍历结婚表，处理各种情况编号
-static int
-marry_refresh(struct MC_Marry *marryMem, int n)
-{
+static int marry_refresh(struct MC_Marry *marryMem, int n) {
 	int i;
 	char buf[400];
 	char filetmp[STRLEN];
@@ -10007,24 +8713,23 @@ marry_refresh(struct MC_Marry *marryMem, int n)
 			append_record(MC_MARRY_RECORDS_ALL, mm, sizeof(struct MC_Marry));	//转入记录
 		}
 		/*else if(marryMem[i].status==MAR_MARRIED){
-			//已结婚，转入记录表，这种情况是为了此次修改，一般不会出现
-			mm = &marryMem[i];
-			mm->status = MAR_MARRIED;
-			append_record(MC_MARRY_RECORDS_ALL, mm, sizeof(struct MC_Marry));	//转入记录
-			mm->enable = 0;	//在这边active表中作废
-			if (!seek_in_file(MC_MARRIED_LIST, mm->bride))
-				addtofile(MC_MARRIED_LIST, mm->bride);
-			if (!seek_in_file(MC_MARRIED_LIST, mm->bridegroom))
-				addtofile(MC_MARRIED_LIST, mm->bridegroom);
+		//已结婚，转入记录表，这种情况是为了此次修改，一般不会出现
+		mm = &marryMem[i];
+		mm->status = MAR_MARRIED;
+		append_record(MC_MARRY_RECORDS_ALL, mm, sizeof(struct MC_Marry));	//转入记录
+		mm->enable = 0;	//在这边active表中作废
+		if (!seek_in_file(MC_MARRIED_LIST, mm->bride))
+		ytht_add_to_file(MC_MARRIED_LIST, mm->bride);
+		if (!seek_in_file(MC_MARRIED_LIST, mm->bridegroom))
+		ytht_add_to_file(MC_MARRIED_LIST, mm->bridegroom);
 		}
 		*/
 		else if(marryMem[i].status==MAR_MARRYING
-					&& marryMem[i].unused[0]!='d'
-					&& !(marryMem[i].marry_t > local_now_t)){
+				&& marryMem[i].unused[0]!='d'
+				&& !(marryMem[i].marry_t > local_now_t)){
 			mm = &marryMem[i];
 			mm->unused[0]='d';
-			sprintf(filetmp, MY_BBS_HOME "/bbstmpfs/tmp/%s.%d",
-				currentuser.userid, getpid());
+			sprintf(filetmp, MY_BBS_HOME "/bbstmpfs/tmp/%s.%d", currentuser.userid, getpid());
 			fp = fopen(filetmp,"w");
 			if(!fp) continue;
 			fprintf(fp,"     \033[1;31m%s\033[m和\033[1;32m%s\033[m的婚礼正式开始，欢迎大家光临\n\n"
@@ -10039,14 +8744,13 @@ marry_refresh(struct MC_Marry *marryMem, int n)
 			append_record(MC_MARRY_RECORDS_ALL, mm, sizeof(struct MC_Marry));	//转入记录
 			mm->enable = 0;	//在这边active表中作废
 			if (!seek_in_file(MC_MARRIED_LIST, mm->bride))
-				addtofile(MC_MARRIED_LIST, mm->bride);
+				ytht_add_to_file(MC_MARRIED_LIST, mm->bride);
 			if (!seek_in_file(MC_MARRIED_LIST, mm->bridegroom))
-				addtofile(MC_MARRIED_LIST, mm->bridegroom);
+				ytht_add_to_file(MC_MARRIED_LIST, mm->bridegroom);
 			sprintf(invpath,"%s/M.%d.A",DIR_MC_MARRY,mm->invitationfile);
 			sprintf(setpath,"%s/M.%d.A",DIR_MC_MARRY,mm->setfile);
 			sprintf(visitpath,"%s/M.%d.A",DIR_MC_MARRY, mm->visitfile);
-			sprintf(filetmp, MY_BBS_HOME "/bbstmpfs/tmp/%s.%d",
-				currentuser.userid, getpid());
+			sprintf(filetmp, MY_BBS_HOME "/bbstmpfs/tmp/%s.%d", currentuser.userid, getpid());
 			fp = fopen(filetmp,"w");
 			if(!fp) continue;
 			fprintf(fp,"     \033[1;31m%s\033[m和\033[1;32m%s\033[m的婚礼到此结束，感谢大家的光临，"
@@ -10089,11 +8793,9 @@ marry_refresh(struct MC_Marry *marryMem, int n)
 	return 1;
 }
 
-static int
-marry_givemoney(struct MC_Marry *mm)
-{
+static int marry_givemoney(struct MC_Marry *mm) {
 	char uident[IDLEN + 1];
-//	void *buffer = NULL;
+	//	void *buffer = NULL;
 	int i;
 	char note[3][STRLEN];
 	char buf[STRLEN];
@@ -10102,9 +8804,9 @@ marry_givemoney(struct MC_Marry *mm)
 
 	move(4,4);
 	if(mm->marry_t > local_now_t){
-			prints("婚礼还未开始,请稍后再来");
-			pressanykey();
-			return 0;
+		prints("婚礼还未开始,请稍后再来");
+		pressanykey();
+		return 0;
 	}
 	else prints("婚礼进行中，送礼的好时机");
 
@@ -10133,13 +8835,13 @@ marry_givemoney(struct MC_Marry *mm)
 		prints("人家新婚大喜呢，这么点钱你也好意思拿出手，小气，哼哼:(");
 		pressanykey();
 		return 0;
-		}
+	}
 	if (num>MAX_MONEY_NUM)
 		num=MAX_MONEY_NUM;
 	move(7, 4);
 	snprintf(buf, STRLEN - 1, "确定转帐 %d 兵马俑币吗？", num);
 	if (askyn(buf, NA, NA) == NA)
-       	return 0;
+		return 0;
 	if (loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM) < num) {
 		move(8, 4);
 		prints("给你们送礼来啦...掏了半天口袋...啊？！居然没带钱？");
@@ -10189,22 +8891,19 @@ marry_givemoney(struct MC_Marry *mm)
 }
 
 //精简的日期表
-char *get_simple_date_str(time_t *tt)
-{
-    struct tm *tm;
+static char *get_simple_date_str(time_t *tt) {
+	struct tm *tm;
 	static char timestr[200];
 	if(tt==0) return "------";
 	tm = localtime(tt);
 	sprintf(timestr,"%02d/%02d/%02d %02d:%02d",
-		tm->tm_year+1900, tm->tm_mon+1,tm->tm_mday, tm->tm_hour, tm->tm_min);
+			tm->tm_year+1900, tm->tm_mon+1,tm->tm_mday, tm->tm_hour, tm->tm_min);
 	//prints(timestr);
 	return timestr;
 }
 
 //参加婚礼
-static int
-marry_attend(struct MC_Marry *marryMem, int n)
-{
+static int marry_attend(struct MC_Marry *marryMem, int n) {
 	int ch, quit = 0;
 	int i,j;
 	char buf[STRLEN];
@@ -10232,8 +8931,8 @@ marry_attend(struct MC_Marry *marryMem, int n)
 	for(i = 0; ;i++) {	//i用于控制页数
 		local_now_t = time(NULL);
 		for(j=0;j<10;j++) {
-				move(8 + j , 0);
-				clrtoeol();
+			move(8 + j , 0);
+			clrtoeol();
 		}
 		count = 0;
 		for(j = 0; count < 10; j++) {	//每屏显示最多10支股票
@@ -10249,8 +8948,8 @@ marry_attend(struct MC_Marry *marryMem, int n)
 			if(!mm->bride[0] || !mm->bridegroom[0]) continue;
 			count++;
 			sprintf(buf, "[%4d] %-20.20s %-10.10s %-10.10s %-16.16s %4d \033[1;%dm%-6.6s\033[m",
-				offset,mm->subject,mm->bride,mm->bridegroom,get_simple_date_str(&mm->marry_t),mm->visitcount,
-				(mm->marry_t > local_now_t)?37:32,(mm->marry_t > local_now_t)?"筹备中":"进行中");
+					offset,mm->subject,mm->bride,mm->bridegroom,get_simple_date_str(&mm->marry_t),mm->visitcount,
+					(mm->marry_t > local_now_t)?37:32,(mm->marry_t > local_now_t)?"筹备中":"进行中");
 			prints("%s", buf);
 			//offset++;
 		}
@@ -10284,7 +8983,7 @@ marry_attend(struct MC_Marry *marryMem, int n)
 		mm->visitfile = t;
 	}else sprintf(visitfile,"%s/M.%d.A",DIR_MC_MARRY, mm->visitfile);
 	if(!seek_in_file(visitfile, currentuser.userid))
-		addtofile(visitfile, currentuser.userid);
+		ytht_add_to_file(visitfile, currentuser.userid);
 
 	while (!quit) {
 		money_show_stat("兵马俑教堂");
@@ -10302,84 +9001,83 @@ marry_attend(struct MC_Marry *marryMem, int n)
 		prints("\033[1;44m 选单 \033[1;46m [1]送礼金 [2]送鲜花 [3]送贺卡 [Q]离开\033[m");
 		ch = igetkey();
 		switch (ch) {
-		case '1':
-			freshflag = 1;
-			if (seek_in_file(DIR_MC "mingren", currentuser.userid)){
-				move(5, 4);
-				prints("    \033[1;32m  黄马褂啊，公公说你们去送猪头吧 \033[m");
-				pressanykey();
+			case '1':
+				freshflag = 1;
+				if (seek_in_file(DIR_MC "mingren", currentuser.userid)){
+					move(5, 4);
+					prints("    \033[1;32m  黄马褂啊，公公说你们去送猪头吧 \033[m");
+					pressanykey();
+					break;
+				}
+				marry_givemoney(mm);
 				break;
-			}
-			marry_givemoney(mm);
-			break;
-		case '2':
-			freshflag = 1;
-			move(5,4);
-			if(mm->marry_t > local_now_t){
-				prints("婚礼还未开始,请稍后再来");
+			case '2':
+				freshflag = 1;
+				move(5,4);
+				if(mm->marry_t > local_now_t){
+					prints("婚礼还未开始,请稍后再来");
+					pressanykey();
+					break;
+				}
+				if(!strcmp(mm->bride, currentuser.userid) || !strcmp(mm->bridegroom, currentuser.userid)){
+					move(7 ,4);
+					prints("哈哈，给自家人送东西就不用这么麻烦了吧...");
+					pressanykey();
+					break;
+				}
+				if(local_now_t%2==1){	//新郎新娘各一半的机会受礼
+					strncpy(uident,mm->bride,IDLEN);
+					prints("鲜花将送到新娘\033[1;31m%s\033[m的手中",uident);
+				}else{
+					strncpy(uident,mm->bridegroom,IDLEN);
+					prints("鲜花将送到新郎\033[1;32m%s\033[m的手中",uident);
+				}
 				pressanykey();
+				if (shop_present(1, "鲜花",uident) == 9) {
+					sprintf(buf, "[恭贺新婚]%s恭贺%s和%s新婚大喜", currentuser.userid, mm->bride, mm->bridegroom);
+					sprintf(genbuf, "送\033[1;31m鲜花\033[m一束\n\n恭祝新郎新娘结婚大喜，百年好合，早生贵子:)");
+					deliverreport(buf, genbuf);
+				}
 				break;
-			}
-			if(!strcmp(mm->bride, currentuser.userid) || !strcmp(mm->bridegroom, currentuser.userid)){
-				move(7 ,4);
-				prints("哈哈，给自家人送东西就不用这么麻烦了吧...");
+			case '3':
+				freshflag = 1;
+				move(5,4);
+				if(mm->marry_t > local_now_t){
+					prints("婚礼还未开始,请稍后再来");
+					pressanykey();
+					break;
+				}
+				if(!strcmp(mm->bride, currentuser.userid) || !strcmp(mm->bridegroom, currentuser.userid)){
+					move(7 ,4);
+					prints("哈哈，给自家人送东西就不用这么麻烦了吧...");
+					pressanykey();
+					break;
+				}
+				if(local_now_t%2==1){	//新郎新娘各一半的机会受礼
+					strncpy(uident,mm->bride,IDLEN);
+					prints("贺卡将送到新娘\033[1;31m%s\033[m的手中",uident);
+				}else{
+					strncpy(uident,mm->bridegroom,IDLEN);
+					prints("贺卡将送到新郎\033[1;32m%s\033[m的手中",uident);
+				}
 				pressanykey();
+				if(shop_present(2, "贺卡",uident) == 9) {
+					sprintf(buf, "[恭贺新婚]%s恭贺%s和%s新婚大喜", currentuser.userid, mm->bride, mm->bridegroom);
+					sprintf(genbuf, "送\033[1;32m贺卡\033[m一张\n\n恭祝新郎新娘结婚大喜，百年好合，早生贵子:)");
+					deliverreport(buf, genbuf);
+				}
 				break;
-			}
-			if(local_now_t%2==1){	//新郎新娘各一半的机会受礼
-				strncpy(uident,mm->bride,IDLEN);
-				prints("鲜花将送到新娘\033[1;31m%s\033[m的手中",uident);
-			}else{
-				strncpy(uident,mm->bridegroom,IDLEN);
-				prints("鲜花将送到新郎\033[1;32m%s\033[m的手中",uident);
-			}
-			pressanykey();
-			if (shop_present(1, "鲜花",uident) == 9) {
-				sprintf(buf, "[恭贺新婚]%s恭贺%s和%s新婚大喜", currentuser.userid, mm->bride, mm->bridegroom);
-				sprintf(genbuf, "送\033[1;31m鲜花\033[m一束\n\n恭祝新郎新娘结婚大喜，百年好合，早生贵子:)");
-				deliverreport(buf, genbuf);
-			}
-			break;
-		case '3':
-			freshflag = 1;
-			move(5,4);
-			if(mm->marry_t > local_now_t){
-				prints("婚礼还未开始,请稍后再来");
-				pressanykey();
+			case 'q':
+			case 'Q':
+				quit = 1;
 				break;
-			}
-			if(!strcmp(mm->bride, currentuser.userid) || !strcmp(mm->bridegroom, currentuser.userid)){
-				move(7 ,4);
-				prints("哈哈，给自家人送东西就不用这么麻烦了吧...");
-				pressanykey();
-				break;
-			}
-			if(local_now_t%2==1){	//新郎新娘各一半的机会受礼
-				strncpy(uident,mm->bride,IDLEN);
-				prints("贺卡将送到新娘\033[1;31m%s\033[m的手中",uident);
-			}else{
-				strncpy(uident,mm->bridegroom,IDLEN);
-				prints("贺卡将送到新郎\033[1;32m%s\033[m的手中",uident);
-			}
-			pressanykey();
-			if(shop_present(2, "贺卡",uident) == 9) {
-				sprintf(buf, "[恭贺新婚]%s恭贺%s和%s新婚大喜", currentuser.userid, mm->bride, mm->bridegroom);
-				sprintf(genbuf, "送\033[1;32m贺卡\033[m一张\n\n恭祝新郎新娘结婚大喜，百年好合，早生贵子:)");
-				deliverreport(buf, genbuf);
-			}
-			break;
-		case 'q':
-		case 'Q':
-			quit = 1;
-			break;
 		}
 		limit_cpu();
 	}
 	return 0;
 }
 
-static int PutMarryRecord(struct MC_Marry *marryMem, int n, struct MC_Marry *new_mm)
-{
+static int PutMarryRecord(struct MC_Marry *marryMem, int n, struct MC_Marry *new_mm) {
 	int i, slot = -1;
 
 	for(i = 0; i < n; i++) {
@@ -10395,9 +9093,7 @@ static int PutMarryRecord(struct MC_Marry *marryMem, int n, struct MC_Marry *new
 }
 
 //求婚
-static int
-marry_court(struct MC_Marry *marryMem, int n)
-{
+static int marry_court(struct MC_Marry *marryMem, int n) {
 	char note[3][STRLEN];
 	char buf[STRLEN];
 	struct MC_Marry mm;
@@ -10418,16 +9114,7 @@ marry_court(struct MC_Marry *marryMem, int n)
 				prints("喂！你正求着婚呢，这么不专一，让mm怎么相信你");
 				pressanykey();
 				return 0;
-			}
-			/*
-			else if(marryMem[i].status == MAR_MARRIED){
-				move(5, 4);
-				prints("你已经结婚了啊，小心告你重婚罪！");
-				pressanykey();
-				return 0;
-			}
-			*/
-			else if(marryMem[i].status == MAR_MARRYING){
+			} else if(marryMem[i].status == MAR_MARRYING){
 				move(5, 4);
 				prints("有没搞错，婚礼正在举行呢，又要求婚，脑袋没发烧吧~~");
 				pressanykey();
@@ -10454,8 +9141,8 @@ marry_court(struct MC_Marry *marryMem, int n)
 	if(!getuser(uident)) {
 		move(6, 4);
 		prints("没有这么个mm啊....");
-              pressanykey();
-              return 0;
+		pressanykey();
+		return 0;
 	}
 	if(!strcmp(uident, currentuser.userid)){
 		move(6, 4);
@@ -10476,16 +9163,7 @@ marry_court(struct MC_Marry *marryMem, int n)
 				prints("你死心吧，人家已经向别人求婚了....");
 				pressanykey();
 				return 0;
-			}
-			/*
-			else if(marryMem[i].status == MAR_MARRIED){
-				move(5, 4);
-				prints("人家已经结婚了呀，当第三者不好的！");
-				pressanykey();
-				return 0;
-			}
-			*/
-			else if(marryMem[i].status == MAR_MARRYING){
+			} else if(marryMem[i].status == MAR_MARRYING){
 				move(5, 4);
 				prints("有没搞错，人家正结婚呢，捣什么乱啊~~");
 				pressanykey();
@@ -10542,7 +9220,7 @@ marry_court(struct MC_Marry *marryMem, int n)
 	PutMarryRecord(marryMem, n, &mm);
 
 	sprintf(buf,"[号外]%s向%s深情的求婚",currentuser.userid,uident);
- 	deliverreport(buf, genbuf);
+	deliverreport(buf, genbuf);
 	sprintf(buf, "[恭喜]%s深情的向您求婚", currentuser.userid);
 	mail_buf(genbuf, uident, buf);
 	move(13, 4);
@@ -10552,20 +9230,17 @@ marry_court(struct MC_Marry *marryMem, int n)
 }
 
 
-char *get_date_str(time_t *tt)
-{
-    struct tm *tm;
+static char *get_date_str(time_t *tt) {
+	struct tm *tm;
 	static char timestr[200];
 	tm = localtime(tt);
 	sprintf(timestr,"%04d年\033[1;33m%02d\033[m月\033[1;33m%02d\033[m日 \033[1;33m%02d\033[m时:\033[1;33m%02d\033[m分",
-		tm->tm_year+1900, tm->tm_mon+1,tm->tm_mday, tm->tm_hour, tm->tm_min);
+			tm->tm_year+1900, tm->tm_mon+1,tm->tm_mday, tm->tm_hour, tm->tm_min);
 	//prints(timestr);
 	return timestr;
 }
 
-static int
-marry_selectday(struct MC_Marry *mm)
-{
+static int marry_selectday(struct MC_Marry *mm) {
 	int ch, quit = 0;
 	time_t local_now_t = time(NULL);
 	//mm->marry_t = local_now_t;
@@ -10589,51 +9264,49 @@ marry_selectday(struct MC_Marry *mm)
 
 		ch = igetkey();
 		switch (ch) {
-		case 'a':
-		case 'A':	//月
-			mm->marry_t += 30*24*60*60;
-			break;
-		case 'b':
-		case 'B':
-			mm->marry_t -= 30*24*60*60;
-			break;
-		case 'c':	//日
-		case 'C':
-			mm->marry_t += 24*60*60;
-			break;
-		case 'd':
-		case 'D':
-			mm->marry_t -= 24*60*60;
-			break;
-		case 'e':	//时
-		case 'E':
-			mm->marry_t += 60*60;
-			break;
-		case 'f':
-		case 'F':
-			mm->marry_t -= 60*60;
-			break;
-		case 'g':
-		case 'G':
-			mm->marry_t += 60;
-			break;
-		case 'h':
-		case 'H':
-			mm->marry_t -= 60;
-			break;
-		case 'q':
-		case 'Q':
-			quit = 1;
-			break;
+			case 'a':
+			case 'A':	//月
+				mm->marry_t += 30*24*60*60;
+				break;
+			case 'b':
+			case 'B':
+				mm->marry_t -= 30*24*60*60;
+				break;
+			case 'c':	//日
+			case 'C':
+				mm->marry_t += 24*60*60;
+				break;
+			case 'd':
+			case 'D':
+				mm->marry_t -= 24*60*60;
+				break;
+			case 'e':	//时
+			case 'E':
+				mm->marry_t += 60*60;
+				break;
+			case 'f':
+			case 'F':
+				mm->marry_t -= 60*60;
+				break;
+			case 'g':
+			case 'G':
+				mm->marry_t += 60;
+				break;
+			case 'h':
+			case 'H':
+				mm->marry_t -= 60;
+				break;
+			case 'q':
+			case 'Q':
+				quit = 1;
+				break;
 		}
 		limit_cpu();
 	}
 	return 0;
 }
 
-static int
-marry_editinvitation(struct MC_Marry *mm)
-{
+static int marry_editinvitation(struct MC_Marry *mm) {
 	FILE *oldfp,*newfp;
 	char buf[400];
 	time_t t;
@@ -10665,7 +9338,7 @@ marry_editinvitation(struct MC_Marry *mm)
 							s[i] = 32;
 						for (i = 0; i < strlen(mm->bridegroom); i++)
 							s[i] = mm->bridegroom[i];
-						}
+					}
 					while (1) {
 						s = strstr(buf, "$bride");
 						if (s == 0)
@@ -10674,14 +9347,14 @@ marry_editinvitation(struct MC_Marry *mm)
 							s[i] = 32;
 						for (i = 0; i < strlen(mm->bride); i++)
 							s[i] = mm->bride[i];
-						}
+					}
 					while (1) {
 						s = strstr(buf, "$marrytime");
 						if (s == 0)
 							break;
 						for (i = 0; i < strlen(get_date_str(&mm->marry_t)); i++)
 							s[i] =get_date_str(&mm->marry_t)[i];
-						}
+					}
 					fprintf(newfp,"%s",buf);
 				}
 				fclose(oldfp);
@@ -10689,12 +9362,11 @@ marry_editinvitation(struct MC_Marry *mm)
 			fclose(newfp);
 		}
 	}else
-	sprintf(filepath,"%s/M.%d.A",DIR_MC_MARRY,mm->invitationfile);
+		sprintf(filepath,"%s/M.%d.A",DIR_MC_MARRY,mm->invitationfile);
 
 	if (dashl(filepath) || !dashf(filepath))
-				return -1;
-	sprintf(edittmp, MY_BBS_HOME "/bbstmpfs/tmp/%s.%d",
-		currentuser.userid, getpid());
+		return -1;
+	sprintf(edittmp, MY_BBS_HOME "/bbstmpfs/tmp/%s.%d", currentuser.userid, getpid());
 	copyfile_attach(filepath, edittmp);
 	if (vedit(edittmp, 0, YEA) < 0) {
 		unlink(edittmp);
@@ -10702,20 +9374,16 @@ marry_editinvitation(struct MC_Marry *mm)
 		do_delay(-1);	/* by ylsdd */
 		return -1;
 	}
-	snprintf(attach_path, sizeof (attach_path),
-		 PATHUSERATTACH "/%s", currentuser.userid);
+	snprintf(attach_path, sizeof (attach_path), PATHUSERATTACH "/%s", currentuser.userid);
 	clearpath(attach_path);
 	decode_attach(filepath, attach_path);
-	insertattachments_byfile(filepath, edittmp,
-					 currentuser.userid);
+	insertattachments_byfile(filepath, edittmp, currentuser.userid);
 	unlink(edittmp);
 	return 1;
 }
 
 
-static int
-marry_editset(struct MC_Marry *mm)
-{
+static int marry_editset(struct MC_Marry *mm) {
 	FILE *oldfp,*newfp;
 	char buf[400];
 	time_t t;
@@ -10747,7 +9415,7 @@ marry_editset(struct MC_Marry *mm)
 							s[i] = 32;
 						for (i = 0; i < strlen(mm->bridegroom); i++)
 							s[i] = mm->bridegroom[i];
-						}
+					}
 					while (1) {
 						s = strstr(buf, "$bride");
 						if (s == 0)
@@ -10756,27 +9424,27 @@ marry_editset(struct MC_Marry *mm)
 							s[i] = 32;
 						for (i = 0; i < strlen(mm->bride); i++)
 							s[i] = mm->bride[i];
-						}
+					}
 					while (1) {
 						s = strstr(buf, "$marrytime");
 						if (s == 0)
 							break;
 						for (i = 0; i < strlen(get_date_str(&mm->marry_t)); i++)
 							s[i] = get_date_str(&mm->marry_t)[i];
-						}
+					}
 					fprintf(newfp,"%s",buf);
-					}/*by macintosh 20051203*/
+				}/*by macintosh 20051203*/
 				fclose(oldfp);
 			}
 			fclose(newfp);
 		}
 	}else
-	sprintf(filepath,"%s/M.%d.A",DIR_MC_MARRY,mm->setfile);
+		sprintf(filepath,"%s/M.%d.A",DIR_MC_MARRY,mm->setfile);
 
 	if (dashl(filepath) || !dashf(filepath))
-				return -1;
+		return -1;
 	sprintf(edittmp, MY_BBS_HOME "/bbstmpfs/tmp/%s.%d",
-		currentuser.userid, getpid());
+			currentuser.userid, getpid());
 	copyfile_attach(filepath, edittmp);
 	if (vedit(edittmp, 0, YEA) < 0) {
 		unlink(edittmp);
@@ -10784,12 +9452,10 @@ marry_editset(struct MC_Marry *mm)
 		do_delay(-1);	/* by ylsdd */
 		return -1;
 	}
-	snprintf(attach_path, sizeof (attach_path),
-		 PATHUSERATTACH "/%s", currentuser.userid);
+	snprintf(attach_path, sizeof (attach_path), PATHUSERATTACH "/%s", currentuser.userid);
 	clearpath(attach_path);
 	decode_attach(filepath, attach_path);
-	insertattachments_byfile(filepath, edittmp,
-					 currentuser.userid);
+	insertattachments_byfile(filepath, edittmp, currentuser.userid);
 	unlink(edittmp);
 
 	return 1;
@@ -10797,9 +9463,7 @@ marry_editset(struct MC_Marry *mm)
 
 
 //准备婚礼
-static int
-marry_perpare(struct MC_Marry *marryMem, int n)
-{
+static int marry_perpare(struct MC_Marry *marryMem, int n) {
 	int ch, quit = 0;
 	int i;
 	struct MC_Marry *mm;
@@ -10840,113 +9504,113 @@ marry_perpare(struct MC_Marry *marryMem, int n)
 		prints("\033[1;44m 选单 \033[1;46m [1]选吉日 [2]写请柬 [3]发请贴 [4]公告天下 [5]设置主题 [6]布置教堂 [Q]离开\033[m");
 		ch = igetkey();
 		switch (ch) {
-		case '1':
-			freshflag = 1;
-			marry_selectday(mm);
-			break;
-		case '2':
-			freshflag = 1;
-			marry_editinvitation(mm);
-			break;
-		case '3':
-			if (HAS_PERM(PERM_DENYMAIL)) {
-				move(5, 4);
-				prints("您被禁止发信");
-				pressanykey();
+			case '1':
+				freshflag = 1;
+				marry_selectday(mm);
 				break;
-			}
-			freshflag = 1;
-			clear();
-			move(5, 4);
-			if (askyn("要发请柬给所有好友吗？", YEA, NA) == NA) {
-				move(6, 4);
-				usercomplete("发请柬给哪位？", uident);
-				if (uident[0] == '\0')
-					break;
-				if(!searchuser(uident)) {
-					move(7, 4);
-	                		prints("名字记错了吧...");
-					pressanykey();
-	                		break;
-					}
-				if(!strcmp(uident,currentuser.userid)){
-					move(10, 4);
-					prints("喂，搞错了吧，给自己发请柬啊");
+			case '2':
+				freshflag = 1;
+				marry_editinvitation(mm);
+				break;
+			case '3':
+				if (HAS_PERM(PERM_DENYMAIL, currentuser)) {
+					move(5, 4);
+					prints("您被禁止发信");
 					pressanykey();
 					break;
 				}
-				sprintf(filepath,"%s/M.%d.A",DIR_MC_MARRY,mm->invitationfile);
-				sprintf(title,"%s台启,%s与%s的婚礼请柬",uident,mm->bride,mm->bridegroom);
-				mail_file(filepath,uident,title);
-			}else {
-				sprintf(filepath,"%s/M.%d.A",DIR_MC_MARRY,mm->invitationfile);
-				for (i = 0; i  < uinfo.fnum; i++) {
+				freshflag = 1;
+				clear();
+				move(5, 4);
+				if (askyn("要发请柬给所有好友吗？", YEA, NA) == NA) {
 					move(6, 4);
-					clrtoeol();
-					getuserid(uident, uinfo.friend[i]);
-					if (!getuser(uident)) {
-						prints("%s这个使用者代号是错误的.\n",uident);
+					usercomplete("发请柬给哪位？", uident);
+					if (uident[0] == '\0')
+						break;
+					if(!ythtbbs_cache_UserTable_search_usernum(uident)) {
+						move(7, 4);
+						prints("名字记错了吧...");
 						pressanykey();
-						continue;
-					} else if (!(lookupuser.userlevel & PERM_READMAIL)) {
-						prints("无法送信给 [1m%s[m\n", lookupuser.userid);
-						pressanykey();
-						continue;
- 					} else if (!strcmp(uident, currentuser.userid)) {
-						prints("自己就不要给自己发请柬吧\n");
-						pressanykey();
-						continue;
+						break;
 					}
+					if(!strcmp(uident,currentuser.userid)){
+						move(10, 4);
+						prints("喂，搞错了吧，给自己发请柬啊");
+						pressanykey();
+						break;
+					}
+					sprintf(filepath,"%s/M.%d.A",DIR_MC_MARRY,mm->invitationfile);
 					sprintf(title,"%s台启,%s与%s的婚礼请柬",uident,mm->bride,mm->bridegroom);
 					mail_file(filepath,uident,title);
+				}else {
+					sprintf(filepath,"%s/M.%d.A",DIR_MC_MARRY,mm->invitationfile);
+					for (i = 0; i  < uinfo.fnum; i++) {
+						move(6, 4);
+						clrtoeol();
+						ythtbbs_cache_UserTable_getuserid(uinfo.friend[i], uident, sizeof(uident));
+						if (!getuser(uident)) {
+							prints("%s这个使用者代号是错误的.\n",uident);
+							pressanykey();
+							continue;
+						} else if (!(lookupuser.userlevel & PERM_READMAIL)) {
+							prints("无法送信给 \033[1m%s\033[m\n", lookupuser.userid);
+							pressanykey();
+							continue;
+						} else if (!strcmp(uident, currentuser.userid)) {
+							prints("自己就不要给自己发请柬吧\n");
+							pressanykey();
+							continue;
+						}
+						sprintf(title,"%s台启,%s与%s的婚礼请柬",uident,mm->bride,mm->bridegroom);
+						mail_file(filepath,uident,title);
+					}
 				}
-			}
-			move(11, 4);
-			prints("请柬已发送");
-			pressanykey();
-			break;
-		case '4':		//版面公告
-			freshflag = 1;
-			move(9, 4);
-			if(mm->invitationfile == 0){
-				prints("还没写好请柬呢");
+				move(11, 4);
+				prints("请柬已发送");
 				pressanykey();
 				break;
-			}
-			sprintf(buf,"您确定要发结婚请柬到“大富翁”版吗？");
-			if (askyn(buf, YEA, NA) == NA) {
-				move(10, 4);
-				prints("慢着，请柬还要再改改~~");
+			case '4':		//版面公告
+				freshflag = 1;
+				move(9, 4);
+				if(mm->invitationfile == 0){
+					prints("还没写好请柬呢");
+					pressanykey();
+					break;
+				}
+				sprintf(buf,"您确定要发结婚请柬到“大富翁”版吗？");
+				if (askyn(buf, YEA, NA) == NA) {
+					move(10, 4);
+					prints("慢着，请柬还要再改改~~");
+					pressanykey();
+					break;
+				}
+				sprintf(filepath,"%s/M.%d.A",DIR_MC_MARRY,mm->invitationfile);
+				sprintf(title,"[请柬]敬请您阖第参加%s和%s的结婚典礼",mm->bride,mm->bridegroom);
+				move(12, 4);
+				if (mm->enable<3){
+					postfile(filepath, MC_BOARD, title ,1);
+					mm->enable++;
+					prints("您的婚事已公告天下，恭喜啦~~");
+				}else
+					prints("请贴也不要总发呀，两次就好了~~");
 				pressanykey();
 				break;
-			}
-			sprintf(filepath,"%s/M.%d.A",DIR_MC_MARRY,mm->invitationfile);
-			sprintf(title,"[请柬]敬请您阖第参加%s和%s的结婚典礼",mm->bride,mm->bridegroom);
-			move(12, 4);
-			if (mm->enable<3){
-				postfile(filepath, MC_BOARD, title ,1);
-				mm->enable++;
-				prints("您的婚事已公告天下，恭喜啦~~");
-			}else
-				prints("请贴也不要总发呀，两次就好了~~");
-			pressanykey();
-			break;
-		case '5':
-			freshflag = 1;
-			buf[0] = 0;
-			getdata(9, 0, "请输入婚礼主题[最多28汉字]: ", buf, 56, DOECHO, NA);
-			if(buf[0]){
-				strncpy(mm->subject,buf,58);
-			}
-			break;
-		case '6':
-			freshflag = 1;
-			marry_editset(mm);
-			break;
-		case 'q':
-		case 'Q':
-			quit = 1;
-			break;
+			case '5':
+				freshflag = 1;
+				buf[0] = 0;
+				getdata(9, 0, "请输入婚礼主题[最多28汉字]: ", buf, 56, DOECHO, NA);
+				if(buf[0]){
+					strncpy(mm->subject,buf,58);
+				}
+				break;
+			case '6':
+				freshflag = 1;
+				marry_editset(mm);
+				break;
+			case 'q':
+			case 'Q':
+				quit = 1;
+				break;
 		}
 		limit_cpu();
 	}//end of while...
@@ -10954,9 +9618,7 @@ marry_perpare(struct MC_Marry *marryMem, int n)
 }
 
 //离婚
-static int
-marry_divorce()
-{
+static int marry_divorce() {
 	clear();
 	move(10, 4);
 	//prints("哎呀，孩子都这么大了还有什么想不开的，快回去好好过日子吧~~");
@@ -10968,9 +9630,7 @@ marry_divorce()
 }
 
 //黑名单
-static int
-money_deny()
-{
+static int money_deny() {
 	char uident[STRLEN];
 	char ans[8];
 	char msgbuf[256];
@@ -10981,11 +9641,9 @@ money_deny()
 		prints("设定黑名单\n");
 		count = listfilecontent(MC_DENY_FILE);
 		if (count)
-			getdata(1, 0, "(A)增加 (D)删除 (C)改变 or (E)离开 [E]: ", ans,
-				7, DOECHO, YEA);
+			getdata(1, 0, "(A)增加 (D)删除 (C)改变 or (E)离开 [E]: ", ans, 7, DOECHO, YEA);
 		else
-			getdata(1, 0, "(A)增加 or (E)离开 [E]: ", ans, 7,
-				DOECHO, YEA);
+			getdata(1, 0, "(A)增加 or (E)离开 [E]: ", ans, 7, DOECHO, YEA);
 		if (*ans == 'A' || *ans == 'a') {
 			move(1, 0);
 			usercomplete("把谁加入黑名单: ", uident);
@@ -11004,7 +9662,7 @@ money_deny()
 			move(1, 0);
 			clrtoeol();
 			if (uident[0] != '\0')
-				if (del_from_file(MC_DENY_FILE, uident))
+				if (ytht_del_from_file(MC_DENY_FILE, uident, true))
 					mc_denynotice(2, uident, msgbuf);
 		} else
 			break;
@@ -11013,11 +9671,7 @@ money_deny()
 	return 1;
 }
 
-
-
-static int
-mc_addtodeny(char *uident, char *msg, int ischange)
-{
+static int mc_addtodeny(char *uident, char *msg, int ischange) {
 	char buf[50], strtosave[256];
 	char buf2[50];
 	int day;
@@ -11049,20 +9703,20 @@ mc_addtodeny(char *uident, char *msg, int ischange)
 		time_t undenytime = nowtime + day * 24 * 60 * 60;
 		tmtime = gmtime(&undenytime);
 		sprintf(strtosave, "%-12s %-40s %2d月%2d日解 \x1b[%ldm", uident,
-			buf, tmtime->tm_mon + 1, tmtime->tm_mday,
-			(long int) undenytime);
+				buf, tmtime->tm_mon + 1, tmtime->tm_mday,
+				(long int) undenytime);
 		sprintf(msg,
-			"据大富翁新闻发言人今日透露，%s 因为"
-			" \033[1m%s\033[m 原因被总管 %s 禁止进入大富翁游戏"
-			" %d 天，希望所有大富翁人士引以为戒，"
-			"共同创建和谐大富翁！",
-			uident, buf, currentuser.userid, day);
+				"据大富翁新闻发言人今日透露，%s 因为"
+				" \033[1m%s\033[m 原因被总管 %s 禁止进入大富翁游戏"
+				" %d 天，希望所有大富翁人士引以为戒，"
+				"共同创建和谐大富翁！",
+				uident, buf, currentuser.userid, day);
 	} else {
 		sprintf(strtosave, "%-12s %-35s 手动解封", uident, buf);
 		sprintf(msg, "据大富翁新闻发言人今日透露，%s 因为"
-			" \033[1m%s \033[m原因被总管 %s 永久禁止进入大富翁游戏，"
-			"希望所有大富翁人士引以为戒，共同创建和谐大富翁！",
-			uident, buf, currentuser.userid);
+				" \033[1m%s \033[m原因被总管 %s 永久禁止进入大富翁游戏，"
+				"希望所有大富翁人士引以为戒，共同创建和谐大富翁！",
+				uident, buf, currentuser.userid);
 	}
 	if (ischange)
 		getdata(5, 0, "真的要改变么?[Y/N]: ", ans, 7, DOECHO, YEA);
@@ -11071,53 +9725,40 @@ mc_addtodeny(char *uident, char *msg, int ischange)
 	if ((*ans != 'Y') && (*ans != 'y'))
 		return -1;
 	if (ischange)
-		del_from_file(MC_DENY_FILE, uident);
-	return addtofile(MC_DENY_FILE, strtosave);
+		ytht_del_from_file(MC_DENY_FILE, uident, true);
+	return ytht_add_to_file(MC_DENY_FILE, strtosave);
 }
 
 
-static int
-mc_denynotice(int action, char *user, char *msgbuf)
-{
+static int mc_denynotice(int action, char *user, char *msgbuf) {
 	char repbuf[STRLEN];
 	char repuser[IDLEN + 1];
 	strcpy(repuser, user);
 	switch (action) {
-	case 1:
-		sprintf(repbuf,
-			"[号外]%s被列入大富翁黑名单", repuser);
-		deliverreport(repbuf, msgbuf);
-		sprintf(repbuf,
-			"%s被%s列入大富翁黑名单",
-			user, currentuser.userid);
-		mail_buf(msgbuf, user, repbuf);
-		millionairesrec(repbuf, msgbuf,"");
-		break;
-	case 3:
-		sprintf(repbuf,
-			"%s改变%s大富翁黑名单的时间或说明",
-			currentuser.userid, user);
-		millionairesrec(repbuf, msgbuf,"");
-		mail_buf(msgbuf, user, repbuf);
-		break;
-	case 2:
-		sprintf(repbuf,
-			"恢复 %s 进入大富翁游戏的权利",
-			repuser);
-		snprintf(msgbuf, 256, "%s %s\n"
-			 "请理解大富翁总管工作，谢谢！\n",
-			 currentuser.userid, repbuf);
-		deliverreport(repbuf, msgbuf);
-		millionairesrec(repbuf, msgbuf,"");
-		mail_buf(msgbuf, user, repbuf);
-		break;
+		case 1:
+			sprintf(repbuf, "[号外]%s被列入大富翁黑名单", repuser);
+			deliverreport(repbuf, msgbuf);
+			sprintf(repbuf, "%s被%s列入大富翁黑名单", user, currentuser.userid);
+			mail_buf(msgbuf, user, repbuf);
+			millionairesrec(repbuf, msgbuf,"");
+			break;
+		case 3:
+			sprintf(repbuf, "%s改变%s大富翁黑名单的时间或说明", currentuser.userid, user);
+			millionairesrec(repbuf, msgbuf,"");
+			mail_buf(msgbuf, user, repbuf);
+			break;
+		case 2:
+			sprintf(repbuf, "恢复 %s 进入大富翁游戏的权利", repuser);
+			snprintf(msgbuf, 256, "%s %s\n" "请理解大富翁总管工作，谢谢！\n", currentuser.userid, repbuf);
+			deliverreport(repbuf, msgbuf);
+			millionairesrec(repbuf, msgbuf,"");
+			mail_buf(msgbuf, user, repbuf);
+			break;
 	}
 	return 0;
 }
 
-static int
-mc_autoundeny()
-{
+static int mc_autoundeny() {
 	char *ptr, buf[STRLEN];
 	int undenytime;
 	if (!seek_in_file(MC_DENY_FILE, currentuser.userid))
@@ -11130,10 +9771,8 @@ mc_autoundeny()
 	undenytime=atoi(buf);
 	if (undenytime > time(0))
 		return 0;
-	if (del_from_file(MC_DENY_FILE, currentuser.userid)) {
-		sprintf(buf,
-			"恢复 %s 进入大富翁游戏的权利",
-			currentuser.userid);
+	if (ytht_del_from_file(MC_DENY_FILE, currentuser.userid, true)) {
+		sprintf(buf, "恢复 %s 进入大富翁游戏的权利", currentuser.userid);
 		//deliverreport(buf, "请理解大富翁总管工作，谢谢！\n");
 		millionairesrec(buf, "系统自动解封\n","");
 		mail_buf("请理解大富翁总管工作，谢谢！\n", currentuser.userid, buf);
@@ -11141,9 +9780,7 @@ mc_autoundeny()
 	return 1;
 }
 
-static int
-addstockboard(char *sbname, char *fname)
-{
+static int addstockboard(char *sbname, char *fname) {
 	int i;
 	int seek;
 
@@ -11167,13 +9804,11 @@ addstockboard(char *sbname, char *fname)
 		pressanykey();
 		return 0;
 	}
-	return addtofile(fname, sbname);
+	return ytht_add_to_file(fname, sbname);
 
 }
 
-static int
-delstockboard(char *sbname, char *fname)
-{
+static int delstockboard(char *sbname, char *fname) {
 	int i, seek;
 	if ((i = getbnum(sbname)) == 0){
 		move(3, 0);
@@ -11195,12 +9830,10 @@ delstockboard(char *sbname, char *fname)
 		pressanykey();
 		return 0;
 	}
-	return del_from_file(fname, sbname);
+	return ytht_del_from_file(fname, sbname, true);
 }
 
-static int
-stockboards()
-{
+static int stockboards() {
 	char uident[STRLEN];
 	char ans[8], repbuf[200], buf[200], titlebuf[STRLEN], bname[STRLEN],  bpath[STRLEN];
 	int count, ch2;
@@ -11212,8 +9845,7 @@ stockboards()
 	whoTakeCharge(6, uident);
 	if (strcmp(currentuser.userid, uident)) {
 		move(6, 4);
-		prints
-	  	  ("秘书%s拦住了你,说道:“主席%s现在很忙,没时间接待你。”", buf,uident);
+		prints("秘书%s拦住了你,说道:“主席%s现在很忙,没时间接待你。”", buf,uident);
 		pressanykey();
 		return 0;
 	} else {
@@ -11227,220 +9859,204 @@ stockboards()
 		prints("5. 辞职                      6. 退出");
 		ch2 = igetkey();
 		switch (ch2) {
-		case '1':
-			ansimore(MC_STOCK_BOARDS, YEA);
-			while (1) {
-				clear();
-				prints("设定上市版面名单\n");
-				count = listfilecontent(MC_STOCK_BOARDS);
-				if (count)
-					getdata(1, 0, "(A)增加 (D)删除 (E)离开 [E]: ",
-						ans, 7, DOECHO, YEA);
-				else
-					getdata(1, 0, "(A)增加  (E)离开 [E]: ", ans, 7,
-						DOECHO, YEA);
-				if (*ans == 'A' || *ans == 'a') {
-					move(1, 0);
-					make_blist();
-					namecomplete("增加版面: ", bname);
-					setbpath(bpath, bname);
-					if ((*bname == '\0') || (stat(bpath, &st) == -1)) {
-						move(2, 0);
-						prints("不正确的讨论区.\n");
-						pressreturn();
-						break;
-					}
-					if (!(st.st_mode & S_IFDIR)) {
-						move(2, 0);
-						prints("不正确的讨论区.\n");
-						pressreturn();
-						break;
-					}
-					if (bname[0] != '\0' && bname[0] != '\n' && bname[0] != '\r') {
-						if (addstockboard(bname, MC_STOCK_BOARDS)) {
-							sprintf(repbuf, "[公告]%s版上市", bname);
-							sprintf(buf,
-								"经过版主申请，大富翁证监会通过，"
-								"批准%s版面上市，试运营期一个月，"
-								"望广大股民注意。"
-								"如有想上市并符合条件的版面，"
-								"欢迎按照相关流程申请上市。\n",
-								bname);
-							deliverreport(repbuf, buf);
-							sprintf(titlebuf, "%s行使股市管理权限", currentuser.userid);
-							sprintf(repbuf, "添加上市版面: %s版", bname);
-							millionairesrec(titlebuf, repbuf, "");
+			case '1':
+				ansimore(MC_STOCK_BOARDS, YEA);
+				while (1) {
+					clear();
+					prints("设定上市版面名单\n");
+					count = listfilecontent(MC_STOCK_BOARDS);
+					if (count)
+						getdata(1, 0, "(A)增加 (D)删除 (E)离开 [E]: ", ans, 7, DOECHO, YEA);
+					else
+						getdata(1, 0, "(A)增加  (E)离开 [E]: ", ans, 7, DOECHO, YEA);
+					if (*ans == 'A' || *ans == 'a') {
+						move(1, 0);
+						make_blist();
+						namecomplete("增加版面: ", bname);
+						setbpath(bpath, bname);
+						if ((*bname == '\0') || (stat(bpath, &st) == -1)) {
+							move(2, 0);
+							prints("不正确的讨论区.\n");
+							pressreturn();
+							break;
 						}
-					}
-				} else if ((*ans == 'D' || *ans == 'd') && count) {
-					move(1, 0);
-					namecomplete("删除版面: ", bname);
-					move(1, 0);
-					clrtoeol();
-					if (bname[0] != '\0' && bname[0] != '\n' && bname[0] != '\r') {
-						if (delstockboard(bname, MC_STOCK_BOARDS)) {
-							getdata(6, 0, "取消原因：", buf, 50, DOECHO, YEA);
-							/*move(7, 0);
-							if (askyn("确定吗？", NA, NA) == NA) {
-								addtofile(MC_STOCK_BOARDS, bname);
-								pressanykey();
-								break;
-							}*/
-							sprintf(repbuf, "原因：%s", buf);
-							sprintf(titlebuf, "[公告]%s版退市", bname);
-							deliverreport(titlebuf, repbuf);
-							sprintf(titlebuf, "%s行使股市管理权限", currentuser.userid);
-							sprintf(repbuf, "取消上市版面: %s版\n\n取消原因：%s\n", bname, buf);
-							millionairesrec(titlebuf, repbuf, "");
+						if (!(st.st_mode & S_IFDIR)) {
+							move(2, 0);
+							prints("不正确的讨论区.\n");
+							pressreturn();
+							break;
 						}
-					}
-				} else
-				break;
-			}
-			break;
-
-		case '2':
-			//ansimore(MC_STOCK_STOPBUY, YEA);
-			while (1) {
-				clear();
-				prints("被暂停交易的版面名单\n");
-				count = listfilecontent(MC_STOCK_STOPBUY);
-				if (count)
-					getdata(1, 0, "(A)增加 (D)删除 (E)离开 [E]: ",
-						ans, 7, DOECHO, YEA);
-				else
-					getdata(1, 0, "(A)增加  (E)离开 [E]: ", ans, 7,
-						DOECHO, YEA);
-				if (*ans == 'A' || *ans == 'a') {
-					move(1, 0);
-					make_blist();
-					namecomplete("暂停哪版交易: ", bname);
-					setbpath(bpath, bname);
-					if ((*bname == '\0') || (stat(bpath, &st) == -1)) {
-						move(2, 0);
-						prints("不正确的讨论区.\n");
-						pressreturn();
-						break;
-					}
-					if (!(st.st_mode & S_IFDIR)) {
-						move(2, 0);
-						prints("不正确的讨论区.\n");
-						pressreturn();
-						break;
-					}
-					if (!seek_in_file(MC_STOCK_BOARDS, bname)){
-						move(2, 0);
-						prints("您选择的版面没有上市\n");
-						pressreturn();
-						break;
-					}
-
-					if (bname[0] != '\0' && bname[0] != '\n' && bname[0] != '\r') {
-						if (addstockboard(bname, MC_STOCK_STOPBUY)) {
-							getdata(6, 0, "暂停原因：", buf, 50, DOECHO, YEA);
-							move(7, 0);
-							if (askyn("确定吗？", NA, NA) == NA) {
-								pressanykey();
-								break;
+						if (bname[0] != '\0' && bname[0] != '\n' && bname[0] != '\r') {
+							if (addstockboard(bname, MC_STOCK_BOARDS)) {
+								sprintf(repbuf, "[公告]%s版上市", bname);
+								sprintf(buf,
+										"经过版主申请，大富翁证监会通过，"
+										"批准%s版面上市，试运营期一个月，"
+										"望广大股民注意。"
+										"如有想上市并符合条件的版面，"
+										"欢迎按照相关流程申请上市。\n",
+										bname);
+								deliverreport(repbuf, buf);
+								sprintf(titlebuf, "%s行使股市管理权限", currentuser.userid);
+								sprintf(repbuf, "添加上市版面: %s版", bname);
+								millionairesrec(titlebuf, repbuf, "");
 							}
-							sprintf(repbuf, "暂停原因：%s", buf);
-							sprintf(titlebuf, "[公告]%s版股票停牌", bname);
-							deliverreport(titlebuf, repbuf);
-							sprintf(titlebuf, "%s行使股市管理权限", currentuser.userid);
-							sprintf(repbuf, "暂停%s版股票交易\n\n原因：%s\n", bname, buf);
-							millionairesrec(titlebuf, repbuf, "");
 						}
-					}
-				} else if ((*ans == 'D' || *ans == 'd') && count) {
-					move(1, 0);
-					namecomplete("要恢复交易的版面: ", bname);
-					move(1, 0);
-					clrtoeol();
-					if (bname[0] != '\0' && bname[0] != '\n' && bname[0] != '\r') {
-						if (delstockboard(bname, MC_STOCK_STOPBUY)) {
-							getdata(6, 0, "恢复原因：", buf, 50, DOECHO, YEA);
-							/*move(7, 0);
-							if (askyn("确定吗？", NA, NA) == NA) {
-								pressanykey();
-								break;
-							}*/
-							sprintf(repbuf, "恢复原因：%s", buf);
-							sprintf(titlebuf, "[公告]%s版股票复牌", bname);
-							deliverreport(titlebuf, repbuf);
-							sprintf(titlebuf, "%s行使股市管理权限", currentuser.userid);
-							sprintf(repbuf, "恢复%s版股票交易\n\n原因：%s\n", bname, buf);
-							millionairesrec(titlebuf, repbuf, "");
+					} else if ((*ans == 'D' || *ans == 'd') && count) {
+						move(1, 0);
+						namecomplete("删除版面: ", bname);
+						move(1, 0);
+						clrtoeol();
+						if (bname[0] != '\0' && bname[0] != '\n' && bname[0] != '\r') {
+							if (delstockboard(bname, MC_STOCK_BOARDS)) {
+								getdata(6, 0, "取消原因：", buf, 50, DOECHO, YEA);
+								sprintf(repbuf, "原因：%s", buf);
+								sprintf(titlebuf, "[公告]%s版退市", bname);
+								deliverreport(titlebuf, repbuf);
+								sprintf(titlebuf, "%s行使股市管理权限", currentuser.userid);
+								sprintf(repbuf, "取消上市版面: %s版\n\n取消原因：%s\n", bname, buf);
+								millionairesrec(titlebuf, repbuf, "");
+							}
 						}
-					}
-				} else
+					} else
+						break;
+				}
 				break;
-			}
-			break;
 
-		case '3':
-		//	utmpshm->ave_score = 0;
-			sprintf(buf,"%s/stopbuy",DIR_MC);
-			if (file_exist(buf)){
-				clear();
-				move(6, 4);
-				prints("已经停盘");
-				pressreturn();
+			case '2':
+				//ansimore(MC_STOCK_STOPBUY, YEA);
+				while (1) {
+					clear();
+					prints("被暂停交易的版面名单\n");
+					count = listfilecontent(MC_STOCK_STOPBUY);
+					if (count)
+						getdata(1, 0, "(A)增加 (D)删除 (E)离开 [E]: ", ans, 7, DOECHO, YEA);
+					else
+						getdata(1, 0, "(A)增加  (E)离开 [E]: ", ans, 7, DOECHO, YEA);
+					if (*ans == 'A' || *ans == 'a') {
+						move(1, 0);
+						make_blist();
+						namecomplete("暂停哪版交易: ", bname);
+						setbpath(bpath, bname);
+						if ((*bname == '\0') || (stat(bpath, &st) == -1)) {
+							move(2, 0);
+							prints("不正确的讨论区.\n");
+							pressreturn();
+							break;
+						}
+						if (!(st.st_mode & S_IFDIR)) {
+							move(2, 0);
+							prints("不正确的讨论区.\n");
+							pressreturn();
+							break;
+						}
+						if (!seek_in_file(MC_STOCK_BOARDS, bname)){
+							move(2, 0);
+							prints("您选择的版面没有上市\n");
+							pressreturn();
+							break;
+						}
+
+						if (bname[0] != '\0' && bname[0] != '\n' && bname[0] != '\r') {
+							if (addstockboard(bname, MC_STOCK_STOPBUY)) {
+								getdata(6, 0, "暂停原因：", buf, 50, DOECHO, YEA);
+								move(7, 0);
+								if (askyn("确定吗？", NA, NA) == NA) {
+									pressanykey();
+									break;
+								}
+								sprintf(repbuf, "暂停原因：%s", buf);
+								sprintf(titlebuf, "[公告]%s版股票停牌", bname);
+								deliverreport(titlebuf, repbuf);
+								sprintf(titlebuf, "%s行使股市管理权限", currentuser.userid);
+								sprintf(repbuf, "暂停%s版股票交易\n\n原因：%s\n", bname, buf);
+								millionairesrec(titlebuf, repbuf, "");
+							}
+						}
+					} else if ((*ans == 'D' || *ans == 'd') && count) {
+						move(1, 0);
+						namecomplete("要恢复交易的版面: ", bname);
+						move(1, 0);
+						clrtoeol();
+						if (bname[0] != '\0' && bname[0] != '\n' && bname[0] != '\r') {
+							if (delstockboard(bname, MC_STOCK_STOPBUY)) {
+								getdata(6, 0, "恢复原因：", buf, 50, DOECHO, YEA);
+								sprintf(repbuf, "恢复原因：%s", buf);
+								sprintf(titlebuf, "[公告]%s版股票复牌", bname);
+								deliverreport(titlebuf, repbuf);
+								sprintf(titlebuf, "%s行使股市管理权限", currentuser.userid);
+								sprintf(repbuf, "恢复%s版股票交易\n\n原因：%s\n", bname, buf);
+								millionairesrec(titlebuf, repbuf, "");
+							}
+						}
+					} else
+						break;
+				}
 				break;
-			}
 
-			f_fp=fopen(buf,"w");
-			if(f_fp!=NULL){
-				fclose(f_fp);
-				//sprintf(repbuf, "原因：%s", buf);
-				//sprintf(titlebuf, "[公告]兵马俑股市停盘");
-				deliverreport("[公告]兵马俑股市停盘", "");
+			case '3':
+				// ythtbbs_cache_utmp_set_ave_score(0);
+				sprintf(buf,"%s/stopbuy",DIR_MC);
+				if (file_exist(buf)){
+					clear();
+					move(6, 4);
+					prints("已经停盘");
+					pressreturn();
+					break;
+				}
+
+				f_fp=fopen(buf,"w");
+				if(f_fp!=NULL){
+					fclose(f_fp);
+					//sprintf(repbuf, "原因：%s", buf);
+					//sprintf(titlebuf, "[公告]兵马俑股市停盘");
+					deliverreport("[公告]兵马俑股市停盘", "");
+					sprintf(titlebuf, "%s行使股市管理权限", currentuser.userid);
+					//sprintf(repbuf, "暂停全部交易\n\n原因：%s\n", bname, buf);
+					millionairesrec(titlebuf, "暂停全部交易", "");
+
+					clear();
+					move(6, 4);
+					prints("操作成功!");
+					pressanykey();
+				}else{
+					clear();
+					move(6, 4);
+					prints("发生错误");
+					pressreturn();
+				}
+				break;
+
+			case '4':
+				sprintf(buf,"%s/stopbuy",DIR_MC);
+				if (!file_exist(buf)){
+					clear();
+					move(6, 4);
+					prints("没有停盘啊");
+					pressreturn();
+					break;
+				}
+				remove(buf);
+				deliverreport("[公告]兵马俑股市重新开盘", "");
 				sprintf(titlebuf, "%s行使股市管理权限", currentuser.userid);
-				//sprintf(repbuf, "暂停全部交易\n\n原因：%s\n", bname, buf);
-				millionairesrec(titlebuf, "暂停全部交易", "");
+				millionairesrec(titlebuf, "恢复全部交易", "");
 
 				clear();
 				move(6, 4);
 				prints("操作成功!");
 				pressanykey();
-			}else{
-				clear();
-				move(6, 4);
-				prints("发生错误");
-				pressreturn();
-			}
-			break;
-
-		case '4':
-			sprintf(buf,"%s/stopbuy",DIR_MC);
-			if (!file_exist(buf)){
-				clear();
-				move(6, 4);
-				prints("没有停盘啊");
-				pressreturn();
 				break;
-			}
-			remove(buf);
-			deliverreport("[公告]兵马俑股市重新开盘", "");
-			sprintf(titlebuf, "%s行使股市管理权限", currentuser.userid);
-			millionairesrec(titlebuf, "恢复全部交易", "");
 
-			clear();
-			move(6, 4);
-			prints("操作成功!");
-			pressanykey();
-			break;
-
-		case '5':
-			move(12, 4);
-			if (askyn("您真的要辞职吗？", NA,NA) == YEA) {
-			sprintf(genbuf, "%s 要辞去证监会主席职务",
-				currentuser.userid);
-			mail_buf(genbuf, "millionaires", genbuf);
-			move(14, 4);
-			prints("好吧，已经发信告知总管了");
-			pressanykey();
-			}
-			break;
+			case '5':
+				move(12, 4);
+				if (askyn("您真的要辞职吗？", NA,NA) == YEA) {
+					sprintf(genbuf, "%s 要辞去证监会主席职务", currentuser.userid);
+					mail_buf(genbuf, "millionaires", genbuf);
+					move(14, 4);
+					prints("好吧，已经发信告知总管了");
+					pressanykey();
+				}
+				break;
 		}
 	}
 	clear();
@@ -11489,8 +10105,7 @@ struct TrainInfo{
 //以下仅列出西安站到发车次，含复车次
 struct TrainInfo XianTrain[]= {
 	{"T193", 2, 0.3, 0.0},{"T194", 2, 0.3, 0.0},{"T191", 2, 0.3, 0.0},{"T192", 2, 0.3, 0.0},
-	{"T197", 2, 0.3, 0.0},{"T198", 2, 0.3, 0.0},
-	{"K5", 2, 0.4, 0.0},	{"K6", 2, 0.4, 0.0},
+	{"T197", 2, 0.3, 0.0},{"T198", 2, 0.3, 0.0}, {"K5", 2, 0.4, 0.0},{"K6", 2, 0.4, 0.0},
 	{"K165", 2, 0.4, 0.0},{"K166", 2, 0.4, 0.0},
 	{"K173", 0, 0.0, 0.0},{"K174", 0, 0.0, 0.0},{"K171", 0, 0.0, 0.0},{"K172", 0, 0.0, 0.0},
 	{"K241", 2, 0.4, 0.0},{"K242", 2, 0.4, 0.0},{"K243", 2, 0.4, 0.0},{"K244", 2, 0.4, 0.0},
@@ -11511,29 +10126,24 @@ struct TrainInfo XianTrain[]= {
 	{"1363", 2, 0.3, 0.0},{"1364", 2, 0.3, 0.0},
 	{"1433", 2, 0.3, 0.0},{"1434", 2, 0.3, 0.0},{"1432", 2, 0.3, 0.0},{"1431", 2, 0.3, 0.0},
 	{"N373", 0, 0.0, 0.0},{"N374", 0, 0.0, 0.0},
-	{"N375", 2, 0.5, -0.15},	{"N376", 2, 0.5, -0.15},	{"N376", 2, 0.5, -0.15},	{"N378", 2, 0.5, -0.15},
+	{"N375", 2, 0.5, -0.15},{"N376", 2, 0.5, -0.15},{"N376", 2, 0.5, -0.15},{"N378", 2, 0.5, -0.15},
 	{"N359", 2, 0.4, 0.0},{"N360", 2, 0.4, 0.0},{"N357", 2, 0.4, 0.0},{"N358", 2, 0.4, 0.0},
 	{"4901", 2, 0.4, 0.0},{"4902", 2, 0.4, 0.0},{"4903", 2, 0.4, 0.0},{"4904", 2, 0.4, 0.0},
 	{"4909", 2, 0.4, 0.0},{"4910", 2, 0.4, 0.0},{"4908", 2, 0.4, 0.0},{"4907", 2, 0.4, 0.0},
 	{"4911", 2, 0.3, 0.0},{"4912", 2, 0.3, 0.0},
 	{"4915", 2, 0.5, -0.3},{"4916", 2, 0.5, -0.3},{"4917", 2, 0.5, -0.3},{"4918", 2, 0.5, -0.3},
-
 	{"A351", 1, 0.0, 0.0},{"A352", 1, 0.0, 0.0},
 };
 
 //四舍五入
-static float
-Round(float num)
-{
+static float Round(float num) {
 	num = (float)(int) (num + 0.5);
 	return num;
 }
 
 
 //计算硬席基本票
-static float
-calc_basic_price(int LiCheng, int flag)
-{
+static float calc_basic_price(int LiCheng, int flag) {
 	int mininum, distance = 0, order = 0, i, j;
 	float rate=0, basic_price=0;
 	const float BASIC = 0.05861;
@@ -11585,9 +10195,7 @@ calc_basic_price(int LiCheng, int flag)
 }
 
 
-static float
-show_ticket()
-{
+static float show_ticket() {
 	float JiBenPiao, BaoXian, KePiao, KuaiPiao, KongPiao, WoPiao, QuanJia, JiJin, CheZhan, KePiao2;
 	int YouXiaoQi=2, i;
 	float jk1=0, jk2=0;
@@ -11609,14 +10217,14 @@ show_ticket()
 		QuanJia = ceil(QuanJia);
 
 		sprintf(printbuf, "\033[1m%s%s\033[0m动车组列车票价信息（里程%d公里）",
-			myTicket.CheCi,  myTicket.CheCi[0]?"次":"",
-			myTicket.LiCheng);
+				myTicket.CheCi,  myTicket.CheCi[0]?"次":"",
+				myTicket.LiCheng);
 		showAt(5, 6, printbuf, 0);
 		showAt(9, 6, "注意: 动车组票价仅供参考，具体票价参见车站公告。", 0);
 
 		sprintf(printbuf, "￥ %.2f 元\t\t\t  动车组%s等座",
-			QuanJia,
-			(myTicket.DongChe == 2)?"一":"二");
+				QuanJia,
+				(myTicket.DongChe == 2)?"一":"二");
 		showAt(16, 6, printbuf, 0);
 
 		if (myTicket.DongChe == 3)
@@ -11693,8 +10301,8 @@ show_ticket()
 			if (myTicket.JiaKuai < 1)//亏钱，普客列车特快到底
 				jk1 = 0;
 			else if (myTicket.JiaKuai < 2){//亏钱，普快列车特快到底
-					jk1 = 0.2 * JiBenPiao;
-					jk1 = Round(jk1);
+				jk1 = 0.2 * JiBenPiao;
+				jk1 = Round(jk1);
 			}else{
 				jk1 = 0.2 * JiBenPiao;
 				jk1 = Round(jk1);
@@ -11837,17 +10445,17 @@ show_ticket()
 			break;
 	}
 	sprintf(printbuf, "￥ %.2f 元\t\t\t  %s%s%s%s%s",
-		QuanJia,
-		(myTicket.KongTiao == 2)?"新":"",
-		(myTicket.KongTiao > 0)?"空调":"",
-		(myTicket.XiBie)?"软座":"硬座",
-		(myTicket.JiaKuai>0)?((myTicket.JiaKuai>1)?ZTKN:"普快"):"普客",
-		(myTicket.WoPu>0)?"卧":"");
+			QuanJia,
+			(myTicket.KongTiao == 2)?"新":"",
+			(myTicket.KongTiao > 0)?"空调":"",
+			(myTicket.XiBie)?"软座":"硬座",
+			(myTicket.JiaKuai>0)?((myTicket.JiaKuai>1)?ZTKN:"普快"):"普客",
+			(myTicket.WoPu>0)?"卧":"");
 	showAt(16, 6, printbuf, 0);
 
 	if (myTicket.DaoDi > 0){
 		sprintf(printbuf, "(%s至到站)",
-			(myTicket.DaoDi > 1)?((myTicket.DaoDi > 2)?"特快":"普快"):"普客");
+				(myTicket.DaoDi > 1)?((myTicket.DaoDi > 2)?"特快":"普快"):"普客");
 		showAt(16, 60, printbuf, 0);
 		showAt(17, 42, "至换乘站", 0);
 	}
@@ -11857,10 +10465,10 @@ show_ticket()
 	else
 		printbuf2[0] = 0;
 	sprintf(printbuf, "\033[1m%s%s\033[0m%s列车票价信息（里程%d公里%s）",
-		myTicket.CheCi,  myTicket.CheCi[0]?"次":"",
-		(myTicket.JiaKuai>0)?((myTicket.JiaKuai>1)?ZTKN:"普快"):"普通",
-		myTicket.LiCheng,
-		printbuf2);
+			myTicket.CheCi,  myTicket.CheCi[0]?"次":"",
+			(myTicket.JiaKuai>0)?((myTicket.JiaKuai>1)?ZTKN:"普快"):"普通",
+			myTicket.LiCheng,
+			printbuf2);
 	showAt(5, 6, printbuf, 0);
 
 	YouXiaoQi = 2;
@@ -11892,214 +10500,9 @@ show_ticket()
 
 	return QuanJia;
 }
-/*
-static int
-calc_ticket_price()
-{
-	int ch, quit = 0, temp, i;
-	char buf[STRLEN], ZTK=0;
-	float tempf;
 
-	bzero(&myTicket, sizeof (struct ticket_info));
-	clear();
-	while (!quit) {
-		nomoney_show_stat("火车票票价计算");
-		show_ticket();
-		showAt(t_lines - 2, 0, "\033[1;44m 设 \033[1;46m [0]车次 [1]里程 [2]票种 [3]席别 [4]等级 [5]空调 [6]上浮率 [7]卧铺 [8]再浮率          \033[m", 0);
-		if (myTicket.DaoDi == 0)
-			showAt(t_lines - 1, 0, "\033[1;44m 置 \033[1;46m [A]通票 [D]动车组票价 [H]帮助 [Q]离开                                                          \033[m", 0);
-		else
-			showAt(t_lines - 1, 0, "\033[1;44m 置 \033[1;46m [A]通票 [B]中转前里程 [H]帮助 [Q]离开                                             \033[m", 0);
-
-		ch = igetkey();
-		switch (ch) {
-		case '0':
-			getdata(t_lines-3, 0, "请输入车次: ", buf, 5, DOECHO, YEA);
-			if (buf[0] == '\0' || buf[0] == '\n')
-				break;
-			bzero(&myTicket, sizeof (struct ticket_info));
-			sprintf(myTicket.CheCi, "%s", buf);
-			if (isalpha(buf[0])){
-				ZTK = toupper(buf[0]);
-				myTicket.CheCi[0] = ZTK;
-			}else
-				ZTK = 0;
-			temp = atoi(buf);
-
-			if (ZTK=='Z' || ZTK=='T' || ZTK=='K' || ZTK=='N'){
-				myTicket.JiaKuai = 2;
-				myTicket.KongTiao = 2;
-				myTicket.ShangFu = 0.5;
-			}else if (ZTK=='D')
-				myTicket.DongChe = 1;
-			else if (temp < 6000)
-				myTicket.JiaKuai = 1;
-			else
-				myTicket.JiaKuai = 0;
-
-			i = 0;
-			while (XianTrain[i].CheCi[0] != '\0'){
-				if (!strcmp(XianTrain[i].CheCi, myTicket.CheCi)){
-					myTicket.KongTiao = XianTrain[i].KongTiao;
-					myTicket.ShangFu = XianTrain[i].ShangFu;
-					myTicket.ZaiFu = XianTrain[i].ZaiFu;
-					break;
-				}
-				i++;
-			}
-			break;
-
-		case '1':
-			getdata(t_lines-3, 0, "请输入里程: ", buf, 5, DOECHO, YEA);
-			if (buf[0] == '\0' || buf[0] == '\n')
-				break;
-			temp = atoi(buf);
-			myTicket.LiCheng = (temp > 0) ? temp : 0;
-			myTicket.LiCheng2 = myTicket.LiCheng;
-			break;
-
-		case '2':
-			showAt(t_lines-4, 0, "0.全价 1.学生票 2.小孩票 3.伤残军人票 4.小孩单独使用卧铺", 0);
-			getdata(t_lines-3, 0, "请输入票种: ", buf, 6, DOECHO, YEA);
-			if (buf[0] == '\0' || buf[0] == '\n')
-				break;
-			temp = atoi(buf);
-			myTicket.PiaoZhong = (temp > 0 && temp < 5) ? temp : 0;
-			break;
-
-		case '3':
-			showAt(t_lines-4, 0, "0.硬席   1.软席", 0);
-			getdata(t_lines-3, 0, "请输入席别: ", buf, 6, DOECHO, YEA);
-			if (buf[0] == '\0' || buf[0] == '\n')
-				break;
-			temp = atoi(buf);
-			myTicket.XiBie = (temp > 0 && temp < 2) ? temp : 0;
-			break;
-
-		case '4':
-			showAt(t_lines-4, 0, "0.普客   1.普快   2.快速/特快/直特", 0);
-			getdata(t_lines-3, 0, "请输入等级: ", buf, 6, DOECHO, YEA);
-			if (buf[0] == '\0' || buf[0] == '\n')
-				break;
-			temp = atoi(buf);
-			myTicket.JiaKuai = (temp > 0 && temp < 3) ? temp : 0;
-			break;
-
-		case '5':
-			showAt(t_lines-4, 0, "0.无空调   1.普通有空调   2.新型有空调", 0);
-			getdata(t_lines-3, 0, "请输入等级: ", buf, 6, DOECHO, YEA);
-			if (buf[0] == '\0' || buf[0] == '\n')
-				break;
-			temp = atoi(buf);
-			myTicket.KongTiao = (temp > 0 && temp < 3) ? temp : 0;
-			if (myTicket.KongTiao == 1)
-				myTicket.ShangFu = 0.0;
-			else if (myTicket.KongTiao == 2)
-				myTicket.ShangFu = 0.5;
-			break;
-
-		case '6':
-			getdata(t_lines-3, 0, "请输入上浮率: ", buf, 6, DOECHO, YEA);
-			if (buf[0] == '\0' || buf[0] == '\n')
-				break;
-			tempf = atof(buf);
-			if (tempf <= 0)
-				tempf = 0;
-			else if (tempf >= 2.99)
-				tempf = 2.99;
-			myTicket.ShangFu = tempf;
-			break;
-
-		case '7':
-			if (myTicket.XiBie == 0)
-				showAt(t_lines-4, 0, "0.取消   1.上铺  2.中铺  3.下铺", 0);
-			else
-				showAt(t_lines-4, 0, "0.取消   1.上铺  2.下铺", 0);
-			getdata(t_lines-3, 0, "请输入卧铺种类: ", buf, 6, DOECHO, YEA);
-			if (buf[0] == '\0' || buf[0] == '\n')
-				break;
-			temp = atoi(buf);
-			myTicket.WoPu= (temp > 0 && temp < 4) ? temp : 0;
-			break;
-
-		case '8':
-			getdata(t_lines-3, 0, "请输入再浮率(可为负值): ", buf, 6, DOECHO, YEA);
-			if (buf[0] == '\0' || buf[0] == '\n')
-				break;
-			tempf = atof(buf);
-			if (tempf < -0.5)
-				tempf = -0.5;
-			else if (tempf > 0.3)
-				tempf = 0.3;
-			myTicket.ZaiFu = tempf;
-			break;
-
-
-		case 'A':
-		case 'a':
-			if (myTicket.DongChe > 0){
-				myTicket.DaoDi = 0;
-				showAt(t_lines-4, 0, "\033[1;5;31m动车组列车车票最远只发售至本次列车终点站。\033[m", 0);
-				pressreturn();
-				break;
-			}	 //动车组不打通票
-			showAt(t_lines-4, 0, "0.取消   1.普客到底  2.普快到底  3.特快到底", 0);
-			getdata(t_lines-3, 0, "请输入通票类型: ", buf, 6, DOECHO, YEA);
-			if (buf[0] == '\0' || buf[0] == '\n')
-				break;
-			temp = atoi(buf);
-			myTicket.DaoDi= (temp > 0 && temp < 4) ? temp : 0;
-			break;
-
-		case 'B':
-		case 'b':
-			if (myTicket.DaoDi == 0)
-				break;
-			getdata(t_lines-3, 0, "请输入中转前的里程: ", buf, 6, DOECHO, YEA);
-			if (buf[0] == '\0' || buf[0] == '\n')
-				break;
-			temp = atoi(buf);
-			myTicket.LiCheng2 = (temp > 0) ? temp : 0;
-			if (myTicket.LiCheng2 > myTicket.LiCheng)
-				myTicket.LiCheng2 = myTicket.LiCheng;
-			break;
-
-		case 'd':
-		case 'D':
-			showAt(t_lines-4, 0, "0.取消   1.二等座   2.一等座   3.二等座学生票", 0);
-			getdata(t_lines-3, 0, "请输入: ", buf, 6, DOECHO, YEA);
-			if (buf[0] == '\0' || buf[0] == '\n')
-				break;
-			temp = atoi(buf);
-			myTicket.DongChe = (temp > 0 && temp < 4) ? temp : 0;
-			if (myTicket.DongChe > 0)
-				myTicket.DaoDi = 0; //动车组不打通票
-			break;
-
-		case 'h':
-		case 'H':
-			clear();
-			showAt(5, 4, "直达、特快、快速列车默认为新空调列车，如需修改请按5。", 0);
-			showAt(7, 4, "新空调列车上浮率为0.5；一、二档折扣分别为0.4、0.3，如需修改请按6。", 0);
-			showAt(9, 4, "\033[1m有程序方面疑问请到\033[32m"MC_BOARD"\033[37m版咨询!\033[m", 0);
-			showAt(11, 4, "\033[1m有铁路票价方面疑问请到\033[32mtraffic\033[37m版咨询!\033[m", 0);
-			showAt(13, 4, "\033[1;32m感谢您的使用! 欢迎您下次再来!\033[m", 1);
-			break;
-
-		case 'q':
-		case 'Q':
-			quit = 1;
-	    	 	break;
-		}
-	}
-	return 0;
-}
-*/
 /* 捐款 by macintosh  */
-
-static int
-loadContributions(char *cname, char *user)
-{
+static int loadContributions(char *cname, char *user) {
 	char value[20];
 	char path[256];
 	sprintf(path, DIR_CONTRIBUTIONS"%s", cname);
@@ -12109,9 +10512,7 @@ loadContributions(char *cname, char *user)
 		return limitValue(atoi(value), sizeof(int));
 }  //读取各基金捐款数值
 
-static int
-saveContributions(char *cname, char *user, int valueToAdd)
-{
+static int saveContributions(char *cname, char *user, int valueToAdd) {
 	int valueInt;
 	char value[20], path[256];
 
@@ -12128,9 +10529,7 @@ saveContributions(char *cname, char *user, int valueToAdd)
 }  //保存捐款数值
 
 
-static void
-doContributions(struct MC_Jijin *clist)
-{
+static void doContributions(struct MC_Jijin *clist) {
 	int money, i=0, num=0, num2, total_num, old_num ;
 	float transfer_rate;
 	char title[80], buf[512];
@@ -12167,10 +10566,8 @@ doContributions(struct MC_Jijin *clist)
 		showAt(t_lines-4, 2, "对不起, 您现金金额不足", 1);
 		return;
 	}
-	transfer_rate = utmpshm->mc.transfer_rate / 10000.0;
-	sprintf(buf,
-		" 手续费 %.2f％（最高收取 100000 兵马俑币，不足1按1收取。）",
-		transfer_rate * 100);
+	transfer_rate = mc->transfer_rate / 10000.0;
+	sprintf(buf, " 手续费 %.2f％（最高收取 100000 兵马俑币，不足1按1收取。）", transfer_rate * 100);
 	showAt(t_lines-4, 2, buf, 0);
 	move(t_lines-3, 2);
 	sprintf(buf, "确定给 %s 基金（%s）捐%d 兵马俑币吗？", clist[num].name, clist[num].userid, num2);
@@ -12193,8 +10590,8 @@ doContributions(struct MC_Jijin *clist)
 		saveValue(clist[num].userid, MONEY_NAME, num2, MAX_MONEY_NUM);
 		sprintf(title, "[通知] %s 给%s基金捐款", currentuser.userid, clist[num].name);
 		sprintf(buf,
-			"%s 通过兵马俑捐款办公室向您捐赠 %d 兵马俑币，请查收。",
-			currentuser.userid, num2);
+				"%s 通过兵马俑捐款办公室向您捐赠 %d 兵马俑币，请查收。",
+				currentuser.userid, num2);
 		mail_buf(buf, clist[num].userid, title);
 
 		sprintf(buf, "ctr_%s", clist[num].userid);
@@ -12213,9 +10610,7 @@ doContributions(struct MC_Jijin *clist)
 	return;
 }
 
-static int
-money_contributions()
-{
+static int money_contributions() {
 	int ch, money, money2, quit = 0, count = 0;
 	void *buffer = NULL;
 	size_t filesize;
@@ -12235,129 +10630,147 @@ money_contributions()
 		nomoney_show_stat("大富翁捐款办公室");
 		showAt(6, 4, "献出一份爱心", 0);
 		showAt(t_lines - 1, 0,
-			"\033[1;44m 选单 \033[1;46m [1]帮派基金 [2]民间基金 [3]慈善家排行榜 [4]捐献全部财产 [Q]离开             \033[m", 0);
+				"\033[1;44m 选单 \033[1;46m [1]帮派基金 [2]民间基金 [3]慈善家排行榜 [4]捐献全部财产 [Q]离开             \033[m", 0);
 		ch = igetkey();
 		switch (ch) {
-		case '1':
-			doContributions(clist1);
-			break;
-
-		case '2':
-			count = get_num_records(MC_JIJIN_CTRL_FILE, sizeof(struct MC_Jijin));
-			filesize = sizeof(struct MC_Jijin) * count;
-			clist2 = loadData(MC_JIJIN_CTRL_FILE, buffer, filesize);
-			if (clist2 == (void *) -1)
+			case '1':
+				doContributions(clist1);
 				break;
-			doContributions(clist2);
-			break;
 
-		case '3':
-			clear();
-			showAt(4, 4, "\033[1;32m赞无\033[m", 1);
-			break;
-
-		case '4':
-			showAt(5, 0,
-				"[1;32m您确定钱放在口袋烧手，存在银行烧心，准备看破红尘四大皆空抛开全部[m\n"
-				"[1;32m身家上山当和尚么？[m\n"
-				"[1;32m您的全部财产将留给millionaires作为剃度费，资金将用于建设希望小学[m\n"
-				"[1;32m和援助艾滋病患者，以及资助坦桑尼亚、赞比亚等国贫民[m\n"
-				"[1;31m注意：公公只负责剃度不负责还俗！！[m\n"
-				"[1;33m钱不是万能的，没有钱却万万不能，三思而后行啊！[m\n"
-				, 0);
-			move(12, 0);
-			if (askyn("确定捐献全部财产吗? ", NA, NA) == YEA) {
-				money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
-				money2 = loadValue(currentuser.userid, CREDIT_NAME, MAX_MONEY_NUM);
-
-				if (money + money2 == 0){
-					showAt(15, 0, "没钱就不用来凑热闹了~", 1);
+			case '2':
+				count = get_num_records(MC_JIJIN_CTRL_FILE, sizeof(struct MC_Jijin));
+				filesize = sizeof(struct MC_Jijin) * count;
+				clist2 = loadData(MC_JIJIN_CTRL_FILE, buffer, filesize);
+				if (clist2 == (void *) -1)
 					break;
+				doContributions(clist2);
+				break;
+
+			case '3':
+				clear();
+				showAt(4, 4, "\033[1;32m赞无\033[m", 1);
+				break;
+
+			case '4':
+				showAt(5, 0,
+						"\033[1;32m您确定钱放在口袋烧手，存在银行烧心，准备看破红尘四大皆空抛开全部\033[m\n"
+						"\033[1;32m身家上山当和尚么？\033[m\n"
+						"\033[1;32m您的全部财产将留给millionaires作为剃度费，资金将用于建设希望小学\033[m\n"
+						"\033[1;32m和援助艾滋病患者，以及资助坦桑尼亚、赞比亚等国贫民\033[m\n"
+						"\033[1;31m注意：公公只负责剃度不负责还俗！！\033[m\n"
+						"\033[1;33m钱不是万能的，没有钱却万万不能，三思而后行啊！\033[m\n"
+						, 0);
+				move(12, 0);
+				if (askyn("确定捐献全部财产吗? ", NA, NA) == YEA) {
+					money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
+					money2 = loadValue(currentuser.userid, CREDIT_NAME, MAX_MONEY_NUM);
+
+					if (money + money2 == 0){
+						showAt(15, 0, "没钱就不用来凑热闹了~", 1);
+						break;
+					}
+
+					saveValue(currentuser.userid, MONEY_NAME, -money, MAX_MONEY_NUM);
+					saveValue("millionaires", MONEY_NAME, money, MAX_MONEY_NUM);
+					saveValue(currentuser.userid, "ctr_millionaires", money, MAX_CTRBT_NUM);
+					saveValue(currentuser.userid, CREDIT_NAME, -money2, MAX_MONEY_NUM);
+					saveValue("millionaires", CREDIT_NAME, money2, MAX_MONEY_NUM);
+					saveValue(currentuser.userid, "ctr_millionaires", money2, MAX_CTRBT_NUM);
+
+					sprintf(title, "%s捐献全部财产", currentuser.userid);
+					sprintf(buf, "%s捐献全部财产:\n现金%d兵马俑币\n存款%d兵马俑币", currentuser.userid, money, money2);
+					millionairesrec(title, buf, "捐款");
+
+					sprintf(title, "[公告] 大富翁基金收到来自%s的捐款", currentuser.userid);
+					sprintf(buf,"感谢%s向兵马俑大富翁捐献其全部财产，大富翁向其表示最崇高的敬意！\n" "并祝愿其今后修行顺利！", currentuser.userid);
+					deliverreport(title, buf);
+
+					showAt(15, 0, "完成!", 1);
 				}
+				break;
 
-				saveValue(currentuser.userid, MONEY_NAME, -money, MAX_MONEY_NUM);
-				saveValue("millionaires", MONEY_NAME, money, MAX_MONEY_NUM);
-				saveValue(currentuser.userid, "ctr_millionaires", money, MAX_CTRBT_NUM);
-				saveValue(currentuser.userid, CREDIT_NAME, -money2, MAX_MONEY_NUM);
-				saveValue("millionaires", CREDIT_NAME, money2, MAX_MONEY_NUM);
-				saveValue(currentuser.userid, "ctr_millionaires", money2, MAX_CTRBT_NUM);
-
-				sprintf(title, "%s捐献全部财产", currentuser.userid);
-				sprintf(buf, "%s捐献全部财产:\n现金%d兵马俑币\n存款%d兵马俑币", currentuser.userid, money, money2);
-				millionairesrec(title, buf, "捐款");
-
-				sprintf(title, "[公告] 大富翁基金收到来自%s的捐款", currentuser.userid);
-				sprintf(buf,"感谢%s向兵马俑大富翁捐献其全部财产，大富翁向其表示最崇高的敬意！\n"
-						"并祝愿其今后修行顺利！", currentuser.userid);
-				deliverreport(title, buf);
-
-				showAt(15, 0, "完成!", 1);
-			}
-			break;
-
-		case 'q':
-		case 'Q':
-			quit = 1;
-			break;
+			case 'q':
+			case 'Q':
+				quit = 1;
+				break;
 		}
 	}
 	return 0;
 }
 
 
-static int
-money_office()
-{
+static int money_office() {
 	int ch, quit = 0;
 	char uident[IDLEN + 1];
 
 	while (!quit) {
 		nomoney_show_stat("兵马俑大富翁管理中心");
 		showAt(6, 4, "大富翁管理中心欢迎你！", 0);
-		showAt(t_lines - 1, 0,
-			"\033[1;44m 选单 \033[1;46m [1]捐款办公室 [2]信访办公室 [3]监狱 [4]邮政局 [5]总管办公室 [Q]离开       \033[m", 0);
+		showAt(t_lines - 1, 0, "\033[1;44m 选单 \033[1;46m [1]捐款办公室 [2]信访办公室 [3]监狱 [4]邮政局 [5]总管办公室 [Q]离开       \033[m", 0);
 		ch = igetkey();
 		switch (ch) {
-		case '1':
-			money_contributions();
-			break;
-
-		case '2':
-			if (!HAS_PERM(PERM_POST))
+			case '1':
+				money_contributions();
 				break;
-			move(6, 4);
-			if (askyn("确定要发信吗? ", NA, NA) == YEA)
-				m_send("millionaires");
-			break;
 
-		case '3':
-			showAt(6, 4, "看你探头探脑猥猥琐琐的样子，打算劫狱？带个棒棒糖就当是AK-47？\n"
-						"皮痒了吧？小心电警棍！", 1);
-			break;
-
-		case '4':
-			money_postoffice();
-			break;
-
-		case '5':
-			nomoney_show_stat("大富翁总管办公室");
-			whoTakeCharge2(11, uident);
-			if (strcmp(currentuser.userid, uident)) {
+			case '2':
+				if (!HAS_PERM(PERM_POST, currentuser))
+					break;
 				move(6, 4);
-				prints
-				    ("值班秘书%s叫住了你，说道:“公公们正在开会，请先四处转转吧。”",
-				     uident);
-				pressanykey();
+				if (askyn("确定要发信吗? ", NA, NA) == YEA)
+					m_send("millionaires");
 				break;
-			}
-			break;
 
-		case 'q':
-		case 'Q':
-			quit = 1;
-			break;
+			case '3':
+				showAt(6, 4, "看你探头探脑猥猥琐琐的样子，打算劫狱？带个棒棒糖就当是AK-47？\n" "皮痒了吧？小心电警棍！", 1);
+				break;
+
+			case '4':
+				money_postoffice();
+				break;
+
+			case '5':
+				nomoney_show_stat("大富翁总管办公室");
+				whoTakeCharge2(11, uident);
+				if (strcmp(currentuser.userid, uident)) {
+					move(6, 4);
+					prints("值班秘书%s叫住了你，说道:“公公们正在开会，请先四处转转吧。”", uident);
+					pressanykey();
+					break;
+				}
+				break;
+
+			case 'q':
+			case 'Q':
+				quit = 1;
+				break;
 		}
 	}
 	return 0;
+}
+
+static void mc_shm_init() {
+	char local_buf[512];
+	if (mc == NULL) {
+		mc = get_shm(MC_SHMKEY, sizeof(*mc));
+	}
+
+	if (mc != NULL) {
+		// 转账手续费
+		if (mc->transfer_rate == 0) {
+			readstrvalue(MC_RATE_FILE, "transfer_rate", local_buf, sizeof(512));
+			mc->transfer_rate = atoi(local_buf);
+		}
+		// 存款利率
+		if (mc->deposit_rate == 0) {
+			readstrvalue(MC_RATE_FILE, "deposit_rate", local_buf, sizeof(512));
+			mc->deposit_rate = atoi(local_buf);
+		}
+		// 贷款利率
+		if (mc->lend_rate == 0) {
+			readstrvalue(MC_RATE_FILE, "lend_rate", local_buf, sizeof(512));
+			mc->lend_rate = atoi(local_buf);
+		}
+	}
 }
 

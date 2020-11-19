@@ -18,7 +18,7 @@ bbsdt_main()
 	t.color = atoi(getparm("color")) - 1;
 	t.num = atoi(getparm("num"));
 	t.dtime = now_t;
-	strsncpy(t.address, getparm("address"), 200);
+	ytht_strsncpy(t.address, getparm("address"), 200);
 	if (!loginok || isguest)
 		http_fatal("匆匆过客不能进行本项操作");
 	if (0 == t.num)

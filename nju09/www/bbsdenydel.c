@@ -13,7 +13,7 @@ bbsdenydel_main()
 	if (!loginok)
 		http_fatal("ÄúÉĞÎ´µÇÂ¼, ÇëÏÈµÇÂ¼");
 	changemode(READING);
-	strsncpy(board, getparm("board"), 30);
+	ytht_strsncpy(board, getparm("board"), 30);
 	if (!(x = getboard(board)))
 		http_fatal("´íÎóµÄÌÖÂÛÇø");
 	if (!has_BM_perm(&currentuser, x))

@@ -6,8 +6,9 @@
 #include <libxml/xpath.h>
 #include <sys/mman.h>
 #include <time.h>
+#include <unistd.h>
 
-#include "ythtbbs.h"
+#include "ythtbbs/ythtbbs.h"
 
 #define NOTIFILE "Notification"
 

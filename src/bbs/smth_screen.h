@@ -20,23 +20,26 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-
-
-/* Maximum Screen width in chars */
-/*#define LINELEN (220) */
-#include "bbstelnet.h"
-//#define SCREEN_MODIFIED 1
-#define SCREEN_BRIGHT 2
-#define SCREEN_LINE 4
-#define SCREEN_BLINK 8
-#define SCREEN_BACK 16
-//#define SCREEN_NOTMOD 30
-//#define SCREEN_ALL 31
-
-struct screenline {
-    unsigned char data[LINELEN];
-    unsigned char mode[LINELEN];
-    unsigned char color[LINELEN];
-    unsigned char changed[LINELEN];
-    int lchanged;
-};
+#ifndef BMYBBS_BBS_SMTH_SCREEN
+#define BMYBBS_BBS_SMTH_SCREEN
+void resetcolor(void);
+int num_noans_chr(char *str);
+void clear(void);
+void initscr(void);
+void refresh(void);
+void redoscr(void);
+void move(int y, int x);
+void getyx(int *y, int *x);
+void clear_whole_line(int i);
+void clrtoeol(void);
+void clrtobot(void);
+void outc(unsigned char c);
+void outns(const char *str, int n);
+void outs(const char *str);
+void prints(char *format, ...);
+void scroll(void);
+void rscroll(void);
+void saveline(int line, int mode, char *buffer);
+void do_naws(int ln, int col);
+void show_message(char msg[]);
+#endif

@@ -1,6 +1,6 @@
 #include <string.h>
 #include <stdio.h>
-#include "ythtbbs.h"
+#include "ythtbbs/ythtbbs.h"
 #define MAXPAIRS 300
 struct {
 	int used;
@@ -9,7 +9,10 @@ struct {
 } pairs[MAXPAIRS];
 
 int npairs;
-struct sectree rootsec = { title:MY_BBS_NAME, parent:NULL };
+struct sectree rootsec = {
+	.title  = MY_BBS_NAME,
+	.parent = NULL
+};
 
 int
 readseclist(char *filename)
@@ -26,11 +29,11 @@ readseclist(char *filename)
 		ptr = strtok(buf, " \t\r\n");
 		if (!ptr)
 			continue;
-		strsncpy(pairs[i].seccode, ptr, sizeof (pairs[i].seccode));
+		ytht_strsncpy(pairs[i].seccode, ptr, sizeof(pairs[i].seccode));
 		ptr = strtok(NULL, "\t\r\n");
 		if (!ptr)
 			continue;
-		strsncpy(pairs[i].title, ptr, sizeof (pairs[i].title));
+		ytht_strsncpy(pairs[i].title, ptr, sizeof(pairs[i].title));
 		pairs[i].used = 0;
 	}
 	npairs = i;
@@ -70,9 +73,9 @@ gentree(char *basestr, struct sectree *tree)
 	size_t len;
 	struct sectree *subsec;
 	len = strlen(basestr);
-	strsncpy(tree->basestr, basestr, sizeof (tree->basestr));
-	strsncpy(tree->introstr, getintrostr(basestr), sizeof (tree->introstr));
-	strsncpy(tree->des, getdes(basestr), sizeof (tree->des));
+	ytht_strsncpy(tree->basestr, basestr, sizeof(tree->basestr));
+	ytht_strsncpy(tree->introstr, getintrostr(basestr), sizeof(tree->introstr));
+	ytht_strsncpy(tree->des, getdes(basestr), sizeof(tree->des));
 	tree->nsubsec = 0;
 	bzero(tree->seccodes, sizeof (tree->seccodes));
 	for (i = 0; i < npairs && tree->nsubsec <= MAXSUBSEC; i++) {
@@ -84,7 +87,7 @@ gentree(char *basestr, struct sectree *tree)
 			continue;
 		subsec = malloc(sizeof (struct sectree));
 		subsec->parent = tree;
-		strsncpy(subsec->title, pairs[i].title, sizeof (subsec->title));
+		ytht_strsncpy(subsec->title, pairs[i].title, sizeof(subsec->title));
 		gentree(pairs[i].seccode, subsec);
 		tree->subsec[tree->nsubsec] = subsec;
 		tree->seccodes[tree->nsubsec] = pairs[i].seccode[len];
@@ -105,19 +108,19 @@ printtree(char *name0, const struct sectree *sec, int mode)
 	printf("const struct sectree %s%s\n", name0, mode ? " = {" : ";");
 	if (mode) {
 		if (sec->parent == NULL)
-			printf("\tparent: NULL,\n");
+			printf("\t.parent\t\t= NULL,\n");
 		else {
 			strncpy(name, name0, 20);
 			name[strlen(name) - 1] = 0;
-			printf("\tparent: &%s,\n", name);
+			printf("\t.parent\t\t= &%s,\n", name);
 		}
-		printf("\ttitle: \"%s\",\n", sec->title);
-		printf("\tbasestr: \"%s\",\n", sec->basestr);
-		printf("\tseccodes: \"%s\",\n", sec->seccodes);
-		printf("\tintrostr: \"%s\",\n", sec->introstr);
-		printf("\tdes: \"%s\",\n", sec->des);
-		printf("\tnsubsec: %d,\n", sec->nsubsec);
-		printf("\tsubsec: {\n");
+		printf("\t.title\t\t= \"%s\",\n", sec->title);
+		printf("\t.basestr\t= \"%s\",\n", sec->basestr);
+		printf("\t.seccodes\t= \"%s\",\n", sec->seccodes);
+		printf("\t.introstr\t= \"%s\",\n", sec->introstr);
+		printf("\t.des\t\t= \"%s\",\n", sec->des);
+		printf("\t.nsubsec\t= %d,\n", sec->nsubsec);
+		printf("\t.subsec\t\t= {\n");
 		for (i = 0; i < sec->nsubsec; i++) {
 			printf("\t\t&%s%c,\n", name0, 'A' + i);
 		}
@@ -136,7 +139,7 @@ main()
 	readseclist("seclist.local");
 	gentree("", &rootsec);
 	printf("#include <stdio.h>\n");
-	printf("#include \"sectree.h\"\n");
+	printf("#include \"ythtbbs/sectree.h\"\n");
 	printtree("sectree", &rootsec, 0);
 	printtree("sectree", &rootsec, 1);
 	return 0;

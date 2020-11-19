@@ -7,12 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 //"not" inserted in identifier
-const char *And = "且";
-const char *Or = "或";
-const char *Not = "非";
-const char LeftBracket = '(';
-const char RightBracket = ')';
-const char Separator[] = { ' ', '\t' };	//seperator, you can add ',', ';' to it, etc
+static const char *And = "\xC7\xD2";  // 且
+static const char *Or  = "\xBB\xF2";  // 或
+static const char *Not = "\xB7\xC7";  // 非
+static const char LeftBracket = '(';
+static const char RightBracket = ')';
+static const char Separator[] = { ' ', '\t' };	//seperator, you can add ',', ';' to it, etc
 
 ////////////////////////////////////////////////////////////////////////////////////////
 //Implementation
@@ -31,9 +31,7 @@ static int do_or(void);
 
 ExtStru *extstru;
 
-static __inline int
-is_str(int temp, const char *Str)
-{
+static __inline int is_str(int temp, const char *Str) {
 	if ((temp - start + 1 == (int) strlen(Str))
 	    && (start == strstr(exp + start, Str) - exp))
 		return 1;
@@ -41,9 +39,8 @@ is_str(int temp, const char *Str)
 	else
 		return 0;
 }
-static __inline int
-is_sep(char c)
-{
+
+static __inline int is_sep(char c) {
 	int i;
 	int num = sizeof (Separator) / sizeof (char);
 	for (i = 0; i < num; i++) {
@@ -52,9 +49,8 @@ is_sep(char c)
 	}
 	return 0;
 }
-static __inline int
-next_token()
-{
+
+static __inline int next_token() {
 	int i;
 	while (start <= end && is_sep(exp[start]))
 		start++;
@@ -64,9 +60,8 @@ next_token()
 		i++;
 	return i - 1;
 }
-static __inline int
-do_extf()
-{
+
+static __inline int do_extf() {
 	int temp = next_token();
 	char *strt;
 	int i, t;
@@ -96,9 +91,7 @@ do_extf()
 	return -start - 1;
 }
 
-static int
-do_term()
-{
+static int do_term() {
 	int t;
 	int temp = next_token();
 	if (is_str(temp, Not)) {
@@ -120,9 +113,8 @@ do_term()
 		return do_extf();
 	}
 }
-static int
-do_and()
-{
+
+static int do_and() {
 	int t, temp;
 	int result = -start - 1;
 	while (start <= end) {
@@ -146,9 +138,7 @@ do_and()
 	return result;
 }
 
-static int
-do_or()
-{
+static int do_or() {
 	int t, temp;
 	int result = -start - 1;
 	while (start <= end) {
@@ -172,9 +162,7 @@ do_or()
 	return result;
 }
 
-int
-checkf(char *str)
-{
+int checkf(char *str) {
 	int result;
 	exp = str;
 	start = 0;

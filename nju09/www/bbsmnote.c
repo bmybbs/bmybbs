@@ -14,7 +14,7 @@ bbsmnote_main()
 	if (!loginok || isguest)
 		http_fatal("匆匆过客，请先登录");
 	changemode(EDIT);
-	strsncpy(board, getparm("board"), 30);
+	ytht_strsncpy(board, getparm("board"), 30);
 	x = getboard(board);
 	mode = atoi(getparm("mode"));
 	if (!has_BM_perm(&currentuser, x))
@@ -71,7 +71,7 @@ save_note(char *path)
 	FILE *fp;
 	char buf[10000];
 	fp = fopen(path, "w");
-	strsncpy(buf, getparm("text"), 9999);
+	ytht_strsncpy(buf, getparm("text"), 9999);
 	fprintf(fp, "%s", buf);
 	fclose(fp);
 	printf("备忘录修改成功。<br>\n");

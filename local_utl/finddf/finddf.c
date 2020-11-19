@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <time.h>
 #include "bbs.h"
-#include "ythtbbs.h"
 
 struct boardheader board1;
 struct fileheader *post1;

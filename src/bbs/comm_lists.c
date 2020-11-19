@@ -8,7 +8,7 @@
     Firebird Bulletin Board System
     Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
                         Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
-    
+
     Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
 
     This program is free software; you can redistribute it and/or modify
@@ -23,6 +23,32 @@
 */
 
 #include "bbs.h"
+#include "stuff.h"
+#include "xyz.h"
+#include "comm_list.h"
+#include "boards.h"
+#include "announce.h"
+#include "maintain.h"
+#include "mail.h"
+#include "list.h"
+#include "talk.h"
+#include "sendmsg.h"
+#include "userinfo.h"
+#include "vote.h"
+#include "bbsinc.h"
+#include "addressbook.h"
+#include "chat.h"
+#include "delete.h"
+#include "more.h"
+#include "convcode.h"
+#include "smth_screen.h"
+#include "main.h"
+#include "fileshm.h"
+#include "bbs_global_vars.h"
+#include "bbs-internal.h"
+
+extern int moneycenter(void);        // moneycenter.c
+extern int x_active_manager(void);   // identify.c
 
 #define SC_BUFSIZE              20480
 #define SC_KEYSIZE              256
@@ -77,27 +103,12 @@ const struct scommandlist sysconf_cmdlist[] = {
 	{"DenyLevel", (void *) x_denylevel},
 	{"OrdainBM", (void *) m_ordainBM},
 	{"RetireBM", (void *) m_retireBM},
-	{"CheckID", (void *) s_checkid},
 	{"Hell", (void *) showhell},
 	{"Prison", (void *) showprison},
 	{"Live", (void *) online},
 	{"SetAlarm", (void *) setcalltime},
 	{"MailAll", (void *) mailall},
-	{"ExecDict", (void *) x_dict},
 	{"LockScreen", (void *) x_lockscreen},
-	{"SecondHand", (void *) sec_hand},
-	{"WORKER", (void *) x_worker},
-	{"TT", (void *) x_tt},
-	{"TETRIS", (void *) x_tetris},
-	{"WINMINE", (void *) x_winmine},
-	{"WINMINE2", (void *) x_winmine2},
-	{"RECITE", (void *) x_recite},
-	{"NCCE", (void *) x_ncce},
-	{"CHESS", (void *) x_chess},
-	{"QKMJ", (void *) x_qkmj},
-	{"ShowUser", (void *) x_showuser},
-	{"QUICKCALC", (void *) x_quickcalc},
-	{"FREEIP", (void *) x_freeip},
 	{"OffLine", (void *) offline},
 	{"ReadNewMail", (void *) m_new},
 	{"ReadMail", (void *) m_read},
@@ -128,39 +139,25 @@ const struct scommandlist sysconf_cmdlist[] = {
 	{"FillForm", (void *) x_fillform},
 	{"SetInfo", (void *) x_info},
 	{"EditUFiles", (void *) x_edits},
-	{"ShowLicense", (void *) Conditions},
-	{"ShowVersion", (void *) Info},
-	{"Notepad", (void *) shownotepad},
-	{"DoVote", (void *) x_vote},
-	{"VoteResult", (void *) x_results},
 	{"ExecBBSNet", ent_bnet},
-	{"ShowWelcome", (void *) Welcome},
-	{"AllUsers", (void *) Users},
 	{"GoodWish", sendgoodwish},
 	{"CheckForm", (void *) m_register},
 	{"Identify", x_active_manager},
 	{"ModifyInfo", (void *) m_info},
 	{"ModifyLevel", (void *) x_level},
 	{"KickUser", (void *) kick_user},
-	{"DelUser", d_user},
 	{"OpenVote", (void *) m_vote},
 	{"NewBoard", (void *) m_newbrd},
 	{"EditBoard", (void *) m_editbrd},
-	{"DelBoard", (void *) d_board},
-	{"SetTrace", (void *) m_trace},
-	{"CleanMail", (void *) m_mclean},
 	{"EditSFiles", (void *) a_edits},
 	{"EditSFiles2",(void*) a_edits2},
 	{"Announceall", (void *) wall},
-	{"Setsyspass", (void *) setsystempasswd},
-	{"ShellOut", (void *) x_csh},
 	{"FCode", (void *) switch_code},
 	{"ADDRESSBOOK", (void *) addressbook},
 	{"CLEARNEWFLAG", (void *) clear_all_new_flag},
 	{"ADDPERSONAL", (void *) m_addpersonal},
 	{"CancelMail", m_cancel},
 	{"MONEYCENTER", (void *) moneycenter},
-	{"InnReload", (void *) inn_reload},
 	{"Wall_telnet", (void *) wall_telnet},
 	{NULL, NULL}
 };
@@ -500,7 +497,7 @@ char *configfile, *imgfile;
 }
 
 /*static int
-reload_badwords(bwfile, tobuild)
+ytht_smth_reload_badwords(bwfile, tobuild)
 char *bwfile;
 char *tobuild;
 {
@@ -604,7 +601,7 @@ struct menupos *pos;
 			pos[num].line = -1;
 			break;
 		default:
-			if (pm->line >= 0 && HAS_PERM(pm->level)) {
+			if (pm->line >= 0 && HAS_PERM(pm->level, currentuser)) {
 				if (pm->line != 0) {
 					line = pm->line;
 					col = pm->col;
@@ -661,7 +658,7 @@ char *menu_name;
 	}
 	while (1) {
 		//printacbar();  by bjgyt
-		while (pm[now].level < 0 || !HAS_PERM(pm[now].level)) {
+		while (pm[now].level < 0 || !HAS_PERM(pm[now].level, currentuser)) {
 			now++;
 			if (now >= size)
 				now = 0;
@@ -691,7 +688,7 @@ char *menu_name;
 				if (pos[i].line == pos[now].line
 				    && pm[i].level >= 0
 				    && pos[i].col > pos[now].col
-				    && HAS_PERM(pm[i].level))
+				    && HAS_PERM(pm[i].level, currentuser))
 					break;
 			}
 			if (i < size) {
@@ -755,7 +752,7 @@ char *menu_name;
 			break;
 			/* add end */
 		case '~':
-			if (!HAS_PERM(PERM_SYSOP)) {
+			if (!HAS_PERM(PERM_SYSOP, currentuser)) {
 				break;
 			}
 			newtrace("system reload sysconf.img2");
@@ -767,11 +764,10 @@ char *menu_name;
 			size = domenu_screen(pm, cmdprompt, pos);
 			now = 0;
 			fill_shmfile(5, "etc/endline", ENDLINE1_SHMKEY);
-			reload_badwords("etc/badwords", "etc/.badwords_new");
-			reload_badwords("etc/sbadwords", "etc/.sbadwords_new");
-			reload_badwords("etc/pbadwords", "etc/.pbadwords_new");
-			reload_badwords("etc/filtertitle",
-					"etc/.filtertitle_new");
+			ytht_smth_reload_badwords("etc/badwords", "etc/.badwords_new");
+			ytht_smth_reload_badwords("etc/sbadwords", "etc/.sbadwords_new");
+			ytht_smth_reload_badwords("etc/pbadwords", "etc/.pbadwords_new");
+			ytht_smth_reload_badwords("etc/filtertitle", "etc/.filtertitle_new");
 			gensecm("etc/secmlist");
 			break;
 		case '!':	/* youzi leave */

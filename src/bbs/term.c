@@ -19,55 +19,42 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "bbs.h"
+#include <string.h>
+#include <stdio.h>
 
-#include <arpa/telnet.h>
+#define clearbuflen       6
+#define strtstandoutlen   4
+#define endstandoutlen    3
+#define cleolbuflen       3
 
-int clearbuflen = 6;
-char clearbuf[6];
-
-int cleolbuflen = 3;
-char cleolbuf[3];
-
-int strtstandoutlen = 4;
-char strtstandout[4];
-
-int endstandoutlen = 3;
-char endstandout[3];
+static char cleolbuf[clearbuflen];
+static char clearbuf[clearbuflen];
+static char strtstandout[clearbuflen];
+static char endstandout[clearbuflen];
 
 int t_lines = 24;
 int t_columns = 80;
-
-int automargins = 1;
 
 #ifdef CAN_EXEC
 int term_convert;
 queue_tl qneti, qneto;
 #endif
 
-void
-init_tty()
-{
+void init_tty(void) {
 #ifdef CAN_EXEC
 	max_timeout = 0;
 	tmachine_init(0);
 #endif
 }
 
-void
-term_init()
-{
+void term_init(void) {
 	strncpy(clearbuf, "\033[H\033[J", clearbuflen);
 	strncpy(cleolbuf, "\033[K", cleolbuflen);
 	strncpy(strtstandout, "\033[7m", strtstandoutlen);
 	strncpy(endstandout, "\033[m", endstandoutlen);
 }
 
-void
-do_move(destcol, destline, outc)
-int destcol, destline;
-int (*outc) ();
-{
+void do_move(int destcol, int destline, int (*outc) ()) {
 	char buf[30];
 	char *p;
 	sprintf(buf, "\033[%d;%dH", destline + 1, destcol + 1);

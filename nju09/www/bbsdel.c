@@ -16,12 +16,12 @@ bbsdel_main()
 		http_fatal("请先登录");
 	changemode(EDIT);
 	id = currentuser.userid;
-	strsncpy(board, getparm("B"), 32);
+	ytht_strsncpy(board, getparm("B"), 32);
 	if (!board[0])
-		strsncpy(board, getparm("board"), 32);
-	strsncpy(file, getparm("F"), 30);
+		ytht_strsncpy(board, getparm("board"), 32);
+	ytht_strsncpy(file, getparm("F"), 30);
 	if (!file[0])
-		strsncpy(file, getparm("file"), 20);
+		ytht_strsncpy(file, getparm("file"), 20);
 	if (strncmp(file, "M.", 2) && strncmp(file, "G.", 2))
 		http_fatal("错误的参数");
 	if (strstr(file, ".."))

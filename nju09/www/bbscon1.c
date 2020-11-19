@@ -12,7 +12,7 @@ bbscon1_main()
 	type = atoi(getparm("T"));
 	switch (type) {
 	case 4:
-		strsncpy(buf, getparm("F"), 80);
+		ytht_strsncpy(buf, getparm("F"), 80);
 		ptr = strrchr(buf, '/');
 		if (NULL == ptr)
 			http_fatal("错误的参数1");
@@ -22,7 +22,7 @@ bbscon1_main()
 		strcat(path, buf);
 		break;
 	case 5:
-		strsncpy(buf, getparm("F"), 80);
+		ytht_strsncpy(buf, getparm("F"), 80);
 		ptr = strrchr(buf, '/');
 		if (NULL == ptr)
 			http_fatal("错误的参数1");

@@ -1,4 +1,4 @@
-#include <sys/socket.h>
+#include <string.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
@@ -18,9 +18,7 @@ invertl(char *lp)
 	lp[2] = ch;
 }
 
-int
-cmpIP(char *left, char *right)
-{
+int cmpIP(const char *left, const char *right) {
 	struct in_addr inaddra, inaddrb;
 	if (inet_aton(left, &inaddra) != 0 && inet_aton(right, &inaddrb) != 0) {
 		invertl((char *) (&inaddra.s_addr));

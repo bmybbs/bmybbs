@@ -1,5 +1,5 @@
 /*
-    Pirate Bulletin Board System  
+    Pirate Bulletin Board System
     Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
     Eagles Bulletin Board System
     Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
@@ -9,7 +9,7 @@
     Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
                         Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
     Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
-    
+
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 1, or (at your option)
@@ -20,10 +20,25 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 */
-#define EXTERN
-#include "bbs.h"
-#include "bbstelnet.h"
 #include <sys/mman.h>
+#include "bbs.h"
+#include "bbs_global_vars.h"
+#include "smth_screen.h"
+#include "maintain.h"
+#include "bcache.h"
+#include "stuff.h"
+#include "io.h"
+#include "edit.h"
+#include "sendmsg.h"
+#include "talk.h"
+#include "namecomplete.h"
+#include "mail.h"
+#include "more.h"
+#include "bbsinc.h"
+#include "convcode.h"
+#include "userinfo.h"
+#include "main.h"
+#include "bbs-internal.h"
 
 pid_t childpid;
 static int loadkeys(struct one_key *key, char *name);
@@ -40,6 +55,109 @@ static void childreturn(int i);
 static void escape_filename(char *fn);
 static void bbs_zsendfile(char *filename);
 static void get_load(double load[]);
+
+static const char * const g_permstrings[] = {
+	"\xBB\xF9\xB1\xBE\xC8\xA8\xC1\xA6",									/* PERM_BASIC     ª˘±æ»®¡¶ */
+	"\xBD\xF8\xC8\xEB\xC1\xC4\xCC\xEC\xCA\xD2",							/* PERM_CHAT      Ω¯»Î¡ƒÃÏ “ */
+	"\xBA\xF4\xBD\xD0\xCB\xFB\xC8\xCB\xC1\xC4\xCC\xEC",					/* PERM_PAGE      ∫ÙΩ–À˚»À¡ƒÃÏ */
+	"\xB7\xA2\xB1\xED\xCE\xC4\xD5\xC2",									/* PERM_POST      ∑¢±ÌŒƒ’¬ */
+	"\xCA\xB9\xD3\xC3\xD5\xDF\xD7\xCA\xC1\xCF\xD5\xFD\xC8\xB7",			/* PERM_LOGINOK    π”√’ﬂ◊ ¡œ’˝»∑ */
+	"\xBD\xFB\xD6\xB9\xCA\xB9\xD3\xC3\xC7\xA9\xC3\xFB\xB5\xB5",			/* PERM_DENYSIG   Ω˚÷π π”√«©√˚µµ */
+	"\xD2\xFE\xC9\xED\xCA\xF5",											/* PERM_CLOAK     “˛…Ì ı */
+	"\xBF\xB4\xB4\xA9\xD2\xFE\xC9\xED\xCA\xF5",							/* PERM_SEECLOAK  ø¥¥©“˛…Ì ı */
+	"\xD5\xCA\xBA\xC5\xD3\xC0\xBE\xC3\xB1\xA3\xC1\xF4",					/* PERM_XEMPT     ’ ∫≈”¿æ√±£¡Ù */
+	"\xB1\xE0\xBC\xAD\xBD\xF8\xD5\xBE\xBB\xAD\xC3\xE6",					/* PERM_WELCOME   ±‡º≠Ω¯’æª≠√Ê */
+	"\xB0\xE5\xD6\xF7",													/* PERM_BOARDS    ∞Â÷˜ */
+	"\xD5\xCA\xBA\xC5\xB9\xDC\xC0\xED\xD4\xB1",							/* PERM_ACCOUNTS  ’ ∫≈π‹¿Ì‘± */
+	"\xB1\xBE\xD5\xBE\xD6\xD9\xB2\xC3",									/* PERM_ARBITRATE ±æ’æ÷Ÿ≤√ */
+	"\xCD\xB6\xC6\xB1\xB9\xDC\xC0\xED\xD4\xB1",							/* PERM_OVOTE     Õ∂∆±π‹¿Ì‘± */
+	"\xCF\xB5\xCD\xB3\xCE\xAC\xBB\xA4\xB9\xDC\xC0\xED\xD4\xB1",			/* PERM_SYSOP     œµÕ≥Œ¨ª§π‹¿Ì‘± */
+	"Read/Post \xCF\xDE\xD6\xC6",										/* PERM_POSTMASK  Read/Post œﬁ÷∆ */
+	"\xBE\xAB\xBB\xAA\xC7\xF8\xD7\xDC\xB9\xDC",							/* PERM_ANNOUNCE  æ´ª™«¯◊‹π‹ */
+	"\xCC\xD6\xC2\xDB\xC7\xF8\xD7\xDC\xB9\xDC",							/* PERM_OBOARDS   Ã÷¬€«¯◊‹π‹ */
+	"\xBB\xEE\xB6\xAF\xBF\xB4\xB0\xE6\xD7\xDC\xB9\xDC",					/* PERM_ACBOARD   ªÓ∂Øø¥∞Ê◊‹π‹ */
+	"\xB2\xBB\xC4\xDC ZAP(\xCC\xD6\xC2\xDB\xC7\xF8\xD7\xA8\xD3\xC3)",	/* PERM_NOZAP     ≤ªƒ‹ZAP(Ã÷¬€«¯◊®”√) */
+	"\xC7\xBF\xD6\xC6\xBA\xF4\xBD\xD0",									/* PERM_FORCEPAGE «ø÷∆∫ÙΩ– */
+	"\xD1\xD3\xB3\xA4\xB7\xA2\xB4\xF4\xCA\xB1\xBC\xE4",					/* PERM_EXT_IDLE  —”≥§∑¢¥Ù ±º‰ */
+	"\xB4\xF3\xD0\xC5\xCF\xE4",											/* PERM_SPECIAL1  ¥Û–≈œ‰ */
+	"\xCC\xD8\xCA\xE2\xC8\xA8\xCF\xDE 2",								/* PERM_SPECIAL2  Ãÿ ‚»®œﬁ 2 */
+	"\xCC\xD8\xCA\xE2\xC8\xA8\xCF\xDE 3",								/* PERM_SPECIAL3  Ãÿ ‚»®œﬁ 3 */
+	"\xC7\xF8\xB3\xA4",													/* PERM_SPECIAL4  «¯≥§ */
+	"\xB1\xBE\xD5\xBE\xBC\xE0\xB2\xEC\xD7\xE9",							/* PERM_SPECIAL5  ±æ’æº‡≤Ï◊È */
+	"\xB1\xBE\xD5\xBE\xC1\xA2\xB7\xA8\xBB\xE1",							/* PERM_SPECIAL6  ±æ’æ¡¢∑®ª· */
+	"\xCC\xD8\xCA\xE2\xC8\xA8\xCF\xDE 7",								/* PERM_SPECIAL7  Ãÿ ‚»®œﬁ 7 */
+	"\xB8\xF6\xC8\xCB\xCE\xC4\xBC\xAF",									/* PERM_SPECIAL8  ∏ˆ»ÀŒƒºØ */
+	"\xBD\xFB\xD6\xB9\xB7\xA2\xD0\xC5\xC8\xA8",							/* PERM_DENYMAIL  Ω˚÷π∑¢–≈»® */
+};
+
+static const char *const g_user_definestr[NUMDEFINES] = {
+	/* DEF_FRIENDCALL         ∫ÙΩ–∆˜πÿ±’ ±ø…»√∫√”—∫ÙΩ– */
+	"\xBA\xF4\xBD\xD0\xC6\xF7\xB9\xD8\xB1\xD5\xCA\xB1\xBF\xC9\xC8\xC3\xBA\xC3\xD3\xD1\xBA\xF4\xBD\xD0",
+	/* DEF_ALLMSG             Ω” ‹À˘”–»Àµƒ—∂œ¢ */
+	"\xBD\xD3\xCA\xDC\xCB\xF9\xD3\xD0\xC8\xCB\xB5\xC4\xD1\xB6\xCF\xA2",
+	/* DEF_FRIENDMSG          Ω” ‹∫√”—µƒ—∂œ¢ */
+	"\xBD\xD3\xCA\xDC\xBA\xC3\xD3\xD1\xB5\xC4\xD1\xB6\xCF\xA2",
+	/* DEF_SOUNDMSG            ’µΩ—∂œ¢∑¢≥ˆ…˘“Ù */
+	"\xCA\xD5\xB5\xBD\xD1\xB6\xCF\xA2\xB7\xA2\xB3\xF6\xC9\xF9\xD2\xF4",
+	/* DEF_COLOR               π”√≤ …´ */
+	"\xCA\xB9\xD3\xC3\xB2\xCA\xC9\xAB",
+	/* DEF_ACBOARD            œ‘ æªÓ∂Øø¥∞Ê */
+	"\xCF\xD4\xCA\xBE\xBB\xEE\xB6\xAF\xBF\xB4\xB0\xE6",
+	/* DEF_ENDLINE            œ‘ æ—°µ•µƒ—∂œ¢¿∏ */
+	"\xCF\xD4\xCA\xBE\xD1\xA1\xB5\xA5\xB5\xC4\xD1\xB6\xCF\xA2\xC0\xB8",
+	/* DEF_EDITMSG            ±‡º≠ ±œ‘ æ◊¥Ã¨¿∏ */
+	"\xB1\xE0\xBC\xAD\xCA\xB1\xCF\xD4\xCA\xBE\xD7\xB4\xCC\xAC\xC0\xB8",
+	/* DEF_NOTMSGFRIEND       —∂œ¢¿∏≤…”√“ª∞„/æ´ºÚƒ£ Ω */
+	"\xD1\xB6\xCF\xA2\xC0\xB8\xB2\xC9\xD3\xC3\xD2\xBB\xB0\xE3/\xBE\xAB\xBC\xF2\xC4\xA3\xCA\xBD",
+	/* DEF_NORMALSCR          —°µ•≤…”√“ª∞„/æ´ºÚƒ£ Ω */
+	"\xD1\xA1\xB5\xA5\xB2\xC9\xD3\xC3\xD2\xBB\xB0\xE3/\xBE\xAB\xBC\xF2\xC4\xA3\xCA\xBD",
+	/* DEF_NEWPOST            ∑÷¿‡Ã÷¬€«¯“‘ New œ‘ æ */
+	"\xB7\xD6\xC0\xE0\xCC\xD6\xC2\xDB\xC7\xF8\xD2\xD4 New \xCF\xD4\xCA\xBE",
+	/* DEF_CIRCLE             ‘ƒ∂¡Œƒ’¬ «∑Ò π”√»∆æÌ—°‘Ò */
+	"\xD4\xC4\xB6\xC1\xCE\xC4\xD5\xC2\xCA\xC7\xB7\xF1\xCA\xB9\xD3\xC3\xC8\xC6\xBE\xED\xD1\xA1\xD4\xF1",
+	/* DEF_FIRSTNEW           ‘ƒ∂¡Œƒ’¬”Œ±ÍÕ£”⁄µ⁄“ª∆™Œ¥∂¡ */
+	"\xD4\xC4\xB6\xC1\xCE\xC4\xD5\xC2\xD3\xCE\xB1\xEA\xCD\xA3\xD3\xDA\xB5\xDA\xD2\xBB\xC6\xAA\xCE\xB4\xB6\xC1",
+	/* DEF_LOGFRIEND          Ω¯’æ ±œ‘ æ∫√”—√˚µ• */
+	"\xBD\xF8\xD5\xBE\xCA\xB1\xCF\xD4\xCA\xBE\xBA\xC3\xD3\xD1\xC3\xFB\xB5\xA5",
+	/* DEF_INNOTE             Ω¯’æ ±œ‘ æ±∏Õ¸¬º */
+	"\xBD\xF8\xD5\xBE\xCA\xB1\xCF\xD4\xCA\xBE\xB1\xB8\xCD\xFC\xC2\xBC",
+	/* DEF_OUTNOTE            ¿Î’æ ±œ‘ æ±∏Õ¸¬º */
+	"\xC0\xEB\xD5\xBE\xCA\xB1\xCF\xD4\xCA\xBE\xB1\xB8\xCD\xFC\xC2\xBC",
+	/* DEF_MAILMSG            ¿Î’æ ±—ØŒ ºƒªÿÀ˘”–—∂œ¢ */
+	"\xC0\xEB\xD5\xBE\xCA\xB1\xD1\xAF\xCE\xCA\xBC\xC4\xBB\xD8\xCB\xF9\xD3\xD0\xD1\xB6\xCF\xA2",
+	/* DEF_LOGOUT              π”√◊‘º∫µƒ¿Î’æª≠√Ê */
+	"\xCA\xB9\xD3\xC3\xD7\xD4\xBC\xBA\xB5\xC4\xC0\xEB\xD5\xBE\xBB\xAD\xC3\xE6",
+	/* DEF_SEEWELC1           Œ“ «’‚∏ˆ◊È÷Øµƒ≥…‘± */
+	"\xCE\xD2\xCA\xC7\xD5\xE2\xB8\xF6\xD7\xE9\xD6\xAF\xB5\xC4\xB3\xC9\xD4\xB1",
+	/* DEF_LOGINFROM          ∫√”—…œ’æÕ®÷™ */
+	"\xBA\xC3\xD3\xD1\xC9\xCF\xD5\xBE\xCD\xA8\xD6\xAA",
+	/* DEF_NOTEPAD            π€ø¥¡Ù—‘∞Ê */
+	"\xB9\xDB\xBF\xB4\xC1\xF4\xD1\xD4\xB0\xE6",
+	/* DEF_NOLOGINSEND        ≤ª“™ÀÕ≥ˆ…œ’æÕ®÷™∏¯∫√”— */
+	"\xB2\xBB\xD2\xAA\xCB\xCD\xB3\xF6\xC9\xCF\xD5\xBE\xCD\xA8\xD6\xAA\xB8\xF8\xBA\xC3\xD3\xD1",
+	/* DEF_THESIS             ÷˜Ã‚ Ωø¥∞Ê */
+	"\xD6\xF7\xCC\xE2\xCA\xBD\xBF\xB4\xB0\xE6",
+	/* DEF_MSGGETKEY           ’µΩ—∂œ¢µ»∫Úªÿ”¶ªÚ«Â≥˝ */
+	"\xCA\xD5\xB5\xBD\xD1\xB6\xCF\xA2\xB5\xC8\xBA\xF2\xBB\xD8\xD3\xA6\xBB\xF2\xC7\xE5\xB3\xFD",
+	/* DEF_DELDBLCHAR         ∫∫◊÷’˚◊÷¥¶¿Ì */
+	"\xBA\xBA\xD7\xD6\xD5\xFB\xD7\xD6\xB4\xA6\xC0\xED",
+	/* DEF_USEGB KCN 99.09.03  π”√GB¬Î‘ƒ∂¡ */
+	"\xCA\xB9\xD3\xC3\x47\x42\xC2\xEB\xD4\xC4\xB6\xC1",
+	/* DEF_ANIENDLINE          π”√∂ØÃ¨µ◊œﬂ */
+	"\xCA\xB9\xD3\xC3\xB6\xAF\xCC\xAC\xB5\xD7\xCF\xDF",
+	/* DEF_INTOANN            ≥ı¥Œ∑√Œ ∞Ê√ÊÃ· æΩ¯»Îæ´ª™«¯ */
+	"\xB3\xF5\xB4\xCE\xB7\xC3\xCE\xCA\xB0\xE6\xC3\xE6\xCC\xE1\xCA\xBE\xBD\xF8\xC8\xEB\xBE\xAB\xBB\xAA\xC7\xF8",
+	/* DEF_POSTNOMSG          ∑¢±ÌŒƒ’¬ ±‘› ±∆¡±ŒMSG */
+	"\xB7\xA2\xB1\xED\xCE\xC4\xD5\xC2\xCA\xB1\xD4\xDD\xCA\xB1\xC6\xC1\xB1\xCEMSG",
+	/* DEF_SEESTATINLOG       Ω¯’æ ±π€ø¥Õ≥º∆–≈œ¢ */
+	"\xBD\xF8\xD5\xBE\xCA\xB1\xB9\xDB\xBF\xB4\xCD\xB3\xBC\xC6\xD0\xC5\xCF\xA2",
+	/* DEF_FILTERXXX          π˝¬Àø…ƒ‹¡Ó»À∑¥∏––≈œ¢ */
+	"\xB9\xFD\xC2\xCB\xBF\xC9\xC4\xDC\xC1\xEE\xC8\xCB\xB7\xB4\xB8\xD0\xD0\xC5\xCF\xA2",
+	/* DEF_INTERNETMAIL        ’»°’æÕ‚–≈º˛ */
+	//"\xCA\xD5\xC8\xA1\xD5\xBE\xCD\xE2\xD0\xC5\xBC\xFE",
+	/* DEF_NEWSTOP10          Ω¯’æ ±π€ø¥»´π˙ Æ¥Û≈≈––∞Ò */
+	"\xBD\xF8\xD5\xBE\xCA\xB1\xB9\xDB\xBF\xB4\xC8\xAB\xB9\xFA\xCA\xAE\xB4\xF3\xC5\xC5\xD0\xD0\xB0\xF1"
+};
 
 static int
 loadkeys(struct one_key *key, char *name)
@@ -89,10 +207,7 @@ loaduserkeys()
 	loadkeys(reject_list, tempname);
 }
 
-int
-modify_user_mode(mode)
-int mode;
-{
+int modify_user_mode(int mode) {
 	if (uinfo.mode == mode)
 		return 0;
 	uinfo.mode = mode;
@@ -109,7 +224,7 @@ x_csh()
 
 	return -1;
 
-	if (!HAS_PERM(PERM_SYSOP)) {
+	if (!HAS_PERM(PERM_SYSOP, currentuser)) {
 		return -1;
 	}
 	if (!check_systempasswd()) {
@@ -118,7 +233,7 @@ x_csh()
 	modify_user_mode(SYSINFO);
 	clear();
 	getdata(1, 0, "«Î ‰»ÎÕ®––∞µ∫≈: ", buf, PASSLEN, NOECHO, YEA);
-	if (*buf == '\0' || !checkpasswd(currentuser.passwd, buf)) {
+	if (*buf == '\0' || !ytht_crypt_checkpasswd(currentuser.passwd, buf)) {
 		prints("\n\n∞µ∫≈≤ª’˝»∑, ≤ªƒ‹÷¥––°£\n");
 		pressreturn();
 		clear();
@@ -157,7 +272,7 @@ int i, use_define;
 	char buf[STRLEN];
 
 	sprintf(buf, "%c. %-30s %3s", 'A' + i,
-		(use_define) ? user_definestr[i] : permstrings[i],
+		(use_define) ? g_user_definestr[i] : g_permstrings[i],
 		((pbits >> i) & 1 ? "ON" : "OFF"));
 	move(i + 6 - ((i > 15) ? 16 : 0), 0 + ((i > 15) ? 40 : 0));
 	prints(buf);
@@ -280,7 +395,7 @@ x_copykeys()
 
 	if (ans[0] == '0' || ans[0] == '\n' || ans[0] == '\0')
 			return 0;
-	
+
 	if (ans[0] == '3' || ans[0] == '6')
 	{
 		int i = 0;
@@ -290,9 +405,9 @@ x_copykeys()
 		}
 		setuserfile(tempname, "mailkey");
 		savekeys(&mail_comms[0], tempname);
-		
+
 	}
-	
+
 	prints("…Ë÷√ÕÍ±œ");
 	pressreturn();
 	return 0;
@@ -570,35 +685,35 @@ x_userdefine()
 	else {
 		lookupuser.userdefine = newlevel;
 		currentuser.userdefine = newlevel;
-		if ((!convcode && !(newlevel & DEF_USEGB))
-		    || (convcode && (newlevel & DEF_USEGB)))
+		if ((!g_convcode && !(newlevel & DEF_USEGB))
+		    || (g_convcode && (newlevel & DEF_USEGB)))
 			switch_code();
 		substitute_record(PASSFILE, &lookupuser, sizeof (struct userec),
 				  id);
 		uinfo.pager |= FRIEND_PAGER;
 		if (!(uinfo.pager & ALL_PAGER)) {
-			if (!DEFINE(DEF_FRIENDCALL))
+			if (!DEFINE(DEF_FRIENDCALL, currentuser))
 				uinfo.pager &= ~FRIEND_PAGER;
 		}
 		uinfo.pager &= ~ALLMSG_PAGER;
 		uinfo.pager &= ~FRIENDMSG_PAGER;
-		if (DEFINE(DEF_DELDBLCHAR))
+		if (DEFINE(DEF_DELDBLCHAR, currentuser))
 			enabledbchar = 1;
 		else
 			enabledbchar = 0;
-		if (DEFINE(DEF_FRIENDMSG)) {
+		if (DEFINE(DEF_FRIENDMSG, currentuser)) {
 			uinfo.pager |= FRIENDMSG_PAGER;
 		}
-		if (DEFINE(DEF_ALLMSG)) {
+		if (DEFINE(DEF_ALLMSG, currentuser)) {
 			uinfo.pager |= ALLMSG_PAGER;
 			uinfo.pager |= FRIENDMSG_PAGER;
 		}
 		update_utmp();
-		if (DEFINE(DEF_ACBOARD))
+		if (DEFINE(DEF_ACBOARD, currentuser))
 			nettyNN = NNread_init();
 		prints("–¬µƒ≤Œ ˝…Ë∂®ÕÍ≥…...\n\n");
 	}
-	iscolor = (DEFINE(DEF_COLOR)) ? 1 : 0;
+	iscolor = (DEFINE(DEF_COLOR, currentuser)) ? 1 : 0;
 	pressreturn();
 	clear();
 	return 0;
@@ -615,7 +730,7 @@ x_cloak()
 	if (!uinfo.in_chat) {
 		move(1, 0);
 		clrtoeol();
-	        if(uinfo.invisible)				//add by mintbaggio@BMY for normal cloak	
+	        if(uinfo.invisible)				//add by mintbaggio@BMY for normal cloak
 			currentuser./*pseudo_*/lastlogout = time(NULL);
 		else	currentuser./*pseudo_*/lastlogout = 0;
 		substitute_record(PASSFILE, &currentuser, sizeof (currentuser),
@@ -715,7 +830,7 @@ a_edits()
 		"autopost", "junkboards", "sysops", "prisonor", "untrust",
 		"bbsnetA.ini", "bbsnet.ini", "filtertitle",
 		"../ftphome/ftp_adm", "badwords", "sbadwords", "pbadwords",
-		"../inndlog/newsfeeds.bbs", "spec_site", "secmlist","special","life", 
+		"../inndlog/newsfeeds.bbs", "spec_site", "secmlist","special","life",
 		"commendlist", "manager_team","./pop_register/mail.xjtu.edu.cn","./pop_register/stu.xjtu.edu.cn",
 		"top10forbid","voteidboards","newboard","recommboard","guestbanip",NULL
 	};
@@ -742,7 +857,7 @@ a_edits()
 	move(0, 0);
 	prints("±‡–ﬁœµÕ≥µµ∞∏\n\n");
 	for (num = 0;
-	     HAS_PERM(PERM_SYSOP) ? e_file[num] != NULL
+	     HAS_PERM(PERM_SYSOP, currentuser) ? e_file[num] != NULL
 	     && explain_file[num] != NULL : strcasecmp(explain_file[num], "menu.ini") != 0;
 	     num++) {
 		if (num >= 20)
@@ -827,7 +942,7 @@ a_edits2()
 	move(0, 0);
 	prints("±‡–ﬁœµÕ≥µµ∞∏2\n\n");
 	for (num = 0;
-	     HAS_PERM(PERM_SYSOP) ? e_file[num] != NULL
+	     HAS_PERM(PERM_SYSOP, currentuser) ? e_file[num] != NULL
 	     && explain_file[num] != NULL : strcasecmp(explain_file[num], "menu.ini") != 0;
 	     num++) {
 		if (num >= 20)
@@ -920,14 +1035,14 @@ x_lockscreen()
 			move(17,0);
 			clrtobot();
 			update_endline();
-			if(HAS_PERM(PERM_SELFLOCK))
+			if(HAS_PERM(PERM_SELFLOCK, currentuser))
             {
 			uinfo.user_state_temp[0]='\0';                  //«Â≥˝…œ¥Œº«¬º
 			update_ulist(&uinfo,utmpent);
 	                getdata(17,0,"«Î ‰»Î◊‘∂®“Â¿Ì”…:",user_self,9,DOECHO,YEA);
 		        int i=0,flag=0;
 			for(i=0;i<=7;i++){
-			if(user_self[i]==' ')  
+			if(user_self[i]==' ')
 			{
 				flag=1;
 				break;
@@ -943,7 +1058,7 @@ x_lockscreen()
 			 modify_user_mode(USERDF4);break;
              }
 			else
-			{	
+			{
 				move(17,0);
 				clrtobot();
 				prints("ƒ˙ ‰»Îµƒ◊‘∂®“Â¿Ì”…∫¨”–≤ª∫œ  ¥ ª„ªÚÃÿ ‚◊÷∑˚£¨Ω´“‘ƒ¨»œ∑Ω ΩÀ¯∆¡");
@@ -952,22 +1067,22 @@ x_lockscreen()
 			}
 		   }
 			else
-			{   
+			{
 				move(17,0);
 				clrtobot();
 				prints("ƒ„±ªπ‹¿Ì‘±»°œ˚◊‘∂®“ÂÀ¯∆¡µƒ»®œﬁ£¨Ω´“‘ƒ¨»œ∑Ω ΩÀ¯∂®");
 				modify_user_mode(LOCKSCREEN);
 				break;
-			} 
+			}
 		default:
 			prints("ƒ¨»œÀ¯∆¡");
 			modify_user_mode(LOCKSCREEN);
 	}
 	move(18,0);
-	clrtobot();      
+	clrtobot();
 	prints("[1;36m”´ƒª“—‘⁄[33m %19s[36m  ±±ª[32m %-12s [36m‘› ±À¯◊°¡À...[m",
 	     ctime(&now), currentuser.userid);
-	while (*buf == '\0' || !checkpasswd(currentuser.passwd, buf)) {
+	while (*buf == '\0' || !ytht_crypt_checkpasswd(currentuser.passwd, buf)) {
 		move(19, 0);
 		clrtobot();
 		update_endline();
@@ -1004,7 +1119,7 @@ const char *cmdfile, *param;
 	if (param != NULL) {
 		char *avoid = "&;!`'\"|?~<>^()[]{}$\n\r\\", *ptr;
 		int n = strlen(avoid);
-		strsncpy(param1, param, sizeof (param1));
+		ytht_strsncpy(param1, param, sizeof(param1));
 		while (n > 0) {
 			n--;
 			ptr = strchr(param1, avoid[n]);
@@ -1013,7 +1128,7 @@ const char *cmdfile, *param;
 		}
 	}
 
-	if (!HAS_PERM(PERM_SYSOP) && heavyload(0)) {
+	if (!HAS_PERM(PERM_SYSOP, currentuser) && heavyload(0)) {
 		clear();
 		prints("±ß«∏£¨ƒø«∞œµÕ≥∏∫∫…π˝÷ÿ£¨¥Àπ¶ƒ‹‘› ±≤ªƒ‹÷¥––...");
 		pressanykey();
@@ -1150,7 +1265,7 @@ char *cmdfile, *param1;
 		pressanykey();
 		return;
 	}
-	if (!HAS_PERM(PERM_SYSOP) && heavyload(0)) {
+	if (!HAS_PERM(PERM_SYSOP, currentuser) && heavyload(0)) {
 		clear();
 		prints("±ß«∏£¨ƒø«∞œµÕ≥∏∫∫…π˝÷ÿ£¨¥Àπ¶ƒ‹‘› ±≤ªƒ‹÷¥––...");
 		pressanykey();
@@ -1257,7 +1372,7 @@ sendGoodWish(char *userid)
 						    ("“—æ≠¡–Œ™ ’◊£∏£»À÷Æ“ª \n");
 						break;
 					}
-					addtofile(wishlists, uident);
+					ytht_add_to_file(wishlists, uident);
 					cnt++;
 					break;
 				case 'E':
@@ -1269,8 +1384,7 @@ sendGoodWish(char *userid)
 				case 'D':
 				case 'd':
 					if (seek_in_file(wishlists, uident)) {
-						del_from_file(wishlists,
-							      uident);
+						ytht_del_from_file(wishlists, uident, true);
 						cnt--;
 					}
 					break;
@@ -1281,8 +1395,7 @@ sendGoodWish(char *userid)
 					for (i = cnt; n < uinfo.fnum; i++) {
 						int key;
 						move(2, 0);
-						getuserid(uident,
-							  uinfo.friend[n]);
+						ythtbbs_cache_UserTable_getuserid(uinfo.friend[n], uident, sizeof(uident));
 						prints("%s\n", uident);
 						move(3, 0);
 						n++;
@@ -1313,8 +1426,7 @@ sendGoodWish(char *userid)
 								i--;
 								continue;
 							}
-							addtofile(wishlists,
-								  uident);
+							ytht_add_to_file(wishlists, uident);
 							cnt++;
 						}
 					}	//for loop
@@ -1460,7 +1572,7 @@ sendGoodWish(char *userid)
 	   if (uid[0] == '\0') {
 	   clear();
 	   return 0;
-	   }         
+	   }
 	   if (!(tuid = getuser(uid))) {
 	   move(7, 0);
 	   prints("\x1b[1mƒ˙ ‰»Îµƒ π”√’ﬂ¥˙∫≈( ID )≤ª¥Ê‘⁄£°\x1b[m\n");
@@ -1473,166 +1585,6 @@ sendGoodWish(char *userid)
 	pressanykey();
 	clear();
 	return 0;
-}
-
-/* ppfoong */
-void
-x_dict()
-{
-	char buf[STRLEN];
-	char *s;
-	//int whichdict;
-
-	if (heavyload(0)) {
-		clear();
-		prints("±ß«∏£¨ƒø«∞œµÕ≥∏∫∫…π˝÷ÿ£¨¥Àπ¶ƒ‹‘› ±≤ªƒ‹÷¥––...");
-		pressanykey();
-		return;
-	}
-	modify_user_mode(DICT);
-	clear();
-	prints("\n[1;32m     _____  __        __   __");
-	prints
-	    ("\n    |     \\|__|.----.|  |_|__|.-----.-----.---.-.----.--.--.");
-	prints
-	    ("\n    |  --  |  ||  __||   _|  ||  _  |     |  _  |   _|  |  |");
-	prints
-	    ("\n    |_____/|__||____||____|__||_____|__|__|___._|__| |___  |");
-	prints
-	    ("\n                                                     |_____|[m");
-	prints("\n\n\nª∂”≠ π”√±æ’æµƒ◊÷µ‰°£");
-	prints
-	    ("\n±æ◊÷µ‰÷˜“™Œ™[1;33m°∏”¢∫∫°π[m≤ø∑÷, µ´“‡ø…◊˜[1;33m°∏∫∫”¢°π[m≤È—Ø°£");
-	prints
-	    ("\n\nœµÕ≥Ω´∏˘æ›ƒ˙À˘ ‰»Îµƒ◊÷¥Æ, ◊‘∂Ø≈–∂œƒ˙À˘“™∑≠≤Èµƒ «”¢Œƒ◊÷ªπ «÷–Œƒ◊÷°£");
-	prints("\n\n\n«Î ‰»Îƒ˙”˚∑≠≤Èµƒ”¢Œƒ◊÷ªÚ÷–Œƒ◊÷, ªÚ÷±Ω”∞¥ <ENTER> »°œ˚°£");
-	getdata(15, 0, ">", buf, 30, DOECHO, YEA);
-	if (buf[0] == '\0') {
-		prints("\nƒ˙≤ªœÎ≤È¡À‡∏...");
-		pressanykey();
-		return;
-	}
-	for (s = buf; *s != '\0'; s++) {
-		if (isspace(*s)) {
-			prints("\n“ª¥Œ÷ªƒ‹≤È“ª∏ˆ◊÷¿≤, ≤ªƒ‹Ã´Ã∞–ƒ‡∏!!");
-			pressanykey();
-			return;
-		}
-	}
-	myexec_cmd(DICT, YEA, "bin/cdict.sh", buf);
-	sprintf(buf, "bbstmpfs/tmp/dict.%s.%d", currentuser.userid, uinfo.pid);
-	if (dashf(buf)) {
-		ansimore(buf, NA);
-		if (askyn("“™Ω´Ω·π˚ºƒªÿ–≈œ‰¬", NA, NA) == YEA)
-			mail_file(buf, currentuser.userid, "◊÷µ‰≤È—ØΩ·π˚");
-		unlink(buf);
-	}
-}
-
-void
-x_tt()
-{
-	myexec_cmd(TT, NA, "bin/tt", NULL);
-	redoscr();
-}
-
-void
-x_worker()
-{
-	myexec_cmd(WORKER, YEA, "bin/worker", NULL);
-	redoscr();
-}
-
-void
-x_tetris()
-{
-	myexec_cmd(TETRIS, NA, "bin/tetris", NULL);
-	redoscr();
-}
-
-void
-x_winmine()
-{
-	myexec_cmd(WINMINE, NA, "bin/winmine", NULL);
-	redoscr();
-}
-
-void
-x_winmine2()
-{
-	myexec_cmd(WINMINE2, NA, "bin/winmine2", NULL);
-	redoscr();
-}
-
-void
-x_recite()
-{
-	myexec_cmd(RECITE, NA, "bin/ptyexec", "bin/recite");
-	redoscr();
-}
-
-void
-x_ncce()
-{
-	myexec_cmd(NCCE, NA, "bin/ptyexec", "bin/ncce");
-	redoscr();
-}
-
-void
-x_chess()
-{
-	myexec_cmd(CHESS, NA, "bin/chc", NULL);
-	redoscr();
-}
-
-void
-x_qkmj()
-{
-	myexec_cmd(CHESS, NA, "bin/qkmj", NULL);
-	redoscr();
-}
-
-void
-x_quickcalc()
-{
-	clear();
-	prints("\n------- ˝◊÷‘ÀÀ„,  ‰»ÎhelpªÒµ√∞Ô÷˙------\n");
-	myexec_cmd(QUICKCALC, NA, "bin/ptyexec", "bin/qc");
-	redoscr();
-}
-
-void
-x_freeip()
-{
-	clear();
-	if (heavyload(2.5)) {
-		prints("±ß«∏£¨ƒø«∞œµÕ≥∏∫∫…π˝÷ÿ£¨¥Àπ¶ƒ‹‘› ±≤ªƒ‹÷¥––...");
-		pressanykey();
-		return;
-	}
-	myexec_cmd(FREEIP, NA, "bin/ptyexec", "bin/freeip");
-	redoscr();
-}
-
-void
-x_showuser()
-{
-	char buf[STRLEN];
-
-	modify_user_mode(SYSINFO);
-	clear();
-	stand_title("±æ’æ π”√’ﬂ◊ ¡œ≤È—Ø");
-	ansimore("etc/showuser.msg", NA);
-	getdata(20, 0, "Parameter: ", buf, 30, DOECHO, YEA);
-	if ((buf[0] == '\0') || dashf("bbstmpfs/tmp/showuser.result"))
-		return;
-	securityreport("≤È—Ø π”√’ﬂ◊ ¡œ", "≤È—Ø π”√’ﬂ◊ ¡œ");
-	exec_cmd(SYSINFO, YEA, "bin/showuser.sh", buf);
-	sprintf(buf, "bbstmpfs/tmp/showuser.result");
-	if (dashf(buf)) {
-		mail_file(buf, currentuser.userid, " π”√’ﬂ◊ ¡œ≤È—ØΩ·π˚");
-		unlink(buf);
-	}
 }
 
 static void
@@ -1849,59 +1801,7 @@ x_denylevel()
 	return 0;
 }
 
-int
-s_checkid()
-{
-	char buf[256];
-	char checkuser[20];
-	int day, id;
-	modify_user_mode(GMENU);
-	clear();
-	stand_title("µ˜≤ÈID∑¢Œƒ«Èøˆ\n");
-	clrtoeol();
-	move(2, 0);
-	usercomplete(" ‰»Î”˚µ˜≤Èµƒ π”√’ﬂ’ ∫≈: ", genbuf);
-	if (genbuf[0] == '\0') {
-		clear();
-		return 0;
-	}
-	strcpy(checkuser, genbuf);
-	if (!(id = getuser(genbuf))) {
-		move(4, 0);
-		prints("Œﬁ–ßµƒ π”√’ﬂ’ ∫≈");
-		clrtoeol();
-		pressreturn();
-		clear();
-		return 0;
-	}
-	getdata(5, 0, " ‰»ÎÃÏ ˝(0-À˘”– ±º‰): ", buf, 7, DOECHO, YEA);
-	day = atoi(buf);
-	sprintf(buf,
-		"/usr/bin/nice " MY_BBS_HOME "/bin/finddf %d %d %s > " MY_BBS_HOME
-		"/bbstmpfs/tmp/checkid.%s 2>/dev/null", currentuser.userlevel,
-		day, checkuser, currentuser.userid);
-	if ((HAS_PERM(PERM_SYSOP) && heavyload(2.5))
-	    || (!HAS_PERM(PERM_SYSOP) && heavyload(1.5))) {
-		prints("œµÕ≥∏∫‘ÿπ˝÷ÿ, Œﬁ∑®÷¥––±æ÷∏¡Ó");
-		pressreturn();
-		return 1;
-	}
-	system(buf);
-	sprintf(buf, "%s finddf %s %d", currentuser.userid, checkuser, day);
-	newtrace(buf);
-	sprintf(buf, MY_BBS_HOME "/bbstmpfs/tmp/checkid.%s",
-		currentuser.userid);
-	mail_file(buf, currentuser.userid, "\"System Report\"");
-	prints("ÕÍ±œ");
-	clrtoeol();
-	pressreturn();
-	clear();
-	return 1;
-}
-
-char *
-directfile(char *fpath, char *direct, char *filename)
-{
+char *directfile(char *fpath, char *direct, char *filename) {
 	char *t;
 	strcpy(fpath, direct);
 	if ((t = strrchr(fpath, '/')) == NULL)
@@ -2048,15 +1948,4 @@ double load[];
 	load[1] = rs.avenrun[1] / (double) (1 << 8);
 	load[2] = rs.avenrun[2] / (double) (1 << 8);
 #endif
-}
-
-void
-inn_reload()
-{
-	char ans[4];
-
-	getdata(t_lines - 1, 0, "÷ÿ∂¡≈‰÷√¬ (Y/N)? [N]: ", ans, 2, DOECHO, YEA);
-	if (ans[0] == 'Y' || ans[0] == 'y') {
-		myexec_cmd(ADMIN, NA, "innd/ctlinnbbsd", "reload");
-	}
 }

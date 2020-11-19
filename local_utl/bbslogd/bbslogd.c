@@ -276,10 +276,10 @@ filterlog(char *str)
 		fields[5]
 	};
 	int n, retv;
-	strsncpy(buf, str, sizeof (buf));
+	ytht_strsncpy(buf, str, sizeof(buf));
 	if ((ptr = strchr(buf, '\n')))
 		*ptr = 0;
-	n = mystrtok(buf, ' ', tmp, 6);
+	n = ytht_strtok(buf, ' ', tmp, 6);
 	retv = filter_passerr(n, tmp);
 	expireevent();
 	bansiteop(NULL);

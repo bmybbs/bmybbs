@@ -16,6 +16,8 @@
 */
 
 #include "bbs.h"
+#include "smth_screen.h"
+#include "bcache.h"
 
 #define BtoGtablefile "etc/b2g_table"
 #define GtoBtablefile "etc/g2b_table"
@@ -25,14 +27,14 @@
 #define	GtoB_bad1 0xa1
 #define	GtoB_bad2 0xbc
 
-unsigned char *GtoB, *BtoG;
+static unsigned char *GtoB, *BtoG;
 #define GtoB_count 7614
 #define BtoG_count 13973
-char gb2big_savec[2];
-char big2gb_savec[2];
+static char gb2big_savec[2];
+static char big2gb_savec[2];
 
 #ifndef PTY_EXEC
-extern int convcode;
+int g_convcode = 0;
 
 static void resolv_file(char *buf);
 static void *attach_shm2(int shmkey, int shmsize, void (*resolv_file) (char *));
@@ -43,7 +45,7 @@ static char *hzconvert(char *s, int *plen, char *psaved, void (*dbcvrt) (void));
 void
 switch_code()
 {
-	convcode = !convcode;
+	g_convcode = !g_convcode;
 	redoscr();
 }
 #endif
@@ -108,9 +110,7 @@ void (*resolv_file) (char *);
 	return shmptr;
 }
 
-void
-conv_init()
-{
+void conv_init() {
 	BtoG =
 	    attach_shm2(CONVTABLE_SHMKEY, GtoB_count * 2 + BtoG_count * 2,
 			resolv_file);
@@ -206,20 +206,10 @@ void (*dbcvrt) ();		/* 2-byte conversion func for a hanzi */
 	return (s);
 }
 
-char *
-gb2big(s, plen, inst)
-char *s;
-int *plen;
-int inst;
-{
+char *gb2big(char *s, int *plen, int inst) {
 	return (hzconvert(s, plen, &gb2big_savec[inst], (void *) g2b));
 }
 
-char *
-big2gb(s, plen, inst)
-char *s;
-int *plen;
-int inst;
-{
+char *big2gb(char *s, int *plen, int inst) {
 	return (hzconvert(s, plen, &big2gb_savec[inst], (void *) b2g));
 }

@@ -8,7 +8,7 @@
     Firebird Bulletin Board System
     Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
                         Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
-    
+
     Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
 
     This program is free software; you can redistribute it and/or modify
@@ -23,11 +23,19 @@
 */
 
 #include "bbs.h"
-#include "bbstelnet.h"
+#include "bbs_global_vars.h"
 #include "tmpl.h"
+#include "smth_screen.h"
+#include "io.h"
+#include "more.h"
+#include "stuff.h"
+#include "bbsinc.h"
+#include "mail.h"
+#include "edit.h"
+#include "postheader.h"
+#include "bbs-internal.h"
 
 extern int numofsig;
-struct boardmem *getbcache();
 
 static int
 getdata_ctrl(line, col, prompt, buf, len, echo, clearlabel)
@@ -268,7 +276,7 @@ struct postheader *header;
 		header->include_mode = 'S';
 	} else
 		titlebuf[0] = '\0';
-	bp = getbcache(currboard);
+	bp = ythtbbs_cache_Board_get_board_by_name(currboard);
 	if (bp == NULL)
 		return NA;
 	if (header->postboard)
@@ -308,7 +316,7 @@ struct postheader *header;
 		sprintf(genbuf, "µÚ [1m%d[m ¸ö", currentuser.signature);
 		prints("\033[0m©¸©¤©¤©¤©¤©¤©¾Ê¹ÓÃ%sÇ©Ãûµµ     %s",
 		       ((currentuser.signature == -1) ? "Ëæ»ú" : genbuf)
-		       , (header->reply_mode) ? r_prompt : 
+		       , (header->reply_mode) ? r_prompt :
 		       ((hastmpl)? "°´Ctrl+P½øÈëÄ£°æ·¢ÎÄ":""));
 		if (titlebuf[0] == '\0') {
 			move(t_lines - 1, 0);
@@ -329,7 +337,7 @@ struct postheader *header;
 				} else
 					return NA;
 			}
-			
+
 			/*pzhg's modification*/
 			/*enter the tmpl's chose derectly*/
 			if ((!in_mail) && (titlebuf[0]==Ctrl('P'))){
@@ -337,7 +345,7 @@ struct postheader *header;
 				return NA;
 			}
 			/*end*/
-			
+
 			strcpy(header->title, titlebuf);
 			continue;
 		}
@@ -361,20 +369,20 @@ struct postheader *header;
 				: ((hastmpl)?",\033[1;32mP\033[mÄ£°å·¢ÎÄ":""), (anonyboard) ? ",\033[1;32mC\033[mÄäÃû" : "",
 				"","");//in_mail ? "" : "\033[1;32mU\033[mÊôĞÔ,"
 		getdata(t_lines - 1, 0, mybuf, ans, 3, DOECHO, YEA);
-		ans[0] = toupper(ans[0]);		
+		ans[0] = toupper(ans[0]);
 		if ((ans[0] - '0') >= 0 && ans[0] - '0' <= 9) {
 			if (atoi(ans) <= numofsig)
 				currentuser.signature = atoi(ans);
-		}else if (ans[0] == 'Q' && !in_mail) 
+		}else if (ans[0] == 'Q' && !in_mail)
 			return NA;
- 		else if (ans[0] == 'P' && !(header->reply_mode) && (!in_mail)){
+		else if (ans[0] == 'P' && !(header->reply_mode) && (!in_mail)){
 			choose_tmpl();
 			return NA;
 		}else if ((header->reply_mode &&
 			    (ans[0] == 'Y' || ans[0] == 'N' || ans[0] == 'A'
 			     || ans[0] == 'R')) || ans[0] == 'S') {
 			header->include_mode = ans[0];
-		} 
+		}
 		else if (ans[0]=='U' && !in_mail){
 			if (header->canreply == 0)
 				header->canreply =1;

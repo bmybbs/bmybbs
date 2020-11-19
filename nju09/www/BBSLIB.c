@@ -1,4 +1,5 @@
 #include "bbslib.h"
+#include "ythtbbs/cache.h"
 #if defined(ENABLE_GHTHASH) && defined(ENABLE_FASTCGI)
 #include <ght_hash_table.h>
 #endif
@@ -9,67 +10,48 @@
 //#else
 #include <iconv.h>
 //#endif
+#include "bmy/cookie.h"
+#include "ythtbbs/session.h"
 
 char needcgi[STRLEN];
-char rframe[STRLEN];
 
-char to_hex(char code);
+static void __unhcode(char *s);
+static void extraparam_init(const char *extrastr);
+static int user_init(struct userec *x, struct user_info **y, const char *userid, const char *sessid);
+static int post_imail(char *userid, char *title, char *file, char *id, char *nickname, char *ip, int sig);
+static void sig_append(FILE * fp, char *id, int sig);
 
 struct wwwstyle wwwstyle[NWWWSTYLE] = {
-	{"éÙºì(´ó×ÖÌå)", CSSPATH "orab.css",
-	 "#b3b7e6", "#abc8f2", "yellow"},
-	{"éÙºì(Ğ¡×ÖÌå)", CSSPATH "oras.css",
-	 "#b3b7e6", "#abc8f2", "yellow"},
-	{"À¼É«(´ó×ÖÌå)", CSSPATH "blub.css",
-	 "#ffc8ce", "#ffe3e7", "#ff8000"},
-	{"À¼É«(Ğ¡×ÖÌå)", CSSPATH "blus.css",
-	 "#ffc8ce", "#ffe3e7", "#ff8000"},
-	{"ÂÌÉ«(´ó×ÖÌå)", CSSPATH "greb.css",
-	 "#c0c0c0", "#d0d0d0", "yellow"},
-	{"ÂÌÉ«(Ğ¡×ÖÌå)", CSSPATH "gres.css",
-        "#c0c0c0", "#d0d0d0", "yellow"},
-	{"ºÚÉ«(´ó×ÖÌå)", CSSPATH "blab.css",
-	 "#c0c0c0", "#d0d0d0", "yellow"},
-	{"ºÚÉ«(Ğ¡×ÖÌå)", CSSPATH "blas.css",
-	 "#c0c0c0", "#d0d0d0", "yellow"},
-	{"×Ô¶¨ÒåµÄ½çÃæ", "bbsucss/ubbs.css",
-	 "", "", ""}
+	// æ©˜çº¢(å¤§å­—ä½“)
+	{"\xE9\xD9\xBA\xEC(\xB4\xF3\xD7\xD6\xCC\xE5)", CSSPATH "orab.css", "#b3b7e6", "yellow"},
+	// æ©˜çº¢(å°å­—ä½“)
+	{"\xE9\xD9\xBA\xEC(\xD0\xA1\xD7\xD6\xCC\xE5)", CSSPATH "oras.css", "#b3b7e6", "yellow"},
+	// è“è‰²(å¤§å­—ä½“)
+	{"\xC0\xB6\xC9\xAB(\xB4\xF3\xD7\xD6\xCC\xE5)", CSSPATH "blub.css", "#ffc8ce", "#ff8000"},
+	// è“è‰²(å°å­—ä½“)
+	{"\xC0\xB6\xC9\xAB(\xD0\xA1\xD7\xD6\xCC\xE5)", CSSPATH "blus.css", "#ffc8ce", "#ff8000"},
+	// ç»¿è‰²(å¤§å­—ä½“)
+	{"\xC2\xCC\xC9\xAB(\xB4\xF3\xD7\xD6\xCC\xE5)", CSSPATH "greb.css", "#c0c0c0", "yellow"},
+	// ç»¿è‰²(å°å­—ä½“)
+	{"\xC2\xCC\xC9\xAB(\xD0\xA1\xD7\xD6\xCC\xE5)", CSSPATH "gres.css", "#c0c0c0", "yellow"},
+	// é»‘è‰²(å¤§å­—ä½“)
+	{"\xBA\xDA\xC9\xAB(\xB4\xF3\xD7\xD6\xCC\xE5)", CSSPATH "blab.css", "#c0c0c0", "yellow"},
+	// é»‘è‰²(å°å­—ä½“)
+	{"\xBA\xDA\xC9\xAB(\xD0\xA1\xD7\xD6\xCC\xE5)", CSSPATH "blas.css", "#c0c0c0", "yellow"},
+	// è‡ªå®šä¹‰çš„ç•Œé¢
+	{"\xD7\xD4\xB6\xA8\xD2\xE5\xB5\xC4\xBD\xE7\xC3\xE6", "bbsucss/ubbs.css", "", ""}
 };
 struct wwwstyle *currstyle = wwwstyle;
 int wwwstylenum = 0;
-int usedMath = 0; //±¾Ò³ÃæÖĞÔø¾­Ê¹ÓÃÊıÑ§¹«Ê½
-int usingMath = 0; //µ±Ç°ÎÄÕÂ£¨µ±Ç°hsprintf·½Ê½£©ÔÚÊ¹ÓÃÊıÑ§¹«Ê½
-int withinMath = 0; //ÕıÔÚÊıÑ§¹«Ê½ÖĞ
-int no_cache_header = 0;
-int has_smagic = 0;
-int go_to_first_page = 0;
-
-void
-filter(char *line)
-{
-	char temp[256];
-	int i, stat, j;
-	stat = 0;
-	j = 0;
-	for (i = 0; line[i] && i < 255; i++) {
-		if (line[i] == '\033')
-			stat = 1;
-		if (!stat)
-			temp[j++] = line[i];
-		if (stat && ((line[i] > 'a' && line[i] < 'z')
-			     || (line[i] > 'A' && line[i] < 'Z')
-			     || line[i] == '@'))
-			stat = 0;
-	}
-	temp[j] = 0;
-	strcpy(line, temp);
-}
+int usedMath = 0; //æœ¬é¡µé¢ä¸­æ›¾ç»ä½¿ç”¨æ•°å­¦å…¬å¼
+int usingMath = 0; //å½“å‰æ–‡ç« ï¼ˆå½“å‰hsprintfæ–¹å¼ï¼‰åœ¨ä½¿ç”¨æ•°å­¦å…¬å¼
+int withinMath = 0; //æ­£åœ¨æ•°å­¦å…¬å¼ä¸­
 
 int
 junkboard(char *board)
 {
-	// Çë×Ô¶¨Òåjunkboard.
-	return file_has_word("etc/junkboards", board);
+	// è¯·è‡ªå®šä¹‰junkboard.
+	return ytht_file_has_word("etc/junkboards", board);
 }
 
 int loginok = 0;
@@ -85,47 +67,17 @@ jmp_buf cgi_start;
 struct userec currentuser;
 struct user_info *u_info;
 struct wwwsession *w_info;
-struct UTMPFILE *shm_utmp;
-struct BCACHE *shm_bcache;
-struct UCACHE *shm_ucache;
-struct UCACHEHASH *uidhashshm;
-struct UINDEX *uindexshm;
-struct WWWCACHE *wwwcache;
-struct mmapfile mf_badwords = { ptr:NULL };
-struct mmapfile mf_sbadwords = { ptr:NULL };
-struct mmapfile mf_pbadwords = { ptr:NULL };
+struct mmapfile mf_badwords  = { .ptr = NULL };
+struct mmapfile mf_sbadwords = { .ptr = NULL };
+struct mmapfile mf_pbadwords = { .ptr = NULL };
 char *ummap_ptr = NULL;
 int ummap_size = 0;
-char fromhost[BMY_IPV6_LEN]; // ´Ó»·¾³±äÁ¿»ñÈ¡ IP µØÖ·£¬IPv4/IPv6 ÒÑ¾­ÓÉ apache ´¦Àí¹ı
+char fromhost[BMY_IPV6_LEN]; // ä»ç¯å¢ƒå˜é‡è·å– IP åœ°å€ï¼ŒIPv4/IPv6 å·²ç»ç”± apache å¤„ç†è¿‡
 struct in6_addr from_addr;   //ipv6 by leoncom
-int via_proxy = 0;
 
-struct boardmem *getbcache();
 struct userec *getuser();
 char *anno_path_of();
-void updatelastboard(void);
-
-int
-file_has_word(char *file, char *word)
-{
-	FILE *fp;
-	char buf[256], buf2[256];
-	fp = fopen(file, "r");
-	if (fp == 0)
-		return 0;
-	while (1) {
-		bzero(buf, 256);
-		if (fgets(buf, 255, fp) == 0)
-			break;
-		sscanf(buf, "%s", buf2);
-		if (!strcasecmp(buf2, word)) {
-			fclose(fp);
-			return 1;
-		}
-	}
-	fclose(fp);
-	return 0;
-}
+static void updatelastboard(void);
 
 int
 f_write(char *file, char *buf)
@@ -177,67 +129,6 @@ del_record(char *file, int size, int num)
 	return !delete_file(file, size, num + 1, NULL);
 }
 
-long
-get_num_records(filename, size)
-char *filename;
-int size;
-{
-	struct stat st;
-
-	if (stat(filename, &st) == -1)
-		return 0;
-	return (st.st_size / size);
-}
-
-int
-insert_record(fpath, data, size, pos, num)
-char *fpath;
-void *data;
-int size;
-int pos;
-int num;
-{
-	int fd;
-	off_t off, len;
-	struct stat st;
-	char *tmp;
-
-	if ((fd = open(fpath, O_RDWR | O_CREAT, 0600)) < 0)
-		return -1;
-
-	flock(fd, LOCK_EX);
-
-	fstat(fd, &st);
-	len = st.st_size;
-
-	/* lkchu.990428: ernie patch Èç¹û len=0 & pos>0
-	   (ÔÚ¸Õ¿ª¾«»ªÇøÄ¿Â¼½øÈ¥ÌùÉÏ£¬Ñ¡ÏÂÒ»¸ö) Ê±»áĞ´ÈëÀ¬»ø */
-	off = len ? size * pos : 0;
-	lseek(fd, off, SEEK_SET);
-
-	size *= num;
-	len -= off;
-	if (len > 0) {
-		tmp = (char *) malloc(pos = len + size);
-		memcpy(tmp, data, size);
-		read(fd, tmp + size, len);
-		lseek(fd, off, SEEK_SET);
-		data = tmp;
-		size = pos;
-	}
-
-	write(fd, data, size);
-
-	flock(fd, LOCK_UN);
-
-	close(fd);
-
-	if (len > 0)
-		free(data);
-
-	return 0;
-}
-
 char *
 noansi(char *s)
 {
@@ -285,17 +176,6 @@ nohtml(const char *s)
 }
 
 char *
-strright(char *s, int len)
-{
-	int l = strlen(s);
-	if (len <= 0)
-		return "";
-	if (len >= l)
-		return s;
-	return s + (l - len);
-}
-
-char *
 getsenv(char *s)
 {
 	char *t = getenv(s);
@@ -323,8 +203,8 @@ http_fatal(char *fmt, ...)
 	va_end(ap);
 	buf[1023] = 0;
 	html_header(1);
-	printf("<br>´íÎó! %s! <br><br>\n", buf);
-	fputs("<a href=javascript:history.go(-1)>¿ìËÙ·µ»Ø</a>", stdout);
+	printf("<br>\xB4\xED\xCE\xF3! %s! <br><br>\n", buf); // é”™è¯¯
+	fputs("<a href=javascript:history.go(-1)>\xBF\xEC\xCB\xD9\xB7\xB5\xBB\xD8</a>", stdout); // å¿«é€Ÿè¿”å›
 	http_quit();
 }
 
@@ -347,9 +227,7 @@ static int istitle = 0;
 
 /*modify by macintosh 050619 for Tex Math Equ*/
 /*modify by macintosh 051215 for highlight & background color*/
-void
-hsprintf(char *s, char *s0)
-{
+static void hsprintf(char *s, char *s0) {
 	char ansibuf[80], buf2[80];
 	char *tmp;
 	int c, bold, m, i, len, lsp = -1;
@@ -426,14 +304,13 @@ hsprintf(char *s, char *s0)
 			for (m = i + 2; s0[m] && m < i + 24; m++)
 				if (strchr("0123456789;", s0[m]) == 0)
 					break;
-			strsncpy(ansibuf, &s0[i + 2], m - (i + 2) + 1);
+			ytht_strsncpy(ansibuf, &s0[i + 2], m - (i + 2) + 1);
 			i = m;
 			if (s0[i] != 'm')
 				continue;
 			if (strlen(ansibuf) == 0) {
 				bold = 0;
-				strnncpy2(s, &len, "</font><font class=b40><font class=c37>",
-					  39);//23
+				strnncpy2(s, &len, "</font><font class=b40><font class=c37>", 39);//23
 			}
 			tmp = strtok(ansibuf, ";");
 			while (tmp) {
@@ -442,29 +319,21 @@ hsprintf(char *s, char *s0)
 				if (c == 1)
 					bold = 1;
 				if (c == 0) {
-					strnncpy2(s, &len,
-						  "</font><font class=b40><font class=c37>",
-						  39);//23
+					strnncpy2(s, &len, "</font><font class=b40><font class=c37>", 39);//23
 					bold = 0;
 				}
 				if (c >= 30 && c <= 37) {
 					if (bold == 1) {
-						sprintf(buf2,
-							"<font class=h%d>",
-							c);//</font>
+						sprintf(buf2, "<font class=h%d>", c);//</font>
 						strnncpy2(s, &len, buf2, 16);//23
 					}
 					if (bold == 0) {
-						sprintf(buf2,
-							"<font class=c%d>",
-							c);//</font>
+						sprintf(buf2, "<font class=c%d>", c);//</font>
 						strnncpy2(s, &len, buf2, 16);//23
 					}
 				}
 				if (c >= 40 && c <= 47){
-					sprintf(buf2,
-						"<font class=b%d>",
-						c);//</font>
+					sprintf(buf2, "<font class=b%d>", c);//</font>
 					strnncpy2(s, &len, buf2, 16);//23
 				}
 			}
@@ -508,9 +377,7 @@ fqhprintf(FILE * output, char *str)
 	fputs(buf, output);
 }
 
-int
-fhhprintf(FILE * output, char *fmt, ...)
-{
+int fhhprintf(FILE * output, char *fmt, ...) {
 	char buf0[1024], buf[1024], *s;
 	int len = 0;
 	char vlink[STRLEN];
@@ -533,14 +400,12 @@ fhhprintf(FILE * output, char *fmt, ...)
 		return 0;
 	}
 	if (!strcasestr(s, "http://") && !strcasestr(s, "ftp://")
-	    && !strcasestr(s, "mailto:") && !strcasestr(s, "#video")) {
+			&& !strcasestr(s, "mailto:") && !strcasestr(s, "#video")) {
 		fqhprintf(output, buf);
 		return 0;
 	}
 	while (s[0]) {
-		if (!strncasecmp(s, "http://", 7)
-		    || !strncasecmp(s, "mailto:", 7)
-		    || !strncasecmp(s, "ftp://", 6)) {
+		if (!strncasecmp(s, "http://", 7) || !strncasecmp(s, "mailto:", 7) || !strncasecmp(s, "ftp://", 6)) {
 			char *tmp, *noh, tmpchar;
 			if (len > 0) {
 				buf0[len] = 0;
@@ -554,10 +419,10 @@ fhhprintf(FILE * output, char *fmt, ...)
 			*s = 0;
 			if (1) {
 				if (!strcasecmp(s - 4, ".gif")
-				    || !strcasecmp(s - 4, ".jpg")
-				    || !strcasecmp(s - 4, ".bmp")
-				    || !strcasecmp(s - 4, ".png")
-				    || !strcasecmp(s - 5, ".jpeg")) {
+						|| !strcasecmp(s - 4, ".jpg")
+						|| !strcasecmp(s - 4, ".bmp")
+						|| !strcasecmp(s - 4, ".png")
+						|| !strcasecmp(s - 5, ".jpeg")) {
 					fprintf(output,
 						"<a href='%s'> "
 						"<IMG style=\" max-width:800px; width: expression(this.width > 800 ? 800: true); height:auto\" SRC='%s' border=0/> </a>",
@@ -576,8 +441,7 @@ fhhprintf(FILE * output, char *fmt, ...)
 				}
 			}
 			noh = nohtml(tmp);
-			fprintf(output, "<a target=_blank href='%s'>%s</a>",
-				noh, noh);
+			fprintf(output, "<a target=_blank href='%s'>%s</a>", noh, noh);
 			*s = tmpchar;
 			continue;
 		}
@@ -646,107 +510,62 @@ parm_add(char *name, char *val)
 	parm_val[parm_num] = calloc(len + 1, 1);
 	if (parm_val[parm_num] == 0)
 		http_fatal("memory overflow2 %d %d", len, parm_num);
-	strsncpy(parm_name[parm_num], name, 78);
-	strsncpy(parm_val[parm_num], val, len + 1);
+	ytht_strsncpy(parm_name[parm_num], name, 78);
+	ytht_strsncpy(parm_val[parm_num], val, len + 1);
 	parm_num++;
 }
 
-static char *domainname[] = {
-	MY_BBS_DOMAIN,
-	"bbs.xjtu.edu.cn",
-	"bbs.xanet.edu.cn",
-	NULL
-};
-
-static char *specname[] = {
-	"1999",
-	"2001",
-	"www",
-	"bbs",
-	NULL
-};
-
-int
-isaword(char *dic[], char *buf)
-{
-	char **a;
-	for (a = dic; *a != NULL; a++)
-		if (!strcmp(buf, *a))
-			return 1;
-	return 0;
-}
-
 struct wwwsession guest = {
-	used:1,
-	t_lines:20,
-	link_mode:0,
-	def_mode:0,
-	att_mode:0,
-	doc_mode:1,
+	.used      = 1,
+	.t_lines   = 20,
+	.link_mode = 0,
+	.def_mode  = 0,
+	.att_mode  = 0,
+	.doc_mode  = 1,
 };
 
+int cookie_parse() {
+	const char *cookie_str;
+	char cookie_buf[128];
+	struct bmy_cookie cookie;
 
-void
-get_session_string(char *name) {
-	char *cookies_string, *session_string, *p;
-	cookies_string = getenv("HTTP_COOKIE");
-
-	if (NULL != cookies_string) {
-		session_string = strchr(cookies_string, '/');
-
-		snprintf(name, STRLEN, "%s", session_string + sizeof(SMAGIC));
-
+	cookie_str = getenv("HTTP_COOKIE");
+	if (cookie_str == NULL || strlen(cookie_str) < sizeof(SMAGIC)) {
+		goto GUEST;
 	} else {
-		strcpy(name, "/");
-	}
-	p = strchr(name, '.');
-	if (NULL != p) {
-		no_cache_header = 1;
-	} else {
-		no_cache_header = 0;
-	}
+		strncpy(cookie_buf, cookie_str + sizeof(SMAGIC), sizeof(cookie_buf));
+		cookie_buf[sizeof(cookie_buf) - 1] = 0;
 
-}
+		memset(&cookie, 0, sizeof(struct bmy_cookie));
+		bmy_cookie_parse(cookie_buf, &cookie);
+		if (cookie.sessid == NULL)
+			goto GUEST;
 
-void
-print_session_string(char *value) {
-	printf("Set-Cookie:sessionString=%s;path=/\n", value);
-}
+		loginok = user_init(&currentuser, &u_info, cookie.userid, cookie.sessid);
 
-int
-contains_invliad_char(char *s) {
-	char *tmp;
-	int ret = 0;
-	tmp = s;
-	while (*s != '\0') {
-		if (!(*s == '/' ||
-			*s == '?' ||
-			*s == '=' ||
-			*s == '.' ||
-			*s == '&' ||
-			*s == '~' ||
-			*s == '_' ||
-			*s == ',' ||
-			*s == ';' ||
-			*s == ':' ||
-			*s == '-' ||
-			(*s >= 'a' && *s <= 'z') ||
-			(*s >= 'A' && *s <= 'Z') ||
-			(*s >= '0' && *s <= '9'))
-			) {
-			ret = 1;
-			break;
+		if (cookie.extraparam == NULL)
+			cookie.extraparam = "";
+		extraparam_init(cookie.extraparam);
+
+		if (!loginok) {
+			goto GUEST;
 		}
-		s++;
+		w_info = &(u_info->wwwinfo);
 	}
-	s = tmp;
-	return ret;
+
+	return 0;
+GUEST:
+	loginok = false;
+	isguest = true;
+	w_info  = &guest;
+	return -1;
 }
 
 int
 url_parse()
 {
 	char *url, *end, name[STRLEN], *p, *extraparam;
+	// e.g. url = /BMY/foo
 	url = getenv("SCRIPT_URL");
 	if (NULL == url)
 		return -1;
@@ -761,28 +580,8 @@ url_parse()
 			return -1;
 	}
 
-	extraparam = strchr(name, '_');
-	if (extraparam) {
-		*extraparam = 0;
-		extraparam++;
-	} else
-		extraparam = "";
-	loginok = user_init(&currentuser, &u_info, name);
-	w_info = &guest;
-	if (loginok)
-		w_info = &(u_info->wwwinfo);
-	extraparam_init(extraparam);
 	if (!strcmp(url, "/") || nologin) {
 		strcpy(needcgi, "bbsindex");
-		strcpy(rframe, "");
-		strsncpy(name, getsenv("HTTP_HOST"), 70);
-		p = strchr(name, '.');
-		if (p != NULL && isaword(domainname, p + 1)) {
-			*p = 0;
-			strsncpy(rframe, name, 60);
-		}
-		if (rframe[0] && isaword(specname, rframe))
-			rframe[0] = 0;
 		return 0;
 	}
 	snprintf(needcgi, STRLEN, "%s", url + 1);
@@ -791,8 +590,7 @@ url_parse()
 	return 0;
 }
 
-void
-http_parm_free(void)
+static void http_parm_free(void)
 {
 	int i;
 	for (i = 0; i < parm_num; i++)
@@ -800,9 +598,7 @@ http_parm_free(void)
 	parm_num = 0;
 }
 
-void
-http_parm_init(void)
-{
+void http_parm_init(void) {
 	char *buf, buf2[1024], *t2, *t3;
 	int n;
 	http_parm_free();
@@ -821,12 +617,12 @@ http_parm_init(void)
 			t3[0] = 0;
 			t3++;
 			__unhcode(t3);
-			parm_add(strtrim(t2), t3);
+			parm_add(ytht_strtrim(t2), t3);
 		}
 		t2 = strtok(0, "&");
 	}
 	free(buf);
-	strsncpy(buf2, getsenv("QUERY_STRING"), 1024);
+	ytht_strsncpy(buf2, getsenv("QUERY_STRING"), 1024);
 	t2 = strtok(buf2, "&");
 	while (t2) {
 		t3 = strchr(t2, '=');
@@ -834,7 +630,7 @@ http_parm_init(void)
 			t3[0] = 0;
 			t3++;
 			__unhcode(t3);
-			parm_add(strtrim(t2), t3);
+			parm_add(ytht_strtrim(t2), t3);
 		}
 		t2 = strtok(0, "&");
 	}
@@ -854,7 +650,7 @@ cache_header(time_t t, int age)
 		if (strptime(old, "%a, %d %b %Y %H:%M:%S %Z", &tm))
 			oldt = mktime(&tm) - timezone;
 		else {
-			strsncpy(buf, old, STRLEN - 10);
+			ytht_strsncpy(buf, old, STRLEN - 10);
 			strcat(buf, "\n");
 			f_append("bbstmpfs/tmp/not-known-time", buf);
 		}
@@ -893,10 +689,7 @@ html_header(int mode)
 	if (mode < 100)
 		printf("<!DOCTYPE html>\n<HTML>\n");
 	else
-		printf
-		    ("<HTML XMLNS:m=\"http://www.w3.org/1998/Math/MathML\">\n");
-	//printf("<!--%d;%d;%d;%d-->", thispid, sizeof (struct wwwsession),
-	//       wwwcache->www_visit, wwwcache->home_visit);
+		printf("<HTML XMLNS:m=\"http://www.w3.org/1998/Math/MathML\">\n");
 	switch (mode) {
 	case 1:
 	case 101:
@@ -924,11 +717,11 @@ html_header(int mode)
 	}
 	if (mode == 101)
 		printf("<OBJECT ID=MathPlayer CLASSID=\"clsid:32F66A20-7614-11D4-BD11-00104BD3F987\">"
-		       "</OBJECT><?IMPORT NAMESPACE=\"m\" IMPLEMENTATION=\"#MathPlayer\" ?>");
-	/*if (isguest && reg_req())
-	   printf
-	   ("<SCRIPT language=\"JavaScript\">P1 = open('regreq', 'WINregreq', 'width=600,height=460');</SCRIPT > ");
-	 */
+				"</OBJECT><?IMPORT NAMESPACE=\"m\" IMPLEMENTATION=\"#MathPlayer\" ?>");
+/*
+	if (isguest && reg_req())
+		printf("<SCRIPT language=\"JavaScript\">P1 = open('regreq', 'WINregreq', 'width=600,height=460');</SCRIPT > ");
+*/
 }
 
 void
@@ -942,20 +735,16 @@ xml_header()
 {
 	printf("Content-type: text/xml; charset=%s\n\n", CHARSET);
 	printf("<?xml version=\"1.0\" encoding=\"%s\"?>\n", CHARSET);
-	printf("<?xml-stylesheet type=\"text/css\" href=\"%s\"?>\n",
-	       currstyle->cssfile);
-	printf
-	    ("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN\"\n"
-	     "\"http://www.w3.org/TR/MathML2/dtd/xhtml-math11-f.dtd\">\n");
+	printf("<?xml-stylesheet type=\"text/css\" href=\"%s\"?>\n", currstyle->cssfile);
+	printf("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN\"\n"
+			"\"http://www.w3.org/TR/MathML2/dtd/xhtml-math11-f.dtd\">\n");
 	printf("<html xmlns=\"http://www.w3.org/1999/xhtml\"\n"
-	       "xmlns:math=\"http://www.w3.org/1998/Math/MathML\"\n"
-	       "xmlns:xlink=\"http://www.w3.org/1999/xlink\">\n");
+			"xmlns:math=\"http://www.w3.org/1998/Math/MathML\"\n"
+			"xmlns:xlink=\"http://www.w3.org/1999/xlink\">\n");
 	printf("<head>");
 }
 
-int
-__to16(char c)
-{
+static int __to16(char c) {
 	if (c >= 'a' && c <= 'f')
 		return c - 'a' + 10;
 	if (c >= 'A' && c <= 'F')
@@ -965,9 +754,7 @@ __to16(char c)
 	return 0;
 }
 
-void
-__unhcode(char *s)
-{
+static void __unhcode(char *s) {
 	int m, n;
 	for (m = 0, n = 0; s[m]; m++, n++) {
 		if (s[m] == '+') {
@@ -1007,29 +794,10 @@ getparm2(char *v1, char *v2)
 int
 shm_init()
 {
-	shm_utmp =
-	    (struct UTMPFILE *) get_old_shm(UTMP_SHMKEY,
-					    sizeof (struct UTMPFILE));
-	shm_bcache =
-	    (struct BCACHE *) get_old_shm(BCACHE_SHMKEY,
-					  sizeof (struct BCACHE));
-	shm_ucache =
-	    (struct UCACHE *) get_old_shm(UCACHE_SHMKEY,
-					  sizeof (struct UCACHE));
-	uidhashshm =
-	    (struct UCACHEHASH *) get_old_shm(UCACHE_HASH_SHMKEY,
-					      sizeof (struct UCACHEHASH));
-	uindexshm =
-	    (struct UINDEX *) get_old_shm(UINDEX_SHMKEY,
-					  sizeof (struct UINDEX));
-	if (shm_utmp == 0)
-		http_fatal("shm_utmp error");
-	if (shm_bcache == 0)
-		http_fatal("shm_bcache error");
-	if (shm_ucache == 0)
-		http_fatal("shm_ucache error");
-	if (uidhashshm == NULL)
-		http_fatal("uidhashshm error");
+	ythtbbs_cache_utmp_resolve();
+	ythtbbs_cache_UserTable_resolve();
+	ythtbbs_cache_Board_resolve();
+
 	return 0;
 }
 
@@ -1045,8 +813,7 @@ ummap()
 	fd = open(".PASSWDS", O_RDONLY);
 	if (fd < 0)
 		exit(7);
-	if (fstat(fd, &st) < 0 || !S_ISREG(st.st_mode)
-	    || st.st_size <= 0) {
+	if (fstat(fd, &st) < 0 || !S_ISREG(st.st_mode) || st.st_size <= 0) {
 		close(fd);
 		exit(8);
 	}
@@ -1056,6 +823,15 @@ ummap()
 		exit(9);
 	ummap_size = st.st_size;
 	return 0;
+}
+
+const char *getextrparam_str(unsigned int param) {
+	static const char *str_arr[] = {
+		"A", "B", "C", "D",
+		"E", "F", "G", "H",
+		"I"
+	};
+	return str_arr[param % NWWWSTYLE];
 }
 
 int
@@ -1082,9 +858,7 @@ addextraparam(char *ub, int size, int n, int param)
 	return 0;
 }
 
-void
-extraparam_init(char *extrastr)
-{
+static void extraparam_init(const char *extrastr) {
 	int i;
 	if (*extrastr) {
 		i = *extrastr - 'A';
@@ -1097,91 +871,33 @@ extraparam_init(char *extrastr)
 		currstyle = &wwwstyle[0];
 }
 
-int
-user_init(struct userec *x, struct user_info **y, char *ub)
-{
+//static int user_init(struct userec *x, struct user_info **y, char *ub) {
+static int user_init(struct userec *x, struct user_info **y, const char *userid, const char *sessid) {
 	struct userec *x2;
-	char sessionid[30];
 	int i;
 	utmpent = 0;
 	isguest = 0;
 	tempuser = 0;
-	//bzero(x, sizeof (*x));
-	x2 = getuser("guest");
-	if (x2)
-		memcpy(x, x2, sizeof (*x));
-	else
-		bzero(x, sizeof (*x));
-	*y = NULL;
-	if (strlen(ub) < 33) {
-		if (strlen(ub) >= 4) {	//´Ó telnet À´µÄÁÙÊ±ÓÃ»§
-			i = (ub[0] - 'A') * 26 * 26 + (ub[1] - 'A') * 26 +
-			    ub[2] - 'A';
-			strcpy(sessionid, ub + 3);
-			if (i < 0 || i >= MAXACTIVE)
-				return 0;
-			(*y) = &(shm_utmp->uinfo[i]);
-			if (strncmp((*y)->from, fromhost, BMY_IPV6_LEN))
-				return 0;
-			if (strncmp((*y)->sessionid, sessionid, 6)) {
-				return 0;
-			}
-			if ((*y)->active == 0)
-				return 0;
-			if (!strcmp((*y)->userid, "guest"))
-				isguest = 1;
-			if (!strcasecmp((*y)->userid, "new"))
-				return 0;
-			x2 = getuser((*y)->userid);
-			if (x2 == 0)
-				return 0;
-			utmpent = i + 1;
-			memcpy(x, x2, sizeof (*x));
-			tempuser = 1;
-		} else {
-			// ÈÏÎª session ²»ºÏ·¨£¬ÊÓÎª guest ÓÃ»§ by IronBlood
-			if (x2) {
-				isguest = 1;
-				memcpy(x, x2, sizeof(*x));
-			}
-		}
+
+	i = ythtbbs_session_get_utmp_idx(sessid, userid);
+	if (i < 0)
+		return 0;
+
+	*y = ythtbbs_cache_utmp_get_by_idx(i);
+	if (strcmp((*y)->sessionid, sessid) || strcmp((*y)->userid, userid))
+		return 0;
+
+	(*y)->lasttime = now_t;
+	if (!strcasecmp((*y)->userid, "guest")) {
+		isguest = 1;
 		return 0;
 	}
-	ub[33] = 0;
-	i = (ub[0] - 'A') * 26 * 26 + (ub[1] - 'A') * 26 + ub[2] - 'A';
-	strncpy(sessionid, ub + 3, 30);
-	if (i < 0 || i >= MAXACTIVE)
-		return 0;
-	(*y) = &(shm_utmp->uinfo[i]);
-	/*	ÎŞÊÓipmask ipv6 by leoncom
-	if ((*y)->wwwinfo.ipmask) {
-		struct in_addr ofip;
-		if (!inet_aton((*y)->from, &ofip))
-			return 0;
-		if ((ofip.s_addr >> (*y)->wwwinfo.ipmask) !=
-		    (from_addr.s_addr >> (*y)->wwwinfo.ipmask))
-			return 0;
-	} else
-	*/
-	if (strncmp((*y)->from, fromhost, BMY_IPV6_LEN))  //ipv6 by leoncom 24->20
-		return 0;
-	if (strcmp((*y)->sessionid, sessionid))
-		return 0;
-	if ((*y)->active == 0)
-		return 0;
-	if ((*y)->userid[0] == 0)
-		return 0;
-	if (!strcasecmp((*y)->userid, "new"))
-		return 0;
-	if (now_t - u_info->lasttime > 18 * 60 || u_info->wwwinfo.iskicked)	//18·ÖÖÓÊÇÁôÏÂÒ»¸ö´°¿Ú,·ÀÖ¹Ò»¸öu_info±»Ë¢ĞÂÎª0Á½´Î
-		return 0;
-	else
-		u_info->lasttime = now_t;
-	if (!strcasecmp((*y)->userid, "guest"))
-		isguest = 1;
+
 	x2 = getuser((*y)->userid);
 	if (x2 == 0)
 		return 0;
+
+	ytht_strsncpy((*y)->from, fromhost, BMY_IPV6_LEN);
 	utmpent = i + 1;
 	memcpy(x, x2, sizeof (*x));
 	return 1;
@@ -1198,14 +914,14 @@ mail_file(char *filename, char *userid, char *title, char *sender)
 		return -1;
 	bzero(&header, sizeof (header));
 	fh_setowner(&header, sender, 0);
-	setmailfile(buf, userid, "");
+	setmailfile_s(buf, sizeof(buf), userid, "");
 	mkdir(buf, 0770);
 	t = trycreatefile(buf, "M.%d.A", now_t, 100);
 	if (t < 0)
 		return -1;
 	header.filetime = t;
 	header.thread = t;
-	strsncpy(header.title, title, sizeof (header.title));
+	ytht_strsncpy(header.title, title, sizeof(header.title));
 	fp = fopen(buf, "w");
 	if (fp == 0)
 		return -2;
@@ -1221,17 +937,17 @@ mail_file(char *filename, char *userid, char *title, char *sender)
 		fclose(fp2);
 	}
 	fclose(fp);
-	setmailfile(dir, userid, ".DIR");
+	setmailfile_s(dir, sizeof(dir), userid, ".DIR");
 	append_record(dir, &header, sizeof (header));
 	return 0;
 }
 
-/** ±£´æÓÊ¼şµ½·¢¼şÏä
+/** ä¿å­˜é‚®ä»¶åˆ°å‘ä»¶ç®±
  *
- * @param userid ·¢ĞÅÈËµÄ ID£¬ÓÃÓÚÉú³É´æ·ÅĞÅ¼şµÄÂ·¾¶
- * @param title ±êÌâ
- * @param file ÎÄ¼ş
- * @param id ÊÕĞÅÈË£¬ÓÃÓÚ .DIR ÎÄ¼şÖĞ±êÃ÷ÊÕĞÅÈËµÄ ID£¬ÒÔ¼° struct fileheader ÖĞ
+ * @param userid å‘ä¿¡äººçš„ IDï¼Œç”¨äºç”Ÿæˆå­˜æ”¾ä¿¡ä»¶çš„è·¯å¾„
+ * @param title æ ‡é¢˜
+ * @param file æ–‡ä»¶
+ * @param id æ”¶ä¿¡äººï¼Œç”¨äº .DIR æ–‡ä»¶ä¸­æ ‡æ˜æ”¶ä¿¡äººçš„ IDï¼Œä»¥åŠ struct fileheader ä¸­
  * @param nickname
  * @param ip
  * @param sig
@@ -1240,15 +956,14 @@ mail_file(char *filename, char *userid, char *title, char *sender)
  */
 int
 post_mail_to_sent_box(char *userid, char *title, char *file,
-        char *id, char *nickname, char *ip, int sig, int mark)
+		char *id, char *nickname, char *ip, int sig, int mark)
 {
 	FILE *fp, *fp2;
 	char buf[256], dir[256];
 	struct fileheader header;
 	int t;
 	snprintf(buf, sizeof (buf), ".bbs@%s", MY_BBS_DOMAIN);
-	if (strstr(userid, buf)
-	    || strstr(userid, ".bbs@localhost")) {
+	if (strstr(userid, buf) || strstr(userid, ".bbs@localhost")) {
 		char *pos;
 		pos = strchr(userid, '.');
 		*pos = '\0';
@@ -1261,16 +976,16 @@ post_mail_to_sent_box(char *userid, char *title, char *file,
 		return -1;
 	header.filetime = t;
 	header.thread = t;
-	strsncpy(header.title, title, sizeof (header.title));
+	ytht_strsncpy(header.title, title, sizeof(header.title));
 	header.accessed |= mark;
 	fp = fopen(buf, "w");
 	if (fp == 0)
 		return -2;
 	fp2 = fopen(file, "r");
-	fprintf(fp, "ÊÕĞÅÈË: %s (%s)\n", id, nickname);
-	fprintf(fp, "±ê  Ìâ: %s\n", title);
-	fprintf(fp, "·¢ĞÅÕ¾: %s (%s)\n", BBSNAME, Ctime(now_t));
-	fprintf(fp, "À´  Ô´: %s\n\n", ip);
+	fprintf(fp, "\xCA\xD5\xD0\xC5\xC8\xCB: %s (%s)\n", id, nickname); // æ”¶ä¿¡äºº
+	fprintf(fp, "\xB1\xEA  \xCC\xE2: %s\n", title); // æ ‡é¢˜
+	fprintf(fp, "\xB7\xA2\xD0\xC5\xD5\xBE: %s (%s)\n", BBSNAME, ytht_ctime(now_t)); // å‘ä¿¡ç«™
+	fprintf(fp, "\xC0\xB4  \xD4\xB4: %s\n\n", ip); // æ¥æº
 	if (fp2) {
 		while (1) {
 			int retv;
@@ -1283,7 +998,7 @@ post_mail_to_sent_box(char *userid, char *title, char *file,
 	}
 	fprintf(fp, "\n--\n");
 	sig_append(fp, id, sig);
-	fprintf(fp, "\n\n[1;%dm¡ù À´Ô´:£®%s %s [FROM: %.40s][m\n",
+	fprintf(fp, "\n\n\033[1;%dm\xA1\xF9 \xC0\xB4\xD4\xB4:\xA3\xAE%s %s [FROM: %.40s]\033[m\n",
 		31 + rand() % 7, BBSNAME, "http://" MY_BBS_DOMAIN, ip);
 	fclose(fp);
 	setsentmailfile(dir, userid, ".DIR");
@@ -1293,15 +1008,14 @@ post_mail_to_sent_box(char *userid, char *title, char *file,
 
 int
 post_mail(char *userid, char *title, char *file, char *id,
-	  char *nickname, char *ip, int sig, int mark)
+		char *nickname, char *ip, int sig, int mark)
 {
 	FILE *fp, *fp2;
 	char buf[256], dir[256];
 	struct fileheader header;
 	int t;
 	snprintf(buf, sizeof (buf), ".bbs@%s", MY_BBS_DOMAIN);
-	if (strstr(userid, buf)
-	    || strstr(userid, ".bbs@localhost")) {
+	if (strstr(userid, buf) || strstr(userid, ".bbs@localhost")) {
 		char *pos;
 		pos = strchr(userid, '.');
 		*pos = '\0';
@@ -1309,25 +1023,25 @@ post_mail(char *userid, char *title, char *file, char *id,
 	if (strstr(userid, "@"))
 		return post_imail(userid, title, file, id, nickname, ip, sig);
 	if (getuser(userid) == NULL)
-		http_fatal("´íÎóµÄÊÕĞÅÈËµØÖ·");
+		http_fatal("\xB4\xED\xCE\xF3\xB5\xC4\xCA\xD5\xD0\xC5\xC8\xCB\xB5\xD8\xD6\xB7"); // é”™è¯¯çš„æ”¶ä¿¡äººåœ°å€
 	bzero(&header, sizeof (header));
 	fh_setowner(&header, id, 0);
-	setmailfile(buf, userid, "");
+	setmailfile_s(buf, sizeof(buf), userid, "");
 	t = trycreatefile(buf, "M.%d.A", now_t, 100);
 	if (t < 0)
 		return -1;
 	header.filetime = t;
 	header.thread = t;
-	strsncpy(header.title, title, sizeof (header.title));
+	ytht_strsncpy(header.title, title, sizeof(header.title));
 	header.accessed |= mark;
 	fp = fopen(buf, "w");
 	if (fp == 0)
 		return -2;
 	fp2 = fopen(file, "r");
-	fprintf(fp, "¼ÄĞÅÈË: %s (%s)\n", id, nickname);
-	fprintf(fp, "±ê  Ìâ: %s\n", title);
-	fprintf(fp, "·¢ĞÅÕ¾: %s (%s)\n", BBSNAME, Ctime(now_t));
-	fprintf(fp, "À´  Ô´: %s\n\n", ip);
+	fprintf(fp, "\xBC\xC4\xD0\xC5\xC8\xCB: %s (%s)\n", id, nickname); // å¯„ä¿¡äºº
+	fprintf(fp, "\xB1\xEA  \xCC\xE2: %s\n", title); // æ ‡é¢˜
+	fprintf(fp, "\xB7\xA2\xD0\xC5\xD5\xBE: %s (%s)\n", BBSNAME, ytht_ctime(now_t)); // å‘ä¿¡ç«™
+	fprintf(fp, "\xC0\xB4  \xD4\xB4: %s\n\n", ip);  // æ¥æº
 	if (fp2) {
 		while (1) {
 			int retv;
@@ -1340,17 +1054,17 @@ post_mail(char *userid, char *title, char *file, char *id,
 	}
 	fprintf(fp, "\n--\n");
 	sig_append(fp, id, sig);
-	fprintf(fp, "\n\n[1;%dm¡ù À´Ô´:£®%s %s [FROM: %.40s][m\n",
+	fprintf(fp, "\n\n\033[1;%dm\xA1\xF9 \xC0\xB4\xD4\xB4:\xA3\xAE%s %s [FROM: %.40s]\033[m\n",
 		31 + rand() % 7, BBSNAME, "http://" MY_BBS_DOMAIN, ip);
 	fclose(fp);
-	setmailfile(dir, userid, ".DIR");
+	setmailfile_s(dir, sizeof(dir), userid, ".DIR");
 	append_record(dir, &header, sizeof (header));
 	return 0;
 }
 
 int
 post_mail_buf(char *userid, char *title, char *buf, char *id, char *nickname,
-	      char *ip, int sig, int mark)
+		char *ip, int sig, int mark)
 {
 	char path[80];
 	FILE *fp;
@@ -1363,19 +1077,18 @@ post_mail_buf(char *userid, char *title, char *buf, char *id, char *nickname,
 	return 0;
 }
 
-int
-post_imail(char *userid, char *title, char *file, char *id,
-	   char *nickname, char *ip, int sig)
+static int post_imail(char *userid, char *title, char *file, char *id,
+		char *nickname, char *ip, int sig)
 {
 	FILE *fp1, *fp2;
 	char buf[256], *ptr;
 	size_t len;
 
 	if (strlen(userid) > 100)
-		http_fatal("´íÎóµÄÊÕĞÅÈËµØÖ·");
+		http_fatal("\xB4\xED\xCE\xF3\xB5\xC4\xCA\xD5\xD0\xC5\xC8\xCB\xB5\xD8\xD6\xB7"); // é”™è¯¯çš„æ”¶ä¿¡äººåœ°å€
 	for (ptr = userid; *ptr; ptr++) {
 		if (strchr(";~-|`!$#%%&^*()'\"<>?/ ", *ptr) || !isprint(*ptr))
-			http_fatal("´íÎóµÄÊÕĞÅÈËµØÖ·");
+			http_fatal("\xB4\xED\xCE\xF3\xB5\xC4\xCA\xD5\xD0\xC5\xC8\xCB\xB5\xD8\xD6\xB7"); // é”™è¯¯çš„æ”¶ä¿¡äººåœ°å€
 	}
 	sprintf(buf, "/usr/lib/sendmail -f %s.bbs@%s '%s'", id, BBSHOST,
 		userid);
@@ -1392,9 +1105,8 @@ post_imail(char *userid, char *title, char *file, char *id,
 	fprintf(fp2, "Subject: %s\n\n", title);
 
 	while (fgets(buf, sizeof (buf), fp1) != NULL) {
-		if (NULL !=
-		    (ptr = checkbinaryattach(buf, FCGI_ToFILE(fp1), &len))) {
-			uuencode(FCGI_ToFILE(fp1), FCGI_ToFILE(fp2), len, ptr);
+		if (NULL != (ptr = checkbinaryattach(buf, fp1, &len))) {
+			uuencode(fp1, fp2, len, ptr);
 			continue;
 		}
 		if (buf[0] == '.' && buf[1] == '\n')
@@ -1405,7 +1117,7 @@ post_imail(char *userid, char *title, char *file, char *id,
 
 	fputs("\n--\n", fp2);
 	sig_append(fp2, id, sig);
-	fprintf(fp2, "\n\n[1;%dm¡ù À´Ô´:£®%s %s [FROM: %.40s][m\n",
+	fprintf(fp2, "\n\n\033[1;%dm\xA1\xF9 \xC0\xB4\xD4\xB4:\xA3\xAE%s %s [FROM: %.40s]\033[m\n",
 		31 + rand() % 7, BBSNAME, "http://" MY_BBS_DOMAIN, ip);
 	fprintf(fp2, ".\n");
 	fclose(fp1);
@@ -1417,8 +1129,8 @@ post_imail(char *userid, char *title, char *file, char *id,
 
 int
 post_article_1984(char *board, char *title, char *file, char *id,
-		  char *nickname, char *ip, int sig, int mark,
-		  int outgoing, char *realauthor, int thread)
+		char *nickname, char *ip, int sig, int mark,
+		int outgoing, char *realauthor, int thread)
 {
 	FILE *fp, *fp2;
 	char buf3[1024], buf[80];
@@ -1441,15 +1153,17 @@ post_article_1984(char *board, char *title, char *file, char *id,
 	header.filetime = t;
 	if (thread != -1)
 		header.thread = thread;
-	strsncpy(header.title, title, sizeof (header.title));
+	ytht_strsncpy(header.title, title, sizeof(header.title));
 	fp = fopen(buf3, "w");
 	if (NULL == fp)
 		return -1;
 	fp2 = fopen(file, "r");
+	// å‘ä¿¡äºº ä¿¡åŒº æ ‡é¢˜ å‘ä¿¡ç«™
+	// è½¬ä¿¡ æœ¬ç«™
 	fprintf(fp,
-		"·¢ĞÅÈË: %s (%s), ĞÅÇø: %s\n±ê  Ìâ: %s\n·¢ĞÅÕ¾: %s (%24.24s), %s)\n\n",
-		id, nickname, board, title, BBSNAME, Ctime(now_t),
-		outgoing ? "×ªĞÅ(" MY_BBS_DOMAIN : "±¾Õ¾(" MY_BBS_DOMAIN);
+			"\xB7\xA2\xD0\xC5\xC8\xCB: %s (%s), \xD0\xC5\xC7\xF8: %s\n\xB1\xEA  \xCC\xE2: %s\n\xB7\xA2\xD0\xC5\xD5\xBE: %s (%24.24s), %s)\n\n",
+			id, nickname, board, title, BBSNAME, ytht_ctime(now_t),
+		outgoing ? "\xD7\xAA\xD0\xC5(" MY_BBS_DOMAIN : "\xB1\xBE\xD5\xBE(" MY_BBS_DOMAIN);
 	if (fp2 != 0) {
 		while (1) {
 			int retv;
@@ -1462,11 +1176,11 @@ post_article_1984(char *board, char *title, char *file, char *id,
 	}
 	fprintf(fp, "\n--\n");
 	sig_append(fp, id, sig);
-	fprintf(fp, "\n\033[1;%dm¡ù À´Ô´:£®%s %s [FROM: %.40s]\033[m\n",
+	fprintf(fp, "\n\033[1;%dm\xA1\xF9 \xC0\xB4\xD4\xB4:\xA3\xAE%s %s [FROM: %.40s]\033[m\n",
 		31 + rand() % 7, BBSNAME, "http://" MY_BBS_DOMAIN, ip);
 	fclose(fp);
 	sprintf(buf3, "%s/M.%d.A", buf, t);
-	header.sizebyte = numbyte(eff_size(buf3));
+	header.sizebyte = ytht_num2byte(eff_size(buf3));
 	sprintf(buf3, "%s/.DIR", buf);
 	append_record(buf3, &header, sizeof (header));
 	return t;
@@ -1474,8 +1188,8 @@ post_article_1984(char *board, char *title, char *file, char *id,
 
 int
 post_article(char *board, char *title, char *file, char *id,
-	     char *nickname, char *ip, int sig, int mark,
-	     int outgoing, char *realauthor, int thread)
+		char *nickname, char *ip, int sig, int mark,
+		int outgoing, char *realauthor, int thread)
 {
 	FILE *fp, *fp2;
 	char buf3[1024];
@@ -1491,7 +1205,7 @@ post_article(char *board, char *title, char *file, char *id,
 	if (t < 0)
 		return -1;
 	header.filetime = t;
-	strsncpy(header.title, title, sizeof (header.title));
+	ytht_strsncpy(header.title, title, sizeof(header.title));
 	header.accessed |= mark;
 	if (outgoing)
 		header.accessed |= FH_INND;
@@ -1499,10 +1213,12 @@ post_article(char *board, char *title, char *file, char *id,
 	if (NULL == fp)
 		return -1;
 	fp2 = fopen(file, "r");
+	// å‘ä¿¡äºº ä¿¡åŒº æ ‡é¢˜ å‘ä¿¡ç«™
+	// è½¬ä¿¡ æœ¬ç«™
 	fprintf(fp,
-		"·¢ĞÅÈË: %s (%s), ĞÅÇø: %s\n±ê  Ìâ: %s\n·¢ĞÅÕ¾: %s (%24.24s), %s)\n\n",
-		id, nickname, board, title, BBSNAME, Ctime(now_t),
-		outgoing ? "×ªĞÅ(" MY_BBS_DOMAIN : "±¾Õ¾(" MY_BBS_DOMAIN);
+			"\xB7\xA2\xD0\xC5\xC8\xCB: %s (%s), \xD0\xC5\xC7\xF8: %s\n\xB1\xEA  \xCC\xE2: %s\n\xB7\xA2\xD0\xC5\xD5\xBE: %s (%24.24s), %s)\n\n",
+			id, nickname, board, title, BBSNAME, ytht_ctime(now_t),
+		outgoing ? "\xD7\xAA\xD0\xC5(" MY_BBS_DOMAIN : "\xB1\xBE\xD5\xBE(" MY_BBS_DOMAIN);
 	if (fp2 != 0) {
 		while (1) {
 			int retv;
@@ -1515,11 +1231,11 @@ post_article(char *board, char *title, char *file, char *id,
 	}
 	fprintf(fp, "\n--\n");
 	sig_append(fp, id, sig);
-	fprintf(fp, "[1;%dm¡ù À´Ô´:£®%s %s [FROM: %.40s][m",
+	fprintf(fp, "\033[1;%dm\xA1\xF9 \xC0\xB4\xD4\xB4:\xA3\xAE%s %s [FROM: %.40s]\033[m",
 		31 + rand() % 7, BBSNAME, "http://" MY_BBS_DOMAIN, ip);
 	fclose(fp);
 	sprintf(buf3, "boards/%s/M.%d.A", board, t);
-	header.sizebyte = numbyte(eff_size(buf3));
+	header.sizebyte = ytht_num2byte(eff_size(buf3));
 	if (thread == -1)
 		header.thread = header.filetime;
 	else
@@ -1537,33 +1253,30 @@ securityreport(char *title, char *content)
 {
 	char fname[STRLEN];
 	FILE *se;
-	sprintf(fname, "bbstmpfs/tmp/security.%s.%05d", currentuser.userid,
-		getpid());
+	sprintf(fname, "bbstmpfs/tmp/security.%s.%05d", currentuser.userid, getpid());
 	if ((se = fopen(fname, "w")) != NULL) {
-		fprintf(se, "ÏµÍ³°²È«¼ÇÂ¼ÏµÍ³\nÔ­Òò£º\n%s\n", content);
-		fprintf(se, "ÒÔÏÂÊÇ²¿·Ö¸öÈË×ÊÁÏ\n");
-		fprintf(se, "×î½ü¹âÁÙ»úÆ÷: %s", fromhost);
+		fprintf(se, "\xCF\xB5\xCD\xB3\xB0\xB2\xC8\xAB\xBC\xC7\xC2\xBC\xCF\xB5\xCD\xB3\n\xD4\xAD\xD2\xF2: \n%s\n", content); // ç³»ç»Ÿå®‰å…¨è®°å½•ç³»ç»Ÿ åŸå› 
+		fprintf(se, "\xD2\xD4\xCF\xC2\xCA\xC7\xB2\xBF\xB7\xD6\xB8\xF6\xC8\xCB\xD7\xCA\xC1\xCF\n"); // ä»¥ä¸‹æ˜¯éƒ¨åˆ†ä¸ªäººèµ„æ–™
+		fprintf(se, "\xD7\xEE\xBD\xFC\xB9\xE2\xC1\xD9\xBB\xFA\xC6\xF7: %s", fromhost); // æœ€è¿‘å…‰ä¸´æœºå™¨
 		fclose(se);
 		post_article("syssecurity", title, fname, currentuser.userid,
-			     currentuser.username, fromhost, -1, 0, 0,
-			     currentuser.userid, -1);
+				currentuser.username, fromhost, -1, 0, 0,
+				currentuser.userid, -1);
 		unlink(fname);
 	}
 	return 0;
 }
 
-void
-sig_append(FILE * fp, char *id, int sig)
-{
+static void sig_append(FILE * fp, char *id, int sig) {
 	FILE *fp2;
 	char path[256];
 	char buf[256];
 	int total, hasnl = 1, i, emptyline = 0, sigln, numofsig;
-	if (HAS_PERM(PERM_DENYSIG))
+	if (HAS_PERM(PERM_DENYSIG, currentuser))
 		return;
 	if (sig < -2 || sig > 10)
 		return;
-	sethomefile(path, id, "signatures");
+	sethomefile_s(path, sizeof(path), id, "signatures");
 	sigln = countln(path);
 	numofsig = (sigln + MAXSIGLINES - 1) / MAXSIGLINES;
 	if (sig==-2) {
@@ -1597,50 +1310,6 @@ sig_append(FILE * fp, char *id, int sig)
 		fputs("\n", fp);
 }
 
-#if defined(ENABLE_GHTHASH) && defined(ENABLE_FASTCGI)
-char *
-anno_path_of(char *board)
-{
-	static char annpath[MAXBOARD][80];
-	int num;
-	static time_t uptime = 0;
-	static ght_hash_table_t *p_table = NULL;
-	int j;
-	char buf1[80], *ptr;
-	if (p_table && shm_bcache->uptime > uptime) {
-		ght_finalize(p_table);
-		p_table = NULL;
-	}
-	if (p_table == NULL) {
-		FILE *fp;
-		char buf2[80];
-		uptime = now_t;
-		p_table = ght_create(MAXBOARD, NULL, 0);
-		fp = fopen("0Announce/.Search", "r");
-		if (fp == 0)
-			return "";
-		num = 0;
-		while (num < MAXBOARD
-		       && fscanf(FCGI_ToFILE(fp), "%s %s", buf1, buf2) > 0) {
-			buf1[79] = 0;
-			buf1[strlen(buf1) - 1] = 0;
-			for (j = 0; buf1[j]; j++)
-				buf1[j] = toupper(buf1[j]);
-			sprintf(annpath[num], "/%s", buf2);
-			ght_insert(p_table, annpath[num], j, buf1);
-			num++;
-		}
-		fclose(fp);
-	}
-	strsncpy(buf1, board, sizeof (buf1));
-	for (j = 0; buf1[j]; j++)
-		buf1[j] = toupper(buf1[j]);
-	ptr = ght_get(p_table, j, buf1);
-	if (ptr)
-		return ptr;
-	return "";
-}
-#else
 char *
 anno_path_of(char *board)
 {
@@ -1650,7 +1319,7 @@ anno_path_of(char *board)
 	if (fp == 0)
 		return "";
 	while (1) {
-		if (fscanf(FCGI_ToFILE(fp), "%s %s", buf1, buf2) <= 0)
+		if (fscanf(fp, "%s %s", buf1, buf2) <= 0)
 			break;
 		buf1[79] = 0;
 		buf1[strlen(buf1) - 1] = 0;
@@ -1663,7 +1332,7 @@ anno_path_of(char *board)
 	fclose(fp);
 	return "";
 }
-#endif
+
 int
 has_BM_perm(struct userec *user, struct boardmem *x)
 {
@@ -1679,13 +1348,13 @@ has_BM_perm(struct userec *user, struct boardmem *x)
 int
 has_read_perm(struct userec *user, char *board)
 {
-	return has_read_perm_x(user, getbcache(board));
+	return has_read_perm_x(user, ythtbbs_cache_Board_get_board_by_name(board));
 }
 
 int
 has_read_perm_x(struct userec *user, struct boardmem *x)
 {
-	/* °æÃæ²»´æÔÚ·µ»Ø0, pºÍz°æÃæ·µ»Ø1, ÓĞÈ¨ÏŞ°æÃæ·µ»Ø1. */
+	/* ç‰ˆé¢ä¸å­˜åœ¨è¿”å›0, på’Œzç‰ˆé¢è¿”å›1, æœ‰æƒé™ç‰ˆé¢è¿”å›1. */
 //	char fn[256];
 
 	if (x == 0)
@@ -1697,9 +1366,7 @@ has_read_perm_x(struct userec *user, struct boardmem *x)
 			return 0;
 		//sprintf(fn, "boards/%s/club_users", x->header.filename);
 		//return file_has_word(fn, user->userid);			new from ytht cvs
-		return u_info->clubrights[(x->header.clubnum) /
-					  32] & (1 << ((x->header.clubnum) %
-						       32));
+		return u_info->clubrights[(x->header.clubnum) / 32] & (1 << ((x->header.clubnum) % 32));
 	}
 	if (x->header.level == 0)
 		return 1;
@@ -1718,7 +1385,7 @@ hideboard(char *bname)
 	struct boardmem *x;
 	if (bname[0] <= 32)
 		return 1;
-	x = getbcache(bname);
+	x = ythtbbs_cache_Board_get_board_by_name(bname);
 	if (x == 0)
 		return 0;
 	return hideboard_x(x);
@@ -1738,7 +1405,7 @@ int
 innd_board(char *bname)
 {
 	struct boardmem *x;
-	x = getbcache(bname);
+	x = ythtbbs_cache_Board_get_board_by_name(bname);
 	if (x == 0)
 		return 0;
 	return (x->header.flag & INNBBSD_FLAG);
@@ -1748,7 +1415,7 @@ int
 political_board(char *bname)
 {
 	struct boardmem *x;
-	x = getbcache(bname);
+	x = ythtbbs_cache_Board_get_board_by_name(bname);
 	if (x == 0)
 		return 0;
 	if (x->header.flag & POLITICAL_FLAG)
@@ -1761,7 +1428,7 @@ int
 anony_board(char *bname)
 {
 	struct boardmem *x;
-	x = getbcache(bname);
+	x = ythtbbs_cache_Board_get_board_by_name(bname);
 	if (x == 0)
 		return 0;
 	return (x->header.flag & ANONY_FLAG);
@@ -1771,10 +1438,8 @@ int
 noadm4political(bname)
 char *bname;
 {
-	if (!shm_utmp->watchman || now_t < shm_utmp->watchman)
-		return 0;
-	return political_board(bname);
-
+	time_t t = ythtbbs_cache_utmp_get_watchman();
+	return (!t || now_t < t) ? 0 : political_board(bname);
 }
 
 int
@@ -1785,10 +1450,10 @@ has_post_perm(struct userec *user, struct boardmem *x)
 		return 0;
 
 	sprintf(buf3, "boards/%s/deny_users", x->header.filename);
-	if (file_has_word(buf3, user->userid))
+	if (ytht_file_has_word(buf3, user->userid))
 		return 0;
 	sprintf(buf3, "boards/%s/deny_anony", x->header.filename);
-	if (file_has_word(buf3, user->userid))
+	if (ytht_file_has_word(buf3, user->userid))
 		return 0;
 	if (!strcasecmp(x->header.filename, "sysop"))
 		return 1;
@@ -1804,18 +1469,14 @@ has_post_perm(struct userec *user, struct boardmem *x)
 		return 1;
 	if (!strcasecmp(x->header.filename, "committee"))
 		return 1;
-	if (file_has_word("deny_users", user->userid))
+	if (ytht_file_has_word("deny_users", user->userid))
 		return 0;
 	if (x->header.clubnum != 0) {
-		if (!(x->header.level & PERM_NOZAP) && x->header.level
-		    && !user_perm(user, x->header.level))
+		if (!(x->header.level & PERM_NOZAP) && x->header.level && !user_perm(user, x->header.level))
 			return 0;
-		return u_info->clubrights[(x->header.clubnum) /
-					  32] & (1 << ((x->header.clubnum) %
-						       32));
+		return u_info->clubrights[(x->header.clubnum) / 32] & (1 << ((x->header.clubnum) % 32));
 	}
-	if (!(x->header.level & PERM_NOZAP) && x->header.level
-	    && !user_perm(user, x->header.level))
+	if (!(x->header.level & PERM_NOZAP) && x->header.level && !user_perm(user, x->header.level))
 		return 0;
 	return 1;
 }
@@ -1836,85 +1497,24 @@ has_vote_perm(struct userec *user, struct boardmem *x)
 		return 0;
 	if (x->header.clubnum != 0) {
 		sprintf(buf3, "boards/%s/club_users", x->header.filename);
-		if (file_has_word(buf3, user->userid))
+		if (ytht_file_has_word(buf3, user->userid))
 			return 1;
 		else
 			return 0;
 	}
-	if (!(x->header.level & PERM_NOZAP) && x->header.level
-	    && !user_perm(user, x->header.level))
+	if (!(x->header.level & PERM_NOZAP) && x->header.level && !user_perm(user, x->header.level))
 		return 0;
 	return 1;
 }
 
-#if defined(ENABLE_GHTHASH) && defined(ENABLE_FASTCGI)
-struct boardmem *
-getbcache(char *board)
-{
-	int i, j;
-	static int num = 0;
-	char upperstr[STRLEN];
-	static ght_hash_table_t *p_table = NULL;
-	static time_t uptime = 0;
-	if (board[0] == 0)
-		return 0;
-	if (p_table
-	    && (num != shm_bcache->number || shm_bcache->uptime > uptime)) {
-		//errlog("getbcache: num %d, bcache->number %d, would reload",
-		//       num, shm_bcache->number);
-		ght_finalize(p_table);
-		p_table = NULL;
-	}
-	if (p_table == NULL) {
-		num = 0;
-		p_table = ght_create(MAXBOARD, NULL, 0);
-		for (i = 0; i < MAXBOARD && i < shm_bcache->number; i++) {
-			num++;
-			if (!shm_bcache->bcache[i].header.filename[0])
-				continue;
-			strsncpy(upperstr,
-				 shm_bcache->bcache[i].header.filename,
-				 sizeof (upperstr));
-			for (j = 0; upperstr[j]; j++)
-				upperstr[j] = toupper(upperstr[j]);
-			ght_insert(p_table, &shm_bcache->bcache[i], j,
-				   upperstr);
-		}
-		uptime = now_t;
-	}
-	strsncpy(upperstr, board, sizeof (upperstr));
-	for (j = 0; upperstr[j]; j++)
-		upperstr[j] = toupper(upperstr[j]);
-	return ght_get(p_table, j, upperstr);
-}
-#else
-struct boardmem *
-getbcache(char *board)
-{
-	int i;
-	if (board[0] == 0)
-		return 0;
-	for (i = 0; i < MAXBOARD && i < shm_bcache->number; i++)
-	{
-		//printf("board:%s, header:%s\n", board, shm_bcache->bcache[i].header.filename);   add by mint
-		if (!strcasecmp(board, shm_bcache->bcache[i].header.filename))
-			return &shm_bcache->bcache[i];
-	}
-	//modified by safari 20100102
-	//printf("end");
-	return 0;
-}
-#endif
-
 /**
- * ÒÀ¾İ°æÃæÃû³Æ»ñÈ¡ boardmem ¶ÔÏó£¬Ó¦Öğ½¥²ÉÓÃ libythtbbs ¿âº¯Êı¡£
+ * ä¾æ®ç‰ˆé¢åç§°è·å– boardmem å¯¹è±¡ï¼Œåº”é€æ¸é‡‡ç”¨ libythtbbs åº“å‡½æ•°ã€‚
  * @see struct boardmem *getboardbyname(char *board_name)
  */
-struct boardmem *
-getboard(char board[80])
+struct boardmem *getboard(char *board)
 {
 	struct boardmem *x1;
-	x1 = getbcache(board);
+	x1 = ythtbbs_cache_Board_get_board_by_name(board);
 	if (x1 == 0)
 		return NULL;
 	if (!has_read_perm_x(&currentuser, x1))
@@ -1924,21 +1524,7 @@ getboard(char board[80])
 }
 
 int
-findnextutmp(char *id, int from)
-{
-	int i;
-	if (from < 0)
-		from = 0;
-	for (i = from; i < MAXACTIVE; i++)
-		if (shm_utmp->uinfo[i].active)
-			if (!strcasecmp(shm_utmp->uinfo[i].userid, id))
-				return i;
-	return -1;
-}
-
-int
-send_msg(char *myuserid, int i, char *touserid, int topid, char *msg,
-	 int offline)
+send_msg(char *myuserid, int i, char *touserid, int topid, char *msg, int offline)
 {
 	struct msghead head, head2;
 	head.time = now_t;
@@ -1960,71 +1546,16 @@ send_msg(char *myuserid, int i, char *touserid, int topid, char *msg,
 	if (topid != 1)
 		kill(topid, SIGUSR2);
 	else
-		shm_utmp->uinfo[i].unreadmsg++;
+		ythtbbs_cache_utmp_get_by_idx(i)->unreadmsg++;
 	return 1;
 }
-
-char *
-horoscope(int month, int day)
-{
-	int date = month * 100 + day;
-	if (month < 1 || month > 12 || day < 1 || day > 31)
-		return "²»Ïê";
-	if (date < 121 || date >= 1222)
-		return "Ä¦ôÉ×ù";
-	if (date < 219)
-		return "Ë®Æ¿×ù";
-	if (date < 321)
-		return "Ë«Óã×ù";
-	if (date < 421)
-		return "ÄµÑò×ù";
-	if (date < 521)
-		return "½ğÅ£×ù";
-	if (date < 622)
-		return "Ë«×Ó×ù";
-	if (date < 723)
-		return "¾ŞĞ·×ù";
-	if (date < 823)
-		return "Ê¨×Ó×ù";
-	if (date < 923)
-		return "´¦Å®×ù";
-	if (date < 1024)
-		return "Ìì³Ó×ù";
-	if (date < 1123)
-		return "ÌìĞ«×ù";
-	/*if(date<1222) */
-	return "ÉäÊÖ×ù";
-}
-
-//add by wjbta@bmy for 666ÉúÃüÁ¦
-int life_special_web(char *id)
-{
-	FILE *fp;
-	char id1[80],buf[80];
-	fp=fopen("etc/life", "r");
-	if(fp==0) return 0;
-	while(1) {
-		if(fgets(buf, 80, fp)==0) break;
-//		printf("%s",buf);
-		if(sscanf(buf, "%s", id1)<1) continue;
-//		printf("%s",id1);
-		if(!strcasecmp(id1,id)) {
-			fclose(fp);
-			return 1;
-		}
-	}
-	fclose(fp);
-	return 0;
-} //add by wjbta@bmy 666ÉúÃüÁ¦
 
 int count_life_value(struct userec *urec)
 {
 	int i, res;
 //	i = (now_t - urec->lastlogin) / 60;
-	if ((urec->userlevel & PERM_XEMPT)
-	    || !strcasecmp(urec->userid, "guest"))
+	if ((urec->userlevel & PERM_XEMPT) || !strcasecmp(urec->userid, "guest"))
 		return 999;
-	//if (life_special_web(urec->userid)) return 666;
 	i = (now_t - urec->lastlogin) / 60;
 
 	/* new user should register in 30 mins */
@@ -2042,19 +1573,9 @@ int count_life_value(struct userec *urec)
 	if (((time(0)-urec->firstlogin)/86400)>365*2)
 		return  365;
 
-
 	res=(120 * 1440 - i) / 1440 + urec->numdays;
 	if (res>364) res=364;
 	return res;
-}
-
-int
-modify_mode(struct user_info *x, int newmode)
-{
-	if (x == 0)
-		return 0;
-	x->mode = newmode;
-	return 0;
 }
 
 int
@@ -2077,100 +1598,14 @@ save_user_data(struct userec *x)
 }
 
 int
-is_bansite(char *ip)
-{
-	FILE *fp;
-	char buf3[256];
-	fp = fopen(".bansite", "r");
-	if (fp == 0)
-		return 0;
-	while (fscanf(FCGI_ToFILE(fp), "%s", buf3) > 0)
-		if (!strcasecmp(buf3, ip)) {
-			fclose(fp);
-			return 1;
-		}
-	fclose(fp);
-	return 0;
-}
-
-int
 user_perm(struct userec *x, int level)
 {
 	return (x->userlevel & level);
 }
 
-int
-useridhash(char *id)
-{
-	int n1 = 0;
-	int n2 = 0;
-	while (*id) {
-		n1 += ((unsigned char) toupper(*id)) % 26;
-		id++;
-		if (!*id)
-			break;
-		n2 += ((unsigned char) toupper(*id)) % 26;
-		id++;
-	}
-	n1 %= 26;
-	n2 %= 26;
-	return n1 * 26 + n2;
-}
-
-int
-insertuseridhash(struct useridhashitem *ptr, int size, char *userid, int num)
-{
-	int h, s, i, j = 0;
-	if (!*userid)
-		return -1;
-	h = useridhash(userid);
-	s = size / 26 / 26;
-	i = h * s;
-	while (j < s * 5 && ptr[i].num > 0 && ptr[i].num != num) {
-		i++;
-		if (i >= size)
-			i %= size;
-	}
-	if (j == s * 5)
-		return -1;
-	ptr[i].num = num;
-	strcpy(ptr[i].userid, userid);
-	return 0;
-}
-
-int
-finduseridhash(struct useridhashitem *ptr, int size, char *userid)
-{
-	int h, s, i, j;
-	h = useridhash(userid);
-	s = size / 26 / 26;
-	i = h * s;
-	for (j = 0; j < s * 5; j++) {
-		if (!strcasecmp(ptr[i].userid, userid))
-			break;
-		i++;
-		if (i >= size)
-			i %= size;
-	}
-	if (j == s * 5)
-		return -1;
-	return ptr[i].num;
-}
-
-int
-getusernum(char *id)
-{
-	int i;
-	if (id[0] == 0 || strchr(id, '.'))
-		return -1;
-	i = finduseridhash(uidhashshm->uhi, UCACHE_HASH_SIZE, id) - 1;
-	if (i >= 0 && !strcasecmp(shm_ucache->userid[i], id))
-		return i;
-	for (i = 0; i < MAXUSERS; i++) {
-		if (!strcasecmp(shm_ucache->userid[i], id))
-			return i;
-	}
-	return -1;
+// è¿”å›ç´¢å¼•å€¼ï¼ŒåŸæœ¬å®ç°ä¸­ä¼šåˆ¤æ–­ shm_ucache->userid[i]
+int getusernum(char *id) {
+	return ythtbbs_cache_UserIDHashTable_find_idx(id);
 }
 
 struct userec *
@@ -2185,164 +1620,19 @@ getuser(char *id)
 		ummap();
 	if (!ummap_ptr)
 		return NULL;
-	memcpy(&userec1, ummap_ptr + sizeof (struct userec) * uid,
-	       sizeof (userec1));
+	memcpy(&userec1, ummap_ptr + sizeof (struct userec) * uid, sizeof (userec1));
 	return &userec1;
 }
 
-int
-checkuser(char *id, char *pw)
-{
-	struct userec *x;
-	x = getuser(id);
-	if (x == 0)
-		return 0;
-	return checkpasswd(x->passwd, pw);
+// å¯¹ ythtbbs_cache_utmp çš„æ›´æ–°ï¼Œä½¿ç”¨æ¥å£å–ä»£åŸå®ç°
+int count_online() {
+	return ythtbbs_cache_utmp_count_active();
 }
 
-int
-count_id_num(char *id)
-{
-	int i, total = 0;
-	for (i = 0; i < MAXACTIVE; i++)
-		if (shm_utmp->uinfo[i].active
-		    && !strcasecmp(shm_utmp->uinfo[i].userid, id))
-			total++;
-	return total;
-}
-
-int
-count_online()
-{
-	int i, total = 0;
-	if (now_t <= shm_utmp->activetime + 60)
-		return shm_utmp->activeuser;
-	for (i = 0; i < MAXACTIVE; i++)
-		if (shm_utmp->uinfo[i].active && shm_utmp->uinfo[i].pid)
-			total++;
-	shm_utmp->activetime = now_t;
-	shm_utmp->activeuser = total;
-	return total;
-}
-
-int
-count_online2()
-{
-	int i, total = 0;
-	for (i = 0; i < MAXACTIVE; i++)
-		if (shm_utmp->uinfo[i].active
-		    && shm_utmp->uinfo[i].invisible == 0)
-			total++;
-	return total;
-}
-
-struct override fff[200];
+struct ythtbbs_override fff[MAXFRIENDS];
+struct ythtbbs_override bbb[MAXREJECTS];
 size_t friendnum = 0;
-int
-loadfriend(char *id)
-{
-	FILE *fp;
-	char file[256];
-	sethomefile(file, id, "friends");
-	fp = fopen(file, "r");
-	friendnum = 0;
-	if (fp) {
-		friendnum = fread(fff, sizeof (fff[0]), 200, fp);
-		fclose(fp);
-	}
-	return 0;
-}
-
-int
-cmpfuid(a, b)
-unsigned *a, *b;
-{
-	return *a - *b;
-}
-
-int
-initfriends(struct user_info *u)
-{
-	int i, fnum = 0;
-	char buf[128];
-	FILE *fp;
-	memset(u->friend, 0, sizeof (u->friend));
-	sethomefile(buf, u->userid, "friends");
-	u->fnum = file_size(buf) / sizeof (struct override);
-	if (u->fnum <= 0)
-		return 0;
-	u->fnum = (u->fnum >= MAXFRIENDS) ? MAXFRIENDS : u->fnum;
-	loadfriend(u->userid);
-	for (i = 0; i < u->fnum; i++) {
-		u->friend[i] = getusernum(fff[i].id) + 1;
-		if (u->friend[i])
-			fnum++;
-		else
-			fff[i].id[0] = 0;
-	}
-	qsort(u->friend, u->fnum, sizeof (u->friend[0]), (void *) cmpfuid);
-	if (fnum == u->fnum)
-		return fnum;
-	fp = fopen(buf, "w");
-	for (i = 0; i < u->fnum; i++) {
-		if (fff[i].id[0])
-			fwrite(&(fff[i]), sizeof (struct override), 1, fp);
-	}
-	fclose(fp);
-	u->fnum = fnum;
-	return fnum;
-}
-
-int
-isfriend(char *id)
-{
-	int n;
-	int num;
-	if (!loginok || isguest)
-		return 0;
-	if (u_info->fnum < 40) {
-		for (n = 0; n < u_info->fnum; n++)
-			if (!strcasecmp(id, shm_ucache->userid[u_info->friend[n] - 1]))
-				return 1;
-		return 0;
-	}
-	if ((num = getusernum(id)) < 0)
-		return 0;
-	num++;
-	for (n = 0; n < u_info->fnum; n++)
-		if ((unsigned int) num == u_info->friend[n])
-			return 1;
-	return 0;
-}
-
-struct override bbb[MAXREJECTS];
 int badnum = 0;
-int
-loadbad(char *id)
-{
-	FILE *fp;
-	char file[256];
-	sethomefile(file, id, "rejects");
-	fp = fopen(file, "r");
-	if (fp) {
-		badnum = fread(bbb, sizeof (bbb[0]), MAXREJECTS, fp);
-		fclose(fp);
-	}
-	return 0;
-}
-
-int
-isbad(char *id)
-{
-	int n;
-	if (!loginok || isguest)
-		return 0;
-	loadbad(currentuser.userid);
-	for (n = 0; n < badnum; n++)
-		if (!strcasecmp(id, bbb[n].id))
-			return 1;
-	return 0;
-}
 
 int
 changemode(int mode)
@@ -2490,7 +1780,7 @@ userid_str(char *s)
 {
 	static char buf[512];
 	char buf2[256], tmp[256], *ptr, *ptr2;
-	strsncpy(tmp, s, 255);
+	ytht_strsncpy(tmp, s, 255);
 	buf[0] = 0;
 	ptr = strtok(tmp, " ,();\r\n\t");
 	while (ptr && strlen(buf) < 400) {
@@ -2509,31 +1799,6 @@ userid_str(char *s)
 	return buf;
 }
 
-int
-fprintf2(FILE * fp, char *s)
-{
-	int i, tail = 0, sum = 0;
-	if (s[0] == ':' && s[1] == ' ' && strlen(s) > 79) {
-		sprintf(s + 76, "..\n");
-		fprintf(fp, "%s", s);
-		return 0;
-	}
-	for (i = 0; s[i]; i++) {
-		fprintf(fp, "%c", s[i]);
-		sum++;
-		if (tail) {
-			tail = 0;
-		} else if (s[i] < 0) {
-			tail = s[i];
-		}
-		if (sum >= 78 && tail == 0) {
-			fprintf(fp, "\n");
-			sum = 0;
-		}
-	}
-	return 0;
-}
-
 char *
 getbfroma(char *path)
 {
@@ -2547,7 +1812,7 @@ getbfroma(char *path)
 	ptr = strchr(path + 13, '/');
 	if (!ptr)
 		return "";
-	strsncpy(board, ptr + 1, sizeof (board));
+	ytht_strsncpy(board, ptr + 1, sizeof(board));
 	ptr = strchr(board, '/');
 	if (ptr)
 		*ptr = 0;
@@ -2561,14 +1826,13 @@ set_my_cookie()
 	w_info->t_lines = 20;
 	if (readuservalue(currentuser.userid, "t_lines", buf, sizeof (buf)) > 0)
 		w_info->t_lines = atoi(buf);
-	if (readuservalue(currentuser.userid, "link_mode", buf, sizeof (buf)) >=
-	    0)
+	if (readuservalue(currentuser.userid, "link_mode", buf, sizeof (buf)) >= 0)
 		w_info->link_mode = atoi(buf);
-	if (readuservalue(currentuser.userid, "def_mode", buf, sizeof (buf)) >=
-	    0)
+	if (readuservalue(currentuser.userid, "def_mode", buf, sizeof (buf)) >= 0)
 		w_info->def_mode = atoi(buf);
-/*	if (readuservalue(currentuser.userid, "att_mode", buf, sizeof (buf)) >=
-	    0) w_info->att_mode = atoi(buf);
+/*
+	if (readuservalue(currentuser.userid, "att_mode", buf, sizeof (buf)) >= 0)
+		w_info->att_mode = atoi(buf);
 */
 	w_info->att_mode = 0;
 	w_info->doc_mode = 1;
@@ -2591,8 +1855,7 @@ has_fill_form()
 			break;
 		r = sscanf(buf, "%s %s", tmp, userid);
 		if (r == 2) {
-			if (!strcasecmp(tmp, "userid:")
-			    && !strcasecmp(userid, currentuser.userid)) {
+			if (!strcasecmp(tmp, "userid:") && !strcasecmp(userid, currentuser.userid)) {
 				fclose(fp);
 				return 1;
 			}
@@ -2632,7 +1895,7 @@ struct user_info *a, *b;
 
 struct fileheader *
 findbarticle(struct mmapfile *mf, char *file, int *num, int mode)
-// mode = 1 ±íÊ¾ .DIR °´Ê±¼äÅÅĞò  0 ±íÊ¾ ²»ÅÅĞò
+// mode = 1 è¡¨ç¤º .DIR æŒ‰æ—¶é—´æ’åº  0 è¡¨ç¤º ä¸æ’åº
 {
 	static struct fileheader x;
 	struct fileheader *ptr;
@@ -2646,17 +1909,13 @@ findbarticle(struct mmapfile *mf, char *file, int *num, int mode)
 	if (*num < 0) {
 		*num = Search_Bin(mf->ptr, filetime, 0, total - 1);
 		if (*num >= 0) {
-			ptr =
-			    (struct fileheader *) (mf->ptr +
-						   *num *
-						   sizeof (struct fileheader));
+			ptr = (struct fileheader *) (mf->ptr + *num * sizeof (struct fileheader));
 			memcpy(&x, ptr, sizeof (struct fileheader));
 			return &x;
 		}
 		return NULL;
 	}
-	ptr =
-	    (struct fileheader *) (mf->ptr + *num * sizeof (struct fileheader));
+	ptr = (struct fileheader *) (mf->ptr + *num * sizeof (struct fileheader));
 	for (i = (*num); i >= 0; i--) {
 		if (mode && ptr->filetime < filetime)
 			return NULL;
@@ -2699,6 +1958,7 @@ utf8_decode(char *src)
 
 char mybrd[GOOD_BRC_NUM][80];
 int mybrdnum = 0;
+
 void
 fdisplay_attach(FILE * output, FILE * fp, char *currline, char *nowfile)
 {
@@ -2719,8 +1979,7 @@ fdisplay_attach(FILE * output, FILE * fp, char *currline, char *nowfile)
 			*ptr = 0;
 			break;
 		}
-		if ((*ptr > 0 && *ptr < ' ') || isspace(*ptr)
-		    || strchr("\\/~`!@#$%^&*()|{}[];:\"'<>,?", *ptr)) {
+		if ((*ptr > 0 && *ptr < ' ') || isspace(*ptr) || strchr("\\/~`!@#$%^&*()|{}[];:\"'<>,?", *ptr)) {
 			*ptr = '_';
 		}
 		ptr++;
@@ -2728,17 +1987,17 @@ fdisplay_attach(FILE * output, FILE * fp, char *currline, char *nowfile)
 	if (strlen(attachfile) < 2)
 		return;
 
-	download = attachdecode(FCGI_ToFILE(fp), nowfile, attachfile);
+	download = attachdecode(fp, nowfile, attachfile);
 	if (download == NULL) {
-		fprintf(output, "²»ÄÜÕıÈ·½âÂëµÄ¸½¼şÄÚÈİ...");
+		fprintf(output, "\xB2\xBB\xC4\xDC\xD5\xFD\xC8\xB7\xBD\xE2\xC2\xEB\xB5\xC4\xB8\xBD\xBC\xFE\xC4\xDA\xC8\xDD..."); // ä¸èƒ½æ­£ç¡®è§£ç çš„é™„ä»¶å†…å®¹
 		return;
 	}
 	if ((ext = strrchr(attachfile, '.')) != NULL) {
 		if (!strcasecmp(ext, ".bmp") || !strcasecmp(ext, ".jpg")
-		    || !strcasecmp(ext, ".gif")
-		    || !strcasecmp(ext, ".jpeg")
-		    || !strcasecmp(ext, ".png")
-		    || !strcasecmp(ext, ".pcx"))
+				|| !strcasecmp(ext, ".gif")
+				|| !strcasecmp(ext, ".jpeg")
+				|| !strcasecmp(ext, ".png")
+				|| !strcasecmp(ext, ".pcx"))
 			pic = 1;
 		else if (!strcasecmp(ext, ".swf"))
 			pic = 2;
@@ -2752,26 +2011,24 @@ fdisplay_attach(FILE * output, FILE * fp, char *currline, char *nowfile)
 	download += sizeof (ATTACHCACHE);
 	switch (pic) {
 	case 1:
-		fprintf
-		    (output,
-		     "%d ¸½Í¼: %s (%ld ×Ö½Ú)<br>"
+		fprintf(output,
+			"%d \xB8\xBD\xCD\xBC: %s (%ld \xD7\xD6\xBD\xDA)<br>"
 			"<a href='/attach/%s'> "
 			"<IMG style=\" max-width:800px; width: expression(this.width > 800 ? 800: true); height:auto\" SRC='/attach/%s' border=0/> </a>",
 	//	"<img src='/attach/%s'></img>",
-		     ++ano, attachfile, size, download, download);
+			++ano, attachfile, size, download, download);
 		break;
 	case 2:
 		fprintf(output,
-			"%d Flash¶¯»­: <a href='/attach/%s'>%s</a> (%ld ×Ö½Ú)<br>"
+			"%d Flash\xB6\xAF\xBB\xAD: <a href='/attach/%s'>%s</a> (%ld \xD7\xD6\xBD\xDA)<br>"
 			"<OBJECT><PARAM NAME='MOVIE' VALUE='/attach/%s'>"
 			"<EMBED SRC='/attach/%s' width=480 height=360></EMBED></OBJECT>",
 			++ano, download, attachfile, size, download, download);
 		break;
 	default:
-		fprintf
-		    (output,
-		     "%d ¸½¼ş: <a href='/attach/%s'>%s</a> (%ld ×Ö½Ú)",
-		     ++ano, download, attachfile, size);
+		fprintf(output,
+			"%d \xB8\xBD\xBC\xFE: <a href='/attach/%s'>%s</a> (%ld \xD7\xD6\xBD\xDA)",
+			++ano, download, attachfile, size);
 		break;
 	}
 }
@@ -2782,36 +2039,27 @@ printhr()
 	printf("<div class=\"linehr\"></div>");
 }
 
-void
-updatelastboard(void)
-{
+static void updatelastboard(void) {
 	struct boardmem *last;
 	char buf[80];
 	if (u_info->curboard) {
-		last = &(shm_bcache->bcache[u_info->curboard - 1]);
+		last = ythtbbs_cache_Board_get_board_by_idx(u_info->curboard - 1);
 		if (last->inboard > 0)
 			last->inboard--;
-		if (now_t > w_info->lastinboardtime
-		    && w_info->lastinboardtime != 0)
-			snprintf(buf, 80, "%s use %s %ld",
-				 currentuser.userid,
-				 last->header.filename,
-				 (long int) (now_t - w_info->lastinboardtime));
+		if (now_t > w_info->lastinboardtime && w_info->lastinboardtime != 0)
+			snprintf(buf, 80, "%s use %s %ld", currentuser.userid, last->header.filename, (long int) (now_t - w_info->lastinboardtime));
 		else
-			snprintf(buf, 80, "%s use %s 1", currentuser.userid,
-				 last->header.filename);
+			snprintf(buf, 80, "%s use %s 1", currentuser.userid, last->header.filename);
 		newtrace(buf);
 	}
 	u_info->curboard = 0;
 }
 
-void
-updateinboard(struct boardmem *x)
-{
+void updateinboard(struct boardmem *x) {
 	int bnum;
 	if (!loginok)
 		return;
-	bnum = x - (struct boardmem *) (shm_bcache);
+	bnum = ythtbbs_cache_Board_get_idx_by_ptr(x);
 	if (bnum + 1 == u_info->curboard)
 		return;
 	updatelastboard();
@@ -2821,26 +2069,21 @@ updateinboard(struct boardmem *x)
 	return;
 }
 
-#include "bbsupdatelastpost.c"
-#include "boardrc.c"
-#include "deny_users.c"
-#include "bbsred.c"
 int
 max_mail_size()
 {
 	int maxsize;
 	/*maxsize = (HAS_PERM(PERM_SYSOP)
-		   || HAS_PERM(PERM_SPECIAL1)) ?
-	    MAX_SYSOPMAIL_HOLD : (HAS_PERM(PERM_ARBITRATE)
-				  || HAS_PERM(PERM_BOARDS)) ?
-	    MAX_MAIL_HOLD * 2 : MAX_MAIL_HOLD;
+		|| HAS_PERM(PERM_SPECIAL1)) ?
+	MAX_SYSOPMAIL_HOLD : (HAS_PERM(PERM_ARBITRATE)
+				|| HAS_PERM(PERM_BOARDS)) ?
+	MAX_MAIL_HOLD * 2 : MAX_MAIL_HOLD;
 	maxsize = maxsize * 10;
 	return maxsize;*/
-	maxsize= (HAS_PERM(PERM_SYSOP))?MAX_SYSOPMAIL_HOLD:HAS_PERM(PERM_SPECIAL1)?MAX_MAIL_HOLD*20:
-                (HAS_PERM(PERM_BOARDS))?MAX_MAIL_HOLD*8:MAX_MAIL_HOLD*3;
-        maxsize=maxsize*10;
-	//modified by wjbta@bmy ĞŞ¸ÄĞÅÏäÈİÁ¿¿ØÖÆ
-        return maxsize;
+	maxsize= (HAS_PERM(PERM_SYSOP, currentuser)) ? MAX_SYSOPMAIL_HOLD : HAS_PERM(PERM_SPECIAL1, currentuser) ? MAX_MAIL_HOLD * 20 : (HAS_PERM(PERM_BOARDS, currentuser)) ? MAX_MAIL_HOLD * 8 : MAX_MAIL_HOLD * 3;
+	maxsize = maxsize * 10;
+	//modified by wjbta@bmy ä¿®æ”¹ä¿¡ç®±å®¹é‡æ§åˆ¶
+	return maxsize;
 }
 
 int
@@ -2851,13 +2094,13 @@ get_mail_size()
 	struct fileheader tmpfh;
 	FILE *fp;
 	time_t t;
-	sethomefile(tmpmail, currentuser.userid, "msgindex");
+	sethomefile_s(tmpmail, sizeof(tmpmail), currentuser.userid, "msgindex");
 	if (file_time(tmpmail))
 		currsize += file_size(tmpmail);
-	sethomefile(tmpmail, currentuser.userid, "msgindex2");
+	sethomefile_s(tmpmail, sizeof(tmpmail), currentuser.userid, "msgindex2");
 	if (file_time(tmpmail))
 		currsize += file_size(tmpmail);
-	sethomefile(tmpmail, currentuser.userid, "msgcontent");
+	sethomefile_s(tmpmail, sizeof(tmpmail), currentuser.userid, "msgcontent");
 	if (file_time(tmpmail))
 		currsize += file_size(tmpmail);
 	sprintf(currmaildir, "mail/%c/%s/%s", mytoupper(currentuser.userid[0]),
@@ -2874,7 +2117,7 @@ get_mail_size()
 		return currsize;
 	}
 	while (fread(&tmpfh, 1, sizeof (tmpfh), fp) == sizeof (tmpfh)) {
-		setmailfile(tmpmail, currentuser.userid, fh2fname(&tmpfh));
+		setmailfile_s(tmpmail, sizeof(tmpmail), currentuser.userid, fh2fname(&tmpfh));
 		currsize += file_size(tmpmail);
 	}
 	fclose(fp);
@@ -2887,7 +2130,7 @@ int
 check_maxmail(char *currmaildir)
 {
 	int currsize, maxsize;
-	if(HAS_PERM(PERM_SYSOP|PERM_OBOARDS))	//add by mintbaggio 040323 for unlimitted mail volum of SYSOPs
+	if(HAS_PERM(PERM_SYSOP|PERM_OBOARDS, currentuser))	//add by mintbaggio 040323 for unlimitted mail volum of SYSOPs
 		return 0;
 	currsize = 0;
 	maxsize = max_mail_size();
@@ -2926,7 +2169,7 @@ system_load()
 		load[0] = load[1] = load[2] = 0;
 	else {
 		float av[3];
-		fscanf(FCGI_ToFILE(fp), "%g %g %g", av, av + 1, av + 2);
+		fscanf(fp, "%g %g %g", av, av + 1, av + 2);
 		fclose(fp);
 		load[0] = av[0];
 		load[1] = av[1];
@@ -2943,126 +2186,6 @@ system_load()
 #endif
 	return load;
 }
-
-int
-setbmstatus(struct userec *u, int online)
-{
-	char path[256];
-	sethomefile(path, u->userid, "mboard");
-	bmfilesync(u);
-	new_apply_record(path, sizeof (struct boardmanager), (void *) setbmhat,
-			 &online);
-	return 0;
-}
-
-int
-setbmhat(struct boardmanager *bm, int *online)
-{
-	if (strcmp(shm_bcache->bcache[bm->bid].header.filename, bm->board)) {
-		errlog("error board name %s, %s. user %s",
-		       shm_bcache->bcache[bm->bid].header.filename, bm->board,
-		       currentuser.userid);
-		return -1;
-	}
-	if (*online) {
-		shm_bcache->bcache[bm->bid].bmonline |= (1 << bm->bmpos);
-		if (u_info->invisible)
-			shm_bcache->bcache[bm->bid].bmcloak |= (1 << bm->bmpos);
-		else
-			shm_bcache->bcache[bm->bid].bmcloak &=
-			    ~(1 << bm->bmpos);
-	} else {
-		shm_bcache->bcache[bm->bid].bmonline &= ~(1 << bm->bmpos);
-		shm_bcache->bcache[bm->bid].bmcloak &= ~(1 << bm->bmpos);
-	}
-	return 0;
-}
-
-void
-add_uindex(int uid, int utmpent)
-{
-	int i, uent;
-	if (uid <= 0 || uid > MAXUSERS)
-		return;
-	for (i = 0; i < 6; i++)
-		if (uindexshm->user[uid - 1][i] == utmpent)
-			return;
-	//Ö»·ÅÔÚºóÈı¸öÎ»ÖÃ, ÕâÑùÀ´±£Ö¤telnetµÄÎ»ÖÃ×Ü¿ÉÒÔ±£Áô
-	for (i = 3; i < 6; i++) {
-		uent = uindexshm->user[uid - 1][i];
-		if (uent <= 0 || !shm_utmp->uinfo[uent - 1].active ||
-		    shm_utmp->uinfo[uent - 1].uid != uid) {
-			uindexshm->user[uid - 1][i] = utmpent;
-			return;
-		}
-	}
-}
-
-void
-remove_uindex(int uid, int utmpent)
-{
-	int i;
-	if (uid <= 0 || uid > MAXUSERS)
-		return;
-	for (i = 0; i < 6; i++) {
-		if (uindexshm->user[uid - 1][i] == utmpent) {
-			uindexshm->user[uid - 1][i] = 0;
-			return;
-		}
-	}
-}
-
-int
-count_uindex(int uid)
-{
-	int i, uent, count = 0;
-	struct user_info *uentp;
-	if (uid <= 0 || uid > MAXUSERS)
-		return 0;
-	for (i = 0; i < 6; i++) {
-		uent = uindexshm->user[uid - 1][i];
-		if (uent <= 0)
-			continue;
-		uentp = &(shm_utmp->uinfo[uent - 1]);
-		if (!uentp->active || !uentp->pid || uentp->uid != uid)
-			continue;
-		if (uentp->pid > 1 && kill(uentp->pid, 0) < 0) {
-			uindexshm->user[uid - 1][i] = 0;
-			continue;
-		}
-		count++;
-	}
-	return count;
-}
-
-int
-cachelevel(int filetime, int attached)
-{
-	return 0;
-	if (attached)
-		return 2;
-	/*
-	   if (now_t - filetime < 2 * 24 * 60 * 60)
-	   return 2;
-	   if (now_t - filetime < 3 * 26 * 60 * 60)
-	   return 1;
-	 */
-	return 0;
-}
-
-#if 0
-int
-reg_req()
-{
-	time_t stay;
-	stay = now_t - (w_info->login_start_time);
-	if ((stay / 1800) % 2 != w_info->show_reg) {
-		w_info->show_reg = (stay / 1800) % 2;
-		return 1;
-	}
-	return 0;
-}
-#endif
 
 int
 dofilter(char *title, char *fn, int level)
@@ -3088,19 +2211,19 @@ dofilter(char *title, char *fn, int level)
 	if (mmapfile(bf, mb) < 0)
 		goto CHECK2;
 
-	if (filter_article(title, fn, mb)) {
+	if (ytht_smth_filter_article(title, fn, mb)) {
 		if (level != 2)
 			return 1;
 		return 2;
 	}
-      CHECK2:
+CHECK2:
 	if (level != 1)
 		return 0;
 	mb = &mf_pbadwords;
 	bf = PBADWORDS;
 	if (mmapfile(bf, mb) < 0)
 		return 0;
-	if (filter_article(title, fn, mb))
+	if (ytht_smth_filter_article(title, fn, mb))
 		return 2;
 	else
 		return 0;
@@ -3130,21 +2253,19 @@ dofilter_edit(char *title, char *buf, int level)
 	if (mmapfile(bf, mb) < 0)
 		goto CHECK2;
 
-	if (filter_string(buf, mb)
-	    || filter_string(title, mb)) {
+	if (ytht_smth_filter_string(buf, mb) || ytht_smth_filter_string(title, mb)) {
 		if (level != 2)
 			return 1;
 		return 2;
 	}
-      CHECK2:
+CHECK2:
 	if (level != 1)
 		return 0;
 	mb = &mf_pbadwords;
 	bf = PBADWORDS;
 	if (mmapfile(bf, mb) < 0)
 		return 0;
-	if (filter_string(buf, mb)
-	    || filter_string(title, mb))
+	if (ytht_smth_filter_string(buf, mb) || ytht_smth_filter_string(title, mb))
 		return 2;
 	else
 		return 0;
@@ -3155,9 +2276,9 @@ search_filter(char *pat1, char *pat2, char *pat3)
 {
 	if (mmapfile(BADWORDS, &mf_badwords) < 0)
 		return 0;
-	if (filter_string(pat1, &mf_badwords)
-	    || filter_string(pat2, &mf_badwords)
-	    || filter_string(pat3, &mf_badwords)) {
+	if (ytht_smth_filter_string(pat1, &mf_badwords)
+		|| ytht_smth_filter_string(pat2, &mf_badwords)
+		|| ytht_smth_filter_string(pat3, &mf_badwords)) {
 		return -1;
 	}
 	return 0;
@@ -3170,56 +2291,6 @@ char *buf, *boardname, *filename;
 	sprintf(buf, "boards/%s/%s", boardname, filename);
 	return buf;
 }
-
-
-/* ´ıÉ¾³ı£¬×Ö·û±àÂë×ª»»ÒÆ¶¯µ½ libythtbbs/misc.c ÏÂÃæ  */
-/*
-int gb2312_to_utf8(char *in, char *out, size_t size){
-	iconv_t cd;
-	cd = iconv_open("UTF-8", "GB2312");
-	if ( cd == (iconv_t)(-1) ){
-		perror("iconv_open failed");
-		return 0;
-	}
-
-	size_t in_left = strlen(in) + 1;
-	char *out_ptr;
-	size_t res;
-
-	out_ptr = out;
-	res = iconv(cd, &in, &in_left, &out_ptr, &size);
-	if ( res == (size_t)(-1) ){
-		perror("iconv failed");
-		return 0;
-	}
-
-	iconv_close(cd);
-	return 1;
-}
-
-int utf8_to_gb2312(char *in, char *out, size_t size){
-	iconv_t cd;
-	cd = iconv_open("GB2312", "UTF-8");
-	if ( cd == (iconv_t)(-1) ){
-		perror("iconv_open failed");
-		return 0;
-	}
-
-	size_t in_left = strlen(in) + 1;
-	char *out_ptr;
-	size_t res;
-
-	out_ptr = out;
-	res = iconv(cd, &in, &in_left, &out_ptr, &size);
-	if ( res == (size_t)(-1) ){
-		perror("iconv failed");
-		return 0;
-	}
-
-	iconv_close(cd);
-	return 1;
-}
-*/
 
 void sstrcat(char *s, const char *format, ...){
 	va_list ap;
@@ -3243,24 +2314,24 @@ char* showByDefMode(){
 /* Returns a url-encoded version of str */
 /* IMPORTANT: be sure to free() the returned string after use */
 char *url_encode(char *str) {
-  char *pstr = str, *buf = malloc(strlen(str) * 3 + 1), *pbuf = buf;
-  memset(buf, 0, strlen(str) * 3 + 1);
-  while (*pstr) {
-    if (isalnum(*pstr) || *pstr == '-' || *pstr == '_' || *pstr == '.' || *pstr == '~')
-      *pbuf++ = *pstr;
-    else if (*pstr == ' ')
-      *pbuf++ = '%', *pbuf++ = '2', *pbuf++ = '0';
-    else
-      *pbuf++ = '%', *pbuf++ = to_hex(*pstr >> 4), *pbuf++ = to_hex(*pstr & 15);
-    pstr++;
-  }
-  *pbuf = '\0';
-  return buf;
+	char *pstr = str, *buf = malloc(strlen(str) * 3 + 1), *pbuf = buf;
+	memset(buf, 0, strlen(str) * 3 + 1);
+	while (*pstr) {
+		if (isalnum(*pstr) || *pstr == '-' || *pstr == '_' || *pstr == '.' || *pstr == '~')
+			*pbuf++ = *pstr;
+		else if (*pstr == ' ')
+			*pbuf++ = '%', *pbuf++ = '2', *pbuf++ = '0';
+		else
+			*pbuf++ = '%', *pbuf++ = to_hex(*pstr >> 4), *pbuf++ = to_hex(*pstr & 15);
+		pstr++;
+	}
+	*pbuf = '\0';
+	return buf;
 }
 
 char to_hex(char code) {
-  static char hex[] = "0123456789ABCDEF";
-  return hex[code & 15];
+	static char hex[] = "0123456789ABCDEF";
+	return hex[code & 15];
 }
 
 //not high light Add by liuche 20121112
@@ -3269,7 +2340,8 @@ NHsprintf(char *s, char *s0)
 {
 	char ansibuf[80], buf2[80];
 	char *tmp;
-	int c, bold, m, i, len, lsp = -1;
+	int bold, m, i, len, lsp = -1;
+	char c;
 	len = 0;
 	bold = 0;
 	for (i = 0; (c = s0[i]); i++) {
@@ -3343,14 +2415,13 @@ NHsprintf(char *s, char *s0)
 			for (m = i + 2; s0[m] && m < i + 24; m++)
 				if (strchr("0123456789;", s0[m]) == 0)
 					break;
-			strsncpy(ansibuf, &s0[i + 2], m - (i + 2) + 1);
+			ytht_strsncpy(ansibuf, &s0[i + 2], m - (i + 2) + 1);
 			i = m;
 			if (s0[i] != 'm')
 				continue;
 			if (strlen(ansibuf) == 0) {
 				bold = 0;
-				//strnncpy2(s, &len, "</font><font class=b40><font class=c37>",
-					  //39);//23
+				//strnncpy2(s, &len, "</font><font class=b40><font class=c37>", 39);//23
 			}
 			tmp = strtok(ansibuf, ";");
 			while (tmp) {
@@ -3359,9 +2430,7 @@ NHsprintf(char *s, char *s0)
 				if (c == 1)
 					bold = 1;
 				if (c == 0) {
-					//strnncpy2(s, &len,
-						  //"</font><font class=b40><font class=c37>",
-						  //39);//23
+					// strnncpy2(s, &len, "</font><font class=b40><font class=c37>", 39);//23
 					bold = 0;
 				}
 				if (c >= 30 && c <= 37) {
@@ -3372,16 +2441,12 @@ NHsprintf(char *s, char *s0)
 						//strnncpy2(s, &len, buf2, 16);//23
 					}
 					if (bold == 0) {
-						//sprintf(buf2,
-							//"<font class=c%d>",
-							//c);//</font>
+						//sprintf(buf2, "<font class=c%d>", c);//</font>
 						//strnncpy2(s, &len, buf2, 16);//23
 					}
 				}
 				if (c >= 40 && c <= 47){
-					//sprintf(buf2,
-						//"<font class=b%d>",
-						//c);//</font>
+					//sprintf(buf2, "<font class=b%d>", c);//</font>
 					//strnncpy2(s, &len, buf2, 16);//23
 				}
 			}
@@ -3391,5 +2456,67 @@ NHsprintf(char *s, char *s0)
 		}
 	}
 	s[len] = 0;
+}
+
+int ismybrd(char *board) {
+	int i;
+
+	for (i = 0; i < mybrdnum; i++)
+		if (!strcasecmp(board, mybrd[i]))
+			return 1;
+	return 0;
+}
+
+int filter_board_v(struct boardmem *board, int curr_idx, va_list ap) {
+	// ä¸€å®šä¼šä½¿ç”¨çš„å˜é‡
+	int flag = va_arg(ap, int);
+	struct boardmem **data = va_arg(ap, struct boardmem **);
+	int *total = va_arg(ap, int *);
+
+	// ä¸ä¸€å®šä¼šä½¿ç”¨çš„å˜é‡
+	int hasintro, len;
+	const char *secstr;
+
+	if (board->header.filename[0] <= 32 || board->header.filename[0] > 'z')
+		return 0;
+
+	if (!has_read_perm_x(&currentuser, board))
+		return 0;
+
+	if (flag & FILTER_BOARD_check_mybrd) {
+		if (!ismybrd(board->header.filename))
+			return 0;
+	}
+
+	if (flag & (FILTER_BOARD_with_secnum | FILTER_BOARD_with_secstr)) {
+		hasintro = va_arg(ap, int);
+		secstr = va_arg(ap, const char *);
+		len = strlen(secstr);
+
+		if (flag & FILTER_BOARD_with_secstr) {
+			if (hasintro) {
+				if (strcmp(secstr, board->header.sec1) && strcmp(secstr, board->header.sec2))
+					return 0;
+			} else {
+				if (strncmp(secstr, board->header.sec1, len) && strncmp(secstr, board->header.sec2, len))
+					return 0;
+			}
+		}
+
+		if (flag & FILTER_BOARD_with_secnum) {
+			if (hasintro) {
+				if (secstr[0] != board->header.secnumber1)
+					return 0;
+			} else {
+				// TODO IronBlood æ‰¹æ³¨: æ¥è‡ª nju09/www/bbsboa çš„ show_boards å‡½æ•°ï¼Œè¿™é‡Œéƒ½æ˜¯åªå’Œ secnumber1 æ¯”è¾ƒï¼Œæ˜¯ä¸æ˜¯å†™é”™äº†ï¼Ÿ
+				if (secstr[0] != board->header.secnumber1)
+					return 0;
+			}
+		}
+	}
+
+	data[*total] = board;
+	*total = *total + 1;
+	return 0;
 }
 

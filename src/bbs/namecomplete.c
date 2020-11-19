@@ -8,7 +8,7 @@
     Firebird Bulletin Board System
     Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
                         Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
-    
+
     Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
 
     This program is free software; you can redistribute it and/or modify
@@ -23,6 +23,11 @@
 */
 
 #include "bbs.h"
+#include "smth_screen.h"
+#include "io.h"
+#include "term.h"
+#include "stuff.h"
+#include "main.h"
 
 extern int can_R_endline;
 
@@ -41,6 +46,7 @@ static int MaxLen(struct word *list, int count);
 static size_t MaxCommonStr(char str[STRLEN], struct word *list, size_t n);
 static int UserMaxLen(char cwlist[][IDLEN + 1], int cwnum, int morenum, int count);
 static int UserSubArray(char cwbuf[][IDLEN + 1], char cwlist[][IDLEN + 1], int cwnum, int key, int pos);
+static int chkstr(char *otag, char *tag, char *name);
 
 static void
 FreeNameList()
@@ -63,10 +69,7 @@ CreateNameList()
 	current = NULL;
 }
 
-void
-AddNameList(name)
-char *name;
-{
+void AddNameList(const char *name) {
 	struct word *node;
 
 	node = (struct word *) malloc(sizeof (struct word));
@@ -93,20 +96,7 @@ register struct word *list;
 	return i;
 }
 
-void
-ApplyToNameList(fptr)
-int ((*fptr) ());
-{
-	struct word *p;
-
-	for (p = toplev; p != NULL; p = p->next)
-		(*fptr) (p->word);
-}
-
-int
-chkstr(otag, tag, name)
-char *otag, *tag, *name;
-{
+static int chkstr(char *otag, char *tag, char *name) {
 	char ch, *oname = name;
 
 	while (*tag != '\0') {
@@ -411,11 +401,7 @@ int cwnum, key, pos;
 	return num;
 }
 
-int
-usercomplete(prompt, data)
-char *prompt, *data;
-{
-	char *u_namearray();
+int usercomplete(char *prompt, char *data) {
 	char *cwbuf, *cwlist, *temp;
 	int cwnum, x, y, origx, origy;
 	int clearbot = NA, count = 0, morenum = 0;
@@ -428,7 +414,7 @@ char *prompt, *data;
 		clrtoeol();
 	}
 	temp = data;
-	cwlist = u_namearray((void *)cwbuf, &cwnum, "");
+	cwlist = ythtbbs_cache_UserTable_get_namearray((void *)cwbuf, &cwnum, "", chkstr);
 	getyx(&y, &x);
 	getyx(&origy, &origx);
 	while ((ch = igetkey()) != EOF) {
@@ -451,7 +437,7 @@ char *prompt, *data;
 			break;
 		} else if (ch == ' ') {
 			int col, len;
-			
+
 			if (count < 3)
 				continue;
 			if (cwnum == 1) {
@@ -501,7 +487,7 @@ char *prompt, *data;
 			temp--;
 			count--;
 			*temp = '\0';
-			cwlist = u_namearray((void *)cwbuf, &cwnum, data);
+			cwlist = ythtbbs_cache_UserTable_get_namearray((void *)cwbuf, &cwnum, data, chkstr);
 			morenum = 0;
 			x--;
 			move(y, x);

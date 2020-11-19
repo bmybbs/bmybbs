@@ -15,7 +15,7 @@ bbspstmail_main()
 		http_fatal("匆匆过客不能写信，请先登录");
 	if (!((currentuser.userlevel )& (PERM_CHAT|PERM_PAGE|PERM_POST)))
 		http_fatal("您没有权限发信");
-	if (HAS_PERM(PERM_DENYMAIL))
+	if (HAS_PERM(PERM_DENYMAIL, currentuser))
 		http_fatal("您被封禁发信权");
 	sprintf(mymaildir, "mail/%c/%s/.DIR", mytoupper(currentuser.userid[0]),
 		currentuser.userid);
@@ -24,14 +24,14 @@ bbspstmail_main()
 		http_fatal(buff);
 		}
 	changemode(SMAIL);
-	strsncpy(board, getparm("B"), 32);
+	ytht_strsncpy(board, getparm("B"), 32);
 	if (!board[0])
-		strsncpy(board, getparm("board"), 32);
+		ytht_strsncpy(board, getparm("board"), 32);
 	if (board[0] && !getboard(board))
 		http_fatal("错误的讨论区");
-	strsncpy(file, getparm("F"), 20);
+	ytht_strsncpy(file, getparm("F"), 20);
 	if (!file[0])
-		strsncpy(file, getparm("file"), 20);
+		ytht_strsncpy(file, getparm("file"), 20);
 	if (file[0] != 'M' && file[0])
 		http_fatal("错误的文件名");
 	if (file[0]) {
@@ -61,7 +61,7 @@ bbspstmail_main()
 			MMAP_END mmapfile(NULL, &mf);
 		}
 		if (dirinfo) {
-			strsncpy(userid, dirinfo->owner, sizeof (userid));
+			ytht_strsncpy(userid, dirinfo->owner, sizeof(userid));
 			if (strchr(userid, '.')) {
 				if (board[0])
 					sprintf(buf, "boards/%s/%s", board,
@@ -74,11 +74,11 @@ bbspstmail_main()
 			if (strncmp(dirinfo->title, "Re: ", 4))
 				snprintf(title, 55, "Re: %s", dirinfo->title);
 			else
-				strsncpy(title, dirinfo->title, 55);
+				ytht_strsncpy(title, dirinfo->title, 55);
 		} else
 			http_fatal("错误的文件名");
 	} else
-		strsncpy(userid, getparm("userid"), 20);
+		ytht_strsncpy(userid, getparm("userid"), 20);
 	if (isguest && strcmp(userid, "SYSOP"))
 		http_fatal("匆匆过客不能写信，请先登录");
 

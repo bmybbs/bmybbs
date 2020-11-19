@@ -1,5 +1,5 @@
 #include <check.h>
-#include "iphash.h"
+#include "bmy/iphash.h"
 
 START_TEST(test_iphash) {
 	const char * ip;

@@ -1,5 +1,7 @@
 #include "bbslib.h"
 
+static int do_fwdmail(char *fn, struct fileheader *x, char *target);
+
 int
 bbsfwdmail_main()
 {
@@ -15,10 +17,10 @@ bbsfwdmail_main()
 	int i, retv;
 	html_header(1);
 	check_msg();
-	strsncpy(file, getparm("F"), 30);
+	ytht_strsncpy(file, getparm("F"), 30);
 	if (!file[0])
-		strsncpy(file, getparm("file"), 30);
-	strsncpy(target, getparm("target"), 30);
+		ytht_strsncpy(file, getparm("file"), 30);
+	ytht_strsncpy(target, getparm("target"), 30);
 	if (!loginok || isguest)
 		http_fatal("匆匆过客不能进行本项操作");
 	changemode(SMAIL);
@@ -29,7 +31,7 @@ bbsfwdmail_main()
      * 1 : out box
     */
     int box_type = 0;
-    strsncpy(buf, getparm("box_type"), 256);
+	ytht_strsncpy(buf, getparm("box_type"), 256);
     if(buf[0] != 0) {
         box_type = atoi(buf);
     }
@@ -43,7 +45,7 @@ bbsfwdmail_main()
     }
 	if (!((currentuser.userlevel )& (PERM_CHAT|PERM_PAGE|PERM_POST)))
 		http_fatal("您没有权限发信");
-	if (HAS_PERM(PERM_DENYMAIL))
+	if (HAS_PERM(PERM_DENYMAIL, currentuser))
 		http_fatal( "您已经被封禁了发信权\n");
     //only check in-box
 	if (box_type == 0 && check_maxmail(dir)){
@@ -106,8 +108,8 @@ bbsfwdmail_main()
 			"\033[m\033[1m【 以下文字转寄自 \033[32m%s \033[m\033[1m的信箱 】\n",
 			currentuser.userid);
 		fprintf(fp,
-			"\033[m\033[1m【 原文由 \033[32m%s \033[m\033[1m于 \033[0m%s\033[1m 发表 】\033[m\n",
-			fh2owner(x), Ctime(x->filetime));
+				"\033[m\033[1m【 原文由 \033[32m%s \033[m\033[1m于 \033[0m%s\033[1m 发表 】\033[m\n",
+				fh2owner(x), ytht_ctime(x->filetime));
 		while (1) {
 			retv = fread(buf, 1, sizeof (buf), fp1);
 			if (retv <= 0)
@@ -137,9 +139,7 @@ bbsfwdmail_main()
 	return 0;
 }
 
-int
-do_fwdmail(char *fn, struct fileheader *x, char *target)
-{
+static int do_fwdmail(char *fn, struct fileheader *x, char *target) {
 	char title[512];
 	if (!file_exist(fn))
 		http_fatal("信件内容已丢失, 无法转寄");

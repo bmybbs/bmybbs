@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <check.h>
-#include "notification.h"
+#include "ythtbbs/notification.h"
 
 START_TEST(send_post_notification_and_delete_it)
 {

@@ -36,7 +36,7 @@ if [ "$#" -ne 1 ]; then
 else
 	BUILD_DIR=$1
 
-	install_library $BUILD_DIR/ythtlib/libytht.so       libytht.so
+	install_library $BUILD_DIR/libytht/libytht.so       libytht.so
 	install_library $BUILD_DIR/libbmy/libbmy.so         libbmy.so
 	install_library $BUILD_DIR/libythtbbs/libythtbbs.so libythtbbs.so
 
@@ -50,7 +50,6 @@ else
 	install_binary $BUILD_DIR/atthttpd/atthttpd         atthttpd
 	install_www    $BUILD_DIR/nju09/www/www             www
 
-	install_binary $BUILD_DIR/local_utl/2nd_expire/2nd_expire                 2nd_expire
 	install_binary $BUILD_DIR/local_utl/averun/averun                         averun
 	install_binary $BUILD_DIR/local_utl/auto_rm_junk/auto_rm_junk             auto_rm_junk
 	install_binary $BUILD_DIR/local_utl/autoclear/autoclear                   autoclear
@@ -78,8 +77,8 @@ else
 	install_binary $BUILD_DIR/local_utl/newboards/newboards                   newboards
 	install_binary $BUILD_DIR/local_utl/newtop10/newtop10                     newtop10
 	install_binary $BUILD_DIR/local_utl/postfile/postfile                     postfile
-	install_binary $BUILD_DIR/local_utl/printSecLastMark/printSecLastMark     printSecLastMark
-	install_binary $BUILD_DIR/local_utl/printSecLastUpdate/printSecLastUpdate printSecLastUpdate
+	#install_binary $BUILD_DIR/local_utl/printSecLastMark/printSecLastMark     printSecLastMark
+	#install_binary $BUILD_DIR/local_utl/printSecLastUpdate/printSecLastUpdate printSecLastUpdate
 	install_binary $BUILD_DIR/local_utl/ptyexec/ptyexec                       ptyexec
 	install_binary $BUILD_DIR/local_utl/repsync/repsync                       repsync
 	install_binary $BUILD_DIR/local_utl/save_brc/save_brc                     save_brc

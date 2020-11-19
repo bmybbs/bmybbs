@@ -64,7 +64,7 @@ scanreg_info()
 			printf("<li><a href=bbsscanreg?STEP=1&F=%s>%s</a>", namelist[i]->d_name, namelist[i]->d_name);
 			sprintf(buf, "%s/%s", SCANREGDIR, namelist[i]->d_name);
 			printf(" n=%d", countnumforms(buf));
-			printf(" %s", Ctime(atoi(namelist[i]->d_name + 2)));
+			printf(" %s", ytht_ctime(atoi(namelist[i]->d_name + 2)));
 		}
 		free(namelist[i]);
 	}
@@ -118,7 +118,7 @@ scanreg_readforms()
 			for (n = 0; field[n] != NULL; n++) {
 				if (strcmp(buf, field[n]) != 0)
 					continue;
-				strsncpy(fdata[n], ptr + 2, sizeof (fdata[n]));
+				ytht_strsncpy(fdata[n], ptr + 2, sizeof(fdata[n]));
 				if ((ptr = strchr(fdata[n], '\n')) != NULL)
 					*ptr = '\0';
 			}
@@ -148,8 +148,8 @@ scanreg_readforms()
 		printf("电子邮箱: %s<br>", uinfo.email);
 		printf("连络电话: %s<br>", fdata[5]);
 		printf("毕业学校: %s<br>", fdata[6]);
-		printf("帐号建立日期: %s<br>", Ctime(uinfo.firstlogin));
-		printf("最近光临日期: %s<br>", Ctime(uinfo.lastlogin));
+		printf("帐号建立日期: %s<br>", ytht_ctime(uinfo.firstlogin));
+		printf("最近光临日期: %s<br>", ytht_ctime(uinfo.lastlogin));
 		printf("最近光临机器: %s", uinfo.lasthost);
 		printf("</td><td valign=top>");
 		if (uinfo.userlevel & PERM_LOGINOK) {
@@ -216,7 +216,7 @@ scanreg_done()
 			for (i = 0; field[i] != NULL; i++) {
 				if (strcmp(buf, field[i]) != 0)
 					continue;
-				strsncpy(fdata[i], ptr + 2, sizeof (fdata[i]));
+				ytht_strsncpy(fdata[i], ptr + 2, sizeof(fdata[i]));
 				if ((ptr = strchr(fdata[i], '\n')) != NULL)
 					*ptr = '\0';
 			}
@@ -262,10 +262,10 @@ scanreg_done()
 					fdata[5][i = 40] = '\0';
 				fdata[3][60 - i] = '\0';
 			}
-			strsncpy(uinfo.realname, fdata[2], sizeof (uinfo.realname));
-			strsncpy(uinfo.address, fdata[4], sizeof (uinfo.address));
+			ytht_strsncpy(uinfo.realname, fdata[2], sizeof(uinfo.realname));
+			ytht_strsncpy(uinfo.address, fdata[4], sizeof(uinfo.address));
 			sprintf(buf, "%s$%s@%s", fdata[3], fdata[5], currentuser.userid);
-			strsncpy(uinfo.realmail, buf, sizeof (uinfo.realmail));
+			ytht_strsncpy(uinfo.realmail, buf, sizeof(uinfo.realmail));
 			uinfo.userlevel |= PERM_DEFAULT;	// by ylsdd
 			save_user_data(&uinfo);
 			sethomefile(buf, uinfo.userid, "sucessreg");
@@ -278,7 +278,7 @@ scanreg_done()
 			if ((fout = fopen(buf, "w")) != NULL) {
 				for (i = 0; field[i] != NULL; i++)
 					fprintf(fout, "%s: %s\n", field[i], fdata[i]);
-				fprintf(fout, "Date: %s\n", Ctime(time(NULL)));
+				fprintf(fout, "Date: %s\n", ytht_ctime(time(NULL)));
 				fprintf(fout, "Approved: %s\n", currentuser.userid);
 				fclose(fout);
 			}
@@ -290,7 +290,7 @@ scanreg_done()
 			securityreport(buf, buf);
 		} else {
 			snprintf(buf, sizeof (buf), "<注册失败>-%s", results[n]);
-			strsncpy(uinfo.address, buf, sizeof (uinfo.address));
+			ytht_strsncpy(uinfo.address, buf, sizeof(uinfo.address));
 			save_user_data(&uinfo);
 			mail_file("etc/f_fill", uinfo.userid, buf, currentuser.userid);
 		}
@@ -308,7 +308,7 @@ bbsscanreg_main()
 	html_header(1);
 	check_msg();
 	printf("<body>");
-	if (!loginok || isguest || !HAS_PERM(PERM_ACCOUNTS))
+	if (!loginok || isguest || !HAS_PERM(PERM_ACCOUNTS, currentuser))
 		http_fatal("unknown request");
 	printf("<nobr><center><div class=rhead>%s -- scan reg form</div></center><hr>\n", BBSNAME);
 	switch (atoi(getparm("STEP"))) {

@@ -10,7 +10,7 @@
                         Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
 
     Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
-    
+
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 1, or (at your option)
@@ -24,7 +24,23 @@
 
 #include "bbs.h"
 #include "bbsgopher.h"
+#include "smth_screen.h"
+#include "main.h"
+#include "stuff.h"
+#include "xyz.h"
+#include "io.h"
+#include "announce.h"
+#include "mail.h"
+#include "more.h"
+#include "bbsinc.h"
+#include "bcache.h"
+#include "help.h"
+#include "maintain.h"
+#include "edit.h"
+#include "bbs_global_vars.h"
+#include "bbs-internal.h"
 
+#define MAXITEMS        1024       /* 精华区最大条目数 */
 #define PATHLEN         1024
 //modified by ylsdd #define A_PAGESIZE      (t_lines - 5)
 #define A_PAGESIZE      (t_lines - 4)
@@ -34,6 +50,13 @@
 #define ADDGOPHER       3
 
 void a_menu();
+static int read_anpath(char titles[20][STRLEN], char paths[20][PATHLEN]);
+static int save_anpath(char titles[20][STRLEN], char paths[20][PATHLEN]);
+static int logvisit(time_t timein, const char *path);
+static int chk_currBM_Personal(char *BMstr);
+static int countstr(char *s0, char *s1);
+static int getvisit(int n[2], const char *path);
+static int add_anpath(char *title, char *path);
 
 extern void a_prompt();		/* added by netty */
 extern int can_R_endline;
@@ -125,7 +148,7 @@ MENU *pm;
 		prints("      << 目前没有文章 >>\n");
 	for (n = pm->page; n < pm->page + A_PAGESIZE && n < pm->num; n++) {
 		overlen = 0;
-		strsncpy(title, pm->item[n]->title, sizeof (title));
+		ytht_strsncpy(title, pm->item[n]->title, sizeof(title));
 		if (a_fmode) {
 			snprintf(fname, STRLEN, "%s", pm->item[n]->fname);
 			if (snprintf(pathbuf, PATHLEN, "%s/%s", pm->path, fname)
@@ -209,7 +232,7 @@ int port;
 
 	if (pm->num < MAXITEMS) {
 		newitem = (ITEM *) malloc(sizeof (ITEM));
-		strsncpy(newitem->title, title, sizeof (newitem->title));
+		ytht_strsncpy(newitem->title, title, sizeof(newitem->title));
 		if (host != NULL) {
 			newitem->host =
 			    (char *) malloc(sizeof (char) * (strlen(host) + 1));
@@ -217,14 +240,12 @@ int port;
 		} else
 			newitem->host = host;
 		newitem->port = port;
-		strsncpy(newitem->fname, fname, sizeof (newitem->fname));
+		ytht_strsncpy(newitem->fname, fname, sizeof(newitem->fname));
 		pm->item[(pm->num)++] = newitem;
 	}
 }
 
-int
-countstr(char *s0, char *s1)
-{
+static int countstr(char *s0, char *s1) {
 	int i = 0, j;
 	char *ptr = s0;
 	j = strlen(s1);
@@ -266,8 +287,8 @@ MENU *pm;
 			litem.fname[79] = '\0';
 
 			curr_board = getboardbyname(litem.fname);
-			if (((!strstr(litem.title + 38, "(BM: BMS)") || HAS_PERM(PERM_BOARDS))
-					&& (!strstr(litem.title + 38, "(BM: SYSOPS)") || HAS_PERM(PERM_SYSOP))
+			if (((!strstr(litem.title + 38, "(BM: BMS)") || HAS_PERM(PERM_BOARDS, currentuser))
+					&& (!strstr(litem.title + 38, "(BM: SYSOPS)") || HAS_PERM(PERM_SYSOP, currentuser))
 					&& (strstr(litem.title, "<HIDE>") != litem.title)
 					&& ((curr_board != NULL) ? hasreadperm(&(curr_board->header)) : 1))
 				 || ((pm->level & PERM_BOARDS) && ((curr_board != NULL) ? hasreadperm(&(curr_board->header)) : 1))) {	/*modified by ylsdd */ /* modified by IronBlood 2014.6.1 */
@@ -288,8 +309,8 @@ MENU *pm;
 			hostname[0] = '\0';
 		} else if (strncmp(buf, "# Title=", 8) == 0) {
 			if (pm->mtitle[0] == '\0') {
-				strsncpy(pm->mtitle, buf + 8,
-					 sizeof (pm->mtitle));
+				ytht_strsncpy(pm->mtitle, buf + 8,
+							  sizeof(pm->mtitle));
 			}
 		} else if (strncmp(buf, "Host=", 5) == 0) {
 			strncpy(hostname, buf + 5, STRLEN);
@@ -406,7 +427,7 @@ int nomsg;
 		    ("\033[1;36m───────────────────────────────────────\033[0m\n",
 		     fpd);
 		fprintf(fpd, "\033[0;44;37m 作者 %-14s 时间 %-52s\033[0m\n",
-			fh2owner(fileinfo), Ctime(fileinfo->filetime));
+				fh2owner(fileinfo), ytht_ctime(fileinfo->filetime));
 		fputs
 		    ("\033[1;36m───────────────────────────────────────\033[0m\n",
 		     fpd);
@@ -449,22 +470,20 @@ check_import(char *anboard)
 		//by bjgyt if (!strcmp(anboard, "Personal_Corpus"))
 		if (!strcmp(anboard, "PersonalCorpus"))
 			return 0;
-		bp = getbcache(anboard);
+		bp = ythtbbs_cache_Board_get_board_by_name(anboard);
 		if (bp == NULL)
 			return -1;
 		if (!chk_currBM(&(bp->header), 1))
 			return -2;
 		return 0;
-	} else if (HAS_PERM(PERM_BLEVELS)) {
+	} else if (HAS_PERM(PERM_BLEVELS, currentuser)) {
 		strcpy(anboard, "noboard");
 		return 0;
 	} else
 		return -2;
 }
 
-int
-an_log(char *action, char *path)
-{
+static int an_log(char *action, char *path) {
 	char anboard[STRLEN], *ptr, buf[256];
 	if (!strncmp(path, "0Announce/groups/GROUP_", 23)) {
 		strncpy(anboard, &(path[25]), STRLEN);
@@ -544,7 +563,7 @@ int nomsg;
 	a_additem(&pm, genbuf, fname, NULL, 0);
 	a_savenames(&pm);
 	/*if(in_mail)
-	   sprintf( genbuf, "/bin/cp -r mail/%c/%s/%s %s 1>/dev/null 2>/dev/null", 
+	   sprintf( genbuf, "/bin/cp -r mail/%c/%s/%s %s 1>/dev/null 2>/dev/null",
 	   mytoupper(currentuser.userid[0]), currentuser.userid, fileinfo->filename , bname );
 	   else
 	   sprintf( genbuf, "/bin/cp -r boards/%s/%s %s 1>/dev/null 2>/dev/null", key , fileinfo->filename , bname );
@@ -762,7 +781,7 @@ int mode;
 		sprintf(genbuf, "%-38.38s %s ", title, currentuser.userid);
 	else {
 /*Add by SmallPig*/
-		if (HAS_PERM(PERM_SYSOP) || HAS_PERM(PERM_ANNOUNCE)) {
+		if (HAS_PERM(PERM_SYSOP, currentuser) || HAS_PERM(PERM_ANNOUNCE, currentuser)) {
 			move(1, 0);
 			clrtoeol();
 /*$$$$$$$$ Multi-BM Input, Modified By Excellent $$$$$$$*/
@@ -852,8 +871,8 @@ int paste;			// -1:cut 0:copy have perm 1:paste 2:copy have no perm
 #define AN_PATH "0Announce/groups/GROUP_0/"
 #define AN_PES_PATH AN_PATH "PersonalCorpus"
 		item = pm->item[pm->now];
-		strsncpy(title, item->title, sizeof (title));
-		strsncpy(filename, item->fname, sizeof (filename));
+		ytht_strsncpy(title, item->title, sizeof(title));
+		ytht_strsncpy(filename, item->fname, sizeof(filename));
 		if (snprintf(fpath, PATHLEN, "%s/%s", pm->path, filename) >
 		    PATHLEN - 1) {
 			prints("档案路径过深, 无法复制");
@@ -862,8 +881,8 @@ int paste;			// -1:cut 0:copy have perm 1:paste 2:copy have no perm
 		}
 		if ((strlen(fpath) < sizeof (AN_PATH)
 		     || !strncmp(fpath, AN_PES_PATH, sizeof (AN_PES_PATH) - 1))
-		    && (HAS_PERM(PERM_ANNOUNCE) || HAS_PERM(PERM_SYSOP)
-			|| HAS_PERM(PERM_OBOARDS))) {
+		    && (HAS_PERM(PERM_ANNOUNCE, currentuser) || HAS_PERM(PERM_SYSOP, currentuser)
+			|| HAS_PERM(PERM_OBOARDS, currentuser))) {
 			prints("站长不能拷贝个人文集, 如有需求, 联系系统维护");
 			egetch();
 			return;
@@ -1067,7 +1086,7 @@ a_changemtitle(char *fpath, char *newmtitle)
 	pm.path = fpath;
 	pm.level |= PERM_BOARDS;
 	a_loadnames(&pm);
-	strsncpy(pm.mtitle, newmtitle, sizeof (pm.mtitle));
+	ytht_strsncpy(pm.mtitle, newmtitle, sizeof(pm.mtitle));
 	a_savenames(&pm);
 	freeitem(&pm);
 	return 0;
@@ -1139,7 +1158,7 @@ int ch;
 		a_newitem(pm, ADDMAIL);
 		break;
 	case 'G':
-		if (HAS_PERM(PERM_SYSOP))
+		if (HAS_PERM(PERM_SYSOP, currentuser))
 			a_newitem(pm, ADDGOPHER);
 		break;
 	case 'p':
@@ -1183,7 +1202,7 @@ int ch;
 			break;
 		case 'V':
 		case 'v':
-			if (HAS_PERM(PERM_SYSOP)) {
+			if (HAS_PERM(PERM_SYSOP, currentuser)) {
 				if (ch == 'v')
 					sprintf(fpath, "%s/.Names", pm->path);
 				else
@@ -1199,7 +1218,7 @@ int ch;
 			ret = 0;
 			if (dashl(fpath))
 				break;
-			strsncpy(changed_T, item->title, 39);
+				ytht_strsncpy(changed_T, item->title, 39);
 			{
 				int i = strlen(changed_T) - 1;
 				while (i > 0 && isspace(changed_T[i]))
@@ -1216,11 +1235,11 @@ int ch;
 			if (dashf(fpath)) {
 				sprintf(genbuf, "%-38.38s %s ",
 					changed_T, currentuser.userid);
-				strsncpy(item->title, genbuf,
-					 sizeof (item->title));
+				ytht_strsncpy(item->title, genbuf,
+							  sizeof(item->title));
 			} else if (dashd(fpath)) {
-				if (HAS_PERM(PERM_SYSOP)
-				    || HAS_PERM(PERM_ANNOUNCE)) {
+				if (HAS_PERM(PERM_SYSOP, currentuser)
+				    || HAS_PERM(PERM_ANNOUNCE, currentuser)) {
 					char *dir = fpath + 25;
 					char *rcon;
 					move(1, 0);
@@ -1282,11 +1301,11 @@ int ch;
 						strcpy(item->fname, fname);
 					}
 				}
-				strsncpy(item->title, genbuf,
-					 sizeof (item->title));
+				ytht_strsncpy(item->title, genbuf,
+							  sizeof(item->title));
 			} else if (pm->item[pm->now]->host != NULL)
-				strsncpy(item->title, changed_T,
-					 sizeof (item->title));
+				ytht_strsncpy(item->title, changed_T,
+							  sizeof(item->title));
 			if (ret == 0) {
 				a_savenames(pm);
 				a_changemtitle(fpath, genbuf);
@@ -1299,8 +1318,8 @@ int ch;
 					sprintf(genbuf, "%-38.38s %s",
 						item->title,
 						currentuser.userid);
-					strsncpy(item->title, genbuf,
-						 sizeof (item->title));
+					ytht_strsncpy(item->title, genbuf,
+								  sizeof(item->title));
 					a_savenames(pm);
 				}
 				pm->page = 9999;
@@ -1446,7 +1465,7 @@ int lastlevel, lastbmonly;
 		case Ctrl('C'):
 			if (me.num == 0)
 				break;
-			if (!HAS_PERM(PERM_POST))
+			if (!HAS_PERM(PERM_POST, currentuser))
 				break;
 			if (snprintf
 			    (fname, PATHLEN, "%s/%s", path,
@@ -1473,12 +1492,12 @@ int lastlevel, lastbmonly;
 				}
 				//add by macintosh 050516
 				if (seek_in_file("deny_users", currentuser.userid)
-					&& strcmp(bname, "sysop") 
+					&& strcmp(bname, "sysop")
 					&& strcmp(bname,"committee")
 					&& strcmp(bname, "welcome")
 					&& strcmp(bname, "KaoYan")
-					&& strcmp(bname, "Appeal") 
-				       && !HAS_PERM(PERM_SYSOP)) {
+					&& strcmp(bname, "Appeal")
+				       && !HAS_PERM(PERM_SYSOP, currentuser)) {
 					move(5, 0);
 					clrtobot();
 					prints
@@ -1488,7 +1507,7 @@ int lastlevel, lastbmonly;
 					break;
 				}
 				if (deny_me(bname)
-				    && !HAS_PERM(PERM_SYSOP)) {
+				    && !HAS_PERM(PERM_SYSOP, currentuser)) {
 					move(5, 0);
 					clrtobot();
 					prints
@@ -1537,7 +1556,7 @@ int lastlevel, lastbmonly;
 			me.page = 9999;
 			break;
 		case 'w':
-			if ((in_mail != YEA) && HAS_PERM(PERM_READMAIL))
+			if ((in_mail != YEA) && HAS_PERM(PERM_READMAIL, currentuser))
 				m_read();
 			me.page = 9999;
 			break;
@@ -1655,7 +1674,7 @@ int lastlevel, lastbmonly;
 			break;
 		case 'F':
 		case 'U':
-			if (me.now < me.num && HAS_PERM(PERM_BASIC)) {
+			if (me.now < me.num && HAS_PERM(PERM_BASIC, currentuser)) {
 				a_forward(path, me.item[me.now], ch == 'U');
 				me.page = 9999;
 			}
@@ -1699,7 +1718,7 @@ int lastlevel, lastbmonly;
 		}
 		if (me.level & PERM_BOARDS)
 			a_manager(&me, ch);
-		else if (ch == 'a' && HAS_PERM(PERM_POST)
+		else if (ch == 'a' && HAS_PERM(PERM_POST, currentuser)
 			 && strstr(me.mtitle, "<GUESTBOOK>") == me.mtitle) {
 			a_newitem(&me, ADDITEM);
 		}
@@ -1749,7 +1768,7 @@ char group[STRLEN], bname[STRLEN], title[STRLEN], gname[STRLEN];
 		fclose(fn);
 	}
 	if (!seek_in_file("0Announce/.Search", bname))
-		addtofile("0Announce/.Search", searchname);
+		ytht_add_to_file("0Announce/.Search", searchname);
 	if (!dashd("0Announce/groups")) {
 		mkdir("0Announce/groups", 0777);
 		chmod("0Announce/groups", 0777);
@@ -1800,7 +1819,7 @@ char grp[STRLEN], bname[STRLEN], title[STRLEN];
 	pm.level |= PERM_BOARDS;	/*add by ylsdd */
 	a_loadnames(&pm);
 	for (i = 0; i < pm.num; i++) {
-		strsncpy(buf2, pm.item[i]->fname, sizeof (buf2));
+		ytht_strsncpy(buf2, pm.item[i]->fname, sizeof(buf2));
 		strcpy(check, strtok(buf2, "/~\n\b"));
 		if (strstr(pm.item[i]->title, title)
 		    && !strcmp(check, bname)) {
@@ -1839,12 +1858,12 @@ char bname[STRLEN], grp[STRLEN], title[STRLEN], newtitle[100];
 	pm.level |= PERM_BOARDS;	/*add by ylsdd */
 	a_loadnames(&pm);
 	for (i = 0; i < pm.num; i++) {
-		strsncpy(buf2, pm.item[i]->fname, sizeof (buf2));
+		ytht_strsncpy(buf2, pm.item[i]->fname, sizeof(buf2));
 		strcpy(check, strtok(buf2, "/~\n\b"));
 		if (strstr(pm.item[i]->title, title)
 		    && !strcmp(check, bname)) {
-			strsncpy(pm.item[i]->title, newtitle,
-				 sizeof (pm.item[i]->title));
+			ytht_strsncpy(pm.item[i]->title, newtitle,
+						  sizeof(pm.item[i]->title));
 			break;
 		}
 	}
@@ -1852,7 +1871,7 @@ char bname[STRLEN], grp[STRLEN], title[STRLEN], newtitle[100];
 	freeitem(&pm);
 	pm.path = bpath;
 	a_loadnames(&pm);
-	strsncpy(pm.mtitle, newtitle, sizeof (pm.mtitle));
+	ytht_strsncpy(pm.mtitle, newtitle, sizeof(pm.mtitle));
 	a_savenames(&pm);
 	freeitem(&pm);
 	return 0;
@@ -1862,13 +1881,13 @@ void
 Announce()
 {
 	sprintf(genbuf, "%s 精华区公布栏", MY_BBS_NAME);
-	a_menu(genbuf, "0Announce", (HAS_PERM(PERM_ANNOUNCE)
-				     || HAS_PERM(PERM_SYSOP)) ?
+	a_menu(genbuf, "0Announce", (HAS_PERM(PERM_ANNOUNCE, currentuser)
+				     || HAS_PERM(PERM_SYSOP, currentuser)) ?
 	       PERM_BOARDS : 0, 0);
 	clear();
 }
 
-//add by gluon, modified by ylsdd*/ 
+//add by gluon, modified by ylsdd*/
 void
 Personal(cmd)
 char *cmd;
@@ -1901,8 +1920,8 @@ char *cmd;
 		break;
 	}
 	if (dashd(buf)) {
-		a_menu(genbuf, buf, (HAS_PERM(PERM_ANNOUNCE)
-				     || HAS_PERM(PERM_SYSOP)) ?
+		a_menu(genbuf, buf, (HAS_PERM(PERM_ANNOUNCE, currentuser)
+				     || HAS_PERM(PERM_SYSOP, currentuser)) ?
 		       PERM_BOARDS : 0, 0);
 	} else if (cmd[0] == '*') {
 		a_prompt(-1,
@@ -1914,12 +1933,9 @@ char *cmd;
 	clear();
 }
 
-// end 
+// end
 /*chk_currBM_Personal用于对个人精华区的支持, by ylsdd*/
-int
-chk_currBM_Personal(BMstr)
-char *BMstr;
-{
+static int chk_currBM_Personal(char *BMstr) {
 	char *ptr;
 	char BMstrbuf[BM_LEN];
 	int chk1 = 0, chk2 = 0;
@@ -1939,27 +1955,25 @@ char *BMstr;
 		ptr = strtok(NULL, ",: ;|&()\n");
 	}
 	if (chk2 == 0) {
-		if (!HAS_PERM(PERM_BOARDS))
+		if (!HAS_PERM(PERM_BOARDS, currentuser))
 			return 0;
-		if (chk1 == 1 || HAS_PERM(PERM_BLEVELS))
+		if (chk1 == 1 || HAS_PERM(PERM_BLEVELS, currentuser))
 			return 2;
 		return 0;
 	}
 	//add by bjgyt for _Personal
-	if (HAS_PERM(PERM_SYSOP))
+	if (HAS_PERM(PERM_SYSOP, currentuser))
 		return 1;
 	//end add
-	if (chk1 == 0 && HAS_PERM(PERM_BLEVELS))
+	if (chk1 == 0 && HAS_PERM(PERM_BLEVELS, currentuser))
 		return 3;
-	if (chk1 == 1 && HAS_PERM(PERM_SPECIAL8))
+	if (chk1 == 1 && HAS_PERM(PERM_SPECIAL8, currentuser))
 		return 1;
 	return -1;
 }
 
 /* logvisit, 用来记录精华区的访问次数和时间长度 */
-int
-logvisit(time_t timein, const char *path)
-{
+static int logvisit(time_t timein, const char *path) {
 	char fn[PATH_MAX + 1];
 	int fd, t, n[2], len;
 	t = time(NULL) - timein;
@@ -1983,9 +1997,7 @@ logvisit(time_t timein, const char *path)
 	return 0;
 }
 
-int
-getvisit(int n[2], const char *path)
-{
+static int getvisit(int n[2], const char *path) {
 	char fn[PATH_MAX + 1];
 	int fd;
 	int len;
@@ -2057,7 +2069,7 @@ MENU *pm;
 	if (realpath(pm->path, rpath) == NULL)
 		return -1;
 	strcpy(buf, rpath + sizeof (MY_BBS_HOME "/0Announce"));
-	normalize(buf);
+	ytht_normalize(buf);
 	len = strlen(buf);
 	dirp = opendir(MY_BBS_HOME "/0Announce/.junk");
 	if (dirp == NULL)
@@ -2090,9 +2102,7 @@ MENU *pm;
 	return changed;
 }
 
-int
-add_anpath(char *title, char *path)
-{
+static int add_anpath(char *title, char *path) {
 	char titles[20][STRLEN], paths[20][PATHLEN], *ptr;
 	int i;
 	int index = 0, nindex = 0;
@@ -2246,9 +2256,7 @@ select_anpath()
 	return 0;
 }
 
-int
-save_anpath(char titles[20][STRLEN], char paths[20][PATHLEN])
-{
+static int save_anpath(char titles[20][STRLEN], char paths[20][PATHLEN]) {
 	int i;
 	FILE *fp;
 	char pathfile[PATHLEN];
@@ -2264,9 +2272,7 @@ save_anpath(char titles[20][STRLEN], char paths[20][PATHLEN])
 	return 0;
 }
 
-int
-read_anpath(char titles[20][STRLEN], char paths[20][PATHLEN])
-{
+static int read_anpath(char titles[20][STRLEN], char paths[20][PATHLEN]) {
 	int i, j = 0;
 	FILE *fp;
 	char pathfile[PATHLEN], *ptr;
