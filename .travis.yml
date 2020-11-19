@@ -1,5 +1,6 @@
 language: c
 compiler: gcc
+dist: focal
 script:
   - (mkdir ght_build && cd ght_build && tar xf ../software/libghthash-0.5.0-x86_64.tar.gz && cd libghthash-0.5.0-x86_64 && ./configure && make && sudo make install)
   - (sudo ldconfig)
