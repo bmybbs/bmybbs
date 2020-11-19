@@ -294,7 +294,7 @@ multi_user_check()
 		return;
 	}
 	logins = ythtbbs_cache_UserTable_count_telnet(usernum);
-	if (!logins)
+	if (logins == 1)
 		return;
 	puin = ythtbbs_cache_UserTable_query_user_by_uid(currentuser.userid, HAS_PERM(PERM_SYSOP | PERM_SEECLOAK, currentuser), usernum, false);
 	if (!puin)
@@ -308,7 +308,7 @@ multi_user_check()
 			buffer, 4, DOECHO, YEA);
 	if (toupper(buffer[0]) != 'Y') {
 		logins = ythtbbs_cache_UserTable_count_telnet(usernum);
-		if (logins >= 2 || (currentuser.dietime > 0 && logins >= 2)) {
+		if (logins > 2 || (currentuser.dietime > 0 && logins > 2)) {
 			scroll();
 			scroll();
 			move(t_lines - 2, 0);
