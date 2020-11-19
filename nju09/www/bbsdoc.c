@@ -60,7 +60,7 @@ void
 printboardhot(struct boardmem *x)
 {
 	char path[STRLEN];
-	struct mmapfile mf = { ptr:NULL, size:0 };
+	struct mmapfile mf = { .ptr = NULL, .size = 0 };
 	sprintf(path, "boards/%s/TOPN", x->header.filename);
 	MMAP_TRY {
 		if (mmapfile(path, &mf) == -1) {

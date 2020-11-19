@@ -15,7 +15,7 @@ char *ytht_ctime(const time_t clock)
 
 char *ytht_ctime_r(const time_t clock, char *buf) {
 	char *tmp;
-	ctime_r(clock, buf);
+	ctime_r(&clock, buf);
 	tmp = strchr(buf, '\n');
 	if (NULL != tmp)
 		*tmp = '\0';

@@ -95,7 +95,7 @@ void ythtbbs_cache_UserTable_resolve() {
 
 	if (shm_user_table->update_time < st.st_mtime) {
 		local_usernumber = 0;
-		ythtbbs_record_apply_v(PASSFILE, ythtbbs_cache_UserTable_fill_v, sizeof(struct userec), &local_usernumber);
+		ythtbbs_record_apply_v(MY_BBS_HOME "/" PASSFILE, ythtbbs_cache_UserTable_fill_v, sizeof(struct userec), &local_usernumber);
 
 		shm_user_table->number = local_usernumber;
 		shm_user_table->update_time = st.st_mtime;
@@ -233,13 +233,12 @@ char *ythtbbs_cache_UserTable_get_namearray(char buf[][IDLEN + 1], int *pnum, ch
 	if (tag[0] == '\0') {
 		*pnum = reg_user_table->number;
 		total = reg_user_table->number;
-		for (n = 0; n < total;) {
+		for (n = 0; n < total; n++) {
 			ptr = reg_user_table->users[n].userid;
 			if (ptr[0] == '\0')
 				continue;
 
 			strcpy(buf[num++], ptr);
-			n++;
 		}
 		return buf[0];
 	}

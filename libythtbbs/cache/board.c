@@ -34,7 +34,7 @@ void ythtbbs_cache_Board_resolve() {
 		}
 	}
 
-	lockfd = open(MY_BBS_HOME "./CACHE.board.lock", O_RDONLY | O_CREAT, 0600);
+	lockfd = open(MY_BBS_HOME "/.CACHE.board.lock", O_RDONLY | O_CREAT, 0600);
 	if (lockfd < 0)
 		return;
 	flock(lockfd, LOCK_EX);
@@ -49,7 +49,7 @@ void ythtbbs_cache_Board_resolve() {
 		shm_board->uptime = local_now;
 		countboard = 0;
 
-		new_apply_record(BOARDS, sizeof(struct boardheader), fillbcache, &countboard);
+		new_apply_record(MY_BBS_HOME "/" BOARDS, sizeof(struct boardheader), fillbcache, &countboard);
 
 		shm_board->number = countboard;
 
@@ -218,5 +218,21 @@ static void bmonlinesync() {
 	}
 
 	newtrace("system reload bmonline");
+}
+
+void ythtbbs_cache_Board_dump(FILE *fp) {
+	int i;
+	struct boardmem *board;
+	ythtbbs_cache_Board_resolve();
+	fprintf(fp, "===== Board =====\n");
+
+	for (i = 0; i < MAXBOARD; i++) {
+		board = &shm_board->bcache[i];
+
+		if (board->header.filename[0] == '\0')
+			continue;
+
+		fprintf(fp, "%d, %s\n", i, board->header.filename);
+	}
 }
 

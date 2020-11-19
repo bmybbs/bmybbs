@@ -27,7 +27,7 @@ void ythtbbs_cache_UserTable_remove_utmp_idx(int uid, int utmp_idx);
 static inline void shm_err(key_t key) {
 	char buf[64];
 
-	sprintf(buf, "SHM Error! key = %d.\n", key);
+	sprintf(buf, "SHM Error! key = 0x%X.", key & 0xffff);
 	newtrace(buf);
 	exit(1);
 }

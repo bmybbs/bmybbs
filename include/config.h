@@ -181,18 +181,18 @@ You must also set "EightBitMode=pass8" in /etc/sendmail.cf
 #define BBS_BIG5_PORT 2300
 #define SMAGIC	      "BMY"
 
-#define CONVTABLE_SHMKEY   3101
-#define BCACHE_SHMKEY      7813
-#define UCACHE_SHMKEY      7912
-#define UCACHE_HASH_SHMKEY 7911
-#define UTMP_SHMKEY        3785
-#define UTMP_HASH_SHMKEY   3786
-#define UINDEX_SHMKEY      3787
-#define ACBOARD_SHMKEY     9014
-#define GOODBYE_SHMKEY     5003
-#define WELCOME_SHMKEY     5004
-#define ENDLINE1_SHMKEY    5006
-#define STAT_SHMKEY        5100
+#define CONVTABLE_SHMKEY   0x0C1D
+#define BCACHE_SHMKEY      0x1E85
+#define UCACHE_SHMKEY      0x1EE8
+#define UCACHE_HASH_SHMKEY 0x1EE7
+#define UTMP_SHMKEY        0x0EC9
+#define UTMP_HASH_SHMKEY   0x0ECA
+#define UINDEX_SHMKEY      0x0ECB
+#define ACBOARD_SHMKEY     0x2336
+#define GOODBYE_SHMKEY     0x138B
+#define WELCOME_SHMKEY     0x138C
+#define ENDLINE1_SHMKEY    0x138E
+#define STAT_SHMKEY        0x13EC
 
 #define BBSLOG_MSQKEY 3333
 #define BBSEVA_MSQKEY 3334

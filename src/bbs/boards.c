@@ -1265,10 +1265,11 @@ Read()
 		return 0;
 
 	board = ythtbbs_cache_Board_get_board_by_idx(uinfo.curboard - 1);
-	if (uinfo.curboard && board->inboard > 0)
+	if (uinfo.curboard && board && board->inboard > 0)
 		board->inboard--;
 	uinfo.curboard = getbnum(currboard);
 	update_utmp();
+	board = ythtbbs_cache_Board_get_board_by_idx(uinfo.curboard - 1);
 	board->inboard++;
 	setvfile(notename, currboard, "notes");
 	clear();
