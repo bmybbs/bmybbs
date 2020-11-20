@@ -1,11 +1,12 @@
 #include "bbslib.h"
+#include "check_server.h"
 
 int
 bbsattach_main()
 {
 	char *ptr, *path_info;
 	struct cgi_applet *a;
-	path_info = getsenv("SCRIPT_URL");
+	path_info = g_is_nginx ? g_url : getsenv("SCRIPT_URL");
 	path_info = strchr(path_info + 1, '/');
 	if (NULL == path_info)
 		http_fatal("错误的文件名");

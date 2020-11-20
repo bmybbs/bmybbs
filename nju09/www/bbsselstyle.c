@@ -1,11 +1,12 @@
 #include "bbslib.h"
+#include "check_server.h"
 
 int
 bbsselstyle_main()
 {
 	char name[STRLEN], *p, *url;
 	int i, n= NWWWSTYLE;
-	url = getenv("SCRIPT_URL");
+	url = g_is_nginx ? g_url : getenv("SCRIPT_URL");
 	if (NULL == url)
 		return -1;
 	name[0] = 0;

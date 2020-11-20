@@ -128,6 +128,7 @@ set(SRC
 	bbsupdatelastpost.c
 	boardrc.c
 	deny_users.c
+	check_server.c
 
 	api_user_check.c
 	api_loginpics.c
