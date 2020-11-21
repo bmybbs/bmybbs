@@ -340,6 +340,8 @@ main(int argc, char *argv[], char *environment[])
 	ythtbbs_cache_utmp_resolve();
 
 	ytht_strsncpy(cookie_buf, getsenv("HTTP_COOKIE"), sizeof(cookie_buf));
+	if (strlen(cookie_buf) < 10)
+		http_fatal("ÇëÏÈµÇÂ¼");
 	memset(&cookie, 0, sizeof(struct bmy_cookie));
 	bmy_cookie_parse(cookie_buf, &cookie);
 
