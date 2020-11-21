@@ -5,6 +5,13 @@
 #include "bmy/cookie.h"
 #include "ythtbbs/session.h"
 
+/* ../check_server.h */
+#define MAX_URL_LEN 1024
+extern bool g_is_nginx;
+extern char *g_url;
+extern char g_url_buf[MAX_URL_LEN];
+extern void check_server(void);
+
 static char *FileName;		/* The filename, as selected by the user. */
 static char *ContentStart;	/* Pointer to the file content. */
 static int ContentLength;	/* Bytecount of the content. */
@@ -26,7 +33,7 @@ getreqstr()
 	static char str[100] = { 0 }, *ptr;
 	if (str[0])
 		return str;
-	ytht_strsncpy(str, getsenv("SCRIPT_URL"), sizeof(str));
+	ytht_strsncpy(str, (g_is_nginx ? g_url : getsenv("SCRIPT_URL")), sizeof(str));
 	if ((ptr = strchr(str, '&')))
 		*ptr = 0;
 	return str;
@@ -313,6 +320,17 @@ main(int argc, char *argv[], char *environment[])
 	const struct user_info *ptr_info;
 	char cookie_buf[128];
 	struct bmy_cookie cookie;
+
+	check_server();
+	if (g_is_nginx) {
+		// parse url
+		char *tmp = getenv("REQUEST_URI");
+		if (tmp == NULL)
+			http_fatal("内部错误，无法获取 REQUEST_URI");
+
+		ytht_strsncpy(g_url_buf, tmp, MAX_URL_LEN);
+		g_url = strtok(g_url_buf, "?");
+	}
 
 	html_header();
 	seteuid(BBSUID);
