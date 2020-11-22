@@ -4,8 +4,6 @@
 #include "ytht/fileop.h"
 #include "ytht/mgrep.h"
 
-int WORDBOUND, WHOLELINE, NOUPPER, INVERSE, FILENAMEONLY, SILENT, FNAME;
-int ONLYCOUNT, num_of_matched, total_line;
 char *CurrentFileName;
 
 int
@@ -38,27 +36,12 @@ ytht_smth_reload_badwords(char *wordlistf, char *imgf)
 	return 0;
 }
 
-static void
-default_setting()
-{
-	WHOLELINE = 0;
-	NOUPPER = 1;
-	INVERSE = 0;
-	FILENAMEONLY = 1;
-	WORDBOUND = 0;
-	SILENT = 1;
-	FNAME = 1;
-	ONLYCOUNT = 0;
-
-	num_of_matched = 0;
-}
-
 int
 ytht_smth_filter_file(char *checkfile, struct mmapfile *badword_img)
 {
 	int retv;
 	struct mmapfile mf = { ptr:NULL };
-	default_setting();
+	ytht_mgrep_default_setting();
 	CurrentFileName = checkfile;
 	if (mmapfile(checkfile, &mf) == -1) {
 		return 0;
@@ -72,7 +55,7 @@ int
 ytht_smth_filter_string(char *string, struct mmapfile *badword_img)
 {
 	int retv;
-	default_setting();
+	ytht_mgrep_default_setting();
 	CurrentFileName = "";
 	retv = ytht_mgrep_mgrep_str(string, strlen(string), (struct pattern_image *) badword_img->ptr);
 	return retv;

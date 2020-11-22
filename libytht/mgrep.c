@@ -9,11 +9,9 @@
 #include "ytht/common.h"
 #include "ytht/mgrep.h"
 
-extern int ONLYCOUNT, FNAME, SILENT, FILENAMEONLY, num_of_matched;
-extern int INVERSE;
-extern int WORDBOUND, WHOLELINE, NOUPPER;
+static int WORDBOUND, WHOLELINE, NOUPPER, INVERSE, FILENAMEONLY, SILENT, FNAME;
+static int ONLYCOUNT, num_of_matched, total_line;
 extern unsigned char *CurrentFileName;
-extern int total_line;
 
 static void countline(unsigned char *text, int len);
 
@@ -21,6 +19,19 @@ static int mgrep(int fd, struct pattern_image *patt_img);
 static void monkey1(register unsigned char *text, int start, int end, struct pattern_image *patt_img);
 static int m_short(unsigned char *text, int start, int end, struct pattern_image *patt_img);
 static void f_prep(int pat_index, unsigned char *Pattern, struct pattern_image *patt_img);
+
+void ytht_mgrep_default_setting() {
+	WHOLELINE = 0;
+	NOUPPER = 1;
+	INVERSE = 0;
+	FILENAMEONLY = 1;
+	WORDBOUND = 0;
+	SILENT = 1;
+	FNAME = 1;
+	ONLYCOUNT = 0;
+
+	num_of_matched = 0;
+}
 
 int
 ytht_mgrep_releasepf(struct pattern_image *patt_img)
@@ -181,11 +192,7 @@ mgrep(int fd, struct pattern_image *patt_img)
 	return 0;
 } /* end mgrep */
 
-static void
-countline(text, len)
-unsigned char *text;
-int len;
-{
+static void countline(unsigned char *text, int len) {
 	int i;
 
 	for (i = 0; i < len; i++)
