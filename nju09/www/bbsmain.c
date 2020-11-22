@@ -2,6 +2,7 @@
 int looponce = 0;
 
 #include "njuapi.h"
+#include "check_server.h"
 
 /* BBSLIB.c */
 extern int cookie_parse();
@@ -179,6 +180,7 @@ int main(int argc, char *argv[]) {
 	thispid = getpid();
 	now_t = time(NULL);
 	srand(now_t * 2 + thispid);
+	check_server();
 	html_header(0);
 	if (geteuid() != BBSUID)
 		http_fatal("uid error.");
@@ -208,7 +210,7 @@ int main(int argc, char *argv[]) {
 
 		cookie_parse();
 		if (url_parse())
-			http_fatal("%s 没有实现的功能!", getsenv("SCRIPT_URL"));
+			http_fatal("%s 没有实现的功能!", (g_is_nginx ? g_url : getsenv("SCRIPT_URL")));
 		http_parm_init();
 		a = get_cgi_applet(needcgi);
 		if (a != NULL) {
@@ -221,7 +223,7 @@ int main(int argc, char *argv[]) {
 			incgiloop = 0;
 			continue;
 		}
-		http_fatal("%s 没有实现的功能!", getsenv("SCRIPT_URL"));
+		http_fatal("%s 没有实现的功能!", (g_is_nginx ? g_url : getsenv("SCRIPT_URL")));
 		incgiloop = 0;
 	}
 	munmap(ummap_ptr, ummap_size);

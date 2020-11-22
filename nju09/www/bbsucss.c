@@ -1,11 +1,11 @@
 #include "bbslib.h"
-
+#include "check_server.h"
 
 int
 bbsucss_main()
 {
 	char  *path_info, filename[255] ;
-	path_info = getsenv("SCRIPT_URL");
+	path_info = g_is_nginx ? g_url : getsenv("SCRIPT_URL");
 	path_info = strrchr(path_info , '/')+1;
 	printf("Content-type: text/css\n\n");
 	if (!loginok || isguest) {

@@ -12,6 +12,7 @@
 //#endif
 #include "bmy/cookie.h"
 #include "ythtbbs/session.h"
+#include "check_server.h"
 
 char needcgi[STRLEN];
 
@@ -566,7 +567,20 @@ url_parse()
 {
 	char *url, *end, name[STRLEN], *p, *extraparam;
 	// e.g. url = /BMY/foo
-	url = getenv("SCRIPT_URL");
+	if (g_is_nginx) {
+		// 对于 nginx 的运行方式（其实 lighttpd 也适用）
+		char *tmp = getenv("REQUEST_URI");
+		if (tmp == NULL)
+			return -1;
+
+		ytht_strsncpy(g_url_buf, tmp, MAX_URL_LEN);
+		g_url = strtok(g_url_buf, "?");
+		url = g_url;
+	} else {
+		// 传统 apache 方式运行
+		url = getenv("SCRIPT_URL");
+	}
+
 	if (NULL == url)
 		return -1;
 	strcpy(name, "/");

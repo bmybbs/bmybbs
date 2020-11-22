@@ -1,4 +1,5 @@
 #include "bbslib.h"
+#include "check_server.h"
 
 static void show_xbanner(void);
 static void show_xsec(const struct sectree *sec);
@@ -78,7 +79,7 @@ bbsx_main()
 	struct boardmem *x1;
 	char *ptr, *board;
 
-	board = getsenv("SCRIPT_URL");
+	board = g_is_nginx ? g_url : getsenv("SCRIPT_URL");
 	board = strrchr(board , '/')+1;
 
 	if (strstr(board, ".tgz") && !strstr(board, "bbsx"))

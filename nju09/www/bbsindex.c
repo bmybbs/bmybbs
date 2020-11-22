@@ -1,4 +1,5 @@
 #include "bbslib.h"
+#include "check_server.h"
 
 char *get_login_pic_link (char *picname, char *linkback);
 
@@ -117,14 +118,14 @@ bbsindex_main()
 		http_quit();
 		return 0;
 	}
-	if (strcmp(FIRST_PAGE, getsenv("SCRIPT_URL")) == 0) {
+	if (strcmp(FIRST_PAGE, (g_is_nginx ? g_url : getsenv("SCRIPT_URL"))) == 0) {
 		loginwindow();
 		http_quit();
 	}
 
 	if (cache_header(1000000000, 86400))
 		return 0;
-	if (strcmp("/" SMAGIC "/", getsenv("SCRPIT_URL")) == 0) {
+	if (strcmp("/" SMAGIC "/", (g_is_nginx ? g_url : getsenv("SCRIPT_URL"))) == 0) {
 		html_header(1);
 		if (!isguest && (readuservalue(currentuser.userid, "wwwstyle", str, sizeof (str)) || atoi(str) != wwwstylenum)) {
 			sprintf(str, "%d", wwwstylenum);
