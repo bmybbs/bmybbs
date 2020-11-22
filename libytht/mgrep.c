@@ -15,7 +15,7 @@ extern unsigned char *CurrentFileName;
 
 static void countline(unsigned char *text, int len);
 
-static int mgrep(int fd, struct pattern_image *patt_img);
+//static int mgrep(int fd, struct pattern_image *patt_img);
 static void monkey1(register unsigned char *text, int start, int end, struct pattern_image *patt_img);
 static int m_short(unsigned char *text, int start, int end, struct pattern_image *patt_img);
 static void f_prep(int pat_index, unsigned char *Pattern, struct pattern_image *patt_img);
@@ -150,6 +150,7 @@ ytht_mgrep_mgrep_str(char *text, int num, struct pattern_image *patt_img)
 	return num_of_matched;
 } /* end ytht_mgrep_mgrep_str */
 
+/*
 static int
 mgrep(int fd, struct pattern_image *patt_img)
 {
@@ -157,7 +158,7 @@ mgrep(int fd, struct pattern_image *patt_img)
 	unsigned char text[2 * BLOCKSIZE + MAXLINE];
 	register int buf_end, num_read, start=0, end=0, residue = 0;
 
-	text[MAXLINE - 1] = '\n';	/* initial case */
+	text[MAXLINE - 1] = '\n'; // initial case
 	start = MAXLINE - 1;
 
 	while ((num_read = read(fd, text + MAXLINE, BLOCKSIZE)) > 0) {
@@ -180,7 +181,7 @@ mgrep(int fd, struct pattern_image *patt_img)
 			start = 1;
 		}
 		strncpy(text + start, text + end, residue);
-	}			/* end of while(num_read = ... */
+	} // end of while(num_read = ...
 	text[MAXLINE] = '\n';
 	text[start - 1] = '\n';
 	if (residue > 1) {
@@ -190,7 +191,8 @@ mgrep(int fd, struct pattern_image *patt_img)
 			monkey1(text, start, end, patt_img);
 	}
 	return 0;
-} /* end mgrep */
+} // end mgrep
+*/
 
 static void countline(unsigned char *text, int len) {
 	int i;
