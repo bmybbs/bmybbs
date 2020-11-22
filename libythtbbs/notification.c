@@ -16,8 +16,7 @@ static struct NotifyItem * parse_to_item(xmlNodePtr xmlItem);
 static void addItemtoList(NotifyItemList *List, struct NotifyItem *Item);
 static int add_notification(char * to_userid, char * from_userid, char * board, time_t article_id, char * title_gbk, int noti_type);
 
-static int add_notification(char * to_userid, char * from_userid, char * board,
-						  time_t article_id, char * title_gbk, int noti_type) {
+static int add_notification(char * to_userid, char * from_userid, char * board, time_t article_id, char * title_gbk, int noti_type) {
 	char noti_type_str[8];
 	sprintf(noti_type_str, "%d", noti_type);
 
@@ -69,13 +68,11 @@ static int add_notification(char * to_userid, char * from_userid, char * board,
 	return 0;
 }
 
-int add_post_notification(char * to_userid, char * from_userid, char * board,
-						  time_t article_id, char * title_gbk) {
+int add_post_notification(char * to_userid, char * from_userid, char * board, time_t article_id, char * title_gbk) {
 	return add_notification(to_userid, from_userid, board, article_id, title_gbk, NOTIFY_TYPE_POST);
 }
 
-int add_mention_notification(char * to_userid, char * from_userid, char * board,
-						  time_t article_id, char * title_gbk) {
+int add_mention_notification(char * to_userid, char * from_userid, char * board, time_t article_id, char * title_gbk) {
 	return add_notification(to_userid, from_userid, board, article_id, title_gbk, NOTIFY_TYPE_MENTION);
 }
 
