@@ -38,7 +38,7 @@ int bmy_cookie_gen(char *buf, size_t len, const struct bmy_cookie *cookie) {
 		return -1;
 
 	if (cookie == NULL) {
-		sprintf(buf, "");
+		buf[0] = '\0';
 		return 0;
 	}
 
