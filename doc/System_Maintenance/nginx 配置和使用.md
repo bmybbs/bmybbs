@@ -68,5 +68,11 @@ server {
 这里就不展开配置了，参考 [\[文档\]nju09如何使用debian自带apache2.2.txt]([文档]nju09如何使用debian自带apache2.2.txt) 以及安装脚本。几个变更：
 1. `/etc/apache2/ports.conf` 修改监听端口为 `127.0.0.1:8082`，且 vhost 对应变更。
 2. 禁用 `ssl` 模块，启用 `remoteip` 模块。
-3. 编辑 `/etc/apache2/conf-enabled/remoteip.conf` 内容为 `RemoteIPHeader REMOTE_ADDR`，这样执行 cgi 的时候才会变更为实际 IP（否则均为 `127.0.0.1`）。
+3. 编辑 `/etc/apache2/conf-enabled/remoteip.conf` 内容如下，这样执行 cgi 的时候才会变更为实际 IP（否则均为 `127.0.0.1`）。
+
+```
+RemoteIPHeader REMOTE_ADDR
+RemoteIPInternalProxy 10.0.0.0/8
+RemoteIPInternalProxy 127.0.0.1/32
+```
 
