@@ -118,7 +118,7 @@ ytht_mgrep_prepf(int fp, struct pattern_image **ppatt_img, size_t * patt_image_l
 	num_pat = p - 1;
 	patt_img->p_size = MAXPAT;
 	for (i = 1; i <= num_pat; i++) {
-		p = strlen(patt_img->pat_spool + patt_img->patt[i]);
+		p = strlen((char *)(patt_img->pat_spool + patt_img->patt[i]));
 		patt_img->pat_len[i] = p;
 		if (p != 0 && p < patt_img->p_size)
 			patt_img->p_size = p;
