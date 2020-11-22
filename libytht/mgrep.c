@@ -25,18 +25,18 @@ static void f_prep(int pat_index, unsigned char *Pattern, struct pattern_image *
 int
 ytht_mgrep_releasepf(struct pattern_image *patt_img)
 {
-	/*
-	   for (i = 0; i < MAXHASH; i++) {
-	   struct pat_list* curr;
-	   curr=patt_img->HASH[i];
-	   while (curr!=NULL) {
-	   struct pat_list* next;
-	   next=curr->next;
-	   free((void*)curr);
-	   curr=next;
-	   }
-	   }
-	 */
+/*
+	for (i = 0; i < MAXHASH; i++) {
+		struct pat_list* curr;
+		curr=patt_img->HASH[i];
+		while (curr!=NULL) {
+			struct pat_list* next;
+			next=curr->next;
+			free((void*)curr);
+			curr=next;
+		}
+	}
+*/
 	free((void *) patt_img);
 	return 0;
 }
@@ -51,8 +51,7 @@ ytht_mgrep_prepf(int fp, struct pattern_image **ppatt_img, size_t * patt_image_l
 	unsigned Mask = 15;
 	int num_read;
 
-	*ppatt_img =
-	    (struct pattern_image *) malloc(sizeof (struct pattern_image));
+	*ppatt_img = (struct pattern_image *) malloc(sizeof (struct pattern_image));
 	patt_img = *ppatt_img;
 	*patt_image_len = sizeof (*patt_img);
 	bzero(patt_img, *patt_image_len);
@@ -63,8 +62,7 @@ ytht_mgrep_prepf(int fp, struct pattern_image **ppatt_img, size_t * patt_image_l
 	while ((num_read = read(fp, patt_img->buf + length, BLOCKSIZE)) > 0) {
 		length = length + num_read;
 		if (length > MAXPATFILE) {
-			errlog("maximum pattern file size is %d\n",
-			       MAXPATFILE);
+			errlog("maximum pattern file size is %d\n", MAXPATFILE);
 			return -1;
 		}
 	}
@@ -274,10 +272,11 @@ static void monkey1(register unsigned char *text, int start, int end, struct pat
 						}
 /*
 				else {
-			  		if(FNAME) printf("%s: ",CurrentFileName);
-                          		while(*(--text) != '\n');
-                          		while(*(++text) != '\n') putchar(*text);
-			  		printf("\n");
+					if(FNAME)
+						printf("%s: ",CurrentFileName);
+					while(*(--text) != '\n');
+					while(*(++text) != '\n') putchar(*text);
+					printf("\n");
 				}
 */
 					}
