@@ -10,10 +10,11 @@
 #include "ytht/mgrep.h"
 
 static int WORDBOUND, WHOLELINE, NOUPPER, INVERSE, FILENAMEONLY, SILENT, FNAME;
-static int ONLYCOUNT, num_of_matched, total_line;
+static int ONLYCOUNT, num_of_matched;
+// static int total_line;
 extern unsigned char *CurrentFileName;
 
-static void countline(unsigned char *text, int len);
+//static void countline(unsigned char *text, int len);
 
 //static int mgrep(int fd, struct pattern_image *patt_img);
 static void monkey1(register unsigned char *text, int start, int end, struct pattern_image *patt_img);
@@ -194,6 +195,7 @@ mgrep(int fd, struct pattern_image *patt_img)
 } // end mgrep
 */
 
+/*
 static void countline(unsigned char *text, int len) {
 	int i;
 
@@ -201,6 +203,7 @@ static void countline(unsigned char *text, int len) {
 		if (text[i] == '\n')
 			total_line++;
 }
+*/
 
 static void monkey1(register unsigned char *text, int start, int end, struct pattern_image *patt_img)
 {
