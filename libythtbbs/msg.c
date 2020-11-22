@@ -100,10 +100,9 @@ translate_msg(char *src, struct msghead *head, char *dest, int add_site)
 	if (head->mode == 0) {
 		if (add_site)
 			snprintf(uid, STRLEN, "Õ¾³¤@%s", MY_BBS_ID);
-		else	
+		else
 			sprintf(uid, "Õ¾³¤");
-	}
-	else { 
+	} else {
 		if (add_site)
 			snprintf(uid, STRLEN, "%s@%s", head->id, MY_BBS_ID);
 		else
@@ -154,8 +153,7 @@ translate_msg(char *src, struct msghead *head, char *dest, int add_site)
 			j = 0;
 		else if (src[i] < 0)
 			j = 1;
-		if ((j == 0 && pos >= 80) || (j == 1 && pos >= 79)
-		    || src[i] == '\n') {
+		if ((j == 0 && pos >= 80) || (j == 1 && pos >= 79) || src[i] == '\n') {
 			for (; pos < 79; pos++)
 				dest[len++] = ' ';
 			dest[len++] = '';
