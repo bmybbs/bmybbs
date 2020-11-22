@@ -11,8 +11,8 @@ save_msgtext(char *uident, struct msghead *head, const char *msgbuf)
 	struct flock ldata;
 	struct stat buf;
 
-	sethomefile(fname, uident, "msgindex");
-	sethomefile(fname2, uident, "msgcontent");
+	sethomefile_s(fname, sizeof(fname), uident, "msgindex");
+	sethomefile_s(fname2, sizeof(fname2), uident, "msgcontent");
 
 	if ((fd = open(fname, O_WRONLY | O_CREAT, 0664)) == -1) {
 		errlog("msgopen err, %s", uident);
@@ -58,7 +58,7 @@ save_msgtext(char *uident, struct msghead *head, const char *msgbuf)
 	close(fd);
 
 	if (!head->sent) {
-		sethomefile(fname, uident, "msgindex2");
+		sethomefile_s(fname, sizeof(fname), uident, "msgindex2");
 		if ((fd = open(fname, O_WRONLY | O_CREAT, 0664)) == -1) {
 			errlog("msgopen err, %s", uident);
 			return -1;	/* ´´½¨ÎÄ¼þ·¢Éú´íÎó */
@@ -100,10 +100,9 @@ translate_msg(char *src, struct msghead *head, char *dest, int add_site)
 	if (head->mode == 0) {
 		if (add_site)
 			snprintf(uid, STRLEN, "Õ¾³¤@%s", MY_BBS_ID);
-		else	
+		else
 			sprintf(uid, "Õ¾³¤");
-	}
-	else { 
+	} else {
 		if (add_site)
 			snprintf(uid, STRLEN, "%s@%s", head->id, MY_BBS_ID);
 		else
@@ -154,8 +153,7 @@ translate_msg(char *src, struct msghead *head, char *dest, int add_site)
 			j = 0;
 		else if (src[i] < 0)
 			j = 1;
-		if ((j == 0 && pos >= 80) || (j == 1 && pos >= 79)
-		    || src[i] == '\n') {
+		if ((j == 0 && pos >= 80) || (j == 1 && pos >= 79) || src[i] == '\n') {
 			for (; pos < 79; pos++)
 				dest[len++] = ' ';
 			dest[len++] = '';
@@ -192,7 +190,7 @@ get_unreadcount(char *uident)
 	struct flock ldata;
 	struct stat buf;
 
-	sethomefile(fname, uident, "msgindex2");
+	sethomefile_s(fname, sizeof(fname), uident, "msgindex2");
 
 	if ((fd = open(fname, O_RDONLY, 0664)) == -1) {
 		return 0;	/* ´´½¨ÎÄ¼þ·¢Éú´íÎó */
@@ -237,7 +235,7 @@ get_msgcount(int id, char *uident)
 		sprintf(idname, "msgindex%d", id + 1);
 	else
 		strcpy(idname, "msgindex");
-	sethomefile(fname, uident, idname);
+	sethomefile_s(fname, sizeof(fname), uident, idname);
 
 	if ((fd = open(fname, O_RDONLY, 0664)) == -1) {
 		return 0;	/* ´´½¨ÎÄ¼þ·¢Éú´íÎó */
@@ -271,7 +269,7 @@ load_msghead(int id, char *uident, struct msghead *head, int index)
 		sprintf(idname, "msgindex%d", id + 1);
 	else
 		strcpy(idname, "msgindex");
-	sethomefile(fname, uident, idname);
+	sethomefile_s(fname, sizeof(fname), uident, idname);
 
 	if ((fd = open(fname, O_RDONLY, 0664)) == -1) {
 		errlog("msgopen err, %s", uident);
@@ -310,7 +308,7 @@ load_msgtext(char *uident, struct msghead *head, char *msgbuf)
 	char fname2[STRLEN];
 	int fd2, i;
 
-	sethomefile(fname2, uident, "msgcontent");
+	sethomefile_s(fname2, sizeof(fname2), uident, "msgcontent");
 
 	msgbuf[0] = 0;
 
@@ -337,7 +335,7 @@ get_unreadmsg(char *uident)
 	struct flock ldata;
 	struct stat buf;
 
-	sethomefile(fname, uident, "msgindex2");
+	sethomefile_s(fname, sizeof(fname), uident, "msgindex2");
 
 	if ((fd = open(fname, O_RDWR | O_CREAT, 0664)) == -1) {
 		errlog("msgopen err, %s", uident);
@@ -378,11 +376,11 @@ clear_msg(char *uident)
 {
 	char fname[STRLEN];
 
-	sethomefile(fname, uident, "msgindex");
+	sethomefile_s(fname, sizeof(fname), uident, "msgindex");
 	unlink(fname);
-	sethomefile(fname, uident, "msgindex2");
+	sethomefile_s(fname, sizeof(fname), uident, "msgindex2");
 	unlink(fname);
-	sethomefile(fname, uident, "msgcontent");
+	sethomefile_s(fname, sizeof(fname), uident, "msgcontent");
 	unlink(fname);
 	return 0;
 }

@@ -7,7 +7,8 @@ const struct sectree *
 getsectree(const char *s)
 {
 	const struct sectree *sec;
-	char *ptr, *str;
+	char *ptr;
+	const char *str;
 	sec = &sectree;
 	str = s;
 	while (*str && (ptr = strchr(sec->seccodes, *str))) {

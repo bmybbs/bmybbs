@@ -16,8 +16,7 @@ static struct NotifyItem * parse_to_item(xmlNodePtr xmlItem);
 static void addItemtoList(NotifyItemList *List, struct NotifyItem *Item);
 static int add_notification(char * to_userid, char * from_userid, char * board, time_t article_id, char * title_gbk, int noti_type);
 
-static int add_notification(char * to_userid, char * from_userid, char * board,
-						  time_t article_id, char * title_gbk, int noti_type) {
+static int add_notification(char * to_userid, char * from_userid, char * board, time_t article_id, char * title_gbk, int noti_type) {
 	char noti_type_str[8];
 	sprintf(noti_type_str, "%d", noti_type);
 
@@ -29,7 +28,7 @@ static int add_notification(char * to_userid, char * from_userid, char * board,
 
 	int ulock = userlock(to_userid, LOCK_EX);
 	char notify_file_path[80], article_id_str[16];
-	sethomefile(notify_file_path, to_userid, NOTIFILE);
+	sethomefile_s(notify_file_path, sizeof(notify_file_path), to_userid, NOTIFILE);
 	sprintf(article_id_str, "%lu", article_id);
 
 	xmlDocPtr doc;
@@ -39,11 +38,11 @@ static int add_notification(char * to_userid, char * from_userid, char * board,
 
 	if(access(notify_file_path, F_OK) != -1) { // file exists
 		doc = xmlParseFile(notify_file_path);
-		if(doc == NULL) { // ÎÄ¼ş½âÎö³ö´í
+		if(doc == NULL) { // æ–‡ä»¶è§£æå‡ºé”™
 			doc = empty_doc;
 		} else {
 			root = xmlDocGetRootElement(doc);
-			if(root == NULL) { // »ñÈ¡¸ù½ÚµãÊ§°Ü
+			if(root == NULL) { // è·å–æ ¹èŠ‚ç‚¹å¤±è´¥
 				doc = empty_doc;
 			}
 		}
@@ -60,7 +59,7 @@ static int add_notification(char * to_userid, char * from_userid, char * board,
 	xmlNewProp(notify_item, (const xmlChar*)"uid", (const xmlChar*)from_userid);
 	xmlNewProp(notify_item, (const xmlChar*)"title", (const xmlChar*)title_utf8);
 
-	// ÔİÎ´ÅĞ¶Ï´ÅÅÌĞ´²»ÏÂµÄÇé¿ö£¬¹ÃÇÒÈÏÎª bmy Ó²ÅÌÓÀÔ¶×ã¹» IronBlood@bmy 20130912
+	// æš‚æœªåˆ¤æ–­ç£ç›˜å†™ä¸ä¸‹çš„æƒ…å†µï¼Œå§‘ä¸”è®¤ä¸º bmy ç¡¬ç›˜æ°¸è¿œè¶³å¤Ÿ IronBlood@bmy 20130912
 	free(title_utf8);
 	xmlSaveFileEnc(notify_file_path, doc, "UTF8");
 	xmlFreeDoc(doc);
@@ -69,29 +68,27 @@ static int add_notification(char * to_userid, char * from_userid, char * board,
 	return 0;
 }
 
-int add_post_notification(char * to_userid, char * from_userid, char * board,
-						  time_t article_id, char * title_gbk) {
+int add_post_notification(char * to_userid, char * from_userid, char * board, time_t article_id, char * title_gbk) {
 	return add_notification(to_userid, from_userid, board, article_id, title_gbk, NOTIFY_TYPE_POST);
 }
 
-int add_mention_notification(char * to_userid, char * from_userid, char * board,
-						  time_t article_id, char * title_gbk) {
+int add_mention_notification(char * to_userid, char * from_userid, char * board, time_t article_id, char * title_gbk) {
 	return add_notification(to_userid, from_userid, board, article_id, title_gbk, NOTIFY_TYPE_MENTION);
 }
 
 int count_notification_num(char *userid) {
 	char notify_file_path[80];
-	sethomefile(notify_file_path, userid, NOTIFILE);
+	sethomefile_s(notify_file_path, sizeof(notify_file_path), userid, NOTIFILE);
 	if (!file_exist(notify_file_path)) return 0;
 	const xmlChar *xpathExpr = (xmlChar *)"/Notify/Item";
 
 	xmlDocPtr doc = xmlParseFile(notify_file_path);
-	if(NULL == doc) { // ²»´æÔÚÍ¨ÖªÎÄ¼ş
+	if(NULL == doc) { // ä¸å­˜åœ¨é€šçŸ¥æ–‡ä»¶
 		return 0;
 	}
 
 	xmlNodePtr root = xmlDocGetRootElement(doc);
-	if(NULL == root) { // xml ¸ñÊ½²»ÕıÈ·
+	if(NULL == root) { // xml æ ¼å¼ä¸æ­£ç¡®
 		xmlFreeDoc(doc);
 		return 0;
 	}
@@ -112,10 +109,10 @@ int is_post_in_notification(char * userid, char *board, time_t article_id) {
 	struct stat statbuf;
 	int fd;
 
-	sethomefile(notify_file_path, userid, NOTIFILE);
+	sethomefile_s(notify_file_path, sizeof(notify_file_path), userid, NOTIFILE);
 
 	fd = open(notify_file_path, O_RDONLY);
-	if(fd == -1) { // ÎÄ¼ş²»´æÔÚ
+	if(fd == -1) { // æ–‡ä»¶ä¸å­˜åœ¨
 		return 0;
 	}
 
@@ -132,14 +129,14 @@ int is_post_in_notification(char * userid, char *board, time_t article_id) {
 	p = mmap(0, statbuf.st_size, PROT_READ, MAP_SHARED, fd, 0);
 	close(fd);
 
-	if(p == MAP_FAILED) { // mmap ÒşÉäÊ§°Ü
+	if(p == MAP_FAILED) { // mmap éšå°„å¤±è´¥
 		return 0;
 	}
 
 	sprintf(search_str, "<Item type=\"0\" board=\"%s\" aid=\"%lu\" ", board, article_id);
 	char *r = strstr(p, search_str);
 
-	// ÅĞ¶ÏÊÇ·ñÓĞ @ ÌáĞÑ
+	// åˆ¤æ–­æ˜¯å¦æœ‰ @ æé†’
 	if(r==NULL) {
 		sprintf(search_str, "<Item type=\"1\" board=\"%s\" aid=\"%lu\" ", board, article_id);
 		r = strstr(p, search_str);
@@ -155,15 +152,15 @@ NotifyItemList parse_notification(char *userid) {
 	const xmlChar * xpathExpr = (xmlChar *)"/Notify/Item";
 	char notify_file_path[80];
 	int i;
-	sethomefile(notify_file_path, userid, NOTIFILE);
+	sethomefile_s(notify_file_path, sizeof(notify_file_path), userid, NOTIFILE);
 
 	xmlDocPtr doc = xmlParseFile(notify_file_path);
-	if(NULL == doc) { // ²»´æÔÚÎÄ¼ş
+	if(NULL == doc) { // ä¸å­˜åœ¨æ–‡ä»¶
 		return NULL;
 	}
 
 	xmlNodePtr root = xmlDocGetRootElement(doc);
-	if(NULL == root) { // ¸ñÊ½²»ÕıÈ·
+	if(NULL == root) { // æ ¼å¼ä¸æ­£ç¡®
 		xmlFreeDoc(doc);
 		return NULL;
 	}
@@ -177,7 +174,7 @@ NotifyItemList parse_notification(char *userid) {
 			struct NotifyItem * item = parse_to_item(res_obj->nodesetval->nodeTab[i]);
 			addItemtoList(&niList, item);
 		}
-	} // res_num == 0, niList ÒÀÈ»Îª NULL
+	} // res_num == 0, niList ä¾ç„¶ä¸º NULL
 
 	xmlXPathFreeObject(res_obj);
 	xmlXPathFreeContext(ctx);
@@ -206,17 +203,17 @@ void free_notification(NotifyItemList niList) {
 int del_post_notification(char * userid, char * board, time_t article_id) {
 	char notify_file_path[80], search_str[96];
 	sprintf(search_str, "/Notify/Item[@board=\"%s\" and @aid=\"%lu\"]", board, article_id);
-	sethomefile(notify_file_path, userid, NOTIFILE);
+	sethomefile_s(notify_file_path, sizeof(notify_file_path), userid, NOTIFILE);
 
 	int ulock = userlock(userid, LOCK_EX); // todo
 	xmlDocPtr doc = xmlParseFile(notify_file_path);
-	if(NULL == doc) { // ÎÄ¼ş²»´æÔÚ
+	if(NULL == doc) { // æ–‡ä»¶ä¸å­˜åœ¨
 		userunlock(userid, ulock);
 		return -1;
 	}
 
 	xmlNodePtr root = xmlDocGetRootElement(doc);
-	if(NULL == root) { // ¸ñÊ½²»ÕıÈ·
+	if(NULL == root) { // æ ¼å¼ä¸æ­£ç¡®
 		xmlFreeDoc(doc);
 		userunlock(userid, ulock);
 		return -1;
@@ -229,7 +226,7 @@ int del_post_notification(char * userid, char * board, time_t article_id) {
 		xmlNodePtr curr;
 		int res_num = res_obj->nodesetval->nodeNr;
 		int i;
-		for(i=0; i<res_num; ++i) { // ÒÀ´ÎÉ¾³ı xpath Ñ¡ÖĞµÄ node
+		for(i=0; i<res_num; ++i) { // ä¾æ¬¡åˆ é™¤ xpath é€‰ä¸­çš„ node
 			curr = res_obj->nodesetval->nodeTab[i];
 			xmlUnlinkNode(curr);
 			xmlFreeNode(curr);
@@ -247,7 +244,7 @@ int del_post_notification(char * userid, char * board, time_t article_id) {
 
 int del_all_notification(char *userid) {
 	char notify_file_path[80];
-	sethomefile(notify_file_path, userid, NOTIFILE);
+	sethomefile_s(notify_file_path, sizeof(notify_file_path), userid, NOTIFILE);
 
 	int fd = userlock(userid, LOCK_EX);
 	unlink(notify_file_path);
@@ -286,9 +283,9 @@ static struct NotifyItem * parse_to_item(xmlNodePtr xmlItem) {
 	xmlChar * xml_str_title_utf8 = xmlGetProp(xmlItem, (const xmlChar *)"title");
 	size_t title_len = strlen((char *)xml_str_title_utf8);
 	item->title_utf = strdup((char *)xml_str_title_utf8);
-	item->title_gbk = malloc(title_len+1);  //gbk³¤¶È<=utf8
+	item->title_gbk = malloc(title_len+1);  //gbké•¿åº¦<=utf8
 	memset(item->title_gbk, 0, title_len+1);
-	if(item->title_gbk == NULL) { //ÄÚ´æ·ÖÅäÊ§°Ü
+	if(item->title_gbk == NULL) { //å†…å­˜åˆ†é…å¤±è´¥
 		xmlFree(xml_str_title_utf8);
 		free(item);
 		return NULL;

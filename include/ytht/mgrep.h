@@ -1,5 +1,6 @@
 #ifndef __MGREP_H
 #define __MGREP_H
+#include <stddef.h>
 
 #define MAXPAT		256
 #define MAXLINE		1024
@@ -33,6 +34,7 @@ struct pattern_image {
 	struct pat_list hashtable[max_num];
 };
 
+void ytht_mgrep_default_setting(void);
 int ytht_mgrep_releasepf(struct pattern_image *patt_img);
 int ytht_mgrep_prepf(int fp, struct pattern_image **ppatt_img, size_t *patt_image_len);
 int ytht_mgrep_mgrep_str(char *text, int num, struct pattern_image *patt_img);

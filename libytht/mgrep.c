@@ -9,34 +9,46 @@
 #include "ytht/common.h"
 #include "ytht/mgrep.h"
 
-extern int ONLYCOUNT, FNAME, SILENT, FILENAMEONLY, num_of_matched;
-extern int INVERSE;
-extern int WORDBOUND, WHOLELINE, NOUPPER;
+static int WORDBOUND, WHOLELINE, NOUPPER, INVERSE, FILENAMEONLY, SILENT, FNAME;
+static int ONLYCOUNT, num_of_matched;
+// static int total_line;
 extern unsigned char *CurrentFileName;
-extern int total_line;
 
-static void countline(unsigned char *text, int len);
+//static void countline(unsigned char *text, int len);
 
-static int mgrep(int fd, struct pattern_image *patt_img);
+//static int mgrep(int fd, struct pattern_image *patt_img);
 static void monkey1(register unsigned char *text, int start, int end, struct pattern_image *patt_img);
 static int m_short(unsigned char *text, int start, int end, struct pattern_image *patt_img);
 static void f_prep(int pat_index, unsigned char *Pattern, struct pattern_image *patt_img);
 
+void ytht_mgrep_default_setting() {
+	WHOLELINE = 0;
+	NOUPPER = 1;
+	INVERSE = 0;
+	FILENAMEONLY = 1;
+	WORDBOUND = 0;
+	SILENT = 1;
+	FNAME = 1;
+	ONLYCOUNT = 0;
+
+	num_of_matched = 0;
+}
+
 int
 ytht_mgrep_releasepf(struct pattern_image *patt_img)
 {
-	/*
-	   for (i = 0; i < MAXHASH; i++) {
-	   struct pat_list* curr;
-	   curr=patt_img->HASH[i];
-	   while (curr!=NULL) {
-	   struct pat_list* next;
-	   next=curr->next;
-	   free((void*)curr);
-	   curr=next;
-	   }
-	   }
-	 */
+/*
+	for (i = 0; i < MAXHASH; i++) {
+		struct pat_list* curr;
+		curr=patt_img->HASH[i];
+		while (curr!=NULL) {
+			struct pat_list* next;
+			next=curr->next;
+			free((void*)curr);
+			curr=next;
+		}
+	}
+*/
 	free((void *) patt_img);
 	return 0;
 }
@@ -51,8 +63,7 @@ ytht_mgrep_prepf(int fp, struct pattern_image **ppatt_img, size_t * patt_image_l
 	unsigned Mask = 15;
 	int num_read;
 
-	*ppatt_img =
-	    (struct pattern_image *) malloc(sizeof (struct pattern_image));
+	*ppatt_img = (struct pattern_image *) malloc(sizeof (struct pattern_image));
 	patt_img = *ppatt_img;
 	*patt_image_len = sizeof (*patt_img);
 	bzero(patt_img, *patt_image_len);
@@ -63,8 +74,7 @@ ytht_mgrep_prepf(int fp, struct pattern_image **ppatt_img, size_t * patt_image_l
 	while ((num_read = read(fp, patt_img->buf + length, BLOCKSIZE)) > 0) {
 		length = length + num_read;
 		if (length > MAXPATFILE) {
-			errlog("maximum pattern file size is %d\n",
-			       MAXPATFILE);
+			errlog("maximum pattern file size is %d\n", MAXPATFILE);
 			return -1;
 		}
 	}
@@ -108,7 +118,7 @@ ytht_mgrep_prepf(int fp, struct pattern_image **ppatt_img, size_t * patt_image_l
 	num_pat = p - 1;
 	patt_img->p_size = MAXPAT;
 	for (i = 1; i <= num_pat; i++) {
-		p = strlen(patt_img->pat_spool + patt_img->patt[i]);
+		p = strlen((char *)(patt_img->pat_spool + patt_img->patt[i]));
 		patt_img->pat_len[i] = p;
 		if (p != 0 && p < patt_img->p_size)
 			patt_img->p_size = p;
@@ -141,6 +151,7 @@ ytht_mgrep_mgrep_str(char *text, int num, struct pattern_image *patt_img)
 	return num_of_matched;
 } /* end ytht_mgrep_mgrep_str */
 
+/*
 static int
 mgrep(int fd, struct pattern_image *patt_img)
 {
@@ -148,7 +159,7 @@ mgrep(int fd, struct pattern_image *patt_img)
 	unsigned char text[2 * BLOCKSIZE + MAXLINE];
 	register int buf_end, num_read, start=0, end=0, residue = 0;
 
-	text[MAXLINE - 1] = '\n';	/* initial case */
+	text[MAXLINE - 1] = '\n'; // initial case
 	start = MAXLINE - 1;
 
 	while ((num_read = read(fd, text + MAXLINE, BLOCKSIZE)) > 0) {
@@ -171,7 +182,7 @@ mgrep(int fd, struct pattern_image *patt_img)
 			start = 1;
 		}
 		strncpy(text + start, text + end, residue);
-	}			/* end of while(num_read = ... */
+	} // end of while(num_read = ...
 	text[MAXLINE] = '\n';
 	text[start - 1] = '\n';
 	if (residue > 1) {
@@ -181,19 +192,18 @@ mgrep(int fd, struct pattern_image *patt_img)
 			monkey1(text, start, end, patt_img);
 	}
 	return 0;
-} /* end mgrep */
+} // end mgrep
+*/
 
-static void
-countline(text, len)
-unsigned char *text;
-int len;
-{
+/*
+static void countline(unsigned char *text, int len) {
 	int i;
 
 	for (i = 0; i < len; i++)
 		if (text[i] == '\n')
 			total_line++;
 }
+*/
 
 static void monkey1(register unsigned char *text, int start, int end, struct pattern_image *patt_img)
 {
@@ -274,10 +284,11 @@ static void monkey1(register unsigned char *text, int start, int end, struct pat
 						}
 /*
 				else {
-			  		if(FNAME) printf("%s: ",CurrentFileName);
-                          		while(*(--text) != '\n');
-                          		while(*(++text) != '\n') putchar(*text);
-			  		printf("\n");
+					if(FNAME)
+						printf("%s: ",CurrentFileName);
+					while(*(--text) != '\n');
+					while(*(++text) != '\n') putchar(*text);
+					printf("\n");
 				}
 */
 					}

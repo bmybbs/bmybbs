@@ -106,7 +106,7 @@ START_TEST(test_bmy_cookie_parse) {
 	ck_assert_ptr_null(cookie.token);
 	ck_assert_ptr_null(cookie.extraparam);
 
-	sprintf(buf, "");
+	buf[0] = '\0';
 	memset(&cookie, 0, sizeof(struct bmy_cookie));
 	bmy_cookie_parse(buf, &cookie);
 	ck_assert_str_eq(cookie.userid, "");
