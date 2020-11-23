@@ -18,28 +18,30 @@
 				</div>
 
 				<!-- welback/loginform switch begin -->
-				<div id="welback" class="row" v-if="loginok">
-					<div class="col-sm-8">
-						欢迎回来 {{ userid }}
+				<div v-if="_checked">
+					<div id="welback" class="row" v-if="_loginok">
+						<div class="col-sm-8">
+							欢迎回来 {{ _userid }}
+						</div>
+						<div class="col-4 btn-group">
+							<button type="button" class="btn btn-sm btn-primary">进入旧版</button>
+							<button type="button" class="btn btn-sm btn-primary">进入新版</button>
+						</div>
 					</div>
-					<div class="col-4 btn-group">
-						<button type="button" class="btn btn-sm btn-primary">进入旧版</button>
-						<button type="button" class="btn btn-sm btn-primary">进入新版</button>
-					</div>
+					<form ref="form" id="login-form" class="row" action="/BMY/bbslogin" method="post" v-else>
+						<div class="col-sm-4">
+							<input name="id" type="text" class="form-control form-control-sm" placeholder="账号" v-model="username">
+						</div>
+						<div class="col-sm-4">
+							<input name="pw" type="password" class="form-control form-control-sm" placeholder="密码" v-model="password">
+						</div>
+						<div class="col-4 btn-group">
+							<button type="button" class="btn btn-sm btn-primary" v-on:click="post_form">登录旧版</button>
+							<button type="button" class="btn btn-sm btn-primary">登录新版</button>
+							<button type="button" class="btn btn-sm btn-primary">忘记密码</button>
+						</div>
+					</form>
 				</div>
-				<form ref="form" id="login-form" class="row" action="/BMY/bbslogin" method="post" v-else>
-					<div class="col-sm-4">
-						<input name="id" type="text" class="form-control form-control-sm" placeholder="账号" v-model="username">
-					</div>
-					<div class="col-sm-4">
-						<input name="pw" type="password" class="form-control form-control-sm" placeholder="密码" v-model="password">
-					</div>
-					<div class="col-4 btn-group">
-						<button type="button" class="btn btn-sm btn-primary" v-on:click="post_form">登录旧版</button>
-						<button type="button" class="btn btn-sm btn-primary">登录新版</button>
-						<button type="button" class="btn btn-sm btn-primary">忘记密码</button>
-					</div>
-				</form>
 				<!-- welback/loginform switch end -->
 
 				<div id="footer">
@@ -73,6 +75,7 @@ export default {
 		this.stopAnimation();
 	},
 	props: {
+		_checked: Boolean,
 		_loginok: Boolean,
 		_userid: String,
 		_loginpics: Array,

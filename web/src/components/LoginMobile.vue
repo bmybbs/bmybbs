@@ -1,22 +1,39 @@
 <template>
 	<div class="bg-image"></div>
 	<div class="bmy-container">
-		<div class="form-container">
-			<h2>欢迎访问 BMYBBS</h2>
-			<div class="input-field">
-				<fa icon="user" type="fas"></fa>
-				<input type="text" placeholder="账号">
+		<div v-if="_checked">
+			<div class="form-container" v-if="_loginok">
+				<h2>欢迎回来 {{ _userid }}</h2>
+				<button>进入 BMYBBS</button>
 			</div>
-			<div class="input-field">
-				<fa icon="lock" type="fas"></fa>
-				<input type="password" placeholder="密码">
+			<div class="form-container" v-else>
+				<h2>欢迎访问 BMYBBS</h2>
+				<div class="input-field">
+					<fa icon="user" type="fas"></fa>
+					<input type="text" placeholder="账号">
+				</div>
+				<div class="input-field">
+					<fa icon="lock" type="fas"></fa>
+					<input type="password" placeholder="密码">
+				</div>
+				<button>登录</button>
 			</div>
-			<button>登录</button>
 		</div>
 	</div>
 </template>
 
 <script>
+export default {
+	data() {
+		return {
+		}
+	},
+	props: {
+		_userid: String,
+		_loginok: Boolean,
+		_checked: Boolean,
+	}
+}
 </script>
 
 <style scoped>

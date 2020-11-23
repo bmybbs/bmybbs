@@ -1,6 +1,6 @@
 <template>
-	<LoginMobile v-if="is_mobile" />
-	<LoginPC v-bind:_loginok="loginok" v-bind:_userid="userid" v-bind:_loginpics="loginpics" v-else />
+	<LoginMobile v-bind:_loginok="loginok" v-bind:_userid="userid" v-bind:_checked="checked" v-if="is_mobile" />
+	<LoginPC v-bind:_loginok="loginok" v-bind:_userid="userid" v-bind:_checked="checked" v-bind:_loginpics="loginpics" v-else />
 </template>
 
 <script>
@@ -14,6 +14,7 @@ export default {
 			loginok: false,
 			userid: "",
 			loginpics: [],
+			checked: false,
 		};
 	},
 	created() {
@@ -44,6 +45,7 @@ export default {
 					this.loginok = true;
 					this.userid  = response.userid;
 				}
+				this.checked = true;
 			});
 	},
 	unmounted() {
