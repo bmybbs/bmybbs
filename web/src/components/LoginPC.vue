@@ -8,18 +8,20 @@
 					<li><a>CTerm工具下载</a></li>
 					<li><a>新用户注册</a></li>
 				</ul>
-				<div id="pic-container">
+				<div id="pic-container" v-on:mouseEnter="stopAnimation" v-on:mouseleave="startAnimation">
 					<div class="slides" v-for="item in loginpics" :key="item.img_url" v-bind:style="{ display: item.display ? 'block' : 'none' }">
 						<a v-bind:href="item.img_link"><img v-bind:src="item.img_url"></a>
 					</div>
 				</div>
-				<div id="pic-nav">
+				<div id="pic-nav" v-on:mouseEnter="stopAnimation" v-on:mouseleave="startAnimation">
 					<div v-for="item in loginpics" :key="item.img_url" v-bind:class="{ active: item.display }" v-on:click="showSlides(item.index)"></div>
 				</div>
-				<div v-if="checked">
-					<div id="welback" class="row" v-if="loginok">
+
+				<!-- welback/loginform switch begin -->
+				<div v-if="_checked">
+					<div id="welback" class="row" v-if="_loginok">
 						<div class="col-sm-8">
-							{{ message }}
+							欢迎回来 {{ _userid }}
 						</div>
 						<div class="col-4 btn-group">
 							<button type="button" class="btn btn-sm btn-primary">进入旧版</button>
@@ -40,6 +42,8 @@
 						</div>
 					</form>
 				</div>
+				<!-- welback/loginform switch end -->
+
 				<div id="footer">
 					陕ICP备 05001571号<br>开发维护：西安交通大学网络中心 BBS程序组
 				</div>
@@ -53,47 +57,28 @@ export default {
 	name: "Login",
 	data() {
 		return {
+			userid: this._userid,
+			intervalID: null,
 			username: "",
 			password: "",
 			slideIndex: 0,
-			loginpics: [],
-			loginok: false,
-			message: "",
-			checked: false
+			loginpics: this._loginpics,
+			loginok: this._loginok,
 		}
 	},
 	created() {
 	},
 	mounted() {
-		let that = this;
-
-		fetch("/BMY/loginpics")
-			.then(response => response.json())
-			.then(response => {
-				let str = response.data,
-					arr = str.split(";;");
-
-				arr.forEach((el, idx) => {
-					let tmp = el.split(";");
-					that.loginpics.push({
-						index: idx,
-						display: (idx == 0),
-						img_url: tmp[0],
-						img_link: tmp[1]
-					});
-				});
-			});
-
-		fetch("/BMY/user_check")
-			.then(response => response.json())
-			.then(response => {
-				if (response.code == 0) {
-					that.message = "欢迎回来 " + response.userid;
-					that.loginok = true;
-				}
-
-				that.checked = true;
-			});
+		this.startAnimation();
+	},
+	unmounted() {
+		this.stopAnimation();
+	},
+	props: {
+		_checked: Boolean,
+		_loginok: Boolean,
+		_userid: String,
+		_loginpics: Array,
 	},
 	methods: {
 		post_form() {
@@ -113,6 +98,20 @@ export default {
 
 			for (let i = 0; i < this.loginpics.length; i++) {
 				this.loginpics[i].display = this.slideIndex == i;
+			}
+		},
+		startAnimation() {
+			var that = this;
+			if (this.intervalID == null) {
+				this.intervalID = setInterval(function() {
+					that.showSlides(that.slideIndex + 1);
+				}, 5000);
+			}
+		},
+		stopAnimation() {
+			if (this.intervalID) {
+				clearInterval(this.intervalID);
+				this.intervalID = null;
 			}
 		},
 	}
