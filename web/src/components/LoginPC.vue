@@ -8,12 +8,12 @@
 					<li><a>CTerm工具下载</a></li>
 					<li><a>新用户注册</a></li>
 				</ul>
-				<div id="pic-container">
+				<div id="pic-container" v-on:mouseEnter="stopAnimation" v-on:mouseleave="startAnimation">
 					<div class="slides" v-for="item in loginpics" :key="item.img_url" v-bind:style="{ display: item.display ? 'block' : 'none' }">
 						<a v-bind:href="item.img_link"><img v-bind:src="item.img_url"></a>
 					</div>
 				</div>
-				<div id="pic-nav">
+				<div id="pic-nav" v-on:mouseEnter="stopAnimation" v-on:mouseleave="startAnimation">
 					<div v-for="item in loginpics" :key="item.img_url" v-bind:class="{ active: item.display }" v-on:click="showSlides(item.index)"></div>
 				</div>
 				<div v-if="checked">
@@ -53,6 +53,7 @@ export default {
 	name: "Login",
 	data() {
 		return {
+			intervalID: null,
 			username: "",
 			password: "",
 			slideIndex: 0,
@@ -73,7 +74,7 @@ export default {
 				let str = response.data,
 					arr = str.split(";;");
 
-				arr.forEach((el, idx) => {
+				arr.forEach((el, idx, a) => {
 					let tmp = el.split(";");
 					that.loginpics.push({
 						index: idx,
@@ -81,6 +82,10 @@ export default {
 						img_url: tmp[0],
 						img_link: tmp[1]
 					});
+
+					if (idx == a.length - 1) {
+						that.startAnimation();
+					}
 				});
 			});
 
@@ -94,6 +99,9 @@ export default {
 
 				that.checked = true;
 			});
+	},
+	unmounted() {
+		this.stopAnimation();
 	},
 	methods: {
 		post_form() {
@@ -113,6 +121,20 @@ export default {
 
 			for (let i = 0; i < this.loginpics.length; i++) {
 				this.loginpics[i].display = this.slideIndex == i;
+			}
+		},
+		startAnimation() {
+			var that = this;
+			if (this.intervalID == null) {
+				this.intervalID = setInterval(function() {
+					that.showSlides(that.slideIndex + 1);
+				}, 5000);
+			}
+		},
+		stopAnimation() {
+			if (this.intervalID) {
+				clearInterval(this.intervalID);
+				this.intervalID = null;
 			}
 		},
 	}
