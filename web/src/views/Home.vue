@@ -1,10 +1,10 @@
 <template>
 	<LoginMobile v-if="is_mobile" />
-	<Login v-else />
+	<LoginPC v-else />
 </template>
 
 <script>
-import Login from "@/components/Login.vue";
+import LoginPC from "@/components/LoginPC.vue";
 import LoginMobile from "@/components/LoginMobile.vue";
 
 export default {
@@ -21,7 +21,7 @@ export default {
 		window.removeEventListener("resize", this.resize_handler);
 	},
 	components: {
-		Login,
+		LoginPC,
 		LoginMobile,
 	},
 	methods: {
