@@ -16,30 +16,32 @@
 				<div id="pic-nav" v-on:mouseEnter="stopAnimation" v-on:mouseleave="startAnimation">
 					<div v-for="item in loginpics" :key="item.img_url" v-bind:class="{ active: item.display }" v-on:click="showSlides(item.index)"></div>
 				</div>
-				<div v-if="checked">
-					<div id="welback" class="row" v-if="loginok">
-						<div class="col-sm-8">
-							{{ message }}
-						</div>
-						<div class="col-4 btn-group">
-							<button type="button" class="btn btn-sm btn-primary">进入旧版</button>
-							<button type="button" class="btn btn-sm btn-primary">进入新版</button>
-						</div>
+
+				<!-- welback/loginform switch begin -->
+				<div id="welback" class="row" v-if="loginok">
+					<div class="col-sm-8">
+						欢迎回来 {{ userid }}
 					</div>
-					<form ref="form" id="login-form" class="row" action="/BMY/bbslogin" method="post" v-else>
-						<div class="col-sm-4">
-							<input name="id" type="text" class="form-control form-control-sm" placeholder="账号" v-model="username">
-						</div>
-						<div class="col-sm-4">
-							<input name="pw" type="password" class="form-control form-control-sm" placeholder="密码" v-model="password">
-						</div>
-						<div class="col-4 btn-group">
-							<button type="button" class="btn btn-sm btn-primary" v-on:click="post_form">登录旧版</button>
-							<button type="button" class="btn btn-sm btn-primary">登录新版</button>
-							<button type="button" class="btn btn-sm btn-primary">忘记密码</button>
-						</div>
-					</form>
+					<div class="col-4 btn-group">
+						<button type="button" class="btn btn-sm btn-primary">进入旧版</button>
+						<button type="button" class="btn btn-sm btn-primary">进入新版</button>
+					</div>
 				</div>
+				<form ref="form" id="login-form" class="row" action="/BMY/bbslogin" method="post" v-else>
+					<div class="col-sm-4">
+						<input name="id" type="text" class="form-control form-control-sm" placeholder="账号" v-model="username">
+					</div>
+					<div class="col-sm-4">
+						<input name="pw" type="password" class="form-control form-control-sm" placeholder="密码" v-model="password">
+					</div>
+					<div class="col-4 btn-group">
+						<button type="button" class="btn btn-sm btn-primary" v-on:click="post_form">登录旧版</button>
+						<button type="button" class="btn btn-sm btn-primary">登录新版</button>
+						<button type="button" class="btn btn-sm btn-primary">忘记密码</button>
+					</div>
+				</form>
+				<!-- welback/loginform switch end -->
+
 				<div id="footer">
 					陕ICP备 05001571号<br>开发维护：西安交通大学网络中心 BBS程序组
 				</div>
@@ -53,55 +55,27 @@ export default {
 	name: "Login",
 	data() {
 		return {
+			userid: this._userid,
 			intervalID: null,
 			username: "",
 			password: "",
 			slideIndex: 0,
-			loginpics: [],
-			loginok: false,
-			message: "",
-			checked: false
+			loginpics: this._loginpics,
+			loginok: this._loginok,
 		}
 	},
 	created() {
 	},
 	mounted() {
-		let that = this;
-
-		fetch("/BMY/loginpics")
-			.then(response => response.json())
-			.then(response => {
-				let str = response.data,
-					arr = str.split(";;");
-
-				arr.forEach((el, idx, a) => {
-					let tmp = el.split(";");
-					that.loginpics.push({
-						index: idx,
-						display: (idx == 0),
-						img_url: tmp[0],
-						img_link: tmp[1]
-					});
-
-					if (idx == a.length - 1) {
-						that.startAnimation();
-					}
-				});
-			});
-
-		fetch("/BMY/user_check")
-			.then(response => response.json())
-			.then(response => {
-				if (response.code == 0) {
-					that.message = "欢迎回来 " + response.userid;
-					that.loginok = true;
-				}
-
-				that.checked = true;
-			});
+		this.startAnimation();
 	},
 	unmounted() {
 		this.stopAnimation();
+	},
+	props: {
+		_loginok: Boolean,
+		_userid: String,
+		_loginpics: Array,
 	},
 	methods: {
 		post_form() {
