@@ -55,5 +55,12 @@
 	top: .25rem;
 	right: 1rem;
 }
+
+/*
+ * Main
+ */
+main {
+	padding-top: 16px;
+}
 </style>
 
