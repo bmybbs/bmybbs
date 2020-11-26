@@ -329,8 +329,7 @@ main()
 	i = 0;
 	while (1) {
 		while ((str = rcvlog(msqid, 1))) {
-			if (filterlog(str))
-				continue;
+			filterlog(str);
 			if (str[0] != lastch) {
 				if (fd >= 0) {
 					write(fd, buf, n);
