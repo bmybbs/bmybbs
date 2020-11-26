@@ -69,7 +69,7 @@ struct sitelimit {
 
 #define SPEC_SITE_FILE MY_BBS_HOME "/etc/spec_site"
 #define MAX_SPEC_SITE 512
-#define DEFAULT_LIMIT 30
+#define DEFAULT_LIMIT 5
 struct sitelimit limit[MAX_SPEC_SITE];
 int sitelimit_cnt;
 
