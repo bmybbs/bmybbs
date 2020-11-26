@@ -25,9 +25,7 @@ rcvlog(int msqid, int nowait)
 	static char buf[1024];
 	struct mymsgbuf *msgp = (struct mymsgbuf *) buf;
 	int retv;
-	retv =
-	    msgrcv(msqid, msgp, sizeof (buf) - sizeof (msgp->mtype) - 2, 0,
-		   (nowait ? IPC_NOWAIT : 0) | MSG_NOERROR);
+	retv = msgrcv(msqid, msgp, sizeof (buf) - sizeof (msgp->mtype) - 2, 0, (nowait ? IPC_NOWAIT : 0) | MSG_NOERROR);
 	while (retv > 0 && msgp->mtext[retv - 1] == 0)
 		retv--;
 	if (retv <= 0)
@@ -130,9 +128,7 @@ site_limit(struct in_addr *from)
 	load_limit_table();
 	if(!sitelimit_cnt)
 		return DEFAULT_LIMIT;
-	ret =
-	    bsearch(&tmp, limit, sitelimit_cnt, sizeof (struct sitelimit),
-		    (void *) m_cmp);
+	ret = bsearch(&tmp, limit, sitelimit_cnt, sizeof (struct sitelimit), (void *) m_cmp);
 	if (!ret)
 		return DEFAULT_LIMIT;
 	return ret->limit;
@@ -178,8 +174,7 @@ bansiteop(struct in_addr *from)
 		bansitetable = tmptable;
 		return -1;
 	}
-	for (b = ght_first(tmptable, &iterator); b;
-	     b = ght_next(tmptable, &iterator)) {
+	for (b = ght_first(tmptable, &iterator); b; b = ght_next(tmptable, &iterator)) {
 		if (b->t < now_t - 6000) {
 			free(b);
 			continue;
@@ -199,8 +194,7 @@ filter_passerr(int n, char *arg[])
 {
 	struct event *e;
 	int *count;
-	if (n < 4 || strcmp(arg[1], "system")
-	    || strcmp(arg[2], "passerr"))
+	if (n < 4 || strcmp(arg[1], "system") || strcmp(arg[2], "passerr"))
 		return 0;
 	if (passerrtable == NULL)
 		passerrtable = ght_create(10000, NULL, 0);
@@ -220,8 +214,7 @@ filter_passerr(int n, char *arg[])
 		if (!count)
 			goto ERROR1;
 		*count = 1;
-		if (ght_insert(passerrtable, count, sizeof (e->from), &e->from)
-		    < 0)
+		if (ght_insert(passerrtable, count, sizeof (e->from), &e->from) < 0)
 			goto ERROR2;
 	}
 	//add to list
@@ -234,11 +227,11 @@ filter_passerr(int n, char *arg[])
 	}
 	e->next = NULL;
 	return 1;
-      ERROR2:
+ERROR2:
 	free(count);
-      ERROR1:
+ERROR1:
 	free(e);
-      ERROR:
+ERROR:
 	return 1;
 }
 
@@ -345,8 +338,7 @@ main()
 					i = 0;
 					close(fd);
 				}
-				fd = open(getfilename(),
-					  O_WRONLY | O_CREAT | O_APPEND, 0660);
+				fd = open(getfilename(), O_WRONLY | O_CREAT | O_APPEND, 0660);
 				lastch = str[0];
 			}
 			l = strlen(str);
