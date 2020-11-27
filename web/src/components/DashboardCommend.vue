@@ -4,17 +4,28 @@
 			{{ _name }}
 		</div>
 		<ul class="list-group list-group-flush">
-			<li class="list-group-item" v-for="article in _articles" :key="article.aid">
-				{{ article.title }} By {{ article.author }} at {{ article.board }}
-			</li>
+			<DashboardArticleListItem
+				v-for="article in _articles"
+				:key="article.aid"
+				:_board="article.board"
+				:_title="article.title"
+				:_author="article.author"
+				:_comments="article.comments"
+				:_aid="article.aid"
+			/>
 		</ul>
 	</section>
 </template>
 
 <script>
+import DashboardArticleListItem from "@/components/DashboardArticleListItem.vue"
+
 export default {
 	data() {
 		return { };
+	},
+	components: {
+		DashboardArticleListItem,
 	},
 	props: {
 		_name: String,

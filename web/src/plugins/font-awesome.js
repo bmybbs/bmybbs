@@ -1,11 +1,14 @@
 import { library } from "@fortawesome/fontawesome-svg-core"
 import {
+	faAt,
 	faAtom,
 	faBook,
 	faBuilding,
 	faChartLine,
+	faClock,
 	faCode,
 	faCogs,
+	faComments,
 	faFutbol,
 	faGamepad,
 	faGlobeAsia,
@@ -25,12 +28,15 @@ import {
 } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 
+library.add(faAt);
 library.add(faAtom);
 library.add(faBook);
 library.add(faBuilding);
 library.add(faChartLine);
+library.add(faClock);
 library.add(faCode);
 library.add(faCogs);
+library.add(faComments);
 library.add(faFutbol);
 library.add(faGamepad);
 library.add(faGlobeAsia);

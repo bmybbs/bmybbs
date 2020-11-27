@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { BMYClient } from "@/lib/BMYClient.js"
+import { BMYClient } from "@/lib/FakeBMYClient.js"
 import { BMYSECSTRS } from "@/lib/BMYConstants.js"
 import DashboardCommend from "@/components/DashboardCommend.vue"
 import DashboardAsideAd from "@/components/DashboardAsideAd.vue"

@@ -2,6 +2,33 @@
  * 便于开发调试创建的类，用于模拟接口返回数据
  */
 export const BMYClient = {
+	get_announce() {
+		return new Promise((resolve) => {
+			resolve({
+				errcode: 0,
+				articlelist: [
+					{ title: "本站开设“西部创新港”版", author: "SYSOP", board: "sysop", aid: 1600156339, comments: 7 },
+					{ title: "学校各职能部门在创新港办公地点", author: "ylqxzyyn", board: "InnovationHarbour", aid: 1600156407, comments: 2 },
+					{ title: "关于学生事务大厅延长开放时间的通知", author: "ylqxzyyn", board: "XJTUnews", aid: 1600735641, comments: 3 },
+					{ title: "[程序组公告] 欢迎试用新的身份验证方式确认账号", author: "IronBlood", board: "XJTUnews", aid: 1599907642, comments: 1 },
+				]
+			});
+		});
+	},
+	get_commend() {
+		return new Promise((resolve) => {
+			resolve({
+				errcode: 0,
+				articlelist: [
+					{ title: "秋日", author: "eledy", board: "bloom", aid: 1600073310, comments: 3 },
+					{ title: "绿萝", author: "eledy", board: "bloom", aid: 1598517189, comments: 5 },
+					{ title: "关于火车", author: "casablanca", board: "bloom", aid: 1589374392, comments: 1 },
+					{ title: "题目大概先叫毕业10年总结吧", author: "lalaarere", board: "XJTUnews", aid: 1602825853, comments: 74 },
+					{ title: "变", author: "casablanca", board: "bloom", aid: 1589547244, comments: 3 },
+				]
+			});
+		});
+	},
 	get_boards_by_section(sec_id) {
 		return new Promise((resolve) => {
 			let boards;
