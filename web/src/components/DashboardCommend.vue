@@ -9,6 +9,7 @@
 <script>
 export default {
 	data() {
+		return { };
 	},
 	props: {
 		_articles: Array,
