@@ -1,9 +1,10 @@
 #include "bbslib.h"
-FILE *fp;
+
+static int save_plan(char *plan);
 
 int
-bbsplan_main()
-{	//modify by mintbaggio 20040829 for new www
+bbsplan_main() {
+//modify by mintbaggio 20040829 for new www
 	FILE *fp;
 	char *ptr, plan[256], buf[10000];
 	int size;
@@ -13,7 +14,7 @@ bbsplan_main()
 	if (!loginok || isguest)
 		http_fatal("匆匆过客不能设置说明档，请先登录");
 	changemode(EDITUFILE);
-	sethomefile(plan, currentuser.userid, "plans");
+	sethomefile_s(plan, sizeof(plan), currentuser.userid, "plans");
 	if (!strcasecmp(getparm("type"), "update"))
 		save_plan(plan);
 	printf("<div class=rhead>%s -- 设置个人说明档 [<span class=h11>%s</span>]</div><hr>\n", BBSNAME, currentuser.userid);
@@ -38,9 +39,8 @@ bbsplan_main()
 	return 0;
 }
 
-int
-save_plan(char *plan)
-{
+static int save_plan(char *plan) {
+	FILE *fp;
 	char buf[10000];
 	fp = fopen(plan, "w");
 	ytht_strsncpy(buf, getparm("text"), 9999);
@@ -51,3 +51,4 @@ save_plan(char *plan)
 	http_quit();
 	return 0;
 }
+
