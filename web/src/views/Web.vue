@@ -12,19 +12,19 @@
 				<div class="sidebar-sticky pt-3">
 					<ul class="nav flex-column">
 						<li class="nav-item">
-							<span class="nav-link">
+							<router-link to="/web" class="nav-link">
 								<span class="sidebar-icon"><fa icon="chart-line" /></span> 导读
-							</span>
+							</router-link>
 						</li>
 						<li class="nav-item">
-							<span class="nav-link">
+							<router-link to="/web/feed" class="nav-link">
 								<span class="sidebar-icon"><fa icon="rss" /></span> 订阅
-							</span>
+							</router-link>
 						</li>
 						<li class="nav-item">
-							<span class="nav-link">
+							<router-link to="/web/follow" class="nav-link">
 								<span class="sidebar-icon"><fa icon="share-alt" /></span> 好友
-							</span>
+							</router-link >
 						</li>
 						<li class="nav-item">
 							<span class="nav-link">
