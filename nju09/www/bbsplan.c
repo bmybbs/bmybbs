@@ -23,7 +23,7 @@ bbsplan_main() {
 	if (fp) {
 		size = fread(buf, 1, 9999, fp);
 		buf[size] = 0;
-		ptr = strcasestr(buf, "<textarea>");
+		ptr = strcasestr(buf, "</textarea>");
 		if (ptr)
 			*ptr = 0;
 		fclose(fp);
