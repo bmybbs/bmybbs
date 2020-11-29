@@ -3,12 +3,6 @@
 #define __MISC_H
 #include <stddef.h>
 
-struct mymsgbuf {
-	long int mtype;
-	char mtext[1];
-};
-void newtrace(char *s);
-int init_newtracelogmsq();
 int u2g(char *inbuf,size_t inlen,char *outbuf,size_t outlen);
 int g2u(char *inbuf,size_t inlen,char *outbuf,size_t outlen);
 int code_convert(char *from_charset,char *to_charset,char *inbuf,size_t inlen,char *outbuf,size_t outlen);

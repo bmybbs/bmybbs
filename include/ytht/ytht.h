@@ -13,5 +13,6 @@
 #include "numbyte.h"
 #include "shmop.h"
 #include "strlib.h"
+#include "msg.h"
 
 #endif
