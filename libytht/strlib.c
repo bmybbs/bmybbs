@@ -228,3 +228,13 @@ char* ytht_str_to_lowercase(char *str) {
 	}
 	return h;
 }
+
+int ytht_badstr(const char *s) {
+	int i;
+	const unsigned char *t = (const unsigned char *)s;
+	for (i = 0; s[i]; i++)
+		if (t[i] != 9 && (t[i] < 32 || t[i] == 255))
+			return 1;
+	return 0;
+}
+

@@ -9,8 +9,6 @@ int code_convert(char *from_charset,char *to_charset,char *inbuf,size_t inlen,ch
 int is_utf_special_byte(unsigned char c);
 int is_utf(char * inbuf, size_t inlen);
 
-int badstr(char *s);
-
 /**
  * @brief 获取不超过4张进站图片
  * 该方法将把当前进站图片的信息输出到 pics_list 中。每条信息使用单个半角分号将图片和

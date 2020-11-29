@@ -178,14 +178,3 @@ void get_no_more_than_four_login_pics(char *buf, size_t len) {
 	ytht_strsncpy(buf, pics_list, len);
 }
 
-int
-badstr(char *s)
-{
-	int i;
-	unsigned char *t = (unsigned char *)s;
-	for (i = 0; s[i]; i++)
-		if (t[i] != 9 && (t[i] < 32 || t[i] == 255))
-			return 1;
-	return 0;
-}
-
