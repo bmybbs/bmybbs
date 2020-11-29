@@ -18,7 +18,7 @@
 
 static unsigned char *
 __boyer_moore(const unsigned char *haystack, size_t haystacklen,
-	      const unsigned char *needle, size_t needlelen, int icase)
+		const unsigned char *needle, size_t needlelen, int icase)
 {
 	register unsigned char *hc_ptr, *nc_ptr;
 	unsigned char *he_ptr, *ne_ptr, *h_ptr;
@@ -45,8 +45,7 @@ __boyer_moore(const unsigned char *haystack, size_t haystacklen,
 	for (i = 0; i < 256; i++)
 		skiptable[i] = needlelen;
 	for (nc_ptr = (unsigned char *) needle; nc_ptr < ne_ptr; nc_ptr++)
-		skiptable[bm_index(*nc_ptr, icase)] =
-		    (size_t) (ne_ptr - nc_ptr);
+		skiptable[bm_index(*nc_ptr, icase)] = (size_t) (ne_ptr - nc_ptr);
 
 	h_ptr = (unsigned char *) haystack;
 	while (haystacklen >= needlelen) {
@@ -54,17 +53,15 @@ __boyer_moore(const unsigned char *haystack, size_t haystacklen,
 		nc_ptr = ne_ptr;	/* set the needle compare pointer */
 
 		/* work our way backwards till they don't match */
-		for (i = 0; nc_ptr > (unsigned char *) needle;
-		     nc_ptr--, hc_ptr--, i++)
+		for (i = 0; nc_ptr > (unsigned char *) needle; nc_ptr--, hc_ptr--, i++)
 			if (!bm_equal(*nc_ptr, *hc_ptr, icase))
 				break;
 
 		if (!bm_equal(*nc_ptr, *hc_ptr, icase)) {
 			n = skiptable[bm_index(*hc_ptr, icase)];
 			if (n == needlelen && i)
-				if (bm_equal
-				    (*ne_ptr, ((unsigned char *) needle)[0],
-				     icase)) n--;
+				if (bm_equal(*ne_ptr, ((unsigned char *) needle)[0], icase))
+					n--;
 			h_ptr += n;
 			haystacklen -= n;
 		} else
@@ -99,13 +96,12 @@ ytht_strnstr(const char *haystack, const char *needle, size_t haystacklen)
 	} else if (needlelen == 0) {
 		return (char *) haystack;
 	} else if (needlelen == 1) {
-		return memchr(haystack, (int) ((unsigned char *) needle)[0],
-			      haystacklen);
+		return memchr(haystack, (int) ((unsigned char *) needle)[0], haystacklen);
 	} else if (bm_optimal(haystacklen, needlelen)) {
 		return (char *) __boyer_moore((const unsigned char *) haystack,
-					      haystacklen,
-					      (const unsigned char *) needle,
-					      needlelen, 0);
+				haystacklen,
+				(const unsigned char *) needle,
+				needlelen, 0);
 	}
 
 	h = (unsigned char *) haystack;
@@ -142,9 +138,9 @@ ytht_strncasestr(const char *haystack, const char *needle, size_t haystacklen)
 		return (char *) haystack;
 	} else if (bm_optimal(haystacklen, needlelen)) {
 		return (char *) __boyer_moore((const unsigned char *) haystack,
-					      haystacklen,
-					      (const unsigned char *) needle,
-					      needlelen, 1);
+				haystacklen,
+				(const unsigned char *) needle,
+				needlelen, 1);
 	}
 
 	h = (unsigned char *) haystack;
