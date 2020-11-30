@@ -10,6 +10,23 @@
 		"navigationBarTextStyle":"black"
 	},
 	"style": "v2",
+	"tabBar": {
+		"color": "#999999",
+		"position": "top",
+		"list": [{
+			"pagePath": "pages/index/index",
+			"text": "导读"
+		}, {
+			"pagePath": "pages/index/index",
+			"text": "订阅"
+		}, {
+			"pagePath": "pages/index/index",
+			"text": "版面"
+		}, {
+			"pagePath": "pages/index/index",
+			"text": "我的"
+		}]
+	},
 	"sitemapLocation": "sitemap.json"
 }
 
