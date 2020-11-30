@@ -1,6 +1,9 @@
 {
 	"pages":[
 		"pages/index/index",
+		"pages/feed/feed",
+		"pages/section/section",
+		"pages/me/me",
 		"pages/logs/logs"
 	],
 	"window":{
@@ -17,13 +20,13 @@
 			"pagePath": "pages/index/index",
 			"text": "导读"
 		}, {
-			"pagePath": "pages/index/index",
+			"pagePath": "pages/feed/feed",
 			"text": "订阅"
 		}, {
-			"pagePath": "pages/index/index",
+			"pagePath": "pages/section/section",
 			"text": "版面"
 		}, {
-			"pagePath": "pages/index/index",
+			"pagePath": "pages/me/me",
 			"text": "我的"
 		}]
 	},
