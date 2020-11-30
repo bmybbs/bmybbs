@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/types.h>
-#include "ythtbbs/misc.h"
+#include "ytht/msg.h"
 
 /**
  * @brief 向 UserTable 中添加 utmp 记录
