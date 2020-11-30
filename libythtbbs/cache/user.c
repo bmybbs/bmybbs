@@ -109,16 +109,16 @@ void ythtbbs_cache_UserTable_resolve() {
 	ythtbbs_cache_UserIDHashTable_resolve();
 }
 
-void ythtbbs_cache_UserTable_add_utmp_idx(int uid, int utmp_idx) {
+int ythtbbs_cache_UserTable_add_utmp_idx(int uid, int utmp_idx) {
 	int i, idx;
 
 	if (uid <= 0 || uid > MAXUSERS)
-		return;
+		return -1;
 
 	// 检查是否已存在
 	for (i = 0; i < MAX_LOGIN_PER_USER; i++) {
 		if (shm_user_table->users[uid - 1].utmp_indices[i] == utmp_idx + 1)
-			return;
+			return 0;
 	}
 
 	for (i = 0; i < MAX_LOGIN_PER_USER; i++) {
@@ -126,9 +126,11 @@ void ythtbbs_cache_UserTable_add_utmp_idx(int uid, int utmp_idx) {
 		if (idx < 0 || !ythtbbs_cache_utmp_check_active_by_idx(idx) || !ythtbbs_cache_utmp_check_uid_by_idx(idx, uid)) {
 			// TODO check
 			shm_user_table->users[uid - 1].utmp_indices[i] = utmp_idx + 1;
-			return;
+			return 0;
 		}
 	}
+
+	return -1;
 }
 
 void ythtbbs_cache_UserTable_remove_utmp_idx(int uid, int utmp_idx) {

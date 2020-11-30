@@ -9,8 +9,9 @@
  * 存放在 UserTable 中的 utmp 记录还是从 1 开始索引，0 用于表示记录不存在。
  * @param uid 用户编号（从1开始索引）
  * @param utmp_idx utmp 索引（从0开始）
+ * @return 0 == 成功
  */
-void ythtbbs_cache_UserTable_add_utmp_idx(int uid, int utmp_idx);
+int ythtbbs_cache_UserTable_add_utmp_idx(int uid, int utmp_idx);
 
 /**
  * @brief 从 UserTable 中移除 utmp 记录
