@@ -1,4 +1,22 @@
 <view>
-	<text>订阅</text>
+	<view class="post_item"
+		wx:for="{{list}}"
+		wx:for-index="idx"
+		wx:for-item="item"
+		wx:key="id">
+		<view class="post_title">{{item.title}}</view>
+		<view class="post_header">
+			<view class="post_author">@{{item.author}}</view>
+			<view class="post_time">{{item.timestamp}}</view>
+		</view>
+		<view class="post_digest">{{item.digest}}</view>
+		<view class="post_footer">
+			<view class="post_board">#{{item.board}}</view>
+			<view class="post_meta">
+				<view class="post_bookmark">{{item.bookmarks}}</view>
+				<view class="post_comment">{{item.comments}}</view>
+			</view>
+		</view>
+	</view>
 </view>
 
