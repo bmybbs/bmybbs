@@ -30,6 +30,9 @@
 			"text": "我的"
 		}]
 	},
+	"useExtendedLib": {
+		"weui": true
+	},
 	"sitemapLocation": "sitemap.json"
 }
 

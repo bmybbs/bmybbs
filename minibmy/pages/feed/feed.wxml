@@ -13,8 +13,9 @@
 		<view class="post_footer">
 			<view class="post_board">#{{item.board}}</view>
 			<view class="post_meta">
-				<view class="post_bookmark">{{item.bookmarks}}</view>
-				<view class="post_comment">{{item.comments}}</view>
+				<view class="post_bookmark"><mp-icon type="field" icon="like" color="red" size="{{18}}"></mp-icon>{{item.bookmarks}}</view>
+				<view class="post_comment"><mp-icon icon="comment" color="#333" size="{{18}}"></mp-icon>
+{{item.comments}}</view>
 			</view>
 		</view>
 	</view>
