@@ -1,6 +1,36 @@
-name: CMake
+name: BMYBBS Backend
 
-on: [push]
+on:
+  push:
+    paths:
+      - api/
+      - atthttpd/
+      - include/
+      - libbmy/
+      - libytht/
+      - libythtbbs/
+      - local_utl/
+      - nju09/www/
+      - nju09/upload/
+      - nju09/CMakeLists.txt
+      - src/
+    branches:
+      - master
+  pull_request:
+    paths:
+      - api/
+      - atthttpd/
+      - include/
+      - libbmy/
+      - libytht/
+      - libythtbbs/
+      - local_utl/
+      - nju09/www/
+      - nju09/upload/
+      - nju09/CMakeLists.txt
+      - src/
+    branches:
+      - master
 
 env:
   BUILD_TYPE: Release
