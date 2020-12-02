@@ -172,9 +172,9 @@ bbsdoreg_main()
 //      if(strlen(dept)<6) http_fatal("工作单位的名称长度至少要6个字符(或3个汉字)");
 	if (strlen(x.address) < 6)
 		http_fatal("通讯地址长度至少要6个字符(或3个汉字)");
-	if (badstr(x.passwd) || badstr(x.username) || badstr(x.realname))
+	if (ytht_badstr(x.passwd) || ytht_badstr(x.username) || ytht_badstr(x.realname))
 		http_fatal("您的注册单中含有非法字符");
-	if (badstr(x.address) || badstr(x.email))
+	if (ytht_badstr(x.address) || ytht_badstr(x.email))
 		http_fatal("您的注册单中含有非法字符");
 	if (is_bad_id(x.userid))
 		http_fatal("不雅帐号或禁止注册的id, 请重新选择");

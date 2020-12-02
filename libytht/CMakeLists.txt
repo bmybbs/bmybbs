@@ -12,6 +12,7 @@ add_library (ytht SHARED
 	smth_filter.c
 	mgrep.c
 	random.c
+	newtrace.c
 )
 
 target_link_libraries(ytht)

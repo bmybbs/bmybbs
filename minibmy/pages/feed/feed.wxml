@@ -1,0 +1,8 @@
+<view>
+	<post-item-card post-item="{{item}}"
+		wx:for="{{list}}"
+		wx:for-item="item"
+		wx:key="id">
+	</post-item-card>
+</view>
+

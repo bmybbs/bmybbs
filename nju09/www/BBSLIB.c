@@ -898,7 +898,7 @@ static int user_init(struct userec *x, struct user_info **y, const char *userid,
 		return 0;
 
 	*y = ythtbbs_cache_utmp_get_by_idx(i);
-	if (strcmp((*y)->sessionid, sessid) || strcmp((*y)->userid, userid))
+	if ((*y)->active == 0 || strcmp((*y)->sessionid, sessid) || strcmp((*y)->userid, userid))
 		return 0;
 
 	(*y)->lasttime = now_t;

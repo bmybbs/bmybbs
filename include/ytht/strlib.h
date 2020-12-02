@@ -48,4 +48,6 @@ char *ytht_strrtrim(char *s);
 char *ytht_str_to_uppercase(char *str);
 
 char *ytht_str_to_lowercase(char *str);
+
+int ytht_badstr(const char *s);
 #endif //BMYBBS_STRLIB_H

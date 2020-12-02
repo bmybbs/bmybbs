@@ -109,16 +109,19 @@ void ythtbbs_cache_UserTable_resolve() {
 	ythtbbs_cache_UserIDHashTable_resolve();
 }
 
-void ythtbbs_cache_UserTable_add_utmp_idx(int uid, int utmp_idx) {
+int ythtbbs_cache_UserTable_add_utmp_idx(int uid, int utmp_idx) {
 	int i, idx;
+	int earlest_used_pos = -1;
+	time_t earlest_time = time(NULL); // now
+	struct user_info *ptr_info = NULL;
 
 	if (uid <= 0 || uid > MAXUSERS)
-		return;
+		return -1;
 
 	// 检查是否已存在
 	for (i = 0; i < MAX_LOGIN_PER_USER; i++) {
 		if (shm_user_table->users[uid - 1].utmp_indices[i] == utmp_idx + 1)
-			return;
+			return 0;
 	}
 
 	for (i = 0; i < MAX_LOGIN_PER_USER; i++) {
@@ -126,9 +129,32 @@ void ythtbbs_cache_UserTable_add_utmp_idx(int uid, int utmp_idx) {
 		if (idx < 0 || !ythtbbs_cache_utmp_check_active_by_idx(idx) || !ythtbbs_cache_utmp_check_uid_by_idx(idx, uid)) {
 			// TODO check
 			shm_user_table->users[uid - 1].utmp_indices[i] = utmp_idx + 1;
-			return;
+			return 0;
+		}
+
+		// 已经达到登录上限，则寻找时间最早的最后一次使用记录
+		// 对于 telnet 登录限制在 src/bbs 中，因此执行到这里说明
+		// 有太多的 www/api 登录
+		ptr_info = ythtbbs_cache_utmp_get_by_idx(idx);
+		if (ptr_info->pid > 1) {
+			// telnet/ssh
+			continue;
+		}
+
+		if (ptr_info->lasttime < earlest_time) {
+			earlest_time = ptr_info->lasttime;
+			earlest_used_pos = i;
 		}
 	}
+
+	if (earlest_used_pos != -1) {
+		ptr_info = ythtbbs_cache_utmp_get_by_idx(shm_user_table->users[uid - 1].utmp_indices[earlest_used_pos] - 1);
+		ptr_info->active = 0; // 暂不清除
+		shm_user_table->users[uid - 1].utmp_indices[earlest_used_pos] = utmp_idx + 1;
+		return 0;
+	}
+
+	return -1;
 }
 
 void ythtbbs_cache_UserTable_remove_utmp_idx(int uid, int utmp_idx) {
