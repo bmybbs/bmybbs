@@ -19,13 +19,11 @@ jobs:
 
     - name: Install libcheck from source code
       working-directory: ${{runner.workspace}}
-      run: git clone https://github.com/libcheck/check
-      run: (cd check; autoreconf --install; ./configure; make; sudo make install; sudo cp check_stdint.h /usr/local/include; sudo ldconfig)
+      run: (git clone https://github.com/libcheck/check ; cd check; autoreconf --install; ./configure; make; sudo make install; sudo cp check_stdint.h /usr/local/include; sudo ldconfig)
 
     - name: Install onion from source code
       working-directory: ${{runner.workspace}}
-      run: git clone https://github.com/davidmoreno/onion
-      run: (mkdir onion-build; cd onion-build; cmake ../onion; make; cd src/onion; sudo make install)
+      run: (git clone https://github.com/davidmoreno/onion ; mkdir onion-build; cd onion-build; cmake ../onion; make; cd src/onion; sudo make install)
 
     - name: Install libghthash
       working-directory: $GITHUB_WORKSPACE
