@@ -1,23 +1,8 @@
 <view>
-	<view class="post_item"
+	<post-item-card post-item="{{item}}"
 		wx:for="{{list}}"
-		wx:for-index="idx"
 		wx:for-item="item"
 		wx:key="id">
-		<view class="post_title">{{item.title}}</view>
-		<view class="post_header">
-			<view class="post_author">@{{item.author}}</view>
-			<view class="post_time">{{item.timestamp}}</view>
-		</view>
-		<view class="post_digest">{{item.digest}}</view>
-		<view class="post_footer">
-			<view class="post_board">#{{item.board}}</view>
-			<view class="post_meta">
-				<view class="post_bookmark"><mp-icon type="field" icon="like" color="red" size="{{18}}"></mp-icon>{{item.bookmarks}}</view>
-				<view class="post_comment"><mp-icon icon="comment" color="#333" size="{{18}}"></mp-icon>
-{{item.comments}}</view>
-			</view>
-		</view>
-	</view>
+	</post-item-card>
 </view>
 

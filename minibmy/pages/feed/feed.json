@@ -1,6 +1,6 @@
 {
 	"usingComponents": {
-		"mp-icon": "weui-miniprogram/icon/icon"
+		"post-item-card": "../../components/PostItemCard/PostItemCard"
 	}
 }
 
