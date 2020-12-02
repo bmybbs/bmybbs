@@ -51,3 +51,21 @@ CREATE TABLE `t_user_subscriptions` (
 	CONSTRAINT `fk_sub_user` FOREIGN KEY (`usernum`) REFERENCES `t_users` (`usernum`) ON DELETE CASCADE
 );
 
+--
+-- procedures
+--
+
+-- 依据 boardnum, boardname_en 创建视图，使用 call 调用
+DELIMITER $$
+CREATE PROCEDURE procedure_create_board_view(
+	IN boardnum int,
+	IN boardname_en varchar(40)
+)
+BEGIN
+	SET @sql = CONCAT("CREATE VIEW v_board_", boardname_en, " AS SELECT `boardname_en`, `boardname_zh`, `timestamp`, `title`, `author`, `comments` FROM `t_boards`, `t_threads` where `t_boards`.`boardnum` = `t_threads`.`boardnum` and `t_threads`.`boardnum` = ", boardnum, " order by `timestamp` desc");
+	PREPARE stmt FROM @sql;
+	EXECUTE stmt;
+	DEALLOCATE PREPARE stmt;
+END$$
+DELIMITER ;
+
