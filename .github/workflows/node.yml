@@ -1,0 +1,29 @@
+name: BMYBBS Frontend
+
+on:
+  push:
+    paths:
+      - web/
+    branches:
+      - master
+  pull_request:
+    paths:
+      - web/
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Use Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+
+      - name: Build front-end
+        working-directory: web
+        run: (npm install && npm build)
+
