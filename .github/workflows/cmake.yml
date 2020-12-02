@@ -1,0 +1,74 @@
+name: BMYBBS Backend
+
+on:
+  push:
+    paths:
+      - api/
+      - atthttpd/
+      - include/
+      - libbmy/
+      - libytht/
+      - libythtbbs/
+      - local_utl/
+      - nju09/www/
+      - nju09/upload/
+      - nju09/CMakeLists.txt
+      - src/
+    branches:
+      - master
+  pull_request:
+    paths:
+      - api/
+      - atthttpd/
+      - include/
+      - libbmy/
+      - libytht/
+      - libythtbbs/
+      - local_utl/
+      - nju09/www/
+      - nju09/upload/
+      - nju09/CMakeLists.txt
+      - src/
+    branches:
+      - master
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: true
+
+    - name: Install dependencies with apt
+      run: (sudo apt-get update -qq && sudo apt-get install -qq libmysqlclient-dev libxml2-dev libhiredis-dev libjson-c-dev libpcre3-dev libgmp-dev libcurl4-openssl-dev)
+
+    - name: Install libcheck from source code
+      working-directory: ${{runner.workspace}}
+      run: (git clone https://github.com/libcheck/check ; cd check; autoreconf --install; ./configure; make; sudo make install; sudo cp check_stdint.h /usr/local/include; sudo ldconfig)
+
+    - name: Install onion from source code
+      working-directory: ${{runner.workspace}}
+      run: (git clone https://github.com/davidmoreno/onion ; mkdir onion-build; cd onion-build; cmake ../onion; make; cd src/onion; sudo make install)
+
+    - name: Install libghthash
+      working-directory: ${{runner.workspace}}
+      run: (mkdir ght_build && cd ght_build && tar xf $GITHUB_WORKSPACE/software/libghthash-0.5.0-x86_64.tar.gz && cd libghthash-0.5.0-x86_64 && ./configure && make && sudo make install && sudo ldconfig)
+
+    - name: Create Build Environment
+      run: cmake -E make_directory ${{runner.workspace}}/build
+
+    - name: Configure CMake
+      shell: bash
+      working-directory: ${{runner.workspace}}/build
+      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+
+    - name: Build
+      working-directory: ${{runner.workspace}}/build
+      shell: bash
+      run: cmake --build . --config $BUILD_TYPE
+
