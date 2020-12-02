@@ -1,4 +1,4 @@
-# BMYBBS [![Build Status](https://travis-ci.org/bmybbs/bmybbs.svg?branch=master)](https://travis-ci.org/bmybbs/bmybbs) [![Coverity Scan Build Status](https://scan.coverity.com/projects/4511/badge.svg)](https://scan.coverity.com/projects/4511)
+# BMYBBS ![Backend Build Status](https://github.com/bmybbs/bmybbs/workflows/BMYBBS%20Backend/badge.svg) ![Frontend Build Status](https://github.com/bmybbs/bmybbs/workflows/BMYBBS%20Frontend/badge.svg) [![Coverity Scan Build Status](https://scan.coverity.com/projects/4511/badge.svg)](https://scan.coverity.com/projects/4511)
 
 **BMYBBS** 是 [YTHT](https://zh.wikipedia.org/wiki/%E4%B8%80%E5%A1%8C%E7%B3%8A%E6%B6%82BBS) 代码的一个分支，被使用在[西安交通大学兵马俑 BBS](http://bbs.xjtu.edu.cn)。 当前开发和运行环境使用的是 Ubuntu 18.04 / gcc 7.5.0，测试环境使用的是 Ubuntu 20.04 / gcc 10.2.0。
 
