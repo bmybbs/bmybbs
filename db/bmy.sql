@@ -71,7 +71,7 @@ CREATE PROCEDURE procedure_create_section_view(
 	IN secstr char(1)
 )
 BEGIN
-	SET @sql = CONCAT("CREATE VIEW v_section_", secstr, " AS SELECT `boardname_en`, `boardname_zh`, `timestamp`, `title`, `author`, `comments` FROM `t_boards`, `t_threads` where `t_boards`.`boardnum` = `t_threads`.`boardnum` and `t_boards`.`secstr` = \"", secstr, "\"");
+	SET @sql = CONCAT("CREATE VIEW v_section_", secstr, " AS SELECT `boardname_en`, `boardname_zh`, `timestamp`, `title`, `author`, `comments` FROM `t_boards`, `t_threads` where `t_boards`.`boardnum` = `t_threads`.`boardnum` and `t_boards`.`secstr` = \"", secstr, "\" order by `timestamp` desc");
 	PREPARE stmt FROM @sql;
 	EXECUTE stmt;
 	DEALLOCATE PREPARE stmt;
