@@ -98,6 +98,22 @@ BEGIN
 	INSERT INTO `t_sections` (`id`, `name`) VALUE (secstr, name);
 	CALL procedure_create_section_view(secstr);
 END$$
+
+-- 插入版面
+CREATE PROCEDURE procedure_insert_board(
+	IN boardnum int,
+	IN boardname_en varchar(40),
+	IN boardname_zh varchar(40),
+	IN secstr char(1)
+)
+BEGIN
+	INSERT INTO `t_boards`
+		(`boardnum`, `boardname_en`, `boardname_zh`, `secstr`)
+	VALUE
+		(boardnum, boardname_en, boardname_zh, secstr);
+	CALL procedure_create_board_view(boardnum, boardname_en);
+END$$
+
 DELIMITER ;
 
 --
