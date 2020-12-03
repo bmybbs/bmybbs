@@ -18,7 +18,10 @@ CREATE TABLE `t_boards` (
 	`boardnum` int NOT NULL COMMENT '对应于 BOARDS 文件中的索引，从 1 开始计数',
 	`boardname_en` varchar(40) NOT NULL COMMENT '对应于 ythtbbs::boardheader.filename char(24)',
 	`boardname_zh` varchar(40) NOT NULL COMMENT '对应于 ythtbbs::boardheader.title char(24)使用 GBK 编码，转换为 UTF8 预计最长 36 字符'，
-	PRIMARY KEY （`boardnum`)
+	`secstr` char(1) NOT NULL,
+	PRIMARY KEY （`boardnum`),
+	KEY `fk_board_section_idx` (`secstr`),
+	CONSTRAINT `fk_board_section` FOREIGN KEY (`secstr`) REFERENCES `t_sections` (`id`)
 );
 
 CREATE TABLE `t_threads` (
