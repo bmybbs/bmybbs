@@ -137,6 +137,19 @@ BEGIN
 	CALL procedure_create_feed_view(usernum, userid);
 END$$
 
+-- 删除用户，通过外键层级删除订阅关系和订阅元数据
+CREATE PROCEDURE procedure_delete_user(
+	IN usernum int,
+	IN userid varchar(14)
+)
+BEGIN
+	SET @sql = CONCAT("DROP VIEW v_feed_", userid);
+	PREPARE stmt FROM @sql;
+	EXECUTE stmt;
+	DEALLOCATE PREPARE stmt;
+	DELETE FROM `t_users` where `t_users`.`usernum` = usernum;
+END$$
+
 DELIMITER ;
 
 --
