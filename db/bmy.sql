@@ -173,6 +173,32 @@ END$$
 DELIMITER ;
 
 --
+-- triggers
+--
+
+DELIMITER $$
+
+CREATE TRIGGER trigger_update_latest_timestamp
+AFTER INSERT ON `t_threads`
+FOR EACH ROW
+BEGIN
+	SET SQL_SAFE_UPDATES=0;
+	UPDATE `t_feed_meta`
+		SET latest_tid = unix_timestamp()
+		WHERE usernum in (
+			select usernum from `t_user_subscriptions`
+			where boardnum = NEW.boardnum
+		);
+
+	UPDATE `t_user_subscriptions`
+		SET latest_tid = unix_timestamp()
+		WHERE boardnum = NEW.boardnum;
+	SET SQL_SAFE_UPDATES=1;
+END$$
+
+DELIMITER ;
+
+--
 -- data
 --
 
