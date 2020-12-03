@@ -150,6 +150,26 @@ BEGIN
 	DELETE FROM `t_users` where `t_users`.`usernum` = usernum;
 END$$
 
+-- 更新版面
+-- TODO 使用条件判断语句？不过重命名版面、移动分区的这个事情不常见
+CREATE PROCEDURE procedure_update_board(
+	IN boardnum int,
+	IN new_boardname_en varchar(40),
+	IN new_boardname_zh varchar(40),
+	IN new_secstr char(1)
+)
+BEGIN
+	SELECT `boardname_en` INTO @old_boardname_en FROM `t_boards` WHERE `t_boards`.`boardnum` = boardnum LIMIT 1;
+	SET @sql = CONCAT("DROP VIEW v_board_", @old_boardname_en);
+	PREPARE stmt FROM @sql;
+	EXECUTE stmt;
+	DEALLOCATE PREPARE stmt;
+
+	CALL procedure_create_board_view(boardnum, new_boardname_en);
+
+	UPDATE `t_boards` SET `boardname_en` = new_boardname_en, `boardname_zh` = new_boardname_zh, `secstr` = new_secstr WHERE `t_boards`.`boardnum` = boardnum;
+END$$
+
 DELIMITER ;
 
 --
