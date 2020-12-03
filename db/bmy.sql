@@ -89,6 +89,18 @@ BEGIN
 	DEALLOCATE PREPARE stmt;
 END$$
 
+-- 依据 userid 创建用户订阅视图
+CREATE PROCEDURE procedure_create_feed_view(
+	IN usernum int,
+	IN userid varchar(14)
+)
+BEGIN
+	SET @sql = CONCAT("CREATE VIEW v_feed_", userid, " AS SELECT `boardname_en`, `boardname_zh`, `timestamp`, `title`, `author`, `comments` FROM `t_boards`, `t_threads` where `t_threads`.`boardnum` IN (SELECT boardnum FROM `t_user_subscriptions` WHERE usernum = ", usernum, ") and `t_threads`.`boardnum` = `t_boards`.`boardnum` order by `timestamp` desc");
+	PREPARE stmt FROM @sql;
+	EXECUTE stmt;
+	DEALLOCATE PREPARE stmt;
+END$$
+
 -- 插入分区
 CREATE PROCEDURE procedure_insert_section(
 	IN secstr char(1),
@@ -112,6 +124,17 @@ BEGIN
 	VALUE
 		(boardnum, boardname_en, boardname_zh, secstr);
 	CALL procedure_create_board_view(boardnum, boardname_en);
+END$$
+
+-- 插入用户
+CREATE PROCEDURE procedure_insert_user(
+	IN usernum int,
+	IN userid varchar(14)
+)
+BEGIN
+	INSERT INTO `t_users`(`usernum`, `userid`) VALUE(usernum, userid);
+	INSERT INTO `t_feed_meta`(`usernum`) VALUE(usernum);
+	CALL procedure_create_feed_view(usernum, userid);
 END$$
 
 DELIMITER ;
