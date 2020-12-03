@@ -1,6 +1,15 @@
 #include "bbslib.h"
 #include "tmpl.h"
-char *stat1();
+static char *stat1(struct fileheader *data, int from, int total);
+
+/* bbsdoc.c */
+extern void nosuchboard(char *board, char *cginame);
+extern int getdocstart(int total, int lines);
+extern void printboardtop(struct boardmem *x, int num);
+extern void printboardhot(struct boardmem *x);
+extern int top_file(const char *call_type);
+extern int printkeywords(char* keywordstr);
+extern void printrelationboards(char *buf);
 
 int
 bbstdoc_main()
@@ -80,35 +89,33 @@ bbstdoc_main()
 		}
 		printf("<input type=hidden name=B value=%s>", board);
 		printf("<input name=Submit2 type=Submit class=sumbitgrey value=Go>\n"
-			   "<input name=start type=text style=\"font-size:11px;font-family:verdana;\" size=4>");
+				"<input name=start type=text style=\"font-size:11px;font-family:verdana;\" size=4>");
 		//add by liuche 20120206 for pagenumber
 		if((start-1)%w_info->t_lines==0)
 		printf(" Page: %d/%d\n",(start-1)/w_info->t_lines+1,(total-1)/w_info->t_lines+1);
 		else
-		printf(" Page: %d/%d\n",(start-1)/w_info->t_lines+2,(total-1)/w_info->t_lines+1); 
+		printf(" Page: %d/%d\n",(start-1)/w_info->t_lines+2,(total-1)/w_info->t_lines+1);
 
 		//printhr();
 		printf("</td></tr></table></td></tr></table></td></tr></form></table>\n");
 		printboardhot(x1); //显示版面热门话题
-		printf
-		    ("<table width=\"95%%\" cellpadding=2 cellspacing=0 align=\"center\"><tr>\n"
-		    		"<td class=tdtitle>序号</td>"
-		    		"<td class=tdtitle>状态</td>"
-		    		"<td class=tduser>作者</td>"
-		    		"<td align=center class=tdtitle>日期</td>"
-		    		"<td align=center class=tdtitle>标题</td>"
-		    		"<td class=tdtitle>回帖/推荐度</td>\n"
-		     "</tr>");
+		printf("<table width=\"95%%\" cellpadding=2 cellspacing=0 align=\"center\"><tr>\n"
+				"<td class=tdtitle>序号</td>"
+				"<td class=tdtitle>状态</td>"
+				"<td class=tduser>作者</td>"
+				"<td align=center class=tdtitle>日期</td>"
+				"<td align=center class=tdtitle>标题</td>"
+				"<td class=tdtitle>回帖/推荐度</td>\n"
+				"</tr>");
 		//top_file();
 		for (i = 0; i < total; i++) {
-
 			//判断是否有b标记
 			if(data[i].accessed & FH_ALLREPLY)
- 				strcpy(only_for_b,"style='color:red;' ");
+				strcpy(only_for_b,"style='color:red;' ");
 			else
 				strcpy(only_for_b,"");
 			//
-			
+
 			if (data[i].thread != data[i].filetime)
 				continue;
 			sum++;
@@ -121,13 +128,12 @@ bbstdoc_main()
 			printf("<td class=tdborder>%d</td>"	// 序号
 					"<td class=tdborder>%s</td>"		// 状态
 					"<td class=tduser>%s</td>",		// 作者
-			       sum, flag_str(data[i].accessed)[0] == ' ' ? "&nbsp;" : flag_str(data[i].accessed),
-			       userid_str(fh2owner(&data[i])));
+					sum, flag_str(data[i].accessed)[0] == ' ' ? "&nbsp;" : flag_str(data[i].accessed),
+					userid_str(fh2owner(&data[i])));
 			printf("<td align=center class=tdborder>%6.6s</td>", ytht_ctime(data[i].filetime) + 4); // 日期
-			printf
-			    ("<td class=tdborder><a href=bbstcon?board=%s&start=%d&th=%ld %s>○ %s </a></td><td class=tdborder>%s</td>\n",
-			     board, i, data[i].thread, only_for_b,void1(titlestr(data[i].title)),
-			     stat1(data, i, total));
+			printf("<td class=tdborder><a href=bbstcon?board=%s&start=%d&th=%ld %s>○ %s </a></td><td class=tdborder>%s</td>\n",
+					board, i, data[i].thread, only_for_b,void1(titlestr(data[i].title)),
+					stat1(data, i, total));
 			if (sum > start + w_info->t_lines - 2)
 				break;
 		}
@@ -171,16 +177,15 @@ bbstdoc_main()
 
 	sprintf(genbuf, "boards/%s/boardrelation", board);
 	fp = fopen(genbuf, "r");
-    	if (fp != NULL)
-    	{
-    	    	char linebuf[128];
-    		fgets(linebuf, 128, fp);
-    		printf("<table width=\"100%%\" cellpadding=2 cellspacing=0><tr><td class=tdtitle align=center>\n");
+	if (fp != NULL) {
+		char linebuf[128];
+		fgets(linebuf, 128, fp);
+		printf("<table width=\"100%%\" cellpadding=2 cellspacing=0><tr><td class=tdtitle align=center>\n");
 		printf("来这个版的朋友也常去这些版面: ");
 		printrelationboards(linebuf);
 		printf("</td></tr></table>\n");
 		fclose(fp);
-    	}
+	}
 	//printhr();
 	//printf("主题模式 文章数[%d] 主题数[%d] ", total, total2);
 	//printf("<a href=bbsdoc?board=%s>一般模式</a>&nbsp;", board);
@@ -188,14 +193,12 @@ bbstdoc_main()
 	//sprintf(buf, "bbstdoc?board=%s", board);
 	//bbsdoc_helper(buf, start, total2, w_info->t_lines);
 	//printdocform("bbstdoc", board);
-    printf("<script src=/function.js></script>\n"); // 尾部加载 js by IronBlood@bmy 20120720
+	printf("<script src=/function.js></script>\n"); // 尾部加载 js by IronBlood@bmy 20120720
 	http_quit();
 	return 0;
 }
 
-char *
-stat1(struct fileheader *data, int from, int total)
-{
+static char *stat1(struct fileheader *data, int from, int total) {
 	static char buf[256];
 	char *ptr = data[from].title;
 	int i, re = 0, click = data[from].staravg50 * data[from].hasvoted / 50;
