@@ -61,34 +61,23 @@ CREATE TABLE `t_user_subscriptions` (
 );
 
 --
--- data
---
-
-INSERT INTO `t_sections`
-	(`id`, `name`)
-VALUES
-	("0", "本站系统"),
-	("1", "交通大学"),
-	("2", "开发技术"),
-	("3", "电脑应用"),
-	("4", "学术科学"),
-	("5", "社会科学"),
-	("6", "文学艺术"),
-	("7", "知性感性"),
-	("8", "体育运动"),
-	("9", "休闲音乐"),
-	("G", "游戏天地"),
-	("N", "新闻信息"),
-	("H", "乡音乡情"),
-	("A", "校务信息"),
-	("C", "俱乐部区");
-
---
 -- procedures
 --
 
--- 依据 boardnum, boardname_en 创建视图，使用 call 调用
 DELIMITER $$
+
+-- 依据 secstr 创建分区视图
+CREATE PROCEDURE procedure_create_section_view(
+	IN secstr char(1)
+)
+BEGIN
+	SET @sql = CONCAT("CREATE VIEW v_section_", secstr, " AS SELECT `boardname_en`, `boardname_zh`, `timestamp`, `title`, `author`, `comments` FROM `t_boards`, `t_threads` where `t_boards`.`boardnum` = `t_threads`.`boardnum` and `t_boards`.`secstr` = \"", secstr, "\"");
+	PREPARE stmt FROM @sql;
+	EXECUTE stmt;
+	DEALLOCATE PREPARE stmt;
+END$$
+
+-- 依据 boardnum, boardname_en 创建视图，使用 call 调用
 CREATE PROCEDURE procedure_create_board_view(
 	IN boardnum int,
 	IN boardname_en varchar(40)
@@ -99,5 +88,35 @@ BEGIN
 	EXECUTE stmt;
 	DEALLOCATE PREPARE stmt;
 END$$
+
+-- 插入分区
+CREATE PROCEDURE procedure_insert_section(
+	IN secstr char(1),
+	IN name char(16)
+)
+BEGIN
+	INSERT INTO `t_sections` (`id`, `name`) VALUE (secstr, name);
+	CALL procedure_create_section_view(secstr);
+END$$
 DELIMITER ;
+
+--
+-- data
+--
+
+CALL procedure_insert_section("0", "本站系统");
+CALL procedure_insert_section("1", "交通大学");
+CALL procedure_insert_section("2", "开发技术");
+CALL procedure_insert_section("3", "电脑应用");
+CALL procedure_insert_section("4", "学术科学");
+CALL procedure_insert_section("5", "社会科学");
+CALL procedure_insert_section("6", "文学艺术");
+CALL procedure_insert_section("7", "知性感性");
+CALL procedure_insert_section("8", "体育运动");
+CALL procedure_insert_section("9", "休闲音乐");
+CALL procedure_insert_section("G", "游戏天地");
+CALL procedure_insert_section("N", "新闻信息");
+CALL procedure_insert_section("H", "乡音乡情");
+CALL procedure_insert_section("A", "校务信息");
+CALL procedure_insert_section("C", "俱乐部区");
 
