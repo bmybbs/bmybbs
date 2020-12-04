@@ -67,4 +67,5 @@ add_subdirectory(upgrade)
 #add_subdirectory(upnew)
 #add_subdirectory(userip)
 add_subdirectory(watchman)
+add_subdirectory(import_feed)
 
