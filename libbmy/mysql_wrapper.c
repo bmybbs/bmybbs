@@ -67,6 +67,7 @@ int execute_prep_stmt(const char* sqlbuf, MYSQL_BIND *params, MYSQL_BIND *result
 
 	stmt = mysql_stmt_init(s);
 	if (!stmt) {
+		result = MYSQL_CANNOT_INIT_STMT;
 		goto END;
 	}
 
@@ -113,3 +114,4 @@ END:
 	if(s)    mysql_close(s);
 	return   result;
 }
+
