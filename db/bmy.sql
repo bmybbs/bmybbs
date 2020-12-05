@@ -11,15 +11,15 @@ CREATE TABLE `t_sections` (
 CREATE TABLE `t_users` (
 	`usernum` int NOT NULL COMMENT '对应于在 PASSWDS 文件中的索引，从 1 开始计数',
 	`userid` varchar(14) NOT NULL,
-	PRIMARY KEY （`usernum`)
+	PRIMARY KEY (`usernum`)
 );
 
 CREATE TABLE `t_boards` (
 	`boardnum` int NOT NULL COMMENT '对应于 BOARDS 文件中的索引，从 1 开始计数',
 	`boardname_en` varchar(40) NOT NULL COMMENT '对应于 ythtbbs::boardheader.filename char(24)',
-	`boardname_zh` varchar(40) NOT NULL COMMENT '对应于 ythtbbs::boardheader.title char(24)使用 GBK 编码，转换为 UTF8 预计最长 36 字符'，
+	`boardname_zh` varchar(40) NOT NULL COMMENT '对应于 ythtbbs::boardheader.title char(24)使用 GBK 编码，转换为 UTF8 预计最长 36 字符',
 	`secstr` char(1) NOT NULL,
-	PRIMARY KEY （`boardnum`),
+	PRIMARY KEY (`boardnum`),
 	KEY `fk_board_section_idx` (`secstr`),
 	CONSTRAINT `fk_board_section` FOREIGN KEY (`secstr`) REFERENCES `t_sections` (`id`)
 );
@@ -31,7 +31,7 @@ CREATE TABLE `t_threads` (
 	`title` varchar(120) NULL COMMENT '对应 ythtbbs::fileheader.title char(60)，留足 UTF8 编码空间',
 	`author` varchar(16) NULL COMMENT '作者，这里就不使用外键关联了，原作者 ID 可能不存在',
 	`comments` int NULL DEFAULT 1 COMMENT '包含原文在内的讨论计数',
-	PRIMARY KEY (`id`)，
+	PRIMARY KEY (`id`),
 	KEY `fk_thread_board_idx` (`boardnum`),
 	KEY `idx_timestamp` (`timestamp`),
 	CONSTRAINT `fk_thread_board` FOREIGN KEY (`boardnum`) REFERENCES `t_boards` (`boardnum`)
