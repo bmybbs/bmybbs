@@ -58,6 +58,8 @@ int import_board(void) {
 	MYBOOL bind_status;
 	int result = 0;
 
+	ythtbbs_cache_utmp_resolve();
+	ythtbbs_cache_UserTable_resolve();
 	ythtbbs_cache_Board_resolve();
 
 	s = mysql_init(NULL);
