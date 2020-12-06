@@ -369,13 +369,13 @@ void ythtbbs_cache_UserIDHashTable_dump(FILE *fp) {
 	}
 }
 
-void ythtbbs_cache_UserTable_apply_v(ythtbbs_cache_UserTable_apply_callback callback, ...) {
+void ythtbbs_cache_UserTable_foreach_v(ythtbbs_cache_UserTable_foreach_callback callback, ...) {
 	int rc, i;
 	va_list ap;
 
 	for (i = 0; i < shm_user_table->number; i++) {
 		va_start(ap, callback);
-		rc = callback(&shm_user_table->users[i], ap);
+		rc = callback(&shm_user_table->users[i], i, ap);
 		va_end(ap);
 
 		if (rc == QUIT)

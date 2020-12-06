@@ -102,8 +102,8 @@ unsigned int ythtbbs_cache_User_hash(const char *userid);
 void ythtbbs_cache_UserTable_resolve();
 
 // 如果返回 QUIT 则终止
-typedef int (*ythtbbs_cache_UserTable_apply_callback)(const struct ythtbbs_cache_User *user, va_list ap);
-void ythtbbs_cache_UserTable_apply_v(ythtbbs_cache_UserTable_apply_callback callback, ...);
+typedef int (*ythtbbs_cache_UserTable_foreach_callback)(const struct ythtbbs_cache_User *user, int curr_idx, va_list ap);
+void ythtbbs_cache_UserTable_foreach_v(ythtbbs_cache_UserTable_foreach_callback callback, ...);
 
 int ythtbbs_cache_UserTable_get_user_online_friends(const char *userid, bool has_see_cloak_perm, struct user_info *user_list, size_t user_list_size);
 

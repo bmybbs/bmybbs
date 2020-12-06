@@ -3,7 +3,7 @@
 static int bm_printboard(struct boardmanager *bm, void *farg);
 
 // const char *, int *, char *
-static int fuzzy_matching_userid_v(const struct ythtbbs_cache_User *user, va_list ap) {
+static int fuzzy_matching_userid_v(const struct ythtbbs_cache_User *user, int curr_idx, va_list ap) {
 	const char *userid;
 	int *j;
 	char *buf;
@@ -88,7 +88,7 @@ bbsqry_main()
 		int j = 0;
 		printf("没有这个用户啊，难道是这些:<p>");
 		printf("<table width=600>");
-		ythtbbs_cache_UserTable_apply_v(fuzzy_matching_userid_v, userid, &j, buf);
+		ythtbbs_cache_UserTable_foreach_v(fuzzy_matching_userid_v, userid, &j, buf);
 		printf("</table>");
 		if (j == 0)
 			printf("不可能，肯定是你敲错了，根本没这人啊");
