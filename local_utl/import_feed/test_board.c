@@ -4,21 +4,7 @@
 #include "ytht/ytht.h"
 #include "ythtbbs/article.h"
 #include "ythtbbs/misc.h"
-
-struct fileheader_utf {
-	time_t filetime;
-	time_t edittime;
-	time_t thread;
-	unsigned int accessed;
-	char title[120];
-	char owner[14];
-	unsigned short viewtime;
-	unsigned char sizebyte;
-	unsigned char staravg50;
-	unsigned char hasvoted;
-	char deltime;
-	unsigned int count;
-};
+#include "common.h"
 
 struct list_item {
 	const char *title;
@@ -71,8 +57,6 @@ static unsigned int find_likely_thread_idx(struct list_item **thread_titles, con
 	// 没有找到返回 idx
 	return idx;
 }
-
-static void copy_to_utf_header(struct fileheader_utf *dest, struct fileheader *src);
 
 int count_threads_of_board(const char *boardname) {
 	char buf[256];
@@ -131,26 +115,5 @@ int count_threads_of_board(const char *boardname) {
 
 	mmapfile(NULL, &mf);
 	return 0;
-}
-
-static void copy_to_utf_header(struct fileheader_utf *dest, struct fileheader *src) {
-	memset(dest, 0, sizeof(struct fileheader_utf));
-	dest->filetime = src->filetime;
-	dest->edittime = src->edittime;
-	dest->thread   = src->thread;
-	dest->accessed = src->accessed;
-	dest->sizebyte = src->sizebyte;
-	dest->viewtime = src->viewtime;
-	dest->hasvoted = src->hasvoted;
-	dest->deltime  = src->deltime;
-	dest->staravg50 = src->staravg50;
-	memcpy(dest->owner, src->owner, 14);
-
-	int len = strlen(src->title);
-	if (len > 60)
-		len = 60;
-	g2u(src->title, len, dest->title, 120);
-
-	dest->count = 1; // the first one!
 }
 
