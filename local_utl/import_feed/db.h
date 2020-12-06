@@ -9,5 +9,6 @@ typedef bool MYBOOL;
 #endif
 
 MYSQL *my_connect_mysql(MYSQL *s);
+void mysql_error_stmt(MYSQL_STMT *stmt);
 #endif
 

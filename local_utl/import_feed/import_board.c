@@ -37,7 +37,7 @@ static int import_board_callback(struct boardmem *board, int curr_idx, va_list a
 	status = mysql_stmt_bind_param(stmt, params);
 	if (status != 0) {
 		fprintf(stderr, "cannot import board %d - %s [bind stmt]\n", curr_idx, board->header.filename);
-		fprintf(stderr, "Error: %s (errno: %d)\n", mysql_stmt_error(stmt), mysql_stmt_errno(stmt));
+		mysql_error_stmt(stmt);
 		return -1;
 	}
 

@@ -36,3 +36,7 @@ MYSQL * my_connect_mysql(MYSQL *s) {
 	return mysql_real_connect(s, sql_host, sql_user, sql_pass, sql_db, atoi(sql_port), NULL, CLIENT_IGNORE_SIGPIPE);
 }
 
+void mysql_error_stmt(MYSQL_STMT *stmt) {
+	fprintf(stderr, "Error: %s (errno: %d)\n", mysql_stmt_error(stmt), mysql_stmt_errno(stmt));
+}
+
