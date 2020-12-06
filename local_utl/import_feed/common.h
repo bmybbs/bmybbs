@@ -17,6 +17,9 @@ struct fileheader_utf {
 	unsigned char hasvoted;
 	char deltime;
 	unsigned int count;
+	unsigned int boardnum;
+
+	struct fileheader_utf *next;
 };
 
 bool is_system_board(const char *boardname);
