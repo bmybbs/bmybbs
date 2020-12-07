@@ -17,7 +17,7 @@ struct fileheader_utf {
 	unsigned char hasvoted;
 	char deltime;
 	unsigned int count;
-	unsigned int boardnum;
+	int boardnum;
 
 	struct fileheader_utf *next;
 };
