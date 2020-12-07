@@ -198,6 +198,7 @@ static struct virtual_board *merge_threads(struct virtual_board boards[], unsign
 	}
 }
 
+/*
 static void dump_mega_thread(struct virtual_board *b) {
 	FILE *fp = fopen(MY_BBS_HOME "/dump_mega_thread.txt", "w");
 	fprintf(fp, "===================\n");
@@ -211,6 +212,75 @@ static void dump_mega_thread(struct virtual_board *b) {
 		it = it->next;
 	}
 	fclose(fp);
+}
+*/
+
+static void insert_mega_thread(struct virtual_board *b) {
+	MYSQL *s;
+	MYSQL_STMT *stmt;
+	MYSQL_BIND params[5];
+	char *anonymous = "Anonymous";
+	int mysql_status = 0;
+
+	s = mysql_init(NULL);
+	mysql_options(s, MYSQL_SET_CHARSET_NAME, "utf8");
+	if (!my_connect_mysql(s)) {
+		return;
+	}
+
+	stmt = mysql_stmt_init(s);
+	if (!stmt) {
+		mysql_close(s);
+		return;
+	}
+
+	const char *sql = "INSERT INTO `t_threads`(`boardnum`, `timestamp`, `title`, `author`, `comments`) VALUES(?, ?, ?, ?, ?)";
+	mysql_status = mysql_stmt_prepare(stmt, sql, strlen(sql));
+	if (mysql_status != 0) {
+		mysql_error_stmt(stmt);
+		mysql_stmt_close(stmt);
+		mysql_close(s);
+		return;
+	}
+
+	struct fileheader_utf *it = b->root.next;
+	while (it) {
+		memset(params, 0, sizeof(params));
+
+		params[0].buffer_type = MYSQL_TYPE_LONG;
+		params[0].buffer = &it->boardnum;
+		params[0].buffer_length = sizeof(int);
+
+		params[1].buffer_type = MYSQL_TYPE_LONGLONG;
+		params[1].buffer = &it->thread;
+		params[1].buffer_length = sizeof(int);
+
+		params[2].buffer_type = MYSQL_TYPE_STRING;
+		params[2].buffer = it->title;
+		params[2].buffer_length = strlen(it->title);
+
+		params[3].buffer_type = MYSQL_TYPE_STRING;
+		params[3].buffer = (it->owner[0] ? it->owner : anonymous);
+		params[3].buffer_length = strlen(params[3].buffer);
+
+		params[4].buffer_type = MYSQL_TYPE_LONG;
+		params[4].buffer = &it->count;
+		params[4].buffer_length = sizeof(int);
+
+		mysql_status = mysql_stmt_bind_param(stmt, params);
+		if (mysql_status != 0) {
+			mysql_error_stmt(stmt);
+		} else {
+			mysql_status = mysql_stmt_execute(stmt);
+			if (mysql_status != 0) {
+				mysql_error_stmt(stmt);
+			}
+		}
+		it = it->next;
+	}
+	mysql_stmt_close(stmt);
+	mysql_close(s);
+	return;
 }
 
 int import_thread(void) {
@@ -251,7 +321,8 @@ int import_thread(void) {
 	fprintf(stderr, "finished checking mega thread order\n");
 
 	if (ordered) {
-		dump_mega_thread(mega_board);
+		//dump_mega_thread(mega_board);
+		insert_mega_thread(mega_board);
 	} else {
 		fprintf(stderr, "mega threads are not in ascending order\n");
 	}
