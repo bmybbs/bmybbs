@@ -6,16 +6,6 @@
 #include "common.h"
 #include "db.h"
 
-static bool is_valid_username(const char *s) {
-	if (s == NULL)
-		return false;
-
-	if (s[0] == 0)
-		return false;
-
-	return ((s[0] >= 'A' && s[0] <= 'Z') || (s[0] >= 'a' && s[0] <= 'z'));
-}
-
 static int import_user_callback(const struct ythtbbs_cache_User *user, int curr_idx, va_list ap) {
 	MYSQL_STMT **stmt = va_arg(ap, MYSQL_STMT **);
 	MYSQL_STMT *stmt_insert_user = stmt[0];

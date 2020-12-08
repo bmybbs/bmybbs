@@ -24,6 +24,6 @@ struct fileheader_utf {
 
 bool is_system_board(const char *boardname);
 void copy_to_utf_header(struct fileheader_utf *dest, struct fileheader *src);
-
+bool is_valid_username(const char *s);
 #endif
 

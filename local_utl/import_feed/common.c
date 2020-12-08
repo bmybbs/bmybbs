@@ -31,3 +31,13 @@ void copy_to_utf_header(struct fileheader_utf *dest, struct fileheader *src) {
 	dest->count = 1; // the first one!
 }
 
+bool is_valid_username(const char *s) {
+	if (s == NULL)
+		return false;
+
+	if (s[0] == 0)
+		return false;
+
+	return ((s[0] >= 'A' && s[0] <= 'Z') || (s[0] >= 'a' && s[0] <= 'z'));
+}
+
