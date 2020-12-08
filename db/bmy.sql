@@ -31,6 +31,7 @@ CREATE TABLE `t_threads` (
 	`title` varchar(120) NULL COMMENT '对应 ythtbbs::fileheader.title char(60)，留足 UTF8 编码空间',
 	`author` varchar(16) NULL COMMENT '作者，这里就不使用外键关联了，原作者 ID 可能不存在',
 	`comments` int NULL DEFAULT 1 COMMENT '包含原文在内的讨论计数',
+	`accessed` int NOT NULL COMMENT '对应 accessed，标记位',
 	PRIMARY KEY (`id`),
 	KEY `fk_thread_board_idx` (`boardnum`),
 	KEY `idx_timestamp` (`timestamp`),
@@ -71,7 +72,7 @@ CREATE PROCEDURE procedure_create_section_view(
 	IN secstr char(1)
 )
 BEGIN
-	SET @sql = CONCAT("CREATE VIEW v_section_", secstr, " AS SELECT `boardname_en`, `boardname_zh`, `timestamp`, `title`, `author`, `comments` FROM `t_boards`, `t_threads` where `t_boards`.`boardnum` = `t_threads`.`boardnum` and `t_boards`.`secstr` = \"", secstr, "\" order by `timestamp` desc");
+	SET @sql = CONCAT("CREATE VIEW v_section_", secstr, " AS SELECT `boardname_en`, `boardname_zh`, `timestamp`, `title`, `author`, `comments`, `accessed` FROM `t_boards`, `t_threads` where `t_boards`.`boardnum` = `t_threads`.`boardnum` and `t_boards`.`secstr` = \"", secstr, "\" order by `timestamp` desc");
 	PREPARE stmt FROM @sql;
 	EXECUTE stmt;
 	DEALLOCATE PREPARE stmt;
@@ -83,7 +84,7 @@ CREATE PROCEDURE procedure_create_board_view(
 	IN boardname_en varchar(40)
 )
 BEGIN
-	SET @sql = CONCAT("CREATE VIEW v_board_", boardname_en, " AS SELECT `boardname_en`, `boardname_zh`, `timestamp`, `title`, `author`, `comments` FROM `t_boards`, `t_threads` where `t_boards`.`boardnum` = `t_threads`.`boardnum` and `t_threads`.`boardnum` = ", boardnum, " order by `timestamp` desc");
+	SET @sql = CONCAT("CREATE VIEW v_board_", boardname_en, " AS SELECT `boardname_en`, `boardname_zh`, `timestamp`, `title`, `author`, `comments`, `accessed` FROM `t_boards`, `t_threads` where `t_boards`.`boardnum` = `t_threads`.`boardnum` and `t_threads`.`boardnum` = ", boardnum, " order by `timestamp` desc");
 	PREPARE stmt FROM @sql;
 	EXECUTE stmt;
 	DEALLOCATE PREPARE stmt;
@@ -95,7 +96,7 @@ CREATE PROCEDURE procedure_create_feed_view(
 	IN userid varchar(14)
 )
 BEGIN
-	SET @sql = CONCAT("CREATE VIEW v_feed_", userid, " AS SELECT `boardname_en`, `boardname_zh`, `timestamp`, `title`, `author`, `comments` FROM `t_boards`, `t_threads` where `t_threads`.`boardnum` IN (SELECT boardnum FROM `t_user_subscriptions` WHERE usernum = ", usernum, ") and `t_threads`.`boardnum` = `t_boards`.`boardnum` order by `timestamp` desc");
+	SET @sql = CONCAT("CREATE VIEW v_feed_", userid, " AS SELECT `boardname_en`, `boardname_zh`, `timestamp`, `title`, `author`, `comments`, `accessed` FROM `t_boards`, `t_threads` where `t_threads`.`boardnum` IN (SELECT boardnum FROM `t_user_subscriptions` WHERE usernum = ", usernum, ") and `t_threads`.`boardnum` = `t_boards`.`boardnum` order by `timestamp` desc");
 	PREPARE stmt FROM @sql;
 	EXECUTE stmt;
 	DEALLOCATE PREPARE stmt;
