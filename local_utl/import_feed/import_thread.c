@@ -218,7 +218,7 @@ static void dump_mega_thread(struct virtual_board *b) {
 static void insert_mega_thread(struct virtual_board *b) {
 	MYSQL *s;
 	MYSQL_STMT *stmt;
-	MYSQL_BIND params[5];
+	MYSQL_BIND params[6];
 	char *anonymous = "Anonymous";
 	int mysql_status = 0;
 
@@ -234,7 +234,7 @@ static void insert_mega_thread(struct virtual_board *b) {
 		return;
 	}
 
-	const char *sql = "INSERT INTO `t_threads`(`boardnum`, `timestamp`, `title`, `author`, `comments`) VALUES(?, ?, ?, ?, ?)";
+	const char *sql = "INSERT INTO `t_threads`(`boardnum`, `timestamp`, `title`, `author`, `comments`, `accessed`) VALUES(?, ?, ?, ?, ?, ?)";
 	mysql_status = mysql_stmt_prepare(stmt, sql, strlen(sql));
 	if (mysql_status != 0) {
 		mysql_error_stmt(stmt);
@@ -266,6 +266,10 @@ static void insert_mega_thread(struct virtual_board *b) {
 		params[4].buffer_type = MYSQL_TYPE_LONG;
 		params[4].buffer = &it->count;
 		params[4].buffer_length = sizeof(int);
+
+		params[5].buffer_type = MYSQL_TYPE_LONG;
+		params[5].buffer = &it->accessed;
+		params[5].buffer_length = sizeof(int);
 
 		mysql_status = mysql_stmt_bind_param(stmt, params);
 		if (mysql_status != 0) {
