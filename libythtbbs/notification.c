@@ -8,6 +8,7 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "bmy/convcode.h"
 #include "ythtbbs/ythtbbs.h"
 
 #define NOTIFILE "Notification"

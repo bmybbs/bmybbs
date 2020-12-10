@@ -1,4 +1,5 @@
 #include "bbs.h"
+#include "bmy/convcode.h"
 
 extern int cmpbnames(char *bname, struct boardheader *brec);
 

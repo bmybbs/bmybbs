@@ -1,6 +1,7 @@
 //ylsdd Nov 05, 2002
 #include <dirent.h>
 #include "bbs.h"
+#include "bmy/convcode.h"
 #include "ythtbbs/ythtbbs.h"
 #include "bmy/cookie.h"
 #include "ythtbbs/session.h"

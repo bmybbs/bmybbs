@@ -4,6 +4,7 @@ add_library(bmy SHARED
 	iphash.c
 	cookie.c
 	wechat.c
+	convcode.c
 )
 
 target_link_libraries(bmy ytht mysqlclient ssl crypto curl json-c)

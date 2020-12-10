@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include "bmy/convcode.h"
 #include "ythtbbs/cache.h"
 #include "ythtbbs/misc.h"
 #include "common.h"
