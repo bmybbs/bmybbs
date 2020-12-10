@@ -2,6 +2,11 @@
 #define BMY_MYSQL_WRAPPER
 #include <mysql/mysql.h>
 
+enum MYSQL_CHARSET {
+	MYSQL_CHARSET_GBK,
+	MYSQL_CHARSET_UTF8
+};
+
 enum MYSQL_STATUS {
 	MYSQL_CANNOT_CONNECT_TO_MYSQL        = -1,
 	MYSQL_CANNOT_INIT_STMT               = -2,
@@ -15,16 +20,17 @@ enum MYSQL_STATUS {
 typedef void (*BMY_MYSQL_WRAPPER_CALLBACK)(MYSQL_STMT *stmt, MYSQL_BIND *result_cols, void *result_set);
 
 /**
- * Ê¹ÓÃ mysql prepared statement ½øĞĞ sql ²éÑ¯µÄº¯Êı·â×°
+ * ä½¿ç”¨ mysql prepared statement è¿›è¡Œ sql æŸ¥è¯¢çš„å‡½æ•°å°è£…
  *
- * Ö´ĞĞ²éÑ¯ºó½á¹û¼¯»áÈ«²¿»º´æÔÚ¿Í»§¶Ë£¬Òò´ËĞèÒªÁôÒâ²éÑ¯µÄ¹æÄ£¡£º¯ÊıÄÚ²¿´¦ÀíÁË½¨Á¢Á¬½Ó¡¢²éÑ¯½áÊøºóÊÍ·Å×ÊÔ´¡£½á¹û¼¯µÄÊ¹ÓÃÓÉ»Øµ÷º¯Êı´¦Àí£¬²¢·µ»Ø»Øµ÷º¯ÊıµÄÖ´ĞĞ½á¹û¡£
- * @param sqlbuf ²éÑ¯µÄ sql Óï¾ä£¨ÒÔ prepared statement ĞÎÊ½Ğ´Èë£©
- * @param params °ó¶¨µÄ²ÎÊı£¬²»´æÔÚÊäÈë NULL
- * @param result_cols °ó¶¨µÄ·µ»ØÖµ£¬²»´æÔÚÊäÈë NULL£¬»á±»´«Èë callback
- * @param result_set ÓÃÓÚ´æ·Å·µ»Ø½á¹ûµÄÖ¸Õë£¬»á±»´«Èë callback
- * @param callback ´¦Àí²éÑ¯½á¹ûµÄ»Øµ÷º¯Êı
- * @return ·µ»Ø mysql µ÷ÓÃ×´Ì¬
+ * æ‰§è¡ŒæŸ¥è¯¢åç»“æœé›†ä¼šå…¨éƒ¨ç¼“å­˜åœ¨å®¢æˆ·ç«¯ï¼Œå› æ­¤éœ€è¦ç•™æ„æŸ¥è¯¢çš„è§„æ¨¡ã€‚å‡½æ•°å†…éƒ¨å¤„ç†äº†å»ºç«‹è¿æ¥ã€æŸ¥è¯¢ç»“æŸåé‡Šæ”¾èµ„æºã€‚ç»“æœé›†çš„ä½¿ç”¨ç”±å›è°ƒå‡½æ•°å¤„ç†ï¼Œå¹¶è¿”å›å›è°ƒå‡½æ•°çš„æ‰§è¡Œç»“æœã€‚
+ * @param sqlbuf æŸ¥è¯¢çš„ sql è¯­å¥ï¼ˆä»¥ prepared statement å½¢å¼å†™å…¥ï¼‰
+ * @param charset ä½¿ç”¨çš„å­—ç¬¦é›†
+ * @param params ç»‘å®šçš„å‚æ•°ï¼Œä¸å­˜åœ¨è¾“å…¥ NULL
+ * @param result_cols ç»‘å®šçš„è¿”å›å€¼ï¼Œä¸å­˜åœ¨è¾“å…¥ NULLï¼Œä¼šè¢«ä¼ å…¥ callback
+ * @param result_set ç”¨äºå­˜æ”¾è¿”å›ç»“æœçš„æŒ‡é’ˆï¼Œä¼šè¢«ä¼ å…¥ callback
+ * @param callback å¤„ç†æŸ¥è¯¢ç»“æœçš„å›è°ƒå‡½æ•°
+ * @return è¿”å› mysql è°ƒç”¨çŠ¶æ€
  */
-int execute_prep_stmt(const char* sqlbuf, MYSQL_BIND *params, MYSQL_BIND *result_cols, void *result_set, BMY_MYSQL_WRAPPER_CALLBACK callback);
+int execute_prep_stmt(const char* sqlbuf, enum MYSQL_CHARSET charset, MYSQL_BIND *params, MYSQL_BIND *result_cols, void *result_set, BMY_MYSQL_WRAPPER_CALLBACK callback);
 
 #endif
