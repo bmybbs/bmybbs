@@ -2,6 +2,7 @@
 #include <sys/mman.h>
 #include "config.h"
 #include "ytht/ytht.h"
+#include "bmy/article.h"
 #include "ythtbbs/article.h"
 #include "ythtbbs/misc.h"
 #include "common.h"

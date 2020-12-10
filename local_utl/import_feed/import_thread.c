@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "ytht/fileop.h"
+#include "bmy/article.h"
 #include "ythtbbs/cache.h"
 #include "ythtbbs/misc.h"
 #include "ythtbbs/article.h"
