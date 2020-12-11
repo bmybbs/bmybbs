@@ -38,8 +38,6 @@
 #include "mail.h"
 #include "bbs_global_vars.h"
 
-#define        BLK_SIZ         4096  //by bjgyt
-
 char cexplain[STRLEN];
 char lookgrp[30];
 
@@ -771,8 +769,6 @@ enterbname:
 	return 0;
 }
 
-FILE *cleanlog;
-char curruser[IDLEN + 2];
 extern int delmsgs[];
 extern int delcnt;
 
