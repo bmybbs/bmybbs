@@ -36,6 +36,7 @@
 #include "announce.h"
 #include "mail.h"
 #include "bbs_global_vars.h"
+#include "bmy/board.h"
 
 char cexplain[STRLEN];
 char lookgrp[30];
@@ -499,6 +500,10 @@ m_newbrd()
 	}
 
 	ythtbbs_cache_Board_resolve();
+	int boardnum = ythtbbs_cache_Board_get_idx_by_name(newboard.filename) + 1;
+	if (boardnum > 0) {
+		bmy_board_create(boardnum, newboard.filename, newboard.title, newboard.sec1);
+	}
 
 	group = chgrp();
 	sprintf(vbuf, "%-38.38s", newboard.title);
@@ -762,6 +767,9 @@ enterbname:
 			}
 			substitute_record(BOARDS, &newfh, sizeof (newfh), pos);
 			ythtbbs_cache_Board_resolve();
+			if (strcmp(newfh.filename, fh.filename) != 0 || strcmp(newfh.title, fh.title) != 0 || strcmp(newfh.sec1, fh.sec1) != 0) {
+				bmy_board_rename(pos, newfh.filename, newfh.title, newfh.sec1);
+			}
 		}
 	}
 	clear();
