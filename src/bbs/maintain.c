@@ -160,7 +160,7 @@ char *title;
 int
 m_info()
 {
-	struct userec uinfo;
+	struct userec local_uinfo;
 	int id;
 
 	modify_user_mode(ADMIN);
@@ -184,12 +184,12 @@ m_info()
 		clear();
 		return -1;
 	}
-	memcpy(&uinfo, &lookupuser, sizeof (uinfo));
+	memcpy(&local_uinfo, &lookupuser, sizeof (local_uinfo));
 
 	move(1, 0);
 	clrtobot();
-	disply_userinfo(&uinfo, 1);
-	uinfo_query(&uinfo, 1, id);
+	disply_userinfo(&local_uinfo, 1);
+	uinfo_query(&local_uinfo, 1, id);
 	return 0;
 }
 
