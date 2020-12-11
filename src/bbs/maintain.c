@@ -35,8 +35,6 @@
 #include "bm.h"
 #include "bbsinc.h"
 #include "announce.h"
-#include "talk.h"
-#include "boards.h"
 #include "mail.h"
 #include "bbs_global_vars.h"
 

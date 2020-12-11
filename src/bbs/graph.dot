@@ -364,8 +364,6 @@ digraph G {
 	n_bm   -> n_mntn;
 	n_bbs  -> n_mntn;
 	n_anno -> n_mntn;
-	n_talk -> n_mntn;
-	n_brds -> n_mntn;
 	n_mail -> n_mntn;
 
 	/* moneycenter.c */
