@@ -724,14 +724,14 @@ enterbname:
 			}
 			newfh.board_mtime = time(NULL);
 			if (strcmp(fh.filename, newfh.filename)) {
-				char old[256], tar[256];
+				char local_old[256], tar[256];
 				a_mv = 1;
-				setbpath(old, fh.filename);
+				setbpath(local_old, fh.filename);
 				setbpath(tar, newfh.filename);
-				rename(old, tar);
-				sprintf(old, "vote/%s", fh.filename);
+				rename(local_old, tar);
+				sprintf(local_old, "vote/%s", fh.filename);
 				sprintf(tar, "vote/%s", newfh.filename);
-				rename(old, tar);
+				rename(local_old, tar);
 				if (seek_in_file("etc/junkboards", fh.filename)) {
 					ytht_del_from_file("etc/junkboards", fh.filename, true);
 					ytht_add_to_file("etc/junkboards", newfh.filename);
