@@ -360,7 +360,6 @@ digraph G {
 	n_bcch -> n_mntn;
 	n_user -> n_mntn;
 	n_more -> n_mntn;
-	n_rcrd -> n_mntn;
 	n_bm   -> n_mntn;
 	n_bbs  -> n_mntn;
 	n_anno -> n_mntn;

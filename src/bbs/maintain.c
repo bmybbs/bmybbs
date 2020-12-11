@@ -31,7 +31,6 @@
 #include "bcache.h"
 #include "userinfo.h"
 #include "more.h"
-#include "record.h"
 #include "bm.h"
 #include "bbsinc.h"
 #include "announce.h"
