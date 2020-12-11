@@ -776,8 +776,8 @@ int
 m_register()
 {
 	FILE *fn;
-	char ans[3], *fname;
-	int x, y, wid, len;
+	char ans[3];
+	int x;
 	char uident[STRLEN];
 
 	modify_user_mode(ADMIN);
@@ -844,7 +844,7 @@ m_ordainBM()
 int
 do_ordainBM(const char *userid, const char *abname)
 {
-	int id, pos, oldbm = 0, i, bm = 0, bigbm, bmpos, minpos, maxpos;
+	int id, pos, oldbm = 0, i, bigbm, bmpos, minpos, maxpos;
 	struct boardheader fh;
 	char bname[STRLEN], tmp[STRLEN], buf[5][STRLEN];
 	char content[1024], title[STRLEN];
@@ -978,8 +978,7 @@ do_ordainBM(const char *userid, const char *abname)
 	securityreport(genbuf, genbuf);
 	move(19, 0);
 	prints("%s", genbuf);
-	sprintf(title, "[公告]任命%s 版%s %s ", bname, (!bm) ? "版主" : "版副",
-		lookupuser.userid);
+	sprintf(title, "[公告]任命%s 版版主 %s ", bname, lookupuser.userid);
 	if(strcmp(bname,"BM_exam")&&strcmp(bname,"BM_examII")&&strcmp(bname,"BM_examIII"))
 		sprintf(content,
 			"\n\t\t    【 版务任命公告 】\n\n\n" "\t  %s 网友：\n\n"
