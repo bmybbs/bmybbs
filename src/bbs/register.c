@@ -34,6 +34,7 @@
 #include "mail.h"
 #include "maintain.h"
 #include "bbs_global_vars.h"
+#include "bmy/user.h"
 /*
 #define  EMAIL          0x0001
 #define  NICK           0x0002
@@ -175,6 +176,7 @@ new_register()
 	mkdir(genbuf, 0775);
 	sprintf(genbuf, "%s newaccount %d %s", newuser.userid, allocid, fromhost);
 	newtrace(genbuf);
+	bmy_user_create(allocid, newuser.userid);
 }
 
 int

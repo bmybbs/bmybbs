@@ -1,6 +1,7 @@
 #include "bbslib.h"
 #include "ythtbbs/identify.h"
 #include "ytht/random.h"
+#include "bmy/user.h"
 
 static void newcomer(struct userec *x, char *words);
 
@@ -315,6 +316,7 @@ bbsdoreg_main()
 //      f_append("wwwreg.log", buf);
 	sprintf(buf, "%s newaccount %d %s www", x.userid, getusernum(x.userid), fromhost);
 	newtrace(buf);
+	bmy_user_create(getusernum(x.userid), x.userid);
 	//wwwstylenum = 1;
 
 	//don't login with reg by leoncom for ipv6
