@@ -171,6 +171,46 @@ BEGIN
 	UPDATE `t_boards` SET `boardname_en` = new_boardname_en, `boardname_zh` = new_boardname_zh, `secstr` = new_secstr WHERE `t_boards`.`boardnum` = boardnum;
 END$$
 
+-- 更新主题评论数
+-- +1 / -1 在代码调用中设定
+CREATE PROCEDURE procedure_update_thread_comments(
+	IN boardnum int,
+	IN timestamp int,
+	IN delta int
+)
+BEGIN
+	SET SQL_SAFE_UPDATES=0;
+	UPDATE `t_threads` SET `comments` = `comments` + delta
+	WHERE `boardnum` = boardnum AND `timestamp` = timestamp;
+	SET SQL_SAFE_UPDATES=1;
+END$$
+
+-- 更新主题标题
+CREATE PROCEDURE procedure_update_thread_title(
+	IN boardnum int,
+	IN timestamp int,
+	IN title varchar(120)
+)
+BEGIN
+	SET SQL_SAFE_UPDATES=0;
+	UPDATE `t_threads` SET `title` = title
+	WHERE `boardnum` = boardnum AND `timestamp` = timestamp;
+	SET SQL_SAFE_UPDATES=1;
+END$$
+
+-- 更新主题标记
+CREATE PROCEDURE procedure_update_thread_accessed(
+	IN boardnum int,
+	IN timestamp int,
+	IN accessed int
+)
+BEGIN
+	SET SQL_SAFE_UPDATES=0;
+	UPDATE `t_threads` SET `accessed` = accessed
+	WHERE `boardnum` = boardnum AND `timestamp` = timestamp;
+	SET SQL_SAFE_UPDATES=1;
+END$$
+
 DELIMITER ;
 
 --
