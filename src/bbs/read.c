@@ -235,8 +235,7 @@ static void
 doquickview(int i)
 {
 	if (quickview != NULL)
-		quickview(quickviewdata.crs_line, quickviewdata.data,
-			  quickviewdata.currdirect);
+		quickview(quickviewdata.crs_line, quickviewdata.data, quickviewdata.currdirect);
 }
 
 void i_read(int cmdmode, char *direct, int (*dotitle) (), char *(*doentry) (int, void *, char *), const struct one_key *rcmdlist, int ssize) {
@@ -338,8 +337,7 @@ void i_read(int cmdmode, char *direct, int (*dotitle) (), char *(*doentry) (int,
 	while (1) {
 		if (savet_lines != 0) {
 			quickviewdata.crs_line = locmem->crs_line;
-			quickviewdata.data =
-			    &pnt[(locmem->crs_line - locmem->top_line) * ssize];
+			quickviewdata.data = &pnt[(locmem->crs_line - locmem->top_line) * ssize];
 			quickviewdata.currdirect = currdirect;
 			signal(SIGALRM, doquickview);
 			ualarm(300000, 0);
@@ -351,9 +349,7 @@ void i_read(int cmdmode, char *direct, int (*dotitle) (), char *(*doentry) (int,
 		if (talkrequest) {
 			talkreply();
 			mode = FULLUPDATE;
-		} else if ((ch >= '0' && ch <= '9') || (lbc > 0
-							&& ch == Ctrl('H'))
-			   || ch == '\177') {
+		} else if ((ch >= '0' && ch <= '9') || (lbc > 0 && ch == Ctrl('H')) || ch == '\177') {
 			if (lbc < 9 || ch == Ctrl('H') || ch == '\177') {
 				char buf[30];
 				if (ch != Ctrl('H') && ch != '\177') {
@@ -367,18 +363,17 @@ void i_read(int cmdmode, char *direct, int (*dotitle) (), char *(*doentry) (int,
 				last_line_excludeBottom = get_num_records_excludeBottom(currdirect, ssize);
 				sprintf(buf, "[\033[36m%.12s\033[33m]",
 					currentuser.userid);
-				prints
-				    ("\033[1;44;33m◊™µΩ:[\033[36m%10s\033[33m]"
-				     " ◊¥Ã¨:[\033[36m%1s%1s%1s%1s%1s%1s\033[33m]"
-				     "  π”√’ﬂ:%-24s Õ£¡Ù:[\033[36m%3d\033[33m:\033[36m%2d\033[33m]"
-				     " \033[m", lbuf,
-				     (uinfo.pager & ALL_PAGER) ? "P" : "p",
-				     (uinfo.pager & FRIEND_PAGER) ? "O" : "o",
-				     (uinfo.pager & ALLMSG_PAGER) ? "M" : "m",
-				     (uinfo.pager & FRIENDMSG_PAGER) ? "F" :
-				     "f", (DEFINE(DEF_MSGGETKEY, currentuser)) ? "X" : "x",
-				     (uinfo.invisible == 1) ? "C" : "c", buf,
-				     (allstay / 60) % 1000, allstay % 60);
+				prints("\033[1;44;33m◊™µΩ:[\033[36m%10s\033[33m]"
+						" ◊¥Ã¨:[\033[36m%1s%1s%1s%1s%1s%1s\033[33m]"
+						"  π”√’ﬂ:%-24s Õ£¡Ù:[\033[36m%3d\033[33m:\033[36m%2d\033[33m]"
+						" \033[m", lbuf,
+						(uinfo.pager & ALL_PAGER) ? "P" : "p",
+						(uinfo.pager & FRIEND_PAGER) ? "O" : "o",
+						(uinfo.pager & ALLMSG_PAGER) ? "M" : "m",
+						(uinfo.pager & FRIENDMSG_PAGER) ? "F" :
+						"f", (DEFINE(DEF_MSGGETKEY, currentuser)) ? "X" : "x",
+						(uinfo.invisible == 1) ? "C" : "c", buf,
+						(allstay / 60) % 1000, allstay % 60);
 			}
 		} else if (lbc > 0 && (ch == '\n' || ch == '\r')) {
 			lbuf[lbc] = '\0';
@@ -405,18 +400,14 @@ void i_read(int cmdmode, char *direct, int (*dotitle) (), char *(*doentry) (int,
 					break;
 				} else if (reload) {
 					recbase = locmem->top_line;
-					entries =
-					    get_records(currdirect, pnt, ssize,
-							recbase, screen_len);
+					entries = get_records(currdirect, pnt, ssize, recbase, screen_len);
 					if (entries <= 0) {
 						last_line = -1;
 						break;
 					}
 				}
 				num = locmem->crs_line - locmem->top_line;
-				mode =
-				    i_read_key(rcmdlist, locmem, ch, ssize,
-					       pnt);
+				mode = i_read_key(rcmdlist, locmem, ch, ssize, pnt);
 				modify_user_mode(cmdmode);
 			}
 		}
@@ -452,15 +443,13 @@ void i_read(int cmdmode, char *direct, int (*dotitle) (), char *(*doentry) (int,
 			recbase = -1;
 			if (mode == 999) {
 				if (uinfo.mode == SELBACKNUMBER
-				    || uinfo.mode ==
-				    BACKNUMBER
-				    || uinfo.mode == DO1984 || cmdmode == GMENU)
+						|| uinfo.mode == BACKNUMBER
+						|| uinfo.mode == DO1984 || cmdmode == GMENU)
 					strcpy(currdirect, direct);
 				//sprintf(currdirect, "backnumbers/%s/%s", currboard, DOT_DIR);
 				else {
 					digestmode = 0;
-					setbdir(currdirect, currboard,
-						digestmode);
+					setbdir(currdirect, currboard, digestmode);
 
 				}
 			}
@@ -486,9 +475,7 @@ void i_read(int cmdmode, char *direct, int (*dotitle) (), char *(*doentry) (int,
 			}
 			if (mode == NEWDIRECT) {
 				num = last_line - screen_len + 1;
-				locmem =
-				    getkeep(currdirect, num < 1 ? 1 : num,
-					    last_line);
+				locmem = getkeep(currdirect, num < 1 ? 1 : num, last_line);
 			}
 		case FULLUPDATE:
 			draw_title(dotitle);
@@ -511,8 +498,7 @@ void i_read(int cmdmode, char *direct, int (*dotitle) (), char *(*doentry) (int,
 						recbase = 1;
 					locmem->top_line = recbase;
 				}
-				entries = get_records(currdirect, pnt, ssize,
-						      recbase, screen_len);
+				entries = get_records(currdirect, pnt, ssize, recbase, screen_len);
 			}
 			if (locmem->crs_line > last_line)
 				locmem->crs_line = last_line;
@@ -546,7 +532,7 @@ char *pnt;
 	case 'q':
 	case KEY_LEFT:
 		if (uinfo.mode != RMAIL && uinfo.mode != SELBACKNUMBER
-		    && uinfo.mode != BACKNUMBER && uinfo.mode != DO1984) {
+				&& uinfo.mode != BACKNUMBER && uinfo.mode != DO1984) {
 			switch (digestmode) {
 			case YEA:
 				return digest_mode();
@@ -589,16 +575,15 @@ char *pnt;
 		last_line = get_num_records(currdirect, ssize);
 		last_line_excludeBottom = get_num_records_excludeBottom(currdirect, ssize);
 		if (last_line >= locmem->top_line + screen_len) {
-			 if (last_line_excludeBottom<locmem->top_line+screen_len) {
-                                locmem->top_line=last_line-screen_len+1;
-                                locmem->crs_line=last_line_excludeBottom;
-                        }
-                        else {
-                                locmem->top_line += screen_len - 1;
-                                if(locmem->top_line<=0)
-                                        locmem->top_line=1;
-                                locmem->crs_line = locmem->top_line;
-                        }
+			if (last_line_excludeBottom<locmem->top_line+screen_len) {
+				locmem->top_line=last_line-screen_len+1;
+				locmem->crs_line=last_line_excludeBottom;
+			} else {
+				locmem->top_line += screen_len - 1;
+				if(locmem->top_line<=0)
+					locmem->top_line=1;
+				locmem->crs_line = locmem->top_line;
+			}
 			return PARTUPDATE;
 		}
 		RMVCURS;
@@ -805,12 +790,11 @@ char *direct;
 {
 	int i, dotype=0;			//add by mintbaggio
 	char buf[STRLEN * 2], ch[4], BMch;
-	static const char *SR_BMitems[] =
-	    { "≤ªºıŒƒ’¬ ˝…æ≥˝", "±£¡Ù", "Œƒ’™", "∑≈»Îæ´ª™«¯", "∑≈»Î‘›¥Êµµ",
-		"…ËŒ™≤ªø…ªÿ∏¥", "∫œºØ" ,"ºıŒƒ’¬ ˝…æ≥˝"//add heji by bjgyt
+	static const char *SR_BMitems[] = {
+		"≤ªºıŒƒ’¬ ˝…æ≥˝", "±£¡Ù", "Œƒ’™", "∑≈»Îæ´ª™«¯", "∑≈»Î‘›¥Êµµ",
+		"…ËŒ™≤ªø…ªÿ∏¥", "∫œºØ" ,"ºıŒƒ’¬ ˝…æ≥˝" //add heji by bjgyt
 	};
-	static const char *subBMitems[] =
-	{"œ‡Õ¨÷˜Ã‚", "œ‡Õ¨◊˜’ﬂ"};		//add by mintbaggio
+	static const char *subBMitems[] = {"œ‡Õ¨÷˜Ã‚", "œ‡Õ¨◊˜’ﬂ"}; //add by mintbaggio
 
 	if (!IScurrBM) {
 		return DONOTHING;
@@ -858,8 +842,7 @@ char *direct;
 		saveline(t_lines - 2, 1, NULL);
 		return FULLUPDATE;
 	}
-	if ((digestmode == 2 || digestmode == 3 || digestmode == 4
-	     || digestmode == 5) && (BMch != 4 && BMch != 5))
+	if ((digestmode == 2 || digestmode == 3 || digestmode == 4 || digestmode == 5) && (BMch != 4 && BMch != 5))
 		return FULLUPDATE;
 	move(t_lines - 2, 0);
 	sprintf(buf, " «∑Ò¥”%sµ⁄“ª∆™ø™ º%s (Y)µ⁄“ª∆™ (N)ƒø«∞’‚“ª∆™", (dotype == 2) ? "∏√◊˜’ﬂ" : "¥À÷˜Ã‚",
@@ -867,7 +850,8 @@ char *direct;
 	if (askyn(buf, YEA, NA) == 1) {
 		if(dotype == 1)		//add by mintbaggio 040322 for same author in BMfunc 'b'
 			ent = sread(2, 0, ent, 0, fileinfo);
-		else	ent = sread(2, 0, ent, 1, fileinfo);
+		else
+			ent = sread(2, 0, ent, 1, fileinfo);
 		fileinfo = &SR_fptr;
 	}
 	if(BMch == 7){			//add by mintbaggio 040321 for heji
@@ -876,16 +860,18 @@ char *direct;
 	}
 	if(dotype == 1)			//add by mintbaggio 040322 for same author in BMfunc 'b'
 		sread(BMch + SR_BMBASE, 0, ent, 0, fileinfo);
-	else	sread(BMch + SR_BMBASE, 0, ent, 1, fileinfo);
+	else
+		sread(BMch + SR_BMBASE, 0, ent, 1, fileinfo);
 
 	if(BMch == 7){			//add by mintbaggio 040321 for heji
 		char title_combine[STRLEN], title[STRLEN];
 		if(dotype == 1){
 			strcpy(title, fileinfo->title);
-			if (!strncmp(title, "Re: ", 4) | !strncmp(title, "RE: ", 4))
+			if (!strncmp(title, "Re: ", 4) || !strncmp(title, "RE: ", 4))
 				strcpy(title, title + 4);
 		}
-		else    strcpy(title, fileinfo->owner);
+		else
+			strcpy(title, fileinfo->owner);
 		sprintf(title_combine, "°æ∫œºØ°ø%s", title);
 		sprintf(buf, "tmp/%s.combine", currentuser.userid);
 		int newFiletime = postfile(buf, currboard, title_combine, 2);
@@ -897,8 +883,7 @@ char *direct;
 		if(is_article_site_top(currboard, fileinfo->thread))
 			update_article_site_top_link(currboard, fileinfo->thread, newFiletime, title_combine);
 	}
-	snprintf(genbuf, 256, "%s sametitle %s %s", currentuser.userid,
-		 currboard, fileinfo->title);
+	snprintf(genbuf, 256, "%s sametitle %s %s", currentuser.userid, currboard, fileinfo->title);
 	newtrace(genbuf);
 	return DIRCHANGED;
 }
@@ -1140,8 +1125,7 @@ int offset;
 char *title;
 {
 
-	if (title[0] == 'R' && (title[1] == 'e' || title[1] == 'E')
-	    && title[2] == ':')
+	if (title[0] == 'R' && (title[1] == 'e' || title[1] == 'E') && title[2] == ':')
 		title += 4;
 	setqtitle(title);
 	return search_articles(locmem, title, offset, 2);
@@ -1175,9 +1159,7 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
 			isstart = 0;
 			move(t_lines - 1, 0);
 			clrtoeol();
-			prints
-			    ("[1;44;31m[%8s] [33mœ¬“ª∑‚ <Space>,<Enter>,°˝,n©¶…œ“ª∑‚ °¸,U,l                          [m",
-			     auser ? "œ‡Õ¨◊˜’ﬂ" : "÷˜Ã‚‘ƒ∂¡");
+			prints("\033[1;44;31m[%8s] \033[33mœ¬“ª∑‚ <Space>,<Enter>,°˝,n©¶…œ“ª∑‚ °¸,U,l                          \033[m", auser ? "œ‡Õ¨◊˜’ﬂ" : "÷˜Ã‚‘ƒ∂¡");
 			switch (egetch()) {
 
 			case 'n':
@@ -1232,20 +1214,17 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
 				return -1;
 			if (!(ptitle->accessed & (FH_MARKED))&&(!(ptitle->accessed & (FILE_TOP1)))) {
 				SR_BMDELFLAG = YEA;
-				markdel_post(locmem->crs_line,
-					     &SR_fptr, currdirect);
+				markdel_post(locmem->crs_line, &SR_fptr, currdirect);
 				SR_BMDELFLAG = NA;
 			}
 			break;
 		case SR_BMMARK:
-			if (digestmode == 2 || digestmode == 3
-			    || digestmode == 4 || digestmode == 5)
+			if (digestmode == 2 || digestmode == 3 || digestmode == 4 || digestmode == 5)
 				return -1;
 			mark_post(locmem->crs_line, &SR_fptr, currdirect);
 			break;
 		case SR_BMDIGEST:
-			if (digestmode == YEA || digestmode == 4
-			    || digestmode == 5)
+			if (digestmode == YEA || digestmode == 4 || digestmode == 5)
 				return -1;
 			digest_post(locmem->crs_line, &SR_fptr, currdirect);
 			break;
@@ -1253,9 +1232,7 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
 			strcpy(tmpboard, currboard);
 			strcpy(currboard, anboard);
 			a_Import(currdirect, &SR_fptr, YEA + add_anno_flag);
-			change_dir(currdirect, &SR_fptr,
-				   (void *) DIR_do_import,
-				   locmem->crs_line, digestmode, 1);
+			change_dir(currdirect, &SR_fptr, (void *) DIR_do_import, locmem->crs_line, digestmode, 1);
 			strcpy(currboard, tmpboard);
 			break;
 		case SR_BMTMP:
@@ -1266,9 +1243,9 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
 				return -1;
 			underline_post(locmem->crs_line, &SR_fptr, currdirect);
 			break;
-                case SR_BMCOMBINE:	//add by bjgyt, modify by mintbaggio
-                        Add_Combine(currboard,&SR_fptr);
-                        break;
+		case SR_BMCOMBINE:	//add by bjgyt, modify by mintbaggio
+			Add_Combine(currboard,&SR_fptr);
+			break;
 		case SR_BMMINUSDEL:	//add by mintbaggio@BMY for minus-numposts delete
 			/*SR_BMDELFLAG = YEA;
 			result = del_post(locmem->crs_line, &SR_fptr, currdirect);
@@ -1281,23 +1258,19 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
 			}*/
 			/*if (!(ptitle->accessed & FH_MARKED)) {
 				SR_BMDELFLAG = YEA;
-				del_post(locmem->crs_line,
-					     &SR_fptr, currdirect);
+				del_post(locmem->crs_line, &SR_fptr, currdirect);
 				SR_BMDELFLAG = NA;
 			}*/
 			if (!(ptitle->accessed & (FH_MARKED))&&(!(ptitle->accessed & (FILE_TOP1)))) {
-                                SR_BMDELFLAG = YEA;
-                                mark_minus_del_post(locmem->crs_line,
-                                             &SR_fptr, currdirect);
-                                SR_BMDELFLAG = NA;
+				SR_BMDELFLAG = YEA;
+				mark_minus_del_post(locmem->crs_line, &SR_fptr, currdirect);
+				SR_BMDELFLAG = NA;
 			}
 			break;
 		}
 		if (!isstart) {
 			if (uinfo.mode != RMAIL && auser == 0) {
-				search_threadid(locmem, isnext, ptitle->thread,
-						(passonly == 1)
-						|| (passonly == 2));
+				search_threadid(locmem, isnext, ptitle->thread, (passonly == 1) || (passonly == 2));
 				if (passonly == 1 || passonly == 2) {
 					previous = locmem->crs_line;
 					break;
@@ -1307,7 +1280,7 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
 				//if(auser == 0)
 				//	search_articles(locmem, title, isnext, auser + 2);
 				//else if(auser == 1)
-					search_articles(locmem, title, isnext, auser + 2);
+				search_articles(locmem, title, isnext, auser + 2);
 				//modify by macintosh 060324 for same author in BMfunc 'b2' complete_search
 			}
 		}
@@ -1315,8 +1288,7 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
 			break;
 		}
 		if (uinfo.mode == RMAIL)
-			setmailfile(genbuf, currentuser.userid,
-				    fh2fname(&SR_fptr));
+			setmailfile(genbuf, currentuser.userid, fh2fname(&SR_fptr));
 		else if (uinfo.mode == BACKNUMBER)
 			setbacknumberfile(genbuf, fh2fname(&SR_fptr));
 		else if (uinfo.mode == DO1984)
@@ -1331,14 +1303,11 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
 			ch = ansimore_withzmodem(genbuf, NA, SR_fptr.title);
 			SETREAD(&SR_fptr, &brc);
 			isstart = 0;
-		      redo:
-			if (ch != KEY_UP && ch != KEY_DOWN
-			    && (ch <= 0 || strchr("RrEexp", ch) == NULL)) {
+redo:
+			if (ch != KEY_UP && ch != KEY_DOWN && (ch <= 0 || strchr("RrEexp", ch) == NULL)) {
 				move(t_lines - 1, 0);
 				clrtoeol();
-				prints
-				    ("\033[1;44;31m[%8s] \033[33mªÿ–≈ R ©¶ Ω· ¯ Q,°˚ ©¶œ¬“ª∑‚ °˝,n,Enter©¶…œ“ª∑‚ °¸,l©¶ ^R ªÿ∏¯◊˜’ﬂ   \033[m",
-				     auser ? "œ‡Õ¨◊˜’ﬂ" : "÷˜Ã‚‘ƒ∂¡");
+				prints("\033[1;44;31m[%8s] \033[33mªÿ–≈ R ©¶ Ω· ¯ Q,°˚ ©¶œ¬“ª∑‚ °˝,n,Enter©¶…œ“ª∑‚ °¸,l©¶ ^R ªÿ∏¯◊˜’ﬂ   \033[m", auser ? "œ‡Õ¨◊˜’ﬂ" : "÷˜Ã‚‘ƒ∂¡");
 				ch = egetch();
 			}
 			switch (ch) {
@@ -1357,8 +1326,7 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
 			case 'r':
 /* Added by deardragon 1999.11.21 ‘ˆº”≤ªø… RE  Ù–‘ */
 				if (in_mail) {
-					mail_reply(0, &SR_fptr, (char *)
-						   NULL);
+					mail_reply(0, &SR_fptr, (char *) NULL);
 					in_mail = YEA;
 					break;
 				}
@@ -1367,8 +1335,7 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
 				else {
 					move(3, 0);
 					clrtobot();
-					prints
-					    ("\n\n ≤ª–ÌRe,æÕ «≤ª–ÌRe!∆¯À¿ƒ„!//grin");
+					prints("\n\n ≤ª–ÌRe,æÕ «≤ª–ÌRe!∆¯À¿ƒ„!//grin");
 					pressreturn();
 					clear();
 				}
@@ -1398,12 +1365,10 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
 				break;
 			case Ctrl('R'):
 				if (in_mail) {
-					mail_reply(0, &SR_fptr, (char *)
-						   NULL);
+					mail_reply(0, &SR_fptr, (char *) NULL);
 					in_mail = YEA;
 				} else
-					post_reply(0, &SR_fptr, (char *)
-						   NULL);
+					post_reply(0, &SR_fptr, (char *) NULL);
 				break;
 			case 'g':
 				digest_post(0, &SR_fptr, currdirect);
@@ -1438,8 +1403,7 @@ char *query;
 	fd = open(filename, O_RDONLY);
 	if (fd < 0)
 		return 0;
-	if (fstat(fd, &st) < 0 || !S_ISREG(st.st_mode)
-	    || st.st_size <= 0) {
+	if (fstat(fd, &st) < 0 || !S_ISREG(st.st_mode) || st.st_size <= 0) {
 		close(fd);
 		return 0;
 	}
@@ -1541,9 +1505,7 @@ int offset, aflag;
 		if (aflag == -1) {
 			char p_name[256];
 			if (uinfo.mode == RMAIL)
-				setmailfile(p_name,
-					    currentuser.userid,
-					    fh2fname(&SR_fptr));
+				setmailfile(p_name, currentuser.userid, fh2fname(&SR_fptr));
 			else if (uinfo.mode == BACKNUMBER)
 				setbacknumberfile(p_name, fh2fname(&SR_fptr));
 			else if (uinfo.mode == DO1984)
@@ -1573,8 +1535,7 @@ int offset, aflag;
 	}
 //      move(t_lines - 1, 0);
 //      clrtoeol();
-	if (lseek(fd, ssize * (locmem->crs_line - 1), SEEK_SET)
-	    == -1) {
+	if (lseek(fd, ssize * (locmem->crs_line - 1), SEEK_SET) == -1) {
 		close(fd);
 		return 0;
 	}
@@ -1629,7 +1590,7 @@ search_threadid(struct keeploc *locmem, int offset, int thread, int mode)
 {
 	int now, match = 0, start, sorted, i;
 	struct fileheader *pFh;
-      struct mmapfile mf = { ptr:NULL };
+	struct mmapfile mf = { .ptr = NULL };
 	now = locmem->crs_line;
 	memset(&SR_fptr, 0, sizeof (struct fileheader));
 	match = 0;
@@ -1661,9 +1622,7 @@ search_threadid(struct keeploc *locmem, int offset, int thread, int mode)
 						break;
 				}
 				if (pFh->thread == thread) {
-					match =
-					    cursor_pos(locmem, now,
-						       screen_len / 2);
+					match = cursor_pos(locmem, now, screen_len / 2);
 					break;
 				}
 			}
@@ -1671,9 +1630,7 @@ search_threadid(struct keeploc *locmem, int offset, int thread, int mode)
 			if (sorted && offset == -1) {	//”–Õ˚º”ÀŸµƒ≤ø∑÷
 				start = Search_Bin(mf.ptr, thread, 0, now - 1);	//¡Ω∑÷∑®’“µΩÀ—À˜∆µ„
 				if (start >= 0) {	//À∆∫ı «÷±Ω”’“µΩ¡À≈∂
-					match =
-					    cursor_pos(locmem, start + 1,
-						       screen_len / 2);
+					match = cursor_pos(locmem, start + 1, screen_len / 2);
 					goto END;
 				}
 				start = -(start + 1);
@@ -1682,9 +1639,7 @@ search_threadid(struct keeploc *locmem, int offset, int thread, int mode)
 				pFh = (struct fileheader *) (mf.ptr) + start;
 				for (i = start; i < now; i++) {
 					if (pFh->thread == thread) {
-						match =
-						    cursor_pos(locmem, i + 1,
-							       screen_len / 2);
+						match = cursor_pos(locmem, i + 1, screen_len / 2);
 						break;
 					}
 					pFh++;
@@ -1707,12 +1662,10 @@ search_threadid(struct keeploc *locmem, int offset, int thread, int mode)
 					}
 				}
 				if (match)	//’“µΩπ˝
-					match =
-					    cursor_pos(locmem, match,
-						       screen_len / 2);
+					match = cursor_pos(locmem, match, screen_len / 2);
 			}
 		}
-	      END:{
+END:{
 		}
 	}
 	MMAP_CATCH {
@@ -1720,8 +1673,8 @@ search_threadid(struct keeploc *locmem, int offset, int thread, int mode)
 	}
 	MMAP_END {
 		memcpy(&SR_fptr,
-		       (struct fileheader *) (mf.ptr) + locmem->crs_line - 1,
-		       sizeof (struct fileheader));
+				(struct fileheader *) (mf.ptr) + locmem->crs_line - 1,
+				sizeof (struct fileheader));
 		mmapfile(NULL, &mf);
 	}
 	move(t_lines - 1, 0);
