@@ -2037,7 +2037,7 @@ post_article(struct fileheader *sfh)
 	aborted = vedit(edittmp, YEA, YEA);
 
 	/*Anony=0; */ /*Inital For ShowOut Signature */
-	if ((aborted == -1))
+	if (aborted == -1)
 	{
 		unlink(edittmp);
 		clear();
@@ -2105,24 +2105,24 @@ post_article(struct fileheader *sfh)
 
 	/*重新指定文件名 */
 
-		char newfilepath[STRLEN], newfname[STRLEN];
-		int count;
-		t = time(NULL);
-		count = 0;
-		while (1)
+	char newfilepath[STRLEN], newfname[STRLEN];
+	int count;
+	t = time(NULL);
+	count = 0;
+	while (1)
+	{
+		sprintf(newfname, "M.%d.A", (int) t);
+		setbfile(newfilepath, currboard, newfname);
+		if (link(filepath, newfilepath) == 0)
 		{
-			sprintf(newfname, "M.%d.A", (int) t);
-			setbfile(newfilepath, currboard, newfname);
-			if (link(filepath, newfilepath) == 0)
-			{
-				unlink(filepath);
-				postfile.filetime = t;
-				break;
-			}
-			t++;
-			if (count++ > MAX_POSTRETRY)
-				break;
+			unlink(filepath);
+			postfile.filetime = t;
+			break;
 		}
+		t++;
+		if (count++ > MAX_POSTRETRY)
+			break;
+	}
 
 
 	if (sfh == NULL)
