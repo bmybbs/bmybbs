@@ -52,10 +52,10 @@ static int tmpl_edit(int allnum);
 
 static int
 orig_tmpl_init(char * nboard, int mode, struct a_template ** pptemp){
-		/***********
-		 * mode 0: 用户看，不显示有斑竹权限的
-		 * mode 1: 斑竹管理
-		 ************/
+/***********
+* mode 0: 用户看，不显示有斑竹权限的
+* mode 1: 斑竹管理
+************/
 
 	int fd;
 	char tmpldir[STRLEN];
@@ -93,7 +93,7 @@ orig_tmpl_init(char * nboard, int mode, struct a_template ** pptemp){
 			break;
 		bzero(cont, sizeof(struct s_content) * tmpl.content_num );
 		if(read(fd, cont, sizeof(struct s_content)*tmpl.content_num) != sizeof(struct s_content)*tmpl.content_num)
-		 	continue;
+			continue;
 		(* pptemp)[templ_num].tmpl = (struct s_template *)malloc(sizeof(struct s_template));
 		if( (* pptemp)[templ_num].tmpl == NULL ){
 			free(cont);
@@ -392,8 +392,8 @@ content_key(int key, int allnum, int pagenum)
 			ct = (struct s_content *) malloc( sizeof(struct s_content) * (ptemplate[t_now].tmpl->content_num-1));
 
 			memcpy(ct+i,&(ptemplate[t_now].cont[i]),sizeof(struct s_content) * (allnum));
-               	for(i=allnum; i<ptemplate[t_now].tmpl->content_num-1;i++)
-                    		memcpy(ct+i, &(ptemplate[t_now].cont[i+1]), sizeof(struct s_content));
+			for(i=allnum; i<ptemplate[t_now].tmpl->content_num-1;i++)
+				memcpy(ct+i, &(ptemplate[t_now].cont[i+1]), sizeof(struct s_content));
 
 			free(ptemplate[t_now].cont);
 			ptemplate[t_now].cont = ct;
@@ -485,7 +485,7 @@ tmpl_key(int key, int allnum, int pagenum)
 			tmpl_save();
 		}
 	/*	if(template_num > 0)
-            		return 1;
+		return 1;
 		else*/
 			return -1;
 		break;
@@ -512,8 +512,8 @@ tmpl_key(int key, int allnum, int pagenum)
 		time_t now;
 		int count = 0;
 
-        	oldmode = uinfo.mode;
-        	modify_user_mode(EDITUFILE);
+		oldmode = uinfo.mode;
+		modify_user_mode(EDITUFILE);
 
 		if( ptemplate[allnum].tmpl->filename[0] == '\0' ){
 			now = time(NULL);
@@ -528,7 +528,7 @@ tmpl_key(int key, int allnum, int pagenum)
 			}
 			fail = 0;
 			close(fp);
-   	 		if (fail) {
+			if (fail) {
 				clear();
 				move(3,0);
 				prints("创建模板文件失败!");
@@ -538,7 +538,7 @@ tmpl_key(int key, int allnum, int pagenum)
 			tmpl_save();
 		}
 		tmpl_edit(allnum);
-    		modify_user_mode(oldmode);
+		modify_user_mode(oldmode);
 		tmpl_show();
 		return 1;
 		}
@@ -615,7 +615,7 @@ tmpl_select(int star, int curr)
 
 	if(range == 0 ){
 		clear();
-	       if (!askyn("本模板现在没有内容，需要现在增加吗", NA, NA))
+		if (!askyn("本模板现在没有内容，需要现在增加吗", NA, NA))
 			return DOQUIT;
 		if(content_add() < 0 )
 			return DOQUIT;
@@ -736,8 +736,7 @@ m_template()
 		}
 	}
 	clear();
-	tmplist =
-	    choose(NA, 0, tmpl_refresh, tmpl_key, tmpl_show, tmpl_select);
+	tmplist = choose(NA, 0, tmpl_refresh, tmpl_key, tmpl_show, tmpl_select);
 	tmpl_free();
 	return FULLUPDATE;
 }
@@ -746,13 +745,13 @@ m_template()
 /***********普通用户模板选择**************/
 static void
 choose_tmpl_refresh(){
-    //clear();
-    docmdtitle("[版面模板选择]",
-               "退出[\x1b[1;32m←\x1b[0;37m] 选择[\x1b[1;32m↑\x1b[0;37m,\x1b[1;32m↓\x1b[0;37m] 使用[\x1b[1;32m→\x1b[0;37m] 查看正文[\033[1;32ms\033[0;37m] 查看问题[\033[1;32mw\033[0;37m] 查看标题[\033[1;32mx\033[m]");
-    move(2, 0);
-    prints("\033[0;1;37;44m %4s %-13s %-50s %8s", "序号", "创建人", "名称","问题个数");
-    clrtoeol();
-    update_endline();
+	//clear();
+	docmdtitle("[版面模板选择]",
+			"退出[\x1b[1;32m←\x1b[0;37m] 选择[\x1b[1;32m↑\x1b[0;37m,\x1b[1;32m↓\x1b[0;37m] 使用[\x1b[1;32m→\x1b[0;37m] 查看正文[\033[1;32ms\033[0;37m] 查看问题[\033[1;32mw\033[0;37m] 查看标题[\033[1;32mx\033[m]");
+	move(2, 0);
+	prints("\033[0;1;37;44m %4s %-13s %-50s %8s", "序号", "创建人", "名称","问题个数");
+	clrtoeol();
+	update_endline();
 }
 
 static int
@@ -847,10 +846,10 @@ choose_tmpl_post(int star, int curr){
 	for(i=0; i< ptemplate[t_now].tmpl->content_num; i++){
 		char *ans;
 		if (modifying)
-		    ans = tmp[i];
+			ans = tmp[i];
 		else{
-		    ans = (char *)malloc(ptemplate[t_now].cont[i].length + 2);
-		    ans[0] = '\0';
+			ans = (char *)malloc(ptemplate[t_now].cont[i].length + 2);
+			ans[0] = '\0';
 		}
 		if( ans == NULL ){
 			modify_user_mode(oldmode);
@@ -870,7 +869,7 @@ choose_tmpl_post(int star, int curr){
 	modify_user_mode(oldmode);
 
 	if( ptemplate[t_now].tmpl->filename[0] ){
-    	struct stat st;
+		struct stat st;
 		setbfile(filepath, currboard , ptemplate[t_now].tmpl->filename);
 		if( stat(filepath, &st) == 0 && S_ISREG(st.st_mode) && st.st_size>2){
 			if((fpsrc = fopen(filepath,"r"))!=NULL){
@@ -991,7 +990,7 @@ choose_tmpl_post(int star, int curr){
 	if (!title[0])
 	{
 		clear();
- 		strcpy(title, "默认模版标题");
+		strcpy(title, "默认模版标题");
 		move(t_lines-2, 0);
 		prints("\033[1m模版标题为空!  \033[m\n");
 		getdata(t_lines-1, 0, " 请输入模版标题[默认模版标题]: ", temp, 50, DOECHO, YEA);
@@ -1046,7 +1045,7 @@ choose_tmpl_post(int star, int curr){
 int
 choose_tmpl()
 {
- 	int tmpllist;
+	int tmpllist;
 
 	sprintf(fname, MY_BBS_HOME "/bbstmpfs/tmp/%s.%d",
 		currentuser.userid, getpid());
@@ -1065,8 +1064,7 @@ choose_tmpl()
 	}
 	clear();
 	t_now = 0;
-	tmpllist =
-	    choose(NA, 0, choose_tmpl_refresh, choose_tmpl_key, tmpl_show, choose_tmpl_post);
+	tmpllist = choose(NA, 0, choose_tmpl_refresh, choose_tmpl_key, tmpl_show, choose_tmpl_post);
 	tmpl_free();
 	return 1;
 }
