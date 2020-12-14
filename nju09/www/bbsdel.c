@@ -59,6 +59,8 @@ bbsdel_main()
 
 		if (f.filetime != f.thread) {
 			bmy_article_del_comment(ythtbbs_cache_Board_get_idx_by_name(board) + 1, f.thread);
+		} else {
+			bmy_article_del_thread(ythtbbs_cache_Board_get_idx_by_name(board) + 1, f.thread);
 		}
 
 		if (!strcmp(id, f.owner)) {

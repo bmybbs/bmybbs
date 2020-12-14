@@ -2948,6 +2948,8 @@ char *direct;
 
 		if (fileinfo->filetime != fileinfo->thread) {
 			bmy_article_del_comment(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fileinfo->thread);
+		} else {
+			bmy_article_del_thread(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fileinfo->thread);
 		}
 
 		if (digestmode == NA && owned) {
