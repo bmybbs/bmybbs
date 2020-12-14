@@ -2498,6 +2498,11 @@ char *direct;
 			currentuser.userid, currboard,
 			fh2owner(fileinfo), fileinfo->title, buf);
 		newtrace(str);
+
+		if (fileinfo->filetime == fileinfo->thread) {
+			bmy_article_update_thread_title(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fileinfo->thread, buf);
+		}
+
 		ytht_strsncpy(fileinfo->title, buf, sizeof(fileinfo->title));
 		directfile(genbuf, direct, fh2fname(fileinfo));
 		change_content_title(genbuf, buf);
