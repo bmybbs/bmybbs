@@ -1,5 +1,8 @@
 #include "bbslib.h"
 
+int update_form(char *board, char *file, char *title);
+extern int testmath(char *ptr); // bbssnd
+
 int
 bbsedit_main()
 {
@@ -12,7 +15,7 @@ bbsedit_main()
 	struct boardmem *brd;
 	struct fileheader *x = NULL;
 	char bmbuf[IDLEN * 4 + 4];
-	struct mmapfile mf = { ptr:NULL };
+	struct mmapfile mf = { .ptr = NULL };
 	html_header(1);
 	check_msg();
 	if (!loginok || isguest)
@@ -219,7 +222,7 @@ update_form(char *board, char *file, char *title)
 	char dir[STRLEN];
 	char filename[STRLEN];
 	struct fileheader x;
-	struct mmapfile mf = { ptr:NULL };
+	struct mmapfile mf = { .ptr = NULL };
 	int dangerous = 0;
 	size_t i;
 	long l;
