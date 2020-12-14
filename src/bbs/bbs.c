@@ -1829,6 +1829,8 @@ post_cross(char *bname, int mode, int islocal, int hascheck, int dangerous)
 		add_crossinfo(filepath, 1);
 		sprintf(buf, "%s crosspost %s %s", currentuser.userid, bname, postfile.title);
 		newtrace(buf);
+
+		bmy_article_add_thread(ythtbbs_cache_Board_get_idx_by_name(bname) + 1, postfile.thread, postfile.title, currentuser.username, postfile.accessed);
 	}
 	return (int)now;  // return filetime instead of 1 by IronBlood 20130807
 }
@@ -2195,6 +2197,12 @@ post_article(struct fileheader *sfh)
 		++i;
 	}
 	// term ÏÂ @ ÌáÐÑ½áÊø
+
+	if (sfh != NULL) {
+		bmy_article_add_comment(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, sfh->thread);
+	} else {
+		bmy_article_add_thread(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, postfile.thread, postfile.title, postfile.owner, postfile.accessed);
+	}
 	return FULLUPDATE;
 }
 
