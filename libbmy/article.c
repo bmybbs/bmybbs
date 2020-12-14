@@ -105,3 +105,48 @@ void bmy_article_del_thread(int boardnum, time_t tid) {
 	execute_prep_stmt(sql, MYSQL_CHARSET_UTF8, params, NULL, NULL, NULL);
 }
 
+void bmy_article_update_thread_title(int boardnum, time_t tid, char *title_gbk) {
+	const char *sql = "CALL procedure_update_thread_title(?, ?, ?)";
+	char title_utf[120];
+	MYSQL_BIND params[3];
+	size_t len;
+
+	len = strlen(title_gbk);
+	if (len > 60)
+		len = 60;
+	g2u(title_gbk, len, title_utf, sizeof(title_utf));
+
+	params[0].buffer_type = MYSQL_TYPE_LONG;
+	params[0].buffer = &boardnum;
+	params[0].buffer_length = sizeof(int);
+
+	params[1].buffer_type = MYSQL_TYPE_LONGLONG;
+	params[1].buffer = &tid;
+	params[1].buffer_length = sizeof(time_t);
+
+	params[2].buffer_type = MYSQL_TYPE_STRING;
+	params[2].buffer = title_utf;
+	params[2].buffer_length = strlen(title_utf);
+
+	execute_prep_stmt(sql, MYSQL_CHARSET_UTF8, params, NULL, NULL, NULL);
+}
+
+void bmy_article_update_thread_accessed(int boardnum, time_t tid, int accessed) {
+	const char *sql = "CALL procedure_update_thread_accessed(?, ?, ?)";
+	MYSQL_BIND params[3];
+
+	params[0].buffer_type = MYSQL_TYPE_LONG;
+	params[0].buffer = &boardnum;
+	params[0].buffer_length = sizeof(int);
+
+	params[1].buffer_type = MYSQL_TYPE_LONGLONG;
+	params[1].buffer = &tid;
+	params[1].buffer_length = sizeof(time_t);
+
+	params[2].buffer_type = MYSQL_TYPE_LONG;
+	params[2].buffer = &accessed;
+	params[2].buffer_length = sizeof(int);
+
+	execute_prep_stmt(sql, MYSQL_CHARSET_UTF8, params, NULL, NULL, NULL);
+}
+

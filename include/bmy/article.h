@@ -36,5 +36,9 @@ void bmy_article_del_comment(int boardnum, time_t tid);
 void bmy_article_add_thread(int boardnum, time_t tid, char *title_gbk, char *author, int accessed);
 
 void bmy_article_del_thread(int boardnum, time_t tid);
+
+void bmy_article_update_thread_title(int boardnum, time_t tid, char *title_gbk);
+
+void bmy_article_update_thread_accessed(int boardnum, time_t tid, int accessed);
 #endif
 
