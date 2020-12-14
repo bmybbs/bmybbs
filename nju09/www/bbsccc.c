@@ -1,5 +1,7 @@
 #include "bbslib.h"
 
+int do_ccc(struct fileheader *x, struct boardmem *brd1, struct boardmem *brd);
+
 int
 bbsccc_main()
 {
@@ -7,7 +9,7 @@ bbsccc_main()
 	struct boardmem *brd, *brd1;
 	char board[80], file[80], target[80];
 	char dir[80];
-	struct mmapfile mf = { ptr:NULL };
+	struct mmapfile mf = { .ptr = NULL };
 	int num;
 	html_header(1);
 	check_msg();
@@ -38,8 +40,7 @@ bbsccc_main()
 	MMAP_END mmapfile(NULL, &mf);
 	if (x == 0)
 		http_fatal("´íÎóµÄÎÄ¼şÃû");
-	printf("<center>%s -- ×ªÔØÎÄÕÂ [Ê¹ÓÃÕß: %s]<hr>\n", BBSNAME,
-	       currentuser.userid);
+	printf("<center>%s -- ×ªÔØÎÄÕÂ [Ê¹ÓÃÕß: %s]<hr>\n", BBSNAME, currentuser.userid);
 	if (target[0]) {
 		brd = getboard(target);
 		if (brd == 0)
@@ -47,14 +48,12 @@ bbsccc_main()
 		if (!has_post_perm(&currentuser, brd))
 			http_fatal("´íÎóµÄÌÖÂÛÇøÃû³Æ»òÄãÃ»ÓĞÔÚ¸Ã°æ·¢ÎÄµÄÈ¨ÏŞ");
 		if (noadm4political(target))
-			http_fatal
-			    ("¶Ô²»Æğ,ÒòÎªÃ»ÓĞ°æÃæ¹ÜÀíÈËÔ±ÔÚÏß,±¾°æÔİÊ±·â±Õ.");
+			http_fatal("¶Ô²»Æğ,ÒòÎªÃ»ÓĞ°æÃæ¹ÜÀíÈËÔ±ÔÚÏß,±¾°æÔİÊ±·â±Õ.");
 		return do_ccc(x, brd1, brd);
 	}
 	printf("<table><tr><td>\n");
 	printf("<font color=red>×ªÌù·¢ÎÄ×¢ÒâÊÂÏî:<br>\n");
-	printf
-	    ("±¾Õ¾¹æ¶¨Í¬ÑùÄÚÈİµÄÎÄÕÂÑÏ½ûÔÚ 4 ¸ö»ò 4 ¸öÒÔÉÏÌÖÂÛÇøÄÚÖØ¸´·¢±í¡£");
+	printf("±¾Õ¾¹æ¶¨Í¬ÑùÄÚÈİµÄÎÄÕÂÑÏ½ûÔÚ 4 ¸ö»ò 4 ¸öÒÔÉÏÌÖÂÛÇøÄÚÖØ¸´·¢±í¡£");
 	printf("Î¥Õß½«±»·â½ûÔÚ±¾Õ¾·¢ÎÄµÄÈ¨Àû<br><br></font>\n");
 	printf("ÎÄÕÂ±êÌâ: %s<br>\n", nohtml(x->title));
 	printf("ÎÄÕÂ×÷Õß: %s<br>\n", fh2owner(x));
@@ -67,9 +66,7 @@ bbsccc_main()
 	return 0;
 }
 
-int
-do_ccc(struct fileheader *x, struct boardmem *brd1, struct boardmem *brd)
-{
+int do_ccc(struct fileheader *x, struct boardmem *brd1, struct boardmem *brd) {
 	FILE *fp, *fp2;
 	char board2[80], board[80], title[512], buf[512], path[200], path2[200], i;
 	int hide1, hide2, retv;
@@ -91,11 +88,11 @@ do_ccc(struct fileheader *x, struct boardmem *brd1, struct boardmem *brd)
 	for (i = 0; i < 3; i++)
 		if (fgets(buf, 256, fp) == 0)
 			break;
-	fprintf(fp2, "[37;1m¡¾ ÒÔÏÂÎÄ×Ö×ªÔØ×Ô [32m%s [37mÌÖÂÛÇø ¡¿\n",
+	fprintf(fp2, "\033[37;1m¡¾ ÒÔÏÂÎÄ×Ö×ªÔØ×Ô \033[32m%s \033[37mÌÖÂÛÇø ¡¿\n",
 		board);
-	fprintf(fp2, "[37;1m¡¾ Ô­ÎÄÓÉ [32m%s [37mÓÚ [32m%s [37m·¢±í ¡¿[m\n\n",
+	fprintf(fp2, "\033[37;1m¡¾ Ô­ÎÄÓÉ \033[32m%s \033[37mÓÚ \033[32m%s \033[37m·¢±í ¡¿\033[m\n\n",
 			fh2owner(x) , ytht_ctime(x->filetime));
-	
+
 	while (1) {
 		retv = fread(buf, 1, sizeof (buf), fp);
 		if (retv <= 0)
@@ -113,14 +110,14 @@ do_ccc(struct fileheader *x, struct boardmem *brd1, struct boardmem *brd)
 		char mtitle[256];
 		sprintf(mtitle, "[×ªÔØ±¨¾¯] %s %.60s", board, title);
 		post_mail("delete", mtitle, path2,
-			  currentuser.userid, currentuser.username,
-			  fromhost, -1, 0);
+				currentuser.userid, currentuser.username,
+				fromhost, -1, 0);
 		updatelastpost("deleterequest");
 		mark |= FH_DANGEROUS;
 	}
 	post_article(board2, title, path2, currentuser.userid,
-		     currentuser.username, fromhost, -1, mark, 0,
-		     currentuser.userid, -1);
+			currentuser.username, fromhost, -1, mark, 0,
+			currentuser.userid, -1);
 	unlink(path2);
 	printf("'%s' ÒÑ×ªÌùµ½ %s °æ.<br>\n", nohtml(title), board2);
 	printf("[<a href='javascript:history.go(-2)'>·µ»Ø</a>]");
