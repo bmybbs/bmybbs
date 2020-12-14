@@ -22,5 +22,15 @@ struct fileheader_utf {
 };
 
 void copy_to_utf_header(struct fileheader_utf *dest, struct fileheader *src);
+
+/**
+ * 添加评论，讨论数 + 1
+ */
+void bmy_article_add_comment(int boardnum, time_t tid);
+
+/**
+ * 删除评论，讨论数 - 1
+ */
+void bmy_article_del_comment(int boardnum, time_t tid);
 #endif
 
