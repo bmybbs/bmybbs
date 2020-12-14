@@ -59,6 +59,7 @@
 #include "chat.h"
 #include "help.h"
 #include "bbs-internal.h"
+#include "bmy/article.h"
 
 struct postheader header;
 int continue_flag;
@@ -2944,6 +2945,11 @@ char *direct;
 	if (!fail) {
 		updatelastpost(currboard);
 		cancelpost(currboard, currentuser.userid, fileinfo, owned);
+
+		if (fileinfo->filetime != fileinfo->thread) {
+			bmy_article_del_comment(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fileinfo->thread);
+		}
+
 		if (digestmode == NA && owned) {
 			set_safe_record();
 			if (!junkboard()) {

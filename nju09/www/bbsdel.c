@@ -1,4 +1,5 @@
 #include "bbslib.h"
+#include "bmy/article.h"
 
 int
 bbsdel_main()
@@ -55,6 +56,11 @@ bbsdel_main()
 		cancelpost(board, currentuser.userid, &f, !strcmp(currentuser.userid, f.owner));
 		updatelastpost(board);
 		printf("删除成功.<br><a href='%s%s&S=%d'>返回本讨论区</a>", showByDefMode(), board, num - 10);
+
+		if (f.filetime != f.thread) {
+			bmy_article_del_comment(ythtbbs_cache_Board_get_idx_by_name(board) + 1, f.thread);
+		}
+
 		if (!strcmp(id, f.owner)) {
 			u = getuser(f.owner);
 			if (x->header.clubnum == 0 && !junkboard(board) && u) {
