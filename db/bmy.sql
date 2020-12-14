@@ -211,6 +211,17 @@ BEGIN
 	SET SQL_SAFE_UPDATES=1;
 END$$
 
+-- 删除主题
+CREATE PROCEDURE procedure_delete_thread(
+	IN boardnum int,
+	IN timestamp int
+)
+BEGIN
+	SET SQL_SAFE_UPDATES=0;
+	DELETE FROM `t_threads` where `boardnum` = boardnum AND `timestamp` = timestamp;
+	SET SQL_SAFE_UPDATES=1;
+END$$
+
 DELIMITER ;
 
 --

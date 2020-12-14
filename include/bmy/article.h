@@ -32,5 +32,9 @@ void bmy_article_add_comment(int boardnum, time_t tid);
  * 删除评论，讨论数 - 1
  */
 void bmy_article_del_comment(int boardnum, time_t tid);
+
+void bmy_article_add_thread(int boardnum, time_t tid, char *title_gbk, char *author, int accessed);
+
+void bmy_article_del_thread(int boardnum, time_t tid);
 #endif
 

@@ -50,3 +50,58 @@ void bmy_article_del_comment(int boardnum, time_t tid) {
 	bmy_article_comment_internal(boardnum, tid, -1);
 }
 
+void bmy_article_add_thread(int boardnum, time_t tid, char *title_gbk, char *author, int accessed) {
+	const char *sql = "INSERT INTO `t_threads`(`boardnum`, `timestamp`, `title`, `author`, `comments`, `accessed`) VALUES(?, ?, ?, ?, ?, ?)";
+	char title_utf[120];
+	size_t len;
+	MYSQL_BIND params[6];
+	char *anonymous = "Anonymous";
+
+	len = strlen(title_gbk);
+	if (len > 60) /* magic number: see struct fileheader::title */
+		len = 60;
+	g2u(title_gbk, len, title_utf, sizeof(title_utf));
+
+	memset(params, 0, sizeof(params));
+
+	params[0].buffer_type = MYSQL_TYPE_LONG;
+	params[0].buffer = &boardnum;
+	params[0].buffer_length = sizeof(int);
+
+	params[1].buffer_type = MYSQL_TYPE_LONGLONG;
+	params[1].buffer = &tid;
+	params[1].buffer_length = sizeof(int);
+
+	params[2].buffer_type = MYSQL_TYPE_STRING;
+	params[2].buffer = title_utf;
+	params[2].buffer_length = strlen(title_utf);
+
+	params[3].buffer_type = MYSQL_TYPE_STRING;
+	params[3].buffer = (author && author[0] ? author : anonymous);
+	params[3].buffer_length = strlen(params[3].buffer);
+
+	params[4].buffer_type = MYSQL_TYPE_LONG;
+	params[4].buffer = (int []){ 1 }; // anonymous array
+	params[4].buffer_length = sizeof(int);
+
+	params[5].buffer_type = MYSQL_TYPE_LONG;
+	params[5].buffer = &accessed;
+	params[5].buffer_length = sizeof(int);
+
+	execute_prep_stmt(sql, MYSQL_CHARSET_UTF8, params, NULL, NULL, NULL);
+}
+
+void bmy_article_del_thread(int boardnum, time_t tid) {
+	const char *sql = "CALL procedure_delete_thread(?, ?)";
+	MYSQL_BIND params[2];
+
+	params[0].buffer_type = MYSQL_TYPE_LONG;
+	params[0].buffer = &boardnum;
+	params[0].buffer_length = sizeof(int);
+	params[1].buffer_type = MYSQL_TYPE_LONGLONG;
+	params[1].buffer = &tid;
+	params[1].buffer_length = sizeof(time_t);
+
+	execute_prep_stmt(sql, MYSQL_CHARSET_UTF8, params, NULL, NULL, NULL);
+}
+
