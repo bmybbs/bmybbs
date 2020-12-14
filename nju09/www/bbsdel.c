@@ -9,7 +9,7 @@ bbsdel_main()
 	char dir[80], board[80], file[80], *id;
 	int num = 0, filetime, total;
 	struct boardmem *x;
-	struct mmapfile mf = { ptr:NULL };
+	struct mmapfile mf = { .ptr = NULL };
 	html_header(1);
 	check_msg();
 	if (!loginok || isguest)
@@ -39,7 +39,7 @@ bbsdel_main()
 		total = mf.size / sizeof (struct fileheader);
 		num = Search_Bin(mf.ptr, filetime, 0, total - 1);
 		if (num >= 0)
-			memcpy(&f,mf.ptr+num*sizeof(struct fileheader) ,sizeof(struct fileheader));
+			memcpy(&f, mf.ptr + num * sizeof(struct fileheader), sizeof(struct fileheader));
 	}
 	MMAP_CATCH {
 		num = -1;
@@ -52,12 +52,9 @@ bbsdel_main()
 		if (!strcmp(board, "syssecurity"))
 			http_fatal("无权删除系统记录");
 		del_record(dir, sizeof (struct fileheader), num);
-		cancelpost(board, currentuser.userid, &f,
-			   !strcmp(currentuser.userid, f.owner));
+		cancelpost(board, currentuser.userid, &f, !strcmp(currentuser.userid, f.owner));
 		updatelastpost(board);
-		printf
-		    ("删除成功.<br><a href='%s%s&S=%d'>返回本讨论区</a>",
-		     showByDefMode(), board, num - 10);
+		printf("删除成功.<br><a href='%s%s&S=%d'>返回本讨论区</a>", showByDefMode(), board, num - 10);
 		if (!strcmp(id, f.owner)) {
 			u = getuser(f.owner);
 			if (x->header.clubnum == 0 && !junkboard(board) && u) {
@@ -74,3 +71,4 @@ bbsdel_main()
 	http_quit();
 	return 0;
 }
+
