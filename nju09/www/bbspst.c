@@ -11,7 +11,7 @@ bbspst_main()
 	struct boardmem *x;
 	//add by mintbaggio 040807 for new www
 	char bmbuf[IDLEN * 4 + 4];
-	struct mmapfile mf = { ptr:NULL };
+	struct mmapfile mf = { .ptr = NULL };
 	html_header(1);
 	check_msg();
 	ytht_strsncpy(board, getparm("B"), 32);
