@@ -301,6 +301,9 @@ char *direct;
 		return DONOTHING;
 	}
 	change_dir(direct, fileinfo, (void *) DIR_do_underline, ent, digestmode, 0);
+	if (fileinfo->thread == fileinfo->filetime) {
+		bmy_article_update_thread_accessed(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fileinfo->thread, fileinfo->accessed);
+	}
 	return PARTUPDATE;
 }
 
@@ -308,6 +311,9 @@ static int allcanre_post(int ent, struct fileheader *fileinfo, char *direct) {
 	if (!HAS_PERM(PERM_SYSOP, currentuser))
 		return DONOTHING;
 	change_dir(direct, fileinfo, (void *) DIR_do_allcanre, ent, digestmode, 0);
+	if (fileinfo->thread == fileinfo->filetime) {
+		bmy_article_update_thread_accessed(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fileinfo->thread, fileinfo->accessed);
+	}
 	return PARTUPDATE;
 }
 
@@ -854,23 +860,25 @@ static int // slowaction
 dele_digest_top(filetime, direc)
 int filetime;
 char *direc;
-{      char digest_name[STRLEN];
-       char new_dir[STRLEN];
-       int tmpcurrfiletime;
-       struct fileheader fh;
-       int pos;
-       sprintf(digest_name, "T.%d.A", filetime);
-       directfile(new_dir, direc, TOPFILE_DIR);
-       tmpcurrfiletime = currfiletime;
-       currfiletime = filetime;
-       pos =new_search_record(new_dir, &fh, sizeof (fh),(void *) cmpfilename, NULL);
-       if (pos <= 0) return 0;
-       delete_file(new_dir, sizeof (struct fileheader),pos, (void *) cmpfilename);
-       currfiletime = tmpcurrfiletime;
-       directfile(new_dir, direc, digest_name);
-       unlink(new_dir);
-       return 0;
-   }
+{
+	char digest_name[STRLEN];
+	char new_dir[STRLEN];
+	int tmpcurrfiletime;
+	struct fileheader fh;
+	int pos;
+	sprintf(digest_name, "T.%d.A", filetime);
+	directfile(new_dir, direc, TOPFILE_DIR);
+	tmpcurrfiletime = currfiletime;
+	currfiletime = filetime;
+	pos = new_search_record(new_dir, &fh, sizeof (fh),(void *) cmpfilename, NULL);
+	if (pos <= 0)
+		return 0;
+	delete_file(new_dir, sizeof (struct fileheader),pos, (void *) cmpfilename);
+	currfiletime = tmpcurrfiletime;
+	directfile(new_dir, direc, digest_name);
+	unlink(new_dir);
+	return 0;
+}
 
 static int topfile_post(int ent, struct fileheader *fhdr, char *direct) //slowaction
 {
@@ -886,14 +894,14 @@ static int topfile_post(int ent, struct fileheader *fhdr, char *direct) //slowac
 		struct fileheader digest;
 		char digestdir[STRLEN], digestfile[STRLEN], oldfile[STRLEN];
 		directfile(digestdir, direct, TOPFILE_DIR);
-			if (get_num_records(digestdir, sizeof (digest)) > 8 && strcmp(currentuser.userid, "SYSOP")!=0) {
-				move(3, 0);
-				clrtobot();
-				move(4, 10);
-				prints ("抱歉，置底数量超过5篇，无法再加入...\n");
-				pressanykey();
-				return PARTUPDATE;
-			}
+		if (get_num_records(digestdir, sizeof (digest)) > 8 && strcmp(currentuser.userid, "SYSOP")!=0) {
+			move(3, 0);
+			clrtobot();
+			move(4, 10);
+			prints ("抱歉，置底数量超过5篇，无法再加入...\n");
+			pressanykey();
+			return PARTUPDATE;
+		}
 		digest = *fhdr;
 		digest.accessed |= FILE_ISTOP1;
 		directfile(digestfile, direct, fh2fname(&digest));
@@ -910,6 +918,9 @@ static int topfile_post(int ent, struct fileheader *fhdr, char *direct) //slowac
 		}
 	}
 	change_dir(direct, fhdr, (void *) DIR_do_top, ent, 0, 0);
+	if (fhdr->thread == fhdr->filetime) {
+		bmy_article_update_thread_accessed(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fhdr->thread, fhdr->accessed);
+	}
 	//topfile_record(direct,fhdr->filename,ent); //add by hace
 	return PARTUPDATE;
 }
@@ -1359,6 +1370,9 @@ int water_post(int ent, struct fileheader *fileinfo, char *dirent)
 
 	newtrace(genbuf);
 	change_dir(dirent, fileinfo, (void *) DIR_do_water, ent, digestmode, 0);
+	if (fileinfo->thread == fileinfo->filetime) {
+		bmy_article_update_thread_accessed(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fileinfo->thread, fileinfo->accessed);
+	}
 	return PARTUPDATE;
 }
 
@@ -1408,6 +1422,9 @@ char *direct;
 		}
 	}
 	change_dir(direct, fhdr, (void *) DIR_do_digest, ent, digestmode, 0);
+	if (fhdr->thread == fhdr->filetime) {
+		bmy_article_update_thread_accessed(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fhdr->thread, fhdr->accessed);
+	}
 	return PARTUPDATE;
 }
 
@@ -2537,7 +2554,10 @@ char *direct;
 //	if(HAS_PERM(PERM_COMMEND))
 //		commend_article(currboard, fileinfo);
 //	else
-		change_dir(direct, fileinfo, (void *) DIR_do_mark, ent, digestmode, 0);
+	change_dir(direct, fileinfo, (void *) DIR_do_mark, ent, digestmode, 0);
+	if (fileinfo->thread == fileinfo->filetime) {
+		bmy_article_update_thread_accessed(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fileinfo->thread, fileinfo->accessed);
+	}
 	return PARTUPDATE;
 }
 
