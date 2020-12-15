@@ -1,4 +1,5 @@
 #include "bbslib.h"
+#include "bmy/article.h"
 
 static int do_del(char *board, char *file);
 static int do_set(char *dirptr, int size, char *file, int flag, char *board);
@@ -124,12 +125,14 @@ static int do_set(char *dirptr, int size, char *file, int flag, char *board) {
 	int om, og, nm, ng, filetime;
 	int start;
 	int total = size / sizeof(struct fileheader);
+	unsigned int oa;
 	filetime = atoi(file + 2);
 	sprintf(path, "boards/%s/%s", board, file);
 
 	start = Search_Bin(dirptr, filetime,0 , total - 1);
 	if (start >= 0) {
 		f = (struct fileheader*)(dirptr + start * sizeof(struct fileheader));
+		oa = f->accessed;
 		om = f->accessed & FH_MARKED;
 		og = f->accessed & FH_DIGEST;
 		f->accessed |= flag;
@@ -138,6 +141,9 @@ static int do_set(char *dirptr, int size, char *file, int flag, char *board) {
 		nm = f->accessed & FH_MARKED;
 		ng = f->accessed & FH_DIGEST;
 		printf("<tr><td>%s<td>标题:%s<td>标记成功.\n", fh2owner(f), nohtml(f->title));
+		if (f->thread == f->filetime && oa != f->accessed) {
+			bmy_article_update_thread_accessed(ythtbbs_cache_Board_get_idx_by_name(board) + 1, f->thread, f->accessed);
+		}
 		buf[0] = 0;
 		if ((!om) && (nm))
 			snprintf(buf, 256, "%s mark %s %s %s",
