@@ -1,6 +1,6 @@
 #include "bbslib.h"
 
-int ismybrd(char *board);
+extern int ismybrd(char *board); // BBSLIB.c
 static int read_submit();
 //secstr == NULL: all boards
 //secstr == "": boards that doesnn't belong to any group
@@ -164,8 +164,6 @@ int readmybrd(char *userid) {
 	}
 	return 0;
 }
-
-extern int ismybrd(char *board); // BBSLIC.c
 
 static int read_submit() {
 	int i;

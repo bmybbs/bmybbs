@@ -1,5 +1,7 @@
 #include "bbslib.h"
 
+extern int ismybrd(char *board); // BBSLIB.c
+
 int
 bbsbrdadd_main()
 {
@@ -22,7 +24,7 @@ bbsbrdadd_main()
 		http_fatal("此讨论区不存在");
 	strcpy(mybrd[mybrdnum], board);
 	mybrdnum++;
-	sethomefile(file, currentuser.userid, ".goodbrd");
+	sethomefile_s(file, sizeof(file), currentuser.userid, ".goodbrd");
 	fp = fopen(file, "w");
 	if (fp) {
 		for (i = 0; i < mybrdnum; i++)
@@ -32,8 +34,7 @@ bbsbrdadd_main()
 		http_fatal("Can't save");
 	//printf("<script>top.f2.location='bbsleft?t=%d'</script>\n", now_t);
 	printf("<script>top.f2.location.reload();</script>\n");
-	printf
-	    ("预定讨论区成功<br><a href='javascript:history.go(-1)'>快速返回</a>");
+	printf("预定讨论区成功<br><a href='javascript:history.go(-1)'>快速返回</a>");
 	http_quit();
 	return 0;
 }
