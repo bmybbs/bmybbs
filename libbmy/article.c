@@ -70,7 +70,7 @@ void bmy_article_add_thread(int boardnum, time_t tid, char *title_gbk, char *aut
 
 	params[1].buffer_type = MYSQL_TYPE_LONGLONG;
 	params[1].buffer = &tid;
-	params[1].buffer_length = sizeof(int);
+	params[1].buffer_length = sizeof(time_t);
 
 	params[2].buffer_type = MYSQL_TYPE_STRING;
 	params[2].buffer = title_utf;
