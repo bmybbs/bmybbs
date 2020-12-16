@@ -144,6 +144,7 @@ save_GoodBrd()			// 保存用户订阅的版面
 	int i;
 	FILE *fp;
 	char fname[STRLEN];
+	struct boardmem *board;
 
 	if (GoodBrd.num <= 0) {
 		GoodBrd.num = 1;
@@ -154,8 +155,17 @@ save_GoodBrd()			// 保存用户订阅的版面
 	}
 	setuserfile(fname, ".goodbrd");
 	if ((fp = fopen(fname, "wb+")) != NULL) {
-		for (i = 0; i < GoodBrd.num; i++)
-			fprintf(fp, "%s\n", GoodBrd.ID[i]);
+		flock(fileno(fp), LOCK_EX);
+
+		for (i = 0; i < GoodBrd.num; i++) {
+			board = ythtbbs_cache_Board_get_board_by_name(GoodBrd.ID[i]);
+
+			if (board == NULL || !hasreadperm(&board->header))
+				continue;
+
+			fprintf(fp, "%s\n", board->header.filename);
+		}
+
 		fclose(fp);
 	}
 }

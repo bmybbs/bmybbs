@@ -171,6 +171,7 @@ static int read_submit() {
 	FILE *fp;
 	struct boardmem *x;
 	mybrdnum = 0;
+	int count = 0;
 	if (!strcmp(getparm("confirm1"), ""))
 		http_fatal("参数错误");
 	for (i = 0; i < parm_num; i++) {
@@ -179,7 +180,7 @@ static int read_submit() {
 				continue;
 			if (mybrdnum >= GOOD_BRC_NUM)
 				http_fatal("您试图预定超过%d个讨论区", GOOD_BRC_NUM);
-			if (!(x = getboard(parm_name[i]))) {
+			if (!getboard(parm_name[i])) {
 				printf("警告: 无法预定'%s'讨论区<br>\n", nohtml(parm_name[i]));
 				continue;
 			}
@@ -189,11 +190,20 @@ static int read_submit() {
 	}
 	sethomefile_s(buf1, sizeof(buf1), currentuser.userid, ".goodbrd");
 	fp = fopen(buf1, "w");
-	for (i = 0; i < mybrdnum; i++)
-		fprintf(fp, "%s\n", mybrd[i]);
-	fclose(fp);
+	if (fp) {
+		flock(fileno(fp), LOCK_EX);
+		for (i = 0; i < mybrdnum; i++) {
+			x = getboard(mybrd[i]);
+			if (x == NULL)
+				continue;
+
+			count++;
+			fprintf(fp, "%s\n", x->header.filename);
+		}
+		fclose(fp);
+	}
 	saveuservalue(currentuser.userid, "mybrdmode", getparm("mybrdmode"));
-	printf("<script>top.f2.location='bbsleft?t=%ld'</script>修改预定讨论区成功，您现在一共预定了%d个讨论区:<hr>\n", now_t, mybrdnum);
+	printf("<script>top.f2.location='bbsleft?t=%ld'</script>修改预定讨论区成功，您现在一共预定了%d个讨论区:<hr>\n", now_t, count);
 	printf("[<a href='javascript:history.go(-2)'>返回</a>]");
 	return 0;
 }

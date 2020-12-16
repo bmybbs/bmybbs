@@ -7,6 +7,7 @@ bbsbrdadd_main()
 {
 	FILE *fp;
 	char file[200], board[200];
+	struct boardmem *b;
 	int i;
 	html_header(1);
 	changemode(ZAP);
@@ -27,8 +28,15 @@ bbsbrdadd_main()
 	sethomefile_s(file, sizeof(file), currentuser.userid, ".goodbrd");
 	fp = fopen(file, "w");
 	if (fp) {
-		for (i = 0; i < mybrdnum; i++)
-			fprintf(fp, "%s\n", mybrd[i]);
+		flock(fileno(fp), LOCK_EX);
+
+		for (i = 0; i < mybrdnum; i++) {
+			b = getboard(mybrd[i]);
+			if (b == NULL)
+				continue;
+			fprintf(fp, "%s\n", b->header.filename);
+		}
+
 		fclose(fp);
 	} else
 		http_fatal("Can't save");
