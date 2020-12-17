@@ -34,5 +34,10 @@ int ythtbbs_mybrd_save(const char *userid, struct goodboard *mybrd, ythtbbs_mybr
  * @warning 本函数不做版面读取权限校验，在应用中自行判断
  */
 void ythtbbs_mybrd_append(struct goodboard *mybrd, const char *boardname);
+
+/**
+ * 删除记录（如果存在，向前覆盖）
+ */
+void ythtbbs_mybrd_remove(struct goodboard *mybrd, const char *boardname);
 #endif
 

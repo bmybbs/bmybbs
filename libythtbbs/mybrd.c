@@ -76,3 +76,27 @@ void ythtbbs_mybrd_append(struct goodboard *mybrd, const char *boardname) {
 	mybrd->num = mybrd->num + 1;
 }
 
+void ythtbbs_mybrd_remove(struct goodboard *mybrd, const char *boardname) {
+	int i;
+
+	for (i = 0; i < mybrd->num; i++) {
+		if (!strcasecmp(boardname, mybrd->ID[i]))
+			break;
+	}
+
+	if (i < mybrd->num) {
+		// 表明存在记录
+		if (i == mybrd->num - 1) {
+			// 如果是最后一条记录
+			mybrd->ID[i][0] = '\0';
+		} else {
+			// 依次拷贝覆盖前面的记录
+			for (; i < mybrd->num - 1; i++) {
+				strcpy(mybrd->ID[i], mybrd->ID[i + 1]);
+			}
+		}
+
+		mybrd->num = mybrd->num - 1;
+	}
+}
+

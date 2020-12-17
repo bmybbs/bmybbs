@@ -1072,7 +1072,7 @@ const struct sectree *sec;
 					//pressreturn();
 				} else {
 					if (!inGoodBrds(ptr->name)) {
-						strcpy(GoodBrd.ID[GoodBrd.num++], ptr->name);
+						ythtbbs_mybrd_append(&GoodBrd, ptr->name);
 						save_GoodBrd();
 						GoodBrd.num = 0;
 						move(t_lines - 1, 0);
@@ -1098,10 +1098,7 @@ const struct sectree *sec;
 					page = -1;
 					break;
 				}
-				pos = inGoodBrds(nbrd[num - secnum].name);
-				for (i = pos - 1; i < GoodBrd.num - 1; i++)
-					strcpy(GoodBrd.ID[i], GoodBrd.ID[i + 1]);
-				GoodBrd.num--;
+				ythtbbs_mybrd_remove(&GoodBrd, nbrd[num - secnum].name);
 				save_GoodBrd();
 				GoodBrd.num = 9999;
 				brdnum = -1;
