@@ -144,24 +144,15 @@ bbsmybrd_main()
 	return 0;
 }
 
+bool readmybrd_has_read_perm(const char *userid, const char *boardname) {
+	char buf[32]; // boardheader.filename char[24];
+	(void) userid;
+	strcpy(buf, boardname);
+	return (getboard(buf) != NULL);
+}
+
 int readmybrd(char *userid) {
-	char file[200];
-	FILE *fp;
-	int l;
-	mybrdnum = 0;
-	sethomefile_s(file, sizeof(file), currentuser.userid, ".goodbrd");
-	fp = fopen(file, "r");
-	if (fp) {
-		while (fgets(mybrd[mybrdnum], sizeof (mybrd[0]), fp) != NULL) {
-			l = strlen(mybrd[mybrdnum]);
-			if (mybrd[mybrdnum][l - 1] == '\n')
-				mybrd[mybrdnum][l - 1] = 0;
-			mybrdnum++;
-			if (mybrdnum >= GOOD_BRD_NUM)
-				break;
-		}
-		fclose(fp);
-	}
+	ythtbbs_mybrd_load(userid, &g_GoodBrd, readmybrd_has_read_perm);
 	return 0;
 }
 
