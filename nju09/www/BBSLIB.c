@@ -1978,7 +1978,7 @@ utf8_decode(char *src)
 		return src;
 }
 
-char mybrd[GOOD_BRC_NUM][80];
+char mybrd[GOOD_BRD_NUM][80];
 int mybrdnum = 0;
 
 void

@@ -71,7 +71,7 @@ unsigned char boardprefix[5];
 
 //定制版面的代码, 取自fb2000.dhs.org.     --ecnegrevid
 struct goodboard {
-	char ID[GOOD_BRC_NUM][20];	//版名最多看来是17+1字节
+	char ID[GOOD_BRD_NUM][20];	//版名最多看来是17+1字节
 	int num;
 } GoodBrd;
 
@@ -106,7 +106,7 @@ static int
 inGoodBrds(char *bname)		// 判断版面是否是订阅版面
 {
 	int i;
-	for (i = 0; i < GoodBrd.num && i < GOOD_BRC_NUM; i++)
+	for (i = 0; i < GoodBrd.num && i < GOOD_BRD_NUM; i++)
 		if (!strcmp(bname, GoodBrd.ID[i]))
 			return i + 1;
 	return 0;
@@ -121,7 +121,7 @@ load_GoodBrd()			//从文件中获取订阅版面，填充数据结构 GoodBrd
 	GoodBrd.num = 0;
 	setuserfile(buf, ".goodbrd");
 	if ((fp = fopen(buf, "r"))) {
-		for (GoodBrd.num = 0; GoodBrd.num < GOOD_BRC_NUM;) {
+		for (GoodBrd.num = 0; GoodBrd.num < GOOD_BRD_NUM;) {
 			if (!fgets(buf, sizeof (buf), fp))
 				break;
 			ytht_strsncpy(GoodBrd.ID[GoodBrd.num], ytht_strtrim(buf), sizeof(GoodBrd.ID[GoodBrd.num]));
@@ -1062,9 +1062,9 @@ const struct sectree *sec;
 			if (num >= brdnum + secnum || num < secnum)
 				break;
 			if (GoodBrd.num) {
-				if (GoodBrd.num >= GOOD_BRC_NUM) {
+				if (GoodBrd.num >= GOOD_BRD_NUM) {
 					move(t_lines - 1, 0);
-					prints("个人热门版数已经达上限(%d)", GOOD_BRC_NUM);
+					prints("个人热门版数已经达上限(%d)", GOOD_BRD_NUM);
 					//pressreturn();
 				} else {
 					char bname[STRLEN], bpath[STRLEN];
@@ -1097,10 +1097,10 @@ const struct sectree *sec;
 			} else {
 				load_GoodBrd();
 				ptr = &nbrd[num - secnum];
-				if (GoodBrd.num >= GOOD_BRC_NUM) {
+				if (GoodBrd.num >= GOOD_BRD_NUM) {
 					move(t_lines - 1, 0);
 					clrtoeol();
-					prints("个人热门版数已经达上限(%d)", GOOD_BRC_NUM);
+					prints("个人热门版数已经达上限(%d)", GOOD_BRD_NUM);
 					GoodBrd.num = 0;
 					//pressreturn();
 				} else {

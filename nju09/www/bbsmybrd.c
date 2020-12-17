@@ -120,7 +120,7 @@ bbsmybrd_main()
 	printf("<tr>\n<td width=40 rowspan=2>&nbsp; </td>\n");
 	//printf("<div class=rhead>个人预定讨论区管理(您目前预定了<span class=h11>%d</span>个讨论区，最多可预定<span class=h11>%d</span>个)</div><br>\n", mybrdnum, GOOD_BRC_NUM);
 	printf("<td height=35> %s &gt; <span id=\"topmenu_b\">个人预定讨论区管理</span>\n", MY_BBS_NAME);
-	printf("[ 目前预定: <span class=\"smalltext\">%d</span>个 | 最多预定:</b> <span class=\"smalltext\">%d</span>个 ]</td>\n" , mybrdnum, GOOD_BRC_NUM);
+	printf("[ 目前预定: <span class=\"smalltext\">%d</span>个 | 最多预定:</b> <span class=\"smalltext\">%d</span>个 ]</td>\n" , mybrdnum, GOOD_BRD_NUM);
 	printf("</tr>\n <td height=35 valign=top><a href=\"bbsmybrd?mode=0\" class=\"btnsubmittheme\">按字母顺序排列</a>\n"
 		"<a href=\"bbsmybrd?mode=1\" class=\"btnsubmittheme\">按分类排列</a></td></tr>\n");
 	printf("<tr>\n<td width=40 class=\"level1\">&nbsp;</td>\n"
@@ -157,7 +157,7 @@ int readmybrd(char *userid) {
 			if (mybrd[mybrdnum][l - 1] == '\n')
 				mybrd[mybrdnum][l - 1] = 0;
 			mybrdnum++;
-			if (mybrdnum >= GOOD_BRC_NUM)
+			if (mybrdnum >= GOOD_BRD_NUM)
 				break;
 		}
 		fclose(fp);
@@ -178,8 +178,8 @@ static int read_submit() {
 		if (!strcasecmp(parm_val[i], "on")) {
 			if (ismybrd(parm_name[i]))
 				continue;
-			if (mybrdnum >= GOOD_BRC_NUM)
-				http_fatal("您试图预定超过%d个讨论区", GOOD_BRC_NUM);
+			if (mybrdnum >= GOOD_BRD_NUM)
+				http_fatal("您试图预定超过%d个讨论区", GOOD_BRD_NUM);
 			if (!getboard(parm_name[i])) {
 				printf("警告: 无法预定'%s'讨论区<br>\n", nohtml(parm_name[i]));
 				continue;
