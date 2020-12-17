@@ -28,8 +28,6 @@ void show_top10();
 void show_right_click_header(int i);
 // int show_manager_team(); Œ¥ π”√
 
-// bbsmybrd.c
-int ismybrd(char *board);
 // bbsshownav
 int shownavpart(int mode, const char *secstr);
 

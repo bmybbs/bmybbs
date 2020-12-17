@@ -2479,15 +2479,6 @@ NHsprintf(char *s, char *s0)
 	s[len] = 0;
 }
 
-int ismybrd(char *board) {
-	int i;
-
-	for (i = 0; i < g_GoodBrd.num; i++)
-		if (!strcasecmp(board, g_GoodBrd.ID[i]))
-			return 1;
-	return 0;
-}
-
 int filter_board_v(struct boardmem *board, int curr_idx, va_list ap) {
 	// 一定会使用的变量
 	int flag = va_arg(ap, int);
@@ -2505,7 +2496,7 @@ int filter_board_v(struct boardmem *board, int curr_idx, va_list ap) {
 		return 0;
 
 	if (flag & FILTER_BOARD_check_mybrd) {
-		if (!ismybrd(board->header.filename))
+		if (!ythtbbs_mybrd_exists(&g_GoodBrd, board->header.filename))
 			return 0;
 	}
 

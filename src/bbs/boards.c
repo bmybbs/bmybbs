@@ -72,7 +72,6 @@ unsigned char boardprefix[5];
 
 struct goodboard GoodBrd;
 
-static int inGoodBrds(char *bname);
 static void load_GoodBrd(void);
 static void save_GoodBrd(void);
 static void load_zapbuf(void);
@@ -97,16 +96,6 @@ GoodBrds()			// 菜单的调用函数
 	boardprefix[0] = 255;
 	boardprefix[1] = 0;
 	choose_board(1, NULL);
-}
-
-static int
-inGoodBrds(char *bname)		// 判断版面是否是订阅版面
-{
-	int i;
-	for (i = 0; i < GoodBrd.num && i < GOOD_BRD_NUM; i++)
-		if (!strcmp(bname, GoodBrd.ID[i]))
-			return i + 1;
-	return 0;
 }
 
 bool load_GoodBrd_has_read_perm(const char *userid, const char *boardname) {
@@ -240,7 +229,7 @@ static int load_boards_callback(struct boardmem *board, int curr_idx, va_list ap
 		local_addto = local_yank_flag || !zapped(curr_idx, board) || (board->header.level & PERM_NOZAP);
 	} else {
 		// 判断是否是订阅的版面
-		local_addto = inGoodBrds(board->header.filename);
+		local_addto = ythtbbs_mybrd_exists(&GoodBrd, board->header.filename);
 	}
 
 	if (local_addto) {
@@ -1051,8 +1040,8 @@ const struct sectree *sec;
 						prints("不正确的讨论区.\n");
 						pressreturn();
 					} else {
-						if (!inGoodBrds(bname)) {
-							strcpy(GoodBrd.ID[GoodBrd.num++], bname);
+						if (!ythtbbs_mybrd_exists(&GoodBrd, bname)) {
+							ythtbbs_mybrd_append(&GoodBrd, bname);
 							save_GoodBrd();
 							GoodBrd.num = 9999;
 							brdnum = -1;
@@ -1071,7 +1060,7 @@ const struct sectree *sec;
 					GoodBrd.num = 0;
 					//pressreturn();
 				} else {
-					if (!inGoodBrds(ptr->name)) {
+					if (!ythtbbs_mybrd_exists(&GoodBrd, ptr->name)) {
 						ythtbbs_mybrd_append(&GoodBrd, ptr->name);
 						save_GoodBrd();
 						GoodBrd.num = 0;

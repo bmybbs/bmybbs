@@ -39,5 +39,7 @@ void ythtbbs_mybrd_append(struct goodboard *mybrd, const char *boardname);
  * 删除记录（如果存在，向前覆盖）
  */
 void ythtbbs_mybrd_remove(struct goodboard *mybrd, const char *boardname);
+
+bool ythtbbs_mybrd_exists(struct goodboard *mybrd, const char *boardname);
 #endif
 

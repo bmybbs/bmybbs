@@ -79,6 +79,9 @@ void ythtbbs_mybrd_append(struct goodboard *mybrd, const char *boardname) {
 void ythtbbs_mybrd_remove(struct goodboard *mybrd, const char *boardname) {
 	int i;
 
+	if (mybrd == NULL || mybrd->num >= GOOD_BRD_NUM || boardname == NULL || boardname[0] == '\0')
+		return;
+
 	for (i = 0; i < mybrd->num; i++) {
 		if (!strcasecmp(boardname, mybrd->ID[i]))
 			break;
@@ -98,5 +101,19 @@ void ythtbbs_mybrd_remove(struct goodboard *mybrd, const char *boardname) {
 
 		mybrd->num = mybrd->num - 1;
 	}
+}
+
+bool ythtbbs_mybrd_exists(struct goodboard *mybrd, const char *boardname) {
+	int i;
+
+	if (mybrd == NULL || mybrd->num >= GOOD_BRD_NUM || boardname == NULL || boardname[0] == '\0')
+		return false;
+
+	for (i = 0; i < mybrd->num; i++) {
+		if (!strcasecmp(boardname, mybrd->ID[i]))
+			return true;
+	}
+
+	return false;
 }
 

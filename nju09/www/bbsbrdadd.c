@@ -1,6 +1,5 @@
 #include "bbslib.h"
 
-extern int ismybrd(char *board); // BBSLIB.c
 extern bool nju09_mybrd_has_read_perm(const char *userid, const char *boardname);
 
 int
@@ -20,7 +19,7 @@ bbsbrdadd_main()
 	readmybrd(currentuser.userid);
 	if (g_GoodBrd.num >= GOOD_BRD_NUM)
 		http_fatal("您预定讨论区数目已达上限，不能增加预定");
-	if (ismybrd(board))
+	if (ythtbbs_mybrd_exists(&g_GoodBrd, board))
 		http_fatal("你已经预定了这个讨论区");
 	b = getboard(board);
 	if (!b)

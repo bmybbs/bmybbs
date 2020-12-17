@@ -1,6 +1,5 @@
 #include "bbslib.h"
 
-extern int ismybrd(char *board); // BBSLIB.c
 static int read_submit();
 //secstr == NULL: all boards
 //secstr == "": boards that doesnn't belong to any group
@@ -53,7 +52,7 @@ showlist_alphabetical(const char *secstr, int needrss)
 	} else {
 		for (i = 0; i < total; i++) {
 		char *buf3 = "";
-		if (ismybrd(data[i]->header.filename))
+		if (ythtbbs_mybrd_exists(&g_GoodBrd, data[i]->header.filename))
 			buf3 = " checked";
 		if (i % 3 == 0)
 			printf("\n<tr>");
@@ -167,7 +166,7 @@ static int read_submit() {
 		http_fatal("参数错误");
 	for (i = 0; i < parm_num; i++) {
 		if (!strcasecmp(parm_val[i], "on")) {
-			if (ismybrd(parm_name[i]))
+			if (ythtbbs_mybrd_exists(&g_GoodBrd, parm_name[i]))
 				continue;
 			if (g_GoodBrd.num >= GOOD_BRD_NUM)
 				http_fatal("您试图预定超过%d个讨论区", GOOD_BRD_NUM);
