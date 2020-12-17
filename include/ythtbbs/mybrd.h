@@ -25,6 +25,11 @@ typedef bool (*ythtbbs_mybrd_has_read_perm)(const char *userid, const char *boar
 void ythtbbs_mybrd_load(const char *userid, struct goodboard *mybrd, ythtbbs_mybrd_has_read_perm func);
 
 /**
+ * 保存用户订阅版面
+ * @return 实际保存的个数
+ */
+int ythtbbs_mybrd_save(const char *userid, struct goodboard *mybrd, ythtbbs_mybrd_has_read_perm func);
+/**
  * 向列表中追加版面名称
  * @warning 本函数不做版面读取权限校验，在应用中自行判断
  */

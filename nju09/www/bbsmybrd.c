@@ -179,20 +179,7 @@ static int read_submit() {
 			ythtbbs_mybrd_append(&g_GoodBrd, x->header.filename);
 		}
 	}
-	sethomefile_s(buf1, sizeof(buf1), currentuser.userid, ".goodbrd");
-	fp = fopen(buf1, "w");
-	if (fp) {
-		flock(fileno(fp), LOCK_EX);
-		for (i = 0; i < mybrdnum; i++) {
-			x = getboard(mybrd[i]);
-			if (x == NULL)
-				continue;
-
-			count++;
-			fprintf(fp, "%s\n", x->header.filename);
-		}
-		fclose(fp);
-	}
+	count = ythtbbs_mybrd_save(currentuser.userid, &g_GoodBrd, readmybrd_has_read_perm);
 	saveuservalue(currentuser.userid, "mybrdmode", getparm("mybrdmode"));
 	printf("<script>top.f2.location='bbsleft?t=%ld'</script>修改预定讨论区成功，您现在一共预定了%d个讨论区:<hr>\n", now_t, count);
 	printf("[<a href='javascript:history.go(-2)'>返回</a>]");

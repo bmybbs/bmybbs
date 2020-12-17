@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <sys/file.h>
 #include "ytht/strlib.h"
 #include "ythtbbs/user.h"
 #include "ythtbbs/mybrd.h"
@@ -37,6 +38,31 @@ void ythtbbs_mybrd_load(const char *userid, struct goodboard *mybrd, ythtbbs_myb
 			mybrd->num = 1;
 		}
 	}
+}
+
+int ythtbbs_mybrd_save(const char *userid, struct goodboard *mybrd, ythtbbs_mybrd_has_read_perm func) {
+	int i;
+	int count = 0;
+	char buf[STRLEN];
+	FILE *fp;
+	struct boardmem *x;
+
+	sethomefile_s(buf, sizeof(buf), userid, GOODBRD);
+	fp = fopen(buf, "w");
+	if (fp) {
+		flock(fileno(fp), LOCK_EX);
+		for (i = 0; i < mybrd->num && i < GOOD_BRD_NUM; i++) {
+			if (!func(userid, mybrd->ID[i]))
+				continue;
+
+			x = ythtbbs_cache_Board_get_board_by_name(mybrd->ID[i]);
+			fprintf(fp, "%s\n", x->header.filename);
+			count++;
+		}
+		fclose(fp);
+	}
+
+	return count;
 }
 
 void ythtbbs_mybrd_append(struct goodboard *mybrd, const char *boardname) {
