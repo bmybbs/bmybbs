@@ -4,6 +4,7 @@
 #include "bbs.h"
 #include "ythtbbs/ythtbbs.h"
 #include "ythtbbs/override.h"
+#include "ythtbbs/mybrd.h"
 
 #define FIRST_PAGE   "/"
 #define CHARSET      "gb2312"
@@ -94,6 +95,7 @@ extern int nologin;
 
 extern char mybrd[GOOD_BRD_NUM][80];
 extern int mybrdnum;
+extern struct goodboard g_GoodBrd;
 
 void newreport(char *board, char *s);
 

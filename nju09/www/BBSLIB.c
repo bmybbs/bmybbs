@@ -1980,6 +1980,7 @@ utf8_decode(char *src)
 
 char mybrd[GOOD_BRD_NUM][80];
 int mybrdnum = 0;
+struct goodboard g_GoodBrd;
 
 void
 fdisplay_attach(FILE * output, FILE * fp, char *currline, char *nowfile)
