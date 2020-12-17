@@ -8,7 +8,7 @@
  * @author ecnegrevid
  */
 struct goodboard {
-	char ID[GOOD_BRD_NUM][20]; ///< 版名最多看来是17+1字节
+	char ID[GOOD_BRD_NUM][32]; ///< 在 struct boardheader.filename 里定义的长度是 24
 	int num;
 };
 
