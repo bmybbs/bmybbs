@@ -169,14 +169,14 @@ static int read_submit() {
 		if (!strcasecmp(parm_val[i], "on")) {
 			if (ismybrd(parm_name[i]))
 				continue;
-			if (mybrdnum >= GOOD_BRD_NUM)
+			if (g_GoodBrd.num >= GOOD_BRD_NUM)
 				http_fatal("您试图预定超过%d个讨论区", GOOD_BRD_NUM);
-			if (!getboard(parm_name[i])) {
+			x = getboard(parm_name[i]);
+			if (!x) {
 				printf("警告: 无法预定'%s'讨论区<br>\n", nohtml(parm_name[i]));
 				continue;
 			}
-			ytht_strsncpy(mybrd[mybrdnum], parm_name[i], sizeof(mybrd[0]));
-			mybrdnum++;
+			ythtbbs_mybrd_append(&g_GoodBrd, x->header.filename);
 		}
 	}
 	sethomefile_s(buf1, sizeof(buf1), currentuser.userid, ".goodbrd");
