@@ -47,6 +47,9 @@ int ythtbbs_mybrd_save(const char *userid, struct goodboard *mybrd, ythtbbs_mybr
 	FILE *fp;
 	struct boardmem *x;
 
+	if (func == NULL)
+		return count;
+
 	sethomefile_s(buf, sizeof(buf), userid, GOODBRD);
 	fp = fopen(buf, "w");
 	if (fp) {
