@@ -104,7 +104,6 @@ extern int errno ;
 
 #endif /* BBSIRC */
 
-#define GOOD_BRC_NUM    40      // 最多有 GOOD_BRC_NUM 个个人定制版面
 #define NUMPERMS   (31)
 
 #define MAX_DIGEST         1000    /* 最大文摘数 */
