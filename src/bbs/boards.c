@@ -46,6 +46,7 @@
 #include "announce.h"
 #include "vote.h"
 #include "bbs-internal.h"
+#include "ythtbbs/mybrd.h"
 
 #define BBS_PAGESIZE    (t_lines - 4)
 
@@ -69,11 +70,7 @@ int zapbufchanged = 0;
 int yank_flag = 0;
 unsigned char boardprefix[5];
 
-//定制版面的代码, 取自fb2000.dhs.org.     --ecnegrevid
-struct goodboard {
-	char ID[GOOD_BRD_NUM][20];	//版名最多看来是17+1字节
-	int num;
-} GoodBrd;
+struct goodboard GoodBrd;
 
 static int inGoodBrds(char *bname);
 static void load_GoodBrd(void);
