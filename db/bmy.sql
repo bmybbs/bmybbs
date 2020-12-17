@@ -25,36 +25,33 @@ CREATE TABLE `t_boards` (
 );
 
 CREATE TABLE `t_threads` (
-	`id` int NOT NULL AUTO_INCREMENT COMMENT '用于数据库内部管理，和 BMY 数据不产生映射',
 	`boardnum` int NOT NULL COMMENT '外键，用于视图中显示版面名称（版面中英文名可能发生变化）',
 	`timestamp` bigint NOT NULL COMMENT '使用长整形保存 time_t 主题创建时间',
 	`title` varchar(120) NULL COMMENT '对应 ythtbbs::fileheader.title char(60)，留足 UTF8 编码空间',
 	`author` varchar(16) NULL COMMENT '作者，这里就不使用外键关联了，原作者 ID 可能不存在',
 	`comments` int NULL DEFAULT 1 COMMENT '包含原文在内的讨论计数',
 	`accessed` int NOT NULL COMMENT '对应 accessed，标记位',
-	PRIMARY KEY (`id`),
+	PRIMARY KEY (`boardnum`, `timestamp`),
 	KEY `fk_thread_board_idx` (`boardnum`),
 	KEY `idx_timestamp` (`timestamp`),
 	CONSTRAINT `fk_thread_board` FOREIGN KEY (`boardnum`) REFERENCES `t_boards` (`boardnum`)
 );
 
 CREATE TABLE `t_feed_meta` (
-	`id` int NOT NULL AUTO_INCREMENT,
 	`usernum` int NOT NULL,
 	`lastread` bigint NOT NULL DEFAULT 0,
 	`latest_tid` bigint NOT NULL DEFAULT 0,
-	PRIMARY KEY (`id`),
+	PRIMARY KEY (`usernum`),
 	KEY `fk_feedmeta_user_idx` (`usernum`),
 	CONSTRAINT `fk_feedmeta_user` FOREIGN KEY (`usernum`) REFERENCES `t_users` (`usernum`) ON DELETE CASCADE
 );
 
 CREATE TABLE `t_user_subscriptions` (
-	`id` int NOT NULL AUTO_INCREMENT,
 	`usernum` int NOT NULL,
 	`boardnum` int NOT NULL,
 	`lastread` bigint DEFAULT '0',
 	`latest_tid` bigint DEFAULT '0',
-	PRIMARY KEY (`id`),
+	PRIMARY KEY (`usernum`, `boardnum`),
 	KEY `fk_sub_user_idx` (`usernum`),
 	KEY `fk_sub_board_idx` (`boardnum`),
 	CONSTRAINT `fk_sub_board` FOREIGN KEY (`boardnum`) REFERENCES `t_boards` (`boardnum`),
@@ -179,10 +176,8 @@ CREATE PROCEDURE procedure_update_thread_comments(
 	IN delta int
 )
 BEGIN
-	SET SQL_SAFE_UPDATES=0;
 	UPDATE `t_threads` SET `comments` = `comments` + delta
 	WHERE `boardnum` = boardnum AND `timestamp` = timestamp;
-	SET SQL_SAFE_UPDATES=1;
 END$$
 
 -- 更新主题标题
@@ -192,10 +187,8 @@ CREATE PROCEDURE procedure_update_thread_title(
 	IN title varchar(120)
 )
 BEGIN
-	SET SQL_SAFE_UPDATES=0;
 	UPDATE `t_threads` SET `title` = title
 	WHERE `boardnum` = boardnum AND `timestamp` = timestamp;
-	SET SQL_SAFE_UPDATES=1;
 END$$
 
 -- 更新主题标记
@@ -205,10 +198,8 @@ CREATE PROCEDURE procedure_update_thread_accessed(
 	IN accessed int
 )
 BEGIN
-	SET SQL_SAFE_UPDATES=0;
 	UPDATE `t_threads` SET `accessed` = accessed
 	WHERE `boardnum` = boardnum AND `timestamp` = timestamp;
-	SET SQL_SAFE_UPDATES=1;
 END$$
 
 -- 删除主题
@@ -217,9 +208,7 @@ CREATE PROCEDURE procedure_delete_thread(
 	IN timestamp int
 )
 BEGIN
-	SET SQL_SAFE_UPDATES=0;
 	DELETE FROM `t_threads` where `boardnum` = boardnum AND `timestamp` = timestamp;
-	SET SQL_SAFE_UPDATES=1;
 END$$
 
 DELIMITER ;
