@@ -109,32 +109,16 @@ inGoodBrds(char *bname)		// 判断版面是否是订阅版面
 	return 0;
 }
 
-static void
-load_GoodBrd()			//从文件中获取订阅版面，填充数据结构 GoodBrd
-{
-	char buf[STRLEN];
-	FILE *fp;
-
-	GoodBrd.num = 0;
-	setuserfile(buf, ".goodbrd");
-	if ((fp = fopen(buf, "r"))) {
-		for (GoodBrd.num = 0; GoodBrd.num < GOOD_BRD_NUM;) {
-			if (!fgets(buf, sizeof (buf), fp))
-				break;
-			ytht_strsncpy(GoodBrd.ID[GoodBrd.num], ytht_strtrim(buf), sizeof(GoodBrd.ID[GoodBrd.num]));
-			if (canberead(GoodBrd.ID[GoodBrd.num]))
-				GoodBrd.num++;
-		}
-		fclose(fp);
-	}
-	if (GoodBrd.num == 0) {
-		GoodBrd.num++;
-		if (ythtbbs_cache_Board_get_board_by_name(DEFAULTBOARD))
-			strcpy(GoodBrd.ID[0], DEFAULTBOARD);
-		else
-			strcpy(GoodBrd.ID[0], currboard);
-	}
+bool load_GoodBrd_has_read_perm(const char *userid, const char *boardname) {
+	(void) userid;
+	return canberead(boardname);
 }
+
+//从文件中获取订阅版面，填充数据结构 GoodBrd
+static void load_GoodBrd() {
+	ythtbbs_mybrd_load(currentuser.userid, &GoodBrd, load_GoodBrd_has_read_perm);
+}
+
 static void
 save_GoodBrd()			// 保存用户订阅的版面
 {

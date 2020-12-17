@@ -57,6 +57,7 @@ add_library(ythtbbs SHARED
 	cache/board.c
 	session.c
 	override.c
+	mybrd.c
 )
 
 add_dependencies(ythtbbs sectree)
