@@ -2484,8 +2484,8 @@ NHsprintf(char *s, char *s0)
 int ismybrd(char *board) {
 	int i;
 
-	for (i = 0; i < mybrdnum; i++)
-		if (!strcasecmp(board, mybrd[i]))
+	for (i = 0; i < g_GoodBrd.num; i++)
+		if (!strcasecmp(board, g_GoodBrd.ID[i]))
 			return 1;
 	return 0;
 }
