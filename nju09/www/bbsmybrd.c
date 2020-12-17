@@ -144,7 +144,7 @@ bbsmybrd_main()
 	return 0;
 }
 
-bool readmybrd_has_read_perm(const char *userid, const char *boardname) {
+bool nju09_mybrd_has_read_perm(const char *userid, const char *boardname) {
 	char buf[32]; // boardheader.filename char[24];
 	(void) userid;
 	strcpy(buf, boardname);
@@ -152,7 +152,7 @@ bool readmybrd_has_read_perm(const char *userid, const char *boardname) {
 }
 
 int readmybrd(char *userid) {
-	ythtbbs_mybrd_load(userid, &g_GoodBrd, readmybrd_has_read_perm);
+	ythtbbs_mybrd_load(userid, &g_GoodBrd, nju09_mybrd_has_read_perm);
 	return 0;
 }
 
@@ -179,7 +179,7 @@ static int read_submit() {
 			ythtbbs_mybrd_append(&g_GoodBrd, x->header.filename);
 		}
 	}
-	count = ythtbbs_mybrd_save(currentuser.userid, &g_GoodBrd, readmybrd_has_read_perm);
+	count = ythtbbs_mybrd_save(currentuser.userid, &g_GoodBrd, nju09_mybrd_has_read_perm);
 	saveuservalue(currentuser.userid, "mybrdmode", getparm("mybrdmode"));
 	printf("<script>top.f2.location='bbsleft?t=%ld'</script>修改预定讨论区成功，您现在一共预定了%d个讨论区:<hr>\n", now_t, count);
 	printf("[<a href='javascript:history.go(-2)'>返回</a>]");
