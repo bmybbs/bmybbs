@@ -39,3 +39,11 @@ void ythtbbs_mybrd_load(const char *userid, struct goodboard *mybrd, ythtbbs_myb
 	}
 }
 
+void ythtbbs_mybrd_append(struct goodboard *mybrd, const char *boardname) {
+	if (mybrd == NULL || mybrd->num >= GOOD_BRD_NUM || boardname == NULL || boardname[0] == '\0')
+		return;
+
+	ytht_strsncpy(mybrd->ID[mybrd->num], boardname, sizeof(mybrd->ID[mybrd->num]));
+	mybrd->num = mybrd->num + 1;
+}
+

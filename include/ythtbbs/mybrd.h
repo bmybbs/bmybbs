@@ -23,5 +23,11 @@ struct goodboard {
 typedef bool (*ythtbbs_mybrd_has_read_perm)(const char *userid, const char *boardname);
 
 void ythtbbs_mybrd_load(const char *userid, struct goodboard *mybrd, ythtbbs_mybrd_has_read_perm func);
+
+/**
+ * 向列表中追加版面名称
+ * @warning 本函数不做版面读取权限校验，在应用中自行判断
+ */
+void ythtbbs_mybrd_append(struct goodboard *mybrd, const char *boardname);
 #endif
 
