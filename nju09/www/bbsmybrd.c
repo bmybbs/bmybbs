@@ -120,7 +120,7 @@ bbsmybrd_main()
 	printf("<tr>\n<td width=40 rowspan=2>&nbsp; </td>\n");
 	//printf("<div class=rhead>个人预定讨论区管理(您目前预定了<span class=h11>%d</span>个讨论区，最多可预定<span class=h11>%d</span>个)</div><br>\n", mybrdnum, GOOD_BRC_NUM);
 	printf("<td height=35> %s &gt; <span id=\"topmenu_b\">个人预定讨论区管理</span>\n", MY_BBS_NAME);
-	printf("[ 目前预定: <span class=\"smalltext\">%d</span>个 | 最多预定:</b> <span class=\"smalltext\">%d</span>个 ]</td>\n" , mybrdnum, GOOD_BRD_NUM);
+	printf("[ 目前预定: <span class=\"smalltext\">%d</span>个 | 最多预定:</b> <span class=\"smalltext\">%d</span>个 ]</td>\n" , g_GoodBrd.num, GOOD_BRD_NUM);
 	printf("</tr>\n <td height=35 valign=top><a href=\"bbsmybrd?mode=0\" class=\"btnsubmittheme\">按字母顺序排列</a>\n"
 		"<a href=\"bbsmybrd?mode=1\" class=\"btnsubmittheme\">按分类排列</a></td></tr>\n");
 	printf("<tr>\n<td width=40 class=\"level1\">&nbsp;</td>\n"
@@ -161,7 +161,7 @@ static int read_submit() {
 	char buf1[200];
 	FILE *fp;
 	struct boardmem *x;
-	mybrdnum = 0;
+	g_GoodBrd.num = 0;
 	int count = 0;
 	if (!strcmp(getparm("confirm1"), ""))
 		http_fatal("参数错误");

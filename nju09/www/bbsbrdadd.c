@@ -18,7 +18,7 @@ bbsbrdadd_main()
 	if (!loginok)
 		http_fatal("超时或未登录，请重新login");
 	readmybrd(currentuser.userid);
-	if (mybrdnum >= GOOD_BRD_NUM)
+	if (g_GoodBrd.num >= GOOD_BRD_NUM)
 		http_fatal("您预定讨论区数目已达上限，不能增加预定");
 	if (ismybrd(board))
 		http_fatal("你已经预定了这个讨论区");

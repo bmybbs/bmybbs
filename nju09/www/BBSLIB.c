@@ -1978,8 +1978,6 @@ utf8_decode(char *src)
 		return src;
 }
 
-char mybrd[GOOD_BRD_NUM][80];
-int mybrdnum = 0;
 struct goodboard g_GoodBrd;
 
 void

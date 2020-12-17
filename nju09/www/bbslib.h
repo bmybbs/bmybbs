@@ -93,8 +93,6 @@ extern struct deny denyuser[256];
 extern int denynum;
 extern int nologin;
 
-extern char mybrd[GOOD_BRD_NUM][80];
-extern int mybrdnum;
 extern struct goodboard g_GoodBrd;
 
 void newreport(char *board, char *s);
