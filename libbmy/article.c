@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <string.h>
 #include "bmy/mysql_wrapper.h"
 #include "bmy/convcode.h"
@@ -148,5 +149,84 @@ void bmy_article_update_thread_accessed(int boardnum, time_t tid, int accessed) 
 	params[2].buffer_length = sizeof(int);
 
 	execute_prep_stmt(sql, MYSQL_CHARSET_UTF8, params, NULL, NULL, NULL);
+}
+
+static void bmy_article_list_subscription_callback(MYSQL_STMT *stmt, MYSQL_BIND *result_cols, void *result_set) {
+	struct bmy_articles **ptr = result_set;
+	struct fileheader_utf *fh;
+	size_t idx, rows;
+
+	*ptr = NULL;
+	rows = mysql_stmt_num_rows(stmt);
+	if (rows == 0)
+		return;
+
+	*ptr = malloc(sizeof(struct bmy_articles));
+	(*ptr)->count = rows;
+	(*ptr)->articles = calloc(rows, sizeof(struct fileheader_utf));
+
+	for (idx = 0; idx < rows; idx++) {
+		fh = &(*ptr)->articles[idx];
+		mysql_stmt_fetch(stmt);
+
+		strcpy(fh->boardname_en, result_cols[0].buffer);
+		strcpy(fh->boardname_zh, result_cols[1].buffer);
+		fh->thread = *(time_t *)result_cols[2].buffer;
+		strcpy(fh->title, result_cols[3].buffer);
+		strcpy(fh->owner, result_cols[4].buffer);
+		fh->count = *(unsigned int *)result_cols[5].buffer;
+		fh->accessed = *(unsigned int *)result_cols[6].buffer;
+	}
+}
+
+struct bmy_articles *bmy_article_list_subscription(const char *userid, size_t limit, size_t offset) {
+	struct bmy_articles *article_list;
+	char sqlbuf[120];
+	struct fileheader_utf result_buf;
+	MYSQL_BIND results[7];
+
+	snprintf(sqlbuf, sizeof(sqlbuf), "SELECT `boardname_en`, `boardname_zh`, `timestamp`, `title`, `author`, `comments`, `accessed` from v_feed_%s LIMIT %zu OFFSET %zu", userid, limit, offset);
+
+	memset(results, 0, sizeof(results));
+
+	results[0].buffer_type = MYSQL_TYPE_STRING;
+	results[0].buffer = result_buf.boardname_en;
+	results[0].buffer_length = sizeof(result_buf.boardname_en);
+
+	results[1].buffer_type = MYSQL_TYPE_STRING;
+	results[1].buffer = result_buf.boardname_zh;
+	results[1].buffer_length = sizeof(result_buf.boardname_zh);
+
+	results[2].buffer_type = MYSQL_TYPE_LONGLONG;
+	results[2].buffer = &result_buf.thread;
+	results[2].buffer_length = sizeof(time_t);
+
+	results[3].buffer_type = MYSQL_TYPE_STRING;
+	results[3].buffer = result_buf.title;
+	results[3].buffer_length = sizeof(result_buf.title);
+
+	results[4].buffer_type = MYSQL_TYPE_STRING;
+	results[4].buffer = result_buf.owner;
+	results[4].buffer_length = sizeof(result_buf.owner);
+
+	results[5].buffer_type = MYSQL_TYPE_LONG;
+	results[5].buffer = &result_buf.count;
+	results[5].buffer_length = sizeof(unsigned int);
+
+	results[6].buffer_type = MYSQL_TYPE_LONG;
+	results[6].buffer = &result_buf.accessed;
+	results[6].buffer_length = sizeof(unsigned int);
+
+	execute_prep_stmt(sqlbuf, MYSQL_CHARSET_UTF8, NULL, results, (void *) &article_list, bmy_article_list_subscription_callback);
+	return article_list;
+}
+
+void bmy_article_list_free(struct bmy_articles *ptr) {
+	if (ptr) {
+		if (ptr->count > 0 && ptr->articles) {
+			free(ptr->articles);
+		}
+		free(ptr);
+	}
 }
 
