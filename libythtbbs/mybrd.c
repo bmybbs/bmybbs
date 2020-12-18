@@ -2,10 +2,13 @@
 #include <string.h>
 #include <sys/file.h>
 #include "ytht/strlib.h"
+#include "bmy/subscription.h"
 #include "ythtbbs/user.h"
 #include "ythtbbs/mybrd.h"
 
 static const char *GOODBRD = ".goodbrd";
+
+static void ythtbbs_mybrd_sync(const char *userid, ythtbbs_mybrd_has_read_perm func);
 
 void ythtbbs_mybrd_load(const char *userid, struct goodboard *mybrd, ythtbbs_mybrd_has_read_perm func) {
 	char buf[STRLEN];
@@ -65,6 +68,7 @@ int ythtbbs_mybrd_save(const char *userid, struct goodboard *mybrd, ythtbbs_mybr
 		fclose(fp);
 	}
 
+	ythtbbs_mybrd_sync(userid, func);
 	return count;
 }
 
@@ -115,5 +119,25 @@ bool ythtbbs_mybrd_exists(struct goodboard *mybrd, const char *boardname) {
 	}
 
 	return false;
+}
+
+static void ythtbbs_mybrd_sync(const char *userid, ythtbbs_mybrd_has_read_perm func) {
+	// 本函数只在 save 里调用，这里暂时不验证 userid 是否存在了...
+	struct goodboard local_mybrd;
+	int *bnums, i;
+
+	memset(&local_mybrd, 0, sizeof(struct goodboard));
+	ythtbbs_mybrd_load(userid, &local_mybrd, func);
+
+	if (local_mybrd.num == 0)
+		return;
+
+	bnums = calloc(local_mybrd.num, sizeof(int));
+	for (i = 0; i < local_mybrd.num; i++) {
+		bnums[i] = 1 + ythtbbs_cache_Board_get_idx_by_name(local_mybrd.ID[i]);
+	}
+	bmy_subscription_sync(1 + ythtbbs_cache_UserIDHashTable_find_idx(userid), bnums, local_mybrd.num);
+
+	free(bnums);
 }
 
