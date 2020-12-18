@@ -16,6 +16,7 @@ struct cgi_applet applets[] = {
 	{bbsdoc_main, {"bbsdoc", "doc", NULL}, 0L, 0L, 0},
 	{bbscon_main, {"bbscon", "con", NULL}, 0L, 0L, 0},
 	{bbsbrdadd_main, {"bbsbrdadd", "brdadd", NULL}, 0L, 0L, 0},
+	{bbsbrddel_main, {"bbsbrddel", "brddel", NULL}, 0L, 0L, 0},
 	{bbsboa_main, {"bbsboa", "boa", NULL}, 0L, 0L, 0},
 	{bbsall_main, {"bbsall", NULL}, 0L, 0L, 0},
 	{bbsanc_main, {"bbsanc", "anc", NULL}, 0L, 0L, 0},

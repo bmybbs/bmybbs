@@ -6,6 +6,7 @@ NJUAPI int bbstop10_main(void);
 NJUAPI int bbsdoc_main(void);
 NJUAPI int bbscon_main(void);
 NJUAPI int bbsbrdadd_main(void);
+NJUAPI int bbsbrddel_main(void);
 NJUAPI int bbsboa_main(void);
 NJUAPI int bbsall_main(void);
 NJUAPI int bbsanc_main(void);

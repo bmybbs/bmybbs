@@ -1978,8 +1978,7 @@ utf8_decode(char *src)
 		return src;
 }
 
-char mybrd[GOOD_BRC_NUM][80];
-int mybrdnum = 0;
+struct goodboard g_GoodBrd;
 
 void
 fdisplay_attach(FILE * output, FILE * fp, char *currline, char *nowfile)
@@ -2480,15 +2479,6 @@ NHsprintf(char *s, char *s0)
 	s[len] = 0;
 }
 
-int ismybrd(char *board) {
-	int i;
-
-	for (i = 0; i < mybrdnum; i++)
-		if (!strcasecmp(board, mybrd[i]))
-			return 1;
-	return 0;
-}
-
 int filter_board_v(struct boardmem *board, int curr_idx, va_list ap) {
 	// 一定会使用的变量
 	int flag = va_arg(ap, int);
@@ -2506,7 +2496,7 @@ int filter_board_v(struct boardmem *board, int curr_idx, va_list ap) {
 		return 0;
 
 	if (flag & FILTER_BOARD_check_mybrd) {
-		if (!ismybrd(board->header.filename))
+		if (!ythtbbs_mybrd_exists(&g_GoodBrd, board->header.filename))
 			return 0;
 	}
 

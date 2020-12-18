@@ -182,10 +182,7 @@ int getbnum(const char *bname) {
 	return 0;
 }
 
-int
-canberead(bname)
-char *bname;
-{
+int canberead(const char *bname) {
 	int i;
 	if ((i = getbnum(bname)) == 0)
 		return 0;

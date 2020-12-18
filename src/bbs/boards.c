@@ -46,6 +46,7 @@
 #include "announce.h"
 #include "vote.h"
 #include "bbs-internal.h"
+#include "ythtbbs/mybrd.h"
 
 #define BBS_PAGESIZE    (t_lines - 4)
 
@@ -69,13 +70,8 @@ int zapbufchanged = 0;
 int yank_flag = 0;
 unsigned char boardprefix[5];
 
-//定制版面的代码, 取自fb2000.dhs.org.     --ecnegrevid
-struct goodboard {
-	char ID[GOOD_BRC_NUM][20];	//版名最多看来是17+1字节
-	int num;
-} GoodBrd;
+struct goodboard GoodBrd;
 
-static int inGoodBrds(char *bname);
 static void load_GoodBrd(void);
 static void save_GoodBrd(void);
 static void load_zapbuf(void);
@@ -102,50 +98,24 @@ GoodBrds()			// 菜单的调用函数
 	choose_board(1, NULL);
 }
 
-static int
-inGoodBrds(char *bname)		// 判断版面是否是订阅版面
-{
-	int i;
-	for (i = 0; i < GoodBrd.num && i < GOOD_BRC_NUM; i++)
-		if (!strcmp(bname, GoodBrd.ID[i]))
-			return i + 1;
-	return 0;
+bool load_GoodBrd_has_read_perm(const char *userid, const char *boardname) {
+	(void) userid;
+	return canberead(boardname);
 }
 
-static void
-load_GoodBrd()			//从文件中获取订阅版面，填充数据结构 GoodBrd
-{
-	char buf[STRLEN];
-	FILE *fp;
-
-	GoodBrd.num = 0;
-	setuserfile(buf, ".goodbrd");
-	if ((fp = fopen(buf, "r"))) {
-		for (GoodBrd.num = 0; GoodBrd.num < GOOD_BRC_NUM;) {
-			if (!fgets(buf, sizeof (buf), fp))
-				break;
-			ytht_strsncpy(GoodBrd.ID[GoodBrd.num], ytht_strtrim(buf), sizeof(GoodBrd.ID[GoodBrd.num]));
-			if (canberead(GoodBrd.ID[GoodBrd.num]))
-				GoodBrd.num++;
-		}
-		fclose(fp);
-	}
-	if (GoodBrd.num == 0) {
-		GoodBrd.num++;
-		if (ythtbbs_cache_Board_get_board_by_name(DEFAULTBOARD))
-			strcpy(GoodBrd.ID[0], DEFAULTBOARD);
-		else
-			strcpy(GoodBrd.ID[0], currboard);
-	}
+//从文件中获取订阅版面，填充数据结构 GoodBrd
+static void load_GoodBrd() {
+	ythtbbs_mybrd_load(currentuser.userid, &GoodBrd, load_GoodBrd_has_read_perm);
 }
+
+static bool term_has_read_perm(const char *userid, const char *boardname) {
+	(void) userid;
+	return (canberead(boardname) != 0);
+}
+
 static void
 save_GoodBrd()			// 保存用户订阅的版面
 {
-	int i;
-	FILE *fp;
-	char fname[STRLEN];
-	struct boardmem *board;
-
 	if (GoodBrd.num <= 0) {
 		GoodBrd.num = 1;
 		if (ythtbbs_cache_Board_get_board_by_name(DEFAULTBOARD))
@@ -153,21 +123,7 @@ save_GoodBrd()			// 保存用户订阅的版面
 		else
 			strcpy(GoodBrd.ID[0], currboard);
 	}
-	setuserfile(fname, ".goodbrd");
-	if ((fp = fopen(fname, "wb+")) != NULL) {
-		flock(fileno(fp), LOCK_EX);
-
-		for (i = 0; i < GoodBrd.num; i++) {
-			board = ythtbbs_cache_Board_get_board_by_name(GoodBrd.ID[i]);
-
-			if (board == NULL || !hasreadperm(&board->header))
-				continue;
-
-			fprintf(fp, "%s\n", board->header.filename);
-		}
-
-		fclose(fp);
-	}
+	ythtbbs_mybrd_save(currentuser.userid, &GoodBrd, term_has_read_perm);
 }
 
 void
@@ -273,7 +229,7 @@ static int load_boards_callback(struct boardmem *board, int curr_idx, va_list ap
 		local_addto = local_yank_flag || !zapped(curr_idx, board) || (board->header.level & PERM_NOZAP);
 	} else {
 		// 判断是否是订阅的版面
-		local_addto = inGoodBrds(board->header.filename);
+		local_addto = ythtbbs_mybrd_exists(&GoodBrd, board->header.filename);
 	}
 
 	if (local_addto) {
@@ -1062,9 +1018,9 @@ const struct sectree *sec;
 			if (num >= brdnum + secnum || num < secnum)
 				break;
 			if (GoodBrd.num) {
-				if (GoodBrd.num >= GOOD_BRC_NUM) {
+				if (GoodBrd.num >= GOOD_BRD_NUM) {
 					move(t_lines - 1, 0);
-					prints("个人热门版数已经达上限(%d)", GOOD_BRC_NUM);
+					prints("个人热门版数已经达上限(%d)", GOOD_BRD_NUM);
 					//pressreturn();
 				} else {
 					char bname[STRLEN], bpath[STRLEN];
@@ -1084,8 +1040,8 @@ const struct sectree *sec;
 						prints("不正确的讨论区.\n");
 						pressreturn();
 					} else {
-						if (!inGoodBrds(bname)) {
-							strcpy(GoodBrd.ID[GoodBrd.num++], bname);
+						if (!ythtbbs_mybrd_exists(&GoodBrd, bname)) {
+							ythtbbs_mybrd_append(&GoodBrd, bname);
 							save_GoodBrd();
 							GoodBrd.num = 9999;
 							brdnum = -1;
@@ -1097,15 +1053,15 @@ const struct sectree *sec;
 			} else {
 				load_GoodBrd();
 				ptr = &nbrd[num - secnum];
-				if (GoodBrd.num >= GOOD_BRC_NUM) {
+				if (GoodBrd.num >= GOOD_BRD_NUM) {
 					move(t_lines - 1, 0);
 					clrtoeol();
-					prints("个人热门版数已经达上限(%d)", GOOD_BRC_NUM);
+					prints("个人热门版数已经达上限(%d)", GOOD_BRD_NUM);
 					GoodBrd.num = 0;
 					//pressreturn();
 				} else {
-					if (!inGoodBrds(ptr->name)) {
-						strcpy(GoodBrd.ID[GoodBrd.num++], ptr->name);
+					if (!ythtbbs_mybrd_exists(&GoodBrd, ptr->name)) {
+						ythtbbs_mybrd_append(&GoodBrd, ptr->name);
 						save_GoodBrd();
 						GoodBrd.num = 0;
 						move(t_lines - 1, 0);
@@ -1131,10 +1087,7 @@ const struct sectree *sec;
 					page = -1;
 					break;
 				}
-				pos = inGoodBrds(nbrd[num - secnum].name);
-				for (i = pos - 1; i < GoodBrd.num - 1; i++)
-					strcpy(GoodBrd.ID[i], GoodBrd.ID[i + 1]);
-				GoodBrd.num--;
+				ythtbbs_mybrd_remove(&GoodBrd, nbrd[num - secnum].name);
 				save_GoodBrd();
 				GoodBrd.num = 9999;
 				brdnum = -1;

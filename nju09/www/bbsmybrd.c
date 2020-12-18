@@ -1,6 +1,5 @@
 #include "bbslib.h"
 
-extern int ismybrd(char *board); // BBSLIB.c
 static int read_submit();
 //secstr == NULL: all boards
 //secstr == "": boards that doesnn't belong to any group
@@ -53,7 +52,7 @@ showlist_alphabetical(const char *secstr, int needrss)
 	} else {
 		for (i = 0; i < total; i++) {
 		char *buf3 = "";
-		if (ismybrd(data[i]->header.filename))
+		if (ythtbbs_mybrd_exists(&g_GoodBrd, data[i]->header.filename))
 			buf3 = " checked";
 		if (i % 3 == 0)
 			printf("\n<tr>");
@@ -120,7 +119,7 @@ bbsmybrd_main()
 	printf("<tr>\n<td width=40 rowspan=2>&nbsp; </td>\n");
 	//printf("<div class=rhead>个人预定讨论区管理(您目前预定了<span class=h11>%d</span>个讨论区，最多可预定<span class=h11>%d</span>个)</div><br>\n", mybrdnum, GOOD_BRC_NUM);
 	printf("<td height=35> %s &gt; <span id=\"topmenu_b\">个人预定讨论区管理</span>\n", MY_BBS_NAME);
-	printf("[ 目前预定: <span class=\"smalltext\">%d</span>个 | 最多预定:</b> <span class=\"smalltext\">%d</span>个 ]</td>\n" , mybrdnum, GOOD_BRC_NUM);
+	printf("[ 目前预定: <span class=\"smalltext\">%d</span>个 | 最多预定:</b> <span class=\"smalltext\">%d</span>个 ]</td>\n" , g_GoodBrd.num, GOOD_BRD_NUM);
 	printf("</tr>\n <td height=35 valign=top><a href=\"bbsmybrd?mode=0\" class=\"btnsubmittheme\">按字母顺序排列</a>\n"
 		"<a href=\"bbsmybrd?mode=1\" class=\"btnsubmittheme\">按分类排列</a></td></tr>\n");
 	printf("<tr>\n<td width=40 class=\"level1\">&nbsp;</td>\n"
@@ -144,24 +143,15 @@ bbsmybrd_main()
 	return 0;
 }
 
+bool nju09_mybrd_has_read_perm(const char *userid, const char *boardname) {
+	char buf[32]; // boardheader.filename char[24];
+	(void) userid;
+	strcpy(buf, boardname);
+	return (getboard(buf) != NULL);
+}
+
 int readmybrd(char *userid) {
-	char file[200];
-	FILE *fp;
-	int l;
-	mybrdnum = 0;
-	sethomefile_s(file, sizeof(file), currentuser.userid, ".goodbrd");
-	fp = fopen(file, "r");
-	if (fp) {
-		while (fgets(mybrd[mybrdnum], sizeof (mybrd[0]), fp) != NULL) {
-			l = strlen(mybrd[mybrdnum]);
-			if (mybrd[mybrdnum][l - 1] == '\n')
-				mybrd[mybrdnum][l - 1] = 0;
-			mybrdnum++;
-			if (mybrdnum >= GOOD_BRC_NUM)
-				break;
-		}
-		fclose(fp);
-	}
+	ythtbbs_mybrd_load(userid, &g_GoodBrd, nju09_mybrd_has_read_perm);
 	return 0;
 }
 
@@ -170,38 +160,25 @@ static int read_submit() {
 	char buf1[200];
 	FILE *fp;
 	struct boardmem *x;
-	mybrdnum = 0;
+	g_GoodBrd.num = 0;
 	int count = 0;
 	if (!strcmp(getparm("confirm1"), ""))
 		http_fatal("参数错误");
 	for (i = 0; i < parm_num; i++) {
 		if (!strcasecmp(parm_val[i], "on")) {
-			if (ismybrd(parm_name[i]))
+			if (ythtbbs_mybrd_exists(&g_GoodBrd, parm_name[i]))
 				continue;
-			if (mybrdnum >= GOOD_BRC_NUM)
-				http_fatal("您试图预定超过%d个讨论区", GOOD_BRC_NUM);
-			if (!getboard(parm_name[i])) {
+			if (g_GoodBrd.num >= GOOD_BRD_NUM)
+				http_fatal("您试图预定超过%d个讨论区", GOOD_BRD_NUM);
+			x = getboard(parm_name[i]);
+			if (!x) {
 				printf("警告: 无法预定'%s'讨论区<br>\n", nohtml(parm_name[i]));
 				continue;
 			}
-			ytht_strsncpy(mybrd[mybrdnum], parm_name[i], sizeof(mybrd[0]));
-			mybrdnum++;
+			ythtbbs_mybrd_append(&g_GoodBrd, x->header.filename);
 		}
 	}
-	sethomefile_s(buf1, sizeof(buf1), currentuser.userid, ".goodbrd");
-	fp = fopen(buf1, "w");
-	if (fp) {
-		flock(fileno(fp), LOCK_EX);
-		for (i = 0; i < mybrdnum; i++) {
-			x = getboard(mybrd[i]);
-			if (x == NULL)
-				continue;
-
-			count++;
-			fprintf(fp, "%s\n", x->header.filename);
-		}
-		fclose(fp);
-	}
+	count = ythtbbs_mybrd_save(currentuser.userid, &g_GoodBrd, nju09_mybrd_has_read_perm);
 	saveuservalue(currentuser.userid, "mybrdmode", getparm("mybrdmode"));
 	printf("<script>top.f2.location='bbsleft?t=%ld'</script>修改预定讨论区成功，您现在一共预定了%d个讨论区:<hr>\n", now_t, count);
 	printf("[<a href='javascript:history.go(-2)'>返回</a>]");

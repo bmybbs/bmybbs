@@ -257,5 +257,6 @@ You must also set "EightBitMode=pass8" in /etc/sendmail.cf
 #define POLITICAL_FLAG	0x80
 #define ZAPPED  0x1           /* For boards...tells if board is Zapped */
 
+#define GOOD_BRD_NUM    40      // 最多有 GOOD_BRD_NUM 个个人定制版面
 #endif  /* BBS_CONFIG */
 

@@ -112,7 +112,12 @@ printboardtop(struct boardmem *x, int num)
 	printf("<a class=btnlinkgrey href=\"mmdoc?B=%s\" title=\"被M文章 accesskey: m\" accesskey=\"m\">&lt;被M文章&gt;</a>\n",board);
 	printf("<a class=btnlinkgrey href=\"bknsel?B=%s\">&lt;过刊区&gt;</a>\n", board);
 	printf("<a class=btnlinkgrey href=\"0an?path=%s\" title=\"精华区 accesskey: x\" accesskey=\"x\">&lt;精华区&gt;</a>\n", anno_path_of(board));
-	printf("<a class=btnfunc href=\"brdadd?B=%s\" title=\"预定本版 accesskey: a\" accesskey=\"a\"> 预定本版</a>\n", board);
+	readmybrd(currentuser.userid);
+	if (ythtbbs_mybrd_exists(&g_GoodBrd, board)) {
+		printf("<a class=btnfunc href=\"brddel?B=%s\" title=\"移除预定 accesskey: a\" accesskey=\"a\"> 移除预定</a>\n", board);
+	} else {
+		printf("<a class=btnfunc href=\"brdadd?B=%s\" title=\"预定本版 accesskey: a\" accesskey=\"a\"> 预定本版</a>\n", board);
+	}
 	printf("<a class=btnfunc href=\"bfind?B=%s\" title=\"版内查询 accesskey: s\" accesskey=\"s\"> 版内查询</a>\n", board);
 	// 注释掉进版页面的功能 by IronBlood@bmy 20120510
 	//sprintf(genbuf, MY_BBS_HOME "/ftphome/root/boards/%s/html/index.htm", board);
