@@ -120,6 +120,7 @@ struct cgi_applet applets[] = {
 	{bbsfindacc_main, {"bbsfindacc", NULL}, 0L, 0L, 0},
 	{bbsnotify_main, {"bbsnotify", NULL}, 0L, 0L, 0},
 	{bbsdelnotify_main, {"bbsdelnotify", NULL}, 0L, 0L, 0},
+	{bbssub_main, {"sub", NULL}, 0L, 0L, 0},
 	{api_user_check, {"user_check", NULL}, 0L, 0L, 0},
 	{api_loginpics, {"loginpics", NULL}, 0L, 0L, 0},
 //	{bbschangestyle_main, {"bbschangestyle", "changestyle", NULL}},
