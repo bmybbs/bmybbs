@@ -4,6 +4,7 @@ set(SRC
 	bbsdoc.c
 	bbscon.c
 	bbsbrdadd.c
+	bbsbrddel.c
 	bbsboa.c
 	bbsall.c
 	bbsanc.c
