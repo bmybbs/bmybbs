@@ -2520,7 +2520,7 @@ char *direct;
 			fh2owner(fileinfo), fileinfo->title, buf);
 		newtrace(str);
 
-		if (fileinfo->filetime == fileinfo->thread) {
+		if (!bmy_board_is_system_board(currboard) && fileinfo->filetime == fileinfo->thread && !strcmp(fileinfo->title, buf)) {
 			bmy_article_update_thread_title(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fileinfo->thread, buf);
 		}
 
