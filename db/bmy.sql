@@ -54,7 +54,7 @@ CREATE TABLE `t_user_subscriptions` (
 	PRIMARY KEY (`usernum`, `boardnum`),
 	KEY `fk_sub_user_idx` (`usernum`),
 	KEY `fk_sub_board_idx` (`boardnum`),
-	CONSTRAINT `fk_sub_board` FOREIGN KEY (`boardnum`) REFERENCES `t_boards` (`boardnum`),
+	CONSTRAINT `fk_sub_board` FOREIGN KEY (`boardnum`) REFERENCES `t_boards` (`boardnum`) ON DELETE CASCADE,
 	CONSTRAINT `fk_sub_user` FOREIGN KEY (`usernum`) REFERENCES `t_users` (`usernum`) ON DELETE CASCADE
 );
 
@@ -82,6 +82,16 @@ CREATE PROCEDURE procedure_create_board_view(
 )
 BEGIN
 	SET @sql = CONCAT("CREATE VIEW v_board_", boardname_en, " AS SELECT `boardname_en`, `boardname_zh`, `timestamp`, `title`, `author`, `comments`, `accessed` FROM `t_boards`, `t_threads` where `t_boards`.`boardnum` = `t_threads`.`boardnum` and `t_threads`.`boardnum` = ", boardnum, " order by `timestamp` desc");
+	PREPARE stmt FROM @sql;
+	EXECUTE stmt;
+	DEALLOCATE PREPARE stmt;
+END$$
+
+CREATE PROCEDURE procedure_delete_board_view(
+	IN boardname_en varchar(40)
+)
+BEGIN
+	set @sql = CONCAT("DROP VIEW v_board_", boardname_en);
 	PREPARE stmt FROM @sql;
 	EXECUTE stmt;
 	DEALLOCATE PREPARE stmt;
@@ -124,6 +134,16 @@ BEGIN
 	CALL procedure_create_board_view(boardnum, boardname_en);
 END$$
 
+-- 删除版面
+CREATE PROCEDURE procedure_delete_board(
+	IN boardnum int,
+	IN boardname_en varchar(40)
+)
+BEGIN
+	CALL procedure_delete_board_view(boardname_en);
+	DELETE FROM `t_boards` WHERE `boardnum` = boardnum;
+END$$
+
 -- 插入用户
 CREATE PROCEDURE procedure_insert_user(
 	IN usernum int,
@@ -158,11 +178,7 @@ CREATE PROCEDURE procedure_update_board(
 )
 BEGIN
 	SELECT `boardname_en` INTO @old_boardname_en FROM `t_boards` WHERE `t_boards`.`boardnum` = boardnum LIMIT 1;
-	SET @sql = CONCAT("DROP VIEW v_board_", @old_boardname_en);
-	PREPARE stmt FROM @sql;
-	EXECUTE stmt;
-	DEALLOCATE PREPARE stmt;
-
+	CALL procedure_delete_board_view(@old_boardname_en);
 	CALL procedure_create_board_view(boardnum, new_boardname_en);
 
 	UPDATE `t_boards` SET `boardname_en` = new_boardname_en, `boardname_zh` = new_boardname_zh, `secstr` = new_secstr WHERE `t_boards`.`boardnum` = boardnum;
