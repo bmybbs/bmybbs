@@ -14,6 +14,7 @@
 #include "ythtbbs/session.h"
 #include "check_server.h"
 #include "bmy/article.h"
+#include "bmy/board.h"
 
 char needcgi[STRLEN];
 
@@ -1258,10 +1259,12 @@ post_article(char *board, char *title, char *file, char *id,
 	setbfile(buf3, board, ".DIR");
 	append_record(buf3, &header, sizeof (header));
 
-	if (thread == -1) {
-		bmy_article_add_thread(ythtbbs_cache_Board_get_idx_by_name(board) + 1, header.thread, header.title, header.owner, header.accessed);
-	} else {
-		bmy_article_add_comment(ythtbbs_cache_Board_get_idx_by_name(board) + 1, header.thread);
+	if (!bmy_board_is_system_board(board)) {
+		if (thread == -1) {
+			bmy_article_add_thread(ythtbbs_cache_Board_get_idx_by_name(board) + 1, header.thread, header.title, header.owner, header.accessed);
+		} else {
+			bmy_article_add_comment(ythtbbs_cache_Board_get_idx_by_name(board) + 1, header.thread);
+		}
 	}
 
 	if (outgoing)

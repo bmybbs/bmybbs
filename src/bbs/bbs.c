@@ -60,6 +60,7 @@
 #include "help.h"
 #include "bbs-internal.h"
 #include "bmy/article.h"
+#include "bmy/board.h"
 
 struct postheader header;
 int continue_flag;
@@ -2215,11 +2216,14 @@ post_article(struct fileheader *sfh)
 	}
 	// term ÏÂ @ ÌáÐÑ½áÊø
 
-	if (sfh != NULL) {
-		bmy_article_add_comment(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, sfh->thread);
-	} else {
-		bmy_article_add_thread(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, postfile.thread, postfile.title, postfile.owner, postfile.accessed);
+	if (!bmy_board_is_system_board(currboard)) {
+		if (sfh != NULL) {
+			bmy_article_add_comment(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, sfh->thread);
+		} else {
+			bmy_article_add_thread(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, postfile.thread, postfile.title, postfile.owner, postfile.accessed);
+		}
 	}
+
 	return FULLUPDATE;
 }
 
@@ -2979,10 +2983,12 @@ char *direct;
 		updatelastpost(currboard);
 		cancelpost(currboard, currentuser.userid, fileinfo, owned);
 
-		if (fileinfo->filetime != fileinfo->thread) {
-			bmy_article_del_comment(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fileinfo->thread);
-		} else {
-			bmy_article_del_thread(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fileinfo->thread);
+		if (!bmy_board_is_system_board(currboard)) {
+			if (fileinfo->filetime != fileinfo->thread) {
+				bmy_article_del_comment(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fileinfo->thread);
+			} else {
+				bmy_article_del_thread(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fileinfo->thread);
+			}
 		}
 
 		if (digestmode == NA && owned) {
