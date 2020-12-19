@@ -29,7 +29,12 @@ void bmy_board_create(int boardnum, char *name_en, char *name_zh_gbk, char *secs
  * @param name_zh_gbk 版面中文名，gbk 编码
  * @param secstr 分区
  */
-void bmy_board_rename(int boardnun, char *name_en, char *name_zh_gbk, char *secstr);
+void bmy_board_rename(int boardnum, char *name_en, char *name_zh_gbk, char *secstr);
+
+/**
+ * 从数据库中移除
+ */
+void bmy_board_delete(int boardnum, char *name_en);
 
 #endif
 

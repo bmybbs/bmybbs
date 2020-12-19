@@ -769,8 +769,19 @@ enterbname:
 			}
 			substitute_record(BOARDS, &newfh, sizeof (newfh), pos);
 			ythtbbs_cache_Board_resolve();
-			if (strcmp(newfh.filename, fh.filename) != 0 || strcmp(newfh.title, fh.title) != 0 || strcmp(newfh.sec1, fh.sec1) != 0) {
-				bmy_board_rename(pos, newfh.filename, newfh.title, newfh.sec1);
+			if (bmy_board_is_system_board(newfh.filename) && bmy_board_is_system_board(fh.filename)) {
+				// 新旧名称都属于系统版面，忽略不处理
+			} else if (bmy_board_is_system_board(fh.filename)) {
+				// 否则，如果原先属于系统版面，则添加，暂不导入版面数据
+				bmy_board_create(pos, newfh.filename, newfh.title, newfh.sec1);
+			} else if (bmy_board_is_system_board(newfh.filename)) {
+				// 再或者，现在属于系统版面了，则移除原记录
+				bmy_board_delete(pos, fh.filename);
+			} else {
+				// 最后，对于普通情况，判断是否重命名
+				if (strcmp(newfh.filename, fh.filename) != 0 || strcmp(newfh.title, fh.title) != 0 || strcmp(newfh.sec1, fh.sec1) != 0) {
+					bmy_board_rename(pos, newfh.filename, newfh.title, newfh.sec1);
+				}
 			}
 		}
 	}

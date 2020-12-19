@@ -50,3 +50,18 @@ void bmy_board_rename(int boardnum, char *name_en, char *name_zh_gbk, char *secs
 	bmy_board_internal_call(sql, boardnum, name_en, name_zh_gbk, secstr);
 }
 
+void bmy_board_delete(int boardnum, char *name_en) {
+	const char *sql = "CALL procedure_delete_board(?, ?)";
+	MYSQL_BIND params[2];
+
+	memset(params, 0, sizeof(params));
+	params[0].buffer_type = MYSQL_TYPE_LONG;
+	params[0].buffer = &boardnum;
+	params[0].buffer_length = sizeof(int);
+	params[1].buffer_type = MYSQL_TYPE_STRING;
+	params[1].buffer = name_en;
+	params[1].buffer_length = strlen(name_en);
+
+	execute_prep_stmt(sql, MYSQL_CHARSET_UTF8, params, NULL, NULL, NULL);
+}
+
