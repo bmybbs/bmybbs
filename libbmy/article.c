@@ -181,7 +181,7 @@ static void bmy_article_list_subscription_callback(MYSQL_STMT *stmt, MYSQL_BIND 
 
 struct bmy_articles *bmy_article_list_subscription(const char *userid, size_t limit, size_t offset) {
 	struct bmy_articles *article_list;
-	char sqlbuf[120];
+	char sqlbuf[160];
 	struct fileheader_utf result_buf;
 	MYSQL_BIND results[7];
 
