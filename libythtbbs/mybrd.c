@@ -2,6 +2,7 @@
 #include <string.h>
 #include <sys/file.h>
 #include "ytht/strlib.h"
+#include "bmy/board.h"
 #include "bmy/subscription.h"
 #include "ythtbbs/user.h"
 #include "ythtbbs/mybrd.h"
@@ -124,7 +125,8 @@ bool ythtbbs_mybrd_exists(struct goodboard *mybrd, const char *boardname) {
 static void ythtbbs_mybrd_sync(const char *userid, ythtbbs_mybrd_has_read_perm func) {
 	// 本函数只在 save 里调用，这里暂时不验证 userid 是否存在了...
 	struct goodboard local_mybrd;
-	int *bnums, i;
+	int *bnums, i, real_num;
+	struct boardmem *b;
 
 	memset(&local_mybrd, 0, sizeof(struct goodboard));
 	ythtbbs_mybrd_load(userid, &local_mybrd, func);
@@ -133,10 +135,15 @@ static void ythtbbs_mybrd_sync(const char *userid, ythtbbs_mybrd_has_read_perm f
 		return;
 
 	bnums = calloc(local_mybrd.num, sizeof(int));
-	for (i = 0; i < local_mybrd.num; i++) {
-		bnums[i] = 1 + ythtbbs_cache_Board_get_idx_by_name(local_mybrd.ID[i]);
+	for (i = 0, real_num = 0; i < local_mybrd.num; i++) {
+		// load 的时候已经校验过读取权限了，因此这里版面应当存在
+		b = ythtbbs_cache_Board_get_board_by_name(local_mybrd.ID[i]);
+		if (bmy_board_is_system_board(b->header.title))
+			continue;
+		bnums[real_num] = 1 + ythtbbs_cache_Board_get_idx_by_ptr(b);
+		real_num++;
 	}
-	bmy_subscription_sync(1 + ythtbbs_cache_UserIDHashTable_find_idx(userid), bnums, local_mybrd.num);
+	bmy_subscription_sync(1 + ythtbbs_cache_UserIDHashTable_find_idx(userid), bnums, real_num);
 
 	free(bnums);
 }
