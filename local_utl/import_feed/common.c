@@ -7,6 +7,9 @@ bool is_system_board(const char *boardname) {
 	return (!strcasecmp(boardname, "newcomers")
 			|| !strcasecmp(boardname, "millionairesrec")
 			|| !strcasecmp(boardname, "sysopmail")
+			|| !strcasecmp(boardname, "bbslists")
+			|| !strcasecmp(boardname, "ProgramLog")
+			|| !strcasecmp(boardname, "TopTen")
 			|| !strcasecmp(boardname, "syssecurity"));
 }
 
