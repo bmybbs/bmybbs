@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "ytht/fileop.h"
 #include "bmy/article.h"
+#include "bmy/board.h"
 #include "ythtbbs/cache.h"
 #include "ythtbbs/misc.h"
 #include "ythtbbs/article.h"
@@ -72,7 +73,7 @@ static int load_threads_by_board(struct boardmem *board, int curr_idx, va_list a
 
 	bool thread_already_sorted = true;
 
-	if (is_system_board(board->header.filename))
+	if (bmy_board_is_system_board(board->header.filename))
 		return 0;
 
 	fprintf(stdout, "start load threads from %s, ", board->header.filename);

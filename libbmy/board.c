@@ -2,6 +2,16 @@
 #include "bmy/mysql_wrapper.h"
 #include "bmy/convcode.h"
 
+bool bmy_board_is_system_board(const char *boardname) {
+	return (!strcasecmp(boardname, "newcomers")
+			|| !strcasecmp(boardname, "millionairesrec")
+			|| !strcasecmp(boardname, "sysopmail")
+			|| !strcasecmp(boardname, "bbslists")
+			|| !strcasecmp(boardname, "ProgramLog")
+			|| !strcasecmp(boardname, "TopTen")
+			|| !strcasecmp(boardname, "syssecurity"));
+}
+
 static void bmy_board_internal_call(const char *sql, int boardnum, char *name_en, char *name_zh_gbk, char *secstr) {
 	char name_zh_utf8[48];
 	MYSQL_BIND params[4];

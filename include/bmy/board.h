@@ -3,6 +3,13 @@
  */
 #ifndef BMY_BOARD_H
 #define BMY_BOARD_H
+#include <stdbool.h>
+
+/**
+ * @brief 判断是否为系统版面
+ * 系统版面不会被导入，因此对于订阅关系、主题也不会被创建
+ */
+bool bmy_board_is_system_board(const char *boardname);
 
 /**
  * 在数据库中创建版面，并创建对应版面视图
