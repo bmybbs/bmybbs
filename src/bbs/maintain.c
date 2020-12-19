@@ -500,9 +500,11 @@ m_newbrd()
 	}
 
 	ythtbbs_cache_Board_resolve();
-	int boardnum = ythtbbs_cache_Board_get_idx_by_name(newboard.filename) + 1;
-	if (boardnum > 0) {
-		bmy_board_create(boardnum, newboard.filename, newboard.title, newboard.sec1);
+	if (!bmy_board_is_system_board(newboard.filename)) {
+		int boardnum = ythtbbs_cache_Board_get_idx_by_name(newboard.filename) + 1;
+		if (boardnum > 0) {
+			bmy_board_create(boardnum, newboard.filename, newboard.title, newboard.sec1);
+		}
 	}
 
 	group = chgrp();
