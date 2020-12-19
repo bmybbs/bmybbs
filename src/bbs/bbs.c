@@ -302,7 +302,7 @@ char *direct;
 		return DONOTHING;
 	}
 	change_dir(direct, fileinfo, (void *) DIR_do_underline, ent, digestmode, 0);
-	if (fileinfo->thread == fileinfo->filetime) {
+	if (!bmy_board_is_system_board(currboard) && fileinfo->thread == fileinfo->filetime) {
 		bmy_article_update_thread_accessed(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fileinfo->thread, fileinfo->accessed);
 	}
 	return PARTUPDATE;
@@ -312,7 +312,7 @@ static int allcanre_post(int ent, struct fileheader *fileinfo, char *direct) {
 	if (!HAS_PERM(PERM_SYSOP, currentuser))
 		return DONOTHING;
 	change_dir(direct, fileinfo, (void *) DIR_do_allcanre, ent, digestmode, 0);
-	if (fileinfo->thread == fileinfo->filetime) {
+	if (!bmy_board_is_system_board(currboard) && fileinfo->thread == fileinfo->filetime) {
 		bmy_article_update_thread_accessed(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fileinfo->thread, fileinfo->accessed);
 	}
 	return PARTUPDATE;
@@ -919,7 +919,7 @@ static int topfile_post(int ent, struct fileheader *fhdr, char *direct) //slowac
 		}
 	}
 	change_dir(direct, fhdr, (void *) DIR_do_top, ent, 0, 0);
-	if (fhdr->thread == fhdr->filetime) {
+	if (!bmy_board_is_system_board(currboard) && fhdr->thread == fhdr->filetime) {
 		bmy_article_update_thread_accessed(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fhdr->thread, fhdr->accessed);
 	}
 	//topfile_record(direct,fhdr->filename,ent); //add by hace
@@ -1371,7 +1371,7 @@ int water_post(int ent, struct fileheader *fileinfo, char *dirent)
 
 	newtrace(genbuf);
 	change_dir(dirent, fileinfo, (void *) DIR_do_water, ent, digestmode, 0);
-	if (fileinfo->thread == fileinfo->filetime) {
+	if (!bmy_board_is_system_board(currboard) && fileinfo->thread == fileinfo->filetime) {
 		bmy_article_update_thread_accessed(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fileinfo->thread, fileinfo->accessed);
 	}
 	return PARTUPDATE;
@@ -1423,7 +1423,7 @@ char *direct;
 		}
 	}
 	change_dir(direct, fhdr, (void *) DIR_do_digest, ent, digestmode, 0);
-	if (fhdr->thread == fhdr->filetime) {
+	if (!bmy_board_is_system_board(currboard) && fhdr->thread == fhdr->filetime) {
 		bmy_article_update_thread_accessed(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fhdr->thread, fhdr->accessed);
 	}
 	return PARTUPDATE;
@@ -2559,7 +2559,7 @@ char *direct;
 //		commend_article(currboard, fileinfo);
 //	else
 	change_dir(direct, fileinfo, (void *) DIR_do_mark, ent, digestmode, 0);
-	if (fileinfo->thread == fileinfo->filetime) {
+	if (!bmy_board_is_system_board(currboard) && fileinfo->thread == fileinfo->filetime) {
 		bmy_article_update_thread_accessed(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fileinfo->thread, fileinfo->accessed);
 	}
 	return PARTUPDATE;

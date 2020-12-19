@@ -1,5 +1,6 @@
 #include "bbslib.h"
 #include "bmy/article.h"
+#include "bmy/board.h"
 
 static int do_del(char *board, char *file);
 static int do_set(char *dirptr, int size, char *file, int flag, char *board);
@@ -141,7 +142,7 @@ static int do_set(char *dirptr, int size, char *file, int flag, char *board) {
 		nm = f->accessed & FH_MARKED;
 		ng = f->accessed & FH_DIGEST;
 		printf("<tr><td>%s<td>标题:%s<td>标记成功.\n", fh2owner(f), nohtml(f->title));
-		if (f->thread == f->filetime && oa != f->accessed) {
+		if (!bmy_board_is_system_board(board) && f->thread == f->filetime && oa != f->accessed) {
 			bmy_article_update_thread_accessed(ythtbbs_cache_Board_get_idx_by_name(board) + 1, f->thread, f->accessed);
 		}
 		buf[0] = 0;
