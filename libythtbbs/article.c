@@ -422,7 +422,7 @@ add_edit_mark(char *fname, char *userid, time_t now_t, char *fromhost)
 	if ((fp = fopen(fname, "a")) == NULL)
 		return 0;
 	// \n\033[1;36m※ 修改:．%s 于 %15.15s 修改本文．[FROM: %-.40s]\033[m
-	fprintf(fp, "\n\033[1;36m\xA1\xF9 \xD0\xDE\xB8\xC4:．%s \xD3\xDA %15.15s \xD0\xDE\xB8\xC4\xB1\xBE\xCE\xC4．[FROM: %-.40s]\033[m",
+	fprintf(fp, "\n\033[1;36m\xA1\xF9 \xD0\xDE\xB8\xC4:\xA3\xAE%s \xD3\xDA %15.15s \xD0\xDE\xB8\xC4\xB1\xBE\xCE\xC4\xA3\xAE[FROM: %-.40s]\033[m",
 			userid, ctime(&now_t) + 4, fromhost);
 	fclose(fp);
 	return 0;

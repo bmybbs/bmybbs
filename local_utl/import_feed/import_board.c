@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "bmy/convcode.h"
+#include "bmy/board.h"
 #include "ythtbbs/cache.h"
 #include "ythtbbs/misc.h"
 #include "common.h"
@@ -12,7 +13,7 @@ static int import_board_callback(struct boardmem *board, int curr_idx, va_list a
 	int status;
 	MYSQL_STMT *stmt = va_arg(ap, MYSQL_STMT *);
 
-	if (is_system_board(board->header.filename))
+	if (bmy_board_is_system_board(board->header.filename))
 		return 0;
 
 	g2u(board->header.title, strlen(board->header.title), boardname_zh, sizeof(boardname_zh));

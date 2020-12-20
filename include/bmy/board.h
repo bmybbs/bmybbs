@@ -3,6 +3,13 @@
  */
 #ifndef BMY_BOARD_H
 #define BMY_BOARD_H
+#include <stdbool.h>
+
+/**
+ * @brief 判断是否为系统版面
+ * 系统版面不会被导入，因此对于订阅关系、主题也不会被创建
+ */
+bool bmy_board_is_system_board(const char *boardname);
 
 /**
  * 在数据库中创建版面，并创建对应版面视图
@@ -22,7 +29,12 @@ void bmy_board_create(int boardnum, char *name_en, char *name_zh_gbk, char *secs
  * @param name_zh_gbk 版面中文名，gbk 编码
  * @param secstr 分区
  */
-void bmy_board_rename(int boardnun, char *name_en, char *name_zh_gbk, char *secstr);
+void bmy_board_rename(int boardnum, char *name_en, char *name_zh_gbk, char *secstr);
+
+/**
+ * 从数据库中移除
+ */
+void bmy_board_delete(int boardnum, char *name_en);
 
 #endif
 

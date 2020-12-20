@@ -1,5 +1,6 @@
 #include "bbslib.h"
 #include "bmy/article.h"
+#include "bmy/board.h"
 
 int update_form(char *board, char *file, char *title);
 extern int testmath(char *ptr); // bbssnd
@@ -298,7 +299,7 @@ update_form(char *board, char *file, char *title)
 			old_accessed = x.accessed;
 			x.edittime = now_t;
 			x.sizebyte = ytht_num2byte(eff_size(path));
-			if (x.filetime == x.thread && strcmp(x.title, title) != 0) {
+			if (!bmy_board_is_system_board(board) && x.filetime == x.thread && strcmp(x.title, title) != 0) {
 				// 对于主题贴，且标题发生变化
 				bmy_article_update_thread_title(ythtbbs_cache_Board_get_idx_by_name(board) + 1, x.thread, title);
 			}
@@ -317,7 +318,7 @@ update_form(char *board, char *file, char *title)
 				x.accessed &= ~FH_ATTACHED;
 			if (dangerous)
 				x.accessed |= FH_DANGEROUS;
-			if (x.filetime == x.thread && x.accessed != old_accessed) {
+			if (!bmy_board_is_system_board(board) && x.filetime == x.thread && x.accessed != old_accessed) {
 				// 对于主题帖且标记发生变化
 				bmy_article_update_thread_accessed(ythtbbs_cache_Board_get_idx_by_name(board) + 1, x.thread, x.accessed);
 			}

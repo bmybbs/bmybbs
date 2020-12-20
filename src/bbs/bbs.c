@@ -60,6 +60,7 @@
 #include "help.h"
 #include "bbs-internal.h"
 #include "bmy/article.h"
+#include "bmy/board.h"
 
 struct postheader header;
 int continue_flag;
@@ -301,7 +302,7 @@ char *direct;
 		return DONOTHING;
 	}
 	change_dir(direct, fileinfo, (void *) DIR_do_underline, ent, digestmode, 0);
-	if (fileinfo->thread == fileinfo->filetime) {
+	if (!bmy_board_is_system_board(currboard) && fileinfo->thread == fileinfo->filetime) {
 		bmy_article_update_thread_accessed(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fileinfo->thread, fileinfo->accessed);
 	}
 	return PARTUPDATE;
@@ -311,7 +312,7 @@ static int allcanre_post(int ent, struct fileheader *fileinfo, char *direct) {
 	if (!HAS_PERM(PERM_SYSOP, currentuser))
 		return DONOTHING;
 	change_dir(direct, fileinfo, (void *) DIR_do_allcanre, ent, digestmode, 0);
-	if (fileinfo->thread == fileinfo->filetime) {
+	if (!bmy_board_is_system_board(currboard) && fileinfo->thread == fileinfo->filetime) {
 		bmy_article_update_thread_accessed(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fileinfo->thread, fileinfo->accessed);
 	}
 	return PARTUPDATE;
@@ -918,7 +919,7 @@ static int topfile_post(int ent, struct fileheader *fhdr, char *direct) //slowac
 		}
 	}
 	change_dir(direct, fhdr, (void *) DIR_do_top, ent, 0, 0);
-	if (fhdr->thread == fhdr->filetime) {
+	if (!bmy_board_is_system_board(currboard) && fhdr->thread == fhdr->filetime) {
 		bmy_article_update_thread_accessed(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fhdr->thread, fhdr->accessed);
 	}
 	//topfile_record(direct,fhdr->filename,ent); //add by hace
@@ -1370,7 +1371,7 @@ int water_post(int ent, struct fileheader *fileinfo, char *dirent)
 
 	newtrace(genbuf);
 	change_dir(dirent, fileinfo, (void *) DIR_do_water, ent, digestmode, 0);
-	if (fileinfo->thread == fileinfo->filetime) {
+	if (!bmy_board_is_system_board(currboard) && fileinfo->thread == fileinfo->filetime) {
 		bmy_article_update_thread_accessed(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fileinfo->thread, fileinfo->accessed);
 	}
 	return PARTUPDATE;
@@ -1422,7 +1423,7 @@ char *direct;
 		}
 	}
 	change_dir(direct, fhdr, (void *) DIR_do_digest, ent, digestmode, 0);
-	if (fhdr->thread == fhdr->filetime) {
+	if (!bmy_board_is_system_board(currboard) && fhdr->thread == fhdr->filetime) {
 		bmy_article_update_thread_accessed(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fhdr->thread, fhdr->accessed);
 	}
 	return PARTUPDATE;
@@ -2215,11 +2216,14 @@ post_article(struct fileheader *sfh)
 	}
 	// term ÏÂ @ ÌáÐÑ½áÊø
 
-	if (sfh != NULL) {
-		bmy_article_add_comment(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, sfh->thread);
-	} else {
-		bmy_article_add_thread(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, postfile.thread, postfile.title, postfile.owner, postfile.accessed);
+	if (!bmy_board_is_system_board(currboard)) {
+		if (sfh != NULL) {
+			bmy_article_add_comment(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, sfh->thread);
+		} else {
+			bmy_article_add_thread(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, postfile.thread, postfile.title, postfile.owner, postfile.accessed);
+		}
 	}
+
 	return FULLUPDATE;
 }
 
@@ -2516,7 +2520,7 @@ char *direct;
 			fh2owner(fileinfo), fileinfo->title, buf);
 		newtrace(str);
 
-		if (fileinfo->filetime == fileinfo->thread) {
+		if (!bmy_board_is_system_board(currboard) && fileinfo->filetime == fileinfo->thread && strcmp(fileinfo->title, buf) != 0) {
 			bmy_article_update_thread_title(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fileinfo->thread, buf);
 		}
 
@@ -2555,7 +2559,7 @@ char *direct;
 //		commend_article(currboard, fileinfo);
 //	else
 	change_dir(direct, fileinfo, (void *) DIR_do_mark, ent, digestmode, 0);
-	if (fileinfo->thread == fileinfo->filetime) {
+	if (!bmy_board_is_system_board(currboard) && fileinfo->thread == fileinfo->filetime) {
 		bmy_article_update_thread_accessed(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fileinfo->thread, fileinfo->accessed);
 	}
 	return PARTUPDATE;
@@ -2979,10 +2983,12 @@ char *direct;
 		updatelastpost(currboard);
 		cancelpost(currboard, currentuser.userid, fileinfo, owned);
 
-		if (fileinfo->filetime != fileinfo->thread) {
-			bmy_article_del_comment(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fileinfo->thread);
-		} else {
-			bmy_article_del_thread(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fileinfo->thread);
+		if (!bmy_board_is_system_board(currboard)) {
+			if (fileinfo->filetime != fileinfo->thread) {
+				bmy_article_del_comment(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fileinfo->thread);
+			} else {
+				bmy_article_del_thread(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fileinfo->thread);
+			}
 		}
 
 		if (digestmode == NA && owned) {

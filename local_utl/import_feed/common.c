@@ -3,13 +3,6 @@
 #include "ythtbbs/misc.h"
 #include "common.h"
 
-bool is_system_board(const char *boardname) {
-	return (!strcasecmp(boardname, "newcomers")
-			|| !strcasecmp(boardname, "millionairesrec")
-			|| !strcasecmp(boardname, "sysopmail")
-			|| !strcasecmp(boardname, "syssecurity"));
-}
-
 bool is_valid_username(const char *s) {
 	if (s == NULL)
 		return false;

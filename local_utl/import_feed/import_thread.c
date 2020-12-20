@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "ytht/fileop.h"
 #include "bmy/article.h"
+#include "bmy/board.h"
 #include "ythtbbs/cache.h"
 #include "ythtbbs/misc.h"
 #include "ythtbbs/article.h"
@@ -33,12 +34,6 @@ static int bfind_thread_idx(struct fileheader_utf *threads, time_t target, unsig
 	if (threads[left].filetime > target || threads[right].filetime < target)
 		return -1;
 
-	if (left == right && threads[left].filetime == target) {
-		return left;
-	} else {
-		return -1;
-	}
-
 	while (left < right) {
 		mid = (left + right) / 2;
 
@@ -47,11 +42,21 @@ static int bfind_thread_idx(struct fileheader_utf *threads, time_t target, unsig
 
 		if (threads[mid].filetime > target)
 			right = mid;
-		else
-			left = mid;
+		else {
+			if (left == mid)
+				break;
+			else
+				left = mid;
+		}
 	}
 
-	return -1;
+	if (threads[left].filetime == target) {
+		return left;
+	} else if (threads[right].filetime == target) {
+		return right;
+	} else {
+		return -1;
+	}
 }
 
 static int load_threads_by_board(struct boardmem *board, int curr_idx, va_list ap) {
@@ -68,7 +73,7 @@ static int load_threads_by_board(struct boardmem *board, int curr_idx, va_list a
 
 	bool thread_already_sorted = true;
 
-	if (is_system_board(board->header.filename))
+	if (bmy_board_is_system_board(board->header.filename))
 		return 0;
 
 	fprintf(stdout, "start load threads from %s, ", board->header.filename);
@@ -305,7 +310,7 @@ int import_thread(void) {
 	ythtbbs_cache_Board_foreach_v(load_threads_by_board, boards);
 	time_t t2 = time(NULL);
 
-	// TODO merging and insert into database
+	// merging and insert into database
 	time_t t3 = time(NULL);
 	struct virtual_board *mega_board = merge_threads(boards, 0, board_count - 1);
 	time_t t4 = time(NULL);

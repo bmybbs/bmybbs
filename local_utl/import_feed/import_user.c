@@ -3,6 +3,7 @@
 #include "ythtbbs/cache.h"
 #include "ythtbbs/misc.h"
 #include "ythtbbs/user.h"
+#include "bmy/board.h"
 #include "common.h"
 #include "db.h"
 
@@ -70,7 +71,7 @@ static int import_user_callback(const struct ythtbbs_cache_User *user, int curr_
 			if (boardname[l - 1] == '\n')
 				boardname[l - 1] = 0;
 
-			if (is_system_board(boardname))
+			if (bmy_board_is_system_board(boardname))
 				continue;
 
 			b = ythtbbs_cache_Board_get_board_by_name(boardname);

@@ -96,6 +96,8 @@ void bmy_article_del_thread(int boardnum, time_t tid) {
 	const char *sql = "CALL procedure_delete_thread(?, ?)";
 	MYSQL_BIND params[2];
 
+	memset(params, 0, sizeof(params));
+
 	params[0].buffer_type = MYSQL_TYPE_LONG;
 	params[0].buffer = &boardnum;
 	params[0].buffer_length = sizeof(int);
@@ -117,6 +119,8 @@ void bmy_article_update_thread_title(int boardnum, time_t tid, char *title_gbk) 
 		len = 60;
 	g2u(title_gbk, len, title_utf, sizeof(title_utf));
 
+	memset(params, 0, sizeof(params));
+
 	params[0].buffer_type = MYSQL_TYPE_LONG;
 	params[0].buffer = &boardnum;
 	params[0].buffer_length = sizeof(int);
@@ -135,6 +139,8 @@ void bmy_article_update_thread_title(int boardnum, time_t tid, char *title_gbk) 
 void bmy_article_update_thread_accessed(int boardnum, time_t tid, int accessed) {
 	const char *sql = "CALL procedure_update_thread_accessed(?, ?, ?)";
 	MYSQL_BIND params[3];
+
+	memset(params, 0, sizeof(params));
 
 	params[0].buffer_type = MYSQL_TYPE_LONG;
 	params[0].buffer = &boardnum;
@@ -181,7 +187,7 @@ static void bmy_article_list_subscription_callback(MYSQL_STMT *stmt, MYSQL_BIND 
 
 struct bmy_articles *bmy_article_list_subscription(const char *userid, size_t limit, size_t offset) {
 	struct bmy_articles *article_list;
-	char sqlbuf[120];
+	char sqlbuf[160];
 	struct fileheader_utf result_buf;
 	MYSQL_BIND results[7];
 
