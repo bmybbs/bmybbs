@@ -10,7 +10,7 @@ int bbssub_main() {
 	struct bmy_articles *articles;
 
 	if (isguest || !loginok)
-		http_fatal("请先登录");
+		http_fatal("\xC7\xEB\xCF\xC8\xB5\xC7\xC2\xBC"); // 请先登录
 
 	changemode(READING);
 	ytht_strsncpy(start_buf, getparm("start"), sizeof(start_buf));
@@ -21,7 +21,7 @@ int bbssub_main() {
 	articles = bmy_article_list_subscription(currentuser.userid, COUNT_PER_PAGE, start);
 	if (articles == NULL || articles->count == 0) {
 		bmy_article_list_free(articles);
-		http_fatal("没有记录");
+		http_fatal("\xC3\xBB\xD3\xD0\xBC\xC7\xC2\xBC"); // 没有记录
 	}
 
 	// 输出，UTF8
