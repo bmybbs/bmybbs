@@ -10,6 +10,8 @@
 #include "common.h"
 #include "db.h"
 
+static const time_t TIME_START = 1420000000; // Dec 31, 2014
+
 struct virtual_board {
 	bool should_be_deallocated;
 	struct fileheader_utf root; // never change
@@ -87,15 +89,23 @@ static int load_threads_by_board(struct boardmem *board, int curr_idx, va_list a
 	post_count = mf.size / sizeof(struct fileheader);
 	for (i = 0; i < post_count; i++) {
 		ptr_header = &((struct fileheader*) mf.ptr)[i];
+		if (ptr_header->thread < TIME_START)
+			continue;
 		if (ptr_header->thread == ptr_header->filetime)
 			thread_count++;
+	}
+
+	if (thread_count == 0) {
+		boards[curr_idx].total = 0;
+		boards[curr_idx].root.next = NULL;
+		return 0;
 	}
 
 	// 第二次遍历，拷贝主题帖，检查主题的 timestamp 是否存在错乱
 	threads = malloc(thread_count * sizeof(struct fileheader_utf));
 	for (i = 0, j = 0; i < post_count; i++) {
 		ptr_header = &((struct fileheader*) mf.ptr)[i];
-		if (ptr_header->thread != ptr_header->filetime) {
+		if (ptr_header->thread < TIME_START || ptr_header->thread != ptr_header->filetime) {
 			continue;
 		}
 
@@ -124,7 +134,7 @@ static int load_threads_by_board(struct boardmem *board, int curr_idx, va_list a
 	// 第三次遍历原始文章列表，用于统计主题讨论数
 	for (i = 0; i < post_count; i++) {
 		ptr_header = &((struct fileheader*) mf.ptr)[i];
-		if (ptr_header->thread == ptr_header->filetime) {
+		if (ptr_header->thread < TIME_START || ptr_header->thread == ptr_header->filetime) {
 			continue;
 		}
 
@@ -141,8 +151,10 @@ static int load_threads_by_board(struct boardmem *board, int curr_idx, va_list a
 	mmapfile(NULL, &mf);
 
 	// 最后将 threads 由数组转换为链表，便于下一步合并
-	for (j = 0; j < thread_count-1; j++) {
-		threads[j].next = &threads[j+1];
+	if (thread_count > 0) {
+		for (j = 0; j < thread_count-1; j++) {
+			threads[j].next = &threads[j+1];
+		}
 	}
 	boards[curr_idx].total = thread_count;
 	boards[curr_idx].root.next = threads;
