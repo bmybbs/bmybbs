@@ -3,6 +3,7 @@ name: BMYBBS Backend
 on:
   push:
     paths:
+      - .github/workflows/cmake.yml
       - api/
       - atthttpd/
       - include/
@@ -18,6 +19,7 @@ on:
       - master
   pull_request:
     paths:
+      - .github/workflows/cmake.yml
       - api/
       - atthttpd/
       - include/
