@@ -27,7 +27,7 @@
 							v-bind:_aid="article.tid"
 						/>
 					</ul>
-					<div class="card-footer text-center">
+					<div class="card-footer text-center" @click="load_more">
 						加载更多
 					</div>
 				</div>
@@ -48,13 +48,20 @@ export default {
 		}
 	},
 	mounted() {
-		BMYClient.get_feed(this.time).then(response => {
-			if (Array.isArray(response.articles)) {
-				this.articles = response.articles;
-			}
+		this.load_more();
+	},
+	methods: {
+		load_more() {
+			BMYClient.get_feed(this.time).then(response => {
+				if (Array.isArray(response.articles)) {
+					this.articles = this.articles.concat(response.articles);
+					let l = response.articles.length;
+					this.time = response.articles[l - 1].tid - 1;
+				}
 
-			// TODO
-		});
+				// TODO
+			});
+		},
 	},
 	components: {
 		DashboardArticleListItem,
