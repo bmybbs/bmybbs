@@ -33,6 +33,8 @@ int bbssub_main() {
 
 	if (start == 0) {
 		printf("<a href='sub?start=%d'>下一页</a>", COUNT_PER_PAGE);
+	} else if (start >= COUNT_PER_PAGE && articles->count < COUNT_PER_PAGE) {
+		printf("<a href='sub?start=%d'>上一页</a>", start - COUNT_PER_PAGE);
 	} else {
 		printf("<a href='sub?start=%d'>上一页</a> / <a href='sub?start=%d'>下一页</a>", start - COUNT_PER_PAGE, start + COUNT_PER_PAGE);
 	}
@@ -44,9 +46,9 @@ int bbssub_main() {
 	for (i = 0; i < articles->count; i++) {
 		printf("<tr>");
 		printf("<td>%s</td>", articles->articles[i].boardname_zh);
-		printf("<td>%12.12s</td>", ytht_ctime(articles->articles[i].thread));
-		printf("<td>%s</td>", articles->articles[i].title);
-		printf("<td>%s</td>", articles->articles[i].owner);
+		printf("<td>%12.12s</td>", ytht_ctime(articles->articles[i].thread) + 4);
+		printf("<td><a href='con?B=%s&F=M.%ld.A'>%s</a></td>", articles->articles[i].boardname_en, articles->articles[i].thread, articles->articles[i].title);
+		printf("<td><a href='qry?U=%s'>%s</a></td>", articles->articles[i].owner, articles->articles[i].owner);
 		printf("<td>%d</td>", articles->articles[i].count);
 		printf("</tr>");
 	}
