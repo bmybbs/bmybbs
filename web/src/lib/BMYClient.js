@@ -9,5 +9,8 @@ export const BMYClient = {
 	get_commend() {
 		return myFetchGet("/api/article/list?type=commend");
 	},
+	get_feed(start) {
+		return myFetchGet("/api/subscription/list?start=" + start);
+	},
 };
 
