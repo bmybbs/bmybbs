@@ -257,11 +257,9 @@ copyfile(char *from, char *to)
 	filesize = lseek(input, 0, SEEK_END);
 	lseek(output, filesize - 1, SEEK_SET);
 	write(output, &endchar, 1);
-	if ((source = mmap(0, filesize, PROT_READ, MAP_SHARED, input, 0)) ==
-	    (void *) -1)
+	if ((source = mmap(0, filesize, PROT_READ, MAP_SHARED, input, 0)) == (void *) -1)
 		goto ERROR3;
-	if ((target = mmap(0, filesize, PROT_WRITE, MAP_SHARED, output, 0)) ==
-	    (void *) -1)
+	if ((target = mmap(0, filesize, PROT_WRITE, MAP_SHARED, output, 0)) == (void *) -1)
 		goto ERROR4;
 	memcpy(target, source, filesize);
 	close(input);
@@ -270,10 +268,14 @@ copyfile(char *from, char *to)
 	munmap(target, filesize);
 	return 0;
 
-      ERROR4:munmap(source, filesize);
-      ERROR3:close(output);
-      ERROR2:close(input);
-      ERROR1:return -1;
+ERROR4:
+	munmap(source, filesize);
+ERROR3:
+	close(output);
+ERROR2:
+	close(input);
+ERROR1:
+	return -1;
 }
 
 int
@@ -332,8 +334,7 @@ checkfilename(const char *str)
 	if (!str[0] || !strcmp(str, ".") || !strcmp(str, ".."))
 		return -1;
 	while (*str) {
-		if ((*str > 0 && *str < ' ') || isspace(*str)
-		    || strchr("\\/~`!@#$%^&*()|{}[];:\"'<>,?", *str))
+		if ((*str > 0 && *str < ' ') || isspace(*str) || strchr("\\/~`!@#$%^&*()|{}[];:\"'<>,?", *str))
 			return -1;
 		str++;
 	}
