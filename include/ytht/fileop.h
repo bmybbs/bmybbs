@@ -62,7 +62,7 @@ int clearpath(const char *path);
  * @param seekstr 需要查找的字符串
  * @return 若包含返回 1，否则返回 0。
  */
-int seek_in_file(char* filename, char *seekstr);
+int seek_in_file(const char* filename, const char *seekstr);
 
 #ifdef BMYBBS_MT
 /**

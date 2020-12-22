@@ -368,7 +368,7 @@ clearpath(const char *path)
 }
 
 // 此处原使用的宏 STRLEN 替换成 80
-int seek_in_file(char *filename, char *seekstr)
+int seek_in_file(const char *filename, const char *seekstr)
 {
 	FILE *fp;
 	char buf[80];

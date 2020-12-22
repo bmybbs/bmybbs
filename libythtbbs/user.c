@@ -390,12 +390,12 @@ int check_user_perm(struct userec *x, int level) {
 	return (x->userlevel & level);
 }
 
-int check_user_read_perm(struct user_info *user, char *board)
+int check_user_read_perm(const struct user_info *user, const char *board)
 {
 	return check_user_read_perm_x(user, ythtbbs_cache_Board_get_board_by_name(board));
 }
 
-int check_user_read_perm_x(struct user_info *user, struct boardmem *board)
+int check_user_read_perm_x(const struct user_info *user, const struct boardmem *board)
 {
 	if(!board || !user)
 		return 0;
@@ -423,7 +423,7 @@ int check_user_read_perm_x(struct user_info *user, struct boardmem *board)
 	return 0;
 }
 
-int check_user_post_perm_x(struct user_info *user, struct boardmem *board)
+int check_user_post_perm_x(const struct user_info *user, const struct boardmem *board)
 {
 	char buf[256];
 
