@@ -182,7 +182,7 @@ sigbus(int signo)
 };
 
 int
-mmapfile(char *filename, struct mmapfile *pmf)
+mmapfile(const char *filename, struct mmapfile *pmf)
 {
 	static char c;
 	struct stat s;
