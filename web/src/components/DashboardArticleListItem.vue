@@ -8,7 +8,7 @@
 
 			<span class="author"><span class="icon"><fa icon="at" /></span>{{ _author }}</span>
 			<span class="post">发表于</span>
-			<span class="time">{{ readableTime }}</span>
+			<span class="time"><TooltipTimestamp :_unix_timestamp="_aid" /></span>
 
 			<span class="dot">•</span>
 
@@ -18,12 +18,7 @@
 </template>
 
 <script>
-import dayjs from "dayjs"
-import relativeTime from "dayjs/plugin/relativeTime"
-import "dayjs/locale/zh-cn"
-
-dayjs.locale("zh-cn");
-dayjs.extend(relativeTime);
+import TooltipTimestamp from "@/components/TooltipTimestamp.vue"
 
 export default {
 	data() {
@@ -37,10 +32,8 @@ export default {
 		_comments: Number,
 		_aid: Number,
 	},
-	computed: {
-		readableTime: function() {
-			return dayjs(this._aid * 1000).fromNow();
-		}
+	components: {
+		TooltipTimestamp,
 	},
 }
 </script>
