@@ -1,10 +1,19 @@
 <template>
 	<li class="list-group-item">
-		<span class="board">{{ _board }}</span>
-		<span class="title">{{ _title }}</span>
-		<span class="author"><span class="icon"><fa icon="at" /></span>{{ _author }}</span>
-		<span class="comments"><span class="icon"><fa icon="comments" /></span>{{ _comments }}</span>
-		<span class="time"><span class="icon"><fa icon="clock" /></span>{{ readableTime }}</span>
+		<h3>{{ _title }}</h3>
+		<div class="meta">
+			<span class="board">{{ _boardname_zh }}</span>
+
+			<span class="dot">•</span>
+
+			<span class="author"><span class="icon"><fa icon="at" /></span>{{ _author }}</span>
+			<span class="post">发表于</span>
+			<span class="time">{{ readableTime }}</span>
+
+			<span class="dot">•</span>
+
+			<span class="comments"><span class="icon"><fa icon="comments" /></span>{{ _comments }}篇讨论</span>
+		</div>
 	</li>
 </template>
 
@@ -21,7 +30,8 @@ export default {
 		return { };
 	},
 	props: {
-		_board: String,
+		_boardname_zh: String,
+		_boardname_en: String,
 		_title: String,
 		_author: String,
 		_comments: Number,
@@ -36,32 +46,37 @@ export default {
 </script>
 
 <style scoped>
-li > span:not(.title) {
-	color: #777;
+* {
+	font-size: 12px;
 }
 
-li > span:not(.time) {
-	margin-right: 15px;
-}
-
-li > span:not(.title):hover {
-	cursor: pointer;
-	color: #333;
-}
-
-.board {
-	display: inline-block;
-	width: 150px;
-}
-
-.time {
-	display: inline-block;
-	position: absolute;
-	right: 16px;
+h3 {
+	color: #222222;
+	font-size: 16px;
+	font-weight: 500;
 }
 
 .icon {
 	margin-right: 2px;
+}
+
+.meta {
+	color: #787c7e;
+	font-weight: 400;
+}
+
+.board {
+	color: #1c1c1c;
+	font-weight: 700;
+}
+
+.dot {
+	margin: 0 4px;
+	font-size: 8px;
+}
+
+.post {
+	margin: 0 4px;
 }
 </style>
 

@@ -20,7 +20,8 @@
 						<DashboardArticleListItem
 							v-for="article in articles"
 							v-bind:key="[article.boardname_en, '/', article.aid].join('')"
-							v-bind:_board="article.boardname_zh"
+							v-bind:_boardname_zh="article.boardname_zh"
+							v-bind:_boardname_en="article.boardname_en"
 							v-bind:_title="article.title"
 							v-bind:_author="article.author"
 							v-bind:_comments="article.count"
