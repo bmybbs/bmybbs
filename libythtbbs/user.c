@@ -392,7 +392,7 @@ int check_user_perm(struct userec *x, int level) {
 
 int check_user_read_perm(struct user_info *user, char *board)
 {
-	return check_user_read_perm_x(user, getboardbyname(board));
+	return check_user_read_perm_x(user, ythtbbs_cache_Board_get_board_by_name(board));
 }
 
 int check_user_read_perm_x(struct user_info *user, struct boardmem *board)
