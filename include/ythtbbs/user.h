@@ -118,7 +118,7 @@ int inoverride(char *who, char *owner, char *file);
  * @param userid 字符串
  * @return 包含则返回
  */
-int id_with_num(char *userid);
+int id_with_num(const char *userid);
 
 int chk_BM(struct userec *, struct boardheader *bh, int isbig);
 int chk_BM_id(char *, struct boardheader *);

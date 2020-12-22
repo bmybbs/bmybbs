@@ -480,9 +480,9 @@ int check_user_post_perm_x(const struct user_info *user, const struct boardmem *
 	return 1;
 }
 
-int id_with_num(char *userid)
+int id_with_num(const char *userid)
 {
-	char *s;
+	const char *s;
 	for (s = userid; *s != '\0'; s++)
 		if (*s < 1 || !isalpha(*s)) return 1;
 	return 0;
