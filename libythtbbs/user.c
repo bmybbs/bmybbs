@@ -395,6 +395,21 @@ int check_user_read_perm(const struct user_info *user, const char *board)
 	return check_user_read_perm_x(user, ythtbbs_cache_Board_get_board_by_name(board));
 }
 
+bool check_guest_read_perm_x(const struct boardmem *board) {
+	if (!board)
+		return false;
+
+	if (board->header.clubnum != 0) {
+		return (board->header.flag & CLUBTYPE_FLAG);
+	}
+
+	// guest.userlevel = 0
+	if (board->header.level == 0 || (board->header.level & (PERM_POSTMASK | PERM_NOZAP)))
+		return true;
+
+	return false;
+}
+
 int check_user_read_perm_x(const struct user_info *user, const struct boardmem *board)
 {
 	if(!board || !user)

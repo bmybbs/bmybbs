@@ -90,6 +90,13 @@ int check_user_perm(struct userec *x, int level);
 int check_user_read_perm(const struct user_info *user, const char *board);
 
 /**
+ * @brief 检查 guest 阅读权限
+ * 参考 check_user_read_perm_x 的实现，便于相关接口调用
+ * @return 有阅读权限返回 true
+ */
+bool check_guest_read_perm_x(const struct boardmem *board);
+
+/**
  * @brief 检查用户的阅读权限
  * 该方法从 nju09 移植，用于检查用户读取版面的权限。
  * @param user
