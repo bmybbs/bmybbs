@@ -2,7 +2,7 @@
 	<li class="list-group-item">
 		<h3>{{ _title }}</h3>
 		<div class="meta">
-			<span class="board">{{ _boardname_zh }}</span>
+			<span class="board"><PopoverBoardInfo :_boardname_zh="_boardname_zh" :_boardname_en="_boardname_en" /></span>
 
 			<span class="dot">•</span>
 
@@ -19,6 +19,7 @@
 
 <script>
 import TooltipTimestamp from "@/components/TooltipTimestamp.vue"
+import PopoverBoardInfo from "@/components/PopoverBoardInfo.vue"
 
 export default {
 	data() {
@@ -33,6 +34,7 @@ export default {
 		_aid: Number,
 	},
 	components: {
+		PopoverBoardInfo,
 		TooltipTimestamp,
 	},
 }
