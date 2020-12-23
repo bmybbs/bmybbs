@@ -14,7 +14,7 @@
 			</div>
 		</div>
 		<div class="row">
-			<div class="col-md-12">
+			<div class="col-md-9">
 				<div class="card">
 					<ul class="list-group list-group-flush">
 						<DashboardArticleListItem
@@ -33,6 +33,18 @@
 					</div>
 				</div>
 			</div>
+			<div class="col-md-3">
+				<div class="card">
+					<div class="card-header">
+						收藏夹列表
+					</div>
+					<ul class="list-group list-group-flush">
+						<li class="list-group-item"
+							v-for="board in favboards"
+							v-bind:key="board.name">{{ board.name }}</li>
+					</ul>
+				</div>
+			</div>
 		</div>
 	</div>
 </template>
@@ -46,10 +58,12 @@ export default {
 		return {
 			time: Math.floor(new Date().getTime() / 1000),
 			articles: [ ],
+			favboards: [ ],
 		}
 	},
 	mounted() {
 		this.load_more();
+		this.load_favboards();
 	},
 	methods: {
 		load_more() {
@@ -61,6 +75,13 @@ export default {
 				}
 
 				// TODO
+			});
+		},
+		load_favboards() {
+			BMYClient.get_fav_boards().then(response => {
+				if (response.errcode == 0 && Array.isArray(response.board_array)) {
+					this.favboards = response.board_array;
+				}
 			});
 		},
 	},
