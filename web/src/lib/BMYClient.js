@@ -6,6 +6,9 @@ export const BMYClient = {
 	get_announce() {
 		return myFetchGet("/api/article/list?type=announce");
 	},
+	get_board_info(boardname_en) {
+		return myFetchGet("/api/board/info?bname=" + boardname_en);
+	},
 	get_commend() {
 		return myFetchGet("/api/article/list?type=commend");
 	},
