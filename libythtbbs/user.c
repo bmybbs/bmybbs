@@ -276,9 +276,7 @@ countlife(struct userec *urec)
 	return res;
 }
 
-int
-userlock(char *userid, int locktype)
-{
+int userlock(const char *userid, int locktype) {
 	char path[256];
 	int fd;
 	sethomefile_s(path, sizeof(path), userid, ".lock");
@@ -289,9 +287,7 @@ userlock(char *userid, int locktype)
 	return fd;
 }
 
-int
-userunlock(char *userid, int fd)
-{
+int userunlock(const char *userid, int fd) {
 	flock(fd, LOCK_UN);
 	close(fd);
 	return 0;

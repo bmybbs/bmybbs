@@ -66,8 +66,8 @@ char *cperf(int);
 int countexp(struct userec *);
 int countperf(struct userec *);
 int countlife(struct userec *);
-int userlock(char *userid, int locktype);
-int userunlock(char *userid, int fd);
+int userlock(const char *userid, int locktype);
+int userunlock(const char *userid, int fd);
 int checkbansite(const char *addr);
 
 /** 检查用户权限

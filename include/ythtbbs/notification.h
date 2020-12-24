@@ -1,11 +1,12 @@
 /* notification.c */
 #ifndef __NOTIFICATION_H
 #define __NOTIFICATION_H
+#include <time.h>
 
 enum {
-	NOTIFY_TYPE_NONSPECIFIED = -1,	// ½ö¹©É¾³ıËùÓĞÌáĞÑµÄÊ±ºòÊ¹ÓÃ
-	NOTIFY_TYPE_POST = 0,			// »Ø¸´ÌáĞÑ
-	NOTIFY_TYPE_MENTION = 1,		// @ ÌáĞÑ
+	NOTIFY_TYPE_NONSPECIFIED = -1,	// ä»…ä¾›åˆ é™¤æ‰€æœ‰æé†’çš„æ—¶å€™ä½¿ç”¨
+	NOTIFY_TYPE_POST = 0,			// å›å¤æé†’
+	NOTIFY_TYPE_MENTION = 1,		// @ æé†’
 };
 
 struct NotifyItem {
@@ -20,25 +21,25 @@ struct NotifyItem {
 
 typedef struct NotifyItem* NotifyItemList;
 
-/** ĞÂÔöÒ»Ìõ»ØÌûÌáĞÑ
+/** æ–°å¢ä¸€æ¡å›å¸–æé†’
  *
- * @param to_userid Í¨ÖªËÍ´ïµÄid
- * @param from_userid Í¨ÖªÀ´×ÔµÄid
- * @param board »ØÌûËùÔÚµÄ°æÃæ
- * @param article_id »ØÌûµÄÊ±¼ä´Á
- * @param title_gbk Ìû×ÓµÄ±êÌâ @warning gbk ±àÂë£¬·½±ãµ÷ÓÃ£¬ÄÚ²¿´¦ÀíµÄÊ±ºò»á×ªÎª utf-8 ±àÂë
- * @return Ìí¼Ó³É¹¦·µ»Ø0
+ * @param to_userid é€šçŸ¥é€è¾¾çš„id
+ * @param from_userid é€šçŸ¥æ¥è‡ªçš„id
+ * @param board å›å¸–æ‰€åœ¨çš„ç‰ˆé¢
+ * @param article_id å›å¸–çš„æ—¶é—´æˆ³
+ * @param title_gbk å¸–å­çš„æ ‡é¢˜ @warning gbk ç¼–ç ï¼Œæ–¹ä¾¿è°ƒç”¨ï¼Œå†…éƒ¨å¤„ç†çš„æ—¶å€™ä¼šè½¬ä¸º utf-8 ç¼–ç 
+ * @return æ·»åŠ æˆåŠŸè¿”å›0
  * @see is_post_in_notification(char * userid, char * board, time_t article_id)
  * @see del_post_notification(char * userid, char * board, time_t article_id)
  */
-int add_post_notification(char * to_userid,
-						  char * from_userid,
-						  char * board,
-						  time_t article_id,
-						  char * title_gbk);
+int add_post_notification(const char * to_userid,
+						const char * from_userid,
+						const char * board,
+						time_t article_id,
+						const char * title_gbk);
 
-/** ĞÂÔöÒ»Ìõ @ ÌáĞÑ
- * Ê¹ÓÃ·½·¨ÀàËÆ add_post_notification º¯Êı
+/** æ–°å¢ä¸€æ¡ @ æé†’
+ * ä½¿ç”¨æ–¹æ³•ç±»ä¼¼ add_post_notification å‡½æ•°
  * @param to_userid
  * @param from_userid
  * @param board
@@ -46,59 +47,59 @@ int add_post_notification(char * to_userid,
  * @param title_gbk
  * @return
  */
-int add_mention_notification(char * to_userid,
-							char * from_userid,
-							char * board,
+int add_mention_notification(const char * to_userid,
+							const char * from_userid,
+							const char * board,
 							time_t article_id,
-							char * title_gbk);
+							const char * title_gbk);
 
-/** ½«Í¨Öª½âÎöµ½ÄÚ´æÖĞ
+/** å°†é€šçŸ¥è§£æåˆ°å†…å­˜ä¸­
  *
- * @param userid ÓÃ»§ id
- * @return struct NotifyItem Á´±í
+ * @param userid ç”¨æˆ· id
+ * @return struct NotifyItem é“¾è¡¨
  */
-NotifyItemList parse_notification(char *userid);
+NotifyItemList parse_notification(const char *userid);
 
-/** ÊÍ·Å NotifyItemList ÄÚ´æ
+/** é‡Šæ”¾ NotifyItemList å†…å­˜
  *
  * @param niList
  */
 void free_notification(NotifyItemList niList);
 
-/** ¼ÆËãÓÃ»§µÄÍ¨ÖªÌõÊı
- * ¸Ã·½·¨Ê¹ÓÃ libxml2 ½âÎö '/Notify/Item' µÄ¸öÊı¡£
- * @param userid ÓÃ»§ id
- * @return Í¨ÖªÌõÊı£¬¸ÃÖµ >= 0
+/** è®¡ç®—ç”¨æˆ·çš„é€šçŸ¥æ¡æ•°
+ * è¯¥æ–¹æ³•ä½¿ç”¨ libxml2 è§£æ '/Notify/Item' çš„ä¸ªæ•°ã€‚
+ * @param userid ç”¨æˆ· id
+ * @return é€šçŸ¥æ¡æ•°ï¼Œè¯¥å€¼ >= 0
  */
-int count_notification_num(char *userid);
+int count_notification_num(const char *userid);
 
-/** ¼ìÑéÄ³ÆªÎÄÕÂÊÇ·ñÔÚÏûÏ¢ÁĞ±íÖĞ
- * ¸Ã·½·¨²»Ê¹ÓÃ libxml2 µÄ·½·¨£¬½öÓÃÓÚ¿ìËÙÅĞ¶ÏÌØÕ÷×Ö·û´®ÊÇ·ñ´æÔÚÓÚÍ¨ÖªÎÄ¼şÖĞ¡£
+/** æ£€éªŒæŸç¯‡æ–‡ç« æ˜¯å¦åœ¨æ¶ˆæ¯åˆ—è¡¨ä¸­
+ * è¯¥æ–¹æ³•ä¸ä½¿ç”¨ libxml2 çš„æ–¹æ³•ï¼Œä»…ç”¨äºå¿«é€Ÿåˆ¤æ–­ç‰¹å¾å­—ç¬¦ä¸²æ˜¯å¦å­˜åœ¨äºé€šçŸ¥æ–‡ä»¶ä¸­ã€‚
  *
- * @warning ¿ÉÄÜ´æÔÚÎóÅĞ¡£
- * @param userid ÓÃ»§ id
- * @param board °æÃæÃû³Æ
- * @param article_id Ìû×Óid
- * @return ÈôÌû×Ó´æÔÚÔÚÍ¨ÖªÎÄ¼şÖĞ£¬Ôò·µ»Ø1£¬·ñÔò·µ»Ø0
+ * @warning å¯èƒ½å­˜åœ¨è¯¯åˆ¤ã€‚
+ * @param userid ç”¨æˆ· id
+ * @param board ç‰ˆé¢åç§°
+ * @param article_id å¸–å­id
+ * @return è‹¥å¸–å­å­˜åœ¨åœ¨é€šçŸ¥æ–‡ä»¶ä¸­ï¼Œåˆ™è¿”å›1ï¼Œå¦åˆ™è¿”å›0
  * @see del_post_notification(char * userid, char * board, time_t article_id)
  */
-int is_post_in_notification(char * userid, char * board, time_t article_id);
+int is_post_in_notification(const char * userid, const char * board, time_t article_id);
 
-/** É¾³ıÌáĞÑ
- * Í¬Ê±É¾³ı»Ø¸´ÌáĞÑºÍ @ ÌáĞÑ¡£
+/** åˆ é™¤æé†’
+ * åŒæ—¶åˆ é™¤å›å¤æé†’å’Œ @ æé†’ã€‚
  * @param userid
  * @param board
  * @param article_id
- * @return <ul><li>0: É¾³ı³É¹¦</li><li>-1: Ìû×Ó²»ÔÚÌáĞÑÎÄ¼şÖĞ</li><li>-2: É¾³ıÊ§°Ü</li></ul>
+ * @return <ul><li>0: åˆ é™¤æˆåŠŸ</li><li>-1: å¸–å­ä¸åœ¨æé†’æ–‡ä»¶ä¸­</li><li>-2: åˆ é™¤å¤±è´¥</li></ul>
  * @see is_post_in_notification(char * userid, char * board, time_t article_id)
  */
-int del_post_notification(char * userid, char * board, time_t article_id);
+int del_post_notification(const char * userid, const char * board, time_t article_id);
 
-/** É¾³ıÄ³¸öÓÃ»§µÄËùÓĞÌáĞÑ
+/** åˆ é™¤æŸä¸ªç”¨æˆ·çš„æ‰€æœ‰æé†’
  *
- * @param userid ÓÃ»§id
- * @return É¾³ı³É¹¦·µ»Ø0
+ * @param userid ç”¨æˆ·id
+ * @return åˆ é™¤æˆåŠŸè¿”å›0
  */
-int del_all_notification(char *userid);
+int del_all_notification(const char *userid);
 
 #endif
