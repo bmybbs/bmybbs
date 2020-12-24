@@ -68,7 +68,7 @@ fh2modifytime(struct fileheader *fh)
 }
 
 void
-fh_setowner(struct fileheader *fh, char *owner, int anony)
+fh_setowner(struct fileheader *fh, const char *owner, int anony)
 {
 	char *ptr;
 	bzero(fh->owner, sizeof (fh->owner));
@@ -365,7 +365,7 @@ fh_find_thread(struct fileheader *fh, char *board)
 	char *p;
 	int i;
 	int start;
-	struct mmapfile mf = { ptr:NULL };
+	struct mmapfile mf = { .ptr = NULL };
 	struct fileheader *buf1;
 	char *title = fh->title;
 	int size = sizeof(struct fileheader);
@@ -429,7 +429,7 @@ add_edit_mark(char *fname, char *userid, time_t now_t, char *fromhost)
 }
 
 int is_article_area_top(char *boardname, int thread) {
-	struct boardmem *bm = getboardbyname(boardname);
+	struct boardmem *bm = ythtbbs_cache_Board_get_board_by_name(boardname);
     if(bm==NULL)
 		return 0;
 
@@ -440,7 +440,7 @@ int is_article_area_top(char *boardname, int thread) {
 }
 
 int update_article_area_top_link(char *boardname, int oldthread, int newfiletime, char *newtitle) {
-	struct boardmem *bm = getboardbyname(boardname);
+	struct boardmem *bm = ythtbbs_cache_Board_get_board_by_name(boardname);
     if(bm==NULL)
 		return 0;
 

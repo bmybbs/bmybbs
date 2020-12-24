@@ -95,7 +95,7 @@ time_t fh2modifytime(struct fileheader *fh);
 /**
  * @brief 设置文章作者
  */
-void fh_setowner(struct fileheader *fh, char *owner, int anony);
+void fh_setowner(struct fileheader *fh, const char *owner, int anony);
 int change_dir(char *, struct fileheader *, void *func(void *, void *), int, int, int);
 void DIR_do_mark(struct fileheader *, struct fileheader *);
 void DIR_do_digest(struct fileheader *, struct fileheader *);
