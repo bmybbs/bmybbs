@@ -6,11 +6,11 @@
 #define BMY_CONVCODE_H
 #include <stddef.h>
 
-int u2g(char *inbuf, size_t inlen, char *outbuf, size_t outlen);
-int g2u(char *inbuf, size_t inlen, char *outbuf, size_t outlen);
-int code_convert(char *from_charset, char *to_charset, char *inbuf, size_t inlen, char *outbuf, size_t outlen);
+int u2g(const char *inbuf, size_t inlen, char *outbuf, size_t outlen);
+int g2u(const char *inbuf, size_t inlen, char *outbuf, size_t outlen);
+int code_convert(const char *from_charset, const char *to_charset, const char *inbuf, size_t inlen, char *outbuf, size_t outlen);
 int is_utf_special_byte(unsigned char c);
-int is_utf(char * inbuf, size_t inlen);
+int is_utf(const char * inbuf, size_t inlen);
 
 #endif
 
