@@ -18,5 +18,8 @@ export const BMYClient = {
 	get_feed(start) {
 		return myFetchGet("/api/subscription/list?start=" + start);
 	},
+	get_user_info(userid) {
+		return myFetchGet("/api/user/query?queryid=" + userid);
+	}
 };
 

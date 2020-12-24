@@ -6,7 +6,7 @@
 
 			<span class="dot">•</span>
 
-			<span class="author"><span class="icon"><fa icon="at" /></span>{{ _author }}</span>
+			<span class="author"><span class="icon"><fa icon="at" /></span><PopoverUserInfo :_userid="_author" /></span>
 			<span class="post">发表于</span>
 			<span class="time"><TooltipTimestamp :_unix_timestamp="_aid" /></span>
 
@@ -20,6 +20,7 @@
 <script>
 import TooltipTimestamp from "@/components/TooltipTimestamp.vue"
 import PopoverBoardInfo from "@/components/PopoverBoardInfo.vue"
+import PopoverUserInfo from "@/components/PopoverUserInfo.vue"
 
 export default {
 	data() {
@@ -35,6 +36,7 @@ export default {
 	},
 	components: {
 		PopoverBoardInfo,
+		PopoverUserInfo,
 		TooltipTimestamp,
 	},
 }
