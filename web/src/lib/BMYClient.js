@@ -12,7 +12,7 @@ export const BMYClient = {
 	get_commend() {
 		return myFetchGet("/api/article/list?type=commend");
 	},
-	get_fav_boards() {
+	get_fav_board_list() {
 		return myFetchGet("/api/board/fav/list");
 	},
 	get_feed(start) {

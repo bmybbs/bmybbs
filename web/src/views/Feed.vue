@@ -78,7 +78,7 @@ export default {
 			});
 		},
 		load_favboards() {
-			BMYClient.get_fav_boards().then(response => {
+			BMYClient.get_fav_board_list().then(response => {
 				if (response.errcode == 0 && Array.isArray(response.board_array)) {
 					this.favboards = response.board_array;
 				}
