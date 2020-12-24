@@ -9,7 +9,7 @@ import { BMYClient } from "@/lib/BMYClient.js"
 import CardBoardInfo from "@/components/CardBoardInfo.vue"
 
 export default {
-	date() {
+	data() {
 		return {
 			internal_id: (new Date().getTime()),
 			status_mouse_on: false,
