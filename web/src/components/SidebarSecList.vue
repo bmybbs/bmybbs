@@ -12,7 +12,7 @@
 		<div v-bind:id="'sidebar-collapse-' + _sec_id" class="accordion-collapse collapse">
 			<div class="accordion-body">
 				<ul class="list-group list-group-flush">
-					<li class="list-group-item" v-for="board in boards" v-bind:key="board.name">{{ board.title }}</li>
+					<li class="list-group-item" v-for="board in boards" v-bind:key="board.name">{{ board.zh_name }}</li>
 				</ul>
 			</div>
 		</div>
@@ -20,7 +20,8 @@
 </template>
 
 <script>
-import { BMYClient } from "@/lib/FakeBMYClient.js";
+import { BOARD_SORT_MODE } from "@/lib/BMYConstants.js"
+import { BMYClient } from "@/lib/BMYClient.js";
 
 export default {
 	data() {
@@ -29,8 +30,8 @@ export default {
 		};
 	},
 	mounted() {
-		BMYClient.get_boards_by_section(this._sec_id).then((data) => {
-			data.boards.forEach((el) => {
+		BMYClient.get_boards_by_section(this._sec_id, BOARD_SORT_MODE.BY_ALPHABET).then((data) => {
+			data.boardlist.forEach((el) => {
 				this.boards.push(el);
 			});
 		});

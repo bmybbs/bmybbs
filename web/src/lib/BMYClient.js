@@ -9,6 +9,9 @@ export const BMYClient = {
 	get_board_info(boardname_en) {
 		return myFetchGet("/api/board/info?bname=" + boardname_en);
 	},
+	get_boards_by_section(secstr, sortmode) {
+		return myFetchGet("/api/board/list?secstr=" + secstr + "&sortmode=" + sortmode);
+	},
 	get_commend() {
 		return myFetchGet("/api/article/list?type=commend");
 	},

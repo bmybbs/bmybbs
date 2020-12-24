@@ -16,3 +16,9 @@ export const BMYSECSTRS = [
 	{ id: 'C', name: "俱乐部区", icon: "pizza-slice" }
 ];
 
+export const BOARD_SORT_MODE = {
+	BY_ALPHABET: 1,
+	BY_SCORE: 2,
+	BY_INBOARD: 3,
+};
+
