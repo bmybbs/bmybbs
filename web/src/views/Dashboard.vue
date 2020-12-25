@@ -8,7 +8,7 @@
 
 				<DashboardCommend v-bind:_name="'通知公告'" v-bind:_articles="announce" />
 
-				<DashboardSection v-for="section in sections" v-bind:key="section.name" v-bind:_name="section.name" />
+				<DashboardSection v-for="section in sections" v-bind:key="section.name" v-bind:_name="section.name" v-bind:_secstr="section.id" />
 			</div>
 			<aside class="col-md-12 col-lg-3">
 				<DashboardAsideAd />

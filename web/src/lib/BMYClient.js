@@ -27,6 +27,9 @@ export const BMYClient = {
 	get_feed(start) {
 		return myFetchGet("/api/subscription/list?start=" + start);
 	},
+	get_sectop(secstr) {
+		return myFetchGet(`/api/article/list?type=sectop&secstr=${secstr}`);
+	},
 	get_thread_list(boardname_en, tid) {
 		return myFetchGet(`/api/article/list?type=thread&board=${boardname_en}&thread=${tid}`);
 	},
