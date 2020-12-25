@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { BMYClient } from "@/lib/FakeBMYClient.js"
+import { BMYClient } from "@/lib/BMYClient.js"
 import { BMYSECSTRS } from "@/lib/BMYConstants.js"
 import DashboardCommend from "@/components/DashboardCommend.vue"
 import DashboardAsideAd from "@/components/DashboardAsideAd.vue"
@@ -37,17 +37,12 @@ export default {
 		}
 	},
 	mounted() {
-		const that = this;
-		BMYClient.get_announce()
-			.then(response => {
-				// TODO
-				response.articlelist.forEach((item) => that.announce.push(item));
-			});
-		BMYClient.get_commend()
-			.then(response => {
-				// TODO
-				response.articlelist.forEach((item) => that.commend.push(item));
-			});
+		BMYClient.get_announce().then(response => {
+			this.announce = response.articlelist;
+		});
+		BMYClient.get_commend().then(response => {
+			this.commend = response.articlelist;
+		});
 	},
 	components: {
 		DashboardCommend,

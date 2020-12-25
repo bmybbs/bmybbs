@@ -7,7 +7,8 @@
 			<DashboardArticleListItem
 				v-for="article in _articles"
 				:key="article.aid"
-				:_board="article.board"
+				:_boardname_en="article.board"
+				:_boardname_zh="article.board"
 				:_title="article.title"
 				:_author="article.author"
 				:_comments="article.comments"
