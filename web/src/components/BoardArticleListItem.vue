@@ -1,6 +1,6 @@
 <template>
 	<li class="list-group-item">
-		<h3>{{ _title }}</h3>
+		<h3><router-link :to="{ name: 'thread', params: { boardname: _boardname_en, tid: _aid }}">{{ _title }}</router-link></h3>
 		<div class="meta">
 			<span class="author"><span class="icon"><fa icon="at" /></span><PopoverUserInfo :_userid="_author" /></span>
 			<span class="post">发表于</span>
@@ -22,6 +22,7 @@ export default {
 		return { };
 	},
 	props: {
+		_boardname_en: String,
 		_title: String,
 		_author: String,
 		_comments: Number,

@@ -28,6 +28,7 @@ const routes = [{
 		component: Board
 	}, {
 		path: "/web/board/:boardname/thread/:tid",
+		name: "thread",
 		component: Thread
 	}]
 }];
