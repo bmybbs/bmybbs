@@ -25,12 +25,22 @@ export default {
 			articles: [],
 		};
 	},
-	mounted() {
-		BMYClient.get_article_list(this.$route.params.boardname, BOARD_ARTICLE_MODE.THREAD_MODE).then(response => {
-			if (response.errcode == 0) {
-				this.articles = response.articlelist.reverse();
-			}
+	created() {
+		this.$watch(() => this.$route.params, (toParams) => {
+			this.get_list(toParams.boardname, BOARD_ARTICLE_MODE.THREAD_MODE);
 		});
+	},
+	mounted() {
+		this.get_list(this.$route.params.boardname, BOARD_ARTICLE_MODE.THREAD_MODE);
+	},
+	methods: {
+		get_list(boardname, mode) {
+			BMYClient.get_article_list(boardname, mode).then(response => {
+				if (response.errcode == 0) {
+					this.articles = response.articlelist.reverse();
+				}
+			});
+		},
 	},
 	components: {
 		BoardArticleListItem,

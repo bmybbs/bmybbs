@@ -27,10 +27,20 @@ export default {
 			info: null,
 		};
 	},
-	mounted() {
-		BMYClient.get_board_info(this.$route.params.boardname).then(response => {
-			this.info = response;
+	created() {
+		this.$watch(() => this.$route.params, (toParams) => {
+			this.get_info(toParams.boardname);
 		});
+	},
+	mounted() {
+		this.get_info(this.$route.params.boardname);
+	},
+	methods: {
+		get_info(boardname) {
+			BMYClient.get_board_info(boardname).then(response => {
+				this.info = response;
+			});
+		},
 	},
 	components: {
 		CardBoardInfo,
