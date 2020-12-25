@@ -5,6 +5,7 @@ import Dashboard from "@/views/Dashboard.vue"
 import Follow from "@/views/Follow.vue"
 import Feed from "@/views/Feed.vue"
 import Board from "@/views/Board.vue"
+import Thread from "@/views/Thread.vue"
 
 const routes = [{
 	path: "/",
@@ -25,6 +26,9 @@ const routes = [{
 	}, {
 		path: "/web/board/:boardname",
 		component: Board
+	}, {
+		path: "/web/board/:boardname/thread/:tid",
+		component: Thread
 	}]
 }];
 

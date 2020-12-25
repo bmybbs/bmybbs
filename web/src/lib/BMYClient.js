@@ -6,6 +6,9 @@ export const BMYClient = {
 	get_announce() {
 		return myFetchGet("/api/article/list?type=announce");
 	},
+	get_article_content(boardname_en, aid) {
+		return myFetchGet(`/api/article/getHTMLContent?board=${boardname_en}&aid=${aid}`);
+	},
 	get_article_list(boardname_en, mode) {
 		return myFetchGet(`/api/article/list?type=board&board=${boardname_en}&btype=${mode}`);
 	},
@@ -23,6 +26,9 @@ export const BMYClient = {
 	},
 	get_feed(start) {
 		return myFetchGet("/api/subscription/list?start=" + start);
+	},
+	get_thread_list(boardname_en, tid) {
+		return myFetchGet(`/api/article/list?type=thread&board=${boardname_en}&thread=${tid}`);
 	},
 	get_user_info(userid) {
 		return myFetchGet("/api/user/query?queryid=" + userid);
