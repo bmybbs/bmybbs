@@ -4,6 +4,7 @@ import Web from "@/views/Web.vue"
 import Dashboard from "@/views/Dashboard.vue"
 import Follow from "@/views/Follow.vue"
 import Feed from "@/views/Feed.vue"
+import Board from "@/views/Board.vue"
 
 const routes = [{
 	path: "/",
@@ -21,6 +22,9 @@ const routes = [{
 	}, {
 		path: "/web/follow",
 		component: Follow
+	}, {
+		path: "/web/board/:boardname",
+		component: Board
 	}]
 }];
 

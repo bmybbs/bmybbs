@@ -22,3 +22,8 @@ export const BOARD_SORT_MODE = {
 	BY_INBOARD: 3,
 };
 
+export const BOARD_ARTICLE_MODE = {
+	THREAD_MODE: "thread",
+	NORMAL_MODE: "",
+};
+
