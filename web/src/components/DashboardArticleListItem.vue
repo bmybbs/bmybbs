@@ -1,6 +1,6 @@
 <template>
 	<li class="list-group-item">
-		<h3>{{ _title }}</h3>
+		<h3><router-link :to="{ name: 'thread', params: { boardname: _boardname_en, tid: _aid }}">{{ _title }}</router-link></h3>
 		<div class="meta">
 			<span class="board"><PopoverBoardInfo :_boardname_zh="_boardname_zh" :_boardname_en="_boardname_en" /></span>
 
