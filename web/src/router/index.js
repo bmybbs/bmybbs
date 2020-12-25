@@ -20,10 +20,15 @@ const routes = [{
 		component: Dashboard
 	}, {
 		path: "/web/feed",
+		name: "feed",
 		component: Feed
 	}, {
 		path: "/web/follow",
 		component: Follow
+	}, {
+		path: "/web/section/:secid",
+		name: "section",
+		component: Feed
 	}, {
 		path: "/web/board/:boardname",
 		component: Board,

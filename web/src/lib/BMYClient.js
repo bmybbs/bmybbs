@@ -12,6 +12,9 @@ export const BMYClient = {
 	get_article_list_by_board(boardname_en, mode) {
 		return myFetchGet(`/api/article/list?type=board&board=${boardname_en}&btype=${mode}`);
 	},
+	get_article_list_by_section(secstr) {
+		return myFetchGet(`/api/article/list?type=section&secstr=${secstr}`);
+	},
 	get_board_info(boardname_en) {
 		return myFetchGet(`/api/board/info?bname=${boardname_en}`);
 	},

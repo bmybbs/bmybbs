@@ -52,21 +52,35 @@
 <script>
 import DashboardArticleListItem from "@/components/DashboardArticleListItem.vue"
 import { BMYClient } from "@/lib/BMYClient.js"
+import { BOARD_SORT_MODE } from "@/lib/BMYConstants.js"
 
 export default {
 	data() {
 		return {
+			feedmode: this.$route.name == "feed",
 			time: Math.floor(new Date().getTime() / 1000),
 			articles: [ ],
 			favboards: [ ],
 		}
 	},
 	mounted() {
-		this.load_more();
-		this.load_favboards();
+		if (this.feedmode) {
+			this.load_feed_more();
+			this.load_favboards();
+		} else {
+			this.load_section_more();
+			this.load_section_boards();
+		}
 	},
 	methods: {
 		load_more() {
+			if (this.feedmode) {
+				this.load_feed_more();
+			} else {
+				this.load_section_more();
+			}
+		},
+		load_feed_more() {
 			BMYClient.get_feed(this.time).then(response => {
 				if (Array.isArray(response.articles)) {
 					this.articles = this.articles.concat(response.articles);
@@ -81,6 +95,20 @@ export default {
 			BMYClient.get_fav_board_list().then(response => {
 				if (response.errcode == 0 && Array.isArray(response.board_array)) {
 					this.favboards = response.board_array;
+				}
+			});
+		},
+		load_section_boards() {
+			BMYClient.get_boards_by_section(this.$route.params.secid, BOARD_SORT_MODE.BY_ALPHABET).then(response => {
+				if (response.errcode == 0) {
+					this.favboards = response.boardlist;
+				}
+			});
+		},
+		load_section_more() {
+			BMYClient.get_article_list_by_section(this.$route.params.secid).then(response => {
+				if (Array.isArray(response.articles)) {
+					this.articles = response.articles;
 				}
 			});
 		},
