@@ -35,7 +35,7 @@ export default {
 	},
 	methods: {
 		get_list(boardname, mode) {
-			BMYClient.get_article_list(boardname, mode).then(response => {
+			BMYClient.get_article_list_by_board(boardname, mode).then(response => {
 				if (response.errcode == 0) {
 					this.articles = response.articlelist.reverse();
 				}

@@ -9,7 +9,7 @@ export const BMYClient = {
 	get_article_content(boardname_en, aid) {
 		return myFetchGet(`/api/article/getHTMLContent?board=${boardname_en}&aid=${aid}`);
 	},
-	get_article_list(boardname_en, mode) {
+	get_article_list_by_board(boardname_en, mode) {
 		return myFetchGet(`/api/article/list?type=board&board=${boardname_en}&btype=${mode}`);
 	},
 	get_board_info(boardname_en) {
