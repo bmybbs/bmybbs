@@ -6,6 +6,8 @@ int code_convert(const char *from_charset, const char *to_charset, const char *i
 	iconv_t cd;
 	size_t rc;
 	char *tmp = strdup(inbuf);
+	char *tmp_p = tmp;
+
 	if (tmp == NULL)
 		return -1;
 
@@ -16,7 +18,7 @@ int code_convert(const char *from_charset, const char *to_charset, const char *i
 	}
 
 	memset(outbuf, 0, outlen);
-	rc = iconv(cd, &tmp, &inlen, &outbuf, &outlen);
+	rc = iconv(cd, &tmp_p, &inlen, &outbuf, &outlen);
 	free(tmp);
 	iconv_close(cd);
 
