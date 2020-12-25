@@ -25,6 +25,7 @@ const routes = [{
 		component: Follow
 	}, {
 		path: "/web/board/:boardname",
+		name: "board",
 		component: Board
 	}, {
 		path: "/web/board/:boardname/thread/:tid",

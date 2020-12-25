@@ -12,7 +12,9 @@
 		<div v-bind:id="'sidebar-collapse-' + _sec_id" class="accordion-collapse collapse">
 			<div class="accordion-body">
 				<ul class="list-group list-group-flush">
-					<li class="list-group-item" v-for="board in boards" v-bind:key="board.name">{{ board.zh_name }}</li>
+					<li class="list-group-item" v-for="board in boards" v-bind:key="board.name">
+						<router-link :to="{ name: 'board', params: { boardname: board.name }}">{{ board.zh_name }}</router-link>
+					</li>
 				</ul>
 			</div>
 		</div>
