@@ -2,7 +2,8 @@
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-xs-6 col-md-6">
-				<h2>订阅</h2>
+				<h2 v-if="feedmode">订阅</h2>
+				<h2 v-else>{{$route.params.secid}}区</h2>
 			</div>
 			<div class="col-xs-6 col-md-6 right-col d-flex align-items-center justify-content-end">
 				<span class="icon mr-3">
@@ -35,8 +36,11 @@
 			</div>
 			<div class="col-md-3">
 				<div class="card">
-					<div class="card-header">
+					<div v-if="feedmode" class="card-header">
 						收藏夹列表
+					</div>
+					<div v-else class="card-header">
+						{{$route.params.secid}}区版面列表
 					</div>
 					<ul class="list-group list-group-flush">
 						<li class="list-group-item"
@@ -63,16 +67,29 @@ export default {
 			favboards: [ ],
 		}
 	},
+	created() {
+		this.$watch(() => this.$route, (toRoute) => {
+			this.feedmode = toRoute.name == "feed";
+			this.time = Math.floor(new Date().getTime() / 1000);
+			this.articles = [ ];
+			this.favboards = [ ];
+
+			this.init_data();
+		});
+	},
 	mounted() {
-		if (this.feedmode) {
-			this.load_feed_more();
-			this.load_favboards();
-		} else {
-			this.load_section_more();
-			this.load_section_boards();
-		}
+		this.init_data();
 	},
 	methods: {
+		init_data() {
+			if (this.feedmode) {
+				this.load_feed_more();
+				this.load_favboards();
+			} else {
+				this.load_section_more();
+				this.load_section_boards();
+			}
+		},
 		load_more() {
 			if (this.feedmode) {
 				this.load_feed_more();
