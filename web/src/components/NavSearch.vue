@@ -13,7 +13,9 @@
 			<li v-if="boards.length > 0">
 				<h6 class="dropdown-header">找到的版面有：</h6>
 				<ul class="search-results">
-					<li class="dropdown-item" v-for="board in boards" v-bind:key="board.name">{{ board.name }}</li>
+					<li class="dropdown-item" v-for="board in boards" v-bind:key="board.name">
+						<NavSearchHighlightItem v-bind:_text="board.name" v-bind:_key="search_str" />
+					</li>
 					<li class="dropdown-item" v-if="hasMoreBoards">更多版面...</li>
 				</ul>
 			</li>
@@ -21,7 +23,9 @@
 			<li v-if="users.length > 0">
 				<h6 class="dropdown-header">找到的用户有：</h6>
 				<ul class="search-results">
-					<li class="dropdown-item" v-for="user in users" v-bind:key="user">{{ user }}</li>
+					<li class="dropdown-item" v-for="user in users" v-bind:key="user">
+						<NavSearchHighlightItem v-bind:_text="user" v-bind:_key="search_str" />
+					</li>
 					<li class="dropdown-item" v-if="hasMoreUsers">更多用户...</li>
 				</ul>
 			</li>
@@ -32,6 +36,7 @@
 <script>
 import Dropdown from "bootstrap/js/dist/dropdown"
 import { BMYClient } from "@/lib/BMYClient.js"
+import NavSearchHighlightItem from "@/components/NavSearchHighlightItem.vue"
 
 const MAXRECORDS = 5;
 
@@ -52,6 +57,9 @@ export default {
 			this.dropdown = new Dropdown(this.$refs.input);
 			this.dropdown.hide();
 		}
+	},
+	components: {
+		NavSearchHighlightItem,
 	},
 	methods: {
 		showDropdown() {
