@@ -38,6 +38,12 @@ export const BMYClient = {
 	},
 	get_user_info(userid) {
 		return myFetchGet("/api/user/query?queryid=" + userid);
-	}
+	},
+	search_board(start_with) {
+		return myFetchGet(`/api/board/autocomplete?search_str=${start_with}`);
+	},
+	search_user(start_with) {
+		return myFetchGet(`/api/user/autocomplete?search_str=${start_with}`);
+	},
 };
 
