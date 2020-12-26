@@ -1,7 +1,7 @@
 <template>
 	<section class="card bmy-dashboard-card">
 		<div class="card-header">
-			{{ _name }}
+			<router-link :to="{ name: 'section', params: { secid: _secstr }}">{{ _name }}</router-link>
 		</div>
 		<ul class="list-group list-group-flush">
 			<DashboardArticleListItem
@@ -15,9 +15,6 @@
 				:_aid="article.aid"
 			/>
 		</ul>
-		<div class="card-footer">
-			热门版面：foo bar baz ...
-		</div>
 	</section>
 </template>
 
