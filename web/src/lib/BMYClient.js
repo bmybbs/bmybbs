@@ -2,6 +2,16 @@ function myFetchGet(url) {
 	return fetch(url).then(response => response.json());
 }
 
+function myFetchPost(url, obj) {
+	return fetch(url, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json"
+		},
+		body: JSON.stringify(obj)
+	}).then(response => response.json());
+}
+
 export const BMYClient = {
 	get_announce() {
 		return myFetchGet("/api/article/list?type=announce");
@@ -23,6 +33,9 @@ export const BMYClient = {
 	},
 	get_commend() {
 		return myFetchGet("/api/article/list?type=commend");
+	},
+	get_draft_preview(obj) {
+		return myFetchPost("/api/article/preview", obj);
 	},
 	get_fav_board_list() {
 		return myFetchGet("/api/board/fav/list");

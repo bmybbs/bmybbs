@@ -35,3 +35,28 @@ export const ARTICLE_FLAGS = {
 	FH_ISWATER: 0x00100000,
 };
 
+export const ANSI_TAGS = {
+	ANSI_CLEAR:     "[ESC][0m",
+	ANSI_ITALIC:    "[ESC][3m",
+	ANSI_UNDERL:    "[ESC][4m",
+	ANSI_BLINK:     "[ESC][5m",
+
+	ANSI_FC_BLACK:  "[ESC][1;30m",
+	ANSI_FC_RED:    "[ESC][1;31m",
+	ANSI_FC_GREEN:  "[ESC][1;32m",
+	ANSI_FC_YELLOW: "[ESC][1;33m",
+	ANSI_FC_BLUE:   "[ESC][1;34m",
+	ANSI_FC_PINK:   "[ESC][1;35m",
+	ANSI_FC_CYAN:   "[ESC][1;36m",
+	ANSI_FC_WHITE:  "[ESC][1;37m",
+
+	ANSI_BG_BLACK:  "[ESC][1;40m",
+	ANSI_BG_RED:    "[ESC][1;41m",
+	ANSI_BG_GREEN:  "[ESC][1;42m",
+	ANSI_BG_YELLOW: "[ESC][1;43m",
+	ANSI_BG_BLUE:   "[ESC][1;44m",
+	ANSI_BG_PINK:   "[ESC][1;45m",
+	ANSI_BG_CYAN:   "[ESC][1;46m",
+	ANSI_BG_WHITE:  "[ESC][1;47m",
+};
+

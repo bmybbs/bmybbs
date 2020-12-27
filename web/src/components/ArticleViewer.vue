@@ -7,6 +7,9 @@
 		<div class="card-body">
 			<div class="article" v-html="content" @click="toggleAha"></div>
 		</div>
+		<div class="card-footer">
+			<TabbedEditor />
+		</div>
 	</div>
 </template>
 
@@ -14,6 +17,7 @@
 import { BMYClient } from "@/lib/BMYClient.js"
 import TooltipTimestamp from "@/components/TooltipTimestamp.vue"
 import BadgeArticleFlags from "@/components/BadgeArticleFlags.vue"
+import TabbedEditor from "@/components/TabbedEditor.vue"
 
 export default {
 	data() {
@@ -57,6 +61,7 @@ export default {
 	},
 	components: {
 		BadgeArticleFlags,
+		TabbedEditor,
 		TooltipTimestamp,
 	},
 }
