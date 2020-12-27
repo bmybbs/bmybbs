@@ -27,3 +27,11 @@ export const BOARD_ARTICLE_MODE = {
 	NORMAL_MODE: "",
 };
 
+export const ARTICLE_FLAGS = {
+	FH_MARKED: 0x04,
+	FH_DIGEST: 0x08,
+	FH_NOREPLY: 0x10,
+	FH_MATH: 0x04000,
+	FH_ISWATER: 0x00100000,
+};
+
