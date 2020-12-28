@@ -3,7 +3,7 @@
 		"pages/index/index",
 		"pages/dashboard/dashboard",
 		"pages/feed/feed",
-		"pages/section/section",
+		"pages/sections/sections",
 		"pages/me/me",
 		"pages/logs/logs"
 	],
@@ -24,8 +24,8 @@
 			"pagePath": "pages/feed/feed",
 			"text": "订阅"
 		}, {
-			"pagePath": "pages/section/section",
-			"text": "版面"
+			"pagePath": "pages/sections/sections",
+			"text": "分区"
 		}, {
 			"pagePath": "pages/me/me",
 			"text": "我的"
