@@ -8,6 +8,8 @@
 
 				<DashboardCommend v-bind:_name="'通知公告'" v-bind:_articles="announce" />
 
+				<DashboardCommend v-bind:_name="'今日十大'" v-bind:_articles="top10" />
+
 				<DashboardSection v-for="section in sections" v-bind:key="section.name" v-bind:_name="section.name" v-bind:_secstr="section.id" />
 			</div>
 			<aside class="col-md-12 col-lg-3">
@@ -33,6 +35,7 @@ export default {
 		return {
 			announce: [],
 			commend: [],
+			top10: [],
 			sections: BMYSECSTRS,
 		}
 	},
@@ -42,6 +45,9 @@ export default {
 		});
 		BMYClient.get_commend().then(response => {
 			this.commend = response.articlelist;
+		});
+		BMYClient.get_top10().then(response => {
+			this.top10 = response.articlelist;
 		});
 	},
 	components: {
