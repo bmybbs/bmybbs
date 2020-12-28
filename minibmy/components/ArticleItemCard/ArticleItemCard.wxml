@@ -3,7 +3,8 @@
 	<view class="post_footer">
 		<view class="post_info">
 			<view class="post_author">@{{article.author}}</view>
-			<view class="post_time">{{article.aid}}</view>
+			发表于
+			<view class="post_time">{{readableTime}}</view>
 		</view>
 		<view class="post_meta">
 			<view class="post_comment">
