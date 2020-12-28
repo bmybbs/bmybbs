@@ -1,0 +1,28 @@
+.section {
+	background-color: #ffffff;
+	display: flex;
+	flex-flow: column;
+	align-items: center;
+	margin-top: 1px;
+	margin-bottom: 1px;
+	padding: 0.5rem 0;
+}
+
+.section_id {
+	display: inline-block;
+	font-size: 1.5rem;
+	line-height: 2rem;
+	width: 2rem;
+	height: 2rem;
+	text-align: center;
+	font-weight: 700;
+	color: #333;
+	border: 2px solid #888;
+	border-radius: 50%;
+}
+
+.section_name {
+	color: #888;
+	margin-top: 0.4rem;
+}
+
