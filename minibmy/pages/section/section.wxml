@@ -1,0 +1,3 @@
+<text class="header">{{sec_en}}区/{{sec_zh}}</text>
+
+<feed-item-card wx:for="{{articles}}" article="{{item}}" wx:key="id"></feed-item-card>

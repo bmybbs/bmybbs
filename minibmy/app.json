@@ -3,6 +3,7 @@
 		"pages/index/index",
 		"pages/dashboard/dashboard",
 		"pages/feed/feed",
+		"pages/section/section",
 		"pages/sections/sections",
 		"pages/me/me",
 		"pages/logs/logs"
