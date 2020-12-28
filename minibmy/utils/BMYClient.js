@@ -45,6 +45,9 @@ export const BMYClient = {
 	get_thread_list(boardname_en, tid) {
 		return myFetchGet(`/api/article/list?type=thread&board=${boardname_en}&thread=${tid}`);
 	},
+	get_top10() {
+		return myFetchGet("/api/article/list?type=top10");
+	},
 	get_user_info(userid) {
 		return myFetchGet("/api/user/query?queryid=" + userid);
 	},

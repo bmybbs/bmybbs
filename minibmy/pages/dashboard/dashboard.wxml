@@ -1,0 +1,20 @@
+<view>
+	<view class="dashboard-header">通知公告</view>
+	<article-item-card article="{{item}}"
+		wx:for="{{announce_list}}"
+		wx:key="id">
+	</article-item-card>
+
+	<view class="dashboard-header">美文推荐</view>
+	<article-item-card article="{{item}}"
+		wx:for="{{commend_list}}"
+		wx:key="id">
+	</article-item-card>
+
+	<view class="dashboard-header">今日十大</view>
+	<article-item-card article="{{item}}"
+		wx:for="{{top10}}"
+		wx:key="id">
+	</article-item-card>
+</view>
+

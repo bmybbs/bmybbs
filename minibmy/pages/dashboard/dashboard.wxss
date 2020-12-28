@@ -1,0 +1,5 @@
+.dashboard-header {
+	padding: 5rpx 40rpx;
+	background: #ddd;
+}
+
