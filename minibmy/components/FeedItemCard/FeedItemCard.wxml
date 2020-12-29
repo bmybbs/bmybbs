@@ -1,4 +1,4 @@
-<view class="post_item">
+<view class="post_item" bindtap="gotoThread">
 	<view class="post_title">{{article.title}}<view class="post_board">#{{article.boardname_zh}}</view></view>
 	<view class="post_footer">
 		<view class="post_info">

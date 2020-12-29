@@ -21,6 +21,11 @@ Component({
 		})
 	},
 	methods: {
+		gotoThread() {
+			wx.navigateTo({
+				url: `../../pages/thread/thread?boardname_en=${this.data.article.boardname_en}&tid=${this.data.article.tid}`,
+			});
+		},
 	}
 })
 

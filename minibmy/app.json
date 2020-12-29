@@ -5,6 +5,7 @@
 		"pages/feed/feed",
 		"pages/section/section",
 		"pages/sections/sections",
+		"pages/thread/thread",
 		"pages/me/me",
 		"pages/logs/logs"
 	],
