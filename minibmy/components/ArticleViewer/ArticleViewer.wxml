@@ -1,6 +1,6 @@
 <view class="article">
 	<view class="article-header">
-		{{article.author}} 发表于 {{aid}}
+		{{article.author}} 发表于 {{time}}
 	</view>
 	<view class="article-body">
 		<rich-text nodes="{{article.content}}"></rich-text>

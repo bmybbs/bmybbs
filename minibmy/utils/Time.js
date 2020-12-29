@@ -11,3 +11,7 @@ export const getReadableTime = function(unix_timestamp) {
 	return dayjs(unix_timestamp * 1000).fromNow();
 };
 
+export const getLongVersionTime = function(unix_timestamp) {
+	return dayjs(unix_timestamp * 1000).format("lll");
+}
+

@@ -1,4 +1,5 @@
 import { BMYClient } from "../../utils/BMYClient.js"
+import { getLongVersionTime } from "../../utils/Time.js"
 
 Component({
 	properties: {
@@ -12,6 +13,7 @@ Component({
 
 				this.setData({
 					show_ansi: true,
+					time: getLongVersionTime(this.data.aid),
 					article: response,
 				});
 			});
