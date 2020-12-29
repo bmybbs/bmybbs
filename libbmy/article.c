@@ -3,6 +3,7 @@
 #include "bmy/mysql_wrapper.h"
 #include "bmy/convcode.h"
 #include "bmy/article.h"
+#include "bmy/algorithms.h"
 
 void copy_to_utf_header(struct fileheader_utf *dest, struct fileheader *src) {
 	memset(dest, 0, sizeof(struct fileheader_utf));
@@ -185,13 +186,10 @@ static void bmy_article_list_subscription_callback(MYSQL_STMT *stmt, MYSQL_BIND 
 	}
 }
 
-struct bmy_articles *bmy_article_list_subscription(const char *userid, size_t limit, size_t offset) {
+static struct bmy_articles *bmy_article_list_internal(const char *sql) {
 	struct bmy_articles *article_list;
-	char sqlbuf[160];
 	struct fileheader_utf result_buf;
 	MYSQL_BIND results[7];
-
-	snprintf(sqlbuf, sizeof(sqlbuf), "SELECT `boardname_en`, `boardname_zh`, `timestamp`, `title`, `author`, `comments`, `accessed` from v_feed_%s LIMIT %zu OFFSET %zu", userid, limit, offset);
 
 	memset(results, 0, sizeof(results));
 
@@ -223,8 +221,55 @@ struct bmy_articles *bmy_article_list_subscription(const char *userid, size_t li
 	results[6].buffer = &result_buf.accessed;
 	results[6].buffer_length = sizeof(unsigned int);
 
-	execute_prep_stmt(sqlbuf, MYSQL_CHARSET_UTF8, NULL, results, (void *) &article_list, bmy_article_list_subscription_callback);
+	execute_prep_stmt(sql, MYSQL_CHARSET_UTF8, NULL, results, (void *) &article_list, bmy_article_list_subscription_callback);
+
 	return article_list;
+}
+
+struct bmy_articles *bmy_article_list_subscription(const char *userid, size_t limit, size_t offset) {
+	char sqlbuf[160];
+
+	snprintf(sqlbuf, sizeof(sqlbuf), "SELECT `boardname_en`, `boardname_zh`, `timestamp`, `title`, `author`, `comments`, `accessed` from v_feed_%s LIMIT %zu OFFSET %zu", userid, limit, offset);
+
+	return bmy_article_list_internal(sqlbuf);
+}
+
+struct bmy_articles *bmy_article_list_subscription_by_time(const char *userid, size_t limit, time_t t) {
+	char sqlbuf[160];
+
+	snprintf(sqlbuf, sizeof(sqlbuf), "SELECT `boardname_en`, `boardname_zh`, `timestamp`, `title`, `author`, `comments`, `accessed` from v_feed_%s WHERE `timestamp` <= %ld LIMIT %zu", userid, t, limit);
+
+	return bmy_article_list_internal(sqlbuf);
+}
+
+struct bmy_articles *bmy_article_list_section(char secid, size_t limit, time_t t) {
+	char sqlbuf[160];
+
+	snprintf(sqlbuf, sizeof(sqlbuf), "SELECT `boardname_en`, `boardname_zh`, `timestamp`, `title`, `author`, `comments`, `accessed` from v_section_%c WHERE `timestamp` <= %ld LIMIT %zu", secid, t, limit);
+	return bmy_article_list_internal(sqlbuf);
+}
+
+struct bmy_articles *bmy_article_list_selected_boards(const int boardnum_array[], size_t num, size_t limit, time_t t) {
+	char *sqlbuf = NULL, *s = NULL;
+	size_t size = 0;
+	struct bmy_articles *p = NULL;
+
+	s = bmy_algo_join_int_array_to_string(boardnum_array, num, ',');
+	if (s == NULL)
+		goto END;
+	size = strlen(s) + 512;
+	sqlbuf = calloc(size, sizeof(char));
+	if (sqlbuf == NULL)
+		goto END;
+
+	snprintf(sqlbuf, size, "SELECT `boardname_en`, `boardname_zh`, `timestamp`, `title`, `author`, `comments`, `accessed` from `t_boards`, `t_threads` WHERE `t_boards`.`boardnum` IN (%s) AND `t_boards`.`boardnum` = `t_threads`.`boardnum` AND `timestamp` <= %ld ORDER BY `timestamp` desc LIMIT %zu", s, t, limit);
+
+	p = bmy_article_list_internal(sqlbuf);
+
+END:
+	if (s) free(s);
+	if (sqlbuf) free(sqlbuf);
+	return p;
 }
 
 void bmy_article_list_free(struct bmy_articles *ptr) {

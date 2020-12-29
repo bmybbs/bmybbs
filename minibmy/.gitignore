@@ -1,4 +1,7 @@
 # for language server
 wx.d.ts
 project.config.json
+node_modules
+miniprogram_npm
+package-lock.json
 

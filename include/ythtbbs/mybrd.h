@@ -2,6 +2,7 @@
 #define YTHTBBS_MYBRD_H
 #include <stdbool.h>
 #include "config.h"
+#include "ythtbbs/cache.h"
 
 /**
  * 定制版面的代码, 取自fb2000.dhs.org.
@@ -22,13 +23,17 @@ struct goodboard {
  */
 typedef bool (*ythtbbs_mybrd_has_read_perm)(const char *userid, const char *boardname);
 
+typedef bool (*ythtbbs_mybrd_has_read_perm_ext)(const struct user_info *ptr_info, const char *boardname);
+
 void ythtbbs_mybrd_load(const char *userid, struct goodboard *mybrd, ythtbbs_mybrd_has_read_perm func);
+void ythtbbs_mybrd_load_ext(const struct user_info *ptr_info, struct goodboard *mybrd, ythtbbs_mybrd_has_read_perm_ext func);
 
 /**
  * 保存用户订阅版面
  * @return 实际保存的个数
  */
 int ythtbbs_mybrd_save(const char *userid, struct goodboard *mybrd, ythtbbs_mybrd_has_read_perm func);
+int ythtbbs_mybrd_save_ext(const struct user_info *ptr_info, struct goodboard *mybrd, ythtbbs_mybrd_has_read_perm_ext func);
 /**
  * 向列表中追加版面名称
  * @warning 本函数不做版面读取权限校验，在应用中自行判断

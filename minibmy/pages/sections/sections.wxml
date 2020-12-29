@@ -1,0 +1,7 @@
+<view>
+	<view class="container3">
+		<section-item wx:for="{{list}}" wx:key="id" item="{{item}}">
+		</section-item>
+	</view>
+</view>
+

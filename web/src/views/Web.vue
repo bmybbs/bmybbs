@@ -4,6 +4,9 @@
 		<button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-toggle="collapse" data-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
 			<span class="navbar-toggler-icon"></span>
 		</button>
+		<div class="w-100">
+			<NavSearch />
+		</div>
 	</header>
 
 	<div class="container-fluid">
@@ -41,7 +44,7 @@
 					</div>
 				</div>
 			</nav>
-			<main class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+			<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
 				<router-view />
 			</main>
 		</div>
@@ -51,6 +54,7 @@
 <script>
 import { BMYSECSTRS } from "@/lib/BMYConstants.js";
 import SidebarSecList from "@/components/SidebarSecList.vue";
+import NavSearch from "@/components/NavSearch.vue";
 
 export default {
 	data() {
@@ -61,15 +65,14 @@ export default {
 	mounted() {
 	},
 	components: {
+		NavSearch,
 		SidebarSecList
 	},
 }
 </script>
 
 <style scoped>
-/*
- * Sidebar
- */
+/* Sidebar */
 .sidebar {
 	position: fixed;
 	top: 0;
@@ -102,9 +105,7 @@ export default {
 	color: #6c757daa;
 }
 
-/*
- * Navbar
- */
+/* Navbar */
 .navbar-brand {
 	padding: .75rem 0;
 	font-size: 1rem;
@@ -117,9 +118,7 @@ export default {
 	right: 1rem;
 }
 
-/*
- * Main
- */
+/* Main */
 main {
 	padding-top: 16px;
 }

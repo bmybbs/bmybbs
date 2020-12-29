@@ -1,7 +1,10 @@
 #include "bbslib.h"
+#include "bmy/convcode.h"
+
 extern char *cginame;
 
 int testmozilla(void);
+extern char *get_mime_type(const char *name);
 
 int
 showbinaryattach(char *filename)
@@ -10,7 +13,7 @@ showbinaryattach(char *filename)
 	int pos_i;
 	size_t pos;
 	unsigned int size;
-	struct mmapfile mf = { ptr:NULL };
+	struct mmapfile mf = { .ptr = NULL };
 //      no_outcache();
 	if (cache_header(file_time(filename), 86400))
 		return 0;
@@ -134,7 +137,7 @@ void fprintbinaryattachlink(FILE * fp, int ano, char *attachname, int pos, int s
 /* show_iframe: 0  just as normail
 		1  just show iframe
 		2  show the content of iframe
- */
+*/
 int
 fshowcon(FILE * output, char *filename, int show_iframe)
 {
@@ -224,7 +227,7 @@ int
 showconxml(char *filename, int viewertype)
 {
 	char filetmp[200], cmd[200], *ptr, *pend;
-	struct mmapfile mf = { ptr:NULL };
+	struct mmapfile mf = { .ptr = NULL };
 	FILE *fp;
 	int retv = -1;
 	if (viewertype != 1)
@@ -371,9 +374,9 @@ bbscon_main()
 	int prenum, nextnum;
 	int outgoing;
 	int inndboard;
-	struct mmapfile mf = { ptr:NULL };
-    char title_utf8[480];
-    memset(title_utf8, '\0', sizeof(title_utf8));
+	struct mmapfile mf = { .ptr = NULL };
+	char title_utf8[480];
+	memset(title_utf8, '\0', sizeof(title_utf8));
 
 	changemode(READING);
 

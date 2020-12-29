@@ -28,7 +28,7 @@ fh2fname(struct fileheader *fh)
 	if (fh->accessed & FH_ISDIGEST)
 		s[0] = 'G';
 	if (fh->accessed & FILE_ISTOP1)  //add by wjbta
-	        s[0] = 'T';
+		s[0] = 'T';
 	return s;
 }
 
@@ -68,7 +68,7 @@ fh2modifytime(struct fileheader *fh)
 }
 
 void
-fh_setowner(struct fileheader *fh, char *owner, int anony)
+fh_setowner(struct fileheader *fh, const char *owner, int anony)
 {
 	char *ptr;
 	bzero(fh->owner, sizeof (fh->owner));
@@ -103,7 +103,7 @@ fh_setowner(struct fileheader *fh, char *owner, int anony)
 
 int
 change_dir(char *direct, struct fileheader *fileinfo,
-	   void (*func(void *, void *)), int ent, int digestmode, int mode)
+		void (*func(void *, void *)), int ent, int digestmode, int mode)
 {
 	int i, newent;
 	int fd;
@@ -226,7 +226,7 @@ DIR_do_mark_minus_del(struct fileheader *fileinfo, struct fileheader *newfileinf
 {								//add by mintbaggio@BMY 040321 for minus-postnums delete
 	if(fileinfo->accessed & FH_DEL)
 		fileinfo->accessed &= ~FH_DEL;
-        SWITCH_FLAG(fileinfo->accessed, FH_MINUSDEL);
+	SWITCH_FLAG(fileinfo->accessed, FH_MINUSDEL);
 }
 
 void
@@ -329,8 +329,7 @@ cancelpost(char *board, char *userid, struct fileheader *fh, int owned)
 					continue;
 				if ((ptr = strrchr(buf, ')')) != NULL) {
 					*ptr = '\0';
-					if ((ptr = strrchr(buf, '('))
-					    != NULL) {
+					if ((ptr = strrchr(buf, '(')) != NULL) {
 						strcpy(from, ptr + 1);
 						break;
 					}
@@ -365,7 +364,7 @@ fh_find_thread(struct fileheader *fh, char *board)
 	char *p;
 	int i;
 	int start;
-	struct mmapfile mf = { ptr:NULL };
+	struct mmapfile mf = { .ptr = NULL };
 	struct fileheader *buf1;
 	char *title = fh->title;
 	int size = sizeof(struct fileheader);
@@ -373,8 +372,8 @@ fh_find_thread(struct fileheader *fh, char *board)
 		return 0;
 	fh->thread = fh->filetime;
 	sprintf(direct, MY_BBS_HOME "/boards/%s/.DIR", board);
-        if (mmapfile(direct, &mf) < 0)
-                return -1;
+	if (mmapfile(direct, &mf) < 0)
+		return -1;
 	if (!strncasecmp(title, "Re:", 3))
 		p = title + 4;
 	else
@@ -429,8 +428,8 @@ add_edit_mark(char *fname, char *userid, time_t now_t, char *fromhost)
 }
 
 int is_article_area_top(char *boardname, int thread) {
-	struct boardmem *bm = getboardbyname(boardname);
-    if(bm==NULL)
+	struct boardmem *bm = ythtbbs_cache_Board_get_board_by_name(boardname);
+	if(bm==NULL)
 		return 0;
 
 	char area_top_filename[20];
@@ -440,8 +439,8 @@ int is_article_area_top(char *boardname, int thread) {
 }
 
 int update_article_area_top_link(char *boardname, int oldthread, int newfiletime, char *newtitle) {
-	struct boardmem *bm = getboardbyname(boardname);
-    if(bm==NULL)
+	struct boardmem *bm = ythtbbs_cache_Board_get_board_by_name(boardname);
+	if(bm==NULL)
 		return 0;
 
 	char area_top_filename[20];
@@ -606,3 +605,4 @@ int parse_mentions(char *content, char **userids, int from)
 	pcre_free(re);
 	return i;
 }
+

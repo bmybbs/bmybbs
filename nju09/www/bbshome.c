@@ -1,6 +1,9 @@
 #include "bbslib.h"
 #include "check_server.h"
 
+extern void nosuchboard(char *, char *);
+extern int bbsdoc_main();
+
 char *
 userid_str2(char *s)
 {
@@ -27,9 +30,7 @@ userid_str2(char *s)
 	return buf;
 }
 
-char *
-get_mime_type(char *name)
-{
+char *get_mime_type(const char *name) {
 	char *dot;
 
 	dot = strrchr(name, '.');
@@ -81,7 +82,7 @@ bbshome_main()
 	struct boardmem *x1;
 	int i;
 	char bmbuf[(IDLEN + 1) * 4];
-	struct mmapfile mf = { ptr:NULL };
+	struct mmapfile mf = { .ptr = NULL };
 	changemode(READING);
 	ytht_strsncpy(board, getparm("B"), 32);
 	if (!board[0])
@@ -102,13 +103,12 @@ bbshome_main()
 			}
 			html_header(1);
 			check_msg();
-			printf
-			    ("<frameset rows=\"%d, *\" frameSpacing=0 frameborder=0 border=0 >\n"
-			     "<frame scrolling=no marginwidth=0 marginheight=0 name=bar "
-			     "src=\"home?board=%s&t=b\">\n"
-			     "<frame src=\"home/boards/%s/html/index.htm\" name=boardpage>\n"
-			     "</frameset>", 15 + (wwwstylenum % 2) * 2, board,
-			     board);
+			printf("<frameset rows=\"%d, *\" frameSpacing=0 frameborder=0 border=0 >\n"
+					"<frame scrolling=no marginwidth=0 marginheight=0 name=bar "
+					"src=\"home?board=%s&t=b\">\n"
+					"<frame src=\"home/boards/%s/html/index.htm\" name=boardpage>\n"
+					"</frameset>", 15 + (wwwstylenum % 2) * 2, board,
+					board);
 		} else {
 			html_header(1);
 			check_msg();
@@ -119,28 +119,14 @@ bbshome_main()
 				"<tr><td width=40><img src=\"/images/spacer.gif\" width=40 height=10 alt=\"\"></td>\n"
 				"<td><table width=\"100%\" border=0 align=right cellpadding=0 cellspacing=0>\n");
 			printf("<tr><td><a href=boa?secstr=%s target=f3>%s</a> / ",
-			       x1->header.sec1,
-			       nohtml(getsectree(x1->header.sec1)->title));
+					x1->header.sec1,
+					nohtml(getsectree(x1->header.sec1)->title));
 			printf("<a href=home?board=%s target=f3>%s版</a></td></tr></table></td>\n",
-			       board, board);
+					board, board);
 			printf("<td><table border=0 align=right cellpadding=0 cellspacing=0>\n");
 			printf("<tr><td>版主[%s]</td></tr>\n",
-			       userid_str2(bm2str(bmbuf, &(x1->header))));
+					userid_str2(bm2str(bmbuf, &(x1->header))));
 			printf("</table></td></tr></table></td></tr>\n");
-/*			printf
-			    ("<a href=bbsbrdadd?board=%s target=f3>预定本版</a> \n",
-			     board);
-			printf("<a href=doc?board=%s target=f3>讨论区</a> ",
-			       board);
-			printf("<a href=bbsgdoc?board=%s target=f3>文摘区</a> ",
-			       board);
-			printf("<a href=bbs0an?path=%s target=f3>精华区</a> ",
-			       anno_path_of(board));
-			sprintf(genbuf, "boards/.backnumbers/%s/.DIR", board);
-			if (!politics(board) && file_exist(genbuf))
-				printf
-				    ("<a href=bbsbknsel?board=%s target=f3>过刊区</a> ",
-				     board);*/
 			printf("%s", "<tr><td height=70 colspan=2>\n"
 				"<table width=\"100%\" height=\"100%\" border=0 cellpadding=0 cellspacing=0>\n"
 				"<tr><td width=40>&nbsp;</td><td height=70>\n"

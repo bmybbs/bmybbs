@@ -1,6 +1,7 @@
 /* board.c */
 #ifndef __BOARD_H
 #define __BOARD_H
+#include <stddef.h>
 #include "config.h"
 
 #define BMNUM 16
@@ -75,4 +76,14 @@ struct boardmem *getboardbyname(const char *board_name) __attribute__((deprecate
  * @return
  */
 int board_is_junkboard(char *board_name);
+
+enum YTHTBBS_BOARD_INFO_STATUS {
+	YTHTBBS_BOARD_INFO_NOT_FOUND = 0,
+	YTHTBBS_BOARD_INFO_FOUND     = 1,
+};
+
+char *ythtbbs_board_set_board_file(char *buf, size_t len, const char *boardname, const char *filename);
+
+enum YTHTBBS_BOARD_INFO_STATUS ythtbbs_board_load_intro(char *buf, size_t len, const struct boardheader *bh);
+enum YTHTBBS_BOARD_INFO_STATUS ythtbbs_board_load_note(char *buf, size_t len, const struct boardheader *bh);
 #endif

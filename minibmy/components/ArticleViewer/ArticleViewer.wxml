@@ -1,0 +1,9 @@
+<view class="article" bindtap="toggleAha">
+	<view class="article-header">
+		{{article.author}} 发表于 {{time}}
+	</view>
+	<view class="article-body">
+		<rich-text nodes="{{article.content}}"></rich-text>
+	</view>
+</view>
+

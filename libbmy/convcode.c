@@ -1,28 +1,36 @@
 #include <string.h>
+#include <stdlib.h>
 #include <iconv.h>
 
-int code_convert(char *from_charset,char *to_charset,char *inbuf,size_t inlen,char *outbuf,size_t outlen) {
+int code_convert(const char *from_charset, const char *to_charset, const char *inbuf, size_t inlen, char *outbuf, size_t outlen) {
 	iconv_t cd;
 	size_t rc;
-	char **pin = &inbuf;
-	char **pout = &outbuf;
+	char *tmp = strdup(inbuf);
+	char *tmp_p = tmp;
 
-	cd = iconv_open(to_charset,from_charset);
-	if (cd==0) return -1;
-	memset(outbuf,0,outlen);
+	if (tmp == NULL)
+		return -1;
 
-	rc = iconv(cd,pin,&inlen,pout,&outlen);
+	cd = iconv_open(to_charset, from_charset);
+	if (cd == 0) {
+		free(tmp);
+		return -1;
+	}
+
+	memset(outbuf, 0, outlen);
+	rc = iconv(cd, &tmp_p, &inlen, &outbuf, &outlen);
+	free(tmp);
 	iconv_close(cd);
 
 	return (rc == (size_t) -1) ? -1 : 0;
 }
 
 //UNICODE码转为GBK码
-int u2g(char *inbuf,size_t inlen,char *outbuf,size_t outlen) {
+int u2g(const char *inbuf,size_t inlen,char *outbuf,size_t outlen) {
 	return code_convert("utf-8","gbk",inbuf,inlen,outbuf,outlen);
 }
 //GBK码转为UNICODE码
-int g2u(char *inbuf,size_t inlen,char *outbuf,size_t outlen) {
+int g2u(const char *inbuf,size_t inlen,char *outbuf,size_t outlen) {
 	return code_convert("gbk","utf-8",inbuf,inlen,outbuf,outlen);
 }
 
@@ -35,7 +43,7 @@ int is_utf_special_byte(unsigned char c){
 }
 
 //判断是否为UNICODE编码
-int is_utf(char * inbuf, size_t inlen) {
+int is_utf(const char * inbuf, size_t inlen) {
 	unsigned one_byte   = 0X00; 	//binary 00000000
 	unsigned two_byte   = 0X06; 	//binary 00000110
 	unsigned three_byte = 0X0E; 	//binary 00001110

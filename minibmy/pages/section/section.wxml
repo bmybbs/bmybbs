@@ -1,9 +1,3 @@
-<view>
-	<view class="container3">
-		<view class="section" wx:for="{{list}}" wx:for-index="idx" wx:for-item="item" wx:key="id">
-			<text class="section_id">{{item.id}}</text>
-			<text class="section_name">{{item.text}}</text>
-		</view>
-	</view>
-</view>
+<text class="header">{{sec_en}}区/{{sec_zh}}</text>
 
+<feed-item-card wx:for="{{articles}}" article="{{item}}" wx:key="id"></feed-item-card>

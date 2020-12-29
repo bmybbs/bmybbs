@@ -8,7 +8,9 @@
 
 				<DashboardCommend v-bind:_name="'通知公告'" v-bind:_articles="announce" />
 
-				<DashboardSection v-for="section in sections" v-bind:key="section.name" v-bind:_name="section.name" />
+				<DashboardCommend v-bind:_name="'今日十大'" v-bind:_articles="top10" />
+
+				<DashboardSection v-for="section in sections" v-bind:key="section.name" v-bind:_name="section.name" v-bind:_secstr="section.id" />
 			</div>
 			<aside class="col-md-12 col-lg-3">
 				<DashboardAsideAd />
@@ -20,7 +22,7 @@
 </template>
 
 <script>
-import { BMYClient } from "@/lib/FakeBMYClient.js"
+import { BMYClient } from "@/lib/BMYClient.js"
 import { BMYSECSTRS } from "@/lib/BMYConstants.js"
 import DashboardCommend from "@/components/DashboardCommend.vue"
 import DashboardAsideAd from "@/components/DashboardAsideAd.vue"
@@ -33,21 +35,20 @@ export default {
 		return {
 			announce: [],
 			commend: [],
+			top10: [],
 			sections: BMYSECSTRS,
 		}
 	},
 	mounted() {
-		const that = this;
-		BMYClient.get_announce()
-			.then(response => {
-				// TODO
-				response.articlelist.forEach((item) => that.announce.push(item));
-			});
-		BMYClient.get_commend()
-			.then(response => {
-				// TODO
-				response.articlelist.forEach((item) => that.commend.push(item));
-			});
+		BMYClient.get_announce().then(response => {
+			this.announce = response.articlelist;
+		});
+		BMYClient.get_commend().then(response => {
+			this.commend = response.articlelist;
+		});
+		BMYClient.get_top10().then(response => {
+			this.top10 = response.articlelist;
+		});
 	},
 	components: {
 		DashboardCommend,

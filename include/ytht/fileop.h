@@ -48,7 +48,7 @@ int readstrvalue(const char *filename, const char *str, char *value, int size);
 int readstrvalue_fp(FILE *fp, const char *str, char *value, size_t size);
 int savestrvalue(const char *filename, const char *str, const char *value);
 void sigbus(int signo);
-int mmapfile(char *filename, struct mmapfile *pmf);
+int mmapfile(const char *filename, struct mmapfile *pmf);
 int trycreatefile(char *path, char *fnformat, int startnum, int maxtry);
 int copyfile(char *source, char *destination);
 int openlockfile(const char *filename, int flag, int op);
@@ -62,7 +62,7 @@ int clearpath(const char *path);
  * @param seekstr 需要查找的字符串
  * @return 若包含返回 1，否则返回 0。
  */
-int seek_in_file(char* filename, char *seekstr);
+int seek_in_file(const char* filename, const char *seekstr);
 
 #ifdef BMYBBS_MT
 /**

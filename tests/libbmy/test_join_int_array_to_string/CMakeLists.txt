@@ -1,0 +1,3 @@
+add_executable(test_join_int_array_to_string main.c)
+target_link_libraries(test_join_int_array_to_string bmy)
+

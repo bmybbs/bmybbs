@@ -66,8 +66,8 @@ char *cperf(int);
 int countexp(struct userec *);
 int countperf(struct userec *);
 int countlife(struct userec *);
-int userlock(char *userid, int locktype);
-int userunlock(char *userid, int fd);
+int userlock(const char *userid, int locktype);
+int userunlock(const char *userid, int fd);
 int checkbansite(const char *addr);
 
 /** 检查用户权限
@@ -87,7 +87,14 @@ int check_user_perm(struct userec *x, int level);
  * @see int has_read_perm(struct userec *user, char *board)
  * @see int has_read_perm_x(struct userec *user, struct boardmem *x)
  */
-int check_user_read_perm(struct user_info *user, char *board);
+int check_user_read_perm(const struct user_info *user, const char *board);
+
+/**
+ * @brief 检查 guest 阅读权限
+ * 参考 check_user_read_perm_x 的实现，便于相关接口调用
+ * @return 有阅读权限返回 true
+ */
+bool check_guest_read_perm_x(const struct boardmem *board);
 
 /**
  * @brief 检查用户的阅读权限
@@ -98,7 +105,7 @@ int check_user_read_perm(struct user_info *user, char *board);
  * @see int has_read_perm(struct userec *user, char *board)
  * @see int has_read_perm_x(struct userec *user, struct boardmem *x)
  */
-int check_user_read_perm_x(struct user_info *user, struct boardmem *board);
+int check_user_read_perm_x(const struct user_info *user, const struct boardmem *board);
 
 /**
  * @brief 检查用户的发帖权限
@@ -107,7 +114,7 @@ int check_user_read_perm_x(struct user_info *user, struct boardmem *board);
  * @param board
  * @return 有权限返回 1，无权限返回 0。
  */
-int check_user_post_perm_x(struct user_info *user, struct boardmem *board);
+int check_user_post_perm_x(const struct user_info *user, const struct boardmem *board);
 int userbansite(const char *userid, const char *fromhost);
 void logattempt(const char *user, const char *from, const char *zone, time_t time);
 int inoverride(char *who, char *owner, char *file);
@@ -118,7 +125,7 @@ int inoverride(char *who, char *owner, char *file);
  * @param userid 字符串
  * @return 包含则返回
  */
-int id_with_num(char *userid);
+int id_with_num(const char *userid);
 
 int chk_BM(struct userec *, struct boardheader *bh, int isbig);
 int chk_BM_id(char *, struct boardheader *);

@@ -1,0 +1,10 @@
+.container3 {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+}
+
+.container3 section-item {
+	width: 33%;
+}
+

@@ -1,0 +1,6 @@
+{
+	"usingComponents": {
+		"article-item-card": "../../components/ArticleItemCard/ArticleItemCard"
+	}
+}
+
