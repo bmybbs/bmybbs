@@ -113,14 +113,14 @@ bbsleft_main()
 		mybrdmode = atoi(buf);
 		printdiv(&div, "预定讨论区");
 		readmybrd(currentuser.userid);
-		for (i = 0; i < mybrdnum; i++) {
-			ptr = mybrd[i];
+		for (i = 0; i < g_GoodBrd.num; i++) {
+			ptr = g_GoodBrd.ID[i];
 			if (!mybrdmode) {
-				x1 = getboard(mybrd[i]);
+				x1 = getboard(ptr);
 				if (x1)
 					ptr = nohtml(titlestr(x1->header.title));
 			}
-			printf("&nbsp;&nbsp;<a target=f3 href=%s%s class=linkleft>%s</a><br>\n", showByDefMode(), mybrd[i], ptr);
+			printf("&nbsp;&nbsp;<a target=f3 href=%s%s class=linkleft>%s</a><br>\n", showByDefMode(), g_GoodBrd.ID[i], ptr);
 		}
 		printf("&nbsp;&nbsp;<a target=f3 href=bbsboa?secstr=* class=linkleft>预定区总览</a><br>\n");
 		printf("&nbsp;&nbsp;<a target=f3 href=bbsmybrd?mode=1 class=linkleft>预定管理</a><br>\n");

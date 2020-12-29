@@ -11,7 +11,7 @@
 
 #define AREA_TOP_CNT	5	// 显示每个区的前TOP_AREA_CNT大热门话题
 //#define AREA_CNT		16	// 共有AREA_CNT个区
-#define LEN(Array)		(sizeof(Array)/sizeof(Array[0]))		
+#define LEN(Array)		(sizeof(Array)/sizeof(Array[0]))
 #define AREA_DIR		"etc/Area_Dir"	// 每个区的热门话题文件的存放目录
 
 struct data_s {
@@ -32,7 +32,7 @@ const char * TDSTYLE = "<style type=\"text/css\">.td-overflow { width: 236px; wh
 const char * BDSTYLE = "<style type=\"text/css\">.bd-overflow { width: 500px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}</style>";
 
 int allflag = 0;
-struct mmapfile filtermf = { ptr:NULL, size:0 };
+struct mmapfile filtermf = { .ptr = NULL, .size = 0 };
 
 extern int postfile(char *filename, char *owner, char *nboard, char *posttitle);
 
@@ -51,7 +51,7 @@ filtertitle(char *tofilter)
 		return 0;
 	return ytht_smth_filter_string(tofilter, &filtermf);
 }
- 
+
 int
 trytoinsert(char *board, struct boardtop *bt)
 {
@@ -76,7 +76,7 @@ getTopTenBt(struct boardtop ** basebt, struct boardheader *bh)
 		}
 	}
 
-	return NULL; 
+	return NULL;
 }
 
 int
@@ -84,7 +84,7 @@ trytoinsert_area(struct boardheader *bh, struct boardtop *bt)
 {
 	struct boardtop * bt1= getTopTenBt(topten_area, bh);
 	struct boardtop * bt2= getTopTenBt(ctopten_area, bh);
-	
+
 	if (bt1 == NULL)
 	{
 		printf("bt1 is NULL!\n");
@@ -132,12 +132,12 @@ _topn(void *bh_void, void * fargs)
 	if (bh->clubnum != 0)
 		if (!(bh->flag & CLUBTYPE_FLAG))
 			return 0;
-	
+
 	// 以下修改是为了让某些版面无法上10大，modified by interma 2005.11.24
 	char buf[256];
 	FILE *fp2;
 	fp2 = fopen(MY_BBS_HOME "/etc/top10forbid", "r");
-	if (fp2 != 0) 
+	if (fp2 != 0)
 	{
 	while(fgets(buf, 256, fp2) != NULL)
 	{
@@ -218,9 +218,7 @@ _topn(void *bh_void, void * fargs)
 				real_title += 4;
 			strncpy(data->bt.title, real_title, 60);
 			data->user_hash = NULL;
-			data->user_hash =
-			    ght_create(tocount, NULL,
-				       GHT_HEURISTICS_MOVE_TO_FRONT);
+			data->user_hash = ght_create(tocount, NULL, GHT_HEURISTICS_MOVE_TO_FRONT);
 			data->bt.unum = 1;
 			(data->bt.lasttime) = ptr->filetime;
 			data->bt.thread = ptr->thread;
@@ -228,25 +226,18 @@ _topn(void *bh_void, void * fargs)
 			strncpy(owner, fh2realauthor(ptr), 14);
 			strncpy(data->bt.firstowner, fh2owner(ptr), 14);
 			*usernum = 0;
-			ght_insert(data->user_hash, usernum,
-				   sizeof (char) * strlen(owner), owner);
+			ght_insert(data->user_hash, usernum, sizeof (char) * strlen(owner), owner);
 			ght_insert(p_table, data, sizeof (int), &(ptr->thread));
 		} else {
 			strncpy(owner, fh2realauthor(ptr), 14);
-			if (
-			    (usernum =
-			     ght_get(data->user_hash,
-				     sizeof (char) * strlen(owner),
-				     owner)) == NULL) {
+			if ((usernum = ght_get(data->user_hash, sizeof (char) * strlen(owner), owner)) == NULL) {
 				(data->bt.unum)++;
 				(data->bt.lasttime) = ptr->filetime;
 				if ((usernum = malloc(sizeof (int))) == NULL) {
 					errlog("malloc failed");
 					exit(-1);
 				}
-				ght_insert(data->user_hash, usernum,
-					   sizeof (char) * strlen(owner),
-					   owner);
+				ght_insert(data->user_hash, usernum, sizeof (char) * strlen(owner), owner);
 			} else {
 				(*usernum)++;
 			}
@@ -260,13 +251,11 @@ _topn(void *bh_void, void * fargs)
 	MMAP_END mmapfile(NULL, &mf);
 	i = 0;
 	bt1 = bt;
-	for (data = ght_first(p_table, &iterator); data;
-	     data = ght_next(p_table, &iterator)) {
+	for (data = ght_first(p_table, &iterator); data; data = ght_next(p_table, &iterator)) {
 		memcpy(bt1, &(data->bt), sizeof (struct boardtop));
 		bt1++;
 		i++;
-		for (usernum = ght_first(data->user_hash, &iterator1); usernum;
-		     usernum = ght_next(data->user_hash, &iterator1)) {
+		for (usernum = ght_first(data->user_hash, &iterator1); usernum; usernum = ght_next(data->user_hash, &iterator1)) {
 			free(usernum);
 		}
 		ght_finalize(data->user_hash);
@@ -331,14 +320,9 @@ html_topten(int mode, char *file)
 	fprintf(fp, "%s<body><center><div class='rhead'>%s --<span class='h11'> 今日十大热门话题</span></div>\n<hr>\n",
 		TDSTYLE, MY_BBS_NAME);
 	fprintf(fp, "<table border='1'>\n");
-	fprintf
-	    (fp,
-	     "<tr><td>名次</td><td>讨论区</td><td>标题</td><td>人数</td></tr>\n");
+	fprintf(fp, "<tr><td>名次</td><td>讨论区</td><td>标题</td><td>人数</td></tr>\n");
 	for (j = 0; j < 10 && bt->unum != 0; j++, bt++) {
-		fprintf
-		    (fp,
-		     "<tr><td>第 %d 名</td><td><a href='tdoc?board=%s'>%s</a></td><td><div class='td-overflow'><a href='tfind?board=%s&amp;th=%ld' title='%s'>%s</a></div></td><td>%d</td></tr>\n",
-		     j + 1, bt->board, bt->board, bt->board, bt->thread, void1(nohtml(bt->title)), void1(nohtml(bt->title)),bt->unum);
+		fprintf(fp, "<tr><td>第 %d 名</td><td><a href='tdoc?board=%s'>%s</a></td><td><div class='td-overflow'><a href='tfind?board=%s&amp;th=%ld' title='%s'>%s</a></div></td><td>%d</td></tr>\n", j + 1, bt->board, bt->board, bt->board, bt->thread, void1(nohtml(bt->title)), void1(nohtml(bt->title)),bt->unum);
 	}
 	fprintf(fp, "</table></center></body>");
 	fclose(fp);
@@ -359,7 +343,7 @@ html_topten(int mode, char *file)
 		sprintf(path, AREA_DIR "/%c", area[i]);
 		fp = fopen(path, "w");
 		fprintf(fp, "%s<table width='90%%'>", BDSTYLE);
-		for (j = 0; j < AREA_TOP_CNT && bt->unum != 0; j++, bt++) 
+		for (j = 0; j < AREA_TOP_CNT && bt->unum != 0; j++, bt++)
 		{
 			fprintf(fp, "<tr><td width='120px'>[<a href='tdoc?board=%s'>%s</a>]</td><td><div class='bd-overflow'><a href='tfind?board=%s&amp;th=%ld' title='%s'>%s</a></div></td><td width='20px'>(%d)</td></tr>",
 				bt->board, bt->board, bt->board, bt->thread, void1(nohtml(bt->title)), void1(nohtml(bt->title)),bt->unum);
@@ -374,28 +358,25 @@ html_topten(int mode, char *file)
 int
 index_topten(int mode, char *file)
 {
-        struct boardtop *bt;
-        int j;
-        FILE *fp;
-        if (mode)
-                bt = ctopten;
-        else
-                bt = topten;
-        fp = fopen("wwwtmp/indextopten.tmp", "w");
-        if (!fp) {
-                errlog("topten write error");
-                exit(1);
-        }
-        fprintf(fp, "%s", TDSTYLE);
-        for (j = 0; j < 10 && bt->unum != 0; j++, bt++) {
-                fprintf
-                    (fp,
-		     "<tr><td><span class=\"smalltext\">%d</span></td><td><div class='td-overflow'><a href='tfind?board=%s&th=%ld' title='%s'>%s</a></div></td></tr>\n",
-                     j + 1, bt->board, bt->thread, void1(nohtml(bt->title)), void1(nohtml(bt->title)));
-        }
-        fclose(fp);
-        rename("wwwtmp/indextopten.tmp", file);
-        return 0;
+	struct boardtop *bt;
+	int j;
+	FILE *fp;
+	if (mode)
+		bt = ctopten;
+	else
+		bt = topten;
+	fp = fopen("wwwtmp/indextopten.tmp", "w");
+	if (!fp) {
+		errlog("topten write error");
+		exit(1);
+	}
+	fprintf(fp, "%s", TDSTYLE);
+	for (j = 0; j < 10 && bt->unum != 0; j++, bt++) {
+		fprintf(fp, "<tr><td><span class=\"smalltext\">%d</span></td><td><div class='td-overflow'><a href='tfind?board=%s&th=%ld' title='%s'>%s</a></div></td></tr>\n", j + 1, bt->board, bt->thread, void1(nohtml(bt->title)), void1(nohtml(bt->title)));
+	}
+	fclose(fp);
+	rename("wwwtmp/indextopten.tmp", file);
+	return 0;
 }
 
 int
@@ -412,7 +393,7 @@ telnet_topten(int mode, char *file)
 		bt = topten;
 	fp = fopen("etc/topten.tmp", "w");
 	fp2 = fopen("etc/dayf_index", "w");	// 建立这个文件是为了实现telnet下边直接看10大，modified by interma@BMY 2005.6.25
-	
+
 	if (!fp) {
 		errlog("topten write error");
 		exit(1);
@@ -428,11 +409,11 @@ telnet_topten(int mode, char *file)
 			"\033[1;37m第\033[1;31m%3d\033[37m 名 \033[37m信区 : \033[33m%-16s\033[37m【\033[32m%s\033[37m】\033[36m%4d\033[37m 人\n     \033[37m标题 : \033[1;44;37m%-60.60s\033[40m\n",
 			j + 1, bt->board, p, bt->unum,bt->title);
 
-		fprintf(fp2, "%s\n%s\n", bt->board, bt->title);	
+		fprintf(fp2, "%s\n%s\n", bt->board, bt->title);
 	}
 	fclose(fp);
 	fclose(fp2);
-	
+
 	rename("etc/topten.tmp", file);
 	return 0;
 }
@@ -452,14 +433,10 @@ main(int argc, char **argv)
 			allflag = 1;
 			break;
 		case 'h':
-			printf
-			    ("%s [-a|boardname]\n  do board top %d article\n",
-			     argv[0], TOPN);
+			printf("%s [-a|boardname]\n  do board top %d article\n", argv[0], TOPN);
 			return 0;
 		case '?':
-			printf
-			    ("%s:Unknown argument.\nTry `%s -h' for more information.\n",
-			     argv[0], argv[0]);
+			printf("%s:Unknown argument.\nTry `%s -h' for more information.\n", argv[0], argv[0]);
 			return 0;
 		}
 	}
@@ -468,9 +445,7 @@ main(int argc, char **argv)
 	if (optind < argc) {
 		name = argv[optind++];
 		if (optind < argc) {
-			printf
-			    ("%s:Too many arguments.\nTry `%s -h' for more information.\n",
-			     argv[0], argv[0]);
+			printf("%s:Too many arguments.\nTry `%s -h' for more information.\n", argv[0], argv[0]);
 			return 0;
 		}
 		strncpy(bh.filename, name, STRLEN);
@@ -487,7 +462,7 @@ main(int argc, char **argv)
 			errlog("malloc failed");
 			exit(1);
 		}
-		
+
 		int area_cnt = LEN(area);
 		topten_area = calloc(area_cnt, sizeof (struct boardtop *));
 		ctopten_area = calloc(area_cnt, sizeof (struct boardtop *));
@@ -521,7 +496,7 @@ main(int argc, char **argv)
 		html_topten(0, "wwwtmp/topten");
 		html_topten(1, "wwwtmp/ctopten");
 		index_topten(0, "wwwtmp/indextopten");
-        index_topten(1, "wwwtmp/cindextopten");
+		index_topten(1, "wwwtmp/cindextopten");
 		time_t tt=time(0);
 		char title[128];
 		strcpy(title,  asctime(localtime(&tt)));

@@ -56,7 +56,7 @@ int query_captcha_by_id(unsigned int cap_id, struct BMYCaptcha *captcha) {
 	results[1].buffer = &(captcha->timestamp);
 	results[1].buffer_length = sizeof(long long);
 
-	execute_prep_stmt(sqlbuf, NULL, results, NULL, query_captcha_by_id_callback);
+	execute_prep_stmt(sqlbuf, MYSQL_CHARSET_GBK, NULL, results, NULL, query_captcha_by_id_callback);
 	time(&(captcha->create_time));
 	return 0;
 }

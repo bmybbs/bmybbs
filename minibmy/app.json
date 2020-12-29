@@ -1,8 +1,11 @@
 {
 	"pages":[
 		"pages/index/index",
+		"pages/dashboard/dashboard",
 		"pages/feed/feed",
 		"pages/section/section",
+		"pages/sections/sections",
+		"pages/thread/thread",
 		"pages/me/me",
 		"pages/logs/logs"
 	],
@@ -17,14 +20,14 @@
 		"color": "#999999",
 		"position": "top",
 		"list": [{
-			"pagePath": "pages/index/index",
+			"pagePath": "pages/dashboard/dashboard",
 			"text": "导读"
 		}, {
 			"pagePath": "pages/feed/feed",
 			"text": "订阅"
 		}, {
-			"pagePath": "pages/section/section",
-			"text": "版面"
+			"pagePath": "pages/sections/sections",
+			"text": "分区"
 		}, {
 			"pagePath": "pages/me/me",
 			"text": "我的"

@@ -1,22 +1,31 @@
+import { BMYClient } from "../../utils/BMYClient.js"
+import { BMYSECSTRS } from "../../utils/BMYConstants.js"
+
 Page({
 	data: {
-		list: [
-			{id: "0", text: "本站系统"},
-			{id: "1", text: "交通大学"},
-			{id: "2", text: "开发技术"},
-			{id: "3", text: "电脑应用"},
-			{id: "4", text: "学术科学"},
-			{id: "5", text: "社会科学"},
-			{id: "6", text: "文学艺术"},
-			{id: "7", text: "知性感性"},
-			{id: "8", text: "体育运动"},
-			{id: "9", text: "休闲音乐"},
-			{id: "G", text: "游戏天地"},
-			{id: "N", text: "新闻信息"},
-			{id: "H", text: "乡音乡情"},
-			{id: "A", text: "校务信息"},
-			{id: "C", text: "俱乐部区"},
-		]
-	}
+		articles: [],
+		sec_en: "",
+		sec_zh: "",
+	},
+	onLoad: function (options) {
+		BMYClient.get_article_list_by_section(options.id).then(response => {
+			if (Array.isArray(response.articles)) {
+				response.articles.map((x) => {
+					x.id = x.boardname_en + x.tid;
+				});
+				this.setData({
+					articles: response.articles
+				});
+			}
+		});
+		BMYSECSTRS.map((x) => {
+			if (x.id == options.id) {
+				this.setData({
+					sec_en: x.id,
+					sec_zh: x.text,
+				});
+			}
+		})
+	},
 })
 

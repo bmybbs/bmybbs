@@ -216,7 +216,7 @@ int query_record_num(char* value, int style)
 	results[0].buffer_length = sizeof(count);
 
 	sprintf(sqlbuf,"SELECT count(*) FROM %s WHERE %s=? AND status>0;", USERREG_TABLE, active_style_str[style]);
-	status = execute_prep_stmt(sqlbuf, params, results, NULL, query_record_num_callback);
+	status = execute_prep_stmt(sqlbuf, MYSQL_CHARSET_GBK, params, results, NULL, query_record_num_callback);
 
 	free(str);
 	return (status != MYSQL_OK) ? -1 : atoi(count);
@@ -254,7 +254,7 @@ int write_active(struct active_data* act_data)
 	results->buffer = count_s;
 	results->buffer_length = sizeof(count_s);
 
-	rc = execute_prep_stmt(sqlbuf, params_count, results, NULL, write_active_callback_count);
+	rc = execute_prep_stmt(sqlbuf, MYSQL_CHARSET_GBK, params_count, results, NULL, write_active_callback_count);
 	if (rc != MYSQL_OK)
 		return WRITE_FAIL;
 
@@ -309,7 +309,7 @@ int write_active(struct active_data* act_data)
 	params_I_U[9].buffer_length = strlen(act_data->userid);
 	params_I_U[9].buffer_type = MYSQL_TYPE_STRING;
 
-	rc = execute_prep_stmt(sqlbuf, params_I_U, NULL, &row_affected, write_active_callback_I_U);
+	rc = execute_prep_stmt(sqlbuf, MYSQL_CHARSET_GBK, params_I_U, NULL, &row_affected, write_active_callback_I_U);
 	return (rc != MYSQL_OK || row_affected != 1) ? WRITE_FAIL : ((count == 0) ? WRITE_SUCCESS : UPDATE_SUCCESS);
 }
 
@@ -381,7 +381,7 @@ int read_active(char* userid, struct active_data* act_data)
 	results[10].buffer = &(act_data->status);
 	results[10].buffer_length = sizeof(int);
 
-	rc = execute_prep_stmt(sqlbuf, params, results, &count, read_active_callback);
+	rc = execute_prep_stmt(sqlbuf, MYSQL_CHARSET_GBK, params, results, &count, read_active_callback);
 	convert_mysql_time_to_str(act_data->regtime, &regtime);
 	convert_mysql_time_to_str(act_data->uptime, &uptime);
 
@@ -446,7 +446,7 @@ struct associated_userid *get_associated_userid_by_style(int style, const char *
 	results[1].buffer_length = sizeof(long);
 
 	au = NULL;
-	execute_prep_stmt(sqlbuf, params, results, (void *) &au, get_associated_userid_callback);
+	execute_prep_stmt(sqlbuf, MYSQL_CHARSET_GBK, params, results, (void *) &au, get_associated_userid_callback);
 	return au;
 }
 

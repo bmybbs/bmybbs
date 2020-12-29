@@ -9,7 +9,7 @@ int updatelastpost(char *board);
 int hasreadperm(struct boardheader *bh);
 int hasreadperm_ext(char *username, char *boardname);
 int getbnum(const char *bname);
-int canberead(char *bname);
+int canberead(const char *bname);
 int noadm4political(const char *bname);
 int haspostperm(char *bname);
 int posttest(char *uid, char *bname);

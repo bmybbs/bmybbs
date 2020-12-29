@@ -102,8 +102,8 @@ unsigned int ythtbbs_cache_User_hash(const char *userid);
 void ythtbbs_cache_UserTable_resolve();
 
 // 如果返回 QUIT 则终止
-typedef int (*ythtbbs_cache_UserTable_apply_callback)(const struct ythtbbs_cache_User *user, va_list ap);
-void ythtbbs_cache_UserTable_apply_v(ythtbbs_cache_UserTable_apply_callback callback, ...);
+typedef int (*ythtbbs_cache_UserTable_foreach_callback)(const struct ythtbbs_cache_User *user, int curr_idx, va_list ap);
+void ythtbbs_cache_UserTable_foreach_v(ythtbbs_cache_UserTable_foreach_callback callback, ...);
 
 int ythtbbs_cache_UserTable_get_user_online_friends(const char *userid, bool has_see_cloak_perm, struct user_info *user_list, size_t user_list_size);
 
@@ -291,6 +291,7 @@ void ythtbbs_cache_Board_resolve();
 struct boardmem *ythtbbs_cache_Board_get_board_by_idx(int idx);
 struct boardmem *ythtbbs_cache_Board_get_board_by_name(const char *bname);
 int ythtbbs_cache_Board_get_idx_by_ptr(const struct boardmem *ptr);
+int ythtbbs_cache_Board_get_idx_by_name(const char *bname);
 int ythtbbs_cache_Board_set_bm_hat_v(void *b, va_list ap);
 
 time_t ythtbbs_cache_Board_get_pollvote(void);

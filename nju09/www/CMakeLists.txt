@@ -4,6 +4,7 @@ set(SRC
 	bbsdoc.c
 	bbscon.c
 	bbsbrdadd.c
+	bbsbrddel.c
 	bbsboa.c
 	bbsall.c
 	bbsanc.c
@@ -130,6 +131,7 @@ set(SRC
 	deny_users.c
 	check_server.c
 
+	bbssub.c
 	api_user_check.c
 	api_loginpics.c
 )

@@ -1,0 +1,17 @@
+<view class="post_item">
+	<view class="post_title">{{article.title}}<view class="post_board">#{{article.board}}</view></view>
+	<view class="post_footer">
+		<view class="post_info">
+			<view class="post_author">@{{article.author}}</view>
+			发表于
+			<view class="post_time">{{readableTime}}</view>
+		</view>
+		<view class="post_meta">
+			<view class="post_comment">
+				<mp-icon icon="comment" color="#333" size="{{18}}"></mp-icon>
+				{{article.th_num + 1}}
+			</view>
+		</view>
+	</view>
+</view>
+

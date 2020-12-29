@@ -94,6 +94,21 @@ int ythtbbs_cache_Board_get_idx_by_ptr(const struct boardmem *ptr) {
 		return ptr - &shm_board->bcache[0];
 }
 
+int ythtbbs_cache_Board_get_idx_by_name(const char *bname) {
+	int i;
+	if (bname == NULL || bname[0] == '\0')
+		return -1;
+
+	ythtbbs_cache_Board_resolve();
+	for (i = 0; i < shm_board->number; i++) {
+		if (!strncasecmp(bname, shm_board->bcache[i].header.filename, STRLEN)) {
+			return i;
+		}
+	}
+
+	return -1;
+}
+
 int ythtbbs_cache_Board_set_bm_hat_v(void *b, va_list ap) {
 	struct boardmanager *bm = b;
 	bool *online, *invisible;

@@ -276,9 +276,7 @@ countlife(struct userec *urec)
 	return res;
 }
 
-int
-userlock(char *userid, int locktype)
-{
+int userlock(const char *userid, int locktype) {
 	char path[256];
 	int fd;
 	sethomefile_s(path, sizeof(path), userid, ".lock");
@@ -289,9 +287,7 @@ userlock(char *userid, int locktype)
 	return fd;
 }
 
-int
-userunlock(char *userid, int fd)
-{
+int userunlock(const char *userid, int fd) {
 	flock(fd, LOCK_UN);
 	close(fd);
 	return 0;
@@ -390,12 +386,27 @@ int check_user_perm(struct userec *x, int level) {
 	return (x->userlevel & level);
 }
 
-int check_user_read_perm(struct user_info *user, char *board)
+int check_user_read_perm(const struct user_info *user, const char *board)
 {
-	return check_user_read_perm_x(user, getboardbyname(board));
+	return check_user_read_perm_x(user, ythtbbs_cache_Board_get_board_by_name(board));
 }
 
-int check_user_read_perm_x(struct user_info *user, struct boardmem *board)
+bool check_guest_read_perm_x(const struct boardmem *board) {
+	if (!board)
+		return false;
+
+	if (board->header.clubnum != 0) {
+		return (board->header.flag & CLUBTYPE_FLAG);
+	}
+
+	// guest.userlevel = 0
+	if (board->header.level == 0 || (board->header.level & (PERM_POSTMASK | PERM_NOZAP)))
+		return true;
+
+	return false;
+}
+
+int check_user_read_perm_x(const struct user_info *user, const struct boardmem *board)
 {
 	if(!board || !user)
 		return 0;
@@ -423,7 +434,7 @@ int check_user_read_perm_x(struct user_info *user, struct boardmem *board)
 	return 0;
 }
 
-int check_user_post_perm_x(struct user_info *user, struct boardmem *board)
+int check_user_post_perm_x(const struct user_info *user, const struct boardmem *board)
 {
 	char buf[256];
 
@@ -480,9 +491,9 @@ int check_user_post_perm_x(struct user_info *user, struct boardmem *board)
 	return 1;
 }
 
-int id_with_num(char *userid)
+int id_with_num(const char *userid)
 {
-	char *s;
+	const char *s;
 	for (s = userid; *s != '\0'; s++)
 		if (*s < 1 || !isalpha(*s)) return 1;
 	return 0;

@@ -1,4 +1,9 @@
 #include "bbslib.h"
+#include "bmy/article.h"
+#include "bmy/board.h"
+
+int update_form(char *board, char *file, char *title);
+extern int testmath(char *ptr); // bbssnd
 
 int
 bbsedit_main()
@@ -12,7 +17,7 @@ bbsedit_main()
 	struct boardmem *brd;
 	struct fileheader *x = NULL;
 	char bmbuf[IDLEN * 4 + 4];
-	struct mmapfile mf = { ptr:NULL };
+	struct mmapfile mf = { .ptr = NULL };
 	html_header(1);
 	check_msg();
 	if (!loginok || isguest)
@@ -219,10 +224,11 @@ update_form(char *board, char *file, char *title)
 	char dir[STRLEN];
 	char filename[STRLEN];
 	struct fileheader x;
-	struct mmapfile mf = { ptr:NULL };
+	struct mmapfile mf = { .ptr = NULL };
 	int dangerous = 0;
 	size_t i;
 	long l;
+	unsigned old_accessed;
 	filetime = atoi(file + 2);
 	usemath = strlen(getparm("usemath"));
 	nore = strlen(getparm("nore"));
@@ -290,8 +296,13 @@ update_form(char *board, char *file, char *title)
 		if (fread(&x, sizeof (struct fileheader), 1, fp) <= 0)
 			break;
 		if (x.filetime == filetime) {
+			old_accessed = x.accessed;
 			x.edittime = now_t;
 			x.sizebyte = ytht_num2byte(eff_size(path));
+			if (!bmy_board_is_system_board(board) && x.filetime == x.thread && strcmp(x.title, title) != 0) {
+				// 对于主题贴，且标题发生变化
+				bmy_article_update_thread_title(ythtbbs_cache_Board_get_idx_by_name(board) + 1, x.thread, title);
+			}
 			ytht_strsncpy(x.title, title, sizeof(x.title));
 			if (nore)
 				x.accessed |= FH_NOREPLY;
@@ -307,6 +318,10 @@ update_form(char *board, char *file, char *title)
 				x.accessed &= ~FH_ATTACHED;
 			if (dangerous)
 				x.accessed |= FH_DANGEROUS;
+			if (!bmy_board_is_system_board(board) && x.filetime == x.thread && x.accessed != old_accessed) {
+				// 对于主题帖且标记发生变化
+				bmy_article_update_thread_accessed(ythtbbs_cache_Board_get_idx_by_name(board) + 1, x.thread, x.accessed);
+			}
 			put_record(&x, sizeof (struct fileheader), num, dir);
 			updatelastpost(board);
 			break;

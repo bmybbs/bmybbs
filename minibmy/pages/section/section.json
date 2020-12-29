@@ -1,4 +1,6 @@
 {
-	"usingComponents": {}
+	"usingComponents": {
+		"feed-item-card": "../../components/FeedItemCard/FeedItemCard"
+	}
 }
 

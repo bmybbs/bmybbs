@@ -1,4 +1,5 @@
 add_subdirectory(libytht/test_ytht_del_from_file)
+add_subdirectory(libbmy/test_join_int_array_to_string)
 
 add_executable(bmybbs.test
 	main.c

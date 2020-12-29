@@ -1,0 +1,5 @@
+<view class="section" bindtap="gotoSection">
+	<text class="section_id">{{item.id}}</text>
+	<text class="section_name">{{item.text}}</text>
+</view>
+

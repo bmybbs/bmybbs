@@ -1,0 +1,4 @@
+<text class="header">{{boardname_en}}/{{thread_title}}</text>
+
+<article-viewer wx:for="{{articlelist}}" board="{{item.board}}" aid="{{item.aid}}" wx:key="aid"></article-viewer>
+

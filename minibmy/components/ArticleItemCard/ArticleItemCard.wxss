@@ -1,0 +1,38 @@
+.post_item {
+	background-color: #fff;
+	padding: 20rpx;
+	margin: 20rpx;
+	border: 2rpx solid rgba(92,92,92,.23);
+	box-shadow: 0px 12rpx 10rpx 0px rgba(92,92,92,0.23);
+}
+.post_title {
+	font-size: 1.2rem;
+	font-weight: 600;
+}
+.post_board {
+	display: inline-block;
+	margin-left: 20rpx;
+	color: #aaa;
+	font-size: 1rem;
+	font-weight: 500;
+}
+
+.post_info, .post_footer {
+	display: flex;
+	justify-content: space-between;
+	font-size: 0.7rem;
+	color: #666;
+	font-weight: 200;
+}
+.post_meta {
+	display: flex;
+}
+
+.post_comment {
+	margin-left: 20rpx;
+}
+
+.post_digest {
+	margin: 30rpx 0;
+}
+

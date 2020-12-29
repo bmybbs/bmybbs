@@ -47,7 +47,7 @@ static MYSQL * my_connect_mysql(MYSQL *s)
 	return mysql_real_connect(s, sql_host, sql_user, sql_pass, sql_db, atoi(sql_port), NULL, CLIENT_IGNORE_SIGPIPE);
 }
 
-int execute_prep_stmt(const char* sqlbuf, MYSQL_BIND *params, MYSQL_BIND *result_cols, void *result_set, BMY_MYSQL_WRAPPER_CALLBACK callback) {
+int execute_prep_stmt(const char* sqlbuf, enum MYSQL_CHARSET charset, MYSQL_BIND *params, MYSQL_BIND *result_cols, void *result_set, BMY_MYSQL_WRAPPER_CALLBACK callback) {
 	MYSQL *s;
 	MYSQL_STMT *stmt;
 	int mysql_status;
@@ -59,7 +59,7 @@ int execute_prep_stmt(const char* sqlbuf, MYSQL_BIND *params, MYSQL_BIND *result
 	result = MYSQL_OK;
 
 	s = mysql_init(NULL);
-	mysql_options(s, MYSQL_SET_CHARSET_NAME, "gbk");
+	mysql_options(s, MYSQL_SET_CHARSET_NAME, (charset == MYSQL_CHARSET_GBK ? "gbk" : "utf8"));
 	if (!my_connect_mysql(s)) {
 		result = MYSQL_CANNOT_CONNECT_TO_MYSQL;
 		goto END;
@@ -67,6 +67,7 @@ int execute_prep_stmt(const char* sqlbuf, MYSQL_BIND *params, MYSQL_BIND *result
 
 	stmt = mysql_stmt_init(s);
 	if (!stmt) {
+		result = MYSQL_CANNOT_INIT_STMT;
 		goto END;
 	}
 
@@ -113,3 +114,4 @@ END:
 	if(s)    mysql_close(s);
 	return   result;
 }
+

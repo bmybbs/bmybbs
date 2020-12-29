@@ -124,8 +124,7 @@ append_record(const char *filename, const void *record, const size_t size)
 }
 
 int
-new_apply_record(char *filename, int size, int (*fptr) (void *, void *),
-		 void *farg)
+new_apply_record(char *filename, int size, int (*fptr) (void *, void *), void *farg)
 {
 	char *buf;
 	int fd, sizeread, n, i, retv;
@@ -160,8 +159,7 @@ new_apply_record(char *filename, int size, int (*fptr) (void *, void *),
 }
 
 int
-new_search_record(char *filename, void *rptr, int size,
-		  int (*fptr) (void *, void *), void *farg)
+new_search_record(char *filename, void *rptr, int size, int (*fptr) (void *, void *), void *farg)
 {
 	int fd;
 	int id = 1;
@@ -198,8 +196,7 @@ new_search_record(char *filename, void *rptr, int size,
 }
 
 int
-search_record(char *filename, void *rptr, int size,
-	      int (*fptr) (void *, void *), void *farg)
+search_record(char *filename, void *rptr, int size, int (*fptr) (void *, void *), void *farg)
 {
 	int fd;
 	int id = 1;
@@ -251,9 +248,7 @@ int (*filecheck) (void *);
 	flock(fd, LOCK_EX);
 	fstat(fd, &st);
 	MMAP_TRY {
-		ptr =
-		    mmap(0, st.st_size, PROT_READ | PROT_WRITE,
-			 MAP_FILE | MAP_SHARED, fd, 0);
+		ptr = mmap(0, st.st_size, PROT_READ | PROT_WRITE, MAP_FILE | MAP_SHARED, fd, 0);
 		ret = 0;
 		pos = ent;
 		if (pos * size > st.st_size) {
@@ -261,8 +256,7 @@ int (*filecheck) (void *);
 		} else {
 			if (filecheck) {
 				for (pos = ent; pos * size <= st.st_size; pos++)
-					if ((*filecheck)
-					    (ptr + (pos - 1) * size))
+					if ((*filecheck) (ptr + (pos - 1) * size))
 						break;
 				if (pos * size > st.st_size)
 					ret = -2;
@@ -271,8 +265,7 @@ int (*filecheck) (void *);
 		if (ret == 0) {
 			char *tmp_dup = malloc(st.st_size);
 			memcpy(tmp_dup, ptr, st.st_size);
-			memcpy(ptr + (pos - 1) * size, tmp_dup + pos * size,
-			       st.st_size - size * pos);
+			memcpy(ptr + (pos - 1) * size, tmp_dup + pos * size, st.st_size - size * pos);
 			free(tmp_dup);
 			ftruncate(fd, st.st_size - size);
 		}

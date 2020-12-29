@@ -59,6 +59,8 @@
 #include "chat.h"
 #include "help.h"
 #include "bbs-internal.h"
+#include "bmy/article.h"
+#include "bmy/board.h"
 
 struct postheader header;
 int continue_flag;
@@ -300,6 +302,9 @@ char *direct;
 		return DONOTHING;
 	}
 	change_dir(direct, fileinfo, (void *) DIR_do_underline, ent, digestmode, 0);
+	if (!bmy_board_is_system_board(currboard) && fileinfo->thread == fileinfo->filetime) {
+		bmy_article_update_thread_accessed(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fileinfo->thread, fileinfo->accessed);
+	}
 	return PARTUPDATE;
 }
 
@@ -307,6 +312,9 @@ static int allcanre_post(int ent, struct fileheader *fileinfo, char *direct) {
 	if (!HAS_PERM(PERM_SYSOP, currentuser))
 		return DONOTHING;
 	change_dir(direct, fileinfo, (void *) DIR_do_allcanre, ent, digestmode, 0);
+	if (!bmy_board_is_system_board(currboard) && fileinfo->thread == fileinfo->filetime) {
+		bmy_article_update_thread_accessed(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fileinfo->thread, fileinfo->accessed);
+	}
 	return PARTUPDATE;
 }
 
@@ -853,23 +861,25 @@ static int // slowaction
 dele_digest_top(filetime, direc)
 int filetime;
 char *direc;
-{      char digest_name[STRLEN];
-       char new_dir[STRLEN];
-       int tmpcurrfiletime;
-       struct fileheader fh;
-       int pos;
-       sprintf(digest_name, "T.%d.A", filetime);
-       directfile(new_dir, direc, TOPFILE_DIR);
-       tmpcurrfiletime = currfiletime;
-       currfiletime = filetime;
-       pos =new_search_record(new_dir, &fh, sizeof (fh),(void *) cmpfilename, NULL);
-       if (pos <= 0) return 0;
-       delete_file(new_dir, sizeof (struct fileheader),pos, (void *) cmpfilename);
-       currfiletime = tmpcurrfiletime;
-       directfile(new_dir, direc, digest_name);
-       unlink(new_dir);
-       return 0;
-   }
+{
+	char digest_name[STRLEN];
+	char new_dir[STRLEN];
+	int tmpcurrfiletime;
+	struct fileheader fh;
+	int pos;
+	sprintf(digest_name, "T.%d.A", filetime);
+	directfile(new_dir, direc, TOPFILE_DIR);
+	tmpcurrfiletime = currfiletime;
+	currfiletime = filetime;
+	pos = new_search_record(new_dir, &fh, sizeof (fh),(void *) cmpfilename, NULL);
+	if (pos <= 0)
+		return 0;
+	delete_file(new_dir, sizeof (struct fileheader),pos, (void *) cmpfilename);
+	currfiletime = tmpcurrfiletime;
+	directfile(new_dir, direc, digest_name);
+	unlink(new_dir);
+	return 0;
+}
 
 static int topfile_post(int ent, struct fileheader *fhdr, char *direct) //slowaction
 {
@@ -885,14 +895,14 @@ static int topfile_post(int ent, struct fileheader *fhdr, char *direct) //slowac
 		struct fileheader digest;
 		char digestdir[STRLEN], digestfile[STRLEN], oldfile[STRLEN];
 		directfile(digestdir, direct, TOPFILE_DIR);
-			if (get_num_records(digestdir, sizeof (digest)) > 8 && strcmp(currentuser.userid, "SYSOP")!=0) {
-				move(3, 0);
-				clrtobot();
-				move(4, 10);
-				prints ("抱歉，置底数量超过5篇，无法再加入...\n");
-				pressanykey();
-				return PARTUPDATE;
-			}
+		if (get_num_records(digestdir, sizeof (digest)) > 8 && strcmp(currentuser.userid, "SYSOP")!=0) {
+			move(3, 0);
+			clrtobot();
+			move(4, 10);
+			prints ("抱歉，置底数量超过5篇，无法再加入...\n");
+			pressanykey();
+			return PARTUPDATE;
+		}
 		digest = *fhdr;
 		digest.accessed |= FILE_ISTOP1;
 		directfile(digestfile, direct, fh2fname(&digest));
@@ -909,6 +919,9 @@ static int topfile_post(int ent, struct fileheader *fhdr, char *direct) //slowac
 		}
 	}
 	change_dir(direct, fhdr, (void *) DIR_do_top, ent, 0, 0);
+	if (!bmy_board_is_system_board(currboard) && fhdr->thread == fhdr->filetime) {
+		bmy_article_update_thread_accessed(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fhdr->thread, fhdr->accessed);
+	}
 	//topfile_record(direct,fhdr->filename,ent); //add by hace
 	return PARTUPDATE;
 }
@@ -1358,6 +1371,9 @@ int water_post(int ent, struct fileheader *fileinfo, char *dirent)
 
 	newtrace(genbuf);
 	change_dir(dirent, fileinfo, (void *) DIR_do_water, ent, digestmode, 0);
+	if (!bmy_board_is_system_board(currboard) && fileinfo->thread == fileinfo->filetime) {
+		bmy_article_update_thread_accessed(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fileinfo->thread, fileinfo->accessed);
+	}
 	return PARTUPDATE;
 }
 
@@ -1407,6 +1423,9 @@ char *direct;
 		}
 	}
 	change_dir(direct, fhdr, (void *) DIR_do_digest, ent, digestmode, 0);
+	if (!bmy_board_is_system_board(currboard) && fhdr->thread == fhdr->filetime) {
+		bmy_article_update_thread_accessed(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fhdr->thread, fhdr->accessed);
+	}
 	return PARTUPDATE;
 }
 
@@ -1828,6 +1847,8 @@ post_cross(char *bname, int mode, int islocal, int hascheck, int dangerous)
 		add_crossinfo(filepath, 1);
 		sprintf(buf, "%s crosspost %s %s", currentuser.userid, bname, postfile.title);
 		newtrace(buf);
+
+		bmy_article_add_thread(ythtbbs_cache_Board_get_idx_by_name(bname) + 1, postfile.thread, postfile.title, currentuser.username, postfile.accessed);
 	}
 	return (int)now;  // return filetime instead of 1 by IronBlood 20130807
 }
@@ -2036,7 +2057,7 @@ post_article(struct fileheader *sfh)
 	aborted = vedit(edittmp, YEA, YEA);
 
 	/*Anony=0; */ /*Inital For ShowOut Signature */
-	if ((aborted == -1))
+	if (aborted == -1)
 	{
 		unlink(edittmp);
 		clear();
@@ -2104,24 +2125,24 @@ post_article(struct fileheader *sfh)
 
 	/*重新指定文件名 */
 
-		char newfilepath[STRLEN], newfname[STRLEN];
-		int count;
-		t = time(NULL);
-		count = 0;
-		while (1)
+	char newfilepath[STRLEN], newfname[STRLEN];
+	int count;
+	t = time(NULL);
+	count = 0;
+	while (1)
+	{
+		sprintf(newfname, "M.%d.A", (int) t);
+		setbfile(newfilepath, currboard, newfname);
+		if (link(filepath, newfilepath) == 0)
 		{
-			sprintf(newfname, "M.%d.A", (int) t);
-			setbfile(newfilepath, currboard, newfname);
-			if (link(filepath, newfilepath) == 0)
-			{
-				unlink(filepath);
-				postfile.filetime = t;
-				break;
-			}
-			t++;
-			if (count++ > MAX_POSTRETRY)
-				break;
+			unlink(filepath);
+			postfile.filetime = t;
+			break;
 		}
+		t++;
+		if (count++ > MAX_POSTRETRY)
+			break;
+	}
 
 
 	if (sfh == NULL)
@@ -2194,6 +2215,15 @@ post_article(struct fileheader *sfh)
 		++i;
 	}
 	// term 下 @ 提醒结束
+
+	if (!bmy_board_is_system_board(currboard)) {
+		if (sfh != NULL) {
+			bmy_article_add_comment(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, sfh->thread);
+		} else {
+			bmy_article_add_thread(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, postfile.thread, postfile.title, postfile.owner, postfile.accessed);
+		}
+	}
+
 	return FULLUPDATE;
 }
 
@@ -2489,6 +2519,11 @@ char *direct;
 			currentuser.userid, currboard,
 			fh2owner(fileinfo), fileinfo->title, buf);
 		newtrace(str);
+
+		if (!bmy_board_is_system_board(currboard) && fileinfo->filetime == fileinfo->thread && strcmp(fileinfo->title, buf) != 0) {
+			bmy_article_update_thread_title(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fileinfo->thread, buf);
+		}
+
 		ytht_strsncpy(fileinfo->title, buf, sizeof(fileinfo->title));
 		directfile(genbuf, direct, fh2fname(fileinfo));
 		change_content_title(genbuf, buf);
@@ -2523,7 +2558,10 @@ char *direct;
 //	if(HAS_PERM(PERM_COMMEND))
 //		commend_article(currboard, fileinfo);
 //	else
-		change_dir(direct, fileinfo, (void *) DIR_do_mark, ent, digestmode, 0);
+	change_dir(direct, fileinfo, (void *) DIR_do_mark, ent, digestmode, 0);
+	if (!bmy_board_is_system_board(currboard) && fileinfo->thread == fileinfo->filetime) {
+		bmy_article_update_thread_accessed(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fileinfo->thread, fileinfo->accessed);
+	}
 	return PARTUPDATE;
 }
 
@@ -2944,6 +2982,15 @@ char *direct;
 	if (!fail) {
 		updatelastpost(currboard);
 		cancelpost(currboard, currentuser.userid, fileinfo, owned);
+
+		if (!bmy_board_is_system_board(currboard)) {
+			if (fileinfo->filetime != fileinfo->thread) {
+				bmy_article_del_comment(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fileinfo->thread);
+			} else {
+				bmy_article_del_thread(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fileinfo->thread);
+			}
+		}
+
 		if (digestmode == NA && owned) {
 			set_safe_record();
 			if (!junkboard()) {

@@ -13,7 +13,5 @@ int m_ordainBM(void);
 int do_ordainBM(const char *userid, const char *abname);
 int m_retireBM(void);
 int do_retireBM(const char *userid, const char *abname);
-int retireBM(char *uid, char *bname);
-int retire_allBM(char *uid);
 int m_addpersonal(void);
 #endif //BMYBBS_MAINTAIN_H
