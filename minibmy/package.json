@@ -9,6 +9,7 @@
 	"author": "",
 	"license": "GPL-2.0",
 	"dependencies": {
-		"dayjs": "^1.9.6"
+		"dayjs": "^1.9.6",
+		"xmldom": "^0.4.0"
 	}
 }

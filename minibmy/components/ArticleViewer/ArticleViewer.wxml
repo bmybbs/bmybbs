@@ -1,4 +1,4 @@
-<view class="article">
+<view class="article" bindtap="toggleAha">
 	<view class="article-header">
 		{{article.author}} 发表于 {{time}}
 	</view>
