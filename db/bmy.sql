@@ -11,6 +11,7 @@ CREATE TABLE `t_sections` (
 CREATE TABLE `t_users` (
 	`usernum` int NOT NULL COMMENT '对应于在 PASSWDS 文件中的索引，从 1 开始计数',
 	`userid` varchar(14) NOT NULL,
+	`openid` varchar(128) DEFAULT NULL,
 	PRIMARY KEY (`usernum`)
 );
 
