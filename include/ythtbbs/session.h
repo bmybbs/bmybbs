@@ -33,4 +33,18 @@ int ythtbbs_session_del(const char *sessionid);
  * 出错时返回 -1
  */
 int ythtbbs_session_get_utmp_idx(const char *sessionid, const char *userid);
+
+/**
+ * @brief 向 session 中存放值
+ * 若键不合法，跳过处理
+ * @param key 允许 [A-Za-z]{1,8} 的键
+ * @param value 对应的值
+ */
+void ythtbbs_session_set_value(const char *sessionid, const char *key, const char *value);
+
+/**
+ * @brief 从 session 中读取存放的值
+ * @return NULL 或者使用 strdup(3) 生成的副本，需要使用 free(3) 释放
+ */
+char *ythtbbs_session_get_value(const char *session, const char *key);
 #endif

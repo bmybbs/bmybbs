@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stddef.h>
+#include <stdbool.h>
 #include "bmy/redis.h"
 #include "ytht/random.h"
 
@@ -101,5 +102,73 @@ ERROR:
 	if (reply) freeReplyObject(reply);
 	if (ctx)   redisFree(ctx);
 	return -1;
+}
+
+static const size_t MAX_SESS_VALID_LENGTH = 8;
+
+// 只允许 [A-Za-z]{8} 的键名
+static bool is_valid_key(const char *key) {
+	size_t l, i;
+	char c;
+
+	if (key == NULL || key[0] == '\0')
+		return false;
+
+	// 系统键
+	if (strcasecmp(key, "userid") == 0 || strcasecmp(key, "utmp_idx") == 0)
+		return false;
+
+	l = strlen(key);
+	if (l > MAX_SESS_VALID_LENGTH)
+		return false;
+
+	for (i = 0; i < l; i++) {
+		c = key[i];
+		if (!((c>='a' && c<='z') || (c>='A' && c<='Z')))
+			return false;
+	}
+
+	return true;
+}
+
+void ythtbbs_session_set_value(const char *sessionid, const char *key, const char *value) {
+	redisContext *ctx = NULL;
+	redisReply   *reply = NULL;
+
+	if (!is_valid_key(key))
+		return;
+
+	if (value == NULL || value[0] == '\0')
+		return;
+
+	ctx = bmy_redisConnect();
+	if (ctx == NULL || ctx->err)
+		goto END;
+
+	reply = redisCommand(ctx, "HSET BMY:Session:%s %s %s", sessionid, key, value);
+
+END:
+	if (reply) freeReplyObject(reply);
+	if (ctx)   redisFree(ctx);
+}
+
+char *ythtbbs_session_get_value(const char *session, const char *key) {
+	redisContext *ctx = NULL;
+	redisReply   *reply = NULL;
+	char *s = NULL;
+
+	if (!is_valid_key(key))
+		goto END;
+
+	reply = redisCommand(ctx, "HGET BMY:Session:%s %s", session, key);
+	if (!reply || reply->type != REDIS_REPLY_STRING)
+		goto END;
+
+	s = strdup(reply->str);
+
+END:
+	if (reply) freeReplyObject(reply);
+	if (ctx)   redisFree(ctx);
+	return s;
 }
 
