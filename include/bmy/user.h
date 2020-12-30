@@ -3,6 +3,7 @@
  */
 #ifndef BMY_USER_H
 #define BMY_USER_H
+#include <stdbool.h>
 
 /**
  * 创建用户、订阅元数据，以及用户订阅视图
@@ -31,6 +32,13 @@ void bmy_user_associate_openid(int usernum, char *openid);
  * @brief 移除关联的 openid
  */
 void bmy_user_dissociate_openid(int usernum);
+
+/**
+ * @brief 判断用户是否关联了 openid
+ * @param usernum 用户编号
+ * @return true 存在关联
+ */
+bool bmy_user_has_openid(int usernum);
 
 /**
  * @brief 依据 openid 查询用户编号
