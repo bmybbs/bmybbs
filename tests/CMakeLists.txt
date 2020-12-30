@@ -12,5 +12,6 @@ add_executable(bmybbs.test
 	libbmy/check_iphash.c
 	libbmy/check_redis.c
 	libbmy/check_cookie.c
+	libbmy/check_2fa.c
 )
 target_link_libraries(bmybbs.test check ythtbbs bmy ytht)
