@@ -49,7 +49,7 @@ int bmy_wechat_session_get(const char *code, struct bmy_wechat_session *s) {
 	char  log_buf[128];
 
 	struct MemoryStruct chunk;
-	json_object *jobj;
+	json_object *jobj = NULL, *o;
 
 	if (code == NULL || strlen(code) == 0 || s == NULL || s->openid != NULL || s->session_key != NULL)
 		return BMY_WECHAT_ERRCODE_WRONG_PARAM;
@@ -80,16 +80,49 @@ int bmy_wechat_session_get(const char *code, struct bmy_wechat_session *s) {
 		rc = BMY_WECHAT_REQUEST_ERROR;
 	} else {
 		jobj = json_tokener_parse(chunk.memory);
-		rc = json_object_get_int(json_object_object_get(jobj, "errcode"));
-		if (rc == BMY_WECHAT_ERRCODE_SUCCESS) {
-			s->openid = strdup(json_object_get_string(json_object_object_get(jobj, "openid")));
-			s->session_key = strdup(json_object_get_string(json_object_object_get(jobj, "session_key")));
+
+		if (jobj != NULL) {
+			o = json_object_object_get(jobj, "errcode");
+			if (o == NULL) {
+				rc = BMY_WECHAT_RESPONSE_FORMAT_ERROR;
+				goto END;
+			}
+
+			rc = json_object_get_int(o);
+			if (rc == BMY_WECHAT_ERRCODE_SUCCESS) {
+				o = json_object_object_get(jobj, "openid");
+				if (o == NULL) {
+					rc = BMY_WECHAT_RESPONSE_FORMAT_ERROR;
+					goto END;
+				}
+				s->openid = strdup(json_object_get_string(o));
+
+				o = json_object_object_get(jobj, "session_key");
+				if (o == NULL) {
+					rc = BMY_WECHAT_RESPONSE_FORMAT_ERROR;
+					goto END;
+				}
+				s->session_key = strdup(json_object_get_string(o));
+			} else {
+				o = json_object_object_get(jobj, "errmsg");
+				if (o == NULL) {
+					rc = BMY_WECHAT_RESPONSE_FORMAT_ERROR;
+					goto END;
+				}
+
+				snprintf(log_buf, sizeof(log_buf), "[bmy/wechat] request session errcode[%d] errmsg: %s", rc, json_object_get_string(o));
+				newtrace(log_buf);
+			}
 		} else {
-			snprintf(log_buf, sizeof(log_buf), "[bmy/wechat] request session errcode[%d] errmsg: %s", rc, json_object_get_string(json_object_object_get(jobj, "errmsg")));
+			snprintf(log_buf, sizeof(log_buf), "[bmy/wechat] cannot parse response as JSON");
 			newtrace(log_buf);
+			rc = BMY_WECHAT_REQUEST_ERROR;
 		}
 	}
 
+END:
+	if (jobj)
+		json_object_put(jobj);
 	if (chunk.memory)
 		free(chunk.memory);
 	return rc;

@@ -3,6 +3,7 @@
 
 enum bmy_wechat_errcode_e {
 	BMY_WECHAT_REQUEST_ERROR                       = -999,    /** curl 调用失败 */
+	BMY_WECHAT_RESPONSE_FORMAT_ERROR               = -998,    /** 格式错误 */
 	BMY_WECHAT_ERRCODE_WRONG_PARAM                 = -3,
 	BMY_WECHAT_ERRCODE_NO_CFGFILE                  = -2,
 	BMY_WECHAT_ERRCODE_BUSY                        = -1,
