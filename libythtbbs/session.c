@@ -160,6 +160,10 @@ char *ythtbbs_session_get_value(const char *session, const char *key) {
 	if (!is_valid_key(key))
 		goto END;
 
+	ctx = bmy_redisConnect();
+	if (!ctx || ctx->err)
+		goto END;
+
 	reply = redisCommand(ctx, "HGET BMY:Session:%s %s", session, key);
 	if (!reply || reply->type != REDIS_REPLY_STRING)
 		goto END;

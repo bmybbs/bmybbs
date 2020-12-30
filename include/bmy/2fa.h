@@ -8,6 +8,7 @@ typedef enum bmy_2fa_status_e {
 	BMY_2FA_CANNOT_SET_2FA_CODE  = 2,
 	BMY_2FA_NOT_EXISTED          = 3,
 	BMY_2FA_CANNOT_SET_OPENID    = 4,
+	BMY_2FA_WRONG_ANSWER         = 5,
 } bmy_2fa_status;
 
 /**
@@ -20,6 +21,12 @@ typedef enum bmy_2fa_status_e {
  * @return 状态码，成功返回 BMY_2FA_SUCCESS
  */
 bmy_2fa_status bmy_2fa_create(char *key, size_t len);
+
+/**
+ * @brief 检查 key 是否还有效
+ * @return BMY_2FA_SUCCESS 代表有效
+ */
+bmy_2fa_status bmy_2fa_valid(const char *key);
 
 /**
  * @brief 第一步验证

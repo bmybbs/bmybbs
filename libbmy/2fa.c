@@ -11,6 +11,7 @@ static const char BMY_2FA_KEY_DICT[] =
 static const int BMY_2FA_KEY_LEN = 62;
 
 static const int MAX_TTL = 300; // 5 min
+static const int VALID_INTERVAL = 10; // 10s
 static const int MAX_ALLOWED_ATTEMPTS = 5;
 
 bmy_2fa_status bmy_2fa_create(char *key, size_t len) {
@@ -42,6 +43,33 @@ bmy_2fa_status bmy_2fa_create(char *key, size_t len) {
 
 	freeReplyObject(reply);
 	reply = redisCommand(ctx, "EXPIRE BMY:2Fa:%s %d", key, MAX_TTL);
+
+END:
+	if (reply) freeReplyObject(reply);
+	if (ctx)   redisFree(ctx);
+	return status;
+}
+
+bmy_2fa_status bmy_2fa_valid(const char *key) {
+	redisContext *ctx = NULL;
+	redisReply   *reply = NULL;
+	bmy_2fa_status status = BMY_2FA_SUCCESS;
+
+	ctx = bmy_redisConnect();
+	if (ctx == NULL || ctx->err) {
+		status = BMY_2FA_CANNOT_CONNECT_REDIS;
+		goto END;
+	}
+
+	reply = redisCommand(ctx, "TTL BMY:2Fa:%s", key);
+	if (!reply || reply->type != REDIS_REPLY_INTEGER) {
+		status = BMY_2FA_WRONG_ANSWER;
+		goto END;
+	}
+
+	if (reply->integer < VALID_INTERVAL) {
+		status = BMY_2FA_NOT_EXISTED;
+	}
 
 END:
 	if (reply) freeReplyObject(reply);
