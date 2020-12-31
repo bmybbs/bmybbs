@@ -1,0 +1,7 @@
+<view class="container">
+	<text>请在网页上输入以下验证码</text>
+	<text>完成绑定后点击按钮返回登录</text>
+	<text class="code">{{code}}</text>
+	<button bindtap="goBack">返回登录</button>
+</view>
+
