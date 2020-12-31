@@ -71,7 +71,7 @@ int ythtbbs_session_get_utmp_idx(const char *sessionid, const char *userid) {
 		goto ERROR;
 
 	reply = redisCommand(ctx, "HGETALL BMY:Session:%s", sessionid);
-	if (!reply || reply->type != REDIS_REPLY_ARRAY || reply->elements != 4)
+	if (!reply || reply->type != REDIS_REPLY_ARRAY)
 		goto ERROR;
 
 	for (i = 0; i < reply->elements/2; i++) {
