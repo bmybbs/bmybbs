@@ -135,7 +135,8 @@ enum ythtbbs_user_login_type {
 	YTHTBBS_LOGIN_TELNET,
 	YTHTBBS_LOGIN_SSH,
 	YTHTBBS_LOGIN_NJU09,
-	YTHTBBS_LOGIN_API
+	YTHTBBS_LOGIN_API,
+	YTHTBBS_LOGIN_OAUTH,
 };
 
 enum ythtbbs_user_login_status {

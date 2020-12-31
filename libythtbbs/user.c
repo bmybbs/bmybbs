@@ -610,6 +610,7 @@ static const char *get_login_type_str(enum ythtbbs_user_login_type type) {
 	case YTHTBBS_LOGIN_SSH   : return "SSH";
 	case YTHTBBS_LOGIN_NJU09 : return "NJU09";
 	case YTHTBBS_LOGIN_API   : return "API";
+	case YTHTBBS_LOGIN_OAUTH : return "OAUTH";
 	default                  : return "unknown";
 	}
 }
@@ -656,9 +657,11 @@ int ythtbbs_user_login(const char *userid, const char *passwd, const char *fromh
 		return YTHTBBS_USER_IN_PRISON;
 	}
 
-	if (!ytht_crypt_checkpasswd(local_lookup_user.passwd, passwd)) {
-		logattempt(local_lookup_user.userid, fromhost, get_login_type_str(login_type), local_now);
-		return YTHTBBS_USER_WRONG_PASSWORD;
+	if (login_type != YTHTBBS_LOGIN_OAUTH) {
+		if (!ytht_crypt_checkpasswd(local_lookup_user.passwd, passwd)) {
+			logattempt(local_lookup_user.userid, fromhost, get_login_type_str(login_type), local_now);
+			return YTHTBBS_USER_WRONG_PASSWORD;
+		}
 	}
 
 	if (!ythtbbs_user_has_perm(&local_lookup_user, PERM_BASIC))
@@ -716,7 +719,7 @@ int ythtbbs_user_login(const char *userid, const char *passwd, const char *fromh
 	memset(&local_uinfo, 0, sizeof(struct user_info));
 
 	local_uinfo.active    = true;
-	local_uinfo.pid       = (login_type == YTHTBBS_LOGIN_TELNET || login_type == YTHTBBS_LOGIN_SSH) ? getpid() : 1 /* magic number for www/api */;
+	local_uinfo.pid       = (login_type == YTHTBBS_LOGIN_TELNET || login_type == YTHTBBS_LOGIN_SSH) ? getpid() : 1 /* magic number for www/api/oauth */;
 	local_uinfo.mode      = LOGIN;
 	local_uinfo.uid       = user_idx + 1;
 	local_uinfo.userlevel = local_lookup_user.userlevel;
@@ -772,7 +775,7 @@ int ythtbbs_user_login(const char *userid, const char *passwd, const char *fromh
 	}
 
 	// wwwinfo
-	if (login_type == YTHTBBS_LOGIN_NJU09 || login_type == YTHTBBS_LOGIN_API) {
+	if (login_type == YTHTBBS_LOGIN_NJU09 || login_type == YTHTBBS_LOGIN_API || login_type == YTHTBBS_LOGIN_OAUTH) {
 		local_uinfo.wwwinfo.login_start_time = local_now;
 
 		if (strcasecmp(local_lookup_user.userid, "guest")) {
