@@ -1,0 +1,19 @@
+text {
+	width: 90%;
+}
+
+.button-sp-area {
+	margin: 0 auto;
+	width: 60;
+}
+
+.url {
+	font-family: 'Courier New', Courier, monospace;
+	border: 5rpx solid #555;
+	padding: 10rpx 20rpx;
+	border-radius: 40rpx;
+	font-size: 0.9rem;
+	font-weight: 900;
+	margin: 10rpx auto;
+}
+
