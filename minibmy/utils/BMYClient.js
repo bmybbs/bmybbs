@@ -11,6 +11,18 @@ const myFetchGet = (url) => {
 	});
 };
 
+const myFetchPost = (url) => {
+	return new Promise((resolve) => {
+		wx.request({
+			url: BASE_URL + url,
+			method: "POST",
+			success(res) {
+				resolve(res.data);
+			}
+		});
+	});
+};
+
 export const BMYClient = {
 	get_announce() {
 		return myFetchGet("/api/article/list?type=announce");
@@ -50,6 +62,12 @@ export const BMYClient = {
 	},
 	get_user_info(userid) {
 		return myFetchGet("/api/user/query?queryid=" + userid);
+	},
+	oauth_get_code(code, tfakey) {
+		return myFetchPost(`/api/oauth/2fa_get_code?code=${code}&tfakey=${tfakey}`);
+	},
+	oauth_login(code) {
+		return myFetchPost(`/api/oauth/login?code=${code}`);
 	},
 	search_board(start_with) {
 		return myFetchGet(`/api/board/autocomplete?search_str=${start_with}`);

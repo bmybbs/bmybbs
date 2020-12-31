@@ -18,3 +18,9 @@ export const BMYSECSTRS = [
 	{ id: "C", text: "俱乐部区" },
 ];
 
+const BMY_EC = {};
+BMY_EC.API_RT_SUCCESS      = 0;
+BMY_EC.API_RT_WXAPIERROR   = 1005;
+BMY_EC.API_RT_2FA_INTERNAL = 100013;
+BMY_EC.API_RT_NOOPENID     = 100015;
+export { BMY_EC };
