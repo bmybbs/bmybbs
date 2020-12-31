@@ -41,7 +41,7 @@ int bmy_wechat_session_get(const char *code, struct bmy_wechat_session *s) {
 	CURL *curl_handle;
 	CURLcode res;
 
-	int rc;
+	int rc = 0;
 	FILE *cfg_fp;
 	char  wechat_appid[24];
 	char  wechat_secret[40];
@@ -83,27 +83,10 @@ int bmy_wechat_session_get(const char *code, struct bmy_wechat_session *s) {
 
 		if (jobj != NULL) {
 			o = json_object_object_get(jobj, "errcode");
-			if (o == NULL) {
-				rc = BMY_WECHAT_RESPONSE_FORMAT_ERROR;
-				goto END;
-			}
+			if (o != NULL)
+				rc = json_object_get_int(o);
 
-			rc = json_object_get_int(o);
-			if (rc == BMY_WECHAT_ERRCODE_SUCCESS) {
-				o = json_object_object_get(jobj, "openid");
-				if (o == NULL) {
-					rc = BMY_WECHAT_RESPONSE_FORMAT_ERROR;
-					goto END;
-				}
-				s->openid = strdup(json_object_get_string(o));
-
-				o = json_object_object_get(jobj, "session_key");
-				if (o == NULL) {
-					rc = BMY_WECHAT_RESPONSE_FORMAT_ERROR;
-					goto END;
-				}
-				s->session_key = strdup(json_object_get_string(o));
-			} else {
+			if (o != NULL && rc != BMY_WECHAT_ERRCODE_SUCCESS) {
 				o = json_object_object_get(jobj, "errmsg");
 				if (o == NULL) {
 					rc = BMY_WECHAT_RESPONSE_FORMAT_ERROR;
@@ -112,7 +95,22 @@ int bmy_wechat_session_get(const char *code, struct bmy_wechat_session *s) {
 
 				snprintf(log_buf, sizeof(log_buf), "[bmy/wechat] request session errcode[%d] errmsg: %s", rc, json_object_get_string(o));
 				newtrace(log_buf);
+				goto END;
 			}
+
+			o = json_object_object_get(jobj, "openid");
+			if (o == NULL) {
+				rc = BMY_WECHAT_RESPONSE_FORMAT_ERROR;
+				goto END;
+			}
+			s->openid = strdup(json_object_get_string(o));
+
+			o = json_object_object_get(jobj, "session_key");
+			if (o == NULL) {
+				rc = BMY_WECHAT_RESPONSE_FORMAT_ERROR;
+				goto END;
+			}
+			s->session_key = strdup(json_object_get_string(o));
 		} else {
 			snprintf(log_buf, sizeof(log_buf), "[bmy/wechat] cannot parse response as JSON");
 			newtrace(log_buf);
