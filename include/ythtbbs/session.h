@@ -47,4 +47,12 @@ void ythtbbs_session_set_value(const char *sessionid, const char *key, const cha
  * @return NULL 或者使用 strdup(3) 生成的副本，需要使用 free(3) 释放
  */
 char *ythtbbs_session_get_value(const char *session, const char *key);
+
+/**
+ * @brief 从 session 移除键
+ * 是 ythtbbs_session_set_value 相反的操作
+ * @param sessionid
+ * @param key
+ */
+void ythtbbs_session_clear_key(const char *sessionid, const char *key);
 #endif

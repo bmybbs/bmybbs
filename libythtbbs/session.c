@@ -176,3 +176,20 @@ END:
 	return s;
 }
 
+void ythtbbs_session_clear_key(const char *sessionid, const char *key) {
+	redisContext *ctx = NULL;
+	redisReply   *reply = NULL;
+
+	if (!is_valid_key(key))
+		return;
+
+	ctx = bmy_redisConnect();
+	if (ctx == NULL || ctx->err)
+		goto END;
+
+	reply = redisCommand(ctx, "DEL BMY:Session:%s %s", sessionid, key);
+END:
+	if (reply) freeReplyObject(reply);
+	if (ctx)   redisFree(ctx);
+}
+
