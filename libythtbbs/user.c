@@ -728,6 +728,7 @@ int ythtbbs_user_login(const char *userid, const char *passwd, const char *fromh
 	local_uinfo.unreadmsg = strcasecmp(local_lookup_user.userid, "guest") ? get_unreadmsg(local_lookup_user.userid) : 0;
 	local_uinfo.invisible = (ythtbbs_user_has_perm(&local_lookup_user, PERM_LOGINCLOAK) && (local_lookup_user.flags[0] & CLOAK_FLAG)) ? true : false; // 移除 term 模式中对 dietime > 0 的处理 by IronBlood 2020.10.09
 	local_uinfo.isssh     = (login_type == YTHTBBS_LOGIN_SSH) ? true : false;
+	local_uinfo.login_type = login_type;
 
 	// pager start
 	local_uinfo.pager = 0;
