@@ -330,7 +330,7 @@ const struct user_info *ythtbbs_cache_UserTable_query_user_by_uid(const char *us
 			continue;
 
 		ptr_info = ythtbbs_cache_utmp_get_by_idx(utmp_idx);
-		if (!ptr_info->active || !ptr_info->pid || ptr_info->uid != search_uid)
+		if (!ptr_info->active || !ptr_info->pid || ptr_info->uid < 0 || (unsigned) ptr_info->uid != search_uid)
 			continue;
 
 		if (dotest && !testreject) {
@@ -385,6 +385,7 @@ void ythtbbs_cache_UserTable_foreach_v(ythtbbs_cache_UserTable_foreach_callback 
 
 int ythtbbs_cache_UserTable_get_user_online_friends(const char *userid, bool has_see_cloak_perm, struct user_info *user_list, size_t user_list_size) {
 	int lockfd;
+	int t;
 	unsigned int i, j, k, total, user_idx;
 	struct ythtbbs_override *override_friends = NULL;
 	const struct user_info *x;
@@ -403,10 +404,11 @@ int ythtbbs_cache_UserTable_get_user_online_friends(const char *userid, bool has
 
 	ythtbbs_cache_UserTable_resolve();
 	for (i = 0, k = 0; i < total; i++) {
-		user_idx = ythtbbs_cache_UserIDHashTable_find_idx(override_friends[i].id);
-		if (user_idx < 0)
+		t = ythtbbs_cache_UserIDHashTable_find_idx(override_friends[i].id);
+		if (t < 0)
 			continue;
 
+		user_idx = (unsigned) t; // t >= 0
 		for (j = 0; j < MAX_LOGIN_PER_USER; j++) {
 			if (shm_user_table->users[user_idx].utmp_indices[j] > 0) {
 				x = ythtbbs_cache_utmp_get_by_idx(shm_user_table->users[user_idx].utmp_indices[j] - 1);
