@@ -63,7 +63,7 @@ int ythtbbs_session_get_utmp_idx(const char *sessionid, const char *userid) {
 	redisContext *ctx = NULL;
 	redisReply   *reply = NULL;
 	redisReply   *key, *val;
-	int           utmp_idx;
+	int           utmp_idx = -1;
 	size_t        i;
 
 	ctx = bmy_redisConnect();
