@@ -49,6 +49,33 @@
 			</main>
 		</div>
 	</div>
+
+	<footer class="d-md-none fixed-bottom">
+		<nav class="navbar navbar-dark bg-dark">
+			<ul class="navbar-nav">
+				<li class="nav-item">
+					<router-link to="/web" class="nav-link">
+						<span class="sidebar-icon"><fa icon="chart-line" /></span> 导读
+					</router-link>
+				</li>
+				<li class="nav-item">
+					<router-link to="/web/feed" class="nav-link">
+						<span class="sidebar-icon"><fa icon="rss" /></span> 订阅
+					</router-link>
+				</li>
+				<li class="nav-item">
+					<router-link to="/web/follow" class="nav-link">
+						<span class="sidebar-icon"><fa icon="share-alt" /></span> 好友
+					</router-link >
+				</li>
+				<li class="nav-item">
+					<router-link to="/web/settings" class="nav-link">
+						<span class="sidebar-icon"><fa icon="sliders-h" /></span> 设置
+					</router-link>
+				</li>
+			</ul>
+		</nav>
+	</footer>
 </template>
 
 <script>
@@ -116,6 +143,14 @@ export default {
 .navbar .navbar-toggler {
 	top: .25rem;
 	right: 1rem;
+}
+
+footer .navbar-nav {
+	flex-direction: row;
+}
+
+footer .navbar-nav .nav-link {
+	padding: 0.5rem 1rem;
 }
 
 /* Main */
