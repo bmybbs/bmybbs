@@ -55,6 +55,15 @@ export const BMYClient = {
 	get_user_info(userid) {
 		return myFetchGet("/api/user/query?queryid=" + userid);
 	},
+	oauth_check_code(code) {
+		return myFetchPost(`/api/oauth/2fa_check_code?code=${code}`);
+	},
+	oauth_get_key() {
+		return myFetchGet("/api/oauth/2fa_get_key");
+	},
+	oauth_remove_wx() {
+		return myFetchPost("/api/oauth/remove_wx");
+	},
 	search_board(start_with) {
 		return myFetchGet(`/api/board/autocomplete?search_str=${start_with}`);
 	},
