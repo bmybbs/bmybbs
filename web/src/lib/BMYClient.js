@@ -70,5 +70,8 @@ export const BMYClient = {
 	search_user(start_with) {
 		return myFetchGet(`/api/user/autocomplete?search_str=${start_with}`);
 	},
+	user_check() {
+		return myFetchGet("/BMY/user_check");
+	},
 };
 

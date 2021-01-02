@@ -4,6 +4,7 @@
 </template>
 
 <script>
+import { BMYClient } from "@/lib/BMYClient.js"
 import LoginPC from "@/components/LoginPC.vue";
 import LoginMobile from "@/components/LoginMobile.vue";
 
@@ -38,15 +39,13 @@ export default {
 				});
 			});
 
-		fetch("/BMY/user_check")
-			.then(response => response.json())
-			.then(response => {
-				if (response.code == 0) {
-					this.loginok = true;
-					this.userid  = response.userid;
-				}
-				this.checked = true;
-			});
+		BMYClient.user_check().then(response => {
+			if (response.code == 0) {
+				this.loginok = true;
+				this.userid  = response.userid;
+			}
+			this.checked = true;
+		});
 	},
 	unmounted() {
 		window.removeEventListener("resize", this.resize_handler);
