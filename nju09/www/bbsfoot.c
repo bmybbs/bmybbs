@@ -179,7 +179,7 @@ bbsfoot_main()
 	printf("<div id='bbsfoot'>");
     if (loginok) {
 		id = currentuser.userid;
-		dt = abs(now_t - w_info->login_start_time) / 60;
+		dt = labs(now_t - w_info->login_start_time) / 60;
 	}
 
 	printf("<span id='bbsfoot_time'>Ê±¼ä[<span class=0011>%16.16s</span>]</span>\n", ytht_ctime(now_t));
