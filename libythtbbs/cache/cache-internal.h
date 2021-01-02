@@ -11,7 +11,7 @@
  * @param utmp_idx utmp 索引（从0开始）
  * @return 0 == 成功
  */
-int ythtbbs_cache_UserTable_add_utmp_idx(int uid, int utmp_idx);
+int ythtbbs_cache_UserTable_add_utmp_idx(int uid, int utmp_idx, int login_type);
 
 /**
  * @brief 从 UserTable 中移除 utmp 记录

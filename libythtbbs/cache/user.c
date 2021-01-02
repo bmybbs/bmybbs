@@ -109,22 +109,48 @@ void ythtbbs_cache_UserTable_resolve() {
 	ythtbbs_cache_UserIDHashTable_resolve();
 }
 
-int ythtbbs_cache_UserTable_add_utmp_idx(int uid, int utmp_idx) {
+int ythtbbs_cache_UserTable_add_utmp_idx(int uid, int utmp_idx, int login_type) {
 	int i, idx;
 	int earlest_used_pos = -1;
+	int slot_start, slot_end;
 	time_t earlest_time = time(NULL); // now
 	struct user_info *ptr_info = NULL;
 
 	if (uid <= 0 || uid > MAXUSERS)
 		return -1;
 
+	switch(login_type) {
+	case YTHTBBS_LOGIN_TELNET:
+		slot_start = 0;
+		slot_end = LOGIN_END_SLOT_NUMBER_TELNET;
+		break;
+	case YTHTBBS_LOGIN_SSH:
+		slot_start = LOGIN_END_SLOT_NUMBER_TELNET;
+		slot_end = LOGIN_END_SLOT_NUMBER_SSH;
+		break;
+	case YTHTBBS_LOGIN_NJU09:
+	case YTHTBBS_LOGIN_API:
+		// NJU09 / API 公用
+		slot_start = LOGIN_END_SLOT_NUMBER_SSH;
+		slot_end = LOGIN_END_SLOT_NUMBER_WEB;
+		break;
+	case YTHTBBS_LOGIN_OAUTH:
+		slot_start = LOGIN_END_SLOT_NUMBER_WEB;
+		slot_end = LOGIN_END_SLOT_NUMBER_OAUTH;
+		break;
+	default:
+		slot_start = 0;
+		slot_end = MAX_LOGIN_PER_USER;
+		break;
+	}
+
 	// 检查是否已存在
-	for (i = 0; i < MAX_LOGIN_PER_USER; i++) {
+	for (i = slot_start; i < slot_end; i++) {
 		if (shm_user_table->users[uid - 1].utmp_indices[i] == utmp_idx + 1)
 			return 0;
 	}
 
-	for (i = 0; i < MAX_LOGIN_PER_USER; i++) {
+	for (i = slot_start; i < slot_end; i++) {
 		idx = shm_user_table->users[uid - 1].utmp_indices[i] - 1;
 		if (idx < 0 || !ythtbbs_cache_utmp_check_active_by_idx(idx) || !ythtbbs_cache_utmp_check_uid_by_idx(idx, uid)) {
 			// TODO check

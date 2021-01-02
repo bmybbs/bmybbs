@@ -81,7 +81,7 @@ int ythtbbs_cache_utmp_insert(struct user_info *ptr_user_info) {
 
 	ythtbbs_session_generate_id(ptr_user_info->sessionid, 40 /* defined in ythtbbs/cache.h */);
 	memcpy(ptr_utmp_entry, ptr_user_info, sizeof(struct user_info));
-	if (ythtbbs_cache_UserTable_add_utmp_idx(ptr_user_info->uid, j) < 0) {
+	if (ythtbbs_cache_UserTable_add_utmp_idx(ptr_user_info->uid, j, ptr_user_info->login_type) < 0) {
 		// 如果插入失败，则撤销上一步的 memcpy
 		memset(ptr_utmp_entry, 0, sizeof(struct user_info));
 		return -1;

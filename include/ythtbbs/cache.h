@@ -69,7 +69,12 @@ struct user_info {
 
 #define USHM_SIZE       (MAXACTIVE + 10)
 #define UCACHE_HASH_SIZE (MAXUSERS*2)
-#define MAX_LOGIN_PER_USER 6
+#define MAX_LOGIN_PER_USER 10
+// 分段存放会话
+#define LOGIN_END_SLOT_NUMBER_TELNET 2
+#define LOGIN_END_SLOT_NUMBER_SSH    4
+#define LOGIN_END_SLOT_NUMBER_WEB    8
+#define LOGIN_END_SLOT_NUMBER_OAUTH  MAX_LOGIN_PER_USER
 /**
  * 原 UCACHE / UINDEX 两个 item 的合并
  */
