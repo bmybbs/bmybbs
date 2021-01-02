@@ -5,7 +5,7 @@
 <template>
 	<div class="accordion-item">
 		<h2 class="accordion-header">
-			<button class="accordion-button collapsed" type="button" data-toggle="collapse" v-bind:data-target="'#sidebar-collapse-' + _sec_id" aria-expanded="false" v-bind:aria-controls="'sidebar-collapse-' + _sec_id">
+			<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" v-bind:data-bs-target="'#sidebar-collapse-' + _sec_id" aria-expanded="false" v-bind:aria-controls="'sidebar-collapse-' + _sec_id">
 				<span class="sidebar-icon"><fa v-bind:icon="_icon" /></span> {{ _name }}
 			</button>
 		</h2>
