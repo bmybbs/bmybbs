@@ -7,6 +7,7 @@ import Feed from "@/views/Feed.vue"
 import Board from "@/views/Board.vue"
 import BoardView from "@/views/BoardView.vue"
 import Thread from "@/views/Thread.vue"
+import Settings from "@/views/Settings.vue"
 
 const routes = [{
 	path: "/",
@@ -41,6 +42,9 @@ const routes = [{
 			name: "thread",
 			component: Thread
 		}]
+	}, {
+		path: "/web/settings",
+		component: Settings
 	}]
 }];
 

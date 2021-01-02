@@ -30,9 +30,9 @@
 							</router-link >
 						</li>
 						<li class="nav-item">
-							<span class="nav-link">
+							<router-link to="/web/settings" class="nav-link">
 								<span class="sidebar-icon"><fa icon="sliders-h" /></span> 设置
-							</span>
+							</router-link>
 						</li>
 					</ul>
 
