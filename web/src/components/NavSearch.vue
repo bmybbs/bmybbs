@@ -9,7 +9,7 @@
 			@focus="showDropdown"
 			@blur="closeDropdown"
 		>
-		<ul class="dropdown-menu dropdown-menu-dark">
+		<ul class="dropdown-menu dropdown-menu-dark" :class="{ show: realShow }">
 			<li v-if="boards.length > 0">
 				<h6 class="dropdown-header">找到的版面有：</h6>
 				<ul class="search-results">
@@ -34,7 +34,6 @@
 </template>
 
 <script>
-import Dropdown from "bootstrap/js/dist/dropdown"
 import { BMYClient } from "@/lib/BMYClient.js"
 import NavSearchHighlightItem from "@/components/NavSearchHighlightItem.vue"
 
@@ -44,6 +43,7 @@ export default {
 	data() {
 		return {
 			dropdown: null,
+			show: false,
 			search_str: "",
 			boards: [],
 			users: [],
@@ -53,22 +53,16 @@ export default {
 		};
 	},
 	mounted() {
-		if (this.dropdown == null) {
-			this.dropdown = new Dropdown(this.$refs.input);
-			this.dropdown.hide();
-		}
 	},
 	components: {
 		NavSearchHighlightItem,
 	},
 	methods: {
 		showDropdown() {
-			if (this.dropdown)
-				this.dropdown.show();
+			this.show = true;
 		},
 		closeDropdown() {
-			if (this.dropdown)
-				this.dropdown.hide();
+			this.show = false;
 		},
 		doLasySearch() {
 			if (this.lazySearchTimer) {
@@ -106,6 +100,11 @@ export default {
 					});
 				}
 			}, 200);
+		},
+	},
+	computed: {
+		realShow() {
+			return this.show && this.search_str.length > 0;
 		},
 	},
 }
