@@ -1,9 +1,6 @@
 <template>
 	<header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
 		<div class="navbar-brand col-md-3 col-lg-2 mr-0 px-3">BMYBBS</div>
-		<button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-toggle="collapse" data-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
-			<span class="navbar-toggler-icon"></span>
-		</button>
 		<div class="w-100">
 			<NavSearch />
 		</div>
@@ -11,7 +8,7 @@
 
 	<div class="container-fluid">
 		<div class="row">
-			<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+			<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block d-none bg-light sidebar">
 				<div class="sidebar-sticky pt-3">
 					<ul class="nav flex-column">
 						<li class="nav-item">
