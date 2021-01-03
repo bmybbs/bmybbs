@@ -49,7 +49,7 @@
 
 	<footer class="d-md-none fixed-bottom">
 		<nav class="navbar navbar-dark bg-dark">
-			<ul class="navbar-nav">
+			<ul class="navbar-nav w-100 flex-row justify-content-around">
 				<li class="nav-item">
 					<router-link to="/web" class="nav-link">
 						<span class="sidebar-icon"><fa icon="chart-line" /></span> 导读
@@ -140,12 +140,6 @@ export default {
 .navbar .navbar-toggler {
 	top: .25rem;
 	right: 1rem;
-}
-
-footer .navbar-nav {
-	width: 100%;
-	flex-direction: row;
-	justify-content: space-around;
 }
 
 footer .navbar-nav .nav-link {
