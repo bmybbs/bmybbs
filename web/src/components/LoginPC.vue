@@ -2,12 +2,12 @@
 	<div class="container-fluid">
 		<div class="row">
 			<div class="bmy-content">
-				<ul class="index-nav float-right">
-					<li><a>匿名登录</a></li>
-					<li><a>telnet登录</a></li>
-					<li><a>CTerm工具下载</a></li>
-					<li><a>新用户注册</a></li>
-				</ul>
+				<ol class="breadcrumb float-end index-nav">
+					<li class="breadcrumb-item"><a>匿名登录</a></li>
+					<li class="breadcrumb-item"><a>telnet登录</a></li>
+					<li class="breadcrumb-item"><a>CTerm工具下载</a></li>
+					<li class="breadcrumb-item"><a>新用户注册</a></li>
+				</ol>
 				<div id="pic-container" v-on:mouseEnter="stopAnimation" v-on:mouseleave="startAnimation">
 					<div class="slides" v-for="item in loginpics" :key="item.img_url" v-bind:style="{ display: item.display ? 'block' : 'none' }">
 						<a v-bind:href="item.img_link"><img v-bind:src="item.img_url"></a>
@@ -19,11 +19,11 @@
 
 				<!-- welback/loginform switch begin -->
 				<div v-if="_checked">
-					<div id="welback" class="row" v-if="_loginok">
-						<div class="col-sm-8">
+					<div id="welback" class="row justify-content-center" v-if="_loginok">
+						<div class="col-auto text-end">
 							欢迎回来 {{ _userid }}
 						</div>
-						<div class="col-4 btn-group">
+						<div class="col-auto btn-group">
 							<button type="button" class="btn btn-sm btn-primary">进入旧版</button>
 							<button type="button" class="btn btn-sm btn-primary">进入新版</button>
 						</div>
@@ -128,27 +128,10 @@ export default {
 	margin: auto;
 }
 
-.bmy-content ul.index-nav {
-	list-style: none;
-	color: #aaa;
-	font-size: 12px;
+.bmy-content ol.index-nav {
+	color: #999;
+	font-size: 14px;
 	margin-bottom: 5px;
-}
-
-.bmy-content ul.index-nav li {
-	display: inline;
-}
-
-.bmy-content ul.index-nav li:after {
-	content: "/";
-	padding-left: .3em;
-	padding-right: .3em;
-	color: #000;
-}
-
-.bmy-content ul.index-nav li:last-child:after {
-	content: "";
-	padding: none;
 }
 
 #pic-container {
