@@ -24,8 +24,8 @@
 							欢迎回来 {{ _userid }}
 						</div>
 						<div class="col-auto btn-group">
-							<button type="button" class="btn btn-sm btn-primary">进入旧版</button>
-							<button type="button" class="btn btn-sm btn-primary">进入新版</button>
+							<a role="button" class="btn btn-sm btn-primary" href="/BMY/">进入旧版</a>
+							<router-link role="button" class="btn btn-sm btn-primary" to="/web">进入新版</router-link>
 						</div>
 					</div>
 					<form ref="form" id="login-form" class="row" action="/BMY/bbslogin" method="post" v-else>
