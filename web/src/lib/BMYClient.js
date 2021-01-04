@@ -8,7 +8,7 @@ function myFetchPost(url, obj) {
 		headers: {
 			"Content-Type": "application/json"
 		},
-		body: JSON.stringify(obj)
+		body: (obj != null) ? JSON.stringify(obj) : ""
 	}).then(response => response.json());
 }
 
