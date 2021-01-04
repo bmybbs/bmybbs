@@ -53,8 +53,7 @@
 </template>
 
 <script>
-import { BMYClient } from "@/lib/BMYClient.js"
-import { BMY_EC } from "@/lib/BMYConstants.js"
+import { BMYLogin } from "@/lib/BMYLogin.js"
 
 export default {
 	name: "Login",
@@ -88,43 +87,8 @@ export default {
 			this.$refs.form.submit();
 		},
 		login() {
-			BMYClient.user_login(this.username, this.password).then(response => {
-				switch (response.errcode) {
-				case BMY_EC.API_RT_SUCCESSFUL:
-					this.$router.push("/web");
-					break;
-
-				case 1: // YTHTBBS_USER_NOT_EXIST
-					this.$toast.error("用户不存在", { position: "top" });
-					break;
-
-				case 2: // YTHTBBS_USER_WRONG_PASSWORD
-					this.$toast.warning("密码不正确", { position: "top" });
-					break;
-
-				case 4: // YTHTBBS_USER_TOO_FREQUENT
-					this.$toast.warning("登录太频繁，请稍候", { position: "top" });
-					break;
-
-				case 5: // YTHTBBS_USER_SITE_BAN
-				case 6: // YTHTBBS_USER_USER_BAN
-				case 7: // YTHTBBS_USER_IN_PRISON
-					this.$toast.error("当前用户被禁止登录", { position: "top" });
-					break;
-
-				case 8: // YTHTBBS_USER_ONLINE_FULL
-					this.$toast.error("当前登录人数已达到系统上限", { position: "top" });
-					break;
-
-				case 9: // YTHTBBS_USER_SESSION_ERROR
-					break;
-
-				case BMY_EC.API_RT_WRONGPARAM:
-				default:
-					this.$toast.error("内部错误", { position: "top" });
-					break;
-
-				}
+			BMYLogin(this.username, this.password, this.$toast, () => {
+				this.$router.push("/web");
 			});
 		},
 		showSlides(n) {
