@@ -10,23 +10,34 @@
 				<h2>欢迎访问 BMYBBS</h2>
 				<div class="input-field">
 					<fa icon="user" type="fas"></fa>
-					<input type="text" placeholder="账号">
+					<input type="text" placeholder="账号" v-model="username">
 				</div>
 				<div class="input-field">
 					<fa icon="lock" type="fas"></fa>
-					<input type="password" placeholder="密码">
+					<input type="password" placeholder="密码" v-model="password">
 				</div>
-				<button>登录</button>
+				<button @click="login">登录</button>
 			</div>
 		</div>
 	</div>
 </template>
 
 <script>
+import { BMYLogin } from "@/lib/BMYLogin.js"
+
 export default {
 	data() {
 		return {
+			username: "",
+			password: "",
 		}
+	},
+	methods: {
+		login() {
+			BMYLogin(this.username, this.password, this.$toast, () => {
+				this.$router.push("/web");
+			});
+		},
 	},
 	props: {
 		_userid: String,
