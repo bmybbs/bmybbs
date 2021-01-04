@@ -73,5 +73,8 @@ export const BMYClient = {
 	user_check() {
 		return myFetchGet("/BMY/user_check");
 	},
+	user_login(userid, passwd) {
+		return myFetchPost("/api/user/login", { userid: userid, passwd: passwd });
+	},
 };
 
