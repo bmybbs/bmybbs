@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include "bmy/redis.h"
 #include "ytht/random.h"
+#include "ythtbbs/cache.h"
 
 static const char SESSION_DICT[] =
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -32,6 +33,9 @@ int ythtbbs_session_set(const char *sessionid, const char *userid, const int utm
 	reply = redisCommand(ctx, "HSET BMY:Session:%s userid %s utmp_idx %d", sessionid, userid, utmp_idx);
 	if (!reply || reply->type != REDIS_REPLY_INTEGER || reply->integer < 0)
 		goto END;
+
+	freeReplyObject(reply);
+	reply = redisCommand(ctx, "EXPIRE BMY:Session:%s %d", sessionid, MAX_SESS_TIME);
 
 	ret = 0;
 END:
