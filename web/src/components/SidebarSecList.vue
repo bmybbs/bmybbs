@@ -4,7 +4,7 @@
 -->
 <template>
 	<div class="accordion-item">
-		<h2 class="accordion-header">
+		<h2 class="accordion-header" @mouseover="doLoad">
 			<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" v-bind:data-bs-target="'#sidebar-collapse-' + _sec_id" aria-expanded="false" v-bind:aria-controls="'sidebar-collapse-' + _sec_id">
 				<span class="sidebar-icon"><fa v-bind:icon="_icon" /></span> {{ _name }}
 			</button>
@@ -28,15 +28,22 @@ import { BMYClient } from "@/lib/BMYClient.js";
 export default {
 	data() {
 		return {
+			loaded: false,
 			boards: [],
 		};
 	},
 	mounted() {
-		BMYClient.get_boards_by_section(this._sec_id, BOARD_SORT_MODE.BY_ALPHABET).then((data) => {
-			data.boardlist.forEach((el) => {
-				this.boards.push(el);
-			});
-		});
+	},
+	methods: {
+		doLoad() {
+			if (!this.loaded) {
+				this.loaded = true;
+
+				BMYClient.get_boards_by_section(this._sec_id, BOARD_SORT_MODE.BY_ALPHABET).then((data) => {
+					this.boards = data.boardlist;
+				});
+			}
+		},
 	},
 	props: {
 		_name: String,
