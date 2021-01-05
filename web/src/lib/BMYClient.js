@@ -76,5 +76,8 @@ export const BMYClient = {
 	user_login(userid, passwd) {
 		return myFetchPost("/api/user/login", { userid: userid, passwd: passwd });
 	},
+	user_logout() {
+		return myFetchPost("/api/user/logout");
+	},
 };
 

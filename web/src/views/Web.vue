@@ -1,9 +1,30 @@
 <template>
-	<header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-		<div class="navbar-brand col-md-3 col-lg-2 mr-0 px-3">BMYBBS</div>
-		<div class="w-100">
-			<NavSearch />
-		</div>
+	<header class="row sticky-top bg-dark m-0 shadow">
+		<nav class="navbar navbar-dark">
+			<div class="navbar-brand col-3 col-sm-3 col-md-3 col-lg-2 mr-0 px-3">BMYBBS</div>
+			<div class="col-6 col-sm-7 col-md-8 col-lg-9">
+				<NavSearch />
+			</div>
+			<div class="col-3 col-sm-2 col-md-1 col-lg-1 px-3">
+				<div class="dropdown">
+					<button class="navbar-toggler dropdown-toggle" ref="dropdownUser" id="dropdownUserButton" type="button" data-bs-toggle="dropdown1" @click="toggle_ddu">
+						<fa icon="user" />
+					</button>
+					<ul class="dropdown-menu dropdown-menu-end" :class="{ show: show_ddu }" aria-labelledby="dropdownUserButton">
+						<li v-if="!loaded_ddu">
+							<div class="d-flex justify-content-center">
+								<div class="spinner-border text-secondary m-5" role="status">
+									<span class="visually-hidden">Loading...</span>
+								</div>
+							</div>
+						</li>
+
+						<li v-if="loaded_ddu && login_ok"><span class="dropdown-item" @click="logout">登出 {{userid}}</span></li>
+						<li v-if="loaded_ddu && !login_ok"><span class="dropdown-item" @click="gotoLogin">登录</span></li>
+					</ul>
+				</div>
+			</div>
+		</nav>
 	</header>
 
 	<div class="container-fluid">
@@ -77,16 +98,43 @@
 
 <script>
 import { BMYSECSTRS } from "@/lib/BMYConstants.js";
+import { BMYClient } from "@/lib/BMYClient.js";
 import SidebarSecList from "@/components/SidebarSecList.vue";
 import NavSearch from "@/components/NavSearch.vue";
 
 export default {
 	data() {
 		return {
+			show_ddu: false,
+			loaded_ddu: false,
+			login_ok: false,
+			userid: "",
 			sections: BMYSECSTRS,
 		}
 	},
 	mounted() {
+	},
+	methods: {
+		toggle_ddu() {
+			this.show_ddu = !this.show_ddu;
+			this.loaded_ddu = false;
+			BMYClient.user_check().then(response => {
+				this.loaded_ddu = true;
+
+				if (response.code == 0) {
+					this.login_ok = true;
+					this.userid = response.userid;
+				}
+			});
+		},
+		logout() {
+			BMYClient.user_logout().then(() => {
+				this.gotoLogin();
+			});
+		},
+		gotoLogin() {
+			this.$router.push("/");
+		},
 	},
 	components: {
 		NavSearch,
@@ -135,6 +183,7 @@ export default {
 	font-size: 1rem;
 	background-color: rgba(0, 0, 0, 0, .25);
 	box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0, .25);
+	margin-right: 0;
 }
 
 .navbar .navbar-toggler {
