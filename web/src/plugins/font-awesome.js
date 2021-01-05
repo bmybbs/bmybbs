@@ -16,6 +16,7 @@ import {
 	faGamepad,
 	faGlobeAsia,
 	faGraduationCap,
+	faHashtag,
 	faHeart,
 	faInfoCircle,
 	faItalic,
@@ -52,6 +53,7 @@ library.add(faFutbol);
 library.add(faGamepad);
 library.add(faGlobeAsia);
 library.add(faGraduationCap);
+library.add(faHashtag);
 library.add(faHeart);
 library.add(faInfoCircle);
 library.add(faItalic);

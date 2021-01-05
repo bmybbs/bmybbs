@@ -1,5 +1,5 @@
 <template>
-	<span ref="span" @mouseover="openPopover" @mouseout="closePopover"><router-link :to="{ name: 'board', params: { boardname: _boardname_en }}">{{_boardname_zh}}</router-link></span>
+	<span ref="span" @mouseover="openPopover" @mouseout="closePopover"><router-link :to="{ name: 'board', params: { boardname: _boardname_en }}" class="text-decoration-none">{{_boardname_zh}}</router-link></span>
 </template>
 
 <script>

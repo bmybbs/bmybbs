@@ -62,7 +62,7 @@ export default {
 
 <style>
 .bmy-dashboard-card {
-	margin-bottom: 30px;
+	border-color: #BBBBBB !important;
 }
 </style>
 

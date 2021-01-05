@@ -1,8 +1,8 @@
 <template>
 	<li class="list-group-item">
-		<h3><router-link :to="{ name: 'thread', params: { boardname: _boardname_en, tid: _aid }}">{{ _title }}</router-link></h3>
+		<router-link :to="{ name: 'thread', params: { boardname: _boardname_en, tid: _aid }}" class="fs-5 fw-bold text-dark text-decoration-none">{{ _title }}</router-link>
 		<div class="meta">
-			<span class="board"><PopoverBoardInfo :_boardname_zh="_boardname_zh" :_boardname_en="_boardname_en" /></span>
+			<span class="board"><span class="icon"><fa icon="hashtag" /></span><PopoverBoardInfo :_boardname_zh="_boardname_zh" :_boardname_en="_boardname_en" /></span>
 
 			<span class="dot">•</span>
 
@@ -43,26 +43,17 @@ export default {
 </script>
 
 <style scoped>
-* {
-	font-size: 12px;
-}
-
-h3 {
-	color: #222222;
-	font-size: 16px;
-	font-weight: 500;
-}
-
 .icon {
 	margin-right: 2px;
 }
 
-.meta {
+.meta >>> * {
 	color: #787c7e;
+	font-size: .9rem;
 	font-weight: 400;
 }
 
-.board {
+.board >>> * {
 	color: #1c1c1c;
 	font-weight: 700;
 }

@@ -1,6 +1,6 @@
 <template>
-	<section class="card bmy-dashboard-card">
-		<div class="card-header">
+	<section class="card mb-4 shadow-lg bmy-dashboard-card">
+		<div class="card-header bg-secondary bg-gradient text-white fs-5">
 			{{ _name }}
 		</div>
 		<ul class="list-group list-group-flush">

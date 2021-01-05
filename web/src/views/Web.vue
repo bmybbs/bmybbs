@@ -1,6 +1,6 @@
 <template>
 	<header class="row sticky-top bg-dark m-0 shadow">
-		<nav class="navbar navbar-dark">
+		<nav class="navbar navbar-dark p-0">
 			<div class="navbar-brand col-3 col-sm-3 col-md-3 col-lg-2 mr-0 px-3">BMYBBS</div>
 			<div class="col-6 col-sm-7 col-md-8 col-lg-9">
 				<NavSearch />
@@ -29,7 +29,7 @@
 
 	<div class="container-fluid">
 		<div class="row">
-			<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block d-none bg-light sidebar">
+			<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block d-none sidebar">
 				<div class="sidebar-sticky pt-3">
 					<ul class="nav flex-column">
 						<li class="nav-item">
@@ -198,6 +198,8 @@ footer .navbar-nav .nav-link {
 /* Main */
 main {
 	padding-top: 16px;
+	background-color: #DAE0E6;
+	padding-bottom: 50px;
 }
 </style>
 
