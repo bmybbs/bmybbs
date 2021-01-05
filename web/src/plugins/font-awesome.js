@@ -11,6 +11,7 @@ import {
 	faCode,
 	faCogs,
 	faComments,
+	faFire,
 	faFont,
 	faFutbol,
 	faGamepad,
@@ -32,6 +33,7 @@ import {
 	faRss,
 	faShareAlt,
 	faSlidersH,
+	faThumbtack,
 	faUnderline,
 	faUser,
 } from "@fortawesome/free-solid-svg-icons"
@@ -48,6 +50,7 @@ library.add(faClone);
 library.add(faCode);
 library.add(faCogs);
 library.add(faComments);
+library.add(faFire);
 library.add(faFont);
 library.add(faFutbol);
 library.add(faGamepad);
@@ -69,6 +72,7 @@ library.add(faRedo);
 library.add(faRss);
 library.add(faShareAlt);
 library.add(faSlidersH);
+library.add(faThumbtack);
 library.add(faUnderline);
 library.add(faUser);
 
