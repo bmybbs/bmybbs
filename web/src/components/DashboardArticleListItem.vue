@@ -1,18 +1,21 @@
 <template>
 	<li class="list-group-item">
 		<router-link :to="{ name: 'thread', params: { boardname: _boardname_en, tid: _aid }}" class="fs-5 fw-bold text-dark text-decoration-none">{{ _title }}</router-link>
-		<div class="meta">
+		<div class="meta d-flex justify-content-between justify-content-sm-start">
 			<span class="board"><span class="icon"><fa icon="hashtag" /></span><PopoverBoardInfo :_boardname_zh="_boardname_zh" :_boardname_en="_boardname_en" /></span>
 
-			<span class="dot">•</span>
+			<span class="dot align-self-center d-none d-sm-inline-block">•</span>
 
 			<span class="author"><span class="icon"><fa icon="at" /></span><PopoverUserInfo :_userid="_author" /></span>
-			<span class="post">发表于</span>
-			<span class="time"><TooltipTimestamp :_unix_timestamp="_aid" /></span>
 
-			<span class="dot">•</span>
+			<span>
+				<span class="post d-none d-sm-inline-block">发表于</span>
+				<span class="time"><TooltipTimestamp :_unix_timestamp="_aid" /></span>
+			</span>
 
-			<span class="comments"><span class="icon"><fa icon="comments" /></span>{{ _comments }}篇讨论</span>
+			<span class="dot align-self-center d-none d-sm-inline-block">•</span>
+
+			<span class="comments"><span class="icon"><fa icon="comments" /></span>{{ _comments }}<span class="d-none d-sm-inline-block">篇讨论</span></span>
 		</div>
 	</li>
 </template>
