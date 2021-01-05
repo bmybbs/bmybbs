@@ -2,7 +2,7 @@
 	<div class="d-block d-md-none">
 		<LoginMobile v-bind:_loginok="loginok" v-bind:_userid="userid" v-bind:_checked="checked" />
 	</div>
-	<div class="d-none d-sm-block">
+	<div class="d-none d-md-block">
 		<LoginPC v-bind:_loginok="loginok" v-bind:_userid="userid" v-bind:_checked="checked" v-bind:_loginpics="loginpics" />
 	</div>
 </template>
