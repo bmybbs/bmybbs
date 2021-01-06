@@ -20,7 +20,7 @@ Page({
 		wx.login({
 			success: res => {
 				BMYClient.oauth_login(res.code).then(response => {
-					if (response.errcode == BMY_EC.API_RT_SUCCESS) {
+					if (response.errcode == BMY_EC.API_RT_SUCCESSFUL) {
 						wx.switchTab({
 							url: '../dashboard/dashboard',
 						})

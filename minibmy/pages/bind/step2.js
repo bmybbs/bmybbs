@@ -15,7 +15,7 @@ Page({
 							icon: "error",
 							duration: 2000
 						})
-					} else if (response.errcode == BMY_EC.API_RT_SUCCESS) {
+					} else if (response.errcode == BMY_EC.API_RT_SUCCESSFUL) {
 						wx.navigateTo({
 							url: `step3?code=${response.code}`
 						})
