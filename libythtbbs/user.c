@@ -604,7 +604,7 @@ fillmboard(struct boardheader *bh, struct myparam1 *mp)
 	return 0;
 }
 
-static const char *get_login_type_str(enum ythtbbs_user_login_type type) {
+const char *ythtbbs_user_get_login_type_str(enum ythtbbs_user_login_type type) {
 	switch(type) {
 	case YTHTBBS_LOGIN_TELNET: return "TELNET";
 	case YTHTBBS_LOGIN_SSH   : return "SSH";
@@ -659,7 +659,7 @@ int ythtbbs_user_login(const char *userid, const char *passwd, const char *fromh
 
 	if (login_type != YTHTBBS_LOGIN_OAUTH) {
 		if (!ytht_crypt_checkpasswd(local_lookup_user.passwd, passwd)) {
-			logattempt(local_lookup_user.userid, fromhost, get_login_type_str(login_type), local_now);
+			logattempt(local_lookup_user.userid, fromhost, ythtbbs_user_get_login_type_str(login_type), local_now);
 			return YTHTBBS_USER_WRONG_PASSWORD;
 		}
 	}
@@ -709,7 +709,7 @@ int ythtbbs_user_login(const char *userid, const char *passwd, const char *fromh
 
 	substitute_record(PASSFILE, &local_lookup_user, sizeof(struct userec), user_idx + 1);
 
-	sprintf(local_buf, "%s enter %s using %s", local_lookup_user.userid, fromhost, get_login_type_str(login_type));
+	sprintf(local_buf, "%s enter %s using %s", local_lookup_user.userid, fromhost, ythtbbs_user_get_login_type_str(login_type));
 	newtrace(local_buf);
 
 	sethomepath_s(local_buf, sizeof(local_buf), local_lookup_user.userid);

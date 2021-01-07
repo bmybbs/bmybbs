@@ -188,4 +188,6 @@ void ythtbbs_user_clean(void);
 void ythtbbs_user_touchnew(const char *userid);
 
 enum ythtbbs_register_status ythtbbs_user_create(const struct userec *user, int *usernum, int *time_interval);
+
+const char *ythtbbs_user_get_login_type_str(enum ythtbbs_user_login_type type);
 #endif

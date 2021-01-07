@@ -8,6 +8,7 @@
 #include "bmy/iphash.h"
 #include "ythtbbs/cache.h"
 #include "ythtbbs/session.h"
+#include "ythtbbs/user.h"
 #include "cache-internal.h"
 
 // 用于 iphash
@@ -196,7 +197,7 @@ void ythtbbs_cache_utmp_dump(FILE *fp) {
 		if (info->userid[0] == '\0')
 			continue;
 
-		fprintf(fp, "%d, %s\n", i, info->userid);
+		fprintf(fp, "%d, %s, %s\n", i, info->userid, ythtbbs_user_get_login_type_str(info->login_type));
 	}
 }
 
