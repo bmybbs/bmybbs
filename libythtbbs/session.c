@@ -191,7 +191,7 @@ void ythtbbs_session_clear_key(const char *sessionid, const char *key) {
 	if (ctx == NULL || ctx->err)
 		goto END;
 
-	reply = redisCommand(ctx, "DEL BMY:Session:%s %s", sessionid, key);
+	reply = redisCommand(ctx, "HDEL BMY:Session:%s %s", sessionid, key);
 END:
 	if (reply) freeReplyObject(reply);
 	if (ctx)   redisFree(ctx);
