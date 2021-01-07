@@ -631,14 +631,12 @@ int allnum, pagenum;
 /* add by zhoulin 98.11*/
 	case 'w':
 	case 'W':
-/*                        if (!friendmode)
-                             return 0;*/
+/* if (!friendmode) return 0;*/
 		friendmode1 = ~friendmode1 & 1;
 		break;
 	case 'f':
 	case 'F':
-/*                        if(strcmp(currentuser.userid,user_record[allnum]->userid))
-                                return 0;*/
+/* if(strcmp(currentuser.userid,user_record[allnum]->userid)) return 0;*/
 		buf[0] = 0;	//add by ylsdd
 		getdata(BBS_PAGESIZE + 3, 0, "±‰ªªÍ«≥∆: ", buf, NAMELEN, DOECHO,
 			NA);
