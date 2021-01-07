@@ -18,7 +18,7 @@
 							</div>
 							<div class="modal-footer">
 								<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-								<button type="button" class="btn btn-danger" @click="remove">确定移除</button>
+								<button type="button" class="btn btn-danger" data-bs-dismiss="modal" @click="remove">确定移除</button>
 							</div>
 						</div>
 					</div>
@@ -101,8 +101,28 @@ export default {
 		},
 		remove() {
 			BMYClient.oauth_remove_wx().then(response => {
-				if (response.errcode == BMY_EC.API_RT_SUCCESSFUL) {
+				switch (response.errcode) {
+				case BMY_EC.API_RT_SUCCESSFUL:
 					this.hasopenid = false;
+					this.load();
+					break;
+				case BMY_EC.API_RT_NOTLOGGEDIN:
+					this.$toast.error("请重新登录", {
+						position: "top"
+					});
+					break;
+				case BMY_EC.API_RT_NOOPENID:
+					this.$toast.error("您没有关联微信", {
+						position: "top"
+					});
+					this.hasopenid = false;
+					this.load();
+					break;
+				default:
+					this.$toast.error("未知错误", {
+						position: "top"
+					});
+					break;
 				}
 			});
 		},
