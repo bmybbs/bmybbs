@@ -11,7 +11,7 @@ appendonebinaryattach(char *filename, char *attachname, char *attachfname)
 {
 	FILE *fp;
 	int size, origsize;
-	struct mmapfile mf = { ptr:NULL };
+	struct mmapfile mf = { .ptr = NULL };
 	char ch = 0;
 
 	if (!file_isfile(attachfname))
@@ -33,9 +33,7 @@ appendonebinaryattach(char *filename, char *attachname, char *attachfname)
 	fwrite(&size, sizeof (size), 1, fp);
 	fwrite(mf.ptr, mf.size, 1, fp);
 	fclose(fp);
-	if (file_size(filename) !=
-	    origsize + 5 + mf.size + strlen("\nbeginbinaryattach \n") +
-	    strlen(attachname)) {
+	if (file_size(filename) != origsize + 5 + mf.size + strlen("\nbeginbinaryattach \n") + strlen(attachname)) {
 		truncate(filename, origsize);
 		mmapfile(NULL, &mf);
 		return -1;
@@ -53,12 +51,11 @@ appendbinaryattach(char *filename, char *userid, char *attachname)
 	char attachfname[1024], path[1024];
 	int count = 0;
 	if (attachname) {
-		snprintf(attachfname, sizeof (attachfname),
-			 PATHUSERATTACH "/%s/%s", userid, attachname);
+		snprintf(attachfname, sizeof (attachfname), PATHUSERATTACH "/%s/%s", userid, attachname);
 		if (strstr(attachfname, "/../"))
 			return -1;
-		if (appendonebinaryattach(filename, attachname, attachfname) ==
-		    0) count++;
+		if (appendonebinaryattach(filename, attachname, attachfname) == 0)
+			count++;
 		return count;
 	}
 	snprintf(path, sizeof (path), PATHUSERATTACH "/%s", userid);
@@ -71,12 +68,10 @@ appendbinaryattach(char *filename, char *userid, char *attachname)
 	while ((pdent = readdir(pdir))) {
 		if (!strcmp(pdent->d_name, "..") || !strcmp(pdent->d_name, "."))
 			continue;
-		snprintf(attachfilepaths[attachcount], sizeof(attachfname), "%s/%s", path,
-			 pdent->d_name);
+		snprintf(attachfilepaths[attachcount], sizeof(attachfname), "%s/%s", path, pdent->d_name);
 		snprintf(attachfilenames[attachcount],256,"%s",pdent->d_name);
 		attachcount++;
-		/*if (appendonebinaryattach(filename, pdent->d_name, attachfname)
-		    == 0)
+		/*if (appendonebinaryattach(filename, pdent->d_name, attachfname) == 0)
 			count++;*/
 	}
 	attachcount--;
@@ -84,13 +79,13 @@ appendbinaryattach(char *filename, char *userid, char *attachname)
 	{
 		if(appendonebinaryattach(filename,attachfilenames[attachcount],attachfilepaths[attachcount])==0)
 		{
-			 count++;
-			 attachcount--;
+			count++;
+			attachcount--;
 		}
-		
+
 	}
 	closedir(pdir);
-	
+
 	return count;
 }
 
