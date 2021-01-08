@@ -48,7 +48,7 @@ appendbinaryattach(char *filename, char *userid, char *attachname)
 {
 	DIR *pdir;
 	struct dirent *pdent;
-	char attachfname[1024], path[1024];
+	char attachfname[1024], path[512];
 	int count = 0;
 	if (attachname) {
 		snprintf(attachfname, sizeof (attachfname), PATHUSERATTACH "/%s/%s", userid, attachname);
