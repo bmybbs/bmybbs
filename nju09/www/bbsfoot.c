@@ -119,7 +119,7 @@ void footInfo(){
 	strcat(path,id);
 	strcat(path,"/GoodWish");
 	*/
-	sethomefile(path, id, "GoodWish");
+	sethomefile_s(path, sizeof(path), id, "GoodWish");
 	printf("<span id=\'foot_msg\' style=\"position:fixed;padding:0; margin-left:5px;overflow:hidden;\">\n");
 	printf("    <font style=\"font-size:12px\" color=#ff6600>\n");
 	printf("    <ul id=\"msg_contain\" style=\"padding:0;margin-top:0px; height:18px;overflow:hidden; \">\n");
@@ -177,7 +177,7 @@ bbsfoot_main()
 	printf("<script>function t(){return (new Date()).valueOf();}</script>\n");
 	printf("<body bgcolor=#efefef>\n");
 	printf("<div id='bbsfoot'>");
-    if (loginok) {
+	if (loginok) {
 		id = currentuser.userid;
 		dt = labs(now_t - w_info->login_start_time) / 60;
 	}
@@ -246,11 +246,11 @@ int mails(char *id, int *unread) {
 	struct fileheader *x;
 	char path[80];
 	int total = 0, i;
-	struct mmapfile mf = { ptr:NULL };
+	struct mmapfile mf = { .ptr = NULL };
 	*unread = 0;
 	if (!loginok || isguest)
 		return 0;
-	setmailfile(path, id, ".DIR");
+	setmailfile_s(path, sizeof(path), id, ".DIR");
 	MMAP_TRY {
 		if (mmapfile(path, &mf) < 0) {
 			MMAP_UNTRY;
