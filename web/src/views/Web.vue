@@ -9,10 +9,26 @@
 				<div class="dropdown">
 					<button class="navbar-toggler dropdown-toggle" ref="dropdownUser" id="dropdownUserButton" type="button" data-bs-toggle="dropdown1" @click="toggle_ddu">
 						<fa icon="user" />
+						<span class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-danger" v-if="counted_messages > 0">{{counted_messages}}<span class="visually-hidden">未读消息</span></span>
 					</button>
-					<ul class="dropdown-menu dropdown-menu-end" :class="{ show: show_ddu }" aria-labelledby="dropdownUserButton">
-						<li v-if="login_ok"><span class="dropdown-item" @click="logout">登出 {{user_info.userid}}</span></li>
-						<li v-if="!login_ok"><span class="dropdown-item" @click="gotoLogin">登录</span></li>
+					<ul class="dropdown-menu dropdown-menu-end" :class="{ show: show_ddu }" aria-labelledby="dropdownUserButton" v-if="login_ok">
+						<li>
+							<div class="dropdown-item">
+								站内信
+								<span class="float-end badge rounded-pill bg-danger" v-if="user_info.unread_mail > 0">{{user_info.unread_mail}}</span>
+							</div>
+						</li>
+						<li>
+							<div class="dropdown-item">
+								提醒
+								<span class="float-end badge rounded-pill bg-danger" v-if="user_info.unread_notify > 0">{{user_info.unread_notify}}</span>
+							</div>
+						</li>
+						<li><hr class="dropdown-divider"></li>
+						<li><span class="dropdown-item" @click="logout">登出 {{user_info.userid}}</span></li>
+					</ul>
+					<ul class="dropdown-menu dropdown-menu-end" :class="{ show: show_ddu }" aria-labelledby="dropdownUserButton" v-else>
+						<li><span class="dropdown-item" @click="gotoLogin">登录</span></li>
 					</ul>
 				</div>
 			</div>
@@ -103,6 +119,11 @@ export default {
 			login_ok: false,
 			sections: BMYSECSTRS,
 		}
+	},
+	computed: {
+		counted_messages() {
+			return this.user_info.unread_mail + this.user_info.unread_notify;
+		},
 	},
 	mounted() {
 		this.load_user_meta();
