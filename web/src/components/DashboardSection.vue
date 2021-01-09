@@ -14,6 +14,7 @@
 				:_author="article.author"
 				:_comments="article.th_num"
 				:_aid="article.aid"
+				:_accessed="article.mark"
 			/>
 		</ul>
 	</section>

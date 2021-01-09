@@ -27,6 +27,7 @@
 							v-bind:_author="article.author"
 							v-bind:_comments="article.count"
 							v-bind:_aid="article.tid"
+							v-bind:_accessed="article.accessed"
 						/>
 					</ul>
 					<div class="card-footer text-center" @click="load_more">

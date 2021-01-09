@@ -1,6 +1,9 @@
 <template>
 	<li class="list-group-item">
-		<router-link :to="{ name: 'thread', params: { boardname: _boardname_en, tid: _aid }}" class="fs-5 fw-bold text-dark text-decoration-none">{{ _title }}</router-link>
+		<div class="d-flex justify-content-between">
+			<router-link :to="{ name: 'thread', params: { boardname: _boardname_en, tid: _aid }}" class="fs-5 fw-bold text-dark text-decoration-none">{{ _title }}</router-link>
+			<BadgeArticleFlags :_accessed="_accessed" />
+		</div>
 		<div class="meta d-flex justify-content-between justify-content-sm-start">
 			<span class="board"><span class="icon"><fa icon="hashtag" /></span><PopoverBoardInfo :_boardname_zh="_boardname_zh" :_boardname_en="_boardname_en" /></span>
 
@@ -21,6 +24,7 @@
 </template>
 
 <script>
+import BadgeArticleFlags from "@/components/BadgeArticleFlags.vue"
 import TooltipTimestamp from "@/components/TooltipTimestamp.vue"
 import PopoverBoardInfo from "@/components/PopoverBoardInfo.vue"
 import PopoverUserInfo from "@/components/PopoverUserInfo.vue"
@@ -36,8 +40,10 @@ export default {
 		_author: String,
 		_comments: Number,
 		_aid: Number,
+		_accessed: Number,
 	},
 	components: {
+		BadgeArticleFlags,
 		PopoverBoardInfo,
 		PopoverUserInfo,
 		TooltipTimestamp,
