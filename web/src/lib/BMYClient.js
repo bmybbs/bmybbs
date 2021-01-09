@@ -53,7 +53,7 @@ export const BMYClient = {
 		return myFetchGet("/api/article/list?type=top10");
 	},
 	get_user_info(userid) {
-		return myFetchGet("/api/user/query?queryid=" + userid);
+		return myFetchGet(`/api/user/query?queryid=${userid}`);
 	},
 	oauth_check_code(code) {
 		return myFetchPost(`/api/oauth/2fa_check_code?code=${code}`);
