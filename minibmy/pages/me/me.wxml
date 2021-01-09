@@ -1,4 +1,42 @@
-<view>
-	<text>me me me</text>
+<view class="me-container">
+	<block wx:if="{{login_ok}}">
+		<view class="me-header">
+			<text class="me-userid">{{user_info.userid}}</text>
+			<text class="me-nickname">{{user_info.nickname}}</text>
+
+			<view class="me-badge">
+				<view class="me-badge-item">
+					<text>登录</text>
+					<text class="me-badge-number">{{user_info.login_counts}}次</text>
+				</view>
+				<view class="me-badge-item">
+					<text>发文</text>
+					<text class="me-badge-number">{{user_info.post_counts}}篇</text>
+				</view>
+				<view class="me-badge-item">
+					<text>经验</text>
+					<text class="me-badge-number">{{user_info.exp_level}}</text>
+				</view>
+				<view class="me-badge-item">
+					<text>表现</text>
+					<text class="me-badge-number">{{user_info.perf_level}}</text>
+				</view>
+			</view>
+		</view>
+
+		<mp-cells>
+			<mp-cell link hover>
+				<view>站内信</view>
+				<view slot="footer" wx:if="{{user_info.unread_mail > 0}}">{{user_info.unread_mail}}</view>
+			</mp-cell>
+			<mp-cell link hover>
+				<view>提醒</view>
+				<view slot="footer" wx:if="{{user_info.unread_notify > 0}}">{{user_info.unread_notify}}</view>
+			</mp-cell>
+		</mp-cells>
+	</block>
+	<block wx:else>
+		请先登录
+	</block>
 </view>
 
