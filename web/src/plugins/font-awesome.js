@@ -22,6 +22,7 @@ import {
 	faInfoCircle,
 	faItalic,
 	faLaptop,
+	faLayerGroup,
 	faLightbulb,
 	faLock,
 	faMap,
@@ -60,6 +61,7 @@ library.add(faHashtag);
 library.add(faHeart);
 library.add(faInfoCircle);
 library.add(faItalic);
+library.add(faLayerGroup);
 library.add(faLaptop);
 library.add(faLightbulb);
 library.add(faLock);
