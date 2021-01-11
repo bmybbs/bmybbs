@@ -247,7 +247,7 @@ copyfile(char *from, char *to)
 {
 	int input, output;
 	void *source, *target;
-	size_t filesize;
+	off_t filesize;
 	char endchar = 0;
 
 	if ((input = open(from, O_RDONLY)) == -1)
@@ -255,6 +255,8 @@ copyfile(char *from, char *to)
 	if ((output = open(to, O_RDWR | O_CREAT | O_TRUNC, 0666)) == -1)
 		goto ERROR2;
 	filesize = lseek(input, 0, SEEK_END);
+	if (filesize == (off_t) -1)
+		goto ERROR2;
 	lseek(output, filesize - 1, SEEK_SET);
 	write(output, &endchar, 1);
 	if ((source = mmap(0, filesize, PROT_READ, MAP_SHARED, input, 0)) == (void *) -1)
