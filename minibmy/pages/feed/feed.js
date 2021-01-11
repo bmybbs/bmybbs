@@ -1,24 +1,35 @@
+import { BMYClient } from "../../utils/BMYClient.js"
+import { BMY_EC } from "../../utils/BMYConstants.js"
+
 Page({
 	data: {
-		list: [{
-			id: 1,
-			title: "Lorem ipsum",
-			author: "foo",
-			timestamp: 1606831692,
-			digest: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do",
-			board: "XJTUnews",
-			comments: 42,
-			bookmarks: 42
-		}, {
-			id: 2,
-			title: "Lorem ipsum",
-			author: "foo",
-			timestamp: 1606831692,
-			digest: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do",
-			board: "doctor",
-			comments: 17,
-			bookmarks: 23
-		}]
-	}
+		articles: [],
+		login_ok: true,
+	},
+	load_feed: function() {
+		let time = Math.floor(new Date().getTime() / 1000);
+		BMYClient.get_feed(time).then(response => {
+			switch (response.errcode) {
+			case BMY_EC.API_RT_SUCCESSFUL:
+				if (Array.isArray(response.articles)) {
+					response.articles.map((x) => {
+						x.id = x.boardname_en + x.tid;
+					});
+					this.setData({
+						articles: response.articles
+					});
+				}
+				break;
+			case BMY_EC.API_RT_NOTLOGGEDIN:
+				this.setData({
+					login_ok: false
+				});
+				break;
+			}
+		});
+	},
+	onLoad: function() {
+		this.load_feed();
+	},
 })
 

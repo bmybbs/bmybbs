@@ -1,12 +1,12 @@
 <template>
-	<div class="container-fluid">
+	<div class="container-fluid" v-if="loggedin">
 		<div class="row">
-			<div class="col-xs-6 col-md-6">
+			<div class="col-6 col-xs-6 col-md-6">
 				<h2 v-if="feedmode">订阅</h2>
 				<h2 v-else>{{$route.params.secid}}区</h2>
 			</div>
-			<div class="col-xs-6 col-md-6 right-col d-flex align-items-center justify-content-end">
-				<span class="icon mr-3">
+			<div class="col-6 col-xs-6 col-md-6 right-col d-flex align-items-center justify-content-end">
+				<span class="icon me-3">
 					<fa icon="align-justify" />
 				</span>
 				<span class="icon">
@@ -27,6 +27,7 @@
 							v-bind:_author="article.author"
 							v-bind:_comments="article.count"
 							v-bind:_aid="article.tid"
+							v-bind:_accessed="article.accessed"
 						/>
 					</ul>
 					<div class="card-footer text-center" @click="load_more">
@@ -51,12 +52,15 @@
 			</div>
 		</div>
 	</div>
+	<div v-else>
+		请先<router-link to="/" class="text-decoration-none">登录</router-link>
+	</div>
 </template>
 
 <script>
 import DashboardArticleListItem from "@/components/DashboardArticleListItem.vue"
 import { BMYClient } from "@/lib/BMYClient.js"
-import { BOARD_SORT_MODE } from "@/lib/BMYConstants.js"
+import { BOARD_SORT_MODE, BMY_EC } from "@/lib/BMYConstants.js"
 
 export default {
 	data() {
@@ -65,6 +69,7 @@ export default {
 			time: Math.floor(new Date().getTime() / 1000),
 			articles: [ ],
 			favboards: [ ],
+			loggedin: true,
 		}
 	},
 	created() {
@@ -99,13 +104,23 @@ export default {
 		},
 		load_feed_more() {
 			BMYClient.get_feed(this.time).then(response => {
-				if (Array.isArray(response.articles)) {
-					this.articles = this.articles.concat(response.articles);
-					let l = response.articles.length;
-					this.time = response.articles[l - 1].tid - 1;
+				switch (response.errcode) {
+				case BMY_EC.API_RT_SUCCESSFUL:
+					if (Array.isArray(response.articles)) {
+						this.articles = this.articles.concat(response.articles);
+						let l = response.articles.length;
+						this.time = response.articles[l - 1].tid - 1;
+					}
+					break;
+				case BMY_EC.API_RT_NOTLOGGEDIN:
+					this.loggedin = false;
+					break;
+				case BMY_EC.API_RT_NOMOREFEED:
+					this.$toast.info("没有更多内容", {
+						position: "top"
+					});
+					break;
 				}
-
-				// TODO
 			});
 		},
 		load_favboards() {

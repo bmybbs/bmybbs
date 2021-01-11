@@ -1,0 +1,43 @@
+.me-container {
+	padding: 5rpx 20rpx;
+}
+
+.me-header {
+	padding: 0 32rpx;
+	display: flex;
+	flex-direction: column;
+}
+
+.me-userid {
+	font-size: 1.4rem;
+	font-weight: 800;
+}
+
+.me-nickname {
+	font-size: 1rem;
+	color: #777;
+}
+
+.me-badge {
+	display: flex;
+	font-size: 1rem;
+	color: #777;
+	justify-content: space-between;
+	flex-wrap: wrap
+}
+
+.me-badge-item {
+	width: 49%;
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 20rpx;
+}
+
+.me-badge-number {
+	display: inline-block;
+	padding: 0 20rpx;
+	color: #fff;
+	background-color: #6C757D;
+	border-radius: 30rpx;
+}
+

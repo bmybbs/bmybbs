@@ -135,20 +135,21 @@ enum ythtbbs_user_login_type {
 	YTHTBBS_LOGIN_TELNET,
 	YTHTBBS_LOGIN_SSH,
 	YTHTBBS_LOGIN_NJU09,
-	YTHTBBS_LOGIN_API
+	YTHTBBS_LOGIN_API,
+	YTHTBBS_LOGIN_OAUTH,
 };
 
 enum ythtbbs_user_login_status {
-	YTHTBBS_USER_LOGIN_OK,
-	YTHTBBS_USER_NOT_EXIST,
-	YTHTBBS_USER_WRONG_PASSWORD,
-	YTHTBBS_USER_SUSPENDED,
-	YTHTBBS_USER_TOO_FREQUENT,
-	YTHTBBS_USER_SITE_BAN,
-	YTHTBBS_USER_USER_BAN,
-	YTHTBBS_USER_IN_PRISON,
-	YTHTBBS_USER_ONLINE_FULL,
-	YTHTBBS_USER_SESSION_ERROR,
+	YTHTBBS_USER_LOGIN_OK       = 0,
+	YTHTBBS_USER_NOT_EXIST      = 1,
+	YTHTBBS_USER_WRONG_PASSWORD = 2,
+	YTHTBBS_USER_SUSPENDED      = 3,
+	YTHTBBS_USER_TOO_FREQUENT   = 4,
+	YTHTBBS_USER_SITE_BAN       = 5,
+	YTHTBBS_USER_USER_BAN       = 6,
+	YTHTBBS_USER_IN_PRISON      = 7,
+	YTHTBBS_USER_ONLINE_FULL    = 8,
+	YTHTBBS_USER_SESSION_ERROR  = 9,
 };
 
 enum ythtbbs_register_status {
@@ -187,4 +188,6 @@ void ythtbbs_user_clean(void);
 void ythtbbs_user_touchnew(const char *userid);
 
 enum ythtbbs_register_status ythtbbs_user_create(const struct userec *user, int *usernum, int *time_interval);
+
+const char *ythtbbs_user_get_login_type_str(enum ythtbbs_user_login_type type);
 #endif

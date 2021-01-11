@@ -1,0 +1,14 @@
+<view class="container">
+	<view class="button-sp-area">
+		<button type="primary" plain="true" bindtap="scanQRCode">扫描二维码</button>
+	</view>
+
+	<view class="sperator"></view>
+
+	<text>若摄像头无法识别二维码，也可以手动输入页面上二维码下方的一串字符，区分大小写</text>
+	<input bindblur="getInput" placeholder="请小心输入哦"/>
+	<view class="button-sp-area">
+		<button type="default" plain="true" bindtap="inputKey">手动输入</button>
+	</view>
+</view>
+

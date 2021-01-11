@@ -1,0 +1,9 @@
+.code {
+	font-family: Menlo, Roboto, 'Courier New', Courier, monospace;
+	font-size: 96rpx;
+	font-weight: 600;
+	margin: 120rpx 0;
+	border-top: 10rpx solid #999;
+	border-bottom: 10rpx solid #999;
+}
+

@@ -1,6 +1,6 @@
 {
 	"usingComponents": {
-		"post-item-card": "../../components/PostItemCard/PostItemCard"
+		"feed-item-card": "../../components/FeedItemCard/FeedItemCard"
 	}
 }
 

@@ -1,0 +1,10 @@
+<view class="container">
+	<text>请打开浏览器，访问以下页面（需登录），看到二维码后点击下一步</text>
+
+	<text class="url">https://bbs.xjtu.edu.cn/web/settings</text>
+
+	<view class="button-sp-area">
+		<button type="primary" plain="true" bindtap="gotoStep2">下一步</button>
+	</view>
+</view>
+

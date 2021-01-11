@@ -4,9 +4,11 @@ import router from "./router";
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { FontAwesomeIcon } from "./plugins/font-awesome.js"
+import Toaster from "@meforma/vue-toaster"
 import "@/assets/aha.scss"
 
 createApp(App)
 	.use(router)
+	.use(Toaster)
 	.component('fa', FontAwesomeIcon)
 	.mount("#app");

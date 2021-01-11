@@ -1,8 +1,12 @@
 <view>
-	<post-item-card post-item="{{item}}"
-		wx:for="{{list}}"
-		wx:for-item="item"
-		wx:key="id">
-	</post-item-card>
+	<block wx:if="{{login_ok}}">
+		<feed-item-card article="{{item}}"
+			wx:for="{{articles}}"
+			wx:key="id">
+		</feed-item-card>
+	</block>
+	<block wx:else>
+		请先登录
+	</block>
 </view>
 

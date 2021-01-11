@@ -8,6 +8,7 @@
 #include "bmy/iphash.h"
 #include "ythtbbs/cache.h"
 #include "ythtbbs/session.h"
+#include "ythtbbs/user.h"
 #include "cache-internal.h"
 
 // 用于 iphash
@@ -81,7 +82,7 @@ int ythtbbs_cache_utmp_insert(struct user_info *ptr_user_info) {
 
 	ythtbbs_session_generate_id(ptr_user_info->sessionid, 40 /* defined in ythtbbs/cache.h */);
 	memcpy(ptr_utmp_entry, ptr_user_info, sizeof(struct user_info));
-	if (ythtbbs_cache_UserTable_add_utmp_idx(ptr_user_info->uid, j) < 0) {
+	if (ythtbbs_cache_UserTable_add_utmp_idx(ptr_user_info->uid, j, ptr_user_info->login_type) < 0) {
 		// 如果插入失败，则撤销上一步的 memcpy
 		memset(ptr_utmp_entry, 0, sizeof(struct user_info));
 		return -1;
@@ -196,7 +197,7 @@ void ythtbbs_cache_utmp_dump(FILE *fp) {
 		if (info->userid[0] == '\0')
 			continue;
 
-		fprintf(fp, "%d, %s\n", i, info->userid);
+		fprintf(fp, "%d, %s, %s\n", i, info->userid, ythtbbs_user_get_login_type_str(info->login_type));
 	}
 }
 

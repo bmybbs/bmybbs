@@ -2,12 +2,12 @@
 	<div class="container-fluid">
 		<div class="row">
 			<div class="bmy-content">
-				<ul class="index-nav float-right">
-					<li><a>匿名登录</a></li>
-					<li><a>telnet登录</a></li>
-					<li><a>CTerm工具下载</a></li>
-					<li><a>新用户注册</a></li>
-				</ul>
+				<ol class="breadcrumb float-end index-nav">
+					<li class="breadcrumb-item"><a>匿名登录</a></li>
+					<li class="breadcrumb-item"><a>telnet登录</a></li>
+					<li class="breadcrumb-item"><a>CTerm工具下载</a></li>
+					<li class="breadcrumb-item"><a>新用户注册</a></li>
+				</ol>
 				<div id="pic-container" v-on:mouseEnter="stopAnimation" v-on:mouseleave="startAnimation">
 					<div class="slides" v-for="item in loginpics" :key="item.img_url" v-bind:style="{ display: item.display ? 'block' : 'none' }">
 						<a v-bind:href="item.img_link"><img v-bind:src="item.img_url"></a>
@@ -19,13 +19,13 @@
 
 				<!-- welback/loginform switch begin -->
 				<div v-if="_checked">
-					<div id="welback" class="row" v-if="_loginok">
-						<div class="col-sm-8">
+					<div id="welback" class="row justify-content-center" v-if="_loginok">
+						<div class="col-auto text-end">
 							欢迎回来 {{ _userid }}
 						</div>
-						<div class="col-4 btn-group">
-							<button type="button" class="btn btn-sm btn-primary">进入旧版</button>
-							<button type="button" class="btn btn-sm btn-primary">进入新版</button>
+						<div class="col-auto btn-group">
+							<a role="button" class="btn btn-sm btn-primary" href="/BMY/">进入旧版</a>
+							<router-link role="button" class="btn btn-sm btn-primary" to="/web">进入新版</router-link>
 						</div>
 					</div>
 					<form ref="form" id="login-form" class="row" action="/BMY/bbslogin" method="post" v-else>
@@ -37,7 +37,7 @@
 						</div>
 						<div class="col-4 btn-group">
 							<button type="button" class="btn btn-sm btn-primary" v-on:click="post_form">登录旧版</button>
-							<button type="button" class="btn btn-sm btn-primary">登录新版</button>
+							<button type="button" class="btn btn-sm btn-primary" @click="login">登录新版</button>
 							<button type="button" class="btn btn-sm btn-primary">忘记密码</button>
 						</div>
 					</form>
@@ -53,6 +53,8 @@
 </template>
 
 <script>
+import { BMYLogin } from "@/lib/BMYLogin.js"
+
 export default {
 	name: "Login",
 	data() {
@@ -83,6 +85,11 @@ export default {
 	methods: {
 		post_form() {
 			this.$refs.form.submit();
+		},
+		login() {
+			BMYLogin(this.username, this.password, this.$toast, () => {
+				this.$router.push("/web");
+			});
 		},
 		showSlides(n) {
 			if (this.slideIndex == n)
@@ -128,27 +135,10 @@ export default {
 	margin: auto;
 }
 
-.bmy-content ul.index-nav {
-	list-style: none;
-	color: #aaa;
-	font-size: 12px;
+.bmy-content ol.index-nav {
+	color: #999;
+	font-size: 14px;
 	margin-bottom: 5px;
-}
-
-.bmy-content ul.index-nav li {
-	display: inline;
-}
-
-.bmy-content ul.index-nav li:after {
-	content: "/";
-	padding-left: .3em;
-	padding-right: .3em;
-	color: #000;
-}
-
-.bmy-content ul.index-nav li:last-child:after {
-	content: "";
-	padding: none;
 }
 
 #pic-container {

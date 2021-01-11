@@ -1,5 +1,5 @@
 <template>
-	<span ref="span" @mouseover="openPopover" @mouseout="closePopover"><router-link :to="{ name: 'board', params: { boardname: _boardname_en }}">{{_boardname_zh}}</router-link></span>
+	<span ref="span" @mouseover="openPopover" @mouseout="closePopover"><router-link :to="{ name: 'board', params: { boardname: _boardname_en }}" class="text-decoration-none">{{_boardname_zh}}</router-link></span>
 </template>
 
 <script>
@@ -11,6 +11,7 @@ import CardBoardInfo from "@/components/CardBoardInfo.vue"
 export default {
 	data() {
 		return {
+			timeout: null,
 			internal_id: (new Date().getTime()),
 			status_mouse_on: false,
 			info: null,
@@ -25,15 +26,18 @@ export default {
 	methods: {
 		openPopover() {
 			if (!this.status_mouse_on) {
-				this.status_mouse_on = true;
-				if (this.info == null) {
-					BMYClient.get_board_info(this._boardname_en).then(response => {
-						this.info = response;
+				this.timeout = setTimeout(() => {
+					this.status_mouse_on = true;
+					if (this.info == null) {
+						BMYClient.get_board_info(this._boardname_en).then(response => {
+							this.info = response;
+							this.doOpen();
+						});
+					} else {
 						this.doOpen();
-					});
-				} else {
-					this.doOpen();
-				}
+					}
+					this.timeout = null;
+				}, 1000);
 			}
 		},
 		doOpen() {
@@ -61,15 +65,19 @@ export default {
 		},
 		closePopover() {
 			this.status_mouse_on = false;
+			if (this.timeout) {
+				clearTimeout(this.timeout);
+				this.timeout = null;
+			} else {
+				if (this.v_instance) {
+					this.v_instance.unmount("#card" + this.internal_id);
+					this.v_instance = null;
+				}
 
-			if (this.v_instance) {
-				this.v_instance.unmount("#card" + this.internal_id);
-				this.v_instance = null;
-			}
-
-			if (this.popover) {
-				this.popover.dispose();
-				this.popover = null;
+				if (this.popover) {
+					this.popover.dispose();
+					this.popover = null;
+				}
 			}
 		},
 	},

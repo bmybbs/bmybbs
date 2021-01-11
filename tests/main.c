@@ -11,6 +11,7 @@ extern Suite * test_suite_session(void);
 extern Suite * test_suite_iphash(void);
 extern Suite * test_suite_redis(void);
 extern Suite * test_suite_cookie(void);
+extern Suite * test_suite_2fa(void);
 
 Suite * main_suit(void) {
 	Suite *s = suite_create("bmybbs test suite");
@@ -27,12 +28,13 @@ int main (void)
 	srunner_add_suite(sr, test_suite_timeop());
 
 	srunner_add_suite(sr, test_suite_mailsender());
-	srunner_add_suite(sr, test_suite_identify());
-	srunner_add_suite(sr, test_suite_captcha());
+	//srunner_add_suite(sr, test_suite_identify());
+	//srunner_add_suite(sr, test_suite_captcha());
 
 	srunner_add_suite(sr, test_suite_iphash());
 	srunner_add_suite(sr, test_suite_redis());
 	srunner_add_suite(sr, test_suite_cookie());
+	srunner_add_suite(sr, test_suite_2fa());
 
 	srunner_add_suite(sr, test_suite_session());
 

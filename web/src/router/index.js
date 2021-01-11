@@ -7,6 +7,8 @@ import Feed from "@/views/Feed.vue"
 import Board from "@/views/Board.vue"
 import BoardView from "@/views/BoardView.vue"
 import Thread from "@/views/Thread.vue"
+import Settings from "@/views/Settings.vue"
+import Section from "@/views/Section.vue"
 
 const routes = [{
 	path: "/",
@@ -26,6 +28,9 @@ const routes = [{
 		path: "/web/follow",
 		component: Follow
 	}, {
+		path: "/web/section",
+		component: Section
+	}, {
 		path: "/web/section/:secid",
 		name: "section",
 		component: Feed
@@ -41,6 +46,9 @@ const routes = [{
 			name: "thread",
 			component: Thread
 		}]
+	}, {
+		path: "/web/settings",
+		component: Settings
 	}]
 }];
 

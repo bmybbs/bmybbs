@@ -604,12 +604,13 @@ fillmboard(struct boardheader *bh, struct myparam1 *mp)
 	return 0;
 }
 
-static const char *get_login_type_str(enum ythtbbs_user_login_type type) {
+const char *ythtbbs_user_get_login_type_str(enum ythtbbs_user_login_type type) {
 	switch(type) {
 	case YTHTBBS_LOGIN_TELNET: return "TELNET";
 	case YTHTBBS_LOGIN_SSH   : return "SSH";
 	case YTHTBBS_LOGIN_NJU09 : return "NJU09";
 	case YTHTBBS_LOGIN_API   : return "API";
+	case YTHTBBS_LOGIN_OAUTH : return "OAUTH";
 	default                  : return "unknown";
 	}
 }
@@ -656,9 +657,11 @@ int ythtbbs_user_login(const char *userid, const char *passwd, const char *fromh
 		return YTHTBBS_USER_IN_PRISON;
 	}
 
-	if (!ytht_crypt_checkpasswd(local_lookup_user.passwd, passwd)) {
-		logattempt(local_lookup_user.userid, fromhost, get_login_type_str(login_type), local_now);
-		return YTHTBBS_USER_WRONG_PASSWORD;
+	if (login_type != YTHTBBS_LOGIN_OAUTH) {
+		if (!ytht_crypt_checkpasswd(local_lookup_user.passwd, passwd)) {
+			logattempt(local_lookup_user.userid, fromhost, ythtbbs_user_get_login_type_str(login_type), local_now);
+			return YTHTBBS_USER_WRONG_PASSWORD;
+		}
 	}
 
 	if (!ythtbbs_user_has_perm(&local_lookup_user, PERM_BASIC))
@@ -706,7 +709,7 @@ int ythtbbs_user_login(const char *userid, const char *passwd, const char *fromh
 
 	substitute_record(PASSFILE, &local_lookup_user, sizeof(struct userec), user_idx + 1);
 
-	sprintf(local_buf, "%s enter %s using %s", local_lookup_user.userid, fromhost, get_login_type_str(login_type));
+	sprintf(local_buf, "%s enter %s using %s", local_lookup_user.userid, fromhost, ythtbbs_user_get_login_type_str(login_type));
 	newtrace(local_buf);
 
 	sethomepath_s(local_buf, sizeof(local_buf), local_lookup_user.userid);
@@ -716,7 +719,7 @@ int ythtbbs_user_login(const char *userid, const char *passwd, const char *fromh
 	memset(&local_uinfo, 0, sizeof(struct user_info));
 
 	local_uinfo.active    = true;
-	local_uinfo.pid       = (login_type == YTHTBBS_LOGIN_TELNET || login_type == YTHTBBS_LOGIN_SSH) ? getpid() : 1 /* magic number for www/api */;
+	local_uinfo.pid       = (login_type == YTHTBBS_LOGIN_TELNET || login_type == YTHTBBS_LOGIN_SSH) ? getpid() : 1 /* magic number for www/api/oauth */;
 	local_uinfo.mode      = LOGIN;
 	local_uinfo.uid       = user_idx + 1;
 	local_uinfo.userlevel = local_lookup_user.userlevel;
@@ -725,6 +728,7 @@ int ythtbbs_user_login(const char *userid, const char *passwd, const char *fromh
 	local_uinfo.unreadmsg = strcasecmp(local_lookup_user.userid, "guest") ? get_unreadmsg(local_lookup_user.userid) : 0;
 	local_uinfo.invisible = (ythtbbs_user_has_perm(&local_lookup_user, PERM_LOGINCLOAK) && (local_lookup_user.flags[0] & CLOAK_FLAG)) ? true : false; // 移除 term 模式中对 dietime > 0 的处理 by IronBlood 2020.10.09
 	local_uinfo.isssh     = (login_type == YTHTBBS_LOGIN_SSH) ? true : false;
+	local_uinfo.login_type = login_type;
 
 	// pager start
 	local_uinfo.pager = 0;
@@ -772,7 +776,7 @@ int ythtbbs_user_login(const char *userid, const char *passwd, const char *fromh
 	}
 
 	// wwwinfo
-	if (login_type == YTHTBBS_LOGIN_NJU09 || login_type == YTHTBBS_LOGIN_API) {
+	if (login_type == YTHTBBS_LOGIN_NJU09 || login_type == YTHTBBS_LOGIN_API || login_type == YTHTBBS_LOGIN_OAUTH) {
 		local_uinfo.wwwinfo.login_start_time = local_now;
 
 		if (strcasecmp(local_lookup_user.userid, "guest")) {

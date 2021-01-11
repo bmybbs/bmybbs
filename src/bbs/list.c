@@ -89,6 +89,31 @@ static char *idle_str(const struct user_info *uent);
 static int num_visible_users();
 static int count_visible_active(const struct user_info *uentp, void *);
 
+static const char *get_color_start_by_session_type(const enum ythtbbs_user_login_type type) {
+	char *s;
+	switch (type) {
+	case YTHTBBS_LOGIN_SSH:
+		s = "\033[32m";
+		break;
+	case YTHTBBS_LOGIN_NJU09:
+	case YTHTBBS_LOGIN_API:
+		s = "\033[35m";
+		break;
+	case YTHTBBS_LOGIN_OAUTH:
+		s = "\033[33m";
+		break;
+	case YTHTBBS_LOGIN_TELNET:
+	default:
+		s = "";
+		break;
+	}
+	return s;
+}
+
+static const char *get_color_end_by_session_type(const enum ythtbbs_user_login_type type) {
+	return (type == YTHTBBS_LOGIN_TELNET) ? "" : "\033[0m";
+}
+
 static int
 friend_search(unsigned uid, const struct user_info *uentp, int tblsize)
 {
@@ -458,8 +483,9 @@ do_userlist()
 					(override) ? "\033[1;32m" : "",
 					uentp->userid, (override) ? "\033[m" : "",
 					(t1.exp[0] == 0) ? uentp->username : t1.exp,
-					(uentp->pid == 1) ? "\033[35m" : ((uentp->isssh == 1) ? "\033[32m" : ""), uentp->from,
-					(uentp->pid == 1) || (uentp->isssh == 1) ? "\033[0m" : "",
+					get_color_start_by_session_type(uentp->login_type),
+					uentp->from,
+					get_color_end_by_session_type(uentp->login_type),
 					pagerchar(hisfriend(uentp), uentp->pager),
 					msgchar(uentp),
 					(uentp->invisible == YEA) ? "\033[1;36m" : ModeColor(uentp->mode), ModeType(uentp->mode),
@@ -474,9 +500,9 @@ do_userlist()
 					(override) ? "\033[1;32m" : "",
 					uentp->userid, (override) ? "\033[m" : "",
 					(t1.exp[0] == 0) ? uentp->username : t1.exp,
-					(uentp->pid == 1) ? "\033[35m" : ((uentp->isssh == 1) ? "\033[32m" : ""),
+					get_color_start_by_session_type(uentp->login_type),
 					uentp->from,
-					(uentp->pid == 1) || (uentp->isssh == 1) ? "\033[0m" : "",
+					get_color_end_by_session_type(uentp->login_type),
 					pagerchar(hisfriend(uentp), uentp->pager),
 					msgchar(uentp),
 					(uentp->invisible == YEA) ? "\033[1;36m" : ModeColor(uentp->mode),
@@ -492,9 +518,9 @@ do_userlist()
 					(override) ? "\033[1;32m" : "",
 					uentp->userid, (override) ? "\033[m" : "",
 					(t1.exp[0] == 0) ? uentp->username : t1.exp,
-					(uentp->pid == 1) ? "\033[35m" : ((uentp->isssh == 1) ? "\033[32m" : ""),
+					get_color_start_by_session_type(uentp->login_type),
 					uentp->from,
-					(uentp->pid == 1) || (uentp->isssh == 1) ? "\033[0m" : "",
+					get_color_end_by_session_type(uentp->login_type),
 					pagerchar(hisfriend(uentp), uentp->pager),
 					msgchar(uentp),
 					(uentp->invisible == YEA) ? "\033[1;36m" : ModeColor(LOCKSCREEN),
@@ -509,9 +535,9 @@ do_userlist()
 					(override) ? "\033[1;32m" : "",
 					uentp->userid, (override) ? "\033[m" : "",
 					uentp->username,
-					(uentp->pid == 1) ? "\033[35m" : ((uentp->isssh == 1) ? "\033[32m" : ""),
+					get_color_start_by_session_type(uentp->login_type),
 					uentp->from,
-					(uentp->pid == 1) || (uentp->isssh == 1) ? "\033[0m" : "",
+					get_color_end_by_session_type(uentp->login_type),
 					pagerchar(hisfriend(uentp), uentp->pager),
 					msgchar(uentp),
 					(uentp->invisible == YEA) ? "\033[1;36m" : ModeColor(uentp->mode),
@@ -524,9 +550,9 @@ do_userlist()
 					(override) ? "\033[1;32m" : "",
 					uentp->userid, (override) ? "\033[m" : "",
 					uentp->username,
-					(uentp->pid == 1) ? "\033[35m" : ((uentp->isssh == 1) ? "\033[32m" : ""),
+					get_color_start_by_session_type(uentp->login_type),
 					uentp->from,
-					(uentp->pid == 1) || (uentp->isssh == 1) ? "\033[0m" : "",
+					get_color_end_by_session_type(uentp->login_type),
 					pagerchar(hisfriend(uentp), uentp->pager),
 					msgchar(uentp),
 					(uentp->invisible == YEA) ? "\033[1;36m" : ModeColor(uentp->mode),
@@ -539,9 +565,9 @@ do_userlist()
 					(override) ? "\033[1;32m" : "",
 					uentp->userid, (override) ? "\033[m" : "",
 					uentp->username,
-					(uentp->pid == 1) ? "\033[35m" : ((uentp->isssh == 1) ? "\033[32m" : ""),
+					get_color_start_by_session_type(uentp->login_type),
 					uentp->from,
-					(uentp->pid == 1) || (uentp->isssh == 1) ? "\033[0m" : "",
+					get_color_end_by_session_type(uentp->login_type),
 					pagerchar(hisfriend(uentp), uentp->pager),
 					msgchar(uentp),
 					(uentp->invisible == YEA) ? "\033[1;36m" : ModeColor(LOCKSCREEN),
@@ -605,14 +631,12 @@ int allnum, pagenum;
 /* add by zhoulin 98.11*/
 	case 'w':
 	case 'W':
-/*                        if (!friendmode)
-                             return 0;*/
+/* if (!friendmode) return 0;*/
 		friendmode1 = ~friendmode1 & 1;
 		break;
 	case 'f':
 	case 'F':
-/*                        if(strcmp(currentuser.userid,user_record[allnum]->userid))
-                                return 0;*/
+/* if(strcmp(currentuser.userid,user_record[allnum]->userid)) return 0;*/
 		buf[0] = 0;	//add by ylsdd
 		getdata(BBS_PAGESIZE + 3, 0, "±‰ªªÍ«≥∆: ", buf, NAMELEN, DOECHO,
 			NA);

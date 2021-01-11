@@ -34,7 +34,7 @@ struct wwwsession {
  */
 struct user_info {
 	int active;                  ///< When allocated this field is true
-	unsigned int uid;            ///< Used to find user name in passwd file, starting from 1
+	int uid;                     ///< Used to find user name in passwd file, starting from 1
 	int pid;                     ///< kill() to notify user of talk request
 	bool invisible;              ///< Used by cloaking function in Xyz menu
 	int sockactive;              ///< Used to coordinate talk requests
@@ -53,7 +53,7 @@ struct user_info {
 	char from[BMY_IPV6_LEN];     ///< machine name the user called in from
 	char sessionid[40];          ///< add by leptin for www use
 	char token[TOKENLENGTH+1];   ///< 用于防范 CSRF 攻击
-	char appkey[APPKEYLENGTH+1]; ///< 用于存放APP来源
+	int  login_type;             ///< 登录类型，参考 ythtbbs_user_login_type
 	char userid[20];
 	char realname[20];
 	char username[NAMELEN];
@@ -69,7 +69,12 @@ struct user_info {
 
 #define USHM_SIZE       (MAXACTIVE + 10)
 #define UCACHE_HASH_SIZE (MAXUSERS*2)
-#define MAX_LOGIN_PER_USER 6
+#define MAX_LOGIN_PER_USER 10
+// 分段存放会话
+#define LOGIN_END_SLOT_NUMBER_TELNET 2
+#define LOGIN_END_SLOT_NUMBER_SSH    4
+#define LOGIN_END_SLOT_NUMBER_WEB    8
+#define LOGIN_END_SLOT_NUMBER_OAUTH  MAX_LOGIN_PER_USER
 /**
  * 原 UCACHE / UINDEX 两个 item 的合并
  */

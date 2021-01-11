@@ -1,7 +1,8 @@
 <template>
-	<section class="card bmy-dashboard-card">
-		<div class="card-header">
-			<router-link :to="{ name: 'section', params: { secid: _secstr }}">{{ _name }}</router-link>
+	<section class="card mb-4 shadow-lg bmy-dashboard-card">
+		<div class="card-header bg-secondary bg-gradient fs-5">
+			<router-link :to="{ name: 'section', params: { secid: _secstr }}" class="text-white text-decoration-none">{{ _name }}</router-link>
+			<span class="float-end text-white font-monospace">{{_secstr}}</span>
 		</div>
 		<ul class="list-group list-group-flush">
 			<DashboardArticleListItem
@@ -13,6 +14,7 @@
 				:_author="article.author"
 				:_comments="article.th_num"
 				:_aid="article.aid"
+				:_accessed="article.mark"
 			/>
 		</ul>
 	</section>

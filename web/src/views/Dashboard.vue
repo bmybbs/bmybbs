@@ -4,11 +4,11 @@
 		<div class="row">
 			<div class="col-md-12 col-lg-9">
 
-				<DashboardCommend v-bind:_name="'美文推荐'" v-bind:_articles="commend" />
+				<DashboardCommend v-bind:_name="'美文推荐'" v-bind:_articles="commend" :_icon="'thumbtack'" />
 
-				<DashboardCommend v-bind:_name="'通知公告'" v-bind:_articles="announce" />
+				<DashboardCommend v-bind:_name="'通知公告'" v-bind:_articles="announce" :_icon="'thumbtack'" />
 
-				<DashboardCommend v-bind:_name="'今日十大'" v-bind:_articles="top10" />
+				<DashboardCommend v-bind:_name="'今日十大'" v-bind:_articles="top10" :_icon="'fire'" />
 
 				<DashboardSection v-for="section in sections" v-bind:key="section.name" v-bind:_name="section.name" v-bind:_secstr="section.id" />
 			</div>
@@ -62,7 +62,7 @@ export default {
 
 <style>
 .bmy-dashboard-card {
-	margin-bottom: 30px;
+	border-color: #BBBBBB !important;
 }
 </style>
 

@@ -1,11 +1,33 @@
 import { BASE_URL } from "BMYConstants.js"
 
+let cookie_str = "";
+
 const myFetchGet = (url) => {
 	return new Promise((resolve) => {
 		wx.request({
 			url: BASE_URL + url,
+			header: {
+				"cookie": cookie_str
+			},
 			success(res) {
 				resolve(res.data);
+			}
+		});
+	});
+};
+
+const myFetchPost = (url) => {
+	return new Promise((resolve) => {
+		wx.request({
+			url: BASE_URL + url,
+			method: "POST",
+			header: {
+				"cookie": cookie_str
+			},
+			success(res) {
+				resolve(res.data);
+				if (res.cookies.length > 0)
+					cookie_str = res.cookies[0];
 			}
 		});
 	});
@@ -50,6 +72,12 @@ export const BMYClient = {
 	},
 	get_user_info(userid) {
 		return myFetchGet("/api/user/query?queryid=" + userid);
+	},
+	oauth_get_code(code, tfakey) {
+		return myFetchPost(`/api/oauth/2fa_get_code?code=${code}&tfakey=${tfakey}`);
+	},
+	oauth_login(code) {
+		return myFetchPost(`/api/oauth/login?code=${code}`);
 	},
 	search_board(start_with) {
 		return myFetchGet(`/api/board/autocomplete?search_str=${start_with}`);

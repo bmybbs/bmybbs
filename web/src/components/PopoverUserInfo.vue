@@ -11,6 +11,7 @@ import CardUserInfo from "@/components/CardUserInfo.vue"
 export default {
 	data() {
 		return {
+			timeout: null,
 			mount_id: "usercard" + (new Date().getTime()),
 			info: null,
 			popover: null,
@@ -22,14 +23,18 @@ export default {
 	},
 	methods: {
 		openPopover() {
-			if (this.info == null) {
-				BMYClient.get_user_info(this._userid).then(response => {
-					this.info = response;
+			this.timeout = setTimeout(() => {
+				if (this.info == null) {
+					BMYClient.get_user_info(this._userid).then(response => {
+						this.info = response;
+						this.doOpen();
+					});
+				} else {
 					this.doOpen();
-				});
-			} else {
-				this.doOpen();
-			}
+				}
+
+				this.timeout = null;
+			}, 1000);
 		},
 		doOpen() {
 			var that = this;
@@ -54,14 +59,19 @@ export default {
 			this.v_instance.mount("#" + this.mount_id);
 		},
 		closePopover() {
-			if (this.v_instance) {
-				this.v_instance.unmount("#" + this.mount_id);
-				this.v_instance = null;
-			}
+			if (this.timeout) {
+				clearTimeout(this.timeout);
+				this.timeout = null;
+			} else {
+				if (this.v_instance) {
+					this.v_instance.unmount("#" + this.mount_id);
+					this.v_instance = null;
+				}
 
-			if (this.popover) {
-				this.popover.dispose();
-				this.popover = null;
+				if (this.popover) {
+					this.popover.dispose();
+					this.popover = null;
+				}
 			}
 		},
 	},

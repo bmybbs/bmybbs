@@ -8,7 +8,7 @@ function myFetchPost(url, obj) {
 		headers: {
 			"Content-Type": "application/json"
 		},
-		body: JSON.stringify(obj)
+		body: (obj != null) ? JSON.stringify(obj) : ""
 	}).then(response => response.json());
 }
 
@@ -53,13 +53,31 @@ export const BMYClient = {
 		return myFetchGet("/api/article/list?type=top10");
 	},
 	get_user_info(userid) {
-		return myFetchGet("/api/user/query?queryid=" + userid);
+		return myFetchGet(`/api/user/query?queryid=${userid}`);
+	},
+	oauth_check_code(code) {
+		return myFetchPost(`/api/oauth/2fa_check_code?code=${code}`);
+	},
+	oauth_get_key() {
+		return myFetchGet("/api/oauth/2fa_get_key");
+	},
+	oauth_remove_wx() {
+		return myFetchPost("/api/oauth/remove_wx");
 	},
 	search_board(start_with) {
 		return myFetchGet(`/api/board/autocomplete?search_str=${start_with}`);
 	},
 	search_user(start_with) {
 		return myFetchGet(`/api/user/autocomplete?search_str=${start_with}`);
+	},
+	user_check() {
+		return myFetchGet("/BMY/user_check");
+	},
+	user_login(userid, passwd) {
+		return myFetchPost("/api/user/login", { userid: userid, passwd: passwd });
+	},
+	user_logout() {
+		return myFetchPost("/api/user/logout");
 	},
 };
 

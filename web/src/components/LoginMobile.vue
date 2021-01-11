@@ -4,29 +4,40 @@
 		<div v-if="_checked">
 			<div class="form-container" v-if="_loginok">
 				<h2>欢迎回来 {{ _userid }}</h2>
-				<button>进入 BMYBBS</button>
+				<router-link to="/web" role="button" class="button">进入 BMYBBS</router-link>
 			</div>
 			<div class="form-container" v-else>
 				<h2>欢迎访问 BMYBBS</h2>
 				<div class="input-field">
 					<fa icon="user" type="fas"></fa>
-					<input type="text" placeholder="账号">
+					<input type="text" placeholder="账号" v-model="username">
 				</div>
 				<div class="input-field">
 					<fa icon="lock" type="fas"></fa>
-					<input type="password" placeholder="密码">
+					<input type="password" placeholder="密码" v-model="password">
 				</div>
-				<button>登录</button>
+				<button @click="login">登录</button>
 			</div>
 		</div>
 	</div>
 </template>
 
 <script>
+import { BMYLogin } from "@/lib/BMYLogin.js"
+
 export default {
 	data() {
 		return {
+			username: "",
+			password: "",
 		}
+	},
+	methods: {
+		login() {
+			BMYLogin(this.username, this.password, this.$toast, () => {
+				this.$router.push("/web");
+			});
+		},
 	},
 	props: {
 		_userid: String,
@@ -96,7 +107,14 @@ h2 {
 	font-weight: 500;
 }
 
-button {
+a.button {
+	display: block;
+	line-height: 49px;
+	text-align: center;
+	text-decoration: none;
+}
+
+button, a.button {
 	width: 150px;
 	height: 49px;
 	border: none;
@@ -109,7 +127,7 @@ button {
 	transition: .5s;
 }
 
-button:hover {
+button:hover, a.button:hover {
 	background-color: #4d84e2;
 }
 </style>

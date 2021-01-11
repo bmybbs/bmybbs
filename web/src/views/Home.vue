@@ -1,16 +1,20 @@
 <template>
-	<LoginMobile v-bind:_loginok="loginok" v-bind:_userid="userid" v-bind:_checked="checked" v-if="is_mobile" />
-	<LoginPC v-bind:_loginok="loginok" v-bind:_userid="userid" v-bind:_checked="checked" v-bind:_loginpics="loginpics" v-else />
+	<div class="d-block d-md-none">
+		<LoginMobile v-bind:_loginok="loginok" v-bind:_userid="userid" v-bind:_checked="checked" />
+	</div>
+	<div class="d-none d-md-block">
+		<LoginPC v-bind:_loginok="loginok" v-bind:_userid="userid" v-bind:_checked="checked" v-bind:_loginpics="loginpics" />
+	</div>
 </template>
 
 <script>
+import { BMYClient } from "@/lib/BMYClient.js"
 import LoginPC from "@/components/LoginPC.vue";
 import LoginMobile from "@/components/LoginMobile.vue";
 
 export default {
 	data() {
 		return {
-			is_mobile: false,
 			loginok: false,
 			userid: "",
 			loginpics: [],
@@ -18,9 +22,6 @@ export default {
 		};
 	},
 	created() {
-		this.check_width();
-		window.addEventListener("resize", this.resize_handler);
-
 		fetch("/BMY/loginpics")
 			.then(response => response.json())
 			.then(response => {
@@ -38,30 +39,19 @@ export default {
 				});
 			});
 
-		fetch("/BMY/user_check")
-			.then(response => response.json())
-			.then(response => {
-				if (response.code == 0) {
-					this.loginok = true;
-					this.userid  = response.userid;
-				}
-				this.checked = true;
-			});
-	},
-	unmounted() {
-		window.removeEventListener("resize", this.resize_handler);
+		BMYClient.user_check().then(response => {
+			if (response.code == 0) {
+				this.loginok = true;
+				this.userid  = response.userid;
+			}
+			this.checked = true;
+		});
 	},
 	components: {
 		LoginPC,
 		LoginMobile,
 	},
 	methods: {
-		check_width() {
-			this.is_mobile = (window.innerWidth <= 600);
-		},
-		resize_handler() {
-			this.check_width();
-		}
 	},
 };
 </script>

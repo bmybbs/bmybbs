@@ -1,0 +1,28 @@
+page {
+	background: #F8F8F8;
+	color: #555;
+}
+
+.button-sp-area {
+	margin: 0 auto;
+	width: 60%;
+}
+
+.sperator {
+	margin: 60rpx 0;
+	width: 100%;
+	border: 3rpx solid #999;
+}
+
+text {
+	width: 90%;
+}
+
+input {
+	border: 5rpx solid #555;
+	margin: 10rpx auto;
+	width: 90%;
+	padding: 10rpx 20rpx;
+	border-radius: 40rpx;
+}
+
