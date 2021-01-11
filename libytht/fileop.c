@@ -117,7 +117,7 @@ savestrvalue(const char *filename, const char *str, const char *value)
 {
 	FILE *fp;
 	char buf[256], *ptr, *tmp;
-	int fd, where = -1;
+	int fd, where = -1, rc;
 	struct stat s;
 	fp = fopen(filename, "r+");
 	if (!fp) {
@@ -158,7 +158,11 @@ savestrvalue(const char *filename, const char *str, const char *value)
 			strcat(tmp, buf);
 	}
 	if (where >= 0) {
-		fseek(fp, where, SEEK_SET);
+		rc = fseek(fp, where, SEEK_SET);
+		if (rc == -1) {
+			fclose(fp);
+			return -5;
+		}
 		fputs(tmp, fp);
 	}
 	free(tmp);
