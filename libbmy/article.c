@@ -179,7 +179,7 @@ static void bmy_article_list_subscription_callback(MYSQL_STMT *stmt, MYSQL_BIND 
 		strcpy(fh->boardname_en, result_cols[0].buffer);
 		strcpy(fh->boardname_zh, result_cols[1].buffer);
 		fh->thread = *(time_t *)result_cols[2].buffer;
-		strcpy(fh->title, result_cols[3].buffer);
+		strncpy(fh->title, result_cols[3].buffer, sizeof(fh->title));
 		strcpy(fh->owner, result_cols[4].buffer);
 		fh->count = *(unsigned int *)result_cols[5].buffer;
 		fh->accessed = *(unsigned int *)result_cols[6].buffer;
