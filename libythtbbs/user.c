@@ -640,6 +640,7 @@ int ythtbbs_user_login(const char *userid, const char *passwd, const char *fromh
 		return YTHTBBS_USER_NOT_EXIST;
 
 	get_record(PASSFILE, &local_lookup_user, sizeof(struct userec), user_idx + 1);
+	local_lookup_user.userid[IDLEN + 1] = '\0'; // 显式设置终止符
 	if (out_userec) {
 		memcpy(out_userec, &local_lookup_user, sizeof(struct userec));
 	}
