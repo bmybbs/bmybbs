@@ -281,11 +281,11 @@ static struct NotifyItem * parse_to_item(xmlNodePtr xmlItem) {
 	xmlFree(xml_str_type);
 
 	xmlChar *xml_str_board = xmlGetProp(xmlItem, (const xmlChar *)"board");
-	memcpy(item->board, (char *)xml_str_board, sizeof(item->board));
+	strncpy(item->board, (char *)xml_str_board, sizeof(item->board));
 	xmlFree(xml_str_board);
 
 	xmlChar *xml_str_userid = xmlGetProp(xmlItem, (const xmlChar *)"uid");
-	memcpy(item->from_userid, (char *)xml_str_userid, 16);
+	strncpy(item->from_userid, (char *)xml_str_userid, sizeof(item->from_userid));
 	xmlFree(xml_str_userid);
 
 	xmlChar *xml_str_timestamp = xmlGetProp(xmlItem, (const xmlChar *)"aid");
@@ -305,7 +305,7 @@ static struct NotifyItem * parse_to_item(xmlNodePtr xmlItem) {
 	if(is_utf((char *)xml_str_title_utf8, title_len)) {
 		u2g((char *)xml_str_title_utf8, title_len, item->title_gbk, title_len);
 	} else {
-		memcpy(item->title_gbk, (const char *)xml_str_title_utf8, title_len);
+		strncpy(item->title_gbk, (const char *)xml_str_title_utf8, title_len);
 	}
 	xmlFree(xml_str_title_utf8);
 
