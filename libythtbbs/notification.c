@@ -274,10 +274,14 @@ static struct NotifyItem * parse_to_item(xmlNodePtr xmlItem) {
 		return NULL;
 
 	memset(item, 0, sizeof(struct NotifyItem));
+	char *in_str, *endstr;
 
 	// these vars need to be free!!!
 	xmlChar *xml_str_type = xmlGetProp(xmlItem, (const xmlChar *)"type");
-	item->type = atoi((char *)xml_str_type);
+	in_str = (char *) xml_str_type;
+	item->type = (int) strtol(in_str, &endstr, 10);
+	if (in_str == endstr)
+		item->type = 0;
 	xmlFree(xml_str_type);
 
 	xmlChar *xml_str_board = xmlGetProp(xmlItem, (const xmlChar *)"board");
@@ -289,7 +293,10 @@ static struct NotifyItem * parse_to_item(xmlNodePtr xmlItem) {
 	xmlFree(xml_str_userid);
 
 	xmlChar *xml_str_timestamp = xmlGetProp(xmlItem, (const xmlChar *)"aid");
-	item->noti_time = (time_t) atol((char *)xml_str_timestamp);
+	in_str = (char *) xml_str_timestamp;
+	item->noti_time = strtol(in_str, &endstr, 10);
+	if (in_str == endstr)
+		item->noti_time = 0;
 	xmlFree(xml_str_timestamp);
 
 	xmlChar * xml_str_title_utf8 = xmlGetProp(xmlItem, (const xmlChar *)"title");
