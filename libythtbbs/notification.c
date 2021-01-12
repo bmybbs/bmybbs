@@ -248,6 +248,8 @@ int del_all_notification(const char *userid) {
 	sethomefile_s(notify_file_path, sizeof(notify_file_path), userid, NOTIFILE);
 
 	int fd = userlock(userid, LOCK_EX);
+	if (fd < 0)
+		return -1;
 	unlink(notify_file_path);
 	userunlock(userid, fd);
 
