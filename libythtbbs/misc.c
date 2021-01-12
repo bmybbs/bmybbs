@@ -4,19 +4,24 @@
 
 // add by IronBlood@bmy 20120107
 static char *get_login_pic_link (char *picname, char *linkback) {
-	FILE *fp;
+	FILE *fp = NULL;
 	char link[256];
 	memset(link, '\0',sizeof(link));
 	char linkfile[256];
 	sprintf(linkfile, MY_BBS_HOME "/loglinks/%s", picname);
 	if (!(fp = fopen ( linkfile,"r")))
-		return "BMY/home?B=XJTUnews";
+		goto DEFAULT;
 	if (!fgets (link,sizeof (link),fp))
-		return "BMY/home?B=XJTUnews";
+		goto DEFAULT;
 	fclose (fp);
 	if (link[strlen(link) - 1] == '\n')
 		link[strlen(link) - 1] = '\0';
 	return strcpy(linkback, link);
+
+DEFAULT:
+	if (fp)
+		fclose(fp);
+	return "BMY/home?B=XJTUnews";
 }
 
 // added by IronBlood@11.09.05
