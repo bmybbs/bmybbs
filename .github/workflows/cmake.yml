@@ -3,34 +3,34 @@ name: BMYBBS Backend
 on:
   push:
     paths:
-      - .github/workflows/cmake.yml
-      - api/
-      - atthttpd/
-      - include/
-      - libbmy/
-      - libytht/
-      - libythtbbs/
-      - local_utl/
-      - nju09/www/
-      - nju09/upload/
-      - nju09/CMakeLists.txt
-      - src/
+      - '.github/workflows/cmake.yml'
+      - 'api/**'
+      - 'atthttpd/**'
+      - 'include/**'
+      - 'libbmy/**'
+      - 'libytht/**'
+      - 'libythtbbs/**'
+      - 'local_utl/**'
+      - 'nju09/www/**'
+      - 'nju09/upload/**'
+      - 'nju09/CMakeLists.txt'
+      - 'src/**'
     branches:
       - master
   pull_request:
     paths:
-      - .github/workflows/cmake.yml
-      - api/
-      - atthttpd/
-      - include/
-      - libbmy/
-      - libytht/
-      - libythtbbs/
-      - local_utl/
-      - nju09/www/
-      - nju09/upload/
-      - nju09/CMakeLists.txt
-      - src/
+      - '.github/workflows/cmake.yml'
+      - 'api/**'
+      - 'atthttpd/**'
+      - 'include/**'
+      - 'libbmy/**'
+      - 'libytht/**'
+      - 'libythtbbs/**'
+      - 'local_utl/**'
+      - 'nju09/www/**'
+      - 'nju09/upload/**'
+      - 'nju09/CMakeLists.txt'
+      - 'src/**'
     branches:
       - master
 
