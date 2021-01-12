@@ -21,13 +21,19 @@ static int add_notification(const char * to_userid, const char * from_userid, co
 	char noti_type_str[8];
 	sprintf(noti_type_str, "%d", noti_type);
 
-	char * title_utf8 = (char *)malloc(2*strlen(title_gbk));
-	if(title_utf8 == NULL)
+	int ulock = userlock(to_userid, LOCK_EX);
+	if (ulock < 0) {
 		return -1;
+	}
+
+	char * title_utf8 = (char *)malloc(2*strlen(title_gbk));
+	if (title_utf8 == NULL) {
+		userunlock(to_userid, ulock);
+		return -1;
+	}
 
 	g2u(title_gbk, strlen(title_gbk), title_utf8, 2*strlen(title_gbk));
 
-	int ulock = userlock(to_userid, LOCK_EX);
 	char notify_file_path[80], article_id_str[16];
 	sethomefile_s(notify_file_path, sizeof(notify_file_path), to_userid, NOTIFILE);
 	sprintf(article_id_str, "%lu", article_id);
