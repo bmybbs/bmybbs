@@ -595,7 +595,8 @@ fillmboard(struct boardheader *bh, struct myparam1 *mp)
 	int i;
 	if ((i = chk_BM(&(mp->user), bh, 0))) {
 		bzero(&bm, sizeof (bm));
-		strncpy(bm.board, bh->filename, 24);
+		strncpy(bm.board, bh->filename, sizeof(bm.board));
+		bm.board[sizeof(bm.board) - 1] = '\0';
 		bm.bmpos = i - 1;
 		bm.bid = mp->bid;
 		write(mp->fd, &bm, sizeof (bm));
