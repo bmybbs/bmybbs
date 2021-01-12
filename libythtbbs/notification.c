@@ -212,7 +212,10 @@ int del_post_notification(const char * userid, const char * board, time_t articl
 	sprintf(search_str, "/Notify/Item[@board=\"%s\" and @aid=\"%lu\"]", board, article_id);
 	sethomefile_s(notify_file_path, sizeof(notify_file_path), userid, NOTIFILE);
 
-	int ulock = userlock(userid, LOCK_EX); // todo
+	int ulock = userlock(userid, LOCK_EX);
+	if (ulock < 0)
+		return -1;
+
 	xmlDocPtr doc = xmlParseFile(notify_file_path);
 	if(NULL == doc) { // 文件不存在
 		userunlock(userid, ulock);
