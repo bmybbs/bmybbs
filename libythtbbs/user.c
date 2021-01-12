@@ -970,6 +970,7 @@ void ythtbbs_user_clean(void) {
 			val = countlife(&utmp);
 			if (utmp.userid[0] != '\0' && val < 0) {
 				// userid 是合法字符，且生命力已小于 0
+				utmp.userid[IDLEN + 1] = '\0';
 				snprintf(local_buf, sizeof(local_buf), "system kill %s %d", utmp.userid, val);
 				newtrace(local_buf);
 
