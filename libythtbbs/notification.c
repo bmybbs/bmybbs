@@ -11,7 +11,7 @@
 #include "bmy/convcode.h"
 #include "ythtbbs/ythtbbs.h"
 
-#define NOTIFILE "Notification"
+static const char *NOTIFILE = "Notification";
 
 static struct NotifyItem * parse_to_item(xmlNodePtr xmlItem);
 static void addItemtoList(NotifyItemList *List, struct NotifyItem *Item);
