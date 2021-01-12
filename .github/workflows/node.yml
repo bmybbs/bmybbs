@@ -3,12 +3,14 @@ name: BMYBBS Frontend
 on:
   push:
     paths:
-      - web/
+      - '.github/workflows/node.yml'
+      - 'web/**'
     branches:
       - master
   pull_request:
     paths:
-      - web/
+      - '.github/workflows/node.yml'
+      - 'web/**'
     branches:
       - master
 
