@@ -24,7 +24,7 @@ static char *get_login_pic_link (char *picname, char *linkback) {
 void get_no_more_than_four_login_pics(char *buf, size_t len) {
 	FILE *fp;
 	if(!(fp = fopen(MY_BBS_HOME "/logpics","r")))
-		ytht_strsncpy(buf, "cai,jpg", len);
+		ytht_strsncpy(buf, "cai.jpg", len);
 
 	char pics[256];
 	const char *pics_dir ="bmyMainPic/using/";
