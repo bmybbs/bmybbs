@@ -1,6 +1,5 @@
-#include <time.h>
-#include <stdlib.h>
 #include <string.h>
+#include "ytht/random.h"
 #include "ythtbbs/ythtbbs.h"
 
 // add by IronBlood@bmy 20120107
@@ -31,6 +30,7 @@ void get_no_more_than_four_login_pics(char *buf, size_t len) {
 	char pics_list[4096];
 	char file[16][256];
 	int file_line=0;
+	unsigned int randnum;
 	char link[256];
 	memset(pics_list, '\0', sizeof(pics_list));
 
@@ -55,8 +55,8 @@ void get_no_more_than_four_login_pics(char *buf, size_t len) {
 
 	while( (i != file_line - 1) && i !=4) // 不超过总图片个数、不超过最大上限
 	{
-		srand(time(NULL)+rand()%100); // 加种子
-		int randnum = 1 + rand()%file_line; // 生成随机数
+		ytht_get_random_int(&randnum);
+		randnum = 1 + randnum % file_line;
 		char *tmp = file[randnum];
 
 		if( strstr(pics_list,tmp)==NULL ) //不包含图片字符串，才执行下面的操作
