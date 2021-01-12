@@ -886,6 +886,7 @@ static int ythtbbs_user_init_override(struct user_info *u, enum ythtbbs_override
 
 	ythtbbs_cache_UserTable_resolve();
 	for(i = 0; i < total; ++i) {
+		array[i].id[IDLEN] = '\0';
 		uid = ythtbbs_cache_UserIDHashTable_find_idx(array[i].id) + 1;
 		if(uid) {
 			count++;
