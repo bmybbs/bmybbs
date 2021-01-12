@@ -26,9 +26,11 @@ DEFAULT:
 
 // added by IronBlood@11.09.05
 void get_no_more_than_four_login_pics(char *buf, size_t len) {
-	FILE *fp;
-	if(!(fp = fopen(MY_BBS_HOME "/logpics","r")))
+	FILE *fp = NULL;
+	if(!(fp = fopen(MY_BBS_HOME "/logpics","r"))) {
 		ytht_strsncpy(buf, "cai.jpg", len);
+		return;
+	}
 
 	char pics[256];
 	const char *pics_dir ="bmyMainPic/using/";
@@ -54,6 +56,7 @@ void get_no_more_than_four_login_pics(char *buf, size_t len) {
 	if (file_line < 2) {
 		// logpics 格式：第一行是计数，因此如果存在进站画面，应该至少2行
 		ytht_strsncpy(buf, "cai.jpg", len);
+		return;
 	}
 
 	int i=0;
