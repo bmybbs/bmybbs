@@ -41,7 +41,7 @@ static int add_notification(const char * to_userid, const char * from_userid, co
 	xmlDocPtr doc;
 	xmlNodePtr root;
 	const char *empty_doc_string = "<Notify />";
-	xmlDocPtr empty_doc = xmlParseMemory(empty_doc_string, strlen(empty_doc_string));
+	xmlDocPtr empty_doc = xmlParseMemory(empty_doc_string, (int) strlen(empty_doc_string)); // 面向编译器友好、安全的类型转换
 
 	if(access(notify_file_path, F_OK) != -1) { // file exists
 		doc = xmlParseFile(notify_file_path);
