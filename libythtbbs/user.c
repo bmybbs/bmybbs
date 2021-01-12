@@ -840,6 +840,7 @@ int ythtbbs_user_logout(const char *userid, const int utmp_idx) {
 	// ptr_info belongs to this user
 	get_record(PASSFILE, &local_lookup_user, sizeof(struct userec), user_idx + 1);
 	local_lookup_user.stay += time(NULL) - ptr_info->lasttime; // TODO
+	local_lookup_user.userid[IDLEN + 1] = '\0';
 	snprintf(local_buf, sizeof(local_buf), "%s exitbbs %ld", local_lookup_user.userid, local_lookup_user.stay);
 	newtrace(local_buf);
 	ythtbbs_cache_utmp_remove(utmp_idx);
