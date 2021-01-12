@@ -480,7 +480,7 @@ int check_user_post_perm_x(const struct user_info *user, const struct boardmem *
 		return 0;
 
 	if(board->header.clubnum != 0) {
-		if(!(board->header.level & PERM_NOZAP) && board->header.level && !(user->userlevel, board->header.level))
+		if(!(board->header.level & PERM_NOZAP) && board->header.level && !(user->userlevel & board->header.level))
 			return 0;
 		return user->clubrights[board->header.clubnum / 32] & (1 << (board->header.clubnum % 32));
 	}
