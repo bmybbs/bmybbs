@@ -1,5 +1,6 @@
 #ifndef BMYBBS_OVERRIDE_H
 #define BMYBBS_OVERRIDE_H
+#include "config.h"
 #include <stddef.h>
 
 /**
@@ -7,7 +8,7 @@
  * 原名 struct override，重构阶段增加了 ythtbbs_ 前缀
  */
 struct ythtbbs_override {
-	char id[13];   ///< 用户 id
+	char id[IDLEN + 1];   ///< 用户 id
 	char exp[40];  ///< 说明
 };
 
