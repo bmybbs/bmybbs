@@ -693,27 +693,6 @@ int ythtbbs_user_login(const char *userid, const char *passwd, const char *fromh
 		local_lookup_user.numdays++;
 	}
 
-	if (local_uinfo.invisible) {
-		srand((unsigned)time(NULL));
-		local_lookup_user.lastlogout = local_lookup_user.lastlogin + 1 + (int) (10000.0 * rand() / (RAND_MAX + 1.0)); //add by bjgyt
-	} else {
-		local_lookup_user.lastlogout = 0;
-	}
-
-	if (strcmp(local_lookup_user.userid, "SYSOP") == 0) {
-		local_lookup_user.userlevel = ~0; /* SYSOP gets all permission bits */
-		local_lookup_user.userlevel &= ~PERM_DENYMAIL; //add by wjbta
-	}
-
-	if (local_lookup_user.firstlogin == 0) {
-		local_lookup_user.firstlogin = local_lookup_user.lastlogin - 7 * 86400;
-	}
-
-	substitute_record(PASSFILE, &local_lookup_user, sizeof(struct userec), user_idx + 1);
-
-	sprintf(local_buf, "%s enter %s using %s", local_lookup_user.userid, fromhost, ythtbbs_user_get_login_type_str(login_type));
-	newtrace(local_buf);
-
 	sethomepath_s(local_buf, sizeof(local_buf), local_lookup_user.userid);
 	mkdir(local_buf, 0755);
 
@@ -810,6 +789,27 @@ int ythtbbs_user_login(const char *userid, const char *passwd, const char *fromh
 
 	ythtbbs_cache_utmp_resolve();
 	local_utmp_idx = ythtbbs_cache_utmp_insert(&local_uinfo);
+
+	if (local_uinfo.invisible) {
+		srand((unsigned)time(NULL));
+		local_lookup_user.lastlogout = local_lookup_user.lastlogin + 1 + (int) (10000.0 * rand() / (RAND_MAX + 1.0)); //add by bjgyt
+	} else {
+		local_lookup_user.lastlogout = 0;
+	}
+
+	if (strcmp(local_lookup_user.userid, "SYSOP") == 0) {
+		local_lookup_user.userlevel = ~0; /* SYSOP gets all permission bits */
+		local_lookup_user.userlevel &= ~PERM_DENYMAIL; //add by wjbta
+	}
+
+	if (local_lookup_user.firstlogin == 0) {
+		local_lookup_user.firstlogin = local_lookup_user.lastlogin - 7 * 86400;
+	}
+
+	substitute_record(PASSFILE, &local_lookup_user, sizeof(struct userec), user_idx + 1);
+
+	sprintf(local_buf, "%s enter %s using %s", local_lookup_user.userid, fromhost, ythtbbs_user_get_login_type_str(login_type));
+	newtrace(local_buf);
 
 	if (out_info)
 		memcpy(out_info, &local_uinfo, sizeof(struct user_info));
