@@ -1,8 +1,8 @@
 name: coverity-scan # ref: ruby/.github/workflows
 
-on: [push, pull_request]
-  #schedule:
-  #- cron: '0 18 * * *' #daily at 18:00 UTC
+on:
+  schedule:
+    - cron: '0 9 * * 2' #weekly at 9:00 UTC (17:00 UTC+8), every Tuesday
 
 env:
   BUILD_TYPE: Release
@@ -45,11 +45,22 @@ jobs:
         env:
           TOKEN: ${{ secrets.COVERITY_SCAN_TOKEN }}
 
-      - name: Build with cov-build
+      - name: Build with cov-build and submit the result to Coverity Scan
         run: |
           export PATH=`pwd`/cov-analysis-linux64/bin:$PATH
           cmake -E make_directory ${{runner.workspace}}/build
           cd ${{runner.workspace}}/build
           cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE
           cov-build --dir cov-int make
+          tar czvf bmybbs.tgz cov-int
+          curl \
+            --form token=$TOKEN \
+            --form email=$EMAIL \
+            --form file=@bmybbs.tgz \
+            --form version=$GITHUB_SHA \
+            --form description="Submitted by GitHub Actions" \
+            https://scan.coverity.com/builds?project=bmybbs%2Fbmybbs
+        env:
+          TOKEN: ${{ secrets.COVERITY_SCAN_TOKEN }}
+          EMAIL: ${{ secrets.COVERITY_NOTIFY_EMAIL }}
 
