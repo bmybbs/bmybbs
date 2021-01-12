@@ -46,6 +46,11 @@ void get_no_more_than_four_login_pics(char *buf, size_t len) {
 	// 释放句柄
 	fclose(fp);
 
+	if (file_line < 2) {
+		// logpics 格式：第一行是计数，因此如果存在进站画面，应该至少2行
+		ytht_strsncpy(buf, "cai.jpg", len);
+	}
+
 	int i=0;
 
 	while( (i != file_line - 1) && i !=4) // 不超过总图片个数、不超过最大上限
