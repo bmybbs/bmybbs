@@ -1556,6 +1556,7 @@ send_msg(char *myuserid, int i, char *touserid, int topid, char *msg, int offlin
 	head.sent = 0;
 	head.mode = 5;		//mode 5 for www msg
 	strncpy(head.id, currentuser.userid, IDLEN + 2);
+	head.id[IDLEN + 1] = '\0';
 	head.frompid = 1;
 	head.topid = topid;
 	memcpy(&head2, &head, sizeof (struct msghead));
