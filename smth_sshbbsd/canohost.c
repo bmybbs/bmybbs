@@ -292,12 +292,10 @@ const char *get_remote_ipaddr(void)
     /* Get the IP address in ascii. */
     char tmpname[256];
     inet_ntop(AF_INET6,&from.sin6_addr,tmpname,INET6_ADDRSTRLEN);
-    canonical_host_ip = xstrdup(tmpname);
+    canonical_host_ip = xstrdup(is4map6addr(tmpname) ? getv4addr(tmpname) : tmpname);
     //canonical_host_ip = xstrdup(inet_ntoa(from.sin_addr));
 
     /* Return ip address string. */
-    if(is4map6addr(canonical_host_ip))    //if ipv6 addr
-	canonical_host_ip = getv4addr(canonical_host_ip);
     return canonical_host_ip;
 }
 
