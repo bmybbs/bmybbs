@@ -49,14 +49,16 @@ bbsbfind_main()
 	if (fp == 0)
 		http_fatal("讨论区错误或没有目前文章");
 	printf("查找讨论区'%s'内, 标题含: '%s' ", board, nohtml(title));
-	if (title2[0])
 
+	if (title2[0])
 		printf("和 '%s' ", nohtml(title2));
+
 	if (title3[0])
 		printf("不含 '%s' ", nohtml(title3));
+
 	printf("作者为: '%s', '%d'天以内的%s%s文章.<br>\n",
-	       userid[0] ? userid_str(userid) : "所有作者", dt,
-	       mg ? "精华" : "所有", at ? "有附件" : "");
+			userid[0] ? userid_str(userid) : "所有作者", dt,
+			mg ? "精华" : "所有", at ? "有附件" : "");
 	printf("<table>\n");
 	printf("<tr><td>编号<td>标记<td>作者<td>日期<td>标题\n");
 	if (search_filter(title, title2, title3))
@@ -74,10 +76,9 @@ bbsbfind_main()
 			continue;
 		if (title3[0] && strcasestr(x.title, title3))
 			continue;
-		if (abs(now_t - x.filetime) > dt * 86400)
+		if (labs(now_t - x.filetime) > dt * 86400)
 			continue;
-		if (mg && !(x.accessed & FH_MARKED)
-		    && !(x.accessed & FH_DIGEST))
+		if (mg && !(x.accessed & FH_MARKED) && !(x.accessed & FH_DIGEST))
 			continue;
 		if (at && !(x.accessed & FH_ATTACHED))
 			continue;
@@ -85,16 +86,16 @@ bbsbfind_main()
 			continue;
 		total++;
 		printf("<tr><td>%d", num);
-		
-printf("<td>%s", flag_str(x.accessed));
+
+		printf("<td>%s", flag_str(x.accessed));
 		printf("<td>%s", userid_str(x.owner));
 		printf("<td>%12.12s", 4 + ytht_ctime(x.filetime));
 		printf("<td><a href=con?B=%s&F=%s&N=%d&T=%ld>%40.40s </a>\n", board,
-		       fh2fname(&x), num, feditmark(x), x.title);
+				fh2fname(&x), num, feditmark(x), x.title);
 		if (total >= 999)
 			break;
 	}
-	
+
 	}
 	//全文搜索
 	else if (type == 2)
@@ -104,7 +105,7 @@ printf("<td>%s", flag_str(x.accessed));
 		char cmd[256];
 		ytht_strsncpy(content, getparm("content"), 200);
 		sprintf(cmd, MY_BBS_HOME "/bin/searcher.py %s '%s'", board, content);
-		
+
 		brd = getboard(board);
 		if (brd == 0)
 			http_fatal("错误的讨论区");
@@ -122,17 +123,17 @@ printf("<td>%s", flag_str(x.accessed));
 			if (line[0] != 'M')
 				break;
 
- 			char f_buf[16];
-    		int filetime;
-    		char t_buf[81];
-    		char o_buf[16];
+			char f_buf[16];
+			int filetime;
+			char t_buf[81];
+			char o_buf[16];
 
-    		int len = strlen(line);
+			int len = strlen(line);
 			ytht_strsncpy(f_buf, line, 15);
-    		sscanf(f_buf, "M.%d.A", &filetime);
+			sscanf(f_buf, "M.%d.A", &filetime);
 
-    		char *p2s = strchr(line+15, ' ');
-    		int owner_len = p2s-line-15;
+			char *p2s = strchr(line+15, ' ');
+			int owner_len = p2s-line-15;
 			ytht_strsncpy(o_buf, line + 15, owner_len + 1);
 
 			ytht_strsncpy(t_buf, p2s + 1, len - 2 - owner_len - 14 + 1);
@@ -146,52 +147,48 @@ printf("<td>%s", flag_str(x.accessed));
 			if (total >= 999)
 				break;
 		}
-	    goto E;
+		goto E;
 	}
 	//精华区检索
 	else if(type==3)
 	{
-		 if (*system_load() >= 5.0 || count_online() > 4000)
-			http_fatal
-			    ("系统负载(%f)或上线人数(%d)过高, 请在上站人数较少的时间查询.",
-			     *system_load(), count_online());
-				brd = getboard(board);
+		if (*system_load() >= 5.0 || count_online() > 4000)
+			http_fatal("系统负载(%f)或上线人数(%d)过高, 请在上站人数较少的时间查询.", *system_load(), count_online());
 
-		brd = getboard(board);		
+		brd = getboard(board);
 		if (brd == 0)
 			http_fatal("错误的讨论区");
-		 
-		 char essential_path[80]="\0";
-		 strncpy(title,getparm("title"),60);
-		 fp=fopen("0Announce/.Search","r");
-		 char linebuf[512];
-		 char *tempbuf;
-		 int flag=0;
-		 int brdlen=strlen(board);
-		 while(fgets(linebuf,512,fp)!=NULL)
-		 {
+
+		char essential_path[80]="\0";
+		strncpy(title,getparm("title"),60);
+		fp=fopen("0Announce/.Search","r");
+		char linebuf[512];
+		char *tempbuf;
+		int flag=0;
+		int brdlen=strlen(board);
+		while(fgets(linebuf,512,fp)!=NULL) {
 			if(strncmp(linebuf,board,brdlen)==0)
 			{
 				tempbuf=strstr(linebuf,": ")+2;
 				flag=1;
 				break;
 			}
-		 }
-		 fclose(fp);
-		 if(flag==0)
+		}
+		fclose(fp);
+		if(flag==0)
 			http_fatal("错误的讨论区");
 
-		 tempbuf[strlen(tempbuf)-1]='\0';
-		 strcpy(essential_path,tempbuf);
-		 printf("查找讨论区'%s'的精华区内, 标题含: '%s' 的所有文章", board, nohtml(title));
-		 printf("<table>\n");
-		 printf("<tr><td width=80px>编号<td width=350px>标题<td width=200px>存放路径\n");
-		 char searchcmd[256];
-		 sprintf(searchcmd,MY_BBS_HOME "/bin/esearch %s %s",essential_path,title);
-		 fp=popen(searchcmd,"r"); 
-		 while(fgets(linebuf,512,fp)!=NULL)
-		 {
-		    char postindex[64];
+		tempbuf[strlen(tempbuf)-1]='\0';
+		strcpy(essential_path,tempbuf);
+		printf("查找讨论区'%s'的精华区内, 标题含: '%s' 的所有文章", board, nohtml(title));
+		printf("<table>\n");
+		printf("<tr><td width=80px>编号<td width=350px>标题<td width=200px>存放路径\n");
+		char searchcmd[256];
+		sprintf(searchcmd,MY_BBS_HOME "/bin/esearch %s %s",essential_path,title);
+		fp=popen(searchcmd,"r");
+		while(fgets(linebuf,512,fp)!=NULL)
+		{
+			char postindex[64];
 			char posttitle[64];
 			char postpath[256];
 			char postnum[32];
@@ -210,7 +207,7 @@ printf("<td>%s", flag_str(x.accessed));
 			total++;
 			if(total>999)
 				break;
-		 }
+		}
 	}
 E:
 	if (type == 1 && fp != NULL)
@@ -222,9 +219,7 @@ E:
 	if (total > 999)
 		printf("(匹配结果过多, 省略第1000以后的查询结果)");
 	printf("<br>\n");
-	printf
-	    ("[<a href=bbsdoc?board=%s>返回本讨论区</a>] [<a href='javascript:history.go(-1)'>返回上一页</a>]",
-	     board);
+	printf("[<a href=bbsdoc?board=%s>返回本讨论区</a>] [<a href='javascript:history.go(-1)'>返回上一页</a>]", board);
 	http_quit();
 	return 0;
 }
@@ -234,31 +229,23 @@ show_form(char *board)
 {
 	printf("<table><form action=bbsbfind?type=1 method=post>\n");
 	printf("<tr><td><h4>一般查询</h4>\n");
-	printf
-	    ("<tr><td>版面名称: <input type=text maxlength=24 size=24 name=board value='%s'><br>\n",
-	     board);
-	printf
-	    ("<tr><td>标题含有: <input type=text maxlength=50 size=20 name=title> AND ");
+	printf("<tr><td>版面名称: <input type=text maxlength=24 size=24 name=board value='%s'><br>\n", board);
+	printf("<tr><td>标题含有: <input type=text maxlength=50 size=20 name=title> AND ");
 	printf("<input type=text maxlength=50 size=20 name=title2>\n");
-	printf
-	    ("<tr><td>标题不含: <input type=text maxlength=50 size=20 name=title3>\n");
-	printf
-	    ("<tr><td>作者帐号: <input type=text maxlength=12 size=12 name=userid><br>\n");
-	printf
-	    ("<tr><td>时间范围: <input type=text maxlength=4  size=4  name=dt value=7> 天以内<br>\n");
+	printf("<tr><td>标题不含: <input type=text maxlength=50 size=20 name=title3>\n");
+	printf("<tr><td>作者帐号: <input type=text maxlength=12 size=12 name=userid><br>\n");
+	printf("<tr><td>时间范围: <input type=text maxlength=4  size=4  name=dt value=7> 天以内<br>\n");
 	printf("<tr><td>被M文章: <input type=checkbox name=mg> 含有附件: <input type=checkbox name=at> 不含跟贴: <input type=checkbox name=og><br><br>\n");
 
-	/* modified by freely@BMY@20070601 */	
+	/* modified by freely@BMY@20070601 */
 	printf("<tr><td><input type=submit value=递交查询结果>\n");
 	printf("</form></table>");
-	
+
 	printf("<hr />\n");
-	
+
 	printf("<table><form action=bbsbfind?type=2 method=post>\n");
 	printf("<tr><td><h4>全文查询</h4>\n");
-	printf
-	    ("<tr><td>版面名称: <input type=text maxlength=24 size=24 name=board value='%s'><br>\n",
-	     board);
+	printf("<tr><td>版面名称: <input type=text maxlength=24 size=24 name=board value='%s'><br>\n", board);
 	printf("<tr><td>正文含有: <input type=text maxlength=100 size=50 name=content>\n");
 	printf("<tr><td>(支持谓词: AND, OR, NOT)<br><br>\n");
 	printf("<tr><td><input type=submit value=递交查询结果>\n");
@@ -267,16 +254,13 @@ show_form(char *board)
 	printf("<hr />\n");
 	printf("<table><form action=bbsbfind?type=3 method=post>\n");
 	printf("<tr><td><h4>精华区查询</h4>\n");
-	printf
-		("<tr><td>版面名称: <input type=text maxlength=24 size=24 name=board value='%s'><br>\n",		board);
+	printf("<tr><td>版面名称: <input type=text maxlength=24 size=24 name=board value='%s'><br>\n",		board);
 	printf("<tr><td>标题含有: <input type=text maxlength=50 size=50 name=title>\n");
 	printf("<tr><td><input type=submit value=递交查询结果>\n");
 	printf("</form></table>");
 	printf("<hr />\n");
 
-	printf
-	    ("[<a href='bbsdoc?board=%s'>返回上一页</a>] [<a href=bbsfind>全站文章查询</a>]",
-	     board);
+	printf("[<a href='bbsdoc?board=%s'>返回上一页</a>] [<a href=bbsfind>全站文章查询</a>]", board);
 	http_quit();
 	return 0;
 }

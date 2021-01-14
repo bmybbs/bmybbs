@@ -480,7 +480,7 @@ int check_user_post_perm_x(const struct user_info *user, const struct boardmem *
 		return 0;
 
 	if(board->header.clubnum != 0) {
-		if(!(board->header.level & PERM_NOZAP) && board->header.level && !(user->userlevel, board->header.level))
+		if(!(board->header.level & PERM_NOZAP) && board->header.level && !(user->userlevel & board->header.level))
 			return 0;
 		return user->clubrights[board->header.clubnum / 32] & (1 << (board->header.clubnum % 32));
 	}
@@ -595,7 +595,8 @@ fillmboard(struct boardheader *bh, struct myparam1 *mp)
 	int i;
 	if ((i = chk_BM(&(mp->user), bh, 0))) {
 		bzero(&bm, sizeof (bm));
-		strncpy(bm.board, bh->filename, 24);
+		strncpy(bm.board, bh->filename, sizeof(bm.board));
+		bm.board[sizeof(bm.board) - 1] = '\0';
 		bm.bmpos = i - 1;
 		bm.bid = mp->bid;
 		write(mp->fd, &bm, sizeof (bm));
@@ -639,6 +640,7 @@ int ythtbbs_user_login(const char *userid, const char *passwd, const char *fromh
 		return YTHTBBS_USER_NOT_EXIST;
 
 	get_record(PASSFILE, &local_lookup_user, sizeof(struct userec), user_idx + 1);
+	local_lookup_user.userid[IDLEN + 1] = '\0'; // 显式设置终止符
 	if (out_userec) {
 		memcpy(out_userec, &local_lookup_user, sizeof(struct userec));
 	}
@@ -690,27 +692,6 @@ int ythtbbs_user_login(const char *userid, const char *passwd, const char *fromh
 	if (day > tm.tm_mday && local_lookup_user.numdays < 800) {
 		local_lookup_user.numdays++;
 	}
-
-	if (local_uinfo.invisible) {
-		srand((unsigned)time(NULL));
-		local_lookup_user.lastlogout = local_lookup_user.lastlogin + 1 + (int) (10000.0 * rand() / (RAND_MAX + 1.0)); //add by bjgyt
-	} else {
-		local_lookup_user.lastlogout = 0;
-	}
-
-	if (strcmp(local_lookup_user.userid, "SYSOP") == 0) {
-		local_lookup_user.userlevel = ~0; /* SYSOP gets all permission bits */
-		local_lookup_user.userlevel &= ~PERM_DENYMAIL; //add by wjbta
-	}
-
-	if (local_lookup_user.firstlogin == 0) {
-		local_lookup_user.firstlogin = local_lookup_user.lastlogin - 7 * 86400;
-	}
-
-	substitute_record(PASSFILE, &local_lookup_user, sizeof(struct userec), user_idx + 1);
-
-	sprintf(local_buf, "%s enter %s using %s", local_lookup_user.userid, fromhost, ythtbbs_user_get_login_type_str(login_type));
-	newtrace(local_buf);
 
 	sethomepath_s(local_buf, sizeof(local_buf), local_lookup_user.userid);
 	mkdir(local_buf, 0755);
@@ -809,6 +790,27 @@ int ythtbbs_user_login(const char *userid, const char *passwd, const char *fromh
 	ythtbbs_cache_utmp_resolve();
 	local_utmp_idx = ythtbbs_cache_utmp_insert(&local_uinfo);
 
+	if (local_uinfo.invisible) {
+		srand((unsigned)time(NULL));
+		local_lookup_user.lastlogout = local_lookup_user.lastlogin + 1 + (int) (10000.0 * rand() / (RAND_MAX + 1.0)); //add by bjgyt
+	} else {
+		local_lookup_user.lastlogout = 0;
+	}
+
+	if (strcmp(local_lookup_user.userid, "SYSOP") == 0) {
+		local_lookup_user.userlevel = ~0; /* SYSOP gets all permission bits */
+		local_lookup_user.userlevel &= ~PERM_DENYMAIL; //add by wjbta
+	}
+
+	if (local_lookup_user.firstlogin == 0) {
+		local_lookup_user.firstlogin = local_lookup_user.lastlogin - 7 * 86400;
+	}
+
+	substitute_record(PASSFILE, &local_lookup_user, sizeof(struct userec), user_idx + 1);
+
+	sprintf(local_buf, "%s enter %s using %s", local_lookup_user.userid, fromhost, ythtbbs_user_get_login_type_str(login_type));
+	newtrace(local_buf);
+
 	if (out_info)
 		memcpy(out_info, &local_uinfo, sizeof(struct user_info));
 	if (out_userec)
@@ -838,6 +840,7 @@ int ythtbbs_user_logout(const char *userid, const int utmp_idx) {
 	// ptr_info belongs to this user
 	get_record(PASSFILE, &local_lookup_user, sizeof(struct userec), user_idx + 1);
 	local_lookup_user.stay += time(NULL) - ptr_info->lasttime; // TODO
+	local_lookup_user.userid[IDLEN + 1] = '\0';
 	snprintf(local_buf, sizeof(local_buf), "%s exitbbs %ld", local_lookup_user.userid, local_lookup_user.stay);
 	newtrace(local_buf);
 	ythtbbs_cache_utmp_remove(utmp_idx);
@@ -884,6 +887,7 @@ static int ythtbbs_user_init_override(struct user_info *u, enum ythtbbs_override
 
 	ythtbbs_cache_UserTable_resolve();
 	for(i = 0; i < total; ++i) {
+		array[i].id[IDLEN] = '\0';
 		uid = ythtbbs_cache_UserIDHashTable_find_idx(array[i].id) + 1;
 		if(uid) {
 			count++;
@@ -966,6 +970,7 @@ void ythtbbs_user_clean(void) {
 			val = countlife(&utmp);
 			if (utmp.userid[0] != '\0' && val < 0) {
 				// userid 是合法字符，且生命力已小于 0
+				utmp.userid[IDLEN + 1] = '\0';
 				snprintf(local_buf, sizeof(local_buf), "system kill %s %d", utmp.userid, val);
 				newtrace(local_buf);
 

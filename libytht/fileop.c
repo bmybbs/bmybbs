@@ -117,7 +117,7 @@ savestrvalue(const char *filename, const char *str, const char *value)
 {
 	FILE *fp;
 	char buf[256], *ptr, *tmp;
-	int fd, where = -1;
+	int fd, where = -1, rc;
 	struct stat s;
 	fp = fopen(filename, "r+");
 	if (!fp) {
@@ -158,7 +158,11 @@ savestrvalue(const char *filename, const char *str, const char *value)
 			strcat(tmp, buf);
 	}
 	if (where >= 0) {
-		fseek(fp, where, SEEK_SET);
+		rc = fseek(fp, where, SEEK_SET);
+		if (rc == -1) {
+			fclose(fp);
+			return -5;
+		}
 		fputs(tmp, fp);
 	}
 	free(tmp);
@@ -247,7 +251,7 @@ copyfile(char *from, char *to)
 {
 	int input, output;
 	void *source, *target;
-	size_t filesize;
+	off_t filesize;
 	char endchar = 0;
 
 	if ((input = open(from, O_RDONLY)) == -1)
@@ -255,6 +259,8 @@ copyfile(char *from, char *to)
 	if ((output = open(to, O_RDWR | O_CREAT | O_TRUNC, 0666)) == -1)
 		goto ERROR2;
 	filesize = lseek(input, 0, SEEK_END);
+	if (filesize == (off_t) -1)
+		goto ERROR2;
 	lseek(output, filesize - 1, SEEK_SET);
 	write(output, &endchar, 1);
 	if ((source = mmap(0, filesize, PROT_READ, MAP_SHARED, input, 0)) == (void *) -1)

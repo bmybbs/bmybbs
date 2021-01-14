@@ -1,36 +1,43 @@
-#include <time.h>
-#include <stdlib.h>
 #include <string.h>
+#include "ytht/random.h"
 #include "ythtbbs/ythtbbs.h"
 
 // add by IronBlood@bmy 20120107
 static char *get_login_pic_link (char *picname, char *linkback) {
-	FILE *fp;
+	FILE *fp = NULL;
 	char link[256];
 	memset(link, '\0',sizeof(link));
 	char linkfile[256];
 	sprintf(linkfile, MY_BBS_HOME "/loglinks/%s", picname);
 	if (!(fp = fopen ( linkfile,"r")))
-		return "BMY/home?B=XJTUnews";
+		goto DEFAULT;
 	if (!fgets (link,sizeof (link),fp))
-		return "BMY/home?B=XJTUnews";
+		goto DEFAULT;
 	fclose (fp);
 	if (link[strlen(link) - 1] == '\n')
 		link[strlen(link) - 1] = '\0';
 	return strcpy(linkback, link);
+
+DEFAULT:
+	if (fp)
+		fclose(fp);
+	return "BMY/home?B=XJTUnews";
 }
 
 // added by IronBlood@11.09.05
 void get_no_more_than_four_login_pics(char *buf, size_t len) {
-	FILE *fp;
-	if(!(fp = fopen(MY_BBS_HOME "/logpics","r")))
-		ytht_strsncpy(buf, "cai,jpg", len);
+	FILE *fp = NULL;
+	if(!(fp = fopen(MY_BBS_HOME "/logpics","r"))) {
+		ytht_strsncpy(buf, "cai.jpg", len);
+		return;
+	}
 
 	char pics[256];
 	const char *pics_dir ="bmyMainPic/using/";
 	char pics_list[4096];
 	char file[16][256];
 	int file_line=0;
+	unsigned int randnum;
 	char link[256];
 	memset(pics_list, '\0', sizeof(pics_list));
 
@@ -46,12 +53,18 @@ void get_no_more_than_four_login_pics(char *buf, size_t len) {
 	// 释放句柄
 	fclose(fp);
 
+	if (file_line < 2) {
+		// logpics 格式：第一行是计数，因此如果存在进站画面，应该至少2行
+		ytht_strsncpy(buf, "cai.jpg", len);
+		return;
+	}
+
 	int i=0;
 
 	while( (i != file_line - 1) && i !=4) // 不超过总图片个数、不超过最大上限
 	{
-		srand(time(NULL)+rand()%100); // 加种子
-		int randnum = 1 + rand()%file_line; // 生成随机数
+		ytht_get_random_int(&randnum);
+		randnum = 1 + randnum % file_line;
 		char *tmp = file[randnum];
 
 		if( strstr(pics_list,tmp)==NULL ) //不包含图片字符串，才执行下面的操作

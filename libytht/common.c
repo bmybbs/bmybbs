@@ -16,7 +16,7 @@ _errlog(char *fmt, ...)
 	int proc;
 	char buf[1024], timestr[16], progname[256], *thetime;
 	time_t dtime;
-	int i = 0, k;
+	int i = 0;
 	pid_t pid;
 	va_list ap;
 
@@ -27,11 +27,8 @@ _errlog(char *fmt, ...)
 		close(proc);
 	}
 	if (i > 0) {
-		for (k = 0; k < i; k++)
-			if (!progname[k])
-				progname[k] = ' ';
-		snprintf(buf, i + 1, "%s", progname);
-		strcpy(buf + i, "|");
+		progname[i - 1] = '\0';
+		snprintf(buf, i + 2, "%s |", progname);
 		i++;
 	} else
 		i = 0;

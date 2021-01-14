@@ -17,6 +17,11 @@
 #include <time.h>
 #include <arpa/inet.h>
 
+// è¿æ¥ä¸Šäº†, ç­‰å¾…å“åº”...\n
+static const char *STR_CONNECTED = "\xC1\xAC\xBD\xD3\xC9\xCF\xC1\xCB, \xB5\xC8\xB4\xFD\xCF\xEC\xD3\xA6...\n";
+// æ²¡æœ‰è¿ä¸Šå™¢ :(\n
+static const char *STR_NOT_CONNECTED = "\xC3\xBB\xD3\xD0\xC1\xAC\xC9\xCF\xE0\xDE :(\n";
+
 #define stty(fd, data) tcsetattr( fd, TCSANOW, data )
 #define gtty(fd, data) tcgetattr( fd, data )
 struct termios tty_state, tty_new;
@@ -54,8 +59,9 @@ void reset_tty(void)
 }
 
 static void
-timeout(void )
+timeout(int i)
 {
+	(void) i;
 	reset_tty();
 	exit(0);
 }
@@ -66,7 +72,7 @@ void proc(char *server, int port)
 	struct sockaddr_in blah;
 	struct hostent *he;
 	int result, lm = time(NULL);
-	unsigned char buf[2048];
+	char buf[2048];
 	fd_set readfds;
 	struct timeval tv;
 	signal(SIGALRM, timeout);
@@ -77,20 +83,30 @@ void proc(char *server, int port)
 	blah.sin_port = htons(port);
 	fflush(stdout);
 	fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	if ((he = gethostbyname(server)) != NULL)
+
+	if (fd < 0)
+		return;
+
+	if ((he = gethostbyname(server)) != NULL) {
 		bcopy(he->h_addr, (char *) &blah.sin_addr, he->h_length);
-	else if ((blah.sin_addr.s_addr = inet_addr(server)) < 0) {
+	} else if ((blah.sin_addr.s_addr = inet_addr(server)) == INADDR_NONE) {
+		shutdown(fd, SHUT_RDWR);
+		close(fd);
 		return;
 	}
+
 	if (connect(fd, (struct sockaddr *) &blah, 16) < 0) {
-		write(1, "Ã»ÓĞÁ¬ÉÏàŞ :(\n", strlen("Ã»ÓĞÁ¬ÉÏàŞ :(\n"));
+		write(1, STR_NOT_CONNECTED, strlen(STR_NOT_CONNECTED));
+		shutdown(fd, SHUT_RDWR);
+		close(fd);
 		return;
 	}
 	signal(SIGALRM, SIG_IGN);
-	if (0 >
-	    write(1, "Á¬½ÓÉÏÁË, µÈ´ıÏìÓ¦...\n",
-		  strlen("Á¬½ÓÉÏÁË, µÈ´ıÏìÓ¦...\n")))
+	if (0 > write(1, STR_CONNECTED, strlen(STR_CONNECTED))) {
+		shutdown(fd, SHUT_RDWR);
+		close(fd);
 		return;
+	}
 	tv.tv_sec = 360;
 	tv.tv_usec = 0;
 	while (1) {
@@ -103,9 +119,11 @@ void proc(char *server, int port)
 			break;
 		if (result == 0) {
 			if (time(NULL) - lm >= 360) {
-				if (write(fd, "\033\133\101\033\133\102", 6) <
-				    0)
+				if (write(fd, "\033\133\101\033\133\102", 6) < 0) {
+					shutdown(fd, SHUT_RDWR);
+					close(fd);
 					return;
+				}
 				lm = time(NULL);
 			}
 			tv.tv_sec = 360;
@@ -123,22 +141,31 @@ void proc(char *server, int port)
 				result = 2;
 			}
 			if (buf[0] == 29) {
+				shutdown(fd, SHUT_RDWR);
 				close(fd);
 				return;
 			}
-			if (write(fd, buf, result) < 0)
+			if (write(fd, buf, result) < 0) {
+				shutdown(fd, SHUT_RDWR);
+				close(fd);
 				return;
+			}
 			lm = time(NULL);
 		} else {
 			result = read(fd, buf, 2048);
 			if (result <= 0)
 				break;
 			if (strchr(buf, 255)) {
-				if (telnetopt(fd, buf, result) < 0)
+				if (telnetopt(fd, buf, result) < 0) {
+					shutdown(fd, SHUT_RDWR);
+					close(fd);
 					return;
-			}
-			else if (write(1, buf, result) < 0)
+				}
+			} else if (write(1, buf, result) < 0) {
+				shutdown(fd, SHUT_RDWR);
+				close(fd);
 				return;
+			}
 		}
 	}
 }
@@ -166,8 +193,7 @@ telnetopt(int fd, char *buf, int max)
 				start = pp;
 				continue;
 			}
-			if ((d == 251 || d == 252)
-			    && (e == 1 || e == 3 || e == 24)) {
+			if ((d == 251 || d == 252) && (e == 1 || e == 3 || e == 24)) {
 				tmp[0] = 255;
 				tmp[1] = 253;
 				tmp[2] = e;

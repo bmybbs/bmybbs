@@ -1552,10 +1552,12 @@ int
 send_msg(char *myuserid, int i, char *touserid, int topid, char *msg, int offline)
 {
 	struct msghead head, head2;
+	memset(&head, 0, sizeof(struct msghead));
 	head.time = now_t;
 	head.sent = 0;
 	head.mode = 5;		//mode 5 for www msg
 	strncpy(head.id, currentuser.userid, IDLEN + 2);
+	head.id[IDLEN + 1] = '\0';
 	head.frompid = 1;
 	head.topid = topid;
 	memcpy(&head2, &head, sizeof (struct msghead));

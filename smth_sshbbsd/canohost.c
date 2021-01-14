@@ -21,8 +21,8 @@ Functions for returning the canonical host name of the remote site.
  *
  * Revision 1.1.1.1  2002/10/01 14:32:16  clearboy
  * update on 20051031
- * by clearboy 
- * for transfering the source codes from main site to the experimental site 
+ * by clearboy
+ * for transfering the source codes from main site to the experimental site
  * for the first time.
  *
  *
@@ -85,7 +85,7 @@ Functions for returning the canonical host name of the remote site.
 #include "xmalloc.h"
 #include "ssh.h"
 
-/* Return the canonical name of the host at the other end of the socket. 
+/* Return the canonical name of the host at the other end of the socket.
    The caller should free the returned string with xfree. */
 
 #if 0
@@ -182,7 +182,7 @@ char *get_remote_hostname(int socket)
             /* Note: "text" buffer must be at least 3x as big as options. */
             for (ucp = options; option_size > 0; ucp++, option_size--, cp += 3)
                 sprintf(cp, " %2.2x", *ucp);
-	    char tmpname[256];  
+	    char tmpname[256];
 	    inet_ntop(AF_INET6,&from.sin6_addr,tmpname,INET6_ADDRSTRLEN);
             log_msg("Connection from %.100s with IP options:%.800s", tmpname, text);
             packet_disconnect("Connection from %.100s with IP options:%.800s", tmpname, text);
@@ -197,7 +197,7 @@ static char *canonical_host_name = NULL;
 static char *canonical_host_ip = NULL;
 #if 0
 /* Return the canonical name of the host in the other side of the current
-   connection.  The host name is cached, so it is efficient to call this 
+   connection.  The host name is cached, so it is efficient to call this
    several times. */
 
 const char *get_canonical_hostname(void)
@@ -292,12 +292,10 @@ const char *get_remote_ipaddr(void)
     /* Get the IP address in ascii. */
     char tmpname[256];
     inet_ntop(AF_INET6,&from.sin6_addr,tmpname,INET6_ADDRSTRLEN);
-    canonical_host_ip = xstrdup(tmpname);
+    canonical_host_ip = xstrdup(is4map6addr(tmpname) ? getv4addr(tmpname) : tmpname);
     //canonical_host_ip = xstrdup(inet_ntoa(from.sin_addr));
 
     /* Return ip address string. */
-    if(is4map6addr(canonical_host_ip))    //if ipv6 addr
-	canonical_host_ip = getv4addr(canonical_host_ip);
     return canonical_host_ip;
 }
 

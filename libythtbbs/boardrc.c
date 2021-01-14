@@ -11,8 +11,7 @@ shorter_brc(struct onebrc *brc)
 	int i;
 	if (brc->num < 2)
 		return;
-	if (brc->list[0] >= 2 && brc->list[brc->num - 1] == 1
-	    && brc->list[brc->num - 2] == 2)
+	if (brc->list[0] >= 2 && brc->list[brc->num - 1] == 1 && brc->list[brc->num - 2] == 2)
 		brc->num--;
 	for (i = brc->num - 1; i > 0; i--) {
 		if (brc->list[i - 1] - brc->list[i] == 1)
@@ -215,11 +214,9 @@ brc_getboard(struct allbrc *allbrc, struct onebrc *brc, char *board)
 			break;
 		if (ptr + ((struct onebrc_c *) ptr)->len > ptr0)
 			break;
-		if (!strncmp
-		    (((struct onebrc_c *) ptr)->data, board, BRC_STRLEN - 1)) {
+		if (!strncmp(((struct onebrc_c *) ptr)->data, board, BRC_STRLEN - 1)) {
 			uncompress_brc(brc, (struct onebrc_c *) ptr);
 			return;
-
 		}
 		ptr += ((struct onebrc_c *) ptr)->len;
 	}
@@ -242,8 +239,7 @@ brc_unreadt_quick(struct allbrc *allbrc, char *board, int t)
 			break;
 		if (ptr + ((struct onebrc_c *) ptr)->len > ptr0)
 			break;
-		if (!strncmp
-		    (((struct onebrc_c *) ptr)->data, board, BRC_STRLEN - 1)) {
+		if (!strncmp(((struct onebrc_c *) ptr)->data, board, BRC_STRLEN - 1)) {
 			return brc_c_unreadt((struct onebrc_c *) ptr, t);
 		}
 		ptr += ((struct onebrc_c *) ptr)->len;
@@ -276,9 +272,7 @@ brc_putboard(struct allbrc *allbrc, struct onebrc *brc)
 			break;
 		if (ptr1 + len > ptr10)
 			break;
-		if (!strncmp
-		    (((struct onebrc_c *) ptr)->data, brc->board,
-		     BRC_STRLEN - 1)) {
+		if (!strncmp(((struct onebrc_c *) ptr)->data, brc->board, BRC_STRLEN - 1)) {
 			ptr += len;
 			continue;
 		}
@@ -411,3 +405,4 @@ brc_init_old(struct allbrc *allbrc, char *filename)
 	}
 	free(brc_buf);
 }
+

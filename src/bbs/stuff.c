@@ -1,24 +1,24 @@
 /*
-    Pirate Bulletin Board System
-    Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
-    Eagles Bulletin Board System
-    Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
-                        Guy Vega, gtvega@seabass.st.usm.edu
-                        Dominic Tynes, dbtynes@seabass.st.usm.edu
-    Firebird Bulletin Board System
-    Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
-                        Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
-    Copyright (C) 1999	KCN,Zhou lin,kcn@cic.tsinghua.edu.cn
+	Pirate Bulletin Board System
+	Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
+	Eagles Bulletin Board System
+	Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
+						Guy Vega, gtvega@seabass.st.usm.edu
+						Dominic Tynes, dbtynes@seabass.st.usm.edu
+	Firebird Bulletin Board System
+	Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
+						Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
+	Copyright (C) 1999 KCN,Zhou lin,kcn@cic.tsinghua.edu.cn
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 1, or (at your option)
-    any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 1, or (at your option)
+	any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 */
 
 #include "bbs.h"
@@ -58,8 +58,8 @@ int pressanykey() {
 	showansi = 1;
 	move(t_lines - 1, 0);
 	clrtoeol();
-	prints
-	    ("[m                                [5;1;33m∞¥»Œ∫Œº¸ºÃ–¯...[m");
+	//"\033[5;1;33mÊåâ‰ªª‰ΩïÈîÆÁªßÁª≠...\033[m"
+	prints("\033[m                                \033[5;1;33m\xB0\xB4\xC8\xCE\xBA\xCE\xBC\xFC\xBC\xCC\xD0\xF8...\033[m");
 	egetch();
 	move(t_lines - 1, 0);
 	clrtoeol();
@@ -73,8 +73,9 @@ int pressreturn() {
 	showansi = 1;
 	move(t_lines - 1, 0);
 	clrtoeol();
+		//"\033[1;33mËØ∑Êåâ ‚óÜ\033[5;36mEnter\033[m\033[1;33m‚óÜ ÁªßÁª≠\033[m",
 	getdata(t_lines - 1, 0,
-		"                              [1;33m«Î∞¥ °Ù[5;36mEnter[m[1;33m°Ù ºÃ–¯\033[m",
+		"                              \033[1;33m\xC7\xEB\xB0\xB4 \xA1\xF4\033[5;36mEnter\033[m\033[1;33m\xA1\xF4 \xBC\xCC\xD0\xF8\033[m",
 		buf, 2, NOECHO, YEA);
 	move(t_lines - 1, 0);
 	clrtoeol();
@@ -86,8 +87,7 @@ int askyn(char *str, int defa, int gobottom) {
 	char realstr[280];
 	char ans[3];
 
-	snprintf(realstr, sizeof (realstr), "%s (Y/N)? [%c]: ", str,
-		 (defa) ? 'Y' : 'N');
+	snprintf(realstr, sizeof (realstr), "%s (Y/N)? [%c]: ", str, (defa) ? 'Y' : 'N');
 	if (gobottom)
 		move(t_lines - 1, 0);
 	getyx(&x, &y);
@@ -139,12 +139,6 @@ void bell() {
 char *bbsenv[MAXENVS];
 int numbbsenvs = 0;
 
-static void strtolower(char *dst, char *src) {
-	for (; *src; src++)
-		*dst++ = tolower(*src);
-	*dst = '\0';
-}
-
 int deltree(char *dst) {
 	char rpath[PATH_MAX + 1 + 10], buf[PATH_MAX + 1];
 	int i = 0, j = 0, isdir = 0, fd;
@@ -188,13 +182,16 @@ int deltree(char *dst) {
 		if (i == 1000)
 			return 0;
 	} else {
-		while (((fd = open(rpath, O_CREAT | O_EXCL | O_WRONLY, 0660)) <
-			0) && i < 1000) {
+		while (((fd = open(rpath, O_CREAT | O_EXCL | O_WRONLY, 0660)) < 0) && i < 1000) {
 			sprintf(rpath + j, "+%d", i);
 			i++;
 		}
-		if (i == 1000)
+		if (i == 1000) {
+			if (fd >= 0) {
+				close(fd);
+			}
 			return 0;
+		}
 		close(fd);
 	}
 	rename(buf, rpath);
@@ -306,7 +303,7 @@ int do_exec(char *com, char *wd) {
 		if (numbbsenvs == 0)
 			bbsenv[0] = NULL;
 /*
-        execve(path,arglist,bbsenv) ;
+		execve(path,arglist,bbsenv) ;
 */
 		strcpy(exec_param, path);
 		tz = exec_param + strlen(exec_param) + 1;
@@ -326,8 +323,7 @@ int do_exec(char *com, char *wd) {
 		};
 
 		execle("bin/ptyexec", "ptyexec", tempfile, "0", NULL, bbsenv);
-		sprintf(genbuf, "EXECV FAILED... path = '%s %s'\n", exec_param,
-			tempfile);
+		sprintf(genbuf, "EXECV FAILED... path = '%s %s'\n", exec_param, tempfile);
 		write(0, genbuf, strlen(genbuf));
 		sleep(4);
 		exit(-1);
@@ -346,7 +342,8 @@ int do_exec(char *com, char *wd) {
 #endif
 	return ((w == -1) ? w : status);
 #endif				/* CAN_EXEC */
-	prints("≤ªƒ‹÷¥––Õ‚≤ø√¸¡Ó£¨ƒ˙ «SSH”√ªß?\n\r");
+	prints("\xB2\xBB\xC4\xDC\xD6\xB4\xD0\xD0\xCD\xE2\xB2\xBF\xC3\xFC\xC1\xEE\xA3\xAC\xC4\xFA\xCA\xC7SSH\xD3\xC3\xBB\xA7?\n\r"); // ‰∏çËÉΩÊâßË°åÂ§ñÈÉ®ÂëΩ‰ª§ÔºåÊÇ®ÊòØSSHÁî®Êà∑?
 	pressanykey();
 	return -1;
 }
+

@@ -11,7 +11,7 @@
 #include "bmy/convcode.h"
 #include "ythtbbs/ythtbbs.h"
 
-#define NOTIFILE "Notification"
+static const char *NOTIFILE = "Notification";
 
 static struct NotifyItem * parse_to_item(xmlNodePtr xmlItem);
 static void addItemtoList(NotifyItemList *List, struct NotifyItem *Item);
@@ -21,13 +21,19 @@ static int add_notification(const char * to_userid, const char * from_userid, co
 	char noti_type_str[8];
 	sprintf(noti_type_str, "%d", noti_type);
 
-	char * title_utf8 = (char *)malloc(2*strlen(title_gbk));
-	if(title_utf8 == NULL)
+	int ulock = userlock(to_userid, LOCK_EX);
+	if (ulock < 0) {
 		return -1;
+	}
+
+	char * title_utf8 = (char *)malloc(2*strlen(title_gbk));
+	if (title_utf8 == NULL) {
+		userunlock(to_userid, ulock);
+		return -1;
+	}
 
 	g2u(title_gbk, strlen(title_gbk), title_utf8, 2*strlen(title_gbk));
 
-	int ulock = userlock(to_userid, LOCK_EX);
 	char notify_file_path[80], article_id_str[16];
 	sethomefile_s(notify_file_path, sizeof(notify_file_path), to_userid, NOTIFILE);
 	sprintf(article_id_str, "%lu", article_id);
@@ -35,7 +41,7 @@ static int add_notification(const char * to_userid, const char * from_userid, co
 	xmlDocPtr doc;
 	xmlNodePtr root;
 	const char *empty_doc_string = "<Notify />";
-	xmlDocPtr empty_doc = xmlParseMemory(empty_doc_string, strlen(empty_doc_string));
+	xmlDocPtr empty_doc = xmlParseMemory(empty_doc_string, (int) strlen(empty_doc_string)); // 面向编译器友好、安全的类型转换
 
 	if(access(notify_file_path, F_OK) != -1) { // file exists
 		doc = xmlParseFile(notify_file_path);
@@ -206,7 +212,10 @@ int del_post_notification(const char * userid, const char * board, time_t articl
 	sprintf(search_str, "/Notify/Item[@board=\"%s\" and @aid=\"%lu\"]", board, article_id);
 	sethomefile_s(notify_file_path, sizeof(notify_file_path), userid, NOTIFILE);
 
-	int ulock = userlock(userid, LOCK_EX); // todo
+	int ulock = userlock(userid, LOCK_EX);
+	if (ulock < 0)
+		return -1;
+
 	xmlDocPtr doc = xmlParseFile(notify_file_path);
 	if(NULL == doc) { // 文件不存在
 		userunlock(userid, ulock);
@@ -248,6 +257,8 @@ int del_all_notification(const char *userid) {
 	sethomefile_s(notify_file_path, sizeof(notify_file_path), userid, NOTIFILE);
 
 	int fd = userlock(userid, LOCK_EX);
+	if (fd < 0)
+		return -1;
 	unlink(notify_file_path);
 	userunlock(userid, fd);
 
@@ -263,22 +274,29 @@ static struct NotifyItem * parse_to_item(xmlNodePtr xmlItem) {
 		return NULL;
 
 	memset(item, 0, sizeof(struct NotifyItem));
+	char *in_str, *endstr;
 
 	// these vars need to be free!!!
 	xmlChar *xml_str_type = xmlGetProp(xmlItem, (const xmlChar *)"type");
-	item->type = atoi((char *)xml_str_type);
+	in_str = (char *) xml_str_type;
+	item->type = (int) strtol(in_str, &endstr, 10);
+	if (in_str == endstr)
+		item->type = 0;
 	xmlFree(xml_str_type);
 
 	xmlChar *xml_str_board = xmlGetProp(xmlItem, (const xmlChar *)"board");
-	memcpy(item->board, (char *)xml_str_board, strlen((char *)xml_str_board));
+	strncpy(item->board, (char *)xml_str_board, sizeof(item->board));
 	xmlFree(xml_str_board);
 
 	xmlChar *xml_str_userid = xmlGetProp(xmlItem, (const xmlChar *)"uid");
-	memcpy(item->from_userid, (char *)xml_str_userid, 16);
+	strncpy(item->from_userid, (char *)xml_str_userid, sizeof(item->from_userid));
 	xmlFree(xml_str_userid);
 
 	xmlChar *xml_str_timestamp = xmlGetProp(xmlItem, (const xmlChar *)"aid");
-	item->noti_time = (time_t) atol((char *)xml_str_timestamp);
+	in_str = (char *) xml_str_timestamp;
+	item->noti_time = strtol(in_str, &endstr, 10);
+	if (in_str == endstr)
+		item->noti_time = 0;
 	xmlFree(xml_str_timestamp);
 
 	xmlChar * xml_str_title_utf8 = xmlGetProp(xmlItem, (const xmlChar *)"title");
@@ -294,7 +312,7 @@ static struct NotifyItem * parse_to_item(xmlNodePtr xmlItem) {
 	if(is_utf((char *)xml_str_title_utf8, title_len)) {
 		u2g((char *)xml_str_title_utf8, title_len, item->title_gbk, title_len);
 	} else {
-		memcpy(item->title_gbk, (const char *)xml_str_title_utf8, title_len);
+		strncpy(item->title_gbk, (const char *)xml_str_title_utf8, title_len);
 	}
 	xmlFree(xml_str_title_utf8);
 

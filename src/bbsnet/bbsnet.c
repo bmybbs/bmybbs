@@ -1,6 +1,7 @@
 // NJU bbsnet, preview version, zhch@dii.nju.edu.cn, 2000.3.23 //
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <termios.h>
 #include <string.h>
 #include <unistd.h>
@@ -8,8 +9,7 @@
 
 char host1[100][40], host2[100][40], ip[100][40];
 int port[100], counts = 0;
-char str[] =
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789`~!@#$%^&*()-_=+\\|[{};:'\"<>,./?";
+char str[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789`~!@#$%^&*()-_=+\\|[{};:'\"<>,./?";
 
 char datafile[80] = "etc/bbsnet.ini";
 char telnet[80] = "bin/telnet";
@@ -35,7 +35,7 @@ init_data()
 	fp = fopen(datafile, "r");
 	if (fp == NULL)
 		return;
-	while (fgets(t, 255, fp) && counts < strlen(str)) {
+	while (fgets(t, 255, fp) && (counts >= 0 && (unsigned) counts < strlen(str))) {
 		t1 = strtok(t, " \t");
 		t2 = strtok(NULL, " \t\n");
 		t3 = strtok(NULL, " \t\n");
@@ -54,40 +54,35 @@ init_data()
 static void
 sh(int n)
 {
-	static oldn = -1;
+	static int oldn = -1;
 	if (n >= counts)
 		return;
 	if (oldn >= 0) {
 		locate(oldn);
-		printf("[1;32m %c.[m%s", str[oldn], host2[oldn]);
+		printf("\033[1;32m %c.\033[m%s", str[oldn], host2[oldn]);
 	}
 	oldn = n;
 	locate(n);
-	printf("[%c][1;42m%s[m", str[n], host2[n]);
-	printf
-	    ("[22;3H[1;37mµ¥Î»: [1;33m%s                   [22;32H[1;37m Õ¾Ãû: [1;33m%s              \r\n",
-	     host1[n], host2[n]);
-	printf("[1;37m[23;3HÁ¬Íù: [1;33m%s %d                   [1;1H",
-	       ip[n], port[n]);
+	printf("[%c]\033[1;42m%s\033[m", str[n], host2[n]);
+	printf("\033[22;3H\033[1;37mµ¥Î»: \033[1;33m%s                   \033[22;32H\033[1;37m Õ¾Ãû: \033[1;33m%s              \r\n",
+			host1[n], host2[n]);
+	printf("\033[1;37m\033[23;3HÁ¬Íù: \033[1;33m%s %d                   \033[1;1H",
+			ip[n], port[n]);
 }
 
 static void
 show_all()
 {
 	int n;
-	printf("[H[2J[m");
-	printf
-	    ("¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ[1;37m   ÏÖÔÚÒªÁ¬µ½ÄÄÀïÄØ£¿£¨Ctrl+CÍË³ö£© \033[m¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ\r\n");
+	printf("\033[H\033[2J\033[m");
+	printf("¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ\033[1;37m   ÏÖÔÚÒªÁ¬µ½ÄÄÀïÄØ£¿£¨Ctrl+CÍË³ö£© \033[m¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ\r\n");
 	for (n = 1; n < 23; n++)
-		printf
-		    ("¡õ                                                                            ¡õ\r\n");
-	printf
-	    ("¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ");
-	printf
-	    ("[21;3H----------------------------------------------------------------------------");
+		printf("¡õ                                                                            ¡õ\r\n");
+	printf("¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ");
+	printf("\033[21;3H----------------------------------------------------------------------------");
 	for (n = 0; n < counts; n++) {
 		locate(n);
-		printf("[1;32m %c.[m%s", str[n], host2[n]);
+		printf("\033[1;32m %c.\033[m%s", str[n], host2[n]);
 	}
 }
 
@@ -99,14 +94,14 @@ locate(int n)
 		return;
 	y = n % 19 + 2;
 	x = n / 19 * 16 + 3;
-	printf("[%d;%dH", y, x);
+	printf("\033[%d;%dH", y, x);
 }
 
 static int
 getch()
 {
 	int c, d, e;
-	static lastc = 0;
+	static int lastc = 0;
 	fflush(stdout);
 	c = getchar();
 	if (c == 10 && lastc == 13)
@@ -134,7 +129,7 @@ main_loop()
 {
 	int p = 0;
 	int c, n;
-      L:
+L:
 	show_all();
 	sh(p);
 	fflush(stdout);
@@ -168,9 +163,8 @@ bbsnet(int n)
 	char pp[180];
 	if (n >= counts)
 		return;
-	printf("[H[2J[1;32mo Á¬Íù: %s (%s %d)\r\n", host2[n], ip[n],
-	       port[n]);
-	printf("%s\r\n\r\n[m", "o Á¬²»ÉÏÊ±ÇëÉÔºò£¬20 Ãëºó½«×Ô¶¯ÍË³ö");
+	printf("\033[H\033[2J\033[1;32mo Á¬Íù: %s (%s %d)\r\n", host2[n], ip[n], port[n]);
+	printf("%s\r\n\r\n\033[m", "o Á¬²»ÉÏÊ±ÇëÉÔºò£¬20 Ãëºó½«×Ô¶¯ÍË³ö");
 	syslog(ip[n]);
 	sprintf(pp, "%d", port[n]);
 	fflush(stdout);
@@ -215,14 +209,14 @@ main(int n, char *cmd[])
 	save_tty();
 	init_tty();
 	if (n >= 2)
-		strcpy(datafile, cmd[1]);
+		strncpy(datafile, cmd[1], sizeof(datafile));
 	if (n >= 3)
-		strcpy(telnet, cmd[2]);
+		strncpy(telnet, cmd[2], sizeof(telnet));
 	if (n >= 4)
-		strcpy(userid, cmd[3]);
+		strncpy(userid, cmd[3], sizeof(userid));
 	init_data();
 	main_loop();
-	printf("[m");
+	printf("\033[m");
 	reset_tty();
 	return 0;
 }

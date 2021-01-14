@@ -1,16 +1,16 @@
 /*
-    Pirate Bulletin Board System
-    Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
+	Pirate Bulletin Board System
+	Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 1, or (at your option)
-    any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 1, or (at your option)
+	any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 */
 
 #include "bbs.h"
@@ -200,8 +200,7 @@ int port;
 
 	mport = port;
 	sin.sin6_port = htons(port);
-	if ((bind(n, (struct sockaddr *) &sin, sizeof (sin)) < 0)
-	    || (listen(n, QLEN) < 0))
+	if ((bind(n, (struct sockaddr *) &sin, sizeof (sin)) < 0) || (listen(n, QLEN) < 0))
 		exit(1);
 
 	setgid(BBSGID);
@@ -274,8 +273,7 @@ show_proc_info(void)
 		if (NULL == fp)
 			continue;
 		if (1 == fscanf(fp, my_proc[i].fmt, buf))
-			prints(" %s [\033[33m%s\033[36m]", my_proc[i].name,
-			       buf);
+			prints(" %s [\033[33m%s\033[36m]", my_proc[i].name, buf);
 		fclose(fp);
 	}
 	prints("\033[m\n\r");
@@ -313,36 +311,35 @@ char *hid;
 		get_load(cpu_load);
 		load = cpu_load[0];
 		if (big5)
-			prints
-			    ("\033[1;36mBBS 程 \033[33m(1,5,15)\033[36m だ牧キА璽颤だ\033[33m %.2f, %.2f, %.2f \033[36m(ヘ玡 = %d).\033[0m\n\r\n\r",
-			     cpu_load[0], cpu_load[1], cpu_load[2], max_load);
+			prints("\033[1;36mBBS 程 \033[33m(1,5,15)\033[36m だ牧キА璽颤だ\033[33m %.2f, %.2f, %.2f \033[36m(ヘ玡 = %d).\033[0m\n\r\n\r",
+					cpu_load[0], cpu_load[1], cpu_load[2], max_load);
 		else
-			prints
-			    ("\033[1;36mBBS 最近 \033[33m(1,5,15)\033[36m 分钟的平均负荷分别为\033[33m %.2f, %.2f, %.2f \033[36m(目前上限 = %d).\033[0m\n\r",
-			     cpu_load[0], cpu_load[1], cpu_load[2], max_load);
+			prints("\033[1;36mBBS 最近 \033[33m(1,5,15)\033[36m 分钟的平均负荷分别为\033[33m %.2f, %.2f, %.2f \033[36m(目前上限 = %d).\033[0m\n\r",
+					cpu_load[0], cpu_load[1], cpu_load[2], max_load);
 
 		if (load < 0 || load > max_load) {
 			if (big5)
-				prints
-				    ("╆簆,ヘ玡╰参璽颤筁, 叫祔ㄓ\n\r");
+				prints("╆簆,ヘ玡╰参璽颤筁, 叫祔ㄓ\n\r");
 			else
-				prints
-				    ("很抱歉,目前系统负荷过重, 请稍后再来\n\r");
+				prints("很抱歉,目前系统负荷过重, 请稍后再来\n\r");
 			close(csock);
 			exit(-1);
 		}
 	}
 #endif				/* LOAD_LIMIT */
 	{
-		FILE *fp;
+		FILE *fp = NULL;
 
-		if ((fp = fopen("NOLOGIN", "r")) != NULL
-		    && (!runtest || access("CANTEST", F_OK))) {
+		if ((fp = fopen("NOLOGIN", "r")) != NULL && (!runtest || access("CANTEST", F_OK))) {
 			while (fgets(buf, 256, fp) != NULL)
 				prints(buf);
 			fclose(fp);
 			close(csock);
 			exit(-1);
+		}
+
+		if (fp != NULL) {
+			fclose(fp);
 		}
 	}
 
@@ -459,9 +456,7 @@ char *argv[];
 	}
 #ifdef GETHOST
 /*
-	whee =
-	    gethostbyaddr((char *) &sin.sin_addr.s_addr,
-			  sizeof (struct in_addr), AF_INET);
+	whee = gethostbyaddr((char *) &sin.sin_addr.s_addr, sizeof (struct in_addr), AF_INET);
 	if ((whee) && (whee->h_name[0])) {
 		strncpy(hid, whee->h_name, 17);
 		hid[40] = 0;
@@ -470,14 +465,14 @@ char *argv[];
 #endif
 	{		//ipv6
 
-	   inet_ntop(AF_INET6, (struct in6_addr *)&(sin.sin6_addr), cp, INET6_ADDRSTRLEN);
+		inet_ntop(AF_INET6, (struct in6_addr *)&(sin.sin6_addr), cp, INET6_ADDRSTRLEN);
 
 		if(is4map6addr(cp))
 		{
-				strcpy(hid,getv4addr(cp));
+			strcpy(hid,getv4addr(cp));
 		}
 		else
-				strncpy(hid,cp,INET6_ADDRSTRLEN);
+			strncpy(hid,cp,INET6_ADDRSTRLEN);
 		/*
 		char *host = (char *) inet_ntoa(sin.sin_addr);
 		strncpy(hid, host, 17);
@@ -517,8 +512,7 @@ checkaddr(struct in6_addr addr, int csock)
 	char str_addr[INET6_ADDRSTRLEN];
 
 	if (fd < 0) {
-		fd = open("/tmp/attacklog", O_CREAT | O_WRONLY | O_APPEND,
-			  0664);
+		fd = open("/tmp/attacklog", O_CREAT | O_WRONLY | O_APPEND, 0664);
 		if (fd >= 0)
 			fcntl(fd, F_SETFD, 1);
 	}
@@ -527,18 +521,19 @@ checkaddr(struct in6_addr addr, int csock)
 		lll = 0;
 	}
 
+	memset(str, 0, sizeof(str));
+
 	time(&timenow);
 	for (i = 0; i < NADDRCHECK; i++) {
 		if (addrcheck[i].t == 0)
 			continue;
-		if (timenow - addrcheck[i].t > 60 * 5
-		    || timenow < addrcheck[i].t) {
+		if (timenow - addrcheck[i].t > 60 * 5 || timenow < addrcheck[i].t) {
 			if (addrcheck[i].x > 100 && addrcheck[i].n > 7) {
 				//ipv6
 				if(inet_ntop(PF_INET6,(const void *)&addrcheck[i].addr, str_addr, INET6_ADDRSTRLEN) != NULL) {
 					sprintf(str, "remove\t%s\t%d\t%s", str_addr, addrcheck[i].n, ctime(&timenow));
+					write(fd, str, strlen(str));
 				}
-				write(fd, str, strlen(str));
 			}
 			addrcheck[i].t = 0;
 			continue;
@@ -558,9 +553,9 @@ checkaddr(struct in6_addr addr, int csock)
 						//ipv6
 						if (inet_ntop(PF_INET6,(const void *)&addrcheck[i].addr, str_addr, sizeof(struct in6_addr)) != NULL) {
 							sprintf(str, "add\t%s\t%d\t%s", str_addr, addrcheck[i].n, ctime(&timenow));
+							write(fd, str, strlen(str));
 						}
 
-						write(fd, str, strlen(str));
 
 						char *s = "对不起, 连接将封闭5分钟。请不要不断连接冲击本站\n";
 						write(csock, s, strlen(s));
@@ -575,8 +570,7 @@ checkaddr(struct in6_addr addr, int csock)
 	}
 	//如果在addrcheck中没有该地址, 则加入.
 	for (i = 0, j = -1, ttemp = timenow + 1; i < NADDRCHECK; i++) {
-		if (addrcheck[i].t < ttemp
-		    && (addrcheck[i].x <= 100 || addrcheck[i].n <= 7)) {
+		if (addrcheck[i].t < ttemp && (addrcheck[i].x <= 100 || addrcheck[i].n <= 7)) {
 			ttemp = addrcheck[i].t;
 			j = i;
 		}
@@ -592,10 +586,10 @@ checkaddr(struct in6_addr addr, int csock)
 		//sprintf(str, "remove\t%s\t%d\t%s", inet_ntoa(addrcheck[i].addr),
 		//	addrcheck[j].n, ctime(&timenow));
 				//ipv6
-				if (inet_ntop(PF_INET6,(const void *)&addrcheck[i].addr, str_addr, sizeof(struct in6_addr)) != NULL) {
-					sprintf(str, "remove\t%s\t%d\t%s", str_addr, addrcheck[i].n, ctime(&timenow));
-				}
-		write(fd, str, strlen(str));
+		if (inet_ntop(PF_INET6,(const void *)&addrcheck[i].addr, str_addr, sizeof(struct in6_addr)) != NULL) {
+			sprintf(str, "remove\t%s\t%d\t%s", str_addr, addrcheck[i].n, ctime(&timenow));
+			write(fd, str, strlen(str));
+		}
 	}
 	addrcheck[j].addr = addr;
 	addrcheck[j].t = timenow;

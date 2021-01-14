@@ -164,7 +164,7 @@ change_dir(char *direct, struct fileheader *fileinfo,
 	return 0;
 }
 
-#define SWITCH_FLAG(x, y) if(x & y) {x &= ~y;} else { x |= y;}
+#define SWITCH_FLAG(x, y) if((x) & (y)) {(x) &= ~(y);} else { (x) |= (y);}
 
 void
 DIR_do_mark(struct fileheader *fileinfo, struct fileheader *newfileinfo)
