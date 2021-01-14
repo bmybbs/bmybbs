@@ -3648,6 +3648,7 @@ Goodbye()
 	char spbuf[STRLEN];
 	int choose;
 	FILE *fp = NULL;
+	char* buf = NULL;
 	alarm(0);
 	if (strcmp(currentuser.userid, "guest") && ythtbbs_cache_UserTable_count(usernum) == 1) {
 		if (DEFINE(DEF_MAILMSG, currentuser)) {
@@ -3681,9 +3682,9 @@ Goodbye()
 		} else {	//add by mintbaggio 040406 for mail OBOARDS when logout
 			clear();
 			prints("你想寄信给哪个主管站长？\n");
-			char* buf;	//IDLEN+2 is length of userid, 2 is bnumber and character '  '
 			char userid[50][IDLEN+2], board[20];
 			int i=0, ch;
+			char *buf_ptr;
 
 			fp = fopen(MY_BBS_HOME"/etc/secmlist", "r");
 			if(!fp){
@@ -3691,18 +3692,18 @@ Goodbye()
 				pressreturn();
 				goto goodbye;
 			}
-			buf = (char*)malloc(sizeof(char)*(IDLEN+2+2));//IDLEN+2 is length of userid, 2 is bnumber and character '  '
-			bzero(buf, IDLEN+2+2);
-			while(fgets(buf, IDLEN+2+2, fp)){
+			buf = (char*) malloc(IDLEN + 2 + 2);//IDLEN+2 is length of userid, 2 is bnumber and character '  '
+			memset(buf, 0, IDLEN + 2 + 2);
+			while(fgets(buf, IDLEN + 2 + 2, fp)){
 				buf[strlen(buf)-1] = 0;
-				if(!buf)
+				if(!buf[0])
 					break;
 				if(buf[0] == '#')
 					continue;
 				board[i] = buf[0];
-				buf = buf+2;
-				bzero(userid[i], IDLEN+2+2);
-				strcpy(userid[i], buf);
+				buf_ptr = buf + 2;
+				memset(userid[i], 0, IDLEN + 2);
+				strcpy(userid[i], buf_ptr);
 /*				if(sscanf(buf, "%c %s", board[i], userid[i])<1){
 					prints("break here");
 					pressanykey();
@@ -3736,6 +3737,7 @@ Goodbye()
 	}
 goodbye:
 	if (fp) fclose(fp);
+	if (buf) free(buf);
 	return Q_Goodbye();
 }
 
