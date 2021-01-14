@@ -521,6 +521,8 @@ checkaddr(struct in6_addr addr, int csock)
 		lll = 0;
 	}
 
+	memset(str, 0, sizeof(str));
+
 	time(&timenow);
 	for (i = 0; i < NADDRCHECK; i++) {
 		if (addrcheck[i].t == 0)
@@ -530,8 +532,8 @@ checkaddr(struct in6_addr addr, int csock)
 				//ipv6
 				if(inet_ntop(PF_INET6,(const void *)&addrcheck[i].addr, str_addr, INET6_ADDRSTRLEN) != NULL) {
 					sprintf(str, "remove\t%s\t%d\t%s", str_addr, addrcheck[i].n, ctime(&timenow));
+					write(fd, str, strlen(str));
 				}
-				write(fd, str, strlen(str));
 			}
 			addrcheck[i].t = 0;
 			continue;
@@ -551,9 +553,9 @@ checkaddr(struct in6_addr addr, int csock)
 						//ipv6
 						if (inet_ntop(PF_INET6,(const void *)&addrcheck[i].addr, str_addr, sizeof(struct in6_addr)) != NULL) {
 							sprintf(str, "add\t%s\t%d\t%s", str_addr, addrcheck[i].n, ctime(&timenow));
+							write(fd, str, strlen(str));
 						}
 
-						write(fd, str, strlen(str));
 
 						char *s = "对不起, 连接将封闭5分钟。请不要不断连接冲击本站\n";
 						write(csock, s, strlen(s));
@@ -584,10 +586,10 @@ checkaddr(struct in6_addr addr, int csock)
 		//sprintf(str, "remove\t%s\t%d\t%s", inet_ntoa(addrcheck[i].addr),
 		//	addrcheck[j].n, ctime(&timenow));
 				//ipv6
-				if (inet_ntop(PF_INET6,(const void *)&addrcheck[i].addr, str_addr, sizeof(struct in6_addr)) != NULL) {
-					sprintf(str, "remove\t%s\t%d\t%s", str_addr, addrcheck[i].n, ctime(&timenow));
-				}
-		write(fd, str, strlen(str));
+		if (inet_ntop(PF_INET6,(const void *)&addrcheck[i].addr, str_addr, sizeof(struct in6_addr)) != NULL) {
+			sprintf(str, "remove\t%s\t%d\t%s", str_addr, addrcheck[i].n, ctime(&timenow));
+			write(fd, str, strlen(str));
+		}
 	}
 	addrcheck[j].addr = addr;
 	addrcheck[j].t = timenow;
