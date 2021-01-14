@@ -328,7 +328,7 @@ char *hid;
 	}
 #endif				/* LOAD_LIMIT */
 	{
-		FILE *fp;
+		FILE *fp = NULL;
 
 		if ((fp = fopen("NOLOGIN", "r")) != NULL && (!runtest || access("CANTEST", F_OK))) {
 			while (fgets(buf, 256, fp) != NULL)
@@ -336,6 +336,10 @@ char *hid;
 			fclose(fp);
 			close(csock);
 			exit(-1);
+		}
+
+		if (fp != NULL) {
+			fclose(fp);
 		}
 	}
 
