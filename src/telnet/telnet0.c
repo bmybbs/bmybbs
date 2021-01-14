@@ -71,7 +71,7 @@ void proc(char *server, int port)
 	struct sockaddr_in blah;
 	struct hostent *he;
 	int result, lm = time(NULL);
-	unsigned char buf[2048];
+	char buf[2048];
 	fd_set readfds;
 	struct timeval tv;
 	signal(SIGALRM, timeout);
