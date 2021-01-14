@@ -4377,8 +4377,11 @@ static int del_commend(int offset) {
 
 	fp = fopen(COMMENDFILE, "r");
 	fp2 = fopen(COMMENDFILE".new", "w");
-	if(!fp || !fp2)
+	if(!fp || !fp2) {
+		if (fp) fclose(fp);
+		if (fp2) fclose(fp2);
 		return 1;
+	}
 	//prints("offset=%d\n");
 	//pressanykey();
 	while(fread(&x, sizeof(struct commend), 1, fp) == 1){
