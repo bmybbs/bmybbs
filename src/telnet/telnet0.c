@@ -89,7 +89,7 @@ void proc(char *server, int port)
 
 	if ((he = gethostbyname(server)) != NULL) {
 		bcopy(he->h_addr, (char *) &blah.sin_addr, he->h_length);
-	} else if ((blah.sin_addr.s_addr = inet_addr(server)) < 0) {
+	} else if ((blah.sin_addr.s_addr = inet_addr(server)) == INADDR_NONE) {
 		shutdown(fd, SHUT_RDWR);
 		close(fd);
 		return;
