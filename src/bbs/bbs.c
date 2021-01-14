@@ -3647,6 +3647,7 @@ Goodbye()
 {
 	char spbuf[STRLEN];
 	int choose;
+	FILE *fp = NULL;
 	alarm(0);
 	if (strcmp(currentuser.userid, "guest") && ythtbbs_cache_UserTable_count(usernum) == 1) {
 		if (DEFINE(DEF_MAILMSG, currentuser)) {
@@ -3680,7 +3681,6 @@ Goodbye()
 		} else {	//add by mintbaggio 040406 for mail OBOARDS when logout
 			clear();
 			prints("你想寄信给哪个主管站长？\n");
-			FILE *fp;
 			char* buf;	//IDLEN+2 is length of userid, 2 is bnumber and character '  '
 			char userid[50][IDLEN+2], board[20];
 			int i=0, ch;
@@ -3735,6 +3735,7 @@ Goodbye()
 				notepad();
 	}
 goodbye:
+	if (fp) fclose(fp);
 	return Q_Goodbye();
 }
 
