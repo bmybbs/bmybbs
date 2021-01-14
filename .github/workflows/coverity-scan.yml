@@ -1,8 +1,6 @@
 name: coverity-scan # ref: ruby/.github/workflows
 
-on:
-  schedule:
-    - cron: '0 9 * * 2' #weekly at 9:00 UTC (17:00 UTC+8), every Tuesday
+on: workflow_dispatch
 
 env:
   BUILD_TYPE: Release
