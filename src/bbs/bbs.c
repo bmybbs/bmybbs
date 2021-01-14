@@ -4419,6 +4419,7 @@ static int do_commend(char* board, struct fileheader* fileinfo) {
 	if(fwrite(&y, sizeof(struct commend), 1, fp) != 1){
 		prints("write fail\n");
 		pressanykey();
+		if (fp) fclose(fp);
 		return 0;
 	}
 	fclose(fp);
