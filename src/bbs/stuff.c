@@ -139,12 +139,6 @@ void bell() {
 char *bbsenv[MAXENVS];
 int numbbsenvs = 0;
 
-static void strtolower(char *dst, char *src) {
-	for (; *src; src++)
-		*dst++ = tolower(*src);
-	*dst = '\0';
-}
-
 int deltree(char *dst) {
 	char rpath[PATH_MAX + 1 + 10], buf[PATH_MAX + 1];
 	int i = 0, j = 0, isdir = 0, fd;
