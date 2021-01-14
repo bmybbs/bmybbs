@@ -1,25 +1,25 @@
 /*
-    Pirate Bulletin Board System
-    Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
-    Eagles Bulletin Board System
-    Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
-                        Guy Vega, gtvega@seabass.st.usm.edu
-                        Dominic Tynes, dbtynes@seabass.st.usm.edu
-    Firebird Bulletin Board System
-    Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
-                        Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
+	Pirate Bulletin Board System
+	Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
+	Eagles Bulletin Board System
+	Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
+						Guy Vega, gtvega@seabass.st.usm.edu
+						Dominic Tynes, dbtynes@seabass.st.usm.edu
+	Firebird Bulletin Board System
+	Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
+						Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
 
-    Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
+	Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 1, or (at your option)
-    any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 1, or (at your option)
+	any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 */
 #include <sys/ipc.h>
 #include <sys/msg.h>
@@ -236,9 +236,9 @@ show_cake(char *filename, int num)
 		else
 			prints(line);
 	}
-      CAKEERROR1:
+CAKEERROR1:
 	fclose(fp);
-      CAKEERROR0:
+CAKEERROR0:
 	prints("\033[22;1H面包变质了?");
 	pressreturn();
 	return -1;
@@ -1114,9 +1114,7 @@ char *direct;
 	return FULLUPDATE;
 }
 
-/*
-  超级版面选择，add by macintosh 07.05.28
-*/
+/* 超级版面选择，add by macintosh 07.05.28 */
 #define BBS_PAGESIZE (t_lines - 4)
 extern int page, range;
 int result[MAXBOARD];
@@ -2294,7 +2292,7 @@ int mode;			// 1: politics    0: non-politics
 		}
 		return -2;
 	}
-      CHECK2:
+CHECK2:
 	if (1 != mode)
 		return 0;
 	mf = &mf_pbadwords;
@@ -2365,8 +2363,9 @@ char *title;
 	unlink(outname);
 	return 0;
 }
- /*ARGSUSED*/ int
-edit_post(ent, fileinfo, direct)
+
+/*ARGSUSED*/
+int edit_post(ent, fileinfo, direct)
 int ent;
 struct fileheader *fileinfo;
 char *direct;
@@ -2791,7 +2790,7 @@ char *direct;
 		pressreturn();
 		return FULLUPDATE;
 	}
-      THERE:
+THERE:
 	move(3, 0);
 	if (askyn("确定删除", NA, NA) == YEA) {
 		if ((ret = delete_range(direct, inum1, inum2)) < 0) {
@@ -3129,8 +3128,8 @@ char *direct;
 	clear();
 	return sequential_read2(ent);
 }
- /*ARGSUSED*/ static int
-sequential_read2(ent /*,fileinfo,direct */ )
+/*ARGSUSED*/
+static int sequential_read2(ent /*,fileinfo,direct */ )
 int ent;
 /*struct fileheader *fileinfo ;
 char *direct ;*/
@@ -4412,7 +4411,7 @@ static int do_commend(char* board, struct fileheader* fileinfo) {
 		return 0;
 	}
 	fclose(fp);
-        return 1;
+	return 1;
 }
 
 //add by mintbaggio 040327 for front page commend
@@ -4424,9 +4423,11 @@ static int count_commend() {
 	fp = fopen(COMMENDFILE, "r");
 	if(!fp)	return 0;
 	while(1){
-		if(fread(&x, sizeof(struct commend), 1, fp)<=0)	break;
-		if(!strcmp(x.com_user, currentuser.userid))	count++;
-        }
+		if(fread(&x, sizeof(struct commend), 1, fp)<=0)
+			break;
+		if(!strcmp(x.com_user, currentuser.userid))
+			count++;
+	}
 	fclose(fp);
 	return count;
 }
@@ -4472,9 +4473,9 @@ static int commend_article2(char* board, struct fileheader* fileinfo) {
 		}
 		else{
 			char fname[STRLEN];
-                        do_commend2(board, fileinfo);
-                        setbfile(fname, currboard, fh2fname(fileinfo));
-                        postfile(fname, "Commend", fileinfo->title, 0);
+			do_commend2(board, fileinfo);
+			setbfile(fname, currboard, fh2fname(fileinfo));
+			postfile(fname, "Commend", fileinfo->title, 0);
 //			do_commend2(board, fileinfo);
 		}
 	}
@@ -4550,7 +4551,7 @@ static int do_commend2(char* board, struct fileheader* fileinfo) {
 		return 0;
 	}
 	fclose(fp);
-        return 1;
+	return 1;
 }
 
 //add by mintbaggio 040327 for front page commend
@@ -4562,9 +4563,11 @@ static int count_commend2() {
 	fp = fopen(COMMENDFILE2, "r");
 	if(!fp)	return 0;
 	while(1){
-		if(fread(&x, sizeof(struct commend), 1, fp)<=0)	break;
-		if(!strcmp(x.com_user, currentuser.userid))	count++;
-        }
+		if(fread(&x, sizeof(struct commend), 1, fp)<=0)
+			break;
+		if(!strcmp(x.com_user, currentuser.userid))
+			count++;
+	}
 	fclose(fp);
 	return count;
 }
