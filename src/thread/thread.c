@@ -150,19 +150,18 @@ generate_title(char *fname, char *tname)
 	return 0;
 }
 
-int
-main(argc, argv)
-char *argv[];
-int argc;
-{
+int main(int argc, char *argv[]) {
 	char dname[STRLEN];
 	char buf[256];
 	struct stat st1, st2;
 
+	if (argc < 2)
+		return 0;
+
 	umask(007);
-	sprintf(dname, "boards/%s/%s", argv[1], DOT_DIR);
-	sprintf(fname, "boards/%s/%s2", argv[1], DOT_DIR);
-	sprintf(tname, "boards/%s/%s", argv[1], THREAD_DIR);
+	snprintf(dname, sizeof(dname), "boards/%s/%s", argv[1], DOT_DIR);
+	snprintf(fname, sizeof(fname), "boards/%s/%s2", argv[1], DOT_DIR);
+	snprintf(tname, sizeof(tname), "boards/%s/%s", argv[1], THREAD_DIR);
 
 	if (stat(dname, &st1) == -1)
 		return -1;
