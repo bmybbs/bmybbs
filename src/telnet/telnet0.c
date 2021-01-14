@@ -59,8 +59,9 @@ void reset_tty(void)
 }
 
 static void
-timeout(void )
+timeout(int i)
 {
+	(void) i;
 	reset_tty();
 	exit(0);
 }
