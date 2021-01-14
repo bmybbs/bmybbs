@@ -1,24 +1,24 @@
 /*
-    Pirate Bulletin Board System
-    Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
-    Eagles Bulletin Board System
-    Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
-                        Guy Vega, gtvega@seabass.st.usm.edu
-                        Dominic Tynes, dbtynes@seabass.st.usm.edu
-    Firebird Bulletin Board System
-    Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
-                        Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
-    Copyright (C) 1999, Zhou Lin, kcn@cic.tsinghua.edu.cn
-    
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 1, or (at your option)
-    any later version.
+	Pirate Bulletin Board System
+	Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
+	Eagles Bulletin Board System
+	Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
+						Guy Vega, gtvega@seabass.st.usm.edu
+						Dominic Tynes, dbtynes@seabass.st.usm.edu
+	Firebird Bulletin Board System
+	Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
+						Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
+	Copyright (C) 1999, Zhou Lin, kcn@cic.tsinghua.edu.cn
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 1, or (at your option)
+	any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 */
 
 #include "bbs.h"
@@ -31,8 +31,7 @@ generate_title(char *fname, char *tname)
 {
 	struct fileheader mkpost, *ptr1, *ptr2;
 	struct flock ldata;
-	int fd, size = sizeof (struct fileheader), total, i, j, count =
-	    0, hasht;
+	int fd, size = sizeof (struct fileheader), total, i, j, count = 0, hasht;
 	char *t;
 	struct mmapfile mf;
 	struct hashstruct {
@@ -41,7 +40,7 @@ generate_title(char *fname, char *tname)
 	int *index, *next;
 
 	if ((fd = open(tname, O_WRONLY | O_CREAT, 0664)) == -1) {
-		return -1;	/* ´´½¨ÎÄ¼ş·¢Éú´íÎó */
+		return -1;	/* åˆ›å»ºæ–‡ä»¶å‘ç”Ÿé”™è¯¯ */
 	}
 	ldata.l_type = F_WRLCK;
 	ldata.l_whence = 0;
@@ -64,8 +63,7 @@ generate_title(char *fname, char *tname)
 		}
 		total = mf.size / size;
 		hasht = total * 8 / 5;
-		hashtable =
-		    (struct hashstruct *) malloc(sizeof (*hashtable) * hasht);
+		hashtable = (struct hashstruct *) malloc(sizeof (*hashtable) * hasht);
 		index = (int *) malloc(sizeof (int) * total);
 		next = (int *) malloc(sizeof (int) * total);
 		memset(hashtable, 0xFF, sizeof (*hashtable) * hasht);
@@ -78,8 +76,7 @@ generate_title(char *fname, char *tname)
 				l = i;
 			else {
 				l = ptr1->thread % hasht;
-				while (hashtable[l].index != ptr1->thread
-				       && hashtable[l].index != -1) {
+				while (hashtable[l].index != ptr1->thread && hashtable[l].index != -1) {
 					l++;
 					if (l >= hasht)
 						l = 0;
@@ -116,9 +113,7 @@ generate_title(char *fname, char *tname)
 				count++;
 				j = next[i];
 				while (j != 0) {
-					ptr2 =
-					    (struct fileheader *) (mf.ptr +
-								   j * size);
+					ptr2 = (struct fileheader *) (mf.ptr + j * size);
 					memcpy(&mkpost, ptr2, sizeof (mkpost));
 					t = ptr2->title;
 					if (!strncmp(t, "Re:", 3))
@@ -150,7 +145,7 @@ generate_title(char *fname, char *tname)
 	MMAP_END mmapfile(NULL, &mf);
 	ftruncate(fd, count * size);
 	ldata.l_type = F_UNLCK;
-	fcntl(fd, F_SETLKW, &ldata);	/* ÍË³ö»¥³âÇøÓò */
+	fcntl(fd, F_SETLKW, &ldata);	/* é€€å‡ºäº’æ–¥åŒºåŸŸ */
 	close(fd);
 	return 0;
 }
@@ -183,3 +178,4 @@ int argc;
 	unlink(fname);
 	return 0;
 }
+
