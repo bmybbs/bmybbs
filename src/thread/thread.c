@@ -33,7 +33,7 @@ generate_title(char *fname, char *tname)
 	struct flock ldata;
 	int fd, size = sizeof (struct fileheader), total, i, j, count = 0, hasht;
 	char *t;
-	struct mmapfile mf;
+	struct mmapfile mf = { .ptr = NULL };
 	struct hashstruct {
 		int index, data;
 	} *hashtable;
