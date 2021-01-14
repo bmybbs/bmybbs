@@ -17,6 +17,11 @@
 #include <time.h>
 #include <arpa/inet.h>
 
+// è¿æ¥ä¸Šäº†, ç­‰å¾…å“åº”...\n
+static const char *STR_CONNECTED = "\xC1\xAC\xBD\xD3\xC9\xCF\xC1\xCB, \xB5\xC8\xB4\xFD\xCF\xEC\xD3\xA6...\n";
+// æ²¡æœ‰è¿ä¸Šå™¢ :(\n
+static const char *STR_NOT_CONNECTED = "\xC3\xBB\xD3\xD0\xC1\xAC\xC9\xCF\xE0\xDE :(\n";
+
 #define stty(fd, data) tcsetattr( fd, TCSANOW, data )
 #define gtty(fd, data) tcgetattr( fd, data )
 struct termios tty_state, tty_new;
@@ -83,13 +88,11 @@ void proc(char *server, int port)
 		return;
 	}
 	if (connect(fd, (struct sockaddr *) &blah, 16) < 0) {
-		write(1, "Ã»ÓĞÁ¬ÉÏàŞ :(\n", strlen("Ã»ÓĞÁ¬ÉÏàŞ :(\n"));
+		write(1, STR_NOT_CONNECTED, strlen(STR_NOT_CONNECTED));
 		return;
 	}
 	signal(SIGALRM, SIG_IGN);
-	if (0 >
-	    write(1, "Á¬½ÓÉÏÁË, µÈ´ıÏìÓ¦...\n",
-		  strlen("Á¬½ÓÉÏÁË, µÈ´ıÏìÓ¦...\n")))
+	if (0 > write(1, STR_CONNECTED, strlen(STR_CONNECTED)))
 		return;
 	tv.tv_sec = 360;
 	tv.tv_usec = 0;
@@ -103,8 +106,7 @@ void proc(char *server, int port)
 			break;
 		if (result == 0) {
 			if (time(NULL) - lm >= 360) {
-				if (write(fd, "\033\133\101\033\133\102", 6) <
-				    0)
+				if (write(fd, "\033\133\101\033\133\102", 6) < 0)
 					return;
 				lm = time(NULL);
 			}
@@ -166,8 +168,7 @@ telnetopt(int fd, char *buf, int max)
 				start = pp;
 				continue;
 			}
-			if ((d == 251 || d == 252)
-			    && (e == 1 || e == 3 || e == 24)) {
+			if ((d == 251 || d == 252) && (e == 1 || e == 3 || e == 24)) {
 				tmp[0] = 255;
 				tmp[1] = 253;
 				tmp[2] = e;
