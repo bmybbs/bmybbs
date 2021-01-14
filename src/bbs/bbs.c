@@ -3703,7 +3703,7 @@ Goodbye()
 				board[i] = buf[0];
 				buf_ptr = buf + 2;
 				memset(userid[i], 0, IDLEN + 2);
-				strcpy(userid[i], buf_ptr);
+				strncpy(userid[i], buf_ptr, IDLEN + 1);
 /*				if(sscanf(buf, "%c %s", board[i], userid[i])<1){
 					prints("break here");
 					pressanykey();
