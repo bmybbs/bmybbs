@@ -684,7 +684,7 @@ char *direct;
 	}
 
 	if (uinfo.mode == RMAIL || in_mail)
-		setmailfile(genbuf, currentuser.userid, fh2fname(fileinfo));
+		setmailfile_s(genbuf, sizeof(genbuf), currentuser.userid, fh2fname(fileinfo));
 	else if (uinfo.mode == BACKNUMBER)
 		directfile(genbuf, direct, fh2fname(fileinfo));
 	else
@@ -1083,11 +1083,11 @@ char *direct;
 		break;
 	case Ctrl('A'):	/*Add by SmallPig */
 		clear();
-		show_author(0, fileinfo, '\0');
+		show_author(0, fileinfo, NULL);
 		return READ_NEXT;
 		break;
 	case 'C':
-		friend_author(0, fileinfo, '\0');
+		friend_author(0, fileinfo, NULL);
 		return READ_NEXT;
 		break;
 	case 'S':		/* by youzi */
@@ -4378,7 +4378,8 @@ static int del_commend(int offset) {
 	//prints("offset=%d\n");
 	//pressanykey();
 	while(fread(&x, sizeof(struct commend), 1, fp) == 1){
-		if((ftell(fp)==offset) || (abs(time(NULL)-x.time)>7*86400))	continue;	//超过7天，自动失效。
+		if((ftell(fp)==offset) || (labs(time(NULL)-x.time)>7*86400))
+			continue;	//超过7天，自动失效。
 		fwrite(&x, sizeof(struct commend), 1, fp2);
 	}
 	fclose(fp);
@@ -4518,7 +4519,8 @@ static int del_commend2(int offset) {
 	//prints("offset=%d\n");
 	//pressanykey();
 	while(fread(&x, sizeof(struct commend), 1, fp) == 1){
-		if((ftell(fp)==offset) || (abs(time(NULL)-x.time)>7*86400))	continue;	//超过7天，自动失效。
+		if((ftell(fp)==offset) || (labs(time(NULL)-x.time)>7*86400))
+			continue;	//超过7天，自动失效。
 		fwrite(&x, sizeof(struct commend), 1, fp2);
 	}
 	fclose(fp);
