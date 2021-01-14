@@ -209,11 +209,11 @@ main(int n, char *cmd[])
 	save_tty();
 	init_tty();
 	if (n >= 2)
-		strcpy(datafile, cmd[1]);
+		strncpy(datafile, cmd[1], sizeof(datafile));
 	if (n >= 3)
-		strcpy(telnet, cmd[2]);
+		strncpy(telnet, cmd[2], sizeof(telnet));
 	if (n >= 4)
-		strcpy(userid, cmd[3]);
+		strncpy(userid, cmd[3], sizeof(userid));
 	init_data();
 	main_loop();
 	printf("\033[m");
