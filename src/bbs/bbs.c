@@ -1650,6 +1650,10 @@ int mode;
 	of = fopen(filepath, "w");
 	if (inf == NULL || of == NULL) {
 		errlog("Cross Post error");
+
+		if (inf) fclose(inf);
+		if (of)  fclose(of);
+
 		return;
 	}
 	if (mode == 0) {
