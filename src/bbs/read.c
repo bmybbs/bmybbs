@@ -754,10 +754,7 @@ char *direct;
 }
 
 int
-friend_author(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+friend_author(int ent, struct fileheader *fileinfo, char *direct)
 {
 	extern int friendflag;
 	char uident[STRLEN];
