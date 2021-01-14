@@ -182,13 +182,16 @@ int deltree(char *dst) {
 		if (i == 1000)
 			return 0;
 	} else {
-		while (((fd = open(rpath, O_CREAT | O_EXCL | O_WRONLY, 0660)) <
-			0) && i < 1000) {
+		while (((fd = open(rpath, O_CREAT | O_EXCL | O_WRONLY, 0660)) < 0) && i < 1000) {
 			sprintf(rpath + j, "+%d", i);
 			i++;
 		}
-		if (i == 1000)
+		if (i == 1000) {
+			if (fd >= 0) {
+				close(fd);
+			}
 			return 0;
+		}
 		close(fd);
 	}
 	rename(buf, rpath);
