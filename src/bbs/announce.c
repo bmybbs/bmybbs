@@ -1,25 +1,25 @@
 /*
-    Pirate Bulletin Board System
-    Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
-    Eagles Bulletin Board System
-    Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
-                        Guy Vega, gtvega@seabass.st.usm.edu
-                        Dominic Tynes, dbtynes@seabass.st.usm.edu
-    Firebird Bulletin Board System
-    Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
-                        Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
+	Pirate Bulletin Board System
+	Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
+	Eagles Bulletin Board System
+	Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
+						Guy Vega, gtvega@seabass.st.usm.edu
+						Dominic Tynes, dbtynes@seabass.st.usm.edu
+	Firebird Bulletin Board System
+	Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
+						Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
 
-    Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
+	Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 1, or (at your option)
-    any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 1, or (at your option)
+	any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 */
 
 #include "bbs.h"
@@ -95,8 +95,7 @@ char *str;
 	char ch;
 
 	while ((ch = *str++) != '\0') {
-		if ((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z') ||
-		    strchr("0123456789-_", ch) != NULL) {
+		if ((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z') || strchr("0123456789-_", ch) != NULL) {
 			;
 		} else {
 			return 0;
@@ -122,27 +121,26 @@ MENU *pm;
 
 	clear();
 	if (chkmail()) {
-		prints("[5m");
+		prints("\033[5m");
 		sprintf(pathbuf, "[ÄúÓĞĞÅ¼ş,Çë°´w²é¿´ĞÅ¼ş]");
 	} else
 		strcpy(pathbuf, pm->mtitle);
 	sprintf(buf, "%*s", (80 - strlen(pathbuf)) / 2, "");
-	prints("[1;44m%s%s%s[m\n", buf, pathbuf, buf);
+	prints("\033[1;44m%s%s%s\033[m\n", buf, pathbuf, buf);
 
 	getvisit(visit, pm->path);
 
 	prints("\033[1;31m[%s]\033[m \033[1;32mF\033[37m ¼Ä»ØĞÅÏä"
-	       "\033[32m¡ü¡ı\033[37mÒÆ¶¯ [32m¡ú r \033[37m"
-	       "¶ÁÈ¡ \033[32m¡û q\033[37m Àë¿ª \033[1;32mh\033[37m ÇóÖú \033[33mä¯ÀÀÍ³¼Æ£º%4d´Î%4d%s\n",
-	       (pm->level & PERM_BOARDS) ? "°æ  Ö÷" : "¹¦ÄÜ¼ü",
-	       visit[0],
-	       (visit[1] > 100000) ? (visit[1] / 3600) : (visit[1] / 60),
-	       (visit[1] > 100000) ? "Ê±" : "·Ö");
+			"\033[32m¡ü¡ı\033[37mÒÆ¶¯ \033[32m¡ú r \033[37m"
+			"¶ÁÈ¡ \033[32m¡û q\033[37m Àë¿ª \033[1;32mh\033[37m ÇóÖú \033[33mä¯ÀÀÍ³¼Æ£º%4d´Î%4d%s\n",
+			(pm->level & PERM_BOARDS) ? "°æ  Ö÷" : "¹¦ÄÜ¼ü",
+			visit[0],
+			(visit[1] > 100000) ? (visit[1] / 3600) : (visit[1] / 60),
+			(visit[1] > 100000) ? "Ê±" : "·Ö");
 
-	prints("[1;44;37m ±àºÅ %-45s Õû  Àí           %8s [m",
-	       "[Àà±ğ] ±ê    Ìâ", (a_fmode == 2
-				   && (pm->level & PERM_BOARDS) !=
-				   0) ? "µµ°¸Ãû³Æ" : "±à¼­ÈÕÆÚ");
+	prints("\033[1;44;37m ±àºÅ %-45s Õû  Àí           %8s \033[m",
+			"[Àà±ğ] ±ê    Ìâ",
+			(a_fmode == 2 && (pm->level & PERM_BOARDS) != 0) ? "µµ°¸Ãû³Æ" : "±à¼­ÈÕÆÚ");
 	prints("\n");
 	if (pm->num == 0)
 		prints("      << Ä¿Ç°Ã»ÓĞÎÄÕÂ >>\n");
@@ -151,13 +149,11 @@ MENU *pm;
 		ytht_strsncpy(title, pm->item[n]->title, sizeof(title));
 		if (a_fmode) {
 			snprintf(fname, STRLEN, "%s", pm->item[n]->fname);
-			if (snprintf(pathbuf, PATHLEN, "%s/%s", pm->path, fname)
-			    > PATHLEN - 1)
+			if (snprintf(pathbuf, PATHLEN, "%s/%s", pm->path, fname) > PATHLEN - 1)
 				overlen = 1;
 			/*¼ÓÉÏ¶ÔlevelµÄ¼ì²â, Ê¹µÃ³öµ½·Ç×Ô¼ºµÄ¹ÜÏ½ÇøÊ±¿´²»µ½ÎÄ¼şÃû ylsdd */
 			if (a_fmode == 2 && (pm->level & PERM_BOARDS) != 0) {
-				ch = (dashf(pathbuf) ? ' '
-				      : (dashd(pathbuf) ? '/' : ' '));
+				ch = (dashf(pathbuf) ? ' ' : (dashd(pathbuf) ? '/' : ' '));
 				fname[10] = '\0';
 			} else {
 				if (dashf(pathbuf) || dashd(pathbuf)) {
@@ -168,7 +164,7 @@ MENU *pm;
 
 				pt = localtime(&mtime);
 				sprintf(fname,
-					"[1m%04d[m.[1m%02d[m.[1m%02d[m",
+					"\033[1m%04d\033[m.\033[1m%02d\033[m.\033[1m%02d\033[m",
 					1900 + pt->tm_year, pt->tm_mon + 1,
 					pt->tm_mday);
 				ch = ' ';
@@ -177,31 +173,29 @@ MENU *pm;
 				strcpy(kind, "[\033[1;32mÌ«Éî\033[m]");
 			} else if (pm->item[n]->host != NULL) {
 				if (pm->item[n]->fname[0] == '0')
-					strcpy(kind, "[[1;32mÁ¬ÎÄ[m]");
+					strcpy(kind, "[\033[1;32mÁ¬ÎÄ\033[m]");
 				else
-					strcpy(kind, "[[1;33mÁ¬Ä¿[m]");
+					strcpy(kind, "[\033[1;33mÁ¬Ä¿\033[m]");
 			} else if (dashf(pathbuf)) {
 				if (dashl(pathbuf))
-					strcpy(kind, "[[1;36mÁ¬ÎÄ[m]");
+					strcpy(kind, "[\033[1;36mÁ¬ÎÄ\033[m]");
 				else
 					strcpy(kind, "[\033[1;36mÎÄ¼ş\033[m]");
 			} else if (dashd(pathbuf)) {
 				if (dashl(pathbuf))
-					strcpy(kind, "[[1mÁ¬Ä¿[m]");
+					strcpy(kind, "[\033[1mÁ¬Ä¿\033[m]");
 				else
 					strcpy(kind, "[\033[1mÄ¿Â¼\033[m]");
 			} else {
-				strcpy(kind, "[[1;32m´íÎó[m]");
+				strcpy(kind, "[\033[1;32m´íÎó\033[m]");
 			}
 			if (!strncmp(title, "[Ä¿Â¼] ", 7)
-			    || !strncmp(title, "[ÎÄ¼ş] ", 7)
-			    || !strncmp(title, "[Á¬Ä¿] ", 7)
-			    || !strncmp(title, "[Á¬ÎÄ] ", 7))
-				sprintf(pathbuf, "%-s %-55.55s%-s%c", kind,
-					title + 7, fname, ch);
+					|| !strncmp(title, "[ÎÄ¼ş] ", 7)
+					|| !strncmp(title, "[Á¬Ä¿] ", 7)
+					|| !strncmp(title, "[Á¬ÎÄ] ", 7))
+				sprintf(pathbuf, "%-s %-55.55s%-s%c", kind, title + 7, fname, ch);
 			else
-				sprintf(pathbuf, "%-s %-55.55s%-s%c", kind,
-					title, fname, ch);
+				sprintf(pathbuf, "%-s %-55.55s%-s%c", kind, title, fname, ch);
 			strncpy(title, pathbuf, STRLEN * 2);
 			title[STRLEN * 2 - 1] = '\0';
 		}
@@ -234,8 +228,7 @@ int port;
 		newitem = (ITEM *) malloc(sizeof (ITEM));
 		ytht_strsncpy(newitem->title, title, sizeof(newitem->title));
 		if (host != NULL) {
-			newitem->host =
-			    (char *) malloc(sizeof (char) * (strlen(host) + 1));
+			newitem->host = (char *) malloc(sizeof (char) * (strlen(host) + 1));
 			strcpy(newitem->host, host);
 		} else
 			newitem->host = host;
@@ -291,7 +284,7 @@ MENU *pm;
 					&& (!strstr(litem.title + 38, "(BM: SYSOPS)") || HAS_PERM(PERM_SYSOP, currentuser))
 					&& (strstr(litem.title, "<HIDE>") != litem.title)
 					&& ((curr_board != NULL) ? hasreadperm(&(curr_board->header)) : 1))
-				 || ((pm->level & PERM_BOARDS) && ((curr_board != NULL) ? hasreadperm(&(curr_board->header)) : 1))) {	/*modified by ylsdd */ /* modified by IronBlood 2014.6.1 */
+					|| ((pm->level & PERM_BOARDS) && ((curr_board != NULL) ? hasreadperm(&(curr_board->header)) : 1))) {	/*modified by ylsdd */ /* modified by IronBlood 2014.6.1 */
 				if (strstr(litem.fname, "!@#$%")) {
 					char *ptr1, *ptr2, gtmp[STRLEN];
 
@@ -302,15 +295,12 @@ MENU *pm;
 					strcpy(litem.fname, ptr2);
 					litem.port = atoi(strtok(NULL, "@"));
 				}
-				a_additem(pm, litem.title, litem.fname,
-					  (strlen(hostname) ==
-					   0) ? NULL : hostname, litem.port);
+				a_additem(pm, litem.title, litem.fname, (strlen(hostname) == 0) ? NULL : hostname, litem.port);
 			}
 			hostname[0] = '\0';
 		} else if (strncmp(buf, "# Title=", 8) == 0) {
 			if (pm->mtitle[0] == '\0') {
-				ytht_strsncpy(pm->mtitle, buf + 8,
-							  sizeof(pm->mtitle));
+				ytht_strsncpy(pm->mtitle, buf + 8, sizeof(pm->mtitle));
 			}
 		} else if (strncmp(buf, "Host=", 5) == 0) {
 			strncpy(hostname, buf + 5, STRLEN);
@@ -338,9 +328,9 @@ MENU *pm;
 		return;
 	fprintf(fn, "#\n");
 	if (!strncmp(pm->mtitle, "[Ä¿Â¼] ", 7)
-	    || !strncmp(pm->mtitle, "[ÎÄ¼ş] ", 7)
-	    || !strncmp(pm->mtitle, "[Á¬Ä¿] ", 7)
-	    || !strncmp(pm->mtitle, "[Á¬ÎÄ] ", 7)) {
+			|| !strncmp(pm->mtitle, "[ÎÄ¼ş] ", 7)
+			|| !strncmp(pm->mtitle, "[Á¬Ä¿] ", 7)
+			|| !strncmp(pm->mtitle, "[Á¬ÎÄ] ", 7)) {
 		fprintf(fn, "# Title=%s\n", pm->mtitle + 7);
 	} else {
 		fprintf(fn, "# Title=%s\n", pm->mtitle);
@@ -349,9 +339,9 @@ MENU *pm;
 	for (n = 0; n < pm->num; n++) {
 		item = pm->item[n];
 		if (!strncmp(item->title, "[Ä¿Â¼] ", 7)
-		    || !strncmp(item->title, "[ÎÄ¼ş] ", 7)
-		    || !strncmp(item->title, "[Á¬Ä¿] ", 7)
-		    || !strncmp(item->title, "[Á¬ÎÄ] ", 7)) {
+				|| !strncmp(item->title, "[ÎÄ¼ş] ", 7)
+				|| !strncmp(item->title, "[Á¬Ä¿] ", 7)
+				|| !strncmp(item->title, "[Á¬ÎÄ] ", 7)) {
 			fprintf(fn, "Name=%s\n", item->title + 7);
 		} else
 			fprintf(fn, "Name=%s\n", item->title);
@@ -423,14 +413,10 @@ int nomsg;
 			return FULLUPDATE;
 		}
 		keepoldheader(fps, SKIPHEADER);
-		fputs
-		    ("\033[1;36m©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤\033[0m\n",
-		     fpd);
+		fputs("\033[1;36m©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤\033[0m\n", fpd);
 		fprintf(fpd, "\033[0;44;37m ×÷Õß %-14s Ê±¼ä %-52s\033[0m\n",
 				fh2owner(fileinfo), ytht_ctime(fileinfo->filetime));
-		fputs
-		    ("\033[1;36m©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤\033[0m\n",
-		     fpd);
+		fputs("\033[1;36m©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤\033[0m\n", fpd);
 		while (fgets(line, sizeof (line), fps) != NULL) {
 			if (transferattach(line, sizeof (line), fps, fpd))
 				continue;
@@ -447,8 +433,7 @@ int nomsg;
 	//     key , fileinfo->filename, (ans)?">>":"",board);
 	// system( genbuf );
 	if (!nomsg)
-		a_prompt(-1, "ÒÑ½«¸ÃÎÄÕÂ´æÈëÔİ´æµµ, Çë°´<Enter>¼ÌĞø...", genbuf,
-			 2);
+		a_prompt(-1, "ÒÑ½«¸ÃÎÄÕÂ´æÈëÔİ´æµµ, Çë°´<Enter>¼ÌĞø...", genbuf, 2);
 	return FULLUPDATE;
 }
 
@@ -493,8 +478,7 @@ static int an_log(char *action, char *path) {
 			*ptr = 0;
 	} else
 		strcpy(anboard, "noboard");
-	snprintf(buf, 256, "%s %s %s %s", currentuser.userid, action, anboard,
-		 path);
+	snprintf(buf, 256, "%s %s %s %s", currentuser.userid, action, anboard, path);
 	newtrace(buf);
 	return 0;
 }
@@ -518,9 +502,7 @@ int nomsg;
 		case 0:
 			break;
 		case -1:
-			a_prompt(-1,
-				 "ÄãÉè¶¨µÄ¸ÃË¿Â··¢ÉúÄÚ²¿´íÎó,ÇëÍ¨ÖªÏµÍ³Î¬»¤",
-				 ans, 2);
+			a_prompt(-1, "ÄãÉè¶¨µÄ¸ÃË¿Â··¢ÉúÄÚ²¿´íÎó,ÇëÍ¨ÖªÏµÍ³Î¬»¤", ans, 2);
 			return 0;
 		default:
 			a_prompt(-1, "ÄãÉè¶¨µÄ¸ÃË¿Â·ÒÑÊ§Ğ§,ÇëÖØĞÂÉèÖÃ", ans, 2);
@@ -563,24 +545,23 @@ int nomsg;
 	a_additem(&pm, genbuf, fname, NULL, 0);
 	a_savenames(&pm);
 	/*if(in_mail)
-	   sprintf( genbuf, "/bin/cp -r mail/%c/%s/%s %s 1>/dev/null 2>/dev/null",
-	   mytoupper(currentuser.userid[0]), currentuser.userid, fileinfo->filename , bname );
-	   else
-	   sprintf( genbuf, "/bin/cp -r boards/%s/%s %s 1>/dev/null 2>/dev/null", key , fileinfo->filename , bname );
-	 */
+		sprintf( genbuf, "/bin/cp -r mail/%c/%s/%s %s 1>/dev/null 2>/dev/null",
+		mytoupper(currentuser.userid[0]), currentuser.userid, fileinfo->filename , bname );
+	else
+		sprintf( genbuf, "/bin/cp -r boards/%s/%s %s 1>/dev/null 2>/dev/null", key , fileinfo->filename , bname );
+	*/
 	directfile(filepath, direct, fh2fname(fileinfo));
 	copyfile(filepath, bname);
 	if (0)
 		if (!nomsg) {
-			a_prompt(-1, "ÒÑ½«¸ÃÎÄÕÂ·Å½ø¾«»ªÇø, Çë°´<Enter>¼ÌĞø...",
-				 ans, 2);
+			a_prompt(-1, "ÒÑ½«¸ÃÎÄÕÂ·Å½ø¾«»ªÇø, Çë°´<Enter>¼ÌĞø...", ans, 2);
 		}
 	if (!nomsg) {
 		strcpy(tmpboard, currboard);
 		strcpy(currboard, anboard);
 	}
 	snprintf(genbuf, 256, "%s import %s %s %s", currentuser.userid,
-		 currboard, fileinfo->owner, fileinfo->title);
+		currboard, fileinfo->owner, fileinfo->title);
 	newtrace(genbuf);
 	if (!nomsg)
 		strcpy(currboard, tmpboard);
@@ -603,8 +584,7 @@ int offset;
 	getdata(t_lines - 1, 0, pmt, ans, 46, DOECHO, YEA);
 	if (*ans != '\0')
 		strcpy(title, ans);
-	for (i = pm->now + offset; (offset == 1) ? (i < pm->num) : (i >= 0);
-	     i += offset) {
+	for (i = pm->now + offset; (offset == 1) ? (i < pm->num) : (i >= 0); i += offset) {
 		strcpy(genbuf, pm->item[i]->title);
 		genbuf[38] = 0;
 		if (strstr(genbuf, title)) {
@@ -654,8 +634,7 @@ int level;
 			a_menu("", found, level, 0);
 			return 1;
 		} else {
-			a_prompt(-1, "ÕÒ²»µ½ÄúËùÊäÈëµÄÌÖÂÛÇø, °´<Enter>¼ÌĞø...",
-				 buf, 2);
+			a_prompt(-1, "ÕÒ²»µ½ÄúËùÊäÈëµÄÌÖÂÛÇø, °´<Enter>¼ÌĞø...", buf, 2);
 			return 1;
 		}
 	}
@@ -670,8 +649,7 @@ int mode;
 {
 	char fname[PATHLEN], *mesg;
 
-	if (snprintf(fname, PATHLEN, "%s/%s", path, pitem->fname) < PATHLEN
-	    && dashf(fname)) {
+	if (snprintf(fname, PATHLEN, "%s/%s", path, pitem->fname) < PATHLEN && dashf(fname)) {
 		switch (doforward(fname, pitem->title, mode)) {
 		case 0:
 			mesg = "ÎÄÕÂ×ª¼ÄÍê³É!\n";
@@ -716,8 +694,8 @@ int mode;
 		sprintf(board, "bm/%s", currentuser.userid);
 		if (!dashf(board)) {
 			a_prompt(-1,
-				 "ÇëÏÈÖÁ¸ÃÌÖÂÛÇø½«ÎÄÕÂ´æÈëÔİ´æµµ, °´<Enter>¼ÌĞø...",
-				 ans, 2);
+				"ÇëÏÈÖÁ¸ÃÌÖÂÛÇø½«ÎÄÕÂ´æÈëÔİ´æµµ, °´<Enter>¼ÌĞø...",
+				ans, 2);
 			return;
 		}
 		break;
@@ -756,8 +734,7 @@ int mode;
 		if (count++ > MAX_POSTRETRY)
 			return;
 		sprintf(fname, "M%d", (int) now++);
-		if (snprintf(fpath, PATHLEN, "%s/%s", pm->path, fname) >
-		    PATHLEN - 1)
+		if (snprintf(fpath, PATHLEN, "%s/%s", pm->path, fname) > PATHLEN - 1)
 			return;
 	} while (dashf(fpath) || dashd(fpath));
 
@@ -805,8 +782,7 @@ int mode;
 	a_loadnames(pm);
 	an_log("additem", pm->path);
 	if (mode == ADDGROUP) {
-		if (snprintf(fpath2, PATHLEN, "%s/%s/.Names", pm->path, fname) <
-		    PATHLEN && (pn = fopen(fpath2, "w")) != NULL) {
+		if (snprintf(fpath2, PATHLEN, "%s/%s/.Names", pm->path, fname) < PATHLEN && (pn = fopen(fpath2, "w")) != NULL) {
 			fprintf(pn, "#\n");
 			fprintf(pn, "# Title=%s\n", genbuf);
 			fprintf(pn, "#\n");
@@ -856,8 +832,7 @@ int paste;			// -1:cut 0:copy have perm 1:paste 2:copy have no perm
 {
 	char title[STRLEN], filename[STRLEN], fpath[PATHLEN];
 	ITEM *item;
-	char newpath[PATHLEN], ans[3], realfpath[PATH_MAX + 1],
-	    realnewpath[PATH_MAX + 1];
+	char newpath[PATHLEN], ans[3], realfpath[PATH_MAX + 1], realnewpath[PATH_MAX + 1];
 	FILE *fn;		//add by gluon for copypate in two window
 	int x, y, hasc;
 	MENU pmforcut;
@@ -873,16 +848,15 @@ int paste;			// -1:cut 0:copy have perm 1:paste 2:copy have no perm
 		item = pm->item[pm->now];
 		ytht_strsncpy(title, item->title, sizeof(title));
 		ytht_strsncpy(filename, item->fname, sizeof(filename));
-		if (snprintf(fpath, PATHLEN, "%s/%s", pm->path, filename) >
-		    PATHLEN - 1) {
+		if (snprintf(fpath, PATHLEN, "%s/%s", pm->path, filename) > PATHLEN - 1) {
 			prints("µµ°¸Â·¾¶¹ıÉî, ÎŞ·¨¸´ÖÆ");
 			egetch();
 			return;
 		}
 		if ((strlen(fpath) < sizeof (AN_PATH)
-		     || !strncmp(fpath, AN_PES_PATH, sizeof (AN_PES_PATH) - 1))
-		    && (HAS_PERM(PERM_ANNOUNCE, currentuser) || HAS_PERM(PERM_SYSOP, currentuser)
-			|| HAS_PERM(PERM_OBOARDS, currentuser))) {
+					|| !strncmp(fpath, AN_PES_PATH, sizeof (AN_PES_PATH) - 1))
+				&& (HAS_PERM(PERM_ANNOUNCE, currentuser) || HAS_PERM(PERM_SYSOP, currentuser)
+					|| HAS_PERM(PERM_OBOARDS, currentuser))) {
 			prints("Õ¾³¤²»ÄÜ¿½±´¸öÈËÎÄ¼¯, ÈçÓĞĞèÇó, ÁªÏµÏµÍ³Î¬»¤");
 			egetch();
 			return;
@@ -902,8 +876,7 @@ int paste;			// -1:cut 0:copy have perm 1:paste 2:copy have no perm
 		fclose(fn);
 		//end
 		if (copymode >= 0)
-			prints
-			    ("µµ°¸±êÊ¶Íê³É. (×¢Òâ! Õ³ÌùÎÄÕÂºó²ÅÄÜ½«ÎÄÕÂ delete!)");
+			prints("µµ°¸±êÊ¶Íê³É. (×¢Òâ! Õ³ÌùÎÄÕÂºó²ÅÄÜ½«ÎÄÕÂ delete!)");
 		else
 			prints("µµ°¸±êÊ¶Íê³É. Õ³Ìùºó½«±»É¾³ı.");
 		egetch();
@@ -922,12 +895,10 @@ int paste;			// -1:cut 0:copy have perm 1:paste 2:copy have no perm
 		fread(&copymode, sizeof (copymode), 1, fn);
 		fclose(fn);
 		//end
-		if (snprintf(newpath, PATHLEN, "%s/%s", pm->path, filename) >
-		    PATHLEN - 1) {
+		if (snprintf(newpath, PATHLEN, "%s/%s", pm->path, filename) > PATHLEN - 1) {
 			prints("Ä¿Â¼Â·¾¶Ì«Éî,ÎŞ·¨Õ³Ìù");
 			egetch();
-		} else if (realpath(pm->path, realnewpath) == NULL
-			   || realpath(fpath, realfpath) == NULL) {
+		} else if (realpath(pm->path, realnewpath) == NULL || realpath(fpath, realfpath) == NULL) {
 			prints("ÏµÍ³ÄÚ²¿´íÎó,ÇëÁªÏµÏµÍ³Î¬»¤!");
 			egetch();
 		} else if (*title == '\0' || *filename == '\0') {
@@ -941,8 +912,7 @@ int paste;			// -1:cut 0:copy have perm 1:paste 2:copy have no perm
 		} else if (dashf(newpath) || dashd(newpath)) {
 			prints("%s µµ°¸/Ä¿Â¼ÒÑ¾­´æÔÚ. ", filename);
 			egetch();
-		} else if (strstr(newpath, fpath) != NULL
-			   || strstr(realnewpath, realfpath) != NULL) {
+		} else if (strstr(newpath, fpath) != NULL || strstr(realnewpath, realfpath) != NULL) {
 			prints("ÎŞ·¨½«Ä¿Â¼°á½ø×Ô¼ºµÄ×ÓÄ¿Â¼ÖĞ, »áÔì³ÉËÀ»ØÈ¦.");
 			egetch();
 		} else {
@@ -967,8 +937,7 @@ int paste;			// -1:cut 0:copy have perm 1:paste 2:copy have no perm
 			getyx(&x, &y);
 			getdata(x, y, genbuf, ans, 2, DOECHO, YEA);
 
-			if (ans[0] != 'c' && ans[0] != 'C' && ans[0] != 'l'
-			    && ans[0] != 'L' && ans[0] != 'n' && ans[0] != 'N')
+			if (ans[0] != 'c' && ans[0] != 'C' && ans[0] != 'l' && ans[0] != 'L' && ans[0] != 'n' && ans[0] != 'N')
 				ans[0] = defaultans[0];
 			hasc = 1;
 			switch (ans[0]) {
@@ -997,9 +966,7 @@ int paste;			// -1:cut 0:copy have perm 1:paste 2:copy have no perm
 					pmforcut.level |= PERM_BOARDS;
 					a_loadnames(&pmforcut);
 					for (i = 0; i < pmforcut.num; i++)
-						if (!strcmp
-						    (pmforcut.item[i]->fname,
-						     filename)) {
+						if (!strcmp(pmforcut.item[i]->fname, filename)) {
 							pmforcut.now = i;
 							break;
 						}
@@ -1046,9 +1013,7 @@ int mode;
 	prints("%5d  %-50s\n", pm->now + 1, item->title);
 	if (mode == 0) {
 		if (item->host == NULL) {
-			if (snprintf
-			    (fpath, PATHLEN, "%s/%s", pm->path,
-			     item->fname) > PATHLEN - 1) {
+			if (snprintf(fpath, PATHLEN, "%s/%s", pm->path, item->fname) > PATHLEN - 1) {
 				prints("Ä¿Â¼¹ıÉî,ÇëÁªÏµÏµÍ³Î¬»¤!");
 				egetch();
 				return;
@@ -1061,9 +1026,7 @@ int mode;
 					return;
 				deltree(fpath);
 			} else if (dashd(fpath)) {
-				if (askyn
-				    ("É¾³ıÕû¸ö×ÓÄ¿Â¼, ±ğ¿ªÍæĞ¦Å¶, È·¶¨Âğ", NA,
-				     YEA) == NA)
+				if (askyn("É¾³ıÕû¸ö×ÓÄ¿Â¼, ±ğ¿ªÍæĞ¦Å¶, È·¶¨Âğ", NA, YEA) == NA)
 					return;
 				deltree(fpath);
 			}
@@ -1132,19 +1095,16 @@ int ch;
 {
 	char uident[STRLEN];
 	ITEM *item = NULL;
-	char fpath[PATHLEN], changed_T[STRLEN], ans[5], fname[STRLEN],
-	    newfpath[PATHLEN];
+	char fpath[PATHLEN], changed_T[STRLEN], ans[5], fname[STRLEN], newfpath[PATHLEN];
 	time_t now;
 	int count, ret;
 
 	if (pm->num > 0) {
 		item = pm->item[pm->now];
-		if (snprintf(fpath, PATHLEN, "%s/%s", pm->path, item->fname) >
-		    PATHLEN - 1)
+		if (snprintf(fpath, PATHLEN, "%s/%s", pm->path, item->fname) > PATHLEN - 1)
 			return;
 	}
-	if (!strchr("agiGpfsMDVvTEnx", ch) && ch != Ctrl('r')
-	    && ch != Ctrl('e'))
+	if (!strchr("agiGpfsMDVvTEnx", ch) && ch != Ctrl('r') && ch != Ctrl('e'))
 		return;
 	modify_user_mode(EDITANN);
 	switch (ch) {
@@ -1235,47 +1195,34 @@ int ch;
 			if (dashf(fpath)) {
 				sprintf(genbuf, "%-38.38s %s ",
 					changed_T, currentuser.userid);
-				ytht_strsncpy(item->title, genbuf,
-							  sizeof(item->title));
+				ytht_strsncpy(item->title, genbuf, sizeof(item->title));
 			} else if (dashd(fpath)) {
-				if (HAS_PERM(PERM_SYSOP, currentuser)
-				    || HAS_PERM(PERM_ANNOUNCE, currentuser)) {
+				if (HAS_PERM(PERM_SYSOP, currentuser) || HAS_PERM(PERM_ANNOUNCE, currentuser)) {
 					char *dir = fpath + 25;
 					char *rcon;
 					move(1, 0);
 					clrtoeol();
 					/*usercomplete("°æÖ÷: ",uident) ; */
 					/*$$$$$$$$ Multi-BM Input, Modified By Excellent $$$$$$$ */
-					getdata(1, 0, "°æÖ÷: ", uident,
-						35, DOECHO, YEA);
-					rcon =
-					    malloc(strlen(dir) +
-						   strlen(changed_T) + 100);
+					getdata(1, 0, "°æÖ÷: ", uident, 35, DOECHO, YEA);
+					rcon = malloc(strlen(dir) + strlen(changed_T) + 100);
 					sprintf(genbuf,
 						"ĞŞ¸Ä%.34sµÄ±êÌâÎª:%.34s,BM:%.34s",
 						dir, changed_T, uident);
 					if (NULL != rcon)
-						sprintf(rcon,
-							"ĞŞ¸Ä%sµÄ±êÌâÎª:%s,BM:%s",
-							dir, changed_T, uident);
+						sprintf(rcon, "ĞŞ¸Ä%sµÄ±êÌâÎª:%s,BM:%s", dir, changed_T, uident);
 					else
 						rcon = "";
 					securityreport(genbuf, rcon);
 					if (strcmp(rcon, ""))
 						free(rcon);
 					if (uident[0] != '\0')
-						sprintf(genbuf,
-							"%-38.38s(BM: %s)",
-							changed_T, uident);
+						sprintf(genbuf, "%-38.38s(BM: %s)", changed_T, uident);
 					else
-						sprintf(genbuf,
-							"%-38.38s", changed_T);
+						sprintf(genbuf, "%-38.38s", changed_T);
 				} else
 					sprintf(genbuf, "%-38.38s", changed_T);
-				if ((!strstr(changed_T, "<GUESTBOOK>")
-				     && strstr(item->title, "<GUESTBOOK>"))
-				    || (strstr(changed_T, "<HIDE>")
-					&& !strstr(item->title, "<HIDE>"))) {
+				if ((!strstr(changed_T, "<GUESTBOOK>") && strstr(item->title, "<GUESTBOOK>")) || (strstr(changed_T, "<HIDE>") && !strstr(item->title, "<HIDE>"))) {
 					//¸ù¾İÈçÉÏÅĞ¶Ï£¬ĞèÒªrenameÄ¿Â¼
 					time(&now);
 					count = 0;
@@ -1286,26 +1233,20 @@ int ch;
 						}
 						sprintf(fname, "M%d",
 							(int) now++);
-						if (snprintf
-						    (newfpath, PATHLEN, "%s/%s",
-						     pm->path,
-						     fname) > PATHLEN - 1) {
+						if (snprintf(newfpath, PATHLEN, "%s/%s", pm->path, fname) > PATHLEN - 1) {
 							ret = -2;
 							break;
 						}
-					} while (dashf(newfpath)
-						 || dashd(newfpath));
+					} while (dashf(newfpath) || dashd(newfpath));
 					if (ret == 0) {
-						if (rename(fpath, newfpath) ==
-						    0) strcpy(fpath, newfpath);
+						if (rename(fpath, newfpath) == 0)
+							strcpy(fpath, newfpath);
 						strcpy(item->fname, fname);
 					}
 				}
-				ytht_strsncpy(item->title, genbuf,
-							  sizeof(item->title));
+				ytht_strsncpy(item->title, genbuf, sizeof(item->title));
 			} else if (pm->item[pm->now]->host != NULL)
-				ytht_strsncpy(item->title, changed_T,
-							  sizeof(item->title));
+				ytht_strsncpy(item->title, changed_T, sizeof(item->title));
 			if (ret == 0) {
 				a_savenames(pm);
 				a_changemtitle(fpath, genbuf);
@@ -1315,11 +1256,8 @@ int ch;
 		case 'E':
 			if (!dashl(fpath) && dashf(fpath)) {
 				if (vedit(fpath, 0, YEA) >= 0) {
-					sprintf(genbuf, "%-38.38s %s",
-						item->title,
-						currentuser.userid);
-					ytht_strsncpy(item->title, genbuf,
-								  sizeof(item->title));
+					sprintf(genbuf, "%-38.38s %s", item->title, currentuser.userid);
+					ytht_strsncpy(item->title, genbuf, sizeof(item->title));
 					a_savenames(pm);
 				}
 				pm->page = 9999;
@@ -1363,8 +1301,7 @@ int lastlevel, lastbmonly;
 	if (bmstr != NULL) {
 		retvBM = chk_currBM_Personal(bmstr + 4);
 		switch (retvBM) {
-		case 3:	/*PERM_BLEVELSÇÒ¸ÃÄ¿Â¼ÊÇ²»²»ÊôÓÚ×Ô¼ºµÄ
-				   ¸öÈËÄ¿Â¼, ²»ÄÜ½ø²»ÊôÓÚ×Ô¼ºµÄÄ¿Â¼ */
+		case 3:	/*PERM_BLEVELSÇÒ¸ÃÄ¿Â¼ÊÇ²»²»ÊôÓÚ×Ô¼ºµÄ ¸öÈËÄ¿Â¼, ²»ÄÜ½ø²»ÊôÓÚ×Ô¼ºµÄÄ¿Â¼ */
 			freeitem(&me);
 			return;
 		case 2:	/*ÊÇ°æÖ÷ */
@@ -1385,9 +1322,7 @@ int lastlevel, lastbmonly;
 		default:
 			break;
 		}
-		if (strstr(bmstr, "(BM: BMS)")
-		    || strstr(bmstr, "(BM: SECRET)")
-		    || strstr(bmstr, "(BM: SYSOPS)"))
+		if (strstr(bmstr, "(BM: BMS)") || strstr(bmstr, "(BM: SECRET)") || strstr(bmstr, "(BM: SYSOPS)"))
 			bmonly = 1;
 	}
 	if (bmonly == 1 && !(me.level & PERM_BOARDS)) {
@@ -1429,7 +1364,7 @@ int lastlevel, lastbmonly;
 		prints("  ");
 		if (ch == 'Q' || ch == 'q' || ch == KEY_LEFT || ch == EOF)
 			break;
-	      EXPRESS:		/* add by djq,990725 */
+EXPRESS:		/* add by djq,990725 */
 		switch (ch) {
 		case KEY_UP:
 		case 'K':
@@ -1467,9 +1402,7 @@ int lastlevel, lastbmonly;
 				break;
 			if (!HAS_PERM(PERM_POST, currentuser))
 				break;
-			if (snprintf
-			    (fname, PATHLEN, "%s/%s", path,
-			     me.item[me.now]->fname) > PATHLEN - 1)
+			if (snprintf(fname, PATHLEN, "%s/%s", path, me.item[me.now]->fname) > PATHLEN - 1)
 				break;	//add by ylsdd
 			if (!dashf(fname))
 				break;
@@ -1478,15 +1411,11 @@ int lastlevel, lastbmonly;
 			{
 				char bname[30];
 				clear();
-				prints
-				    ("[1mÇë×¢Òâ£º±¾Õ¾Õ¾¹æ¹æ¶¨£ºÄÚÈİÏàÍ¬»òÀàËÆµÄÎÄÕÂÑÏ½ûÔÚ[31m3(²»º¬)[37m¸öÒÔÉÏÌÖÂÛÇøÖØ¸´ÕÅÌù¡£\n");
-				prints
-				    ("[1m×ªÌù³¬¹ı3¸öÌÖÂÛÇøÕß³ıËùÌùÎÄÕÂ»á±»È«²¿É¾³ıÖ®Íâ£¬»¹½«±»°ş¶áÈ«Õ¾·¢±íÎÄÕÂµÄÈ¨Àû¡£\n");
-				prints
-				    ("[1m             Çë´ó¼Ò¹²Í¬Î¬»¤ BBS µÄ»·¾³£¬½ÚÊ¡ÏµÍ³×ÊÔ´¡£Ğ»Ğ»ºÏ×÷¡£\n[0m");
+				prints("\033[1mÇë×¢Òâ£º±¾Õ¾Õ¾¹æ¹æ¶¨£ºÄÚÈİÏàÍ¬»òÀàËÆµÄÎÄÕÂÑÏ½ûÔÚ\033[31m3(²»º¬)\033[37m¸öÒÔÉÏÌÖÂÛÇøÖØ¸´ÕÅÌù¡£\n");
+				prints("\033[1m×ªÌù³¬¹ı3¸öÌÖÂÛÇøÕß³ıËùÌùÎÄÕÂ»á±»È«²¿É¾³ıÖ®Íâ£¬»¹½«±»°ş¶áÈ«Õ¾·¢±íÎÄÕÂµÄÈ¨Àû¡£\n");
+				prints("\033[1m             Çë´ó¼Ò¹²Í¬Î¬»¤ BBS µÄ»·¾³£¬½ÚÊ¡ÏµÍ³×ÊÔ´¡£Ğ»Ğ»ºÏ×÷¡£\n\033[0m");
 				move(4, 0);
-				if (!get_a_boardname
-				    (bname, "ÇëÊäÈëÒª×ªÌùµÄÌÖÂÛÇøÃû³Æ: ")) {
+				if (!get_a_boardname(bname, "ÇëÊäÈëÒª×ªÌùµÄÌÖÂÛÇøÃû³Æ: ")) {
 					me.page = 999;
 					break;
 				}
@@ -1497,21 +1426,18 @@ int lastlevel, lastbmonly;
 					&& strcmp(bname, "welcome")
 					&& strcmp(bname, "KaoYan")
 					&& strcmp(bname, "Appeal")
-				       && !HAS_PERM(PERM_SYSOP, currentuser)) {
+					&& !HAS_PERM(PERM_SYSOP, currentuser)) {
 					move(5, 0);
 					clrtobot();
-					prints
-					    ("\n\n                 ºÜ±§Ç¸£¬Äã±»Õ¾ÎñÍ£Ö¹È«Õ¾ POST µÄÈ¨Àû¡£");
+					prints("\n\n                 ºÜ±§Ç¸£¬Äã±»Õ¾ÎñÍ£Ö¹È«Õ¾ POST µÄÈ¨Àû¡£");
 					pressreturn();
 					me.page = 999;
 					break;
 				}
-				if (deny_me(bname)
-				    && !HAS_PERM(PERM_SYSOP, currentuser)) {
+				if (deny_me(bname) && !HAS_PERM(PERM_SYSOP, currentuser)) {
 					move(5, 0);
 					clrtobot();
-					prints
-					    ("\n\n                 ºÜ±§Ç¸£¬Äã±»°æÖ÷Í£Ö¹ POST µÄÈ¨Àû¡£");
+					prints("\n\n                 ºÜ±§Ç¸£¬Äã±»°æÖ÷Í£Ö¹ POST µÄÈ¨Àû¡£");
 					pressreturn();
 					me.page = 999;
 					break;
@@ -1519,9 +1445,7 @@ int lastlevel, lastbmonly;
 				if (!haspostperm(bname)) {
 					move(5, 0);
 					clrtobot();
-					prints
-					    ("\n\n               ÄúÉĞÎŞÈ¨ÏŞÔÚ %s ·¢±íÎÄÕÂ",
-					     bname);
+					prints("\n\n               ÄúÉĞÎŞÈ¨ÏŞÔÚ %s ·¢±íÎÄÕÂ", bname);
 					pressreturn();
 					me.page = 999;
 					break;
@@ -1529,8 +1453,7 @@ int lastlevel, lastbmonly;
 				if (noadm4political(bname)) {
 					move(5, 0);
 					clrtobot();
-					prints
-					    ("\n\n               ¶Ô²»Æğ,ÒòÎªÃ»ÓĞ°æÃæ¹ÜÀíÈËÔ±ÔÚÏß,±¾°æÔİÊ±·â±Õ.");
+					prints("\n\n               ¶Ô²»Æğ,ÒòÎªÃ»ÓĞ°æÃæ¹ÜÀíÈËÔ±ÔÚÏß,±¾°æÔİÊ±·â±Õ.");
 					pressreturn();
 					me.page = 999;
 					break;
@@ -1541,13 +1464,9 @@ int lastlevel, lastbmonly;
 					me.page = 999;
 					break;
 				}
-				if (postfile
-				    (fname, bname,
-				     me.item[me.now]->title, 2) != -1) {
+				if (postfile(fname, bname, me.item[me.now]->title, 2) != -1) {
 					move(7, 0);
-					sprintf(tmp,
-						"[1mÒÑ¾­°ïÄã×ªÌùÖÁ %s °æÁË[m",
-						bname);
+					sprintf(tmp, "\033[1mÒÑ¾­°ïÄã×ªÌùÖÁ %s °æÁË\033[m", bname);
 					prints(tmp);
 				}
 				refresh();
@@ -1577,60 +1496,37 @@ int lastlevel, lastbmonly;
 			if (me.now < me.num) {
 				if (me.item[me.now]->host != NULL) {
 					if (me.item[me.now]->fname[0] == '0') {
-						if (get_con
-						    (me.item[me.now]->host,
-						     me.item[me.now]->port)
-						    != -1) {
-							char
-							 tmpfile[30];
+						if (get_con(me.item[me.now]->host, me.item[me.now]->port) != -1) {
+							char tmpfile[30];
 
 							GOPHER tmp;
 							extern GOPHER *tmpitem;
 
 							tmpitem = &tmp;
-							strcpy
-							    (tmp.server,
-							     me.item
-							     [me.now]->host);
-							strcpy(tmp.file,
-							       me.item
-							       [me.now]->fname);
-							sprintf
-							    (tmp.title,
-							     "0%s",
-							     me.item
-							     [me.now]->title);
-							tmp.port =
-							    me.item[me.now]->
-							    port;
-							enterdir(me.
-								 item[me.now]->
-								 fname);
-							setuserfile(tmpfile,
-								    "gopher.tmp");
+							strcpy(tmp.server, me.item[me.now]->host);
+							strcpy(tmp.file, me.item[me.now]->fname);
+							sprintf(tmp.title, "0%s", me.item[me.now]->title);
+							tmp.port = me.item[me.now]-> port;
+							enterdir(me.item[me.now]->fname);
+							setuserfile(tmpfile, "gopher.tmp");
 							savetmpfile(tmpfile);
 							ansimore(tmpfile, YEA);
 							unlink(tmpfile);
 						}
 					} else {
 						gopher(me.item[me.now]->host,
-						       me.item[me.now]->fname,
-						       me.item[me.now]->port,
-						       me.item[me.now]->title);
+								me.item[me.now]->fname,
+								me.item[me.now]->port,
+								me.item[me.now]->title);
 					}
 					me.page = 9999;
 					break;
 				}
-				if (snprintf
-				    (fname, PATHLEN, "%s/%s", path,
-				     me.item[me.now]->fname) > PATHLEN - 1)
+				if (snprintf(fname, PATHLEN, "%s/%s", path, me.item[me.now]->fname) > PATHLEN - 1)
 					break;
 				if (dashf(fname)) {
-					ansimore_withzmodem(fname, NA,
-							    me.item[me.now]->
-							    title);
-					prints
-					    ("[1m[44m[31m[ÔÄ¶Á¾«»ªÇø×ÊÁÏ]  [33m½áÊø Q, ¡û ©¦ ÉÏÒ»Ïî×ÊÁÏ U,¡ü©¦ ÏÂÒ»Ïî×ÊÁÏ <Enter>,<Space>,¡ı [m");
+					ansimore_withzmodem(fname, NA, me.item[me.now]-> title);
+					prints("\033[1m\033[44m\033[31m[ÔÄ¶Á¾«»ªÇø×ÊÁÏ]  \033[33m½áÊø Q, ¡û ©¦ ÉÏÒ»Ïî×ÊÁÏ U,¡ü©¦ ÏÂÒ»Ïî×ÊÁÏ <Enter>,<Space>,¡ı \033[m");
 					switch (ch = egetch()) {
 					case KEY_DOWN:
 					case ' ':
@@ -1649,17 +1545,14 @@ int lastlevel, lastbmonly;
 					case 'h':
 						goto EXPRESS;
 					case Ctrl('Y'):
-						zsend_file(fname,
-							   me.item[me.now]->
-							   title);
+						zsend_file(fname, me.item[me.now]-> title);
 						break;
 					default:
 						break;
 					}
 
 				} else if (dashd(fname)) {
-					a_menu(me.item[me.now]->title,
-					       fname, me.level, bmonly);
+					a_menu(me.item[me.now]->title, fname, me.level, bmonly);
 				}
 				me.page = 9999;
 			}
@@ -1684,9 +1577,7 @@ int lastlevel, lastbmonly;
 				break;	/* youzi leave */
 		case 'c':
 			if (me.now < me.num) {
-				if (snprintf
-				    (fname, PATHLEN, "%s/%s", path,
-				     me.item[me.now]->fname) > PATHLEN - 1)
+				if (snprintf(fname, PATHLEN, "%s/%s", path, me.item[me.now]->fname) > PATHLEN - 1)
 					break;	//add by ylsdd
 				if (dashf(fname) && (me.level & PERM_BOARDS))
 					a_copypaste(&me, 0);
@@ -1700,11 +1591,9 @@ int lastlevel, lastbmonly;
 					me.page = 9999;
 					break;
 				} else
-					sprintf(fname, "%s/%s", path,
-						me.item[me.now]->fname);
+					sprintf(fname, "%s/%s", path, me.item[me.now]->fname);
 				if (dashf(fname)) {
-					zsend_file(fname,
-						   me.item[me.now]->title);
+					zsend_file(fname, me.item[me.now]->title);
 					me.page = 9999;
 				}
 			}
@@ -1718,8 +1607,7 @@ int lastlevel, lastbmonly;
 		}
 		if (me.level & PERM_BOARDS)
 			a_manager(&me, ch);
-		else if (ch == 'a' && HAS_PERM(PERM_POST, currentuser)
-			 && strstr(me.mtitle, "<GUESTBOOK>") == me.mtitle) {
+		else if (ch == 'a' && HAS_PERM(PERM_POST, currentuser) && strstr(me.mtitle, "<GUESTBOOK>") == me.mtitle) {
 			a_newitem(&me, ADDITEM);
 		}
 	}
@@ -1821,8 +1709,7 @@ char grp[STRLEN], bname[STRLEN], title[STRLEN];
 	for (i = 0; i < pm.num; i++) {
 		ytht_strsncpy(buf2, pm.item[i]->fname, sizeof(buf2));
 		strcpy(check, strtok(buf2, "/~\n\b"));
-		if (strstr(pm.item[i]->title, title)
-		    && !strcmp(check, bname)) {
+		if (strstr(pm.item[i]->title, title) && !strcmp(check, bname)) {
 			free(pm.item[i]);
 			(pm.num)--;
 			for (n = i; n < pm.num; n++)
@@ -1860,10 +1747,8 @@ char bname[STRLEN], grp[STRLEN], title[STRLEN], newtitle[100];
 	for (i = 0; i < pm.num; i++) {
 		ytht_strsncpy(buf2, pm.item[i]->fname, sizeof(buf2));
 		strcpy(check, strtok(buf2, "/~\n\b"));
-		if (strstr(pm.item[i]->title, title)
-		    && !strcmp(check, bname)) {
-			ytht_strsncpy(pm.item[i]->title, newtitle,
-						  sizeof(pm.item[i]->title));
+		if (strstr(pm.item[i]->title, title) && !strcmp(check, bname)) {
+			ytht_strsncpy(pm.item[i]->title, newtitle, sizeof(pm.item[i]->title));
 			break;
 		}
 	}
@@ -1881,9 +1766,7 @@ void
 Announce()
 {
 	sprintf(genbuf, "%s ¾«»ªÇø¹«²¼À¸", MY_BBS_NAME);
-	a_menu(genbuf, "0Announce", (HAS_PERM(PERM_ANNOUNCE, currentuser)
-				     || HAS_PERM(PERM_SYSOP, currentuser)) ?
-	       PERM_BOARDS : 0, 0);
+	a_menu(genbuf, "0Announce", (HAS_PERM(PERM_ANNOUNCE, currentuser) || HAS_PERM(PERM_SYSOP, currentuser)) ?  PERM_BOARDS : 0, 0);
 	clear();
 }
 
@@ -1898,35 +1781,28 @@ char *cmd;
 	switch (cmd[0]) {
 	case '*':
 		ch = currentuser.userid[0];
-		ch = (ch >= 'A' && ch <= 'Z') ? ch :
-		    (ch >= 'a' && ch <= 'z') ? (ch + 'A' - 'a') : '\0';
+		ch = (ch >= 'A' && ch <= 'Z') ? ch : (ch >= 'a' && ch <= 'z') ? (ch + 'A' - 'a') : '\0';
 		sprintf(buf,
 			"0Announce/groups/GROUP_0/PersonalCorpus/%c/%.15s",
 			ch, currentuser.userid);
 		break;
 	case '$':
 		ch = cmd[1];
-		ch = (ch >= 'A' && ch <= 'Z') ? ch :
-		    (ch >= 'a' && ch <= 'z') ? (ch + 'A' - 'a') : '\0';
+		ch = (ch >= 'A' && ch <= 'Z') ? ch : (ch >= 'a' && ch <= 'z') ? (ch + 'A' - 'a') : '\0';
 		sprintf(buf,
 			"0Announce/groups/GROUP_0/PersonalCorpus/%c/%.15s",
 			ch, &(cmd[1]));
 		break;
 	default:
 		ch = cmd[0];
-		ch = (ch >= 'A' && ch <= 'Z') ? ch :
-		    (ch >= 'a' && ch <= 'z') ? (ch + 'A' - 'a') : '\0';
+		ch = (ch >= 'A' && ch <= 'Z') ? ch : (ch >= 'a' && ch <= 'z') ? (ch + 'A' - 'a') : '\0';
 		sprintf(buf, "0Announce/groups/GROUP_0/PersonalCorpus/%c", ch);
 		break;
 	}
 	if (dashd(buf)) {
-		a_menu(genbuf, buf, (HAS_PERM(PERM_ANNOUNCE, currentuser)
-				     || HAS_PERM(PERM_SYSOP, currentuser)) ?
-		       PERM_BOARDS : 0, 0);
+		a_menu(genbuf, buf, (HAS_PERM(PERM_ANNOUNCE, currentuser) || HAS_PERM(PERM_SYSOP, currentuser)) ?  PERM_BOARDS : 0, 0);
 	} else if (cmd[0] == '*') {
-		a_prompt(-1,
-			 "Ã»ÓĞÕÒµ½ÄúµÄ¸öÈËÎÄ¼¯, Çëµ½Personal_Corpus°æÉêÇë£¬°´<Enter>¼ÌĞø...",
-			 genbuf, 2);
+		a_prompt(-1, "Ã»ÓĞÕÒµ½ÄúµÄ¸öÈËÎÄ¼¯, Çëµ½Personal_Corpus°æÉêÇë£¬°´<Enter>¼ÌĞø...", genbuf, 2);
 	} else if (cmd[0] == '$') {
 		a_prompt(-1, "Ã»ÓĞÕÒµ½¸Ã¸öÈËÎÄ¼¯£¬°´<Enter>¼ÌĞø...", genbuf, 2);
 	}
@@ -2036,15 +1912,13 @@ MENU *pm;
 		if (direntp->d_name[0] == '.')
 			continue;
 		for (i = 0; i < pm->num; i++) {
-			if (strcmp(pm->item[i]->fname, direntp->d_name)
-			    == 0) {
+			if (strcmp(pm->item[i]->fname, direntp->d_name) == 0) {
 				i = -1;
 				break;
 			}
 		}
 		if (i != -1) {
-			a_additem(pm, direntp->d_name, direntp->d_name,
-				  NULL, 0);
+			a_additem(pm, direntp->d_name, direntp->d_name, NULL, 0);
 			changed++;
 		}
 	}
@@ -2063,8 +1937,7 @@ MENU *pm;
 	DIR *dirp;
 	struct dirent *direntp;
 	int changed = 0, len, count;
-	char buf[PATH_MAX + 1], rpath[PATH_MAX + 1], fpath[PATHLEN],
-	    fname[STRLEN];
+	char buf[PATH_MAX + 1], rpath[PATH_MAX + 1], fpath[PATHLEN], fname[STRLEN];
 	time_t now;
 	if (realpath(pm->path, rpath) == NULL)
 		return -1;
@@ -2076,26 +1949,22 @@ MENU *pm;
 		return -2;
 	time(&now);
 	while ((direntp = readdir(dirp)) != NULL) {
-		if (strncmp(buf, direntp->d_name, len)
-		    || !strlen(direntp->d_name + len))
+		if (strncmp(buf, direntp->d_name, len) || !strlen(direntp->d_name + len))
 			continue;
-		sprintf(rpath, MY_BBS_HOME "/0Announce/.junk/%s",
-			direntp->d_name);
+		sprintf(rpath, MY_BBS_HOME "/0Announce/.junk/%s", direntp->d_name);
 		count = 0;
 		do {
 			if (count++ > MAX_POSTRETRY)
 				goto out;
 			sprintf(fname, "M%d", (int) now++);
-			if (snprintf
-			    (fpath, PATHLEN, "%s/%s", pm->path,
-			     fname) > PATHLEN - 1)
+			if (snprintf(fpath, PATHLEN, "%s/%s", pm->path, fname) > PATHLEN - 1)
 				goto out;
 		} while (!access(fpath, F_OK));
 		rename(rpath, fpath);
 		a_additem(pm, fname, fname, NULL, 0);
 		changed++;
 	}
-      out:
+out:
 	closedir(dirp);
 	if (changed)
 		a_savenames(pm);
@@ -2109,15 +1978,10 @@ static int add_anpath(char *title, char *path) {
 	read_anpath(titles, paths);
 	move(t_lines - 22, 0);
 	clrtobot();
-	prints
-	    ("½«µ±Ç°Â·¾¶ÉèÖÃÎªË¿Â·µÄÄÇÒ»Ïî? (°´A-T¡ü¡ıÑ¡Ôñ, ' '»ò»Ø³µÈ·¶¨', ¡û»ò'X'È¡Ïû)");
+	prints("½«µ±Ç°Â·¾¶ÉèÖÃÎªË¿Â·µÄÄÇÒ»Ïî? (°´A-T¡ü¡ıÑ¡Ôñ, ' '»ò»Ø³µÈ·¶¨', ¡û»ò'X'È¡Ïû)");
 	for (i = 0; i < 20; i++) {
 		move(t_lines - 22 + 1 + i, 0);
-		prints(" %s(%c) %s\033[0m",
-		       (i == index) ? ">\033[1;7m" : " ",
-		       'A' + i,
-		       (titles[i][0] !=
-			0) ? titles[i] : "\033[32mÉĞÎ´Éè¶¨\033[0m");
+		prints(" %s(%c) %s\033[0m", (i == index) ? ">\033[1;7m" : " ", 'A' + i, (titles[i][0] != 0) ? titles[i] : "\033[32mÉĞÎ´Éè¶¨\033[0m");
 	}
 	while (1) {
 		i = igetkey();
@@ -2145,17 +2009,10 @@ static int add_anpath(char *title, char *path) {
 		}
 		if (nindex != index) {
 			move(t_lines - 22 + 1 + index, 0);
-			prints("  (%c) %s\033[0m",
-			       'A' + index,
-			       (titles[index][0] !=
-				0) ? titles[index] : "\033[32mÉĞÎ´Éè¶¨\033[0m");
+			prints("  (%c) %s\033[0m", 'A' + index, (titles[index][0] != 0) ? titles[index] : "\033[32mÉĞÎ´Éè¶¨\033[0m");
 			clrtoeol();
 			move(t_lines - 22 + 1 + nindex, 0);
-			prints(" >\033[1;7m(%c) %s\033[0m",
-			       'A' + nindex,
-			       (titles[nindex][0] !=
-				0) ? titles[nindex] :
-			       "\033[32mÉĞÎ´Éè¶¨\033[0m");
+			prints(" >\033[1;7m(%c) %s\033[0m", 'A' + nindex, (titles[nindex][0] != 0) ? titles[nindex] : "\033[32mÉĞÎ´Éè¶¨\033[0m");
 			clrtoeol();
 			index = nindex;
 		}
@@ -2170,9 +2027,7 @@ static int add_anpath(char *title, char *path) {
 	paths[index][sizeof (paths[index]) - 1] = 0;
 	move(t_lines - 22 + 1 + index, 0);
 	clrtoeol();
-	prints("  (%c) %s", 'A' + index,
-	       (titles[index][0] !=
-		0) ? titles[index] : "\033[32mÉĞÎ´Éè¶¨\033[0m");
+	prints("  (%c) %s", 'A' + index, (titles[index][0] != 0) ? titles[index] : "\033[32mÉĞÎ´Éè¶¨\033[0m");
 	if (save_anpath(titles, paths) < 0) {
 		prints("ÉèÖÃË¿Â·´íÎó! °´ÈÎÒâ¼ü¼ÌĞø");
 		igetkey();
@@ -2195,15 +2050,10 @@ select_anpath()
 		pressreturn();
 		return -1;
 	}
-	prints
-	    ("½«ÎÄµµ±£´æµ½ÄÄ¸öË¿Â·? (°´A-H¡ü¡ıÑ¡Ôñ, ' '»ò»Ø³µÈ·¶¨', ¡û»ò'X'È¡Ïû)");
+	prints("½«ÎÄµµ±£´æµ½ÄÄ¸öË¿Â·? (°´A-H¡ü¡ıÑ¡Ôñ, ' '»ò»Ø³µÈ·¶¨', ¡û»ò'X'È¡Ïû)");
 	for (i = 0; i < 20; i++) {
 		move(t_lines - 22 + 1 + i, 0);
-		prints(" %s(%c) %s\033[0m",
-		       (i == index) ? ">\033[1;7m" : " ",
-		       'A' + i,
-		       (titles[i][0] !=
-			0) ? titles[i] : "\033[32mÉĞÎ´Éè¶¨\033[0m");
+		prints(" %s(%c) %s\033[0m", (i == index) ? ">\033[1;7m" : " ", 'A' + i, (titles[i][0] != 0) ? titles[i] : "\033[32mÉĞÎ´Éè¶¨\033[0m");
 	}
 	while (1) {
 		i = igetkey();
@@ -2237,17 +2087,10 @@ select_anpath()
 		}
 		if (nindex != index) {
 			move(t_lines - 22 + 1 + index, 0);
-			prints("  (%c) %s\033[0m",
-			       'A' + index,
-			       (titles[index][0] !=
-				0) ? titles[index] : "\033[32mÉĞÎ´Éè¶¨\033[0m");
+			prints("  (%c) %s\033[0m", 'A' + index, (titles[index][0] != 0) ? titles[index] : "\033[32mÉĞÎ´Éè¶¨\033[0m");
 			clrtoeol();
 			move(t_lines - 22 + 1 + nindex, 0);
-			prints(" >\033[1;7m(%c) %s\033[0m",
-			       'A' + nindex,
-			       (titles[nindex][0] !=
-				0) ? titles[nindex] :
-			       "\033[32mÉĞÎ´Éè¶¨\033[0m");
+			prints(" >\033[1;7m(%c) %s\033[0m", 'A' + nindex, (titles[nindex][0] != 0) ? titles[nindex] : "\033[32mÉĞÎ´Éè¶¨\033[0m");
 			clrtoeol();
 			index = nindex;
 		}
@@ -2283,8 +2126,7 @@ static int read_anpath(char titles[20][STRLEN], char paths[20][PATHLEN]) {
 		return -1;
 	}
 	for (i = 0; i < 20; i++) {
-		if (fgets(titles[i], STRLEN, fp) == NULL
-		    || fgets(paths[i], PATHLEN, fp) == NULL) {
+		if (fgets(titles[i], STRLEN, fp) == NULL || fgets(paths[i], PATHLEN, fp) == NULL) {
 			while (i < 20)
 				titles[i++][0] = 0;
 			break;
@@ -2301,3 +2143,4 @@ static int read_anpath(char titles[20][STRLEN], char paths[20][PATHLEN]) {
 	fclose(fp);
 	return j;
 }
+
