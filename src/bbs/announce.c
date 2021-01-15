@@ -279,7 +279,7 @@ MENU *pm;
 				strncpy(litem.fname, buf + 5, 80);
 			litem.fname[79] = '\0';
 
-			curr_board = getboardbyname(litem.fname);
+			curr_board = ythtbbs_cache_Board_get_board_by_name(litem.fname);
 			if (((!strstr(litem.title + 38, "(BM: BMS)") || HAS_PERM(PERM_BOARDS, currentuser))
 					&& (!strstr(litem.title + 38, "(BM: SYSOPS)") || HAS_PERM(PERM_SYSOP, currentuser))
 					&& (strstr(litem.title, "<HIDE>") != litem.title)
@@ -1178,7 +1178,7 @@ int ch;
 			ret = 0;
 			if (dashl(fpath))
 				break;
-				ytht_strsncpy(changed_T, item->title, 39);
+			ytht_strsncpy(changed_T, item->title, 39);
 			{
 				int i = strlen(changed_T) - 1;
 				while (i > 0 && isspace(changed_T[i]))
