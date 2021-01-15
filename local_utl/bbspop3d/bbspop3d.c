@@ -1,16 +1,16 @@
 /*
-    POP3D server for Firebird BBS.
-    Revision [29 Oct 1997] By Peng-Piaw Foong, ppfoong@csie.ncu.edu.tw
-    
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 1, or (at your option)
-    any later version.
+	POP3D server for Firebird BBS.
+	Revision [29 Oct 1997] By Peng-Piaw Foong, ppfoong@csie.ncu.edu.tw
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 1, or (at your option)
+	any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 */
 
 #include "bbs.h"
@@ -127,9 +127,7 @@ filter(char *line)
 			stat = 1;
 		if (!stat)
 			temp[j++] = line[i];
-		if (stat && ((line[i] > 'a' && line[i] < 'z')
-			     || (line[i] > 'A' && line[i] < 'Z')
-			     || line[i] == '@'))
+		if (stat && ((line[i] > 'a' && line[i] < 'z') || (line[i] > 'A' && line[i] < 'Z') || line[i] == '@'))
 			stat = 0;
 	}
 	temp[j] = 0;
@@ -147,8 +145,7 @@ char *filename;
 
 	if ((fp = fopen(filename, "r")) != NULL) {
 		while (fgets(linebuf, sizeof (linebuf), fp) != NULL) {
-			if (NULL !=
-			    (attach = checkbinaryattach(linebuf, fp, &len))) {
+			if (NULL != (attach = checkbinaryattach(linebuf, fp, &len))) {
 				uuencode(fp, cfp, len, attach);
 				continue;
 			}
@@ -189,75 +186,68 @@ char *dest;
 	char *result = "unknown";
 
 	/*
-	 * Use one unbuffered stdio stream for writing to and for reading from
-	 * the RFC931 etc. server. This is done because of a bug in the SunOS 
-	 * 4.1.x stdio library. The bug may live in other stdio implementations,
-	 * too. When we use a single, buffered, bidirectional stdio stream ("r+"
-	 * or "w+" mode) we read our own output. Such behaviour would make sense
-	 * with resources that support random-access operations, but not with   
-	 * sockets.
-	 */
+	* Use one unbuffered stdio stream for writing to and for reading from
+	* the RFC931 etc. server. This is done because of a bug in the SunOS
+	* 4.1.x stdio library. The bug may live in other stdio implementations,
+	* too. When we use a single, buffered, bidirectional stdio stream ("r+"
+	* or "w+" mode) we read our own output. Such behaviour would make sense
+	* with resources that support random-access operations, but not with
+	* sockets.
+	*/
 	if ((fp = fsocket(AF_INET, SOCK_STREAM, 0)) != 0) {
 		setbuf(fp, (char *) 0);
 
 		/*
-		 * Set up a timer so we won't get stuck while waiting for the server.
-		 */
+		* Set up a timer so we won't get stuck while waiting for the server.
+		*/
 
 		if (setjmp(timebuf) == 0) {
 			signal(SIGALRM, (void *) timeout);
 			alarm(RFC931_TIMEOUT);
 
 			/*
-			 * Bind the local and remote ends of the query socket to the same
-			 * IP addresses as the connection under investigation. We go
-			 * through all this trouble because the local or remote system
-			 * might have more than one network address. The RFC931 etc.  
-			 * client sends only port numbers; the server takes the IP    
-			 * addresses from the query socket.
-			 */
+			* Bind the local and remote ends of the query socket to the same
+			* IP addresses as the connection under investigation. We go
+			* through all this trouble because the local or remote system
+			* might have more than one network address. The RFC931 etc.
+			* client sends only port numbers; the server takes the IP
+			* addresses from the query socket.
+			*/
 
 			our_query_sin = *our_sin;
 			our_query_sin.sin_port = htons(ANY_PORT);
 			rmt_query_sin = *rmt_sin;
 			rmt_query_sin.sin_port = htons(RFC931_PORT);
 
-			if (bind(fileno(fp), (struct sockaddr *) &our_query_sin,
-				 sizeof (our_query_sin)) >= 0 &&
-			    connect(fileno(fp),
-				    (struct sockaddr *) &rmt_query_sin,
-				    sizeof (rmt_query_sin)) >= 0) {
+			if (bind(fileno(fp), (struct sockaddr *) &our_query_sin, sizeof (our_query_sin)) >= 0 &&
+					connect(fileno(fp), (struct sockaddr *) &rmt_query_sin, sizeof (rmt_query_sin)) >= 0) {
 
 				/*
-				 * Send query to server. Neglect the risk that a 13-byte
-				 * write would have to be fragmented by the local system and
-				 * cause trouble with buggy System V stdio libraries.
-				 */
+				* Send query to server. Neglect the risk that a 13-byte
+				* write would have to be fragmented by the local system and
+				* cause trouble with buggy System V stdio libraries.
+				*/
 
-				fprintf(fp, "%u,%u\r\n",
-					ntohs(rmt_sin->sin_port),
-					ntohs(our_sin->sin_port));
+				fprintf(fp, "%u,%u\r\n", ntohs(rmt_sin->sin_port), ntohs(our_sin->sin_port));
 				fflush(fp);
 
 				/*
-				 * Read response from server. Use fgets()/sscanf() so we can
-				 * work around System V stdio libraries that incorrectly
-				 * assume EOF when a read from a socket returns less than
-				 * requested.
-				 */
+				* Read response from server. Use fgets()/sscanf() so we can
+				* work around System V stdio libraries that incorrectly
+				* assume EOF when a read from a socket returns less than
+				* requested.
+				*/
 
 				if (fgets(buffer, sizeof (buffer), fp) != 0
-				    && ferror(fp) == 0 && feof(fp) == 0
-				    && sscanf(buffer,
-					      "%u , %u : USERID :%*[^:]:%255s",
-					      &rmt_port, &our_port, user) == 3
-				    && ntohs(rmt_sin->sin_port) == rmt_port
-				    && ntohs(our_sin->sin_port) == our_port) {
+						&& ferror(fp) == 0 && feof(fp) == 0
+						&& sscanf(buffer, "%u , %u : USERID :%*[^:]:%255s", &rmt_port, &our_port, user) == 3
+						&& ntohs(rmt_sin->sin_port) == rmt_port
+						&& ntohs(our_sin->sin_port) == our_port) {
 
 					/*
-					 * Strip trailing carriage return. It is part of the
-					 * protocol, not part of the data.
-					 */
+					* Strip trailing carriage return. It is part of the
+					* protocol, not part of the data.
+					*/
 
 					if ((cp = strchr(user, '\r')))
 						*cp = 0;
@@ -276,10 +266,10 @@ char *dest;
 		strcat(dest, "@");
 
 	/*hp = gethostbyaddr((char *) &rmt_sin->sin_addr, sizeof (struct in_addr),
-	   rmt_sin->sin_family);
-	   if (hp)
-	   strcat(dest, hp->h_name);
-   else *///似乎有安全问题, removed by ylsdd
+	rmt_sin->sin_family);
+	if (hp)
+	strcat(dest, hp->h_name);
+else *///似乎有安全问题, removed by ylsdd
 	strcat(dest, (char *) inet_ntoa(rmt_sin->sin_addr));
 
 }
@@ -374,9 +364,7 @@ Login_init()
 		}
 		if (stat(genbuf, &st) == -1)
 			st.st_size = 0;
-		postlen[i] =
-		    st.st_size + strlen(fowner[i]) + 10 +
-		    strlen(fcache[i].title) + 10 + 40;
+		postlen[i] = st.st_size + strlen(fowner[i]) + 10 + strlen(fcache[i].title) + 10 + 40;
 		totalbyte += postlen[i];
 	}
 }
@@ -904,8 +892,7 @@ do_delete()
 	i = count = 0;
 	while (read(fdr, &currentmail, sizeof (currentmail))) {
 /*modified by KCN for not delete marked mail. 98.11    	*/
-		if (i >= totalnum || !(fcache[i].accessed & FH_DIGEST) ||
-		    (fcache[i].accessed & FH_MARKED)) {
+		if (i >= totalnum || !(fcache[i].accessed & FH_DIGEST) || (fcache[i].accessed & FH_MARKED)) {
 			write(fdw, &currentmail, sizeof (currentmail));
 			count++;
 		} else {
