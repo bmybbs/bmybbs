@@ -70,7 +70,7 @@ int bmy_wechat_session_get(const char *code, struct bmy_wechat_session *s) {
 	snprintf(url, sizeof(url), "https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code", wechat_appid, wechat_secret, code);
 	curl_easy_setopt(curl_handle, CURLOPT_URL, url);
 	curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
-	curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *) &chunk);
+	curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, &chunk);
 	curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, BMY_USER_AGENT);
 
 	res = curl_easy_perform(curl_handle);
