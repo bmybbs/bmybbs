@@ -61,9 +61,9 @@ int main(int argc, char **argv)
 
 	while (ent = readdir(pdir)) {
 		if ((strcmp(ent->d_name, ".DIR"))
-		    && (strcmp(ent->d_name, "."))
-		    && (strcmp(ent->d_name, ".."))
-		    && (ent->d_name[0] == 'M')) {
+				&& (strcmp(ent->d_name, "."))
+				&& (strcmp(ent->d_name, ".."))
+				&& (ent->d_name[0] == 'M')) {
 			struct stat st;
 			if (stat(ent->d_name, &st))
 				continue;
@@ -95,11 +95,10 @@ int main(int argc, char **argv)
 					fh.accessed |= FH_DIGEST;
 				ytht_strsncpy(fh.title, buf2 + 8, sizeof(fh.title));
 				if (strncmp(buf1, "发信站", 6)
-				    && strncmp(buf1, "寄信人: ", 8)
-				    && strncmp(buf1, "发信人: ", 8))
+						&& strncmp(buf1, "寄信人: ", 8)
+						&& strncmp(buf1, "发信人: ", 8))
 					continue;
-				if ((strncmp(buf2, "标  题: ", 8))
-				    && (strncmp(buf2, "标　题: ", 8)))
+				if ((strncmp(buf2, "标  题: ", 8)) && (strncmp(buf2, "标　题: ", 8)))
 					continue;
 				insertfile(fh);
 				fclose(art);
