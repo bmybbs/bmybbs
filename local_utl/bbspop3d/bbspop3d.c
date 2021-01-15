@@ -620,8 +620,8 @@ char *buf;
 		fprintf(fp, "%02d/%02d/%02d %02d:%02d:%02d [%s](%s) %s\n",
 			p->tm_year, p->tm_mon + 1, p->tm_mday, p->tm_hour,
 			p->tm_min, p->tm_sec,
-			currentuser.userid ? currentuser.userid : "",
-			remote_userid ? remote_userid : "", buf);
+			currentuser.userid[0] ? currentuser.userid : "",
+			remote_userid[0] ? remote_userid : "", buf);
 		fflush(fp);
 		fclose(fp);
 	}
