@@ -1,5 +1,9 @@
 #include "bbslib.h"
 
+extern int testmath(char *ptr); // bbssnd
+
+static int update_form_mail(char *file, char *title, int box_type);
+
 int
 bbseditmail_main()
 {
@@ -12,7 +16,7 @@ bbseditmail_main()
 	struct boardmem *brd;
 	struct fileheader *x = NULL;
 	char bmbuf[IDLEN * 4 + 4];
-	struct mmapfile mf = { ptr:NULL };
+	struct mmapfile mf = { .ptr = NULL };
 	html_header(1);
 	check_msg();
 	if (!loginok || isguest)
@@ -35,7 +39,7 @@ bbseditmail_main()
 	if(box_type == 1) {
 		setsentmailfile(path, currentuser.userid, ".DIR");
 	} else {
-		setmailfile(path, currentuser.userid, ".DIR");
+		setmailfile_s(path, sizeof(path), currentuser.userid, ".DIR");
 	}
 	MMAP_TRY {
 		if (mmapfile(path, &mf) == -1) {
@@ -89,7 +93,7 @@ bbseditmail_main()
 	if(box_type == 1) {
 		setsentmailfile(path, currentuser.userid,  file);
 	} else {
-		setmailfile(path, currentuser.userid,  file);
+		setmailfile_s(path, sizeof(path), currentuser.userid,  file);
 	}
 	fp = fopen(path, "r");
 	if (fp == 0)
@@ -145,9 +149,7 @@ bbseditmail_main()
 	return 0;
 }
 
-int
-update_form_mail(char *file, char *title, int box_type)
-{
+static int update_form_mail(char *file, char *title, int box_type) {
 	FILE *fp;
 	FILE *foo;
 	char *buf = getparm("text"), path[80];
@@ -156,12 +158,12 @@ update_form_mail(char *file, char *title, int box_type)
 	char dir[STRLEN];
 	char filename[STRLEN];
 	struct fileheader x;
-	struct mmapfile mf = { ptr:NULL };
+	struct mmapfile mf = { .ptr = NULL };
 	size_t i;
 	long l;
 
-    char type_string[20];
-    snprintf(type_string, sizeof(type_string), "box_type=%d", box_type);
+	char type_string[20];
+	snprintf(type_string, sizeof(type_string), "box_type=%d", box_type);
 
 	filetime = atoi(file + 2);
 	usemath = strlen(getparm("usemath"));
@@ -184,7 +186,7 @@ update_form_mail(char *file, char *title, int box_type)
 	if(box_type == 1) {
 		setsentmailfile(path, currentuser.userid, file);
 	} else {
-		setmailfile(path, currentuser.userid, file);
+		setmailfile_s(path, sizeof(path), currentuser.userid, file);
 	}
 	fp = fopen(path, "r+");
 	if (fp == 0)
@@ -199,7 +201,7 @@ update_form_mail(char *file, char *title, int box_type)
 	if(box_type == 1) {
 		setsentmailfile(dir, currentuser.userid, ".DIR");
 	} else {
-		setmailfile(dir, currentuser.userid, ".DIR");
+		setmailfile_s(dir, sizeof(dir), currentuser.userid, ".DIR");
 	}
 	fp = fopen(dir, "r");
 	if (fp == 0)
