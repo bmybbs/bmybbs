@@ -361,7 +361,7 @@ static void showout(void) {
 	int i = 0, i2 = 0;
 	char foo[1024];
 	char tmpfile[STRLEN];
-	char buf[20];
+	char buf[64];
 	int notreload = 0;
 	GOPHER newitem;
 
@@ -415,7 +415,7 @@ static void showout(void) {
 				}
 				refresh();
 				append_record(gophertmpfile, &newitem, sizeof (GOPHER));
-				sprintf(buf,
+				snprintf(buf, sizeof(buf),
 					"\033[1;3%dm转\033[3%dm换\033[3%dm资\033[3%dm料\033[3%dm中\033[m",
 					(i % 7) + 1, ((i + 1) % 7) + 1,
 					((i + 2) % 7) + 1, ((i + 3) % 7) + 1,
