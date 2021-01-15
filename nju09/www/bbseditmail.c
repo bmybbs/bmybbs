@@ -157,7 +157,6 @@ update_form_mail(char *file, char *title, int box_type)
 	char filename[STRLEN];
 	struct fileheader x;
 	struct mmapfile mf = { ptr:NULL };
-	int dangerous = 0;
 	size_t i;
 	long l;
 
@@ -224,8 +223,6 @@ update_form_mail(char *file, char *title, int box_type)
 				x.accessed |= FH_ATTACHED;
 			else
 				x.accessed &= ~FH_ATTACHED;
-			if (dangerous)
-				x.accessed |= FH_DANGEROUS;
 			put_record(&x, sizeof (struct fileheader), num, dir);
 			break;
 		}
