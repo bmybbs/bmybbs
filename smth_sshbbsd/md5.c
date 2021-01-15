@@ -47,7 +47,7 @@ void MD5Update(struct MD5Context *ctx, unsigned char const *buf, unsigned len)
     md5_uint32 t;
 
     /*
-     * Update bitcount 
+     * Update bitcount
      */
 
     t = ctx->bits[0];
@@ -58,7 +58,7 @@ void MD5Update(struct MD5Context *ctx, unsigned char const *buf, unsigned len)
     t = (t >> 3) & 0x3f;        /* Bytes already in shsInfo->data */
 
     /*
-     * Handle any leading odd-sized chunks 
+     * Handle any leading odd-sized chunks
      */
 
     if (t) {
@@ -75,7 +75,7 @@ void MD5Update(struct MD5Context *ctx, unsigned char const *buf, unsigned len)
         len -= t;
     }
     /*
-     * Process data in 64-byte chunks 
+     * Process data in 64-byte chunks
      */
 
     while (len >= 64) {
@@ -86,7 +86,7 @@ void MD5Update(struct MD5Context *ctx, unsigned char const *buf, unsigned len)
     }
 
     /*
-     * Handle any remaining bytes of data. 
+     * Handle any remaining bytes of data.
      */
 
     memcpy(ctx->in, (void *) buf, len);
@@ -113,7 +113,7 @@ void MD5Update(struct MD5Context *ctx, unsigned char const *buf, unsigned len)
 		    (cp)[1] = (value) >> 8; } while (0)
 
 /*
- * Final wrapup - pad to 64-byte boundary with the bit pattern 
+ * Final wrapup - pad to 64-byte boundary with the bit pattern
  * 1 0* (64-bit count of bits processed, MSB-first)
  */
 void MD5Final(unsigned char digest[16], struct MD5Context *ctx)
@@ -122,45 +122,45 @@ void MD5Final(unsigned char digest[16], struct MD5Context *ctx)
     unsigned char *p;
 
     /*
-     * Compute number of bytes mod 64 
+     * Compute number of bytes mod 64
      */
     count = (ctx->bits[0] >> 3) & 0x3F;
 
     /*
      * Set the first char of padding to 0x80.  This is safe since there is
-     * always at least one byte free 
+     * always at least one byte free
      */
     p = ctx->in + count;
     *p++ = 0x80;
 
     /*
-     * Bytes of padding needed to make 64 bytes 
+     * Bytes of padding needed to make 64 bytes
      */
     count = 64 - 1 - count;
 
     /*
-     * Pad out to 56 mod 64 
+     * Pad out to 56 mod 64
      */
     if (count < 8) {
         /*
-         * Two lots of padding:  Pad the first block to 64 bytes 
+         * Two lots of padding:  Pad the first block to 64 bytes
          */
         memset(p, 0, count);
         MD5Transform(ctx->buf, ctx->in);
 
         /*
-         * Now fill the next block with 56 bytes 
+         * Now fill the next block with 56 bytes
          */
         memset(ctx->in, 0, 56);
     } else {
         /*
-         * Pad block to 56 bytes 
+         * Pad block to 56 bytes
          */
         memset(p, 0, count - 8);
     }
 
     /*
-     * Append length in bits and transform 
+     * Append length in bits and transform
      */
     PUT_32BIT_LSB_FIRST(ctx->in + 56, ctx->bits[0]);
     PUT_32BIT_LSB_FIRST(ctx->in + 60, ctx->bits[1]);
