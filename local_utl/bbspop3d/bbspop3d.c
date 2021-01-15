@@ -353,7 +353,7 @@ Login_init()
 	close(fd);
 
 	for (i = 0; i < totalnum; i++) {
-		setmailfile(genbuf, LowUserid, fh2fname(&fcache[i]));
+		setmailfile_s(genbuf, sizeof(genbuf), LowUserid, fh2fname(&fcache[i]));
 		strcpy(fowner[i], fh2owner(&fcache[i]));
 		if (strchr(fowner[i], '.') == NULL) {
 			//rbb@bmy 20090312
@@ -664,7 +664,7 @@ Retr()
 	sprintf(genbuf, "Subject: %s", fcache[num].title);
 	outs(genbuf);
 	outs("");
-	setmailfile(genbuf, LowUserid, fh2fname(&fcache[num]));
+	setmailfile_s(genbuf, sizeof(genbuf), LowUserid, fh2fname(&fcache[num]));
 	outfile(genbuf);
 	return 0;
 }
