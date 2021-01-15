@@ -68,7 +68,7 @@ int main(int argc, char **argv)
 				char *p;
 				bzero(&fh, sizeof (fh));
 				fgets(buf1, 256, art);
-				if (buf1 == 0)
+				if (buf1[0] == 0)
 					continue;
 				p = strchr(buf1 + 8, ' ');
 				if (p)
@@ -79,7 +79,7 @@ int main(int argc, char **argv)
 					*p = 0;
 				fh_setowner(&fh, buf1 + 8, 0);
 				fgets(buf2, 256, art);
-				if (buf2 == 0)
+				if (buf2[0] == 0)
 					continue;
 				printf("%s", buf2);
 				if (p = strchr(buf2 + 8, '\n'))
