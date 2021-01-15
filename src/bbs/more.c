@@ -760,7 +760,6 @@ mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
 		while (change == 0) {
 			mem_printbotline(curr_line + 1, last_line + 1, l.total,
 					l.line[last_line % 100] - ptr + l.s[last_line % 100], size);
-			l.line[l.curr_line% 100] - ptr + l.s[l.curr_line % 100],
 			ch = egetch();
 			move(t_lines - 1, 0);
 			clrtoeol();
