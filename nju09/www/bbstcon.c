@@ -1,4 +1,5 @@
 #include "bbslib.h"
+#include "bmy/convcode.h"
 
 // bbscon
 int testmozilla(void);
