@@ -1,25 +1,25 @@
 /*
-    Pirate Bulletin Board System
-    Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
-    Eagles Bulletin Board System
-    Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
-                        Guy Vega, gtvega@seabass.st.usm.edu
-                        Dominic Tynes, dbtynes@seabass.st.usm.edu
-    Firebird Bulletin Board System
-    Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
-                        Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
+	Pirate Bulletin Board System
+	Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
+	Eagles Bulletin Board System
+	Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
+						Guy Vega, gtvega@seabass.st.usm.edu
+						Dominic Tynes, dbtynes@seabass.st.usm.edu
+	Firebird Bulletin Board System
+	Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
+						Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
 
-    Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
+	Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 1, or (at your option)
-    any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 1, or (at your option)
+	any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 */
 
 #include "bbs.h"
@@ -129,7 +129,7 @@ int savetmpfile(char *tmpname) {
 
 	if ((fp = fopen(tmpname, "w")) == NULL)
 		return -1;
-	show_message("[5m×ª»»ÎÄ¼þ×ÊÁÏÎªÔÝ´æµµ");
+	show_message("\033[5m×ª»»ÎÄ¼þ×ÊÁÏÎªÔÝ´æµµ");
 	fprintf(fp, "À´  Ô´: %s\n", tmpitem->server);
 	fprintf(fp, "µµ  Ãû: %s(Ê¹ÓÃ %d ²º)\n", tmpitem->file, tmpitem->port);
 	fprintf(fp, "±ê  Ìâ: %s\n\n", tmpitem->title + 1);
@@ -158,17 +158,15 @@ static void print_gophertitle(void) {
 	move(0, 0);
 	clrtobot();
 	sprintf(buf, "%*s", (80 - strlen(title)) / 2, " ");
-	prints("[1;44m%s%s%s[m\n", buf, title, buf);
-	prints
-	    ("             [1;32mF [37m¼Ä»Ø×Ô¼ºµÄÐÅÏä [32m ¡ü¡ý[37m ÒÆ¶¯  [32m¡ú <Enter>[37m ¶ÁÈ¡ [32m ¡û[37m Àë¿ª");
+	prints("\033[1;44m%s%s%s\033[m\n", buf, title, buf);
+	prints("             \033[1;32mF \033[37m¼Ä»Ø×Ô¼ºµÄÐÅÏä \033[32m ¡ü¡ý\033[37m ÒÆ¶¯  \033[32m¡ú <Enter>\033[37m ¶ÁÈ¡ \033[32m ¡û\033[37m Àë¿ª");
 }
 
 static void printgopher_title(void) {
 	move(2, 0);
 	clrtoeol();
 
-	prints
-	    ("[1;37;44m ±àºÅ [Àà±ð] ±ê    Ìâ                                                          [m\n");
+	prints("\033[1;37;44m ±àºÅ [Àà±ð] ±ê    Ìâ                                                          \033[m\n");
 }
 
 static void g_refresh(void) {
@@ -209,11 +207,11 @@ static int deal_gopherkey(char ch, int allnum, int pagenum) {
 			tmpitem = nth_item(allnum - pagenum);
 			move(2, 0);
 			clrtobot();
-			prints("[1;44;37m");
+			prints("\033[1;44;37m");
 			printdash("BBS Gopher Îï¼þ»ù±¾×ÊÁÏ");
-			prints("[m");
+			prints("\033[m");
 			prints("ÀàÐÍ£º%c (%s)\n", tmpitem->title[0],
-			       (tmpitem->title[0] == '0') ? "ÎÄ¼þ" : "Ä¿Â¼");
+					(tmpitem->title[0] == '0') ? "ÎÄ¼þ" : "Ä¿Â¼");
 			prints("±êÌâ£º%s\n", tmpitem->title + 1);
 			prints("Â·¾¶£º%s\n", tmpitem->file);
 			prints("Î»ÖÃ£º%s\n", tmpitem->server);
@@ -237,16 +235,14 @@ static int deal_gopherkey(char ch, int allnum, int pagenum) {
 		if (dashf(fname)) {
 			char bname[30];
 			clear();
-			if (get_a_boardname
-			    (bname, "ÇëÊäÈëÒª×ªÌùµÄÌÖÂÛÇøÃû³Æ: ")) {
+			if (get_a_boardname(bname, "ÇëÊäÈëÒª×ªÌùµÄÌÖÂÛÇøÃû³Æ: ")) {
 				move(1, 0);
 				sprintf(fpath, "ÄãÈ·¶¨Òª×ªÌùµ½ %s °æÂð", bname);
 				if (askyn(fpath, NA, NA) == 1) {
 					move(2, 0);
-					postfile(fname, bname,
-						 tmpitem->title + 1, 2);
+					postfile(fname, bname, tmpitem->title + 1, 2);
 					sprintf(fpath,
-						"[1mÒÑ¾­°ïÄã×ªÌùµ½ %s °æÁË...[m",
+						"\033[1mÒÑ¾­°ïÄã×ªÌùµ½ %s °æÁË...\033[m",
 						bname);
 					prints(fpath);
 					refresh();
@@ -274,8 +270,7 @@ static int deal_gopherkey(char ch, int allnum, int pagenum) {
 		savetmpfile(fname);
 		if (!dashf(fname))
 			return 1;
-		switch (doforward(fname, tmpitem->title + 1,
-				  (ch == 'u' || ch == 'U') ? 1 : 0)) {
+		switch (doforward(fname, tmpitem->title + 1, (ch == 'u' || ch == 'U') ? 1 : 0)) {
 		case 0:
 			show_message("ÎÄÕÂ×ª¼ÄÍê³É!");
 			break;
@@ -355,9 +350,9 @@ static int show_gopher(void) {
 	for (i = page; i < page + 19 && i < range; i++) {
 		tmpnode = nth_item(i - page);
 		move(i - page + 3, 0);
-		prints(" %4d [[1m%9s[m] %-65s\n", i + 1,
-		       ((tmpnode->title[0] == '0') ? "[32mÁ¬ÎÄ" : "[33mÁ¬Ä¿"),
-		       tmpnode->title + 1);
+		prints(" %4d [\033[1m%9s\033[m] %-65s\n", i + 1,
+				((tmpnode->title[0] == '0') ? "\033[32mÁ¬ÎÄ" : "\033[33mÁ¬Ä¿"),
+				tmpnode->title + 1);
 	}
 	return 0;
 }
@@ -379,9 +374,7 @@ static void showout(void) {
 		update_endline();
 		if (!notreload) {
 			i = 0;
-			if (get_con
-			    (g_main[gopher_position]->server,
-			     g_main[gopher_position]->port) == -1) {
+			if (get_con(g_main[gopher_position]->server, g_main[gopher_position]->port) == -1) {
 				show_message(NULL);
 				free(g_main[gopher_position]);
 				gopher_position--;
@@ -394,8 +387,7 @@ static void showout(void) {
 				if (readfield(a, foo, 1024) <= 0) {
 					break;
 				}
-				if (foo[0] == '.' && foo[1] == '\r'
-				    && foo[2] == '\n') {
+				if (foo[0] == '.' && foo[1] == '\r' && foo[2] == '\n') {
 					break;
 				}
 				strncpy(newitem.title, foo, 70);
@@ -417,16 +409,14 @@ static void showout(void) {
 				if (newitem.title[0] != newitem.file[0]) {
 					break;
 				}
-				if (newitem.title[0] != '0'
-				    && newitem.title[0] != '1') {
+				if (newitem.title[0] != '0' && newitem.title[0] != '1') {
 					i--;
 					continue;
 				}
 				refresh();
-				append_record(gophertmpfile, &newitem,
-					      sizeof (GOPHER));
+				append_record(gophertmpfile, &newitem, sizeof (GOPHER));
 				sprintf(buf,
-					"[1;3%dm×ª[3%dm»»[3%dm×Ê[3%dmÁÏ[3%dmÖÐ[m",
+					"\033[1;3%dm×ª\033[3%dm»»\033[3%dm×Ê\033[3%dmÁÏ\033[3%dmÖÐ\033[m",
 					(i % 7) + 1, ((i + 1) % 7) + 1,
 					((i + 2) % 7) + 1, ((i + 3) % 7) + 1,
 					((i + 4) % 7) + 1);
@@ -440,8 +430,7 @@ static void showout(void) {
 			clrtobot();
 			move(10, 0);
 			clrtoeol();
-			prints
-			    ("                             [1;31mÃ»ÓÐÈÎºÎµÄ×ÊÁÏ...[m");
+			prints("                             \033[1;31mÃ»ÓÐÈÎºÎµÄ×ÊÁÏ...\033[m");
 			pressanykey();
 			free(g_main[gopher_position]);
 			gopher_position--;
@@ -452,8 +441,8 @@ static void showout(void) {
 		clrtobot();
 		setlistrange(i);
 		i2 = choose(NA, g_main[gopher_position]->position,
-			    print_gophertitle, deal_gopherkey, show_gopher,
-			    do_gopher);
+				print_gophertitle, deal_gopherkey, show_gopher,
+				do_gopher);
 		if (i2 == -1) {
 			free(g_main[gopher_position]);
 			clear_gophertmpfile();
