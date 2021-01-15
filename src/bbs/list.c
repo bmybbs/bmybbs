@@ -1169,11 +1169,12 @@ num_visible_users()
 
 static int count_visible_active(const struct user_info *uentp, void *x_param)
 {
+	int *p_i = (int *) x_param;
 	if (!uentp->active || !uentp->pid)
 		return 0;
-	*(int *)x_param++;
+	*p_i = *p_i + 1;
 	if (!HAS_PERM(PERM_SYSOP | PERM_SEECLOAK, currentuser) && uentp->invisible)
-		*(int *)x_param--;
+		*p_i = *p_i - 1;
 	return 1;
 }
 
