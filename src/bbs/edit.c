@@ -954,10 +954,7 @@ int mode;
 
 	now = time(0);
 	ytht_strsncpy(uid, currentuser.userid, 20);
-	if (in_mail)
-		ytht_strsncpy(uname, currentuser.username, NAMELEN);
-	else
-		ytht_strsncpy(uname, currentuser.username, NAMELEN);
+	ytht_strsncpy(uname, currentuser.username, NAMELEN);
 	save_title[STRLEN - 10] = '\0';
 	bp = ythtbbs_cache_Board_get_board_by_name(currboard);
 	//这里bp会不存在么？fp还在那个目录里呢啊
