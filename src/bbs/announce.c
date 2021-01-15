@@ -125,7 +125,7 @@ MENU *pm;
 		sprintf(pathbuf, "[您有信件,请按w查看信件]");
 	} else
 		strcpy(pathbuf, pm->mtitle);
-	sprintf(buf, "%*s", (int) (80 - strlen(pathbuf)) / 2, "");
+	sprintf(buf, "%*s", (int) (80 - strlen(pathbuf)) / 2, " ");
 	prints("\033[1;44m%s%s%s\033[m\n", buf, pathbuf, buf);
 
 	getvisit(visit, pm->path);
