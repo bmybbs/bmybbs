@@ -1,7 +1,7 @@
 #include "bbs.h"
 
 char *
-encode_url(unsigned char *s)
+encode_url(char *s)
 {
 	int i, j;
 	static char buf[512];
