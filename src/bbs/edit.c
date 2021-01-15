@@ -1026,10 +1026,6 @@ char *pmt, *abort;
 	struct textline *p = firstline;
 	char ch;
 	int total, lines, len, sig, y;
-	int w;
-
-	w = NA;
-
 	if (uinfo.mode == POSTING) {
 		total = lines = len = sig = 0;
 		while (p != NULL) {
@@ -1056,22 +1052,10 @@ char *pmt, *abort;
 			prints("注意：本篇文章过于简短, 系统认为是灌水文章.\n");
 			y += 3;
 		}
-		if (w) {
-			strcpy(pmt, "(E)再编辑, (F)不换行发出，(S)发出, (A)取消 or (T)更改标题? [E]: ");
-		}
 	}
 
 	getdata(0, 0, pmt, abort, 3, DOECHO, YEA);
-	if (w && abort[0] == '\0')
-		abort[0] = 'E';
-	switch (abort[0]) {
-	case 'A':
-	case 'a':		/* abort */
-	case 'E':
-	case 'e':		/* keep editing */
-		return;
-	}
-
+	return;
 }
 
 /* Add By KCN for auto crlf*/
