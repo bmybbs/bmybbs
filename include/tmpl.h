@@ -1,5 +1,6 @@
 #ifndef _TEMPLATE_H
 #define _TEMPLATE_H
+#include <stddef.h>
 #include "config.h"
 
 #define TEMPLATE_DIR ".tmpl"

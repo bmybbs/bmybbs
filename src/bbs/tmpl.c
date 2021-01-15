@@ -424,7 +424,7 @@ content_key(int key, int allnum, int pagenum)
 		{
 		char newlen[10];
 		int nl;
-		sprintf(newlen,"%-3d",ptemplate[t_now].cont[allnum].length);
+		snprintf(newlen, sizeof(newlen), "%-3zu", ptemplate[t_now].cont[allnum].length);
 		getdata(t_lines-1, 0, "ÐÂ³¤¶È: ", newlen, 5, DOECHO, NA);
 		nl = atoi(newlen);
 		if( nl <= 0 || nl > MAX_CONTENT_LENGTH || nl == ptemplate[t_now].cont[allnum].length )
