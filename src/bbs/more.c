@@ -97,7 +97,7 @@ NNread_init()
 	if (movieshm == NULL) {
 		movieshm = (void *) attach_shm(ACBOARD_SHMKEY, sizeof (*movieshm));
 	}
-	if (abs(now - movieshm->update) < 12 * 60 * 60 && ftime < movieshm->update) {
+	if (labs(now - movieshm->update) < 12 * 60 * 60 && ftime < movieshm->update) {
 		return 1;
 	}
 	if ((fffd = fopen("etc/movie", "r")) == NULL) {
