@@ -1,25 +1,25 @@
 /*
-    Pirate Bulletin Board System
-    Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
-    Eagles Bulletin Board System
-    Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
-                        Guy Vega, gtvega@seabass.st.usm.edu
-                        Dominic Tynes, dbtynes@seabass.st.usm.edu
-    Firebird Bulletin Board System
-    Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
-                        Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
+	Pirate Bulletin Board System
+	Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
+	Eagles Bulletin Board System
+	Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
+						Guy Vega, gtvega@seabass.st.usm.edu
+						Dominic Tynes, dbtynes@seabass.st.usm.edu
+	Firebird Bulletin Board System
+	Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
+						Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
 
-    Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
+	Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 1, or (at your option)
-    any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 1, or (at your option)
+	any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 */
 
 #include <sys/mman.h>
@@ -95,11 +95,9 @@ NNread_init()
 	}
 	ftime = st.st_mtime;
 	if (movieshm == NULL) {
-		movieshm =
-		    (void *) attach_shm(ACBOARD_SHMKEY, sizeof (*movieshm));
+		movieshm = (void *) attach_shm(ACBOARD_SHMKEY, sizeof (*movieshm));
 	}
-	if (abs(now - movieshm->update) < 12 * 60 * 60
-	    && ftime < movieshm->update) {
+	if (abs(now - movieshm->update) < 12 * 60 * 60 && ftime < movieshm->update) {
 		return 1;
 	}
 	if ((fffd = fopen("etc/movie", "r")) == NULL) {
@@ -112,8 +110,7 @@ NNread_init()
 		xxxline = 1;
 		return 1;
 	}
-	while ((xxxline < ACBOARD_MAXLINE) &&
-	       (fgets(buf, ACBOARD_BUFSIZE, fffd) != NULL)) {
+	while ((xxxline < ACBOARD_MAXLINE) && (fgets(buf, ACBOARD_BUFSIZE, fffd) != NULL)) {
 		ptr = movieshm->line[xxxline];
 		memcpy(ptr, buf, sizeof (buf));
 		xxxline++;
@@ -168,7 +165,7 @@ char *fname;
 	return count;
 }
 
-						      /* below added by netty  *//*Rewrite by SmallPig */
+/* below added by netty  *//*Rewrite by SmallPig */
 static void
 netty_more()
 {
@@ -241,7 +238,7 @@ check_calltime()
 		move(line, 0);
 		clrtoeol();
 		prints("\033[1;44;32mBBS 系统通告: \033[37m%-65s\033[m",
-		       "系统闹钟 铃～～～～～～");
+				"系统闹钟 铃～～～～～～");
 		igetkey();
 		move(line, 0);
 		clrtoeol();
@@ -371,8 +368,7 @@ measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
 	}
 	if (*s == size)
 		return 0;
-	if (oldty % 2 == 0 && *ty == 0 && size > 10
-	    && !strncmp(p0, "begin 644 ", 10)) {
+	if (oldty % 2 == 0 && *ty == 0 && size > 10 && !strncmp(p0, "begin 644 ", 10)) {
 		char *pe = p0 + size;
 		for (p = p0; p < pe;) {
 			if (!(p = memchr(p, '\n', pe - p)))
@@ -391,9 +387,7 @@ measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
 			*s = p - p0;
 		*ty = 100;
 	}
-	if (oldty % 2 == 0 && *ty == 0 && size > 19
-	    && !strncmp(p0, "beginbinaryattach ", 18)
-	    && size - *s >= 5 && p0[*s] == 0) {
+	if (oldty % 2 == 0 && *ty == 0 && size > 19 && !strncmp(p0, "beginbinaryattach ", 18) && size - *s >= 5 && p0[*s] == 0) {
 		unsigned int len;
 		p = p0 + *s + 1;
 		len = ntohl(*(unsigned int *) p);
@@ -428,8 +422,7 @@ init_MemMoreLines(struct MemMoreLines *l, char *ptr, int size)
 	for (i = 0, p0 = ptr, s = size; i < 25 && s > 0; i++) {
 		u = (l->start + l->num) % 100;
 		l->line[u] = p0;
-		if (measure_line(p0, s, &l->len[u], &l->s[u], oldty, &l->ty[u])
-		    < 0) {
+		if (measure_line(p0, s, &l->len[u], &l->s[u], oldty, &l->ty[u]) < 0) {
 			break;
 		}
 		oldty = l->ty[u];
@@ -473,8 +466,7 @@ next_MemMoreLines(struct MemMoreLines *l)
 		p0 = l->line[n] + l->s[n];
 		n = (l->start + l->num) % 100;
 		l->line[n] = p0;
-		measure_line(p0, l->size - (p0 - l->ptr), &l->len[n], &l->s[n],
-			     oldty, &l->ty[n]);
+		measure_line(p0, l->size - (p0 - l->ptr), &l->len[n], &l->s[n], oldty, &l->ty[n]);
 		l->num++;
 		if (l->size - (p0 - l->ptr) == l->s[n]) {
 			l->total = l->start + l->num;
@@ -516,7 +508,7 @@ seek_MemMoreLines(struct MemMoreLines *l, int n)
 static int
 mmap_show(char *fn, int row, int numlines)
 {
-      struct mmapfile mf = { ptr:NULL };
+	struct mmapfile mf = { .ptr = NULL };
 	MMAP_TRY {
 		if (mmapfile(fn, &mf) < 0)
 			MMAP_RETURN(-1);
@@ -531,7 +523,7 @@ mmap_show(char *fn, int row, int numlines)
 static int
 mmap_more(char *fn, int quit, char *keystr, char *title)
 {
-      struct mmapfile mf = { ptr:NULL };
+	struct mmapfile mf = { .ptr = NULL };
 	int retv = 0;
 	MMAP_TRY {
 		if (mmapfile(fn, &mf) < 0)
@@ -555,8 +547,7 @@ mem_printline(char *ptr, int len, char *fn, char ty,struct MemMoreLines *l)
 		prints("\n");
 		return;
 	}
-	if (!strncmp(ptr, "□ 引用", 7) || !strncmp(ptr, "==>", 3)
-	    || !strncmp(ptr, "【 在", 5) || !strncmp(ptr, "※ 引述", 7)) {
+	if (!strncmp(ptr, "□ 引用", 7) || !strncmp(ptr, "==>", 3) || !strncmp(ptr, "【 在", 5) || !strncmp(ptr, "※ 引述", 7)) {
 		outns("\033[1;33m", 7);
 		outns(ptr, len);
 		outns("\033[m\n", 4);
@@ -574,10 +565,9 @@ mem_printline(char *ptr, int len, char *fn, char ty,struct MemMoreLines *l)
 			int nPos=0;
 			int last_line;
 			last_line = l->curr_line;
-			if(l!=NULL)
-				{
-				 nPos=l->curr- l->ptr+20+strlen(attachname);
-				}
+			if (l!=NULL) {
+				nPos=l->curr- l->ptr+20+strlen(attachname);
+			}
 /* clearboy 2005.1
 修改目的：增加tenet下面图片链接显示
 修改方法：给mem_printline函数，增加一个接口，以获得图片链接的地址。
@@ -608,15 +598,11 @@ http://站名/版面名称/文件名称/随机数/包含后缀的文件名
 */
 /*			if((attachname[0] > ' ' && attachname[0] < 'z' && strlen(attachname) < 20))
 			{
-			prints
-                            ("\033[m附图: %s 链接:\nhttp://%s:8080/%s%s/%d/%s\033[0m\n",
-                             	attachname,MY_BBS_DOMAIN,currboard,strrchr(fn, '/'),nPos,attachname);
+			prints("\033[m附图: %s 链接:\nhttp://%s:8080/%s%s/%d/%s\033[0m\n", attachname,MY_BBS_DOMAIN,currboard,strrchr(fn, '/'),nPos,attachname);
 			}
 			else
 */			{
-/*			prints
-			    ("\033[m附图: %s 链接:\n\033[1;4mhttp://%s:8080/%s%s/%d/%d%s\033[0m\n",
-				attachname,MY_BBS_IP, currboard, strrchr(fn,'/'), nPos, l->curr_line - 4, strrchr(attachname, '.'));
+/*			prints("\033[m附图: %s 链接:\n\033[1;4mhttp://%s:8080/%s%s/%d/%d%s\033[0m\n", attachname,MY_BBS_IP, currboard, strrchr(fn,'/'), nPos, l->curr_line - 4, strrchr(attachname, '.'));
 */
 /*修改by Clearboy@BMY 2005.2.27
 1. 去掉原来的文件名,不分行显示;
@@ -719,20 +705,20 @@ mem_printbotline(int l1, int l2, int total, int read, int size)
 	extern int t_lines;
 	static int n = 0;
 	char *(s[4]) = {
-	"结束 ← q | ↑↓ PgUp PgDn 移动",
-		    "s 开头 | e 末尾 | b f 前后翻页",
-		    "g 跳到某行 | ? / 上下搜索字符串",
-		    "l n 上篇下篇 | R 回文 | E 评价"};
+		"结束 ← q | ↑↓ PgUp PgDn 移动",
+		"s 开头 | e 末尾 | b f 前后翻页",
+		"g 跳到某行 | ? / 上下搜索字符串",
+		"l n 上篇下篇 | R 回文 | E 评价"
+	};
 	n++;
 	if (uinfo.mode == READING)
 		n %= 4;
 	else
 		n %= 3;
 	move(t_lines - 1, 0);
-	prints
-	    ("\033[1;44;32m%s (%d%%) 第(%d-%d)行 \033[33m| %s | h 辅助说明\033[m",
-	     (read >= size) ? "看到末尾啦" : "下面还有喔",
-	     total ? (100 * l2 / total) : (100 * read / size), l1, l2, s[n]);
+	prints("\033[1;44;32m%s (%d%%) 第(%d-%d)行 \033[33m| %s | h 辅助说明\033[m",
+			(read >= size) ? "看到末尾啦" : "下面还有喔",
+			total ? (100 * l2 / total) : (100 * read / size), l1, l2, s[n]);
 }
 
 static int
@@ -765,9 +751,7 @@ mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
 		last_line = l.curr_line;
 		if (l.total && l.total <= t_lines - 1)
 			return 0;
-		if (l.line[last_line % 100] - ptr + l.s[last_line % 100] == size
-		    && (ch == KEY_RIGHT || ch == KEY_PGDN || ch == ' '
-			|| ch == Ctrl('f'))) {
+		if (l.line[last_line % 100] - ptr + l.s[last_line % 100] == size && (ch == KEY_RIGHT || ch == KEY_PGDN || ch == ' ' || ch == Ctrl('f'))) {
 			move(t_lines - 1, 0);
 			clrtobot();
 			return 0;
@@ -775,9 +759,8 @@ mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
 		change = 0;
 		while (change == 0) {
 			mem_printbotline(curr_line + 1, last_line + 1, l.total,
-					 l.line[last_line % 100] - ptr +
-					 l.s[last_line % 100], size);
-			 l.line[l.curr_line% 100] - ptr + l.s[l.curr_line % 100],
+					l.line[last_line % 100] - ptr + l.s[last_line % 100], size);
+			l.line[l.curr_line% 100] - ptr + l.s[l.curr_line % 100],
 			ch = egetch();
 			move(t_lines - 1, 0);
 			clrtoeol();
@@ -803,14 +786,10 @@ mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
 			case KEY_PGDN:
 			case KEY_RIGHT:
 				if (!l.total)
-					seek_MemMoreLines(&l,
-							  last_line + t_lines);
+					seek_MemMoreLines(&l, last_line + t_lines);
 				change = t_lines - 2;
-				if (l.total && last_line < l.total
-				    && curr_line + change + t_lines - 1 >
-				    l.total)
-					change =
-					    l.total - curr_line - t_lines + 1 ;
+				if (l.total && last_line < l.total && curr_line + change + t_lines - 1 > l.total)
+					change = l.total - curr_line - t_lines + 1 ;
 				break;
 			case 's':
 				change = -curr_line;
@@ -844,16 +823,11 @@ mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
 							i++;
 						else
 							i--;
-						if (seek_MemMoreLines(&l, i) <
-						    0)
+						if (seek_MemMoreLines(&l, i) < 0)
 							break;
-						memcpy(buf, l.curr,
-						       (l.currlen >=
-							256) ? 255 : l.currlen);
-						buf[(l.currlen >= 256) ? 255 :
-						    l.currlen] = 0;
-						if (strcasestr(buf, searchstr)
-						    != NULL) {
+						memcpy(buf, l.curr, (l.currlen >= 256) ? 255 : l.currlen);
+						buf[(l.currlen >= 256) ? 255 : l.currlen] = 0;
+						if (strcasestr(buf, searchstr) != NULL) {
 							change = i - curr_line;
 							break;
 						}
@@ -885,8 +859,7 @@ mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
 				}
 				break;
 			default:
-				if (keystr != NULL
-				    && strchr(keystr, ch) != NULL)
+				if (keystr != NULL && strchr(keystr, ch) != NULL)
 					return ch;
 			}
 			if (change < 0 && curr_line == 0) {
@@ -895,21 +868,15 @@ mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
 				change = 0;
 			}
 			if (change == 1) {
-				if (seek_MemMoreLines
-				    (&l, curr_line + t_lines - 1) >= 0) {
+				if (seek_MemMoreLines(&l, curr_line + t_lines - 1) >= 0) {
 					curr_line++;
 					last_line++;
 					scroll();
 					move(t_lines - 2, 0);
 					clrtoeol();
 					mem_printline(l.curr, l.currlen, fn,l.currty,&l);
-					if ((ch == KEY_PGDN || ch == ' '
-					     || ch == Ctrl('f')
-					     || ch == KEY_RIGHT
-					     || ch == KEY_DOWN || ch == 'j'
-					     || ch == '\n')
-					    && l.line[last_line % 100] - ptr +
-					    l.s[last_line % 100] == size) {
+					if ((ch == KEY_PGDN || ch == ' ' || ch == Ctrl('f') || ch == KEY_RIGHT || ch == KEY_DOWN || ch == 'j' || ch == '\n')
+							&& l.line[last_line % 100] - ptr + l.s[last_line % 100] == size) {
 						move(t_lines - 1, 0);
 						clrtoeol();
 						return 0;
