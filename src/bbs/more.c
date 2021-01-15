@@ -201,26 +201,6 @@ netty_more()
 	move(y, x);
 }
 
-static void printacbar() {
-	struct boardmem *bp;
-	int x, y;
-	getyx(&y, &x);
-
-	bp = ythtbbs_cache_Board_get_board_by_name(DEFAULTBOARD);
-	if (bp == NULL)
-		return;
-	move(2, 0);
-	prints("\033[1;31m¡õ¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©È\033[37m»î  ¶¯  ¿´  °æ\033[31m©À¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡õ \033[m\n");
-	move(3 + MAXnettyLN, 0);
-	if (bp->header.flag & VOTE_FLAG)
-		prints("\033[1;31m¡õ¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©È\033[37mÏµÍ³Í¶Æ±ÖÐ [ Config->Vote ] \033[31m©À¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡õ \033[m\n");
-	else
-		prints("\033[1;31m¡õ¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡õ \033[m\n");
-
-	move(y, x);
-	refresh();
-}
-
 void
 check_calltime()
 {
@@ -943,14 +923,6 @@ int numlines;
 	if (promptend)
 		pressanykey();
 	return ch;
-}
-
-static int ansimorestuff(char *filename, int promptend) {
-	int retv;
-	stuffmode = 1;
-	retv = ansimore(filename, promptend);
-	stuffmode = 0;
-	return retv;
 }
 
 int
