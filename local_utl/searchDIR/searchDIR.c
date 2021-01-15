@@ -36,13 +36,13 @@ int
 countdb(char *str)
 {
 	int db = 0;
-	unsigned char *ptr = str;
-	while (*ptr) {
+	char *ptr = str;
+	while (*ptr != 0) {
 		if (db)
 			db = 0;
-		else if (*ptr >= 128)
+		else if ((unsigned char) *ptr >= 128)
 			db = 1;
-		*ptr++;
+		ptr++;
 	}
 	return db;
 }
