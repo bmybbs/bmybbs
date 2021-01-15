@@ -249,7 +249,7 @@ int uinfo_query(struct userec *u, int real, int unum)
 	struct userec newinfo;
 	char ans[3], buf[STRLEN], genbuf[128];
 	char src[STRLEN], dst[STRLEN];
-	int i, fail = 0, netty_check = 0;
+	int i, fail = 0; //, netty_check = 0;
 	FILE *fin, *fout, *dp;
 	time_t code;
 
@@ -408,6 +408,7 @@ int uinfo_query(struct userec *u, int real, int unum)
 		}
 		/* added by netty to automatically send a mail to new user. */
 
+#if 0
 		if (netty_check == 1) {
 			sprintf(genbuf, "%s", email_domain());
 			if ((sysconf_str("EMAILFILE") != NULL)
@@ -459,14 +460,17 @@ int uinfo_query(struct userec *u, int real, int unum)
 				}
 			}
 		}
+#endif
 		memcpy(u, &newinfo, sizeof(newinfo));
 		set_safe_record();
+#if 0
 		if (netty_check == 1) {
 			newinfo.userlevel &= ~(PERM_LOGINOK | PERM_PAGE);
 			sethomefile_s(src, sizeof(src), newinfo.userid, "register");
 			sethomefile_s(dst, sizeof(dst), newinfo.userid, "register.old");
 			rename(src, dst);
 		}
+#endif
 		substitute_record(PASSFILE, &newinfo, sizeof(newinfo), unum);
 	}
 	clear();
