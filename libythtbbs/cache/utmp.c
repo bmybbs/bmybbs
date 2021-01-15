@@ -206,9 +206,10 @@ struct user_info *ythtbbs_cache_utmp_get_by_idx(int idx) {
 }
 
 static int count_active(const struct user_info *uentp, void *x_param) {
+	int *p_i = x_param;
 	if (!uentp->active || !uentp->pid)
 		return 0;
-	*(int *)x_param++;
+	*p_i = *p_i + 1;
 	return 1;
 }
 
