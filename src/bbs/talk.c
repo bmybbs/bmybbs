@@ -534,13 +534,14 @@ bm_printboard(struct boardmanager *bm, void *farg)
 }
 
 static int count_useshell(const struct user_info *uentp, void *x_param) {
+	int *p_i = x_param;
 	if (!uentp->active || !uentp->pid)
 		return 0;
 	if (uentp->mode == WWW || uentp->mode == SYSINFO
 			|| uentp->mode == HYTELNET || uentp->mode == DICT
 			|| uentp->mode == ARCHIE || uentp->mode == IRCCHAT
 			|| uentp->mode == BBSNET || uentp->mode == GAME)
-		*(int *)x_param++;
+		*p_i = *p_i + 1;
 	return 1;
 }
 
