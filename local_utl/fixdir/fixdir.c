@@ -17,11 +17,8 @@ struct fileheader *f1, *f2;
 	return f1->filetime - f2->filetime;
 }
 
-void
-insertfile(fh)
-struct fileheader fh;
-{
-	data[len] = fh;
+void insertfile(struct fileheader *fh) {
+	data[len] = *fh;
 	len++;
 }
 
@@ -100,7 +97,7 @@ int main(int argc, char **argv)
 					continue;
 				if ((strncmp(buf2, "标  题: ", 8)) && (strncmp(buf2, "标　题: ", 8)))
 					continue;
-				insertfile(fh);
+				insertfile(&fh);
 				fclose(art);
 			}
 		}
