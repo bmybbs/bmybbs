@@ -157,7 +157,7 @@ static void print_gophertitle(void) {
 	title[70] = '\0';
 	move(0, 0);
 	clrtobot();
-	sprintf(buf, "%*s", (80 - strlen(title)) / 2, " ");
+	sprintf(buf, "%*s", (int) (80 - strlen(title)) / 2, " ");
 	prints("\033[1;44m%s%s%s\033[m\n", buf, title, buf);
 	prints("             \033[1;32mF \033[37m寄回自己的信箱 \033[32m ↑↓\033[37m 移动  \033[32m→ <Enter>\033[37m 读取 \033[32m ←\033[37m 离开");
 }
