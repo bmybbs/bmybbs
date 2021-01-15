@@ -175,7 +175,7 @@ static void g_refresh(void) {
 	update_endline();
 }
 
-static int deal_gopherkey(char ch, int allnum, int pagenum) {
+static int deal_gopherkey(int ch, int allnum, int pagenum) {
 	char fname[STRLEN], fpath[STRLEN];
 
 	switch (ch) {

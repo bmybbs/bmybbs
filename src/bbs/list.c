@@ -613,9 +613,7 @@ show_userlist()
 }
 
 static int
-deal_key(ch, allnum, pagenum)
-char ch;
-int allnum, pagenum;
+deal_key(int ch, int allnum, int pagenum)
 {
 	char buf[STRLEN];
 	char tempuser[20];
