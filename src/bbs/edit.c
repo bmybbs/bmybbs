@@ -1,25 +1,25 @@
 /*
-    Pirate Bulletin Board System
-    Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
-    Eagles Bulletin Board System
-    Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
-                        Guy Vega, gtvega@seabass.st.usm.edu
-                        Dominic Tynes, dbtynes@seabass.st.usm.edu
-    Firebird Bulletin Board System
-    Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
-                        Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
+	Pirate Bulletin Board System
+	Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
+	Eagles Bulletin Board System
+	Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
+						Guy Vega, gtvega@seabass.st.usm.edu
+						Dominic Tynes, dbtynes@seabass.st.usm.edu
+	Firebird Bulletin Board System
+	Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
+						Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
 
-    Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
+	Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 1, or (at your option)
-    any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 1, or (at your option)
+	any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 */
 
 #include "bbs.h"
@@ -159,8 +159,7 @@ ishowspecialchar()
 			for (i = 0; i < 5; i++) {
 				prints(" %d.%2s", i + 1, &tablebuf[i * 13 + 8]);
 				specialcharbuf[i * 2] = tablebuf[i * 13 + 8];
-				specialcharbuf[i * 2 + 1] =
-				    tablebuf[i * 13 + 9];
+				specialcharbuf[i * 2 + 1] = tablebuf[i * 13 + 9];
 			}
 			return 1;
 		}
@@ -347,9 +346,7 @@ alloc_line()
 	return p;
 }
 
-/*
-  Appends p after line in list.  keeps up with last line as well.
- */
+/* Appends p after line in list.  keeps up with last line as well.  */
 
 static void
 goline(n)
@@ -429,9 +426,7 @@ char text[STRLEN];
 			else
 				tt = 0;
 			if (strstr(p->data + tt, text)) {
-				addr =
-				    (int) (strstr(p->data + tt, text) -
-					   p->data) + strlen(text);
+				addr = (int) (strstr(p->data + tt, text) - p->data) + strlen(text);
 				currpnt = addr;
 				break;
 			}
@@ -491,10 +486,7 @@ register struct textline *p, *line;
 	p->prev = line;
 }
 
-/*
-  delete_line deletes 'line' from the list and maintains the lastline, and
-  firstline pointers.
- */
+/* delete_line deletes 'line' from the list and maintains the lastline, and firstline pointers.  */
 
 static void
 delete_line(line)
@@ -526,9 +518,7 @@ register struct textline *line;
 		free(line);
 }
 
-/*
-  split splits 'line' right before the character pos
- */
+/* split splits 'line' right before the character pos */
 
 static void
 split(line, pos)
@@ -557,16 +547,16 @@ register int pos;
 }
 
 /*
-  join connects 'line' and the next line.  It returns true if:
+	join connects 'line' and the next line.  It returns true if:
 
-  1) lines were joined and one was deleted
-  2) lines could not be joined
-  3) next line is empty
+	1) lines were joined and one was deleted
+	2) lines could not be joined
+	3) next line is empty
 
-  returns false if:
+	returns false if:
 
-  1) Some of the joined line wrapped
- */
+	1) Some of the joined line wrapped
+*/
 
 static int
 join(line)
@@ -576,7 +566,7 @@ register struct textline *line;
 	if (!line->next)
 		return YEA;
 	/*if(*killsp(line->next->data) == '\0')
-	   return YEA ; */
+		return YEA ; */
 	ovfl = line->len + line->next->len - WRAPMARGIN;
 	if (ovfl < 0) {
 		strcat(line->data, line->next->data);
@@ -826,31 +816,23 @@ delete_char()
 			if (currline->data[currpnt + 1] & 0x80) {
 				/*  ÕâÑù¿ÉÒÔÈ·±£É¾³ýµÄÊÇÒ»¸öÕû×Ö */
 				if (dbchar) {
-					for (i = currpnt - 1;
-					     i != currline->len - 1; i++)
-						currline->data[i] =
-						    currline->data[i + 2];
+					for (i = currpnt - 1; i != currline->len - 1; i++)
+						currline->data[i] = currline->data[i + 2];
 					currpnt--;
 				} else
-					for (i = currpnt;
-					     i != currline->len - 1; i++)
-						currline->data[i] =
-						    currline->data[i + 2];
+					for (i = currpnt; i != currline->len - 1; i++)
+						currline->data[i] = currline->data[i + 2];
 				currline->len -= 2;
 				return;
 			} else {	/* µ±Ç°Î»Îª¸ßÎ»£¬ºóÐøÎ»ÎªµÍÎ» */
 				if (dbchar) {	/* µ±Ç°ÊÇÕû×Ö */
-					for (i = currpnt - 1;
-					     i != currline->len - 1; i++)
-						currline->data[i] =
-						    currline->data[i + 2];
+					for (i = currpnt - 1; i != currline->len - 1; i++)
+						currline->data[i] = currline->data[i + 2];
 					currpnt--;
 					currline->len -= 2;
 				} else {	/* µ±Ç°Îª·ÇÕû×Ö£¬Ö»É¾µ¥×Ö½Ú */
-					for (i = currpnt; i != currline->len;
-					     i++)
-						currline->data[i] =
-						    currline->data[i + 1];
+					for (i = currpnt; i != currline->len; i++)
+						currline->data[i] = currline->data[i + 1];
 					currline->len--;
 				}
 				return;
@@ -972,10 +954,7 @@ int mode;
 
 	now = time(0);
 	ytht_strsncpy(uid, currentuser.userid, 20);
-	if (in_mail)
-		ytht_strsncpy(uname, currentuser.username, NAMELEN);
-	else
-		ytht_strsncpy(uname, currentuser.username, NAMELEN);
+	ytht_strsncpy(uname, currentuser.username, NAMELEN);
 	save_title[STRLEN - 10] = '\0';
 	bp = ythtbbs_cache_Board_get_board_by_name(currboard);
 	//ÕâÀïbp»á²»´æÔÚÃ´£¿fp»¹ÔÚÄÇ¸öÄ¿Â¼ÀïÄØ°¡
@@ -985,13 +964,7 @@ int mode;
 	if (in_mail)
 		fprintf(fp, "¼ÄÐÅÈË: %s (%s)\n", uid, uname);
 	else {
-		fprintf(fp, "·¢ÐÅÈË: %s (%s), ÐÅÇø: %s\n",
-			(noname
-			 && header.chk_anony) ? "Anonymous" : uid, (noname
-								    &&
-								    header.
-								    chk_anony) ?
-			"ÎÒÊÇÄäÃûÌìÊ¹" : uname, currboard);
+		fprintf(fp, "·¢ÐÅÈË: %s (%s), ÐÅÇø: %s\n", (noname && header.chk_anony) ? "Anonymous" : uid, (noname && header.  chk_anony) ?  "ÎÒÊÇÄäÃûÌìÊ¹" : uname, currboard);
 	}
 	fprintf(fp, "±ê  Ìâ: %s\n", save_title);
 	fprintf(fp, "·¢ÐÅÕ¾: %s (%24.24s), %s", MY_BBS_NAME, ctime(&now),
@@ -1024,10 +997,7 @@ int blank;
 	if ((sigfile = fopen(fname, "r")) == NULL) {
 		return;
 	}
-	sig =
-	    (currentuser.signature ==
-	     -1) ? (numofsig ? (rand() % numofsig +
-				1) : 0) : currentuser.signature;
+	sig = (currentuser.signature == -1) ? (numofsig ? (rand() % numofsig + 1) : 0) : currentuser.signature;
 	for (i = 1; i <= (sig - 1) * MAXSIGLINES && sig != 1; i++) {
 		if (!fgets(inbuf, sizeof (inbuf), sigfile)) {
 			fclose(sigfile);
@@ -1056,10 +1026,6 @@ char *pmt, *abort;
 	struct textline *p = firstline;
 	char ch;
 	int total, lines, len, sig, y;
-	int w;
-
-	w = NA;
-
 	if (uinfo.mode == POSTING) {
 		total = lines = len = sig = 0;
 		while (p != NULL) {
@@ -1067,8 +1033,7 @@ char *pmt, *abort;
 				ch = p->data[0];
 				if (strcmp(p->data, "--") == 0)
 					sig = 1;
-				else if (ch != ':' && ch != '>' && ch != '=' &&
-					 !strstr(p->data, "µÄ´ó×÷ÖÐÌáµ½: ¡¿")) {
+				else if (ch != ':' && ch != '>' && ch != '=' && !strstr(p->data, "µÄ´ó×÷ÖÐÌáµ½: ¡¿")) {
 					lines++;
 					len += strlen(p->data);
 				}
@@ -1079,8 +1044,7 @@ char *pmt, *abort;
 		y = 2;
 		if (lines < total * 0.35 - MAXSIGLINES) {
 			move(y, 0);
-			prints
-			    ("×¢Òâ£º±¾ÆªÎÄÕÂµÄÒýÑÔ¹ý³¤, ½¨ÒéÄúÉ¾µôÒ»Ð©²»±ØÒªµÄÒýÑÔ.\n");
+			prints("×¢Òâ£º±¾ÆªÎÄÕÂµÄÒýÑÔ¹ý³¤, ½¨ÒéÄúÉ¾µôÒ»Ð©²»±ØÒªµÄÒýÑÔ.\n");
 			y += 3;
 		}
 		if (len < 40 || lines < 1) {
@@ -1088,23 +1052,10 @@ char *pmt, *abort;
 			prints("×¢Òâ£º±¾ÆªÎÄÕÂ¹ýÓÚ¼ò¶Ì, ÏµÍ³ÈÏÎªÊÇ¹àË®ÎÄÕÂ.\n");
 			y += 3;
 		}
-		if (w) {
-			strcpy(pmt,
-			       "(E)ÔÙ±à¼­, (F)²»»»ÐÐ·¢³ö£¬(S)·¢³ö, (A)È¡Ïû or (T)¸ü¸Ä±êÌâ? [E]: ");
-		}
 	}
 
 	getdata(0, 0, pmt, abort, 3, DOECHO, YEA);
-	if (w && abort[0] == '\0')
-		abort[0] = 'E';
-	switch (abort[0]) {
-	case 'A':
-	case 'a':		/* abort */
-	case 'E':
-	case 'e':		/* keep editing */
-		return;
-	}
-
+	return;
 }
 
 /* Add By KCN for auto crlf*/
@@ -1216,31 +1167,22 @@ int modifyheader;
 	if (uinfo.mode != CCUGOPHER) {
 		if (uinfo.mode == POSTING) {
 			if (local_article == 1)
-				strcpy(p_buf,
-				       "(L)²»×ªÐÅ, (S)·¢±í, (F)×Ô¶¯»»ÐÐ·¢³ö, (A)È¡Ïû, (T)¸ü¸Ä±êÌâ or (E)ÔÙ±à¼­? [L]: ");
+				strcpy(p_buf, "(L)²»×ªÐÅ, (S)·¢±í, (F)×Ô¶¯»»ÐÐ·¢³ö, (A)È¡Ïû, (T)¸ü¸Ä±êÌâ or (E)ÔÙ±à¼­? [L]: ");
 			else {
 				if (local_article == -1)
-					strcpy(p_buf,
-					       "(L)²»×ªÐÅ, (F)×Ô¶¯»»ÐÐ·¢³ö, (A)È¡Ïû, (T)¸ü¸Ä±êÌâ or (E)ÔÙ±à¼­? [L]: ");
+					strcpy(p_buf, "(L)²»×ªÐÅ, (F)×Ô¶¯»»ÐÐ·¢³ö, (A)È¡Ïû, (T)¸ü¸Ä±êÌâ or (E)ÔÙ±à¼­? [L]: ");
 				else
-					strcpy(p_buf,
-					       "(S)·¢±í, (L)²»×ªÐÅ£¬(F)×Ô¶¯»»ÐÐ·¢³ö, (A)È¡Ïû, (T)¸ü¸Ä±êÌâ or (E)ÔÙ±à¼­? [S]: ");
+					strcpy(p_buf, "(S)·¢±í, (L)²»×ªÐÅ£¬(F)×Ô¶¯»»ÐÐ·¢³ö, (A)È¡Ïû, (T)¸ü¸Ä±êÌâ or (E)ÔÙ±à¼­? [S]: ");
 			}
 		} else if (uinfo.mode == SMAIL)
-			strcpy(p_buf,
-			       "(S)¼Ä³ö, (F)×Ô¶¯»»ÐÐ·¢³ö£¬(A)È¡Ïû, or (E)ÔÙ±à¼­? [S]: ");
+			strcpy(p_buf, "(S)¼Ä³ö, (F)×Ô¶¯»»ÐÐ·¢³ö£¬(A)È¡Ïû, or (E)ÔÙ±à¼­? [S]: ");
 		else
-			strcpy(p_buf,
-			       "(S)´¢´æµµ°¸, (F)×Ô¶¯»»ÐÐ·¢³ö£¬(A)·ÅÆú±à¼­, (E)¼ÌÐø±à¼­? [S]: ");
+			strcpy(p_buf, "(S)´¢´æµµ°¸, (F)×Ô¶¯»»ÐÐ·¢³ö£¬(A)·ÅÆú±à¼­, (E)¼ÌÐø±à¼­? [S]: ");
 		valid_article(p_buf, abort);
 
-		if ((local_article == 0)
-		    && ((abort[0] == 'l')
-			|| (abort[0] == 'L')))
+		if ((local_article == 0) && ((abort[0] == 'l') || (abort[0] == 'L')))
 			local_article = 1;
-		if ((local_article == 1)
-		    && ((abort[0] == 's')
-			|| (abort[0] == 'S')))
+		if ((local_article == 1) && ((abort[0] == 's') || (abort[0] == 'S')))
 			local_article = 0;
 		if (local_article == -1)
 			local_article = 1;
@@ -1413,9 +1355,7 @@ display_buffer()
 	for (p = top_of_win, i = 0; i < t_lines - 1; i++) {
 		move(i, 0);
 		if (p) {
-			shift = (currpnt + 2 > STRLEN) ?
-			    (currpnt / (STRLEN - scrollen)) * (STRLEN -
-							       scrollen) : 0;
+			shift = (currpnt + 2 > STRLEN) ?  (currpnt / (STRLEN - scrollen)) * (STRLEN - scrollen) : 0;
 			if (editansi) {
 				showansi = 1;
 				prints("%s", p->data);
@@ -1755,10 +1695,10 @@ int action, arg;
 		inputspecial = 1;
 /*		while (igetspecialchar(buf))
 		{
-                	ve_insert_str(buf);
+			ve_insert_str(buf);
 			display_buffer(); redoscr();
 		}
-         	inputspecial=0;*/
+		inputspecial=0;*/
 		display_buffer();
 		redoscr();
 		break;
@@ -1772,7 +1712,7 @@ int action, arg;
 			move(t_lines - 2, 0);
 			clrtoeol();
 			prints("[1m%s%s%s[m", msg,
-			       ", Çë°´ÈÎÒâ¼ü·µ»Ø±à¼­»­Ãæ...", ANSI_RESET);
+					", Çë°´ÈÎÒâ¼ü·µ»Ø±à¼­»­Ãæ...", ANSI_RESET);
 			igetkey();
 			newch = '\0';
 			editansi = showansi = 0;
@@ -1795,8 +1735,7 @@ int ch;
 	static int lastindent = -1;
 	int no_touch, warn, shift;
 
-	if (ch == Ctrl('P') || ch == KEY_UP ||
-	    ch == Ctrl('N') || ch == KEY_DOWN) {
+	if (ch == Ctrl('P') || ch == KEY_UP || ch == Ctrl('N') || ch == KEY_DOWN) {
 		if (lastindent == -1)
 			lastindent = currpnt;
 	} else
@@ -1905,9 +1844,7 @@ int ch;
 				currln--;
 				curr_window_line--;
 				currline = currline->prev;
-				currpnt =
-				    (currline->len >
-				     lastindent) ? lastindent : currline->len;
+				currpnt = (currline->len > lastindent) ? lastindent : currline->len;
 			}
 			if (enabledbchar) {
 				int i, j = 0;
@@ -1932,9 +1869,7 @@ int ch;
 					curr_window_line--;
 					currline = currline->prev;
 				}
-				currpnt =
-				    (currline->len >
-				     lastindent) ? lastindent : currline->len;
+				currpnt = (currline->len > lastindent) ? lastindent : currline->len;
 			}
 			if (enabledbchar) {
 				int i, j = 0;
@@ -2013,7 +1948,7 @@ int ch;
 		case KEY_INS:	/* Toggle insert/overwrite */
 			insert_character = !insert_character;
 			/*move(0,73);
-			   prints( " [%s] ", insert_character ? "Ins" : "Rep" ); */
+			prints( " [%s] ", insert_character ? "Ins" : "Rep" ); */
 			break;
 		case Ctrl('H'):
 		case '\177':	/* backspace */
@@ -2101,11 +2036,9 @@ int ch;
 				break;
 			}
 			if (currline->next) {
-				if (Origin(currline->next)
-				    && currpnt == currline->len && currpnt != 0)
+				if (Origin(currline->next) && currpnt == currline->len && currpnt != 0)
 					break;
-				if (Origin(currline->next)
-				    && currline->prev == NULL) {
+				if (Origin(currline->next) && currline->prev == NULL) {
 					vedit_key(Ctrl('Y'));
 					break;
 				}
@@ -2175,8 +2108,7 @@ int ch;
 	}
 	if (editansi /*|| mark_on */ )
 		redraw_everything = YEA;
-	shift = (currpnt + 2 > STRLEN) ?
-	    (currpnt / (STRLEN - scrollen)) * (STRLEN - scrollen) : 0;
+	shift = (currpnt + 2 > STRLEN) ?  (currpnt / (STRLEN - scrollen)) * (STRLEN - scrollen) : 0;
 	msgline(0);
 	if (shifttmp != shift || redraw_everything == YEA) {
 		redraw_everything = YEA;
@@ -2299,8 +2231,7 @@ int modifyheader;
 			display_buffer();
 		}
 		redraw_everything = NA;
-		shift = (currpnt + 2 > STRLEN) ?
-		    (currpnt / (STRLEN - scrollen)) * (STRLEN - scrollen) : 0;
+		shift = (currpnt + 2 > STRLEN) ?  (currpnt / (STRLEN - scrollen)) * (STRLEN - scrollen) : 0;
 		move(curr_window_line, currpnt - shift);
 
 		ch = (newch != '\0') ? newch : igetkey();
@@ -2329,9 +2260,7 @@ int modifyheader;
 		}
 		MMAP_END mmapfile(NULL, &mf);
 		if (retv)
-			if (askyn
-			    ("±¾ÎÄ°üº¬¸½¼þ£¬±à¼­ºó½«¶ªÊ§¸½¼þ£¬È·¶¨Òª±à¼­Âð£¿",
-			     NA, NA) == NA)
+			if (askyn("±¾ÎÄ°üº¬¸½¼þ£¬±à¼­ºó½«¶ªÊ§¸½¼þ£¬È·¶¨Òª±à¼­Âð£¿", NA, NA) == NA)
 				return -1;
 	}*/
 	t = showansi;
@@ -2349,3 +2278,4 @@ int modifyheader;
 		unblock_msg();
 	return ans;
 }
+

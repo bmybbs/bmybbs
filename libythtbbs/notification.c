@@ -286,6 +286,7 @@ static struct NotifyItem * parse_to_item(xmlNodePtr xmlItem) {
 
 	xmlChar *xml_str_board = xmlGetProp(xmlItem, (const xmlChar *)"board");
 	strncpy(item->board, (char *)xml_str_board, sizeof(item->board));
+	item->board[sizeof(item->board) - 1] = 0;
 	xmlFree(xml_str_board);
 
 	xmlChar *xml_str_userid = xmlGetProp(xmlItem, (const xmlChar *)"uid");

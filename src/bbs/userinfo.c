@@ -1,25 +1,25 @@
 /*
- Pirate Bulletin Board System
- Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
- Eagles Bulletin Board System
- Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
- Guy Vega, gtvega@seabass.st.usm.edu
- Dominic Tynes, dbtynes@seabass.st.usm.edu
- Firebird Bulletin Board System
- Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
- Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
- Copyright (C) 1999, Zhou Lin, kcn@cic.tsinghua.edu.cn
+	Pirate Bulletin Board System
+	Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
+	Eagles Bulletin Board System
+	Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
+						Guy Vega, gtvega@seabass.st.usm.edu
+						Dominic Tynes, dbtynes@seabass.st.usm.edu
+	Firebird Bulletin Board System
+	Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
+						Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
+	Copyright (C) 1999, Zhou Lin, kcn@cic.tsinghua.edu.cn
 
- This program is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 1, or (at your option)
- any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 1, or (at your option)
+	any later version.
 
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
- */
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+*/
 
 #include "bbs.h"
 #include "bcache.h"
@@ -92,13 +92,13 @@ static void register_success(int usernum, char *userid, char *realname,
 	uinfo.userlevel |= PERM_DEFAULT;	// by ylsdd
 	substitute_record(PASSFILE, &uinfo, sizeof(struct userec), usernum);
 
-	sethomefile(buf, uinfo.userid, "sucessreg");
+	sethomefile_s(buf, sizeof(buf), uinfo.userid, "sucessreg");
 	if ((fout = fopen(buf, "w")) != NULL) {
 		fprintf(fout, "\n");
 		fclose(fout);
 	}
 
-	sethomefile(buf, uinfo.userid, "register");
+	sethomefile_s(buf, sizeof(buf), uinfo.userid, "register");
 
 	if ((fout = fopen(buf, "w")) != NULL) {
 		fprintf(fout, "%s: %d\n", "usernum", usernum);
@@ -118,7 +118,7 @@ static void register_success(int usernum, char *userid, char *realname,
 	mail_file("etc/s_fill", uinfo.userid, "恭禧您通过身份验证"); // 这个地方有个瑕疵，就是发信人为本人
 
 	mail_file("etc/s_fill2", uinfo.userid, "欢迎加入" MY_BBS_NAME "大家庭");
-	sethomefile(buf, uinfo.userid, "mailcheck");
+	sethomefile_s(buf, sizeof(buf), uinfo.userid, "mailcheck");
 	unlink(buf);
 	sprintf(genbuf, "让 %s 通过身分确认.", uinfo.userid);
 	securityreport(genbuf, genbuf);
@@ -127,6 +127,7 @@ static void register_success(int usernum, char *userid, char *realname,
 }
 
 // username用户验证失败的处理（砍掉这个用户，不过目前暂未使用这个函数）， added by interma@BMY 2005.5.16
+#if 0
 static void register_fail(char *userid)
 {
 	int id;
@@ -151,6 +152,7 @@ static void register_fail(char *userid)
 	substitute_record(PASSFILE, &lookupuser, sizeof(lookupuser), id);
 	ythtbbs_cache_UserTable_setuserid(id, lookupuser.userid);
 }
+#endif
 
 extern char fromhost[60];
 #endif
@@ -247,7 +249,7 @@ int uinfo_query(struct userec *u, int real, int unum)
 	struct userec newinfo;
 	char ans[3], buf[STRLEN], genbuf[128];
 	char src[STRLEN], dst[STRLEN];
-	int i, fail = 0, netty_check = 0;
+	int i, fail = 0; //, netty_check = 0;
 	FILE *fin, *fout, *dp;
 	time_t code;
 
@@ -390,12 +392,12 @@ int uinfo_query(struct userec *u, int real, int unum)
 			sprintf(src, "mail/%c/%s", mytoupper(u->userid[0]), u->userid);
 			sprintf(dst, "mail/%c/%s", mytoupper(newinfo.userid[0]), newinfo.userid);
 			rename(src, dst);
-			sethomepath(src, u->userid);
-			sethomepath(dst, newinfo.userid);
+			sethomepath_s(src, sizeof(src), u->userid);
+			sethomepath_s(dst, sizeof(dst), newinfo.userid);
 			rename(src, dst);
-			sethomefile(src, u->userid, "register");
+			sethomefile_s(src, sizeof(src), u->userid, "register");
 			unlink(src);
-			sethomefile(src, u->userid, "register.old");
+			sethomefile_s(src, sizeof(src), u->userid, "register.old");
 			unlink(src);
 			ythtbbs_cache_UserTable_setuserid(unum, newinfo.userid);
 		}
@@ -406,7 +408,8 @@ int uinfo_query(struct userec *u, int real, int unum)
 		}
 		/* added by netty to automatically send a mail to new user. */
 
-		if ((netty_check == 1)) {
+#if 0
+		if (netty_check == 1) {
 			sprintf(genbuf, "%s", email_domain());
 			if ((sysconf_str("EMAILFILE") != NULL)
 					&& (!strstr(newinfo.email, genbuf))
@@ -414,7 +417,7 @@ int uinfo_query(struct userec *u, int real, int unum)
 					&& (!invalid_email(newinfo.email))) {
 				randomize();
 				code = (time(0) / 2) + (rand() / 10);
-				sethomefile(genbuf, u->userid, "mailcheck");
+				sethomefile_s(genbuf, sizeof(genbuf), u->userid, "mailcheck");
 				if ((dp = fopen(genbuf, "w")) == NULL) {
 					fclose(dp);
 					return -2;
@@ -457,14 +460,17 @@ int uinfo_query(struct userec *u, int real, int unum)
 				}
 			}
 		}
+#endif
 		memcpy(u, &newinfo, sizeof(newinfo));
 		set_safe_record();
+#if 0
 		if (netty_check == 1) {
 			newinfo.userlevel &= ~(PERM_LOGINOK | PERM_PAGE);
-			sethomefile(src, newinfo.userid, "register");
-			sethomefile(dst, newinfo.userid, "register.old");
+			sethomefile_s(src, sizeof(src), newinfo.userid, "register");
+			sethomefile_s(dst, sizeof(dst), newinfo.userid, "register.old");
 			rename(src, dst);
 		}
+#endif
 		substitute_record(PASSFILE, &newinfo, sizeof(newinfo), unum);
 	}
 	clear();
@@ -622,8 +628,7 @@ void x_fillform()
 		getfield(10, "包括寝室或门牌号码", "目前住址或通讯地址", addr, STRLEN);
 		getfield(12, "包括可联络时间", "联络电话", phone, STRLEN);
 		getfield(14, "校友会或毕业学校", "校 友 会", assoc, STRLEN);
-		/* only for 9#        getfield( 14, "介绍人ID和真实姓名",    "介绍人(外来的ID须填:ID/姓名)",   assoc, STRLEN );
-		 */
+		/* only for 9#        getfield( 14, "介绍人ID和真实姓名",    "介绍人(外来的ID须填:ID/姓名)",   assoc, STRLEN ); */
 		mesg = "以上资料是否正确, 按 Q 放弃注册 (Y/N/Quit)? [N]: ";
 		getdata(t_lines - 1, 0, mesg, ans, 3, DOECHO, YEA);
 		if (ans[0] == 'Q' || ans[0] == 'q')
@@ -644,9 +649,9 @@ void x_fillform()
 	act_data.phone[VALUELEN-1] = '\0';
 	snprintf(act_data.operator, IDLEN+2, "%s", currentuser.userid);
 	act_data.operator[IDLEN+1] = '\0';
-	snprintf(act_data.ip, 40, "%s", currentuser.lasthost);
-	act_data.ip[40] = '\0';
-	sprintf(act_data.email, "");
+	snprintf(act_data.ip, BMY_IPV6_LEN, "%s", currentuser.lasthost);
+	act_data.ip[BMY_IPV6_LEN - 1] = '\0';
+	act_data.email[0] = 0;
 	act_data.status = 0;
 	write_active(&act_data);
 
@@ -767,8 +772,7 @@ x_fillform()
 		getfield(10, "包括寝室或门牌号码", "目前住址或通讯地址", addr, STRLEN);
 		getfield(12, "包括可联络时间", "联络电话", phone, STRLEN);
 		getfield(14, "校友会或毕业学校", "校 友 会", assoc, STRLEN);
-		/* only for 9#        getfield( 14, "介绍人ID和真实姓名",    "介绍人(外来的ID须填:ID/姓名)",   assoc, STRLEN );
-		 */
+		/* only for 9#        getfield( 14, "介绍人ID和真实姓名",    "介绍人(外来的ID须填:ID/姓名)",   assoc, STRLEN ); */
 		mesg = "以上资料是否正确, 按 Q 放弃注册 (Y/N/Quit)? [N]: ";
 		getdata(t_lines - 1, 0, mesg, ans, 3, DOECHO, YEA);
 		if (ans[0] == 'Q' || ans[0] == 'q')

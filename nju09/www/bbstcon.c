@@ -1,4 +1,5 @@
 #include "bbslib.h"
+#include "bmy/convcode.h"
 
 // bbscon
 int testmozilla(void);
@@ -211,7 +212,7 @@ bbstcon_main()
 		printf("[<a href=bbstcon?board=%s&start=%d&th=%d>обрЁ</a>]",
 				board, nextstart, thread);
 	flpage = total - total%20;
-	if (nextstart)
+	if (flpage > 0)
 		printf("[<a href=bbstcon?board=%s&start=%d&th=%d>н╡рЁ</a>]",
 				board, flpage, thread);
 //

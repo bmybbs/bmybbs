@@ -17,11 +17,8 @@ struct fileheader *f1, *f2;
 	return f1->filetime - f2->filetime;
 }
 
-void
-insertfile(fh)
-struct fileheader fh;
-{
-	data[len] = fh;
+void insertfile(struct fileheader *fh) {
+	data[len] = *fh;
 	len++;
 }
 
@@ -61,9 +58,9 @@ int main(int argc, char **argv)
 
 	while (ent = readdir(pdir)) {
 		if ((strcmp(ent->d_name, ".DIR"))
-		    && (strcmp(ent->d_name, "."))
-		    && (strcmp(ent->d_name, ".."))
-		    && (ent->d_name[0] == 'M')) {
+				&& (strcmp(ent->d_name, "."))
+				&& (strcmp(ent->d_name, ".."))
+				&& (ent->d_name[0] == 'M')) {
 			struct stat st;
 			if (stat(ent->d_name, &st))
 				continue;
@@ -71,7 +68,7 @@ int main(int argc, char **argv)
 				char *p;
 				bzero(&fh, sizeof (fh));
 				fgets(buf1, 256, art);
-				if (buf1 == 0)
+				if (buf1[0] == 0)
 					continue;
 				p = strchr(buf1 + 8, ' ');
 				if (p)
@@ -82,7 +79,7 @@ int main(int argc, char **argv)
 					*p = 0;
 				fh_setowner(&fh, buf1 + 8, 0);
 				fgets(buf2, 256, art);
-				if (buf2 == 0)
+				if (buf2[0] == 0)
 					continue;
 				printf("%s", buf2);
 				if (p = strchr(buf2 + 8, '\n'))
@@ -95,13 +92,12 @@ int main(int argc, char **argv)
 					fh.accessed |= FH_DIGEST;
 				ytht_strsncpy(fh.title, buf2 + 8, sizeof(fh.title));
 				if (strncmp(buf1, "发信站", 6)
-				    && strncmp(buf1, "寄信人: ", 8)
-				    && strncmp(buf1, "发信人: ", 8))
+						&& strncmp(buf1, "寄信人: ", 8)
+						&& strncmp(buf1, "发信人: ", 8))
 					continue;
-				if ((strncmp(buf2, "标  题: ", 8))
-				    && (strncmp(buf2, "标　题: ", 8)))
+				if ((strncmp(buf2, "标  题: ", 8)) && (strncmp(buf2, "标　题: ", 8)))
 					continue;
-				insertfile(fh);
+				insertfile(&fh);
 				fclose(art);
 			}
 		}

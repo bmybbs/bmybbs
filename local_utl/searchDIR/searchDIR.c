@@ -1,7 +1,7 @@
 #include "bbs.h"
 
 char *
-encode_url(unsigned char *s)
+encode_url(char *s)
 {
 	int i, j;
 	static char buf[512];
@@ -36,13 +36,13 @@ int
 countdb(char *str)
 {
 	int db = 0;
-	unsigned char *ptr = str;
-	while (*ptr) {
+	char *ptr = str;
+	while (*ptr != 0) {
 		if (db)
 			db = 0;
-		else if (*ptr >= 128)
+		else if ((unsigned char) *ptr >= 128)
 			db = 1;
-		*ptr++;
+		ptr++;
 	}
 	return db;
 }
@@ -55,7 +55,7 @@ main(int argn, char **argv)
 	char fn[20];
 	char path[100];
 	struct fileheader fh;
-	struct mmapfile mf = { ptr:NULL };
+	struct mmapfile mf = { .ptr = NULL };
 	if (argn != 3 || strlen(argv[1]) > 20)
 		return 0;
 	strncpy(fn, argv[2], 20);
@@ -72,11 +72,7 @@ main(int argn, char **argv)
 		retv = Search_Bin(mf.ptr, filetime, 0, total);
 		if (retv < 0)
 			return 0;
-		memcpy(&fh,
-		       (struct fileheader *) (mf.ptr +
-					      retv *
-					      sizeof (struct fileheader)),
-		       sizeof (struct fileheader));
+		memcpy(&fh, (struct fileheader *) (mf.ptr + retv * sizeof (struct fileheader)), sizeof (struct fileheader));
 	}
 
 	MMAP_CATCH {
@@ -90,7 +86,7 @@ main(int argn, char **argv)
 	if (countdb(fh.title)) {
 		fh.title[strlen(fh.title) - 1] = 0;
 	}
-	printf("%s,%ld,%s,%s\n", fh2owner(&fh), fh.thread, encode_url(fh.title),
-	       fh.title);
+	printf("%s,%ld,%s,%s\n", fh2owner(&fh), fh.thread, encode_url(fh.title), fh.title);
 	return 0;
 }
+

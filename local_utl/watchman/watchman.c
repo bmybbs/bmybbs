@@ -62,6 +62,6 @@ main(int argc, char *argv[])
 			fputs(buf, fp);
 		fclose(fr);
 	}
-	fclose(fp);
+	pclose(fp);
 	return 0;
 }

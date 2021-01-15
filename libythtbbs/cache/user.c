@@ -6,6 +6,7 @@
 #include <sys/file.h>
 #include <sys/stat.h>
 #include "ytht/shmop.h"
+#include "ytht/strlib.h"
 #include "ythtbbs/cache.h"
 #include "ythtbbs/record.h"
 #include "ythtbbs/user.h"
@@ -265,7 +266,7 @@ void ythtbbs_cache_UserTable_getuserid(int usernum, char *userid, size_t len) {
 	ythtbbs_cache_UserTable_resolve();
 
 	if (usernum > 0 && usernum <= MAXUSERS && usernum <= shm_user_table->number) {
-		strncpy(userid, shm_user_table->users[usernum - 1].userid, len);
+		ytht_strsncpy(userid, shm_user_table->users[usernum - 1].userid, len);
 		shm_user_table->users[usernum - 1].userid[len - 1] = '\0';
 	} else {
 		userid[0] = '\0';

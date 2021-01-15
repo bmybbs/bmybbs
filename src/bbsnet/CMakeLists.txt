@@ -1,2 +1,2 @@
 add_executable(bbsnet bbsnet.c)
-link_directories(bbsnet ythtbbs ytht)
+target_link_libraries(bbsnet ytht)

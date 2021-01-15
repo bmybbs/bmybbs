@@ -219,7 +219,6 @@ gettarget_board_title(char *board, char *title, char *filename)
 	fclose(fp);
 	ptr = strstr(buf, "标  题:");
 	if (ptr == NULL) {
-		fclose(fp);
 		return -3;
 	}
 	snprintf(title, 60, "%s", ptr + sizeof ("标  题: ") - 1);

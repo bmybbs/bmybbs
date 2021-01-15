@@ -6,6 +6,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <time.h>
+#include "ytht/strlib.h"
 
 char host1[100][40], host2[100][40], ip[100][40];
 int port[100], counts = 0;
@@ -209,11 +210,11 @@ main(int n, char *cmd[])
 	save_tty();
 	init_tty();
 	if (n >= 2)
-		strncpy(datafile, cmd[1], sizeof(datafile));
+		ytht_strsncpy(datafile, cmd[1], sizeof(datafile));
 	if (n >= 3)
-		strncpy(telnet, cmd[2], sizeof(telnet));
+		ytht_strsncpy(telnet, cmd[2], sizeof(telnet));
 	if (n >= 4)
-		strncpy(userid, cmd[3], sizeof(userid));
+		ytht_strsncpy(userid, cmd[3], sizeof(userid));
 	init_data();
 	main_loop();
 	printf("\033[m");
