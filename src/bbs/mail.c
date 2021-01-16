@@ -309,7 +309,7 @@ char *userid, *title;
 	int internet_mail = 0;
 	char tmp_fname[STRLEN];
 	char uid[80];
-	int now;
+	time_t now;
 	int save_in_mail;
 
 	strcpy(uid, userid);
@@ -333,7 +333,7 @@ char *userid, *title;
 
 	if (!(lookupuser.userlevel & PERM_READMAIL))
 		return -3;
-	setmailfile(filepath, uid, "");
+	setmailfile_s(filepath, sizeof(filepath), uid, "");
 	if (stat(filepath, &st) == -1) {
 		if (mkdir(filepath, 0775) == -1)
 			return -1;
@@ -343,13 +343,13 @@ char *userid, *title;
 	}
 	memset(&newmessage, 0, sizeof (newmessage));
 	now = time(NULL);
-	sprintf(fname, "M.%d.A", now);
-	setmailfile(filepath, uid, fname);
+	sprintf(fname, "M.%ld.A", now);
+	setmailfile_s(filepath, sizeof(filepath), uid, fname);
 	count = 0;
 	while ((fp = open(filepath, O_CREAT | O_EXCL | O_WRONLY, 0644)) == -1) {
 		now++;
-		sprintf(fname, "M.%d.A", now);
-		setmailfile(filepath, uid, fname);
+		sprintf(fname, "M.%ld.A", now);
+		setmailfile_s(filepath, sizeof(filepath), uid, fname);
 		if (count++ > MAX_POSTRETRY) {
 			return -1;
 		}
@@ -430,7 +430,7 @@ edit_mail_file:
 		clear();
 		if (askyn("是否备份给自己", NA, NA) == YEA)
 			mail_file(filepath, currentuser.userid, save_title2);
-		setmailfile(genbuf, uid, DOT_DIR);
+		setmailfile_s(genbuf, sizeof(genbuf), uid, DOT_DIR);
 		if (append_record(genbuf, &newmessage, sizeof (newmessage)) == -1) {
 			in_mail = save_in_mail;
 			return -1;
@@ -505,7 +505,7 @@ static int
 read_mail(fptr)
 struct fileheader *fptr;
 {
-	setmailfile(genbuf, currentuser.userid, fh2fname(fptr));
+	setmailfile_s(genbuf, sizeof(genbuf), currentuser.userid, fh2fname(fptr));
 	ansimore(genbuf, NA);
 	fptr->accessed |= FH_READ;
 	return 0;
@@ -564,7 +564,7 @@ struct fileheader *fptr;
 			done = YEA;
 		}
 		if (!done) {
-			setmailfile(fname, currentuser.userid, fh2fname(fptr));
+			setmailfile_s(fname, sizeof(fname), currentuser.userid, fh2fname(fptr));
 			ansimore(fname, NA);	/* re-read */
 		}
 	}
@@ -573,7 +573,7 @@ struct fileheader *fptr;
 		prints("删除信件 '%s' ", fptr->title);
 		getdata(1, 0, "(Y)es ,(N)o [N]: ", genbuf, 3, DOECHO, YEA);
 		if (genbuf[0] == 'Y' || genbuf[0] == 'y') {	/* if not yes quit */
-			setmailfile(fname, currentuser.userid, fh2fname(fptr));
+			setmailfile_s(fname, sizeof(fname), currentuser.userid, fh2fname(fptr));
 			unlink(fname);
 			delmsgs[delcnt++] = idc;
 		}
@@ -783,7 +783,7 @@ char *direct;
 	strncat(title, fileinfo->title, sizeof (title) - 5);
 
 	if (quote_file[0] == '\0')
-		setmailfile(quote_file, currentuser.userid, fh2fname(fileinfo));
+		setmailfile_s(quote_file, sizeof(quote_file), currentuser.userid, fh2fname(fileinfo));
 	strcpy(quote_user, fileinfo->owner);
 	switch (do_send(uid, title)) {
 	case -1:
@@ -929,32 +929,32 @@ char *direct;
 }
 
 // 等价子
-typedef int(*equalor)(const struct fileheader*, void *);
+typedef int(*equalor)(const struct fileheader*, const void *);
 // 标记的邮件
-static int ismark(const struct fileheader *mail, void *ext)
+static int ismark(const struct fileheader *mail, const void *ext)
 {
 	if (mail->accessed & FH_MARKED)
 		return 1;
 	return 0;
 }
 // 带附件的邮件
-static int isattach(const struct fileheader *mail, void *ext)
+static int isattach(const struct fileheader *mail, const void *ext)
 {
 	if (mail->accessed & FH_ATTACHED)
 		return 1;
 	return 0;
 }
 // 特定标题的邮件
-static int istitle(const struct fileheader *mail, void *ext)
+static int istitle(const struct fileheader *mail, const void *ext)
 {
-	if (strstr2(mail->title, (char*)ext) != NULL)
+	if (strstr2(mail->title, (const char *)ext) != NULL)
 		return 1;
 	return 0;
 }
 // 特定发信人的邮件
-static int issender(const struct fileheader *mail, void *ext)
+static int issender(const struct fileheader *mail, const void *ext)
 {
-	if (strncasecmp(mail->owner, (char*)ext, sizeof(mail->owner)+1) == 0) // 不区分大小写
+	if (strncasecmp(mail->owner, (const char*)ext, sizeof(mail->owner)+1) == 0) // 不区分大小写
 		return 1;
 	return 0;
 }
@@ -1007,6 +1007,7 @@ static void do_search_mailbox(int type, const char *whattosearch, const char *te
 
 // 将邮箱索引文件(.DIR)的路径名截取出来
 // interma@bmy, 2006-11-23
+#if 0
 static char *truncateDIR(char *dest)
 {
 	char *p = NULL;
@@ -1016,6 +1017,7 @@ static char *truncateDIR(char *dest)
 	}
 	return dest;
 }
+#endif
 
 struct one_key query_comms[];
 
@@ -1328,7 +1330,7 @@ g_send()
 	modify_user_mode(SMAIL);
 	*quote_file = '\0';
 	clear();
-	sethomefile(maillists, currentuser.userid, "maillist");
+	sethomefile_s(maillists, sizeof(maillists), currentuser.userid, "maillist");
 	cnt = listfilecontent(maillists);
 	while (1) {
 		if (cnt > maxrecp - 10) {
@@ -1666,14 +1668,15 @@ char tmpfile[STRLEN], userid[STRLEN], title[STRLEN];
 	struct fileheader newmessage;
 	struct stat st;
 	char fname[STRLEN], filepath[STRLEN];
-	int fp, count, now;
+	int fp, count;
+	time_t now;
 
 	memset(&newmessage, 0, sizeof (newmessage));
 	ytht_strsncpy(newmessage.owner, currentuser.userid, sizeof(newmessage.owner));
 	ytht_strsncpy(newmessage.title, title, sizeof(newmessage.title));
 	ytht_strsncpy(save_title, newmessage.title, sizeof(save_title));
 
-	setmailfile(filepath, userid, "");
+	setmailfile_s(filepath, sizeof(filepath), userid, "");
 	if (stat(filepath, &st) == -1) {
 		if (mkdir(filepath, 0775) == -1)
 			return -1;
@@ -1682,13 +1685,13 @@ char tmpfile[STRLEN], userid[STRLEN], title[STRLEN];
 			return -1;
 	}
 	now = time(NULL);
-	sprintf(fname, "M.%d.A", now);
-	setmailfile(filepath, userid, fname);
+	sprintf(fname, "M.%ld.A", now);
+	setmailfile_s(filepath, sizeof(filepath), userid, fname);
 	count = 0;
 	while ((fp = open(filepath, O_CREAT | O_EXCL | O_WRONLY, 0644)) == -1) {
 		now++;
-		sprintf(fname, "M.%d.A", now);
-		setmailfile(filepath, userid, fname);
+		sprintf(fname, "M.%ld.A", now);
+		setmailfile_s(filepath, sizeof(filepath), userid, fname);
 		if (count++ > MAX_POSTRETRY) {
 			return -1;
 		}
@@ -1701,7 +1704,7 @@ char tmpfile[STRLEN], userid[STRLEN], title[STRLEN];
 		symlink(tmpfile, filepath);
 	} else
 		copyfile(tmpfile, filepath);
-	setmailfile(genbuf, userid, DOT_DIR);
+	setmailfile_s(genbuf, sizeof(genbuf), userid, DOT_DIR);
 	if (append_record(genbuf, &newmessage, sizeof (newmessage)) == -1)
 		return -1;
 	sprintf(genbuf, "%s mail %s", currentuser.userid, userid);
@@ -1717,7 +1720,8 @@ char *buf, userid[], title[];
 	struct fileheader newmessage;
 	struct stat st;
 	char fname[STRLEN], filepath[STRLEN];
-	int count, tmpinmail, now, fd;
+	int count, tmpinmail, fd;
+	time_t now;
 	FILE *fp;
 
 	memset(&newmessage, 0, sizeof (newmessage));
@@ -1725,7 +1729,7 @@ char *buf, userid[], title[];
 	ytht_strsncpy(newmessage.title, title, sizeof(newmessage.title));
 	ytht_strsncpy(save_title, newmessage.title, sizeof(save_title));
 
-	setmailfile(filepath, userid, "");
+	setmailfile_s(filepath, sizeof(filepath), userid, "");
 	if (stat(filepath, &st) == -1) {
 		if (mkdir(filepath, 0775) == -1)
 			return -1;
@@ -1734,13 +1738,13 @@ char *buf, userid[], title[];
 			return -1;
 	}
 	now = time(NULL);
-	sprintf(fname, "M.%d.A", now);
-	setmailfile(filepath, userid, fname);
+	sprintf(fname, "M.%ld.A", now);
+	setmailfile_s(filepath, sizeof(filepath), userid, fname);
 	count = 0;
 	while ((fd = open(filepath, O_CREAT | O_EXCL | O_WRONLY, 0644)) == -1) {
 		now++;
-		sprintf(fname, "M.%d.A", now);
-		setmailfile(filepath, userid, fname);
+		sprintf(fname, "M.%ld.A", now);
+		setmailfile_s(filepath, sizeof(filepath), userid, fname);
 		if (count++ > MAX_POSTRETRY) {
 			return -1;
 		}
@@ -1757,7 +1761,7 @@ char *buf, userid[], title[];
 	in_mail = tmpinmail;
 	fprintf(fp, "%s", buf);
 	fclose(fp);
-	setmailfile(genbuf, userid, DOT_DIR);
+	setmailfile_s(genbuf, sizeof(genbuf), userid, DOT_DIR);
 	if (append_record(genbuf, &newmessage, sizeof (newmessage)) == -1)
 		return -1;
 	sprintf(genbuf, "%s mail %s", currentuser.userid, userid);
@@ -2080,7 +2084,7 @@ mail_rjunk()
 		getmailinfo(npath, &rstmsg);
 		rstmsg.filetime = atoi(direntp->d_name + 2 + len);
 		rstmsg.thread = rstmsg.filetime;
-		setmailfile(genbuf, currentuser.userid, DOT_DIR);
+		setmailfile_s(genbuf, sizeof(genbuf), currentuser.userid, DOT_DIR);
 		if (append_record(genbuf, &rstmsg, sizeof (struct fileheader)) == -1)
 			break;
 		count++;
@@ -2104,7 +2108,7 @@ m_cancel_1(struct fileheader *fh, char *receiver)
 		return 0;
 	snprintf(buf, sizeof (buf), "您要撤回邮件<%.50s>吗?", fh->title);
 	if (YEA == askyn(buf, NA, NA)) {
-		setmailfile(buf, receiver, fh2fname(fh));
+		setmailfile_s(buf, sizeof(buf), receiver, fh2fname(fh));
 		mail_file(buf, currentuser.userid, "[系统]撤回的邮件备份");
 		fp = fopen(buf, "r+");
 		if (NULL == fp) {
@@ -2158,18 +2162,18 @@ get_mail_size()
 		if (fd < 0)
 			return 0;
 		while (read(fd, &tmpfh, sizeof (tmpfh)) == sizeof (tmpfh)) {
-			setmailfile(tmpmail, currentuser.userid, fh2fname(&tmpfh));
+			setmailfile_s(tmpmail, sizeof(tmpmail), currentuser.userid, fh2fname(&tmpfh));
 			currmailsize += file_size(tmpmail);
 		}
 		close(fd);
 	}
-	sethomefile(buf, currentuser.userid, "msgindex");
+	sethomefile_s(buf, sizeof(buf), currentuser.userid, "msgindex");
 	if (file_time(buf))
 		currmsgsize = file_size(buf);
-	sethomefile(buf, currentuser.userid, "msgindex2");
+	sethomefile_s(buf, sizeof(buf), currentuser.userid, "msgindex2");
 	if (file_time(buf))
 		currmsgsize += file_size(buf);
-	sethomefile(buf, currentuser.userid, "msgcontent");
+	sethomefile_s(buf, sizeof(buf), currentuser.userid, "msgcontent");
 	if (file_time(buf))
 		currmsgsize += file_size(buf);
 	currmsgsize = (currmailsize + currmsgsize) / 1024;
@@ -2201,7 +2205,7 @@ char userid[];
 	} else
 		strcpy(uident, userid);
 	clear();
-	setmailfile(buf, uident, ".DIR");
+	setmailfile_s(buf, sizeof(buf), uident, ".DIR");
 	if (!new_apply_record(buf, sizeof (struct fileheader), (void *) m_cancel_1, uident))
 		prints("没有找到可以撤回的信件\n");
 	pressreturn();

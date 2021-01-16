@@ -15,7 +15,7 @@ extern int nettyNN;
 extern int selboard;           /* THis flag is true if above is active */
 extern int inBBSNET;
 extern char IScurrBM;
-extern char quote_file[], quote_user[];
+extern char quote_file[120], quote_user[];
 extern struct postheader header;
 
 void do_delay(int i);
