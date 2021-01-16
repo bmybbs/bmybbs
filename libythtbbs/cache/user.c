@@ -594,6 +594,9 @@ static int ythtbbs_cache_UserIDHashTable_resolve() {
 	char local_buf[64];
 
 	fd = open(MY_BBS_HOME "/.CACHE.hash.lock", O_RDWR | O_CREAT, 0660);
+	if (fd < 0) {
+		return -1;
+	}
 	flock(fd, LOCK_EX);
 	if (shm_userid_hashtable == NULL) {
 		shm_userid_hashtable = get_shm(UCACHE_HASH_SHMKEY, sizeof(*shm_userid_hashtable));
