@@ -124,8 +124,10 @@ power_range(char *filename, unsigned int id1, int id2, char *select, power_dofun
 		id2 = st.st_size / sizeof (struct fileheader);
 	bufsize = sizeof (struct fileheader) * (id2 + 1 - id1);
 	buf = malloc(bufsize);
-	if (buf == NULL)
+	if (buf == NULL) {
+		close(fd);
 		return -4;
+	}
 
 	lseek(fd, (id1 - 1) * sizeof (struct fileheader), SEEK_SET);
 	n = read(fd, buf, bufsize);
