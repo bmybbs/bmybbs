@@ -97,7 +97,6 @@ set(SRC
 	bbsattach.c
 	bbskick.c
 
-	bbsscanreg.c
 	bbsshowfile.c
 	bbst.c
 	bbsdt.c

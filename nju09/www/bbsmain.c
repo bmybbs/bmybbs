@@ -57,7 +57,6 @@ struct cgi_applet applets[] = {
 	{bbsmsg_main, {"bbsmsg", NULL}, 0L, 0L, 0},
 	{bbssendmsg_main, {"bbssendmsg", NULL}, 0L, 0L, 0},
 	{bbsreg_main, {"bbsreg", NULL}, 0L, 0L, 0},
-	{bbsscanreg_main, {"bbsscanreg", NULL}, 0L, 0L, 0},
 	{bbsmailmsg_main, {"bbsmailmsg", NULL}, 0L, 0L, 0},
 	{bbssndmail_main, {"bbssndmail", NULL}, 0L, 0L, 0},
 	{bbsnewmail_main, {"bbsnewmail", NULL}, 0L, 0L, 0},
