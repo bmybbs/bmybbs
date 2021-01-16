@@ -372,11 +372,10 @@ char **argv;
 	sprintf(ULIST, "%s.%s", ULIST_BASE, genbuf);
 
 	if (argc >= 3) {
-		strncpy(fromhost, argv[2], BMY_IPV6_LEN);
+		ytht_strsncpy(fromhost, argv[2], BMY_IPV6_LEN);
 	} else {
 		fromhost[0] = '\0';
 	}
-	fromhost[BMY_IPV6_LEN] = '\0';
 
 #ifndef lint
 	signal(SIGINT, SIG_IGN);
