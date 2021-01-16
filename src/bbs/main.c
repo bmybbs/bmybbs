@@ -818,8 +818,7 @@ user_login()
 	}
 
 	set_safe_record();
-	strncpy(currentuser.lasthost, fromhost, BMY_IPV6_LEN);
-	currentuser.lasthost[BMY_IPV6_LEN] = '\0';	/* dumb mistake on my part */
+	ytht_strsncpy(currentuser.lasthost, fromhost, BMY_IPV6_LEN);
 	dtime = time(NULL) - 4 * 3600;
 	day = localtime(&dtime)->tm_mday;
 	dtime = currentuser.lastlogin - 4 * 3600;
