@@ -358,6 +358,8 @@ char *prompt, *data;
 		move(origy, origx);
 		prints("%s\n", data);
 	}
+	if (cwlist)
+		ClearSubList(cwlist);
 	return 0;
 }
 
