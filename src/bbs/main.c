@@ -647,8 +647,7 @@ direct_login()
 	u_enter();
 	started = 1;
 	WishNum = 9999;
-	strncpy(currentuser.lasthost, fromhost, BMY_IPV6_LEN);
-	currentuser.lasthost[BMY_IPV6_LEN] = '\0';	/* dumb mistake on my part */
+	ytht_strsncpy(currentuser.lasthost, fromhost, BMY_IPV6_LEN);
 	currentuser.lastlogin = time(NULL);
 	if(uinfo.invisible){			//add by mintbaggio@BMY for normal cloak
 		//currentuser.pseudo_lastlogout = currentuser.lastlogin+10;
