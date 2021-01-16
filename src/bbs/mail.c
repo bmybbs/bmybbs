@@ -244,7 +244,7 @@ mailall()
 	add_loginfo(fname);
 	move(t_lines - 1, 0);
 	clrtoeol();
-	prints("[5;1;32;44mÕıÔÚ¼Ä¼şÖĞ£¬ÇëÉÔºò.....                                                        [m");
+	prints("\033[5;1;32;44mÕıÔÚ¼Ä¼şÖĞ£¬ÇëÉÔºò.....                                                        \033[m");
 	refresh();
 	mailtoall(ans[0] - '0', hour);
 	move(t_lines - 1, 0);
@@ -613,8 +613,8 @@ mailtitle()
 {
 	showtitle("ÓÊ¼şÑ¡µ¥    ", MY_BBS_NAME);
 
-	prints("Àë¿ª[[1;32m¡û[m,[1;32me[m]  Ñ¡Ôñ[[1;32m¡ü[m,[1;32m¡ı[m]  ÔÄ¶ÁĞÅ¼ş[[1;32m¡ú[m,[1;32mRtn[m]  »ØĞÅ[[1;32mR[m]  ¿³ĞÅ£¯Çå³ı¾ÉĞÅ[[1;32md[m,[1;32mD[m]  ÇóÖú[[1;32mh[m][m\n");
-	prints(" [1;44m±àºÅ    %-12s %6s  %-24s %d %s %d %s[m\n", "·¢ĞÅÕß",
+	prints("Àë¿ª[\033[1;32m¡û\033[m,\033[1;32me\033[m]  Ñ¡Ôñ[\033[1;32m¡ü\033[m,\033[1;32m¡ı\033[m]  ÔÄ¶ÁĞÅ¼ş[\033[1;32m¡ú\033[m,\033[1;32mRtn\033[m]  »ØĞÅ[\033[1;32mR\033[m]  ¿³ĞÅ£¯Çå³ı¾ÉĞÅ[\033[1;32md\033[m,\033[1;32mD\033[m]  ÇóÖú[\033[1;32mh\033[m]\033[m\n");
+	prints(" \033[1;44m±àºÅ    %-12s %6s  %-24s %d %s %d %s\033[m\n", "·¢ĞÅÕß",
 			"ÈÕ  ÆÚ", "±ê  Ìâ      µ±Ç°ĞÅÏäÈİÁ¿", max_mail_size(),
 			"k,ÒÑÓÃ¿Õ¼ä", get_mail_size(), "k");
 	clrtobot();
@@ -1333,7 +1333,7 @@ g_send()
 	while (1) {
 		if (cnt > maxrecp - 10) {
 			move(2, 0);
-			prints("Ä¿Ç°ÏŞÖÆ¼ÄĞÅ¸ø [1m%d[m ÈË", maxrecp);
+			prints("Ä¿Ç°ÏŞÖÆ¼ÄĞÅ¸ø \033[1m%d\033[m ÈË", maxrecp);
 		}
 		if (keepgoing) {
 			tmp[0]='a';
@@ -1371,7 +1371,7 @@ g_send()
 		case 'a':
 			if (!(lookupuser.userlevel & PERM_READMAIL)) {
 				move(2, 0);
-				prints("ÎŞ·¨ËÍĞÅ¸ø: [1m%s[m\n", lookupuser.userid);
+				prints("ÎŞ·¨ËÍĞÅ¸ø: \033[1m%s\033[m\n", lookupuser.userid);
 				break;
 			} else if (seek_in_file(maillists, uident)) {
 				move(2, 0);
@@ -1427,7 +1427,7 @@ g_send()
 						continue;
 					} else if (!(lookupuser.userlevel & PERM_READMAIL)) {
 						move(4, 0);
-						prints("ÎŞ·¨ËÍĞÅ¸ø: [1m%s[m\n", lookupuser.userid);
+						prints("ÎŞ·¨ËÍĞÅ¸ø: \033[1m%s\033[m\n", lookupuser.userid);
 						i--;
 						continue;
 					} else if (seek_in_file(maillists, uident)) {
@@ -1509,7 +1509,7 @@ int num;
 	}
 	add_loginfo(tmpfile);
 	clear();
-	prints("[5;1;32mÕıÔÚ¼Ä¼şÖĞ£¬ÇëÉÔºò...[m");
+	prints("\033[5;1;32mÕıÔÚ¼Ä¼şÖĞ£¬ÇëÉÔºò...\033[m");
 	if (G_SENDMODE == 2) {
 		char maillists[STRLEN];
 
@@ -1605,7 +1605,7 @@ char* fname;
 	}
 	add_loginfo(tmpfile);
 	clear();
-	prints("[5;1;32mÕıÔÚ¼Ä¼şÖĞ£¬ÇëÉÔºò...[m");
+	prints("\033[5;1;32mÕıÔÚ¼Ä¼şÖĞ£¬ÇëÉÔºò...\033[m");
 	if (G_SENDMODE == 4) {
 		char maillists[STRLEN];
 		G_SENDMODE = 2;
@@ -1783,7 +1783,7 @@ ov_send()
 	move(1, 0);
 	clrtobot();
 	move(2, 0);
-	prints("¼ÄĞÅ¸øºÃÓÑÃûµ¥ÖĞµÄÈË£¬Ä¿Ç°±¾Õ¾ÏŞÖÆ½ö¿ÉÒÔ¼Ä¸ø [1m%d[m Î»¡£\n", maxrecp);
+	prints("¼ÄĞÅ¸øºÃÓÑÃûµ¥ÖĞµÄÈË£¬Ä¿Ç°±¾Õ¾ÏŞÖÆ½ö¿ÉÒÔ¼Ä¸ø \033[1m%d\033[m Î»¡£\n", maxrecp);
 	if (uinfo.fnum <= 0) {
 		prints("Äã²¢Ã»ÓĞÉè¶¨ºÃÓÑ¡£\n");
 		pressanykey();
