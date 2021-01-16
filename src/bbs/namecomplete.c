@@ -1,25 +1,25 @@
 /*
-    Pirate Bulletin Board System
-    Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
-    Eagles Bulletin Board System
-    Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
-                        Guy Vega, gtvega@seabass.st.usm.edu
-                        Dominic Tynes, dbtynes@seabass.st.usm.edu
-    Firebird Bulletin Board System
-    Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
-                        Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
+	Pirate Bulletin Board System
+	Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
+	Eagles Bulletin Board System
+	Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
+						Guy Vega, gtvega@seabass.st.usm.edu
+						Dominic Tynes, dbtynes@seabass.st.usm.edu
+	Firebird Bulletin Board System
+	Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
+						Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
 
-    Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
+	Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 1, or (at your option)
-    any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 1, or (at your option)
+	any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 */
 
 #include "bbs.h"
@@ -289,8 +289,7 @@ char *prompt, *data;
 //			standend();
 			while (len + col < 80) {
 				int i;
-				for (i = NUMLINES;
-				     (morelist) && (i > origy - 1); i--) {
+				for (i = NUMLINES; (morelist) && (i > origy - 1); i--) {
 					move(origy + 2 + (NUMLINES - i), col);
 					prints("%s", morelist->word);
 					morelist = morelist->next;
@@ -302,8 +301,7 @@ char *prompt, *data;
 			}
 			if (morelist) {
 				move(t_lines - 1, 0);
-				prints
-				    ("[1;44m-- ªπ”– --                                                                     [m");
+				prints("\033[1;44m-- ªπ”– --                                                                     \033[m");
 			}
 			move(y, x);
 			continue;
@@ -431,8 +429,8 @@ int usercomplete(char *prompt, char *data) {
 				ptr += IDLEN + 1;
 			}
 /*
-                if( cwnum == 1 )
-                    strcpy( data, cwlist );
+			if( cwnum == 1 )
+				strcpy( data, cwlist );
 */
 			break;
 		} else if (ch == ' ') {
@@ -457,25 +455,18 @@ int usercomplete(char *prompt, char *data) {
 			printdash(" À˘”– π”√’ﬂ¡–±Ì ");
 			while (len + col < 79) {
 				int i;
-				for (i = 0;
-				     morenum < cwnum
-				     && i < NUMLINES - origy + 1; i++) {
+				for (i = 0; morenum < cwnum && i < NUMLINES - origy + 1; i++) {
 					move(origy + 2 + i, col);
-					prints("%s ",
-					       cwlist + (IDLEN +
-							 1) * morenum++);
+					prints("%s ", cwlist + (IDLEN + 1) * morenum++);
 				}
 				col += len + 2;
 				if (morenum >= cwnum)
 					break;
-				len =
-				    UserMaxLen((void *)cwlist, cwnum, morenum,
-					       NUMLINES);
+				len = UserMaxLen((void *)cwlist, cwnum, morenum, NUMLINES);
 			}
 			if (morenum < cwnum) {
 				move(t_lines - 1, 0);
-				prints
-				    ("[1;44m-- ªπ”– π”√’ﬂ --                                                               [m");
+				prints("\033[1;44m-- ªπ”– π”√’ﬂ --                                                               \033[m");
 			} else {
 				morenum = 0;
 			}
