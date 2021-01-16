@@ -647,7 +647,7 @@ static int ythtbbs_cache_UserIDHashTable_insert(char *userid, int idx) {
 	}
 
 	ptr_items[i].user_num = idx + 1;
-	strcpy(ptr_items[i].userid, userid);
+	ytht_strsncpy(ptr_items[i].userid, userid, sizeof(ptr_items[i].userid));
 	return 0;
 }
 
