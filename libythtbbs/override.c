@@ -19,6 +19,8 @@ int ythtbbs_override_lock(const char *userid, const enum ythtbbs_override_type o
 
 	sethomefile_s(buf, sizeof(buf), userid, (override_type == YTHTBBS_OVERRIDE_FRIENDS) ? FRIENDS_FILE_LOCK : REJECTS_FILE_LOCK);
 	lockfd = open(buf, O_RDWR | O_CREAT, 0600);
+	if (lockfd < 0)
+		return -1;
 	flock(lockfd, LOCK_EX);
 
 	return lockfd;

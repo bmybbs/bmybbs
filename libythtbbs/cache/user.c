@@ -422,6 +422,10 @@ int ythtbbs_cache_UserTable_get_user_online_friends(const char *userid, bool has
 	const struct user_info *x;
 
 	lockfd = ythtbbs_override_lock(userid, YTHTBBS_OVERRIDE_FRIENDS);
+	if (lockfd < 0) {
+		return 0;
+	}
+
 	total = ythtbbs_override_count(userid, YTHTBBS_OVERRIDE_FRIENDS);
 
 	if (total <= 0) {
