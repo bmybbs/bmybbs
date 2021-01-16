@@ -1266,8 +1266,11 @@ char *fname, *title, *receiver;
 		currentuser.userid, email_domain(), receiver);
 	fout = popen(genbuf, "w");
 	fin = fopen(fname, "r");
-	if (fin == NULL || fout == NULL)
+	if (fin == NULL || fout == NULL) {
+		if (fin) fclose(fin);
+		if (fout) pclose(fout);
 		return -1;
+	}
 
 	fprintf(fout, "Return-Path: %s.bbs@%s\n", currentuser.userid,
 		email_domain());
