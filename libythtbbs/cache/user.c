@@ -71,6 +71,10 @@ void ythtbbs_cache_UserTable_resolve() {
 	int    local_usernumber;
 
 	fd = open(MY_BBS_HOME "/.CACHE.user.lock", O_RDWR | O_CREAT, 0660);
+	if (fd < 0) {
+		return;
+	}
+
 	flock(fd, LOCK_EX);
 
 	time(&local_now);
