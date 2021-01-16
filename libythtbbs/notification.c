@@ -285,12 +285,12 @@ static struct NotifyItem * parse_to_item(xmlNodePtr xmlItem) {
 	xmlFree(xml_str_type);
 
 	xmlChar *xml_str_board = xmlGetProp(xmlItem, (const xmlChar *)"board");
-	strncpy(item->board, (char *)xml_str_board, sizeof(item->board));
+	ytht_strsncpy(item->board, (char *)xml_str_board, sizeof(item->board));
 	item->board[sizeof(item->board) - 1] = 0;
 	xmlFree(xml_str_board);
 
 	xmlChar *xml_str_userid = xmlGetProp(xmlItem, (const xmlChar *)"uid");
-	strncpy(item->from_userid, (char *)xml_str_userid, sizeof(item->from_userid));
+	ytht_strsncpy(item->from_userid, (char *)xml_str_userid, sizeof(item->from_userid));
 	xmlFree(xml_str_userid);
 
 	xmlChar *xml_str_timestamp = xmlGetProp(xmlItem, (const xmlChar *)"aid");

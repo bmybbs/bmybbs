@@ -1,25 +1,25 @@
 /*
-    Pirate Bulletin Board System
-    Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
-    Eagles Bulletin Board System
-    Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
-                        Guy Vega, gtvega@seabass.st.usm.edu
-                        Dominic Tynes, dbtynes@seabass.st.usm.edu
-    Firebird Bulletin Board System
-    Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
-                        Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
+	Pirate Bulletin Board System
+	Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
+	Eagles Bulletin Board System
+	Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
+						Guy Vega, gtvega@seabass.st.usm.edu
+						Dominic Tynes, dbtynes@seabass.st.usm.edu
+	Firebird Bulletin Board System
+	Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
+						Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
 
-    Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
+	Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 1, or (at your option)
-    any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 1, or (at your option)
+	any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 */
 #include <stdlib.h>
 #include <string.h>
@@ -79,8 +79,7 @@ int ent;
 struct fileheader *fileinfo;
 char *direct;
 {
-	change_dir(direct, fileinfo,
-		   (void *) DIR_do_markdel, ent, digestmode, 0);
+	change_dir(direct, fileinfo, (void *) DIR_do_markdel, ent, digestmode, 0);
 	return;
 }
 
@@ -90,8 +89,7 @@ int ent;
 struct fileheader *fileinfo;
 char *direct;
 {
-	change_dir(direct, fileinfo,
-		   (void *) DIR_do_mark_minus_del, ent, digestmode, 0);
+	change_dir(direct, fileinfo, (void *) DIR_do_mark_minus_del, ent, digestmode, 0);
 	return;
 }
 
@@ -101,8 +99,7 @@ int ent;
 struct fileheader *fileinfo;
 char *direct;
 {
-	change_dir(direct, fileinfo,
-		   (void *) DIR_do_spec, ent, digestmode, 0);
+	change_dir(direct, fileinfo, (void *) DIR_do_spec, ent, digestmode, 0);
 	return;
 }
 
@@ -127,8 +124,10 @@ power_range(char *filename, unsigned int id1, int id2, char *select, power_dofun
 		id2 = st.st_size / sizeof (struct fileheader);
 	bufsize = sizeof (struct fileheader) * (id2 + 1 - id1);
 	buf = malloc(bufsize);
-	if (buf == NULL)
+	if (buf == NULL) {
+		close(fd);
 		return -4;
+	}
 
 	lseek(fd, (id1 - 1) * sizeof (struct fileheader), SEEK_SET);
 	n = read(fd, buf, bufsize);
@@ -151,52 +150,52 @@ power_range(char *filename, unsigned int id1, int id2, char *select, power_dofun
 // 全文搜索,interma@bmy
 int full_search_action(char *whattosearch)
 {
-  digestmode = 3;
-  setbdir(currdirect, currboard, digestmode);
-  unlink(currdirect);
-  sprintf(genbuf, "%s full_search %s %s",currentuser.userid, currboard, whattosearch);
-  newtrace(genbuf);
-  //
-  char cmd[256];
-  sprintf(cmd, MY_BBS_HOME "/bin/searcher.py %s '%s'", currboard, whattosearch);
+	digestmode = 3;
+	setbdir(currdirect, currboard, digestmode);
+	unlink(currdirect);
+	sprintf(genbuf, "%s full_search %s %s",currentuser.userid, currboard, whattosearch);
+	newtrace(genbuf);
+	//
+	char cmd[256];
+	sprintf(cmd, MY_BBS_HOME "/bin/searcher.py %s '%s'", currboard, whattosearch);
 
-  FILE *fp = popen(cmd, "r");
-  if (fp == 0)
-    return PARTUPDATE;
+	FILE *fp = popen(cmd, "r");
+	if (fp == 0)
+		return PARTUPDATE;
 
-  char line[256];
-  struct fileheader fh;
-  bzero(&fh, sizeof(struct fileheader));
-  int nr = 0;
-  while (fgets(line, 256, fp) != NULL)
-  {
-    if (line[0] != 'M')
-      break;
+	char line[256];
+	struct fileheader fh;
+	bzero(&fh, sizeof(struct fileheader));
+	int nr = 0;
+	while (fgets(line, 256, fp) != NULL)
+	{
+		if (line[0] != 'M')
+			break;
 
-    char f_buf[16];
-    int filetime;
-    char t_buf[81];
-    char o_buf[16];
+		char f_buf[16];
+		int filetime;
+		char t_buf[81];
+		char o_buf[16];
 
-    int len = strlen(line);
-	  ytht_strsncpy(f_buf, line, 15);
-    sscanf(f_buf, "M.%ld.A", &(fh.filetime));
-    sscanf(f_buf, "M.%ld.A", &(fh.edittime));
+		int len = strlen(line);
+		ytht_strsncpy(f_buf, line, 15);
+		sscanf(f_buf, "M.%ld.A", &(fh.filetime));
+		sscanf(f_buf, "M.%ld.A", &(fh.edittime));
 
-    char *p2s = strchr(line+15, ' ');
-    int owner_len = p2s-line-15;
-	  ytht_strsncpy(fh.owner, line + 15, owner_len + 1);
+		char *p2s = strchr(line+15, ' ');
+		int owner_len = p2s-line-15;
+		ytht_strsncpy(fh.owner, line + 15, owner_len + 1);
 
-	  ytht_strsncpy(fh.title, p2s + 1, len - 2 - owner_len - 14 + 1);
-    fh.title[strlen(fh.title)-1] = 0;
-    fh.thread = nr++;
-    append_record(currdirect, &fh, sizeof(struct fileheader));
-  }
+		ytht_strsncpy(fh.title, p2s + 1, len - 2 - owner_len - 14 + 1);
+		fh.title[strlen(fh.title)-1] = 0;
+		fh.thread = nr++;
+		append_record(currdirect, &fh, sizeof(struct fileheader));
+	}
 
-  pclose(fp);
-  //
-  limit_cpu();
-  return NEWDIRECT;
+	pclose(fp);
+	//
+	limit_cpu();
+	return NEWDIRECT;
 }
 
 
@@ -251,9 +250,7 @@ power_action(char *filename, unsigned int id1, int id2, char *select, int action
 		}
 		return FULLUPDATE;
 	} else if (ret > 0) {
-		prints
-		    ("限制条件语法错误,从第%d个字符起我就觉得不对劲,一个汉字算两个字符啊!",
-		     ret);
+		prints("限制条件语法错误,从第%d个字符起我就觉得不对劲,一个汉字算两个字符啊!", ret);
 		if (action == 9) {
 			digestmode = NA;
 			setbdir(currdirect, currboard, digestmode);
@@ -342,8 +339,7 @@ counttextlt(char *num)
 	int n, size, size2, i;
 	char buf[256];
 	n = atoi(num);
-	snprintf(buf, sizeof (buf), "boards/%s/%s",
-		 currboard, fh2fname(select_cur));
+	snprintf(buf, sizeof (buf), "boards/%s/%s", currboard, fh2fname(select_cur));
 	fp = fopen(buf, "r");
 	if (fp == NULL)
 		return 1;
@@ -359,11 +355,10 @@ counttextlt(char *num)
 		if (strcmp(buf, "--\n") == 0 || strcmp(buf, "--\r\n") == 0)
 			break;
 		if (strncmp(buf, ": ", 2)
-		    && strncmp(buf, "> ", 2)
-		    && !strstr(buf, "的大作中提到: 】")) {
+				&& strncmp(buf, "> ", 2)
+				&& !strstr(buf, "的大作中提到: 】")) {
 			for (i = 0; buf[i]; i++) {
-				if (buf[i] != ' ' && buf[i] != '\t'
-				    && buf[i] != '\r' && buf[i] != '\n') {
+				if (buf[i] != ' ' && buf[i] != '\t' && buf[i] != '\r' && buf[i] != '\n') {
 					if (buf[i] < 0)
 						size2++;
 					size++;
@@ -386,8 +381,7 @@ static int
 checktext(char *query)
 {
 	char buf[256];
-	snprintf(buf, sizeof (buf), "boards/%s/%s",
-		 currboard, fh2fname(select_cur));
+	snprintf(buf, sizeof (buf), "boards/%s/%s", currboard, fh2fname(select_cur));
 	return searchpattern(buf, query);
 }
 
@@ -458,23 +452,23 @@ char *direct;
 	}
 	move(6, 0);
 	prints("例子:\n"
-	       "   例子一: 找sysop的所有文章\n"
-	       "   请输入限制条件: 作者是 sysop(查找转信文章请输入 作者是 转信)\n"
-	       "   例子二: 找sysop写的灌水文章\n"
-	       "   请输入限制条件: 作者是 sysop 且 灌水字数少于 40\n"
-	       "   例子三: 找sysop写的灌水文章,而且被标记为m的\n"
-	       "   请输入限制条件: 作者是 sysop 且 灌水字数少于 40 且 标记含 m\n"
-	       "   例子四: 找所有标题包含兵马俑或者bmy的文章\n"
-	       "   请输入限制条件: 标题含 兵马俑 或 标题含 bmy\n"
-	       "   例子五: 找所有不是sysop也不是XJTU-XANET发表的文章\n"
-	       "   请输入限制条件: 非 (作者是 sysop 或 作者是 XJTU-XANET)\n"
-	       "   (或者)请输入限制条件: 作者不是 sysop 且 作者不是 XJTU-XANET\n"
-	       "   例子六: 找所有有附件的文章\n"
-	       "   请输入限制条件: 标记含 @\n"
-	       "   例子七: 找所有推荐星级在3星以上的文章\n"
-	       "   请输入限制条件: 推荐星级高于 3\n"
-	       "   例子八: 找所有推荐人数在10人以上的文章\n"
-	       "   请输入限制条件: 推荐人数高于 10\n");
+			"   例子一: 找sysop的所有文章\n"
+			"   请输入限制条件: 作者是 sysop(查找转信文章请输入 作者是 转信)\n"
+			"   例子二: 找sysop写的灌水文章\n"
+			"   请输入限制条件: 作者是 sysop 且 灌水字数少于 40\n"
+			"   例子三: 找sysop写的灌水文章,而且被标记为m的\n"
+			"   请输入限制条件: 作者是 sysop 且 灌水字数少于 40 且 标记含 m\n"
+			"   例子四: 找所有标题包含兵马俑或者bmy的文章\n"
+			"   请输入限制条件: 标题含 兵马俑 或 标题含 bmy\n"
+			"   例子五: 找所有不是sysop也不是XJTU-XANET发表的文章\n"
+			"   请输入限制条件: 非 (作者是 sysop 或 作者是 XJTU-XANET)\n"
+			"   (或者)请输入限制条件: 作者不是 sysop 且 作者不是 XJTU-XANET\n"
+			"   例子六: 找所有有附件的文章\n"
+			"   请输入限制条件: 标记含 @\n"
+			"   例子七: 找所有推荐星级在3星以上的文章\n"
+			"   请输入限制条件: 推荐星级高于 3\n"
+			"   例子八: 找所有推荐人数在10人以上的文章\n"
+			"   请输入限制条件: 推荐人数高于 10\n");
 
 	getdata(5, 0, "请输入限制条件: ", select, 60, DOECHO, NA);
 	clrtobot();
@@ -494,3 +488,4 @@ char *direct;
 	}
 	return power_action(dir, inum1, inum2, select, answer);
 }
+

@@ -43,7 +43,6 @@ add_library(ythtbbs SHARED
 	binaryattach.c
 	bbseva.c
 	attach.c
-	regform.c
 	announce.c
 	board.c
 	sectree.c

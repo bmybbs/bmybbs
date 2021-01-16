@@ -71,6 +71,10 @@ void ythtbbs_cache_UserTable_resolve() {
 	int    local_usernumber;
 
 	fd = open(MY_BBS_HOME "/.CACHE.user.lock", O_RDWR | O_CREAT, 0660);
+	if (fd < 0) {
+		return;
+	}
+
 	flock(fd, LOCK_EX);
 
 	time(&local_now);
@@ -418,6 +422,10 @@ int ythtbbs_cache_UserTable_get_user_online_friends(const char *userid, bool has
 	const struct user_info *x;
 
 	lockfd = ythtbbs_override_lock(userid, YTHTBBS_OVERRIDE_FRIENDS);
+	if (lockfd < 0) {
+		return 0;
+	}
+
 	total = ythtbbs_override_count(userid, YTHTBBS_OVERRIDE_FRIENDS);
 
 	if (total <= 0) {
@@ -431,6 +439,7 @@ int ythtbbs_cache_UserTable_get_user_online_friends(const char *userid, bool has
 
 	ythtbbs_cache_UserTable_resolve();
 	for (i = 0, k = 0; i < total; i++) {
+		override_friends[i].id[IDLEN] = 0;
 		t = ythtbbs_cache_UserIDHashTable_find_idx(override_friends[i].id);
 		if (t < 0)
 			continue;
@@ -585,6 +594,9 @@ static int ythtbbs_cache_UserIDHashTable_resolve() {
 	char local_buf[64];
 
 	fd = open(MY_BBS_HOME "/.CACHE.hash.lock", O_RDWR | O_CREAT, 0660);
+	if (fd < 0) {
+		return -1;
+	}
 	flock(fd, LOCK_EX);
 	if (shm_userid_hashtable == NULL) {
 		shm_userid_hashtable = get_shm(UCACHE_HASH_SHMKEY, sizeof(*shm_userid_hashtable));
@@ -647,7 +659,7 @@ static int ythtbbs_cache_UserIDHashTable_insert(char *userid, int idx) {
 	}
 
 	ptr_items[i].user_num = idx + 1;
-	strcpy(ptr_items[i].userid, userid);
+	ytht_strsncpy(ptr_items[i].userid, userid, sizeof(ptr_items[i].userid));
 	return 0;
 }
 

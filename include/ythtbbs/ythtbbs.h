@@ -17,7 +17,6 @@
 #include "permissions.h"
 #include "bbseva.h"
 #include "attach.h"
-#include "regform.h"
 #include "announce.h"
 #include "board.h"
 #include "sectree.h"

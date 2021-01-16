@@ -1,25 +1,25 @@
 /*
-    Pirate Bulletin Board System
-    Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
-    Eagles Bulletin Board System
-    Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
-                        Guy Vega, gtvega@seabass.st.usm.edu
-                        Dominic Tynes, dbtynes@seabass.st.usm.edu
-    Firebird Bulletin Board System
-    Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
-                        Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
+	Pirate Bulletin Board System
+	Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
+	Eagles Bulletin Board System
+	Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
+						Guy Vega, gtvega@seabass.st.usm.edu
+						Dominic Tynes, dbtynes@seabass.st.usm.edu
+	Firebird Bulletin Board System
+	Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
+						Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
 
-    Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
+	Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 1, or (at your option)
-    any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 1, or (at your option)
+	any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 */
 
 #include <time.h>
@@ -372,11 +372,10 @@ char **argv;
 	sprintf(ULIST, "%s.%s", ULIST_BASE, genbuf);
 
 	if (argc >= 3) {
-		strncpy(fromhost, argv[2], BMY_IPV6_LEN);
+		ytht_strsncpy(fromhost, argv[2], BMY_IPV6_LEN);
 	} else {
 		fromhost[0] = '\0';
 	}
-	fromhost[BMY_IPV6_LEN] = '\0';
 
 #ifndef lint
 	signal(SIGINT, SIG_IGN);
@@ -616,7 +615,7 @@ else sprintf(str1,"现在是 %s, 新世纪已经开始了%d秒\n",str,-dis);
 			mail_file(buf, currentuser.userid, "不正常断线所保留的部份...");
 		unlink(buf);
 	}
-	sethomepath(genbuf, currentuser.userid);
+	sethomepath_s(genbuf, sizeof(genbuf), currentuser.userid);
 	mkdir(genbuf, 0775);
 }
 
@@ -642,13 +641,12 @@ direct_login()
 			exit(1);
 		}
 	}
-	sethomepath(genbuf, currentuser.userid);
+	sethomepath_s(genbuf, sizeof(genbuf), currentuser.userid);
 	mkdir(genbuf, 0775);
 	u_enter();
 	started = 1;
 	WishNum = 9999;
-	strncpy(currentuser.lasthost, fromhost, BMY_IPV6_LEN);
-	currentuser.lasthost[BMY_IPV6_LEN] = '\0';	/* dumb mistake on my part */
+	ytht_strsncpy(currentuser.lasthost, fromhost, BMY_IPV6_LEN);
 	currentuser.lastlogin = time(NULL);
 	if(uinfo.invisible){			//add by mintbaggio@BMY for normal cloak
 		//currentuser.pseudo_lastlogout = currentuser.lastlogin+10;
@@ -818,8 +816,7 @@ user_login()
 	}
 
 	set_safe_record();
-	strncpy(currentuser.lasthost, fromhost, BMY_IPV6_LEN);
-	currentuser.lasthost[BMY_IPV6_LEN] = '\0';	/* dumb mistake on my part */
+	ytht_strsncpy(currentuser.lasthost, fromhost, BMY_IPV6_LEN);
 	dtime = time(NULL) - 4 * 3600;
 	day = localtime(&dtime)->tm_mday;
 	dtime = currentuser.lastlogin - 4 * 3600;
@@ -1050,7 +1047,7 @@ char *argv[];
 				if (!uinfo.invisible)
 					ythtbbs_cache_utmp_apply(friend_login_wall, NULL);
 /*       pressanykey();
-       clear();*/
+		clear();*/
 			set_numofsig();
 			if (DEFINE(DEF_INNOTE, currentuser)) {
 				setuserfile(fname, "notes");
@@ -1102,10 +1099,10 @@ int egetch(void) {
 		return -1;
 	}
 /*    if (ntalkrequest) {
-        ntalkreply() ;
-        refscreen = YEA ;
-        return -1 ;
-    } */
+		ntalkreply() ;
+		refscreen = YEA ;
+		return -1 ;
+	} */
 	while (1) {
 		rval = igetkey();
 		if (talkrequest) {
@@ -1114,10 +1111,10 @@ int egetch(void) {
 			return -1;
 		}
 /*        if(ntalkrequest) {
-            ntalkreply() ;
-            refscreen = YEA ;
-            return -1 ;
-        } */
+			ntalkreply() ;
+			refscreen = YEA ;
+			return -1 ;
+		} */
 		if (rval != Ctrl('L'))
 			break;
 		redoscr();
@@ -1319,28 +1316,6 @@ tlog_recover()
 }
 
 //#endif
-
-static void relogin() {
-	char bbs_prog_path[STRLEN], bbstest_prog_path[STRLEN];
-	char utmppos[STRLEN];
-	int n;
-	sprintf(utmppos, "%d", utmpent);
-	sprintf(bbs_prog_path, "%s/bin/bbs", MY_BBS_HOME);
-	sprintf(bbstest_prog_path, "%s/bin/bbstest", MY_BBS_HOME);
-	for (n = 1; n < 10; n++)
-		close(n);
-	if (g_convcode) {
-		if (!runtest)
-			execl(bbs_prog_path, "bbs", "e", currentuser.lasthost, utmppos, currentuser.userid, NULL);	/*调用BBS */
-		else
-			execl(bbstest_prog_path, "bbstest", "e", currentuser.lasthost, utmppos, currentuser.userid, NULL);	/*调用BBS */
-	} else {
-		if (!runtest)
-			execl(bbs_prog_path, "bbs", "d", currentuser.lasthost, utmppos, currentuser.userid, NULL);	/*调用BBS */
-		else
-			execl(bbstest_prog_path, "bbstest", "d", currentuser.lasthost, utmppos, currentuser.userid, NULL);	/*调用BBS */
-	}
-}
 
 /* youzi quick goodbye */
 int
