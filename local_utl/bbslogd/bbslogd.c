@@ -172,6 +172,7 @@ bansiteop(struct in_addr *from)
 	bansitetable = ght_create(200, NULL, 0);
 	if (!bansitetable) {
 		bansitetable = tmptable;
+		fclose(fp);
 		return -1;
 	}
 	for (b = ght_first(tmptable, &iterator); b; b = ght_next(tmptable, &iterator)) {
