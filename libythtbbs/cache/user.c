@@ -439,6 +439,7 @@ int ythtbbs_cache_UserTable_get_user_online_friends(const char *userid, bool has
 
 	ythtbbs_cache_UserTable_resolve();
 	for (i = 0, k = 0; i < total; i++) {
+		override_friends[i].id[IDLEN] = 0;
 		t = ythtbbs_cache_UserIDHashTable_find_idx(override_friends[i].id);
 		if (t < 0)
 			continue;
