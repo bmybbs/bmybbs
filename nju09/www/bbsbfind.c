@@ -172,6 +172,7 @@ bbsbfind_main()
 		while(fgets(linebuf,512,fp)!=NULL) {
 			if(strncmp(linebuf,board,brdlen)==0)
 			{
+				linebuf[sizeof(linebuf) - 1] = 0;
 				tempbuf=strstr(linebuf,": ")+2;
 				flag=1;
 				break;
@@ -181,7 +182,6 @@ bbsbfind_main()
 		if(flag==0)
 			http_fatal("错误的讨论区");
 
-		tempbuf[strlen(tempbuf)-1]='\0';
 		ytht_strsncpy(essential_path, tempbuf, sizeof(essential_path));
 		printf("查找讨论区'%s'的精华区内, 标题含: '%s' 的所有文章", board, nohtml(title));
 		printf("<table>\n");
