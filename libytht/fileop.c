@@ -193,7 +193,7 @@ mmapfile(const char *filename, struct mmapfile *pmf)
 	int fd;
 	if (filename == NULL || stat(filename, &s) == -1) {
 		cleanmmap(*pmf);
-		return filename ? (-1) : 0;
+		return -1;
 	}
 	if (pmf->ptr != NULL && s.st_mtime == pmf->mtime)
 		return 0;
