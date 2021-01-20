@@ -188,7 +188,10 @@ bbsbfind_main()
 		printf("<tr><td width=80px>编号<td width=350px>标题<td width=200px>存放路径\n");
 		char searchcmd[256];
 		sprintf(searchcmd,MY_BBS_HOME "/bin/esearch %s %s",essential_path,title);
-		fp=popen(searchcmd,"r");
+		fp = popen(searchcmd,"r");
+		if (fp == NULL)
+			http_fatal("无法搜索");
+
 		while(fgets(linebuf,512,fp)!=NULL)
 		{
 			char postindex[64];
