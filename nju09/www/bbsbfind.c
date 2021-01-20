@@ -200,13 +200,13 @@ bbsbfind_main()
 			char postnum[32];
 			char *ptemp;
 			ptemp=strtok(linebuf,",");
-			strcpy(postindex,ptemp);
+			ytht_strsncpy(postindex, ptemp, sizeof(postindex));
 			ptemp=strtok(NULL,",");
-			strcpy(postpath,ptemp);
+			ytht_strsncpy(postpath, ptemp, sizeof(postpath));
 			ptemp=strtok(NULL,",");
-			strcpy(postnum,ptemp);
+			ytht_strsncpy(postnum, ptemp, sizeof(postnum));
 			ptemp=strtok(NULL,"\n");
-			strcpy(posttitle,ptemp);
+			ytht_strsncpy(posttitle, ptemp, sizeof(posttitle));
 			printf("<tr><td>%d",total+1);
 			printf("<td><a href=bbsanc?path=%s&item=%s>%40.40s </a>",postpath,postnum,posttitle);
 			printf("<td>%s\n",postindex);
