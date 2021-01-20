@@ -31,6 +31,9 @@ char *addr, char *phone, char *assoc, char *email)
 
 	//int id = getuser(userid);
 	struct userec *u = getuser(userid);
+	if (u == NULL) {
+		return;
+	}
 
 	sethomefile_s(genbuf, sizeof(genbuf), userid, "mailcheck");
 	//http_fatal(genbuf);
