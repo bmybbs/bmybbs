@@ -514,10 +514,10 @@ bbscon_main()
 				"<A href='edit?B=%s&amp;F=%s' class=btnfunc>/ ÐÞ¸Ä</a>\n",
 				board, file);
 		}
+		dirinfo->title[sizeof(dirinfo->title) - 1] = 0;
 		ptr = dirinfo->title;
 		if (!strncmp(ptr, "Re: ", 4))
 			ptr += 4;
-		ptr[60] = 0;
 		outgoing = (dirinfo->accessed & FH_INND) || strchr(dirinfo->owner, '.');
 
 		fputs(buf, stdout);
