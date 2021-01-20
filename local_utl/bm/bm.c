@@ -12,6 +12,9 @@ int main(int argc, char *argv[])
 			continue;
 		if (rec.clubnum != 0 && (!(rec.flag & CLUBTYPE_FLAG)))
 			continue;
+
+		rec.filename[sizeof(rec.filename) - 1] = 0;
+		rec.title[sizeof(rec.title) - 1] = 0;
 		printf("%-18s%-24s %s\n", rec.filename, rec.title, bm2str(bmbuf, &rec));
 	}
 	fclose(fd1);
