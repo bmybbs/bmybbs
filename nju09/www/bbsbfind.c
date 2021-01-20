@@ -166,7 +166,7 @@ bbsbfind_main()
 		strncpy(title,getparm("title"),60);
 		fp=fopen("0Announce/.Search","r");
 		char linebuf[512];
-		char *tempbuf;
+		char *tempbuf = NULL;
 		int flag=0;
 		int brdlen=strlen(board);
 		while(fgets(linebuf,512,fp)!=NULL) {
@@ -182,7 +182,7 @@ bbsbfind_main()
 			http_fatal("错误的讨论区");
 
 		tempbuf[strlen(tempbuf)-1]='\0';
-		strcpy(essential_path,tempbuf);
+		ytht_strsncpy(essential_path, tempbuf, sizeof(essential_path));
 		printf("查找讨论区'%s'的精华区内, 标题含: '%s' 的所有文章", board, nohtml(title));
 		printf("<table>\n");
 		printf("<tr><td width=80px>编号<td width=350px>标题<td width=200px>存放路径\n");
