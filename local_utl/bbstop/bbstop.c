@@ -335,6 +335,7 @@ char **argv;
 		insert_stays(&aman);
 		insert_ages(&aman);
 		insert_posts(&aman);
+		aman.userid[IDLEN + 1] = 0;
 		if (strcmp(aman.userid, "guest") == 0)
 			continue;
 		insert_data(login_q, (void *) login_cmp, &aman);
