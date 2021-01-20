@@ -284,7 +284,12 @@ output_c(char *file, int mode)
 			count = age_c;
 			ms = age_s;
 			break;
+		default:
+			ms = NULL;
+			count = 0;
 	}
+	if (ms == NULL)
+		return;
 	sprintf(fn, MY_BBS_HOME "/%s", file);
 	fd = open(fn, O_WRONLY | O_CREAT, 0660);
 	if (fd) {
