@@ -87,6 +87,9 @@ bbsbfind_main()
 		total++;
 		printf("<tr><td>%d", num);
 
+		x.owner[sizeof(x.owner) - 1] = 0;
+		x.title[sizeof(x.title) - 1] = 0;
+
 		printf("<td>%s", flag_str(x.accessed));
 		printf("<td>%s", userid_str(x.owner));
 		printf("<td>%12.12s", 4 + ytht_ctime(x.filetime));
