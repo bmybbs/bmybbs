@@ -573,7 +573,7 @@ logout_user(int unum)
 	memset(&users[unum], 0, sizeof (users[unum]));
 	users[unum].sockfd = users[unum].utent = users[unum].room = -1;
 	for (i = 0; i < MAXROOM; i++) {
-		if (rooms[i].invites != NULL)
+		if (rooms[i].invites[unum] != 0)
 			rooms[i].invites[unum] = 0;
 	}
 	num_conns--;
