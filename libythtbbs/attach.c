@@ -39,6 +39,7 @@ filter_attach(char *path)
 		ptr = realloc(tmp, s.st_size + 1);
 		if (NULL == ptr) {
 			errlog("no enough memory!");
+			fclose(fp);
 			return;
 		}
 		tmp = ptr;
@@ -49,6 +50,7 @@ filter_attach(char *path)
 		tmp = malloc(s.st_size + 1);
 		if (NULL == tmp) {
 			errlog("no enough memory!");
+			fclose(fp);
 			return;
 		}
 	}
