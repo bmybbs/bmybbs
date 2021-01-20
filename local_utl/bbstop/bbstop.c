@@ -4,7 +4,7 @@
 #define REAL_INFO
 #include "bbs.h"
 
-#define NUMCOUNT 100 
+#define NUMCOUNT 100
 
 struct mystat {
 	unsigned int key;
@@ -49,7 +49,7 @@ perm_cmp(b, a)
 struct userec *a, *b;
 {
 	return (a->numlogins / 3 + a->numposts + a->stay / 3600) -
-	    (b->numlogins / 3 + b->numposts + b->stay / 3600);
+		(b->numlogins / 3 + b->numposts + b->stay / 3600);
 }
 
 void
@@ -59,9 +59,9 @@ top_login(FILE * fp)
 	char buf1[80], buf2[80];
 
 	fprintf(fp, "\n\n%s", "\
-[1;37m              ===========  [1;36m  …œ’æ¥Œ ˝≈≈––∞Ò [37m   ============ \n\n\
+\033[1;37m              ===========  \033[1;36m  …œ’æ¥Œ ˝≈≈––∞Ò \033[37m   ============ \n\n\
 √˚¥Œ ¥˙∫≈       Í«≥∆           ¥Œ ˝    √˚¥Œ ¥˙∫≈       Í«≥∆            ¥Œ ˝ \n\
-==== ===============================   ==== ================================\n[0m\
+==== ===============================   ==== ================================\n\033[0m\
 ");
 	for (i = 0; i < rows; i++) {
 		sprintf(buf1, "[%2d] %-10.10s %-14.14s %3d",
@@ -72,7 +72,7 @@ top_login(FILE * fp)
 			j + 1, login_q[j].userid, login_q[j].username,
 			login_q[j].numlogins);
 
-		fprintf(fp, "%-39.39s%-39.39s[m\n", buf1, buf2);
+		fprintf(fp, "%-39.39s%-39.39s\033[m\n", buf1, buf2);
 	}
 }
 
@@ -83,9 +83,9 @@ top_stay(FILE * fp)
 	char buf1[80], buf2[80];
 
 	fprintf(fp, "\n\n\n%s", "\
-[1;37m              ===========   [36m …œ’æ◊‹ ± ˝≈≈––∞Ò [37m   ============ \n\n\
+\033[1;37m              ===========   \033[36m …œ’æ◊‹ ± ˝≈≈––∞Ò \033[37m   ============ \n\n\
 √˚¥Œ ¥˙∫≈       Í«≥∆           ◊‹ ± ˝  √˚¥Œ ¥˙∫≈       Í«≥∆           ◊‹ ± ˝ \n\
-==== ================================  ==== ================================\n[0m\
+==== ================================  ==== ================================\n\033[0m\
 ");
 	for (i = 0; i < rows; i++) {
 		sprintf(buf1, "[%2d] %-10.10s %-14.14s%4ld:%2ld",
@@ -96,7 +96,7 @@ top_stay(FILE * fp)
 			j + 1, stay_q[j].userid, stay_q[j].username,
 			stay_q[j].stay / 3600, (stay_q[j].stay % 3600) / 60);
 
-		fprintf(fp, "%-39.39s%-39.39s[m\n", buf1, buf2);
+		fprintf(fp, "%-39.39s%-39.39s\033[m\n", buf1, buf2);
 	}
 }
 
@@ -107,9 +107,9 @@ top_post(FILE * fp)
 	char buf1[80], buf2[80];
 
 	fprintf(fp, "\n\n\n%s", "\
-              [1;37m===========  [36m  Ã÷¬€¥Œ ˝≈≈––∞Ò [37m   ============ \n\n\
+\033[1;37m              ===========  \033[36m  Ã÷¬€¥Œ ˝≈≈––∞Ò \033[37m   ============ \n\n\
 √˚¥Œ ¥˙∫≈       Í«≥∆           ¥Œ ˝    √˚¥Œ ¥˙∫≈       Í«≥∆            ¥Œ ˝ \n\
-==== ===============================  ===== ================================\n[0m\
+==== ===============================  ===== ================================\n\033[0m\
 ");
 	for (i = 0; i < rows; i++) {
 		sprintf(buf1, "[%2d] %-10.10s %-14.14s %3d",
@@ -120,7 +120,7 @@ top_post(FILE * fp)
 			j + 1, post_q[j].userid, post_q[j].username,
 			post_q[j].numposts);
 
-		fprintf(fp, "%-39.39s%-39.39s[m\n", buf1, buf2);
+		fprintf(fp, "%-39.39s%-39.39s\033[m\n", buf1, buf2);
 	}
 }
 
@@ -131,10 +131,10 @@ top_perm(FILE * fp)
 	char buf1[80], buf2[80];
 
 	fprintf(fp, "\n\n\n%s", "\
-              [1;37m===========    [36m◊‹±Ìœ÷ª˝∑÷≈≈––∞Ò[37m    ============ \n\
-                   [32m π´ Ω£∫…œ’æ¥Œ ˝/3+Œƒ’¬ ˝+…œ’æº∏–° ±[37m\n\
+\033[1;37m              ===========    \033[36m◊‹±Ìœ÷ª˝∑÷≈≈––∞Ò\033[37m    ============ \n\
+\033[32m                    π´ Ω£∫…œ’æ¥Œ ˝/3+Œƒ’¬ ˝+…œ’æº∏–° ±\033[37m\n\
 √˚¥Œ ¥˙∫≈       Í«≥∆            ª˝∑÷   √˚¥Œ ¥˙∫≈       Í«≥∆              ª˝∑÷ \n\
-==== ===============================   ==== =================================\n[0m\
+==== ===============================   ==== =================================\n\033[0m\
 ");
 	for (i = 0; i < rows; i++) {
 		sprintf(buf1, "[%2d] %-10.10s %-14.14s %5ld",
@@ -147,13 +147,12 @@ top_perm(FILE * fp)
 			(perm_q[j].numlogins / 3) + perm_q[j].numposts +
 			(perm_q[j].stay / 3600));
 
-		fprintf(fp, "%-39.39s%-39.39s[m\n", buf1, buf2);
+		fprintf(fp, "%-39.39s%-39.39s\033[m\n", buf1, buf2);
 	}
 }
 
 void
-insert_data(struct userec *queue, int comp_f(struct userec *, struct userec *),
-	    struct userec *aman)
+insert_data(struct userec *queue, int comp_f(struct userec *, struct userec *), struct userec *aman)
 {
 	int i, j;
 	if (comp_f(&(queue[NUMCOUNT - 1]), aman) <= 0)
@@ -161,8 +160,7 @@ insert_data(struct userec *queue, int comp_f(struct userec *, struct userec *),
 	for (i = NUMCOUNT - 1; i >= 0; i--) {
 		j = (*comp_f) (&(queue[i]), aman);
 		if (j > 0)
-			memcpy(&(queue[i + 1]), &(queue[i]),
-			       sizeof (struct userec));
+			memcpy(&(queue[i + 1]), &(queue[i]), sizeof (struct userec));
 		else
 			break;
 	}
@@ -170,7 +168,7 @@ insert_data(struct userec *queue, int comp_f(struct userec *, struct userec *),
 }
 
 void
-insert_logins(struct userec *aman) 
+insert_logins(struct userec *aman)
 {
 	int i;
 	for (i=login_c - 1; i>=0; i--) {
