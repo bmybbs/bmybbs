@@ -39,6 +39,7 @@ filter_attach(char *path)
 		ptr = realloc(tmp, s.st_size + 1);
 		if (NULL == ptr) {
 			errlog("no enough memory!");
+			fclose(fp);
 			return;
 		}
 		tmp = ptr;
@@ -49,6 +50,7 @@ filter_attach(char *path)
 		tmp = malloc(s.st_size + 1);
 		if (NULL == tmp) {
 			errlog("no enough memory!");
+			fclose(fp);
 			return;
 		}
 	}
@@ -165,9 +167,7 @@ insertattachments_byfile(char *filename, char *tmpfile, char *userid)
 }
 
 int
-getattach(FILE * fp, char *currline, char *attachfile, char *nowfile,
-	  int base64, int len, int fake)
-{
+getattach(FILE * fp, char *currline, char *attachfile, char *nowfile, int base64, int len, int fake) {
 	char buf[PATH_MAX + 1], *ext;
 	strncpy(buf, nowfile, sizeof (buf));
 	buf[PATH_MAX] = 0;
@@ -183,8 +183,7 @@ getattach(FILE * fp, char *currline, char *attachfile, char *nowfile,
 	}
 	if (attachfile[strlen(attachfile) - 1] == '\n')
 		attachfile[strlen(attachfile) - 1] = 0;
-	if (strlen(attachfile) > NAME_MAX
-	    || strlen(buf) + strlen(attachfile) + 1 > PATH_MAX) {
+	if (strlen(attachfile) > NAME_MAX || strlen(buf) + strlen(attachfile) + 1 > PATH_MAX) {
 		if (comfakedecode(fp, base64, len))
 			return -2;
 		else

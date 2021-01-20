@@ -87,6 +87,9 @@ bbsbfind_main()
 		total++;
 		printf("<tr><td>%d", num);
 
+		x.owner[sizeof(x.owner) - 1] = 0;
+		x.title[sizeof(x.title) - 1] = 0;
+
 		printf("<td>%s", flag_str(x.accessed));
 		printf("<td>%s", userid_str(x.owner));
 		printf("<td>%12.12s", 4 + ytht_ctime(x.filetime));
@@ -163,12 +166,13 @@ bbsbfind_main()
 		strncpy(title,getparm("title"),60);
 		fp=fopen("0Announce/.Search","r");
 		char linebuf[512];
-		char *tempbuf;
+		char *tempbuf = NULL;
 		int flag=0;
 		int brdlen=strlen(board);
 		while(fgets(linebuf,512,fp)!=NULL) {
 			if(strncmp(linebuf,board,brdlen)==0)
 			{
+				linebuf[sizeof(linebuf) - 1] = 0;
 				tempbuf=strstr(linebuf,": ")+2;
 				flag=1;
 				break;
@@ -178,14 +182,16 @@ bbsbfind_main()
 		if(flag==0)
 			http_fatal("错误的讨论区");
 
-		tempbuf[strlen(tempbuf)-1]='\0';
-		strcpy(essential_path,tempbuf);
+		ytht_strsncpy(essential_path, tempbuf, sizeof(essential_path));
 		printf("查找讨论区'%s'的精华区内, 标题含: '%s' 的所有文章", board, nohtml(title));
 		printf("<table>\n");
 		printf("<tr><td width=80px>编号<td width=350px>标题<td width=200px>存放路径\n");
 		char searchcmd[256];
 		sprintf(searchcmd,MY_BBS_HOME "/bin/esearch %s %s",essential_path,title);
-		fp=popen(searchcmd,"r");
+		fp = popen(searchcmd,"r");
+		if (fp == NULL)
+			http_fatal("无法搜索");
+
 		while(fgets(linebuf,512,fp)!=NULL)
 		{
 			char postindex[64];
@@ -194,13 +200,13 @@ bbsbfind_main()
 			char postnum[32];
 			char *ptemp;
 			ptemp=strtok(linebuf,",");
-			strcpy(postindex,ptemp);
+			ytht_strsncpy(postindex, ptemp, sizeof(postindex));
 			ptemp=strtok(NULL,",");
-			strcpy(postpath,ptemp);
+			ytht_strsncpy(postpath, ptemp, sizeof(postpath));
 			ptemp=strtok(NULL,",");
-			strcpy(postnum,ptemp);
+			ytht_strsncpy(postnum, ptemp, sizeof(postnum));
 			ptemp=strtok(NULL,"\n");
-			strcpy(posttitle,ptemp);
+			ytht_strsncpy(posttitle, ptemp, sizeof(posttitle));
 			printf("<tr><td>%d",total+1);
 			printf("<td><a href=bbsanc?path=%s&item=%s>%40.40s </a>",postpath,postnum,posttitle);
 			printf("<td>%s\n",postindex);

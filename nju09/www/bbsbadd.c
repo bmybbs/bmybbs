@@ -30,6 +30,8 @@ bbsbadd_main()
 		http_fatal("错误的使用者帐号");
 
 	lockfd = ythtbbs_override_lock(currentuser.userid, YTHTBBS_OVERRIDE_REJECTS);
+	if (lockfd < 0)
+		http_fatal("内部错误，请重试");
 	badnum = ythtbbs_override_count(currentuser.userid, YTHTBBS_OVERRIDE_REJECTS);
 	if (badnum >= MAXREJECTS-1) {
 		ythtbbs_override_unlock(lockfd);

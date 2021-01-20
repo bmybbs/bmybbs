@@ -11,6 +11,8 @@ bbsball_main()
 	changemode(GMENU);
 
 	lockfd = ythtbbs_override_lock(currentuser.userid, YTHTBBS_OVERRIDE_REJECTS);
+	if (lockfd < 0)
+		http_fatal("ÄÚ²¿´íÎó£¬ÇëÖØÊÔ");
 	badnum = ythtbbs_override_count(currentuser.userid, YTHTBBS_OVERRIDE_REJECTS);
 	ythtbbs_override_get_records(currentuser.userid, bbb, badnum, YTHTBBS_OVERRIDE_REJECTS);
 	ythtbbs_override_unlock(lockfd);

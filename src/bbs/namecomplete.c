@@ -247,6 +247,7 @@ char *prompt, *data;
 			if (wordptr == NULL)
 				data[0] = 0;
 			ClearSubList(cwlist);
+			cwlist = NULL;
 			break;
 		}
 		if (ch == ' ') {

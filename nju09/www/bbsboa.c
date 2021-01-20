@@ -415,6 +415,11 @@ show_commend()
 			strcpy(allcanre," style='color:red;' ");
 		sprintf(commends[i], "<tr><td></td>\n");
 		char temp[1024];
+
+		x.board[sizeof(x.board) - 1] = 0;
+		x.filename[sizeof(x.filename) - 1] = 0;
+		x.title[sizeof(x.title) - 1] = 0;
+		x.userid[sizeof(x.userid) - 1] = 0;
 		sprintf(temp, "<td><a href=con?B=%s&F=%s%s>%-30s</a> / <a href=qry?U=%s class=linkdatetheme>%-12s</a>"
 			"/<a href=\"%s%s\" class=linkdatetheme>%-13s</a></td></tr>\n",
 			x.board, x.filename, allcanre, x.title,x.userid,  x.userid, showByDefMode(), x.board, x.board);
@@ -455,6 +460,11 @@ int show_commend2()
 			strcpy(allcanre," style='color:red;' ");
 		sprintf(commends[i], "<tr><td></td>\n");
 		char temp[1024];
+
+		x.board[sizeof(x.board) - 1] = 0;
+		x.filename[sizeof(x.filename) - 1] = 0;
+		x.title[sizeof(x.title) - 1] = 0;
+		x.userid[sizeof(x.userid) - 1] = 0;
 		sprintf(temp, "<td><a href=con?B=%s&F=%s%s>%-30s</a> / <a href=qry?U=%s class=linkdatetheme>%-12s</a>"
 			"/<a href=\"%s%s\" class=linkdatetheme>%-13s</a></td></tr>\n",
 			x.board, x.filename, allcanre, x.title,x.userid,  x.userid, showByDefMode(), x.board, x.board);

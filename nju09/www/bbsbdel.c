@@ -24,6 +24,8 @@ bbsbdel_main()
 	}
 
 	lockfd = ythtbbs_override_lock(currentuser.userid, YTHTBBS_OVERRIDE_REJECTS);
+	if (lockfd < 0)
+		http_fatal("ÄÚ²¿´íÎó£¬ÇëÖØÊÔ");
 	badnum = ythtbbs_override_count(currentuser.userid, YTHTBBS_OVERRIDE_REJECTS);
 	if (badnum <= 0) {
 		ythtbbs_override_unlock(lockfd);
