@@ -1,25 +1,25 @@
 /*
-    Pirate Bulletin Board System
-    Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
-    Eagles Bulletin Board System
-    Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
-                        Guy Vega, gtvega@seabass.st.usm.edu
-                        Dominic Tynes, dbtynes@seabass.st.usm.edu
-    Firebird Bulletin Board System
-    Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
-                        Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
+	Pirate Bulletin Board System
+	Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
+	Eagles Bulletin Board System
+	Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
+						Guy Vega, gtvega@seabass.st.usm.edu
+						Dominic Tynes, dbtynes@seabass.st.usm.edu
+	Firebird Bulletin Board System
+	Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
+						Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
 
-    Copyright (C) 1999	KCN,Zhou lin,kcn@cic.tsinghua.edu.cn
+	Copyright (C) 1999	KCN,Zhou lin,kcn@cic.tsinghua.edu.cn
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 1, or (at your option)
-    any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 1, or (at your option)
+	any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 */
 #include "bbs.h"
 #include "chat.h"
@@ -55,7 +55,7 @@
 #define WWW_USER(u)     (users[(u)].utent == -2)
 #define CHATOP(u)       (users[(u)].flags & PERM_NOZAP)
 
-							      /* add by cityhunter on 3.14 *//* rm by ylsdd */
+/* add by cityhunter on 3.14 *//* rm by ylsdd */
 //#define CHATOP(u)       (users[(u)].flags & PERM_SPECIAL1)
 
 #define ROOM_LOCKED     0x1
@@ -510,10 +510,10 @@ enter_room(int unum, char *room, char *msg)
 	if (rnum == -1) {
 		/* new room */
 /*    if (OUTSIDER(unum))
-    {
-      send_to_unum(unum, "\033[1;31m◎ \033[37m抱歉，您不能开新包厢 \033[31m◎\033[m");
-      return 0;
-    }*/
+	{
+		send_to_unum(unum, "\033[1;31m◎ \033[37m抱歉，您不能开新包厢 \033[31m◎\033[m");
+		return 0;
+	}*/
 		for (i = 1; i < MAXROOM; i++) {
 			if (rooms[i].occupants == 0) {
 				report("new room");
@@ -648,12 +648,10 @@ login_user(int unum, char *msg)
 				return -1;
 			}
 		}
-/*    else
-    if (users[i].utent == utent)
-    {
-      send_to_unum(unum, CHAT_LOGIN_BOGUS);
-      return -1;
-    }*/
+/*    else if (users[i].utent == utent) {
+		send_to_unum(unum, CHAT_LOGIN_BOGUS);
+		return -1;
+	}*/
 	}
 	if (!is_valid_chatid(chatid)) {
 		send_to_unum(unum, CHAT_LOGIN_INVALID);
@@ -738,8 +736,7 @@ chat_do_user_list(int unum, char *msg, int whichroom)
 	send_to_unum(unum, "\033[1;33;44m 聊天代号│使用者代号  │聊    天    室┃Op┃来自                          \033[m");
 	for (i = 0; i < MAXACTIVE; i++) {
 		rnum = users[i].room;
-		if (users[i].sockfd != -1 && rnum != -1
-		    && !(users[i].cloak == 1 && !CLOAK(unum))) {
+		if (users[i].sockfd != -1 && rnum != -1 && !(users[i].cloak == 1 && !CLOAK(unum))) {
 			if (whichroom != -1 && whichroom != rnum)
 				continue;
 			if (myroom != rnum) {
@@ -803,15 +800,13 @@ chat_map_chatids(int unum, int whichroom)
 	send_to_unum(unum, "\033[1;33;44m 聊天代号 使用者代号  │ 聊天代号 使用者代号  │ 聊天代号 使用者代号 \033[m");
 	for (i = 0, c = 0; i < MAXACTIVE; i++) {
 		rnum = users[i].room;
-		if (users[i].sockfd != -1 && rnum != -1
-		    && !(users[i].cloak == 1 && !CLOAK(unum))) {
+		if (users[i].sockfd != -1 && rnum != -1 && !(users[i].cloak == 1 && !CLOAK(unum))) {
 			if (whichroom != -1 && whichroom != rnum)
 				continue;
 			if (myroom != rnum) {
 				if (RESTRICTED(unum))
 					continue;
-				if ((rooms[rnum].flags & ROOM_SECRET)
-				    && !SYSOP(unum) && !CHATOP(unum))
+				if ((rooms[rnum].flags & ROOM_SECRET) && !SYSOP(unum) && !CHATOP(unum))
 					continue;
 			}
 			sprintf(chatbuf + (c * 50),
@@ -1354,8 +1349,7 @@ struct action party_data[] = {
 	{"agree", "完全同意", "的看法"},
 	{"bearhug", "热情的拥抱", ""},
 
-	{"beg", "抱住",
-	 "的两腿，一把鼻涕一把泪地说：“行行好，救救俺这没钱的吧！”"},
+	{"beg", "抱住", "的两腿，一把鼻涕一把泪地说：“行行好，救救俺这没钱的吧！”"},
 	{"bless", "祝福", "心想事成"},
 	{"bow", "毕躬毕敬的向", "鞠躬"},
 	{"caress", "抚摸", ""},
@@ -1376,8 +1370,7 @@ struct action party_data[] = {
 	{"growl", "对", "咆哮不已"},
 	{"hand", "跟", "握手"},
 
-	{"heng", "看都不看",
-	 "一眼， 哼了一声，高高的把头扬起来了,不屑一顾的样子..."},
+	{"heng", "看都不看", "一眼， 哼了一声，高高的把头扬起来了,不屑一顾的样子..."},
 	{"hug", "轻轻地拥抱", ""},
 	{"idiot", "无情地耻笑", "的痴呆。"},
 	{"kick", "把", "踢的死去活来"},
@@ -1401,8 +1394,7 @@ struct action party_data[] = {
 	{"squeeze", "紧紧地拥抱著", ""},
 	{"thank", "向", "道谢"},
 	{"tickle", "咕叽!咕叽!搔", "的痒"},
-	{"waiting", "深情地对",
-	 "说：一年三百六十五天，每分每秒我都在这里等着你"},
+	{"waiting", "深情地对", "说：一年三百六十五天，每分每秒我都在这里等着你"},
 	{"wave", "对著", "拼命的摇手"},
 	{"welcome", "热烈欢迎", "的到来"},
 	{"wink", "对", "神秘的眨眨眼睛"},
