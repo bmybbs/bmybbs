@@ -165,9 +165,7 @@ insertattachments_byfile(char *filename, char *tmpfile, char *userid)
 }
 
 int
-getattach(FILE * fp, char *currline, char *attachfile, char *nowfile,
-	  int base64, int len, int fake)
-{
+getattach(FILE * fp, char *currline, char *attachfile, char *nowfile, int base64, int len, int fake) {
 	char buf[PATH_MAX + 1], *ext;
 	strncpy(buf, nowfile, sizeof (buf));
 	buf[PATH_MAX] = 0;
@@ -183,8 +181,7 @@ getattach(FILE * fp, char *currline, char *attachfile, char *nowfile,
 	}
 	if (attachfile[strlen(attachfile) - 1] == '\n')
 		attachfile[strlen(attachfile) - 1] = 0;
-	if (strlen(attachfile) > NAME_MAX
-	    || strlen(buf) + strlen(attachfile) + 1 > PATH_MAX) {
+	if (strlen(attachfile) > NAME_MAX || strlen(buf) + strlen(attachfile) + 1 > PATH_MAX) {
 		if (comfakedecode(fp, base64, len))
 			return -2;
 		else
