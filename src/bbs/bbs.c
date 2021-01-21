@@ -213,6 +213,7 @@ show_cake(char *filename, int num)
 						Q_Goodbye();
 					}
 				}
+				fclose(fp);
 				pressreturn();
 				return 0;
 			}
