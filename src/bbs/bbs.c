@@ -2347,8 +2347,10 @@ char *title;
 		return 0;
 	sprintf(outname, "bbstmpfs/tmp/editpost.%s.%05d", currentuser.userid,
 		uinfo.pid);
-	if ((out = fopen(outname, "w")) == NULL)
+	if ((out = fopen(outname, "w")) == NULL) {
+		fclose(fp);
 		return 0;
+	}
 	while ((fgets(buf, 256, fp)) != NULL) {
 		if (transferattach(buf, sizeof (buf), fp, out))
 			continue;
