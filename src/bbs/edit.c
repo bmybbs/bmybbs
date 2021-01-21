@@ -154,15 +154,19 @@ ishowspecialchar()
 			prints("%7s", tablebuf);
 			move(t_lines - 1, 30);
 			for (i = 0; i < lineidx + 1; i++)
-				if (fgets(tablebuf, 99, fp) == NULL)
+				if (fgets(tablebuf, 99, fp) == NULL) {
+					fclose(fp);
 					return 0;
+				}
 			for (i = 0; i < 5; i++) {
 				prints(" %d.%2s", i + 1, &tablebuf[i * 13 + 8]);
 				specialcharbuf[i * 2] = tablebuf[i * 13 + 8];
 				specialcharbuf[i * 2 + 1] = tablebuf[i * 13 + 9];
 			}
+			fclose(fp);
 			return 1;
 		}
+		fclose(fp);
 		return 0;
 	}
 	return 0;
