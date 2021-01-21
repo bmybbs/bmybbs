@@ -831,7 +831,7 @@ const struct sectree *sec;
 							break;
 
 						char dir[80];
-						struct mmapfile mf = { ptr:NULL };
+						struct mmapfile mf = { .ptr = NULL };
 						struct fileheader *x = NULL;
 
 						sprintf(dir, "boards/%s/.DIR", board[num - 1]);
@@ -1034,7 +1034,7 @@ const struct sectree *sec;
 					if((namecomplete((char *) NULL, bname))=='#')
 						super_select_board(bname);
 					setbpath(bpath, bname);
-					if (*bname == '\0');
+					//if (*bname == '\0');
 					if (stat(bpath, &st) == -1) {
 						move(2, 0);
 						prints("不正确的讨论区.\n");
