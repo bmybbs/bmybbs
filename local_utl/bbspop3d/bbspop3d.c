@@ -887,8 +887,10 @@ do_delete()
 	sprintf(fnew, "mail/%c/%s/pop3.DIR", mytoupper(*LowUserid), LowUserid);
 	if ((fdr = open(fpath, O_RDONLY)) == -1)
 		return -1;
-	if ((fdw = open(fnew, O_RDWR | O_CREAT, 0644)) == -1)
+	if ((fdw = open(fnew, O_RDWR | O_CREAT, 0644)) == -1) {
+		close(fdr);
 		return -1;
+	}
 	i = count = 0;
 	while (read(fdr, &currentmail, sizeof (currentmail))) {
 /*modified by KCN for not delete marked mail. 98.11    	*/
