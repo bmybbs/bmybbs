@@ -285,6 +285,7 @@ draw_usage()
 	}
 	fclose(fp1);
 	fclose(fp2);
+	free(data);
 }
 
 void
