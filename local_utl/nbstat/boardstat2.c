@@ -94,6 +94,7 @@ bu_exit()
 	}
 	fclose(fp1);
 	fclose(fp2);
+	free(data);
 }
 
 static int bu_callback(struct boardmem *board, int curr_idx, va_list ap) {
