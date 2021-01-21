@@ -5335,7 +5335,6 @@ static int money_stock_board() {
 	int getnum=0;
 	FILE *fp1;
 
-	fp1 = fopen( MC_STOCK_BOARDS, "r" );
 	count1= count = listfilecontent(MC_STOCK_BOARDS);
 	clear();
 	if (count==0){
@@ -5344,6 +5343,8 @@ static int money_stock_board() {
 		pressanykey();
 		return 0;
 	}
+
+	fp1 = fopen( MC_STOCK_BOARDS, "r" );
 	for (j = 0; j < count; j++)
 		fscanf(fp1, "%s", stockboard[j]);
 	fclose(fp1);
