@@ -114,8 +114,10 @@ ifinprison(char *name)
 	while (fgets(buf, 80, fp) != NULL) {
 		if (buf[strlen(buf) - 1] == '\n')
 			buf[strlen(buf) - 1] = 0;
-		if (!strcmp(name, buf))
+		if (!strcmp(name, buf)) {
+			fclose(fp);
 			return 1;
+		}
 	}
 	fclose(fp);
 	return 0;
