@@ -48,7 +48,6 @@ static int showkeyinfo(struct one_key *akey, int i);
 static unsigned int setkeys(struct one_key *key);
 static void myexec_cmd(int umode, int pager, const char *cmdfile, const char *param);
 static void datapipefd(int fds, int fdn);
-static void exec_cmd(int umode, int pager, char *cmdfile, char *param1);
 static int sendGoodWish(char *userid);
 static void childreturn(int i);
 static void escape_filename(char *fn);
@@ -1226,52 +1225,6 @@ datapipefd(int fds, int fdn)
 			FD_CLR(fdn, &rs);
 		}
 	}
-}
-
-static void
-exec_cmd(umode, pager, cmdfile, param1)
-int umode, pager;
-char *cmdfile, *param1;
-{
-	char buf[STRLEN * 2];
-	int save_pager;
-
-	{
-		char *ptr = strchr(param1, ';');
-		if (ptr != NULL)
-			*ptr = 0;
-	}
-
-	if (num_useshell() >= 20) {
-		clear();
-		prints("太多人使用外部程式了，你等一下再用吧...");
-		pressanykey();
-		return;
-	}
-	if (!HAS_PERM(PERM_SYSOP, currentuser) && heavyload(0)) {
-		clear();
-		prints("抱歉，目前系统负荷过重，此功能暂时不能执行...");
-		pressanykey();
-		return;
-	}
-	if (!dashf(cmdfile)) {
-		move(2, 0);
-		prints("no %s\n", cmdfile);
-		pressreturn();
-		return;
-	}
-	save_pager = uinfo.pager;
-	if (pager == NA) {
-		uinfo.pager = 0;
-	}
-	modify_user_mode(umode);
-	sprintf(buf, "/bin/sh %s %s %s %d", cmdfile, param1, currentuser.userid,
-		getpid());
-	sprintf(genbuf, "%s exec %s", currentuser.userid, buf);
-	newtrace(genbuf);
-	do_exec(buf, NULL);
-	uinfo.pager = save_pager;
-	clear();
 }
 
 int
