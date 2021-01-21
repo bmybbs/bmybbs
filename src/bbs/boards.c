@@ -51,7 +51,7 @@
 #define BBS_PAGESIZE    (t_lines - 4)
 
 struct allbrc *allbrc = NULL;
-struct onebrc brc = { 0, 0, 0, "" };
+struct onebrc brc = { 0, 0, 0, "", { 0 }, 0 };
 char *sysconf_str();
 struct newpostdata {
 	char *name;
