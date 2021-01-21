@@ -895,10 +895,11 @@ char *arg;
 			}
 		}
 	if (!del) {
+		struct chatalias EMPTY;
 		strncpy(chat_aliases[chat_alias_count].cmd, arg, 8);
-		chat_aliases[chat_alias_count].cmd[8] = 0;
+		chat_aliases[chat_alias_count].cmd[sizeof(EMPTY.cmd) - 1] = 0;
 		strncpy(chat_aliases[chat_alias_count].action, action, 80);
-		chat_aliases[chat_alias_count].action[81] = 0;
+		chat_aliases[chat_alias_count].action[sizeof(EMPTY.cmd) - 1] = 0;
 		sprintf(buf, "自定义alias-%s已经创建\n", arg);
 		printchatline(buf);
 		i = chat_alias_count;
