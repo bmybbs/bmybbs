@@ -104,7 +104,7 @@ orig_tmpl_init(char * nboard, int mode, struct a_template ** pptemp){
 		}
 
 		memcpy(pptemp[templ_num]->tmpl, &tmpl, sizeof(struct s_template) );
-		memcpy(pptemp[templ_num]->cont, &content, sizeof(struct s_template) );
+		memcpy(pptemp[templ_num]->cont, &content, sizeof(struct s_content) );
 		templ_num ++;
 		if( templ_num >= MAX_TEMPLATE )
 			break;
