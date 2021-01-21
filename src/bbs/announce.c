@@ -1215,8 +1215,7 @@ int ch;
 					else
 						rcon = "";
 					securityreport(genbuf, rcon);
-					if (strcmp(rcon, ""))
-						free(rcon);
+					free(rcon);
 					if (uident[0] != '\0')
 						sprintf(genbuf, "%-38.38s(BM: %s)", changed_T, uident);
 					else
