@@ -60,7 +60,7 @@ orig_tmpl_init(char * nboard, int mode, struct a_template ** pptemp){
 	int fd;
 	char tmpldir[STRLEN];
 	struct s_template tmpl;
-	struct s_content * cont;
+	struct s_content content;
 	int templ_num;
 
 	setbfile(tmpldir, nboard, TEMPLATE_DIR);
@@ -88,20 +88,23 @@ orig_tmpl_init(char * nboard, int mode, struct a_template ** pptemp){
 			lseek( fd, sizeof(struct s_content) * tmpl.content_num , SEEK_CUR );
 			continue;
 		}
-		cont = (struct s_content *) malloc( sizeof( struct s_content ) * tmpl.content_num );
-		if( cont == NULL )
-			break;
-		bzero(cont, sizeof(struct s_content) * tmpl.content_num );
-		if(read(fd, cont, sizeof(struct s_content)*tmpl.content_num) != sizeof(struct s_content)*tmpl.content_num)
+		memset(&content, 0, sizeof(struct s_content) * tmpl.content_num );
+		if(read(fd, &content, sizeof(struct s_content)*tmpl.content_num) != sizeof(struct s_content)*tmpl.content_num)
 			continue;
-		(* pptemp)[templ_num].tmpl = (struct s_template *)malloc(sizeof(struct s_template));
-		if( (* pptemp)[templ_num].tmpl == NULL ){
-			free(cont);
+
+		pptemp[templ_num]->tmpl = malloc(sizeof(struct s_template));
+		if( pptemp[templ_num]->tmpl == NULL ){
 			break;
 		}
-		bzero( (* pptemp)[templ_num].tmpl , sizeof(struct s_template) );
-		memcpy( (* pptemp)[templ_num].tmpl, &tmpl, sizeof(struct s_template) );
-		(* pptemp)[templ_num].cont = cont;
+
+		pptemp[templ_num]->cont = malloc(sizeof(struct s_content));
+		if (pptemp[templ_num]->cont == NULL) {
+			free(pptemp[templ_num]->tmpl);
+			break;
+		}
+
+		memcpy(pptemp[templ_num]->tmpl, &tmpl, sizeof(struct s_template) );
+		memcpy(pptemp[templ_num]->cont, &content, sizeof(struct s_template) );
 		templ_num ++;
 		if( templ_num >= MAX_TEMPLATE )
 			break;
