@@ -4558,6 +4558,7 @@ static int do_commend2(char* board, struct fileheader* fileinfo) {
 	y.accessed=fileinfo->accessed;
 	y.time=time(NULL);
 	if(fwrite(&y, sizeof(struct commend), 1, fp) != 1){
+		fclose(fp);
 		prints("write fail\n");
 		pressanykey();
 		return 0;
