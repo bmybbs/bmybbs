@@ -322,6 +322,7 @@ char *chatbuf;
 			gethostname(inbuf, STRLEN);
 			if (!(h = gethostbyname(inbuf))) {
 				prints("gethostbyname");
+				close(cfd);
 				return -1;
 			}
 			memset(&sin, 0, sizeof sin);
@@ -346,6 +347,7 @@ char *chatbuf;
 			cfd = socket(sin.sin_family, SOCK_STREAM, 0);
 			if ((connect(cfd, (struct sockaddr *) &sin, sizeof (sin)))) {
 				perror("connect failed");
+				close(cfd);
 				return -1;
 			}
 		}
@@ -380,6 +382,7 @@ char *chatbuf;
 			cfd = socket(sin.sin_family, SOCK_STREAM, 0);
 			if ((connect(cfd, (struct sockaddr *) &sin, sizeof (sin)))) {
 				perror("connect failed");
+				close(cfd);
 				return -1;
 			}
 		}
@@ -412,6 +415,7 @@ char *chatbuf;
 			cuser.userlevel, cuser.userid, chatid);
 		chat_send(cfd, inbuf);
 		if (recv(cfd, inbuf, 3, 0) != 3) {
+			close(cfd);
 			return 0;
 		}
 		move(3, 0);
