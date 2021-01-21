@@ -618,9 +618,10 @@ int level;
 			if (searchmode && !strstr(buf, "groups/"))
 				continue;
 			ptr = strchr(buf, ':');
-			if (!ptr)
+			if (!ptr) {
+				fclose(fn);
 				return 0;
-			else {
+			} else {
 				*ptr = '\0';
 				ptr = strtok(ptr + 1, " \t\n");
 			}
