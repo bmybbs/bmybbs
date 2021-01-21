@@ -68,7 +68,7 @@ struct newpostdata nbrd[MAXBOARD];
 int *zapbuf;
 int zapbufchanged = 0;
 int yank_flag = 0;
-unsigned char boardprefix[5];
+static unsigned char boardprefix[5];
 
 struct goodboard GoodBrd;
 
