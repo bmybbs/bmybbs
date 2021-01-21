@@ -481,7 +481,6 @@ char *configfile, *imgfile;
 		close(fh);
 		//must use rename, because we will use mmap on imgfile -- ylsdd
 		rename(tmpfile, imgfile);
-		close(fh);
 	}
 	free(menuitem);
 	free(sysvar);
