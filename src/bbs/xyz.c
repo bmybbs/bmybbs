@@ -1407,6 +1407,7 @@ sendGoodWish(char *userid)
 				if ((fp = fopen(genbuf, "a")) == NULL) {
 					prints("无法开启该用户的底部流动信息文件，请通知站长...\n");
 					pressanykey();
+					fclose(mp);
 					return NA;
 				}
 				now = time(0);
@@ -1429,6 +1430,7 @@ sendGoodWish(char *userid)
 					currentuser.userid, uid);
 				newtrace(genbuf);
 			}	//for loop
+			fclose(mp);
 			return 0;
 		}
 	} else
