@@ -45,6 +45,7 @@
 #include "bbs_global_vars.h"
 #include "bbs-internal.h"
 #include "ythtbbs/cache.h"
+#include "bcache.h"
 
 extern int page, range;
 extern char IScurrBM;
