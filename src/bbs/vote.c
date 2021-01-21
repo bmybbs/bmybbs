@@ -1124,8 +1124,10 @@ init_lists()
 	struct voterlist* vltemp=(struct voterlist*)malloc(sizeof(struct voterlist));
 	setbfile(listbuf, currboard, "validlist");
 	fn = open( listbuf, O_RDONLY );
-	if (fn==-1)
+	if (fn == -1) {
+		free(vltemp);
 		return 0;
+	}
 	while(read(fn, vltemp, sizeof(struct voterlist))==sizeof(struct voterlist))
 	{
 		vlists[listnum]=(struct voterlist*)malloc(sizeof(struct voterlist));
