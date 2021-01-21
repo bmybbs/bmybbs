@@ -18,6 +18,7 @@
 #include "boards.h"
 #include "edit.h"
 #include "bbs-internal.h"
+#include "bcache.h"
 
 #define MC_BOARD        "millionaires"
 #define DIR_MC          MY_BBS_HOME "/etc/moneyCenter/"
