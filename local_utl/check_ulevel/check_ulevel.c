@@ -64,8 +64,11 @@ int do_check()
 	chdir(MY_BBS_HOME);
 	fp = fopen(PASSFILE, "r+");
 	logfp = fopen(LOG_FILE, "a");
-	if(fp == NULL)
+	if(fp == NULL || logfp == NULL) {
+		if (fp) fclose(fp);
+		if (logfp) fclose(logfp);
 		return OPENFILE_ERROR;
+	}
 	check_user = (struct userec*)malloc(sizeof(struct userec));
 
 	while(fread(check_user, sizeof(struct userec), 1, fp)==1){
