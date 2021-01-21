@@ -402,7 +402,7 @@ struct boardmem *bptr;
 	int fd, offset, step, num, filetime;
 
 	num = bptr->total + 1;
-	if ((fd = open(dirfile, O_RDONLY)) > 0) {
+	if ((fd = open(dirfile, O_RDONLY)) >= 0) {
 		if (!brc_initial(bptr->header.filename, 1)) {
 			num = 1;
 		} else {
