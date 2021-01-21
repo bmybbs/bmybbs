@@ -971,8 +971,10 @@ static void do_search_mailbox(int type, const char *whattosearch, const char *te
 	if (fdir == NULL)
 		return;
 	ftempdir = fopen(tempdir, "w");
-	if (ftempdir == NULL)
+	if (ftempdir == NULL) {
+		fclose(fdir);
 		return;
+	}
 
 	switch (type)
 	{
