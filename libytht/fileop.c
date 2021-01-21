@@ -260,7 +260,7 @@ copyfile(char *from, char *to)
 		goto ERROR2;
 	filesize = lseek(input, 0, SEEK_END);
 	if (filesize == (off_t) -1)
-		goto ERROR2;
+		goto ERROR3;
 	lseek(output, filesize - 1, SEEK_SET);
 	write(output, &endchar, 1);
 	if ((source = mmap(0, filesize, PROT_READ, MAP_SHARED, input, 0)) == (void *) -1)
