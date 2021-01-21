@@ -80,8 +80,11 @@ int do_check()
 			fprintf(logfp, "user %s has PERM_SPECIAL1\n", check_user.userid);
 			check_user.userlevel &= ~PERM_SPECIAL1;
 			fseek(fp, -sizeof(struct userec), SEEK_CUR);
-			if(fwrite(&check_user, sizeof(struct userec), 1, fp)!=1)
+			if(fwrite(&check_user, sizeof(struct userec), 1, fp)!=1) {
+				fclose(fp);
+				fclose(logfp);
 				return WRITEFILE_ERROR;
+			}
 			printf("user %s's level has been changed\n", check_user.userid);
 			fprintf(logfp, "user %s's level has been changed(%s)\n", check_user.userid, ytht_ctime(time(NULL)));
 		}
