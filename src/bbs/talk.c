@@ -1053,6 +1053,7 @@ talkreply()
 	sin.sin_port = ui.sockaddr;
 	a = socket(sin.sin_family, SOCK_STREAM, 0);
 	if ((connect(a, (struct sockaddr *) &sin, sizeof (sin)))) {
+		close(a);
 		perror("connect err");
 		return -1;
 	}
