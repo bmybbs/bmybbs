@@ -161,6 +161,7 @@ savestrvalue(const char *filename, const char *str, const char *value)
 		rc = fseek(fp, where, SEEK_SET);
 		if (rc == -1) {
 			fclose(fp);
+			free(tmp);
 			return -5;
 		}
 		fputs(tmp, fp);
