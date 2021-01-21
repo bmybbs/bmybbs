@@ -6313,6 +6313,7 @@ static int shop_present(int order, char *kind, char *touserid) {
 	prints("本店出售如下种类的%s: ", kind);
 	if ((dp = opendir(dir)) == NULL)
 		return -1;
+	closedir(dp);
 
 	fp=fopen(indexpath, "r");
 	if(fp!=0) {
@@ -6358,6 +6359,7 @@ static int shop_present(int order, char *kind, char *touserid) {
 	snprintf(dirpath, PATHLEN, "%s", dirNameBuffer[dirIndex]);
 	if ((dp = opendir(dirpath)) == NULL)
 		return -1;
+	closedir(dp);
 	//prints("本店出售如下种类的%s: ", kind);
 
 	sprintf(indexpath, "%s/.Names", dirpath);
