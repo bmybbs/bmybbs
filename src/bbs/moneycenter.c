@@ -9360,9 +9360,9 @@ static int marry_editinvitation(struct MC_Marry *mm) {
 					}
 					fprintf(newfp,"%s",buf);
 				}
-				fclose(oldfp);
+				fclose(newfp);
 			}
-			fclose(newfp);
+			fclose(oldfp);
 		}
 	}else
 		sprintf(filepath,"%s/M.%d.A",DIR_MC_MARRY,mm->invitationfile);
