@@ -59,7 +59,7 @@ int get_userid()
 int do_check()
 {
 	FILE* fp, *logfp;					//fp of .PASSWDS
-	struct userec* check_user;
+	struct userec check_user;
 
 	chdir(MY_BBS_HOME);
 	fp = fopen(PASSFILE, "r+");
@@ -69,22 +69,21 @@ int do_check()
 		if (logfp) fclose(logfp);
 		return OPENFILE_ERROR;
 	}
-	check_user = (struct userec*)malloc(sizeof(struct userec));
 
-	while(fread(check_user, sizeof(struct userec), 1, fp)==1){
-		if(!check_user->userid[0])
+	while(fread(&check_user, sizeof(struct userec), 1, fp)==1){
+		if(!check_user.userid[0])
 			break;
-		if(is_specialid(check_user->userid))
+		if(is_specialid(check_user.userid))
 			continue;
-		if(check_user->userlevel & PERM_SPECIAL1){
-			printf("user %s has PERM_SPECIAL1\n", check_user->userid);
-			fprintf(logfp, "user %s has PERM_SPECIAL1\n", check_user->userid);
-			check_user->userlevel &= ~PERM_SPECIAL1;
+		if(check_user.userlevel & PERM_SPECIAL1){
+			printf("user %s has PERM_SPECIAL1\n", check_user.userid);
+			fprintf(logfp, "user %s has PERM_SPECIAL1\n", check_user.userid);
+			check_user.userlevel &= ~PERM_SPECIAL1;
 			fseek(fp, -sizeof(struct userec), SEEK_CUR);
-			if(fwrite(check_user, sizeof(struct userec), 1, fp)!=1)
+			if(fwrite(&check_user, sizeof(struct userec), 1, fp)!=1)
 				return WRITEFILE_ERROR;
-			printf("user %s's level has been changed\n", check_user->userid);
-			fprintf(logfp, "user %s's level has been changed(%s)\n", check_user->userid, ytht_ctime(time(NULL)));
+			printf("user %s's level has been changed\n", check_user.userid);
+			fprintf(logfp, "user %s's level has been changed(%s)\n", check_user.userid, ytht_ctime(time(NULL)));
 		}
 	}
 	fclose(fp);
