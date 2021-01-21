@@ -4464,6 +4464,7 @@ int show_commend() {
 		//prints("\033[37m信区:\033[33m%-16s\033[37m标题:\033[1;44;37m%-60.60s\033[40m\033[37m【推荐时间:\033[32m%s\033[37m,推荐人:\033[32m%s\033[37m】\033[0m\n", x.board, x.title, ytht_ctime(x.time), x.com_user);
 		prints("\033[1;44;37m信区:\033[33m%-13s\033[37m标题:\033[37m%-30s \033[37m作者:\033[32m%-12s\033[0m\n", x.board, x.title, x.userid);
 	}
+	fclose(fp);
 	return 0;
 }
 
