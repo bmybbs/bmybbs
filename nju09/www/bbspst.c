@@ -135,10 +135,13 @@ bbspst_main()
 	int hastmpl;
 	char tmplfile[STRLEN];
 	sprintf(tmplfile, "boards/%s/%s", board, ".tmpl");
-	if (fopen(tmplfile, "r") == 0)
+	FILE *tmpl_fp;
+	if ((tmpl_fp = fopen(tmplfile, "r")) == NULL)
 		hastmpl = 0;
-	else
+	else {
+		fclose(tmpl_fp);
 		hastmpl = file_size(tmplfile) / sizeof (struct a_template);
+	}
 	if (!file[0] && hastmpl > 0) {
 		printf("<tr><td class=bordertheme>");
 		printf("<a target=_self href=bbstmpl?action=show&board=%s class=btnsubmittheme>", board);
