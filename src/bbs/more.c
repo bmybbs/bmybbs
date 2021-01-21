@@ -108,6 +108,7 @@ NNread_init()
 	if (!DEFINE(DEF_ACBOARD, currentuser)) {
 		nnline = 1;
 		xxxline = 1;
+		fclose(fffd);
 		return 1;
 	}
 	while ((xxxline < ACBOARD_MAXLINE) && (fgets(buf, ACBOARD_BUFSIZE, fffd) != NULL)) {
