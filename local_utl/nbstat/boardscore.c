@@ -154,6 +154,7 @@ bs_exit()
 	fclose(fp);
 	ythtbbs_cache_utmp_resolve();
 	ythtbbs_cache_utmp_set_ave_score(count / boards);
+	free(data);
 }
 
 static int bs_callback(struct boardmem *board, int curr_idx, va_list ap) {

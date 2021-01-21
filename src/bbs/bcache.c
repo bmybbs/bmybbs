@@ -355,7 +355,7 @@ char *boardname;
 	if (board_ptr->header.clubnum == 0)
 		return 1;
 
-	setuserfile(fn, "clubrights");
+	sethomefile_s(fn, sizeof(fn), currentuser.userid, "clubrights");
 	if (stat(fn, &st1))
 		memset(&(uinfo.clubrights), 0, 4 * sizeof (int));
 	else if (club_rights_time < st1.st_mtime) {
@@ -380,7 +380,7 @@ char *boardname;
 				uinfo.clubrights[board_ptr->header.clubnum / 32] &= ~(1 << board_ptr->header.clubnum % 32);
 			if (old_right != HAS_CLUBRIGHT(board_ptr->header.clubnum, uinfo.clubrights)) {
 				char towrite[STRLEN];
-				setuserfile(fn, "clubrights");
+				sethomefile_s(fn, sizeof(fn), currentuser.userid, "clubrights");
 				sprintf(towrite, "%d", board_ptr->header.clubnum);
 				old_right ? ytht_del_from_file(fn, towrite, true) : ytht_add_to_file(fn, towrite);
 			}

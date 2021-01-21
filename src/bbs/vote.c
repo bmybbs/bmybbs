@@ -1,24 +1,24 @@
 /*
-    Pirate Bulletin Board System
-    Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
-    Eagles Bulletin Board System
-    Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
-                        Guy Vega, gtvega@seabass.st.usm.edu
-                        Dominic Tynes, dbtynes@seabass.st.usm.edu
-    Firebird Bulletin Board System
-    Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
-                        Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
-    Copyright (C) 1999, Zhou Lin, kcn@cic.tsinghua.edu.cn
+	Pirate Bulletin Board System
+	Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
+	Eagles Bulletin Board System
+	Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
+						Guy Vega, gtvega@seabass.st.usm.edu
+						Dominic Tynes, dbtynes@seabass.st.usm.edu
+	Firebird Bulletin Board System
+	Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
+						Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
+	Copyright (C) 1999, Zhou Lin, kcn@cic.tsinghua.edu.cn
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 1, or (at your option)
-    any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 1, or (at your option)
+	any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 */
 
 #include <sys/mman.h>
@@ -45,6 +45,7 @@
 #include "bbs_global_vars.h"
 #include "bbs-internal.h"
 #include "ythtbbs/cache.h"
+#include "bcache.h"
 
 extern int page, range;
 extern char IScurrBM;
@@ -1123,8 +1124,10 @@ init_lists()
 	struct voterlist* vltemp=(struct voterlist*)malloc(sizeof(struct voterlist));
 	setbfile(listbuf, currboard, "validlist");
 	fn = open( listbuf, O_RDONLY );
-	if (fn==-1)
+	if (fn == -1) {
+		free(vltemp);
 		return 0;
+	}
 	while(read(fn, vltemp, sizeof(struct voterlist))==sizeof(struct voterlist))
 	{
 		vlists[listnum]=(struct voterlist*)malloc(sizeof(struct voterlist));

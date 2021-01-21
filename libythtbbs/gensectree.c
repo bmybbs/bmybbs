@@ -21,6 +21,9 @@ readseclist(char *filename)
 	char buf[256], *ptr;
 	int i;
 	fp = fopen(filename, "rt");
+	if (fp == NULL)
+		return -1;
+
 	for (i = 0; i < MAXPAIRS; i++) {
 		if (fgets(buf, sizeof (buf), fp) == NULL)
 			break;
@@ -37,6 +40,7 @@ readseclist(char *filename)
 		pairs[i].used = 0;
 	}
 	npairs = i;
+	fclose(fp);
 	return 0;
 }
 

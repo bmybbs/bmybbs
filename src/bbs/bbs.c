@@ -213,6 +213,7 @@ show_cake(char *filename, int num)
 						Q_Goodbye();
 					}
 				}
+				fclose(fp);
 				pressreturn();
 				return 0;
 			}
@@ -400,10 +401,6 @@ setquotefile(filepath)
 char filepath[];
 {
 	strcpy(quote_file, filepath);
-}
-
-char *setuserfile(char *buf, const char *filename) {
-	return sethomefile(buf, currentuser.userid, filename);
 }
 
 char *
@@ -1864,7 +1861,7 @@ char *filepath;
 	char fname[STRLEN];
 	noidboard = header.chk_anony;
 	color = (currentuser.numlogins % 7) + 31;
-	setuserfile(fname, "signatures");
+	sethomefile_s(fname, sizeof(fname), currentuser.userid, "signatures");
 	if ((fp = fopen(filepath, "a")) == NULL)
 		return;
 	if (!dashf(fname) || currentuser.signature == 0 || noidboard)
@@ -2350,8 +2347,10 @@ char *title;
 		return 0;
 	sprintf(outname, "bbstmpfs/tmp/editpost.%s.%05d", currentuser.userid,
 		uinfo.pid);
-	if ((out = fopen(outname, "w")) == NULL)
+	if ((out = fopen(outname, "w")) == NULL) {
+		fclose(fp);
 		return 0;
+	}
 	while ((fgets(buf, 256, fp)) != NULL) {
 		if (transferattach(buf, sizeof (buf), fp, out))
 			continue;
@@ -4465,6 +4464,7 @@ int show_commend() {
 		//prints("\033[37m信区:\033[33m%-16s\033[37m标题:\033[1;44;37m%-60.60s\033[40m\033[37m【推荐时间:\033[32m%s\033[37m,推荐人:\033[32m%s\033[37m】\033[0m\n", x.board, x.title, ytht_ctime(x.time), x.com_user);
 		prints("\033[1;44;37m信区:\033[33m%-13s\033[37m标题:\033[37m%-30s \033[37m作者:\033[32m%-12s\033[0m\n", x.board, x.title, x.userid);
 	}
+	fclose(fp);
 	return 0;
 }
 
@@ -4525,8 +4525,11 @@ static int del_commend2(int offset) {
 
 	fp = fopen(COMMENDFILE2, "r");
 	fp2 = fopen(COMMENDFILE2".new", "w");
-	if(!fp || !fp2)
+	if(!fp || !fp2) {
+		if (fp) fclose(fp);
+		if (fp2) fclose(fp2);
 		return 1;
+	}
 	//prints("offset=%d\n");
 	//pressanykey();
 	while(fread(&x, sizeof(struct commend), 1, fp) == 1){
@@ -4559,6 +4562,7 @@ static int do_commend2(char* board, struct fileheader* fileinfo) {
 	y.accessed=fileinfo->accessed;
 	y.time=time(NULL);
 	if(fwrite(&y, sizeof(struct commend), 1, fp) != 1){
+		fclose(fp);
 		prints("write fail\n");
 		pressanykey();
 		return 0;

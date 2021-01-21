@@ -18,6 +18,7 @@
 #include "boards.h"
 #include "edit.h"
 #include "bbs-internal.h"
+#include "bcache.h"
 
 #define MC_BOARD        "millionaires"
 #define DIR_MC          MY_BBS_HOME "/etc/moneyCenter/"
@@ -5334,7 +5335,6 @@ static int money_stock_board() {
 	int getnum=0;
 	FILE *fp1;
 
-	fp1 = fopen( MC_STOCK_BOARDS, "r" );
 	count1= count = listfilecontent(MC_STOCK_BOARDS);
 	clear();
 	if (count==0){
@@ -5343,6 +5343,8 @@ static int money_stock_board() {
 		pressanykey();
 		return 0;
 	}
+
+	fp1 = fopen( MC_STOCK_BOARDS, "r" );
 	for (j = 0; j < count; j++)
 		fscanf(fp1, "%s", stockboard[j]);
 	fclose(fp1);
@@ -6312,6 +6314,7 @@ static int shop_present(int order, char *kind, char *touserid) {
 	prints("本店出售如下种类的%s: ", kind);
 	if ((dp = opendir(dir)) == NULL)
 		return -1;
+	closedir(dp);
 
 	fp=fopen(indexpath, "r");
 	if(fp!=0) {
@@ -6357,6 +6360,7 @@ static int shop_present(int order, char *kind, char *touserid) {
 	snprintf(dirpath, PATHLEN, "%s", dirNameBuffer[dirIndex]);
 	if ((dp = opendir(dirpath)) == NULL)
 		return -1;
+	closedir(dp);
 	//prints("本店出售如下种类的%s: ", kind);
 
 	sprintf(indexpath, "%s/.Names", dirpath);
@@ -9357,9 +9361,9 @@ static int marry_editinvitation(struct MC_Marry *mm) {
 					}
 					fprintf(newfp,"%s",buf);
 				}
-				fclose(oldfp);
+				fclose(newfp);
 			}
-			fclose(newfp);
+			fclose(oldfp);
 		}
 	}else
 		sprintf(filepath,"%s/M.%d.A",DIR_MC_MARRY,mm->invitationfile);
@@ -9434,9 +9438,9 @@ static int marry_editset(struct MC_Marry *mm) {
 					}
 					fprintf(newfp,"%s",buf);
 				}/*by macintosh 20051203*/
-				fclose(oldfp);
+				fclose(newfp);
 			}
-			fclose(newfp);
+			fclose(oldfp);
 		}
 	}else
 		sprintf(filepath,"%s/M.%d.A",DIR_MC_MARRY,mm->setfile);

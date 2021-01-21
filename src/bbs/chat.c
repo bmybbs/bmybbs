@@ -1,26 +1,26 @@
 /*
-    modify test by leoncom 2009.3.4(nothing but add this comment)
-    Pirate Bulletin Board System
-    Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
-    Eagles Bulletin Board System
-    Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
-                        Guy Vega, gtvega@seabass.st.usm.edu
-                        Dominic Tynes, dbtynes@seabass.st.usm.edu
-    Firebird Bulletin Board System
-    Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
-                        Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
+	modify test by leoncom 2009.3.4(nothing but add this comment)
+	Pirate Bulletin Board System
+	Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
+	Eagles Bulletin Board System
+	Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
+						Guy Vega, gtvega@seabass.st.usm.edu
+						Dominic Tynes, dbtynes@seabass.st.usm.edu
+	Firebird Bulletin Board System
+	Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
+						Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
 
-    Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
+	Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 1, or (at your option)
-    any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 1, or (at your option)
+	any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 */
 
 #include "bbs.h"
@@ -92,18 +92,15 @@ chat_load_alias()
 	char buf[256];
 	int i;
 	chat_alias_count = 0;
-	chat_aliases =
-	    (struct chatalias *) malloc(sizeof (struct chatalias) *
-					MAXDEFINEALIAS);
+	chat_aliases = (struct chatalias *) malloc(sizeof (struct chatalias) * MAXDEFINEALIAS);
 	for (i = 0; i < MAXDEFINEALIAS; i++)
 		chat_aliases[i].cmd[0] = 0;
-	setuserfile(buf, "chatalias");
+	sethomefile_s(buf, sizeof(buf), currentuser.userid, "chatalias");
 	chat_alias_count = get_num_records(buf, sizeof (struct chatalias));
 	if (chat_alias_count > MAXDEFINEALIAS)
 		chat_alias_count = MAXDEFINEALIAS;
 	if (chat_alias_count != 0)
-		get_records(buf, chat_aliases, sizeof (struct chatalias), 1,
-			    chat_alias_count);
+		get_records(buf, chat_aliases, sizeof (struct chatalias), 1, chat_alias_count);
 	for (i = 0; i < chat_alias_count; i++) {
 		if (chat_aliases[i].cmd[0] == 0) {
 			chat_alias_count = i;
@@ -210,10 +207,7 @@ char *chatid;
 				clrtoeol();
 				sprintf(genbuf, "房间： \033[32m%s", chatroom);
 				strncpy(buftopic, bptr + 2, STRLEN - 1);
-				prints
-				    ("\033[1;44;33m %-21s  \033[33m话题：\033[36m%-47s\033[5;31m%6s\033[m",
-				     genbuf, bptr + 2,
-				     (recflag == 1) ? "录音中" : "      ");
+				prints("\033[1;44;33m %-21s  \033[33m话题：\033[36m%-47s\033[5;31m%6s\033[m", genbuf, bptr + 2, (recflag == 1) ? "录音中" : "      ");
 			}
 		} else {
 			printchatline(bptr);
@@ -290,14 +284,11 @@ char *chatbuf;
 		break;
 	}
 
-	if ((chatroom == 1)
-	    && (stationrec = fopen("etc/chatstation", "r")) != NULL) {
+	if ((chatroom == 1) && (stationrec = fopen("etc/chatstation", "r")) != NULL) {
 		i = 0;
 		while (fgets(inbuf, STRLEN, stationrec) != NULL && i <= 11) {
-			strncpy(stnname[i], (char *) strtok(inbuf, " \n\r\t"),
-				19);
-			strncpy(stnaddr[i], (char *) strtok(NULL, " \n\r\t"),
-				29);
+			strncpy(stnname[i], (char *) strtok(inbuf, " \n\r\t"), 19);
+			strncpy(stnaddr[i], (char *) strtok(NULL, " \n\r\t"), 29);
 			strncpy(temp, (char *) strtok(NULL, " \n\r\t"), 9);
 			portnum[i] = atoi(temp);
 			i++;
@@ -306,8 +297,7 @@ char *chatbuf;
 		move(1, 0);
 		clrtobot();
 		prints("\n\n序 连线站名称             连线站位址\n");
-		prints
-		    ("== =====================  ==============================\n");
+		prints("== =====================  ==============================\n");
 		for (j = 0; j <= i - 1; j++) {
 			move(5 + j, 0);
 			prints("%2d %-22s %-32s", j, stnname[j], stnaddr[j]);
@@ -332,6 +322,7 @@ char *chatbuf;
 			gethostname(inbuf, STRLEN);
 			if (!(h = gethostbyname(inbuf))) {
 				prints("gethostbyname");
+				close(cfd);
 				return -1;
 			}
 			memset(&sin, 0, sizeof sin);
@@ -354,9 +345,9 @@ char *chatbuf;
 				exit(-1);
 			}
 			cfd = socket(sin.sin_family, SOCK_STREAM, 0);
-			if ((connect
-			     (cfd, (struct sockaddr *) &sin, sizeof (sin)))) {
+			if ((connect(cfd, (struct sockaddr *) &sin, sizeof (sin)))) {
 				perror("connect failed");
+				close(cfd);
 				return -1;
 			}
 		}
@@ -389,9 +380,9 @@ char *chatbuf;
 			}
 			sleep(1);
 			cfd = socket(sin.sin_family, SOCK_STREAM, 0);
-			if ((connect
-			     (cfd, (struct sockaddr *) &sin, sizeof (sin)))) {
+			if ((connect(cfd, (struct sockaddr *) &sin, sizeof (sin)))) {
 				perror("connect failed");
+				close(cfd);
 				return -1;
 			}
 		}
@@ -418,13 +409,13 @@ char *chatbuf;
 			updatelastpost("deleterequest");
 		}
 		sprintf(chatid, "%.8s",
-			((inbuf[0] != '\0' && inbuf[0] != '\n') ? inbuf :
-			 cuser.userid));
+			((inbuf[0] != '\0' && inbuf[0] != '\n') ? inbuf : cuser.userid));
 		fixchatid(chatid);
 		sprintf(inbuf, "/! %d %d %s %s 0", uinfo.uid,
 			cuser.userlevel, cuser.userid, chatid);
 		chat_send(cfd, inbuf);
 		if (recv(cfd, inbuf, 3, 0) != 3) {
+			close(cfd);
 			return 0;
 		}
 		move(3, 0);
@@ -518,8 +509,7 @@ char *chatbuf;
 			if (currchar < 68) {
 				if (inbuf[currchar]) {	/* insert */
 					int i;
-					for (i = currchar; inbuf[i] && i < 68;
-					     i++) ;
+					for (i = currchar; inbuf[i] && i < 68; i++) ;
 					inbuf[i + 1] = '\0';
 					for (; i > currchar; i--)
 						inbuf[i] = inbuf[i - 1];
@@ -539,8 +529,7 @@ char *chatbuf;
 					strcpy(genbuf, "在聊天室说过滤词");
 					mail_buf(inbuf, "delete", genbuf);
 					updatelastpost("deleterequest");
-					printchatline
-					    ("\033[1;32m聊天室禁止污言秽语哦\033[m");
+					printchatline("\033[1;32m聊天室禁止污言秽语哦\033[m");
 					inbuf[0] = '\0';
 					currchar = 0;
 					move(b_lines, 10);
@@ -559,8 +548,7 @@ char *chatbuf;
 				if (!strncmp(inbuf, "/b", 2))
 					break;
 				for (cmdpos = MAXLASTCMD - 1; cmdpos; cmdpos--)
-					strcpy(lastcmd[cmdpos],
-					       lastcmd[cmdpos - 1]);
+					strcpy(lastcmd[cmdpos], lastcmd[cmdpos - 1]);
 				strcpy(lastcmd[0], inbuf);
 
 				inbuf[0] = '\0';
@@ -575,8 +563,7 @@ char *chatbuf;
 			if (currchar) {
 				currchar--;
 				inbuf[69] = '\0';
-				memcpy(&inbuf[currchar], &inbuf[currchar + 1],
-				       69 - currchar);
+				memcpy(&inbuf[currchar], &inbuf[currchar + 1], 69 - currchar);
 				move(b_lines, currchar + 10);
 				clrtoeol();
 				outs(&inbuf[currchar]);
@@ -624,8 +611,7 @@ static int printuserent(const struct user_info *uentp, void *x_param) {
 	}
 	if (!uentp->active || !uentp->pid)
 		return 0;
-	if (!(HAS_PERM(PERM_SYSOP, currentuser) || HAS_PERM(PERM_SEECLOAK, currentuser))
-	    && uentp->invisible)
+	if (!(HAS_PERM(PERM_SYSOP, currentuser) || HAS_PERM(PERM_SEECLOAK, currentuser)) && uentp->invisible)
 		return 0;
 
 	sprintf(pline, " %s%-13s\x1b[m%c%s%-10.10s\x1b[m",
@@ -703,9 +689,7 @@ char *arg;
 
 	printchatline(msg);
 
-	strcpy(genbuf,
-		   lookupuser.dietime ? ytht_ctime(lookupuser.dietime) :
-		   ytht_ctime(lookupuser.lastlogin));
+	strcpy(genbuf, lookupuser.dietime ? ytht_ctime(lookupuser.dietime) : ytht_ctime(lookupuser.lastlogin));
 	if (ifinprison(lookupuser.userid)) {
 		strcpy(genbuf, ytht_ctime(lookupuser.lastlogin));
 		sprintf(msg, "在监狱服刑，入狱时间[\033[1m%s\033[m]", genbuf);
@@ -716,9 +700,7 @@ char *arg;
 	} else {
 		sprintf(msg,
 			"上次在 [\033[1;37m%-24.24s\033[m] 由 [\033[1;37m%s\033[m] 到本站一游",
-			genbuf,
-			(lookupuser.lasthost[0] ==
-			 '\0' ? "(不详)" : lookupuser.lasthost));
+			genbuf, (lookupuser.lasthost[0] == '\0' ? "(不详)" : lookupuser.lasthost));
 	}
 
 	printchatline(msg);
@@ -772,9 +754,7 @@ chat_date()
 	time_t thetime;
 
 	time(&thetime);
-	sprintf(genbuf, "\033[1m %s标准时间: \033[32m%s\033[0m",
-		MY_BBS_NAME, ctime(&thetime));
-				       /*---by ylsdd: because of Y2K--*/
+	sprintf(genbuf, "\033[1m %s标准时间: \033[32m%s\033[0m", MY_BBS_NAME, ctime(&thetime));
 	printchatline(genbuf);
 }
 
@@ -800,8 +780,6 @@ set_rec()
 	int savemode;
 
 	now = time(0);
-/*        if(!(HAS_PERM(PERM_SYSOP)||HAS_PERM(PERM_SEECLOAK)))
-                        return;                        */
 
 	sprintf(fname, "tmp/chat.%s", currentuser.userid);
 	if (recflag == 0) {
@@ -813,8 +791,7 @@ set_rec()
 		move(0, 0);
 		clrtoeol();
 		sprintf(genbuf, "房间： \033[32m%s", chatroom);
-		prints("\033[1;44;33m %-21s  \033[33m话题：\033[36m%-47s\033[5;31m%6s\033[m",
-		       genbuf, buftopic, (recflag == 1) ? "录音中" : "      ");
+		prints("\033[1;44;33m %-21s  \033[33m话题：\033[36m%-47s\033[5;31m%6s\033[m", genbuf, buftopic, (recflag == 1) ? "录音中" : "      ");
 
 		fprintf(rec, "本段由 %s", currentuser.userid);
 		fprintf(rec, "所录下，时间： %s", ctime(&now));
@@ -824,8 +801,7 @@ set_rec()
 		move(0, 0);
 		clrtoeol();
 		sprintf(genbuf, "房间： \033[32m%s", chatroom);
-		prints("\033[1;44;33m %-21s  \033[33m话题：\033[36m%-47s\033[5;31m%6s\033[m",
-		       genbuf, buftopic, (recflag == 1) ? "录音中" : "      ");
+		prints("\033[1;44;33m %-21s  \033[33m话题：\033[36m%-47s\033[5;31m%6s\033[m", genbuf, buftopic, (recflag == 1) ? "录音中" : "      ");
 
 		printchatline("\033[1;5;32m录音结束...\033[m");
 		fprintf(rec, "结束时间：%s\n", ctime(&now));
@@ -900,40 +876,30 @@ char *arg;
 		if (!strncasecmp(chat_aliases[i].cmd, arg, 8)) {
 			if (del) {
 				chat_alias_count--;
-				setuserfile(buf, "chatalias");
+				sethomefile_s(buf, sizeof(buf), currentuser.userid, "chatalias");
 				if (chat_alias_count != 0) {
-					memcpy(&chat_aliases[i],
-					       &chat_aliases[chat_alias_count],
-					       sizeof (struct chatalias));
-					chat_aliases[chat_alias_count].cmd[0] =
-					    0;
-					substitute_record(buf,
-							  &chat_aliases
-							  [chat_alias_count],
-							  sizeof (chat_aliases
-								  [chat_alias_count]),
-							  chat_alias_count + 1);
+					memcpy(&chat_aliases[i], &chat_aliases[chat_alias_count], sizeof (struct chatalias));
+					chat_aliases[chat_alias_count].cmd[0] = 0;
+					substitute_record(buf, &chat_aliases [chat_alias_count], sizeof (chat_aliases [chat_alias_count]), chat_alias_count + 1);
 				} else {
 					chat_aliases[i].cmd[0] = 0;
 				}
-				substitute_record(buf, &chat_aliases[i],
-						  sizeof (chat_aliases[i]),
-						  i + 1);
+				substitute_record(buf, &chat_aliases[i], sizeof (chat_aliases[i]), i + 1);
 				sprintf(buf, "自定义alias已经删除\n");
 				printchatline(buf);
 				return;
 			} else {
-				sprintf(buf, "自定义alias-%s已经存在\n",
-					chat_aliases[i].cmd);
+				sprintf(buf, "自定义alias-%s已经存在\n", chat_aliases[i].cmd);
 				printchatline(buf);
 				return;
 			}
 		}
 	if (!del) {
+		struct chatalias EMPTY;
 		strncpy(chat_aliases[chat_alias_count].cmd, arg, 8);
-		chat_aliases[chat_alias_count].cmd[8] = 0;
+		chat_aliases[chat_alias_count].cmd[sizeof(EMPTY.cmd) - 1] = 0;
 		strncpy(chat_aliases[chat_alias_count].action, action, 80);
-		chat_aliases[chat_alias_count].action[81] = 0;
+		chat_aliases[chat_alias_count].action[sizeof(EMPTY.cmd) - 1] = 0;
 		sprintf(buf, "自定义alias-%s已经创建\n", arg);
 		printchatline(buf);
 		i = chat_alias_count;
@@ -942,9 +908,8 @@ char *arg;
 		printchatline("没找到自定义alias\n");
 		return;
 	}
-	setuserfile(buf, "chatalias");
-	substitute_record(buf, &chat_aliases[i], sizeof (chat_aliases[i]),
-			  i + 1);
+	sethomefile_s(buf, sizeof(buf), currentuser.userid, "chatalias");
+	substitute_record(buf, &chat_aliases[i], sizeof (chat_aliases[i]), i + 1);
 }
 
 static int
@@ -987,8 +952,7 @@ int cfd;
 					fmt++;
 					if (isdigit(*fmt)) {
 						int index = *fmt - '0';
-						if (slen + strlen(args[index]) >
-						    255 - 8)
+						if (slen + strlen(args[index]) > 255 - 8)
 							break;
 						buf1[slen] = 0;
 						strcat(buf1, "\033[1m");
@@ -996,8 +960,7 @@ int cfd;
 						strcat(buf1, "\033[m");
 						slen += strlen(args[index]) + 7;
 					} else if (*fmt == 's') {
-						if (slen + strlen(args[1]) >
-						    255 - 8)
+						if (slen + strlen(args[1]) > 255 - 8)
 							break;
 						buf1[slen] = 0;
 						strcat(buf1, "\033[1m");
@@ -1165,8 +1128,7 @@ int cfd;
 		return 1;
 	} else
 		for (i = 0; chat_cmdtbl[i].cmdname; i++) {
-			if (*buf != '\0'
-			    && chat_cmd_match(buf, chat_cmdtbl[i].cmdname)) {
+			if (*buf != '\0' && chat_cmd_match(buf, chat_cmdtbl[i].cmdname)) {
 				chat_cmdtbl[i].cmdfunc(buf);
 				return 1;
 			}

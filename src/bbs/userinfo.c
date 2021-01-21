@@ -71,7 +71,7 @@ static void register_success(int usernum, char *userid, char *realname,
 	//int id = getuser(userid);
 	usernum = getuser(userid);
 
-	setuserfile(genbuf, "mailcheck");
+	sethomefile_s(genbuf, sizeof(genbuf), currentuser.userid, "mailcheck");
 	if ((fn = fopen(genbuf, "w")) == NULL) {
 		fclose(fn);
 		return;
@@ -797,7 +797,7 @@ x_fillform()
 		fclose(fn);
 	}
 	close(lockfd);
-	setuserfile(genbuf, "mailcheck");
+	sethomefile_s(genbuf, sizeof(genbuf), currentuser.userid, "mailcheck");
 	if ((fn = fopen(genbuf, "w")) == NULL)
 	{
 		fclose(fn);

@@ -137,17 +137,15 @@ _topn(void *bh_void, void * fargs)
 	char buf[256];
 	FILE *fp2;
 	fp2 = fopen(MY_BBS_HOME "/etc/top10forbid", "r");
-	if (fp2 != 0)
-	{
-	while(fgets(buf, 256, fp2) != NULL)
-	{
-		buf[strlen(buf) - 1] = 0;
-		if (strcmp(bh->filename, buf)==0)
-		{
-			return 0;
+	if (fp2 != NULL) {
+		while(fgets(buf, 256, fp2) != NULL) {
+			buf[strlen(buf) - 1] = 0;
+			if (strcmp(bh->filename, buf)==0) {
+				fclose(fp2);
+				return 0;
+			}
 		}
-	}
-	fclose(fp2);
+		fclose(fp2);
 	}
 
 	sprintf(DOTDIR, "boards/%s/.DIR", bh->filename);

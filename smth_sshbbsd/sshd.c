@@ -525,6 +525,7 @@ agent connections.
 #include "userfile.h"
 #include "emulate.h"
 #include "ythtbbs/cache.h"
+#include "../src/bbs/smth_screen.h"
 
 #ifdef HAVE_ULIMIT_H
 #include <ulimit.h>

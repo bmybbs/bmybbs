@@ -1,25 +1,25 @@
 /*
-    Pirate Bulletin Board System
-    Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
-    Eagles Bulletin Board System
-    Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
-                        Guy Vega, gtvega@seabass.st.usm.edu
-                        Dominic Tynes, dbtynes@seabass.st.usm.edu
-    Firebird Bulletin Board System
-    Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
-                        Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
+	Pirate Bulletin Board System
+	Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
+	Eagles Bulletin Board System
+	Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
+						Guy Vega, gtvega@seabass.st.usm.edu
+						Dominic Tynes, dbtynes@seabass.st.usm.edu
+	Firebird Bulletin Board System
+	Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
+						Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
 
-    Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
+	Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 1, or (at your option)
-    any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 1, or (at your option)
+	any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 */
 
 #include "bbs.h"
@@ -86,7 +86,7 @@ struct scommandlist {
 	int (*fptr) (char *);
 };
 
-static struct mmapfile sysconf_mf = { ptr:NULL };
+static struct mmapfile sysconf_mf = { .ptr = NULL };
 
 const struct scommandlist sysconf_cmdlist[] = {
 	{"domenu", domenu},
@@ -170,8 +170,7 @@ static void sysconf_addkey(char *key, char *str, int val);
 static void parse_sysconf(char *fname);
 static void build_sysconf(char *configfile, char *imgfile);
 static void load_sysconf_image(char *imgfile);
-static int domenu_screen(struct smenuitem *pm, char *cmdprompt,
-			 struct menupos *pos);
+static int domenu_screen(struct smenuitem *pm, char *cmdprompt, struct menupos *pos);
 static void sysconf_addmenu(FILE * fp, char *key);
 static void sysconf_addblock(FILE * fp, char *key);
 
@@ -323,8 +322,7 @@ char *key;
 				*ptr = '\0';
 			} else {
 				arg[n] = ptr;
-				while (*ptr != ' ' && *ptr != '\t'
-				       && *ptr != '\0') ptr++;
+				while (*ptr != ' ' && *ptr != '\t' && *ptr != '\0') ptr++;
 				*ptr = '\0';
 			}
 		}
@@ -412,8 +410,7 @@ char *fname;
 		} else if (*ptr == '#') {
 			key = strtok(ptr, " \t\"\n");
 			str = strtok(NULL, " \t\"\n");
-			if (key != NULL && str != NULL
-			    && strcmp(key, "#include") == 0) {
+			if (key != NULL && str != NULL && strcmp(key, "#include") == 0) {
 				parse_sysconf(str);
 			}
 		} else if (*ptr != '\n') {
@@ -472,7 +469,7 @@ char *configfile, *imgfile;
 	sysconf_len = 0;
 	parse_sysconf(configfile);
 	snprintf(tmpfile, sizeof (tmpfile), "%s.tmp", imgfile);
-	if ((fh = open(tmpfile, O_WRONLY | O_CREAT, 0644)) > 0) {
+	if ((fh = open(tmpfile, O_WRONLY | O_CREAT, 0644)) >= 0) {
 		ftruncate(fh, 0);
 		shead.menu = sysconf_menu;
 		shead.key = sysconf_key;
@@ -484,6 +481,7 @@ char *configfile, *imgfile;
 		close(fh);
 		//must use rename, because we will use mmap on imgfile -- ylsdd
 		rename(tmpfile, imgfile);
+		close(fh);
 	}
 	free(menuitem);
 	free(sysvar);
@@ -587,13 +585,9 @@ struct menupos *pos;
 			return (num);
 		case -2:
 			if (strcmp(sysconf_ptr(pm->name_off), "title") == 0) {
-				docmdtitle(sysconf_ptr(pm->desc_off),
-					   cmdprompt);
-			} else if (strcmp(sysconf_ptr(pm->name_off), "screen")
-				   == 0) {
-				if (
-				    (str =
-				     sysconf_str(sysconf_ptr(pm->desc_off)))) {
+				docmdtitle(sysconf_ptr(pm->desc_off), cmdprompt);
+			} else if (strcmp(sysconf_ptr(pm->name_off), "screen") == 0) {
+				if ((str = sysconf_str(sysconf_ptr(pm->desc_off)))) {
 					move(pm->line, pm->col);
 					decodestr(str);
 				}
@@ -648,8 +642,8 @@ char *menu_name;
 		if (chkmail())
 			ch = 'M';
 		for (i = 0; i < size; i++)
-			if (pos[i].line > 0
-			    && *sysconf_ptr(pm[i].name_off) == ch) now = i;
+			if (pos[i].line > 0 && *sysconf_ptr(pm[i].name_off) == ch)
+				now = i;
 	}
 	modify_user_mode(MMENU);
 	/* added by netty  */
@@ -686,9 +680,9 @@ char *menu_name;
 		case KEY_RIGHT:
 			for (i = 0; i < size; i++) {
 				if (pos[i].line == pos[now].line
-				    && pm[i].level >= 0
-				    && pos[i].col > pos[now].col
-				    && HAS_PERM(pm[i].level, currentuser))
+						&& pm[i].level >= 0
+						&& pos[i].col > pos[now].col
+						&& HAS_PERM(pm[i].level, currentuser))
 					break;
 			}
 			if (i < size) {
@@ -717,8 +711,7 @@ char *menu_name;
 			break;
 		case KEY_LEFT:
 			for (i = size - 1; i >= 0; i--) {
-				if (pos[i].line == pos[now].line
-				    && pos[i].col < pos[now].col)
+				if (pos[i].line == pos[now].line && pos[i].col < pos[now].col)
 					break;
 				if (pm2fptr(pm[i]) == Goodbye)
 					break;
@@ -780,8 +773,7 @@ char *menu_name;
 		default:
 			cmd = toupper(cmd);
 			for (i = 0; i < size; i++) {
-				if (pos[i].line > 0
-				    && cmd == *sysconf_ptr(pm[i].name_off)) {
+				if (pos[i].line > 0 && cmd == *sysconf_ptr(pm[i].name_off)) {
 					now = i;
 					break;
 				}

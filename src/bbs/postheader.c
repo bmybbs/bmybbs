@@ -398,7 +398,7 @@ struct postheader *header;
 		} else if (ans[0] == 'C' && anonyboard) {
 			header->chk_anony = (header->chk_anony == 1) ? 0 : 1;
 		} else if (ans[0] == 'V') {
-			setuserfile(mybuf, "signatures");
+			sethomefile_s(mybuf, sizeof(mybuf), currentuser.userid, "signatures");
 			if (askyn("预设显示前三个签名档, 要显示全部吗", NA, YEA)
 			    == YEA)
 				ansimore(mybuf, YEA);

@@ -24,7 +24,6 @@ int set_safe_record(void);
 void setqtitle(char *stitle);
 int chk_currBM(struct boardheader *bh, int isbig);
 void setquotefile(char filepath[]);
-char *setuserfile(char *buf, const char *filename);
 char *setbpath(char *buf, char *boardname);
 char *setbfile(char *buf, char *boardname, char *filename);
 int deny_me(char *bname);

@@ -114,8 +114,10 @@ ifinprison(char *name)
 	while (fgets(buf, 80, fp) != NULL) {
 		if (buf[strlen(buf) - 1] == '\n')
 			buf[strlen(buf) - 1] = 0;
-		if (!strcmp(name, buf))
+		if (!strcmp(name, buf)) {
+			fclose(fp);
 			return 1;
+		}
 	}
 	fclose(fp);
 	return 0;
@@ -659,7 +661,7 @@ direct_login()
 		FILE *fp;
 		int tempnum;
 		char fname[STRLEN];
-		setuserfile(fname, "clubrights");
+		sethomefile_s(fname, sizeof(fname), currentuser.userid, "clubrights");
 		if ((fp = fopen(fname, "r")) == NULL) {
 			memset(&(uinfo.clubrights), 0, 4 * sizeof (int));
 		} else {
@@ -797,7 +799,7 @@ user_login()
 			show_help("0Announce/bbslist/newsday");
 	}
 	WishNum = 9999;
-	setuserfile(fname, BADLOGINFILE);
+	sethomefile_s(fname, sizeof(fname), currentuser.userid, BADLOGINFILE);
 	if (ansimore(fname, NA) != -1) {
 		char ans[3];
 		getdata(t_lines - 1, 0,
@@ -836,7 +838,7 @@ user_login()
 	if (HAS_PERM(PERM_LOGINOK, currentuser)) {
 		FILE *fp;
 		int tempnum;
-		setuserfile(fname, "clubrights");
+		sethomefile_s(fname, sizeof(fname), currentuser.userid, "clubrights");
 		if ((fp = fopen(fname, "r")) == NULL) {
 			memset(&(uinfo.clubrights), 0, 4 * sizeof (int));
 		} else {
@@ -864,7 +866,7 @@ set_numofsig()
 {
 	int sigln;
 	char signame[STRLEN];
-	setuserfile(signame, "signatures");
+	sethomefile_s(signame, sizeof(signame), currentuser.userid, "signatures");
 	sigln = countln(signame);
 	numofsig = sigln / MAXSIGLINES;
 	if ((sigln % MAXSIGLINES) != 0)
@@ -1050,7 +1052,7 @@ char *argv[];
 		clear();*/
 			set_numofsig();
 			if (DEFINE(DEF_INNOTE, currentuser)) {
-				setuserfile(fname, "notes");
+				sethomefile_s(fname, sizeof(fname), currentuser.userid, "notes");
 				if (dashf(fname))
 					ansimore(fname, YEA);
 			}
@@ -1183,13 +1185,13 @@ nowishfile:
 				(uinfo.invisible == 1) ? "C" : "c", buf);
 		return;
 	}
-	setuserfile(fname, "HaveNewWish");
+	sethomefile_s(fname, sizeof(fname), currentuser.userid, "HaveNewWish");
 	if (WishNum == 9999 || dashf(fname)) {
 		if (WishNum != 9999)
 			unlink(fname);
 		WishNum = 0;
 		orderWish = 0;
-		setuserfile(fname, "GoodWish");
+		sethomefile_s(fname, sizeof(fname), currentuser.userid, "GoodWish");
 		if ((fp = fopen(fname, "r")) != NULL) {
 			for (; WishNum < 20;) {
 				if (fgets(buf, STRLEN - 1, fp) == NULL)
@@ -1328,12 +1330,12 @@ Q_Goodbye()
 	clear();
 	prints("\n\n\n\n");
 	if (DEFINE(DEF_OUTNOTE, currentuser)) {
-		setuserfile(notename, "notes");
+		sethomefile_s(notename, sizeof(notename), currentuser.userid, "notes");
 		if (dashf(notename))
 			ansimore(notename, YEA);
 	}
 	if (DEFINE(DEF_LOGOUT, currentuser)) {
-		setuserfile(fname, "logout");
+		sethomefile_s(fname, sizeof(fname), currentuser.userid, "logout");
 		if (dashf(fname))
 			mylogout = YEA;
 	}

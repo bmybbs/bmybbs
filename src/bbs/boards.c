@@ -1,25 +1,25 @@
 /*
-    Pirate Bulletin Board System
-    Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
-    Eagles Bulletin Board System
-    Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
-                        Guy Vega, gtvega@seabass.st.usm.edu
-                        Dominic Tynes, dbtynes@seabass.st.usm.edu
-    Firebird Bulletin Board System
-    Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
-                        Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
+	Pirate Bulletin Board System
+	Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
+	Eagles Bulletin Board System
+	Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
+						Guy Vega, gtvega@seabass.st.usm.edu
+						Dominic Tynes, dbtynes@seabass.st.usm.edu
+	Firebird Bulletin Board System
+	Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
+						Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
 
-    Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
+	Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 1, or (at your option)
-    any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 1, or (at your option)
+	any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 */
 #include "bbs.h"
 #include "bbs_global_vars.h"
@@ -51,7 +51,7 @@
 #define BBS_PAGESIZE    (t_lines - 4)
 
 struct allbrc *allbrc = NULL;
-struct onebrc brc = { 0, 0, 0, "" };
+struct onebrc brc = { 0, 0, 0, "", { 0 }, 0 };
 char *sysconf_str();
 struct newpostdata {
 	char *name;
@@ -68,7 +68,7 @@ struct newpostdata nbrd[MAXBOARD];
 int *zapbuf;
 int zapbufchanged = 0;
 int yank_flag = 0;
-unsigned char boardprefix[5];
+static unsigned char boardprefix[5];
 
 struct goodboard GoodBrd;
 
@@ -165,7 +165,7 @@ load_zapbuf()
 	size = MAXBOARD * sizeof (int);
 	zapbuf = (int *) malloc(size);
 	bzero(zapbuf, size);
-	setuserfile(fname, ".newlastread");
+	sethomefile_s(fname, sizeof(fname), currentuser.userid, ".newlastread");
 	if ((fd = open(fname, O_RDONLY, 0600)) != -1) {
 		size = ythtbbs_cache_Board_get_number() * sizeof (int);
 		read(fd, zapbuf, size);
@@ -184,7 +184,7 @@ save_zapbuf()
 		return;
 	zapbufchanged = 0;
 
-	setuserfile(fname, ".newlastread");
+	sethomefile_s(fname, sizeof(fname), currentuser.userid, ".newlastread");
 	if ((fd = open(fname, O_WRONLY | O_CREAT, 0600)) != -1) {
 		size = ythtbbs_cache_Board_get_number() * sizeof (int);
 		write(fd, zapbuf, size);
@@ -402,7 +402,7 @@ struct boardmem *bptr;
 	int fd, offset, step, num, filetime;
 
 	num = bptr->total + 1;
-	if ((fd = open(dirfile, O_RDONLY)) > 0) {
+	if ((fd = open(dirfile, O_RDONLY)) >= 0) {
 		if (!brc_initial(bptr->header.filename, 1)) {
 			num = 1;
 		} else {
@@ -831,7 +831,7 @@ const struct sectree *sec;
 							break;
 
 						char dir[80];
-						struct mmapfile mf = { ptr:NULL };
+						struct mmapfile mf = { .ptr = NULL };
 						struct fileheader *x = NULL;
 
 						sprintf(dir, "boards/%s/.DIR", board[num - 1]);
@@ -1034,7 +1034,7 @@ const struct sectree *sec;
 					if((namecomplete((char *) NULL, bname))=='#')
 						super_select_board(bname);
 					setbpath(bpath, bname);
-					if (*bname == '\0');
+					//if (*bname == '\0');
 					if (stat(bpath, &st) == -1) {
 						move(2, 0);
 						prints("不正确的讨论区.\n");
@@ -1117,7 +1117,7 @@ readwritebrc(struct allbrc *allbrc)
 {
 	char dirfile[STRLEN];
 	if (strcmp(currentuser.userid, "guest")) {
-		setuserfile(dirfile, "brc");
+		sethomefile_s(dirfile, sizeof(dirfile), currentuser.userid, "brc");
 		brc_init(allbrc, currentuser.userid, dirfile);
 		brc_putboard(allbrc, &brc);
 		brc_fini(allbrc, currentuser.userid);
@@ -1634,8 +1634,8 @@ makedatestar(char *datestr, struct fileheader *ent)
 int
 clubtest(char *board)
 {
-        char buf[256];
-        sprintf(buf, "boards/%s/club_users", board);
-        return seek_in_file(buf, currentuser.userid);
+	char buf[256];
+	sprintf(buf, "boards/%s/club_users", board);
+	return seek_in_file(buf, currentuser.userid);
 }
 //add by wjbta for moneycenter

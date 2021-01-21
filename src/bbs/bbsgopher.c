@@ -187,7 +187,7 @@ static int deal_gopherkey(int ch, int allnum, int pagenum) {
 	case 'E':
 	case 'e':
 		tmpitem = nth_item(allnum - pagenum);
-		setuserfile(fname, "gopher.tmp");
+		sethomefile_s(fname, sizeof(fname), currentuser.userid, "gopher.tmp");
 		if (tmpitem->title[0] != '0') {
 			return 1;
 		}
@@ -224,7 +224,7 @@ static int deal_gopherkey(int ch, int allnum, int pagenum) {
 		tmpitem = nth_item(allnum - pagenum);
 		if (!HAS_PERM(PERM_POST, currentuser))
 			break;
-		setuserfile(fname, "gopher.tmp");
+		sethomefile_s(fname, sizeof(fname), currentuser.userid, "gopher.tmp");
 		if (tmpitem->title[0] != '0') {
 			return 1;
 		}
@@ -260,7 +260,7 @@ static int deal_gopherkey(int ch, int allnum, int pagenum) {
 	case 'z':
 	case 'Z':
 		tmpitem = nth_item(allnum - pagenum);
-		setuserfile(fname, "gopher.tmp");
+		sethomefile_s(fname, sizeof(fname), currentuser.userid, "gopher.tmp");
 		if (tmpitem->title[0] != '0') {
 			return 1;
 		}
@@ -360,7 +360,7 @@ static int show_gopher(void) {
 static void showout(void) {
 	int i = 0, i2 = 0;
 	char foo[1024];
-	char tmpfile[STRLEN];
+	char tmp_file[STRLEN];
 	char buf[64];
 	int notreload = 0;
 	GOPHER newitem;
@@ -456,11 +456,11 @@ static void showout(void) {
 			if (get_con(newitem.server, newitem.port) == -1)
 				continue;
 			enterdir(newitem.file);
-			setuserfile(tmpfile, "gopher.tmp");
-			savetmpfile(tmpfile);
-			ansimore(tmpfile, YEA);
+			sethomefile_s(tmp_file, sizeof(tmp_file), currentuser.userid, "gopher.tmp");
+			savetmpfile(tmp_file);
+			ansimore(tmp_file, YEA);
 			notreload = 1;
-			unlink(tmpfile);
+			unlink(tmp_file);
 			continue;
 		} else {
 			GOPHER *newgi;
