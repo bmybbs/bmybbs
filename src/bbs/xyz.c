@@ -755,9 +755,9 @@ x_edits()
 	move(1, 0);
 	prints("±àĞŞ¸öÈËµµ°¸\n\n");
 	for (num = 0; e_file[num] != NULL && explain_file[num] != NULL; num++) {
-		prints("[[1;32m%d[m] %s\n", num + 1, explain_file[num]);
+		prints("[\033[1;32m%d\033[m] %s\n", num + 1, explain_file[num]);
 	}
-	prints("[[1;32m%d[m] ¶¼²»Ïë¸Ä\n", num + 1);
+	prints("[\033[1;32m%d\033[m] ¶¼²»Ïë¸Ä\n", num + 1);
 
 	getdata(num + 5, 0, "ÄãÒª±àĞŞÄÄÒ»Ïî¸öÈËµµ°¸: ", ans, 2, DOECHO, YEA);
 	if (ans[0] - '0' <= 0 || ans[0] - '0' > num || ans[0] == '\n' || ans[0] == '\0')
@@ -1006,12 +1006,12 @@ x_lockscreen()
 	now = time(0);
 	move(9, 0);
 	prints(
-			"\n[1;37m       _       _____   ___     _   _   ___     ___       __"
+			"\n\033[1;37m       _       _____   ___     _   _   ___     ___       __"
 			"\n      ( )     (  _  ) (  _`\\  ( ) ( ) (  _`\\  (  _`\\    |  |"
 			"\n      | |     | ( ) | | ( (_) | |/'/' | (_(_) | | ) |   |  |"
 			"\n      | |  _  | | | | | |  _  | , <   |  _)_  | | | )   |  |"
 			"\n      | |_( ) | (_) | | (_( ) | |\\`\\  | (_( ) | |_) |   |==|"
-			"\n      (____/' (_____) (____/' (_) (_) (____/' (____/'   |__|[m\n");
+			"\n      (____/' (_____) (____/' (_) (_) (____/' (____/'   |__|\033[m\n");
 	move(17,0);
 	getdata(17,0,"ËøÆÁÀíÓÉ? (1)³Ô·¹È¥ÁË (2)ºÍMMÁÄÌì (3)±ğÀ´·³ÎÒ (4)Ã»ÀíÓÉ (5)×Ô¶¨Òå:",ubuf,3,DOECHO,YEA); //add by landefeng@BMY for ËøÆÁÀíÓÉ
 	switch(ubuf[0]){
@@ -1067,7 +1067,7 @@ x_lockscreen()
 	}
 	move(18,0);
 	clrtobot();
-	prints("[1;36mÓ«Ä»ÒÑÔÚ[33m %19s[36m Ê±±»[32m %-12s [36mÔİÊ±Ëø×¡ÁË...[m", ctime(&now), currentuser.userid);
+	prints("\033[1;36mÓ«Ä»ÒÑÔÚ\033[33m %19s\033[36m Ê±±»\033[32m %-12s \033[36mÔİÊ±Ëø×¡ÁË...\033[m", ctime(&now), currentuser.userid);
 	while (*buf == '\0' || !ytht_crypt_checkpasswd(currentuser.passwd, buf)) {
 		move(19, 0);
 		clrtobot();
@@ -1294,7 +1294,7 @@ sendGoodWish(char *userid)
 	modify_user_mode(GOODWISH);
 	clear();
 	move(1, 0);
-	prints("[0;1;32mÁôÑÔ±¾[m\nÄú¿ÉÒÔÔÚÕâÀï¸øÄúµÄÅóÓÑËÍÈ¥ÄúµÄ×£¸££¬");
+	prints("\033[0;1;32mÁôÑÔ±¾\033[m\nÄú¿ÉÒÔÔÚÕâÀï¸øÄúµÄÅóÓÑËÍÈ¥ÄúµÄ×£¸££¬");
 	prints("\nÒ²¿ÉÒÔÎªÄú¸øËû/ËıÉÓÉÏÒ»¾äÇÄÇÄ»°¡£");
 	move(6, 0);
 
@@ -1420,7 +1420,7 @@ sendGoodWish(char *userid)
 				return 0;
 			move(5, 0);
 			clrtoeol();
-			prints("[m¡¾ÇëÊäÈëÄúµÄÁôÑÔ¡¿       ");
+			prints("\033[m¡¾ÇëÊäÈëÄúµÄÁôÑÔ¡¿       ");
 			move(6, 0);
 			tmpbuf[0] = '\0';
 			prints("ÄúµÄÁôÑÔ[Ö±½Ó°´ ENTER ½áÊøÁôÑÔ£¬×î¶à 5 ¾ä£¬Ã¿¾ä×î³¤ 50 ×Ö·û]:");
@@ -1482,14 +1482,14 @@ sendGoodWish(char *userid)
 		strcpy(uid, userid);
 	if (!(tuid = getuser(uid))) {
 		move(7, 0);
-		prints("[1mÄúÊäÈëµÄÊ¹ÓÃÕß´úºÅ( ID )²»´æÔÚ£¡[m\n");
+		prints("\033[1mÄúÊäÈëµÄÊ¹ÓÃÕß´úºÅ( ID )²»´æÔÚ£¡\033[m\n");
 		pressanykey();
 		clear();
 		return -1;
 	}
 	move(5, 0);
 	clrtoeol();
-	prints("[m¡¾¸ø [1m%s[m ÁôÑÔ¡¿       ", uid);
+	prints("\033[m¡¾¸ø \033[1m%s\033[m ÁôÑÔ¡¿       ", uid);
 	move(6, 0);
 	tmpbuf[0] = '\0';
 	prints("ÄúµÄÁôÑÔ[Ö±½Ó°´ ENTER ½áÊøÁôÑÔ£¬×î¶à 5 ¾ä£¬Ã¿¾ä×î³¤ 50 ×Ö·û]:");
@@ -1503,7 +1503,7 @@ sendGoodWish(char *userid)
 	if (count == 0)
 		return 0;
 
-	sprintf(genbuf, "ÄãÈ·¶¨Òª·¢ËÍÕâÌõÁôÑÔ¸ø [1m%s[m Âğ", uid);
+	sprintf(genbuf, "ÄãÈ·¶¨Òª·¢ËÍÕâÌõÁôÑÔ¸ø \033[1m%s\033[m Âğ", uid);
 	move(9 + count, 0);
 	if (askyn(genbuf, YEA, NA) == NA) {
 		clear();
