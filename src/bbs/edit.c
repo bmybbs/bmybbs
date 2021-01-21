@@ -993,7 +993,7 @@ int blank;
 	fputs("--\n", fp);
 	if (HAS_PERM(PERM_DENYSIG, currentuser))
 		return;
-	setuserfile(fname, "signatures");
+	sethomefile_s(fname, sizeof(fname), currentuser.userid, "signatures");
 	if ((sigfile = fopen(fname, "r")) == NULL) {
 		return;
 	}

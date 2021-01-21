@@ -195,13 +195,13 @@ void
 loaduserkeys()
 {
 	char tempname[STRLEN];
-	setuserfile(tempname, "readkey");
+	sethomefile_s(tempname, sizeof(tempname), currentuser.userid, "readkey");
 	loadkeys(read_comms, tempname);
-	setuserfile(tempname, "mailkey");
+	sethomefile_s(tempname, sizeof(tempname), currentuser.userid, "mailkey");
 	loadkeys(mail_comms, tempname);
-	setuserfile(tempname, "friendkey");
+	sethomefile_s(tempname, sizeof(tempname), currentuser.userid, "friendkey");
 	loadkeys(friend_list, tempname);
-	setuserfile(tempname, "rejectkey");
+	sethomefile_s(tempname, sizeof(tempname), currentuser.userid, "rejectkey");
 	loadkeys(reject_list, tempname);
 }
 
@@ -400,7 +400,7 @@ x_copykeys()
 			mail_comms[i].key= mail_default_comms[i].key;
 			i++;
 		}
-		setuserfile(tempname, "mailkey");
+		sethomefile_s(tempname, sizeof(tempname), currentuser.userid, "mailkey");
 		savekeys(&mail_comms[0], tempname);
 
 	}
@@ -494,7 +494,7 @@ x_setkeys()
 	move(0, 0);
 	clrtoeol();
 	setkeys(&read_comms[0]);
-	setuserfile(tempname, "readkey");
+	sethomefile_s(tempname, sizeof(tempname), currentuser.userid, "readkey");
 	savekeys(&read_comms[0], tempname);
 	return 0;
 }
@@ -508,7 +508,7 @@ x_setkeys2()
 	move(0, 0);
 	clrtoeol();
 	setkeys(&read_comms[40]);
-	setuserfile(tempname, "readkey");
+	sethomefile_s(tempname, sizeof(tempname), currentuser.userid, "readkey");
 	savekeys(&read_comms[0], tempname);
 	return 0;
 }
@@ -522,7 +522,7 @@ x_setkeys3()
 	move(0, 0);
 	clrtoeol();
 	setkeys(&mail_comms[0]);
-	setuserfile(tempname, "mailkey");
+	sethomefile_s(tempname, sizeof(tempname), currentuser.userid, "mailkey");
 	savekeys(&mail_comms[0], tempname);
 	return 0;
 }
@@ -536,7 +536,7 @@ x_setkeys4()
 	move(0, 0);
 	clrtoeol();
 	setkeys(&friend_list[0]);
-	setuserfile(tempname, "friendkey");
+	sethomefile_s(tempname, sizeof(tempname), currentuser.userid, "friendkey");
 	savekeys(&friend_list[0], tempname);
 	return 0;
 }
@@ -550,7 +550,7 @@ x_setkeys5()
 	move(0, 0);
 	clrtoeol();
 	setkeys(&reject_list[0]);
-	setuserfile(tempname, "rejectdkey");
+	sethomefile_s(tempname, sizeof(tempname), currentuser.userid, "rejectdkey");
 	savekeys(&reject_list[0], tempname);
 	return 0;
 }
@@ -763,7 +763,7 @@ x_edits()
 		return;
 
 	ch = ans[0] - '0' - 1;
-	setuserfile(genbuf, e_file[ch]);
+	sethomefile_s(genbuf, sizeof(genbuf), currentuser.userid, e_file[ch]);
 	move(3, 0);
 	clrtobot();
 	sprintf(buf, "(E)±à¼­ (D)É¾³ý %s? [E]: ", explain_file[ch]);
@@ -1392,7 +1392,7 @@ sendGoodWish(char *userid)
 				clear();
 				return 0;
 			}
-			setuserfile(wishlists, "wishlist");
+			sethomefile_s(wishlists, sizeof(wishlists), currentuser.userid, "wishlist");
 			if ((mp = fopen(wishlists, "r")) == NULL) {
 				return -3;
 			}

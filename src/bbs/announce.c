@@ -1498,7 +1498,7 @@ EXPRESS:		/* add by djq,990725 */
 				if (me.item[me.now]->host != NULL) {
 					if (me.item[me.now]->fname[0] == '0') {
 						if (get_con(me.item[me.now]->host, me.item[me.now]->port) != -1) {
-							char tmpfile[30];
+							char tmp_file[30];
 
 							GOPHER tmp;
 							extern GOPHER *tmpitem;
@@ -1509,10 +1509,10 @@ EXPRESS:		/* add by djq,990725 */
 							sprintf(tmp.title, "0%s", me.item[me.now]->title);
 							tmp.port = me.item[me.now]-> port;
 							enterdir(me.item[me.now]->fname);
-							setuserfile(tmpfile, "gopher.tmp");
-							savetmpfile(tmpfile);
-							ansimore(tmpfile, YEA);
-							unlink(tmpfile);
+							sethomefile_s(tmp_file, sizeof(tmp_file), currentuser.userid, "gopher.tmp");
+							savetmpfile(tmp_file);
+							ansimore(tmp_file, YEA);
+							unlink(tmp_file);
 						}
 					} else {
 						gopher(me.item[me.now]->host,

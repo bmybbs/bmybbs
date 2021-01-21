@@ -165,7 +165,7 @@ load_zapbuf()
 	size = MAXBOARD * sizeof (int);
 	zapbuf = (int *) malloc(size);
 	bzero(zapbuf, size);
-	setuserfile(fname, ".newlastread");
+	sethomefile_s(fname, sizeof(fname), currentuser.userid, ".newlastread");
 	if ((fd = open(fname, O_RDONLY, 0600)) != -1) {
 		size = ythtbbs_cache_Board_get_number() * sizeof (int);
 		read(fd, zapbuf, size);
@@ -184,7 +184,7 @@ save_zapbuf()
 		return;
 	zapbufchanged = 0;
 
-	setuserfile(fname, ".newlastread");
+	sethomefile_s(fname, sizeof(fname), currentuser.userid, ".newlastread");
 	if ((fd = open(fname, O_WRONLY | O_CREAT, 0600)) != -1) {
 		size = ythtbbs_cache_Board_get_number() * sizeof (int);
 		write(fd, zapbuf, size);
@@ -1117,7 +1117,7 @@ readwritebrc(struct allbrc *allbrc)
 {
 	char dirfile[STRLEN];
 	if (strcmp(currentuser.userid, "guest")) {
-		setuserfile(dirfile, "brc");
+		sethomefile_s(dirfile, sizeof(dirfile), currentuser.userid, "brc");
 		brc_init(allbrc, currentuser.userid, dirfile);
 		brc_putboard(allbrc, &brc);
 		brc_fini(allbrc, currentuser.userid);

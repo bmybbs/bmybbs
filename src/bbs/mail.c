@@ -371,7 +371,7 @@ edit_mail_file:
 	save_in_mail = in_mail;
 	in_mail = YEA;
 
-	setuserfile(genbuf, "signatures");
+	sethomefile_s(genbuf, sizeof(genbuf), currentuser.userid, "signatures");
 	ansimore2(genbuf, NA, 0, 18);
 	strcpy(header.ds, uid);
 	if (post_header(&header)) {
@@ -1518,7 +1518,7 @@ int num;
 	if (G_SENDMODE == 2) {
 		char maillists[STRLEN];
 
-		setuserfile(maillists, "maillist");
+		sethomefile_s(maillists, sizeof(maillists), currentuser.userid, "maillist");
 		if ((mp = fopen(maillists, "r")) == NULL) {
 			in_mail = save_in_mail;
 			return -3;
@@ -2311,7 +2311,7 @@ static int
 show_user_notes()
 {
 	char buf[256];
-	setuserfile(buf, "notes");
+	sethomefile_s(buf, sizeof(buf), currentuser.userid, "notes");
 	if (dashf(buf)) {
 		ansimore(buf, YEA);
 		return FULLUPDATE;

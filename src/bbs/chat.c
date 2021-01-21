@@ -95,7 +95,7 @@ chat_load_alias()
 	chat_aliases = (struct chatalias *) malloc(sizeof (struct chatalias) * MAXDEFINEALIAS);
 	for (i = 0; i < MAXDEFINEALIAS; i++)
 		chat_aliases[i].cmd[0] = 0;
-	setuserfile(buf, "chatalias");
+	sethomefile_s(buf, sizeof(buf), currentuser.userid, "chatalias");
 	chat_alias_count = get_num_records(buf, sizeof (struct chatalias));
 	if (chat_alias_count > MAXDEFINEALIAS)
 		chat_alias_count = MAXDEFINEALIAS;
@@ -876,7 +876,7 @@ char *arg;
 		if (!strncasecmp(chat_aliases[i].cmd, arg, 8)) {
 			if (del) {
 				chat_alias_count--;
-				setuserfile(buf, "chatalias");
+				sethomefile_s(buf, sizeof(buf), currentuser.userid, "chatalias");
 				if (chat_alias_count != 0) {
 					memcpy(&chat_aliases[i], &chat_aliases[chat_alias_count], sizeof (struct chatalias));
 					chat_aliases[chat_alias_count].cmd[0] = 0;
@@ -908,7 +908,7 @@ char *arg;
 		printchatline("没找到自定义alias\n");
 		return;
 	}
-	setuserfile(buf, "chatalias");
+	sethomefile_s(buf, sizeof(buf), currentuser.userid, "chatalias");
 	substitute_record(buf, &chat_aliases[i], sizeof (chat_aliases[i]), i + 1);
 }
 

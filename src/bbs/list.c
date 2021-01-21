@@ -460,7 +460,7 @@ do_userlist()
 	struct ythtbbs_override t1, t2;
 	char overridefile[256];
 
-	setuserfile(overridefile, "friends");
+	sethomefile_s(overridefile, sizeof(overridefile), currentuser.userid, "friends");
 	move(3, 0);
 	print_user_info_title();
 
@@ -841,7 +841,7 @@ t_friends()
 	modify_user_mode(FRIEND);
 	friendmode = YEA;
 	friendmode1 = 0;
-	setuserfile(buf, "friends");
+	sethomefile_s(buf, sizeof(buf), currentuser.userid, "friends");
 	if (!dashf(buf)) {
 		move(1, 0);
 		clrtobot();

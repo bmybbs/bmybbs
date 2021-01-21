@@ -403,10 +403,6 @@ char filepath[];
 	strcpy(quote_file, filepath);
 }
 
-char *setuserfile(char *buf, const char *filename) {
-	return sethomefile(buf, currentuser.userid, filename);
-}
-
 char *
 setbpath(buf, boardname)
 char *buf, *boardname;
@@ -1865,7 +1861,7 @@ char *filepath;
 	char fname[STRLEN];
 	noidboard = header.chk_anony;
 	color = (currentuser.numlogins % 7) + 31;
-	setuserfile(fname, "signatures");
+	sethomefile_s(fname, sizeof(fname), currentuser.userid, "signatures");
 	if ((fp = fopen(filepath, "a")) == NULL)
 		return;
 	if (!dashf(fname) || currentuser.signature == 0 || noidboard)

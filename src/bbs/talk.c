@@ -1509,7 +1509,7 @@ int deleteoverride(const char *uident, const char *filename) {
 	struct ythtbbs_override fh;
 	char buf[STRLEN];
 
-	setuserfile(buf, filename);
+	sethomefile_s(buf, sizeof(buf), currentuser.userid, filename);
 	deleted = search_record(buf, &fh, sizeof (fh), (void *) cmpfnames, (void *)uident); // cmpfnames 传入 uident，此处省略 const 是安全的
 	if (deleted > 0) {
 		if (delete_record(buf, sizeof (fh), deleted) != -1) {
@@ -1808,7 +1808,7 @@ t_friend()
 	char buf[STRLEN];
 
 	friendflag = YEA;
-	setuserfile(buf, "friends");
+	sethomefile_s(buf, sizeof(buf), currentuser.userid, "friends");
 	i_read(GMENU, buf, override_title, (void *) override_doentry, friend_list, sizeof (struct ythtbbs_override));
 	clear();
 	return;
@@ -1820,7 +1820,7 @@ t_reject()
 	char buf[STRLEN];
 
 	friendflag = NA;
-	setuserfile(buf, "rejects");
+	sethomefile_s(buf, sizeof(buf), currentuser.userid, "rejects");
 	i_read(GMENU, buf, override_title, (void *) override_doentry, reject_list, sizeof (struct ythtbbs_override));
 	clear();
 	return;
@@ -1857,7 +1857,7 @@ getfriendstr()
 	struct ythtbbs_override *tmp;
 
 	memset(uinfo.friend, 0, sizeof (uinfo.friend));
-	setuserfile(genbuf, "friends");
+	sethomefile_s(genbuf, sizeof(genbuf), currentuser.userid, "friends");
 	uinfo.fnum = get_num_records(genbuf, sizeof (struct ythtbbs_override));
 	if (uinfo.fnum <= 0)
 		return -1;
@@ -1883,7 +1883,7 @@ getrejectstr()
 	struct ythtbbs_override *tmp;
 
 	memset(uinfo.reject, 0, sizeof (uinfo.reject));
-	setuserfile(genbuf, "rejects");
+	sethomefile_s(genbuf, sizeof(genbuf), currentuser.userid, "rejects");
 	nr = get_num_records(genbuf, sizeof (struct ythtbbs_override));
 	if (nr <= 0)
 		return -1;
