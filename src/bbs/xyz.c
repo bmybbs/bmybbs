@@ -1314,7 +1314,7 @@ sendGoodWish(char *userid)
 			}
 		} else {
 			clear();
-			sethomefile(wishlists, currentuser.userid, "wishlist");
+			sethomefile_s(wishlists, sizeof(wishlists), currentuser.userid, "wishlist");
 			cnt = listfilecontent(wishlists);
 			while (1) {
 				getdata(0, 0,
@@ -1450,7 +1450,7 @@ sendGoodWish(char *userid)
 					else
 						continue;
 				}
-				sethomefile(genbuf, uid, "GoodWish");
+				sethomefile_s(genbuf, sizeof(genbuf), uid, "GoodWish");
 				if ((fp = fopen(genbuf, "a")) == NULL) {
 					prints("无法开启该用户的底部流动信息文件，请通知站长...\n");
 					pressanykey();
@@ -1465,7 +1465,7 @@ sendGoodWish(char *userid)
 						i + 1, count, buf[i]);
 				}
 				fclose(fp);
-				sethomefile(genbuf, uid, "HaveNewWish");
+				sethomefile_s(genbuf, sizeof(genbuf), uid, "HaveNewWish");
 				if ((fp = fopen(genbuf, "w+")) != NULL) {
 					fputs("Have New Wish", fp);
 					fclose(fp);
@@ -1509,7 +1509,7 @@ sendGoodWish(char *userid)
 		clear();
 		return 0;
 	}
-	sethomefile(genbuf, uid, "GoodWish");
+	sethomefile_s(genbuf, sizeof(genbuf), uid, "GoodWish");
 	if ((fp = fopen(genbuf, "a")) == NULL) {
 		prints("无法开启该用户的底部流动信息文件，请通知站长...\n");
 		pressanykey();
@@ -1523,7 +1523,7 @@ sendGoodWish(char *userid)
 			currentuser.userid, timestr, i + 1, count, buf[i]);
 	}
 	fclose(fp);
-	sethomefile(genbuf, uid, "HaveNewWish");
+	sethomefile_s(genbuf, sizeof(genbuf), uid, "HaveNewWish");
 	if ((fp = fopen(genbuf, "w+")) != NULL) {
 		fputs("Have New Wish", fp);
 		fclose(fp);
