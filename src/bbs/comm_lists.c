@@ -469,7 +469,7 @@ char *configfile, *imgfile;
 	sysconf_len = 0;
 	parse_sysconf(configfile);
 	snprintf(tmpfile, sizeof (tmpfile), "%s.tmp", imgfile);
-	if ((fh = open(tmpfile, O_WRONLY | O_CREAT, 0644)) > 0) {
+	if ((fh = open(tmpfile, O_WRONLY | O_CREAT, 0644)) >= 0) {
 		ftruncate(fh, 0);
 		shead.menu = sysconf_menu;
 		shead.key = sysconf_key;
@@ -481,6 +481,7 @@ char *configfile, *imgfile;
 		close(fh);
 		//must use rename, because we will use mmap on imgfile -- ylsdd
 		rename(tmpfile, imgfile);
+		close(fh);
 	}
 	free(menuitem);
 	free(sysvar);
