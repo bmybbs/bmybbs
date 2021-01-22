@@ -168,7 +168,11 @@ savestrvalue(const char *filename, const char *str, const char *value)
 	}
 	free(tmp);
 	fprintf(fp, "%s %.200s\n", str, value);
-	ftruncate(fd, ftell(fp));
+
+	long pos = ftell(fp);
+	if (pos >= 0) {
+		ftruncate(fd, pos);
+	}
 	fclose(fp);
 	return 0;
 }
