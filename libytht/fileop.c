@@ -168,7 +168,11 @@ savestrvalue(const char *filename, const char *str, const char *value)
 	}
 	free(tmp);
 	fprintf(fp, "%s %.200s\n", str, value);
-	ftruncate(fd, ftell(fp));
+
+	long pos = ftell(fp);
+	if (pos >= 0) {
+		ftruncate(fd, pos);
+	}
 	fclose(fp);
 	return 0;
 }
@@ -437,6 +441,7 @@ int ytht_del_from_file(char *filename, char *str, bool include_lf) {
 		if ((local_buf = (char *) calloc(1, len+2)) == NULL) {
 			munmap(src, statbuf.st_size);
 			close(fdin);
+			return -1;
 		}
 		sprintf(local_buf, "%s\n", str);
 		len++;

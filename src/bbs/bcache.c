@@ -1,24 +1,24 @@
 /*
-    Pirate Bulletin Board System
-    Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
-    Eagles Bulletin Board System
-    Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
-                        Guy Vega, gtvega@seabass.st.usm.edu
-                        Dominic Tynes, dbtynes@seabass.st.usm.edu
-    Firebird Bulletin Board System
-    Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
-                        Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
-    Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
+	Pirate Bulletin Board System
+	Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
+	Eagles Bulletin Board System
+	Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
+						Guy Vega, gtvega@seabass.st.usm.edu
+						Dominic Tynes, dbtynes@seabass.st.usm.edu
+	Firebird Bulletin Board System
+	Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
+						Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
+	Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 1, or (at your option)
-    any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 1, or (at your option)
+	any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 */
 #include "bbs.h"
 #include "smth_screen.h"
@@ -507,9 +507,9 @@ int user_isonline(char* userid) {
 	ythtbbs_cache_utmp_resolve();
 	for (i = 0; i < USHM_SIZE; i++) {
 		uentp = ythtbbs_cache_utmp_get_by_idx(i);
-		if (!uentp->active)
-			continue;
 		if (uentp != NULL) {
+			if (!uentp->active)
+				continue;
 			if (!strcmp(uentp->userid, userid)){
 				return (uentp->active && uentp->pid) ? 1 : 0;
 			}
@@ -549,8 +549,8 @@ int get_utmp(void) {
 
 /* added by djq 99.7.19 */
 /* function added by douglas 990305
-   set uentp to the user who is calling me
-   solve the "one of 2 line call sb. to five" problem
+ * set uentp to the user who is calling me
+ * solve the "one of 2 line call sb. to five" problem
 */
 int who_callme(struct user_info *uentp, int (*fptr) (int, struct user_info *), int farg, int me) {
 	int i;

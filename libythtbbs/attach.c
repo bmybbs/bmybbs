@@ -70,7 +70,9 @@ filter_attach(char *path)
 	if (hasa) {
 		fseek(fp, 0L, SEEK_SET);
 		fprintf(fp, "%s", tmp);
-		ftruncate(fd, ftell(fp));
+		long pos = ftell(fp);
+		if (pos > 0)
+			ftruncate(fd, ftell(fp));
 	}
 #ifndef LOCAL_UTL
 	free(tmp);
