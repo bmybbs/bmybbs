@@ -18,7 +18,7 @@ int ytht_get_random_int(unsigned int *s) {
 	if (fd < 0)
 		return -1;
 
-	read(fd, s, 4);
+	read(fd, s, sizeof(unsigned int));
 	close(fd);
 	return 0;
 }
