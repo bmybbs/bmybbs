@@ -4,12 +4,16 @@
 
 static const char *DEV_RAN = "/dev/urandom";
 
-void ytht_get_random_buf(char *buf, size_t len) {
+int ytht_get_random_buf(char *buf, size_t len) {
 	int fd;
 
 	fd = open(DEV_RAN, O_RDONLY);
+	if (fd < 0)
+		return -1;
+
 	read(fd, buf, len);
 	close(fd);
+	return 0;
 }
 
 int ytht_get_random_int(unsigned int *s) {
