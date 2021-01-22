@@ -15,7 +15,7 @@ void ytht_get_random_str(char *s);
  * @param s 字符串
  * @param len 长度
  */
-void ytht_get_random_str_r(char *s, size_t len);
+int ytht_get_random_str_r(char *s, size_t len);
 
 /**
  * @brief 加盐的方法

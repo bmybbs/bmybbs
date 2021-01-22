@@ -30,16 +30,20 @@ void ytht_get_random_str(char *s) {
 	s[30] = 0;
 }
 
-void ytht_get_random_str_r(char *s, size_t len) {
+int ytht_get_random_str_r(char *s, size_t len) {
 	int fd;
 	size_t i;
 	fd = open(DEV_RAN, O_RDONLY);
+	if (fd < 0)
+		return -1;
+
 	read(fd, s, len);
 	close(fd);
 	for(i=0; i<len; ++i) {
 		s[i] = ((unsigned char)s[i])%26 + 'A';
 	}
 	s[len-1] = 0;
+	return 0;
 }
 
 int ytht_get_salt(char *salt) {
