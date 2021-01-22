@@ -8,7 +8,7 @@
  * 本函数不会将 buf 最后变更为 0 作为字符串终止符。
  */
 void ytht_get_random_buf(char *buf, size_t len);
-void ytht_get_random_int(unsigned int *s);
+int ytht_get_random_int(unsigned int *s);
 void ytht_get_random_str(char *s);
 /**
  * getrandomstr 方法的变种

@@ -12,11 +12,15 @@ void ytht_get_random_buf(char *buf, size_t len) {
 	close(fd);
 }
 
-void ytht_get_random_int(unsigned int *s) {
+int ytht_get_random_int(unsigned int *s) {
 	int fd;
 	fd = open(DEV_RAN, O_RDONLY);
+	if (fd < 0)
+		return -1;
+
 	read(fd, s, 4);
 	close(fd);
+	return 0;
 }
 
 void ytht_get_random_str(char *s) {
