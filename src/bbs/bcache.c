@@ -507,9 +507,9 @@ int user_isonline(char* userid) {
 	ythtbbs_cache_utmp_resolve();
 	for (i = 0; i < USHM_SIZE; i++) {
 		uentp = ythtbbs_cache_utmp_get_by_idx(i);
-		if (!uentp->active)
-			continue;
 		if (uentp != NULL) {
+			if (!uentp->active)
+				continue;
 			if (!strcmp(uentp->userid, userid)){
 				return (uentp->active && uentp->pid) ? 1 : 0;
 			}
