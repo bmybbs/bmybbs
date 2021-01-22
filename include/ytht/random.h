@@ -9,7 +9,7 @@
  */
 int ytht_get_random_buf(char *buf, size_t len);
 int ytht_get_random_int(unsigned int *s);
-void ytht_get_random_str(char *s);
+int ytht_get_random_str(char *s);
 /**
  * getrandomstr 方法的变种
  * @param s 字符串
