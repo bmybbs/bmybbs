@@ -42,11 +42,15 @@ void ytht_get_random_str_r(char *s, size_t len) {
 	s[len-1] = 0;
 }
 
-void ytht_get_salt(char *salt) {
+int ytht_get_salt(char *salt) {
 	int s, i, c;
 
 	int fd;
 	fd = open(DEV_RAN, O_RDONLY);
+	if (fd < 0) {
+		return -1;
+	}
+
 	read(fd, &s, 4);
 	close(fd);
 	salt[0] = s & 077;
@@ -60,5 +64,7 @@ void ytht_get_salt(char *salt) {
 			c += 6;
 		salt[i] = c;
 	}
+
+	return 0;
 }
 

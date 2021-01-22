@@ -22,5 +22,5 @@ void ytht_get_random_str_r(char *s, size_t len);
  * 来自 nju09
  * @param salt
  */
-void ytht_get_salt(char *salt);
+int ytht_get_salt(char *salt);
 #endif
