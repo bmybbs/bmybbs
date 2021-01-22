@@ -68,6 +68,10 @@ bbsbfind_main()
 		if (fread(&x, sizeof (x), 1, fp) == 0)
 			break;
 		num++;
+
+		x.owner[sizeof(x.owner) - 1] = 0;
+		x.title[sizeof(x.title) - 1] = 0;
+
 		if (title[0] && !strcasestr(x.title, title))
 			continue;
 		if (title2[0] && !strcasestr(x.title, title2))
@@ -86,10 +90,6 @@ bbsbfind_main()
 			continue;
 		total++;
 		printf("<tr><td>%d", num);
-
-		x.owner[sizeof(x.owner) - 1] = 0;
-		x.title[sizeof(x.title) - 1] = 0;
-
 		printf("<td>%s", flag_str(x.accessed));
 		printf("<td>%s", userid_str(x.owner));
 		printf("<td>%12.12s", 4 + ytht_ctime(x.filetime));
