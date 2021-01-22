@@ -441,6 +441,7 @@ int ytht_del_from_file(char *filename, char *str, bool include_lf) {
 		if ((local_buf = (char *) calloc(1, len+2)) == NULL) {
 			munmap(src, statbuf.st_size);
 			close(fdin);
+			return -1;
 		}
 		sprintf(local_buf, "%s\n", str);
 		len++;
