@@ -32,5 +32,4 @@ void brc_addlistt(struct onebrc *brc, int t);
 int brc_unreadt(struct onebrc *brc, int t);
 int brc_unreadt_quick(struct allbrc *allbrc, char *board, int t);
 void brc_clearto(struct onebrc *brc, int t);
-void brc_init_old(struct allbrc *allbrc, char *filename);
 #endif

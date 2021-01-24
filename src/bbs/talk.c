@@ -223,7 +223,7 @@ char *userid;
 
 /* Modified By Excellent*/
 int t_query(const char *q_id) {
-	char uident[STRLEN];
+	char uident[IDLEN + 1];
 	int tuid = 0;
 	int exp, perf;		/*Add by SmallPig */
 	char qry_mail_dir[STRLEN];
@@ -939,7 +939,7 @@ char *mesg;
 {
 	static time_t last_check;
 	time_t now;
-	char buf[STRLEN];
+	char buf[STRLEN * 2];
 	int tuid = search_ulist(&ui, cmpunums, usernum);
 
 	if (tuid == 0 || !ui.sockactive)

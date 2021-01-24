@@ -624,8 +624,9 @@ login_user(int unum, char *msg)
 	userid = nextword(&msg);
 	chatid = nextword(&msg);
 	cloak = nextword(&msg);
-#ifdef WWW_CHAT
+
 	utent = atoi(utentstr);
+#ifdef WWW_CHAT
 	if (utent <= -2) {
 		utent = -2;
 		passwd = nextword(&msg);
@@ -686,7 +687,7 @@ login_user(int unum, char *msg)
 	users[unum].utent = utent;
 	strcpy(users[unum].userid, userid);
 	strncpy(users[unum].chatid, chatid, CHAT_IDLEN - 1);
-	users[unum].chatid[CHAT_IDLEN] = '\0';
+	users[unum].chatid[CHAT_IDLEN - 1] = '\0';
 	send_to_unum(unum, CHAT_LOGIN_OK);
 	print_user_counts(unum);
 	enter_room(unum, mainroom, (char *) NULL);

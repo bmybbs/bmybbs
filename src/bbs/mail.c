@@ -193,7 +193,15 @@ int
 mailall()
 {
 	char ans[4], fname[STRLEN], title[STRLEN];
-	char doc[6][STRLEN], buf[STRLEN], str[7];
+	const char *doc[6] = {
+		"(1) 尚未通过身份确认的使用者",
+		"(2) 所有通过身份确认的使用者",
+		"(3) 所有的版主",
+		"(4) 本站智囊团",
+		"(5) 所有本组织会员",
+		"(6) 所有SYSOP",
+	};
+	char buf[STRLEN], str[7];
 	int i;
 	int hour;
 	int save_in_mail;
@@ -205,12 +213,6 @@ mailall()
 	sprintf(fname, "tmp/mailall.%s", currentuser.userid);
 	prints("你要寄给所有的：\n");
 	prints("(0) 放弃\n");
-	strcpy(doc[0], "(1) 尚未通过身份确认的使用者");
-	strcpy(doc[1], "(2) 所有通过身份确认的使用者");
-	strcpy(doc[2], "(3) 所有的版主");
-	strcpy(doc[3], "(4) 本站智囊团");
-	strcpy(doc[4], "(5) 所有本组织会员");
-	strcpy(doc[5], "(6) 所有SYSOP");
 	for (i = 0; i < 6; i++)
 		prints("%s\n", doc[i]);
 	getdata(9, 0, "请输入模式 (0~6)? [0]: ", ans, 2, DOECHO, YEA);

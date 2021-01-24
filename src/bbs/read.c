@@ -553,7 +553,7 @@ char *pnt;
 		redoscr();
 		break;
 	case 'y': // 水文标注
-		mode = water_post(locmem->crs_line, &pnt[(locmem->crs_line - locmem->top_line) * ssize], currdirect);
+		mode = water_post(locmem->crs_line, &SR_fptr, currdirect);
 		break;
 	case 'k':
 	case KEY_UP:
@@ -861,7 +861,7 @@ char *direct;
 		sread(BMch + SR_BMBASE, 0, ent, 1, fileinfo);
 
 	if(BMch == 7){			//add by mintbaggio 040321 for heji
-		char title_combine[STRLEN], title[STRLEN];
+		char title_combine[STRLEN], title[60];
 		if(dotype == 1){
 			strcpy(title, fileinfo->title);
 			if (!strncmp(title, "Re: ", 4) || !strncmp(title, "RE: ", 4))
@@ -947,7 +947,7 @@ int offset;
 char *powner;
 {
 	static char author[IDLEN + 1];
-	char ans[IDLEN + 2], pmt[STRLEN];
+	char ans[IDLEN + 2], pmt[STRLEN * 2];
 	char currauth[STRLEN];
 
 	strcpy(currauth, powner);
@@ -1083,7 +1083,7 @@ struct keeploc *locmem;
 int offset;
 {
 	static char query[STRLEN];
-	char ans[STRLEN], pmt[STRLEN];
+	char ans[STRLEN], pmt[STRLEN * 2];
 
 	strcpy(ans, query);
 	sprintf(pmt, "搜寻%s的文章 [%s]: ",
@@ -1285,7 +1285,7 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
 			break;
 		}
 		if (uinfo.mode == RMAIL)
-			setmailfile(genbuf, currentuser.userid, fh2fname(&SR_fptr));
+			setmailfile_s(genbuf, sizeof(genbuf), currentuser.userid, fh2fname(&SR_fptr));
 		else if (uinfo.mode == BACKNUMBER)
 			setbacknumberfile(genbuf, fh2fname(&SR_fptr));
 		else if (uinfo.mode == DO1984)
@@ -1502,7 +1502,7 @@ int offset, aflag;
 		if (aflag == -1) {
 			char p_name[256];
 			if (uinfo.mode == RMAIL)
-				setmailfile(p_name, currentuser.userid, fh2fname(&SR_fptr));
+				setmailfile_s(p_name, sizeof(setmailfile_s), currentuser.userid, fh2fname(&SR_fptr));
 			else if (uinfo.mode == BACKNUMBER)
 				setbacknumberfile(p_name, fh2fname(&SR_fptr));
 			else if (uinfo.mode == DO1984)

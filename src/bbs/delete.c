@@ -1,25 +1,25 @@
 /*
-   Pirate Bulletin Board System
-   Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
-   Eagles Bulletin Board System
-   Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
-   Guy Vega, gtvega@seabass.st.usm.edu
-   Dominic Tynes, dbtynes@seabass.st.usm.edu
-   Firebird Bulletin Board System
-   Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
-   Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
+	Pirate Bulletin Board System
+	Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
+	Eagles Bulletin Board System
+	Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
+						Guy Vega, gtvega@seabass.st.usm.edu
+						Dominic Tynes, dbtynes@seabass.st.usm.edu
+	Firebird Bulletin Board System
+	Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
+						Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
 
-   Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
+	Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
 
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 1, or (at your option)
-   any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 1, or (at your option)
+	any later version.
 
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 */
 
 #include "bbs.h"
@@ -151,7 +151,7 @@ kick_user(const struct user_info *userinfo, int mode)
 	char titlebuf[STRLEN];
 	char contentbuf[STRLEN];
 	char repbuf[STRLEN];
-	char msgbuf[STRLEN];
+	char msgbuf[STRLEN * 2];
 	if (uinfo.mode != LUSERS && uinfo.mode != OFFLINE && uinfo.mode != FRIEND) {
 		modify_user_mode(ADMIN);
 		stand_title("Kick User");
@@ -185,9 +185,11 @@ kick_user(const struct user_info *userinfo, int mode)
 	} else {
 		uin = *userinfo;
 		strcpy(kickuser, uin.userid);
-		/*        id = getuser(kickuser);
-				  search_record(PASSFILE, &kuinfo, sizeof(kuinfo), cmpuids, kickuser);
-				  ind = search_ulist( &uin, t_cmpuids, id ); */
+/*
+		id = getuser(kickuser);
+		search_record(PASSFILE, &kuinfo, sizeof(kuinfo), cmpuids, kickuser);
+		ind = search_ulist( &uin, t_cmpuids, id );
+*/
 		ind = YEA;
 	}
 
@@ -199,7 +201,7 @@ kick_user(const struct user_info *userinfo, int mode)
 		move(1,0);
 		getdata(2,0,"踢人原因: ", kickreason,STRLEN,DOECHO,YEA);
 	} else {
-		sprintf(kickreason, "");
+		kickreason[0] = 0;
 	}
 	if (uin.pid != 1 && (!ind || !uin.active || uin.pid <= 0 || (kill(uin.pid, 0) == -1))) {
 		if (uinfo.mode != LUSERS && uinfo.mode != OFFLINE && uinfo.mode != FRIEND) {
@@ -221,7 +223,7 @@ kick_user(const struct user_info *userinfo, int mode)
 	securityreport(titlebuf,contentbuf);
 
 	sprintf(repbuf,"您被%s强制离开本站",currentuser.userid);
-	sprintf(msgbuf,"理由:%s\n",kickreason);
+	snprintf(msgbuf, sizeof(msgbuf), "理由:%s\n",kickreason);
 	mail_buf(msgbuf,kickuser, repbuf);
 	sprintf(genbuf, "%s kick %s", currentuser.userid, kickuser);
 	newtrace(genbuf);

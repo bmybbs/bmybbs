@@ -41,7 +41,7 @@ init_data()
 		t2 = strtok(NULL, " \t\n");
 		t3 = strtok(NULL, " \t\n");
 		t4 = strtok(NULL, " \t\n");
-		if (t1[0] == '#' || t1 == NULL || t2 == NULL || t3 == NULL)
+		if (t1 == NULL || t1[0] == '#' || t2 == NULL || t3 == NULL)
 			continue;
 		strncpy(host1[counts], t1, 16);
 		strncpy(host2[counts], t2, 36);

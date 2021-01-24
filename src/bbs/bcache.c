@@ -37,7 +37,6 @@ struct userec lookupuser;
 int usernumber;
 int numboards = -1;
 extern int die;
-extern char ULIST[]; /* main.c */
 
 static int getlastpost(char *board, int *lastpost, int *total);
 static int setbmhat(struct boardmanager *bm, int *online);

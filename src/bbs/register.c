@@ -1,24 +1,24 @@
 /*
-    Pirate Bulletin Board System
-    Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
-    Eagles Bulletin Board System
-    Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
-                        Guy Vega, gtvega@seabass.st.usm.edu
-                        Dominic Tynes, dbtynes@seabass.st.usm.edu
-    Firebird Bulletin Board System
-    Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
-                        Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
-    Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
+	Pirate Bulletin Board System
+	Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
+	Eagles Bulletin Board System
+	Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
+						Guy Vega, gtvega@seabass.st.usm.edu
+						Dominic Tynes, dbtynes@seabass.st.usm.edu
+	Firebird Bulletin Board System
+	Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
+						Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
+	Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 1, or (at your option)
-    any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 1, or (at your option)
+	any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 */
 
 #include "bbs.h"
@@ -172,7 +172,7 @@ new_register()
 		refresh();
 		exit(1);
 	}
-	sethomepath(genbuf, newuser.userid);
+	sethomepath_s(genbuf, sizeof(genbuf), newuser.userid);
 	mkdir(genbuf, 0775);
 	sprintf(genbuf, "%s newaccount %d %s", newuser.userid, allocid, fromhost);
 	newtrace(genbuf);
@@ -212,10 +212,10 @@ invalid_realmail(char *userid, char *email, int msize)
 	if (strchr(email, '@') && valid_ident(email) && HAS_PERM(PERM_LOGINOK, currentuser))
 		return 0;
 
-	sethomefile(fname, userid, "register");
+	sethomefile_s(fname, sizeof(fname), userid, "register");
 	if (stat(fname, &st) == 0) {
 	}
-	sethomefile(fname, userid, "register");
+	sethomefile_s(fname, sizeof(fname), userid, "register");
 	if ((fn = fopen(fname, "r")) != NULL) {
 		fgets(genbuf, STRLEN, fn);
 		fclose(fn);

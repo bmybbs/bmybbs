@@ -599,7 +599,7 @@ x_level()
 {
 	int id, oldlevel;
 	unsigned int newlevel;
-	char content[1024];
+	char content[2048];
 
 	modify_user_mode(ADMIN);
 	if (!check_systempasswd()) {
@@ -1096,7 +1096,7 @@ myexec_cmd(umode, pager, cmdfile, param)
 int umode, pager;
 const char *cmdfile, *param;
 {
-	char buf[STRLEN * 2], param1[256];
+	char buf[STRLEN * 8], param1[256];
 	int save_pager;
 	pid_t childpid;
 	int p[2];
@@ -1581,7 +1581,7 @@ int
 x_denylevel()
 {
 	int id;
-	char ans[7], content[1024];
+	char ans[7], content[2048];
 	int oldlevel;
 	modify_user_mode(ADMIN);
 	if (!check_systempasswd()) {
@@ -1749,10 +1749,10 @@ zsend_file(char *from, char *title)
 	char name[200], name1[200];
 	char path[200];
 	FILE *fr, *fw;
-	char to[200];
+	char to[512];
 	char buf[512], *fn = NULL;
-	char attachfile[200];
-	char attach_to_send[200];
+	char attachfile[512];
+	char attach_to_send[1024];
 	int  isa, base64;
 	size_t len;
 
@@ -1809,7 +1809,7 @@ zsend_file(char *from, char *title)
 			fn = buf + 18;
 		}
 		if (isa) {
-			sprintf(attachfile, "%s-attach-%s",  name, fn);
+			snprintf(attachfile, sizeof(attachfile), "%s-attach-%s",  name, fn);
 			if (getattach(fr, buf, attachfile, path, base64, len, 0)) {
 				fprintf(fw, "¸½¼þ%s´íÎó\n", fn);
 			} else {

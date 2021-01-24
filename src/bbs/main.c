@@ -73,7 +73,6 @@ static enum ythtbbs_user_login_status login_rc; // ÉùÃ÷ÎªÈ«¾Ö±äÁ¿£¬±ãÓÚ±£ÁôÔ­ÓĞ³
 
 char fromhost[60];
 
-char ULIST[STRLEN];
 int utmpent = -1;
 time_t login_start_time;
 int showansi = 1;
@@ -370,8 +369,6 @@ char **argv;
 	mallopt(M_MMAP_THRESHOLD, 10000);
 
 	login_start_time = time(0);
-	gethostname(genbuf, 256);
-	sprintf(ULIST, "%s.%s", ULIST_BASE, genbuf);
 
 	if (argc >= 3) {
 		ytht_strsncpy(fromhost, argv[2], BMY_IPV6_LEN);
@@ -1128,17 +1125,17 @@ int egetch(void) {
 static char *
 boardmargin()
 {
-	static char buf[STRLEN];
+	static char buf[STRLEN * 2];
 	if (selboard)
-		sprintf(buf, "ÌÖÂÛÇø [%s]", currboard);
+		snprintf(buf, sizeof(buf), "ÌÖÂÛÇø [%s]", currboard);
 	else {
 		brc_initial(DEFAULTBOARD, 0);
 		strcpy(currboard, DEFAULTBOARD);
 		if (getbnum(currboard)) {
 			selboard = 1;
-			sprintf(buf, "ÌÖÂÛÇø [%s]", currboard);
+			snprintf(buf, sizeof(buf), "ÌÖÂÛÇø [%s]", currboard);
 		} else
-			sprintf(buf, "Ä¿Ç°²¢Ã»ÓĞÉè¶¨ÌÖÂÛÇø");
+			snprintf(buf, sizeof(buf), "Ä¿Ç°²¢Ã»ÓĞÉè¶¨ÌÖÂÛÇø");
 	}
 	return buf;
 }

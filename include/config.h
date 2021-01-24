@@ -128,7 +128,6 @@ hog or anything, but if you don't want it...
                              to a reasonable value based on the resources of
                              your system. */
 #define MAXACTIVERUN 5000
-			  /* */
 
 #define MAXSIGLINES    6  /* max. # of lines appended for post signature */
 #define MAXQUERYLINES 16  /* max. # of lines shown by the Query function */
@@ -198,7 +197,6 @@ You must also set "EightBitMode=pass8" in /etc/sendmail.cf
 #define BBSEVA_MSQKEY 3334
 
 #define PASSFILE    ".PASSWDS"              /* Name of file User records stored in */
-#define ULIST_BASE  ".UTMP"                 /* Names of users currently on line */
 #define FLUSH       ".PASSFLUSH"            /* Stores date for user cache flushing */
 #define BOARDS      ".BOARDS"               /* File containing list of boards */
 #define DOT_DIR     ".DIR"                  /* Name of Directory file info */
