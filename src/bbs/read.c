@@ -861,7 +861,7 @@ char *direct;
 		sread(BMch + SR_BMBASE, 0, ent, 1, fileinfo);
 
 	if(BMch == 7){			//add by mintbaggio 040321 for heji
-		char title_combine[STRLEN], title[STRLEN];
+		char title_combine[STRLEN], title[60];
 		if(dotype == 1){
 			strcpy(title, fileinfo->title);
 			if (!strncmp(title, "Re: ", 4) || !strncmp(title, "RE: ", 4))
@@ -947,7 +947,7 @@ int offset;
 char *powner;
 {
 	static char author[IDLEN + 1];
-	char ans[IDLEN + 2], pmt[STRLEN];
+	char ans[IDLEN + 2], pmt[STRLEN * 2];
 	char currauth[STRLEN];
 
 	strcpy(currauth, powner);
@@ -1083,7 +1083,7 @@ struct keeploc *locmem;
 int offset;
 {
 	static char query[STRLEN];
-	char ans[STRLEN], pmt[STRLEN];
+	char ans[STRLEN], pmt[STRLEN * 2];
 
 	strcpy(ans, query);
 	sprintf(pmt, "ËÑÑ°%sµÄÎÄÕÂ [%s]: ",
