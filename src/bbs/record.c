@@ -1,25 +1,25 @@
 /*
-    Pirate Bulletin Board System
-    Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
-    Eagles Bulletin Board System
-    Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
-                        Guy Vega, gtvega@seabass.st.usm.edu
-                        Dominic Tynes, dbtynes@seabass.st.usm.edu
-    Firebird Bulletin Board System
-    Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
-                        Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
+	Pirate Bulletin Board System
+	Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
+	Eagles Bulletin Board System
+	Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
+						Guy Vega, gtvega@seabass.st.usm.edu
+						Dominic Tynes, dbtynes@seabass.st.usm.edu
+	Firebird Bulletin Board System
+	Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
+						Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
 
-    Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
+	Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 1, or (at your option)
-    any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 1, or (at your option)
+	any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 */
 
 #include "bbs.h"
@@ -89,9 +89,9 @@ int size;
 	s=strrchr(buf,'/')+1;
 	strcpy(s,".TOPFILE");
 	if(stat(buf,&st)==-1)
-	    return num/size;
+		return num/size;
 	else
-	    return (num+st.st_size)/size;
+		return (num+st.st_size)/size;
 	//end
 }
 
@@ -155,38 +155,38 @@ char *filename;
 void *rptr;
 int size, id, number;
 {
-        int fd;
-        int n;
+	int fd;
+	int n;
 
-        if ((fd = open(filename, O_RDONLY, 0)) == -1)
-                return -1;
-        if (lseek(fd, size * (id - 1), SEEK_SET) == -1) {
-                close(fd);
-                return 0;
-        }
-        if ((n = read(fd, rptr, size * number)) == -1) {
-                close(fd);
-                return -1;
-        }
+	if ((fd = open(filename, O_RDONLY, 0)) == -1)
+		return -1;
+	if (lseek(fd, size * (id - 1), SEEK_SET) == -1) {
+		close(fd);
+		return 0;
+	}
+	if ((n = read(fd, rptr, size * number)) == -1) {
+		close(fd);
+		return -1;
+	}
 
-        close(fd);
+	close(fd);
 
-if(n<number*size){//hace
-    char *s,buf[64];
-    struct stat st;
-    strcpy(buf,filename);
-    s=strrchr(buf,'/')+1;
-    strcpy(s,".TOPFILE");
-    if((stat(buf,&st)!=-1) && st.st_size>0){
-        fd=open(buf,O_RDONLY,0); //没有作错误检查
-        while(read(fd,&rptr[n],size)){
-            n+=size;
-            if(n>=number*size)break;
-        }
-        close(fd);
-    }
-}
-return (n /size);
+	if(n<number*size){//hace
+		char *s,buf[64];
+		struct stat st;
+		strcpy(buf,filename);
+		s=strrchr(buf,'/')+1;
+		strcpy(s,".TOPFILE");
+		if((stat(buf,&st)!=-1) && st.st_size>0){
+			fd=open(buf,O_RDONLY,0); //没有作错误检查
+			while(read(fd,&rptr[n],size)){
+				n+=size;
+				if(n>=number*size)break;
+			}
+			close(fd);
+		}
+	}
+	return (n /size);
 }
 
 int
@@ -209,8 +209,7 @@ int num;
 	fstat(fd, &st);
 	len = st.st_size;
 
-	/* lkchu.990428: ernie patch 如果 len=0 & pos>0
-	   (在刚开精华区目录进去贴上，选下一个) 时会写入垃圾 */
+	/* lkchu.990428: ernie patch 如果 len=0 & pos>0 (在刚开精华区目录进去贴上，选下一个) 时会写入垃圾 */
 	off = len ? size * pos : 0;
 	lseek(fd, off, SEEK_SET);
 
@@ -278,9 +277,7 @@ int id1, id2;
 			continue;
 		}
 		if ((id2 == -1 && !(fhdr.accessed & FH_DEL) && !(fhdr.accessed & FH_MINUSDEL)) || //modify by mintbaggio for minus-numposts delete
-		    (id2 != -1
-		     && (count < id1 || count > id2
-			 || fhdr.accessed & FH_MARKED || fhdr.accessed & FILE_TOP1))) {
+				(id2 != -1 && (count < id1 || count > id2 || fhdr.accessed & FH_MARKED || fhdr.accessed & FILE_TOP1))) {
 			if ((safewrite(fdw, &fhdr, sizeof (fhdr)) == -1)) {
 				unlink(tmpfile);
 				flock(fdw, LOCK_UN);
@@ -291,17 +288,14 @@ int id1, id2;
 		} else {
 /* add by KCN for delete ranger backup, modified by ylsdd */
 #ifdef BACK_DELETE_RANGE
-			if (uinfo.mode != RMAIL
-			    && (digestmode == 4 || digestmode == 5)) {
+			if (uinfo.mode != RMAIL && (digestmode == 4 || digestmode == 5)) {
 				char fullpath[STRLEN];
 				sprintf(fullpath, "boards/%s/%s", currboard, fh2fname(&fhdr));
 				unlink(fullpath);
 			} else {
 				if (uinfo.mode == RMAIL) {
 					char fullpath[STRLEN];
-					setmailfile(fullpath,
-						    currentuser.userid,
-						    fh2fname(&fhdr));
+					setmailfile(fullpath, currentuser.userid, fh2fname(&fhdr));
 					deltree(fullpath);
 				} else{
 					cancelpost(currboard, currentuser.userid, &fhdr, 0);
@@ -315,7 +309,8 @@ int id1, id2;
 						if( !IScurrent ) {
 							owned = getuser(usrid);
 							if( owned!=0 )
-								if(posttime < lookupuser.firstlogin) owned = 0;
+								if(posttime < lookupuser.firstlogin)
+									owned = 0;
 						}
 						else owned =  posttime > currentuser.firstlogin;
 
