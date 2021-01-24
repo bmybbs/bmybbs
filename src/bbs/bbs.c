@@ -553,7 +553,7 @@ char *direct;
 {
 	char *p, buf[1024];
 	char UTitle[128];
-	char filepath[STRLEN];
+	char filepath[STRLEN * 2];
 	struct fileheader UFile;
 	int i;
 	FILE *fp;
@@ -562,7 +562,7 @@ char *direct;
 		return DONOTHING;
 	if (!IScurrBM)
 		return DONOTHING;
-	sprintf(filepath, "boards/%s/%s", currboard, fh2fname(fileinfo));
+	snprintf(filepath, sizeof(filepath), "boards/%s/%s", currboard, fh2fname(fileinfo));
 	if (!dashf(filepath)) {
 		clear();
 		move(2, 0);
@@ -2173,8 +2173,8 @@ post_article(struct fileheader *sfh)
 	}
 	if (mailback)
 	{
-		char copyfrom[STRLEN], replyto[IDLEN + 2];
-		sprintf(copyfrom, "boards/%s/M.%ld.A", currboard, postfile.filetime);
+		char copyfrom[STRLEN * 2], replyto[IDLEN + 2];
+		snprintf(copyfrom, sizeof(copyfrom), "boards/%s/M.%ld.A", currboard, postfile.filetime);
 		if (sfh->owner[0] == 0)
 			strcpy(replyto, sfh->owner + 1);
 		else
@@ -2456,10 +2456,10 @@ char *direct;
 		char *temp;
 		temp=strrchr(filepathtemp,'T');
 		*temp='M';
-		char command[64];
-		sprintf(command,"rm %s",filepathtemp);
+		char command[STRLEN * 3];
+		snprintf(command, sizeof(command), "rm %s", filepathtemp);
 		system(command);
-		sprintf(command,"cp %s %s",filepath,filepathtemp);
+		snprintf(command, sizeof(command), "cp %s %s", filepath, filepathtemp);
 		system(command);
 	}
 	else
@@ -2472,10 +2472,10 @@ char *direct;
 		struct stat test_exist;
 		if(stat(filepathtemp,&test_exist)==0)     //如果原帖存在置顶贴则重新生成置顶贴
 		{
-			char command[64];
-			sprintf(command,"rm %s",filepathtemp);
+			char command[STRLEN * 3];
+			snprintf(command, sizeof(command), "rm %s", filepathtemp);
 			system(command);
-			sprintf(command,"cp %s %s",filepath,filepathtemp);
+			snprintf(command, sizeof(command), "cp %s %s", filepath, filepathtemp);
 			system(command);
 		}
 	}
@@ -3087,6 +3087,7 @@ struct fileheader *fptr;
 				clear();
 			}
 			/* Added End. */
+			break;
 		case ' ':
 		case '\n':
 		case KEY_DOWN:
@@ -3851,7 +3852,7 @@ char *direct;
 	strcpy(buf1, direct);
 	if ((t = strrchr(buf1, '/')) != NULL)
 		*t = '\0';
-	snprintf(genbuf, 512, "%s/%s", buf1, fh2fname(fileinfo));
+	snprintf(genbuf, sizeof(genbuf), "%s/%s", buf1, fh2fname(fileinfo));
 	return zsend_file(genbuf, fileinfo->title);
 }
 
@@ -4068,14 +4069,14 @@ thread_mode()
 static int
 do_thread()
 {
-	char buf[STRLEN];
-	sprintf(buf, "%s thread %s", currentuser.userid, currboard);
+	char buf[STRLEN * 2];
+	snprintf(buf, sizeof(buf), "%s thread %s", currentuser.userid, currboard);
 	newtrace(buf);
 	move(t_lines - 1, 0);
 	clrtoeol();
 	prints("\x1b[1;5m系统处理标题中, 请稍候...\x1b[m\n");
 	refresh();
-	sprintf(buf, "bin/thread %s 1>/dev/null 2>/dev/null", currboard);
+	snprintf(buf, sizeof(buf), "bin/thread %s 1>/dev/null 2>/dev/null", currboard);
 	system(buf);
 	return 0;
 }
