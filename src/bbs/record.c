@@ -25,6 +25,9 @@
 #include "bbs.h"
 #include <sys/mman.h>
 #include "bbs_global_vars.h"
+#include "bbsinc.h"
+#include "stuff.h"
+#include "bcache.h"
 
 #define BUFSIZE (8192)
 
@@ -295,7 +298,7 @@ int id1, id2;
 			} else {
 				if (uinfo.mode == RMAIL) {
 					char fullpath[STRLEN];
-					setmailfile(fullpath, currentuser.userid, fh2fname(&fhdr));
+					setmailfile_s(fullpath, sizeof(fullpath), currentuser.userid, fh2fname(&fhdr));
 					deltree(fullpath);
 				} else{
 					cancelpost(currboard, currentuser.userid, &fhdr, 0);
