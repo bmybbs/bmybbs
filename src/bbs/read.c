@@ -553,7 +553,7 @@ char *pnt;
 		redoscr();
 		break;
 	case 'y': // Ë®ÎÄ±ê×¢
-		mode = water_post(locmem->crs_line, &pnt[(locmem->crs_line - locmem->top_line) * ssize], currdirect);
+		mode = water_post(locmem->crs_line, &SR_fptr, currdirect);
 		break;
 	case 'k':
 	case KEY_UP:
@@ -1285,7 +1285,7 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
 			break;
 		}
 		if (uinfo.mode == RMAIL)
-			setmailfile(genbuf, currentuser.userid, fh2fname(&SR_fptr));
+			setmailfile_s(genbuf, sizeof(genbuf), currentuser.userid, fh2fname(&SR_fptr));
 		else if (uinfo.mode == BACKNUMBER)
 			setbacknumberfile(genbuf, fh2fname(&SR_fptr));
 		else if (uinfo.mode == DO1984)
@@ -1502,7 +1502,7 @@ int offset, aflag;
 		if (aflag == -1) {
 			char p_name[256];
 			if (uinfo.mode == RMAIL)
-				setmailfile(p_name, currentuser.userid, fh2fname(&SR_fptr));
+				setmailfile_s(p_name, sizeof(setmailfile_s), currentuser.userid, fh2fname(&SR_fptr));
 			else if (uinfo.mode == BACKNUMBER)
 				setbacknumberfile(p_name, fh2fname(&SR_fptr));
 			else if (uinfo.mode == DO1984)
