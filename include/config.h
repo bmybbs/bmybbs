@@ -198,7 +198,6 @@ You must also set "EightBitMode=pass8" in /etc/sendmail.cf
 #define BBSEVA_MSQKEY 3334
 
 #define PASSFILE    ".PASSWDS"              /* Name of file User records stored in */
-#define ULIST_BASE  ".UTMP"                 /* Names of users currently on line */
 #define FLUSH       ".PASSFLUSH"            /* Stores date for user cache flushing */
 #define BOARDS      ".BOARDS"               /* File containing list of boards */
 #define DOT_DIR     ".DIR"                  /* Name of Directory file info */
