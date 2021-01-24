@@ -151,7 +151,7 @@ kick_user(const struct user_info *userinfo, int mode)
 	char titlebuf[STRLEN];
 	char contentbuf[STRLEN];
 	char repbuf[STRLEN];
-	char msgbuf[STRLEN];
+	char msgbuf[STRLEN * 2];
 	if (uinfo.mode != LUSERS && uinfo.mode != OFFLINE && uinfo.mode != FRIEND) {
 		modify_user_mode(ADMIN);
 		stand_title("Kick User");
@@ -223,7 +223,7 @@ kick_user(const struct user_info *userinfo, int mode)
 	securityreport(titlebuf,contentbuf);
 
 	sprintf(repbuf,"您被%s强制离开本站",currentuser.userid);
-	sprintf(msgbuf,"理由:%s\n",kickreason);
+	snprintf(msgbuf, sizeof(msgbuf), "理由:%s\n",kickreason);
 	mail_buf(msgbuf,kickuser, repbuf);
 	sprintf(genbuf, "%s kick %s", currentuser.userid, kickuser);
 	newtrace(genbuf);
