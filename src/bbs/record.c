@@ -292,8 +292,8 @@ int id1, id2;
 /* add by KCN for delete ranger backup, modified by ylsdd */
 #ifdef BACK_DELETE_RANGE
 			if (uinfo.mode != RMAIL && (digestmode == 4 || digestmode == 5)) {
-				char fullpath[STRLEN];
-				sprintf(fullpath, "boards/%s/%s", currboard, fh2fname(&fhdr));
+				char fullpath[STRLEN * 2];
+				snprintf(fullpath, sizeof(fullpath), "boards/%s/%s", currboard, fh2fname(&fhdr));
 				unlink(fullpath);
 			} else {
 				if (uinfo.mode == RMAIL) {
