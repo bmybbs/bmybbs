@@ -365,20 +365,3 @@ brc_clearto(struct onebrc *brc, int t)
 	brc_set(brc, t);
 }
 
-#define BRC_MAXSIZEOLD     50000
-
-static char *
-brc_getrecord(char *ptr, struct onebrc *brc)
-{
-	char *tmp;
-	strncpy(brc->board, ptr, BRC_STRLEN);
-	ptr += BRC_STRLEN;
-	brc->num = (*ptr++) & 0xff;
-	tmp = ptr + brc->num * sizeof (int);
-	if (brc->num > BRC_MAXNUM) {
-		brc->num = BRC_MAXNUM;
-	}
-	memcpy(brc->list, ptr, brc->num * sizeof (int));
-	return tmp;
-}
-
