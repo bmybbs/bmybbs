@@ -201,7 +201,7 @@ kick_user(const struct user_info *userinfo, int mode)
 		move(1,0);
 		getdata(2,0,"Ãﬂ»À‘≠“Ú: ", kickreason,STRLEN,DOECHO,YEA);
 	} else {
-		sprintf(kickreason, "");
+		kickreason[0] = 0;
 	}
 	if (uin.pid != 1 && (!ind || !uin.active || uin.pid <= 0 || (kill(uin.pid, 0) == -1))) {
 		if (uinfo.mode != LUSERS && uinfo.mode != OFFLINE && uinfo.mode != FRIEND) {
