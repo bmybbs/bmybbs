@@ -382,27 +382,3 @@ brc_getrecord(char *ptr, struct onebrc *brc)
 	return tmp;
 }
 
-void
-brc_init_old(struct allbrc *allbrc, char *filename)
-{
-	FILE *fp;
-	int brc_size;
-	char *brc_buf, *ptr;
-	struct onebrc brc;
-	bzero(allbrc, sizeof (*allbrc));
-	if (!(fp = fopen(filename, "r"))) {
-		return;
-	}
-	brc_buf = malloc(BRC_MAXSIZEOLD);
-	brc_size = fread(brc_buf, 1, BRC_MAXSIZE, fp);
-	fclose(fp);
-	ptr = brc_buf;
-	while (ptr < &brc_buf[brc_size] && (*ptr >= ' ' && *ptr <= 'z')) {
-		bzero(&brc, sizeof (brc));
-		ptr = brc_getrecord(ptr, &brc);
-		brc.changed = 1;
-		brc_putboard(allbrc, &brc);
-	}
-	free(brc_buf);
-}
-
