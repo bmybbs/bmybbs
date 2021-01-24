@@ -1125,17 +1125,17 @@ int egetch(void) {
 static char *
 boardmargin()
 {
-	static char buf[STRLEN];
+	static char buf[STRLEN * 2];
 	if (selboard)
-		sprintf(buf, "讨论区 [%s]", currboard);
+		snprintf(buf, sizeof(buf), "讨论区 [%s]", currboard);
 	else {
 		brc_initial(DEFAULTBOARD, 0);
 		strcpy(currboard, DEFAULTBOARD);
 		if (getbnum(currboard)) {
 			selboard = 1;
-			sprintf(buf, "讨论区 [%s]", currboard);
+			snprintf(buf, sizeof(buf), "讨论区 [%s]", currboard);
 		} else
-			sprintf(buf, "目前并没有设定讨论区");
+			snprintf(buf, sizeof(buf), "目前并没有设定讨论区");
 	}
 	return buf;
 }
