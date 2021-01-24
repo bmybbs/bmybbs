@@ -641,6 +641,9 @@ int ythtbbs_user_login(const char *userid, const char *passwd, const char *fromh
 
 	get_record(PASSFILE, &local_lookup_user, sizeof(struct userec), user_idx + 1);
 	local_lookup_user.userid[IDLEN + 1] = '\0'; // 显式设置终止符
+	local_lookup_user.passwd[PASSLEN - 1] = 0;
+	local_lookup_user.username[NAMELEN - 1] = 0;
+	local_lookup_user.realname[NAMELEN - 1] = 0;
 	if (out_userec) {
 		memcpy(out_userec, &local_lookup_user, sizeof(struct userec));
 	}
