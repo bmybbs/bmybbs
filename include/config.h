@@ -128,7 +128,6 @@ hog or anything, but if you don't want it...
                              to a reasonable value based on the resources of
                              your system. */
 #define MAXACTIVERUN 5000
-			  /* */
 
 #define MAXSIGLINES    6  /* max. # of lines appended for post signature */
 #define MAXQUERYLINES 16  /* max. # of lines shown by the Query function */
