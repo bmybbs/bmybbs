@@ -265,6 +265,7 @@ MENU *pm;
 	if ((fn = fopen(buf, "r")) == NULL)
 		return 0;
 	hostname[0] = '\0';
+	memset(&litem, 0, sizeof(ITEM));
 	while (fgets(buf, sizeof (buf), fn) != NULL) {
 		if ((ptr = strchr(buf, '\n')) != NULL)
 			*ptr = '\0';
