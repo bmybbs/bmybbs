@@ -616,8 +616,8 @@ void x_fillform()
 	sprintf(genbuf, "您要填写注册单，加入%s大家庭吗？", MY_BBS_NAME);
 	if (askyn(genbuf, YEA, NA) == NA)
 		return;
-	strncpy(rname, currentuser.realname, NAMELEN);
-	strncpy(addr, currentuser.address, STRLEN);
+	ytht_strsncpy(rname, currentuser.realname, sizeof(rname));
+	ytht_strsncpy(addr, currentuser.address, sizeof(addr));
 	dept[0] = phone[0] = assoc[0] = '\0';
 	while (1) {
 		move(3, 0);
@@ -636,8 +636,8 @@ void x_fillform()
 		if (ans[0] == 'Y' || ans[0] == 'y')
 			break;
 	}
-	strncpy(currentuser.realname, rname, NAMELEN);
-	strncpy(currentuser.address, addr, STRLEN);
+	ytht_strsncpy(currentuser.realname, rname, sizeof(currentuser.realname));
+	ytht_strsncpy(currentuser.address, addr, sizeof(currentuser.address));
 	memset(&act_data, 0, sizeof(act_data));
 	snprintf(act_data.name, NAMELEN, "%s", rname);
 	act_data.name[NAMELEN-1] = '\0';
@@ -692,7 +692,7 @@ void x_fillform()
 
 		if (strcasecmp(email, currentuser.email) != 0) {
 			unlink_captcha(currentuser.userid, CAPTCHA_FILE_REGISTER);
-			strncpy(currentuser.email, email, STRLEN);
+			ytht_strsncpy(currentuser.email, email, sizeof(currentuser.email));
 		}
 		rc = send_active_mail(currentuser.userid, email);
 
