@@ -222,6 +222,7 @@ _topn(void *bh_void, void * fargs)
 			data->bt.thread = ptr->thread;
 			strncpy(data->bt.board, bh->filename, 24);
 			strncpy(owner, fh2realauthor(ptr), 14);
+			owner[sizeof(owner) - 1] = 0;
 			strncpy(data->bt.firstowner, fh2owner(ptr), 14);
 			*usernum = 0;
 			ght_insert(data->user_hash, usernum, sizeof (char) * strlen(owner), owner);
