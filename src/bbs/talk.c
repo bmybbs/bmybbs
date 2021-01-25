@@ -736,11 +736,13 @@ list:
 		server.sin_port = 0;
 		if (bind(sock, (struct sockaddr *) &server, sizeof (server)) < 0) {
 			perror("bind err");
+			close(sock);
 			return -1;
 		}
 		length = sizeof (server);
 		if (getsockname(sock, (struct sockaddr *) &server, &length) < 0) {
 			perror("socket name err");
+			close(sock);
 			return -1;
 		}
 		uinfo.sockactive = YEA;
@@ -784,6 +786,7 @@ list:
 					/*Add by SmallPig 2 lines */
 					uinfo.sockactive = NA;
 					uinfo.destuid = 0;
+					close(sock);
 					return -1;
 				}
 				continue;
@@ -803,6 +806,7 @@ list:
 		msgsock = accept(sock, (struct sockaddr *) 0, (unsigned int *) 0);
 		if (msgsock == -1) {
 			perror("accept");
+			close(sock);
 			return -1;
 		}
 		add_io(0, 0);
