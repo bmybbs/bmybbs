@@ -1563,6 +1563,7 @@ send_msg(char *myuserid, int i, char *touserid, int topid, char *msg, int offlin
 	memcpy(&head2, &head, sizeof (struct msghead));
 	head2.sent = 1;
 	strncpy(head2.id, touserid, IDLEN + 2);
+	head2.id[IDLEN + 1] = '\0';
 
 	if (save_msgtext(touserid, &head, msg) < 0)
 		return -2;
