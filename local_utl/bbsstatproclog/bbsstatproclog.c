@@ -20,8 +20,12 @@ main(int argc, char *argv[])
 	bzero(telnetavg, sizeof (telnetavg));
 	bzero(www, sizeof (www));
 	bzero(wwwavg, sizeof (wwwavg));
+	memset(n162105, 0, sizeof(n162105));
+	memset(n162105avg, 0, sizeof(n162105avg));
 	bzero(wwwguest, sizeof (wwwguest));
 	bzero(wgavg, sizeof (wgavg));
+	memset(netflow, 0, sizeof(netflow));
+	memset(nfavg, 0, sizeof(nfavg));
 	bzero(load, sizeof (load));
 	bzero(loadavg, sizeof (loadavg));
 	fd = open(BBSSTATELOGFILE, O_RDONLY | O_CREAT, 0600);
