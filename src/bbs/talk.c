@@ -761,7 +761,7 @@ list:
 /* modified end */
 
 //#ifdef TALK_LOG
-		strcpy(partner, uin.userid);
+		ytht_strsncpy(partner, uin.userid, sizeof(partner));
 //#endif
 
 		kill(uin.pid, SIGUSR1);
