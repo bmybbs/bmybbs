@@ -1,26 +1,28 @@
 /*
-    Pirate Bulletin Board System
-    Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
-    Eagles Bulletin Board System
-    Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
-                        Guy Vega, gtvega@seabass.st.usm.edu
-                        Dominic Tynes, dbtynes@seabass.st.usm.edu
-    Firebird Bulletin Board System
-    Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
-                        Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
-    
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 1, or (at your option)
-    any later version.
+	Pirate Bulletin Board System
+	Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
+	Eagles Bulletin Board System
+	Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
+						Guy Vega, gtvega@seabass.st.usm.edu
+						Dominic Tynes, dbtynes@seabass.st.usm.edu
+	Firebird Bulletin Board System
+	Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
+						Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 1, or (at your option)
+	any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 */
 #ifndef BMYBBS_VOTE_H
 #define BMYBBS_VOTE_H
+#include "config.h"
+#include <time.h>
 #define VOTE_YN         (1)
 #define VOTE_SINGLE     (2)
 #define VOTE_MULTI      (3)
@@ -35,9 +37,9 @@
 
 struct ballot
 {
-        char    uid[IDLEN];                   /* Í¶Æ±ÈË       */
-        unsigned int voted;                  /* Í¶Æ±µÄÄÚÈÝ   */
-        char    msg[3][STRLEN];         /* ½¨ÒéÊÂÏî     */
+	char    uid[IDLEN];                  /* æŠ•ç¥¨äºº       */
+	unsigned int voted;                  /* æŠ•ç¥¨çš„å†…å®¹   */
+	char    msg[3][STRLEN];              /* å»ºè®®äº‹é¡¹     */
 };
 
 struct votelog
@@ -50,24 +52,24 @@ struct votelog
 
 struct votebal
 {
-        char            userid[IDLEN+1];
+	char            userid[IDLEN+1];
 	char            title[STRLEN];
-        char            type;
-        char            items[32][38];
-        int             maxdays;
-        int             maxtkt;
-        short int	totalitems;
-	short int	flag;
-        time_t          opendate;
-	char		listfname[STRLEN];
+	char            type;
+	char            items[32][38];
+	int             maxdays;
+	int             maxtkt;
+	short int       totalitems;
+	short int       flag;
+	time_t          opendate;
+	char            listfname[STRLEN];
 };
 
 struct voterlist
 {
-	char		listname[80];
-	int		voternum;
-	char		listfname[80];
-	char		authorid[80];
+	char    listname[80];
+	int     voternum;
+	char    listfname[80];
+	char    authorid[80];
 };
 
 void makevdir(char *bname);
