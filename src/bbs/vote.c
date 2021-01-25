@@ -140,6 +140,10 @@ char *buf, *bname, *filename;
 	sprintf(buf, "vote/%s/%s", bname, filename);
 }
 
+static void setvfile_s (char *buf, size_t len, char *bname, char *filename) {
+	snprintf(buf, len, "vote/%s/%s", bname, filename);
+}
+
 static void
 setcontrolfile()
 {
@@ -259,7 +263,7 @@ struct votelog *ptr;
 static void
 get_result_title()
 {
-	char buf[STRLEN];
+	char buf[STRLEN * 2];
 
 	fprintf(sug, "⊙ 投票开启于：\033[1m%.24s\033[m  类别：\033[1m%s\033[m\n",
 		ctime(&currvote.opendate), vote_type[currvote.type - 1]);
@@ -267,7 +271,7 @@ get_result_title()
 	if (currvote.type == VOTE_VALUE)
 		fprintf(sug, "⊙ 此次投票的值不可超过：\033[1m%d\033[m\n\n", currvote.maxtkt);
 	fprintf(sug, "⊙ 票选题目描述：\n\n");
-	sprintf(buf, "vote/%s/desc.%ld", currboard, (long int) currvote.opendate);
+	sprintf(buf, "vote/%s/desc.%ld", currboard, currvote.opendate);
 	b_suckinfile(sug, buf);
 }
 
@@ -292,16 +296,16 @@ static int get_board_by_name(struct boardmem *board, int curr_idx, va_list ap) {
 static void
 mk_result()
 {
-	char fname[STRLEN], nname[STRLEN];
-	char sugname[STRLEN];
-	char logfname[STRLEN], sortedlogfname[STRLEN];
-	char title[STRLEN];
+	char fname[STRLEN * 2], nname[STRLEN * 2];
+	char sugname[STRLEN * 2];
+	char logfname[STRLEN * 2], sortedlogfname[STRLEN * 2];
+	char title[STRLEN * 2];
 	int i;
 	int postout = 0;
 	unsigned int total = 0;
 
 	setcontrolfile();
-	sprintf(fname, "vote/%s/flag.%ld", currboard, (long int) currvote.opendate);
+	sprintf(fname, "vote/%s/flag.%ld", currboard, currvote.opendate);
 	count_result(NULL);
 	sprintf(sugname, "vote/%s/tmp.%d", currboard, uinfo.pid);
 
@@ -466,7 +470,7 @@ int
 vote_maintain(bname)
 char *bname;
 {
-	char buf[STRLEN * 2];
+	char buf[STRLEN * 4];
 	struct votebal *ball = &currvote;
 	int aborted;
 
@@ -511,8 +515,9 @@ char *bname;
 	ball->opendate = time(NULL);
 	prints("请按任何键开始编辑此次 [投票的描述]: \n");
 	igetkey();
-	setvfile(genbuf, bname, "desc");
-	sprintf(buf, "%s.%ld", genbuf, (long int) ball->opendate);
+	char tmp_buf[STRLEN];
+	setvfile_s(tmp_buf, sizeof(tmp_buf), bname, "desc");
+	sprintf(buf, "%s.%ld", tmp_buf, ball->opendate);
 
 	aborted = vedit(buf, NA, YEA);
 	if (aborted) {
@@ -853,7 +858,7 @@ static void
 user_vote(num)
 int num;
 {
-	char fname[STRLEN], bname[STRLEN];
+	char fname[STRLEN * 2], bname[STRLEN];
 	char buf[STRLEN];
 	struct ballot uservote, tmpbal;
 	int votevalue;
@@ -881,7 +886,7 @@ int num;
 		pressanykey();
 	}
 
-	sprintf(fname, "vote/%s/flag.%ld", currboard, (long int) currvote.opendate);
+	sprintf(fname, "vote/%s/flag.%ld", currboard, currvote.opendate);
 	if ((pos = search_record(fname, &uservote, sizeof (uservote), (void *) cmpvuid, currentuser.userid)) <= 0) {
 		(void) memset(&uservote, 0, sizeof (uservote));
 		voted_flag = NA;
@@ -934,14 +939,14 @@ int num;
 		}
 		prints("\n已经帮您投入票箱中...\n");
 		if (currvote.flag & VOTE_FLAG_OPENED) {
-			char votelogfile[STRLEN];
+			char votelogfile[STRLEN * 2];
 			struct votelog log;
 			strcpy(log.uid, currentuser.userid);
 			log.uid[IDLEN] = 0;
 			log.votetime = time(NULL);
 			log.voted = uservote.voted;
 			strcpy(log.ip, currentuser.lasthost);
-			sprintf(votelogfile, "vote/%s/newlog.%ld", currboard, (long int) currvote.opendate);
+			sprintf(votelogfile, "vote/%s/newlog.%ld", currboard, currvote.opendate);
 			append_record(votelogfile, &log, sizeof (log));
 		}
 		if (!strcmp(currboard, "SM_Election")) {
@@ -1002,7 +1007,7 @@ struct votebal *ent;
 static void
 dele_vote()
 {
-	char buf[STRLEN];
+	char buf[STRLEN * 2];
 	int num = 1;
 	struct votebal tmpvote;
 	while (get_record(controlfile, &tmpvote, sizeof (struct votebal), num) == 0) {
@@ -1012,11 +1017,11 @@ dele_vote()
 				pressanykey();
 			}
 			range--;
-			sprintf(buf, "vote/%s/flag.%ld", currboard, (long int) currvote.opendate);
+			sprintf(buf, "vote/%s/flag.%ld", currboard, currvote.opendate);
 			unlink(buf);
-			sprintf(buf, "vote/%s/desc.%ld", currboard, (long int) currvote.opendate);
+			sprintf(buf, "vote/%s/desc.%ld", currboard, currvote.opendate);
 			unlink(buf);
-			sprintf(buf, "vote/%s/newlog.%ld", currboard, (long int) currvote.opendate);
+			sprintf(buf, "vote/%s/newlog.%ld", currboard, currvote.opendate);
 			unlink(buf);
 			break;
 		}
@@ -1165,7 +1170,7 @@ list_refresh()
 static int
 voter_key(int key, int allnum, int pagenum)
 {
-	char titlebuf[80];
+	char titlebuf[STRLEN * 4];
 	switch(key) {
 		case 'a':
 		case 'A':
@@ -1306,7 +1311,7 @@ compare_fname(char* fname)
 static int
 add_list()
 {
-	char buf[60], titlebuf[80];
+	char buf[60], titlebuf[STRLEN * 4];
 	char fbuf[60];
 	FILE* fn;
 	int i;
@@ -1372,8 +1377,8 @@ save_list()
 static int
 voter(int listnum)
 {
-	char uident[STRLEN];
-	char ans[8], buf[STRLEN], titlebuf[STRLEN];
+	char uident[IDLEN + 2];
+	char ans[8], buf[STRLEN * 2], titlebuf[STRLEN * 2];
 	int count, i;
 	setbfile(genbuf, currboard, vlists[listnum]->listfname);
 	ansimore(genbuf, YEA);
@@ -1435,7 +1440,7 @@ int ch;
 int allnum, pagenum;
 {
 	int deal = 0, ans;
-	char buf[STRLEN];
+	char buf[STRLEN * 2];
 	int count;
 
 	switch (ch) {
