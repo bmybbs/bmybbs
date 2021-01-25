@@ -888,7 +888,7 @@ int num;
 	} else {
 		voted_flag = YEA;
 	}
-	strncpy(uservote.uid, currentuser.userid, IDLEN);
+	ytht_strsncpy(uservote.uid, currentuser.userid, sizeof(uservote.uid));
 	sprintf(bname, "desc.%ld", (long int) currvote.opendate);
 	setvfile(buf, currboard, bname);
 	ansimore(buf, YEA);
