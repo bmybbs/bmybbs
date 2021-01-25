@@ -182,7 +182,7 @@ tmpl_add(){
 		return -1;
 	}
 	strncpy(tmpl.title, buf, 50);
-	strncpy(tmpl.authorid, currentuser.userid, IDLEN);
+	ytht_strsncpy(tmpl.authorid, currentuser.userid, sizeof(tmpl.authorid));
 	tmpl.title[49] = '\0';
 
 	template[template_num].tmpl = (struct s_template *) malloc( sizeof(struct s_template) );
