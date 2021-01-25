@@ -1385,12 +1385,7 @@ int fd;
 	default:
 		sethomefile_s(talkbuf, sizeof(talkbuf), currentuser.userid, "talklog");
 		sprintf(mywords, "¸ú %s µÄÁÄÌì¼ÇÂ¼ [%s]", partner, Cdate(&now) + 4);
-		{
-			char temp[STRLEN];
-			strncpy(temp, save_title, STRLEN);
-			mail_file(talkbuf, currentuser.userid, mywords);
-			strncpy(save_title, temp, STRLEN);
-		}
+		mail_file(talkbuf, currentuser.userid, mywords);
 	}
 	sethomefile_s(talkbuf, sizeof(talkbuf), currentuser.userid, "talklog");
 	unlink(talkbuf);
