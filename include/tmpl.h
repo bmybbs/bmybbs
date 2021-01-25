@@ -17,7 +17,7 @@ struct s_content {
 
 struct s_template {
 	char title[50];
-	char authorid[IDLEN];
+	char authorid[IDLEN + 1];
 	char title_prefix[20];
 	int content_num;
 	char filename[STRLEN];

@@ -162,6 +162,7 @@ main(int argc, char *argv[])
 	if (argc <= 2)
 		usage(argv[0]);
 	strncpy(target, argv[1], 10);
+	target[sizeof(target) - 1] = 0;
 	if (strchr(target, 's') || strchr(target, 'b')) {
 		if (strlen(target) > 1)
 			usage(argv[0]);

@@ -265,6 +265,7 @@ MENU *pm;
 	if ((fn = fopen(buf, "r")) == NULL)
 		return 0;
 	hostname[0] = '\0';
+	memset(&litem, 0, sizeof(ITEM));
 	while (fgets(buf, sizeof (buf), fn) != NULL) {
 		if ((ptr = strchr(buf, '\n')) != NULL)
 			*ptr = '\0';
@@ -834,6 +835,7 @@ int paste;			// -1:cut 0:copy have perm 1:paste 2:copy have no perm
 	char title[STRLEN], filename[STRLEN], fpath[PATHLEN];
 	ITEM *item;
 	char newpath[PATHLEN], ans[3], realfpath[PATH_MAX + 1], realnewpath[PATH_MAX + 1];
+	char cmd[PATHLEN * 2 + 128];
 	FILE *fn;		//add by gluon for copypate in two window
 	int x, y, hasc;
 	MENU pmforcut;
@@ -984,10 +986,10 @@ int paste;			// -1:cut 0:copy have perm 1:paste 2:copy have no perm
 				} else if (copymode == 2) {
 					symlink(realfpath, newpath);
 				} else {
-					sprintf(genbuf,
+					sprintf(cmd,
 						"/bin/cp -a %s %s 1>/dev/null 2>/dev/null",
 						fpath, newpath);
-					system(genbuf);
+					system(cmd);
 				}
 			}
 			if (hasc) {
@@ -1640,7 +1642,7 @@ char group[STRLEN], bname[STRLEN], title[STRLEN], gname[STRLEN];
 	char buf[PATHLEN];
 	char searchname[STRLEN];
 	char gpath[STRLEN * 2];
-	char bpath[STRLEN * 2];
+	char bpath[STRLEN * 4];
 
 	sprintf(searchname, "%s: groups/%s/%s", bname, group, bname);
 	sprintf(gpath, "0Announce/groups/%s", group);
@@ -1691,7 +1693,7 @@ char grp[STRLEN], bname[STRLEN], title[STRLEN];
 {
 	char buf[STRLEN], buf2[STRLEN], buf3[30];
 	char gpath[STRLEN * 2];
-	char bpath[STRLEN * 2];
+	char bpath[STRLEN * 4];
 	char check[30];
 	int i, n;
 	MENU pm;
@@ -1728,7 +1730,7 @@ char bname[STRLEN], grp[STRLEN], title[STRLEN], newtitle[100];
 {
 	char buf[STRLEN], buf2[STRLEN], buf3[30];
 	char gpath[STRLEN * 2];
-	char bpath[STRLEN * 2];
+	char bpath[STRLEN * 4];
 	char check[30];
 	int i;
 	MENU pm;

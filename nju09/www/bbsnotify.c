@@ -35,11 +35,11 @@ int bbsnotify_main() {
 	for(currItem = (struct NotifyItem *)allNotifyItems; currItem != NULL; currItem = currItem->next) {
 		switch(currItem->type) {
 			case NOTIFY_TYPE_POST:
-				printf("<div class=\"notify-item\">[<a href=\"bbsdelnotify?type=0&amp;B=%s&amp;ID=%d\">忽略</a>] "
-					   "网友<a href=\"qry?U=%s\">%s</a>%s在<a href=\"bbscon?B=%s&amp;F=M.%d.A\">%s</a>中回复了您</div>",
-					    currItem->board, (int)currItem->noti_time,
+				printf("<div class=\"notify-item\">[<a href=\"bbsdelnotify?type=0&amp;B=%s&amp;ID=%ld\">忽略</a>] "
+					   "网友<a href=\"qry?U=%s\">%s</a>%s在<a href=\"bbscon?B=%s&amp;F=M.%ld.A\">%s</a>中回复了您</div>",
+					    currItem->board, currItem->noti_time,
 					    currItem->from_userid, currItem->from_userid, ytht_Difftime(currItem->noti_time),
-						currItem->board, (int)currItem->noti_time, currItem->title_gbk);
+						currItem->board, currItem->noti_time, currItem->title_gbk);
 				break;
 			case NOTIFY_TYPE_MENTION:
 				printf("<div class=\"notify-item mention-item\">[<a href=\"bbsdelnotify?type=0&amp;B=%s&amp;ID=%d\">忽略</a>] "

@@ -199,6 +199,7 @@ bbsdoreg_main()
 	ytht_strsncpy(x.passwd, ytht_crypt_crypt1(pass1, salt), 14);
 	//ipv6 by leoncom 不能赋值太多，就影响后面的数据 fixed by IronBlood 2020.09.11
 	strncpy(x.lasthost, fromhost,BMY_IPV6_LEN);
+	x.lasthost[sizeof(x.lasthost) - 1] = 0;
 	x.userlevel = PERM_BASIC;
 	x.firstlogin = now_t;
 	x.lastlogin = now_t - 3600;  //ipv6 by leoncom 注册后手动登录

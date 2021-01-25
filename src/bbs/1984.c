@@ -253,7 +253,7 @@ post_1984_to_board(char *dir, struct fileheader *fileinfo)
 		return;
 	strcpy(postfile.title, title);
 	while (1) {
-		sprintf(newfname, "M.%d.A", (int) now);
+		sprintf(newfname, "M.%ld.A", now);
 		setbfile(newfilepath, targetboard, newfname);
 		if (link(buf, newfilepath) == 0) {
 			//              unlink(buf);
@@ -309,7 +309,7 @@ post_to_1984(char *file, struct fileheader *fileinfo, int mode)
 
 	count = 0;
 	while (1) {
-		sprintf(newfname, "M.%d.A", (int) now);
+		sprintf(newfname, "M.%ld.A",  now);
 		sprintf(newfilepath, "%s/%s", buf, newfname);
 		if (link(file, newfilepath) == 0) {
 			postfile.filetime = now;

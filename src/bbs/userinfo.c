@@ -272,19 +272,19 @@ int uinfo_query(struct userec *u, int real, int unum)
 		sprintf(genbuf, "昵称 [%s]: ", u->username);
 		getdata(i++, 0, genbuf, buf, NAMELEN, DOECHO, YEA);
 		if (buf[0])
-			strncpy(newinfo.username, buf, NAMELEN);
+			ytht_strsncpy(newinfo.username, buf, sizeof(newinfo.username));
 		if (!real && buf[0])
-			strncpy(uinfo.username, buf, 40);
+			ytht_strsncpy(uinfo.username, buf, sizeof(newinfo.username));
 
 		sprintf(genbuf, "真实姓名 [%s]: ", u->realname);
 		getdata(i++, 0, genbuf, buf, NAMELEN, DOECHO, YEA);
 		if (buf[0])
-			strncpy(newinfo.realname, buf, NAMELEN);
+			ytht_strsncpy(newinfo.realname, buf, sizeof(newinfo.realname));
 
 		sprintf(genbuf, "居住地址 [%s]: ", u->address);
 		getdata(i++, 0, genbuf, buf, NAMELEN, DOECHO, YEA);
 		if (buf[0])
-			strncpy(newinfo.address, buf, NAMELEN);
+			ytht_strsncpy(newinfo.address, buf, sizeof(newinfo.address));
 
 #ifndef POP_CHECK  // 不让改信箱地址了，因为要绑定
 		sprintf(genbuf, "电子信箱 [%s]: ", u->email);
@@ -297,13 +297,13 @@ int uinfo_query(struct userec *u, int real, int unum)
 		sprintf(genbuf, "域名指向 [%s]: ", u->ip);
 		getdata(i++, 0, genbuf, buf, 16, DOECHO, YEA);
 		if (buf[0])
-			strncpy(newinfo.ip, buf, 16);
+			ytht_strsncpy(newinfo.ip, buf, sizeof(newinfo.ip));
 
 		if (real) {
 			sprintf(genbuf, "真实Email[%s]: ", u->realmail);
 			getdata(i++, 0, genbuf, buf, STRLEN - 10, DOECHO, YEA);
 			if (buf[0])
-				strncpy(newinfo.realmail, buf, STRLEN - 16);
+				ytht_strsncpy(newinfo.realmail, buf, sizeof(newinfo.realmail));
 
 			sprintf(genbuf, "上线次数 [%d]: ", u->numlogins);
 			getdata(i++, 0, genbuf, buf, 16, DOECHO, YEA);
@@ -349,7 +349,7 @@ int uinfo_query(struct userec *u, int real, int unum)
 			break;
 		}
 		buf[8] = '\0';
-		strncpy(newinfo.passwd, ytht_crypt_genpasswd(buf), PASSLEN);
+		ytht_strsncpy(newinfo.passwd, ytht_crypt_genpasswd(buf), sizeof(newinfo.passwd));
 		break;
 	case '3':
 		if (!real) {
@@ -367,7 +367,7 @@ int uinfo_query(struct userec *u, int real, int unum)
 					prints("\n错误! 不合法的 ID\n");
 					fail++;
 				} else {
-					strncpy(newinfo.userid, genbuf, IDLEN + 2);
+					ytht_strsncpy(newinfo.userid, genbuf, sizeof(newinfo.userid));
 				}
 			}
 		}
@@ -403,7 +403,7 @@ int uinfo_query(struct userec *u, int real, int unum)
 		}
 		if (!strcmp(u->userid, currentuser.userid)) {
 			extern int WishNum;
-			strncpy(uinfo.username, newinfo.username, NAMELEN);
+			ytht_strsncpy(uinfo.username, newinfo.username, sizeof(uinfo.username));
 			WishNum = 9999;
 		}
 		/* added by netty to automatically send a mail to new user. */
@@ -616,8 +616,8 @@ void x_fillform()
 	sprintf(genbuf, "您要填写注册单，加入%s大家庭吗？", MY_BBS_NAME);
 	if (askyn(genbuf, YEA, NA) == NA)
 		return;
-	strncpy(rname, currentuser.realname, NAMELEN);
-	strncpy(addr, currentuser.address, STRLEN);
+	ytht_strsncpy(rname, currentuser.realname, sizeof(rname));
+	ytht_strsncpy(addr, currentuser.address, sizeof(addr));
 	dept[0] = phone[0] = assoc[0] = '\0';
 	while (1) {
 		move(3, 0);
@@ -636,8 +636,8 @@ void x_fillform()
 		if (ans[0] == 'Y' || ans[0] == 'y')
 			break;
 	}
-	strncpy(currentuser.realname, rname, NAMELEN);
-	strncpy(currentuser.address, addr, STRLEN);
+	ytht_strsncpy(currentuser.realname, rname, sizeof(currentuser.realname));
+	ytht_strsncpy(currentuser.address, addr, sizeof(currentuser.address));
 	memset(&act_data, 0, sizeof(act_data));
 	snprintf(act_data.name, NAMELEN, "%s", rname);
 	act_data.name[NAMELEN-1] = '\0';
@@ -692,7 +692,7 @@ void x_fillform()
 
 		if (strcasecmp(email, currentuser.email) != 0) {
 			unlink_captcha(currentuser.userid, CAPTCHA_FILE_REGISTER);
-			strncpy(currentuser.email, email, STRLEN);
+			ytht_strsncpy(currentuser.email, email, sizeof(currentuser.email));
 		}
 		rc = send_active_mail(currentuser.userid, email);
 

@@ -127,13 +127,13 @@ bbsbfind_main()
 				break;
 
 			char f_buf[16];
-			int filetime;
+			time_t filetime;
 			char t_buf[81];
 			char o_buf[16];
 
 			int len = strlen(line);
 			ytht_strsncpy(f_buf, line, 15);
-			sscanf(f_buf, "M.%d.A", &filetime);
+			sscanf(f_buf, "M.%ld.A", &filetime);
 
 			char *p2s = strchr(line+15, ' ');
 			int owner_len = p2s-line-15;

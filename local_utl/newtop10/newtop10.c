@@ -120,7 +120,7 @@ _topn(void *bh_void, void * fargs)
 	char owner[14];
 	int start, tocount;
 	struct boardtop *bt, *bt1;
-	char topnfilename[80], tmpfn[80];
+	char topnfilename[160], tmpfn[160];
 	FILE *fp;
 	char DOTDIR[80];
 	char path[80];
@@ -150,7 +150,7 @@ _topn(void *bh_void, void * fargs)
 
 	sprintf(DOTDIR, "boards/%s/.DIR", bh->filename);
 	sprintf(path, "boards/%s", bh->filename);
-	sprintf(topnfilename, "%s/%s", path, TOPFN);
+	snprintf(topnfilename, sizeof(topnfilename), "%s/%s", path, TOPFN);
 	unlink(topnfilename);
 	MMAP_TRY {
 	if (mmapfile(DOTDIR, &mf) == -1) {
@@ -222,6 +222,7 @@ _topn(void *bh_void, void * fargs)
 			data->bt.thread = ptr->thread;
 			strncpy(data->bt.board, bh->filename, 24);
 			strncpy(owner, fh2realauthor(ptr), 14);
+			owner[sizeof(owner) - 1] = 0;
 			strncpy(data->bt.firstowner, fh2owner(ptr), 14);
 			*usernum = 0;
 			ght_insert(data->user_hash, usernum, sizeof (char) * strlen(owner), owner);
@@ -263,7 +264,7 @@ _topn(void *bh_void, void * fargs)
 	ght_finalize(p_table);
 	p_table = NULL;
 	qsort(bt, i, sizeof (struct boardtop), cmpbt);
-	sprintf(tmpfn, "%s/topntmp", path);
+	snprintf(tmpfn, sizeof(tmpfn), "%s/topntmp", path);
 	fp = fopen(tmpfn, "w");
 	if (!fp) {
 		errlog("touch %s error", tmpfn);

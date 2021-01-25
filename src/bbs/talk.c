@@ -736,11 +736,13 @@ list:
 		server.sin_port = 0;
 		if (bind(sock, (struct sockaddr *) &server, sizeof (server)) < 0) {
 			perror("bind err");
+			close(sock);
 			return -1;
 		}
 		length = sizeof (server);
 		if (getsockname(sock, (struct sockaddr *) &server, &length) < 0) {
 			perror("socket name err");
+			close(sock);
 			return -1;
 		}
 		uinfo.sockactive = YEA;
@@ -759,7 +761,7 @@ list:
 /* modified end */
 
 //#ifdef TALK_LOG
-		strcpy(partner, uin.userid);
+		ytht_strsncpy(partner, uin.userid, sizeof(partner));
 //#endif
 
 		kill(uin.pid, SIGUSR1);
@@ -784,6 +786,7 @@ list:
 					/*Add by SmallPig 2 lines */
 					uinfo.sockactive = NA;
 					uinfo.destuid = 0;
+					close(sock);
 					return -1;
 				}
 				continue;
@@ -803,6 +806,7 @@ list:
 		msgsock = accept(sock, (struct sockaddr *) 0, (unsigned int *) 0);
 		if (msgsock == -1) {
 			perror("accept");
+			close(sock);
 			return -1;
 		}
 		add_io(0, 0);
@@ -1381,12 +1385,7 @@ int fd;
 	default:
 		sethomefile_s(talkbuf, sizeof(talkbuf), currentuser.userid, "talklog");
 		sprintf(mywords, "¸ú %s µÄÁÄÌì¼ÇÂ¼ [%s]", partner, Cdate(&now) + 4);
-		{
-			char temp[STRLEN];
-			strncpy(temp, save_title, STRLEN);
-			mail_file(talkbuf, currentuser.userid, mywords);
-			strncpy(save_title, temp, STRLEN);
-		}
+		mail_file(talkbuf, currentuser.userid, mywords);
 	}
 	sethomefile_s(talkbuf, sizeof(talkbuf), currentuser.userid, "talklog");
 	unlink(talkbuf);

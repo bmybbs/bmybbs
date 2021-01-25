@@ -9,13 +9,11 @@ bbseditmail_main()
 {
 	FILE *fp;
 	int type = 0, num;
-	char buf[512], path[512], file[512], board[512], title[80];
+	char buf[512], path[512], file[512], title[80];
 	int base64, isa = 0;
 	size_t len;
 	char *fn = NULL;
-	struct boardmem *brd;
 	struct fileheader *x = NULL;
-	char bmbuf[IDLEN * 4 + 4];
 	struct mmapfile mf = { .ptr = NULL };
 	html_header(1);
 	check_msg();
@@ -129,7 +127,6 @@ bbseditmail_main()
 	printf("</textarea></td></tr>\n");
 
 	printf("<input type=hidden name=type value=1>\n");
-	printf("<input type=hidden name=board value=%s>\n", board);
 	printf("<input type=hidden name=file value=%s>\n", file);
 	printf("%s", "<tr><td><input name=Submit2 type=submit class=resetlong value=\"存盘\" "
 			"onclick=\"this.value='文章提交中，请稍候...';this.disabled=true;form1.submit();\">\n"
@@ -151,7 +148,6 @@ bbseditmail_main()
 
 static int update_form_mail(char *file, char *title, int box_type) {
 	FILE *fp;
-	FILE *foo;
 	char *buf = getparm("text"), path[80];
 	int num = 0, filetime;
 	int usemath, useattach, nore;
