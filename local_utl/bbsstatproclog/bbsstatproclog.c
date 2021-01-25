@@ -9,9 +9,9 @@ main(int argc, char *argv[])
 	struct tm *ptm;
 	time_t t;
 	int online[24][10], onlineavg[24][10][2], telnet[24][10],
-	    telnetavg[24][10][2], www[24][10], wwwavg[24][10][2],
-	    n162105[24][10], n162105avg[24][10][2], wwwguest[24][10],
-	    wgavg[24][10][2], netflow[24][10], nfavg[24][10][2];
+		telnetavg[24][10][2], www[24][10], wwwavg[24][10][2],
+		n162105[24][10], n162105avg[24][10][2], wwwguest[24][10],
+		wgavg[24][10][2], netflow[24][10], nfavg[24][10][2];
 	float load[24][10], loadavg[24][10][2];
 	t = time(NULL);
 	bzero(online, sizeof (online));
@@ -64,8 +64,7 @@ main(int argc, char *argv[])
 	i = ptm->tm_hour;
 	j = ptm->tm_min / 6;
 	printf("#now=%d.%d; %ldsec; %s", i, j, t, ctime(&t));
-	printf
-	    ("#time\tonline\tonlineavg\ttelnet\ttelnetavg\twww\twwwavg\tload\tloadavg\tn162105\taverage\twwwguest\twgavg\tnetflow\tnfavg\n");
+	printf("#time\tonline\tonlineavg\ttelnet\ttelnetavg\twww\twwwavg\tload\tloadavg\tn162105\taverage\twwwguest\twgavg\tnetflow\tnfavg\n");
 	for (i = 0; i < 24; i++)
 		for (j = 0; j < 10; j++) {
 			printf("%d.%d", i, j);
