@@ -98,8 +98,7 @@ postfile(char *filename, char *owner, char *nboard, char *posttitle)
 {
 	struct boardheader fh;
 
-	if (search_record
-	    (MY_BBS_HOME "/" BOARDS, &fh, sizeof (fh), cmpbnames, nboard) <= 0) {
+	if (search_record(MY_BBS_HOME "/" BOARDS, &fh, sizeof (fh), cmpbnames, nboard) <= 0) {
 		printf("%s 讨论区找不到", nboard);
 		return -1;
 	}
