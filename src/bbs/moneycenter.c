@@ -116,9 +116,9 @@ struct MC_Marry{
 	time_t marry_t;				//结婚时间
 	time_t divorce_t;			//离婚时间
 	char subject[60];			//主题限30汉字
-	int setfile;			//婚礼布置的显示文件	时间值
-	int invitationfile;		//请柬文件	时间值
-	int visitfile;			//到访人员存储文件
+	time_t setfile;			//婚礼布置的显示文件	时间值
+	time_t invitationfile;		//请柬文件	时间值
+	time_t visitfile;			//到访人员存储文件
 	int visitcount;			//参加人数
 	char unused[18];
 }; // 150 bytes
@@ -381,7 +381,7 @@ int millionairesrec(char *title, char *str, char *owner) {
 	//postfile(fname, owner, "millionairesrec", title);
 	memset(&postfile, 0, sizeof (postfile));
 	sprintf(filepath, MY_BBS_HOME "/boards/%s/", "millionairesrec");
-	now = trycreatefile(filepath, "M.%d.A", now, 100);
+	now = trycreatefile(filepath, "M.%ld.A", now, 100);
 	if (now < 0)
 		return -1;
 	postfile.filetime = now;
@@ -8751,8 +8751,8 @@ static int marry_refresh(struct MC_Marry *marryMem, int n) {
 				ytht_add_to_file(MC_MARRIED_LIST, mm->bride);
 			if (!seek_in_file(MC_MARRIED_LIST, mm->bridegroom))
 				ytht_add_to_file(MC_MARRIED_LIST, mm->bridegroom);
-			sprintf(invpath,"%s/M.%d.A",DIR_MC_MARRY,mm->invitationfile);
-			sprintf(setpath,"%s/M.%d.A",DIR_MC_MARRY,mm->setfile);
+			sprintf(invpath,"%s/M.%ld.A",DIR_MC_MARRY,mm->invitationfile);
+			sprintf(setpath,"%s/M.%ld.A",DIR_MC_MARRY,mm->setfile);
 			sprintf(visitpath,"%s/M.%d.A",DIR_MC_MARRY, mm->visitfile);
 			sprintf(filetmp, MY_BBS_HOME "/bbstmpfs/tmp/%s.%d", currentuser.userid, getpid());
 			fp = fopen(filetmp,"w");
@@ -8981,18 +8981,18 @@ static int marry_attend(struct MC_Marry *marryMem, int n) {
 	local_now_t = time(NULL);
 	strncpy(visitfile,DIR_MC_MARRY,STRLEN-1);
 	if(mm->visitfile==0){
-		t = trycreatefile(visitfile, "M.%d.A", local_now_t, 100);
+		t = trycreatefile(visitfile, "M.%ld.A", local_now_t, 100);
 		if (t < 0)
 			return -1;
 		mm->visitfile = t;
-	}else sprintf(visitfile,"%s/M.%d.A",DIR_MC_MARRY, mm->visitfile);
+	}else sprintf(visitfile,"%s/M.%ld.A",DIR_MC_MARRY, mm->visitfile);
 	if(!seek_in_file(visitfile, currentuser.userid))
 		ytht_add_to_file(visitfile, currentuser.userid);
 
 	while (!quit) {
 		money_show_stat("兵马俑教堂");
 		if(freshflag){
-			sprintf(filepath,"%s/M.%d.A",DIR_MC_MARRY,mm->setfile);
+			sprintf(filepath,"%s/M.%ld.A",DIR_MC_MARRY,mm->setfile);
 			show_welcome(filepath,4,22);
 			freshflag =0;
 		}
@@ -9321,7 +9321,7 @@ static int marry_editinvitation(struct MC_Marry *mm) {
 
 	strncpy(filepath,DIR_MC_MARRY,STRLEN-1);
 	if(mm->invitationfile == 0){
-		t = trycreatefile(filepath, "M.%d.A", local_now_t, 100);
+		t = trycreatefile(filepath, "M.%ld.A", local_now_t, 100);
 		if (t < 0)
 			return -1;
 		mm->invitationfile = t;
@@ -9366,7 +9366,7 @@ static int marry_editinvitation(struct MC_Marry *mm) {
 			fclose(oldfp);
 		}
 	}else
-		sprintf(filepath,"%s/M.%d.A",DIR_MC_MARRY,mm->invitationfile);
+		sprintf(filepath,"%s/M.%ld.A",DIR_MC_MARRY,mm->invitationfile);
 
 	if (dashl(filepath) || !dashf(filepath))
 		return -1;
@@ -9398,7 +9398,7 @@ static int marry_editset(struct MC_Marry *mm) {
 
 	strncpy(filepath,DIR_MC_MARRY,STRLEN-1);
 	if(mm->setfile == 0){
-		t = trycreatefile(filepath, "M.%d.A", local_now_t, 100);
+		t = trycreatefile(filepath, "M.%ld.A", local_now_t, 100);
 		if (t < 0)
 			return -1;
 		mm->setfile = t;
@@ -9443,7 +9443,7 @@ static int marry_editset(struct MC_Marry *mm) {
 			fclose(oldfp);
 		}
 	}else
-		sprintf(filepath,"%s/M.%d.A",DIR_MC_MARRY,mm->setfile);
+		sprintf(filepath,"%s/M.%ld.A",DIR_MC_MARRY,mm->setfile);
 
 	if (dashl(filepath) || !dashf(filepath))
 		return -1;
@@ -9543,11 +9543,11 @@ static int marry_perpare(struct MC_Marry *marryMem, int n) {
 						pressanykey();
 						break;
 					}
-					sprintf(filepath,"%s/M.%d.A",DIR_MC_MARRY,mm->invitationfile);
+					sprintf(filepath,"%s/M.%ld.A",DIR_MC_MARRY,mm->invitationfile);
 					sprintf(title,"%s台启,%s与%s的婚礼请柬",uident,mm->bride,mm->bridegroom);
 					mail_file(filepath,uident,title);
 				}else {
-					sprintf(filepath,"%s/M.%d.A",DIR_MC_MARRY,mm->invitationfile);
+					sprintf(filepath,"%s/M.%ld.A",DIR_MC_MARRY,mm->invitationfile);
 					for (i = 0; i  < uinfo.fnum; i++) {
 						move(6, 4);
 						clrtoeol();
@@ -9588,7 +9588,7 @@ static int marry_perpare(struct MC_Marry *marryMem, int n) {
 					pressanykey();
 					break;
 				}
-				sprintf(filepath,"%s/M.%d.A",DIR_MC_MARRY,mm->invitationfile);
+				sprintf(filepath,"%s/M.%ld.A",DIR_MC_MARRY,mm->invitationfile);
 				sprintf(title,"[请柬]敬请您阖第参加%s和%s的结婚典礼",mm->bride,mm->bridegroom);
 				move(12, 4);
 				if (mm->enable<3){

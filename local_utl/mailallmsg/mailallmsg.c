@@ -1,22 +1,22 @@
 #include "bbs.h"
-#define numboards 296 
-int now;
-int 
+#define numboards 296
+time_t now;
+int
 mail_file(char *filename, char *userid, char *title, char *sender)
 {
         FILE *fp, *fp2;
         char buf[256], dir[256];
         struct fileheader header;
-        int t;
+        time_t t;
         bzero(&header, sizeof (header));
         fh_setowner(&header, sender, 0);
 	sprintf(buf, "mail/%c/%s/", mytoupper(userid[0]), userid);
         mkdir(buf, 0770);
-        t = trycreatefile(buf, "M.%d.A", now, 100);
+        t = trycreatefile(buf, "M.%ld.A", now, 100);
         if (t < 0)
                 return -1;
         header.filetime = t;
-        strsncpy(header.title, title, sizeof (header.title));
+        ytht_strsncpy(header.title, title, sizeof (header.title));
         fp = fopen(buf, "w");
         if (fp == 0)
                 return -2;

@@ -49,7 +49,7 @@ int readstrvalue_fp(FILE *fp, const char *str, char *value, size_t size);
 int savestrvalue(const char *filename, const char *str, const char *value);
 void sigbus(int signo);
 int mmapfile(const char *filename, struct mmapfile *pmf);
-int trycreatefile(char *path, char *fnformat, int startnum, int maxtry);
+time_t trycreatefile(char *path, char *fnformat, time_t startnum, int maxtry);
 int copyfile(char *source, char *destination);
 int openlockfile(const char *filename, int flag, int op);
 int checkfilename(const char *filename);

@@ -591,14 +591,14 @@ mail_buf_slow(char *userid, char *title, char *content, char *sender)
 	char buf[256], dir[256];
 	struct fileheader header;
 	int t;
-	int now;
+	time_t now;
 	bzero(&header, sizeof (header));
 	fh_setowner(&header, sender, 0);
 	sprintf(buf, "mail/%c/%s/", mytoupper(userid[0]), userid);
 	if (!file_isdir(buf))
 		return -1;
 	now = time(NULL);
-	t = trycreatefile(buf, "M.%d.A", now, 100);
+	t = trycreatefile(buf, "M.%ld.A", now, 100);
 	if (t < 0)
 		return -1;
 	header.filetime = t;

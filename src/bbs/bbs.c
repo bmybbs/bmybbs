@@ -1757,7 +1757,7 @@ post_cross(char *bname, int mode, int islocal, int hascheck, int dangerous)
 	}
 	bzero(&postfile, sizeof (postfile));
 	now = time(NULL);
-	sprintf(fname, "M.%d.A", (int) now);
+	sprintf(fname, "M.%ld.A", now);
 	if (!mode) {
 		if (!strstr(quote_title, "[зЊди]"))
 			sprintf(buf4, "[зЊди] %.70s", quote_title);
@@ -1771,7 +1771,7 @@ post_cross(char *bname, int mode, int islocal, int hascheck, int dangerous)
 	count = 0;
 	while ((fp = open(filepath, O_CREAT | O_EXCL | O_WRONLY, 0660)) == -1) {
 		now++;
-		sprintf(fname, "M.%d.A", (int) now);
+		sprintf(fname, "M.%ld.A", now);
 		setbfile(filepath, bname, fname);
 		if (count++ > MAX_POSTRETRY) {
 			return -1;
@@ -2042,7 +2042,7 @@ post_article(struct fileheader *sfh)
 		return FULLUPDATE;
 	}
 	setbfile(filepath, currboard, "");
-	t = trycreatefile(filepath, "M.%d.A", now_t, 100);
+	t = trycreatefile(filepath, "M.%ld.A", now_t, 100);
 	if (t < 0)
 		return -1;
 	postfile.filetime = t;
@@ -2130,7 +2130,7 @@ post_article(struct fileheader *sfh)
 	count = 0;
 	while (1)
 	{
-		sprintf(newfname, "M.%d.A", (int) t);
+		sprintf(newfname, "M.%ld.A", t);
 		setbfile(newfilepath, currboard, newfname);
 		if (link(filepath, newfilepath) == 0)
 		{

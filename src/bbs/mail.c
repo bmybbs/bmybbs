@@ -48,13 +48,12 @@
 #include "bbs-internal.h"
 
 int in_mail;
-extern int mailallmode;
 int G_SENDMODE = NA;
 
 char currmaildir[STRLEN];
 int filter_ansi;
 int mailmode, mailhour;
-int mailallmode = 0;
+time_t mailallmode = 0;
 #define maxrecp 300
 
 static int do_send(char *userid, char *title);
@@ -1668,7 +1667,7 @@ char* fname;
 	return 0;
 }
 
-int
+time_t
 mail_file(tmpfile, userid, title)
 char tmpfile[STRLEN], userid[STRLEN], title[STRLEN];
 {
@@ -2334,7 +2333,7 @@ struct userec *uentp;
 	char filename[STRLEN];
 
 //      sprintf(filename, "tmp/mailall.%s", currentuser.userid);
-	sprintf(filename, "%s/mail/S/SYSOP/M.%d.A", MY_BBS_HOME, mailallmode);
+	sprintf(filename, MY_BBS_HOME "/mail/S/SYSOP/M.%ld.A", mailallmode);
 	if (uentp->stay / 60 / 60 < mailhour)
 		return 1;
 	if (!strcmp(uentp->userid, "SYSOP"))

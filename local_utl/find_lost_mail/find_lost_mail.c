@@ -23,7 +23,8 @@ int
 fixabnormalfn(char *path, char *file)
 {
 	char newfilepath[256], oldfilepath[256];
-	int l, t;
+	int l;
+	time_t t;
 	if (strncmp(file, "M.", 2) && strncmp(file, "G.", 2))
 		return 0;
 	if (!isdigit(file[3]))
@@ -36,7 +37,7 @@ fixabnormalfn(char *path, char *file)
 	t = atoi(file + 2) + 1;
 	sprintf(oldfilepath, "%s/%s", path, file);
 	strcpy(newfilepath, path);
-	t = trycreatefile(newfilepath, "M.%d.A", t, 100);
+	t = trycreatefile(newfilepath, "M.%ld.A", t, 100);
 	if (t <= 0)
 		return -1;
 	return rename(oldfilepath, newfilepath);

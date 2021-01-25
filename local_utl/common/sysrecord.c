@@ -62,7 +62,7 @@ char *filename, *nboard, *posttitle, *owner;
 
 	now = time(0);
 	setbfile(filepath, nboard, "");
-	now = trycreatefile(filepath, "M.%d.A", now, 100);
+	now = trycreatefile(filepath, "M.%ld.A", now, 100);
 	if (now < 0)
 		return -1;
 	postfile.filetime = now;
@@ -71,7 +71,7 @@ char *filename, *nboard, *posttitle, *owner;
 	ytht_strsncpy(postfile.title, posttitle, sizeof(postfile.title));
 
 	getcross(filepath, filename, nboard, posttitle);
-	chmod(filepath, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH); 
+	chmod(filepath, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
 
 	setbdir(buf, nboard);
 	if (append_record(buf, &postfile, sizeof (postfile)) == -1) {

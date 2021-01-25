@@ -925,14 +925,14 @@ mail_file(char *filename, char *userid, char *title, char *sender)
 	FILE *fp, *fp2;
 	char buf[256], dir[256];
 	struct fileheader header;
-	int t;
+	time_t t;
 	if (getuser(userid) == NULL)
 		return -1;
 	bzero(&header, sizeof (header));
 	fh_setowner(&header, sender, 0);
 	setmailfile_s(buf, sizeof(buf), userid, "");
 	mkdir(buf, 0770);
-	t = trycreatefile(buf, "M.%d.A", now_t, 100);
+	t = trycreatefile(buf, "M.%ld.A", now_t, 100);
 	if (t < 0)
 		return -1;
 	header.filetime = t;
@@ -977,7 +977,7 @@ post_mail_to_sent_box(char *userid, char *title, char *file,
 	FILE *fp, *fp2;
 	char buf[256], dir[256];
 	struct fileheader header;
-	int t;
+	time_t t;
 	snprintf(buf, sizeof (buf), ".bbs@%s", MY_BBS_DOMAIN);
 	if (strstr(userid, buf) || strstr(userid, ".bbs@localhost")) {
 		char *pos;
@@ -987,7 +987,7 @@ post_mail_to_sent_box(char *userid, char *title, char *file,
 	bzero(&header, sizeof (header));
 	fh_setowner(&header, id, 0);
 	setsentmailfile(buf, userid, "");
-	t = trycreatefile(buf, "M.%d.A", now_t, 100);
+	t = trycreatefile(buf, "M.%ld.A", now_t, 100);
 	if (t < 0)
 		return -1;
 	header.filetime = t;
@@ -1029,7 +1029,7 @@ post_mail(char *userid, char *title, char *file, char *id,
 	FILE *fp, *fp2;
 	char buf[256], dir[256];
 	struct fileheader header;
-	int t;
+	time_t t;
 	snprintf(buf, sizeof (buf), ".bbs@%s", MY_BBS_DOMAIN);
 	if (strstr(userid, buf) || strstr(userid, ".bbs@localhost")) {
 		char *pos;
@@ -1043,7 +1043,7 @@ post_mail(char *userid, char *title, char *file, char *id,
 	bzero(&header, sizeof (header));
 	fh_setowner(&header, id, 0);
 	setmailfile_s(buf, sizeof(buf), userid, "");
-	t = trycreatefile(buf, "M.%d.A", now_t, 100);
+	t = trycreatefile(buf, "M.%ld.A", now_t, 100);
 	if (t < 0)
 		return -1;
 	header.filetime = t;
@@ -1151,7 +1151,7 @@ post_article_1984(char *board, char *title, char *file, char *id,
 	FILE *fp, *fp2;
 	char buf3[1024], buf[80];
 	struct fileheader header;
-	int t;
+	time_t t;
 	struct tm *n;
 	n = localtime(&now_t);
 	sprintf(buf, "boards/.1984/%04d%02d%02d", n->tm_year + 1900,
@@ -1163,7 +1163,7 @@ post_article_1984(char *board, char *title, char *file, char *id,
 	bzero(&header, sizeof (header));
 	fh_setowner(&header, id, 0);
 	strcpy(buf3, buf);
-	t = trycreatefile(buf3, "M.%d.A", now_t, 100);
+	t = trycreatefile(buf3, "M.%ld.A", now_t, 100);
 	if (t < 0)
 		return -1;
 	header.filetime = t;
@@ -1195,7 +1195,7 @@ post_article_1984(char *board, char *title, char *file, char *id,
 	fprintf(fp, "\n\033[1;%dm\xA1\xF9 \xC0\xB4\xD4\xB4:\xA3\xAE%s %s [FROM: %.40s]\033[m\n",
 		31 + rand() % 7, BBSNAME, "http://" MY_BBS_DOMAIN, ip);
 	fclose(fp);
-	sprintf(buf3, "%s/M.%d.A", buf, t);
+	sprintf(buf3, "%s/M.%ld.A", buf, t);
 	header.sizebyte = ytht_num2byte(eff_size(buf3));
 	sprintf(buf3, "%s/.DIR", buf);
 	append_record(buf3, &header, sizeof (header));
@@ -1210,14 +1210,14 @@ post_article(char *board, char *title, char *file, char *id,
 	FILE *fp, *fp2;
 	char buf3[1024];
 	struct fileheader header;
-	int t;
+	time_t t;
 	bzero(&header, sizeof (header));
 	if (strcasecmp(id, "Anonymous"))
 		fh_setowner(&header, id, 0);
 	else
 		fh_setowner(&header, realauthor, 1);
 	setbfile(buf3, board, "");
-	t = trycreatefile(buf3, "M.%d.A", now_t, 100);
+	t = trycreatefile(buf3, "M.%ld.A", now_t, 100);
 	if (t < 0)
 		return -1;
 	header.filetime = t;
@@ -1250,7 +1250,7 @@ post_article(char *board, char *title, char *file, char *id,
 	fprintf(fp, "\033[1;%dm\xA1\xF9 \xC0\xB4\xD4\xB4:\xA3\xAE%s %s [FROM: %.40s]\033[m",
 		31 + rand() % 7, BBSNAME, "http://" MY_BBS_DOMAIN, ip);
 	fclose(fp);
-	sprintf(buf3, "boards/%s/M.%d.A", board, t);
+	sprintf(buf3, "boards/%s/M.%ld.A", board, t);
 	header.sizebyte = ytht_num2byte(eff_size(buf3));
 	if (thread == -1)
 		header.thread = header.filetime;

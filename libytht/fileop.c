@@ -225,8 +225,8 @@ mmapfile(const char *filename, struct mmapfile *pmf)
 	return 0;
 }
 
-int
-trycreatefile(char *path, char *fnformat, int startnum, int maxtry)
+time_t
+trycreatefile(char *path, char *fnformat, time_t startnum, int maxtry)
 {
 	int i, fd;
 	char *ptr;

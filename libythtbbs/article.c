@@ -17,8 +17,8 @@
 // 为了处理 @id 引入 pcre 库 by IronBlood 20140624
 #include <pcre.h>
 
-static int is_article_link_in_file(char *boardname, int thread, char *filename);
-static int update_article_link_in_file(char *boardname, int oldthread, int newfiletime, char *newtitle, char *filename);
+static int is_article_link_in_file(char *boardname, time_t thread, char *filename);
+static int update_article_link_in_file(char *boardname, time_t oldthread, time_t newfiletime, char *newtitle, char *filename);
 
 char *
 fh2fname(struct fileheader *fh)
@@ -474,7 +474,7 @@ int update_article_site_top_link(char *boardname, int oldthread, int newfiletime
  * @param filename 需要判断的文件路径
  * @return 如果文件中存在该篇文章主题，则返回1，不存在返回0，出错返回-1
  */
-static int is_article_link_in_file(char *boardname, int thread, char *filename) {
+static int is_article_link_in_file(char *boardname, time_t thread, char *filename) {
 	htmlDocPtr doc = htmlParseFile(filename, "GBK");
 	if(doc == NULL) {
 		return -1;
@@ -487,7 +487,7 @@ static int is_article_link_in_file(char *boardname, int thread, char *filename) 
 	}
 
 	char xpath[80];
-	sprintf(xpath, "//a[@href='tfind?board=%s&th=%d']", boardname, thread);
+	sprintf(xpath, "//a[@href='tfind?board=%s&th=%ld']", boardname, thread);
 
 	xmlXPathContextPtr ctx = xmlXPathNewContext(doc);
 	xmlXPathObjectPtr result = xmlXPathEvalExpression((const xmlChar *)xpath, ctx);
@@ -510,7 +510,7 @@ static int is_article_link_in_file(char *boardname, int thread, char *filename) 
  * @param filename 需要更新的文件路径
  * @return 若文件已更新，则返回1
  */
-static int update_article_link_in_file(char *boardname, int oldthread, int newfiletime, char *newtitle, char *filename) {
+static int update_article_link_in_file(char *boardname, time_t oldthread, time_t newfiletime, char *newtitle, char *filename) {
 	int fd=open(filename, O_RDONLY);
 	if(fd == -1)
 		return -1;
@@ -529,7 +529,7 @@ static int update_article_link_in_file(char *boardname, int oldthread, int newfi
 	}
 
 	char xpath[80];
-	sprintf(xpath, "//a[@href='tfind?board=%s&th=%d']", boardname, oldthread);
+	sprintf(xpath, "//a[@href='tfind?board=%s&th=%ld']", boardname, oldthread);
 
 	xmlXPathContextPtr ctx = xmlXPathNewContext(doc);
 	xmlXPathObjectPtr result = xmlXPathEvalExpression((const xmlChar*)xpath, ctx);
@@ -538,7 +538,7 @@ static int update_article_link_in_file(char *boardname, int oldthread, int newfi
 	int r=0;
 	if((r=result->nodesetval->nodeNr) == 1){
 		char new_href[80];
-		sprintf(new_href, "con?B=%s&F=M.%d.A", boardname, newfiletime); //新链接采用一般阅读模式
+		sprintf(new_href, "con?B=%s&F=M.%ld.A", boardname, newfiletime); //新链接采用一般阅读模式
 
 		xmlNodePtr cur = result->nodesetval->nodeTab[0];
 		xmlSetProp(cur, (const xmlChar*)"href", (const xmlChar*)new_href); // 更新链接
