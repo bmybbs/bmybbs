@@ -14,7 +14,7 @@ bbsucss_main()
 		else
 			return 0;
 	} else {
-		sethomefile(filename, currentuser.userid, path_info);
+		sethomefile_s(filename, sizeof(filename), currentuser.userid, path_info);
 /*		if (!file_exist(filename)){
 			if(!strcmp(path_info,"ubbs.css"))
 				strcpy(filename,HTMPATH CSSPATH"gres.css");
