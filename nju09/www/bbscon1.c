@@ -1,5 +1,7 @@
 #include "bbslib.h"
 
+extern int showbinaryattach(char *filename);
+
 int
 bbscon1_main()
 {
@@ -7,7 +9,7 @@ bbscon1_main()
 	struct fileheader *dirinfo = NULL;
 	int type, num;
 	char *ptr;
-	struct mmapfile mf = { ptr:NULL };
+	struct mmapfile mf = { .ptr = NULL };
 	changemode(READING);
 	type = atoi(getparm("T"));
 	switch (type) {
