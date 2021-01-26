@@ -943,7 +943,7 @@ char *direct;
 	ytht_strsncpy(quote_file, genbuf, sizeof(quote_file));
 	ytht_strsncpy(quote_board, currboard, 24);
 	ytht_strsncpy(quote_title, fileinfo->title, sizeof(quote_title));
-	strncpy(quote_user, fh2owner(fileinfo), sizeof (quote_user));
+	ytht_strsncpy(quote_user, fh2owner(fileinfo), sizeof (quote_user));
 	isattached = 0;
 #ifndef NOREPLY
 	ch = ansimore_withzmodem(genbuf, NA, fileinfo->title);
@@ -1791,9 +1791,9 @@ post_cross(char *bname, int mode, int islocal, int hascheck, int dangerous)
 		strcpy(whopost, "XJTU-XANET");
 	else {
 		if(strcasecmp(bname, "AnonyLog")==0) {
-			strncpy(whopost, quote_user, sizeof(whopost));
+			ytht_strsncpy(whopost, quote_user, sizeof(whopost));
 		} else {
-			strcpy(whopost, currentuser.userid);
+			ytht_strsncpy(whopost, currentuser.userid, sizeof(whopost));
 		}
 	}
 
