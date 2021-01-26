@@ -1,5 +1,7 @@
 #include "bbslib.h"
 
+static int read_form();
+
 char *defines[] = {
 	"呼叫器关闭时可让好友呼叫",	/* DEF_FRIENDCALL */
 	"接受所有人的讯息",	/* DEF_ALLMSG */
@@ -71,9 +73,7 @@ bbsparm_main()
 	return 0;
 }
 
-int
-read_form()
-{
+static int read_form() {
 	int i, perm = 1, def = 0;
 	char var[100];
 	for (i = 0; i < 32; i++) {
