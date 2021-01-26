@@ -20,15 +20,14 @@ testmath(char *ptr)
 int
 bbssnd_main()
 {
-	char filename[80], dir[80], board[80], title[80], buf[256], userid[20] ,*content,
-	    *ref, *content0;
+	char filename[80], dir[80], board[80], title[80], buf[256], userid[20] ,*content, *ref, *content0;
 	int r, sig, mark = 0, outgoing, anony, guestre = 0, usemath, nore, mailback;
 	int is1984, to1984 = 0;
 	size_t i;
 	struct boardmem *brd;
 	struct fileheader *x = NULL;
 	int thread = -1;
-	struct mmapfile mf = { ptr:NULL };
+	struct mmapfile mf = { .ptr = NULL };
 	html_header(1);
 
 	ytht_strsncpy(board, getparm("board"), 18);
@@ -75,8 +74,7 @@ bbssnd_main()
 	} else {
 		thread = -1;
 	}
-	if(strcmp(board, "welcome") &&
-	   strcmp(board, "KaoYan")){	//add by mintbaggio 040614 for post at "welcome" + "KaoYan"(by wsf)
+	if(strcmp(board, "welcome") && strcmp(board, "KaoYan")){	//add by mintbaggio 040614 for post at "welcome" + "KaoYan"(by wsf)
 		if (!loginok || (isguest && !guestre))
 			http_fatal("匆匆过客不能发表文章，请先登录");
 	}
@@ -110,8 +108,7 @@ bbssnd_main()
 		mark |= FH_MAILREPLY;
 	if (title[0] == 0)
 		http_fatal("文章必须要有标题");
-	if(strcmp(board, "welcome") &&
-	   strcmp(board, "KaoYan")){   //add by mintbaggio 040614 for post at "welcome" + "KaoYan"(by wsf)
+	if(strcmp(board, "welcome") && strcmp(board, "KaoYan")){   //add by mintbaggio 040614 for post at "welcome" + "KaoYan"(by wsf)
 		if (!has_post_perm(&currentuser, brd) && !guestre)
 			http_fatal("此讨论区是唯读的, 或是您尚无权限在此发表文章.");
 	}
@@ -126,8 +123,7 @@ bbssnd_main()
 	sprintf(filename, "bbstmpfs/tmp/%d.tmp", thispid);
 	f_write(filename, content);
 	if (!hideboard_x(brd)) {
-		int dangerous =
-		    dofilter(title, filename, political_board(board));
+		int dangerous = dofilter(title, filename, political_board(board));
 		if (dangerous == 1){
 			to1984 = 1;
 			mail_file(filename, currentuser.userid, title, currentuser.userid);
@@ -135,8 +131,8 @@ bbssnd_main()
 			char mtitle[256];
 			sprintf(mtitle, "[发表报警] %s %.60s", board, title);
 			post_mail("delete", mtitle, filename,
-				  currentuser.userid, currentuser.username,
-				  fromhost, -1, 0);
+					currentuser.userid, currentuser.username,
+					fromhost, -1, 0);
 			updatelastpost("deleterequest");
 			mark |= FH_DANGEROUS;
 		}
@@ -150,17 +146,17 @@ bbssnd_main()
 
 	if (is1984 || to1984) {
 		r = post_article_1984(board, title, filename,
-				      currentuser.userid, currentuser.username,
-				      fromhost, sig - 1, mark, outgoing,
-				      currentuser.userid, thread);
+				currentuser.userid, currentuser.username,
+				fromhost, sig - 1, mark, outgoing,
+				currentuser.userid, thread);
 	} else if (anony)
 		r = post_article(board, title, filename, "Anonymous",
-				 "我是匿名天使", "匿名天使的家", 0, mark,
-				 outgoing, currentuser.userid, thread);
+				"我是匿名天使", "匿名天使的家", 0, mark,
+				outgoing, currentuser.userid, thread);
 	else
 		r = post_article(board, title, filename, currentuser.userid,
-				 currentuser.username, fromhost, sig - 1, mark,
-				 outgoing, currentuser.userid, thread);
+				currentuser.username, fromhost, sig - 1, mark,
+				outgoing, currentuser.userid, thread);
 	if (r <= 0)
 		http_fatal("内部错误，无法发文");
 	if (!is1984 && !to1984) {
