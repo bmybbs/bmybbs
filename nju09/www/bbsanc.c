@@ -11,8 +11,8 @@ extern int anc_hidetitle(char *title);
 int
 bbsanc_main()
 {	//modify by mintbaggio 20040829 for new www
-	char *board, *ptr, path[PATHLEN], fn[PATHLEN], buf[PATHLEN],
-	item[PATHLEN], names[PATHLEN], file[80], lastfile[80], title[256] = " ";
+	char *board, *ptr, path[PATHLEN], fn[PATHLEN * 2 + STRLEN], buf[PATHLEN],
+	item[PATHLEN], names[PATHLEN + STRLEN], file[80], lastfile[80], title[256] = " ";
 	int index = 0, found = 0;
 	FILE *fp;
 	changemode(DIGEST);
@@ -29,7 +29,7 @@ L:
 		sprintf(buf, "%s版", board);
 	if (strstr(path, ".Search") || strstr(path, ".Names") || strstr(path, ".."))
 		http_fatal("错误的文件名");
-	snprintf(names, PATHLEN, "0Announce%s/.Names", path);
+	snprintf(names, sizeof(names), "0Announce%s/.Names", path);
 	fp = fopen(names, "r");
 	if (fp == 0)
 		http_fatal("目录不存在");
@@ -63,7 +63,7 @@ L:
 		fclose(fp);
 		http_fatal("文件不存在");
 	}
-	snprintf(fn, PATHLEN, "0Announce%s%s", path, item);
+	snprintf(fn, sizeof(fn), "0Announce%s%s", path, item);
 	if (*getparm("attachname") == '/') {
 		fclose(fp);
 		showbinaryattach(fn);
@@ -77,7 +77,7 @@ L:
 	printf("</div><hr>");
 	showcon(fn);
 	if (index > 0) {
-		snprintf(fn, PATHLEN, "0Announce%s%s", path, lastfile);
+		snprintf(fn, sizeof(fn), "0Announce%s%s", path, lastfile);
 		if (file_exist(fn)) {
 			if (file_isdir(fn)) {
 				printf("[<a href=bbs0an?path=%s%s>上一项</a>] ", path, lastfile);
@@ -91,7 +91,7 @@ L:
 		if (anc_readitem(fp, file, sizeof (file), title, sizeof (title))) break;
 		if (anc_hidetitle(title))
 			break;
-		snprintf(fn, PATHLEN, "0Announce%s%s", path, file);
+		snprintf(fn, sizeof(fn), "0Announce%s%s", path, file);
 		if (!board[0]) {
 			if(strcasecmp(board, "PersonalCorpus")){	//add by mintbaggio@BMY for the reason of www PersonalCorpus
 				ptr = getbfroma(buf);
