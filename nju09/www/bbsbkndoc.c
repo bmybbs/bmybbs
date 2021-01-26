@@ -11,17 +11,17 @@ int
 bbsbkndoc_main()
 {
 	FILE *fp;
-	char board[80], bkn[80], dir[160], *ptr, genbuf[STRLEN];
+	char board[32], bkn[32], dir[160], *ptr, genbuf[STRLEN * 2];
 	struct boardmem *x1;
 	struct fileheader x;
 	int i, start, total;
 	html_header(1);
 	changemode(BACKNUMBER);
 	check_msg();
-	ytht_strsncpy(board, getparm("B"), 32);
+	ytht_strsncpy(board, getparm("B"), sizeof(board));
 	if (!board[0])
-		ytht_strsncpy(board, getparm("board"), 32);
-	ytht_strsncpy(bkn, getparm("bkn"), 32);
+		ytht_strsncpy(board, getparm("board"), sizeof(board));
+	ytht_strsncpy(bkn, getparm("bkn"), sizeof(bkn));
 	ptr = bkn;
 	while (*ptr) {
 		if (*ptr != 'B' && *ptr != '.' && !isdigit(*ptr))
@@ -49,7 +49,7 @@ bbsbkndoc_main()
 		printboardtop(x1, 5);
 		printf("阅览过刊 文章数[%d] ", total);
 		printf("<a href=bbsbknsel?board=%s>选择过刊</a> ", board);
-		sprintf(genbuf, "bbsbkndoc?board=%s&bkn=%s", board, bkn);
+		snprintf(genbuf, sizeof(genbuf), "bbsbkndoc?board=%s&bkn=%s", board, bkn);
 		bbsdoc_helper(genbuf, start, total, w_info->t_lines);
 		if (total <= 0)
 			http_fatal("本卷过刊目前没有文章");
