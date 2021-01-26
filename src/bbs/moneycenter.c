@@ -6334,8 +6334,8 @@ static int shop_present(int order, char *kind, char *touserid) {
 					if (!file_isdir(dirpath))
 						continue;
 					for(m=0; m<strlen(title); m++) if(title[m]==' ') title[m]=0;
-					strncpy(dirNameBuffer[numDir], dirpath, PATHLEN);
-					strncpy(dirTitleBuffer[numDir], title, STRLEN);
+					ytht_strsncpy(dirNameBuffer[numDir], dirpath, PATHLEN);
+					ytht_strsncpy(dirTitleBuffer[numDir], title, STRLEN);
 					move(6 + numDir, 8);
 					prints("%d. %s", numDir, title);
 					numDir++;
@@ -6412,8 +6412,8 @@ static int shop_present(int order, char *kind, char *touserid) {
 
 	limit_cpu();
 
-	strncpy(ok_filename, fileNameBuffer[cardIndex], PATHLEN);
-	strncpy(ok_title, fileTitleBuffer[cardIndex], STRLEN);
+	ytht_strsncpy(ok_filename, fileNameBuffer[cardIndex], PATHLEN);
+	ytht_strsncpy(ok_title, fileTitleBuffer[cardIndex], STRLEN);
 	if(!ok_filename[0])  return 0;
 
 	sprintf(buf, "礼品店%s收银台", kind);
