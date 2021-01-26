@@ -3,8 +3,7 @@
 int
 bbssndmail_main()
 {
-	char mymaildir[80], userid[80], filename[80], title[80], title2[80],
-	    *content;
+	char mymaildir[80], userid[80], filename[80], title[80], title2[80], *content;
 	int sig, backup, allfriend, mark = 0;
 	int lockfd;
 	size_t i;
@@ -44,7 +43,7 @@ bbssndmail_main()
 	if (!allfriend) {
 		snprintf(title2, sizeof (title2), "{%s} %s", userid, title);
 		post_mail(userid, title, filename, currentuser.userid,
-			  currentuser.username, fromhost, sig - 1, mark);
+				currentuser.username, fromhost, sig - 1, mark);
 	} else {
 		lockfd = ythtbbs_override_lock(currentuser.userid, YTHTBBS_OVERRIDE_FRIENDS);
 		ythtbbs_override_get_records(currentuser.userid, fff, MAXFRIENDS, YTHTBBS_OVERRIDE_FRIENDS);
@@ -65,7 +64,7 @@ bbssndmail_main()
 		post_mail_to_sent_box(currentuser.userid, title2, filename,
 				currentuser.userid, currentuser.username, fromhost,
 				sig - 1, mark);
-    }
+	}
 	unlink(filename);
 	printf("信件已寄给%s.<br>\n", allfriend ? "所有好友" : userid);
 	if (backup)
