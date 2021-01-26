@@ -8,7 +8,7 @@ bbsdel_main()
 	//不原子
 	struct fileheader f;
 	struct userec *u;
-	char dir[80], board[80], file[80], *id;
+	char dir[80], board[32], file[80], *id;
 	int num = 0, filetime, total;
 	struct boardmem *x;
 	struct mmapfile mf = { .ptr = NULL };
@@ -18,9 +18,9 @@ bbsdel_main()
 		http_fatal("请先登录");
 	changemode(EDIT);
 	id = currentuser.userid;
-	ytht_strsncpy(board, getparm("B"), 32);
+	ytht_strsncpy(board, getparm("B"), sizeof(board));
 	if (!board[0])
-		ytht_strsncpy(board, getparm("board"), 32);
+		ytht_strsncpy(board, getparm("board"), sizeof(board));
 	ytht_strsncpy(file, getparm("F"), 30);
 	if (!file[0])
 		ytht_strsncpy(file, getparm("file"), 20);
