@@ -710,7 +710,7 @@ static void sackOrAppoint2(int pos, char *boss, int msgType, char *msg) {
 	char head[10];
 	char in[10];
 	char end[10];
-	char posDesc[][40] = {
+	char posDesc[][60] = {
 		"兵马俑银行行长秘书", "兵马俑博彩公司经理秘书", "兵马俑赌场经理秘书",
 		"兵马俑黑帮帮主秘书", "兵马俑丐帮帮主秘书", "兵马俑证监会主席秘书",
 		"兵马俑商场经理秘书", "兵马俑警署署长秘书","兵马俑杀手帮主秘书",
@@ -769,7 +769,7 @@ static int money_bank() {
 				sprintf(genbuf, "确定要变卖 %d 文章数，换取 %d 兵马俑币吗？", num, num * convert_rate);
 				if (askyn(genbuf, NA, NA) == YEA) {
 					set_safe_record();
-					if (currentuser.numposts < num) {
+					if (currentuser.numposts < (unsigned) num /* safe */) {
 						move(8, 4);
 						prints("您没有那么多文章数...");
 						pressanykey();
@@ -3058,7 +3058,7 @@ static void saveSoccerRecord(char *complexBet) {
 static int validSoccerBet(char *buf) {
 	int count = 0;
 	int meetSeperator = 1;
-	int i;
+	size_t i;
 	int first = 0, second = 0;
 
 	if (strlen(buf) == 0) {
@@ -6305,7 +6305,8 @@ static int shop_present(int order, char *kind, char *touserid) {
 	char dirNameBuffer[10][PATHLEN], dirTitleBuffer[10][STRLEN];
 	char fileNameBuffer[10][PATHLEN],  fileTitleBuffer[10][STRLEN];
 	char dirpath[PATHLEN], filepath[PATHLEN + STRLEN], dir[STRLEN * 4], indexpath[PATHLEN + STRLEN], title[STRLEN];
-	int numDir=0, numFile=0, dirIndex, cardIndex, m;
+	int numDir=0, numFile=0, dirIndex, cardIndex;
+	size_t m;
 	int HIDE=0;
 	FILE *fp;
 
@@ -9343,7 +9344,7 @@ static int marry_editinvitation(struct MC_Marry *mm) {
 					if(fgets(buf,sizeof(buf),oldfp) == NULL)
 						break;
 					char *s;
-					int i;
+					size_t i;
 					while (1) {
 						s = strstr(buf, "$bridegroom");
 						if (s == 0)
@@ -9420,7 +9421,7 @@ static int marry_editset(struct MC_Marry *mm) {
 					if(fgets(buf,sizeof(buf),oldfp) == NULL)
 						break;
 					char *s;
-					int i;
+					size_t i;
 					while (1) {
 						s = strstr(buf, "$bridegroom");
 						if (s == 0)
@@ -10772,17 +10773,17 @@ static void mc_shm_init() {
 	if (mc != NULL) {
 		// 转账手续费
 		if (mc->transfer_rate == 0) {
-			readstrvalue(MC_RATE_FILE, "transfer_rate", local_buf, sizeof(512));
+			readstrvalue(MC_RATE_FILE, "transfer_rate", local_buf, sizeof(local_buf));
 			mc->transfer_rate = atoi(local_buf);
 		}
 		// 存款利率
 		if (mc->deposit_rate == 0) {
-			readstrvalue(MC_RATE_FILE, "deposit_rate", local_buf, sizeof(512));
+			readstrvalue(MC_RATE_FILE, "deposit_rate", local_buf, sizeof(local_buf));
 			mc->deposit_rate = atoi(local_buf);
 		}
 		// 贷款利率
 		if (mc->lend_rate == 0) {
-			readstrvalue(MC_RATE_FILE, "lend_rate", local_buf, sizeof(512));
+			readstrvalue(MC_RATE_FILE, "lend_rate", local_buf, sizeof(local_buf));
 			mc->lend_rate = atoi(local_buf);
 		}
 	}
