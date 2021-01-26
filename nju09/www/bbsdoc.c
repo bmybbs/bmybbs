@@ -39,9 +39,7 @@ static int nosuchboard_callback(struct boardmem *board, int curr_idx, va_list ap
 	return 0;
 }
 
-void
-nosuchboard(char *board, char *cginame)
-{
+void nosuchboard(char *board, char *cginame) {
 	int i, j = 0;
 	char buf[128];
 	printf("没有这个讨论区啊，可能的选择:<p>");
