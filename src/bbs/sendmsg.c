@@ -712,12 +712,12 @@ sendmsgfunc(char *uid, struct user_info *uin, int userpid, const char *msgstr, i
 	head.time = time(0);
 	head.sent = 0;
 	head.mode = mode;
-	strncpy(head.id, currentuser.userid, IDLEN + 2);
+	ytht_strsncpy(head.id, currentuser.userid, sizeof(head.id));
 	head.frompid = uinfo.pid;
 	head.topid = topid;
 	memcpy(&head2, &head, sizeof (struct msghead));
 	head2.sent = 1;
-	strncpy(head2.id, uid, IDLEN + 2);
+	ytht_strsncpy(head2.id, uid, sizeof(head2.id));
 
 	if (save_msgtext(uid, &head, msgstr) < 0)
 		return -2;
