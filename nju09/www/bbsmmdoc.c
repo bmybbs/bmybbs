@@ -8,7 +8,7 @@ int
 bbsmmdoc_main()
 {	//developed by macintosh 050519 for new www
 	FILE *fp, *fp1, *fp2;
-	char board[80], dir[80],buf[128],name[80];
+	char board[32], dir[80],buf[128],name[80];
 	struct boardmem *x1;
 	struct fileheader x;
 	int i, start, total=0;
@@ -16,7 +16,7 @@ bbsmmdoc_main()
 	check_msg();
 	printf("<script src=/function.js></script>\n");
 	changemode(READING);
-	ytht_strsncpy(board, getparm2("B", "board"), 32);
+	ytht_strsncpy(board, getparm2("B", "board"), sizeof(board));
 	x1 = getboard(board);
 	if (x1 == 0)
 		nosuchboard(board, "bbsmmdoc");
