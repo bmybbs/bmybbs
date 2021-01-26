@@ -2,14 +2,14 @@
 #include "bmy/article.h"
 #include "bmy/board.h"
 
-static int do_del(char *board, char *file);
+//static int do_del(char *board, char *file);
 static int do_set(char *dirptr, int size, char *file, int flag, char *board);
 
 int
 bbsman_main()
 {
 	int i, total = 0, mode;
-	char board[80], tbuf[256], *cbuf;
+	char board[32], tbuf[256], *cbuf;
 	char dir[80];
 	struct boardmem *brd;
 	char *data= NULL;
@@ -20,7 +20,7 @@ bbsman_main()
 	if (!loginok || isguest)
 		http_fatal("请先登录");
 	changemode(READING);
-	ytht_strsncpy(board, getparm("board"), 60);
+	ytht_strsncpy(board, getparm("board"), sizeof(board));
 	mode = atoi(getparm("mode"));
 	brd = getboard(board);
 	if (brd == 0)
@@ -87,6 +87,7 @@ bbsman_main()
 	return 0;
 }
 
+/*
 static int do_del(char *board, char *file) {
 	FILE *fp;
 	int num = 0, filetime;
@@ -118,7 +119,7 @@ static int do_del(char *board, char *file) {
 	fclose(fp);
 	printf("<tr><td><td>%s<td>文件不存在.\n", file);
 	return -1;
-}
+}*/
 
 static int do_set(char *dirptr, int size, char *file, int flag, char *board) {
 	char path[256], buf[256];
