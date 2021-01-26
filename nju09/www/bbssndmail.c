@@ -3,13 +3,13 @@
 int
 bbssndmail_main()
 {
-	char mymaildir[80], userid[80], filename[80], title[80], title2[80], *content;
+	char mymaildir[80], userid[IDLEN + 2], filename[80], title[80], title2[80 * 2], *content;
 	int sig, backup, allfriend, mark = 0;
 	int lockfd;
 	size_t i;
 	struct userec *u;
 	html_header(1);
-	ytht_strsncpy(userid, getparm("userid"), 40);
+	ytht_strsncpy(userid, getparm("userid"), sizeof(userid));
 	if (!loginok || (isguest && strcmp(userid, "SYSOP")))
 		http_fatal("匆匆过客不能写信，请先登录");
 	if (HAS_PERM(PERM_DENYMAIL, currentuser))
