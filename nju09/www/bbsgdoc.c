@@ -1,5 +1,9 @@
 #include "bbslib.h"
 
+extern void nosuchboard(char *board, char *cginame);
+extern void printboardtop(struct boardmem *x, int num);
+extern int getdocstart(int total, int lines);
+
 int
 bbsgdoc_main()
 {	//modity by macintosh 050516 for new www
@@ -56,8 +60,7 @@ bbsgdoc_main()
 
 /*	printhr();
 	printf("<table border=0>\n");
-	printf
-	    ("<tr><td>序号</td><td>状态</td><td>作者</td><td>日期</td><td>标题</td><td>星级</td><td>评价</td></tr>\n");
+	printf("<tr><td>序号</td><td>状态</td><td>作者</td><td>日期</td><td>标题</td><td>星级</td><td>评价</td></tr>\n");
 */
 	printf("%s", "<tr><td width=40 class=\"level1\">&nbsp;</td>\n"
 		"<td class=\"level1\"><TABLE width=\"95%\" cellpadding=2 cellspacing=0>\n"
@@ -82,7 +85,7 @@ bbsgdoc_main()
 	}
 	printf("</TR> </TBODY></TABLE></td></tr>\n");
 /*	printhr();
-  	printf("文章数[%d] ", total);
+	printf("文章数[%d] ", total);
 	printf("<a href=bbspst?board=%s>发表文章</a> ", board);
 	bbsdoc_helper(buf, start, total, w_info->t_lines);
 */
