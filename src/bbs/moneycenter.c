@@ -62,23 +62,21 @@
 
 #define MAX_STOCK_NUM 16
 #define MAX_STOCK_NUM2 8
-/*修改MAX_STOCK_NUM 要记得再money_stock_board函数中
-  给stock_name加上相应的股票名称*/
+/*修改MAX_STOCK_NUM 要记得再money_stock_board函数中 给stock_name加上相应的股票名称*/
 
 //婚礼数据结构及定义
 /*
-   结婚程序是这样的:
-   男方选择"求婚"向女方求婚,这时登记结婚记录，状态为 MAR_COURT，一星期后自动失败
-   女方去教堂，自动提示是否接受求婚？
-   如果不接受，结婚记录enable设为0,宣告失败
-   如果接受，结婚记录状态设为 MAR_MARRYING 结婚中,结婚日期默认设为1天后
-   然后男女方都可以到教堂准备婚礼，包括设置结婚日期，写请柬，发请柬，布置背景等
-   此时可以在参加婚礼时的婚礼等级表中看到这条记录，时间一到，婚礼自动开始
-   朋友们可以来参见他们的婚礼了，参见婚礼时可以送礼金，送花，送贺卡
-   婚礼在四小时后自动结束，发信到金融中心版面
-   在MC_MARRY_RECORDS(100条记录)中保存求婚COURT和在婚MARRYING的记录
-   在刷新记录时把求婚失败和结婚成功的记录转到MC_MARRY_RECORDS_ALL
-
+	结婚程序是这样的:
+	男方选择"求婚"向女方求婚,这时登记结婚记录，状态为 MAR_COURT，一星期后自动失败
+	女方去教堂，自动提示是否接受求婚？
+	如果不接受，结婚记录enable设为0,宣告失败
+	如果接受，结婚记录状态设为 MAR_MARRYING 结婚中,结婚日期默认设为1天后
+	然后男女方都可以到教堂准备婚礼，包括设置结婚日期，写请柬，发请柬，布置背景等
+	此时可以在参加婚礼时的婚礼等级表中看到这条记录，时间一到，婚礼自动开始
+	朋友们可以来参见他们的婚礼了，参见婚礼时可以送礼金，送花，送贺卡
+	婚礼在四小时后自动结束，发信到金融中心版面
+	在MC_MARRY_RECORDS(100条记录)中保存求婚COURT和在婚MARRYING的记录
+	在刷新记录时把求婚失败和结婚成功的记录转到MC_MARRY_RECORDS_ALL
 */
 #define DIR_MC_MARRY			MY_BBS_HOME"/etc/moneyCenter/marry"
 #define MC_MARRY_RECORDS        MY_BBS_HOME"/etc/moneyCenter/marryrecords"
@@ -166,9 +164,9 @@ static int money_police(void);
 static void persenal_stock_info(int stock_num[15], int stock_price[15],
 		int money, char stockboard[STRLEN][MAX_STOCK_NUM],
 		int stock_board[15]);
-/*atic void persenal_stock_info2(int stock_num[15], int stock_price[15],
-  int money, char *stockboard[],
-  int stock_board[15]);*/
+/*static void persenal_stock_info2(int stock_num[15], int stock_price[15],
+int money, char *stockboard[],
+int stock_board[15]);*/
 //static int shop_card_show(char *card[][2], int group);
 //static int buy_card(char *cardname, int cardnumber);
 static int forq(char *a, char *b);
