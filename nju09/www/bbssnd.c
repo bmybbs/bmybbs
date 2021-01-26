@@ -20,7 +20,7 @@ testmath(char *ptr)
 int
 bbssnd_main()
 {
-	char filename[80], dir[80], board[80], title[80], buf[256], userid[20] ,*content, *ref, *content0;
+	char filename[80], dir[80], board[32], title[80], buf[256], userid[20] ,*content, *ref, *content0;
 	int r, sig, mark = 0, outgoing, anony, guestre = 0, usemath, nore, mailback;
 	int is1984, to1984 = 0;
 	size_t i;
@@ -30,7 +30,7 @@ bbssnd_main()
 	struct mmapfile mf = { .ptr = NULL };
 	html_header(1);
 
-	ytht_strsncpy(board, getparm("board"), 18);
+	ytht_strsncpy(board, getparm("board"), sizeof(board));
 	ytht_strsncpy(title, getparm("title"), 60);
 	ytht_strsncpy(userid, getparm("replyto"), 14);
 	outgoing = strlen(getparm("outgoing"));
@@ -63,9 +63,9 @@ bbssnd_main()
 
 		if (x && (x->accessed & FH_ALLREPLY)) {
 			if (strncmp(x->title, "Re: ", 4))
-				snprintf(title, 60, "Re: %s", x->title);
+				snprintf(title, sizeof(title), "Re: %s", x->title);
 			else
-				snprintf(title, 60, "%s", x->title);
+				snprintf(title, sizeof(title), "%s", x->title);
 			guestre = 1;
 			mark = mark | FH_ALLREPLY;
 		}
