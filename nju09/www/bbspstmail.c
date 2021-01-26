@@ -5,7 +5,7 @@ bbspstmail_main()
 {	//modify by mintbaggio 040821 for new www
 	FILE *fp;
 	int i, num, fullquote = 0;
-	char mymaildir[80], userid[80], buf[512], path[512], file[512], board[40], title[80] = "", buff[512];
+	char mymaildir[80], userid[80], buf[512], path[512], file[20], board[40], title[80] = "", buff[512];
 	struct fileheader *dirinfo;
 	struct mmapfile mf = { .ptr = NULL };
 	html_header(1);
@@ -28,9 +28,9 @@ bbspstmail_main()
 		ytht_strsncpy(board, getparm("board"), 32);
 	if (board[0] && !getboard(board))
 		http_fatal("错误的讨论区");
-	ytht_strsncpy(file, getparm("F"), 20);
+	ytht_strsncpy(file, getparm("F"), sizeof(file));
 	if (!file[0])
-		ytht_strsncpy(file, getparm("file"), 20);
+		ytht_strsncpy(file, getparm("file"), sizeof(file));
 	if (file[0] != 'M' && file[0])
 		http_fatal("错误的文件名");
 	if (file[0]) {
@@ -69,9 +69,9 @@ bbspstmail_main()
 				getdocauthor(buf, userid, sizeof (userid));
 			}
 			if (strncmp(dirinfo->title, "Re: ", 4))
-				snprintf(title, 55, "Re: %s", dirinfo->title);
+				snprintf(title, sizeof(title), "Re: %s", dirinfo->title);
 			else
-				ytht_strsncpy(title, dirinfo->title, 55);
+				ytht_strsncpy(title, dirinfo->title, sizeof(title));
 		} else
 			http_fatal("错误的文件名");
 	} else
