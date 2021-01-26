@@ -1,11 +1,13 @@
 #include "bbslib.h"
 
+extern int showbinaryattach(char *filename);
+
 int
 bbsbkncon_main()
 {
 	char board[80], bkn[80], dir[256], file[256], filename[256], *ptr;
 	struct fileheader *x, *dirinfo;
-	struct mmapfile mf = { ptr:NULL };
+	struct mmapfile mf = { .ptr = NULL };
 	int num, total;
 	changemode(BACKNUMBER);
 	ytht_strsncpy(board, getparm("board"), 32);
@@ -49,9 +51,7 @@ bbsbkncon_main()
 			MMAP_UNTRY;
 			http_fatal("本文不存在或者已被删除");
 		}
-		dirinfo =
-		    (struct fileheader *) (mf.ptr +
-					   num * sizeof (struct fileheader));
+		dirinfo = (struct fileheader *) (mf.ptr + num * sizeof (struct fileheader));
 		if (dirinfo->owner[0] == '-') {
 			mmapfile(NULL, &mf);
 			MMAP_UNTRY;
@@ -68,29 +68,18 @@ bbsbkncon_main()
 			http_fatal("编号不太对啊...");
 		}
 		showcon(filename);
-		printf("[<a href=bbsfwd?board=%s&file=%s>转寄</a>]", board,
-		       file);
-		printf("[<a href=bbsccc?board=%s&file=%s>转贴</a>]", board,
-		       file);
+		printf("[<a href=bbsfwd?board=%s&file=%s>转寄</a>]", board, file);
+		printf("[<a href=bbsccc?board=%s&file=%s>转贴</a>]", board, file);
 		if (num > 0) {
-			x = (struct fileheader *) (mf.ptr +
-						   (num -
-						    1) *
-						   sizeof (struct fileheader));
-			printf
-			    ("[<a href=bbsbkncon?board=%s&bkn=%s&file=%s&num=%d>上一篇</a>]",
-			     board, bkn, fh2fname(x), num - 1);
+			x = (struct fileheader *) (mf.ptr + (num - 1) * sizeof (struct fileheader));
+			printf("[<a href=bbsbkncon?board=%s&bkn=%s&file=%s&num=%d>上一篇</a>]",
+					board, bkn, fh2fname(x), num - 1);
 		}
-		printf("[<a href=bbsbkndoc?board=%s&bkn=%s>本卷过刊</a>]",
-		       board, bkn);
+		printf("[<a href=bbsbkndoc?board=%s&bkn=%s>本卷过刊</a>]", board, bkn);
 		if (num < total - 1) {
-			x = (struct fileheader *) (mf.ptr +
-						   (num +
-						    1) *
-						   sizeof (struct fileheader));
-			printf
-			    ("[<a href=bbsbkncon?board=%s&bkn=%s&file=%s&num=%d>下一篇</a>]",
-			     board, bkn, fh2fname(x), num + 1);
+			x = (struct fileheader *) (mf.ptr + (num + 1) * sizeof (struct fileheader));
+			printf("[<a href=bbsbkncon?board=%s&bkn=%s&file=%s&num=%d>下一篇</a>]",
+					board, bkn, fh2fname(x), num + 1);
 		}
 	}
 	MMAP_CATCH {
