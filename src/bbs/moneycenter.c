@@ -1308,19 +1308,20 @@ static int money_bank() {
 							if (askyn("确定向该客户提供贷款吗？", NA, NA) == NA)
 								break;
 							time_t t = time(0) + 86400 * atoi(buf);
-							sprintf(genbuf, "%s\t%s", uident, ctime(&t));
+							char local_buf[STRLEN * 2], local_buf_lg[STRLEN * 4];
+							sprintf(local_buf, "%s\t%s", uident, ctime(&t));
 							ytht_add_to_file(DIR_MC "special_lend", genbuf);
 							saveValue(uident, MONEY_NAME, num, MAX_MONEY_NUM);
 							saveValue(uident, LEND_NAME, num, MAX_MONEY_NUM);
 							saveValue(uident, "lend_time", time(0), 2000000000);
 							saveValue(uident, "back_time", time(0) + atoi(buf) * 86400, 2000000000);
-							sprintf(genbuf, "贷款金额 %d 兵马俑币，请务必于 %s 天内偿还贷款。", num, buf);
-							mail_buf(genbuf, uident, "兵马俑银行行长同意了您的贷款申请");
+							sprintf(local_buf, "贷款金额 %d 兵马俑币，请务必于 %s 天内偿还贷款。", num, buf);
+							mail_buf(local_buf, uident, "兵马俑银行行长同意了您的贷款申请");
 							move(16, 4);
 							prints("贷款审批完成。请确保客户及时还款。");
-							sprintf(buf, "给%s特别贷款，%s",uident, genbuf);
-							sprintf(genbuf, "%s行使银行管理权限",currentuser.userid);
-							millionairesrec(genbuf, buf, "");
+							sprintf(local_buf_lg, "给%s特别贷款，%s",uident,local_buf);
+							sprintf(local_buf, "%s行使银行管理权限",currentuser.userid);
+							millionairesrec(local_buf, local_buf_lg, "");
 							pressanykey();
 							break;
 						case '5':
@@ -1834,7 +1835,7 @@ struct MC_Jijin{
 };
 
 static int addOrDel_contrb() {
-	char uident[STRLEN], ans[8];
+	char uident[IDLEN + 1], ans[8];
 	int count = 0, tag = 0, i, j, fd, x=0;
 	char buf[STRLEN], title[STRLEN];
 	void *buffer = NULL;
@@ -1911,10 +1912,10 @@ static int addOrDel_contrb() {
 			buf[0] = 0;
 			memset(&JijinTmp, 0, sizeof(struct MC_Jijin));
 			if (tag == 1){
-				sprintf(JijinTmp.userid, "%s", uident);
+				ytht_strsncpy(JijinTmp.userid, uident, sizeof(JijinTmp.userid));
 				while (buf[0] == 0)
 					getdata(2, 0, "请输入基金名称: ", buf, 18, DOECHO, YEA);
-				sprintf(JijinTmp.name, "%s", buf);
+				ytht_strsncpy(JijinTmp.name, buf, sizeof(JijinTmp.name));
 				append_record(MC_JIJIN_CTRL_FILE, &JijinTmp, sizeof(struct MC_Jijin));
 				sprintf(title, "%s行使管理权限(设置捐款基金)", currentuser.userid);
 				sprintf(buf,"%s把%s添加为 %s基金", currentuser.userid, JijinTmp.userid, JijinTmp.name);
@@ -2061,8 +2062,9 @@ static int money_sackOrAppoint(int type) {
 			pressanykey();
 			return 0;
 		}
-		getdata(17, 4, "免去原因:", genbuf, 50, DOECHO, YEA);
-		sprintf(report, "免去原因：%s", genbuf);
+		char local_buf[STRLEN];
+		getdata(17, 4, "免去原因:", local_buf, 50, DOECHO, YEA);
+		sprintf(report, "免去原因：%s", local_buf);
 		move(17, 4);
 		sprintf(genbuf, "确定免去 %s 的%s职位吗？", boss, (type==1)?"":"秘书");
 		if (askyn(genbuf, NA, NA) == YEA) {
@@ -2222,9 +2224,10 @@ static int money_admin() {
 					ytht_del_from_file(MC_ADMIN_FILE, uident, true);
 					move(18, 4);
 					prints("取消成功!");
+					char local_letter[STRLEN * 2];
 					sprintf(genbuf, "[公告]取消 %s 的兵马俑金融中心管理权限", uident);
-					sprintf(letter, "取消原因： %s", buf);
-					deliverreport(genbuf, letter);
+					sprintf(local_letter, "取消原因： %s", buf);
+					deliverreport(genbuf, local_letter);
 					sprintf(genbuf, "%s 被 %s 取消兵马俑金融中心管理权限", uident, currentuser.userid);
 					mail_buf(genbuf, uident, genbuf);
 					sprintf(genbuf, "%s行使管理权限", currentuser.userid);
@@ -2463,10 +2466,11 @@ static int money_admin() {
 					pressanykey();
 					break;
 				}
+				char local_buf1[STRLEN * 4];
 				getdata(14, 4, "基金名称：", buf, 50, DOECHO, YEA);
 				sprintf(genbuf, "[公告]成立%s基金%s", buf, uident);
 				getdata(15, 4, "原因：", buf, 50, DOECHO, YEA);
-				sprintf(letter, "成立原因：%s\n希望基金管理者忠于职守，建设廉洁高效的基金体系。", buf);
+				sprintf(local_buf1, "成立原因：%s\n希望基金管理者忠于职守，建设廉洁高效的基金体系。", buf);
 				move(16, 4);
 				if (askyn("确定吗？", NA, NA) == NA)
 					break;
@@ -2474,8 +2478,8 @@ static int money_admin() {
 				if (!seek_in_file(DIR_MC "mingren", uident))
 					ytht_add_to_file(DIR_MC "mingren",uident);
 				//基金id是给予特殊的黄马褂
-				deliverreport(genbuf, letter);
-				mail_buf (letter, uident, genbuf);
+				deliverreport(genbuf, local_buf1);
+				mail_buf (local_buf1, uident, genbuf);
 				sprintf(genbuf, "%s行使管理权限", currentuser.userid);
 				sprintf(buf,"%s任命%s为基金ID", currentuser.userid, uident);
 				millionairesrec(genbuf, buf, "");
@@ -2502,20 +2506,21 @@ static int money_admin() {
 					pressanykey();
 					break;
 				}
-				getdata(15, 4, "原因：", buf, 50, DOECHO, YEA);
-				sprintf(letter, "撤销原因：%s", buf);
+				char local_buf[STRLEN];
+				getdata(15, 4, "原因：", local_buf, 50, DOECHO, YEA);
+				sprintf(letter, "撤销原因：%s", local_buf);
 				move(16, 4);
 				if (askyn("确定吗？", NA, NA) == NA)
 					break;
 				ytht_del_from_file(DIR_MC"jijin", uident, true);
 				ytht_del_from_file(DIR_MC"mingren", uident, true);
 				//一并取消黄马褂
-				sprintf(genbuf, "[公告]撤销基金%s", uident);
-				deliverreport(genbuf, letter);
-				mail_buf (letter, uident, genbuf);
-				sprintf(genbuf, "%s行使管理权限", currentuser.userid);
+				sprintf(local_buf, "[公告]撤销基金%s", uident);
+				deliverreport(local_buf, letter);
+				mail_buf(letter, uident, local_buf);
+				sprintf(local_buf, "%s行使管理权限", currentuser.userid);
 				sprintf(buf,"%s撤销基金%s", currentuser.userid, uident);
-				millionairesrec(genbuf, buf, "");
+				millionairesrec(local_buf, buf, "");
 				move(17, 4);
 				prints("解除成功。");
 				pressanykey();
@@ -6301,7 +6306,7 @@ static int shop_present(int order, char *kind, char *touserid) {
 	//	struct dirent *dirp;
 	char dirNameBuffer[10][PATHLEN], dirTitleBuffer[10][STRLEN];
 	char fileNameBuffer[10][PATHLEN],  fileTitleBuffer[10][STRLEN];
-	char dirpath[PATHLEN], filepath[PATHLEN], dir[PATHLEN], indexpath[PATHLEN], title[STRLEN];
+	char dirpath[PATHLEN], filepath[PATHLEN + STRLEN], dir[STRLEN * 4], indexpath[PATHLEN + STRLEN], title[STRLEN];
 	int numDir=0, numFile=0, dirIndex, cardIndex, m;
 	int HIDE=0;
 	FILE *fp;
@@ -6357,7 +6362,7 @@ static int shop_present(int order, char *kind, char *touserid) {
 	sprintf(buf, "兵马俑礼品店%s柜台", kind);
 	nomoney_show_stat(buf);
 	move(4,4);
-	snprintf(dirpath, PATHLEN, "%s", dirNameBuffer[dirIndex]);
+	ytht_strsncpy(dirpath, dirNameBuffer[dirIndex], sizeof(dirpath));
 	if ((dp = opendir(dirpath)) == NULL)
 		return -1;
 	closedir(dp);
@@ -6377,7 +6382,7 @@ static int shop_present(int order, char *kind, char *touserid) {
 				fgets(buf, STRLEN, fp);
 				if(!strncmp("Path=~/", buf, 6)) {
 					if(HIDE) continue;
-					snprintf(filepath, PATHLEN,  "%s/%s", dirpath, buf+7);
+					snprintf(filepath, sizeof(filepath), "%s/%s", dirpath, buf+7);
 					for(m=0; m<strlen(filepath); m++) if (filepath[m]<27) filepath[m]=0;
 					if (!file_isfile(filepath))
 						continue;
@@ -6405,8 +6410,9 @@ static int shop_present(int order, char *kind, char *touserid) {
 			break;
 	}
 
-	sprintf(buf, "%s柜台%s 类%s展示", kind, dirTitleBuffer[dirIndex], fileTitleBuffer[cardIndex]);
-	nomoney_show_stat(buf);
+	char local_buf[STRLEN * 4];
+	sprintf(local_buf, "%s柜台%s 类%s展示", kind, dirTitleBuffer[dirIndex], fileTitleBuffer[cardIndex]);
+	nomoney_show_stat(local_buf);
 	//show_welcome(fileNameBuffer[cardIndex], 5, 20);
 	ansimore2(fileNameBuffer[cardIndex], 1, 5, 20);
 
@@ -6472,7 +6478,7 @@ static int buy_present(int order, char *kind, char *cardname, char *filepath, in
 	int inputNum=1;
 	char uident[IDLEN + 1], note[3][STRLEN], tmpname[STRLEN];
 	int price;
-	char buf[200];
+	char buf[STRLEN];
 	char *ptr1,*ptr2;
 	char unit[STRLEN];
 
@@ -6506,7 +6512,7 @@ static int buy_present(int order, char *kind, char *cardname, char *filepath, in
 			sprintf(buf,"%s","份");
 		else{
 			*ptr2='\0';
-			strncpy(buf, ptr1, STRLEN);
+			ytht_strsncpy(buf, ptr1, STRLEN);
 		}
 		if (!strlen(buf))
 			sprintf(buf,"%s","份");
@@ -6567,11 +6573,12 @@ static int buy_present(int order, char *kind, char *cardname, char *filepath, in
 			fprintf(fp, "%s", note[j]);
 		fclose(fp);
 	}
-	sprintf(buf,"送你%d%s%s，喜欢吗？",inputNum,unit,cardname);
-	if (mail_file(tmpname, uident, buf) >= 0) {
+	char local_buf[STRLEN * 4];
+	sprintf(local_buf,"送你%d%s%s，喜欢吗？",inputNum,unit,cardname);
+	if (mail_file(tmpname, uident, local_buf) >= 0) {
 		move(8,0);
-		sprintf(buf,"你的%s已经发出去了",kind);
-		prints(buf);
+		sprintf(local_buf,"你的%s已经发出去了",kind);
+		prints(local_buf);
 		pressanykey();
 		return 9; //for marry
 	} else {
@@ -7348,8 +7355,9 @@ static int money_cop() {
 					pressanykey();
 					break;
 				}
-				getdata(8, 4, "简述案情：", genbuf, 40, DOECHO, YEA);
-				if (genbuf[0] == '\0')
+				char local_buf[STRLEN];
+				getdata(8, 4, "简述案情：", local_buf, 40, DOECHO, YEA);
+				if (local_buf[0] == '\0')
 					break;
 				move(9, 4);
 				if (askyn("\033[1;33m你向警方提供的上述信息真实吗？\033[0m", NA, NA) == NA)
@@ -7357,14 +7365,14 @@ static int money_cop() {
 				saveValue(currentuser.userid, MONEY_NAME, +2000, MAX_MONEY_NUM);
 				strcpy(buf, uident);
 				strcat(buf, "\t");
-				strcat(buf, genbuf);
+				strcat(buf, local_buf);
 				ytht_add_to_file(DIR_MC "criminals_list", buf);
 				move(10, 4);
 				prints("警方非常感谢您提供的线索，我们将尽力尽快破案。");
 				pressanykey();
-				sprintf(buf, "ID: %s\n案情: %s", uident, genbuf);
-				sprintf(genbuf, "%s报案",currentuser.userid);
-				millionairesrec(genbuf, buf, "");
+				sprintf(buf, "ID: %s\n案情: %s", uident, local_buf);
+				sprintf(local_buf, "%s报案",currentuser.userid);
+				millionairesrec(local_buf, buf, "");
 				break;
 			case '2':
 				clear();
@@ -8504,10 +8512,11 @@ static int marry_query_records(char *id) {
 				default:
 					strcpy(timestr,get_simple_date_str(&mm->marry_t));
 			}
-			sprintf(buf, "[%4d] %-20.20s %-10.10s %-10.10s %-16.16s %4d \033[1;%dm%-6.6s\033[m",
+			char local_buf[STRLEN * 2];
+			snprintf(local_buf, sizeof(local_buf), "[%4d] %-20.20s %-10.10s %-10.10s %-16.16s %4d \033[1;%dm%-6.6s\033[m",
 					offset,mm->subject,mm->bride,mm->bridegroom,timestr,mm->visitcount,
 					(mm->status ==MAR_MARRYING)?32:37,marry_status[mm->status]);
-			prints("%s", buf);
+			prints("%s", local_buf);
 		}
 		if ((offset >= n ) && (count <= 0)){
 			move(9, 0);
@@ -8602,10 +8611,11 @@ static int marry_all_records() {
 				default:
 					strcpy(timestr,get_simple_date_str(&mm->marry_t));
 			}
-			sprintf(buf, "[%4d] %-20.20s %-10.10s %-10.10s %-16.16s %4d \033[1;%dm%-6.6s\033[m",
+			char local_buf[STRLEN * 2];
+			snprintf(local_buf, sizeof(local_buf), "[%4d] %-20.20s %-10.10s %-10.10s %-16.16s %4d \033[1;%dm%-6.6s\033[m",
 					offset,mm->subject,mm->bride,mm->bridegroom,timestr,mm->visitcount,
 					(mm->status ==MAR_MARRYING)?32:37,marry_status[mm->status]);
-			prints("%s", buf);
+			prints("%s", local_buf);
 			//offset++;
 		}
 		getdata(19, 4, "[B]前页 [C]下页 [Q]退出: [C]", buf, 2, DOECHO, YEA);
@@ -8676,11 +8686,12 @@ static int marry_active_records(struct MC_Marry *marryMem, int n) {
 				default:
 					strcpy(timestr,get_simple_date_str(&mm->marry_t));
 			}
-			sprintf(buf, "[%4d] %-20.20s %-10.10s %-10.10s %-16.16s %4d \033[1;%dm%-6.6s\033[m",
+			char local_buf[STRLEN * 2];
+			snprintf(local_buf, sizeof(local_buf), "[%4d] %-20.20s %-10.10s %-10.10s %-16.16s %4d \033[1;%dm%-6.6s\033[m",
 					offset,mm->subject,mm->bride,mm->bridegroom,timestr,mm->visitcount,
 					(mm->status ==MAR_MARRYING)?32:37,
 					(mm->status ==MAR_MARRYING)?((mm->marry_t > time(NULL))?"筹备中":"婚礼中"):(marry_status[mm->status]));
-			prints("%s", buf);
+			prints("%s", local_buf);
 			//offset++;
 		}
 		getdata(19, 4, "[B]前页 [C]下页 [Q]退出: [C]", buf, 2, DOECHO, YEA);
@@ -8753,7 +8764,7 @@ static int marry_refresh(struct MC_Marry *marryMem, int n) {
 				ytht_add_to_file(MC_MARRIED_LIST, mm->bridegroom);
 			sprintf(invpath,"%s/M.%ld.A",DIR_MC_MARRY,mm->invitationfile);
 			sprintf(setpath,"%s/M.%ld.A",DIR_MC_MARRY,mm->setfile);
-			sprintf(visitpath,"%s/M.%d.A",DIR_MC_MARRY, mm->visitfile);
+			sprintf(visitpath,"%s/M.%ld.A",DIR_MC_MARRY, mm->visitfile);
 			sprintf(filetmp, MY_BBS_HOME "/bbstmpfs/tmp/%s.%d", currentuser.userid, getpid());
 			fp = fopen(filetmp,"w");
 			if(!fp) continue;
@@ -8951,10 +8962,11 @@ static int marry_attend(struct MC_Marry *marryMem, int n) {
 			if(mm->enable==0) continue;
 			if(!mm->bride[0] || !mm->bridegroom[0]) continue;
 			count++;
-			sprintf(buf, "[%4d] %-20.20s %-10.10s %-10.10s %-16.16s %4d \033[1;%dm%-6.6s\033[m",
+			char local_buf[STRLEN * 2];
+			snprintf(local_buf, sizeof(local_buf), "[%4d] %-20.20s %-10.10s %-10.10s %-16.16s %4d \033[1;%dm%-6.6s\033[m",
 					offset,mm->subject,mm->bride,mm->bridegroom,get_simple_date_str(&mm->marry_t),mm->visitcount,
 					(mm->marry_t > local_now_t)?37:32,(mm->marry_t > local_now_t)?"筹备中":"进行中");
-			prints("%s", buf);
+			prints("%s", local_buf);
 			//offset++;
 		}
 		getdata(19, 4, "[B]前页 [C]下页 [S]选择 [Q]退出: [C]", buf, 2, DOECHO, YEA);
