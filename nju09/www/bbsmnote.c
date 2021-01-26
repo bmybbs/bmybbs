@@ -6,7 +6,7 @@ int
 bbsmnote_main()
 {
 	FILE *fp;
-	char *ptr, path[256], buf[10000], board[256], notestr[40], buf2[128];
+	char *ptr, path[256], buf[10000], board[30], notestr[40], buf2[128];
 	struct boardmem *x;
 	int mode;
 
@@ -16,7 +16,7 @@ bbsmnote_main()
 	if (!loginok || isguest)
 		http_fatal("´Ò´Ò¹ý¿Í£¬ÇëÏÈµÇÂ¼");
 	changemode(EDIT);
-	ytht_strsncpy(board, getparm("board"), 30);
+	ytht_strsncpy(board, getparm("board"), sizeof(board));
 	x = getboard(board);
 	mode = atoi(getparm("mode"));
 	if (!has_BM_perm(&currentuser, x))
