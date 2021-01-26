@@ -1,10 +1,14 @@
 #include "bbslib.h"
 
+extern void printboardtop(struct boardmem *x, int num);
+extern int getdocstart(int total, int lines);
+extern void nosuchboard(char *board, char *cginame);
+
 int
 bbsmmdoc_main()
 {	//developed by macintosh 050519 for new www
 	FILE *fp, *fp1, *fp2;
-	char board[80], dir[80],buf[128],name[80];
+	char board[32], dir[80],buf[128],name[80];
 	struct boardmem *x1;
 	struct fileheader x;
 	int i, start, total=0;
@@ -12,7 +16,7 @@ bbsmmdoc_main()
 	check_msg();
 	printf("<script src=/function.js></script>\n");
 	changemode(READING);
-	ytht_strsncpy(board, getparm2("B", "board"), 32);
+	ytht_strsncpy(board, getparm2("B", "board"), sizeof(board));
 	x1 = getboard(board);
 	if (x1 == 0)
 		nosuchboard(board, "bbsmmdoc");
@@ -37,8 +41,8 @@ bbsmmdoc_main()
 	}
 	fclose(fp1);
 	fclose(fp2);
-	
-	fp = fopen(buf, "r");	
+
+	fp = fopen(buf, "r");
 	start = getdocstart(total, w_info->t_lines);
 	printf("<body topmargin=0 leftmargin=0>\n");
 	printf("<table width=\"100%%\" border=0 cellpadding=0 cellspacing=0>\n"
@@ -51,7 +55,7 @@ bbsmmdoc_main()
 	printf("<td align=right><a href=\"mmdoc?B=%s&S=%d\" title=\"第一页 accesskey: 1\" accesskey=\"1\">第一页</a>\n", board, 1);
 	if(start > w_info->t_lines+1) printf("<a href=\"mmdoc?B=%s&S=%d\" title=\"上一页 accesskey: f\" accesskey=\"f\">上一页</a>\n", board, (start-w_info->t_lines));
 	if(start < total-w_info->t_lines+1) printf("<a href=\"mmdoc?B=%s&S=%d\" title=\"下一页 accesskey: n\" accesskey=\"n\">下一页</a>\n", board, (start+w_info->t_lines));
-	printf("<a href=\"mmdoc?B=%s&S=%d\" title=\"最后一页 accesskey: l\" accesskey=\"l\">最后一页</a>\n", board, (total-w_info->t_lines+1)); 
+	printf("<a href=\"mmdoc?B=%s&S=%d\" title=\"最后一页 accesskey: l\" accesskey=\"l\">最后一页</a>\n", board, (total-w_info->t_lines+1));
 	printf("<input type=hidden name=B value=%s>", board);
 	printf("<input name=Submit1 type=Submit class=sumbitgrey value=Go>\n"
 		"<input name=S type=text style=\"font-size:11px;font-family:verdana;\" size=4></td>\n"
@@ -74,23 +78,18 @@ bbsmmdoc_main()
 		"<TD class=tdtitle>星级</TD>\n"
 		"<TD class=tdtitle>评价</TD>\n"
 		"</TR>\n");
-	
+
 	fseek(fp, (start - 1) * sizeof (struct fileheader), SEEK_SET);
 	for (i = 0; i < w_info->t_lines; i++) {
 		if (fread(&x, sizeof (x), 1, fp) <= 0)
 			break;
 		printf("<tr><td class=tdborder>%d</td><td class=tdborder> </td><td class=tduser>%s</td>",
-		       start + i, 
-		       //flag_str(x.accessed) , 
-		       userid_str(x.owner));
+				start + i,
+				//flag_str(x.accessed) ,
+				userid_str(x.owner));
 		printf("<td align=center class=tdborder>%12.12s</td>", ytht_ctime(x.filetime) + 4);
-		printf
-		    ("<td class=tdborder><a href=con?B=%s&F=%s>%s%s</a></td><td class=tdborder>%d</td><td class=tdborder>%d人</td></tr>\n",
-		     board, fh2fname(&x),  strncmp(x.title,
-								 "Re: ",
-								 4) ? "● " :
-		     "", void1(titlestr(x.title)), x.staravg50 / 50,
-		     x.hasvoted);
+		printf("<td class=tdborder><a href=con?B=%s&F=%s>%s%s</a></td><td class=tdborder>%d</td><td class=tdborder>%d人</td></tr>\n",
+				board, fh2fname(&x),  strncmp(x.title, "Re: ", 4) ? "● " : "", void1(titlestr(x.title)), x.staravg50 / 50, x.hasvoted);
 	}
 	printf("</TR> </TBODY></TABLE></td></tr>\n");
 	printf("<tr><td height=40 class=\"level1\">&nbsp;</td>\n"
@@ -103,7 +102,7 @@ bbsmmdoc_main()
 	printf("<td align=right><a href=\"mmdoc?B=%s&S=%d\" title=\"第一页 accesskey: 1\" accesskey=\"1\">第一页</a>\n", board, 1);
 	if(start > w_info->t_lines+1) printf("<a href=\"mmdoc?B=%s&S=%d\" title=\"上一页 accesskey: f\" accesskey=\"f\">上一页</a>\n", board, (start-w_info->t_lines));
 	if(start < total-w_info->t_lines+1) printf("<a href=\"mmdoc?B=%s&S=%d\" title=\"下一页 accesskey: n\" accesskey=\"n\">下一页</a>\n", board, (start+w_info->t_lines));
-	printf("<a href=\"mmdoc?B=%s&S=%d\" title=\"最后一页 accesskey: l\" accesskey=\"l\">最后一页</a>\n", board, (total-w_info->t_lines+1)); 
+	printf("<a href=\"mmdoc?B=%s&S=%d\" title=\"最后一页 accesskey: l\" accesskey=\"l\">最后一页</a>\n", board, (total-w_info->t_lines+1));
 	printf("<input type=hidden name=B value=%s>", board);
 	printf("<input name=Submit2 type=Submit class=sumbitgrey value=Go>\n"
 		"<input name=S type=text style=\"font-size:11px;font-family:verdana;\" size=4></td>\n"

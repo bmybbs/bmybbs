@@ -1,20 +1,22 @@
 #include "bbslib.h"
 
+static void save_note(char *path);
+
 int
 bbsmnote_main()
 {
 	FILE *fp;
-	char *ptr, path[256], buf[10000], board[256], notestr[40], buf2[128];
+	char *ptr, path[256], buf[10000], board[30], notestr[40], buf2[128];
 	struct boardmem *x;
 	int mode;
-	
+
 	html_header(1);
 	check_msg();
 	printf("<center>\n");
 	if (!loginok || isguest)
 		http_fatal("´Ò´Ò¹ý¿Í£¬ÇëÏÈµÇÂ¼");
 	changemode(EDIT);
-	ytht_strsncpy(board, getparm("board"), 30);
+	ytht_strsncpy(board, getparm("board"), sizeof(board));
 	x = getboard(board);
 	mode = atoi(getparm("mode"));
 	if (!has_BM_perm(&currentuser, x))
@@ -42,9 +44,7 @@ bbsmnote_main()
 		save_note(path);
 	}
 	printf("%s -- ±à¼­%s [ÌÖÂÛÇø: %s]<hr>\n", BBSNAME, notestr, board);
-	printf
-	    ("<form name=form1 method=post action=bbsmnote?type=update&board=%s&mode=%d>\n",
-	     board, mode);
+	printf("<form name=form1 method=post action=bbsmnote?type=update&board=%s&mode=%d>\n", board, mode);
 	fp = fopen(path, "r");
 	if (fp) {
 		fread(buf, 9999, 1, fp);
@@ -54,8 +54,7 @@ bbsmnote_main()
 		fclose(fp);
 	}
 	printf("<table border=1><tr><td>");
-	printf
-	    ("<textarea  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.form1.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.form1.submit()' name=text rows=20 cols=80 wrap=virtual>\n");
+	printf("<textarea  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.form1.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.form1.submit()' name=text rows=20 cols=80 wrap=virtual>\n");
 	printf("%s", nohtml(void1(buf)));
 	printf("</textarea></table>\n");
 	printf("<input type=submit value=´æÅÌ> ");
@@ -65,9 +64,7 @@ bbsmnote_main()
 	return 0;
 }
 
-void
-save_note(char *path)
-{
+static void save_note(char *path) {
 	FILE *fp;
 	char buf[10000];
 	fp = fopen(path, "w");

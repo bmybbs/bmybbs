@@ -1,5 +1,7 @@
 #include "bbslib.h"
 
+static int do_cccmail(struct fileheader *x, struct boardmem *brd);
+
 int
 bbscccmail_main()
 {
@@ -7,7 +9,7 @@ bbscccmail_main()
 	struct boardmem *brd;
 	char file[80], target[80];
 	char dir[80];
-	struct mmapfile mf = { ptr:NULL };
+	struct mmapfile mf = { .ptr = NULL };
 	int num;
 	html_header(1);
 	check_msg();
@@ -33,8 +35,7 @@ bbscccmail_main()
 	MMAP_END mmapfile(NULL, &mf);
 	if (x == 0)
 		http_fatal("错误的文件名");
-	printf("<center>%s -- 转载文章 [使用者: %s]<hr>\n", BBSNAME,
-	       currentuser.userid);
+	printf("<center>%s -- 转载文章 [使用者: %s]<hr>\n", BBSNAME, currentuser.userid);
 	if (target[0]) {
 		brd = getboard(target);
 		if (brd == 0)
@@ -42,14 +43,12 @@ bbscccmail_main()
 		if (!has_post_perm(&currentuser, brd))
 			http_fatal("错误的讨论区名称或你没有在该版发文的权限");
 		if (noadm4political(target))
-			http_fatal
-			    ("对不起,因为没有版面管理人员在线,本版暂时封闭.");
+			http_fatal("对不起,因为没有版面管理人员在线,本版暂时封闭.");
 		return do_cccmail(x, brd);
 	}
 	printf("<table><tr><td>\n");
 	printf("<font color=red>转贴发文注意事项:<br>\n");
-	printf
-	    ("本站规定同样内容的文章严禁在3(不含)个以上讨论区重复张贴。");
+	printf("本站规定同样内容的文章严禁在3(不含)个以上讨论区重复张贴。");
 	printf("违者将剥夺全站发表文章的权利。<br><br></font>\n");
 	printf("文章标题: %s<br>\n", nohtml(x->title));
 	printf("文章作者: %s<br>\n", fh2owner(x));
@@ -61,12 +60,9 @@ bbscccmail_main()
 	return 0;
 }
 
-int
-do_cccmail(struct fileheader *x, struct boardmem *brd)
-{
+static int do_cccmail(struct fileheader *x, struct boardmem *brd) {
 	FILE *fp, *fp2;
-	char board[80], title[512], buf[512], path[200], path2[200],
-	    i;
+	char board[80], title[512], buf[512], path[200], path2[200], i;
 	char tmpfn[80];
 	int retv;
 	int mark = 0;
@@ -123,8 +119,8 @@ do_cccmail(struct fileheader *x, struct boardmem *brd)
 	}
 	unlink(tmpfn);
 	post_article(board, title, path2, currentuser.userid,
-		     currentuser.username, fromhost, -1, mark, 0,
-		     currentuser.userid, -1);
+			currentuser.username, fromhost, -1, mark, 0,
+			currentuser.userid, -1);
 	unlink(path2);
 	printf("'%s' 已转贴到 %s 版.<br>\n", nohtml(title), board);
 	printf("[<a href='javascript:history.go(-2)'>返回</a>]");

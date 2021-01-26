@@ -1,6 +1,8 @@
 #include "bbslib.h"
 
-char *defines[] = {
+static int read_form();
+
+static const char *defines[] = {
 	"呼叫器关闭时可让好友呼叫",	/* DEF_FRIENDCALL */
 	"接受所有人的讯息",	/* DEF_ALLMSG */
 	"接受好友的讯息",	/* DEF_FRIENDMSG */
@@ -43,8 +45,7 @@ bbsparm_main()
 	html_header(1);
 	check_msg();
 	type = atoi(getparm("type"));
-	printf("<body><center><div class=rhead>%s -- 修改个人参数 [使用者: <span class=h11>%s</span>]</div><hr>\n", BBSNAME,
-	       currentuser.userid);
+	printf("<body><center><div class=rhead>%s -- 修改个人参数 [使用者: <span class=h11>%s</span>]</div><hr>\n", BBSNAME, currentuser.userid);
 	if (!loginok || isguest)
 		http_fatal("匆匆过客不能设定参数");
 	changemode(USERDEF);
@@ -58,22 +59,17 @@ bbsparm_main()
 			printf("<tr>\n");
 		if (currentuser.userdefine & perm)
 			ptr = " checked";
-		printf
-		    ("<td><input type=checkbox name=perm%d%s></td><td>%s</td>",
-		     i, ptr, defines[i]);
+		printf("<td><input type=checkbox name=perm%d%s></td><td>%s</td>", i, ptr, defines[i]);
 		perm = perm * 2;
 	}
 	printf("</table>");
-	printf
-	    ("<input type=submit value=确定修改></form><br>以上参数大多仅在telnet方式下才有作用\n");
+	printf("<input type=submit value=确定修改></form><br>以上参数大多仅在telnet方式下才有作用\n");
 	printf("</body>");
 	http_quit();
 	return 0;
 }
 
-int
-read_form()
-{
+static int read_form() {
 	int i, perm = 1, def = 0;
 	char var[100];
 	for (i = 0; i < 32; i++) {

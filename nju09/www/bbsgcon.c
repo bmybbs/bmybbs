@@ -1,20 +1,23 @@
 #include "bbslib.h"
+
+extern int showbinaryattach(char *filename);
+
 int
 bbsgcon_main()
 {
 	FILE *fp;
-	char board[80], dir[80], file[80], filename[80], *ptr;
+	char board[32], dir[80], file[32], filename[80], *ptr;
 	struct fileheader x;
 	int num, total = 0;
 	struct fileheader *dirinfo = NULL;
-	struct mmapfile mf = { ptr:NULL };
+	struct mmapfile mf = { .ptr = NULL };
 	changemode(READING);
-	ytht_strsncpy(board, getparm("B"), 32);
+	ytht_strsncpy(board, getparm("B"), sizeof(board));
 	if (!board[0])
-		ytht_strsncpy(board, getparm("board"), 32);
-	ytht_strsncpy(file, getparm("F"), 32);
+		ytht_strsncpy(board, getparm("board"), sizeof(board));
+	ytht_strsncpy(file, getparm("F"), sizeof(file));
 	if (!file[0])
-		ytht_strsncpy(file, getparm("file"), 32);
+		ytht_strsncpy(file, getparm("file"), sizeof(file));
 	num = atoi(getparm("num"));
 	if (getboard(board) == NULL)
 		http_fatal("错误的讨论区");
@@ -56,22 +59,19 @@ bbsgcon_main()
 	if (num > 0) {
 		fseek(fp, sizeof (x) * (num - 1), SEEK_SET);
 		fread(&x, sizeof (x), 1, fp);
-		printf("[<a href=bbsgcon?board=%s&file=%s&num=%d>上一篇</a>]",
-		       board, fh2fname(&x), num - 1);
+		printf("[<a href=bbsgcon?board=%s&file=%s&num=%d>上一篇</a>]", board, fh2fname(&x), num - 1);
 	}
 	printf("[<a href=%s%s>本讨论区</a>]", showByDefMode(), board);
 	if (num < total - 1) {
 		fseek(fp, sizeof (x) * (num + 1), SEEK_SET);
 		fread(&x, sizeof (x), 1, fp);
-		printf("[<a href=bbsgcon?board=%s&file=%s&num=%d>下一篇</a>]",
-		       board, fh2fname(&x), num + 1);
+		printf("[<a href=bbsgcon?board=%s&file=%s&num=%d>下一篇</a>]", board, fh2fname(&x), num + 1);
 	}
 	fclose(fp);
 	ptr = dirinfo->title;
 	if (!strncmp(ptr, "Re: ", 4))
 		ptr += 4;
-	printf("[<a href='bbstfind?board=%s&th=%ld'>同主题阅读</a>]\n",
-	       board, dirinfo->thread);
+	printf("[<a href='bbstfind?board=%s&th=%ld'>同主题阅读</a>]\n", board, dirinfo->thread);
 	printf("</center></body>\n");
 	http_quit();
 	return 0;

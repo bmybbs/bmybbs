@@ -7,7 +7,7 @@ bbsbfind_main()
 {
 	FILE *fp;
 	int num = 0, total = 0, type, dt, mg = 0, og = 0, at = 0;
-	char dir[80], title[80], title2[80], title3[80], board[80], userid[80];
+	char dir[80], title[80], title2[80], title3[80], board[32], userid[80];
 	struct boardmem *brd;
 	struct fileheader x;
 	html_header(1);
@@ -15,9 +15,9 @@ bbsbfind_main()
 	check_msg();
 	printf("<center>%s -- °æÄÚÎÄÕÂËÑË÷<hr>\n", BBSNAME);
 	type = atoi(getparm("type"));
-	ytht_strsncpy(board, getparm("B"), 32);
+	ytht_strsncpy(board, getparm("B"), sizeof(board));
 	if (!board[0])
-		ytht_strsncpy(board, getparm("board"), 30);
+		ytht_strsncpy(board, getparm("board"), sizeof(board));
 	if (type == 0)
 		return show_form(board);
 	// Ò»°ãËÑË÷
@@ -105,9 +105,9 @@ bbsbfind_main()
 
 	{
 		char content[200];
-		char cmd[256];
+		char cmd[512];
 		ytht_strsncpy(content, getparm("content"), 200);
-		sprintf(cmd, MY_BBS_HOME "/bin/searcher.py %s '%s'", board, content);
+		snprintf(cmd, sizeof(cmd), MY_BBS_HOME "/bin/searcher.py %s '%s'", board, content);
 
 		brd = getboard(board);
 		if (brd == 0)

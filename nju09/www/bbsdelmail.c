@@ -23,20 +23,20 @@ bbsdelmail_main()
 			ndelfile++;
 	}
 
-    int box_type = 0;
-    char type_string[20];
+	int box_type = 0;
+	char type_string[20];
 	ytht_strsncpy(type_string, getparm("box_type"), 20);
-    if(type_string[0] != 0) {
-        box_type = atoi(type_string);
-    }
-    snprintf(type_string, sizeof(type_string), "box_type=%d", box_type);
-    if(box_type == 1) {
-        setsentmailfile(path, currentuser.userid, ".DIR");
-	    setsentmailfile(tmppath, currentuser.userid, ".DIR.tmp");
-    } else {
-        setmailfile(path, currentuser.userid, ".DIR");
-        setmailfile(tmppath, currentuser.userid, ".DIR.tmp");
-    }
+	if(type_string[0] != 0) {
+		box_type = atoi(type_string);
+	}
+	snprintf(type_string, sizeof(type_string), "box_type=%d", box_type);
+	if(box_type == 1) {
+		setsentmailfile(path, currentuser.userid, ".DIR");
+		setsentmailfile(tmppath, currentuser.userid, ".DIR.tmp");
+	} else {
+		setmailfile_s(path, sizeof(path), currentuser.userid, ".DIR");
+		setmailfile_s(tmppath, sizeof(tmppath), currentuser.userid, ".DIR.tmp");
+	}
 	fp = fopen(path, "r");
 	if (fp == 0)
 		http_fatal("错误的参数2");
@@ -57,14 +57,13 @@ bbsdelmail_main()
 			fwrite(&f, sizeof (f), 1, fpw);
 			continue;
 		}
-		setmailfile(file, currentuser.userid, ptr);
+		setmailfile_s(file, sizeof(file), currentuser.userid, ptr);
 		unlink(file);
 	}
 	fclose(fp);
 	fclose(fpw);
 	rename(tmppath, path);
-	printf("信件已删除.<br><a href=bbsmail?%s>返回信件列表</a>\n"
-            , type_string);
+	printf("信件已删除.<br><a href=bbsmail?%s>返回信件列表</a>\n", type_string);
 	http_quit();
 	return 0;
 }

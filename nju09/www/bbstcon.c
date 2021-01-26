@@ -46,7 +46,7 @@ void tshare(char * board, int start, int thread, int article_count, char * owner
 int
 bbstcon_main()
 {	//modify by mintbaggio 040529 for new www, 041228 for www v2.0
-	char title[256], board[80], dir[80];
+	char title[256], board[32], dir[80];
 	char thread_title[256]; // 同主题标题 by IronBlood@bmy 20120426
 	char bmbuf[IDLEN * 4 + 4], odd_even_class[16], class[10];
 	struct fileheader *x;
@@ -60,7 +60,7 @@ bbstcon_main()
 	html_header(1);
 	check_msg();
 	printf("<script src=/function.js></script>\n");
-	ytht_strsncpy(board, getparm("board"), 32);
+	ytht_strsncpy(board, getparm("board"), sizeof(board));
 	thread = atoi(getparm("th"));
 	printf("<body leftmargin=0 topmargin=0>\n<img src=\"/images/bmy.gif\" style=\"position: absolute;top:-160px;\"/>\n");
 	printf("<table width=100%% border=0 cellpadding=0 cellspacing=0>\n");

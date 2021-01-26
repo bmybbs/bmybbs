@@ -1,5 +1,6 @@
 #include "bbslib.h"
-FILE *fp;
+
+static void save_sig(char *path);
 
 int
 bbssig_main()
@@ -10,16 +11,14 @@ bbssig_main()
 	if (!loginok || isguest)
 		http_fatal("匆匆过客不能设置签名档，请先登录");
 	changemode(EDITUFILE);
-	printf("<body><center><div class=rhead>%s -- 设置签名档 [使用者: <span class=h11>%s</span>]</div><hr>\n",
-	       BBSNAME, currentuser.userid);
-	sprintf(path, "home/%c/%s/signatures",
-		mytoupper(currentuser.userid[0]), currentuser.userid);
+	printf("<body><center><div class=rhead>%s -- 设置签名档 [使用者: <span class=h11>%s</span>]</div><hr>\n", BBSNAME, currentuser.userid);
+	sprintf(path, "home/%c/%s/signatures", mytoupper(currentuser.userid[0]), currentuser.userid);
 	if (!strcasecmp(getparm("type"), "1"))
 		save_sig(path);
 	printf("<form name=form1 method=post action=bbssig?type=1>\n");
 	printf("签名档每6行为一个单位, 可设置多个签名档.<br>"
-	       "(<a href=bbscon?B=Announce&F=M.1047666649.A>"
-	       "[临时公告]关于图片签名档的大小限制</a>)<br>");
+			"(<a href=bbscon?B=Announce&F=M.1047666649.A>"
+			"[临时公告]关于图片签名档的大小限制</a>)<br>");
 	printf("<textarea  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.form1.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.form1.submit()' name=text rows=20 cols=80>\n");
 	fp = fopen(path, "r");
 	if (fp) {
@@ -35,9 +34,8 @@ bbssig_main()
 	return 0;
 }
 
-void
-save_sig(char *path)
-{
+static void save_sig(char *path) {
+	FILE *fp;
 	char *buf;
 	fp = fopen(path, "w");
 	buf = getparm("text");

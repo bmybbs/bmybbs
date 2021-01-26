@@ -2,13 +2,15 @@
 #include "check_server.h"
 int quote_quote = 0;
 
+extern int fshowcon(FILE * output, char *filename, int show_iframe);
+
 int
 bbsincon_main()
 {	//modify by macintosh 050619 for Tex Math Equ
 	char *path_info;
 	char *name, filename[128], dir[128],*ptr;
 	struct fileheader *dirinfo;
-	struct mmapfile mf = { ptr:NULL };
+	struct mmapfile mf = { .ptr = NULL };
 	extern char *cginame;
 	int old_quote_quote;
 	int num = -1;
@@ -31,7 +33,7 @@ bbsincon_main()
 		withinMath = 0;
 	} else {
 		usingMath = 0;
-	}   
+	}
 	if (hideboard(path_info))
 		http_fatal("错误的文件名3");
 	if (strncmp(name, "M.", 2) && strncmp(name, "G.", 2))

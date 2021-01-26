@@ -7,18 +7,18 @@ bbsccc_main()
 {
 	struct fileheader *x = NULL;
 	struct boardmem *brd, *brd1;
-	char board[80], file[80], target[80];
+	char board[32], file[30], target[80];
 	char dir[80];
 	struct mmapfile mf = { .ptr = NULL };
 	int num;
 	html_header(1);
 	check_msg();
-	ytht_strsncpy(board, getparm("B"), 32);
+	ytht_strsncpy(board, getparm("B"), sizeof(board));
 	if (!board[0])
-		ytht_strsncpy(board, getparm("board"), 30);
-	ytht_strsncpy(file, getparm("F"), 30);
+		ytht_strsncpy(board, getparm("board"), sizeof(board));
+	ytht_strsncpy(file, getparm("F"), sizeof(file));
 	if (!file[0])
-		ytht_strsncpy(file, getparm("file"), 30);
+		ytht_strsncpy(file, getparm("file"), sizeof(file));
 	ytht_strsncpy(target, getparm("target"), 30);
 	if (!loginok || isguest)
 		http_fatal("匆匆过客不能进行本项操作");

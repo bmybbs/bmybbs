@@ -14,15 +14,15 @@ extern void printrelationboards(char *buf);
 int
 bbstdoc_main()
 {
-	char board[80], buf[128],only_for_b[80],genbuf[STRLEN];
+	char board[32], buf[128],only_for_b[80],genbuf[STRLEN];
 	FILE *fp;
 	struct boardmem *x1;
 	struct fileheader *data = NULL;
 	int i, start = 0, total2 = 0, total = 0, sum = 0, fd, size;
 	changemode(READING);
-	ytht_strsncpy(board, getparm("B"), 32);
+	ytht_strsncpy(board, getparm("B"), sizeof(board));
 	if (!board[0])
-		ytht_strsncpy(board, getparm("board"), 32);
+		ytht_strsncpy(board, getparm("board"), sizeof(board));
 	x1 = getboard(board);
 	if (x1 == 0) {
 		html_header(1);
@@ -92,9 +92,9 @@ bbstdoc_main()
 				"<input name=start type=text style=\"font-size:11px;font-family:verdana;\" size=4>");
 		//add by liuche 20120206 for pagenumber
 		if((start-1)%w_info->t_lines==0)
-		printf(" Page: %d/%d\n",(start-1)/w_info->t_lines+1,(total-1)/w_info->t_lines+1);
+			printf(" Page: %d/%d\n",(start-1)/w_info->t_lines+1,(total-1)/w_info->t_lines+1);
 		else
-		printf(" Page: %d/%d\n",(start-1)/w_info->t_lines+2,(total-1)/w_info->t_lines+1);
+			printf(" Page: %d/%d\n",(start-1)/w_info->t_lines+2,(total-1)/w_info->t_lines+1);
 
 		//printhr();
 		printf("</td></tr></table></td></tr></table></td></tr></form></table>\n");
@@ -163,9 +163,9 @@ bbstdoc_main()
 	printf("<input name=Submit2 type=Submit class=sumbitgrey value=Go>\n"
 		"<input name=start type=text style=\"font-size:11px;font-family:verdana;\" size=4>");
 	if((start-1)%w_info->t_lines==0)
-	printf(" Page: %d/%d\n",(start-1)/w_info->t_lines+1,(total-1)/w_info->t_lines+1);
+		printf(" Page: %d/%d\n",(start-1)/w_info->t_lines+1,(total-1)/w_info->t_lines+1);
 	else
-	printf(" Page: %d/%d\n",(start-1)/w_info->t_lines+2,(total-1)/w_info->t_lines+1);
+		printf(" Page: %d/%d\n",(start-1)/w_info->t_lines+2,(total-1)/w_info->t_lines+1);
 	printf("</td></tr></form></table>");
 	sprintf(buf, "%s", ytht_strtrim(x1->header.keyword));
 	if (strlen(buf)){

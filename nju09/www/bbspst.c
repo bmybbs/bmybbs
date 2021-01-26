@@ -6,7 +6,7 @@ bbspst_main()
 {
 	FILE *fp;
 	int local_article, i, num, fullquote = 0, guestre = 0, thread = -1;
-	char userid[80], buf[512], path[512], file[512], board[512], title[80] = "";
+	char userid[IDLEN + 2], buf[512], path[512], file[20], board[32], title[80] = "";
 	struct fileheader *dirinfo = NULL;
 	struct boardmem *x;
 	//add by mintbaggio 040807 for new www
@@ -14,7 +14,7 @@ bbspst_main()
 	struct mmapfile mf = { .ptr = NULL };
 	html_header(1);
 	check_msg();
-	ytht_strsncpy(board, getparm("B"), 32);
+	ytht_strsncpy(board, getparm("B"), sizeof(board));
 	if(strcasecmp(board, "welcome") && strcasecmp(board, "KaoYan")){
 		// modify by mintbaggio 040614 for guest post at board "welcome" + "KaoYan"(by wsf)
 		if (!loginok) {
@@ -27,12 +27,11 @@ bbspst_main()
 	else if (seek_in_file(MY_BBS_HOME"/etc/guestbanip", fromhost) && !loginok)
 		http_fatal("您的ip被禁止使用guest在本版发表文章!");
 	local_article = 1; // modified by linux @ 2006.6.6 for the default post status to no outgo
-//	ytht_strsncpy(board, getparm("B"), 32);
 	if (!board[0])
-		ytht_strsncpy(board, getparm("board"), 20);
-	ytht_strsncpy(file, getparm("F"), 20);
+		ytht_strsncpy(board, getparm("board"), sizeof(board));
+	ytht_strsncpy(file, getparm("F"), sizeof(file));
 	if (!file[0])
-		ytht_strsncpy(file, getparm("file"), 20);
+		ytht_strsncpy(file, getparm("file"), sizeof(file));
 	fullquote = atoi(getparm("fullquote"));
 	if (file[0] != 'M' && file[0])
 		http_fatal("错误的文件名");
@@ -56,12 +55,12 @@ bbspst_main()
 			thread = dirinfo->thread;
 			//if (dirinfo->accessed & FH_ALLREPLY)
 			//	guestre = 1;
-			ytht_strsncpy(userid, fh2owner(dirinfo), 20);
+			ytht_strsncpy(userid, fh2owner(dirinfo), sizeof(userid));
 			if (strncmp(dirinfo->title, "Re: ", 4)) {
-				snprintf(title, 60, "Re: %s", dirinfo->title);
+				snprintf(title, sizeof(title), "Re: %s", dirinfo->title);
 				local_article = atoi(getparm("la")); // added by linux @2006.6.6 for the post status to the status of the article before when doing a reply post
 			} else
-				ytht_strsncpy(title, dirinfo->title, 60);
+				ytht_strsncpy(title, dirinfo->title, sizeof(title));
 		} else
 			http_fatal("错误的文件名");
 		if (dirinfo->accessed & FH_NOREPLY)

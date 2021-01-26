@@ -11,7 +11,7 @@ bbsbadlogins_main()
 		return 0;
 	}
 
-	sethomefile(file, currentuser.userid, BADLOGINFILE);
+	sethomefile_s(file, sizeof(file), currentuser.userid, BADLOGINFILE);
 	if (!file_exist(file)) {
 		printf("没有任何密码输入错误记录</body></html>");
 		return 0;
@@ -19,8 +19,7 @@ bbsbadlogins_main()
 	if (*getparm("del") == '1') {
 		unlink(file);
 		printf("密码输入错误记录已被删除<br>");
-		printf
-		    ("<a href='#' onClick='javascript:window.close()'>关闭窗口</a>");
+		printf("<a href='#' onClick='javascript:window.close()'>关闭窗口</a>");
 	} else {
 		printf("发现以下密码输入错误记录<br><pre>");
 		showfile(file);

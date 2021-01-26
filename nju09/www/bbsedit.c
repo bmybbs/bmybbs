@@ -10,7 +10,7 @@ bbsedit_main()
 {
 	FILE *fp;
 	int type = 0, num;
-	char buf[512], path[512], file[512], board[512], title[80];
+	char buf[512], path[512], file[30], board[32], title[80];
 	int base64, isa = 0;
 	size_t len;
 	char *fn = NULL;
@@ -24,16 +24,16 @@ bbsedit_main()
 		http_fatal("匆匆过客不能修改文章，请先登录");
 	changemode(EDIT);
 	ytht_strsncpy(title, getparm("title"), 60);
-	ytht_strsncpy(board, getparm("B"), 32);
+	ytht_strsncpy(board, getparm("B"), sizeof(board));
 	if (!board[0])
-		ytht_strsncpy(board, getparm("board"), 32);
+		ytht_strsncpy(board, getparm("board"), sizeof(board));
 	type = atoi(getparm("type"));
 	brd = getboard(board);
 	if (brd == 0)
 		http_fatal("错误的讨论区");
-	ytht_strsncpy(file, getparm("F"), 30);
+	ytht_strsncpy(file, getparm("F"), sizeof(file));
 	if (!file[0])
-		ytht_strsncpy(file, getparm("file"), 30);
+		ytht_strsncpy(file, getparm("file"), sizeof(file));
 	if (!has_post_perm(&currentuser, brd))
 		http_fatal("错误的讨论区或者您无权在此讨论区发表文章");
 	if (noadm4political(board))
@@ -218,7 +218,7 @@ int
 update_form(char *board, char *file, char *title)
 {
 	FILE *fp, *fp_old;
-	char *buf = getparm("text"), path[80], path_new[80];
+	char *buf = getparm("text"), path[80], path_new[80 + 8];
 	int num = 0, filetime;
 	int usemath, useattach, nore;
 	char dir[STRLEN];

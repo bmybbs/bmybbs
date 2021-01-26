@@ -16,7 +16,7 @@ bbsvote_main()
 	int aborted = NA, pos;
 	int i;
 	unsigned int j, multiroll = 0;
-	char board[80];
+	char board[32];
 	char controlfile[STRLEN];
 	char *date, *tmp1, *tmp2;
 	char flagname[STRLEN];
@@ -32,9 +32,9 @@ bbsvote_main()
 	struct boardmem *x;
 	html_header(1);
 	check_msg();
-	ytht_strsncpy(board, getparm("B"), 32);
+	ytht_strsncpy(board, getparm("B"), sizeof(board));
 	if (!board[0])
-		ytht_strsncpy(board, getparm("board"), 32);
+		ytht_strsncpy(board, getparm("board"), sizeof(board));
 	votenum = atoi(getparm("votenum"));
 	procvote = atoi(getparm("procvote"));
 	if (getboard(board) == NULL)
@@ -156,8 +156,7 @@ bbsvote_main()
 					printf("<input type=radio name=votesingle value=%d %s>%s<br>", (i + multiroll) % currvote.totalitems + 1, (j & 1) ? "checked" : "", currvote.items[(i + multiroll) % currvote.totalitems]);
 					j >>= 1;
 				}
-				printf
-				    ("<input type=hidden name=procvote value=2>");
+				printf("<input type=hidden name=procvote value=2>");
 				break;
 			case VOTE_MULTI:
 				j = (uservote.voted >> multiroll) + (uservote.voted << (currvote.totalitems - multiroll));
@@ -276,9 +275,7 @@ bbsvote_main()
 				ytht_strsncpy(buf1, getparm("sug"), 500);
 				tmp2 = buf1;
 				if (pos > 0)
-					uservote.msg[0][0] =
-					    uservote.msg[1][0] =
-					    uservote.msg[2][0] = 0;
+					uservote.msg[0][0] = uservote.msg[1][0] = uservote.msg[2][0] = 0;
 				for (i = 0; i < 3; i++) {
 					tmp1 = strchr(tmp2, '\n');
 					if (tmp1 != NULL)
