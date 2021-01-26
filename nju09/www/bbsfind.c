@@ -78,7 +78,7 @@ static int search_callback(struct boardmem *board, int curr_idx, va_list ap) {
 		start = - (start + 1);
 
 	for (total = 0, j = start; j < nr; j++) {
-		if (abs(now_t - x[j].filetime) > dt)
+		if (labs(now_t - x[j].filetime) > dt)
 			continue;
 		if (id[0] != 0 && strcasecmp(x[j].owner, id))
 			continue;
