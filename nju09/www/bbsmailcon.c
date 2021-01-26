@@ -1,5 +1,7 @@
 #include "bbslib.h"
 
+extern int showbinaryattach(char *filename);
+
 int
 bbsmailcon_main()
 {	// modify by mintbaggio for new www 041227
@@ -10,19 +12,19 @@ bbsmailcon_main()
 	if ((!loginok || isguest) && (!tempuser))
 		http_fatal("请先登录%d", tempuser);
 
-    /**
-     * type of mail box
-     * 0 : in box [defualt]
-     * 1 : out box
-     */
-    int box_type = 0;
-    char buf[10];
+	/**
+	* type of mail box
+	* 0 : in box [defualt]
+	* 1 : out box
+	*/
+	int box_type = 0;
+	char buf[10];
 	ytht_strsncpy(buf, getparm("box_type"), 10);
-    if(buf[0] != 0) {
-        box_type = atoi(buf);
-    }
-    char type_string[20];
-    snprintf(type_string, sizeof(type_string), "box_type=%d", box_type);
+	if(buf[0] != 0) {
+		box_type = atoi(buf);
+	}
+	char type_string[20];
+	snprintf(type_string, sizeof(type_string), "box_type=%d", box_type);
 
 	//if (tempuser) http_fatal("user %d", tempuser);
 	changemode(RMAIL);
@@ -33,21 +35,21 @@ bbsmailcon_main()
 		http_fatal("错误的参数1");
 	if (strstr(file, "..") || strstr(file, "/"))
 		http_fatal("错误的参数2");
-    if(box_type == 1) {
-        setsentmailfile(path, id, file);
-    }else {
-        setmailfile(path, id, file);
-    }
+	if(box_type == 1) {
+		setsentmailfile(path, id, file);
+	}else {
+		setmailfile_s(path, sizeof(path), id, file);
+	}
 	if (*getparm("attachname") == '/') {
 		showbinaryattach(path);
 		return 0;
 	}
 	if (!tempuser) {
-        if(box_type == 1) {
-            setsentmailfile(dir, id, ".DIR");
-        }else {
-            setmailfile(dir, id, ".DIR");
-        }
+		if(box_type == 1) {
+			setsentmailfile(dir, id, ".DIR");
+		}else {
+			setmailfile_s(dir, sizeof(dir), id, ".DIR");
+		}
 		total = file_size(dir) / sizeof (x);
 		if (total <= 0)
 			http_fatal("错误的参数3 %s", dir);
@@ -78,10 +80,9 @@ bbsmailcon_main()
 	}
 #endif
 	if (loginok && !isguest && !(currentuser.userlevel & PERM_LOGINOK) &&
-	    !tempuser && !strncmp(x.title, "<注册失败>", 10)
-	    && !has_fill_form())
-		printf
-		    ("--&gt;<a href=bbsform><font color=RED size=+1>重新填写注册单</font></a>&lt;--\n<br>");
+			!tempuser && !strncmp(x.title, "<注册失败>", 10)
+			&& !has_fill_form())
+		printf("--&gt;<a href=bbsform><font color=RED size=+1>重新填写注册单</font></a>&lt;--\n<br>");
 #if 0
 	printf("<center>");
 	sprintf(path, "mail/%c/%s/%s", mytoupper(id[0]), id, file);
@@ -100,36 +101,30 @@ bbsmailcon_main()
 		if (num < total - 1) {
 			fseek(fp, sizeof (x) * (num + 1), SEEK_SET);
 			fread(&x, sizeof (x), 1, fp);
-			printf("<a href=bbsmailcon?file=%s&num=%d&%s class=\"btnsubmittheme\" title=\"下一篇 accesskey: n\" accesskey=\"n\">下一篇</a>",
-			       fh2fname(&x), num + 1, type_string);
+			printf("<a href=bbsmailcon?file=%s&num=%d&%s class=\"btnsubmittheme\" title=\"下一篇 accesskey: n\" accesskey=\"n\">下一篇</a>", fh2fname(&x), num + 1, type_string);
 		}
 		if (num >= 0 && num < total) {
 			fseek(fp, sizeof (x) * num, SEEK_SET);
-			if (fread(&x, sizeof (x), 1, fp) > 0
-			    && !(x.accessed & FH_READ)) {
+			if (fread(&x, sizeof (x), 1, fp) > 0 && !(x.accessed & FH_READ)) {
 				x.accessed |= FH_READ;
 				fseek(fp, sizeof (x) * num, SEEK_SET);
 				fwrite(&x, sizeof (x), 1, fp);
-				printf
-				    ("<script>top.f4.location.reload();</script>");
+				printf("<script>top.f4.location.reload();</script>");
 			}
 		}
-        //send box only support 'foward'
-        if(box_type == 0) {
-		    printf("<a href='bbspstmail?file=%s&num=%d' class=\"btnsubmittheme\" title=\"回信 accesskey: m\" accesskey=\"m\">回信</a>",
-		       fh2fname(&x), num);
-		    printf("<a href='bbscccmail?file=%s' class=\"btnsubmittheme\" title=\"转贴 accesskey: c\" accesskey=\"c\">转贴</a>",
-		       fh2fname(&x));
-        }
-		printf("<a href='bbsfwdmail?file=%s&%s' class=\"btnsubmittheme\" title=\"转寄 accesskey: u\" accesskey=\"u\">转寄</a>",
-		       fh2fname(&x), type_string);
+		//send box only support 'foward'
+		if(box_type == 0) {
+			printf("<a href='bbspstmail?file=%s&num=%d' class=\"btnsubmittheme\" title=\"回信 accesskey: m\" accesskey=\"m\">回信</a>", fh2fname(&x), num);
+			printf("<a href='bbscccmail?file=%s' class=\"btnsubmittheme\" title=\"转贴 accesskey: c\" accesskey=\"c\">转贴</a>", fh2fname(&x));
+		}
+		printf("<a href='bbsfwdmail?file=%s&%s' class=\"btnsubmittheme\" title=\"转寄 accesskey: u\" accesskey=\"u\">转寄</a>", fh2fname(&x), type_string);
 		fclose(fp);
 	}
-    if(box_type == 1) {
-        setsentmailfile(path, id, file);
-    } else {
-        setmailfile(path, id, file);
-    }
+	if(box_type == 1) {
+		setsentmailfile(path, id, file);
+	} else {
+		setmailfile_s(path, sizeof(path), id, file);
+	}
 	showcon(path);
 
 	printf("</table></td></tr></table></body>\n");

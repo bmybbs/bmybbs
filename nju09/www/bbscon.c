@@ -6,9 +6,7 @@ extern char *cginame;
 int testmozilla(void);
 extern char *get_mime_type(const char *name);
 
-int
-showbinaryattach(char *filename)
-{
+int showbinaryattach(char *filename) {
 	char *attachname;
 	int pos_i;
 	size_t pos;
