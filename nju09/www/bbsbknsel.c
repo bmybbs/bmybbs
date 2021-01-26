@@ -10,7 +10,7 @@ int
 bbsbknsel_main()
 {
 	FILE *fp;
-	char board[80], dir[160], genbuf[STRLEN];
+	char board[32], dir[160], genbuf[STRLEN];
 	struct boardmem *x1;
 	struct bknheader x;
 	int i, start, total;
@@ -18,9 +18,9 @@ bbsbknsel_main()
 	printf("<script src=/function.js></script>\n");
 	check_msg();
 	changemode(SELBACKNUMBER);
-	ytht_strsncpy(board, getparm("B"), 32);
+	ytht_strsncpy(board, getparm("B"), sizeof(board));
 	if (!board[0])
-		ytht_strsncpy(board, getparm("board"), 32);
+		ytht_strsncpy(board, getparm("board"), sizeof(board));
 	x1 = getboard(board);
 	if (x1 == 0)
 		nosuchboard(board, "bbsbknsel");
