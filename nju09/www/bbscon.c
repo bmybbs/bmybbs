@@ -226,7 +226,7 @@ showcon(char *filename)
 int
 showconxml(char *filename, int viewertype)
 {
-	char filetmp[200], cmd[200], *ptr, *pend;
+	char filetmp[200], cmd[512], *ptr, *pend;
 	struct mmapfile mf = { .ptr = NULL };
 	FILE *fp;
 	int retv = -1;
@@ -363,7 +363,7 @@ processMath()
 int
 bbscon_main()
 {	//modify by mintbaggio 050526 for new www
-	char board[80], dir[80], file[80], filename[80], fileback[80], *ptr;
+	char board[32 /* max 24 */], dir[80], file[32], filename[80], fileback[128], *ptr;
 	char buf[2048];
 	char bmbuf[IDLEN * 4 + 4];
 	int thread;
@@ -380,12 +380,12 @@ bbscon_main()
 
 	changemode(READING);
 
-	ytht_strsncpy(board, getparm("B"), 32);
+	ytht_strsncpy(board, getparm("B"), sizeof(board));
 	if (!board[0])
-		ytht_strsncpy(board, getparm("board"), 32);
-	ytht_strsncpy(file, getparm("F"), 32);
+		ytht_strsncpy(board, getparm("board"), sizeof(board));
+	ytht_strsncpy(file, getparm("F"), sizeof(file));
 	if (!file[0])
-		ytht_strsncpy(file, getparm("file"), 32);
+		ytht_strsncpy(file, getparm("file"), sizeof(file));
 	num = atoi((ptr = getparm("N"))) - 1;
 	if (!ptr[0])
 		num = atoi(getparm("num")) - 1;
