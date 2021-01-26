@@ -56,7 +56,7 @@ bbs0an_main()
 {	//modify by mintbaggio 040825 for new www
 	FILE *fp;
 	int index = 0, visit[2];
-	char *ptr, papath[PATHLEN], path[PATHLEN], names[PATHLEN], file[80], buf[PATHLEN], title[256] = " ";
+	char *ptr, papath[PATHLEN], path[PATHLEN], names[PATHLEN + STRLEN], file[80], buf[PATHLEN + STRLEN * 2], title[256] = " ";
 	char *board;
 	html_header(1);
 	changemode(DIGEST);
@@ -68,7 +68,7 @@ bbs0an_main()
 	ytht_strsncpy(path, getparm("path"), PATHLEN - 1);
 	if (strstr(path, ".."))
 		http_fatal("此目录不存在");
-	snprintf(names, PATHLEN, "0Announce%s/.Names", path);
+	snprintf(names, sizeof(names), "0Announce%s/.Names", path);
 	strcpy(papath, path);
 	ptr = strrchr(papath, '/');
 	if (ptr != NULL) {
@@ -82,7 +82,8 @@ bbs0an_main()
 		goto L;
 	if (board[0] && !has_read_perm(&currentuser, board))
 		http_fatal("1,目录不存在");
-L:	fp = fopen(names, "r");
+L:
+	fp = fopen(names, "r");
 	if (fp == 0)
 		http_fatal("2,目录不存在");
 	if (anc_readtitle(fp, title, sizeof (title))) {
