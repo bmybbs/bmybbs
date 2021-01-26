@@ -1,6 +1,8 @@
 #include "bbslib.h"
 #include "check_server.h"
 
+extern struct cgi_applet *get_cgi_applet(char *needcgi);
+
 int
 bbsattach_main()
 {
