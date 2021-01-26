@@ -1940,7 +1940,7 @@ int mode;
 		move(2,0);
 		usercomplete("==>", receiver);
 		if (receiver[0] != '\0') {
-			strncpy(address, receiver, STRLEN);
+			ytht_strsncpy(address, receiver, STRLEN);
 		}
 	}
 	sprintf(genbuf, ".bbs@%s", email_domain());

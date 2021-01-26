@@ -35,10 +35,10 @@ static void haha(int what);
 static void win(struct fivechess *fc, int who);
 static void quit(void);
 static void calvalue(struct fivechess *fc, int x1, int y1, int x2, int y2,
-		     int x3, int y3, int x4, int y4, int x5, int y5);
+		int x3, int y3, int x4, int y4, int x5, int y5);
 static void callfour(struct fivechess *fc, int x1, int y1, int x2, int y2,
-		     int x3, int y3, int x4, int y4, int x5, int y5, int x6,
-		     int y6);
+		int x3, int y3, int x4, int y4, int x5, int y5, int x6,
+		int y6);
 static void bandhand(struct fivechess *fc, int style);
 static void five_chat(char *msg, int init);
 static void press(void);
@@ -46,8 +46,7 @@ static void press(void);
 static void
 Box(int x, int y, int x1, int y1)
 {
-	char *lt = "©°", *rt = "©´", *hor = "©¤", *ver = "©¦", *lb = "©¸", *rb =
-	    "©¼";
+	char *lt = "©°", *rt = "©´", *hor = "©¤", *ver = "©¦", *lb = "©¸", *rb = "©¼";
 	int i;
 
 	move(x, y);
@@ -78,21 +77,21 @@ InitScreen()
 		clrtoeol();
 	}
 	move(0, 0);
-	outs("©°©Ð©Ð©Ð©Ð©Ð©Ð©Ð©Ð©Ð©Ð©Ð©Ð©Ð©´15\n"
-	     "©À©à©à©à©à©à©à©à©à©à©à©à©à©à©È14\n"
-	     "©À©à©à©à©à©à©à©à©à©à©à©à©à©à©È13\n"
-	     "©À©à©à£«©à©à©à©à©à©à©à£«©à©à©È12\n"
-	     "©À©à©à©à©à©à©à©à©à©à©à©à©à©à©È11\n"
-	     "©À©à©à©à©à©à©à©à©à©à©à©à©à©à©È10\n"
-	     "©À©à©à©à©à©à©à©à©à©à©à©à©à©à©È9\n"
-	     "©À©à©à©à©à©à©à£«©à©à©à©à©à©à©È8\n"
-	     "©À©à©à©à©à©à©à©à©à©à©à©à©à©à©È7\n"
-	     "©À©à©à©à©à©à©à©à©à©à©à©à©à©à©È6\n"
-	     "©À©à©à©à©à©à©à©à©à©à©à©à©à©à©È5\n"
-	     "©À©à©à£«©à©à©à©à©à©à©à£«©à©à©È4\n"
-	     "©À©à©à©à©à©à©à©à©à©à©à©à©à©à©È3\n"
-	     "©À©à©à©à©à©à©à©à©à©à©à©à©à©à©È2\n"
-	     "©¸©Ø©Ø©Ø©Ø©Ø©Ø©Ø©Ø©Ø©Ø©Ø©Ø©Ø©¼1" "A B C D E F G H I J K L M N O");
+	outs(   "©°©Ð©Ð©Ð©Ð©Ð©Ð©Ð©Ð©Ð©Ð©Ð©Ð©Ð©´15\n"
+			"©À©à©à©à©à©à©à©à©à©à©à©à©à©à©È14\n"
+			"©À©à©à©à©à©à©à©à©à©à©à©à©à©à©È13\n"
+			"©À©à©à£«©à©à©à©à©à©à©à£«©à©à©È12\n"
+			"©À©à©à©à©à©à©à©à©à©à©à©à©à©à©È11\n"
+			"©À©à©à©à©à©à©à©à©à©à©à©à©à©à©È10\n"
+			"©À©à©à©à©à©à©à©à©à©à©à©à©à©à©È9\n"
+			"©À©à©à©à©à©à©à£«©à©à©à©à©à©à©È8\n"
+			"©À©à©à©à©à©à©à©à©à©à©à©à©à©à©È7\n"
+			"©À©à©à©à©à©à©à©à©à©à©à©à©à©à©È6\n"
+			"©À©à©à©à©à©à©à©à©à©à©à©à©à©à©È5\n"
+			"©À©à©à£«©à©à©à©à©à©à©à£«©à©à©È4\n"
+			"©À©à©à©à©à©à©à©à©à©à©à©à©à©à©È3\n"
+			"©À©à©à©à©à©à©à©à©à©à©à©à©à©à©È2\n"
+			"©¸©Ø©Ø©Ø©Ø©Ø©Ø©Ø©Ø©Ø©Ø©Ø©Ø©Ø©¼1" "A B C D E F G H I J K L M N O");
 
 	user_guide();
 	move(0, 33);
@@ -168,19 +167,19 @@ quit(void)
 
 static void
 calvalue(struct fivechess *fc, int x1, int y1,
-	 int x2, int y2, int x3, int y3, int x4, int y4, int x5, int y5)
+		int x2, int y2, int x3, int y3, int x4, int y4, int x5, int y5)
 {
 	int n_black, n_white, empty, i, j;
 
 	n_black = n_white = empty = 0;
 
 	if (x1 < 0 || x2 < 0 || x3 < 0 || x4 < 0 || x5 < 0 ||
-	    x1 > 14 || x2 > 14 || x3 > 14 || x4 > 14 || x5 > 14)
+			x1 > 14 || x2 > 14 || x3 > 14 || x4 > 14 || x5 > 14)
 		return;
 	if (fc->winner != 0)
 		return;
 	if (fc->playboard[x2][y2] == 0 || fc->playboard[x3][y3] == 0
-	    || fc->playboard[x4][y4] == 0)
+			|| fc->playboard[x4][y4] == 0)
 		empty = 1;	/*check 10111ÐÍËÀËÄ */
 
 	if (fc->playboard[x1][y1] == black)
@@ -226,20 +225,20 @@ calvalue(struct fivechess *fc, int x1, int y1,
 		for (i = 0; i <= 14; i++)	/*ËÄ×ÝÏò */
 			for (j = 0; j <= 9; j++)
 				callfour(fc, i, j, i, j + 1, i, j + 2, i, j + 3,
-					 i, j + 4, i, j + 5);
+						i, j + 4, i, j + 5);
 		for (i = 0; i <= 9; i++)	/*ËÄºáÏò */
 			for (j = 0; j <= 14; j++)
 				callfour(fc, i, j, i + 1, j, i + 2, j, i + 3, j,
-					 i + 4, j, i + 5, j);
+						i + 4, j, i + 5, j);
 		for (i = 0; i <= 9; i++)	/*ËÄÐ±ÓÒÏÂ */
 			for (j = 0; j <= 9; j++) {
 				callfour(fc, i, j, i + 1, j + 1, i + 2, j + 2,
-					 i + 3, j + 3, i + 4, j + 4, i + 5,
-					 j + 5);
+						i + 3, j + 3, i + 4, j + 4, i + 5,
+						j + 5);
 				/*ËÄÐ±×óÏÂ */
 				callfour(fc, i, j + 5, i + 1, j + 4, i + 2,
-					 j + 3, i + 3, j + 2, i + 4, j + 1,
-					 i + 5, j);
+						j + 3, i + 3, j + 2, i + 4, j + 1,
+						i + 5, j);
 			}
 		if (fc->winner == 0)
 			win(fc, black);
@@ -251,21 +250,21 @@ calvalue(struct fivechess *fc, int x1, int y1,
 
 static void
 callfour(struct fivechess *fc, int x1, int y1, int x2, int y2, int x3, int y3,
-	 int x4, int y4, int x5, int y5, int x6, int y6)
+		int x4, int y4, int x5, int y5, int x6, int y6)
 {
 	int n_black, n_white, dead;
 
 	n_black = n_white = dead = 0;
 
 	if (x1 < 0 || x2 < 0 || x3 < 0 || x4 < 0 || x5 < 0 || x6 < 0 ||
-	    x1 > 14 || x2 > 14 || x3 > 14 || x4 > 14 || x5 > 14 || x6 > 14)
+			x1 > 14 || x2 > 14 || x3 > 14 || x4 > 14 || x5 > 14 || x6 > 14)
 		return;
 
 	if (fc->winner != 0)
 		return;
 
 	if ((fc->playboard[x1][y1] != 0 && fc->playboard[x6][y6] == 0) ||
-	    (fc->playboard[x1][y1] == 0 && fc->playboard[x6][y6] != 0))
+			(fc->playboard[x1][y1] == 0 && fc->playboard[x6][y6] != 0))
 		dead = 1;	/* for checking  ³åËÄ */
 
 	if (fc->playboard[x2][y2] == black)
@@ -286,7 +285,7 @@ callfour(struct fivechess *fc, int x1, int y1, int x2, int y2, int x3, int y3,
 		n_white += 1;
 
 	if (fc->playboard[x1][y1] == 0 && fc->playboard[x6][y6] == 0 &&
-	    (fc->playboard[x3][y3] == 0 || fc->playboard[x4][y4] == 0)) {
+			(fc->playboard[x3][y3] == 0 || fc->playboard[x4][y4] == 0)) {
 		if (n_black == 3 || n_white == 3)
 			haha(0);
 		if (n_black == 3)
@@ -294,18 +293,15 @@ callfour(struct fivechess *fc, int x1, int y1, int x2, int y2, int x3, int y3,
 	}
 
 	if (n_black == 4) {
-		if (fc->playboard[x1][y1] == black
-		    && fc->playboard[x6][y6] == black)
+		if (fc->playboard[x1][y1] == black && fc->playboard[x6][y6] == black)
 			bandhand(fc, 6);
 		if (fc->playboard[x1][y1] != 0 && fc->playboard[x6][y6] != 0)
 			return;
 
 		if (dead) {
 /* add by satan Mar 19, 1999 start*/
-			if ((fc->playboard[x1][y1] == 0
-			     && fc->playboard[x5][y5] == 0)
-			    || (fc->playboard[x2][y2] == 0
-				&& fc->playboard[x6][y6] == 0))
+			if ((fc->playboard[x1][y1] == 0 && fc->playboard[x5][y5] == 0)
+					|| (fc->playboard[x2][y2] == 0 && fc->playboard[x6][y6] == 0))
 				fc->livethree -= 1;
 /* add by satan Mar 19, 1999 end*/
 
@@ -339,8 +335,8 @@ callfour(struct fivechess *fc, int x1, int y1, int x2, int y2, int x3, int y3,
 		n_black += 1;
 
 	if (n_black == 5
-	    && (fc->playboard[x3][y3] == 0 || fc->playboard[x4][y4] == 0
-		|| fc->playboard[x5][y5] == 0 || fc->playboard[x2][y2] == 0))
+			&& (fc->playboard[x3][y3] == 0 || fc->playboard[x4][y4] == 0
+			|| fc->playboard[x5][y5] == 0 || fc->playboard[x2][y2] == 0))
 		fc->tlivef -= 1;	/* ÁùÈ±Ò»ÐÍ, ²»Ëã³åËÄ */
 
 	if (n_black >= 6)
@@ -391,8 +387,9 @@ int first;
 	int i, j, fway, banf, idone;
 	int player, px, py;
 	int chess[250][2] = { {0, 0} };
-	char abcd[15] =
-	    { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+	char abcd[15] = {
+		'A', 'B', 'C', 'D', 'E', 'F', 'G',
+		'H', 'I', 'J', 'K', 'L', 'M',
 		'N', 'O'
 	};
 	char save_page_requestor[40];
@@ -423,7 +420,7 @@ int first;
 
 	add_io(fd, 0);
 
-      begin:
+begin:
 	for (i = 0; i <= 14; i++)
 		for (j = 0; j <= 14; j++)
 			fc.playboard[i][j] = 0;
@@ -515,8 +512,7 @@ int first;
 				saveline(PROMPT, 0, NULL);
 				move(PROMPT, 0);
 				clrtoeol();
-				prints("%s ½ÓÊÜÁËÄãµÄÇëÇó :-)",
-				       save_page_requestor);
+				prints("%s ½ÓÊÜÁËÄãµÄÇëÇó :-)", save_page_requestor);
 				refresh();
 				sleep(1);
 				saveline(PROMPT, 1, NULL);
@@ -528,8 +524,7 @@ int first;
 				saveline(PROMPT, 0, NULL);
 				move(PROMPT, 0);
 				clrtoeol();
-				prints("%s ¾Ü¾øÁËÄãµÄÇëÇó :-(",
-				       save_page_requestor);
+				prints("%s ¾Ü¾øÁËÄãµÄÇëÇó :-(", save_page_requestor);
 				refresh();
 				sleep(1);
 				saveline(PROMPT, 1, NULL);
@@ -555,8 +550,8 @@ int first;
 				move(((fc.hand - 1) % 19) / 2 + 4, 35);
 
 			prints("µÚ%2dÊÖ %s%c%2d", fc.hand,
-			       (player == black) ? "¡ñ" : "¡ð", abcd[cx / 2],
-			       15 - cy);
+					(player == black) ? "¡ñ" : "¡ð", abcd[cx / 2],
+					15 - cy);
 
 			move(cy, cx);
 			x = cx / 2;
@@ -577,44 +572,44 @@ int first;
 			fc.tdeadf = fc.tlivef = fc.livethree = fc.threefour = 0;
 			for (j = 0; j <= 10; j++)
 				calvalue(&fc, cx / 2, j, cx / 2, j + 1, cx / 2,
-					 j + 2, cx / 2, j + 3, cx / 2, j + 4);
+						j + 2, cx / 2, j + 3, cx / 2, j + 4);
 			for (i = 0; i <= 10; i++)	/*ºáÏò */
 				calvalue(&fc, i, cy, i + 1, cy, i + 2, cy,
-					 i + 3, cy, i + 4, cy);
+						i + 3, cy, i + 4, cy);
 			for (i = -4; i <= 0; i++)	/*Ð±ÓÒÏÂ */
 				calvalue(&fc, cx / 2 + i, cy + i,
-					 cx / 2 + i + 1, cy + i + 1,
-					 cx / 2 + i + 2, cy + i + 2,
-					 cx / 2 + i + 3, cy + i + 3,
-					 cx / 2 + i + 4, cy + i + 4);
+						cx / 2 + i + 1, cy + i + 1,
+						cx / 2 + i + 2, cy + i + 2,
+						cx / 2 + i + 3, cy + i + 3,
+						cx / 2 + i + 4, cy + i + 4);
 			for (i = -4; i <= 0; i++)	/*Ð±×óÏÂ */
 				calvalue(&fc, cx / 2 - i, cy + i,
-					 cx / 2 - i - 1, cy + i + 1,
-					 cx / 2 - i - 2, cy + i + 2,
-					 cx / 2 - i - 3, cy + i + 3,
-					 cx / 2 - i - 4, cy + i + 4);
+						cx / 2 - i - 1, cy + i + 1,
+						cx / 2 - i - 2, cy + i + 2,
+						cx / 2 - i - 3, cy + i + 3,
+						cx / 2 - i - 4, cy + i + 4);
 
 			for (j = 0; j <= 9; j++)
 				callfour(&fc, cx / 2, j, cx / 2, j + 1, cx / 2,
-					 j + 2, cx / 2, j + 3, cx / 2, j + 4,
-					 cx / 2, j + 5);
+						j + 2, cx / 2, j + 3, cx / 2, j + 4,
+						cx / 2, j + 5);
 			for (i = 0; i <= 9; i++)	/*ËÄºáÏò */
 				callfour(&fc, i, cy, i + 1, cy, i + 2, cy,
-					 i + 3, cy, i + 4, cy, i + 5, cy);
+						i + 3, cy, i + 4, cy, i + 5, cy);
 			for (i = -5; i <= 0; i++) {	/*ËÄÐ±ÓÒÏÂ */
 				callfour(&fc, cx / 2 + i, cy + i,
-					 cx / 2 + i + 1, cy + i + 1,
-					 cx / 2 + i + 2, cy + i + 2,
-					 cx / 2 + i + 3, cy + i + 3,
-					 cx / 2 + i + 4, cy + i + 4,
-					 cx / 2 + i + 5, cy + i + 5);
+						cx / 2 + i + 1, cy + i + 1,
+						cx / 2 + i + 2, cy + i + 2,
+						cx / 2 + i + 3, cy + i + 3,
+						cx / 2 + i + 4, cy + i + 4,
+						cx / 2 + i + 5, cy + i + 5);
 				/*ËÄÐ±×óÏÂ */
 				callfour(&fc, cx / 2 - i, cy + i,
-					 cx / 2 - i - 1, cy + i + 1,
-					 cx / 2 - i - 2, cy + i + 2,
-					 cx / 2 - i - 3, cy + i + 3,
-					 cx / 2 - i - 4, cy + i + 4,
-					 cx / 2 - i - 5, cy + i + 5);
+						cx / 2 - i - 1, cy + i + 1,
+						cx / 2 - i - 2, cy + i + 2,
+						cx / 2 - i - 3, cy + i + 3,
+						cx / 2 - i - 4, cy + i + 4,
+						cx / 2 - i - 5, cy + i + 5);
 			}
 
 			py = cy;
@@ -639,8 +634,7 @@ int first;
 		} else {
 			if (ch == Ctrl('X')) {
 				quitf = 1;
-			} else if (ch == Ctrl('C')
-				   || ((ch == 'Q' || ch == 'q') && !chating)) {
+			} else if (ch == Ctrl('C') || ((ch == 'Q' || ch == 'q') && !chating)) {
 				RMSG = YEA;
 				saveline(PROMPT, 0, NULL);
 				getdata(PROMPT, 0, "ÄúÈ·¶¨ÒªÀë¿ªÂð? (Y/N)?[N] ",
@@ -651,8 +645,7 @@ int first;
 					quitf = 0;
 				saveline(PROMPT, 1, NULL);
 				RMSG = NA;
-			} else if (ch == Ctrl('N')
-				   || ((ch == 'N' || ch == 'n') && !chating)) {
+			} else if (ch == Ctrl('N') || ((ch == 'N' || ch == 'n') && !chating)) {
 				saveline(PROMPT, 0, NULL);
 				RMSG = YEA;
 				getdata(PROMPT, 0,
@@ -692,8 +685,7 @@ int first;
 						continue;
 					ptr = 0;
 					five_chat(chatbuf + 1, 0);
-					send(fd, chatbuf,
-					     strlen(chatbuf + 1) + 2, 0);
+					send(fd, chatbuf, strlen(chatbuf + 1) + 2, 0);
 					cbuf[0] = '\0';
 					move(PROMPT, 6);
 					clrtoeol();
@@ -706,18 +698,14 @@ int first;
 				} else if (ch == Ctrl('H') || ch == '\177') {
 					if (ptr) {
 						ptr--;
-						memcpy(&cbuf[ptr],
-						       &cbuf[ptr + 1],
-						       BSIZE - ptr);
+						memcpy(&cbuf[ptr], &cbuf[ptr + 1], BSIZE - ptr);
 						move(PROMPT, ptr + 6);
 						clrtoeol();
 						prints(&cbuf[ptr]);
 					}
 				} else if (ch == KEY_DEL) {
 					if (cbuf[ptr]) {
-						memcpy(&cbuf[ptr],
-						       &cbuf[ptr + 1],
-						       BSIZE - ptr);
+						memcpy(&cbuf[ptr], &cbuf[ptr + 1], BSIZE - ptr);
 						clrtoeol();
 						prints(&cbuf[ptr]);
 					}
@@ -749,15 +737,12 @@ int first;
 						} while (--ptr);
 						do {
 							if (cbuf[ptr] == ' ') {
-								if (cbuf
-								    [ptr + 1] !=
-								    ' ')
+								if (cbuf[ptr + 1] != ' ')
 									ptr++;
 								break;
 							}
 						} while (--ptr);
-						memcpy(&cbuf[ptr], &cbuf[optr],
-						       BSIZE - optr + 1);
+						memcpy(&cbuf[ptr], &cbuf[optr], BSIZE - optr + 1);
 						move(PROMPT, ptr + 6);
 						clrtoeol();
 						prints(&cbuf[ptr]);
@@ -771,9 +756,7 @@ int first;
 						outc(ch);
 						cbuf[++ptr] = 0;
 					} else {
-						memmove(&cbuf[ptr + 1],
-							&cbuf[ptr],
-							BSIZE - ptr + 1);
+						memmove(&cbuf[ptr + 1], &cbuf[ptr], BSIZE - ptr + 1);
 						cbuf[ptr] = ch;
 						move(PROMPT, 6 + ptr);
 						prints(&cbuf[ptr]);
@@ -847,8 +830,8 @@ int first;
 					move(((fc.hand - 1) % 19) / 2 + 4, 35);
 
 				prints("µÚ%2dÊÖ %s%c%2d", fc.hand,
-				       (fc.hand % 2 == 1) ? "¡ñ" : "¡ð",
-				       abcd[px / 2], 15 - py);
+						(fc.hand % 2 == 1) ? "¡ñ" : "¡ð",
+						abcd[px / 2], 15 - py);
 				idone = 1;
 				move(py, px);
 				break;
@@ -876,50 +859,49 @@ int first;
 				outs("¡ïµÈ´ý¶Ô·½ÏÂ×Ó¡ï");
 				haha(5);
 
-				fc.tdeadf = fc.tlivef = fc.livethree =
-				    fc.threefour = 0;
+				fc.tdeadf = fc.tlivef = fc.livethree = fc.threefour = 0;
 				for (j = 0; j <= 10; j++)
 					calvalue(&fc, px / 2, j, px / 2, j + 1,
-						 px / 2, j + 2, px / 2, j + 3,
-						 px / 2, j + 4);
+							px / 2, j + 2, px / 2, j + 3,
+							px / 2, j + 4);
 				for (i = 0; i <= 10; i++)	/*ºáÏò */
 					calvalue(&fc, i, py, i + 1, py, i + 2,
-						 py, i + 3, py, i + 4, py);
+							py, i + 3, py, i + 4, py);
 				for (i = -4; i <= 0; i++)	/*Ð±ÓÒÏÂ */
 					calvalue(&fc, px / 2 + i, py + i,
-						 px / 2 + i + 1, py + i + 1,
-						 px / 2 + i + 2, py + i + 2,
-						 px / 2 + i + 3, py + i + 3,
-						 px / 2 + i + 4, py + i + 4);
+							px / 2 + i + 1, py + i + 1,
+							px / 2 + i + 2, py + i + 2,
+							px / 2 + i + 3, py + i + 3,
+							px / 2 + i + 4, py + i + 4);
 				for (i = -4; i <= 0; i++)	/*Ð±×óÏÂ */
 					calvalue(&fc, px / 2 - i, py + i,
-						 px / 2 - i - 1, py + i + 1,
-						 px / 2 - i - 2, py + i + 2,
-						 px / 2 - i - 3, py + i + 3,
-						 px / 2 - i - 4, py + i + 4);
+							px / 2 - i - 1, py + i + 1,
+							px / 2 - i - 2, py + i + 2,
+							px / 2 - i - 3, py + i + 3,
+							px / 2 - i - 4, py + i + 4);
 
 				for (j = 0; j <= 9; j++)
 					callfour(&fc, px / 2, j, px / 2, j + 1,
-						 px / 2, j + 2, px / 2, j + 3,
-						 px / 2, j + 4, px / 2, j + 5);
+							px / 2, j + 2, px / 2, j + 3,
+							px / 2, j + 4, px / 2, j + 5);
 				for (i = 0; i <= 9; i++)	/*ËÄºáÏò */
 					callfour(&fc, i, py, i + 1, py, i + 2,
-						 py, i + 3, py, i + 4, py,
-						 i + 5, py);
+							py, i + 3, py, i + 4, py,
+							i + 5, py);
 				for (i = -5; i <= 0; i++) {	/*ËÄÐ±ÓÒÏÂ */
 					callfour(&fc, px / 2 + i, py + i,
-						 px / 2 + i + 1, py + i + 1,
-						 px / 2 + i + 2, py + i + 2,
-						 px / 2 + i + 3, py + i + 3,
-						 px / 2 + i + 4, py + i + 4,
-						 px / 2 + i + 5, py + i + 5);
+							px / 2 + i + 1, py + i + 1,
+							px / 2 + i + 2, py + i + 2,
+							px / 2 + i + 3, py + i + 3,
+							px / 2 + i + 4, py + i + 4,
+							px / 2 + i + 5, py + i + 5);
 					/*ËÄÐ±×óÏÂ */
 					callfour(&fc, px / 2 - i, py + i,
-						 px / 2 - i - 1, py + i + 1,
-						 px / 2 - i - 2, py + i + 2,
-						 px / 2 - i - 3, py + i + 3,
-						 px / 2 - i - 4, py + i + 4,
-						 px / 2 - i - 5, py + i + 5);
+							px / 2 - i - 1, py + i + 1,
+							px / 2 - i - 2, py + i + 2,
+							px / 2 - i - 3, py + i + 3,
+							px / 2 - i - 4, py + i + 4,
+							px / 2 - i - 5, py + i + 5);
 				}
 
 				if (fc.tlivef >= 2 && fc.winner == 0)
@@ -979,7 +961,7 @@ five_chat(char *msg, int init)
 	}
 
 	if (msg) {
-		strncpy(win[p], msg, 80);
+		ytht_strsncpy(win[p], msg, sizeof(win[p]));
 		move(curr, 0);
 		clrtoeol();
 		prints(win[p]);
@@ -1013,8 +995,7 @@ press(void)
 	saveline(t_lines - 1, 0, NULL);
 	move(t_lines - 1, 0);
 	clrtoeol();
-	prints
-	    ("[37;40m[0m                               [33m°´ÈÎÒâ¼ü¼ÌÐø ...[37;40m[0m");
+	prints("[37;40m[0m                               [33m°´ÈÎÒâ¼ü¼ÌÐø ...[37;40m[0m");
 	c = egetch();
 	move(t_lines - 1, 0);
 	saveline(t_lines - 1, 1, NULL);

@@ -1,25 +1,25 @@
 /*
-    Pirate Bulletin Board System
-    Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
-    Eagles Bulletin Board System
-    Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
-                        Guy Vega, gtvega@seabass.st.usm.edu
-                        Dominic Tynes, dbtynes@seabass.st.usm.edu
-    Firebird Bulletin Board System
-    Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
-                        Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
+	Pirate Bulletin Board System
+	Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
+	Eagles Bulletin Board System
+	Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
+						Guy Vega, gtvega@seabass.st.usm.edu
+						Dominic Tynes, dbtynes@seabass.st.usm.edu
+	Firebird Bulletin Board System
+	Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
+						Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
 
-    Copyright (C) 1999	KCN,Zhou lin,kcn@cic.tsinghua.edu.cn
+	Copyright (C) 1999	KCN,Zhou lin,kcn@cic.tsinghua.edu.cn
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 1, or (at your option)
-    any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 1, or (at your option)
+	any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 */
 
 #include "bbs.h"
@@ -64,8 +64,7 @@ get_msg(char *uid, char *msg, size_t msg_len, int line)
 	prints("ËÍÒôĞÅ¸ø:%-12s    ÇëÊäÈëÒôĞÅÄÚÈİ£¬Ctrl+Q »»ĞĞ:", uid);
 	memset(msg, 0, msg_len);
 	while (1) {
-		i = multi_getdata(line + 1, 0, 79, NULL, msg, MAX_MSG_SIZE, 11,
-				  0);
+		i = multi_getdata(line + 1, 0, 79, NULL, msg, MAX_MSG_SIZE, 11, 0);
 		if (msg[0] == '\0')
 			return 0;
 
@@ -85,8 +84,7 @@ int canmsg(const struct user_info *uin) {
 		return NA;
 	if (isreject(uin))
 		return NA;
-	if ((uin->pager & ALLMSG_PAGER)
-	    || HAS_PERM(PERM_SYSOP | PERM_FORCEPAGE, currentuser))
+	if ((uin->pager & ALLMSG_PAGER) || HAS_PERM(PERM_SYSOP | PERM_FORCEPAGE, currentuser))
 		return YEA;
 	if ((uin->pager & FRIENDMSG_PAGER) && hisfriend(uin))
 		return YEA;
@@ -161,9 +159,7 @@ int do_sendmsg(const char *uid, const struct user_info *uentp, char *msgstr, int
 	}
 	if (!strcasecmp(uident, currentuser.userid))
 		return 0;
-	/*
-	 * try to send the msg
-	 */
+	/* try to send the msg */
 	result = sendmsgfunc(uident, uinptr, upid, msgstr, mode, msgerr);
 
 	switch (result) {
@@ -196,9 +192,7 @@ int do_sendmsg(const char *uid, const struct user_info *uentp, char *msgstr, int
 		return result;
 		break;
 	}
-	/*
-	 * resend the message
-	 */
+	/* resend the message */
 	result = sendmsgfunc(uident, uinptr, upid, buf, mode, msgerr);
 
 	switch (result) {
@@ -431,14 +425,11 @@ r_msg2()
 				userpid = 0;
 			}
 
-			prints
-			    ("µÚ %d ÌõÏûÏ¢£¬¹² %d ÌõÏûÏ¢£¬»Ø¸´ %s(%s)£¬»»ĞĞ°´ Ctrl+Q\n",
-			     MsgNum + 1, count, head.id,
-			     (online_test
-			      && !invisible) ? "ÔÚÏß" : "\x1b[1;32mÀëÏß\x1b[m");
+			prints("µÚ %d ÌõÏûÏ¢£¬¹² %d ÌõÏûÏ¢£¬»Ø¸´ %s(%s)£¬»»ĞĞ°´ Ctrl+Q\n",
+					MsgNum + 1, count, head.id,
+					(online_test && !invisible) ? "ÔÚÏß" : "\x1b[1;32mÀëÏß\x1b[m");
 			if (msgperm_test) {
-				ch = multi_getdata(line + 1, 0, 79, NULL,
-						   buf, MAX_MSG_SIZE, 11, 1);
+				ch = multi_getdata(line + 1, 0, 79, NULL, buf, MAX_MSG_SIZE, 11, 1);
 				if (-ch == Ctrl('Z') || -ch == KEY_UP) {
 					MsgNum--;
 					if (MsgNum < 0)
@@ -449,13 +440,10 @@ r_msg2()
 					continue;
 				}
 				if (buf[0] != '\0') {
-					if (do_sendmsg
-					    (usid, uin, buf, 2, userpid) == 1) {
+					if (do_sendmsg(usid, uin, buf, 2, userpid) == 1) {
 						prints("\n");
 						clrtoeol();
-						prints
-						    ("[1;32m°ïÄãËÍ³öÑ¶Ï¢¸ø %s ÁË![m",
-						     usid);
+						prints("[1;32m°ïÄãËÍ³öÑ¶Ï¢¸ø %s ÁË![m", usid);
 						refresh();
 						sleep(1);
 					}
@@ -470,9 +458,7 @@ r_msg2()
 				clrtoeol();
 				prints("\n");
 				clrtoeol();
-				prints
-				    ("[1;32mÎŞ·¨·¢Ñ¶Ï¢¸ø %s! Çë°´ÉÏ:[^Z ¡ü] »òÏÂ:[^A ¡ı] »ò°´ÆäËû¼üÀë¿ª [m",
-				     usid);
+				prints("[1;32mÎŞ·¨·¢Ñ¶Ï¢¸ø %s! Çë°´ÉÏ:[^Z ¡ü] »òÏÂ:[^A ¡ı] »ò°´ÆäËû¼üÀë¿ª [m", usid);
 				ch = igetkey();
 				if (ch == Ctrl('Z') || ch == KEY_UP) {
 					MsgNum--;
@@ -543,8 +529,7 @@ r_msg()
 		move(0, 0);
 		prints("%s", outmsg);
 		clrtoeol();
-		prints("µÚ %d ÌõÏûÏ¢£¬¹² %d ÌõÏûÏ¢ °´r»Ø¸´", count + 1,
-		       count + 1);
+		prints("µÚ %d ÌõÏûÏ¢£¬¹² %d ÌõÏûÏ¢ °´r»Ø¸´", count + 1, count + 1);
 		getyx(&line, &i);
 		if (DEFINE(DEF_MSGGETKEY, currentuser)) {
 			RMSG = YEA;
@@ -553,8 +538,7 @@ r_msg()
 				ch = igetkey();
 				if (ch == '\r' || ch == '\n')
 					break;
-				else if (ch == Ctrl('R') || ch == 'R'
-					 || ch == 'r' || ch == Ctrl('Z')) {
+				else if (ch == Ctrl('R') || ch == 'R' || ch == 'r' || ch == Ctrl('Z')) {
 					int send_pid, msgperm_test, online_test;
 					int userpid;
 					int invisible = 0;
@@ -585,18 +569,12 @@ r_msg()
 					strcpy(usid, head.id);
 					if (msgperm_test) {
 						clrtoeol();
-						prints("£¬»ØÑ¶Ï¢¸ø %s (%s)£¬Ctrl+Q»»ĞĞ: ",
-						     usid, (online_test && !invisible) ? "ÔÚÏß" : "\x1b[1;32mÀëÏß\x1b[m");
+						prints("£¬»ØÑ¶Ï¢¸ø %s (%s)£¬Ctrl+Q»»ĞĞ: ", usid, (online_test && !invisible) ? "ÔÚÏß" : "\x1b[1;32mÀëÏß\x1b[m");
 						move(line + 1, 0);
 						clrtoeol();
-						multi_getdata(line + 1, 0, 79,
-							      NULL, buf,
-							      MAX_MSG_SIZE, 11,
-							      1);
+						multi_getdata(line + 1, 0, 79, NULL, buf, MAX_MSG_SIZE, 11, 1);
 
-						if (buf[0] != '\0'
-						    && buf[0] != Ctrl('Z')
-						    && buf[0] != Ctrl('A')) {
+						if (buf[0] != '\0' && buf[0] != Ctrl('Z') && buf[0] != Ctrl('A')) {
 							if (do_sendmsg(usid, uin, buf, 2, userpid) == 1) {
 								prints("\n");
 								clrtoeol();
@@ -683,8 +661,7 @@ friend_login_wall(const struct user_info *pageinfo, void *x_param) {
 }
 
 static int
-sendmsgfunc(char *uid, struct user_info *uin, int userpid, const char *msgstr,
-	    int mode, char *msgerr)
+sendmsgfunc(char *uid, struct user_info *uin, int userpid, const char *msgstr, int mode, char *msgerr)
 {
 	struct msghead head, head2;
 	int offline_msg = 0;
@@ -711,12 +688,11 @@ sendmsgfunc(char *uid, struct user_info *uin, int userpid, const char *msgstr,
 			if (userpid != uin->pid) {
 				offline_msg = 1;
 			}
-		} else if (!uin->active || uin->pid <= 0
-			   || (uin->pid != 1 && kill(uin->pid, 0) == -1)) {
+		} else if (!uin->active || uin->pid <= 0 || (uin->pid != 1 && kill(uin->pid, 0) == -1)) {
 			offline_msg = 1;
 		} else if (uin->mode == IRCCHAT || uin->mode == BBSNET
-			   || uin->mode == HYTELNET || uin->mode == GAME
-			   || uin->mode == PAGE || uin->mode == LOCKSCREEN) {
+				|| uin->mode == HYTELNET || uin->mode == GAME
+				|| uin->mode == PAGE || uin->mode == LOCKSCREEN) {
 			offline_msg = 1;
 		}
 	}
@@ -736,12 +712,12 @@ sendmsgfunc(char *uid, struct user_info *uin, int userpid, const char *msgstr,
 	head.time = time(0);
 	head.sent = 0;
 	head.mode = mode;
-	strncpy(head.id, currentuser.userid, IDLEN + 2);
+	ytht_strsncpy(head.id, currentuser.userid, sizeof(head.id));
 	head.frompid = uinfo.pid;
 	head.topid = topid;
 	memcpy(&head2, &head, sizeof (struct msghead));
 	head2.sent = 1;
-	strncpy(head2.id, uid, IDLEN + 2);
+	ytht_strsncpy(head2.id, uid, sizeof(head2.id));
 
 	if (save_msgtext(uid, &head, msgstr) < 0)
 		return -2;
@@ -803,14 +779,10 @@ show_allmsgs()
 		}
 		move(t_lines - 1, 0);
 		if (!all)
-			prints
-			    ("\x1b[1;44;32m±£Áô<\x1b[37mr\x1b[32m> Çå³ı<\x1b[37mc\x1b[32m> ¼Ä»ØĞÅÏä<\x1b[37mm\x1b[32m> ·¢Ñ¶ÈË<\x1b[37mi\x1b[32m> Ñ¶Ï¢ÄÚÈİ<\x1b[37ms\x1b[32m> Í·<\x1b[37mh\x1b[32m> Î²<\x1b[37me\x1b[32m>        Ê£Óà:%4d\x1b[m",
-			     count - i);
+			prints("\x1b[1;44;32m±£Áô<\x1b[37mr\x1b[32m> Çå³ı<\x1b[37mc\x1b[32m> ¼Ä»ØĞÅÏä<\x1b[37mm\x1b[32m> ·¢Ñ¶ÈË<\x1b[37mi\x1b[32m> Ñ¶Ï¢ÄÚÈİ<\x1b[37ms\x1b[32m> Í·<\x1b[37mh\x1b[32m> Î²<\x1b[37me\x1b[32m>        Ê£Óà:%4d\x1b[m", count - i);
 		else
-			prints
-			    ("\x1b[1;44;32m±£Áô<\x1b[37mr\x1b[32m> Çå³ı<\x1b[37mc\x1b[32m> ¼Ä»ØĞÅÏä<\x1b[37mm\x1b[32m> ·¢Ñ¶ÈË<\x1b[37mi\x1b[32m> Ñ¶Ï¢ÄÚÈİ<\x1b[37ms\x1b[32m> È«²¿<\x1b[37ma\x1b[32m> Í·<\x1b[37mh\x1b[32m> Î²<\x1b[37me\x1b[32m>      %4d\x1b[m",
-			     count - i);
-	      reenter:
+			prints("\x1b[1;44;32m±£Áô<\x1b[37mr\x1b[32m> Çå³ı<\x1b[37mc\x1b[32m> ¼Ä»ØĞÅÏä<\x1b[37mm\x1b[32m> ·¢Ñ¶ÈË<\x1b[37mi\x1b[32m> Ñ¶Ï¢ÄÚÈİ<\x1b[37ms\x1b[32m> È«²¿<\x1b[37ma\x1b[32m> Í·<\x1b[37mh\x1b[32m> Î²<\x1b[37me\x1b[32m>      %4d\x1b[m", count - i);
+reenter:
 		ch = igetkey();
 		switch (ch) {
 		case 'r':
@@ -871,29 +843,18 @@ show_allmsgs()
 				char fname[STRLEN], fname2[STRLEN];
 				struct msghead head;
 				int i;
-				sethomefile(fname, currentuser.userid,
-					    "msgindex");
-				sethomefile(fname2, currentuser.userid,
-					    "msgindex3");
+				sethomefile_s(fname, sizeof(fname), currentuser.userid, "msgindex");
+				sethomefile_s(fname2, sizeof(fname2), currentuser.userid, "msgindex3");
 				fd = open(fname, O_RDONLY, 0644);
 				fd2 = open(fname2, O_WRONLY | O_CREAT, 0644);
 				write(fd2, &i, 4);
 				lseek(fd, 4, SEEK_SET);
 				for (i = 0; i < count; i++) {
-					read(fd, &head,
-					     sizeof (struct msghead));
+					read(fd, &head, sizeof (struct msghead));
 					if (toupper(ch) == 'S')
-						load_msgtext
-						    (currentuser.userid,
-						     &head, buf);
-					if ((toupper(ch) == 'I'
-					     && !strncasecmp(chk,
-							     head.id, IDLEN))
-					    || (toupper(ch) == 'S'
-						&& strcasestr(buf,
-							      chk) != NULL))
-						write(fd2, &head,
-						      sizeof (struct msghead));
+						load_msgtext(currentuser.userid, &head, buf);
+					if ((toupper(ch) == 'I' && !strncasecmp(chk, head.id, IDLEN)) || (toupper(ch) == 'S' && strcasestr(buf, chk) != NULL))
+						write(fd2, &head, sizeof (struct msghead));
 				}
 				close(fd2);
 				close(fd);
@@ -908,8 +869,7 @@ show_allmsgs()
 		case 'a':
 		case 'A':
 			if (all) {
-				sethomefile(buf, currentuser.userid,
-					    "msgindex3");
+				sethomefile_s(buf, sizeof(buf), currentuser.userid, "msgindex3");
 				unlink(buf);
 				all = 0;
 				reload = 1;
@@ -924,10 +884,10 @@ show_allmsgs()
 			goto reenter;
 		}
 	}
-      outofhere:
+outofhere:
 
 	if (all) {
-		sethomefile(buf, currentuser.userid, "msgindex3");
+		sethomefile_s(buf, sizeof(buf), currentuser.userid, "msgindex3");
 		unlink(buf);
 	}
 	clear();

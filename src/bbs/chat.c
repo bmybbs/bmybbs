@@ -219,7 +219,7 @@ char *chatid;
 
 	if (c > 0) {
 		strcpy(genbuf, bptr);
-		strncpy(buf, genbuf, sizeof (buf));
+		ytht_strsncpy(buf, genbuf, sizeof (buf));
 		bufstart = len - 1;
 	} else
 		bufstart = 0;
