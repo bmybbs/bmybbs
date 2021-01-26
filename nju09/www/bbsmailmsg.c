@@ -1,5 +1,7 @@
 #include "bbslib.h"
 
+static void mail_msg(struct userec *user);
+
 int
 bbsmailmsg_main()
 {
@@ -16,32 +18,31 @@ bbsmailmsg_main()
 	return 0;
 }
 
-void                    
-mail_msg(struct userec *user)                                                                                                                 {
-        char fname[30];      
-        char buf[MAX_MSG_SIZE], showmsg[MAX_MSG_SIZE * 2];
-        int i;  
-        struct msghead head;
-        time_t now;
-        char title[STRLEN];
-        FILE *fn;
-        int count;
+static void mail_msg(struct userec *user) {
+	char fname[30];
+	char buf[MAX_MSG_SIZE], showmsg[MAX_MSG_SIZE * 2];
+	int i;
+	struct msghead head;
+	time_t now;
+	char title[STRLEN];
+	FILE *fn;
+	int count;
 
-        sprintf(fname, "tmp/%s.msg", user->userid);
-        fn = fopen(fname, "w");
-        count = get_msgcount(0, user->userid);
-        for (i = 0; i < count; i++) {
-                load_msghead(0, user->userid, &head, i);
-                load_msgtext(user->userid, &head, buf);
-                translate_msg(buf, &head, showmsg, 0);
-                fprintf(fn, "%s", showmsg);
-        }
-        fclose(fn);
+	sprintf(fname, "tmp/%s.msg", user->userid);
+	fn = fopen(fname, "w");
+	count = get_msgcount(0, user->userid);
+	for (i = 0; i < count; i++) {
+		load_msghead(0, user->userid, &head, i);
+		load_msgtext(user->userid, &head, buf);
+		translate_msg(buf, &head, showmsg, 0);
+		fprintf(fn, "%s", showmsg);
+	}
+	fclose(fn);
 
-        now = time(0);
-        sprintf(title, "[%12.12s] 所有讯息备份", ctime(&now) + 4);
-        mail_file(fname, user->userid, title, user->userid);
-        unlink(fname);
-        clear_msg(user->userid);
+	now = time(0);
+	sprintf(title, "[%12.12s] 所有讯息备份", ctime(&now) + 4);
+	mail_file(fname, user->userid, title, user->userid);
+	unlink(fname);
+	clear_msg(user->userid);
 }
 
