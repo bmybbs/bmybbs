@@ -1,4 +1,7 @@
 #include "bbslib.h"
+
+extern int showbinaryattach(char *filename);
+
 int
 bbsgcon_main()
 {
@@ -7,7 +10,7 @@ bbsgcon_main()
 	struct fileheader x;
 	int num, total = 0;
 	struct fileheader *dirinfo = NULL;
-	struct mmapfile mf = { ptr:NULL };
+	struct mmapfile mf = { .ptr = NULL };
 	changemode(READING);
 	ytht_strsncpy(board, getparm("B"), 32);
 	if (!board[0])
@@ -56,22 +59,19 @@ bbsgcon_main()
 	if (num > 0) {
 		fseek(fp, sizeof (x) * (num - 1), SEEK_SET);
 		fread(&x, sizeof (x), 1, fp);
-		printf("[<a href=bbsgcon?board=%s&file=%s&num=%d>上一篇</a>]",
-		       board, fh2fname(&x), num - 1);
+		printf("[<a href=bbsgcon?board=%s&file=%s&num=%d>上一篇</a>]", board, fh2fname(&x), num - 1);
 	}
 	printf("[<a href=%s%s>本讨论区</a>]", showByDefMode(), board);
 	if (num < total - 1) {
 		fseek(fp, sizeof (x) * (num + 1), SEEK_SET);
 		fread(&x, sizeof (x), 1, fp);
-		printf("[<a href=bbsgcon?board=%s&file=%s&num=%d>下一篇</a>]",
-		       board, fh2fname(&x), num + 1);
+		printf("[<a href=bbsgcon?board=%s&file=%s&num=%d>下一篇</a>]", board, fh2fname(&x), num + 1);
 	}
 	fclose(fp);
 	ptr = dirinfo->title;
 	if (!strncmp(ptr, "Re: ", 4))
 		ptr += 4;
-	printf("[<a href='bbstfind?board=%s&th=%ld'>同主题阅读</a>]\n",
-	       board, dirinfo->thread);
+	printf("[<a href='bbstfind?board=%s&th=%ld'>同主题阅读</a>]\n", board, dirinfo->thread);
 	printf("</center></body>\n");
 	http_quit();
 	return 0;
