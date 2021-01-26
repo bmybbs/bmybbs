@@ -6,14 +6,14 @@ int
 bbsfwd_main()
 {
 	struct fileheader *x = NULL;
-	char board[80], file[80], target[80], dir[80];
+	char board[32], file[80], target[80], dir[80];
 	int num;
 	struct mmapfile mf = { .ptr = NULL };
 	html_header(1);
 	check_msg();
-	ytht_strsncpy(board, getparm("B"), 32);
+	ytht_strsncpy(board, getparm("B"), sizeof(board));
 	if (!board[0])
-		ytht_strsncpy(board, getparm("board"), 32);
+		ytht_strsncpy(board, getparm("board"), sizeof(board));
 	ytht_strsncpy(file, getparm("F"), 30);
 	if (!file[0])
 		ytht_strsncpy(file, getparm("file"), 30);
