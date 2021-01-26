@@ -65,13 +65,13 @@ bbsleft_main()
 	printf("<table width=100%% border=0 cellpadding=0 cellspacing=1>\n<tr><td><div align=center>\n");
 	if (!loginok || isguest) {
 		printf("<form action=bbslogin method=post target=_top name=loginform><tr><td>\n"
-			 "<div style=\"text-align:center\">ÓÃ»§µÇÂ¼</div>\n"
-			 "ÕÊºÅ<input type=text name=id maxlength=12 size=8 class=inputuser><br>\n"
-			 "ÃÜÂë<input type=password name=pw maxlength=12 size=8 class=inputpwd><br>\n"
-			 "<input type=submit class=sumbitshort value=µÇÂ¼>&nbsp;"
-			 "<input type=submit class=resetshort value=×¢²á onclick=\"{openreg();return false}\">"
-			 "&nbsp&nbsp<a target=f3 href='bbsfindpass' target='_blank' class=linkindex><br>ÕÒ»ØÕÊºÅ»òÃÜÂë</a><br>\n"
-			 "</form>\n");
+			"<div style=\"text-align:center\">ÓÃ»§µÇÂ¼</div>\n"
+			"ÕÊºÅ<input type=text name=id maxlength=12 size=8 class=inputuser><br>\n"
+			"ÃÜÂë<input type=password name=pw maxlength=12 size=8 class=inputpwd><br>\n"
+			"<input type=submit class=sumbitshort value=µÇÂ¼>&nbsp;"
+			"<input type=submit class=resetshort value=×¢²á onclick=\"{openreg();return false}\">"
+			"&nbsp&nbsp<a target=f3 href='bbsfindpass' target='_blank' class=linkindex><br>ÕÒ»ØÕÊºÅ»òÃÜÂë</a><br>\n"
+			"</form>\n");
 	} else {
 		char buf[256] = "Î´×¢²áÓÃ»§";
 		printf("<a class=1100>ÓÃ»§: <a href=bbsqry?userid=%s target=f3>%s</a><br>",
@@ -186,7 +186,7 @@ bbsleft_main()
 			"size=9 onclick=\"this.select()\" value=Ñ¡ÔñÌÖÂÛÇø><input type=submit class=sumbitgrey value=go></td></form></tr>\n");
 			if (loginok && !isguest && !(currentuser.userlevel & PERM_LOGINOK) && !has_fill_form())
 			printf("<tr><td align=right> <img src=\"/images/list2.gif\"></td>\n"
-			 "<td><a class=linkleft href=\"bbsform\" target=f3>ÌîĞ´×¢²áµ¥</a></td></tr>\n");
+					"<td><a class=linkleft href=\"bbsform\" target=f3>ÌîĞ´×¢²áµ¥</a></td></tr>\n");
 		if (loginok && !isguest && HAS_PERM(PERM_SYSOP, currentuser))        //add by mintbaggio@BMY for www SYSOP kick www user
 			printf("<tr><td align=right> <img src=\"/images/list2.gif\"></td>\n"
 					"<td><a class=linkleft href=\"kick\" target=f3>ÌßwwwÏÂÕ¾</a></td></tr>\n");
@@ -252,9 +252,9 @@ endleft:
 			printf("<script>setTimeout('open(\"regreq\", \"winREGREQ\", \"width=600,height=460\")', 1800000);</script>");
 		if (loginok && !isguest) {
 			char filename[80];
-			sethomepath(filename, currentuser.userid);
+			sethomepath_s(filename, sizeof(filename), currentuser.userid);
 			mkdir(filename, 0755);
-			sethomefile(filename, currentuser.userid, BADLOGINFILE);
+			sethomefile_s(filename, sizeof(filename), currentuser.userid, BADLOGINFILE);
 			if (file_exist(filename)) {
 				printf("<script>"
 						"window.open('bbsbadlogins', 'badlogins', 'toolbar=0, scrollbars=1, location=0, statusbar=1, menubar=0, resizable=1, width=450, height=300');"
