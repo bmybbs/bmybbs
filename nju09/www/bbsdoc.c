@@ -197,14 +197,14 @@ int
 bbsdoc_main()
 {	//modify by mintbaggio 040522 for new www
 	FILE *fp;
-	char board[80], dir[80], genbuf[STRLEN], buf[STRLEN],only_for_b[80];
+	char board[32 /* max: 24 */], dir[80], genbuf[STRLEN], buf[STRLEN],only_for_b[80];
 	struct boardmem *x1;
 	struct fileheader x, x2;
 	int i, start, total;
 	changemode(READING);
-	ytht_strsncpy(board, getparm("B"), 32);
+	ytht_strsncpy(board, getparm("B"), sizeof(board));
 	if (!board[0])
-		ytht_strsncpy(board, getparm("board"), 32);
+		ytht_strsncpy(board, getparm("board"), sizeof(board));
 	x1 = getboard(board);
 	if (x1 == 0) {
 		html_header(1);
