@@ -961,7 +961,7 @@ five_chat(char *msg, int init)
 	}
 
 	if (msg) {
-		strncpy(win[p], msg, 80);
+		ytht_strsncpy(win[p], msg, sizeof(win[p]));
 		move(curr, 0);
 		clrtoeol();
 		prints(win[p]);
