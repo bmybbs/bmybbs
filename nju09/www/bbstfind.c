@@ -4,7 +4,7 @@ char *size_str(int size); // bbsdoc.c
 int
 bbstfind_main()
 {
-	char buf[1024], board[80], dir[80];
+	char buf[1024], board[32], dir[80];
 	struct boardmem *x1;
 	struct fileheader *x;
 	int i, total = 0, start = 0, numrecords;
@@ -13,9 +13,9 @@ bbstfind_main()
 	html_header(1);
 	check_msg();
 	changemode(READING);
-	ytht_strsncpy(board, getparm("B"), 32);
+	ytht_strsncpy(board, getparm("B"), sizeof(board));
 	if (!board[0])
-		ytht_strsncpy(board, getparm("board"), 32);
+		ytht_strsncpy(board, getparm("board"), sizeof(board));
 	thread = atoi(getparm("th"));
 	x1 = getboard(board);
 	if (x1 == 0)
