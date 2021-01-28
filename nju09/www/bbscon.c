@@ -597,9 +597,8 @@ bbscon_main()
 		fshowcon(stdout, filename, 0);
 
 	printf("<tr><td></td><td height=\"20\" valign=\"middle\">");
-	memset(fileback, 0, 80);
-	sprintf(fileback, "http://bbs.xjtu.edu.cn/BMY/con?B=%s&F=%s", board,file);
-	printf("本文链接&nbsp;&nbsp;<a href=' %s'>%s</a>", fileback, fileback);
+	snprintf(fileback, sizeof(fileback), "://%s/%s/con?B=%s&F=%s", MY_BBS_DOMAIN, SMAGIC, board, file);
+	printf("本文链接&nbsp;&nbsp;<a href='%s'>%s</a>", fileback, fileback);
 	printf("</td></tr>");
 	printf("</table></td></tr></table></td></tr></table>\n");
 #ifdef ENABLE_MYSQL
