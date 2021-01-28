@@ -217,75 +217,10 @@ showcon(char *filename)
 	return fshowcon(stdout, filename, 0);
 }
 
-int
-showconxml(char *filename, int viewertype)
-{
-	char filetmp[200], cmd[512], *ptr, *pend;
-	struct mmapfile mf = { .ptr = NULL };
-	FILE *fp;
-	int retv = -1;
-	if (viewertype != 1)
-		printf("<br>本文使用了<a href=home/boards/BBSHelp/html/itex/itexintro.html target=_blank>Tex数学公式</a><br>");
-	fp = fopen("bbstmpfs/tmp/testxml.txt", "w");
-	fshowcon(fp, filename, 0);
-	fclose(fp);
-	sprintf(filetmp, "bbstmpfs/tmp/xml.%d.tmp", thispid);
-	if (viewertype != 1)
-		sprintf(cmd, MY_BBS_HOME "/bin/tidy -iso2022 -f /dev/null | "
-			MY_BBS_HOME "/bin/itex2MML |" MY_BBS_HOME
-			"/bin/mathml4mathplayer > %s", filetmp);
-	else
-		sprintf(cmd,
-			MY_BBS_HOME "/bin/tidy -iso2022 -f /dev/null | "
-			MY_BBS_HOME
-			"/bin/itex2MML | sed -es/'<br>'/'<br \\/>'/g > %s",
-			filetmp);
-	fp = popen(cmd, "w");
-	if (!fp)
-		return -1;
-	fshowcon(fp, filename, 0);
-	pclose(fp);
-	MMAP_TRY {
-		if (mmapfile(filetmp, &mf) < 0) {
-			unlink(filetmp);
-			MMAP_RETURN(-1);
-		}
-		ptr = ytht_strncasestr(mf.ptr, "<body>", mf.size);
-		if (!ptr) {
-			mmapfile(NULL, &mf);
-			unlink(filetmp);
-			MMAP_RETURN(retv);
-		}
-		ptr += 6;
-		pend = ytht_strncasestr(ptr, "</body>", mf.size - (ptr - mf.ptr));
-		if (!pend)
-			pend = mf.ptr + mf.size;
-		fwrite(ptr, pend - ptr, 1, stdout);
-		if (ytht_strncasestr(ptr, "</table>", pend - ptr) == NULL)
-			printf("</td></tr></table>");
-	}
-	MMAP_CATCH {
-	}
-	MMAP_END mmapfile(NULL, &mf);
-	unlink(filetmp);
-	return retv;
-}
-
 int testmozilla() {
 	char *ptr = getsenv("HTTP_USER_AGENT");
 	if (strcasestr(ptr, "Mozilla") && !strcasestr(ptr, "compatible"))
 		return 1;
-	return 0;
-}
-
-int
-testxml()
-{
-	char *ptr = getsenv("HTTP_USER_AGENT");
-	if (strcasestr(ptr, "Mozilla/5") && !strcasestr(ptr, "compatible"))
-		return 1;
-	if (strcasestr(ptr, "MSIE 6.") || strcasestr(ptr, "MSIE 5.5"))
-		return 2;
 	return 0;
 }
 
@@ -298,7 +233,6 @@ processMath()
 	}
 }
 
-
 int
 bbscon_main()
 {	//modify by mintbaggio 050526 for new www
@@ -306,7 +240,7 @@ bbscon_main()
 	char buf[2048];
 	char bmbuf[IDLEN * 4 + 4];
 	int thread;
-	int nbuf = 0, usexml = 0;
+	int nbuf = 0;
 	struct fileheader *x = NULL, *dirinfo = NULL;
 	struct boardmem *bx;
 	int num, total, sametitle;
@@ -367,7 +301,6 @@ bbscon_main()
 			http_fatal("本文不存在或者已被删除");
 		}
 
-#if 1
 		html_header(1);
 		if (dirinfo->accessed & FH_MATH) {
 			usingMath = 1;
@@ -376,14 +309,6 @@ bbscon_main()
 		} else {
 			usingMath = 0;
 		}
-#else
-		if (dirinfo->accessed & FH_MATH && (usexml = testxml())) {
-			html_header(100 + usexml - 1);
-		} else {
-			usexml = 0;
-			html_header(1);
-		}
-#endif
 		check_msg();
 		// output post title and link by IronBlood@bmy 2011.12.06
 		x = (struct fileheader *)(mf.ptr + num * sizeof (struct fileheader));
@@ -536,10 +461,7 @@ bbscon_main()
 	MMAP_END mmapfile(NULL, &mf);
 
 	fputs(buf, stdout);
-	if (usexml)
-		showconxml(filename, usexml);
-	else
-		fshowcon(stdout, filename, 0);
+	fshowcon(stdout, filename, 0);
 
 	printf("<tr><td></td><td height=\"20\" valign=\"middle\">");
 	snprintf(fileback, sizeof(fileback), "://%s/%s/con?B=%s&F=%s", MY_BBS_DOMAIN, SMAGIC, board, file);
