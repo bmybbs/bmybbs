@@ -106,28 +106,24 @@ void fprintbinaryattachlink(FILE * fp, int ano, char *attachname, int pos, int s
 				|| !strcasecmp(ext, ".png")
 				|| !strcasecmp(ext, ".pcx"))
 			pic = 1;
-		else if (!strcasecmp(ext, ".swf"))
+		else if (!strcasecmp(ext, ".mp4"))
 			pic = 2;
 		else
 			pic = 0;
 	}
 	switch (pic) {
 	case 1:
-		fprintf(fp, "%d 附图: %s (%d 字节)<br>"
-			"<a href='%s'><IMG style=\" max-width:800px; width: expression(this.width > 800 ? 800: true); height:auto\" SRC='%s'  border=0/></a>",
-			ano, attachname, size, link, link);
+		fprintf(fp, "%d 附图: <a href='%s'>%s</a> (%d 字节)<br>"
+			"<IMG style=\" max-width:800px; width: expression(this.width > 800 ? 800: true); height:auto\" SRC='%s'  border=0/></a>",
+			ano, link, attachname, size, link);
 		break;
 	case 2:
-		fprintf(fp,
-			"%d Flash动画: "
-			"<a href='%s'>%s</a> (%d 字节)<br>"
-			"<OBJECT><PARAM NAME='MOVIE' VALUE='%s'>"
-			"<EMBED SRC='%s' width=480 height=360></EMBED></OBJECT>",
-			ano, link, attachname, size, link, link);
+		fprintf(fp, "%d 视频: <a href='%s'>%s</a> (%d 字节)<br>"
+			"<video controls src='%s'>",
+			ano, link, attachname, size, link);
 		break;
 	default:
-		fprintf(fp,
-			"%d 附件: <a href='%s'>%s</a> (%d 字节)",
+		fprintf(fp, "%d 附件: <a href='%s'>%s</a> (%d 字节)",
 			ano, link, attachname, size);
 	}
 }
