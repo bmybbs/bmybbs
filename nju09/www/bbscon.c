@@ -271,61 +271,6 @@ showconxml(char *filename, int viewertype)
 	return retv;
 }
 
-int
-showcon_cache(char *filename, int level, int edittime)
-{
-	char showfile[NAME_MAX + 1];
-	static char showpath[PATH_MAX + 1];
-	struct stat st;
-	char *ptr = NULL;
-	FILE *fp;
-	int fd;
-	if (!level)
-		return fshowcon(stdout, filename, 0);
-	if (!edittime)
-		strncpy(showfile, filename, NAME_MAX);
-	else
-		snprintf(showfile, NAME_MAX, "%s:%d", filename, edittime);
-	ytht_normalize(showfile);
-	snprintf(showpath, PATH_MAX, "%s/%s", ATTACHCACHE, showfile);
-	if (access(showpath, R_OK)) {
-		if (level < 2)
-			return fshowcon(stdout, filename, 0);
-		fp = fopen(showpath, "w");
-		if (!fp)
-			return fshowcon(stdout, filename, 0);
-		fshowcon(fp, filename, 0);
-		fclose(fp);
-		//printf("<!--make cache-->");
-	}
-	//printf("<!--show cache-->");
-
-	fd = open(showpath, O_RDONLY);
-	if (fd < 0) {
-		fshowcon(stdout, filename, 0);
-		return -1;
-	}
-	if (fstat(fd, &st) < 0 || !S_ISREG(st.st_mode) || st.st_size <= 0) {
-		close(fd);
-		fshowcon(stdout, filename, 0);
-		return -1;
-	}
-	MMAP_TRY {
-		ptr = mmap(NULL, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
-		close(fd);
-		if (ptr == NULL) {
-			fshowcon(stdout, filename, 0);
-			MMAP_RETURN(-1);
-		}
-		fwrite(ptr, st.st_size, 1, stdout);
-	}
-	MMAP_CATCH {
-		close(fd);
-	}
-	MMAP_END munmap(ptr, st.st_size);
-	return 0;
-}
-
 int testmozilla() {
 	char *ptr = getsenv("HTTP_USER_AGENT");
 	if (strcasestr(ptr, "Mozilla") && !strcasestr(ptr, "compatible"))
