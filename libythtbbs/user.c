@@ -772,9 +772,10 @@ int ythtbbs_user_login(const char *userid, const char *passwd, const char *fromh
 				local_uinfo.wwwinfo.link_mode = atoi(local_buf);
 			if (readuservalue(local_lookup_user.userid, "def_mode", local_buf, sizeof(local_buf)) >= 0)
 				local_uinfo.wwwinfo.def_mode = atoi(local_buf);
-
-			local_uinfo.wwwinfo.att_mode = 0;
-			local_uinfo.wwwinfo.doc_mode = 1;
+			if (readuservalue(local_lookup_user.userid, "att_mode", local_buf, sizeof(local_buf)) >= 0)
+				local_uinfo.wwwinfo.att_mode = atoi(local_buf);
+			if (readuservalue(local_lookup_user.userid, "doc_mode", local_buf, sizeof(local_buf)) >= 0)
+				local_uinfo.wwwinfo.doc_mode = atoi(local_buf);
 
 			if (local_uinfo.wwwinfo.t_lines < 10 || local_uinfo.wwwinfo.t_lines > 40)
 				local_uinfo.wwwinfo.t_lines = 20;
