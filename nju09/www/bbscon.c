@@ -79,7 +79,7 @@ void fprintbinaryattachlink(FILE * fp, int ano, char *attachname, int pos, int s
 		//这种情况目前可以用atthttpd
 		if (!atthttp)
 			snprintf(link, sizeof (link),
-				"%s%s&amp;attachpos=%d&amp;attachname=/%s",
+				"%s%s&attachpos=%d&attachname=/%s",
 				ptr, alt, pos, attachname);
 		else
 			snprintf(link, sizeof (link),"/attach/%s/%d/%s", alt1, pos, attachname);
@@ -88,14 +88,14 @@ void fprintbinaryattachlink(FILE * fp, int ano, char *attachname, int pos, int s
 		//同上
 		if (!atthttp)
 			snprintf(link, sizeof (link),
-				"%sattach/bbscon/%s?B=%s&amp;F=%s&amp;attachpos=%d&amp;attachname=/%s",
+				"%sattach/bbscon/%s?B=%s&F=%s&attachpos=%d&attachname=/%s",
 				ptr, attachname, board, getparm2("F", "file"),
 				pos, attachname);
 		else
 			snprintf(link, sizeof (link),"/attach/%s/%s/%d/%s", board, getparm2("F", "file"), pos, attachname);
 	} else
 		snprintf(link, sizeof (link),
-			"attach/%s/%s?%s&amp;attachpos=%d&amp;attachname=/%s",
+			"attach/%s/%s?%s&attachpos=%d&attachname=/%s",
 			cginame, attachname, getsenv("QUERY_STRING"), pos,
 			attachname);
 
@@ -488,10 +488,10 @@ bbscon_main()
 			"<table width=\"100%%\" border=0 cellpadding=0 cellspacing=0>\n");
 		nbuf = sprintf(buf, "<tr><td><div class=\"menu\">\n<DIV class=btncurrent>&lt;%s&gt;</DIV>\n", void1(titlestr(bx->header.title)));
 		nbuf += sprintf(buf+nbuf,
-			"<A href='fwd?B=%s&amp;F=%s' class=btnfunc>/ 转寄</A>\n",
+			"<A href='fwd?B=%s&F=%s' class=btnfunc>/ 转寄</A>\n",
 			board, file);
 		nbuf += sprintf(buf + nbuf,
-			"<DIV><A href='ccc?B=%s&amp;F=%s' class=btnfunc>/ 转贴</a>\n",
+			"<DIV><A href='ccc?B=%s&F=%s' class=btnfunc>/ 转贴</a>\n",
 			board, file);
 
 		if (num >= 0 && num < total) {
@@ -502,10 +502,10 @@ bbscon_main()
 		if (!strncmp(currentuser.userid, dirinfo->owner, IDLEN + 1)) {
 			//|| has_BM_perm(&currentuser, bx)) {
 			nbuf += sprintf(buf + nbuf,
-				"<A onclick='return confirm(\"你真的要删除本文吗?\")' href='del?B=%s&amp;F=%s' class=btnfunc>/ 删除</a>\n",
+				"<A onclick='return confirm(\"你真的要删除本文吗?\")' href='del?B=%s&F=%s' class=btnfunc>/ 删除</a>\n",
 				board, file);
 			nbuf += sprintf(buf + nbuf,
-				"<A href='edit?B=%s&amp;F=%s' class=btnfunc>/ 修改</a>\n",
+				"<A href='edit?B=%s&F=%s' class=btnfunc>/ 修改</a>\n",
 				board, file);
 		}
 		dirinfo->title[sizeof(dirinfo->title) - 1] = 0;
@@ -517,20 +517,20 @@ bbscon_main()
 		fputs(buf, stdout);
 		nbuf = 0;
 		nbuf += sprintf(buf + nbuf,
-			"<a href='pstmail?B=%s&amp;F=%s&amp;num=%d' class=btnfunc title=\"回信给作者 accesskey: m\" accesskey=\"m\">/ 回信给作者</a>\n", board, file, num);
+			"<a href='pstmail?B=%s&F=%s&num=%d' class=btnfunc title=\"回信给作者 accesskey: m\" accesskey=\"m\">/ 回信给作者</a>\n", board, file, num);
 		nbuf += sprintf(buf + nbuf,
-			"<a href='tfind?B=%s&amp;th=%lu&amp;T=%s' class=btnfunc>/ 同主题列表</a>\n", board, (long)dirinfo->thread, encode_url(ptr));
+			"<a href='tfind?B=%s&th=%lu&T=%s' class=btnfunc>/ 同主题列表</a>\n", board, (long)dirinfo->thread, encode_url(ptr));
 		nbuf += sprintf(buf + nbuf,
-			"<a href='bbstcon?board=%s&amp;start=%d&amp;th=%lu' class=btnfunc>/ 同主题由此展开</a>\n", board, num, (long)dirinfo->thread);
+			"<a href='bbstcon?board=%s&start=%d&th=%lu' class=btnfunc>/ 同主题由此展开</a>\n", board, num, (long)dirinfo->thread);
 		nbuf += sprintf(buf + nbuf,
-			"<a href='%s%s&amp;S=%d' class=btnfunc title=\"返回讨论区 accesskey: b\" accesskey=\"b\">/ 返回讨论区</a>\n",
+			"<a href='%s%s&S=%d' class=btnfunc title=\"返回讨论区 accesskey: b\" accesskey=\"b\">/ 返回讨论区</a>\n",
 			showByDefMode(), board, (num > 4) ? (num - 4) : 1);
 		nbuf += sprintf(buf + nbuf, "</div></td></tr></table></td></tr>\n");
 		nbuf += sprintf(buf + nbuf, "<tr><td width=\"60%%\">");
 
 		if (!(dirinfo->accessed & FH_NOREPLY))
 			nbuf += sprintf(buf + nbuf,
-		"<a href='pst?B=%s&amp;F=%s&amp;num=%d%s' class=btnsubmittheme title=\"回复本文 accesskey: r\" accesskey=\"r\">回复本文</a> </td>\n", board, file, num, outgoing ? "" : (inndboard ? "&amp;la=1" : ""));
+		"<a href='pst?B=%s&F=%s&num=%d%s' class=btnsubmittheme title=\"回复本文 accesskey: r\" accesskey=\"r\">回复本文</a> </td>\n", board, file, num, outgoing ? "" : (inndboard ? "&la=1" : ""));
 
 		nbuf += sprintf(buf + nbuf, "<td width=\"40%%\" align=right>分享到 ");
 		char *encoded_title = url_encode(title_utf8);
@@ -550,10 +550,10 @@ bbscon_main()
 			}
 			if (prenum >= 0 && num - prenum < 100)
 				nbuf += sprintf(buf + nbuf,
-					"<a href='con?B=%s&amp;F=%s&amp;N=%d&amp;st=1&amp;T=%lu'>同主题上篇 </a>",
+					"<a href='con?B=%s&F=%s&N=%d&st=1&T=%lu'>同主题上篇 </a>",
 					board, fh2fname(x), prenum + 1, feditmark(*x));
 			nbuf += sprintf(buf + nbuf,
-					"<a href='%s%s&amp;S=%d'>本讨论区 </a>",
+					"<a href='%s%s&S=%d'>本讨论区 </a>",
 					showByDefMode(), board, (num > 4) ? (num - 4) : 1);
 			while (nextnum < total && nextnum - num < 100) {
 				x = (struct fileheader *) (mf.ptr + nextnum * sizeof (struct fileheader));
@@ -563,22 +563,22 @@ bbscon_main()
 			}
 			if (nextnum < total && nextnum - num < 100)
 				nbuf += sprintf(buf + nbuf,
-					"<a href='con?B=%s&amp;F=%s&amp;N=%d&amp;st=1&amp;T=%lu'>同主题下篇</a>",
+					"<a href='con?B=%s&F=%s&N=%d&st=1&T=%lu'>同主题下篇</a>",
 					board, fh2fname(x), nextnum + 1, feditmark(*x));
 		} else {
 			if (num > 0) {
 				x = (struct fileheader *) (mf.ptr + (num - 1) * sizeof (struct fileheader));
 				nbuf += sprintf(buf + nbuf,
-					"<a href='con?B=%s&amp;F=%s&amp;N=%d&amp;T=%lu' title=\"上篇 accesskey: f\" accesskey=\"f\">上篇 </a>",
+					"<a href='con?B=%s&F=%s&N=%d&T=%lu' title=\"上篇 accesskey: f\" accesskey=\"f\">上篇 </a>",
 					board, fh2fname(x), num, feditmark(*x));
 			}
 			nbuf += sprintf(buf + nbuf,
-				"<a href='%s%s&amp;S=%d' title=\"本讨论区 accesskey: c\" accesskey=\"c\">本讨论区 </a>",
+				"<a href='%s%s&S=%d' title=\"本讨论区 accesskey: c\" accesskey=\"c\">本讨论区 </a>",
 				showByDefMode(), board, (num > 4) ? (num - 4) : 1);
 			if (num < total - 1) {
 				x = (struct fileheader *) (mf.ptr + (num + 1) * sizeof (struct fileheader));
 				nbuf += sprintf(buf + nbuf,
-					"<a href='con?B=%s&amp;F=%s&amp;N=%d&amp;T=%lu' title=\"下篇 accesskey: n\" accesskey=\"n\">下篇</a>",
+					"<a href='con?B=%s&F=%s&N=%d&T=%lu' title=\"下篇 accesskey: n\" accesskey=\"n\">下篇</a>",
 					board, fh2fname(x), num + 2, feditmark(*x));
 			}
 		}
