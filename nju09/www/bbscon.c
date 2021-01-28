@@ -146,7 +146,6 @@ fshowcon(FILE * output, char *filename, int show_iframe)
 	fp = fopen(filename, "r");
 	if (fp == 0)
 		return -1;
-	fdisplay_attach(NULL, NULL, NULL, NULL);
 	printf("<div id='filecontent' style='width:800px;'>\n");
 	while (1) {
 		if (fgets(buf, sizeof (buf), fp) == 0)
