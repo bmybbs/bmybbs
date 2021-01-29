@@ -48,8 +48,9 @@ int showbinaryattach(char *filename) {
 			http_fatal("无法打开附件");
 			MMAP_RETURN(-1);
 		}
+
+		printf("Content-Length: %d", size);
 		printf("Content-type: %s\n\n", get_mime_type(attachname));
-//      printf("Content-Length: %d\n\n", size);
 		fwrite(mf.ptr + pos + 4, 1, size, stdout);
 	}
 	MMAP_CATCH {
