@@ -61,7 +61,6 @@ int showbinaryattach(char *filename) {
 void fprintbinaryattachlink(FILE * fp, int ano, char *attachname, int pos, int size, char *alt, char *alt1) {
 	char *ext, link[256], *ptr, *board;
 	int pic = 0;
-	int atthttp = 0;
 	struct boardmem *x;
 
 	//check read_perm for guest, refer to has_read_perm()
@@ -69,15 +68,13 @@ void fprintbinaryattachlink(FILE * fp, int ano, char *attachname, int pos, int s
 	x = getboard(board);
 	if (x && !x->header.clubnum && !x->header.level) {
 		ptr = "/" SMAGIC "/";
-		if (w_info->att_mode == 0)
-			atthttp = 1;
 	} else {
 		ptr = "";
 	}
 
 	if (alt) {
 		//这种情况目前可以用atthttpd
-		if (!atthttp)
+		if (w_info->att_mode)
 			snprintf(link, sizeof (link),
 				"%s%s&attachpos=%d&attachname=/%s",
 				ptr, alt, pos, attachname);
@@ -86,7 +83,7 @@ void fprintbinaryattachlink(FILE * fp, int ano, char *attachname, int pos, int s
 
 	} else if (!strcmp(cginame, "bbscon")) {
 		//同上
-		if (!atthttp)
+		if (w_info->att_mode)
 			snprintf(link, sizeof (link),
 				"%sbbscon/%s?B=%s&F=%s&attachpos=%d&attachname=/%s",
 				ptr, attachname, board, getparm2("F", "file"),
