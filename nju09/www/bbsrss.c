@@ -6,7 +6,6 @@
 #include <time.h>
 #include "bbslib.h"
 
-void fprintbinaryattachlink(FILE * fp, int ano, char *attachname, int pos, int size, char *alt, char *alt1); // bbscon.c
 int nosuchboard(char *board, char *cginame); // bbsdoc.c
 #define CHARSET "gb2312"
 // #define SMAGIC "BMYALLPGGUNZAIJJWPKSMZHTCMPNTOYACOOH_B"

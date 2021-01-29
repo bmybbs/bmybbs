@@ -4,7 +4,6 @@
 // bbscon
 int testmozilla(void);
 void processMath(void);
-void fprintbinaryattachlink(FILE * fp, int ano, char *attachname, int pos, int size, char *alt, char *alt1);
 static int show_file(char *board, struct fileheader *x, int n);
 
 char* userid_str_class(char *s, char* class)

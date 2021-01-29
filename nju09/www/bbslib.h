@@ -225,4 +225,16 @@ enum FILTER_BOARD_e {
  * 本函数属于位于多个代码片段中相似功能的合并。各个版本略有差别，通过 FILTER_BOARD_e 枚举控制代码逻辑。枚举采用位运算。
  */
 int filter_board_v(struct boardmem *board, int curr_idx, va_list ap);
+
+/**
+ * @brief 输出附件的链接
+ * @param fp 输出的文件指针
+ * @param ano 附件编号
+ * @param attachname 附件文件名
+ * @param pos 文件中的位置
+ * @param size 附件大小
+ * @param alt 用于生成 bbscon URL
+ * @param alt1 用于生成 atthttp URL
+ */
+void fprintbinaryattachlink(FILE * fp, int ano, char *attachname, int pos, int size, char *alt, char *alt1);
 #endif
