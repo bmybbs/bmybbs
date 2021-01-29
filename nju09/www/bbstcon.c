@@ -274,8 +274,7 @@ fshow_file(FILE * output, char *board, struct fileheader *x, int n)
 			ptr = buf + 18;
 			fread(&len, 4, 1, fp);
 			len = ntohl(len);
-			sprintf(buf2, "attach/bbscon/%s?B=%s&F=%s", ptr,
-				board, fh2fname(x));
+			sprintf(buf2, "bbscon/%s?B=%s&F=%s", ptr, board, fh2fname(x));
 			sprintf(buf3, "%s/%s", board, fh2fname(x));
 			fprintbinaryattachlink(output, ano, ptr, -4 + (int) ftell(fp), len, buf2, buf3);
 			fseek(fp, len, SEEK_CUR);

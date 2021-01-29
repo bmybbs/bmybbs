@@ -88,15 +88,15 @@ void fprintbinaryattachlink(FILE * fp, int ano, char *attachname, int pos, int s
 		//м╛ио
 		if (!atthttp)
 			snprintf(link, sizeof (link),
-				"%sattach/bbscon/%s?B=%s&F=%s&attachpos=%d&attachname=/%s",
+				"%sbbscon/%s?B=%s&F=%s&attachpos=%d&attachname=/%s",
 				ptr, attachname, board, getparm2("F", "file"),
 				pos, attachname);
 		else
 			snprintf(link, sizeof (link),"/attach/%s/%s/%d/%s", board, getparm2("F", "file"), pos, attachname);
 	} else
 		snprintf(link, sizeof (link),
-			"attach/%s/%s?%s&attachpos=%d&attachname=/%s",
-			cginame, attachname, getsenv("QUERY_STRING"), pos,
+			"bbscon/%s?%s&attachpos=%d&attachname=/%s",
+			attachname, getsenv("QUERY_STRING"), pos,
 			attachname);
 
 	if ((ext = strrchr(attachname, '.')) != NULL) {
