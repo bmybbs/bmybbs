@@ -1,3 +1,6 @@
 [submodule "api"]
 	path = api
 	url = https://github.com/bmybbs/api.git
+[submodule "content-parser"]
+	path = content-parser
+	url = https://github.com/bmybbs/bmybbs-content-parser
