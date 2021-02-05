@@ -8,6 +8,7 @@
 		"lint": "vue-cli-service lint"
 	},
 	"dependencies": {
+		"@bmybbs/bmybbs-content-parser": "file:../content-parser",
 		"@fortawesome/fontawesome-svg-core": "^1.2.32",
 		"@fortawesome/free-solid-svg-icons": "^5.15.1",
 		"@fortawesome/vue-fontawesome": "^3.0.0-3",
