@@ -17,6 +17,7 @@
 		"bootstrap": "^5.0.0-beta1",
 		"core-js": "^3.6.5",
 		"dayjs": "^1.9.6",
+		"file-icons-js": "github:websemantics/file-icons-js",
 		"prismjs": "^1.23.0",
 		"qrcode": "^1.4.4",
 		"vue": "^3.0.4",

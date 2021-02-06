@@ -1,0 +1,14 @@
+.bmy-attach {
+	display: flex;
+}
+
+.bmy-attach span::before {
+	font-size: 3rem;
+	line-height: 3rem;
+}
+
+.bmy-attach a {
+	line-height: 3rem;
+	margin-left: 10px;
+}
+
