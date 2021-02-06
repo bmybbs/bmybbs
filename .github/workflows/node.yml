@@ -5,12 +5,14 @@ on:
     paths:
       - '.github/workflows/node.yml'
       - 'web/**'
+      - 'content-parser'
     branches:
       - master
   pull_request:
     paths:
       - '.github/workflows/node.yml'
       - 'web/**'
+      - 'content-parser'
     branches:
       - master
 
@@ -23,9 +25,13 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: '12.x'
+          node-version: '14.x'
+
+      - name: Build deps
+        working-directory: content-parser
+        run: (npm install && npm run build && rm .eslintrc.json)
 
       - name: Build front-end
         working-directory: web
-        run: (npm install && npm build)
+        run: (npm install && npm run build)
 
