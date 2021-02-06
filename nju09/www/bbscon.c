@@ -48,8 +48,9 @@ int showbinaryattach(char *filename) {
 			http_fatal("无法打开附件");
 			MMAP_RETURN(-1);
 		}
+
+		printf("Content-Length: %d", size);
 		printf("Content-type: %s\n\n", get_mime_type(attachname));
-//      printf("Content-Length: %d\n\n", size);
 		fwrite(mf.ptr + pos + 4, 1, size, stdout);
 	}
 	MMAP_CATCH {
@@ -61,7 +62,6 @@ int showbinaryattach(char *filename) {
 void fprintbinaryattachlink(FILE * fp, int ano, char *attachname, int pos, int size, char *alt, char *alt1) {
 	char *ext, link[256], *ptr, *board;
 	int pic = 0;
-	int atthttp = 0;
 	struct boardmem *x;
 
 	//check read_perm for guest, refer to has_read_perm()
@@ -69,34 +69,32 @@ void fprintbinaryattachlink(FILE * fp, int ano, char *attachname, int pos, int s
 	x = getboard(board);
 	if (x && !x->header.clubnum && !x->header.level) {
 		ptr = "/" SMAGIC "/";
-		if (w_info->att_mode == 0)
-			atthttp = 1;
 	} else {
 		ptr = "";
 	}
 
 	if (alt) {
 		//这种情况目前可以用atthttpd
-		if (!atthttp)
+		if (w_info->att_mode)
 			snprintf(link, sizeof (link),
-				"%s%s&amp;attachpos=%d&amp;attachname=/%s",
+				"%s%s&attachpos=%d&attachname=/%s",
 				ptr, alt, pos, attachname);
 		else
 			snprintf(link, sizeof (link),"/attach/%s/%d/%s", alt1, pos, attachname);
 
 	} else if (!strcmp(cginame, "bbscon")) {
 		//同上
-		if (!atthttp)
+		if (w_info->att_mode)
 			snprintf(link, sizeof (link),
-				"%sattach/bbscon/%s?B=%s&amp;F=%s&amp;attachpos=%d&amp;attachname=/%s",
+				"%sbbscon/%s?B=%s&F=%s&attachpos=%d&attachname=/%s",
 				ptr, attachname, board, getparm2("F", "file"),
 				pos, attachname);
 		else
 			snprintf(link, sizeof (link),"/attach/%s/%s/%d/%s", board, getparm2("F", "file"), pos, attachname);
 	} else
 		snprintf(link, sizeof (link),
-			"attach/%s/%s?%s&amp;attachpos=%d&amp;attachname=/%s",
-			cginame, attachname, getsenv("QUERY_STRING"), pos,
+			"bbscon/%s?%s&attachpos=%d&attachname=/%s",
+			attachname, getsenv("QUERY_STRING"), pos,
 			attachname);
 
 	if ((ext = strrchr(attachname, '.')) != NULL) {
@@ -106,28 +104,24 @@ void fprintbinaryattachlink(FILE * fp, int ano, char *attachname, int pos, int s
 				|| !strcasecmp(ext, ".png")
 				|| !strcasecmp(ext, ".pcx"))
 			pic = 1;
-		else if (!strcasecmp(ext, ".swf"))
+		else if (!strcasecmp(ext, ".mp4"))
 			pic = 2;
 		else
 			pic = 0;
 	}
 	switch (pic) {
 	case 1:
-		fprintf(fp, "%d 附图: %s (%d 字节)<br>"
-			"<a href='%s'><IMG style=\" max-width:800px; width: expression(this.width > 800 ? 800: true); height:auto\" SRC='%s'  border=0/></a>",
-			ano, attachname, size, link, link);
+		fprintf(fp, "%d 附图: <a href='%s'>%s</a> (%d 字节)<br>"
+			"<IMG style=\" max-width:800px; width: expression(this.width > 800 ? 800: true); height:auto\" SRC='%s'  border=0/></a>",
+			ano, link, attachname, size, link);
 		break;
 	case 2:
-		fprintf(fp,
-			"%d Flash动画: "
-			"<a href='%s'>%s</a> (%d 字节)<br>"
-			"<OBJECT><PARAM NAME='MOVIE' VALUE='%s'>"
-			"<EMBED SRC='%s' width=480 height=360></EMBED></OBJECT>",
-			ano, link, attachname, size, link, link);
+		fprintf(fp, "%d 视频: <a href='%s'>%s</a> (%d 字节)<br>"
+			"<video controls src='%s'>",
+			ano, link, attachname, size, link);
 		break;
 	default:
-		fprintf(fp,
-			"%d 附件: <a href='%s'>%s</a> (%d 字节)",
+		fprintf(fp, "%d 附件: <a href='%s'>%s</a> (%d 字节)",
 			ano, link, attachname, size);
 	}
 }
@@ -150,7 +144,6 @@ fshowcon(FILE * output, char *filename, int show_iframe)
 	fp = fopen(filename, "r");
 	if (fp == 0)
 		return -1;
-	fdisplay_attach(NULL, NULL, NULL, NULL);
 	printf("<div id='filecontent' style='width:800px;'>\n");
 	while (1) {
 		if (fgets(buf, sizeof (buf), fp) == 0)
@@ -221,130 +214,10 @@ showcon(char *filename)
 	return fshowcon(stdout, filename, 0);
 }
 
-int
-showconxml(char *filename, int viewertype)
-{
-	char filetmp[200], cmd[512], *ptr, *pend;
-	struct mmapfile mf = { .ptr = NULL };
-	FILE *fp;
-	int retv = -1;
-	if (viewertype != 1)
-		printf("<br>本文使用了<a href=home/boards/BBSHelp/html/itex/itexintro.html target=_blank>Tex数学公式</a><br>");
-	fp = fopen("bbstmpfs/tmp/testxml.txt", "w");
-	fshowcon(fp, filename, 0);
-	fclose(fp);
-	sprintf(filetmp, "bbstmpfs/tmp/xml.%d.tmp", thispid);
-	if (viewertype != 1)
-		sprintf(cmd, MY_BBS_HOME "/bin/tidy -iso2022 -f /dev/null | "
-			MY_BBS_HOME "/bin/itex2MML |" MY_BBS_HOME
-			"/bin/mathml4mathplayer > %s", filetmp);
-	else
-		sprintf(cmd,
-			MY_BBS_HOME "/bin/tidy -iso2022 -f /dev/null | "
-			MY_BBS_HOME
-			"/bin/itex2MML | sed -es/'<br>'/'<br \\/>'/g > %s",
-			filetmp);
-	fp = popen(cmd, "w");
-	if (!fp)
-		return -1;
-	fshowcon(fp, filename, 0);
-	pclose(fp);
-	MMAP_TRY {
-		if (mmapfile(filetmp, &mf) < 0) {
-			unlink(filetmp);
-			MMAP_RETURN(-1);
-		}
-		ptr = ytht_strncasestr(mf.ptr, "<body>", mf.size);
-		if (!ptr) {
-			mmapfile(NULL, &mf);
-			unlink(filetmp);
-			MMAP_RETURN(retv);
-		}
-		ptr += 6;
-		pend = ytht_strncasestr(ptr, "</body>", mf.size - (ptr - mf.ptr));
-		if (!pend)
-			pend = mf.ptr + mf.size;
-		fwrite(ptr, pend - ptr, 1, stdout);
-		if (ytht_strncasestr(ptr, "</table>", pend - ptr) == NULL)
-			printf("</td></tr></table>");
-	}
-	MMAP_CATCH {
-	}
-	MMAP_END mmapfile(NULL, &mf);
-	unlink(filetmp);
-	return retv;
-}
-
-int
-showcon_cache(char *filename, int level, int edittime)
-{
-	char showfile[NAME_MAX + 1];
-	static char showpath[PATH_MAX + 1];
-	struct stat st;
-	char *ptr = NULL;
-	FILE *fp;
-	int fd;
-	if (!level)
-		return fshowcon(stdout, filename, 0);
-	if (!edittime)
-		strncpy(showfile, filename, NAME_MAX);
-	else
-		snprintf(showfile, NAME_MAX, "%s:%d", filename, edittime);
-	ytht_normalize(showfile);
-	snprintf(showpath, PATH_MAX, "%s/%s", ATTACHCACHE, showfile);
-	if (access(showpath, R_OK)) {
-		if (level < 2)
-			return fshowcon(stdout, filename, 0);
-		fp = fopen(showpath, "w");
-		if (!fp)
-			return fshowcon(stdout, filename, 0);
-		fshowcon(fp, filename, 0);
-		fclose(fp);
-		//printf("<!--make cache-->");
-	}
-	//printf("<!--show cache-->");
-
-	fd = open(showpath, O_RDONLY);
-	if (fd < 0) {
-		fshowcon(stdout, filename, 0);
-		return -1;
-	}
-	if (fstat(fd, &st) < 0 || !S_ISREG(st.st_mode) || st.st_size <= 0) {
-		close(fd);
-		fshowcon(stdout, filename, 0);
-		return -1;
-	}
-	MMAP_TRY {
-		ptr = mmap(NULL, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
-		close(fd);
-		if (ptr == NULL) {
-			fshowcon(stdout, filename, 0);
-			MMAP_RETURN(-1);
-		}
-		fwrite(ptr, st.st_size, 1, stdout);
-	}
-	MMAP_CATCH {
-		close(fd);
-	}
-	MMAP_END munmap(ptr, st.st_size);
-	return 0;
-}
-
 int testmozilla() {
 	char *ptr = getsenv("HTTP_USER_AGENT");
 	if (strcasestr(ptr, "Mozilla") && !strcasestr(ptr, "compatible"))
 		return 1;
-	return 0;
-}
-
-int
-testxml()
-{
-	char *ptr = getsenv("HTTP_USER_AGENT");
-	if (strcasestr(ptr, "Mozilla/5") && !strcasestr(ptr, "compatible"))
-		return 1;
-	if (strcasestr(ptr, "MSIE 6.") || strcasestr(ptr, "MSIE 5.5"))
-		return 2;
 	return 0;
 }
 
@@ -357,7 +230,6 @@ processMath()
 	}
 }
 
-
 int
 bbscon_main()
 {	//modify by mintbaggio 050526 for new www
@@ -365,7 +237,7 @@ bbscon_main()
 	char buf[2048];
 	char bmbuf[IDLEN * 4 + 4];
 	int thread;
-	int nbuf = 0, usexml = 0;
+	int nbuf = 0;
 	struct fileheader *x = NULL, *dirinfo = NULL;
 	struct boardmem *bx;
 	int num, total, sametitle;
@@ -426,7 +298,6 @@ bbscon_main()
 			http_fatal("本文不存在或者已被删除");
 		}
 
-#if 1
 		html_header(1);
 		if (dirinfo->accessed & FH_MATH) {
 			usingMath = 1;
@@ -435,14 +306,6 @@ bbscon_main()
 		} else {
 			usingMath = 0;
 		}
-#else
-		if (dirinfo->accessed & FH_MATH && (usexml = testxml())) {
-			html_header(100 + usexml - 1);
-		} else {
-			usexml = 0;
-			html_header(1);
-		}
-#endif
 		check_msg();
 		// output post title and link by IronBlood@bmy 2011.12.06
 		x = (struct fileheader *)(mf.ptr + num * sizeof (struct fileheader));
@@ -492,10 +355,10 @@ bbscon_main()
 			"<table width=\"100%%\" border=0 cellpadding=0 cellspacing=0>\n");
 		nbuf = sprintf(buf, "<tr><td><div class=\"menu\">\n<DIV class=btncurrent>&lt;%s&gt;</DIV>\n", void1(titlestr(bx->header.title)));
 		nbuf += sprintf(buf+nbuf,
-			"<A href='fwd?B=%s&amp;F=%s' class=btnfunc>/ 转寄</A>\n",
+			"<A href='fwd?B=%s&F=%s' class=btnfunc>/ 转寄</A>\n",
 			board, file);
 		nbuf += sprintf(buf + nbuf,
-			"<DIV><A href='ccc?B=%s&amp;F=%s' class=btnfunc>/ 转贴</a>\n",
+			"<DIV><A href='ccc?B=%s&F=%s' class=btnfunc>/ 转贴</a>\n",
 			board, file);
 
 		if (num >= 0 && num < total) {
@@ -506,10 +369,10 @@ bbscon_main()
 		if (!strncmp(currentuser.userid, dirinfo->owner, IDLEN + 1)) {
 			//|| has_BM_perm(&currentuser, bx)) {
 			nbuf += sprintf(buf + nbuf,
-				"<A onclick='return confirm(\"你真的要删除本文吗?\")' href='del?B=%s&amp;F=%s' class=btnfunc>/ 删除</a>\n",
+				"<A onclick='return confirm(\"你真的要删除本文吗?\")' href='del?B=%s&F=%s' class=btnfunc>/ 删除</a>\n",
 				board, file);
 			nbuf += sprintf(buf + nbuf,
-				"<A href='edit?B=%s&amp;F=%s' class=btnfunc>/ 修改</a>\n",
+				"<A href='edit?B=%s&F=%s' class=btnfunc>/ 修改</a>\n",
 				board, file);
 		}
 		dirinfo->title[sizeof(dirinfo->title) - 1] = 0;
@@ -521,20 +384,20 @@ bbscon_main()
 		fputs(buf, stdout);
 		nbuf = 0;
 		nbuf += sprintf(buf + nbuf,
-			"<a href='pstmail?B=%s&amp;F=%s&amp;num=%d' class=btnfunc title=\"回信给作者 accesskey: m\" accesskey=\"m\">/ 回信给作者</a>\n", board, file, num);
+			"<a href='pstmail?B=%s&F=%s&num=%d' class=btnfunc title=\"回信给作者 accesskey: m\" accesskey=\"m\">/ 回信给作者</a>\n", board, file, num);
 		nbuf += sprintf(buf + nbuf,
-			"<a href='tfind?B=%s&amp;th=%lu&amp;T=%s' class=btnfunc>/ 同主题列表</a>\n", board, (long)dirinfo->thread, encode_url(ptr));
+			"<a href='tfind?B=%s&th=%lu&T=%s' class=btnfunc>/ 同主题列表</a>\n", board, (long)dirinfo->thread, encode_url(ptr));
 		nbuf += sprintf(buf + nbuf,
-			"<a href='bbstcon?board=%s&amp;start=%d&amp;th=%lu' class=btnfunc>/ 同主题由此展开</a>\n", board, num, (long)dirinfo->thread);
+			"<a href='bbstcon?board=%s&start=%d&th=%lu' class=btnfunc>/ 同主题由此展开</a>\n", board, num, (long)dirinfo->thread);
 		nbuf += sprintf(buf + nbuf,
-			"<a href='%s%s&amp;S=%d' class=btnfunc title=\"返回讨论区 accesskey: b\" accesskey=\"b\">/ 返回讨论区</a>\n",
+			"<a href='%s%s&S=%d' class=btnfunc title=\"返回讨论区 accesskey: b\" accesskey=\"b\">/ 返回讨论区</a>\n",
 			showByDefMode(), board, (num > 4) ? (num - 4) : 1);
 		nbuf += sprintf(buf + nbuf, "</div></td></tr></table></td></tr>\n");
 		nbuf += sprintf(buf + nbuf, "<tr><td width=\"60%%\">");
 
 		if (!(dirinfo->accessed & FH_NOREPLY))
 			nbuf += sprintf(buf + nbuf,
-		"<a href='pst?B=%s&amp;F=%s&amp;num=%d%s' class=btnsubmittheme title=\"回复本文 accesskey: r\" accesskey=\"r\">回复本文</a> </td>\n", board, file, num, outgoing ? "" : (inndboard ? "&amp;la=1" : ""));
+		"<a href='pst?B=%s&F=%s&num=%d%s' class=btnsubmittheme title=\"回复本文 accesskey: r\" accesskey=\"r\">回复本文</a> </td>\n", board, file, num, outgoing ? "" : (inndboard ? "&la=1" : ""));
 
 		nbuf += sprintf(buf + nbuf, "<td width=\"40%%\" align=right>分享到 ");
 		char *encoded_title = url_encode(title_utf8);
@@ -554,10 +417,10 @@ bbscon_main()
 			}
 			if (prenum >= 0 && num - prenum < 100)
 				nbuf += sprintf(buf + nbuf,
-					"<a href='con?B=%s&amp;F=%s&amp;N=%d&amp;st=1&amp;T=%lu'>同主题上篇 </a>",
+					"<a href='con?B=%s&F=%s&N=%d&st=1&T=%lu'>同主题上篇 </a>",
 					board, fh2fname(x), prenum + 1, feditmark(*x));
 			nbuf += sprintf(buf + nbuf,
-					"<a href='%s%s&amp;S=%d'>本讨论区 </a>",
+					"<a href='%s%s&S=%d'>本讨论区 </a>",
 					showByDefMode(), board, (num > 4) ? (num - 4) : 1);
 			while (nextnum < total && nextnum - num < 100) {
 				x = (struct fileheader *) (mf.ptr + nextnum * sizeof (struct fileheader));
@@ -567,22 +430,22 @@ bbscon_main()
 			}
 			if (nextnum < total && nextnum - num < 100)
 				nbuf += sprintf(buf + nbuf,
-					"<a href='con?B=%s&amp;F=%s&amp;N=%d&amp;st=1&amp;T=%lu'>同主题下篇</a>",
+					"<a href='con?B=%s&F=%s&N=%d&st=1&T=%lu'>同主题下篇</a>",
 					board, fh2fname(x), nextnum + 1, feditmark(*x));
 		} else {
 			if (num > 0) {
 				x = (struct fileheader *) (mf.ptr + (num - 1) * sizeof (struct fileheader));
 				nbuf += sprintf(buf + nbuf,
-					"<a href='con?B=%s&amp;F=%s&amp;N=%d&amp;T=%lu' title=\"上篇 accesskey: f\" accesskey=\"f\">上篇 </a>",
+					"<a href='con?B=%s&F=%s&N=%d&T=%lu' title=\"上篇 accesskey: f\" accesskey=\"f\">上篇 </a>",
 					board, fh2fname(x), num, feditmark(*x));
 			}
 			nbuf += sprintf(buf + nbuf,
-				"<a href='%s%s&amp;S=%d' title=\"本讨论区 accesskey: c\" accesskey=\"c\">本讨论区 </a>",
+				"<a href='%s%s&S=%d' title=\"本讨论区 accesskey: c\" accesskey=\"c\">本讨论区 </a>",
 				showByDefMode(), board, (num > 4) ? (num - 4) : 1);
 			if (num < total - 1) {
 				x = (struct fileheader *) (mf.ptr + (num + 1) * sizeof (struct fileheader));
 				nbuf += sprintf(buf + nbuf,
-					"<a href='con?B=%s&amp;F=%s&amp;N=%d&amp;T=%lu' title=\"下篇 accesskey: n\" accesskey=\"n\">下篇</a>",
+					"<a href='con?B=%s&F=%s&N=%d&T=%lu' title=\"下篇 accesskey: n\" accesskey=\"n\">下篇</a>",
 					board, fh2fname(x), num + 2, feditmark(*x));
 			}
 		}
@@ -595,15 +458,11 @@ bbscon_main()
 	MMAP_END mmapfile(NULL, &mf);
 
 	fputs(buf, stdout);
-	if (usexml)
-		showconxml(filename, usexml);
-	else
-		fshowcon(stdout, filename, 0);
+	fshowcon(stdout, filename, 0);
 
 	printf("<tr><td></td><td height=\"20\" valign=\"middle\">");
-	memset(fileback, 0, 80);
-	sprintf(fileback, "http://bbs.xjtu.edu.cn/BMY/con?B=%s&F=%s", board,file);
-	printf("本文链接&nbsp;&nbsp;<a href=' %s'>%s</a>", fileback, fileback);
+	snprintf(fileback, sizeof(fileback), "%s/%s/con?B=%s&F=%s", MY_BBS_DOMAIN, SMAGIC, board, file);
+	printf("本文链接&nbsp;&nbsp;<a href='//%s'>%s</a>", fileback, fileback);
 	printf("</td></tr>");
 	printf("</table></td></tr></table></td></tr></table>\n");
 #ifdef ENABLE_MYSQL

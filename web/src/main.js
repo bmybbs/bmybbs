@@ -6,6 +6,8 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import { FontAwesomeIcon } from "./plugins/font-awesome.js"
 import Toaster from "@meforma/vue-toaster"
 import "@/assets/aha.scss"
+import "file-icons-js/css/style.css"
+import "@/assets/article.css"
 
 createApp(App)
 	.use(router)

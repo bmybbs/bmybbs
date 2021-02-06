@@ -5,7 +5,7 @@
 			<BadgeArticleFlags :_accessed="_mark" />
 		</div>
 		<div class="card-body">
-			<div class="article" v-html="content" @click="toggleAha"></div>
+			<div class="article" v-html="content" @click="toggleAha" ref="article"></div>
 		</div>
 		<div class="card-footer">
 			<TabbedEditor />
@@ -18,11 +18,12 @@ import { BMYClient } from "@/lib/BMYClient.js"
 import TooltipTimestamp from "@/components/TooltipTimestamp.vue"
 import BadgeArticleFlags from "@/components/BadgeArticleFlags.vue"
 import TabbedEditor from "@/components/TabbedEditor.vue"
+import bmyParser from "@bmybbs/bmybbs-content-parser"
+import Prism from "prismjs"
 
 export default {
 	data() {
 		return {
-			v_dom: null,
 			aha_list: [],
 			show_ansi: true,
 			content: "",
@@ -36,27 +37,30 @@ export default {
 	},
 	mounted() {
 		BMYClient.get_article_content(this._boardname_en, this._aid).then(response => {
-			this.content = response.content;
-			this.v_dom = document.createElement('div');
-			this.v_dom.innerHTML = response.content;
-			this.aha_list = [].slice.call(this.v_dom.querySelectorAll("span.aha"));
+			this.content = bmyParser({
+				text: response.content,
+				attaches: response.attach
+			});
+			this.aha_list = [].slice.call(this.$refs.article.querySelectorAll("span.aha"));
 			this.author = response.author;
+			setTimeout(() => {
+				Prism.highlightAll();
+			}, 1500);
 		});
 	},
 	methods: {
 		toggleAha() {
 			if (this.show_ansi) {
 				this.show_ansi = false;
-				this.aha_list.map((x) => {
+				this.aha_list.forEach((x) => {
 					x.classList.remove("aha");
 				});
 			} else {
 				this.show_ansi = true;
-				this.aha_list.map((x) => {
+				this.aha_list.forEach((x) => {
 					x.classList.add("aha");
 				});
 			}
-			this.content = this.v_dom.innerHTML;
 		},
 	},
 	components: {
