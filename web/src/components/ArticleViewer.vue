@@ -19,6 +19,7 @@ import TooltipTimestamp from "@/components/TooltipTimestamp.vue"
 import BadgeArticleFlags from "@/components/BadgeArticleFlags.vue"
 import TabbedEditor from "@/components/TabbedEditor.vue"
 import bmyParser from "@bmybbs/bmybbs-content-parser"
+import Prism from "prismjs"
 
 export default {
 	data() {
@@ -42,6 +43,9 @@ export default {
 			});
 			this.aha_list = [].slice.call(this.$refs.article.querySelectorAll("span.aha"));
 			this.author = response.author;
+			setTimeout(() => {
+				Prism.highlightAll();
+			}, 1500);
 		});
 	},
 	methods: {
