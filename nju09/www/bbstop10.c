@@ -82,6 +82,10 @@ void showCommend(int kind){
 			break;
 		if(x.accessed & FH_ALLREPLY)
 			strcpy(allcanre," style='color:red;' ");
+		x.board[sizeof(x.board) - 1] = 0;
+		x.filename[sizeof(x.filename) - 1] = 0;
+		x.title[sizeof(x.title) - 1] = 0;
+		x.userid[sizeof(x.userid) - 1] = 0;
 		printf("<tr><td>  %d  </td> <td><a href=\"%s%s\" >%-13s</a></td> <td><a href=con?B=%s&F=%s%s>%-30s</a></td> <td><a href=qry?U=%s >%-12s</a></td> </tr>",
 			21-i, showByDefMode(), x.board, x.board, x.board, x.filename, allcanre, x.title, x.userid, x.userid);
 
