@@ -1166,6 +1166,7 @@ int modifyheader;
 	signal(SIGALRM, SIG_IGN);
 	clear();
 
+	memset(abort, 0, sizeof(abort));
 	save_stat = local_article;
 	//local_article: -1 不转信版面  0 转信版面默认不转信  1 转信
 	if (uinfo.mode != CCUGOPHER) {
