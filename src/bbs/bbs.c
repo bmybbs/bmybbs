@@ -4437,10 +4437,12 @@ static int count_commend() {
 	int count = 0;
 
 	fp = fopen(COMMENDFILE, "r");
-	if(!fp)	return 0;
+	if(!fp)
+		return 0;
 	while(1){
 		if(fread(&x, sizeof(struct commend), 1, fp)<=0)
 			break;
+		x.com_user[sizeof(x.com_user) - 1] = 0;
 		if(!strcmp(x.com_user, currentuser.userid))
 			count++;
 	}
@@ -4587,10 +4589,12 @@ static int count_commend2() {
 	int count = 0;
 
 	fp = fopen(COMMENDFILE2, "r");
-	if(!fp)	return 0;
+	if(!fp)
+		return 0;
 	while(1){
 		if(fread(&x, sizeof(struct commend), 1, fp)<=0)
 			break;
+		x.com_user[sizeof(x.com_user) - 1] = 0;
 		if(!strcmp(x.com_user, currentuser.userid))
 			count++;
 	}
