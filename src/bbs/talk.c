@@ -1889,7 +1889,9 @@ getrejectstr()
 	nr = (nr >= MAXREJECTS) ? MAXREJECTS : nr;
 	tmp = (struct ythtbbs_override *) calloc(sizeof (struct ythtbbs_override), nr);
 	get_records(genbuf, tmp, sizeof (struct ythtbbs_override), 1, nr);
+	struct ythtbbs_override EMPTY;
 	for (i = 0; i < nr; i++) {
+		tmp[i].id[sizeof(EMPTY.id) - 1] = 0;
 		uinfo.reject[i] = ythtbbs_cache_UserTable_search_usernum(tmp[i].id);
 		if (uinfo.reject[i] == 0)
 			deleteoverride(tmp[i].id, "rejects");
