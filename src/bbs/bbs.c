@@ -2492,7 +2492,7 @@ char *direct;
 	struct stat st; //add by hace
 	char buf[STRLEN], filepath[STRLEN];
 	int now;
-	if(stat(direct,&st)==-1 || (st.st_size/sizeof(struct fileheader) < ent))
+	if(ent < 0 || stat(direct,&st)==-1 || (st.st_size/sizeof(struct fileheader) < (unsigned int /* safe */) ent))
 		return DONOTHING;//add by hace
 	if (!in_mail)
 	{
