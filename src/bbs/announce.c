@@ -1981,6 +1981,7 @@ static int add_anpath(char *title, char *path) {
 	char titles[20][STRLEN], paths[20][PATHLEN], *ptr;
 	int i;
 	int index = 0, nindex = 0;
+	memset(titles, 0, sizeof(titles));
 	read_anpath(titles, paths);
 	move(t_lines - 22, 0);
 	clrtobot();
