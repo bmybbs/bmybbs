@@ -4362,7 +4362,11 @@ int is_in_commend(char* board, struct fileheader* fileinfo) {
 		return 0;
 
 	while(1){
-		if(fread(&x, sizeof(struct commend), 1, fp)<=0)	break;
+		if(fread(&x, sizeof(struct commend), 1, fp)<=0)
+			break;
+
+		x.board[sizeof(x.board) - 1] = 0;
+		x.filename[sizeof(x.filename) - 1] = 0;
 		if(!strcmp(board, x.board) && !strcmp(fh2fname(fileinfo), x.filename)){
 			offset = ftell(fp);
 			fclose(fp);
