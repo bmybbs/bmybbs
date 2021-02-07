@@ -2052,6 +2052,7 @@ select_anpath()
 	Importname[0] = 0;
 	move(t_lines - 22, 0);
 	clrtobot();
+	memset(titles, 0, sizeof(titles));
 	if (read_anpath(titles, paths) <= 0) {
 		prints("丝路未曾设置或过期, 请首先设置丝路");
 		pressreturn();
