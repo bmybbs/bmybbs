@@ -18,15 +18,13 @@ bbsnewmail_main()
 	check_msg();
 	changemode(RMAIL);
 	printf("<body><center>\n");
-	printf
-	    ("<div class=rhead>%s -- 新邮件列表 [使用者: <span class=h11>%s</span>]<br>[信箱容量: <span class=h11>%d</span>k, 已用空间: <span class=h11>%dk</span>]</div><hr>\n",
-	     BBSNAME, currentuser.userid, max_mail_size(), get_mail_size());
+	printf("<div class=rhead>%s -- 新邮件列表 [使用者: <span class=h11>%s</span>]<br>[信箱容量: <span class=h11>%d</span>k, 已用空间: <span class=h11>%dk</span>]</div><hr>\n",
+			BBSNAME, currentuser.userid, max_mail_size(), get_mail_size());
 	fp = fopen(dir, "r");
 	if (fp == 0)
 		http_fatal("目前您的信箱没有任何信件");
 	printf("<table border=1>\n");
-	printf
-	    ("<tr><td>序号</td><td>状态</td><td>发信人</td><td>日期</td><td>信件标题</td></tr>\n");
+	printf("<tr><td>序号</td><td>状态</td><td>发信人</td><td>日期</td><td>信件标题</td></tr>\n");
 	while (1) {
 		if (fread(&x, sizeof (x), 1, fp) <= 0)
 			break;
@@ -36,8 +34,8 @@ bbsnewmail_main()
 		printf("<tr><td>%d</td><td>N</td>", total);
 		printf("<td>%s</td>", userid_str(fh2owner(&x)));
 		printf("<td>%6.6s</td>", ytht_ctime(x.filetime) + 4);
-		printf("<td><a href=bbsmailcon?file=%s&num=%d>", fh2fname(&x),
-		       total - 1);
+		printf("<td><a href=bbsmailcon?file=%s&num=%d>", fh2fname(&x), total - 1);
+		x.title[sizeof(x.title) - 1] = 0;
 		if (strncmp("Re: ", x.title, 4))
 			printf("★ ");
 		hprintf("%42.42s", void1(x.title));

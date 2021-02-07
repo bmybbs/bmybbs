@@ -668,6 +668,7 @@ mem_show(char *ptr, int size, int row, int numlines, char *fn)
 	int i, curr_line;
 	if (size <= 0)
 		return;
+	memset(&l, 0, sizeof(struct MemMoreLines));
 	init_MemMoreLines(&l, ptr, size);
 	move(row, 0);
 	clrtobot();
@@ -714,6 +715,7 @@ mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
 
 	if (size <= 0)
 		return 0;
+	memset(&l, 0, sizeof(struct MemMoreLines));
 	init_MemMoreLines(&l, ptr, size);
 
 	prints("\033[m");

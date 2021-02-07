@@ -49,7 +49,9 @@ bbssndmail_main()
 		ythtbbs_override_get_records(currentuser.userid, fff, MAXFRIENDS, YTHTBBS_OVERRIDE_FRIENDS);
 		ythtbbs_override_unlock(lockfd);
 		snprintf(title2, sizeof (title2), "[群体信件] %.60s", title);
+		struct ythtbbs_override EMPTY;
 		for (i = 0; i < friendnum; i++) {
+			fff[i].id[sizeof(EMPTY.id) - 1] = 0;
 			u = getuser(fff[i].id);
 			if (u == 0)
 				continue;

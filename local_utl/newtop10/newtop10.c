@@ -112,7 +112,7 @@ _topn(void *bh_void, void * fargs)
 	//从 bh 里面找到TOPN个thread
 	int size = sizeof (struct fileheader), total;
 	int i, j, k, *usernum;
-	struct mmapfile mf;
+	struct mmapfile mf = { .ptr = NULL };
 	struct fileheader *ptr;
 	ght_hash_table_t *p_table = NULL;
 	ght_iterator_t iterator, iterator1;

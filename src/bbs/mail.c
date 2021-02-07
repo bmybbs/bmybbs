@@ -966,7 +966,7 @@ static void do_search_mailbox(int type, const char *whattosearch, const char *te
 {
 	FILE *fdir;
 	FILE *ftempdir;
-	equalor isequal;
+	equalor isequal = NULL;
 
 	fdir = fopen(currmaildir, "r");
 	if (fdir == NULL)
@@ -991,6 +991,10 @@ static void do_search_mailbox(int type, const char *whattosearch, const char *te
 	case 4:
 		isequal = issender;
 		break;
+	}
+
+	if (isequal == NULL) {
+		return;
 	}
 
 	size_t n = 0;

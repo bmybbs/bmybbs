@@ -30,7 +30,7 @@ void api_bbsfindacc() {
 	int rc = 0;
 	int domain_idx;
 	char email[80];
-	struct associated_userid *au;
+	struct associated_userid *au = NULL;
 	char *user   = getparm("user");
 	char *domain = getparm("domain");
 

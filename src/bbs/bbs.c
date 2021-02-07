@@ -2492,7 +2492,7 @@ char *direct;
 	struct stat st; //add by hace
 	char buf[STRLEN], filepath[STRLEN];
 	int now;
-	if(stat(direct,&st)==-1 || (st.st_size/sizeof(struct fileheader) < ent))
+	if(ent < 0 || stat(direct,&st)==-1 || (st.st_size/sizeof(struct fileheader) < (unsigned int /* safe */) ent))
 		return DONOTHING;//add by hace
 	if (!in_mail)
 	{
@@ -4362,7 +4362,11 @@ int is_in_commend(char* board, struct fileheader* fileinfo) {
 		return 0;
 
 	while(1){
-		if(fread(&x, sizeof(struct commend), 1, fp)<=0)	break;
+		if(fread(&x, sizeof(struct commend), 1, fp)<=0)
+			break;
+
+		x.board[sizeof(x.board) - 1] = 0;
+		x.filename[sizeof(x.filename) - 1] = 0;
 		if(!strcmp(board, x.board) && !strcmp(fh2fname(fileinfo), x.filename)){
 			offset = ftell(fp);
 			fclose(fp);
@@ -4433,10 +4437,12 @@ static int count_commend() {
 	int count = 0;
 
 	fp = fopen(COMMENDFILE, "r");
-	if(!fp)	return 0;
+	if(!fp)
+		return 0;
 	while(1){
 		if(fread(&x, sizeof(struct commend), 1, fp)<=0)
 			break;
+		x.com_user[sizeof(x.com_user) - 1] = 0;
 		if(!strcmp(x.com_user, currentuser.userid))
 			count++;
 	}
@@ -4508,7 +4514,11 @@ int is_in_commend2(char* board, struct fileheader* fileinfo) {
 		return 0;
 
 	while(1){
-		if(fread(&x, sizeof(struct commend), 1, fp)<=0)	break;
+		if(fread(&x, sizeof(struct commend), 1, fp)<=0)
+			break;
+
+		x.board[sizeof(x.board) - 1] = 0;
+		x.filename[sizeof(x.filename) - 1] = 0;
 		if(!strcmp(board, x.board) && !strcmp(fh2fname(fileinfo), x.filename)){
 			offset = ftell(fp);
 			fclose(fp);
@@ -4579,10 +4589,12 @@ static int count_commend2() {
 	int count = 0;
 
 	fp = fopen(COMMENDFILE2, "r");
-	if(!fp)	return 0;
+	if(!fp)
+		return 0;
 	while(1){
 		if(fread(&x, sizeof(struct commend), 1, fp)<=0)
 			break;
+		x.com_user[sizeof(x.com_user) - 1] = 0;
 		if(!strcmp(x.com_user, currentuser.userid))
 			count++;
 	}

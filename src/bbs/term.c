@@ -1,26 +1,27 @@
 /***********************************************
 	term.c for BBS without tty use
-	
-    Firebird Bulletin Board System
-    Copyright (C) 1999	KCN,Zhou lin,kcn@cic.tsinghua.edu.cn
-    
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 1, or (at your option)
-    any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	Firebird Bulletin Board System
+	Copyright (C) 1999	KCN,Zhou lin,kcn@cic.tsinghua.edu.cn
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 1, or (at your option)
+	any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
 #include <string.h>
 #include <stdio.h>
+#include "ytht/strlib.h"
 
 #define clearbuflen       6
 #define strtstandoutlen   4
@@ -48,10 +49,10 @@ void init_tty(void) {
 }
 
 void term_init(void) {
-	strncpy(clearbuf, "\033[H\033[J", clearbuflen);
-	strncpy(cleolbuf, "\033[K", cleolbuflen);
-	strncpy(strtstandout, "\033[7m", strtstandoutlen);
-	strncpy(endstandout, "\033[m", endstandoutlen);
+	ytht_strsncpy(clearbuf, "\033[H\033[J", clearbuflen);
+	ytht_strsncpy(cleolbuf, "\033[K", cleolbuflen);
+	ytht_strsncpy(strtstandout, "\033[7m", strtstandoutlen);
+	ytht_strsncpy(endstandout, "\033[m", endstandoutlen);
 }
 
 void do_move(int destcol, int destline, int (*outc) ()) {

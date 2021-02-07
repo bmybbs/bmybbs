@@ -496,6 +496,8 @@ int nomsg;
 	MENU pm;
 	char anboard[STRLEN], tmpboard[STRLEN];
 
+	memset(&pm, 0, sizeof(MENU));
+	memset(anboard, 0, sizeof(anboard));
 	if (!nomsg) {
 		if (select_anpath() < 0)
 			return 0;
@@ -793,10 +795,7 @@ int mode;
 	}
 }
 
-static void
-a_moveitem(pm)
-MENU *pm;
-{
+static void a_moveitem(MENU *pm) {
 	ITEM *tmp;
 	char newnum[STRLEN];
 	int num, n;
@@ -810,10 +809,10 @@ MENU *pm;
 		return;
 	tmp = pm->item[pm->now];
 	if (num > pm->now) {
-		for (n = pm->now; n < num; n++)
+		for (n = pm->now; n < num - 1; n++)
 			pm->item[n] = pm->item[n + 1];
 	} else {
-		for (n = pm->now; n > num; n--)
+		for (n = pm->now; n > num && n > 0; n--)
 			pm->item[n] = pm->item[n - 1];
 	}
 	pm->item[num] = tmp;
@@ -840,6 +839,7 @@ int paste;			// -1:cut 0:copy have perm 1:paste 2:copy have no perm
 	int x, y, hasc;
 	MENU pmforcut;
 
+	memset(&pmforcut, 0, sizeof(MENU));
 	move(t_lines - 1, 0);
 	if (paste != 1) {
 		copymode = paste;
@@ -892,9 +892,16 @@ int paste;			// -1:cut 0:copy have perm 1:paste 2:copy have no perm
 			egetch();
 			return;
 		}
-		fread(title, sizeof (item->title), 1, fn);
-		fread(filename, sizeof (item->fname), 1, fn);
-		fread(fpath, sizeof (fpath), 1, fn);
+		size_t len;
+		if ((len = fread(title, sizeof (item->title), 1, fn)) > 0) {
+			title[len < sizeof(title) ? len : (sizeof(title) - 1)] = 0;
+		}
+		if ((len = fread(filename, sizeof (item->fname), 1, fn)) > 0) {
+			filename[len < sizeof(filename) ? len : (sizeof(title) - 1)] = 0;
+		}
+		if ((len = fread(fpath, sizeof (fpath), 1, fn)) > 0) {
+			fpath[len < sizeof(fpath) ? len : (sizeof(fpath) - 1)] = 0;
+		}
 		fread(&copymode, sizeof (copymode), 1, fn);
 		fclose(fn);
 		//end
@@ -920,6 +927,8 @@ int paste;			// -1:cut 0:copy have perm 1:paste 2:copy have no perm
 			egetch();
 		} else {
 			char defaultans[3];
+			memset(defaultans, 0, sizeof(defaultans));
+			// TODO
 			switch (copymode) {
 			case -1:	//cut
 				defaultans[0] = 'C';
@@ -1049,6 +1058,7 @@ static int
 a_changemtitle(char *fpath, char *newmtitle)
 {
 	MENU pm;
+	memset(&pm, 0, sizeof(MENU));
 	pm.path = fpath;
 	pm.level |= PERM_BOARDS;
 	a_loadnames(&pm);
@@ -1626,6 +1636,7 @@ char *path, *title, *fname;
 {
 	MENU pm;
 
+	memset(&pm, 0, sizeof(MENU));
 	pm.path = path;
 	pm.level |= PERM_BOARDS;	/*add by ylsdd */
 	a_loadnames(&pm);
@@ -1698,6 +1709,7 @@ char grp[STRLEN], bname[STRLEN], title[STRLEN];
 	int i, n;
 	MENU pm;
 
+	memset(&pm, 0, sizeof(MENU));
 	strncpy(buf3, grp, 29);
 	buf3[29] = '\0';
 	sprintf(buf, "0Announce/.Search");
@@ -1735,6 +1747,7 @@ char bname[STRLEN], grp[STRLEN], title[STRLEN], newtitle[100];
 	int i;
 	MENU pm;
 
+	memset(&pm, 0, sizeof(MENU));
 	strncpy(buf3, grp, 29);
 	buf3[29] = '\0';
 	sprintf(buf, "0Announce/.Search");
@@ -1977,6 +1990,7 @@ static int add_anpath(char *title, char *path) {
 	char titles[20][STRLEN], paths[20][PATHLEN], *ptr;
 	int i;
 	int index = 0, nindex = 0;
+	memset(titles, 0, sizeof(titles));
 	read_anpath(titles, paths);
 	move(t_lines - 22, 0);
 	clrtobot();
@@ -2047,6 +2061,7 @@ select_anpath()
 	Importname[0] = 0;
 	move(t_lines - 22, 0);
 	clrtobot();
+	memset(titles, 0, sizeof(titles));
 	if (read_anpath(titles, paths) <= 0) {
 		prints("丝路未曾设置或过期, 请首先设置丝路");
 		pressreturn();
