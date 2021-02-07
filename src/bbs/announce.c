@@ -497,6 +497,7 @@ int nomsg;
 	char anboard[STRLEN], tmpboard[STRLEN];
 
 	memset(&pm, 0, sizeof(MENU));
+	memset(anboard, 0, sizeof(anboard));
 	if (!nomsg) {
 		if (select_anpath() < 0)
 			return 0;
