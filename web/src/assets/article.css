@@ -4,16 +4,19 @@
 
 .bmy-attach span {
 	color: #444444;
+	text-align: center;
 }
 
 .bmy-attach span::before {
 	font-size: 3rem;
 	line-height: 3rem;
+	width: 60px;
+	display: inline-block;
 }
 
 .bmy-attach a {
 	line-height: 3rem;
-	margin-left: 10px;
+	text-decoration: none;
 }
 
 .bmy-attach .powerpoint-icon { color: #d24726; }
