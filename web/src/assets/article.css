@@ -2,6 +2,10 @@
 	display: flex;
 }
 
+.bmy-attach span {
+	color: #444444;
+}
+
 .bmy-attach span::before {
 	font-size: 3rem;
 	line-height: 3rem;
@@ -11,4 +15,11 @@
 	line-height: 3rem;
 	margin-left: 10px;
 }
+
+.bmy-attach .powerpoint-icon { color: #d24726; }
+.bmy-attach .excel-icon      { color: #217346; }
+.bmy-attach .word-icon       { color: #2b579a; }
+.bmy-attach .android-icon    { color: #a4c639; }
+.bmy-attach .pdf-icon        { color: #F40F02; }
+.bmy-attach .windows-icon    { color: #0078d7; }
 
