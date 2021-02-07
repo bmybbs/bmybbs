@@ -134,9 +134,9 @@ new_register()
 			prints("密码太短或与使用者代号相同, 请重新输入\n");
 			continue;
 		}
-		strncpy(newuser.passwd, passbuf, PASSLEN);
+		ytht_strsncpy(newuser.passwd, passbuf, PASSLEN);
 		getdata(t_lines - 3, 0, "请再输入一次你的密码 (Reconfirm Password): ", passbuf, PASSLEN, NOECHO, YEA);
-		if (strncmp(passbuf, newuser.passwd, PASSLEN) != 0) {
+		if (strncmp(passbuf, newuser.passwd, PASSLEN - 1) != 0) {
 			prints("密码输入错误, 请重新输入密码.\n");
 			continue;
 		}
