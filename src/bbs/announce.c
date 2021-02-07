@@ -793,10 +793,7 @@ int mode;
 	}
 }
 
-static void
-a_moveitem(pm)
-MENU *pm;
-{
+static void a_moveitem(MENU *pm) {
 	ITEM *tmp;
 	char newnum[STRLEN];
 	int num, n;
@@ -810,10 +807,10 @@ MENU *pm;
 		return;
 	tmp = pm->item[pm->now];
 	if (num > pm->now) {
-		for (n = pm->now; n < num; n++)
+		for (n = pm->now; n < num - 1; n++)
 			pm->item[n] = pm->item[n + 1];
 	} else {
-		for (n = pm->now; n > num; n--)
+		for (n = pm->now; n > num && n > 0; n--)
 			pm->item[n] = pm->item[n - 1];
 	}
 	pm->item[num] = tmp;
