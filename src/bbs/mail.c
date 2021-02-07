@@ -994,6 +994,8 @@ static void do_search_mailbox(int type, const char *whattosearch, const char *te
 	}
 
 	if (isequal == NULL) {
+		fclose(fdir);
+		fclose(ftempdir);
 		return;
 	}
 
