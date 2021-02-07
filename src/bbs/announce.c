@@ -892,9 +892,16 @@ int paste;			// -1:cut 0:copy have perm 1:paste 2:copy have no perm
 			egetch();
 			return;
 		}
-		fread(title, sizeof (item->title), 1, fn);
-		fread(filename, sizeof (item->fname), 1, fn);
-		fread(fpath, sizeof (fpath), 1, fn);
+		size_t len;
+		if ((len = fread(title, sizeof (item->title), 1, fn)) > 0) {
+			title[len < sizeof(title) ? len : (sizeof(title) - 1)] = 0;
+		}
+		if ((len = fread(filename, sizeof (item->fname), 1, fn)) > 0) {
+			filename[len < sizeof(filename) ? len : (sizeof(title) - 1)] = 0;
+		}
+		if ((len = fread(fpath, sizeof (fpath), 1, fn)) > 0) {
+			fpath[len < sizeof(fpath) ? len : (sizeof(fpath) - 1)] = 0;
+		}
 		fread(&copymode, sizeof (copymode), 1, fn);
 		fclose(fn);
 		//end
