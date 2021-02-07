@@ -927,6 +927,8 @@ int paste;			// -1:cut 0:copy have perm 1:paste 2:copy have no perm
 			egetch();
 		} else {
 			char defaultans[3];
+			memset(defaultans, 0, sizeof(defaultans));
+			// TODO
 			switch (copymode) {
 			case -1:	//cut
 				defaultans[0] = 'C';
