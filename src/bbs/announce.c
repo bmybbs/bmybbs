@@ -839,6 +839,7 @@ int paste;			// -1:cut 0:copy have perm 1:paste 2:copy have no perm
 	int x, y, hasc;
 	MENU pmforcut;
 
+	memset(&pmforcut, 0, sizeof(MENU));
 	move(t_lines - 1, 0);
 	if (paste != 1) {
 		copymode = paste;
@@ -1055,6 +1056,7 @@ static int
 a_changemtitle(char *fpath, char *newmtitle)
 {
 	MENU pm;
+	memset(&pm, 0, sizeof(MENU));
 	pm.path = fpath;
 	pm.level |= PERM_BOARDS;
 	a_loadnames(&pm);
