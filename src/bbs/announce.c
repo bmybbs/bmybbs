@@ -496,6 +496,7 @@ int nomsg;
 	MENU pm;
 	char anboard[STRLEN], tmpboard[STRLEN];
 
+	memset(&pm, 0, sizeof(MENU));
 	if (!nomsg) {
 		if (select_anpath() < 0)
 			return 0;
@@ -1630,6 +1631,7 @@ char *path, *title, *fname;
 {
 	MENU pm;
 
+	memset(&pm, 0, sizeof(MENU));
 	pm.path = path;
 	pm.level |= PERM_BOARDS;	/*add by ylsdd */
 	a_loadnames(&pm);
@@ -1702,6 +1704,7 @@ char grp[STRLEN], bname[STRLEN], title[STRLEN];
 	int i, n;
 	MENU pm;
 
+	memset(&pm, 0, sizeof(MENU));
 	strncpy(buf3, grp, 29);
 	buf3[29] = '\0';
 	sprintf(buf, "0Announce/.Search");
@@ -1739,6 +1742,7 @@ char bname[STRLEN], grp[STRLEN], title[STRLEN], newtitle[100];
 	int i;
 	MENU pm;
 
+	memset(&pm, 0, sizeof(MENU));
 	strncpy(buf3, grp, 29);
 	buf3[29] = '\0';
 	sprintf(buf, "0Announce/.Search");
