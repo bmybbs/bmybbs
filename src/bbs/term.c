@@ -21,6 +21,7 @@
 
 #include <string.h>
 #include <stdio.h>
+#include "ytht/strlib.h"
 
 #define clearbuflen       6
 #define strtstandoutlen   4
@@ -48,10 +49,10 @@ void init_tty(void) {
 }
 
 void term_init(void) {
-	strncpy(clearbuf, "\033[H\033[J", clearbuflen);
-	strncpy(cleolbuf, "\033[K", cleolbuflen);
-	strncpy(strtstandout, "\033[7m", strtstandoutlen);
-	strncpy(endstandout, "\033[m", endstandoutlen);
+	ytht_strsncpy(clearbuf, "\033[H\033[J", clearbuflen);
+	ytht_strsncpy(cleolbuf, "\033[K", cleolbuflen);
+	ytht_strsncpy(strtstandout, "\033[7m", strtstandoutlen);
+	ytht_strsncpy(endstandout, "\033[m", endstandoutlen);
 }
 
 void do_move(int destcol, int destline, int (*outc) ()) {
