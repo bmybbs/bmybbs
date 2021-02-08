@@ -57,19 +57,19 @@ static int check_info() {
 		if ((buf[m] < 32 && buf[m] > 0) || buf[m] == -1)
 			buf[m] = ' ';
 	if (strlen(buf) > 1) {
-		strcpy(currentuser.username, buf);
+		ytht_strsncpy(currentuser.username, buf, sizeof(currentuser.username));
 	} else {
 		printf("警告: 昵称太短!<br>\n");
 	}
 	ytht_strsncpy(buf, getparm("realname"), 9);
 	if (strlen(buf) > 1) {
-		strcpy(currentuser.realname, buf);
+		ytht_strsncpy(currentuser.realname, buf, sizeof(currentuser.realname));
 	} else {
 		printf("警告: 真实姓名太短!<br>\n");
 	}
 	ytht_strsncpy(buf, getparm("address"), 40);
 	if (strlen(buf) > 8) {
-		strcpy(currentuser.address, buf);
+		ytht_strsncpy(currentuser.address, buf, sizeof(currentuser.address));
 	} else {
 		printf("警告: 居住地址太短!<br>\n");
 	}
