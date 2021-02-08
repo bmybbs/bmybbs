@@ -889,8 +889,8 @@ chk_friend_book()
 			continue;
 		ptr++;
 		strcpy(uid, ptr);
-		ptr = strstr(uid, "\n");
-		*ptr = '\0';
+		if ((ptr = strstr(uid, "\n")) != NULL)
+			*ptr = '\0';
 		idnum = atoi(buf);
 		if (idnum != usernum || idnum <= 0)
 			continue;
