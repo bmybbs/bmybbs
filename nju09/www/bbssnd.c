@@ -58,6 +58,10 @@ bbssnd_main()
 		}
 		MMAP_END mmapfile(NULL, &mf);
 
+		if (x == NULL) {
+			http_fatal("文章不存在");
+		}
+
 		if (x->accessed & FH_NOREPLY)
 			http_fatal("本文被设为不可Re模式");
 
