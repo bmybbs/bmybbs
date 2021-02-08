@@ -496,6 +496,9 @@ static void
 delete_line(line)
 register struct textline *line;
 {
+	if (!line)
+		return;
+
 	/* if single line */
 	if (!line->next && !line->prev) {
 		line->data[0] = '\0';
@@ -518,8 +521,7 @@ register struct textline *line;
 	else
 		firstline = line->next;	/* if on first line */
 
-	if (line)
-		free(line);
+	free(line);
 }
 
 /* split splits 'line' right before the character pos */
