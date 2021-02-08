@@ -596,7 +596,7 @@ url_parse()
 			return -1;
 	}
 
-	if (!strcmp(url, "/") || nologin) {
+	if (url == NULL || !strcmp(url, "/") || nologin) {
 		strcpy(needcgi, "bbsindex");
 		return 0;
 	}
