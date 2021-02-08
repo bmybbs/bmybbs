@@ -541,14 +541,12 @@ mem_printline(char *ptr, int len, char *fn, char ty,struct MemMoreLines *l)
 		if (p != NULL)
 			*p = 0;
 		p = strrchr(attachname, '.');
-		if (p != NULL)
+		if (p != NULL && l != NULL)
 		{
-			int nPos=0;
+			int nPos = 0;
 			int last_line;
 			last_line = l->curr_line;
-			if (l!=NULL) {
-				nPos=l->curr- l->ptr+20+strlen(attachname); /* Magic Number 20: "beginbinaryattach " + 2 -> size (4 bytes) noted by IronBlood 2020.02.08 */
-			}
+			nPos = l->curr - l->ptr + 20 + strlen(attachname); /* Magic Number 20: "beginbinaryattach " + 2 -> size (4 bytes) noted by IronBlood 2020.02.08 */
 			if (!strcasecmp(p, ".bmp") || !strcasecmp(p, ".jpg") || !strcasecmp(p, ".gif") || !strcasecmp(p, ".jpeg") ||!strcasecmp(p, ".png"))
 				prints("\033[m¸½Í¼: \033[1;4mhttp://%s/attach/%s/M%s/%d/%d%s\033[0m\n",
 						MY_BBS_DOMAIN, currboard, strchr(fn,'.'), nPos, l->curr_line - 4, strrchr(attachname, '.'));
