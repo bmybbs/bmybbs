@@ -1211,7 +1211,7 @@ voter_key(int key, int allnum, int pagenum)
 		case 'T':
 		{
 			char newtitle[60];
-			strcpy(newtitle, vlists[allnum]->listname);
+			ytht_strsncpy(newtitle, vlists[allnum]->listname, sizeof(newtitle));
 			getdata(t_lines - 1, 0, "ĞÂ±êÌâ: ", newtitle, 50, DOECHO, NA);
 			if( newtitle[0] == '\0' || newtitle[0]=='\n' || !strcmp(newtitle,vlists[allnum]->listname) )
 				return 1;
