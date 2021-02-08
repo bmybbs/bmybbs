@@ -641,8 +641,8 @@ char *arg;
 		if ((fp = fopen("help/chatophelp", "r")) == NULL)
 			return;
 		while (fgets(buf, 255, fp) != NULL) {
-			ptr = strstr(buf, "\n");
-			*ptr = '\0';
+			if ((ptr = strstr(buf, "\n")) != NULL)
+				*ptr = '\0';
 			printchatline(buf);
 		}
 		fclose(fp);
@@ -650,8 +650,8 @@ char *arg;
 		if ((fp = fopen("help/chathelp", "r")) == NULL)
 			return;
 		while (fgets(buf, 255, fp) != NULL) {
-			ptr = strstr(buf, "\n");
-			*ptr = '\0';
+			if ((ptr = strstr(buf, "\n")) != NULL)
+				*ptr = '\0';
 			printchatline(buf);
 		}
 		fclose(fp);
