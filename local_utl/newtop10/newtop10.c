@@ -447,7 +447,7 @@ main(int argc, char **argv)
 			printf("%s:Too many arguments.\nTry `%s -h' for more information.\n", argv[0], argv[0]);
 			return 0;
 		}
-		strncpy(bh.filename, name, STRLEN);
+		ytht_strsncpy(bh.filename, name, sizeof(bh.filename));
 		_topn(&bh, NULL);
 	}
 	if (allflag) {
