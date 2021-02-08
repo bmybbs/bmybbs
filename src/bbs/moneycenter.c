@@ -8672,17 +8672,17 @@ static int marry_active_records(struct MC_Marry *marryMem, int n) {
 			switch(mm->status){
 				case MAR_COURT:
 				case MAR_COURT_FAIL:
-					strcpy(timestr,get_simple_date_str(&mm->court_t));
+					ytht_strsncpy(timestr,get_simple_date_str(&mm->court_t), sizeof(timestr));
 					break;
 				case MAR_MARRIED:
 				case MAR_MARRYING:
-					strcpy(timestr,get_simple_date_str(&mm->marry_t));
+					ytht_strsncpy(timestr,get_simple_date_str(&mm->marry_t), sizeof(timestr));
 					break;
 				case MAR_DIVORCE:
-					strcpy(timestr,get_simple_date_str(&mm->divorce_t));
+					ytht_strsncpy(timestr,get_simple_date_str(&mm->divorce_t), sizeof(timestr));
 					break;
 				default:
-					strcpy(timestr,get_simple_date_str(&mm->marry_t));
+					ytht_strsncpy(timestr,get_simple_date_str(&mm->marry_t), sizeof(timestr));
 			}
 			char local_buf[STRLEN * 2];
 			snprintf(local_buf, sizeof(local_buf), "[%4d] %-20.20s %-10.10s %-10.10s %-16.16s %4d \033[1;%dm%-6.6s\033[m",
