@@ -2866,7 +2866,7 @@ char *direct;
 		if (!strncmp(fileinfo->title, "done", 4))
 			return DONOTHING;
 		snprintf(genbuf, 60, "done %-27.27s - %s", fileinfo->title, currentuser.userid);
-		strcpy(fileinfo->title, genbuf);
+		ytht_strsncpy(fileinfo->title, genbuf, sizeof(fileinfo->title));
 		change_dir(direct, fileinfo, (void *) DIR_do_changetitle, ent, digestmode, 1);
 		return FULLUPDATE;
 	}
