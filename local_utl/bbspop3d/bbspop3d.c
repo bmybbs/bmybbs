@@ -584,8 +584,8 @@ User()
 		return -1;
 	}
 	if (strstr(cmd, ".bbs") != NULL) {
-		ptr = strchr(cmd, '.');
-		*ptr = '\0';
+		if ((ptr = strchr(cmd, '.')) != NULL)
+			*ptr = '\0';
 	}
 	if (get_userdata(cmd) != 1) {
 		sprintf(genbuf, "-ERR Unknown user: \"%s\".", cmd);
