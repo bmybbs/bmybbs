@@ -596,7 +596,7 @@ url_parse()
 			return -1;
 	}
 
-	if (!strcmp(url, "/") || nologin) {
+	if (url == NULL || !strcmp(url, "/") || nologin) {
 		strcpy(needcgi, "bbsindex");
 		return 0;
 	}
@@ -981,8 +981,8 @@ post_mail_to_sent_box(char *userid, char *title, char *file,
 	snprintf(buf, sizeof (buf), ".bbs@%s", MY_BBS_DOMAIN);
 	if (strstr(userid, buf) || strstr(userid, ".bbs@localhost")) {
 		char *pos;
-		pos = strchr(userid, '.');
-		*pos = '\0';
+		if ((pos = strchr(userid, '.')) != NULL)
+			*pos = '\0';
 	}
 	bzero(&header, sizeof (header));
 	fh_setowner(&header, id, 0);
@@ -1033,8 +1033,8 @@ post_mail(char *userid, char *title, char *file, char *id,
 	snprintf(buf, sizeof (buf), ".bbs@%s", MY_BBS_DOMAIN);
 	if (strstr(userid, buf) || strstr(userid, ".bbs@localhost")) {
 		char *pos;
-		pos = strchr(userid, '.');
-		*pos = '\0';
+		if ((pos = strchr(userid, '.')) != NULL)
+			*pos = '\0';
 	}
 	if (strstr(userid, "@"))
 		return post_imail(userid, title, file, id, nickname, ip, sig);

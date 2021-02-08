@@ -878,7 +878,7 @@ list:
 		default:
 			sprintf(save_page_requestor, "%s (%s)", uin.userid, uin.username);
 //#ifdef TALK_LOG
-			strcpy(partner, uin.userid);
+			ytht_strsncpy(partner, uin.userid, sizeof(partner));
 //#endif
 
 			do_talk(msgsock);
@@ -1040,7 +1040,7 @@ talkreply()
 
 	strcpy(save_page_requestor, page_requestor);
 //#ifdef TALK_LOG
-	strcpy(partner, page_requestorid);
+	ytht_strsncpy(partner, page_requestorid, sizeof(partner));
 //#endif
 
 	memset(page_requestor, 0, sizeof (page_requestor));

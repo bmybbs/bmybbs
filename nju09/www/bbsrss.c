@@ -172,7 +172,7 @@ prt_channel(struct boardmem *x)
 
 	strcpy(board, x->header.filename); // 英文版名
 	strcpy(sec, x->header.sec1);  // 区号
-	strcpy(secname, nohtml(getsectree(x->header.sec1)->title)); // 区名
+	ytht_strsncpy(secname, nohtml(getsectree(x->header.sec1)->title), sizeof(secname)); // 区名
 	strcpy(brdname, x->header.title); // 中文版名
 
 	printf("<rss version=\"2.0\" \n\txmlns:content=\"http://purl.org/rss/1.0/modules/content/\"\n\txmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n");

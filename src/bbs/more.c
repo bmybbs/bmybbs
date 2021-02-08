@@ -351,7 +351,7 @@ measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
 		return 0;
 	if (oldty % 2 == 0 && *ty == 0 && size > 10 && !strncmp(p0, "begin 644 ", 10)) {
 		char *pe = p0 + size;
-		for (p = p0; p < pe;) {
+		for (p = p0; p < pe && p != NULL;) {
 			if (!(p = memchr(p, '\n', pe - p)))
 				break;
 			p++;
@@ -541,61 +541,18 @@ mem_printline(char *ptr, int len, char *fn, char ty,struct MemMoreLines *l)
 		if (p != NULL)
 			*p = 0;
 		p = strrchr(attachname, '.');
-		if (p != NULL)
+		if (p != NULL && l != NULL)
 		{
-			int nPos=0;
+			int nPos = 0;
 			int last_line;
 			last_line = l->curr_line;
-			if (l!=NULL) {
-				nPos=l->curr- l->ptr+20+strlen(attachname);
-			}
-/* clearboy 2005.1
-修改目的：增加tenet下面图片链接显示
-修改方法：给mem_printline函数，增加一个接口，以获得图片链接的地址。
-原理说明：
-
-图片链接地址的生成规律如下：
-http://站名/版面名称/文件名称/随机数/包含后缀的文件名
-
-其中：
-1、随机数的生成规律为：
-随机数= l->curr- l->ptr + 20 + strlen(图片文件名)
-2、包含后缀的文件名，实际上并没有实际的意义，只要后缀相同，文件名可以任意:)
-
-原理解释：
-
-这种修改的方法，是直接把图片的链接地址显示出来了。
-麻烦的是，链接地址上面的那个随机数。
-
-没有文档，我根据观察，总结的随机数的规律似乎是：
-随机数= l->curr- l->ptr；
-但是，这个值恰好少20+，不知道原因是什么，所以我就在代码里面加了
-+20 + strlen(图片文件名)
-
-对于中文的文件名，fterm现在不支持。好在现在服务器端这个版本的atthttpd不要求文件名必须是上传时候的那个。。。
-只根据文件名后缀判断一下文件类型。因此，为了避免因为用户上载的文件名的不同引起的麻烦，返回的图片链接地址，
-并没有用原始的文件名。
-
-*/
-/*			if((attachname[0] > ' ' && attachname[0] < 'z' && strlen(attachname) < 20))
-			{
-			prints("\033[m附图: %s 链接:\nhttp://%s:8080/%s%s/%d/%s\033[0m\n", attachname,MY_BBS_DOMAIN,currboard,strrchr(fn, '/'),nPos,attachname);
-			}
-			else
-*/			{
-/*			prints("\033[m附图: %s 链接:\n\033[1;4mhttp://%s:8080/%s%s/%d/%d%s\033[0m\n", attachname,MY_BBS_IP, currboard, strrchr(fn,'/'), nPos, l->curr_line - 4, strrchr(attachname, '.'));
-*/
-/*修改by Clearboy@BMY 2005.2.27
-1. 去掉原来的文件名,不分行显示;
-2. 更改了文件名提取的方法,用"."来提取，以便在推荐的帖子中图片仍然能正常显示；*/
+			nPos = l->curr - l->ptr + 20 + strlen(attachname); /* Magic Number 20: "beginbinaryattach " + 2 -> size (4 bytes) noted by IronBlood 2020.02.08 */
 			if (!strcasecmp(p, ".bmp") || !strcasecmp(p, ".jpg") || !strcasecmp(p, ".gif") || !strcasecmp(p, ".jpeg") ||!strcasecmp(p, ".png"))
 				prints("\033[m附图: \033[1;4mhttp://%s/attach/%s/M%s/%d/%d%s\033[0m\n",
-				MY_BBS_DOMAIN, currboard, strchr(fn,'.'), nPos, l->curr_line - 4, strrchr(attachname, '.'));
+						MY_BBS_DOMAIN, currboard, strchr(fn,'.'), nPos, l->curr_line - 4, strrchr(attachname, '.'));
 			else
 				prints("\033[m附件: \033[1;4mhttp://%s/attach/%s/M%s/%d/%d%s\033[0m\n",
-				MY_BBS_DOMAIN, currboard, strchr(fn,'.'), nPos, l->curr_line - 4, strrchr(attachname, '.'));
-			}
-
+						MY_BBS_DOMAIN, currboard, strchr(fn,'.'), nPos, l->curr_line - 4, strrchr(attachname, '.'));
 		}
 		return;
 	} else if (ty == 104) {

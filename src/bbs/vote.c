@@ -940,14 +940,15 @@ int num;
 		prints("\n已经帮您投入票箱中...\n");
 		if (currvote.flag & VOTE_FLAG_OPENED) {
 			char votelogfile[STRLEN * 2];
-			struct votelog log;
-			strcpy(log.uid, currentuser.userid);
-			log.uid[IDLEN] = 0;
-			log.votetime = time(NULL);
-			log.voted = uservote.voted;
-			strcpy(log.ip, currentuser.lasthost);
+			struct votelog vlog;
+			memset(&vlog, 0, sizeof(struct votelog));
+			ytht_strsncpy(vlog.uid, currentuser.userid, sizeof(vlog.uid));
+			vlog.uid[IDLEN] = 0;
+			vlog.votetime = time(NULL);
+			vlog.voted = uservote.voted;
+			strcpy(vlog.ip, currentuser.lasthost);
 			sprintf(votelogfile, "vote/%s/newlog.%ld", currboard, currvote.opendate);
-			append_record(votelogfile, &log, sizeof (log));
+			append_record(votelogfile, &vlog, sizeof (vlog));
 		}
 		if (!strcmp(currboard, "SM_Election")) {
 			int now;
@@ -1210,7 +1211,7 @@ voter_key(int key, int allnum, int pagenum)
 		case 'T':
 		{
 			char newtitle[60];
-			strcpy(newtitle, vlists[allnum]->listname);
+			ytht_strsncpy(newtitle, vlists[allnum]->listname, sizeof(newtitle));
 			getdata(t_lines - 1, 0, "新标题: ", newtitle, 50, DOECHO, NA);
 			if( newtitle[0] == '\0' || newtitle[0]=='\n' || !strcmp(newtitle,vlists[allnum]->listname) )
 				return 1;

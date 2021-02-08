@@ -118,10 +118,11 @@ static int bu_callback(struct boardmem *board, int curr_idx, va_list ap) {
 		exit(-1);
 	}
 
-	snprintf(tmp->str, 20, "%s", board->header.filename);
-	strcpy(((struct buser *) (tmp->value))->board, tmp->str);
-	snprintf(((struct buser *) (tmp->value))->expname, STRLEN, "%s", board->header.title);
-	((struct buser *) (tmp->value))->noread = boardnoread(&(board->header));
+	ytht_strsncpy(tmp->str, board->header.filename, sizeof(tmp->str));
+	struct buser *tmp_ptr = (struct buser *) tmp->value;
+	ytht_strsncpy(tmp_ptr->board, tmp->str, sizeof(tmp_ptr->board));
+	ytht_strsncpy(tmp_ptr->expname, board->header.title, sizeof(tmp_ptr->expname));
+	tmp_ptr->noread = boardnoread(&(board->header));
 	insertdic(bustat, tmp);
 
 	return 0;

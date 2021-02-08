@@ -49,15 +49,15 @@ int show_special_web(char *id2) {
 void show_special_api(char *id2, char *output){
 	FILE *fp;
 	char id1[80], name[80], buf[256];
-	fp=fopen("etc/special", "r");
-	if(fp!=0){
-		while(1){
+	fp = fopen("etc/special", "r");
+	if (fp != NULL) {
+		while (1) {
 			if(fgets(buf, 256, fp)==0) break;
 			if(sscanf(buf, "%s %s", id1, name)<2) continue;
 			if(!strcasecmp(id1, id2)) sstrcat(output, "\"Title\":\"%s\",", name);
 		}
+		fclose(fp);
 	}
-	fclose(fp);
 }
 
 int

@@ -2023,7 +2023,7 @@ post_article(struct fileheader *sfh)
 		header.title[0] = '\0';
 		header.reply_mode = 0;
 	}
-	strcpy(header.ds, currboard);
+	ytht_strsncpy(header.ds, currboard, sizeof(header.ds));
 	header.postboard = YEA;
 	{
 		int i = strlen(header.title) - 1;
@@ -2866,7 +2866,7 @@ char *direct;
 		if (!strncmp(fileinfo->title, "done", 4))
 			return DONOTHING;
 		snprintf(genbuf, 60, "done %-27.27s - %s", fileinfo->title, currentuser.userid);
-		strcpy(fileinfo->title, genbuf);
+		ytht_strsncpy(fileinfo->title, genbuf, sizeof(fileinfo->title));
 		change_dir(direct, fileinfo, (void *) DIR_do_changetitle, ent, digestmode, 1);
 		return FULLUPDATE;
 	}

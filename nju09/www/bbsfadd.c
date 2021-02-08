@@ -41,7 +41,7 @@ bbsfadd_main()
 		http_fatal("此人已经在你的好友名单里了");
 	}
 
-	strcpy(of.id, lookupuser->userid);
+	ytht_strsncpy(of.id, lookupuser->userid, sizeof(of.id));
 	ythtbbs_override_add(currentuser.userid, &of, YTHTBBS_OVERRIDE_FRIENDS);
 	ythtbbs_override_unlock(lockfd);
 

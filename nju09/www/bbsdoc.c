@@ -457,6 +457,8 @@ int top_file(const char *call_type)
 
 	ytht_strsncpy(board, getparm2("B", "board"), 32);
 	x1 = getboard(board);
+	if (x1 == NULL)
+		return -1;
 	updateinboard(x1);
 	strcpy(board, x1->header.filename);
 	sprintf(buf, "boards/%s/.TOPFILE", board);
@@ -469,6 +471,9 @@ int top_file(const char *call_type)
 	for (i = 0; i < w_info->t_lines; i++) {
 		if (fread(&x, sizeof (x), 1, fp) <= 0)
 			break;
+
+		x.title[sizeof(x.title) - 1] = 0;
+		x.owner[sizeof(x.owner) - 1] = 0;
 		j=0;
 		strcpy(title, fh2fname(&x));
 		if(title[0]=='T')
@@ -507,6 +512,10 @@ void show_rec() {
 		fseek(fp, sizeof(struct commend)*i, SEEK_SET);
 		if(fread(&x, sizeof(struct commend), 1, fp)<=0) break;
 		//if(!x.flag) continue;
+
+		x.title[sizeof(x.title) - 1] = 0;
+		x.board[sizeof(x.board) - 1] = 0;
+		x.filename[sizeof(x.filename) - 1] = 0;
 		no++;
 		if(no>=17) break;
 		if(no%2==1) printf("<tr style=\'line-height:12px\'>");

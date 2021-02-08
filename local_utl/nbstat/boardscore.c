@@ -177,10 +177,11 @@ static int bs_callback(struct boardmem *board, int curr_idx, va_list ap) {
 		exit(-1);
 	}
 
-	snprintf(tmp->str, 20, "%s", board->header.filename);
-	strcpy(((struct bscore *) (tmp->value))->board, tmp->str);
-	snprintf(((struct bscore *) (tmp->value))->expname, STRLEN, "[%s] %s", board->header.type, board->header.title);
-	((struct bscore *) (tmp->value))->noread = boardnoread(&(board->header));
+	ytht_strsncpy(tmp->str, board->header.filename, sizeof(tmp->str));
+	struct bscore *tmp_ptr = (struct bscore *) tmp->value;
+	ytht_strsncpy(tmp_ptr->board, tmp->str, sizeof(tmp_ptr->board));
+	snprintf(tmp_ptr->expname, sizeof(tmp_ptr->expname), "[%s] %s", board->header.type, board->header.title);
+	tmp_ptr->noread = boardnoread(&(board->header));
 	insertdic(bsstat, tmp);
 
 	return 0;

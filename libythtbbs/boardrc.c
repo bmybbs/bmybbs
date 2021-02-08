@@ -71,7 +71,7 @@ uncompress_brc(struct onebrc *brc, struct onebrc_c *brc_c)
 	char *ptr, *bits;
 	brc->changed = 0;
 	ptr = brc_c->data;
-	strcpy(brc->board, ptr);
+	ytht_strsncpy(brc->board, ptr, sizeof(brc->board));
 	ptr += strlen(ptr) + 1;
 	brc->num = *ptr & 0x7f;
 	ptr++;

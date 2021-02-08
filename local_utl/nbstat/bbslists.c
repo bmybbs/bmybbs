@@ -209,18 +209,13 @@ draw_newacct()
 	fclose(fp);
 }
 
-int static
-bstat_cmp(struct bstat *b, struct bstat *a)
-{
+static int bstat_cmp(struct bstat *b, struct bstat *a) {
 	if (a->stay != b->stay)
 		return (a->stay - b->stay);
 	return a->used - b->used;
 }
 
-char static *
-timetostr(i)
-int i;
-{
+static char *timetostr(int i) {
 	static char str[30];
 	int minute, sec, hour;
 
@@ -316,10 +311,11 @@ static int bbslists_callback(struct boardmem *board, int curr_idx, va_list ap) {
 		exit(-1);
 	}
 
-	snprintf(tmp->str, 20, "%s", board->header.filename);
-	strcpy(((struct bstat *) (tmp->value))->board, tmp->str);
-	snprintf(((struct bstat *) (tmp->value))->expname, STRLEN, "%s", board->header.title);
-	((struct bstat *) (tmp->value))->noread = boardnoread(&(board->header));
+	ytht_strsncpy(tmp->str, board->header.filename, sizeof(tmp->str));
+	struct bstat *tmp_ptr = (struct bstat *) tmp->value;
+	ytht_strsncpy(tmp_ptr->board, tmp->str, sizeof(tmp_ptr->board));
+	ytht_strsncpy(tmp_ptr->expname, board->header.title, sizeof(tmp_ptr->expname));
+	tmp_ptr->noread = boardnoread(&(board->header));
 	insertdic(busage, tmp);
 
 	return 0;
