@@ -1218,16 +1218,16 @@ int ch;
 					/*usercomplete("版主: ",uident) ; */
 					/*$$$$$$$$ Multi-BM Input, Modified By Excellent $$$$$$$ */
 					getdata(1, 0, "版主: ", uident, 35, DOECHO, YEA);
-					rcon = malloc(strlen(dir) + strlen(changed_T) + 100);
 					sprintf(genbuf,
 						"修改%.34s的标题为:%.34s,BM:%.34s",
 						dir, changed_T, uident);
-					if (NULL != rcon)
+					if (NULL != (rcon = malloc(strlen(dir) + strlen(changed_T) + 100))) {
 						sprintf(rcon, "修改%s的标题为:%s,BM:%s", dir, changed_T, uident);
-					else
-						rcon = "";
-					securityreport(genbuf, rcon);
-					free(rcon);
+						securityreport(genbuf, rcon);
+						free(rcon);
+					} else {
+						securityreport(genbuf, "");
+					}
 					if (uident[0] != '\0')
 						sprintf(genbuf, "%-38.38s(BM: %s)", changed_T, uident);
 					else
