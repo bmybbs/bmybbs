@@ -6501,11 +6501,10 @@ static int buy_present(int order, char *kind, char *cardname, char *filepath, in
 	}
 
 	//cardname= 玫瑰花1(枝)   价:100bmyb
-	ptr1= strstr(cardname,"(");
-	ptr1++;
-	if(!ptr1)
+	if ((ptr1 = strstr(cardname,"(")) == NULL)
 		sprintf(buf,"%s","份");
 	else{
+		ptr1++;
 		ptr2=strstr(ptr1,")");
 		if(!ptr2)
 			sprintf(buf,"%s","份");
