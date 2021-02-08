@@ -93,6 +93,9 @@ bbsvote_main()
 		if (votenum > num_of_vote)
 			http_fatal("投票参数错误");
 		fp = fopen(controlfile, "r");
+		if (fp == NULL)
+			http_fatal("抱歉，文件错误");
+
 		printf("<table width=600>");
 		fseek(fp, sizeof (struct votebal) * (votenum - 1), 0);
 		fread(&currvote, sizeof (struct votebal), 1, fp);
