@@ -457,6 +457,8 @@ int top_file(const char *call_type)
 
 	ytht_strsncpy(board, getparm2("B", "board"), 32);
 	x1 = getboard(board);
+	if (x1 == NULL)
+		return -1;
 	updateinboard(x1);
 	strcpy(board, x1->header.filename);
 	sprintf(buf, "boards/%s/.TOPFILE", board);
