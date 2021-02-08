@@ -351,7 +351,7 @@ measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
 		return 0;
 	if (oldty % 2 == 0 && *ty == 0 && size > 10 && !strncmp(p0, "begin 644 ", 10)) {
 		char *pe = p0 + size;
-		for (p = p0; p < pe;) {
+		for (p = p0; p < pe && p != NULL;) {
 			if (!(p = memchr(p, '\n', pe - p)))
 				break;
 			p++;
