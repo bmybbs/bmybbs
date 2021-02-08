@@ -100,6 +100,15 @@ bbsvote_main()
 		fseek(fp, sizeof (struct votebal) * (votenum - 1), 0);
 		fread(&currvote, sizeof (struct votebal), 1, fp);
 		fclose(fp);
+
+		currvote.userid[sizeof(currvote.userid) - 1] = 0;
+		currvote.title[sizeof(currvote.title) - 1] = 0;
+		currvote.listfname[sizeof(currvote.listfname) - 1] = 0;
+		for (i = 0; i < 32; i++) {
+			// MAGIC NUMBERS
+			currvote.items[i][38 - 1] = 0;
+		}
+
 		//add by gluon for sm_vote
 		if (!(currentuser.userlevel & PERM_LOGINOK))
 			http_fatal("抱歉,您没有通过注册");
@@ -119,7 +128,11 @@ bbsvote_main()
 		if (fp) {
 			for (i = 1; i <= num_voted; i++) {
 				fread(&uservote, sizeof (struct ballot), 1, fp);
+				uservote.uid[sizeof(uservote.uid) - 1] = 0;
 				if (!strcasecmp(uservote.uid, currentuser.userid)) {
+					uservote.msg[0][STRLEN - 1] = 0;
+					uservote.msg[1][STRLEN - 1] = 0;
+					uservote.msg[2][STRLEN - 1] = 0;
 					voted_flag = YEA;
 					pos = i;
 					break;
@@ -128,7 +141,7 @@ bbsvote_main()
 			fclose(fp);
 		}
 		if (!voted_flag)
-			(void) memset(&uservote, 0, sizeof (uservote));
+			memset(&uservote, 0, sizeof (uservote));
 		if (procvote == 0) {
 			date = ctime(&currvote.opendate) + 4;
 			closedate = currvote.opendate + currvote.maxdays * 86400;
