@@ -1953,8 +1953,8 @@ int mode;
 	if (strstr(receiver, genbuf) || strstr(receiver, ".bbs@localhost")) {
 		char *pos;
 
-		pos = strchr(address, '.');
-		*pos = '\0';
+		if ((pos = strchr(address, '.')) != NULL)
+			*pos = '\0';
 	}
 	if (check_maxmail())
 		return -1;
