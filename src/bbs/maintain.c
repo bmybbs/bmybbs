@@ -747,12 +747,11 @@ enterbname:
 			anno_title(vbuf, &newfh);
 			edit_grp(fh.filename, lookgrp, oldtitle, vbuf);
 			if (a_mv >= 1) {
-				group = chgrp();
-				get_grp(fh.filename);
-				strcpy(tmp_grp, lookgrp);
-				if (strcmp(tmp_grp, group) || a_mv != 2) {
-					ytht_del_from_file("0Announce/.Search", fh.filename, true);
-					if (group != NULL) {
+				if ((group = chgrp()) != NULL) {
+					get_grp(fh.filename);
+					strcpy(tmp_grp, lookgrp);
+					if (strcmp(tmp_grp, group) || a_mv != 2) {
+						ytht_del_from_file("0Announce/.Search", fh.filename, true);
 						if (add_grp(group, cexplain, newfh.filename, vbuf) == -1)
 							prints("\n成立精华区失败....\n");
 						else
