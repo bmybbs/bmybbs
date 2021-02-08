@@ -209,18 +209,13 @@ draw_newacct()
 	fclose(fp);
 }
 
-int static
-bstat_cmp(struct bstat *b, struct bstat *a)
-{
+static int bstat_cmp(struct bstat *b, struct bstat *a) {
 	if (a->stay != b->stay)
 		return (a->stay - b->stay);
 	return a->used - b->used;
 }
 
-char static *
-timetostr(i)
-int i;
-{
+static char *timetostr(int i) {
 	static char str[30];
 	int minute, sec, hour;
 
