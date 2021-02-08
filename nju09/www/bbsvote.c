@@ -108,7 +108,7 @@ bbsvote_main()
 			}
 		}
 		//end
-		sprintf(flagname, "vote/%s/flag.%d", board, (int) currvote.opendate);
+		sprintf(flagname, "vote/%s/flag.%ld", board, currvote.opendate);
 		num_voted = (stat(flagname, &st) == -1) ? 0 : st.st_size / sizeof (struct ballot);
 		pos = 0;
 		fp = fopen(flagname, "r");
