@@ -175,7 +175,7 @@ int offset;
 		clrtoeol();
 		getdata(t_lines - 1, 0, pmt, ans, NAMELEN + 1, DOECHO, YEA);
 		if (ans[0] != '\0')
-			strcpy(queryNick, ans);
+			ytht_strsncpy(queryNick, ans, sizeof(queryNick));
 		return NickSearch(queryNick, curr_num, offset);
 	case 'C':
 		strcpy(ans, queryIP);
