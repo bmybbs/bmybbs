@@ -950,7 +950,7 @@ char *powner;
 	char ans[IDLEN + 2], pmt[STRLEN * 2];
 	char currauth[STRLEN];
 
-	strcpy(currauth, powner);
+	ytht_strsncpy(currauth, powner, sizeof(currauth));
 
 	sprintf(pmt, "%s的文章搜寻作者 [%s]: ",
 		offset > 0 ? "往后来" : "往先前", currauth);
@@ -958,9 +958,9 @@ char *powner;
 	clrtoeol();
 	getdata(t_lines - 1, 0, pmt, ans, IDLEN + 1, DOECHO, YEA);
 	if (ans[0] != '\0')
-		strcpy(author, ans);
+		ytht_strsncpy(author, ans, sizeof(author));
 	else
-		strcpy(author, currauth);
+		ytht_strsncpy(author, currauth, sizeof(author));
 
 	return search_articles(locmem, author, offset, 1);
 }
