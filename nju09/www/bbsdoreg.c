@@ -38,7 +38,6 @@ char *addr, char *phone, char *assoc, char *email)
 	sethomefile_s(genbuf, sizeof(genbuf), userid, "mailcheck");
 	//http_fatal(genbuf);
 	if ((fn = fopen(genbuf, "w")) == NULL) {
-		fclose(fn);
 		return;
 	}
 

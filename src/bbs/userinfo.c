@@ -800,7 +800,6 @@ x_fillform()
 	sethomefile_s(genbuf, sizeof(genbuf), currentuser.userid, "mailcheck");
 	if ((fn = fopen(genbuf, "w")) == NULL)
 	{
-		fclose(fn);
 		return;
 	}
 	fprintf(fn, "usernum: %d\n", usernum);
