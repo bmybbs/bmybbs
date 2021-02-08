@@ -311,10 +311,10 @@ static int bbslists_callback(struct boardmem *board, int curr_idx, va_list ap) {
 		exit(-1);
 	}
 
-	snprintf(tmp->str, 20, "%s", board->header.filename);
+	ytht_strsncpy(tmp->str, board->header.filename, sizeof(tmp->str));
 	struct bstat *tmp_ptr = (struct bstat *) tmp->value;
 	ytht_strsncpy(tmp_ptr->board, tmp->str, sizeof(tmp_ptr->board));
-	snprintf(tmp_ptr->expname, STRLEN, "%s", board->header.title);
+	ytht_strsncpy(tmp_ptr->expname, board->header.title, sizeof(tmp_ptr->expname));
 	tmp_ptr->noread = boardnoread(&(board->header));
 	insertdic(busage, tmp);
 
