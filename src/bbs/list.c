@@ -491,7 +491,7 @@ do_userlist()
 					(uentp->invisible == YEA) ? "\033[1;36m" : ModeColor(uentp->mode), ModeType(uentp->mode),
 					idle_str(uentp));
 			} else if (uentp->user_state_temp[0]!='\0') {
-				strcpy(t2.id, uentp->userid);
+				ytht_strsncpy(t2.id, uentp->userid, sizeof(t2.id));
 				t1.exp[0] = 0;
 				search_record(overridefile, &t1, sizeof (t1), (void *) cfriendname, &t2);
 				sprintf(user_info_str,
