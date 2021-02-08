@@ -1033,8 +1033,8 @@ post_mail(char *userid, char *title, char *file, char *id,
 	snprintf(buf, sizeof (buf), ".bbs@%s", MY_BBS_DOMAIN);
 	if (strstr(userid, buf) || strstr(userid, ".bbs@localhost")) {
 		char *pos;
-		pos = strchr(userid, '.');
-		*pos = '\0';
+		if ((pos = strchr(userid, '.')) != NULL)
+			*pos = '\0';
 	}
 	if (strstr(userid, "@"))
 		return post_imail(userid, title, file, id, nickname, ip, sig);
