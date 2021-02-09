@@ -65,15 +65,6 @@ CREATE TABLE `t_user_subscriptions` (
 
 DELIMITER $$
 
--- 依据 secstr 创建分区视图
-CREATE PROCEDURE procedure_create_section_view(_secstr char(1))
-BEGIN
-	SET @sql = CONCAT("CREATE VIEW v_section_", _secstr, " AS SELECT `boardname_en`, `boardname_zh`, `timestamp`, `title`, `author`, `comments`, `accessed` FROM `t_boards`, `t_threads` where `t_boards`.`boardnum` = `t_threads`.`boardnum` and `t_boards`.`secstr` = \"", _secstr, "\" order by `timestamp` desc");
-	PREPARE stmt FROM @sql;
-	EXECUTE stmt;
-	DEALLOCATE PREPARE stmt;
-END$$
-
 -- 依据 boardnum, boardname_en 创建视图，使用 call 调用
 CREATE PROCEDURE procedure_create_board_view(_boardnum int, _boardname_en varchar(40))
 BEGIN
@@ -104,7 +95,6 @@ END$$
 CREATE PROCEDURE procedure_insert_section(_secstr char(1), _name char(16))
 BEGIN
 	INSERT INTO `t_sections` (`id`, `name`) VALUE (_secstr, _name);
-	CALL procedure_create_section_view(_secstr);
 END$$
 
 -- 插入版面
