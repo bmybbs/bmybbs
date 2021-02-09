@@ -140,6 +140,7 @@ DELIMITER ;
 -- triggers
 --
 
+/*
 DELIMITER $$
 
 CREATE TRIGGER trigger_update_latest_timestamp
@@ -161,6 +162,7 @@ BEGIN
 END$$
 
 DELIMITER ;
+*/
 
 --
 -- data
