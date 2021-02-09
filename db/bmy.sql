@@ -65,15 +65,6 @@ CREATE TABLE `t_user_subscriptions` (
 
 DELIMITER $$
 
--- 依据 userid 创建用户订阅视图
-CREATE PROCEDURE procedure_create_feed_view(_usernum int, _userid varchar(14))
-BEGIN
-	SET @sql = CONCAT("CREATE VIEW v_feed_", _userid, " AS SELECT `boardname_en`, `boardname_zh`, `timestamp`, `title`, `author`, `comments`, `accessed` FROM `t_boards`, `t_threads` where `t_threads`.`boardnum` IN (SELECT boardnum FROM `t_user_subscriptions` WHERE usernum = ", _usernum, ") and `t_threads`.`boardnum` = `t_boards`.`boardnum` order by `timestamp` desc");
-	PREPARE stmt FROM @sql;
-	EXECUTE stmt;
-	DEALLOCATE PREPARE stmt;
-END$$
-
 -- 插入分区
 CREATE PROCEDURE procedure_insert_section(_secstr char(1), _name char(16))
 BEGIN
@@ -100,16 +91,11 @@ CREATE PROCEDURE procedure_insert_user(_usernum int, _userid varchar(14)
 ) BEGIN
 	INSERT INTO `t_users`(`usernum`, `userid`) VALUE(_usernum, _userid);
 	INSERT INTO `t_feed_meta`(`usernum`) VALUE(_usernum);
-	CALL procedure_create_feed_view(_usernum, _userid);
 END$$
 
 -- 删除用户，通过外键层级删除订阅关系和订阅元数据
 CREATE PROCEDURE procedure_delete_user(_usernum int, _userid varchar(14))
 BEGIN
-	SET @sql = CONCAT("DROP VIEW v_feed_", _userid);
-	PREPARE stmt FROM @sql;
-	EXECUTE stmt;
-	DEALLOCATE PREPARE stmt;
 	DELETE FROM `t_users` where `t_users`.`usernum` = _usernum;
 END$$
 
