@@ -65,23 +65,6 @@ CREATE TABLE `t_user_subscriptions` (
 
 DELIMITER $$
 
--- 依据 boardnum, boardname_en 创建视图，使用 call 调用
-CREATE PROCEDURE procedure_create_board_view(_boardnum int, _boardname_en varchar(40))
-BEGIN
-	SET @sql = CONCAT("CREATE VIEW v_board_", _boardname_en, " AS SELECT `boardname_en`, `boardname_zh`, `timestamp`, `title`, `author`, `comments`, `accessed` FROM `t_boards`, `t_threads` where `t_boards`.`boardnum` = `t_threads`.`boardnum` and `t_threads`.`boardnum` = ", _boardnum, " order by `timestamp` desc");
-	PREPARE stmt FROM @sql;
-	EXECUTE stmt;
-	DEALLOCATE PREPARE stmt;
-END$$
-
-CREATE PROCEDURE procedure_delete_board_view(_boardname_en varchar(40))
-BEGIN
-	set @sql = CONCAT("DROP VIEW v_board_", _boardname_en);
-	PREPARE stmt FROM @sql;
-	EXECUTE stmt;
-	DEALLOCATE PREPARE stmt;
-END$$
-
 -- 依据 userid 创建用户订阅视图
 CREATE PROCEDURE procedure_create_feed_view(_usernum int, _userid varchar(14))
 BEGIN
@@ -104,13 +87,11 @@ BEGIN
 		(`boardnum`, `boardname_en`, `boardname_zh`, `secstr`)
 	VALUE
 		(_boardnum, _boardname_en, _boardname_zh, _secstr);
-	CALL procedure_create_board_view(_boardnum, _boardname_en);
 END$$
 
 -- 删除版面
 CREATE PROCEDURE procedure_delete_board(_boardnum int, _boardname_en varchar(40))
 BEGIN
-	CALL procedure_delete_board_view(_boardname_en);
 	DELETE FROM `t_boards` WHERE `boardnum` = _boardnum;
 END$$
 
@@ -136,10 +117,6 @@ END$$
 -- TODO 使用条件判断语句？不过重命名版面、移动分区的这个事情不常见
 CREATE PROCEDURE procedure_update_board(_boardnum int, _new_boardname_en varchar(40), _new_boardname_zh varchar(40), _new_secstr char(1))
 BEGIN
-	SELECT `boardname_en` INTO @old_boardname_en FROM `t_boards` WHERE `t_boards`.`boardnum` = _boardnum LIMIT 1;
-	CALL procedure_delete_board_view(@old_boardname_en);
-	CALL procedure_create_board_view(_boardnum, _new_boardname_en);
-
 	UPDATE `t_boards` SET `boardname_en` = _new_boardname_en, `boardname_zh` = _new_boardname_zh, `secstr` = _new_secstr WHERE `t_boards`.`boardnum` = _boardnum;
 END$$
 
