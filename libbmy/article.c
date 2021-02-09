@@ -243,13 +243,6 @@ struct bmy_articles *bmy_article_list_subscription_by_time(const char *userid, s
 	return bmy_article_list_internal(sqlbuf);
 }
 
-struct bmy_articles *bmy_article_list_section(char secid, size_t limit, time_t t) {
-	char sqlbuf[160];
-
-	snprintf(sqlbuf, sizeof(sqlbuf), "SELECT `boardname_en`, `boardname_zh`, `timestamp`, `title`, `author`, `comments`, `accessed` from v_section_%c WHERE `timestamp` <= %ld LIMIT %zu", secid, t, limit);
-	return bmy_article_list_internal(sqlbuf);
-}
-
 struct bmy_articles *bmy_article_list_selected_boards(const int boardnum_array[], size_t num, size_t limit, time_t t) {
 	char *sqlbuf = NULL, *s = NULL;
 	size_t size = 0;

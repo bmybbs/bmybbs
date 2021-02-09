@@ -50,7 +50,6 @@ void bmy_article_update_thread_accessed(int boardnum, time_t tid, int accessed);
 
 struct bmy_articles *bmy_article_list_subscription(const char *userid, size_t limit, size_t offset);
 struct bmy_articles *bmy_article_list_subscription_by_time(const char *userid, size_t limit, time_t t);
-struct bmy_articles *bmy_article_list_section(char secid, size_t limit, time_t t);
 struct bmy_articles *bmy_article_list_selected_boards(const int boardnum_array[], size_t num, size_t limit, time_t t);
 
 void bmy_article_list_free(struct bmy_articles *ptr);
