@@ -130,7 +130,6 @@ set(SRC
 	deny_users.c
 	check_server.c
 
-	bbssub.c
 	api_user_check.c
 	api_loginpics.c
 )

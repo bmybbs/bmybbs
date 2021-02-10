@@ -108,7 +108,6 @@ NJUAPI int bbsdelnotify_main(void);
 NJUAPI int bbsbadd_main(void);
 NJUAPI int bbsbdel_main(void);
 NJUAPI int bbsball_main(void);
-NJUAPI int bbssub_main(void);
 NJUAPI int api_user_check(void);
 NJUAPI int api_loginpics(void);
 #endif
