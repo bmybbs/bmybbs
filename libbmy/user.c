@@ -60,6 +60,8 @@ void bmy_user_dissociate_openid(int usernum) {
 }
 
 static void bmy_user_mysql_simple_callback(MYSQL_STMT *stmt, MYSQL_BIND *result_col, void *result_set) {
+	(void) result_col;
+	(void) result_set;
 	if (mysql_stmt_num_rows(stmt) > 0) {
 		mysql_stmt_fetch(stmt);
 	}
