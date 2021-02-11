@@ -119,7 +119,6 @@ char *bmy_2fa_check_code(const char *key, const char *code) {
 	redisReply   *reply = NULL;
 	const redisReply *r_key, *r_count = NULL, *r_code = NULL, *r_auth = NULL;
 	size_t        i;
-	bool          has_checked;
 	int           count;
 	char *s = NULL;
 
