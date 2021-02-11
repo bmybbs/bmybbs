@@ -288,6 +288,7 @@ int userlock(const char *userid, int locktype) {
 }
 
 int userunlock(const char *userid, int fd) {
+	(void) userid;
 	flock(fd, LOCK_UN);
 	close(fd);
 	return 0;
