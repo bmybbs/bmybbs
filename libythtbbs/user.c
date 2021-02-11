@@ -830,7 +830,6 @@ int ythtbbs_user_logout(const char *userid, const int utmp_idx) {
 	int              user_idx;
 	struct userec    local_lookup_user;
 	struct user_info *ptr_info;
-	time_t           local_now;
 	char             local_buf[128];
 
 	ythtbbs_cache_UserTable_resolve();
