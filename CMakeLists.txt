@@ -10,7 +10,7 @@ include_directories(include ${LIBXML2_INCLUDE_DIR})
 
 link_directories(libytht libbmy libythtbbs)
 
-set(CMAKE_C_FLAGS "-Wall -g -pipe -Wextra -Wno-unused-result -Wno-unused-parameter -Wno-unused-variable -Wno-unused-but-set-variable -Wno-unused-value -std=gnu11")
+set(CMAKE_C_FLAGS "-Wall -g -pipe -Wextra -std=gnu11")
 
 add_definitions(-D_GNU_SOURCE -DCONF_HAVE_OPENPTY -DLINUX -DSMTP_OPENSSL)
 
