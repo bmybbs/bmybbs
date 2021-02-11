@@ -16,7 +16,6 @@ static const int MAX_ALLOWED_ATTEMPTS = 5;
 
 bmy_2fa_status bmy_2fa_create(char *key, size_t len) {
 	size_t i;
-	int ret = -1;
 	unsigned int code;
 	bmy_2fa_status status = BMY_2FA_SUCCESS;
 	redisContext *ctx = NULL;
