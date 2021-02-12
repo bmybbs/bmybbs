@@ -125,6 +125,7 @@ struct stat *l_stat_s(struct stat *s, const char *file);
 #define file_isfile(x) ((f_stat(x)->st_mode & S_IFREG)!=0)
 #define lfile_isdir(x) ((l_stat(x)->st_mode & S_IFDIR)!=0)
 
+bool ytht_file_isfile_x(struct stat *st);
 /**
  * @brief 将 str 追加到 filename 结尾
  *
