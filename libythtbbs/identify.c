@@ -189,6 +189,8 @@ int get_active_value(char* value, struct active_data* act_data)
 }
 
 static void query_record_num_callback(MYSQL_STMT *stmt, MYSQL_BIND *result_col, void *result_set) {
+	(void) result_col;
+	(void) result_set;
 	mysql_stmt_fetch(stmt);
 }
 
@@ -222,11 +224,15 @@ int query_record_num(char* value, int style)
 	return (status != MYSQL_OK) ? -1 : atoi(count);
 }
 
-static void write_active_callback_count(MYSQL_STMT *stmt, MYSQL_BIND *result_cols, void *result_set) {
+static void write_active_callback_count(MYSQL_STMT *stmt, MYSQL_BIND *result_col, void *result_set) {
+	(void) result_col;
+	(void) result_set;
 	mysql_stmt_fetch(stmt);
 }
 
-static void write_active_callback_I_U(MYSQL_STMT *stmt, MYSQL_BIND *result_cols, void *result_set) {
+static void write_active_callback_I_U(MYSQL_STMT *stmt, MYSQL_BIND *result_col, void *result_set) {
+	(void) result_col;
+	(void) result_set;
 	*(int *) result_set = mysql_affected_rows(stmt->mysql);
 }
 
@@ -314,6 +320,8 @@ int write_active(struct active_data* act_data)
 }
 
 static void read_active_callback(MYSQL_STMT *stmt, MYSQL_BIND *result_col, void *result_set) {
+	(void) result_col;
+	(void) result_set;
 	*(int *)result_set = mysql_stmt_num_rows(stmt);
 	if (*(int *)result_set > 0) {
 		mysql_stmt_fetch(stmt);
@@ -451,6 +459,7 @@ struct associated_userid *get_associated_userid_by_style(int style, const char *
 }
 
 int release_email(char *userid, char *email) {
+	(void) email;
 	struct active_data act_data;
 
 	read_active(userid, &act_data);
