@@ -1810,7 +1810,7 @@ zsend_file(char *from, char *title)
 		}
 		if (isa) {
 			snprintf(attachfile, sizeof(attachfile), "%s-attach-%s",  name, fn);
-			if (getattach(fr, buf, attachfile, path, base64, len, 0)) {
+			if (getattach(fr, attachfile, path, base64, len, 0)) {
 				fprintf(fw, "¸½¼þ%s´íÎó\n", fn);
 			} else {
 				sprintf(attach_to_send, "%s/%s", path, attachfile);

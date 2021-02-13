@@ -117,7 +117,7 @@ bbseditmail_main()
 			fn = buf + 18;
 		}
 		if (isa) {
-			if (!getattach(fp, buf, fn, path, base64, len, 0)) {
+			if (!getattach(fp, fn, path, base64, len, 0)) {
 				printf("#attach %s\n", fn);
 			}
 		} else

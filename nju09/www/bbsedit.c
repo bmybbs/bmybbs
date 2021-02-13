@@ -162,7 +162,7 @@ bbsedit_main()
 			fn = buf + 18;
 		}
 		if (isa) {
-			if (!getattach(fp, buf, fn, path, base64, len, 0)) {
+			if (!getattach(fp, fn, path, base64, len, 0)) {
 				printf("#attach %s\n", fn);
 			}
 		} else if (!strncmp(buf, "--\n", 3) || !strncmp(buf, "--\r\n", 4)) { // 签名以及变更日志单独存放 IronBlood
