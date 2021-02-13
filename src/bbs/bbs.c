@@ -648,12 +648,8 @@ char *direct;
 }
 
 /* Add by SmallPig */
-int
-do_cross(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int do_cross(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
 	char bname[STRLEN];
 	char ispost[10];
 	int ddigestmode;
