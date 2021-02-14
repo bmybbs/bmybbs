@@ -55,8 +55,8 @@ void bmy_article_list_free(struct bmy_articles *ptr);
 
 /**
  * @brief 判断文章中是否附带数学公式
- * 采用 TeX 语法，内联采用 \( \), 块采用 $$ $$
- * 目前实现中仅依据是否包含 \( $$ 判断
+ * 采用 TeX 语法，内联采用 \( \), 块采用 $$ $$ 以及 \[ \]
+ * 目前实现中仅依据是否包含 \( \[ $$ 判断
  * @param content 文章内容
  * @return true/false
  */

@@ -272,8 +272,8 @@ bool bmy_article_include_math(const char *content) {
 				break;
 			}
 
-			// \(
-			if (*ptr == '(' && (idx > 0 && content[idx-1] == '\\')) {
+			// \( \[
+			if ((*ptr == '(' || *ptr == '[') && (idx > 0 && content[idx-1] == '\\')) {
 				include_math = true;
 				break;
 			}
