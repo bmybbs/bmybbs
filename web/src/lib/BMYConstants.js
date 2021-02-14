@@ -119,3 +119,7 @@ export const BMY_EC = {
 	API_RT_NOMOREFEED     : 150001,
 };
 
+export const BMY_FILE_HEADER = {
+	FH_MATH: 0x4000,
+};
+
