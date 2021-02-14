@@ -2,6 +2,7 @@
 #include "bmy/convcode.h"
 
 extern char *cginame;
+bool g_has_code = false;
 
 int testmozilla(void);
 extern char *get_mime_type(const char *name);
@@ -136,6 +137,7 @@ fshowcon(FILE * output, char *filename, int show_iframe)
 	char *ptr, buf[512];
 	FILE *fp;
 	int lastq = 0, ano = 0, in_sig = 0;
+	bool in_code_block = false;
 	if (show_iframe != 2) {
 //		fprintf(output, "<table width=100%% border=1><tr>");
 		fprintf(output, "<tr><td width=40 class=\"level1\">&nbsp;</td>\n<td class=\"level1\"><br><TABLE width=\"95%%\" cellpadding=5 cellspacing=0><TBODY>\n<tr><td class=tdtitletheme>&nbsp;</td></tr><tr>\n");
@@ -154,6 +156,33 @@ fshowcon(FILE * output, char *filename, int show_iframe)
 			errlog("old attach %s", filename);
 			fdisplay_attach(output, fp, buf, ptr + 1);
 			fprintf(output, "\n<br>");
+			continue;
+		}
+		if (!strncmp(buf, "```", 3)) {
+			if (in_code_block) {
+				in_code_block = false;
+				fprintf(output, "</code></pre>");
+			} else {
+				in_code_block = true;
+				g_has_code = true;
+
+				char lang[12 /* 当前最长 unrealscript */ + 1];
+				char *p = lang;
+				ytht_strsncpy(lang, buf + 3, sizeof(lang));
+				while (*p) {
+					if (*p >= 'A' && *p <= 'Z') {
+						*p += 32;
+					}
+
+					if (!(*p >= 'a' && *p <= 'z')) {
+						*p = 0;
+						break;
+					}
+					p++;
+				}
+
+				fprintf(output, "<pre><code class=\"language-%s\">", lang);
+			}
 			continue;
 		}
 		if (!strncmp(buf, "beginbinaryattach ", 18)) {
@@ -474,6 +503,11 @@ bbscon_main()
 #endif
 
 	processMath();
+	if (g_has_code) {
+		printf("<link rel='stylesheet' href='/node_modules/prismjs/themes/prism-tomorrow.css'/>");
+		printf("<script src='/node_modules/prismjs/components/prism-core.min.js'></script>");
+		printf("<script src='/node_modules/prismjs/plugins/autoloader/prism-autoloader.min.js'></script>");
+	}
 	printf("</body></html>\n");
 
 	return 0;
