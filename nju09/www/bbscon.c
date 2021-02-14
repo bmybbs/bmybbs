@@ -148,8 +148,9 @@ fshowcon(FILE * output, char *filename, int show_iframe)
 		return -1;
 	printf("<div id='filecontent' style='width:800px;'>\n");
 	while (1) {
-		if (fgets(buf, sizeof (buf), fp) == 0)
+		if (fgets(buf, sizeof (buf) - 1, fp) == 0)
 			break;
+		buf[sizeof(buf) - 1] = 0;
 		if (!strncmp(buf, "begin 644 ", 10)) {
 			ano++;
 			ptr = strrchr(filename, '/');
