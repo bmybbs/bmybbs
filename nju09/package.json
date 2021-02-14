@@ -1,0 +1,12 @@
+{
+	"name": "nju09",
+	"version": "1.0.0",
+	"description": "NJUWWWBBS-0.9 for FB3 & FB2000.",
+	"scripts": {
+		"test": "echo \"第三方包管理\" && exit 1"
+	},
+	"license": "GPL-2.0",
+	"dependencies": {
+		"mathjax-full": "^3.1.2"
+	}
+}

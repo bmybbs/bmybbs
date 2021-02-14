@@ -223,10 +223,11 @@ int testmozilla() {
 
 void
 processMath()
-{	//add by macintosh 050619 for Tex Math Equ
+{
+	// add by macintosh 050619 for Tex Math Equ
+	// switching from jsMath to mathjax by IronBlood Feb 14th, 2021.
 	if(usedMath) {
-		printf("<script src=/jsMath/jsMath.js></script>");
-		printf("<script>jsMath.ProcessBeforeShowing();</script>");
+		printf("<script src=\"/node_modules/mathjax-full/es5/tex-svg.js\"></script>");
 	}
 }
 
