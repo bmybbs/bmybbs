@@ -1,6 +1,7 @@
 #ifndef BMY_ARTICLE_H
 #define BMY_ARTICLE_H
 #include <time.h>
+#include <stdbool.h>
 #include "ythtbbs/article.h"
 
 struct fileheader_utf {
@@ -51,5 +52,14 @@ void bmy_article_update_thread_accessed(int boardnum, time_t tid, int accessed);
 struct bmy_articles *bmy_article_list_selected_boards(const int boardnum_array[], size_t num, size_t limit, time_t t);
 
 void bmy_article_list_free(struct bmy_articles *ptr);
+
+/**
+ * @brief 判断文章中是否附带数学公式
+ * 采用 TeX 语法，内联采用 \( \), 块采用 $$ $$
+ * 目前实现中仅依据是否包含 \( $$ 判断
+ * @param content 文章内容
+ * @return true/false
+ */
+bool bmy_article_include_math(const char *content);
 #endif
 

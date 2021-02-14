@@ -3,7 +3,6 @@
 #include "bmy/board.h"
 
 int update_form(char *board, char *file, char *title);
-extern int testmath(char *ptr); // bbssnd
 
 int
 bbsedit_main()
@@ -233,7 +232,7 @@ update_form(char *board, char *file, char *title)
 	usemath = strlen(getparm("usemath"));
 	nore = strlen(getparm("nore"));
 	if (usemath)
-		usemath = testmath(buf);
+		usemath = bmy_article_include_math(buf);
 
 	for (i = 0; i < strlen(title); i++)
 		if (title[i] <= 27 && title[i] >= -1)

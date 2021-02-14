@@ -1,6 +1,5 @@
 #include "bbslib.h"
-
-extern int testmath(char *ptr); // bbssnd
+#include "bmy/article.h"
 
 static int update_form_mail(char *file, char *title, int box_type);
 
@@ -165,7 +164,7 @@ static int update_form_mail(char *file, char *title, int box_type) {
 	usemath = strlen(getparm("usemath"));
 	nore = strlen(getparm("nore"));
 	if (usemath)
-		usemath = testmath(buf);
+		usemath = bmy_article_include_math(buf);
 
 	for (i = 0; i < strlen(title); i++)
 		if (title[i] <= 27 && title[i] >= -1)
