@@ -25,6 +25,9 @@ export const BMYClient = {
 	get_article_list_by_section(secstr) {
 		return myFetchGet(`/api/article/list?type=section&secstr=${secstr}`);
 	},
+	get_attach_list() {
+		return myFetchGet("/api/attach/list");
+	},
 	get_board_info(boardname_en) {
 		return myFetchGet(`/api/board/info?bname=${boardname_en}`);
 	},
