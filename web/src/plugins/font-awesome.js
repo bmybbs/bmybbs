@@ -12,6 +12,7 @@ import {
 	faCode,
 	faCogs,
 	faComments,
+	faFile,
 	faFire,
 	faFont,
 	faFutbol,
@@ -53,6 +54,7 @@ library.add(faCloudUploadAlt);
 library.add(faCode);
 library.add(faCogs);
 library.add(faComments);
+library.add(faFile);
 library.add(faFire);
 library.add(faFont);
 library.add(faFutbol);

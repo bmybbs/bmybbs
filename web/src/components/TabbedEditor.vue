@@ -74,18 +74,23 @@
 			</ul>
 
 			<ul class="editor-toolbar nav nav-tabs" v-if="isAttach" ref="attach_toolbar">
-				<li class="nav-item">
-					<span class="nav-link" data-bs-toggle="tooltip" data-bs-placement="top" title="刷新">
+				<li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="top" title="选择文件">
+					<span class="nav-link" @click="pickFiles">
+						<fa icon="paperclip" />
+					</span>
+				</li>
+				<li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="top" title="刷新">
+					<span class="nav-link" @click="loadUploaded">
 						<fa icon="redo" />
 					</span>
 				</li>
-				<li class="nav-item">
-					<span class="nav-link" data-bs-toggle="tooltip" data-bs-placement="top" title="上传">
+				<li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="top" title="上传">
+					<span class="nav-link">
 						<fa icon="cloud-upload-alt" />
 					</span>
 				</li>
-				<li class="nav-item">
-					<span class="nav-link" data-bs-toggle="tooltip" data-bs-placement="top" title="参考代码">
+				<li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="top" title="参考代码">
+					<span class="nav-link">
 						<fa icon="code" />
 					</span>
 				</li>
@@ -95,6 +100,36 @@
 			<div class="tab-pane fade" :class="{ active: isEditing, show: isEditing }">
 				<textarea ref="textarea" class="form-control" rows="5"></textarea>
 				<button class="btn btn-primary">回复</button>
+			</div>
+
+			<div class="tab-pane fade" :class="{ active: isAttach, show: isAttach, isDragging: isDragging }"
+				ref="dropbox"
+				@dragenter.stop.prevent="dragEnter"
+				@dragleave.stop.prevent="dragLeave"
+				@dragover.stop.prevent
+				@drop.prevent="dropFiles">
+				<input ref="filepicker" type=file style="display:none" multiple @change="handleFiles">
+				<div v-if="files.length == 0" class="text-center py-5">
+					当前没有附件，可以点击回纹针添加文件或者拖拽文件到这里。
+				</div>
+				<div v-else>
+					<div v-for="file in files" :key="file.name" class="d-flex flex-row">
+						<div class="upload-icon p-2" :class="{ uploaded: file.status.uploaded }">
+							<fa icon="file" />
+						</div>
+						<div class="d-flex flex-column align-self-center">
+							<div class="upload-h1">
+								{{file.name}}
+							</div>
+							<div class="upload-meta">
+								<span>{{file.size}}</span>
+								<span v-if="file.status.uploaded">已上传</span>
+								<span v-if="file.status.pending">待上传</span>
+								<span v-if="file.status.hasError">错误</span>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 
 			<div class="tab-pane fade" :class="{ active: !isEditing, show: !isEditing }" v-html="previewContent">
@@ -107,16 +142,21 @@
 import Tooltip from "bootstrap/js/dist/tooltip"
 import { BMYClient } from "@/lib/BMYClient.js"
 import { ANSI_TAGS } from "@/lib/BMYConstants.js"
+import { readableSize } from "@bmybbs/bmybbs-content-parser/dist/utils.js"
 
 export default {
 	data() {
 		return {
 			isEditing: true,
 			isAttach: false,
+			isDragging: false,
 			previewContent: "",
 			fc_dd: null,
 			showFcdd: false,
 			showBgdd: false,
+			uploadedFiles: [],
+			pendingFiles: [],
+			files: [],
 		};
 	},
 	mounted() {
@@ -142,6 +182,7 @@ export default {
 		turnOnAttach() {
 			this.isEditing = false;
 			this.isAttach = true;
+			this.loadUploaded();
 		},
 		turnOnPreview() {
 			this.isEditing = false;
@@ -156,6 +197,61 @@ export default {
 					this.previewContent = "";
 				}
 			});
+		},
+		loadUploaded() {
+			BMYClient.get_attach_list().then(response => {
+				if (response.errcode == 0) {
+					this.uploadedFiles = response.attach_array;
+					this.updateFileList();
+				}
+			});
+		},
+		dragEnter() {
+			this.isDragging = true;
+		},
+		dragLeave() {
+			this.isDragging = false;
+		},
+		dropFiles(event) {
+			this.isDragging = false;
+			this.pendingFiles = [ ...event.dataTransfer.files ];
+			this.updateFileList();
+		},
+		pickFiles() {
+			this.$refs.filepicker.click();
+		},
+		handleFiles() {
+			this.pendingFiles = [ ...this.$refs.filepicker.files ];
+			this.updateFileList();
+		},
+		updateFileList() {
+			const arr = [];
+
+			this.uploadedFiles.forEach(file => {
+				arr.push({
+					name: file.file_name,
+					size: readableSize(file.size),
+					status: {
+						uploaded: true,
+						pending: false,
+						hasError: false,
+					},
+				});
+			});
+
+			this.pendingFiles.forEach(file => {
+				arr.push({
+					name: file.name,
+					size: readableSize(file.size),
+					status: {
+						uploaded: false,
+						pending: true,
+						hasError: false,
+					},
+				});
+			});
+
+			this.files = arr;
 		},
 		insertAtCursor(left, right) {
 			this.showFcdd = false;
@@ -242,6 +338,19 @@ textarea {
 
 .palette span:not(:first-child) {
 	margin-left: 5px;
+}
+
+.isDragging {
+	border: 10px solid #00ff00;
+}
+
+.upload-icon {
+	font-size: 220%;
+	color: #638ade;
+}
+
+.upload-icon.uploaded {
+	color: #62bf71;
 }
 </style>
 
