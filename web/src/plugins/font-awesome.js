@@ -8,6 +8,7 @@ import {
 	faChartLine,
 	faClock,
 	faClone,
+	faCloudUploadAlt,
 	faCode,
 	faCogs,
 	faComments,
@@ -48,6 +49,7 @@ library.add(faBuilding);
 library.add(faChartLine);
 library.add(faClock);
 library.add(faClone);
+library.add(faCloudUploadAlt);
 library.add(faCode);
 library.add(faCogs);
 library.add(faComments);

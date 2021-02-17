@@ -6,16 +6,14 @@
 					<span class="nav-link" :class="{ active: isEditing }" @click="turnOnEdit">编辑</span>
 				</li>
 				<li class="nav-item">
-					<span class="nav-link" :class="{ active: !isEditing }" @click="turnOnPreview">预览</span>
+					<span class="nav-link" :class="{ active: isAttach }" @click="turnOnAttach">附件</span>
+				</li>
+				<li class="nav-item">
+					<span class="nav-link" :class="{ active: !isEditing && !isAttach }" @click="turnOnPreview">预览</span>
 				</li>
 			</ul>
 
 			<ul class="editor-toolbar nav nav-tabs" v-if="isEditing" ref="editor_toolbar">
-				<li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="top" title="附件">
-					<span class="nav-link">
-						<fa icon="paperclip" />
-					</span>
-				</li>
 				<li class="nav-item dropdown" data-bs-toggle="tooltip" data-bs-placement="top" title="前景色">
 					<span class="nav-link" @click="openFcdd">
 						<fa icon="font" />
@@ -74,6 +72,24 @@
 					</span>
 				</li>
 			</ul>
+
+			<ul class="editor-toolbar nav nav-tabs" v-if="isAttach" ref="attach_toolbar">
+				<li class="nav-item">
+					<span class="nav-link" data-bs-toggle="tooltip" data-bs-placement="top" title="刷新">
+						<fa icon="redo" />
+					</span>
+				</li>
+				<li class="nav-item">
+					<span class="nav-link" data-bs-toggle="tooltip" data-bs-placement="top" title="上传">
+						<fa icon="cloud-upload-alt" />
+					</span>
+				</li>
+				<li class="nav-item">
+					<span class="nav-link" data-bs-toggle="tooltip" data-bs-placement="top" title="参考代码">
+						<fa icon="code" />
+					</span>
+				</li>
+			</ul>
 		</div>
 		<div class="tab-content">
 			<div class="tab-pane fade" :class="{ active: isEditing, show: isEditing }">
@@ -96,6 +112,7 @@ export default {
 	data() {
 		return {
 			isEditing: true,
+			isAttach: false,
 			previewContent: "",
 			fc_dd: null,
 			showFcdd: false,
@@ -105,7 +122,7 @@ export default {
 	mounted() {
 		let elements = this.$refs.editor_toolbar.querySelectorAll('[data-bs-toggle="tooltip"]');
 		let tooltipTriggerList = [].slice.call(elements);
-		tooltipTriggerList.map((el) => {
+		tooltipTriggerList.forEach((el) => {
 			new Tooltip(el);
 		});
 	},
@@ -120,9 +137,15 @@ export default {
 		},
 		turnOnEdit() {
 			this.isEditing = true;
+			this.isAttach = false;
+		},
+		turnOnAttach() {
+			this.isEditing = false;
+			this.isAttach = true;
 		},
 		turnOnPreview() {
 			this.isEditing = false;
+			this.isAttach = false;
 
 			BMYClient.get_draft_preview({
 				content: this.$refs.textarea.value,
