@@ -102,7 +102,7 @@
 				<button class="btn btn-primary">回复</button>
 			</div>
 
-			<div class="tab-pane fade position-relative" :class="{ active: isAttach, show: isAttach, isDragging: isDragging }"
+			<div class="tab-pane fade position-relative dropbox" :class="{ active: isAttach, show: isAttach, isDragging: isDragging }"
 				ref="dropbox"
 				@dragenter.stop.prevent="dragEnter"
 				@dragleave.stop.prevent="dragLeave"
@@ -126,15 +126,19 @@
 								<span v-if="file.status.uploaded">已上传</span>
 								<span v-if="file.status.pending">待上传</span>
 								<span v-if="file.status.hasError" :title="file.error">错误</span>
+								<button type="button" class="btn btn-outline-danger btn-sm" @click="deleteFile(file)">删除</button>
 							</div>
 						</div>
 					</div>
 				</div>
 
-				<div class="upload-mask position-absolute" :class="{ show: isUploading}">
-					<div class="progress w-50 position-absolute top-50 start-50 translate-middle">
+				<div class="upload-mask position-absolute" :class="{ show: isUploading || isDeleting || isDragging}">
+					<div class="progress w-50 position-absolute top-50 start-50 translate-middle" v-if="isUploading">
 						<div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" :style="progressStyleObj"></div>
 					</div>
+
+					<div class="position-absolute top-50 start-50 translate-middle" v-if="isDeleting">正在删除，请稍等</div>
+					<div class="position-absolute top-50 start-50 translate-middle" v-if="isDragging">松开鼠标后将替换待上传的文件</div>
 				</div>
 			</div>
 
@@ -191,6 +195,7 @@ export default {
 			isAttach: false,
 			isDragging: false,
 			isUploading: false,
+			isDeleting: false,
 			previewContent: "",
 			fc_dd: null,
 			showFcdd: false,
@@ -346,6 +351,25 @@ export default {
 			this.loadUploaded();
 			this.isUploading = false;
 		},
+		async deleteFile(file) {
+			this.isDeleting = true;
+			await sleep(500);
+
+			if (file.status.pending) {
+				for (let i = 0, l = this.pendingFiles.length; i < l; i++) {
+					if (this.pendingFiles[i].name == file.name) {
+						this.pendingFiles.splice(i, 1);
+						break;
+					}
+				}
+				this.updateFileList();
+			} else {
+				await BMYClient.delete_attach(file.name);
+				await sleep(500);
+				this.loadUploaded();
+			}
+			this.isDeleting = false;
+		},
 		insertAtCursor(left, right) {
 			this.showFcdd = false;
 			this.showBgdd = false;
@@ -437,6 +461,18 @@ textarea {
 	border: 1px solid #00ff00;
 }
 
+.dropbox * {
+	pointer-events: none;
+}
+
+.dropbox button {
+	pointer-events: auto;
+}
+
+.dropbox.isDragging button {
+	pointer-events: none;
+}
+
 .upload-icon {
 	font-size: 220%;
 	color: #638ade;
@@ -454,11 +490,16 @@ textarea {
 	right: 0;
 	width: 100%;
 	height: 100%;
-	background-color: rgba(0,0,0,0.5)
+	background-color: rgba(0,0,0,0.8);
+	color: #fff;
 }
 
 .upload-mask.show {
 	display: block;
+}
+
+.upload-meta span {
+	margin-right: 4px;
 }
 </style>
 

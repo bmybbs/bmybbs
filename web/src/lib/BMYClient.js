@@ -13,6 +13,9 @@ function myFetchPost(url, obj) {
 }
 
 export const BMYClient = {
+	delete_attach(filename) {
+		return fetch(`/api/attach/delete?file=${filename}`, { method: "DELETE" }).then(response => response.json());
+	},
 	get_announce() {
 		return myFetchGet("/api/article/list?type=announce");
 	},
