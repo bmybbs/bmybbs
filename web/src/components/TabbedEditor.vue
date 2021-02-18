@@ -118,7 +118,10 @@
 							<fa icon="file" />
 						</div>
 						<div class="d-flex flex-column align-self-center">
-							<div class="upload-h1">
+							<div class="upload-h1" v-if="file.status.uploaded">
+								<a :href="'/api/attach/get?file=' + file.name" target="_blank">{{file.name}}</a>
+							</div>
+							<div class="upload-h1" v-else>
 								{{file.name}}
 							</div>
 							<div class="upload-meta">
@@ -465,11 +468,15 @@ textarea {
 	pointer-events: none;
 }
 
-.dropbox button {
+.dropbox a {
+	text-decoration: none;
+}
+
+.dropbox button, .dropbox a {
 	pointer-events: auto;
 }
 
-.dropbox.isDragging button {
+.dropbox.isDragging button, .dropbox.isDragging a {
 	pointer-events: none;
 }
 
