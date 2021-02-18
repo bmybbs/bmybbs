@@ -85,7 +85,7 @@
 					</span>
 				</li>
 				<li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="top" title="上传">
-					<span class="nav-link">
+					<span class="nav-link" @click="doUpload">
 						<fa icon="cloud-upload-alt" />
 					</span>
 				</li>
@@ -102,7 +102,7 @@
 				<button class="btn btn-primary">回复</button>
 			</div>
 
-			<div class="tab-pane fade" :class="{ active: isAttach, show: isAttach, isDragging: isDragging }"
+			<div class="tab-pane fade position-relative" :class="{ active: isAttach, show: isAttach, isDragging: isDragging }"
 				ref="dropbox"
 				@dragenter.stop.prevent="dragEnter"
 				@dragleave.stop.prevent="dragLeave"
@@ -125,14 +125,20 @@
 								<span>{{file.size}}</span>
 								<span v-if="file.status.uploaded">已上传</span>
 								<span v-if="file.status.pending">待上传</span>
-								<span v-if="file.status.hasError">错误</span>
+								<span v-if="file.status.hasError" :title="file.error">错误</span>
 							</div>
 						</div>
 					</div>
 				</div>
+
+				<div class="upload-mask position-absolute" :class="{ show: isUploading}">
+					<div class="progress w-50 position-absolute top-50 start-50 translate-middle">
+						<div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" :style="progressStyleObj"></div>
+					</div>
+				</div>
 			</div>
 
-			<div class="tab-pane fade" :class="{ active: !isEditing, show: !isEditing }" v-html="previewContent">
+			<div class="tab-pane fade" :class="{ active: !isEditing && !isAttach, show: !isEditing && !isAttach }" v-html="previewContent">
 			</div>
 		</div>
 	</div>
@@ -141,8 +147,42 @@
 <script>
 import Tooltip from "bootstrap/js/dist/tooltip"
 import { BMYClient } from "@/lib/BMYClient.js"
-import { ANSI_TAGS } from "@/lib/BMYConstants.js"
+import { ANSI_TAGS, BMY_EC } from "@/lib/BMYConstants.js"
 import { readableSize } from "@bmybbs/bmybbs-content-parser/dist/utils.js"
+
+const UPLOAD_ERROR_MSG = {
+	NOTLOGGEDIN: "请先登录",
+	WRONGPARAM: "文件名过长",
+	TOOBIG: "文件过大",
+	INNER: "临时文件不存在，请联系站长",
+	NOSPACE: "空间不足，请联系站长",
+	UNKNOWN: "服务错误，请联系站长",
+};
+
+const sleep = async (ms) => new Promise(r => setTimeout(r, ms));
+
+const getUploadErrorMsg = (errcode) => {
+	let msg = "";
+	switch (errcode) {
+	case BMY_EC.API_RT_NOTLOGGEDIN:
+		msg = UPLOAD_ERROR_MSG.NOTLOGGEDIN;
+		break;
+	case BMY_EC.API_RT_WRONGPARAM:
+		msg = UPLOAD_ERROR_MSG.WRONGPARAM;
+		break;
+	case BMY_EC.API_RT_ATTTOOBIG:
+		msg = UPLOAD_ERROR_MSG.TOOBIG;
+		break;
+	case BMY_EC.API_RT_NOSUCHFILE:
+	case BMY_EC.API_RT_ATTINNERR:
+		msg = UPLOAD_ERROR_MSG.INNER;
+		break;
+	case BMY_EC.API_RT_ATTNOSPACE:
+		msg = UPLOAD_ERROR_MSG.NOSPACE;
+		break;
+	}
+	return msg;
+};
 
 export default {
 	data() {
@@ -150,13 +190,18 @@ export default {
 			isEditing: true,
 			isAttach: false,
 			isDragging: false,
+			isUploading: false,
 			previewContent: "",
 			fc_dd: null,
 			showFcdd: false,
 			showBgdd: false,
 			uploadedFiles: [],
 			pendingFiles: [],
+			uploadErrorMap: new Map(),
 			files: [],
+			progressStyleObj: {
+				width: "0%",
+			},
 		};
 	},
 	mounted() {
@@ -236,22 +281,70 @@ export default {
 						pending: false,
 						hasError: false,
 					},
+					error: "",
 				});
 			});
 
 			this.pendingFiles.forEach(file => {
-				arr.push({
-					name: file.name,
-					size: readableSize(file.size),
-					status: {
-						uploaded: false,
-						pending: true,
-						hasError: false,
-					},
-				});
+				if (this.uploadErrorMap.has(file.name)) {
+					arr.push({
+						name: file.name,
+						size: readableSize(file.size),
+						status: {
+							uploaded: false,
+							pending: true,
+							hasError: true,
+						},
+						error: this.uploadErrorMap.get(file.name),
+					});
+				} else {
+					arr.push({
+						name: file.name,
+						size: readableSize(file.size),
+						status: {
+							uploaded: false,
+							pending: true,
+							hasError: false,
+						},
+						error: "",
+					});
+				}
 			});
 
 			this.files = arr;
+		},
+		async doUpload() {
+			const error_map = new Map();
+			const remain = [];
+
+			this.isUploading = true;
+			for (let i = 0, l = this.pendingFiles.length; i < l; i++) {
+				if (this.pendingFiles[i].size > 5000000 /* maximum size allowed */) {
+					remain.push(this.pendingFiles[i]);
+					error_map.set(this.pendingFiles[i].name, UPLOAD_ERROR_MSG.TOOBIG);
+				} else {
+					try {
+						const response = await BMYClient.upload_attach(this.pendingFiles[i]);
+						if (response.errcode != BMY_EC.API_RT_SUCCESSFUL) {
+							remain.push(this.pendingFiles[i]);
+							error_map.set(this.pendingFiles[i].name, getUploadErrorMsg(response.errcode));
+						}
+					} catch(e) {
+						console.error(e);
+						remain.push(this.pendingFiles[i]);
+						error_map.set(this.pendingFiles[i].name, UPLOAD_ERROR_MSG.UNKNOWN);
+					}
+				}
+
+				const progress = ((i + 1) / l).toFixed(0);
+				this.progressStyleObj.width = `${progress}%`;
+				await sleep(1000);
+			}
+
+			this.pendingFiles = remain;
+			this.uploadErrorMap = error_map;
+			this.loadUploaded();
+			this.isUploading = false;
 		},
 		insertAtCursor(left, right) {
 			this.showFcdd = false;
@@ -341,7 +434,7 @@ textarea {
 }
 
 .isDragging {
-	border: 10px solid #00ff00;
+	border: 1px solid #00ff00;
 }
 
 .upload-icon {
@@ -351,6 +444,21 @@ textarea {
 
 .upload-icon.uploaded {
 	color: #62bf71;
+}
+
+.upload-mask {
+	display: none;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0,0,0,0.5)
+}
+
+.upload-mask.show {
+	display: block;
 }
 </style>
 
