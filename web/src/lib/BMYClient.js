@@ -78,7 +78,6 @@ export const BMYClient = {
 		formData.append("file", file);
 		const response = await fetch("/api/attach/upload", { method: "POST", body: formData });
 		if (!response.ok) {
-			console.log(response);
 			throw new Error(`HTTP error! status: ${response.status}`);
 		} else {
 			return await response.json();
