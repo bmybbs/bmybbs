@@ -90,7 +90,7 @@
 					</span>
 				</li>
 				<li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="top" title="参考代码">
-					<span class="nav-link">
+					<span class="nav-link" @click="showCodeModal">
 						<fa icon="code" />
 					</span>
 				</li>
@@ -100,6 +100,14 @@
 			<div class="tab-pane fade" :class="{ active: isEditing, show: isEditing }">
 				<textarea ref="textarea" class="form-control" rows="5"></textarea>
 				<button class="btn btn-primary">回复</button>
+			</div>
+
+			<div class="modal-code-container" :class="{ show: showCode }">
+				<div class="modal-code-content w-50 position-absolute top-50 start-50 translate-middle border border-white rounded-3 p-5">
+					<p>请在文章编辑框中预期位置上新起一行，顶头写上需要插入的附件，对应代码：</p>
+					<p v-for="file in uploadedFiles" :key="file.file_name" class="font-monospace">#attach {{file.file_name}}</p>
+					<button class="btn btn-secondary" @click="closeCodeModal">关闭</button>
+				</div>
 			</div>
 
 			<div class="tab-pane fade position-relative dropbox" :class="{ active: isAttach, show: isAttach, isDragging: isDragging }"
@@ -199,6 +207,7 @@ export default {
 			isDragging: false,
 			isUploading: false,
 			isDeleting: false,
+			showCode: false,
 			previewContent: "",
 			fc_dd: null,
 			showFcdd: false,
@@ -250,6 +259,12 @@ export default {
 					this.previewContent = "";
 				}
 			});
+		},
+		showCodeModal() {
+			this.showCode = true;
+		},
+		closeCodeModal() {
+			this.showCode = false;
 		},
 		loadUploaded() {
 			BMYClient.get_attach_list().then(response => {
@@ -507,6 +522,25 @@ textarea {
 
 .upload-meta span {
 	margin-right: 4px;
+}
+
+.modal-code-container {
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background-color: rgba(0,0,0,0.8);
+	position: fixed;
+	z-index: 9999;
+	display: none;
+}
+
+.modal-code-container.show {
+	display: block;
+}
+
+.modal-code-container .modal-code-content {
+	background-color: #fff;
 }
 </style>
 
