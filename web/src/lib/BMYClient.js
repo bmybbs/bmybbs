@@ -73,10 +73,16 @@ export const BMYClient = {
 	search_user(start_with) {
 		return myFetchGet(`/api/user/autocomplete?search_str=${start_with}`);
 	},
-	upload_attach(file) {
+	async upload_attach(file) {
 		const formData = new FormData();
 		formData.append("file", file);
-		return fetch("/api/attach/upload", { method: "POST", body: formData }).then(response => response.json());
+		const response = await fetch("/api/attach/upload", { method: "POST", body: formData });
+		if (!response.ok) {
+			console.log(response);
+			throw new Error(`HTTP error! status: ${response.status}`);
+		} else {
+			return await response.json();
+		}
 	},
 	user_check() {
 		return myFetchGet("/BMY/user_check");
