@@ -744,7 +744,7 @@ deal_key(int ch, int allnum, int pagenum)
 		move(BBS_PAGESIZE + 3, 0);
 		if (askyn(buf, NA, NA) == NA)
 			break;
-		if (deleteoverride(user_record[allnum]->userid, "friends") == -1) {
+		if (deleteoverride(user_record[allnum]->userid, YTHTBBS_OVERRIDE_FRIENDS) == -1) {
 			sprintf(buf, "%s 本来就不在朋友名单中", user_record[allnum]->userid);
 		} else {
 			sprintf(buf, "%s 已从朋友名单移除", user_record[allnum]->userid);

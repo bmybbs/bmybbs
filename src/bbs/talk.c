@@ -406,7 +406,7 @@ int t_query(const char *q_id) {
 			clrtoeol();
 			if (genbuf[0] != 'Y' && genbuf[0] != 'y')
 				break;
-			if (deleteoverride(uident, "friends") == -1)
+			if (deleteoverride(uident, YTHTBBS_OVERRIDE_FRIENDS) == -1)
 				sprintf(buf, "%s 本来就不在好友名单中", uident);
 			else
 				sprintf(buf, "%s 已从好友名单移除", uident);
@@ -1501,12 +1501,12 @@ int addtooverride(const char *uident) {
 	return n;
 }
 
-int deleteoverride(const char *uident, const char *filename) {
+int deleteoverride(const char *uident, const enum ythtbbs_override_type override_type) {
 	int deleted;
 	struct ythtbbs_override fh;
 	char buf[STRLEN];
 
-	sethomefile_s(buf, sizeof(buf), currentuser.userid, filename);
+	sethomefile_s(buf, sizeof(buf), currentuser.userid, (override_type == YTHTBBS_OVERRIDE_FRIENDS) ? "friends" : "rejects");
 	deleted = search_record(buf, &fh, sizeof (fh), (void *) cmpfnames, (void *)uident); // cmpfnames 传入 uident，此处省略 const 是安全的
 	if (deleted > 0) {
 		if (delete_record(buf, sizeof (fh), deleted) != -1) {
@@ -1613,7 +1613,7 @@ static int override_dele(int ent, struct ythtbbs_override *fh, char *direct) {
 	if (askyn(buf, NA, NA) == YEA) {
 		move(t_lines - 2, 0);
 		clrtoeol();
-		if (deleteoverride(fh->id, fname) == 1) {
+		if (deleteoverride(fh->id, (friendflag) ? YTHTBBS_OVERRIDE_FRIENDS : YTHTBBS_OVERRIDE_REJECTS) == 1) {
 			prints("已从%s名单中移除【%s】,按任何键继续...", desc, fh->id);
 			deleted = YEA;
 		} else
@@ -1841,7 +1841,7 @@ getfriendstr()
 		tmp[i].id[sizeof(EMPTY.id) - 1] = 0;
 		uinfo.friend[i] = ythtbbs_cache_UserTable_search_usernum(tmp[i].id);
 		if (uinfo.friend[i] == 0)
-			deleteoverride(tmp[i].id, "friends");
+			deleteoverride(tmp[i].id, YTHTBBS_OVERRIDE_FRIENDS);
 		/* 顺便删除已不存在帐号的好友 */
 	}
 	free(tmp);
@@ -1869,7 +1869,7 @@ getrejectstr()
 		tmp[i].id[sizeof(EMPTY.id) - 1] = 0;
 		uinfo.reject[i] = ythtbbs_cache_UserTable_search_usernum(tmp[i].id);
 		if (uinfo.reject[i] == 0)
-			deleteoverride(tmp[i].id, "rejects");
+			deleteoverride(tmp[i].id, YTHTBBS_OVERRIDE_REJECTS);
 	}
 	free(tmp);
 	return 0;

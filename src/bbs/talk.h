@@ -1,6 +1,7 @@
 #ifndef BMYBBS_TALK_H
 #define BMYBBS_TALK_H
 #include "ythtbbs/cache.h"
+#include "ythtbbs/override.h"
 
 int t_pager(void);
 int t_query(const char *q_id);
@@ -14,7 +15,7 @@ int talkreply(void);
 void endmsg(void);
 int listfilecontent(char *fname);
 int addtooverride(const char *uident);
-int deleteoverride(const char *uident, const char *filename);
+int deleteoverride(const char *uident, const enum ythtbbs_override_type override_type);
 int override_add(void);
 void t_friend(void);
 void t_reject(void);
