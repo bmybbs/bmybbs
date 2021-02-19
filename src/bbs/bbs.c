@@ -132,8 +132,8 @@ static int commend_article(char* board, struct fileheader* fileinfo);
 static int commend_article2(char* board, struct fileheader* fileinfo);
 static int del_commend(int offset);
 static int del_commend2(int offset);
-static int do_commend(char* board, struct fileheader* fileinfo);
-static int do_commend2(char* board, struct fileheader* fileinfo);
+static int do_commend(struct fileheader* fileinfo);
+static int do_commend2(struct fileheader* fileinfo);
 static int count_commend();
 static int count_commend2();
 
@@ -4310,7 +4310,7 @@ static int commend_article(char* board, struct fileheader* fileinfo) {
 		}
 		else{
 			char fname[STRLEN];
-			do_commend(board, fileinfo);
+			do_commend(fileinfo);
 			setbfile(fname, currboard, fh2fname(fileinfo));
 			postfile(fname, "Commend", fileinfo->title, 0);
 		}
@@ -4374,7 +4374,7 @@ static int del_commend(int offset) {
 }
 
 //add by mintbaggio 040326 for front page commend
-static int do_commend(char* board, struct fileheader* fileinfo) {
+static int do_commend(struct fileheader* fileinfo) {
 	FILE *fp;
 	struct commend y;
 	bzero(&y, sizeof(struct commend));
@@ -4461,7 +4461,7 @@ static int commend_article2(char* board, struct fileheader* fileinfo) {
 		}
 		else{
 			char fname[STRLEN];
-			do_commend2(board, fileinfo);
+			do_commend2(fileinfo);
 			setbfile(fname, currboard, fh2fname(fileinfo));
 			postfile(fname, "Commend", fileinfo->title, 0);
 //			do_commend2(board, fileinfo);
@@ -4526,7 +4526,7 @@ static int del_commend2(int offset) {
 }
 
 //add by mintbaggio 040326 for front page commend
-static int do_commend2(char* board, struct fileheader* fileinfo) {
+static int do_commend2(struct fileheader* fileinfo) {
 	FILE *fp;
 	struct commend y;
 	bzero(&y, sizeof(struct commend));
