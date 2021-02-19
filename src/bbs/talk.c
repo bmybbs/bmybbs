@@ -523,9 +523,8 @@ static int show_special(char *id2) {
 	return 0;
 }//add by wjbta@bmy
 
-static int
-bm_printboard(struct boardmanager *bm, void *farg)
-{
+static int bm_printboard(struct boardmanager *bm, void *farg) {
+	(void) farg;
 	if (canberead(bm->board))
 		prints("%s ", bm->board);
 	return 0;
@@ -1550,12 +1549,8 @@ char buf[512];
 	return buf;
 }
 
-static int
-override_edit(ent, fh, direc)
-int ent;
-struct ythtbbs_override *fh;
-char *direc;
-{
+static int override_edit(int ent, struct ythtbbs_override *fh, char *direc) {
+	(void) ent;
 	struct ythtbbs_override nh;
 	char buf[STRLEN / 2];
 	int pos;
@@ -1596,12 +1591,9 @@ override_add()
 	return FULLUPDATE;
 }
 
-static int
-override_dele(ent, fh, direct)
-int ent;
-struct ythtbbs_override *fh;
-char *direct;
-{
+static int override_dele(int ent, struct ythtbbs_override *fh, char *direct) {
+	(void) ent;
+	(void) direct;
 	char buf[STRLEN];
 	char desc[5];
 	char fname[10];
@@ -1647,12 +1639,10 @@ char *direct;
 	return override_edit(ent, fh, direct);
 }
 
-static int
-friend_add(ent, fh, direct)
-int ent;
-struct ythtbbs_override *fh;
-char *direct;
-{
+static int friend_add(int ent, struct ythtbbs_override *fh, char *direct) {
+	(void) ent;
+	(void) fh;
+	(void) direct;
 	friendflag = YEA;
 	return override_add();
 }
@@ -1667,24 +1657,18 @@ char *direct;
 	return override_dele(ent, fh, direct);
 }
 
-static int
-friend_mail(ent, fh, direct)
-int ent;
-struct ythtbbs_override *fh;
-char *direct;
-{
+static int friend_mail(int ent, struct ythtbbs_override *fh, char *direct) {
+	(void) ent;
+	(void) direct;
 	if (!HAS_PERM(PERM_POST, currentuser))
 		return DONOTHING;
 	m_send(fh->id);
 	return FULLUPDATE;
 }
 
-static int
-friend_query(ent, fh, direct)
-int ent;
-struct ythtbbs_override *fh;
-char *direct;
-{
+static int friend_query(int ent, struct ythtbbs_override *fh, char *direct) {
+	(void) ent;
+	(void) direct;
 	int ch;
 
 	if (t_query(fh->id) == -1)
@@ -1736,32 +1720,22 @@ char *direct;
 	return override_edit(ent, fh, direct);
 }
 
-static int
-reject_add(ent, fh, direct)
-int ent;
-struct ythtbbs_override *fh;
-char *direct;
-{
+static int reject_add(int ent, struct ythtbbs_override *fh, char *direct) {
+	(void) ent;
+	(void) fh;
+	(void) direct;
 	friendflag = NA;
 	return override_add();
 }
 
-static int
-reject_dele(ent, fh, direct)
-int ent;
-struct ythtbbs_override *fh;
-char *direct;
-{
+static int reject_dele(int ent, struct ythtbbs_override *fh, char *direct) {
 	friendflag = NA;
 	return override_dele(ent, fh, direct);
 }
 
-static int
-reject_query(ent, fh, direct)
-int ent;
-struct ythtbbs_override *fh;
-char *direct;
-{
+static int reject_query(int ent, struct ythtbbs_override *fh, char *direct) {
+	(void) ent;
+	(void) direct;
 	int ch;
 
 	if (t_query(fh->id) == -1)
