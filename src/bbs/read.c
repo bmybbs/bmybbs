@@ -130,11 +130,8 @@ int def_cursline;
 	return p;
 }
 
-void
-fixkeep(s, first, last)
-char *s;
-int first, last;
-{
+void fixkeep(char *s, int first, int last) {
+	(void) last;
 	struct keeploc *k;
 	k = getkeep(s, 1, 1);
 	if (k->crs_line >= first) {
