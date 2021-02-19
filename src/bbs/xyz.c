@@ -1181,6 +1181,7 @@ datapipefd(int fds, int fdn)
 int
 sendgoodwish(char *uid)
 {
+	(void) uid;
 	return sendGoodWish(NULL);
 }
 
@@ -1462,7 +1463,7 @@ sendGoodWish(char *userid)
 static void
 childreturn(int i)
 {
-
+	(void) i;
 	int retv;
 	while ((retv = waitpid(-1, NULL, WNOHANG | WUNTRACED)) > 0)
 		if (childpid > 0 && retv == childpid)
