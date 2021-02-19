@@ -23,8 +23,7 @@ static char *backnumberdoent(int num, struct fileheader *ent, char buf[512]);
 static int backnumber_read(int ent, struct fileheader *fileinfo, char *direct);
 static int backnumber_hide(int ent, struct fileheader *fileinfo, char *direct);
 static int selectbacknumbertitle(void);
-static char *selectbacknumberdoent(int num, struct bknheader *ent,
-				   char buf[512]);
+static char *selectbacknumberdoent(int num, struct bknheader *ent, char buf[512]);
 static int delete_backnumber(int ent, struct bknheader *bkninfo, char *direct);
 static int change_title(int ent, struct bknheader *bkninfo, char *direct);
 int do_intobacknumber(char *filename, time_t t);
@@ -42,10 +41,9 @@ backnumbertitle()
 {
 
 	showtitle("ÔÄ¶Á¹ı¿¯", MY_BBS_NAME);
-	prints
-	    ("Àë¿ª[[1;32m¡û[m,[1;32me[m]  Ñ¡Ôñ[[1;32m¡ü[m,[1;32m¡ı[m]  ÔÄ¶Á"
-	     "[[1;32m¡ú[m,[1;32mRtn[m] ÇóÖú[[1;32mh[m][m\n");
-	prints("[1;44m±àºÅ   %-12s %6s  %-50s[m\n", "¿¯µÇÕß", "ÈÕÆÚ", "±êÌâ");
+	prints("Àë¿ª[\033[1;32m¡û\033[m,\033[1;32me\033[m]  Ñ¡Ôñ[\033[1;32m¡ü\033[m,\033[1;32m¡ı\033[m]  ÔÄ¶Á"
+			"[\033[1;32m¡ú\033[m,\033[1;32mRtn\033[m] ÇóÖú[\033[1;32mh\033[m]\033[m\n");
+	prints("\033[1;44m±àºÅ   %-12s %6s  %-50s\033[m\n", "¿¯µÇÕß", "ÈÕÆÚ", "±êÌâ");
 	clrtobot();
 	return 0;
 }
@@ -77,8 +75,8 @@ char buf[512];
 	type = (ent->accessed & FH_MARKED) ? 'm' : ' ';
 	attached = (ent->accessed & FH_ATTACHED) ? '@' : ' ';
 	type = (ent->accessed & FH_HIDE) ? 'd' : type;
-	strcpy(c1, "[1;36m");
-	strcpy(c2, "[1;33m");
+	strcpy(c1, "\033[1;36m");
+	strcpy(c2, "\033[1;33m");
 	if (!strcmp(ReadPost, ent->title) || !strcmp(ReplyPost, ent->title))
 		same = YEA;
 	strncpy(b2, ent->owner, STRLEN);
@@ -86,15 +84,15 @@ char buf[512];
 		*t = '\0';
 
 	if ((ent->accessed & FH_HIDE) && !IScurrBM) {
-		sprintf(buf, " %s%3d[m %c %-12.12s %6.6s %c%s%.50s[m",
+		sprintf(buf, " %s%3d\033[m %c %-12.12s %6.6s %c%s%.50s\033[m",
 			same ? c1 : "", num, ' ', "", "", ' ', same ? c1 : "",
 			"-±¾ÎÄÒÑ±»É¾³ı-");
 	} else if (!strncmp("Re:", ent->title, 3)) {
-		sprintf(buf, " %s%3d[m %c %-12.12s %6.6s %c%s%.50s[m",
+		sprintf(buf, " %s%3d\033[m %c %-12.12s %6.6s %c%s%.50s\033[m",
 			same ? c1 : "", num, type, b2, date, attached,
 			same ? c1 : "", ent->title);
 	} else {
-		sprintf(buf, " %s%3d[m %c %-12.12s %6.6s %c%s¡ñ %.47s[m",
+		sprintf(buf, " %s%3d\033[m %c %-12.12s %6.6s %c%s¡ñ %.47s\033[m",
 			same ? c2 : "", num, type, b2, date, attached,
 			same ? c2 : "", ent->title);
 	}
@@ -122,11 +120,9 @@ char *direct;
 		ch = ansimore(notgenbuf, NA);
 	move(t_lines - 1, 0);
 	prints("\033[1;44;31m[ÔÄ¶ÁÎÄÕÂ] \033[33m½áÊø Q,¡û©¦ÉÏÒ»·â ¡ü,l©¦"
-	       "ÏÂÒ»·â n, <Space>,<Enter>,¡ı©¦Ö÷ÌâÔÄ¶Á x p \033[m");
+			"ÏÂÒ»·â n, <Space>,<Enter>,¡ı©¦Ö÷ÌâÔÄ¶Á x p \033[m");
 	//usleep(300000l);
-	if (!
-	    (ch == KEY_RIGHT || ch == KEY_UP || ch == KEY_PGUP
-	     || ch == KEY_DOWN) && (ch <= 0 || strchr("RrEexp", ch) == NULL))
+	if (!(ch == KEY_RIGHT || ch == KEY_UP || ch == KEY_PGUP || ch == KEY_DOWN) && (ch <= 0 || strchr("RrEexp", ch) == NULL))
 		ch = egetch();
 	switch (ch) {
 	case 'Q':
@@ -218,8 +214,8 @@ static int readbacknumber(int ent, struct bknheader *bkninfo, char *direct) {
 	sprintf(currbacknumberdir, "%s/%s/%s", buf, bknh2bknname(bkninfo),
 		DOT_DIR);
 	i_read(BACKNUMBER, currbacknumberdir, backnumbertitle,
-	       (void *) backnumberdoent, backnumber_comms,
-	       sizeof (struct fileheader));
+			(void *) backnumberdoent, backnumber_comms,
+			sizeof (struct fileheader));
 	return 999;
 }
 
@@ -230,9 +226,8 @@ selectbacknumbertitle()
 	char buf[STRLEN];
 	sprintf(buf, "Ñ¡Ôñ¹ı¿¯");
 	showtitle(buf, MY_BBS_NAME);
-	prints
-	    ("Àë¿ª[[1;32m¡û[m,[1;32me[m]  Ñ¡Ôñ[[1;32m¡ü[m,[1;32m¡ı[m]  ÔÄ¶Á[[1;32m¡ú[m,[1;32mRtn[m]  ¿ª±ÙĞÂ¹ı¿¯[[1;32m^P[m]  ÇóÖú[[1;32mh[m][m\n");
-	prints("[1;44m±àºÅ %-12s %6s  %-50s[m\n", "°æÃæ", "ÈÕ  ÆÚ", "±ê  Ìâ");
+	prints("Àë¿ª[\033[1;32m¡û\033[m,\033[1;32me\033[m]  Ñ¡Ôñ[\033[1;32m¡ü\033[m,\033[1;32m¡ı\033[m]  ÔÄ¶Á[\033[1;32m¡ú\033[m,\033[1;32mRtn\033[m]  ¿ª±ÙĞÂ¹ı¿¯[\033[1;32m^P\033[m]  ÇóÖú[\033[1;32mh\033[m]\033[m\n");
+	prints("\033[1;44m±àºÅ %-12s %6s  %-50s\033[m\n", "°æÃæ", "ÈÕ  ÆÚ", "±ê  Ìâ");
 	clrtobot();
 	return 0;
 }
@@ -253,7 +248,7 @@ char buf[512];
 		date = "";
 	}
 
-	sprintf(buf, " %3d[m %-12.12s %6.6s  ¡ï %.47s[m",
+	sprintf(buf, " %3d\033[m %-12.12s %6.6s  ¡ï %.47s\033[m",
 		num, ent->boardname, date, ent->title);
 	return buf;
 }
@@ -306,7 +301,7 @@ char *direct;
 	char dpath[MAXPATHLEN];
 	if (!IScurrBM)
 //by bjgyt        if (!HAS_PERM(PERM_OBOARDS) && !HAS_PERM(PERM_SYSOP))
-                return DONOTHING;
+		return DONOTHING;
 	if (askyn("È·¶¨É¾³ı?", NA, NA) == NA)
 		return FULLUPDATE;
 	sprintf(dpath, "boards/.backnumbers/%s/%s", currboard,
@@ -327,7 +322,7 @@ char *direct;
 	char buf[STRLEN];
 	if (!IScurrBM)
 //by bjgyt        if (!HAS_PERM(PERM_OBOARDS) && !HAS_PERM(PERM_SYSOP))
-                return DONOTHING;
+		return DONOTHING;
 	ytht_strsncpy(buf, bkninfo->title, 60);
 	getdata(t_lines - 1, 0, "ĞÂ¹ı¿¯±êÌâ: ", buf, 50, DOECHO, NA);
 	if (buf[0] != '\0') {
@@ -365,8 +360,8 @@ selectbacknumber()
 	sprintf(backnumberboarddir, "boards/.backnumbers/%s/%s", currboard,
 		DOT_DIR);
 	i_read(SELBACKNUMBER, backnumberboarddir, selectbacknumbertitle,
-	       (void *) selectbacknumberdoent, selectbacknumber_comms,
-	       sizeof (struct bknheader));
+			(void *) selectbacknumberdoent, selectbacknumber_comms,
+			sizeof (struct bknheader));
 	return 0;
 }
 
