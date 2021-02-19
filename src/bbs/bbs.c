@@ -926,13 +926,13 @@ struct fileheader *fileinfo;
 char *direct;
 {
 	int ch;
-	time_t starttime;
 #ifdef ENABLE_MYSQL
+	time_t starttime;
 	int cou;
 	extern int effectiveline;
 	static time_t lastevaluetime = 0;
-#endif
 	starttime = time(NULL);
+#endif
 	clear();
 	directfile(genbuf, direct, fh2fname(fileinfo));
 	SETREAD(fileinfo, &brc);
