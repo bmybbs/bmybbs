@@ -872,6 +872,7 @@ list:
 			read(msgsock, reason, sizeof (reason));
 			prints("%s (%s)หตฃบ%s\n", uin.userid, uin.username, reason);
 			pressreturn();
+			break;
 		default:
 			sprintf(save_page_requestor, "%s (%s)", uin.userid, uin.username);
 //#ifdef TALK_LOG
