@@ -3204,7 +3204,7 @@ static void quickviewpost(int ent, struct fileheader *fileinfo, char *direct) {
 static int
 change_t_lines()
 {
-	extern void (*quickview) ();
+	extern void (*quickview) (int ent, struct fileheader *fileinfo, char *direct);
 	if (0)
 		if (!IScurrBM)
 			return DONOTHING;

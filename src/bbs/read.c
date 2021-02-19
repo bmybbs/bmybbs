@@ -222,10 +222,10 @@ char *pnt;
 	update_endline();
 }
 
-void (*quickview) () = NULL;
+void (*quickview) (int ent, struct fileheader *fileinfo, char *direct) = NULL;
 struct {
 	int crs_line;
-	char *data;
+	struct fileheader *data;
 	char *currdirect;
 } quickviewdata;
 
