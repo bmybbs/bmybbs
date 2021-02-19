@@ -561,6 +561,8 @@ struct fileheader *fptr;
 		case 'D':
 		case 'd':
 			delete_it = YEA;
+			done = YEA;
+			break;
 		default:
 			done = YEA;
 		}
@@ -725,6 +727,8 @@ char *direct;
 		case 'D':
 		case 'd':
 			delete_it = YEA;
+			done = YEA;
+			break;
 		default:
 			done = YEA;
 		}
