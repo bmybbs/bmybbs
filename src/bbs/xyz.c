@@ -214,55 +214,6 @@ int modify_user_mode(int mode) {
 }
 
 int
-x_csh()
-{
-	char buf[PASSLEN];
-	int save_pager;
-	int magic;
-
-	return -1;
-
-	if (!HAS_PERM(PERM_SYSOP, currentuser)) {
-		return -1;
-	}
-	if (!check_systempasswd()) {
-		return -1;
-	}
-	modify_user_mode(SYSINFO);
-	clear();
-	getdata(1, 0, "请输入通行暗号: ", buf, PASSLEN, NOECHO, YEA);
-	if (*buf == '\0' || !ytht_crypt_checkpasswd(currentuser.passwd, buf)) {
-		prints("\n\n暗号不正确, 不能执行。\n");
-		pressreturn();
-		clear();
-		return -1;
-	}
-	randomize();
-	magic = rand() % 1000;
-	prints("\nMagic Key: %d", magic * 3 - 1);
-	getdata(4, 0, "Your Key : ", buf, PASSLEN, NOECHO, YEA);
-	if (*buf == '\0' || !(atoi(buf) == magic)) {
-		securityreport("Fail to shell out", "Fail to shell out");
-		prints("\n\nKey 不正确, 不能执行。\n");
-		pressreturn();
-		clear();
-		return -1;
-	}
-	securityreport("Shell out", "Shell out");
-	modify_user_mode(SYSINFO);
-	clear();
-	refresh();
-	save_pager = uinfo.pager;
-	uinfo.pager = 0;
-	update_utmp();
-	do_exec("csh", NULL);
-	uinfo.pager = save_pager;
-	update_utmp();
-	clear();
-	return 0;
-}
-
-int
 showperminfo(pbits, i, use_define)
 unsigned int pbits;
 int i, use_define;
