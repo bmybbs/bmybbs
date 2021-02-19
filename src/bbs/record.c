@@ -172,19 +172,22 @@ int size, id, number;
 
 	close(fd);
 
-	if(n<number*size){//hace
-		char *s,buf[64];
+	if (n < number*size) {//hace
+		char *s, buf[64];
 		struct stat st;
-		strcpy(buf,filename);
-		s=strrchr(buf,'/')+1;
-		strcpy(s,".TOPFILE");
-		if((stat(buf,&st)!=-1) && st.st_size>0){
-			fd=open(buf,O_RDONLY,0); //没有作错误检查
-			while(read(fd,&rptr[n],size)){
-				n+=size;
-				if(n>=number*size)break;
+		strcpy(buf, filename);
+		s = strrchr(buf, '/') + 1;
+		strcpy(s, ".TOPFILE");
+		if ((stat(buf, &st) != -1) && st.st_size > 0) {
+			if ((fd = open(buf, O_RDONLY, 0)) >= 0) {
+				int size_read;
+				while ((size_read = read(fd, rptr + n, size)) > 0) {
+					n += size_read;
+					if (n >= number * size)
+						break;
+				}
+				close(fd);
 			}
-			close(fd);
 		}
 	}
 	return (n /size);
