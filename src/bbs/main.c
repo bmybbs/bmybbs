@@ -231,6 +231,7 @@ int started = 0;
 static void
 talk_request(int signum)
 {
+	(void) signum;
 	signal(SIGUSR1, talk_request);
 	talkrequest = YEA;
 	bell();
@@ -1280,6 +1281,7 @@ char *title, *prompt;
 static void
 R_endline(int signum)
 {
+	(void) signum;
 	signal(SIGTTOU, R_endline);
 	if (!can_R_endline)
 		return;
