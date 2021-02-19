@@ -676,12 +676,8 @@ char *pnt;
 	return mode;
 }
 
-int
-auth_search_down(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int auth_search_down(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
 	struct keeploc *locmem;
 
 	locmem = getkeep(direct, 1, 1);
@@ -692,12 +688,8 @@ char *direct;
 	return DONOTHING;
 }
 
-int
-auth_search_up(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int auth_search_up(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
 	struct keeploc *locmem;
 
 	locmem = getkeep(direct, 1, 1);
@@ -708,12 +700,9 @@ char *direct;
 	return DONOTHING;
 }
 
-int
-post_search_down(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int post_search_down(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
+	(void) fileinfo;
 	struct keeploc *locmem;
 
 	locmem = getkeep(direct, 1, 1);
@@ -724,12 +713,9 @@ char *direct;
 	return DONOTHING;
 }
 
-int
-post_search_up(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int post_search_up(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
+	(void) fileinfo;
 	struct keeploc *locmem;
 
 	locmem = getkeep(direct, 1, 1);
@@ -740,19 +726,16 @@ char *direct;
 	return DONOTHING;
 }
 
-int
-show_author(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int show_author(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
+	(void) direct;
 	t_query(fileinfo->owner);
 	return FULLUPDATE;
 }
 
-int
-friend_author(int ent, struct fileheader *fileinfo, char *direct)
-{
+int friend_author(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
+	(void) direct;
 	extern int friendflag;
 	char uident[STRLEN];
 	char *q_id = fileinfo->owner;
@@ -776,12 +759,8 @@ friend_author(int ent, struct fileheader *fileinfo, char *direct)
 	return FULLUPDATE;
 }
 
-int
-SR_BMfunc(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int SR_BMfunc(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) direct;
 	int i, dotype=0;			//add by mintbaggio
 	char buf[STRLEN * 2], ch[4], BMch;
 	static const char *SR_BMitems[] = {
@@ -897,42 +876,30 @@ char *direct;
 	return PARTUPDATE;
 }
 
-int
-SR_last(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int SR_last(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
+	(void) direct;
 	sread(1, 0, ent, 0, fileinfo);
 	return PARTUPDATE;
 }
 
-int
-SR_first(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int SR_first(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
+	(void) direct;
 	sread(2, 0, ent, 0, fileinfo);
 	return PARTUPDATE;
 }
 
-int
-SR_read(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int SR_read(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
+	(void) direct;
 	sread(0, 1, 0, 0, fileinfo);
 	return FULLUPDATE;
 }
 
-int
-SR_author(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int SR_author(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
+	(void) direct;
 	sread(0, 1, 0, 1, fileinfo);
 	return FULLUPDATE;
 }
@@ -994,12 +961,9 @@ char *direct;
 	return DONOTHING;
 }
 #endif
-int
-t_search_down(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int t_search_down(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
+	(void) fileinfo;
 	struct keeploc *locmem;
 
 	locmem = getkeep(direct, 1, 1);
@@ -1010,12 +974,9 @@ char *direct;
 	return DONOTHING;
 }
 
-int
-t_search_up(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int t_search_up(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
+	(void) fileinfo;
 	struct keeploc *locmem;
 
 	locmem = getkeep(direct, 1, 1);
@@ -1026,12 +987,8 @@ char *direct;
 	return DONOTHING;
 }
 
-int
-thread_up(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int thread_up(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
 	struct keeploc *locmem;
 
 	locmem = getkeep(direct, 1, 1);
@@ -1050,12 +1007,8 @@ char *direct;
 	return DONOTHING;
 }
 
-int
-thread_down(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int thread_down(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
 	struct keeploc *locmem;
 
 	locmem = getkeep(direct, 1, 1);
