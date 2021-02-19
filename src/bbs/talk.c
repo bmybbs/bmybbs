@@ -225,7 +225,7 @@ char *userid;
 int t_query(const char *q_id) {
 	char uident[IDLEN + 1];
 	int tuid = 0;
-	int exp, perf;		/*Add by SmallPig */
+	int exp;		/*Add by SmallPig */
 	char qry_mail_dir[STRLEN];
 	char path[STRLEN];
 	char planid[IDLEN + 2];
@@ -268,7 +268,6 @@ int t_query(const char *q_id) {
 	sprintf(qry_mail_dir, "mail/%c/%s/%s", mytoupper(lookupuser.userid[0]), lookupuser.userid, DOT_DIR);
 
 	exp = countexp(&lookupuser);
-	perf = countperf(&lookupuser);
 	strcpy(expbuf,charexp(exp));	//add for displaying exp type.  rbb@bmy
 	prints("\033[1m%s \033[m(\033[1m%s\033[m) 共上站 \033[1;33m%d\033[m 次，发表过 \033[1;33m%d\033[m 篇文章",
 			lookupuser.userid, lookupuser.username, lookupuser.numlogins,
@@ -423,7 +422,6 @@ int t_query(const char *q_id) {
 			prints("查询网友状态 (隐藏说明档)\n");
 			sprintf(qry_mail_dir, "mail/%c/%s/%s", mytoupper(lookupuser.userid[0]), lookupuser.userid, DOT_DIR);
 			exp = countexp(&lookupuser);
-			perf = countperf(&lookupuser);
 			prints("\033[1m%s \033[m(\033[1m%s\033[m) 共上站 \033[1;33m%d\033[m 次，发表过 \033[1;33m%d\033[m 篇文章",
 					lookupuser.userid, lookupuser.username, lookupuser.numlogins,
 					lookupuser.numposts);
