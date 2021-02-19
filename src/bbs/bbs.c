@@ -2899,8 +2899,9 @@ char *direct;
 	newtrace(genbuf);
 	currfiletime = fileinfo->filetime;
 	setbfile(filepath, currboard, fh2fname(fileinfo));
-	sprintf(fileinfo->title, "%-32.32s - %s", fileinfo->title,
-		currentuser.userid);
+	char tmp_buf[sizeof(fileinfo->title)];
+	ytht_strsncpy(tmp_buf, fileinfo->title, sizeof(tmp_buf));
+	sprintf(fileinfo->title, "%-32.32s - %s", tmp_buf, currentuser.userid);
 	post_to_1984(filepath, fileinfo, 1);
 	if (keep <= 0) {
 		fail = delete_file(direct, sizeof (struct fileheader), ent, (void *) cmpfilename);
