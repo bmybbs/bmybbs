@@ -1180,6 +1180,8 @@ sb_show()
 static int
 sb_key(int key, int allnum, int pagenum)
 {
+	(void) allnum;
+	(void) pagenum;
 	switch(key){
 	default:
 		break;
@@ -1243,12 +1245,9 @@ super_select_board(char *bname)
 	return 0;
 }
 
-static int
-do_select(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+static int do_select(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
+	(void) fileinfo;
 	char bname[STRLEN], bpath[STRLEN];
 	struct stat st;
 	int ret;
@@ -1534,7 +1533,7 @@ char quote_mode;
 	char op;
 	int bflag;
 	int line_count = 0;
-	int attach;
+	// int attach;
 	qfile = quote_file;
 	quser = quote_user;
 	bflag = strncmp(qfile, "mail", 4);
@@ -1560,7 +1559,7 @@ char quote_mode;
 				fprintf(outf,
 					"\n【 在 %-.55s 的来信中提到: 】\n",
 					quser);
-			attach = 0;
+			// attach = 0; // unused IronBlood 2021.02.19
 			if (op == 'A') {
 				while (fgets(buf, 256, inf) != NULL) {
 					if (skipattach(buf, sizeof (buf), inf))
@@ -2585,6 +2584,7 @@ int has_perm_commend(char* userid)			//add by mintbaggio 040406 for front page c
 
 //add by mintbaggio 040331 for front page commend
 static int mark_commend(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent; (void) direct;
 	if(!HAS_PERM(PERM_SYSOP, currentuser) && !has_perm_commend(currentuser.userid))
 		return DONOTHING;
 	commend_article(currboard, fileinfo);
@@ -2593,6 +2593,7 @@ static int mark_commend(int ent, struct fileheader *fileinfo, char *direct) {
 
 //add by mintbaggio 040331 for front page commend
 static int mark_commend2(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent; (void) direct;
 	if(!HAS_PERM(PERM_SYSOP, currentuser) && !has_perm_commend(currentuser.userid))
 		return DONOTHING;
 	commend_article2(currboard, fileinfo);
@@ -2680,12 +2681,9 @@ import_spec()
 	return DIRCHANGED;
 }
 
-static int
-moveintobacknumber(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+static int moveintobacknumber(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
+	(void) fileinfo;
 	struct tm atm;
 	time_t t;
 	char buf[STRLEN], content[1024];
@@ -2749,12 +2747,9 @@ char *direct;
 	return FULLUPDATE;
 }
 
-int
-del_range(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int del_range(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
+	(void) fileinfo;
 	char num[16], content[1024];
 	int inum1, inum2, ret;
 	if (uinfo.mode == READING)
@@ -3103,12 +3098,9 @@ struct fileheader *fptr;
 	return 0;
 }
 
-static int
-clear_new_flag(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+static int clear_new_flag(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
+	(void) direct;
 	static int lastf;
 	if (now_t - lastf > 2)
 		clear_new_flag_quick(max(fileinfo->filetime, fileinfo->edittime));
@@ -3118,12 +3110,9 @@ char *direct;
 	return PARTUPDATE;
 }
 
-static int
-sequential_read(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+static int sequential_read(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) direct;
+	(void) fileinfo;
 	readpost = 1;
 	clear();
 	return sequential_read2(ent);
@@ -3144,24 +3133,16 @@ char *direct ;*/
 }
 
 /* Added by netty to handle post saving into (0)Announce */
-int
-Save_post(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int Save_post(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
+	(void) direct;
 	if (!IScurrBM)
 		return DONOTHING;
 	return (a_Save("0Announce", currboard, fileinfo, NA));
 }
 
 /* Added by ylsdd */
-static void
-quickviewpost(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+static void quickviewpost(int ent, struct fileheader *fileinfo, char *direct) {
 	char buf[STRLEN * 2];
 	int i, j, x, y;
 	int attach = 0, has_attach;
@@ -3340,12 +3321,8 @@ show_b_note()
 	return what_to_do();
 }
 
-static int
-show_file_info(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+static int show_file_info(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) direct;
 	struct boardmem *bp;
 	char temp_sessionid[10];
 	time_t t = fileinfo->filetime;
@@ -3836,12 +3813,8 @@ setbdir(char *buf, char *boardname, int Digestmode)
 		sprintf(buf, "boards/%s/%s", boardname, dir);
 }
 
-int
-zmodem_sendfile(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int zmodem_sendfile(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
 	char *t;
 	char buf1[512];
 
