@@ -25,7 +25,7 @@ void setqtitle(char *stitle);
 int chk_currBM(struct boardheader *bh, int isbig);
 void setquotefile(char filepath[]);
 char *setbpath(char *buf, char *boardname);
-char *setbfile(char *buf, char *boardname, char *filename);
+char *setbfile(char *buf, const char *boardname, const char *filename);
 int deny_me(char *bname);
 void shownotepad(void);
 void make_blist(void);

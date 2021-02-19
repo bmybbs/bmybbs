@@ -412,10 +412,7 @@ char *buf, *boardname;
 	return buf;
 }
 
-char *
-setbfile(buf, boardname, filename)
-char *buf, *boardname, *filename;
-{
+char * setbfile(char *buf, const char *boardname, const char *filename) {
 	sprintf(buf, "boards/%s/%s", boardname, filename);
 	return buf;
 }
