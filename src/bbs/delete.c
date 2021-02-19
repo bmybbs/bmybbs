@@ -98,12 +98,8 @@ int
 online()
 {
 	char buf[STRLEN];
-	struct tm *nowtime;
-	time_t nowtimeins;
 	modify_user_mode(OFFLINE);
 	clear();
-	nowtimeins = time(NULL);
-	nowtime = localtime(&nowtimeins);
 	if ((currentuser.stay <= currentuser.dietime)) {
 		move(1, 0);
 		prints("\n\nËÀÆÚÎ´Âú°¡!!\n");
