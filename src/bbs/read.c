@@ -228,9 +228,9 @@ struct {
 	char *data;
 	char *currdirect;
 } quickviewdata;
-static void
-doquickview(int i)
-{
+
+static void doquickview(int i) {
+	(void) i;
 	if (quickview != NULL)
 		quickview(quickviewdata.crs_line, quickviewdata.data, quickviewdata.currdirect);
 }
