@@ -65,7 +65,7 @@ static int mail_read(int ent, struct fileheader *fileinfo, char *direct);
 static int mail_del(int ent, struct fileheader *fileinfo, char *direct);
 static int mail_del_range(int ent, struct fileheader *fileinfo, char *direct);
 static int mail_mark(int ent, struct fileheader *fileinfo, char *direct);
-static int do_gsend(char *userid[], char *title, int num);
+static int do_gsend(const char *userid[], int num);
 static void getmailinfo(char *path, struct fileheader *rst);
 static int mail_rjunk(void);
 static int m_cancel_1(struct fileheader *fh, char *receiver);
@@ -844,12 +844,8 @@ char *direct;
 
 #ifdef INTERNET_EMAIL
 
-int
-mail_forward(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int mail_forward(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
 	char buf[STRLEN];
 	if (!HAS_PERM(PERM_FORWARD, currentuser)) {
 		return DONOTHING;
@@ -874,12 +870,8 @@ char *direct;
 	return FULLUPDATE;
 }
 
-int
-mail_u_forward(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int mail_u_forward(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
 	char buf[STRLEN];
 	if (!HAS_PERM(PERM_FORWARD, currentuser)) {
 		return DONOTHING;
@@ -915,12 +907,8 @@ char *direct;
 	return (del_range(ent, fileinfo, direct));
 }
 
-static int
-mail_mark(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+static int mail_mark(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) direct;
 	if (fileinfo->accessed & FH_MARKED)
 		fileinfo->accessed &= ~FH_MARKED;
 	else
@@ -934,6 +922,7 @@ typedef int(*equalor)(const struct fileheader*, const void *);
 // 标记的邮件
 static int ismark(const struct fileheader *mail, const void *ext)
 {
+	(void) ext;
 	if (mail->accessed & FH_MARKED)
 		return 1;
 	return 0;
@@ -941,6 +930,7 @@ static int ismark(const struct fileheader *mail, const void *ext)
 // 带附件的邮件
 static int isattach(const struct fileheader *mail, const void *ext)
 {
+	(void) ext;
 	if (mail->accessed & FH_ATTACHED)
 		return 1;
 	return 0;
@@ -1032,12 +1022,10 @@ struct one_key query_comms[];
 
 // 邮箱查询功能，邮箱界面中ctrl+g
 // interma@bmy, 2006-11-23
-static int
-mail_query(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+static int mail_query(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
+	(void) fileinfo;
+	(void) direct;
 	//power_action(currmaildir, 1, -1, "标记含 m", 9);
 	char ans[3];
 	int type;
@@ -1473,7 +1461,7 @@ g_send()
 	}
 	if (cnt > 0) {
 		G_SENDMODE = 2;
-		switch (do_gsend(NULL, NULL, cnt)) {
+		switch (do_gsend(NULL, cnt)) {
 		case -1:
 			prints("信件目录错误\n");
 			break;
@@ -1491,11 +1479,7 @@ g_send()
 
 /*Add by SmallPig*/
 
-static int
-do_gsend(userid, title, num)
-char *userid[], *title;
-int num;
-{
+static int do_gsend(const char *userid[], int num) {
 	struct stat st;
 	char filepath[STRLEN], tmpfile[STRLEN];
 	int cnt;
@@ -1586,12 +1570,7 @@ int num;
 	return 0;
 }
 
-static int
-do_gsend_voter(userid, title, num,fname)
-char *userid[], *title;
-int num;
-char* fname;
-{
+static int do_gsend_voter(const char *userid[], int num, const char *fname) {
 	struct stat st;
 	char filepath[STRLEN], tmpfile[STRLEN];
 	int cnt;
@@ -1819,7 +1798,7 @@ ov_send()
 			outc('\n');
 	}
 	pressanykey();
-	switch (do_gsend(NULL, NULL, all)) {
+	switch (do_gsend(NULL, all)) {
 	case -1:
 		prints("信件目录错误\n");
 		break;
@@ -1854,7 +1833,7 @@ voter_send(char* fname)
 	G_SENDMODE = 4;
 	setbfile(maillists, currboard, fname);
 	all = listfilecontent(maillists);
-	switch (do_gsend_voter(NULL, NULL, all,fname)) {
+	switch (do_gsend_voter(NULL, all, fname)) {
 	case -1:
 		prints("信件目录错误\n");
 		break;
@@ -1890,7 +1869,7 @@ club_send()
 	G_SENDMODE = 3;
 	setbfile(maillists, currboard, "club_users");
 	all = listfilecontent(maillists);
-	switch (do_gsend(NULL, NULL, all)) {
+	switch (do_gsend(NULL, all)) {
 	case -1:
 		prints("信件目录错误\n");
 		break;
@@ -2249,12 +2228,9 @@ check_maxmail()
 		return (0);
 }
 
-/*ARGSUSED*/ int
-post_reply(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int post_reply(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
+	(void) direct;
 	char uid[STRLEN];
 	char title[STRLEN];
 	if (!strcmp(currentuser.userid, "guest"))
