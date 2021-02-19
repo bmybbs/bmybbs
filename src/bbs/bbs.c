@@ -403,17 +403,13 @@ char filepath[];
 	strcpy(quote_file, filepath);
 }
 
-char *
-setbpath(buf, boardname)
-char *buf, *boardname;
-{
-	strcpy(buf, "boards/");
-	strcat(buf, boardname);
+char *setbpath(char *buf, size_t len, const char *boardname) {
+	snprintf(buf, len, "boards/%s", boardname);
 	return buf;
 }
 
-char * setbfile(char *buf, const char *boardname, const char *filename) {
-	sprintf(buf, "boards/%s/%s", boardname, filename);
+char *setbfile(char *buf, size_t len, const char *boardname, const char *filename) {
+	snprintf(buf, len, "boards/%s/%s", boardname, filename);
 	return buf;
 }
 
@@ -422,9 +418,9 @@ deny_me(char *bname)
 {
 	char buf[STRLEN];
 	int deny1, deny2;
-	setbfile(buf, bname, "deny_users");
+	setbfile(buf, sizeof(buf), bname, "deny_users");
 	deny1 = seek_in_file(buf, currentuser.userid);
-	setbfile(buf, bname, "deny_anony");
+	setbfile(buf, sizeof(buf), bname, "deny_anony");
 	deny2 = seek_in_file(buf, currentuser.userid);
 	return (deny1 || deny2);
 }
@@ -616,7 +612,7 @@ char *direct;
 			sprintf(newfname, "%c.%d.A",
 				(fileinfo->accessed & FH_ISDIGEST) ? 'G' : 'M',
 				(int) now);
-			setbfile(newfilepath, currboard, newfname);
+			setbfile(newfilepath, sizeof(newfilepath), currboard, newfname);
 			if (link(filepath, newfilepath) == 0) {
 				unlink(filepath);
 				UFile.filetime = now;
@@ -1263,7 +1259,7 @@ static int do_select(int ent, struct fileheader *fileinfo, char *direct) {
 	make_blist();
 	if((ret=namecomplete((char *) NULL, bname))=='#') //super_select_board
 		super_select_board(bname);
-	setbpath(bpath, bname);
+	setbpath(bpath, sizeof(bpath), bname);
 	if (*bname == '\0')
 		return FULLUPDATE;
 	if (stat(bpath, &st) == -1) {
@@ -1759,12 +1755,12 @@ post_cross(char *bname, int mode, int islocal, int hascheck, int dangerous)
 		strcpy(buf4, quote_title);
 	strncpy(save_title, buf4, STRLEN);
 	save_title[STRLEN - 1] = 0;
-	setbfile(filepath, bname, fname);
+	setbfile(filepath, sizeof(filepath), bname, fname);
 	count = 0;
 	while ((fp = open(filepath, O_CREAT | O_EXCL | O_WRONLY, 0660)) == -1) {
 		now++;
 		sprintf(fname, "M.%ld.A", now);
-		setbfile(filepath, bname, fname);
+		setbfile(filepath, sizeof(filepath), bname, fname);
 		if (count++ > MAX_POSTRETRY) {
 			return -1;
 		}
@@ -1793,7 +1789,7 @@ post_cross(char *bname, int mode, int islocal, int hascheck, int dangerous)
 		postfile.accessed |= FH_MARKED;
 
 	ytht_strsncpy(postfile.owner, whopost, sizeof(postfile.owner));
-	setbfile(filepath, bname, fname);
+	setbfile(filepath, sizeof(filepath), bname, fname);
 	modify_user_mode(POSTING);
 	strcpy(bkcurrboard, currboard);
 	strcpy(currboard, bname);
@@ -2033,7 +2029,7 @@ post_article(struct fileheader *sfh)
 		do_delay( -1);	/* by ylsdd */
 		return FULLUPDATE;
 	}
-	setbfile(filepath, currboard, "");
+	setbfile(filepath, sizeof(filepath), currboard, "");
 	t = trycreatefile(filepath, "M.%ld.A", now_t, 100);
 	if (t < 0)
 		return -1;
@@ -2123,7 +2119,7 @@ post_article(struct fileheader *sfh)
 	while (1)
 	{
 		sprintf(newfname, "M.%ld.A", t);
-		setbfile(newfilepath, currboard, newfname);
+		setbfile(newfilepath, sizeof(newfilepath), currboard, newfname);
 		if (link(filepath, newfilepath) == 0)
 		{
 			unlink(filepath);
@@ -2895,7 +2891,7 @@ char *direct;
 		fileinfo->title);
 	newtrace(genbuf);
 	currfiletime = fileinfo->filetime;
-	setbfile(filepath, currboard, fh2fname(fileinfo));
+	setbfile(filepath, sizeof(filepath), currboard, fh2fname(fileinfo));
 	char tmp_buf[sizeof(fileinfo->title)];
 	ytht_strsncpy(tmp_buf, fileinfo->title, sizeof(tmp_buf));
 	sprintf(fileinfo->title, "%-32.32s - %s", tmp_buf, currentuser.userid);
@@ -3043,7 +3039,7 @@ struct fileheader *fptr;
 			clear();
 			return 0;
 		}
-		setbfile(genbuf, currboard, fh2fname(fptr));
+		setbfile(genbuf, sizeof(genbuf), currboard, fh2fname(fptr));
 		ytht_strsncpy(quote_file, genbuf, sizeof(quote_file));
 		ytht_strsncpy(quote_user, fh2owner(fptr), sizeof(quote_user));
 #ifdef NOREPLY
@@ -4091,7 +4087,7 @@ b_notes_edit()
 		notetype = 2;
 		break;
 	case '3':
-		setbfile(buf, currboard, "introduction");
+		setbfile(buf, sizeof(buf), currboard, "introduction");
 		ptr = "°æÃæ¼ò½é";
 		notetype = 3;
 		break;
@@ -4261,7 +4257,7 @@ struct fileheader *fileinfo;
 
 	int blankline=0;
 
-	setbfile(buf, board, fh2fname(fileinfo));		//modify by mintbaggio 040321 for heji
+	setbfile(buf, sizeof(buf), board, fh2fname(fileinfo));		//modify by mintbaggio 040321 for heji
 	fp1=fopen(buf, "rt");
 	if (fgets(temp2, 200, fp1)!=NULL){
 		keepoldheader(fp1, SKIPHEADER);
@@ -4309,7 +4305,7 @@ static int commend_article(char* board, struct fileheader* fileinfo) {
 		else{
 			char fname[STRLEN];
 			do_commend(fileinfo);
-			setbfile(fname, currboard, fh2fname(fileinfo));
+			setbfile(fname, sizeof(fname), currboard, fh2fname(fileinfo));
 			postfile(fname, "Commend", fileinfo->title, 0);
 		}
 	}
@@ -4460,7 +4456,7 @@ static int commend_article2(char* board, struct fileheader* fileinfo) {
 		else{
 			char fname[STRLEN];
 			do_commend2(fileinfo);
-			setbfile(fname, currboard, fh2fname(fileinfo));
+			setbfile(fname, sizeof(fname), currboard, fh2fname(fileinfo));
 			postfile(fname, "Commend", fileinfo->title, 0);
 //			do_commend2(board, fileinfo);
 		}

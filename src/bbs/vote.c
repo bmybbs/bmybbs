@@ -1079,7 +1079,7 @@ char *uident;
 		clear();
 		return 0;
 	}
-	setbfile(buf, currboard, "validlist");
+	setbfile(buf, sizeof(buf), currboard, "validlist");
 	seek = seek_in_file(buf, uident);
 	if (seek) {
 		move(2, 0);
@@ -1087,7 +1087,7 @@ char *uident;
 		pressreturn();
 		return -1;
 	}
-	setbfile(buf, currboard, vlists[currlist]->listfname);
+	setbfile(buf, sizeof(buf), currboard, vlists[currlist]->listfname);
 	if ((i = getbnum(currboard)) == 0)
 		return DONOTHING;
 	vlists[currlist]->voternum++;
@@ -1112,7 +1112,7 @@ char *uident;
 	}
 	if ((i = getbnum(currboard)) == 0)
 		return DONOTHING;
-	setbfile(fn, currboard, vlists[currlist]->listfname);
+	setbfile(fn, sizeof(fn), currboard, vlists[currlist]->listfname);
 	if (vlists[currlist]->voternum>0)
 		vlists[currlist]->voternum--;
 	return ytht_del_from_file(fn, uident, true);
@@ -1128,7 +1128,7 @@ init_lists()
 	for (index=0; index<MAX_VOTERLIST_NUM; ++index)
 		vlists[index]=NULL;
 	struct voterlist* vltemp=(struct voterlist*)malloc(sizeof(struct voterlist));
-	setbfile(listbuf, currboard, "validlist");
+	setbfile(listbuf, sizeof(listbuf), currboard, "validlist");
 	fn = open( listbuf, O_RDONLY );
 	if (fn == -1) {
 		free(vltemp);
@@ -1335,7 +1335,7 @@ add_list()
 			break;
 	}
 	strcpy(vltemp.listfname, fbuf);
-	setbfile(buf,currboard, vltemp.listfname);
+	setbfile(buf, sizeof(buf), currboard, vltemp.listfname);
 	fn=fopen(buf, "w");
 	fclose(fn);
 	vltemp.voternum=0;
@@ -1360,7 +1360,7 @@ save_list()
 	int i;
 	FILE *fp;
 	char buf[60];
-	setbfile(buf, currboard, "validlist");
+	setbfile(buf, sizeof(buf), currboard, "validlist");
 	if( (fp = fopen( buf, "w") ) == NULL ){
 		return -1;
 	}
@@ -1381,12 +1381,12 @@ voter(int listnum)
 	char uident[IDLEN + 2];
 	char ans[8], buf[STRLEN * 2], titlebuf[STRLEN * 2];
 	int count, i;
-	setbfile(genbuf, currboard, vlists[listnum]->listfname);
+	setbfile(genbuf, sizeof(genbuf), currboard, vlists[listnum]->listfname);
 	ansimore(genbuf, YEA);
 	while (1) {
 		clear();
 		prints("设定投票人员名单\n");
-		setbfile(genbuf, currboard, vlists[listnum]->listfname);
+		setbfile(genbuf, sizeof(genbuf), currboard, vlists[listnum]->listfname);
 		count = listfilecontent(genbuf);
 		if (count)
 			getdata(1, 0,

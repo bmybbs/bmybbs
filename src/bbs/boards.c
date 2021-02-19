@@ -1005,7 +1005,7 @@ const struct sectree *sec;
 				(bptr->header.flag & INNBBSD_FLAG) ? "是" : "不",
 				bptr->header.keyword[0] ? bptr->header.keyword : "\033[37m(暂无)",
 				linebuf[0] ? linebuf: "\033[37m(暂无)");
-			setbfile(property, bptr->header.filename, "introduction");
+			setbfile(property, sizeof(property), bptr->header.filename, "introduction");
 			if (file_exist(property))
 				ansimore2(property, NA, 9, 14);
 			else
@@ -1033,7 +1033,7 @@ const struct sectree *sec;
 					make_blist();
 					if((namecomplete((char *) NULL, bname))=='#')
 						super_select_board(bname);
-					setbpath(bpath, bname);
+					setbpath(bpath, sizeof(bpath), bname);
 					//if (*bname == '\0');
 					if (stat(bpath, &st) == -1) {
 						move(2, 0);

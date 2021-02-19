@@ -416,7 +416,7 @@ time_t t;
 	while (read(fdr, &fhdr, sizeof (fhdr)) == sizeof (fhdr)) {
 		filet = fhdr.filetime;
 		if (filet > 0 && filet < t) {
-			setbfile(buf1, currboard, fh2fname(&fhdr));
+			setbfile(buf1, sizeof(buf1), currboard, fh2fname(&fhdr));
 			if (!dashf(buf1))
 				continue;
 			sprintf(buf2, "%s/%s", bnpath, fh2fname(&fhdr));

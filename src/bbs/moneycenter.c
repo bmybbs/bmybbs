@@ -9887,7 +9887,7 @@ static int stockboards() {
 						move(1, 0);
 						make_blist();
 						namecomplete("增加版面: ", bname);
-						setbpath(bpath, bname);
+						setbpath(bpath, sizeof(bpath), bname);
 						if ((*bname == '\0') || (stat(bpath, &st) == -1)) {
 							move(2, 0);
 							prints("不正确的讨论区.\n");
@@ -9951,7 +9951,7 @@ static int stockboards() {
 						move(1, 0);
 						make_blist();
 						namecomplete("暂停哪版交易: ", bname);
-						setbpath(bpath, bname);
+						setbpath(bpath, sizeof(bpath), bname);
 						if ((*bname == '\0') || (stat(bpath, &st) == -1)) {
 							move(2, 0);
 							prints("不正确的讨论区.\n");

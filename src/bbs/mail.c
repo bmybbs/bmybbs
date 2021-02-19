@@ -1524,7 +1524,7 @@ static int do_gsend(const char *userid[], int num) {
 	if (G_SENDMODE == 3) {
 		char maillists[STRLEN];
 		G_SENDMODE = 2;
-		setbfile(maillists, currboard, "club_users");
+		setbfile(maillists, sizeof(maillists), currboard, "club_users");
 		if ((mp = fopen(maillists, "r")) == NULL) {
 			in_mail = save_in_mail;
 			return -3;
@@ -1606,7 +1606,7 @@ static int do_gsend_voter(const char *userid[], int num, const char *fname) {
 	if (G_SENDMODE == 4) {
 		char maillists[STRLEN];
 		G_SENDMODE = 2;
-		setbfile(maillists, currboard,fname);
+		setbfile(maillists, sizeof(maillists), currboard,fname);
 		if ((mp = fopen(maillists, "r")) == NULL) {
 			in_mail = save_in_mail;
 			return -3;
@@ -1835,7 +1835,7 @@ voter_send(char* fname)
 	clrtobot();
 	move(2, 0);
 	G_SENDMODE = 4;
-	setbfile(maillists, currboard, fname);
+	setbfile(maillists, sizeof(maillists), currboard, fname);
 	all = listfilecontent(maillists);
 	switch (do_gsend_voter(NULL, all, fname)) {
 	case -1:
@@ -1871,7 +1871,7 @@ club_send()
 	clrtobot();
 	move(2, 0);
 	G_SENDMODE = 3;
-	setbfile(maillists, currboard, "club_users");
+	setbfile(maillists, sizeof(maillists), currboard, "club_users");
 	all = listfilecontent(maillists);
 	switch (do_gsend(NULL, all)) {
 	case -1:
@@ -2251,7 +2251,7 @@ int post_reply(int ent, struct fileheader *fileinfo, char *direct) {
 	}
 	modify_user_mode(SMAIL);
 /* indicate the quote file/user */
-	setbfile(quote_file, currboard, fh2fname(fileinfo));
+	setbfile(quote_file, sizeof(quote_file), currboard, fh2fname(fileinfo));
 	strcpy(quote_user, fh2owner(fileinfo));
 /* find the author */
 	if (!getuser(quote_user)) {

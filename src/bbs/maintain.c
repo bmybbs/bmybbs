@@ -399,7 +399,7 @@ m_newbrd()
 		return -1;
 	strcpy(vbuf, "vote/");
 	strcat(vbuf, newboard.filename);
-	setbpath(genbuf, newboard.filename);
+	setbpath(genbuf, sizeof(genbuf), newboard.filename);
 	if (getbnum(newboard.filename) > 0 || mkdir(genbuf, 0777) == -1 || mkdir(vbuf, 0777) == -1) {
 		prints("\n错误的讨论区名称!!\n");
 		pressreturn();
@@ -732,8 +732,8 @@ enterbname:
 			if (strcmp(fh.filename, newfh.filename)) {
 				char local_old[256], tar[256];
 				a_mv = 1;
-				setbpath(local_old, fh.filename);
-				setbpath(tar, newfh.filename);
+				setbpath(local_old, sizeof(local_old), fh.filename);
+				setbpath(tar, sizeof(tar), newfh.filename);
 				rename(local_old, tar);
 				sprintf(local_old, "vote/%s", fh.filename);
 				sprintf(tar, "vote/%s", newfh.filename);

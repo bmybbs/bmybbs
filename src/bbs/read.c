@@ -1291,7 +1291,7 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
 		else if (uinfo.mode == DO1984)
 			set1984file(genbuf, fh2fname(&SR_fptr));
 		else
-			setbfile(genbuf, currboard, fh2fname(&SR_fptr));
+			setbfile(genbuf, sizeof(genbuf), currboard, fh2fname(&SR_fptr));
 		previous = locmem->crs_line;
 		setquotefile(genbuf);
 		if (passonly == 0 || passonly == 4) {
@@ -1508,7 +1508,7 @@ int offset, aflag;
 			else if (uinfo.mode == DO1984)
 				set1984file(p_name, fh2fname(&SR_fptr));
 			else
-				setbfile(p_name, currboard, fh2fname(&SR_fptr));
+				setbfile(p_name, sizeof(p_name), currboard, fh2fname(&SR_fptr));
 			if (searchpattern(p_name, query)) {
 				match = cursor_pos(locmem, now, 10);
 				break;

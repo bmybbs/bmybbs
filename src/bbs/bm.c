@@ -62,9 +62,9 @@ int ischange, isglobal, isanony;
 	if (isglobal)
 		strcpy(genbuf, "deny_users");
 	else if (isanony)
-		setbfile(genbuf, currboard, "deny_anony");
+		setbfile(genbuf, sizeof(genbuf), currboard, "deny_anony");
 	else
-		setbfile(genbuf, currboard, "deny_users");
+		setbfile(genbuf, sizeof(genbuf), currboard, "deny_users");
 	seek = seek_in_file(genbuf, uident);
 	if ((ischange && !seek) || (!ischange && seek)) {
 		move(2, 0);
@@ -165,9 +165,9 @@ int ischange, isglobal, isanony;
 	if (isglobal)
 		strcpy(genbuf, "deny_users");
 	else if (isanony)
-		setbfile(genbuf, currboard, "deny_anony");
+		setbfile(genbuf, sizeof(genbuf), currboard, "deny_anony");
 	else
-		setbfile(genbuf, currboard, "deny_users");
+		setbfile(genbuf, sizeof(genbuf), currboard, "deny_users");
 	return ytht_add_to_file(genbuf, strtosave);
 }
 
@@ -182,9 +182,9 @@ int isanony;
 	if (isglobal)
 		strcpy(fn, "deny_users");
 	else if (isanony)
-		setbfile(fn, currboard, "deny_anony");
+		setbfile(fn, sizeof(fn), currboard, "deny_anony");
 	else
-		setbfile(fn, currboard, "deny_users");
+		setbfile(fn, sizeof(fn), currboard, "deny_users");
 	return ytht_del_from_file(fn, uident, true);
 }
 
@@ -212,7 +212,7 @@ deny_user()
 	if (isglobal)
 		strcpy(genbuf, "deny_users");
 	else
-		setbfile(genbuf, currboard, "deny_users");
+		setbfile(genbuf, sizeof(genbuf), currboard, "deny_users");
 //      ansimore(genbuf, YEA);
 	while (1) {
 		clear();
@@ -220,7 +220,7 @@ deny_user()
 		if (isglobal)
 			strcpy(genbuf, "deny_users");
 		else
-			setbfile(genbuf, currboard, "deny_users");
+			setbfile(genbuf, sizeof(genbuf), currboard, "deny_users");
 		count = listfilecontent(genbuf);
 		if (count)
 			getdata(1, 0,
@@ -300,7 +300,7 @@ int clubnum;
 			clear();
 			return 0;
 		}
-		setbfile(genbuf, currboard, "club_users");
+		setbfile(genbuf, sizeof(genbuf), currboard, "club_users");
 		seek = seek_in_file(genbuf, uident);
 		if (seek) {
 			move(2, 0);
@@ -312,7 +312,7 @@ int clubnum;
 		getdata(4, 0, "真的要添加么?[Y/N]: ", ans, 7, DOECHO, YEA);
 		if ((*ans != 'Y') && (*ans != 'y'))
 			return -1;
-		setbfile(genbuf, currboard, "club_users");
+		setbfile(genbuf, sizeof(genbuf), currboard, "club_users");
 		sethomefile_s(genbuf1, sizeof(genbuf1), uident, "clubrights");
 		if ((i = getbnum(currboard)) == 0)
 			return DONOTHING;
@@ -320,7 +320,7 @@ int clubnum;
 		ytht_add_to_file(genbuf1, genbuf2);
 		return ytht_add_to_file(genbuf, uident);
 	} else {
-		setbfile(genbuf, currboard, "club_users");
+		setbfile(genbuf, sizeof(genbuf), currboard, "club_users");
 		seek = seek_in_file(genbuf, uident);
 		if (seek)
 			return DONOTHING;
@@ -349,7 +349,7 @@ char *uident;
 	}
 	if ((i = getbnum(currboard)) == 0)
 		return DONOTHING;
-	setbfile(fn, currboard, "club_users");
+	setbfile(fn, sizeof(fn), currboard, "club_users");
 	sethomefile_s(genbuf1, sizeof(genbuf1), uident, "clubrights");
 	sprintf(genbuf2, "%d", ythtbbs_cache_Board_get_board_by_idx(i - 1)->header.clubnum);
 	ytht_del_from_file(genbuf1, genbuf2, true);
@@ -370,12 +370,12 @@ clubmember()
 		return DONOTHING;
 	if (ythtbbs_cache_Board_get_board_by_idx(i - 1)->header.clubnum == 0)
 		return DONOTHING;
-	setbfile(genbuf, currboard, "club_users");
+	setbfile(genbuf, sizeof(genbuf), currboard, "club_users");
 	ansimore(genbuf, YEA);
 	while (1) {
 		clear();
 		prints("设定俱乐部名单\n");
-		setbfile(genbuf, currboard, "club_users");
+		setbfile(genbuf, sizeof(genbuf), currboard, "club_users");
 		count = listfilecontent(genbuf);
 		if (count)
 			getdata(1, 0,
@@ -462,11 +462,11 @@ char *direct;
 	}
 	if (!strcmp(fh2owner(fileinfo), "Anonymous")) {	/* 对匿名文章 */
 		isanony = 1;
-		setbfile(genbuf, currboard, "deny_anony");
+		setbfile(genbuf, sizeof(genbuf), currboard, "deny_anony");
 		strcpy(user, fh2realauthor(fileinfo));
 	} else {
 		isanony = 0;
-		setbfile(genbuf, currboard, "deny_users");
+		setbfile(genbuf, sizeof(genbuf), currboard, "deny_users");
 		strcpy(user, fileinfo->owner);
 	}
 	seek = seek_in_file(genbuf, user);
@@ -485,7 +485,7 @@ char *direct;
 			if(isanony) {
 				char fname[STRLEN];
 				strncpy(quote_user, user, STRLEN);
-				setbfile(fname, currboard, fh2fname(fileinfo));
+				setbfile(fname, sizeof(fname), currboard, fh2fname(fileinfo));
 				postfile(fname, "AnonyLog", fileinfo->title, 0);
 			}
 		}
