@@ -34,8 +34,10 @@ import {
 	faPizzaSlice,
 	faRedo,
 	faRss,
+	faSearch,
 	faShareAlt,
 	faSlidersH,
+	faSpinner,
 	faThumbtack,
 	faUnderline,
 	faUser,
@@ -76,8 +78,10 @@ library.add(faPaperPlane);
 library.add(faPizzaSlice);
 library.add(faRedo);
 library.add(faRss);
+library.add(faSearch);
 library.add(faShareAlt);
 library.add(faSlidersH);
+library.add(faSpinner);
 library.add(faThumbtack);
 library.add(faUnderline);
 library.add(faUser);
