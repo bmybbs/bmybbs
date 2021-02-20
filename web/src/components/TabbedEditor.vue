@@ -1,5 +1,10 @@
 <template>
 	<div>
+		<div class="form-floating mb-3">
+			<input type="text" class="form-control" id="title" placeholder="标题" v-model="title">
+			<label for="title">标题<span class="ms-2" :class="{ 'text-danger': titleLength > titleMaxLength, 'fw-bold': titleLength > titleMaxLength}" v-if="titleLength > 0">{{titleLength}}/{{titleMaxLength}}</span></label>
+		</div>
+
 		<div class="editor-header">
 			<ul class="nav nav-tabs">
 				<li class="nav-item">
@@ -176,6 +181,14 @@ const UPLOAD_ERROR_MSG = {
 
 const sleep = async (ms) => new Promise(r => setTimeout(r, ms));
 
+const titleLen = (str) => {
+	let count = 0;
+	for (let i = 0, l = str.length; i < l; i++) {
+		count += str.charCodeAt(i) < 256 ? 1 : 2;
+	}
+	return count;
+};
+
 const getUploadErrorMsg = (errcode) => {
 	let msg = "";
 	switch (errcode) {
@@ -212,6 +225,7 @@ export default {
 			fc_dd: null,
 			showFcdd: false,
 			showBgdd: false,
+			title: "",
 			uploadedFiles: [],
 			pendingFiles: [],
 			uploadErrorMap: new Map(),
@@ -431,6 +445,14 @@ export default {
 		insertBgPurple() { this.insertAtCursor(ANSI_TAGS.ANSI_BG_PINK,   ANSI_TAGS.ANSI_CLEAR); },
 		insertBgTeal()   { this.insertAtCursor(ANSI_TAGS.ANSI_BG_CYAN,   ANSI_TAGS.ANSI_CLEAR); },
 		insertBgGrey()   { this.insertAtCursor(ANSI_TAGS.ANSI_BG_WHITE,  ANSI_TAGS.ANSI_CLEAR); },
+	},
+	computed: {
+		titleLength() {
+			return titleLen(this.title);
+		},
+		titleMaxLength() {
+			return this.title.startsWith("Re: ") ? 59 : 55;
+		},
 	},
 }
 </script>
