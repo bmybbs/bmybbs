@@ -104,7 +104,15 @@
 		<div class="tab-content">
 			<div class="tab-pane fade" :class="{ active: isEditing, show: isEditing }">
 				<textarea ref="textarea" class="form-control" rows="5"></textarea>
-				<button class="btn btn-primary">回复</button>
+				<div class="form-check form-switch">
+					<input class="form-check-input" type="checkbox" value="">
+					<label class="form-check-label">使用 Tex 风格的数学公式</label>
+				</div>
+				<div class="form-check form-switch">
+					<input class="form-check-input" type="checkbox" value="">
+					<label class="form-check-label">设为不可回复</label>
+				</div>
+				<button class="btn btn-primary">发表</button>
 			</div>
 
 			<div class="modal-code-container" :class="{ show: showCode }">
