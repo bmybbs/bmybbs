@@ -61,6 +61,7 @@ const routes = [{
 		children: [{
 			path: "",
 			component: Submit,
+			name: "RAWSUBMIT",
 		}]
 	}]
 }];

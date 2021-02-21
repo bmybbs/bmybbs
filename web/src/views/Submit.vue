@@ -29,11 +29,18 @@ import TabbedEditor from "@/components/TabbedEditor.vue"
 export default {
 	data() {
 		return {
-			board: "",
+			board: this.$route.name == "RAWSUBMIT" ? "" : this.$route.params.boardname,
 			isSearching: false,
 			isPickingBoard: false,
 			favboards: [],
 		};
+	},
+	created() {
+		this.$watch(() => this.$route, (toRoute) => {
+			this.board = toRoute.name == "RAWSUBMIT" ? "" : toRoute.params.boardname;
+		});
+	},
+	mounted() {
 	},
 	methods: {
 		searchFocus() {
