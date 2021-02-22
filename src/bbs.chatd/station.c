@@ -502,7 +502,10 @@ chat_topic(int unum, char *msg)
 int
 enter_room(int unum, char *room, char *msg)
 {
-	int rnum, oldrnum;
+	int rnum;
+#ifdef WWW_CHAT
+	int oldrnum;
+#endif
 	int op = 0;
 	register int i;
 
@@ -539,7 +542,9 @@ enter_room(int unum, char *room, char *msg)
 		}
 	}
 
+#ifdef WWW_CHAT
 	oldrnum = users[unum].room;
+#endif
 	exit_room(unum, EXIT_LOGOUT, msg);
 	users[unum].room = rnum;
 	if (op)
