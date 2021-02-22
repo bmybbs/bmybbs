@@ -5,6 +5,6 @@
 void permtostr(int perm, char *str);
 void disply_userinfo(struct userec *u, int real);
 int uinfo_query(struct userec *u, int real, int unum);
-void x_info(void);
-void x_fillform(void);
+int x_info(const char *s);
+int x_fillform(const char *s);
 #endif //BMYBBS_USERINFO_H

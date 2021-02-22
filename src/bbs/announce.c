@@ -1488,7 +1488,7 @@ EXPRESS:		/* add by djq,990725 */
 			break;
 		case 'w':
 			if ((in_mail != YEA) && HAS_PERM(PERM_READMAIL, currentuser))
-				m_read();
+				m_read(NULL);
 			me.page = 9999;
 			break;
 		case 'h':
@@ -1777,19 +1777,16 @@ char bname[STRLEN], grp[STRLEN], title[STRLEN], newtitle[100];
 	return 0;
 }
 
-void
-Announce()
-{
+int Announce(const char *s) {
+	(void) s;
 	sprintf(genbuf, "%s 精华区公布栏", MY_BBS_NAME);
 	a_menu(genbuf, "0Announce", (HAS_PERM(PERM_ANNOUNCE, currentuser) || HAS_PERM(PERM_SYSOP, currentuser)) ?  PERM_BOARDS : 0, 0);
 	clear();
+	return 0;
 }
 
 //add by gluon, modified by ylsdd*/
-void
-Personal(cmd)
-char *cmd;
-{
+int Personal(const char *cmd) {
 	char buf[100], ch;
 	/*strcpy( genbuf, "个人文集"); */
 	strcpy(genbuf, "");

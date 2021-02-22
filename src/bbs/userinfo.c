@@ -477,21 +477,22 @@ int uinfo_query(struct userec *u, int real, int unum)
 	return 0;
 }
 
-void x_info()
-{
+int x_info(const char *s) {
+	(void) s;
 	modify_user_mode(GMENU);
 	if (!strcmp("guest", currentuser.userid)) {
 		disply_userinfo(&currentuser, 0);
 		pressreturn();
-		return;
+		return 0;
 	}
 	disply_userinfo(&currentuser, 1);
 	uinfo_query(&currentuser, 0, usernum);
+	return 0;
 }
 
 #ifdef POP_CHECK
-void x_fillform()
-{
+int x_fillform(const char *s) {
+	(void) s;
 	char rname[NAMELEN], addr[STRLEN];
 	char phone[STRLEN], dept[STRLEN], assoc[STRLEN];
 	char ans[5], *mesg, *ptr;
@@ -512,12 +513,12 @@ void x_fillform()
 	if (!strcmp("guest", currentuser.userid)) {
 		prints("抱歉, 请用 new 申请一个新帐号后再填申请表.");
 		pressreturn();
-		return;
+		return 0;
 	}
 	if (currentuser.userlevel & PERM_LOGINOK) {
 		prints("您已经完成本站的使用者注册手续, 欢迎加入本站的行列.");
 		pressreturn();
-		return;
+		return 0;
 	}
 	if ((fn = fopen("new_register", "r")) != NULL) {
 		while (fgets(genbuf, STRLEN, fn) != NULL) {
@@ -528,7 +529,7 @@ void x_fillform()
 				fclose(fn);
 				prints("站长尚未处理您的注册申请单, 请耐心等候.");
 				pressreturn();
-				return;
+				return 0;
 			}
 		}
 		fclose(fn);
@@ -542,7 +543,7 @@ void x_fillform()
 			getdata(3, 0, "请输入您的验证码(输入x放弃验证) >>  ", code, 6, DOECHO, YEA);
 
 			if (strcasecmp(code, "x") == 0) {
-				return;
+				return 0;
 			}
 
 			cap_status = verify_captcha_for_user(currentuser.userid, code, CAPTCHA_FILE_REGISTER);
@@ -573,7 +574,7 @@ void x_fillform()
 					move(3, 0);
 					prints("您的信箱已经验证过 %d 个id，无法再用于验证了!\n", MAX_USER_PER_RECORD);
 					pressreturn();
-					return;
+					return 0;
 				}
 
 				int response;
@@ -590,13 +591,13 @@ void x_fillform()
 
 					//scroll();
 					pressreturn();
-					return;
+					return 0;
 				}
 				clear();
 				move(3, 0);
 				prints("验证失败!");
 				pressreturn();
-				return;
+				return 0;
 			} else {
 				// 验证码校验失败，重新判断状态
 				cap_status = check_captcha_status(currentuser.userid, CAPTCHA_FILE_REGISTER);
@@ -615,7 +616,7 @@ void x_fillform()
 	move(3, 0);
 	sprintf(genbuf, "您要填写注册单，加入%s大家庭吗？", MY_BBS_NAME);
 	if (askyn(genbuf, YEA, NA) == NA)
-		return;
+		return 0;
 	ytht_strsncpy(rname, currentuser.realname, sizeof(rname));
 	ytht_strsncpy(addr, currentuser.address, sizeof(addr));
 	dept[0] = phone[0] = assoc[0] = '\0';
@@ -632,7 +633,7 @@ void x_fillform()
 		mesg = "以上资料是否正确, 按 Q 放弃注册 (Y/N/Quit)? [N]: ";
 		getdata(t_lines - 1, 0, mesg, ans, 3, DOECHO, YEA);
 		if (ans[0] == 'Q' || ans[0] == 'q')
-			return;
+			return 0;
 		if (ans[0] == 'Y' || ans[0] == 'y')
 			break;
 	}
@@ -671,7 +672,7 @@ void x_fillform()
 		getdata(13, 0, "信箱用户名(输入x放弃验证，新生注册请输入用户名test) >>  ", user, USER_LEN, DOECHO, YEA);
 
 		if (strcmp(user, "x") == 0) {
-			return;
+			return 0;
 		}
 		if (strcasecmp(user, "test") == 0) {
 			clear();
@@ -680,7 +681,7 @@ void x_fillform()
 			prints("目前您没有发文、信件、消息等权限。\n\n");
 			prints("请在开学取得xjtu.edu.cn信箱后，\n按照上站登录后的提示完成信箱绑定认证操作，成为本站正式用户。");
 			pressanykey();
-			return;
+			return 0;
 		}
 
 		move(11, 0);
@@ -707,9 +708,10 @@ void x_fillform()
 	move(3, 0);
 	sprintf(genbuf, "验证码已发送，需要现在输入吗？");
 	if (askyn(genbuf, YEA, NA) == NA)
-		return;
+		return 0;
 
-	x_fillform();
+	x_fillform(NULL);
+	return 0;
 }
 #else
 void

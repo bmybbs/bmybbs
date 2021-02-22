@@ -238,10 +238,7 @@ char *chatid;
 	}
 }
 
-int
-ent_chat(chatbuf)
-char *chatbuf;
-{
+int ent_chat(const char *chatbuf) {
 	char inbuf[80], chatid[CHAT_IDLEN], lastcmd[MAXLASTCMD][80];
 	struct sockaddr_in sin;
 	struct hostent *h;
@@ -818,7 +815,7 @@ setpager()
 {
 	char buf[STRLEN];
 
-	t_pager();
+	t_pager(NULL);
 	sprintf(buf, "\033[1;32m◆ \033[31m呼叫器 %s 了\033[m",
 		(uinfo.pager & ALL_PAGER) ? "打开" : "关闭");
 	printchatline(buf);

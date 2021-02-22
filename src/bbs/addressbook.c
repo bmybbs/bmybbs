@@ -27,11 +27,9 @@ static void showaddressbook(char items[][STRLEN], int mode);
 static void readaddressbook(char *filename, char items[][STRLEN]);
 static void saveaddressbook(char *filename, char items[][STRLEN]);
 
-int
-addressbook()
-{
-	char str[STRLEN], buf[STRLEN], filename[STRLEN],
-	    items[NADDRESSITEM][STRLEN];
+int addressbook(const char *s) {
+	(void) s;
+	char str[STRLEN], buf[STRLEN], filename[STRLEN], items[NADDRESSITEM][STRLEN];
 	int i;
 	modify_user_mode(ADDRESSBOOK);
 	while (1) {

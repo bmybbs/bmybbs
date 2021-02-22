@@ -3,6 +3,7 @@
 extern int g_convcode;
 
 void switch_code(void);
+int switch_code_wrapper(const char *s);
 void conv_init(void);
 
 char *gb2big(char *s, int *plen, int inst);

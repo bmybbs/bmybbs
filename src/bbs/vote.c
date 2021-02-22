@@ -1578,15 +1578,14 @@ b_results()
 	return vote_results(currboard);
 }
 
-void
-m_vote()
-{
+int m_vote(const char *s) {
+	(void) s;
 	char buf[STRLEN];
 	strcpy(buf, currboard);
 	strcpy(currboard, DEFAULTBOARD);
 	modify_user_mode(ADMIN);
 	vote_maintain(DEFAULTBOARD);
 	strcpy(currboard, buf);
-	return;
+	return 0;
 }
 

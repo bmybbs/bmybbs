@@ -478,12 +478,12 @@ junkboard()
 	return seek_in_file("etc/junkboards", currboard) || club_board(currboard);
 }
 
-void
-Select()
-{
+int Select(const char *s) {
+	(void) s;
 	modify_user_mode(SELECT);
 	do_select(0, NULL, NULL);
-	Read();
+	Read(NULL);
+	return 0;
 }
 
 #if 0
@@ -1080,7 +1080,7 @@ char *direct;
 		if (!HAS_PERM(PERM_PAGE, currentuser))
 			break;
 		clear();
-		s_msg();
+		s_msg(NULL);
 		break;
 	case Ctrl('D'):	/*by yuhuan for deny anonymous */
 		if (!IScurrBM)
@@ -3374,7 +3374,7 @@ what_to_do()
 		move(0, 0);
 		prints("·¢ËÍInternetÐÅ¼þ");
 		if (HAS_PERM(PERM_POST, currentuser))
-			m_internet();
+			m_internet(NULL);
 		break;
 	case 'c':
 		if (HAS_PERM(PERM_CHAT, currentuser))
@@ -3382,7 +3382,7 @@ what_to_do()
 		break;
 	case 'o':
 		if (HAS_PERM(PERM_BASIC, currentuser)) {
-			t_friend();
+			t_friend(NULL);
 			retv = 999;
 		}
 		break;
@@ -3609,9 +3609,8 @@ notepad()
 	return;
 }
 
-int
-Goodbye()
-{
+int Goodbye(const char *s) {
+	(void) s;
 	char spbuf[STRLEN];
 	int choose;
 	FILE *fp = NULL;
@@ -3620,7 +3619,7 @@ Goodbye()
 	if (strcmp(currentuser.userid, "guest") && ythtbbs_cache_UserTable_count(usernum) == 1) {
 		if (DEFINE(DEF_MAILMSG, currentuser)) {
 			if (get_msgcount(0, currentuser.userid) > 0)
-				show_allmsgs();
+				show_allmsgs(NULL);
 		} else {
 			clear_msg(currentuser.userid);
 		}

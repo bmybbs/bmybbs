@@ -832,9 +832,8 @@ int star, curr;
 	return 0;
 }
 
-int
-t_friends()
-{
+int t_friends(const char *s) {
+	(void) s;
 	char buf[STRLEN];
 	user_record = malloc(sizeof (struct user_info *) * MAXACTIVE);
 
@@ -879,9 +878,8 @@ t_friends()
 	return FULLUPDATE;
 }
 
-int
-t_users()
-{
+int t_users(const char *s) {
+	(void) s;
 	user_record = malloc(sizeof (struct user_info *) * MAXACTIVE);
 	friendmode = NA;
 	modify_user_mode(LUSERS);

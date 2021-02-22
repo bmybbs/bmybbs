@@ -168,9 +168,8 @@ static void creat_list() {
 	ythtbbs_cache_utmp_apply(listcuent, NULL);
 }
 
-int
-t_pager()
-{
+int t_pager(const char *s) {
+	(void) s;
 
 	if (uinfo.pager & ALL_PAGER) {
 		uinfo.pager &= ~ALL_PAGER;
@@ -576,9 +575,8 @@ struct user_info *up;
 	return (up->active && uid == up->uid);
 }
 
-int
-t_talk()
-{
+int t_talk(const char *s) {
+	(void) s;
 	int netty_talk;
 
 #ifdef DOTIMEOUT
@@ -1345,7 +1343,7 @@ int fd;
 					do_talk_char(&mywin, '\r');
 				}
 			} else if (ch == Ctrl('P') && HAS_PERM(PERM_BASIC, currentuser)) {
-				t_pager();
+				t_pager(NULL);
 				update_utmp();
 				update_endline();
 			}
@@ -1774,28 +1772,26 @@ reject_help()
 	return FULLUPDATE;
 }
 
-void
-t_friend()
-{
+int t_friend(const char *s) {
+	(void) s;
 	char buf[STRLEN];
 
 	friendflag = YEA;
 	sethomefile_s(buf, sizeof(buf), currentuser.userid, "friends");
 	i_read(GMENU, buf, override_title, (void *) override_doentry, friend_list, sizeof (struct ythtbbs_override));
 	clear();
-	return;
+	return 0;
 }
 
-void
-t_reject()
-{
+int t_reject(const char *s) {
+	(void) s;
 	char buf[STRLEN];
 
 	friendflag = NA;
 	sethomefile_s(buf, sizeof(buf), currentuser.userid, "rejects");
 	i_read(GMENU, buf, override_title, (void *) override_doentry, reject_list, sizeof (struct ythtbbs_override));
 	clear();
-	return;
+	return 0;
 }
 
 struct user_info *t_search(char *sid, int pid, int invisible_check) {
@@ -1875,9 +1871,8 @@ getrejectstr()
 	return 0;
 }
 
-int
-wait_friend()
-{
+int wait_friend(const char *s) {
+	(void) s;
 	FILE *fp;
 	int tuid;
 	char buf[STRLEN];

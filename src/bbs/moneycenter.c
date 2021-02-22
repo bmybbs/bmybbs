@@ -240,7 +240,8 @@ static void showAt(int line, int col, char *str, int flag) {
 }
 
 //moneycenter进入界面
-int moneycenter() {
+int moneycenter(const char *s) {
+	(void) s;
 	int ch;
 	int quit = 0;
 	modify_user_mode(MONEY);

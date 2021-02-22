@@ -2,7 +2,7 @@
 #define BMYBBS_MORE_H
 
 int NNread_init(void);
-void setcalltime(void);
+int setcalltime(const char *s);
 int countln(char *fname);
 void check_calltime(void);
 void R_monitor(void);

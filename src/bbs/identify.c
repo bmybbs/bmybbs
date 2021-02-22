@@ -18,8 +18,8 @@ static int update_active(char* userid);
 static int query_value(char* value, int style);
 
 //验证信息管理的入口
-int x_active_manager()
-{
+int x_active_manager(const char *s) {
+	(void) s;
     char an[2];
 //	char style[2];
     char userid[IDLEN+2];
@@ -31,7 +31,7 @@ int x_active_manager()
         return 0;
     }
     clear();
- INPUT:   
+ INPUT:
     stand_title("实名认证管理选单\n\n");
     clrtobot();
     move(3, 0);
@@ -81,7 +81,7 @@ int x_active_manager()
 	 getdata(3, 0, ">> ", value, VALUELEN, DOECHO, YEA);
         if (*value) query_value(value, MAIL_ACTIVE);
         goto INPUT;
-    } 
+    }
     return 0;
 }
 
@@ -140,7 +140,7 @@ static int query_active(char* userid)
         prints("未找到用户 %s 的认证与绑定信息!", userid);
     }
     pressreturn();
-    return 1;		
+    return 1;
 }
 
 //强制激活某用户
@@ -173,7 +173,7 @@ static int force_comfirm(char* userid)
 	 act_data.status=FORCE_ACTIVE;
 	 strcpy(act_data.ip, currentuser.lasthost);
 	 write_active(&act_data);
-	
+
 	memcpy(&cuser, &lookupuser, sizeof (lookupuser));
 	cuser.userlevel |= PERM_DEFAULT;	// by ylsdd
 	substitute_record(PASSFILE, &cuser, sizeof (struct userec), response);

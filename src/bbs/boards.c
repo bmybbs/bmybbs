@@ -88,14 +88,15 @@ static int readtitle();   // 输出阅读头部
 static char *readdoent(int num, struct fileheader *ent, char buf[512]);
 static char *makedatestar(char *datestr, struct fileheader *ent);
 
-void
-GoodBrds()			// 菜单的调用函数
-{
-//        if(!strcmp(currentuser.userid,"guest")) return;
+// 菜单的调用函数
+int GoodBrds(const char *s) {
+	(void) s;
+//  if(!strcmp(currentuser.userid,"guest")) return;
 	GoodBrd.num = 9999;
 	boardprefix[0] = 255;
 	boardprefix[1] = 0;
 	choose_board(1, NULL);
+	return 0;
 }
 
 bool load_GoodBrd_has_read_perm(const char *userid, const char *boardname) {
@@ -126,34 +127,32 @@ save_GoodBrd()			// 保存用户订阅的版面
 	ythtbbs_mybrd_save(currentuser.userid, &GoodBrd, term_has_read_perm);
 }
 
-void
-EGroup(cmd)
-char *cmd;
-{
+int EGroup(const char *cmd) {
 	const struct sectree *sec;
 	GoodBrd.num = 0;
 	boardprefix[0] = cmd[0];
 	boardprefix[1] = 0;
 	sec = getsectree(boardprefix);
 	choose_board(DEFINE(DEF_NEWPOST, currentuser) ? 1 : 0, sec);
+	return 0;
 }
 
-void
-Boards()
-{
+int Boards(const char *s) {
+	(void) s;
 	boardprefix[0] = 255;
 	boardprefix[1] = 0;
 	GoodBrd.num = 0;
 	choose_board(0, NULL);
+	return 0;
 }
 
-void
-New()
-{
+int New(const char *s) {
+	(void) s;
 	boardprefix[0] = 255;
 	boardprefix[1] = 0;
 	GoodBrd.num = 0;
 	choose_board(1, NULL);
+	return 0;
 }
 
 static void
@@ -650,7 +649,7 @@ const struct sectree *sec;
 			update_endline();
 			break;
 		case 'L':	/* ppfoong */
-			show_allmsgs();
+			show_allmsgs(NULL);
 			page = -1;
 			break;
 		case 'N':
@@ -681,7 +680,7 @@ const struct sectree *sec;
 			return Q_Goodbye();
 		case 'w':
 			if ((in_mail != YEA) && HAS_PERM(PERM_READMAIL, currentuser))
-				m_read();
+				m_read(NULL);
 			page = -1;
 			break;
 		case 'h':
@@ -762,7 +761,7 @@ const struct sectree *sec;
 						getkeep(buf, page > 1 ? page : 1, tmp + 1);
 					}
 				}
-				Read();
+				Read(NULL);
 				ptr->unread = page = -1;
 				modify_user_mode(newflag ? READNEW : READBRD);
 			} else {
@@ -883,13 +882,13 @@ const struct sectree *sec;
 		case 'S':	/* sendmsg ... youzi */
 			if (!HAS_PERM(PERM_PAGE, currentuser))
 				break;
-			s_msg();
+			s_msg(NULL);
 			page = -1;
 			break;
 		case 'c':	/* show friends ... youzi */
 			if (!HAS_PERM(PERM_BASIC, currentuser))
 				break;
-			t_friends();
+			t_friends(NULL);
 			modify_user_mode(newflag ? READNEW : READBRD);
 			page = -1;
 			break;
@@ -1182,9 +1181,8 @@ clear_new_flag_quick(int t)
 	brc_clearto(&brc, t);
 }
 
-void
-clear_all_new_flag()
-{
+int clear_all_new_flag(const char *s) {
+	(void) s;
 	int i;
 	char ans[3];
 	int brdnum;
@@ -1195,19 +1193,19 @@ clear_all_new_flag()
 	getdata(t_lines - 2, 0, "确定要清除所有版面的未读标记？(Y/N) [N]:", ans,
 		2, DOECHO, YEA);
 	if (ans[0] != 'y' && ans[0] != 'Y')
-		return;
+		return 0;
 	if (load_boards(&brdnum, 0) < 0)
-		return;
+		return 0;
 	for (i = 0; i < brdnum; i++) {
 		brc_initial(nbrd[i].name, (i == brdnum - 1) ? 0 : 1);
 		clear_new_flag_quick(0);
 	}
 	brc_update();
+	return 0;
 }
 
-int
-Read()
-{
+int Read(const char *s) {
+	(void) s;
 	char buf[STRLEN];
 	char notename[STRLEN];
 	time_t usetime;
@@ -1284,20 +1282,18 @@ Read()
 	return 0;
 }
 
-int
-showhell()
-{
+int showhell(const char *s) {
+	(void) s;
 	selboard = 1;
 	strcpy(currboard, "hell");
-	return Read();
+	return Read(NULL);
 }
 
-int
-showprison()
-{
+int showprison(const char *s) {
+	(void) s;
 	selboard = 1;
 	strcpy(currboard, "prison");
-	return Read();
+	return Read(NULL);
 }
 
 static int

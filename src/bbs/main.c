@@ -1063,12 +1063,12 @@ char *argv[];
 		}
 		num_alcounter();
 		if (count_friends > 0 && DEFINE(DEF_LOGFRIEND, currentuser))
-			t_friends();
+			t_friends(NULL);
 		loaduserkeys();
 		if ((!(currentuser.userlevel & PERM_LOGINOK))
 				&& strcmp("guest", currentuser.userid)
 				&& strcmp("SYSOP", currentuser.userid)) {
-			x_fillform();
+			x_fillform(NULL);
 		}
 	}
 	if (strcmp(currentuser.userid, "guest")) {
@@ -1085,7 +1085,7 @@ char *argv[];
 			else
 				domenu("TOPMENU2");
 		}
-		Goodbye();
+		Goodbye(NULL);
 	}
 }
 

@@ -188,9 +188,8 @@ char qry_mail_dir[STRLEN];
 	return NA;
 }
 
-int
-mailall()
-{
+int mailall(const char *s) {
+	(void) s;
 	char ans[4], fname[STRLEN], title[STRLEN];
 	const char *doc[6] = {
 		"(1) 尚未通过身份确认的使用者",
@@ -257,18 +256,17 @@ mailall()
 
 #ifdef INTERNET_EMAIL
 
-void
-m_internet()
-{
+int m_internet(const char *s) {
+	(void) s;
 	char receiver[STRLEN];
 
 	if (check_maxmail()) {
 		pressreturn();
-		return;
+		return 0;
 	}
 	if (check_mail_perm()) {
 		pressreturn();
-		return;
+		return 0;
 	}
 	modify_user_mode(SMAIL);
 
@@ -288,6 +286,7 @@ m_internet()
 		pressreturn();
 	}
 	clear();
+	return 0;
 }
 #endif
 
@@ -495,9 +494,8 @@ int m_send(const char *userid) {
 	return FULLUPDATE;
 }
 
-int
-M_send()
-{
+int M_send(const char *s) {
+	(void) s;
 	if (!HAS_PERM(PERM_LOGINOK, currentuser))
 		return 0;
 	return m_send(NULL);
@@ -585,9 +583,8 @@ struct fileheader *fptr;
 	return 0;
 }
 
-int
-m_new()
-{
+int m_new(const char *s) {
+	(void) s;
 	clear();
 	mrd = 0;
 	modify_user_mode(RMAIL);
@@ -1217,9 +1214,8 @@ const struct one_key mail_default_comms[] = {
 	{'\0', NULL, ""}
 };
 
-int
-m_read()
-{
+int m_read(const char *s) {
+	(void) s;
 	int savemode;
 	int save_in_mail;
 	save_in_mail = in_mail;
@@ -1315,9 +1311,8 @@ char *fname, *title, *receiver;
 
 #endif
 
-int
-g_send()
-{
+int g_send(const char *s) {
+	(void) s;
 	char uident[13], tmp[3];
 	int cnt, i, n, fmode = NA;
 	int keepgoing = 0;
@@ -1765,9 +1760,8 @@ char *buf, userid[], title[];
 }
 
 /*Add by SmallPig*/
-int
-ov_send()
-{
+int ov_send(const char *s) {
+	(void) s;
 	int all, i;
 
 	if (check_maxmail()) {
@@ -2175,10 +2169,7 @@ get_mail_size()
 	return currmsgsize;
 }
 
-int
-m_cancel(userid)
-char userid[];
-{
+int m_cancel(const char *userid) {
 	char uident[STRLEN], buf[STRLEN];
 
 	if (check_mail_perm()) {

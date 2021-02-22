@@ -563,7 +563,7 @@ char *pnt;
 			return PARTUPDATE;
 		break;
 	case 'L':		/* ppfoong */
-		show_allmsgs();
+		show_allmsgs(NULL);
 		return FULLUPDATE;
 	case 'N':
 	case Ctrl('F'):
@@ -628,7 +628,7 @@ char *pnt;
 	case 'S':		/* youzi */
 		if (!HAS_PERM(PERM_PAGE, currentuser))
 			break;
-		s_msg();
+		s_msg(NULL);
 		return FULLUPDATE;
 		break;
 		/*      case 'c': *//* youzi */
@@ -638,7 +638,7 @@ char *pnt;
 		break;*/
 	case 'w':
 		if ((in_mail != YEA) && (HAS_PERM(PERM_READMAIL, currentuser))) {
-			m_read();
+			m_read(NULL);
 			return 999;
 		} else
 			break;

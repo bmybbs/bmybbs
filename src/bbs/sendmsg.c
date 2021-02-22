@@ -106,9 +106,8 @@ static int canmsg_offline(char *uid) {
 	return NA;
 }
 
-int
-s_msg()
-{
+int s_msg(const char *s) {
+	(void) s;
 	do_sendmsg(NULL, NULL, NULL, 0, 0);
 	return 0;
 }
@@ -269,9 +268,8 @@ static int hisfriend_wall(const struct user_info *uin, void *x_param) {
 	return 0;
 }
 
-int
-wall()
-{
+int wall(const char *s) {
+	(void) s;
 	if (!HAS_PERM(PERM_SYSOP, currentuser))
 		return 0;
 	modify_user_mode(MSG);
@@ -290,9 +288,8 @@ wall()
 	return 1;
 }
 
-int
-wall_telnet()
-{
+int wall_telnet(const char *s) {
+	(void) s;
 	if (!HAS_PERM(PERM_SYSOP, currentuser))
 		return 0;
 	modify_user_mode(MSG);
@@ -311,9 +308,8 @@ wall_telnet()
 	return 1;
 }
 
-int
-friend_wall()
-{
+int friend_wall(const char *s) {
+	(void) s;
 	char buf[3] = "";
 
 	if (uinfo.invisible) {
@@ -734,9 +730,8 @@ sendmsgfunc(char *uid, struct user_info *uin, int userpid, const char *msgstr, i
 	return 1;
 }
 
-int
-show_allmsgs()
-{
+int show_allmsgs(const char *s) {
+	(void) s;
 	char buf[MAX_MSG_SIZE], showmsg[MAX_MSG_SIZE * 2], chk[STRLEN];
 	int oldmode, count, i, j, page, ch, y, all = 0, reload = 0;
 	struct msghead head;
