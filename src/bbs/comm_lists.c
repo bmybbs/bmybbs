@@ -77,8 +77,8 @@ struct sdefine {
 } *sysvar;
 
 extern int nettyNN;
-char *sysconf_buf;
-int sysconf_menu, sysconf_key, sysconf_len;
+static char *sysconf_buf;
+static int sysconf_menu, sysconf_key, sysconf_len;
 
 /*Add By Excellent */
 struct scommandlist {
