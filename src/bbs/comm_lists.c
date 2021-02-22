@@ -53,8 +53,6 @@ extern int x_active_manager(const char *s);   // identify.c
 #define SC_BUFSIZE              20480
 #define SC_KEYSIZE              256
 #define SC_CMDSIZE              256
-#define sysconf_ptr( offset )   (&sysconf_buf[ offset ])
-#define pm2fptr(pm) sysconf_funcptr(sysconf_ptr((pm).func_off))
 
 struct menupos {
 	short col, line;
@@ -81,9 +79,10 @@ static char *sysconf_buf;
 static int sysconf_menu, sysconf_key, sysconf_len;
 
 /*Add By Excellent */
+typedef int (*SCommandFunc)(const char *);
 struct scommandlist {
 	char *name;
-	int (*fptr) (const char *);
+	SCommandFunc fptr;
 };
 
 static struct mmapfile sysconf_mf = { .ptr = NULL };
@@ -164,7 +163,7 @@ const struct scommandlist sysconf_cmdlist[] = {
 
 static void encodestr(register char *str);
 static void decodestr(register char *str);
-static void *sysconf_funcptr(char *func_name);
+static SCommandFunc sysconf_funcptr(const char *func_name);
 static int sysconf_addstr(char *str);
 static void sysconf_addkey(char *key, char *str, int val);
 static void parse_sysconf(char *fname);
@@ -173,6 +172,14 @@ static void load_sysconf_image(char *imgfile);
 static int domenu_screen(struct smenuitem *pm, char *cmdprompt, struct menupos *pos);
 static void sysconf_addmenu(FILE * fp, char *key);
 static void sysconf_addblock(FILE * fp, char *key);
+
+static inline char *sysconf_ptr(int offset) {
+	return sysconf_buf + offset;
+}
+
+static inline SCommandFunc pm2fptr(struct smenuitem *pm) {
+	return sysconf_funcptr(sysconf_ptr(pm->func_off));
+}
 
 static void
 encodestr(str)
@@ -219,10 +226,7 @@ register char *str;
 	outs(buf);
 }
 
-static void *
-sysconf_funcptr(func_name)
-char *func_name;
-{
+static SCommandFunc sysconf_funcptr(const char *func_name) {
 	int n = 0;
 	char *str;
 
@@ -688,7 +692,7 @@ int domenu(const char *menu_name) {
 				return 0;
 			}
 			if (pm[now].func_off != 0) {
-				int (*fptr) () = pm2fptr(pm[now]);
+				SCommandFunc fptr = pm2fptr(&pm[now]);
 				move(1, cmdplen);
 				clrtoeol();
 				fptr(sysconf_ptr(pm[now].arg_off));
@@ -706,7 +710,7 @@ int domenu(const char *menu_name) {
 			for (i = size - 1; i >= 0; i--) {
 				if (pos[i].line == pos[now].line && pos[i].col < pos[now].col)
 					break;
-				if (pm2fptr(pm[i]) == Goodbye)
+				if (pm2fptr(&pm[i]) == Goodbye)
 					break;
 			}
 			if (i >= 0) {
