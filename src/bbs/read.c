@@ -786,14 +786,15 @@ int SR_BMfunc(int ent, struct fileheader *fileinfo, char *direct) {
 	//end
 
 	//add by mintbaggio for BMfunc 'b'
-	sprintf(buf, "%s (0)取消", subBMitems[dotype-1]);
+	int len = 0;
+	len += snprintf(buf, sizeof(buf), "%s (0)取消", subBMitems[dotype-1]);
 	saveline(t_lines - 2, 0, NULL);
 	move(t_lines -2 , 0);
 	clrtoeol();
 	//end
 
-	for (i = 0; i < 5; i++)
-		sprintf(buf, "%s(%d)%s ", buf, i + 1, SR_BMitems[i]);
+	for (i = 0; i < 5 && sizeof(buf) - len > 0; i++)
+		len += snprintf(buf + len, sizeof(buf) - len, "(%d)%s ", i + 1, SR_BMitems[i]);
 	move(t_lines - 3, 0);
 	prints("%s", buf);
 	buf[0] = 0;
