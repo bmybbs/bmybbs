@@ -43,7 +43,7 @@ eff_size(char *file)
 		size += strlen(ytht_strtrim(buf));
 	}
 	fclose(fp);
-      E:
+E:
 	size = size - size2 / 2;
 	if (size == 0)
 		size = 1;
@@ -70,8 +70,7 @@ getdocauthor(char *filename, char *author, int len)
 		if (f1)
 			ytht_strsncpy(author, f1, len);
 		f2 = strsep(&ptr, " ,\n\r\t");
-		if (f2 && f2[0] == '<' && f2[strlen(f2) - 1] == '>'
-		    && strchr(f2, '@')) {
+		if (f2 && f2[0] == '<' && f2[strlen(f2) - 1] == '>' && strchr(f2, '@')) {
 			f2[strlen(f2) - 1] = 0;
 			ytht_strsncpy(author, f2 + 1, len);
 		}
@@ -100,18 +99,16 @@ keepoldheader(FILE * fp, int dowhat)
 			return -1;
 		while (fgets(tmpbuf[i], STRLEN, fp)) {
 			i++;
-			if (!strcmp(tmpbuf[i - 1], "\n")
-			    || !strcmp(tmpbuf[i - 1], "\r\n") || i > 4)
+			if (!strcmp(tmpbuf[i - 1], "\n") || !strcmp(tmpbuf[i - 1], "\r\n") || i > 4)
 				break;
 		}
-		if (i < 4 || (strncmp(tmpbuf[0], "发信人: ", 8) &&
-			      strncmp(tmpbuf[0], "寄信人: ", 8)) ||
-		    strncmp(tmpbuf[1], "标  题: ", 8)) {
+		if (i < 4 || (strncmp(tmpbuf[0], "发信人: ", 8) && strncmp(tmpbuf[0], "寄信人: ", 8)) || strncmp(tmpbuf[1], "标  题: ", 8)) {
 			fseek(fp, 0, SEEK_SET);
 			i = 0;
 			goto RET1;
 		}
-	      RET1:if (SKIPHEADER == dowhat) {
+RET1:
+		if (SKIPHEADER == dowhat) {
 			free(tmpbuf);
 			tmpbuf = NULL;
 		}
@@ -131,27 +128,26 @@ keepoldheader(FILE * fp, int dowhat)
 }
 
 int copyheadertofile(FILE *from_fp, FILE *to_fp) {
-	char (*tmpbuf)[STRLEN]=NULL;
-	int i=0;
+	char (*tmpbuf)[STRLEN] = NULL;
+	int i = 0;
 	int j;
 
-	tmpbuf = malloc(5*STRLEN);
-	if(tmpbuf == NULL)
+	tmpbuf = malloc(5 * STRLEN);
+	if (tmpbuf == NULL)
 		return -1;
 
 	// 开始读取文件头到 tmpbuf 中
-	while(fgets(tmpbuf[i], STRLEN, from_fp)) {
+	while (fgets(tmpbuf[i], STRLEN, from_fp)) {
 		++i;
-		if( !strcmp(tmpbuf[i-1], "\n")
-		    || !strcmp(tmpbuf[i-1], "\r\n")
-		    || i>4 )
+		if (!strcmp(tmpbuf[i-1], "\n") || !strcmp(tmpbuf[i-1], "\r\n") || i > 4)
 			break;
 	}
 
-	for(j=0;j<i;++j) {
+	for (j = 0; j < i; ++j) {
 		fputs(tmpbuf[j], to_fp);
 	}
 
 	free(tmpbuf);
 	return 0;
 }
+
