@@ -232,3 +232,10 @@ kick_user(const struct user_info *userinfo, int mode)
 	return 1;
 }
 
+// 用于 comm_list
+// 此时 uinfo.mode = 10 (MMENU)，会进入查询逻辑
+int kick_user_wrapper(const char *s) {
+	(void) s;
+	return kick_user(NULL, 0);
+}
+

@@ -49,6 +49,7 @@
 
 extern int moneycenter(const char *s);        // moneycenter.c
 extern int x_active_manager(const char *s);   // identify.c
+extern int kick_user_wrapper(const char *s);  // delete.c
 
 #define SC_BUFSIZE              20480
 #define SC_KEYSIZE              256
@@ -144,7 +145,7 @@ const struct scommandlist sysconf_cmdlist[] = {
 	{"Identify", x_active_manager},
 	{"ModifyInfo", m_info},
 	{"ModifyLevel", x_level},
-	{"KickUser", kick_user},
+	{"KickUser", kick_user_wrapper},
 	{"OpenVote", m_vote},
 	{"NewBoard", m_newbrd},
 	{"EditBoard", m_editbrd},
