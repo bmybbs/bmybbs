@@ -661,7 +661,6 @@ query_user(arg)
 char *arg;
 {
 	char *userid, msg[STRLEN * 2];
-	int exp, perf;
 	char qry_mail_dir[STRLEN];
 
 	userid = strrchr(arg, ' ');
@@ -677,8 +676,6 @@ char *arg;
 	}
 	sprintf(qry_mail_dir, "mail/%c/%s/%s", mytoupper(lookupuser.userid[0]),
 		lookupuser.userid, DOT_DIR);
-	exp = countexp(&lookupuser);
-	perf = countperf(&lookupuser);
 
 	sprintf(msg, "\033[1;32m%s\033[m (\033[1;37m%s\033[m) 共上站 \033[1;37m%d\033[m 次, 发表"
 		"过 \033[1;37m%d\033[m 篇文章", lookupuser.userid,
