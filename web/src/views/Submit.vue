@@ -21,7 +21,7 @@
 			</div>
 		</div>
 
-		<TabbedEditor />
+		<TabbedEditor :_boardname_en="board"/>
 	</div>
 </template>
 

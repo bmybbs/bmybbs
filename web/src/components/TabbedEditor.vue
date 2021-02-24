@@ -105,14 +105,14 @@
 			<div class="tab-pane fade" :class="{ active: isEditing, show: isEditing }">
 				<textarea ref="textarea" class="form-control" rows="5"></textarea>
 				<div class="form-check form-switch">
-					<input class="form-check-input" type="checkbox" value="">
+					<input class="form-check-input" type="checkbox" v-model="using_math">
 					<label class="form-check-label">使用 Tex 风格的数学公式</label>
 				</div>
 				<div class="form-check form-switch">
-					<input class="form-check-input" type="checkbox" value="">
+					<input class="form-check-input" type="checkbox" v-model="is_norep">
 					<label class="form-check-label">设为不可回复</label>
 				</div>
-				<button class="btn btn-primary">发表</button>
+				<button class="btn btn-primary" @click="post">发表</button>
 			</div>
 
 			<div class="modal-code-container" :class="{ show: showCode }">
@@ -234,6 +234,9 @@ export default {
 			showFcdd: false,
 			showBgdd: false,
 			title: "",
+			is_anony: false,
+			is_norep: false,
+			using_math: false,
 			uploadedFiles: [],
 			pendingFiles: [],
 			uploadErrorMap: new Map(),
@@ -243,6 +246,9 @@ export default {
 			},
 		};
 	},
+	props: {
+		_boardname_en: String,
+	},
 	mounted() {
 		let elements = this.$refs.editor_toolbar.querySelectorAll('[data-bs-toggle="tooltip"]');
 		let tooltipTriggerList = [].slice.call(elements);
@@ -251,6 +257,27 @@ export default {
 		});
 	},
 	methods: {
+		post() {
+			const article = {
+				board: this._boardname_en,
+				title: this.title,
+				content: this.$refs.textarea.value.replaceAll("[ESC][", "\x1b["),
+				using_math: this.using_math,
+				is_anony: this.is_anony,
+				is_norep: this.is_norep,
+			};
+			BMYClient.post_article(article).then(response => {
+				if (response.errcode == 0) {
+					this.$router.push({
+						name: "thread",
+						params: {
+							boardname: this._boardname_en,
+							tid: response.aid,
+						}
+					});
+				}
+			});
+		},
 		openFcdd() {
 			this.showBgdd = false;
 			this.showFcdd = true;

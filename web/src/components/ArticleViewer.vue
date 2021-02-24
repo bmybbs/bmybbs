@@ -8,7 +8,7 @@
 			<div class="article" v-html="content" @click="toggleAha" ref="article"></div>
 		</div>
 		<div class="card-footer">
-			<TabbedEditor />
+			<TabbedEditor :_boardname_en="_boardname_en"/>
 		</div>
 	</div>
 </template>
