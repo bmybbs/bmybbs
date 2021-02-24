@@ -26,7 +26,7 @@ size_t eff_size(const char *file) {
 			*ptr = 0;
 		if ((ptr = strchr(buf, '\n')))
 			*ptr = 0;
-		if ((t1 = ytht_strrtrim(buf)) == NULL)
+		if ((t1 = ytht_strrtrim_s(buf)) == NULL)
 			break;
 		t2 = ytht_strltrim(t1);
 		len = strlen(t2);
