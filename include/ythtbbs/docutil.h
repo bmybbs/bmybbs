@@ -2,7 +2,7 @@
 #ifndef __DOCUTIL_H
 #define __DOCUTIL_H
 #include <stdio.h>
-int eff_size(char *file);
+size_t eff_size(const char *file);
 char *getdocauthor(char *filename, char *author, int len);
 enum {
 	KEEPHEADER,

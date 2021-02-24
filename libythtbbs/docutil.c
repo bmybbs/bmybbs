@@ -2,13 +2,16 @@
 #include <string.h>
 #include "ythtbbs/ythtbbs.h"
 
-int
-eff_size(char *file)
-{
+size_t eff_size(const char *file) {
 	FILE *fp;
 	char buf[1000];
-	int i, size, size2 = 0;
-	size = file_size(file);
+	char *t1, *t2;
+	size_t len;
+	size_t i, size, size2 = 0;
+	struct stat st;
+
+	f_stat_s(&st, file);
+	size = st.st_size;
 	if (size > 3000 || size == 0)
 		goto E;
 	size = 0;
@@ -23,7 +26,12 @@ eff_size(char *file)
 			*ptr = 0;
 		if ((ptr = strchr(buf, '\n')))
 			*ptr = 0;
-		if (!strlen(ytht_strtrim(buf)))
+		if ((t1 = ytht_strrtrim(buf)) == NULL)
+			break;
+		t2 = ytht_strltrim(t1);
+		len = strlen(t2);
+		free(t1);
+		if (!len)
 			break;
 	}
 	while (1) {
@@ -40,7 +48,12 @@ eff_size(char *file)
 		for (i = 0; buf[i]; i++)
 			if (buf[i] < 0)
 				size2++;
-		size += strlen(ytht_strtrim(buf));
+
+		if ((t1 = ytht_strrtrim_s(buf)) != NULL) {
+			t2 = ytht_strltrim(t1);
+			size += strlen(t2);
+			free(t1);
+		}
 	}
 	fclose(fp);
 E:
