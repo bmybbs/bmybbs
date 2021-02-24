@@ -263,8 +263,9 @@ export default {
 				title: this.title,
 				content: this.$refs.textarea.value.replaceAll("[ESC][", "\x1b["),
 				using_math: this.using_math,
-				is_anony: this.is_anony,
-				is_norep: this.is_norep,
+				anony: this.is_anony,
+				norep: this.is_norep,
+				math: this.using_math,
 			};
 			BMYClient.post_article(article).then(response => {
 				if (response.errcode == 0) {
