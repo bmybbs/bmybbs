@@ -13,14 +13,18 @@ appendonebinaryattach(char *filename, char *attachname, char *attachfname)
 	int size, origsize;
 	struct mmapfile mf = { .ptr = NULL };
 	char ch = 0;
+	struct stat st_attach, st_file;
 
-	if (!file_isfile(attachfname))
+	f_stat_s(&st_attach, attachfname);
+	// file_isfile
+	if (!(st_attach.st_mode & S_IFREG))
 		return -1;
 
 	if (mmapfile(attachfname, &mf) < 0)
 		return -1;
 
-	origsize = file_size(filename);
+	f_stat_s(&st_file, filename);
+	origsize = st_file.st_size;
 	fp = fopen(filename, "a");
 	if (!fp) {
 		mmapfile(NULL, &mf);
@@ -33,7 +37,9 @@ appendonebinaryattach(char *filename, char *attachname, char *attachfname)
 	fwrite(&size, sizeof (size), 1, fp);
 	fwrite(mf.ptr, mf.size, 1, fp);
 	fclose(fp);
-	if (file_size(filename) != origsize + 5 + mf.size + strlen("\nbeginbinaryattach \n") + strlen(attachname)) {
+
+	f_stat_s(&st_file, filename);
+	if (st_file.st_size != origsize + 5 + mf.size + strlen("\nbeginbinaryattach \n") + strlen(attachname)) {
 		truncate(filename, origsize);
 		mmapfile(NULL, &mf);
 		return -1;
