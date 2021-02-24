@@ -6,9 +6,7 @@
 #include <string.h>
 #include "ythtbbs/ythtbbs.h"
 
-static int
-appendonebinaryattach(char *filename, char *attachname, char *attachfname)
-{
+static int appendonebinaryattach(const char *filename, const char *attachname, const char *attachfname) {
 	FILE *fp;
 	int size, origsize;
 	struct mmapfile mf = { .ptr = NULL };
@@ -58,9 +56,27 @@ struct AttachFile {
 	char path[MAX_ATTACH_PATH];
 };
 
-int
-appendbinaryattach(char *filename, char *userid, char *attachname)
-{
+bool hasbinaryattach(const char *userid) {
+	bool result = false;
+	DIR *pdir;
+	struct dirent *pdent;
+	char path[512];
+	snprintf(path, sizeof(path), PATHUSERATTACH "/%s", userid);
+	if ((pdir = opendir(path)) != NULL) {
+		while ((pdent = readdir(pdir)) != NULL) {
+			if (!strcmp(pdent->d_name, "..") || !strcmp(pdent->d_name, ".")) {
+				continue;
+			} else {
+				result = true;
+				break;
+			}
+		}
+		closedir(pdir);
+	}
+	return result;
+}
+
+int appendbinaryattach(const char *filename, const char *userid, const char *attachname) {
 	DIR *pdir;
 	struct dirent *pdent;
 	char attachfname[1024], path[512];
