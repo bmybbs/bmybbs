@@ -70,6 +70,9 @@ export const BMYClient = {
 	oauth_remove_wx() {
 		return myFetchPost("/api/oauth/remove_wx");
 	},
+	post_article(article) {
+		return myFetchPost("/api/article/post", article);
+	},
 	search_board(start_with) {
 		return myFetchGet(`/api/board/autocomplete?search_str=${start_with}`);
 	},
