@@ -71,7 +71,7 @@ int seek_in_file(const char* filename, const char *seekstr);
  * @param file
  * @return
  */
-struct stat *f_stat(char *file) __attribute__((deprecated("use f_stat_s instead")));
+struct stat *f_stat(const char *file) __attribute__((deprecated("use f_stat_s instead")));
 #else
 /**
  * A wrapper of stat(2)
@@ -79,7 +79,7 @@ struct stat *f_stat(char *file) __attribute__((deprecated("use f_stat_s instead"
  * @param file
  * @return
  */
-struct stat *f_stat(char *file);
+struct stat *f_stat(const char *file);
 #endif
 
 #ifdef BMYBBS_MT
@@ -89,7 +89,7 @@ struct stat *f_stat(char *file);
  * @param file
  * @return
  */
-struct stat *l_stat(char *file) __attribute__((deprecated("use l_stat_s instead")));
+struct stat *l_stat(const char *file) __attribute__((deprecated("use l_stat_s instead")));
 #else
 /**
  * A wrapper of lstat(2)
@@ -97,7 +97,7 @@ struct stat *l_stat(char *file) __attribute__((deprecated("use l_stat_s instead"
  * @param file
  * @return
  */
-struct stat *l_stat(char *file);
+struct stat *l_stat(const char *file);
 #endif
 
 /**
