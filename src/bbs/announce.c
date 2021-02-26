@@ -1819,6 +1819,7 @@ int Personal(const char *cmd) {
 		a_prompt(-1, "没有找到该个人文集，按<Enter>继续...", genbuf, 2);
 	}
 	clear();
+	return 0;
 }
 
 // end

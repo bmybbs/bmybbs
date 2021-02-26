@@ -215,6 +215,12 @@ countperf(struct userec *udata)
 	if (!strcmp(udata->userid, "guest"))
 		return -9999;
 	reg_days = (time(0) - udata->firstlogin) / 86400 + 1;
+	if (reg_days < 1)
+		reg_days = 1;
+
+	if (udata->numlogins < 1)
+		udata->numlogins = 1;
+
 	perf = ((float) (udata->numposts /*+post_in_tin( udata->userid ) */ ) /
 		(float) udata->numlogins +
 		(float) udata->numlogins / (float) reg_days) * 10;
