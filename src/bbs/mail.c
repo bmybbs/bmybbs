@@ -65,7 +65,7 @@ static int mail_read(int ent, struct fileheader *fileinfo, char *direct);
 static int mail_del(int ent, struct fileheader *fileinfo, char *direct);
 static int mail_del_range(int ent, struct fileheader *fileinfo, char *direct);
 static int mail_mark(int ent, struct fileheader *fileinfo, char *direct);
-static int do_gsend(char *userid[], char *title, int num);
+static int do_gsend(const char *userid[], int num);
 static void getmailinfo(char *path, struct fileheader *rst);
 static int mail_rjunk(void);
 static int m_cancel_1(struct fileheader *fh, char *receiver);
@@ -188,9 +188,8 @@ char qry_mail_dir[STRLEN];
 	return NA;
 }
 
-int
-mailall()
-{
+int mailall(const char *s) {
+	(void) s;
 	char ans[4], fname[STRLEN], title[STRLEN];
 	const char *doc[6] = {
 		"(1) 尚未通过身份确认的使用者",
@@ -257,18 +256,17 @@ mailall()
 
 #ifdef INTERNET_EMAIL
 
-void
-m_internet()
-{
+int m_internet(const char *s) {
+	(void) s;
 	char receiver[STRLEN];
 
 	if (check_maxmail()) {
 		pressreturn();
-		return;
+		return 0;
 	}
 	if (check_mail_perm()) {
 		pressreturn();
-		return;
+		return 0;
 	}
 	modify_user_mode(SMAIL);
 
@@ -288,6 +286,7 @@ m_internet()
 		pressreturn();
 	}
 	clear();
+	return 0;
 }
 #endif
 
@@ -495,9 +494,8 @@ int m_send(const char *userid) {
 	return FULLUPDATE;
 }
 
-int
-M_send()
-{
+int M_send(const char *s) {
+	(void) s;
 	if (!HAS_PERM(PERM_LOGINOK, currentuser))
 		return 0;
 	return m_send(NULL);
@@ -561,6 +559,8 @@ struct fileheader *fptr;
 		case 'D':
 		case 'd':
 			delete_it = YEA;
+			done = YEA;
+			break;
 		default:
 			done = YEA;
 		}
@@ -583,9 +583,8 @@ struct fileheader *fptr;
 	return 0;
 }
 
-int
-m_new()
-{
+int m_new(const char *s) {
+	(void) s;
 	clear();
 	mrd = 0;
 	modify_user_mode(RMAIL);
@@ -725,6 +724,8 @@ char *direct;
 		case 'D':
 		case 'd':
 			delete_it = YEA;
+			done = YEA;
+			break;
 		default:
 			done = YEA;
 		}
@@ -844,12 +845,8 @@ char *direct;
 
 #ifdef INTERNET_EMAIL
 
-int
-mail_forward(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int mail_forward(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
 	char buf[STRLEN];
 	if (!HAS_PERM(PERM_FORWARD, currentuser)) {
 		return DONOTHING;
@@ -874,12 +871,8 @@ char *direct;
 	return FULLUPDATE;
 }
 
-int
-mail_u_forward(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int mail_u_forward(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
 	char buf[STRLEN];
 	if (!HAS_PERM(PERM_FORWARD, currentuser)) {
 		return DONOTHING;
@@ -915,12 +908,8 @@ char *direct;
 	return (del_range(ent, fileinfo, direct));
 }
 
-static int
-mail_mark(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+static int mail_mark(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) direct;
 	if (fileinfo->accessed & FH_MARKED)
 		fileinfo->accessed &= ~FH_MARKED;
 	else
@@ -934,6 +923,7 @@ typedef int(*equalor)(const struct fileheader*, const void *);
 // 标记的邮件
 static int ismark(const struct fileheader *mail, const void *ext)
 {
+	(void) ext;
 	if (mail->accessed & FH_MARKED)
 		return 1;
 	return 0;
@@ -941,6 +931,7 @@ static int ismark(const struct fileheader *mail, const void *ext)
 // 带附件的邮件
 static int isattach(const struct fileheader *mail, const void *ext)
 {
+	(void) ext;
 	if (mail->accessed & FH_ATTACHED)
 		return 1;
 	return 0;
@@ -1032,12 +1023,10 @@ struct one_key query_comms[];
 
 // 邮箱查询功能，邮箱界面中ctrl+g
 // interma@bmy, 2006-11-23
-static int
-mail_query(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+static int mail_query(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
+	(void) fileinfo;
+	(void) direct;
 	//power_action(currmaildir, 1, -1, "标记含 m", 9);
 	char ans[3];
 	int type;
@@ -1225,9 +1214,8 @@ const struct one_key mail_default_comms[] = {
 	{'\0', NULL, ""}
 };
 
-int
-m_read()
-{
+int m_read(const char *s) {
+	(void) s;
 	int savemode;
 	int save_in_mail;
 	save_in_mail = in_mail;
@@ -1323,9 +1311,8 @@ char *fname, *title, *receiver;
 
 #endif
 
-int
-g_send()
-{
+int g_send(const char *s) {
+	(void) s;
 	char uident[13], tmp[3];
 	int cnt, i, n, fmode = NA;
 	int keepgoing = 0;
@@ -1473,7 +1460,7 @@ g_send()
 	}
 	if (cnt > 0) {
 		G_SENDMODE = 2;
-		switch (do_gsend(NULL, NULL, cnt)) {
+		switch (do_gsend(NULL, cnt)) {
 		case -1:
 			prints("信件目录错误\n");
 			break;
@@ -1491,11 +1478,7 @@ g_send()
 
 /*Add by SmallPig*/
 
-static int
-do_gsend(userid, title, num)
-char *userid[], *title;
-int num;
-{
+static int do_gsend(const char *userid[], int num) {
 	struct stat st;
 	char filepath[STRLEN], tmpfile[STRLEN];
 	int cnt;
@@ -1536,7 +1519,7 @@ int num;
 	if (G_SENDMODE == 3) {
 		char maillists[STRLEN];
 		G_SENDMODE = 2;
-		setbfile(maillists, currboard, "club_users");
+		setbfile(maillists, sizeof(maillists), currboard, "club_users");
 		if ((mp = fopen(maillists, "r")) == NULL) {
 			in_mail = save_in_mail;
 			return -3;
@@ -1586,12 +1569,7 @@ int num;
 	return 0;
 }
 
-static int
-do_gsend_voter(userid, title, num,fname)
-char *userid[], *title;
-int num;
-char* fname;
-{
+static int do_gsend_voter(const char *userid[], int num, const char *fname) {
 	struct stat st;
 	char filepath[STRLEN], tmpfile[STRLEN];
 	int cnt;
@@ -1623,7 +1601,7 @@ char* fname;
 	if (G_SENDMODE == 4) {
 		char maillists[STRLEN];
 		G_SENDMODE = 2;
-		setbfile(maillists, currboard,fname);
+		setbfile(maillists, sizeof(maillists), currboard,fname);
 		if ((mp = fopen(maillists, "r")) == NULL) {
 			in_mail = save_in_mail;
 			return -3;
@@ -1782,9 +1760,8 @@ char *buf, userid[], title[];
 }
 
 /*Add by SmallPig*/
-int
-ov_send()
-{
+int ov_send(const char *s) {
+	(void) s;
 	int all, i;
 
 	if (check_maxmail()) {
@@ -1819,7 +1796,7 @@ ov_send()
 			outc('\n');
 	}
 	pressanykey();
-	switch (do_gsend(NULL, NULL, all)) {
+	switch (do_gsend(NULL, all)) {
 	case -1:
 		prints("信件目录错误\n");
 		break;
@@ -1852,9 +1829,9 @@ voter_send(char* fname)
 	clrtobot();
 	move(2, 0);
 	G_SENDMODE = 4;
-	setbfile(maillists, currboard, fname);
+	setbfile(maillists, sizeof(maillists), currboard, fname);
 	all = listfilecontent(maillists);
-	switch (do_gsend_voter(NULL, NULL, all,fname)) {
+	switch (do_gsend_voter(NULL, all, fname)) {
 	case -1:
 		prints("信件目录错误\n");
 		break;
@@ -1888,9 +1865,9 @@ club_send()
 	clrtobot();
 	move(2, 0);
 	G_SENDMODE = 3;
-	setbfile(maillists, currboard, "club_users");
+	setbfile(maillists, sizeof(maillists), currboard, "club_users");
 	all = listfilecontent(maillists);
-	switch (do_gsend(NULL, NULL, all)) {
+	switch (do_gsend(NULL, all)) {
 	case -1:
 		prints("信件目录错误\n");
 		break;
@@ -2192,10 +2169,7 @@ get_mail_size()
 	return currmsgsize;
 }
 
-int
-m_cancel(userid)
-char userid[];
-{
+int m_cancel(const char *userid) {
 	char uident[STRLEN], buf[STRLEN];
 
 	if (check_mail_perm()) {
@@ -2249,12 +2223,9 @@ check_maxmail()
 		return (0);
 }
 
-/*ARGSUSED*/ int
-post_reply(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int post_reply(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
+	(void) direct;
 	char uid[STRLEN];
 	char title[STRLEN];
 	if (!strcmp(currentuser.userid, "guest"))
@@ -2271,7 +2242,7 @@ char *direct;
 	}
 	modify_user_mode(SMAIL);
 /* indicate the quote file/user */
-	setbfile(quote_file, currboard, fh2fname(fileinfo));
+	setbfile(quote_file, sizeof(quote_file), currboard, fh2fname(fileinfo));
 	strcpy(quote_user, fh2owner(fileinfo));
 /* find the author */
 	if (!getuser(quote_user)) {

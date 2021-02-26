@@ -165,7 +165,7 @@ int insertattachments_byfile(const char *filename, char *tmpfile, const char *us
 }
 
 int
-getattach(FILE * fp, char *currline, char *attachfile, char *nowfile, int base64, int len, int fake) {
+getattach(FILE * fp, char *attachfile, char *nowfile, int base64, int len, int fake) {
 	char buf[PATH_MAX + 1], *ext;
 	strncpy(buf, nowfile, sizeof (buf));
 	buf[PATH_MAX] = 0;
@@ -261,7 +261,7 @@ decode_attach(char *filename, char *path)
 			fn = buf + 18;
 		}
 		if (isa) {
-			getattach(fp, buf, fn, path, base64, len, 0);
+			getattach(fp, fn, path, base64, len, 0);
 		}
 	}
 	fclose(fp);
@@ -301,7 +301,7 @@ copyfile_attach(char *source, char *target)
 			fn = buf + 18;
 		}
 		if (isa) {
-			if (!getattach(fpr, buf, fn, "/tmp" , base64, len, 1)) {
+			if (!getattach(fpr, fn, "/tmp" , base64, len, 1)) {
 				fprintf(fpw, "#attach %s\n", fn);
 			}
 		} else

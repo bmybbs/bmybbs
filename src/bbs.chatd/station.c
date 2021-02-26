@@ -99,7 +99,7 @@ struct chatroom {
 
 struct chatcmd {
 	char *cmdstr;
-	void (*cmdfunc) ();
+	void (*cmdfunc) (int, char *);
 	int exact;
 };
 
@@ -502,7 +502,10 @@ chat_topic(int unum, char *msg)
 int
 enter_room(int unum, char *room, char *msg)
 {
-	int rnum, oldrnum;
+	int rnum;
+#ifdef WWW_CHAT
+	int oldrnum;
+#endif
 	int op = 0;
 	register int i;
 
@@ -539,7 +542,9 @@ enter_room(int unum, char *room, char *msg)
 		}
 	}
 
+#ifdef WWW_CHAT
 	oldrnum = users[unum].room;
+#endif
 	exit_room(unum, EXIT_LOGOUT, msg);
 	users[unum].room = rnum;
 	if (op)
@@ -697,6 +702,7 @@ login_user(int unum, char *msg)
 void
 chat_list_rooms(int unum, char *msg)
 {
+	(void) msg;
 	int i, occupants;
 	if (RESTRICTED(unum)) {
 		send_to_unum(unum, "\033[1;31m◎ \033[37m抱歉！老大不让你看有哪些房间有客人 \033[31m◎\033[m");
@@ -829,6 +835,7 @@ chat_map_chatids(int unum, int whichroom)
 void
 chat_map_chatids_thisroom(int unum, char *msg)
 {
+	(void) msg;
 	chat_map_chatids(unum, users[unum].room);
 }
 
@@ -1060,6 +1067,7 @@ chat_act(int unum, char *msg)
 void
 chat_cloak(int unum, char *msg)
 {
+	(void) msg;
 	if (CLOAK(unum)) {
 		if (users[unum].cloak == 1)
 			users[unum].cloak = 0;
@@ -1159,8 +1167,9 @@ chat_makeop(int unum, char *msg)
 
 /*---   Add by Zhangwei 1999-08-14              ---*/
 void
-chat_clear_ops(int unum)
+chat_clear_ops(int unum, char *s)
 {
+	(void) s;
 	int rnum, recnum;
 	if (!SYSOP(unum))
 		return;			/*--- Only SYSOPs can do this!!! ---*/

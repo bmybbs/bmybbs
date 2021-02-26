@@ -214,55 +214,6 @@ int modify_user_mode(int mode) {
 }
 
 int
-x_csh()
-{
-	char buf[PASSLEN];
-	int save_pager;
-	int magic;
-
-	return -1;
-
-	if (!HAS_PERM(PERM_SYSOP, currentuser)) {
-		return -1;
-	}
-	if (!check_systempasswd()) {
-		return -1;
-	}
-	modify_user_mode(SYSINFO);
-	clear();
-	getdata(1, 0, "请输入通行暗号: ", buf, PASSLEN, NOECHO, YEA);
-	if (*buf == '\0' || !ytht_crypt_checkpasswd(currentuser.passwd, buf)) {
-		prints("\n\n暗号不正确, 不能执行。\n");
-		pressreturn();
-		clear();
-		return -1;
-	}
-	randomize();
-	magic = rand() % 1000;
-	prints("\nMagic Key: %d", magic * 3 - 1);
-	getdata(4, 0, "Your Key : ", buf, PASSLEN, NOECHO, YEA);
-	if (*buf == '\0' || !(atoi(buf) == magic)) {
-		securityreport("Fail to shell out", "Fail to shell out");
-		prints("\n\nKey 不正确, 不能执行。\n");
-		pressreturn();
-		clear();
-		return -1;
-	}
-	securityreport("Shell out", "Shell out");
-	modify_user_mode(SYSINFO);
-	clear();
-	refresh();
-	save_pager = uinfo.pager;
-	uinfo.pager = 0;
-	update_utmp();
-	do_exec("csh", NULL);
-	uinfo.pager = save_pager;
-	update_utmp();
-	clear();
-	return 0;
-}
-
-int
 showperminfo(pbits, i, use_define)
 unsigned int pbits;
 int i, use_define;
@@ -377,9 +328,8 @@ setkeys(struct one_key *key)
 	return 0;
 }
 
-int
-x_copykeys()
-{
+int x_copykeys(const char *s) {
+	(void) s;
 	char tempname[STRLEN];
 	modify_user_mode(USERDEF);
 	char ans[3];
@@ -485,9 +435,8 @@ x_copykeys()
 }
 */
 
-int
-x_setkeys()
-{
+int x_setkeys(const char *s) {
+	(void) s;
 	char tempname[STRLEN];
 	modify_user_mode(USERDEF);
 	clear();
@@ -499,9 +448,8 @@ x_setkeys()
 	return 0;
 }
 
-int
-x_setkeys2()
-{
+int x_setkeys2(const char *s) {
+	(void) s;
 	char tempname[STRLEN];
 	modify_user_mode(USERDEF);
 	clear();
@@ -513,9 +461,8 @@ x_setkeys2()
 	return 0;
 }
 
-int
-x_setkeys3()
-{
+int x_setkeys3(const char *s) {
+	(void) s;
 	char tempname[STRLEN];
 	modify_user_mode(USERDEF);
 	clear();
@@ -527,9 +474,8 @@ x_setkeys3()
 	return 0;
 }
 
-int
-x_setkeys4()
-{
+int x_setkeys4(const char *s) {
+	(void) s;
 	char tempname[STRLEN];
 	modify_user_mode(USERDEF);
 	clear();
@@ -541,9 +487,8 @@ x_setkeys4()
 	return 0;
 }
 
-int
-x_setkeys5()
-{
+int x_setkeys5(const char *s) {
+	(void) s;
 	char tempname[STRLEN];
 	modify_user_mode(USERDEF);
 	clear();
@@ -594,9 +539,8 @@ int param;
 	return (pbits);
 }
 
-int
-x_level()
-{
+int x_level(const char *s) {
+	(void) s;
 	int id, oldlevel;
 	unsigned int newlevel;
 	char content[2048];
@@ -652,9 +596,8 @@ x_level()
 	return 0;
 }
 
-int
-x_userdefine()
-{
+int x_userdefine(const char *s) {
+	(void) s;
 	int id;
 	unsigned int newlevel;
 	extern int nettyNN;
@@ -710,9 +653,8 @@ x_userdefine()
 	return 0;
 }
 
-int
-x_cloak()
-{
+int x_cloak(const char *s) {
+	(void) s;
 	modify_user_mode(GMENU);
 	uinfo.invisible = (uinfo.invisible) ? NA : YEA;
 	update_utmp();
@@ -732,9 +674,8 @@ x_cloak()
 	return 0;
 }
 
-void
-x_edits()
-{
+int x_edits(const char *s) {
+	(void) s;
 	int aborted;
 	char ans[7], buf[STRLEN];
 	int ch, num, confirm;
@@ -760,7 +701,7 @@ x_edits()
 
 	getdata(num + 5, 0, "你要编修哪一项个人档案: ", ans, 2, DOECHO, YEA);
 	if (ans[0] - '0' <= 0 || ans[0] - '0' > num || ans[0] == '\n' || ans[0] == '\0')
-		return;
+		return 0;
 
 	ch = ans[0] - '0' - 1;
 	sethomefile_s(genbuf, sizeof(genbuf), currentuser.userid, e_file[ch]);
@@ -775,7 +716,7 @@ x_edits()
 			prints("取消删除行动\n");
 			pressreturn();
 			clear();
-			return;
+			return 0;
 		}
 		unlink(genbuf);
 		move(5, 0);
@@ -784,7 +725,7 @@ x_edits()
 		if (ch == 4)
 			WishNum = 9999;
 		clear();
-		return;
+		return 0;
 	}
 	modify_user_mode(EDITUFILE);
 	aborted = vedit(genbuf, NA, YEA);
@@ -801,11 +742,11 @@ x_edits()
 	pressreturn();
 	if (ch == 4)
 		WishNum = 9999;
+	return 0;
 }
 
-void
-a_edits()
-{
+int a_edits(const char *s) {
+	(void) s;
 	int aborted;
 	char ans[7], buf[STRLEN], buf2[STRLEN];
 	int ch, num, confirm;
@@ -840,7 +781,7 @@ a_edits()
 
 	modify_user_mode(ADMIN);
 	if (!check_systempasswd()) {
-		return;
+		return 0;
 	}
 	clear();
 	move(0, 0);
@@ -861,7 +802,7 @@ a_edits()
 		YEA);
 	ch = atoi(ans);
 	if (!isdigit(ans[0]) || ch <= 0 || ch > num || ans[0] == '\n' || ans[0] == '\0')
-		return;
+		return 0;
 	ch -= 1;
 	sprintf(buf2, "etc/%s", e_file[ch]);
 	move(3, 0);
@@ -875,7 +816,7 @@ a_edits()
 			prints("取消删除行动\n");
 			pressreturn();
 			clear();
-			return;
+			return 0;
 		}
 		{
 			char secu[STRLEN];
@@ -887,7 +828,7 @@ a_edits()
 		prints("%s 已删除\n", explain_file[ch]);
 		pressreturn();
 		clear();
-		return;
+		return 0;
 	}
 	modify_user_mode(EDITSFILE);
 	aborted = vedit(buf2, NA, YEA);
@@ -906,12 +847,12 @@ a_edits()
 		}
 	}
 	pressreturn();
+	return 0;
 }
 
 //added by pzhg for SysFiles2
-void
-a_edits2()
-{
+int a_edits2(const char *s) {
+	(void) s;
 	int aborted;
 	char ans[7], buf[STRLEN], buf2[STRLEN];
 	int ch, num, confirm;
@@ -926,7 +867,7 @@ a_edits2()
 
 	modify_user_mode(ADMIN);
 	if (!check_systempasswd()) {
-		return;
+		return 0;
 	}
 	clear();
 	move(0, 0);
@@ -947,7 +888,7 @@ a_edits2()
 		YEA);
 	ch = atoi(ans);
 	if (!isdigit(ans[0]) || ch <= 0 || ch > num || ans[0] == '\n' || ans[0] == '\0')
-		return;
+		return 0;
 	ch -= 1;
 	sprintf(buf2, "etc/%s", e_file[ch]);
 	move(3, 0);
@@ -961,7 +902,7 @@ a_edits2()
 			prints("取消删除行动\n");
 			pressreturn();
 			clear();
-			return;
+			return 0;
 		}
 		{
 			char secu[STRLEN];
@@ -973,7 +914,7 @@ a_edits2()
 		prints("%s 已删除\n", explain_file[ch]);
 		pressreturn();
 		clear();
-		return;
+		return 0;
 	}
 	modify_user_mode(EDITSFILE);
 	aborted = vedit(buf2, NA, YEA);
@@ -987,11 +928,11 @@ a_edits2()
 		}
 	}
 	pressreturn();
+	return 0;
 }
 
-void
-x_lockscreen()
-{
+int x_lockscreen(const char *s) {
+	(void) s;
 	char buf[PASSLEN + 1];
 	time_t now;
 	modify_user_mode(LOCKSCREEN);
@@ -1076,6 +1017,7 @@ x_lockscreen()
 			PASSLEN, NOECHO, YEA);
 	}
 	unblock_msg();
+	return 0;
 }
 
 int
@@ -1227,9 +1169,8 @@ datapipefd(int fds, int fdn)
 	}
 }
 
-int
-sendgoodwish(char *uid)
-{
+int sendgoodwish(const char *uid) {
+	(void) uid;
 	return sendGoodWish(NULL);
 }
 
@@ -1511,16 +1452,14 @@ sendGoodWish(char *userid)
 static void
 childreturn(int i)
 {
-
+	(void) i;
 	int retv;
 	while ((retv = waitpid(-1, NULL, WNOHANG | WUNTRACED)) > 0)
 		if (childpid > 0 && retv == childpid)
 			childpid = 0;
 }
 
-int
-ent_bnet(char *cmd)
-{
+int ent_bnet(const char *cmd) {
 	int p[2];
 #ifdef SSHBBS
 	move(9, 0);
@@ -1577,9 +1516,8 @@ ent_bnet(char *cmd)
 	return 0;
 }
 
-int
-x_denylevel()
-{
+int x_denylevel(const char *s) {
+	(void) s;
 	int id;
 	char ans[7], content[2048];
 	int oldlevel;
@@ -1810,7 +1748,7 @@ zsend_file(char *from, char *title)
 		}
 		if (isa) {
 			snprintf(attachfile, sizeof(attachfile), "%s-attach-%s",  name, fn);
-			if (getattach(fr, buf, attachfile, path, base64, len, 0)) {
+			if (getattach(fr, attachfile, path, base64, len, 0)) {
 				fprintf(fw, "附件%s错误\n", fn);
 			} else {
 				sprintf(attach_to_send, "%s/%s", path, attachfile);

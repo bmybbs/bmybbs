@@ -532,3 +532,6 @@ int ytht_file_has_word(char *file, char *word) {
 	return 0;
 }
 
+bool ytht_file_isfile_x(struct stat *st) {
+	return (st->st_mode & S_IFREG) != 0;
+}

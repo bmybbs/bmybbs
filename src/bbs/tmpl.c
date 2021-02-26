@@ -63,7 +63,7 @@ orig_tmpl_init(char * nboard, int mode, struct a_template template_array[], size
 	struct s_content content;
 	size_t templ_num;
 
-	setbfile(tmpldir, nboard, TEMPLATE_DIR);
+	setbfile(tmpldir, sizeof(tmpldir), nboard, TEMPLATE_DIR);
 
 	memset(template_array, 0, size * sizeof(struct a_template));
 	templ_num = 0;
@@ -127,7 +127,7 @@ orig_tmpl_save(struct a_template * ptemp, size_t temp_num, char *board){
 	FILE *fp;
 	char tmpldir[STRLEN];
 
-	setbfile(tmpldir, board, TEMPLATE_DIR);
+	setbfile(tmpldir, sizeof(tmpldir), board, TEMPLATE_DIR);
 	if( (fp = fopen( tmpldir, "w") ) == NULL ){
 		return -1;
 	}
@@ -256,7 +256,7 @@ tmpl_edit(int allnum)
 	move(1, 0);
 	prints("±à¼­/É¾³ýÄ£°åÕýÎÄ");
 
-	setbfile(filepath, currboard , template[allnum].tmpl->filename);
+	setbfile(filepath, sizeof(filepath), currboard, template[allnum].tmpl->filename);
 
 	getdata(3, 0, "(E)±à¼­ (D)É¾³ý (Q)È¡Ïû? [E]: ", ans, 2, DOECHO, YEA);
 	if (ans[0] == 'Q' || ans[0] == 'q')
@@ -468,7 +468,7 @@ tmpl_key(int key, int _allnum, int pagenum)
 			char filepath[STRLEN];
 
 			if( template[allnum].tmpl->filename[0] ){
-				setbfile(filepath, currboard, template[allnum].tmpl->filename);
+				setbfile(filepath, sizeof(filepath), currboard, template[allnum].tmpl->filename);
 				if(dashf(filepath))
 					unlink(filepath);
 			}
@@ -519,11 +519,11 @@ tmpl_key(int key, int _allnum, int pagenum)
 		if( template[allnum].tmpl->filename[0] == '\0' ){
 			now = time(NULL);
 			sprintf(template[allnum].tmpl->filename, "P.%ld.T", now);
-			setbfile(filepath, currboard, template[allnum].tmpl->filename);
+			setbfile(filepath, sizeof(filepath), currboard, template[allnum].tmpl->filename);
 			while ((fp = open(filepath, O_CREAT | O_EXCL | O_WRONLY, 0660)) == -1) {
 				now++;
 				sprintf(template[allnum].tmpl->filename, "P.%ld.T", now);
-				setbfile(filepath, currboard, template[allnum].tmpl->filename);
+				setbfile(filepath, sizeof(filepath), currboard, template[allnum].tmpl->filename);
 				if (count++ > MAX_POSTRETRY)
 					fail = 1;
 			}
@@ -547,7 +547,7 @@ tmpl_key(int key, int _allnum, int pagenum)
 	case 's' :
 		{
 		char filepath[STRLEN];
-		setbfile(filepath, currboard , template[allnum].tmpl->filename);
+		setbfile(filepath, sizeof(filepath), currboard, template[allnum].tmpl->filename);
 		clear();
 		ansimore(filepath,1);
 		tmpl_show();
@@ -769,7 +769,7 @@ choose_tmpl_key(int key, int _allnum, int pagenum){
 			return -1;
 		if( template[allnum].tmpl->filename[0] ){
 			clear();
-			setbfile(filepath, currboard, template[allnum].tmpl->filename);
+			setbfile(filepath, sizeof(filepath), currboard, template[allnum].tmpl->filename);
 			ansimore(filepath, 1);
 			tmpl_show();
 			return 1;
@@ -875,7 +875,7 @@ choose_tmpl_post(int star, int curr){
 
 	if( template[t_now].tmpl->filename[0] ){
 		struct stat st;
-		setbfile(filepath, currboard , template[t_now].tmpl->filename);
+		setbfile(filepath, sizeof(filepath), currboard, template[t_now].tmpl->filename);
 		if( stat(filepath, &st) == 0 && S_ISREG(st.st_mode) && st.st_size>2){
 			if((fpsrc = fopen(filepath,"r"))!=NULL){
 				char buf[256];

@@ -254,7 +254,7 @@ post_1984_to_board(char *dir, struct fileheader *fileinfo)
 	strcpy(postfile.title, title);
 	while (1) {
 		sprintf(newfname, "M.%ld.A", now);
-		setbfile(newfilepath, targetboard, newfname);
+		setbfile(newfilepath, sizeof(newfilepath), targetboard, newfname);
 		if (link(buf, newfilepath) == 0) {
 			//              unlink(buf);
 			postfile.filetime = now;

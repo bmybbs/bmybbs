@@ -47,14 +47,13 @@
 #include "bbs_global_vars.h"
 #include "bbs-internal.h"
 
-extern int moneycenter(void);        // moneycenter.c
-extern int x_active_manager(void);   // identify.c
+extern int moneycenter(const char *s);        // moneycenter.c
+extern int x_active_manager(const char *s);   // identify.c
+extern int kick_user_wrapper(const char *s);  // delete.c
 
 #define SC_BUFSIZE              20480
 #define SC_KEYSIZE              256
 #define SC_CMDSIZE              256
-#define sysconf_ptr( offset )   (&sysconf_buf[ offset ])
-#define pm2fptr(pm) sysconf_funcptr(sysconf_ptr((pm).func_off))
 
 struct menupos {
 	short col, line;
@@ -77,94 +76,95 @@ struct sdefine {
 } *sysvar;
 
 extern int nettyNN;
-char *sysconf_buf;
-int sysconf_menu, sysconf_key, sysconf_len;
+static char *sysconf_buf;
+static int sysconf_menu, sysconf_key, sysconf_len;
 
 /*Add By Excellent */
+typedef int (*SCommandFunc)(const char *);
 struct scommandlist {
 	char *name;
-	int (*fptr) (char *);
+	SCommandFunc fptr;
 };
 
 static struct mmapfile sysconf_mf = { .ptr = NULL };
 
 const struct scommandlist sysconf_cmdlist[] = {
 	{"domenu", domenu},
-	{"EGroups", (void *) EGroup},
-	{"BoardsAll", (void *) Boards},
-	{"BoardsNew", (void *) New},
-	{"GoodBrds", (void *) GoodBrds},
-	{"LeaveBBS", (void *) Goodbye},
-	{"Announce", (void *) Announce},
-	{"SelectBoard", (void *) Select},
-	{"ReadBoard", (void *) Read},
-	{"SetHelp", (void *) Personal},
-	{"Personal", (void *) Personal},
-	{"DenyLevel", (void *) x_denylevel},
-	{"OrdainBM", (void *) m_ordainBM},
-	{"RetireBM", (void *) m_retireBM},
-	{"Hell", (void *) showhell},
-	{"Prison", (void *) showprison},
-	{"Live", (void *) online},
-	{"SetAlarm", (void *) setcalltime},
-	{"MailAll", (void *) mailall},
-	{"LockScreen", (void *) x_lockscreen},
-	{"OffLine", (void *) offline},
-	{"ReadNewMail", (void *) m_new},
-	{"ReadMail", (void *) m_read},
-	{"SendMail", (void *) M_send},
-	{"GroupSend", (void *) g_send},
-	{"OverrideSend", (void *) ov_send},
-	{"SendNetMail", (void *) m_internet},
-	{"UserDefine", (void *) x_userdefine},
-	{"CopyKeys", (void *) x_copykeys},
-	{"DefineKeys", (void *) x_setkeys},
-	{"DefineKeys2", (void *) x_setkeys2},
-	{"DefineKeys3", (void *) x_setkeys3},
-	{"DefineKeys4", (void *) x_setkeys4},
-	{"DefineKeys5", (void *) x_setkeys5},
-	{"ShowFriends", (void *) t_friends},
-	{"ShowLogins", (void *) t_users},
+	{"EGroups", EGroup},
+	{"BoardsAll", Boards},
+	{"BoardsNew", New},
+	{"GoodBrds", GoodBrds},
+	{"LeaveBBS", Goodbye},
+	{"Announce", Announce},
+	{"SelectBoard", Select},
+	{"ReadBoard", Read},
+	{"SetHelp", Personal},
+	{"Personal", Personal},
+	{"DenyLevel", x_denylevel},
+	{"OrdainBM", m_ordainBM},
+	{"RetireBM", m_retireBM},
+	{"Hell", showhell},
+	{"Prison", showprison},
+	{"Live", online},
+	{"SetAlarm", setcalltime},
+	{"MailAll", mailall},
+	{"LockScreen", x_lockscreen},
+	{"OffLine", offline},
+	{"ReadNewMail", m_new},
+	{"ReadMail", m_read},
+	{"SendMail", M_send},
+	{"GroupSend", g_send},
+	{"OverrideSend", ov_send},
+	{"SendNetMail", m_internet},
+	{"UserDefine", x_userdefine},
+	{"CopyKeys", x_copykeys},
+	{"DefineKeys", x_setkeys},
+	{"DefineKeys2", x_setkeys2},
+	{"DefineKeys3", x_setkeys3},
+	{"DefineKeys4", x_setkeys4},
+	{"DefineKeys5", x_setkeys5},
+	{"ShowFriends", t_friends},
+	{"ShowLogins", t_users},
 	{"QueryUser", t_query},
-	{"WaitFriend", (void *) wait_friend},
-	{"Talk", (void *) t_talk},
-	{"SetPager", (void *) t_pager},
-	{"SetCloak", (void *) x_cloak},
-	{"SendMsg", (void *) s_msg},
-	{"ShowMsg", (void *) show_allmsgs},
-	{"SetFriends", (void *) t_friend},
-	{"SetRejects", (void *) t_reject},
-	{"FriendWall", (void *) friend_wall},
+	{"WaitFriend", wait_friend},
+	{"Talk", t_talk},
+	{"SetPager", t_pager},
+	{"SetCloak", x_cloak},
+	{"SendMsg", s_msg},
+	{"ShowMsg", show_allmsgs},
+	{"SetFriends", t_friend},
+	{"SetRejects", t_reject},
+	{"FriendWall", friend_wall},
 	{"EnterChat", ent_chat},
-	{"FillForm", (void *) x_fillform},
-	{"SetInfo", (void *) x_info},
-	{"EditUFiles", (void *) x_edits},
+	{"FillForm", x_fillform},
+	{"SetInfo", x_info},
+	{"EditUFiles", x_edits},
 	{"ExecBBSNet", ent_bnet},
 	{"GoodWish", sendgoodwish},
-	{"CheckForm", (void *) m_register},
+	{"CheckForm", m_register},
 	{"Identify", x_active_manager},
-	{"ModifyInfo", (void *) m_info},
-	{"ModifyLevel", (void *) x_level},
-	{"KickUser", (void *) kick_user},
-	{"OpenVote", (void *) m_vote},
-	{"NewBoard", (void *) m_newbrd},
-	{"EditBoard", (void *) m_editbrd},
-	{"EditSFiles", (void *) a_edits},
-	{"EditSFiles2",(void*) a_edits2},
-	{"Announceall", (void *) wall},
-	{"FCode", (void *) switch_code},
-	{"ADDRESSBOOK", (void *) addressbook},
-	{"CLEARNEWFLAG", (void *) clear_all_new_flag},
-	{"ADDPERSONAL", (void *) m_addpersonal},
+	{"ModifyInfo", m_info},
+	{"ModifyLevel", x_level},
+	{"KickUser", kick_user_wrapper},
+	{"OpenVote", m_vote},
+	{"NewBoard", m_newbrd},
+	{"EditBoard", m_editbrd},
+	{"EditSFiles", a_edits},
+	{"EditSFiles2", a_edits2},
+	{"Announceall", wall},
+	{"FCode", switch_code_wrapper},
+	{"ADDRESSBOOK", addressbook},
+	{"CLEARNEWFLAG", clear_all_new_flag},
+	{"ADDPERSONAL", m_addpersonal},
 	{"CancelMail", m_cancel},
-	{"MONEYCENTER", (void *) moneycenter},
-	{"Wall_telnet", (void *) wall_telnet},
+	{"MONEYCENTER", moneycenter},
+	{"Wall_telnet", wall_telnet},
 	{NULL, NULL}
 };
 
 static void encodestr(register char *str);
 static void decodestr(register char *str);
-static void *sysconf_funcptr(char *func_name);
+static SCommandFunc sysconf_funcptr(const char *func_name);
 static int sysconf_addstr(char *str);
 static void sysconf_addkey(char *key, char *str, int val);
 static void parse_sysconf(char *fname);
@@ -173,6 +173,14 @@ static void load_sysconf_image(char *imgfile);
 static int domenu_screen(struct smenuitem *pm, char *cmdprompt, struct menupos *pos);
 static void sysconf_addmenu(FILE * fp, char *key);
 static void sysconf_addblock(FILE * fp, char *key);
+
+static inline char *sysconf_ptr(int offset) {
+	return sysconf_buf + offset;
+}
+
+static inline SCommandFunc pm2fptr(struct smenuitem *pm) {
+	return sysconf_funcptr(sysconf_ptr(pm->func_off));
+}
 
 static void
 encodestr(str)
@@ -219,10 +227,7 @@ register char *str;
 	outs(buf);
 }
 
-static void *
-sysconf_funcptr(func_name)
-char *func_name;
-{
+static SCommandFunc sysconf_funcptr(const char *func_name) {
 	int n = 0;
 	char *str;
 
@@ -259,10 +264,7 @@ char *key;
 	return NULL;
 }
 
-int
-sysconf_eval(key)
-char *key;
-{
+int sysconf_eval(const char *key) {
 	int n;
 
 	for (n = 0; n < sysconf_key; n++)
@@ -617,10 +619,7 @@ struct menupos *pos;
 	}
 }
 
-int
-domenu(menu_name)
-char *menu_name;
-{
+int domenu(const char *menu_name) {
 	extern int refscreen;
 	struct smenuitem *pm;
 	struct menupos *pos;
@@ -694,7 +693,7 @@ char *menu_name;
 				return 0;
 			}
 			if (pm[now].func_off != 0) {
-				int (*fptr) () = pm2fptr(pm[now]);
+				SCommandFunc fptr = pm2fptr(&pm[now]);
 				move(1, cmdplen);
 				clrtoeol();
 				fptr(sysconf_ptr(pm[now].arg_off));
@@ -712,7 +711,7 @@ char *menu_name;
 			for (i = size - 1; i >= 0; i--) {
 				if (pos[i].line == pos[now].line && pos[i].col < pos[now].col)
 					break;
-				if (pm2fptr(pm[i]) == Goodbye)
+				if (pm2fptr(&pm[i]) == Goodbye)
 					break;
 			}
 			if (i >= 0) {
@@ -767,7 +766,7 @@ char *menu_name;
 				break;
 			else {
 				free(pos);
-				return Goodbye();
+				return Goodbye(NULL);
 			}
 		default:
 			cmd = toupper(cmd);

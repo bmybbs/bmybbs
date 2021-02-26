@@ -71,7 +71,6 @@ static enum YTHTBBS_BOARD_INFO_STATUS ythtbbs_board_load_internal(char *buf, siz
 
 enum YTHTBBS_BOARD_INFO_STATUS ythtbbs_board_load_intro(char *buf, size_t len, const struct boardheader *bh) {
 	char filename[128];
-	FILE *fp;
 
 	ythtbbs_board_set_board_file(filename, sizeof(filename), bh->filename, "introduction");
 	return ythtbbs_board_load_internal(buf, len, filename);

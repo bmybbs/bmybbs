@@ -286,7 +286,7 @@ struct postheader *header;
 	int hastmpl = 0;
 	if (!in_mail){
 		char tmplfile[STRLEN];
-		setbfile(tmplfile, currboard, ".tmpl");
+		setbfile(tmplfile, sizeof(tmplfile), currboard, ".tmpl");
 		if (file_exist(tmplfile))
 			hastmpl = file_size(tmplfile) / sizeof (struct a_template);
 	}

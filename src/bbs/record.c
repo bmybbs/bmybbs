@@ -98,18 +98,16 @@ int size;
 	//end
 }
 
-
-long
-get_num_records_excludeBottom(filename, size)  //返回不包含置底的帖子数，added by interma@bmy 2005.11.21
-char *filename;
-int size;
-{
+/**
+ * 返回不包含置底的帖子数
+ * @author interma
+ * @date 2005.11.21
+ */
+long get_num_records_excludeBottom(char *filename, int size) {
 	struct stat st;
 
 	if (stat(filename, &st) == -1)
 		return 0;
-	//add by hace 2003.05.05
-	char *s,buf[64];
 	int num=st.st_size;
 	return num/size;
 }
@@ -174,19 +172,22 @@ int size, id, number;
 
 	close(fd);
 
-	if(n<number*size){//hace
-		char *s,buf[64];
+	if (n < number*size) {//hace
+		char *s, buf[64];
 		struct stat st;
-		strcpy(buf,filename);
-		s=strrchr(buf,'/')+1;
-		strcpy(s,".TOPFILE");
-		if((stat(buf,&st)!=-1) && st.st_size>0){
-			fd=open(buf,O_RDONLY,0); //没有作错误检查
-			while(read(fd,&rptr[n],size)){
-				n+=size;
-				if(n>=number*size)break;
+		strcpy(buf, filename);
+		s = strrchr(buf, '/') + 1;
+		strcpy(s, ".TOPFILE");
+		if ((stat(buf, &st) != -1) && st.st_size > 0) {
+			if ((fd = open(buf, O_RDONLY, 0)) >= 0) {
+				int size_read;
+				while ((size_read = read(fd, rptr + n, size)) > 0) {
+					n += size_read;
+					if (n >= number * size)
+						break;
+				}
+				close(fd);
 			}
-			close(fd);
 		}
 	}
 	return (n /size);

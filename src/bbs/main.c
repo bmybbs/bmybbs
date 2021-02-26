@@ -231,6 +231,7 @@ int started = 0;
 static void
 talk_request(int signum)
 {
+	(void) signum;
 	signal(SIGUSR1, talk_request);
 	talkrequest = YEA;
 	bell();
@@ -1062,12 +1063,12 @@ char *argv[];
 		}
 		num_alcounter();
 		if (count_friends > 0 && DEFINE(DEF_LOGFRIEND, currentuser))
-			t_friends();
+			t_friends(NULL);
 		loaduserkeys();
 		if ((!(currentuser.userlevel & PERM_LOGINOK))
 				&& strcmp("guest", currentuser.userid)
 				&& strcmp("SYSOP", currentuser.userid)) {
-			x_fillform();
+			x_fillform(NULL);
 		}
 	}
 	if (strcmp(currentuser.userid, "guest")) {
@@ -1084,7 +1085,7 @@ char *argv[];
 			else
 				domenu("TOPMENU2");
 		}
-		Goodbye();
+		Goodbye(NULL);
 	}
 }
 
@@ -1280,6 +1281,7 @@ char *title, *prompt;
 static void
 R_endline(int signum)
 {
+	(void) signum;
 	signal(SIGTTOU, R_endline);
 	if (!can_R_endline)
 		return;

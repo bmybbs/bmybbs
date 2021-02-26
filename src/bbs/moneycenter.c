@@ -240,7 +240,8 @@ static void showAt(int line, int col, char *str, int flag) {
 }
 
 //moneycenter进入界面
-int moneycenter() {
+int moneycenter(const char *s) {
+	(void) s;
 	int ch;
 	int quit = 0;
 	modify_user_mode(MONEY);
@@ -9887,7 +9888,7 @@ static int stockboards() {
 						move(1, 0);
 						make_blist();
 						namecomplete("增加版面: ", bname);
-						setbpath(bpath, bname);
+						setbpath(bpath, sizeof(bpath), bname);
 						if ((*bname == '\0') || (stat(bpath, &st) == -1)) {
 							move(2, 0);
 							prints("不正确的讨论区.\n");
@@ -9951,7 +9952,7 @@ static int stockboards() {
 						move(1, 0);
 						make_blist();
 						namecomplete("暂停哪版交易: ", bname);
-						setbpath(bpath, bname);
+						setbpath(bpath, sizeof(bpath), bname);
 						if ((*bname == '\0') || (stat(bpath, &st) == -1)) {
 							move(2, 0);
 							prints("不正确的讨论区.\n");

@@ -130,11 +130,8 @@ int def_cursline;
 	return p;
 }
 
-void
-fixkeep(s, first, last)
-char *s;
-int first, last;
-{
+void fixkeep(char *s, int first, int last) {
+	(void) last;
 	struct keeploc *k;
 	k = getkeep(s, 1, 1);
 	if (k->crs_line >= first) {
@@ -225,15 +222,15 @@ char *pnt;
 	update_endline();
 }
 
-void (*quickview) () = NULL;
+void (*quickview) (int ent, struct fileheader *fileinfo, char *direct) = NULL;
 struct {
 	int crs_line;
-	char *data;
+	struct fileheader *data;
 	char *currdirect;
 } quickviewdata;
-static void
-doquickview(int i)
-{
+
+static void doquickview(int i) {
+	(void) i;
 	if (quickview != NULL)
 		quickview(quickviewdata.crs_line, quickviewdata.data, quickviewdata.currdirect);
 }
@@ -566,7 +563,7 @@ char *pnt;
 			return PARTUPDATE;
 		break;
 	case 'L':		/* ppfoong */
-		show_allmsgs();
+		show_allmsgs(NULL);
 		return FULLUPDATE;
 	case 'N':
 	case Ctrl('F'):
@@ -631,7 +628,7 @@ char *pnt;
 	case 'S':		/* youzi */
 		if (!HAS_PERM(PERM_PAGE, currentuser))
 			break;
-		s_msg();
+		s_msg(NULL);
 		return FULLUPDATE;
 		break;
 		/*      case 'c': *//* youzi */
@@ -641,7 +638,7 @@ char *pnt;
 		break;*/
 	case 'w':
 		if ((in_mail != YEA) && (HAS_PERM(PERM_READMAIL, currentuser))) {
-			m_read();
+			m_read(NULL);
 			return 999;
 		} else
 			break;
@@ -679,12 +676,8 @@ char *pnt;
 	return mode;
 }
 
-int
-auth_search_down(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int auth_search_down(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
 	struct keeploc *locmem;
 
 	locmem = getkeep(direct, 1, 1);
@@ -695,12 +688,8 @@ char *direct;
 	return DONOTHING;
 }
 
-int
-auth_search_up(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int auth_search_up(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
 	struct keeploc *locmem;
 
 	locmem = getkeep(direct, 1, 1);
@@ -711,12 +700,9 @@ char *direct;
 	return DONOTHING;
 }
 
-int
-post_search_down(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int post_search_down(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
+	(void) fileinfo;
 	struct keeploc *locmem;
 
 	locmem = getkeep(direct, 1, 1);
@@ -727,12 +713,9 @@ char *direct;
 	return DONOTHING;
 }
 
-int
-post_search_up(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int post_search_up(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
+	(void) fileinfo;
 	struct keeploc *locmem;
 
 	locmem = getkeep(direct, 1, 1);
@@ -743,19 +726,16 @@ char *direct;
 	return DONOTHING;
 }
 
-int
-show_author(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int show_author(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
+	(void) direct;
 	t_query(fileinfo->owner);
 	return FULLUPDATE;
 }
 
-int
-friend_author(int ent, struct fileheader *fileinfo, char *direct)
-{
+int friend_author(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
+	(void) direct;
 	extern int friendflag;
 	char uident[STRLEN];
 	char *q_id = fileinfo->owner;
@@ -779,12 +759,8 @@ friend_author(int ent, struct fileheader *fileinfo, char *direct)
 	return FULLUPDATE;
 }
 
-int
-SR_BMfunc(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int SR_BMfunc(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) direct;
 	int i, dotype=0;			//add by mintbaggio
 	char buf[STRLEN * 2], ch[4], BMch;
 	static const char *SR_BMitems[] = {
@@ -810,19 +786,21 @@ char *direct;
 	//end
 
 	//add by mintbaggio for BMfunc 'b'
-	sprintf(buf, "%s (0)取消", subBMitems[dotype-1]);
+	int len = 0;
+	len += snprintf(buf, sizeof(buf), "%s (0)取消", subBMitems[dotype-1]);
 	saveline(t_lines - 2, 0, NULL);
 	move(t_lines -2 , 0);
 	clrtoeol();
 	//end
 
-	for (i = 0; i < 5; i++)
-		sprintf(buf, "%s(%d)%s ", buf, i + 1, SR_BMitems[i]);
+	for (i = 0; i < 5 && sizeof(buf) - len > 0; i++)
+		len += snprintf(buf + len, sizeof(buf) - len, "(%d)%s ", i + 1, SR_BMitems[i]);
 	move(t_lines - 3, 0);
 	prints("%s", buf);
 	buf[0] = 0;
-	for (i = 5; i < 8; i++)//change 6 to 8 by mintbaggio
-		sprintf(buf, "%s(%d)%s ", buf, i + 1, SR_BMitems[i]);
+	len = 0;
+	for (i = 5; i < 8 && sizeof(buf) - len > 0; i++)//change 6 to 8 by mintbaggio
+		len += snprintf(buf + len, sizeof(buf) - len, "(%d)%s ", i + 1, SR_BMitems[i]);
 	strcat(buf, "? [0]: ");
 	getdata(t_lines - 2, 0, buf, ch, 3, DOECHO, YEA);
 	BMch = atoi(ch);
@@ -900,42 +878,30 @@ char *direct;
 	return PARTUPDATE;
 }
 
-int
-SR_last(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int SR_last(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
+	(void) direct;
 	sread(1, 0, ent, 0, fileinfo);
 	return PARTUPDATE;
 }
 
-int
-SR_first(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int SR_first(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
+	(void) direct;
 	sread(2, 0, ent, 0, fileinfo);
 	return PARTUPDATE;
 }
 
-int
-SR_read(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int SR_read(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
+	(void) direct;
 	sread(0, 1, 0, 0, fileinfo);
 	return FULLUPDATE;
 }
 
-int
-SR_author(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int SR_author(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
+	(void) direct;
 	sread(0, 1, 0, 1, fileinfo);
 	return FULLUPDATE;
 }
@@ -997,12 +963,9 @@ char *direct;
 	return DONOTHING;
 }
 #endif
-int
-t_search_down(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int t_search_down(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
+	(void) fileinfo;
 	struct keeploc *locmem;
 
 	locmem = getkeep(direct, 1, 1);
@@ -1013,12 +976,9 @@ char *direct;
 	return DONOTHING;
 }
 
-int
-t_search_up(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int t_search_up(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
+	(void) fileinfo;
 	struct keeploc *locmem;
 
 	locmem = getkeep(direct, 1, 1);
@@ -1029,12 +989,8 @@ char *direct;
 	return DONOTHING;
 }
 
-int
-thread_up(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int thread_up(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
 	struct keeploc *locmem;
 
 	locmem = getkeep(direct, 1, 1);
@@ -1053,12 +1009,8 @@ char *direct;
 	return DONOTHING;
 }
 
-int
-thread_down(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int thread_down(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
 	struct keeploc *locmem;
 
 	locmem = getkeep(direct, 1, 1);
@@ -1291,7 +1243,7 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
 		else if (uinfo.mode == DO1984)
 			set1984file(genbuf, fh2fname(&SR_fptr));
 		else
-			setbfile(genbuf, currboard, fh2fname(&SR_fptr));
+			setbfile(genbuf, sizeof(genbuf), currboard, fh2fname(&SR_fptr));
 		previous = locmem->crs_line;
 		setquotefile(genbuf);
 		if (passonly == 0 || passonly == 4) {
@@ -1508,7 +1460,7 @@ int offset, aflag;
 			else if (uinfo.mode == DO1984)
 				set1984file(p_name, fh2fname(&SR_fptr));
 			else
-				setbfile(p_name, currboard, fh2fname(&SR_fptr));
+				setbfile(p_name, sizeof(p_name), currboard, fh2fname(&SR_fptr));
 			if (searchpattern(p_name, query)) {
 				match = cursor_pos(locmem, now, 10);
 				break;

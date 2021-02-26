@@ -55,7 +55,6 @@ int ythtbbs_cache_utmp_insert(struct user_info *ptr_user_info) {
 	struct user_info *ptr_utmp_entry;  /* utmp 中的指针 */
 	time_t            local_now;
 	int               i, j, n, num[2];
-	pid_t             pid;
 	char              local_buf[64];
 
 	utmpfd = open(MY_BBS_HOME "/.CACHE.utmp.lock", O_RDWR | O_CREAT, 0600);

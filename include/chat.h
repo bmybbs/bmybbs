@@ -8,7 +8,7 @@
     Firebird Bulletin Board System
     Copyright (C) 1996, Hsien-Tsung Chang, Smallpig.bbs@bbs.cs.ccu.edu.tw
                         Peng Piaw Foong, ppfoong@csie.ncu.edu.tw
-    
+
     Copyright (C) 1998, Lin Zhou, Zhoulin@cai.cic.tsinghua.edu.cn
 
     it under the terms of the GNU General Public License as published by
@@ -60,6 +60,7 @@
 #define BADCIDCHARS " *:/"
 
 void printchatline(const char *str);
-int ent_chat(char *chatbuf);
+int ent_chat(const char *chatbuf);
 void setpager(void);
 #endif
+

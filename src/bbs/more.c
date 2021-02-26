@@ -131,9 +131,8 @@ NNread_init()
 	return 1;
 }
 
-void
-setcalltime()
-{
+int setcalltime(const char *s) {
+	(void) s;
 	char ans[6];
 	int ttt;
 
@@ -141,11 +140,12 @@ setcalltime()
 	clrtoeol();
 	getdata(1, 0, "几分钟后要系统提醒你: ", ans, 3, DOECHO, YEA);
 	if (!isdigit(ans[0]))
-		return;
+		return 0;
 	ttt = atoi(ans);
 	if (ttt <= 0)
-		return;
+		return 0;
 	calltime = time(0) + ttt * 60;
+	return 0;
 }
 
 /*Add by SmallPig*/

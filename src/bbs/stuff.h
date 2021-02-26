@@ -9,5 +9,4 @@ int askyn(char *str, int defa, int gobottom);
 void printdash(char *mesg);
 void bell(void);
 int deltree(char *dst);
-int do_exec(char *com, char *wd);
 #endif //BMYBBS_STUFF_H

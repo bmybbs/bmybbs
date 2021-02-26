@@ -239,7 +239,7 @@ char *bname;
 
 	board_ptr = ythtbbs_cache_Board_get_board_by_idx(i - 1);
 	if (board_ptr->header.clubnum != 0) {
-		setbfile(genbuf, currboard, "club_users");
+		setbfile(genbuf, sizeof(genbuf), currboard, "club_users");
 		return seek_in_file(genbuf, uid);
 	}
 	if (board_ptr->header.level == 0)
@@ -370,7 +370,7 @@ char *boardname;
 			memset(&(uinfo.clubrights), 0, 4 * sizeof (int));
 	}
 	old_right = HAS_CLUBRIGHT(board_ptr->header.clubnum, uinfo.clubrights);
-	setbfile(fn, boardname, "club_users");
+	setbfile(fn, sizeof(fn), boardname, "club_users");
 	if (!stat(fn, &st2))
 		if (club_rights_time < st2.st_mtime) {
 			if (seek_in_file(fn, currentuser.userid))

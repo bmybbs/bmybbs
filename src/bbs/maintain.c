@@ -157,9 +157,8 @@ char *title;
 	//standend();
 }
 
-int
-m_info()
-{
+int m_info(const char *s) {
+	(void) s;
 	struct userec local_uinfo;
 	int id;
 
@@ -358,9 +357,8 @@ setsecstr(char *buf, int ln)
 	}
 }
 
-int
-m_newbrd()
-{
+int m_newbrd(const char *s) {
+	(void) s;
 	struct boardheader newboard;
 	char ans[4];
 	char vbuf[100];
@@ -399,7 +397,7 @@ m_newbrd()
 		return -1;
 	strcpy(vbuf, "vote/");
 	strcat(vbuf, newboard.filename);
-	setbpath(genbuf, newboard.filename);
+	setbpath(genbuf, sizeof(genbuf), newboard.filename);
 	if (getbnum(newboard.filename) > 0 || mkdir(genbuf, 0777) == -1 || mkdir(vbuf, 0777) == -1) {
 		prints("\n错误的讨论区名称!!\n");
 		pressreturn();
@@ -545,9 +543,8 @@ struct boardheader *bh;
 	return;
 }
 
-int
-m_editbrd()
-{
+int m_editbrd(const char *s) {
+	(void) s;
 	char bname[STRLEN], buf[STRLEN], oldtitle[STRLEN], vbuf[256], *group;
 	char oldpath[STRLEN], newpath[STRLEN], tmp_grp[30];
 	int pos, noidboard, a_mv, isclub, innboard, isopenclub, is1984;
@@ -732,8 +729,8 @@ enterbname:
 			if (strcmp(fh.filename, newfh.filename)) {
 				char local_old[256], tar[256];
 				a_mv = 1;
-				setbpath(local_old, fh.filename);
-				setbpath(tar, newfh.filename);
+				setbpath(local_old, sizeof(local_old), fh.filename);
+				setbpath(tar, sizeof(tar), newfh.filename);
 				rename(local_old, tar);
 				sprintf(local_old, "vote/%s", fh.filename);
 				sprintf(tar, "vote/%s", newfh.filename);
@@ -791,9 +788,8 @@ enterbname:
 extern int delmsgs[];
 extern int delcnt;
 
-int
-m_register()
-{
+int m_register(const char *s) {
+	(void) s;
 	FILE *fn;
 	char ans[3];
 	int x;
@@ -854,9 +850,8 @@ m_register()
 	return 0;
 }
 
-int
-m_ordainBM()
-{
+int m_ordainBM(const char *s) {
+	(void) s;
 	return do_ordainBM(NULL, NULL);
 }
 
@@ -1030,9 +1025,8 @@ do_ordainBM(const char *userid, const char *abname)
 	return 0;
 }
 
-int
-m_retireBM()
-{
+int m_retireBM(const char *s) {
+	(void) s;
 	return do_retireBM(NULL, NULL);
 }
 
@@ -1206,9 +1200,8 @@ do_retireBM(const char *userid, const char *abname)
 	return 0;
 }
 
-int
-m_addpersonal()
-{
+int m_addpersonal(const char *s) {
+	(void) s;
 	FILE *fn;
 	char digestpath[80] = "0Announce/groups/GROUP_0/PersonalCorpus";
 	char personalpath[80], title[STRLEN];

@@ -80,5 +80,5 @@ int b_vote_maintain(void);
 int m_voter(void);
 int b_vote(void);
 int b_results(void);
-void m_vote(void);
+int m_vote(const char *s);
 #endif

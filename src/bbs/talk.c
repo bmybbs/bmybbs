@@ -168,9 +168,8 @@ static void creat_list() {
 	ythtbbs_cache_utmp_apply(listcuent, NULL);
 }
 
-int
-t_pager()
-{
+int t_pager(const char *s) {
+	(void) s;
 
 	if (uinfo.pager & ALL_PAGER) {
 		uinfo.pager &= ~ALL_PAGER;
@@ -225,7 +224,7 @@ char *userid;
 int t_query(const char *q_id) {
 	char uident[IDLEN + 1];
 	int tuid = 0;
-	int exp, perf;		/*Add by SmallPig */
+	int exp;		/*Add by SmallPig */
 	char qry_mail_dir[STRLEN];
 	char path[STRLEN];
 	char planid[IDLEN + 2];
@@ -268,7 +267,6 @@ int t_query(const char *q_id) {
 	sprintf(qry_mail_dir, "mail/%c/%s/%s", mytoupper(lookupuser.userid[0]), lookupuser.userid, DOT_DIR);
 
 	exp = countexp(&lookupuser);
-	perf = countperf(&lookupuser);
 	strcpy(expbuf,charexp(exp));	//add for displaying exp type.  rbb@bmy
 	prints("\033[1m%s \033[m(\033[1m%s\033[m) 共上站 \033[1;33m%d\033[m 次，发表过 \033[1;33m%d\033[m 篇文章",
 			lookupuser.userid, lookupuser.username, lookupuser.numlogins,
@@ -407,7 +405,7 @@ int t_query(const char *q_id) {
 			clrtoeol();
 			if (genbuf[0] != 'Y' && genbuf[0] != 'y')
 				break;
-			if (deleteoverride(uident, "friends") == -1)
+			if (deleteoverride(uident, YTHTBBS_OVERRIDE_FRIENDS) == -1)
 				sprintf(buf, "%s 本来就不在好友名单中", uident);
 			else
 				sprintf(buf, "%s 已从好友名单移除", uident);
@@ -423,7 +421,6 @@ int t_query(const char *q_id) {
 			prints("查询网友状态 (隐藏说明档)\n");
 			sprintf(qry_mail_dir, "mail/%c/%s/%s", mytoupper(lookupuser.userid[0]), lookupuser.userid, DOT_DIR);
 			exp = countexp(&lookupuser);
-			perf = countperf(&lookupuser);
 			prints("\033[1m%s \033[m(\033[1m%s\033[m) 共上站 \033[1;33m%d\033[m 次，发表过 \033[1;33m%d\033[m 篇文章",
 					lookupuser.userid, lookupuser.username, lookupuser.numlogins,
 					lookupuser.numposts);
@@ -525,9 +522,8 @@ static int show_special(char *id2) {
 	return 0;
 }//add by wjbta@bmy
 
-static int
-bm_printboard(struct boardmanager *bm, void *farg)
-{
+static int bm_printboard(struct boardmanager *bm, void *farg) {
+	(void) farg;
 	if (canberead(bm->board))
 		prints("%s ", bm->board);
 	return 0;
@@ -579,9 +575,8 @@ struct user_info *up;
 	return (up->active && uid == up->uid);
 }
 
-int
-t_talk()
-{
+int t_talk(const char *s) {
+	(void) s;
 	int netty_talk;
 
 #ifdef DOTIMEOUT
@@ -875,6 +870,7 @@ list:
 			read(msgsock, reason, sizeof (reason));
 			prints("%s (%s)说：%s\n", uin.userid, uin.username, reason);
 			pressreturn();
+			break;
 		default:
 			sprintf(save_page_requestor, "%s (%s)", uin.userid, uin.username);
 //#ifdef TALK_LOG
@@ -1347,7 +1343,7 @@ int fd;
 					do_talk_char(&mywin, '\r');
 				}
 			} else if (ch == Ctrl('P') && HAS_PERM(PERM_BASIC, currentuser)) {
-				t_pager();
+				t_pager(NULL);
 				update_utmp();
 				update_endline();
 			}
@@ -1503,12 +1499,12 @@ int addtooverride(const char *uident) {
 	return n;
 }
 
-int deleteoverride(const char *uident, const char *filename) {
+int deleteoverride(const char *uident, const enum ythtbbs_override_type override_type) {
 	int deleted;
 	struct ythtbbs_override fh;
 	char buf[STRLEN];
 
-	sethomefile_s(buf, sizeof(buf), currentuser.userid, filename);
+	sethomefile_s(buf, sizeof(buf), currentuser.userid, (override_type == YTHTBBS_OVERRIDE_FRIENDS) ? "friends" : "rejects");
 	deleted = search_record(buf, &fh, sizeof (fh), (void *) cmpfnames, (void *)uident); // cmpfnames 传入 uident，此处省略 const 是安全的
 	if (deleted > 0) {
 		if (delete_record(buf, sizeof (fh), deleted) != -1) {
@@ -1552,12 +1548,8 @@ char buf[512];
 	return buf;
 }
 
-static int
-override_edit(ent, fh, direc)
-int ent;
-struct ythtbbs_override *fh;
-char *direc;
-{
+static int override_edit(int ent, struct ythtbbs_override *fh, char *direc) {
+	(void) ent;
 	struct ythtbbs_override nh;
 	char buf[STRLEN / 2];
 	int pos;
@@ -1598,12 +1590,9 @@ override_add()
 	return FULLUPDATE;
 }
 
-static int
-override_dele(ent, fh, direct)
-int ent;
-struct ythtbbs_override *fh;
-char *direct;
-{
+static int override_dele(int ent, struct ythtbbs_override *fh, char *direct) {
+	(void) ent;
+	(void) direct;
 	char buf[STRLEN];
 	char desc[5];
 	char fname[10];
@@ -1622,7 +1611,7 @@ char *direct;
 	if (askyn(buf, NA, NA) == YEA) {
 		move(t_lines - 2, 0);
 		clrtoeol();
-		if (deleteoverride(fh->id, fname) == 1) {
+		if (deleteoverride(fh->id, (friendflag) ? YTHTBBS_OVERRIDE_FRIENDS : YTHTBBS_OVERRIDE_REJECTS) == 1) {
 			prints("已从%s名单中移除【%s】,按任何键继续...", desc, fh->id);
 			deleted = YEA;
 		} else
@@ -1649,12 +1638,10 @@ char *direct;
 	return override_edit(ent, fh, direct);
 }
 
-static int
-friend_add(ent, fh, direct)
-int ent;
-struct ythtbbs_override *fh;
-char *direct;
-{
+static int friend_add(int ent, struct ythtbbs_override *fh, char *direct) {
+	(void) ent;
+	(void) fh;
+	(void) direct;
 	friendflag = YEA;
 	return override_add();
 }
@@ -1669,24 +1656,18 @@ char *direct;
 	return override_dele(ent, fh, direct);
 }
 
-static int
-friend_mail(ent, fh, direct)
-int ent;
-struct ythtbbs_override *fh;
-char *direct;
-{
+static int friend_mail(int ent, struct ythtbbs_override *fh, char *direct) {
+	(void) ent;
+	(void) direct;
 	if (!HAS_PERM(PERM_POST, currentuser))
 		return DONOTHING;
 	m_send(fh->id);
 	return FULLUPDATE;
 }
 
-static int
-friend_query(ent, fh, direct)
-int ent;
-struct ythtbbs_override *fh;
-char *direct;
-{
+static int friend_query(int ent, struct ythtbbs_override *fh, char *direct) {
+	(void) ent;
+	(void) direct;
 	int ch;
 
 	if (t_query(fh->id) == -1)
@@ -1738,32 +1719,22 @@ char *direct;
 	return override_edit(ent, fh, direct);
 }
 
-static int
-reject_add(ent, fh, direct)
-int ent;
-struct ythtbbs_override *fh;
-char *direct;
-{
+static int reject_add(int ent, struct ythtbbs_override *fh, char *direct) {
+	(void) ent;
+	(void) fh;
+	(void) direct;
 	friendflag = NA;
 	return override_add();
 }
 
-static int
-reject_dele(ent, fh, direct)
-int ent;
-struct ythtbbs_override *fh;
-char *direct;
-{
+static int reject_dele(int ent, struct ythtbbs_override *fh, char *direct) {
 	friendflag = NA;
 	return override_dele(ent, fh, direct);
 }
 
-static int
-reject_query(ent, fh, direct)
-int ent;
-struct ythtbbs_override *fh;
-char *direct;
-{
+static int reject_query(int ent, struct ythtbbs_override *fh, char *direct) {
+	(void) ent;
+	(void) direct;
 	int ch;
 
 	if (t_query(fh->id) == -1)
@@ -1801,28 +1772,26 @@ reject_help()
 	return FULLUPDATE;
 }
 
-void
-t_friend()
-{
+int t_friend(const char *s) {
+	(void) s;
 	char buf[STRLEN];
 
 	friendflag = YEA;
 	sethomefile_s(buf, sizeof(buf), currentuser.userid, "friends");
 	i_read(GMENU, buf, override_title, (void *) override_doentry, friend_list, sizeof (struct ythtbbs_override));
 	clear();
-	return;
+	return 0;
 }
 
-void
-t_reject()
-{
+int t_reject(const char *s) {
+	(void) s;
 	char buf[STRLEN];
 
 	friendflag = NA;
 	sethomefile_s(buf, sizeof(buf), currentuser.userid, "rejects");
 	i_read(GMENU, buf, override_title, (void *) override_doentry, reject_list, sizeof (struct ythtbbs_override));
 	clear();
-	return;
+	return 0;
 }
 
 struct user_info *t_search(char *sid, int pid, int invisible_check) {
@@ -1868,7 +1837,7 @@ getfriendstr()
 		tmp[i].id[sizeof(EMPTY.id) - 1] = 0;
 		uinfo.friend[i] = ythtbbs_cache_UserTable_search_usernum(tmp[i].id);
 		if (uinfo.friend[i] == 0)
-			deleteoverride(tmp[i].id, "friends");
+			deleteoverride(tmp[i].id, YTHTBBS_OVERRIDE_FRIENDS);
 		/* 顺便删除已不存在帐号的好友 */
 	}
 	free(tmp);
@@ -1896,15 +1865,14 @@ getrejectstr()
 		tmp[i].id[sizeof(EMPTY.id) - 1] = 0;
 		uinfo.reject[i] = ythtbbs_cache_UserTable_search_usernum(tmp[i].id);
 		if (uinfo.reject[i] == 0)
-			deleteoverride(tmp[i].id, "rejects");
+			deleteoverride(tmp[i].id, YTHTBBS_OVERRIDE_REJECTS);
 	}
 	free(tmp);
 	return 0;
 }
 
-int
-wait_friend()
-{
+int wait_friend(const char *s) {
+	(void) s;
 	FILE *fp;
 	int tuid;
 	char buf[STRLEN];

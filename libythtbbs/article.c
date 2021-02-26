@@ -169,53 +169,62 @@ change_dir(char *direct, struct fileheader *fileinfo,
 void
 DIR_do_mark(struct fileheader *fileinfo, struct fileheader *newfileinfo)
 {
+	(void) newfileinfo;
 	SWITCH_FLAG(fileinfo->accessed, FH_MARKED);
 }
 
 void
 DIR_do_digest(struct fileheader *fileinfo, struct fileheader *newfileinfo)
 {
+	(void) newfileinfo;
 	SWITCH_FLAG(fileinfo->accessed, FH_DIGEST);
 }
 
 void
 DIR_do_underline(struct fileheader *fileinfo, struct fileheader *newfileinfo)
 {
+	(void) newfileinfo;
 	SWITCH_FLAG(fileinfo->accessed, FH_NOREPLY);
 }
 
 void DIR_do_water(struct fileheader *fileinfo, struct fileheader *newfileinfo)
 {
+	(void) newfileinfo;
 	SWITCH_FLAG(fileinfo->accessed, FH_ISWATER);
 }
 
 void
 DIR_do_allcanre(struct fileheader *fileinfo, struct fileheader *newfileinfo)
 {
+	(void) newfileinfo;
 	SWITCH_FLAG(fileinfo->accessed, FH_ALLREPLY);
 }
 
 void
 DIR_do_attach(struct fileheader *fileinfo, struct fileheader *newfileinfo)
 {
+	(void) newfileinfo;
 	fileinfo->accessed |= FH_ATTACHED;
 }
 
 void
 DIR_clear_dangerous(struct fileheader *fileinfo, struct fileheader *newfileinfo)
 {
+	(void) newfileinfo;
 	fileinfo->accessed &= ~FH_DANGEROUS;
 }
 
 void
 DIR_do_dangerous(struct fileheader *fileinfo, struct fileheader *newfileinfo)
 {
+	(void) newfileinfo;
 	fileinfo->accessed |= FH_DANGEROUS;
 }
 
 void
 DIR_do_markdel(struct fileheader *fileinfo, struct fileheader *newfileinfo)
 {
+	(void) newfileinfo;
 	if(fileinfo->accessed & FH_MINUSDEL)			//add by mintbaggio@BMY 040321 for minus-postnums delete
 		fileinfo->accessed &= ~FH_MINUSDEL;
 	SWITCH_FLAG(fileinfo->accessed, FH_DEL);
@@ -224,6 +233,7 @@ DIR_do_markdel(struct fileheader *fileinfo, struct fileheader *newfileinfo)
 void
 DIR_do_mark_minus_del(struct fileheader *fileinfo, struct fileheader *newfileinfo)
 {								//add by mintbaggio@BMY 040321 for minus-postnums delete
+	(void) newfileinfo;
 	if(fileinfo->accessed & FH_DEL)
 		fileinfo->accessed &= ~FH_DEL;
 	SWITCH_FLAG(fileinfo->accessed, FH_MINUSDEL);
@@ -253,6 +263,7 @@ DIR_do_evaluate(struct fileheader *fileinfo, struct fileheader *newfileinfo)
 void
 DIR_do_spec(struct fileheader *fileinfo, struct fileheader *newfileinfo)
 {
+	(void) newfileinfo;
 	SWITCH_FLAG(fileinfo->accessed, FH_SPEC);
 }
 
@@ -266,12 +277,14 @@ DIR_do_import(struct fileheader *fileinfo, struct fileheader *newfileinfo)
 void
 DIR_do_suremarkdel(struct fileheader *fileinfo, struct fileheader *newfileinfo)
 {
+	(void) newfileinfo;
 	fileinfo->accessed |= FH_DEL;
 }
 
 void
 DIR_do_top(struct fileheader *fileinfo, struct fileheader *newfileinfo)
 {
+	(void) newfileinfo;
 	SWITCH_FLAG(fileinfo->accessed, FILE_TOP1);
 }
 
@@ -511,6 +524,7 @@ static int is_article_link_in_file(char *boardname, time_t thread, char *filenam
  * @return 若文件已更新，则返回1
  */
 static int update_article_link_in_file(char *boardname, time_t oldthread, time_t newfiletime, char *newtitle, char *filename) {
+	(void) newtitle;
 	int fd=open(filename, O_RDONLY);
 	if(fd == -1)
 		return -1;

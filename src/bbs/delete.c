@@ -38,9 +38,8 @@
 #include "boards.h"
 #include "bbs_global_vars.h"
 
-void
-offline()
-{
+int offline(const char *s) {
+	(void) s;
 	char buf[STRLEN];
 
 	modify_user_mode(OFFLINE);
@@ -50,7 +49,7 @@ offline()
 		prints("\n\n您有重任在身, 不能随便自杀啦!!\n");
 		pressreturn();
 		clear();
-		return;
+		return 0;
 	}
 	if (currentuser.stay < 86400) {
 		move(1, 0);
@@ -59,7 +58,7 @@ offline()
 		prints("只有上站时间超过24小时的用户才能自杀.\n");
 		pressreturn();
 		clear();
-		return;
+		return 0;
 	}
 
 	getdata(1, 0, "请输入你的密码: ", buf, PASSLEN, NOECHO, YEA);
@@ -67,14 +66,14 @@ offline()
 		prints("\n\n很抱歉, 您输入的密码不正确。\n");
 		pressreturn();
 		clear();
-		return;
+		return 0;
 	}
 	getdata(3, 0, "请问你叫什么名字? ", buf, NAMELEN, DOECHO, YEA);
 	if (*buf == '\0' || strcmp(buf, currentuser.realname)) {
 		prints("\n\n很抱歉, 我并不认识你。\n");
 		pressreturn();
 		clear();
-		return;
+		return 0;
 	}
 	clear();
 	move(1, 0);
@@ -90,20 +89,17 @@ offline()
 		currentuser.dietime = currentuser.stay + 6*18 * 24 * 60 * 60;//改自杀恢复为6*18天   六道轮回+18层地狱
 		substitute_record(PASSFILE, &currentuser, sizeof (currentuser), usernum);
 		Q_Goodbye();
-		return;
+		return 0;
 	}
+
+	return 0;
 }
 
-int
-online()
-{
+int online(const char *s) {
+	(void) s;
 	char buf[STRLEN];
-	struct tm *nowtime;
-	time_t nowtimeins;
 	modify_user_mode(OFFLINE);
 	clear();
-	nowtimeins = time(NULL);
-	nowtime = localtime(&nowtimeins);
 	if ((currentuser.stay <= currentuser.dietime)) {
 		move(1, 0);
 		prints("\n\n死期未满啊!!\n");
@@ -234,5 +230,12 @@ kick_user(const struct user_info *userinfo, int mode)
 		clear();
 	}
 	return 1;
+}
+
+// 用于 comm_list
+// 此时 uinfo.mode = 10 (MMENU)，会进入查询逻辑
+int kick_user_wrapper(const char *s) {
+	(void) s;
+	return kick_user(NULL, 0);
 }
 

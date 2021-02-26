@@ -132,8 +132,8 @@ static int commend_article(char* board, struct fileheader* fileinfo);
 static int commend_article2(char* board, struct fileheader* fileinfo);
 static int del_commend(int offset);
 static int del_commend2(int offset);
-static int do_commend(char* board, struct fileheader* fileinfo);
-static int do_commend2(char* board, struct fileheader* fileinfo);
+static int do_commend(struct fileheader* fileinfo);
+static int do_commend2(struct fileheader* fileinfo);
 static int count_commend();
 static int count_commend2();
 
@@ -403,20 +403,13 @@ char filepath[];
 	strcpy(quote_file, filepath);
 }
 
-char *
-setbpath(buf, boardname)
-char *buf, *boardname;
-{
-	strcpy(buf, "boards/");
-	strcat(buf, boardname);
+char *setbpath(char *buf, size_t len, const char *boardname) {
+	snprintf(buf, len, "boards/%s", boardname);
 	return buf;
 }
 
-char *
-setbfile(buf, boardname, filename)
-char *buf, *boardname, *filename;
-{
-	sprintf(buf, "boards/%s/%s", boardname, filename);
+char *setbfile(char *buf, size_t len, const char *boardname, const char *filename) {
+	snprintf(buf, len, "boards/%s/%s", boardname, filename);
 	return buf;
 }
 
@@ -425,9 +418,9 @@ deny_me(char *bname)
 {
 	char buf[STRLEN];
 	int deny1, deny2;
-	setbfile(buf, bname, "deny_users");
+	setbfile(buf, sizeof(buf), bname, "deny_users");
 	deny1 = seek_in_file(buf, currentuser.userid);
-	setbfile(buf, bname, "deny_anony");
+	setbfile(buf, sizeof(buf), bname, "deny_anony");
 	deny2 = seek_in_file(buf, currentuser.userid);
 	return (deny1 || deny2);
 }
@@ -485,12 +478,12 @@ junkboard()
 	return seek_in_file("etc/junkboards", currboard) || club_board(currboard);
 }
 
-void
-Select()
-{
+int Select(const char *s) {
+	(void) s;
 	modify_user_mode(SELECT);
 	do_select(0, NULL, NULL);
-	Read();
+	Read(NULL);
+	return 0;
 }
 
 #if 0
@@ -619,7 +612,7 @@ char *direct;
 			sprintf(newfname, "%c.%d.A",
 				(fileinfo->accessed & FH_ISDIGEST) ? 'G' : 'M',
 				(int) now);
-			setbfile(newfilepath, currboard, newfname);
+			setbfile(newfilepath, sizeof(newfilepath), currboard, newfname);
 			if (link(filepath, newfilepath) == 0) {
 				unlink(filepath);
 				UFile.filetime = now;
@@ -648,12 +641,8 @@ char *direct;
 }
 
 /* Add by SmallPig */
-int
-do_cross(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int do_cross(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
 	char bname[STRLEN];
 	char ispost[10];
 	int ddigestmode;
@@ -930,13 +919,13 @@ struct fileheader *fileinfo;
 char *direct;
 {
 	int ch;
-	time_t starttime;
 #ifdef ENABLE_MYSQL
+	time_t starttime;
 	int cou;
 	extern int effectiveline;
 	static time_t lastevaluetime = 0;
-#endif
 	starttime = time(NULL);
+#endif
 	clear();
 	directfile(genbuf, direct, fh2fname(fileinfo));
 	SETREAD(fileinfo, &brc);
@@ -1091,7 +1080,7 @@ char *direct;
 		if (!HAS_PERM(PERM_PAGE, currentuser))
 			break;
 		clear();
-		s_msg();
+		s_msg(NULL);
 		break;
 	case Ctrl('D'):	/*by yuhuan for deny anonymous */
 		if (!IScurrBM)
@@ -1184,6 +1173,8 @@ sb_show()
 static int
 sb_key(int key, int allnum, int pagenum)
 {
+	(void) allnum;
+	(void) pagenum;
 	switch(key){
 	default:
 		break;
@@ -1247,12 +1238,9 @@ super_select_board(char *bname)
 	return 0;
 }
 
-static int
-do_select(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+static int do_select(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
+	(void) fileinfo;
 	char bname[STRLEN], bpath[STRLEN];
 	struct stat st;
 	int ret;
@@ -1271,7 +1259,7 @@ char *direct;
 	make_blist();
 	if((ret=namecomplete((char *) NULL, bname))=='#') //super_select_board
 		super_select_board(bname);
-	setbpath(bpath, bname);
+	setbpath(bpath, sizeof(bpath), bname);
 	if (*bname == '\0')
 		return FULLUPDATE;
 	if (stat(bpath, &st) == -1) {
@@ -1538,7 +1526,7 @@ char quote_mode;
 	char op;
 	int bflag;
 	int line_count = 0;
-	int attach;
+	// int attach;
 	qfile = quote_file;
 	quser = quote_user;
 	bflag = strncmp(qfile, "mail", 4);
@@ -1564,7 +1552,7 @@ char quote_mode;
 				fprintf(outf,
 					"\n【 在 %-.55s 的来信中提到: 】\n",
 					quser);
-			attach = 0;
+			// attach = 0; // unused IronBlood 2021.02.19
 			if (op == 'A') {
 				while (fgets(buf, 256, inf) != NULL) {
 					if (skipattach(buf, sizeof (buf), inf))
@@ -1767,12 +1755,12 @@ post_cross(char *bname, int mode, int islocal, int hascheck, int dangerous)
 		strcpy(buf4, quote_title);
 	strncpy(save_title, buf4, STRLEN);
 	save_title[STRLEN - 1] = 0;
-	setbfile(filepath, bname, fname);
+	setbfile(filepath, sizeof(filepath), bname, fname);
 	count = 0;
 	while ((fp = open(filepath, O_CREAT | O_EXCL | O_WRONLY, 0660)) == -1) {
 		now++;
 		sprintf(fname, "M.%ld.A", now);
-		setbfile(filepath, bname, fname);
+		setbfile(filepath, sizeof(filepath), bname, fname);
 		if (count++ > MAX_POSTRETRY) {
 			return -1;
 		}
@@ -1801,7 +1789,7 @@ post_cross(char *bname, int mode, int islocal, int hascheck, int dangerous)
 		postfile.accessed |= FH_MARKED;
 
 	ytht_strsncpy(postfile.owner, whopost, sizeof(postfile.owner));
-	setbfile(filepath, bname, fname);
+	setbfile(filepath, sizeof(filepath), bname, fname);
 	modify_user_mode(POSTING);
 	strcpy(bkcurrboard, currboard);
 	strcpy(currboard, bname);
@@ -2041,7 +2029,7 @@ post_article(struct fileheader *sfh)
 		do_delay( -1);	/* by ylsdd */
 		return FULLUPDATE;
 	}
-	setbfile(filepath, currboard, "");
+	setbfile(filepath, sizeof(filepath), currboard, "");
 	t = trycreatefile(filepath, "M.%ld.A", now_t, 100);
 	if (t < 0)
 		return -1;
@@ -2131,7 +2119,7 @@ post_article(struct fileheader *sfh)
 	while (1)
 	{
 		sprintf(newfname, "M.%ld.A", t);
-		setbfile(newfilepath, currboard, newfname);
+		setbfile(newfilepath, sizeof(newfilepath), currboard, newfname);
 		if (link(filepath, newfilepath) == 0)
 		{
 			unlink(filepath);
@@ -2589,6 +2577,7 @@ int has_perm_commend(char* userid)			//add by mintbaggio 040406 for front page c
 
 //add by mintbaggio 040331 for front page commend
 static int mark_commend(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent; (void) direct;
 	if(!HAS_PERM(PERM_SYSOP, currentuser) && !has_perm_commend(currentuser.userid))
 		return DONOTHING;
 	commend_article(currboard, fileinfo);
@@ -2597,6 +2586,7 @@ static int mark_commend(int ent, struct fileheader *fileinfo, char *direct) {
 
 //add by mintbaggio 040331 for front page commend
 static int mark_commend2(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent; (void) direct;
 	if(!HAS_PERM(PERM_SYSOP, currentuser) && !has_perm_commend(currentuser.userid))
 		return DONOTHING;
 	commend_article2(currboard, fileinfo);
@@ -2684,12 +2674,9 @@ import_spec()
 	return DIRCHANGED;
 }
 
-static int
-moveintobacknumber(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+static int moveintobacknumber(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
+	(void) fileinfo;
 	struct tm atm;
 	time_t t;
 	char buf[STRLEN], content[1024];
@@ -2753,12 +2740,9 @@ char *direct;
 	return FULLUPDATE;
 }
 
-int
-del_range(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int del_range(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
+	(void) fileinfo;
 	char num[16], content[1024];
 	int inum1, inum2, ret;
 	if (uinfo.mode == READING)
@@ -2907,9 +2891,10 @@ char *direct;
 		fileinfo->title);
 	newtrace(genbuf);
 	currfiletime = fileinfo->filetime;
-	setbfile(filepath, currboard, fh2fname(fileinfo));
-	sprintf(fileinfo->title, "%-32.32s - %s", fileinfo->title,
-		currentuser.userid);
+	setbfile(filepath, sizeof(filepath), currboard, fh2fname(fileinfo));
+	char tmp_buf[sizeof(fileinfo->title)];
+	ytht_strsncpy(tmp_buf, fileinfo->title, sizeof(tmp_buf));
+	sprintf(fileinfo->title, "%-32.32s - %s", tmp_buf, currentuser.userid);
 	post_to_1984(filepath, fileinfo, 1);
 	if (keep <= 0) {
 		fail = delete_file(direct, sizeof (struct fileheader), ent, (void *) cmpfilename);
@@ -3054,7 +3039,7 @@ struct fileheader *fptr;
 			clear();
 			return 0;
 		}
-		setbfile(genbuf, currboard, fh2fname(fptr));
+		setbfile(genbuf, sizeof(genbuf), currboard, fh2fname(fptr));
 		ytht_strsncpy(quote_file, genbuf, sizeof(quote_file));
 		ytht_strsncpy(quote_user, fh2owner(fptr), sizeof(quote_user));
 #ifdef NOREPLY
@@ -3107,12 +3092,9 @@ struct fileheader *fptr;
 	return 0;
 }
 
-static int
-clear_new_flag(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+static int clear_new_flag(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
+	(void) direct;
 	static int lastf;
 	if (now_t - lastf > 2)
 		clear_new_flag_quick(max(fileinfo->filetime, fileinfo->edittime));
@@ -3122,12 +3104,9 @@ char *direct;
 	return PARTUPDATE;
 }
 
-static int
-sequential_read(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+static int sequential_read(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) direct;
+	(void) fileinfo;
 	readpost = 1;
 	clear();
 	return sequential_read2(ent);
@@ -3148,24 +3127,16 @@ char *direct ;*/
 }
 
 /* Added by netty to handle post saving into (0)Announce */
-int
-Save_post(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int Save_post(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
+	(void) direct;
 	if (!IScurrBM)
 		return DONOTHING;
 	return (a_Save("0Announce", currboard, fileinfo, NA));
 }
 
 /* Added by ylsdd */
-static void
-quickviewpost(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+static void quickviewpost(int ent, struct fileheader *fileinfo, char *direct) {
 	char buf[STRLEN * 2];
 	int i, j, x, y;
 	int attach = 0, has_attach;
@@ -3233,7 +3204,7 @@ char *direct;
 static int
 change_t_lines()
 {
-	extern void (*quickview) ();
+	extern void (*quickview) (int ent, struct fileheader *fileinfo, char *direct);
 	if (0)
 		if (!IScurrBM)
 			return DONOTHING;
@@ -3344,12 +3315,8 @@ show_b_note()
 	return what_to_do();
 }
 
-static int
-show_file_info(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+static int show_file_info(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) direct;
 	struct boardmem *bp;
 	char temp_sessionid[10];
 	time_t t = fileinfo->filetime;
@@ -3407,7 +3374,7 @@ what_to_do()
 		move(0, 0);
 		prints("发送Internet信件");
 		if (HAS_PERM(PERM_POST, currentuser))
-			m_internet();
+			m_internet(NULL);
 		break;
 	case 'c':
 		if (HAS_PERM(PERM_CHAT, currentuser))
@@ -3415,7 +3382,7 @@ what_to_do()
 		break;
 	case 'o':
 		if (HAS_PERM(PERM_BASIC, currentuser)) {
-			t_friend();
+			t_friend(NULL);
 			retv = 999;
 		}
 		break;
@@ -3642,9 +3609,8 @@ notepad()
 	return;
 }
 
-int
-Goodbye()
-{
+int Goodbye(const char *s) {
+	(void) s;
 	char spbuf[STRLEN];
 	int choose;
 	FILE *fp = NULL;
@@ -3653,7 +3619,7 @@ Goodbye()
 	if (strcmp(currentuser.userid, "guest") && ythtbbs_cache_UserTable_count(usernum) == 1) {
 		if (DEFINE(DEF_MAILMSG, currentuser)) {
 			if (get_msgcount(0, currentuser.userid) > 0)
-				show_allmsgs();
+				show_allmsgs(NULL);
 		} else {
 			clear_msg(currentuser.userid);
 		}
@@ -3840,12 +3806,8 @@ setbdir(char *buf, char *boardname, int Digestmode)
 		sprintf(buf, "boards/%s/%s", boardname, dir);
 }
 
-int
-zmodem_sendfile(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int zmodem_sendfile(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
 	char *t;
 	char buf1[512];
 
@@ -4124,7 +4086,7 @@ b_notes_edit()
 		notetype = 2;
 		break;
 	case '3':
-		setbfile(buf, currboard, "introduction");
+		setbfile(buf, sizeof(buf), currboard, "introduction");
 		ptr = "版面简介";
 		notetype = 3;
 		break;
@@ -4294,7 +4256,7 @@ struct fileheader *fileinfo;
 
 	int blankline=0;
 
-	setbfile(buf, board, fh2fname(fileinfo));		//modify by mintbaggio 040321 for heji
+	setbfile(buf, sizeof(buf), board, fh2fname(fileinfo));		//modify by mintbaggio 040321 for heji
 	fp1=fopen(buf, "rt");
 	if (fgets(temp2, 200, fp1)!=NULL){
 		keepoldheader(fp1, SKIPHEADER);
@@ -4341,8 +4303,8 @@ static int commend_article(char* board, struct fileheader* fileinfo) {
 		}
 		else{
 			char fname[STRLEN];
-			do_commend(board, fileinfo);
-			setbfile(fname, currboard, fh2fname(fileinfo));
+			do_commend(fileinfo);
+			setbfile(fname, sizeof(fname), currboard, fh2fname(fileinfo));
 			postfile(fname, "Commend", fileinfo->title, 0);
 		}
 	}
@@ -4405,7 +4367,7 @@ static int del_commend(int offset) {
 }
 
 //add by mintbaggio 040326 for front page commend
-static int do_commend(char* board, struct fileheader* fileinfo) {
+static int do_commend(struct fileheader* fileinfo) {
 	FILE *fp;
 	struct commend y;
 	bzero(&y, sizeof(struct commend));
@@ -4492,8 +4454,8 @@ static int commend_article2(char* board, struct fileheader* fileinfo) {
 		}
 		else{
 			char fname[STRLEN];
-			do_commend2(board, fileinfo);
-			setbfile(fname, currboard, fh2fname(fileinfo));
+			do_commend2(fileinfo);
+			setbfile(fname, sizeof(fname), currboard, fh2fname(fileinfo));
 			postfile(fname, "Commend", fileinfo->title, 0);
 //			do_commend2(board, fileinfo);
 		}
@@ -4557,7 +4519,7 @@ static int del_commend2(int offset) {
 }
 
 //add by mintbaggio 040326 for front page commend
-static int do_commend2(char* board, struct fileheader* fileinfo) {
+static int do_commend2(struct fileheader* fileinfo) {
 	FILE *fp;
 	struct commend y;
 	bzero(&y, sizeof(struct commend));

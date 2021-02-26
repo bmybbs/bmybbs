@@ -35,7 +35,9 @@ static const char *CAPTCHA_LK_FILES[] = {
 		".RESET.lock",
 };
 
-static void query_captcha_by_id_callback(MYSQL_STMT *stmt, MYSQL_BIND *result_cols, void *result) {
+static void query_captcha_by_id_callback(MYSQL_STMT *stmt, MYSQL_BIND *result_col, void *result_set) {
+	(void) result_col;
+	(void) result_set;
 	if (mysql_stmt_num_rows(stmt) == 1)
 		mysql_stmt_fetch(stmt);
 }

@@ -1,9 +1,9 @@
 /*
     Firebird Bulletin Board System
     Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
-    
+
     get some function from hztty.:)
-    
+
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 1, or (at your option)
@@ -42,11 +42,15 @@ static void g2b(register unsigned char *s);
 static void b2g(register unsigned char *s);
 static char *hzconvert(char *s, int *plen, char *psaved, void (*dbcvrt) (void));
 
-void
-switch_code()
-{
+void switch_code() {
 	g_convcode = !g_convcode;
 	redoscr();
+}
+
+int switch_code_wrapper(const char *s) {
+	(void) s;
+	switch_code();
+	return 0;
 }
 #endif
 
