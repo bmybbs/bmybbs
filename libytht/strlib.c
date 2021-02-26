@@ -197,6 +197,24 @@ char *ytht_strrtrim(char *s)
 	return t;
 }
 
+char *ytht_strrtrim_s(const char *s) {
+	char *t = NULL, *t2;
+
+	if (s[0] == 0)
+		return NULL;
+
+	if ((t = strdup(s)) == NULL)
+		return NULL;
+
+	t2 = t + strlen(s) - 1;
+	while (strchr(" \t\r\n", *t2) && t2 > t) {
+		t2--;
+	}
+
+	t2[1] = 0;
+	return t;
+}
+
 void ytht_normalize(char *buf)
 {
 	int i = 0;

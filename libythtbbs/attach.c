@@ -80,9 +80,7 @@ filter_attach(char *path)
 	fclose(fp);
 }
 
-int
-insertattachments(char *filename, char *content, char *userid)
-{
+int insertattachments(const char *filename, char *content, const char *userid) {
 	int retv = 0;
 	char *ptr, *ptr1, *p0 = content;
 	FILE *fp;
@@ -118,9 +116,7 @@ insertattachments(char *filename, char *content, char *userid)
 	return retv;
 }
 
-int
-insertattachments_byfile(char *filename, char *tmpfile, char *userid)
-{
+int insertattachments_byfile(const char *filename, char *tmpfile, const char *userid) {
 	int retv = 0;
 	char *ptr1;
 	char ptr[256];

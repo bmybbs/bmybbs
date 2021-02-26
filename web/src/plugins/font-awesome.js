@@ -8,9 +8,11 @@ import {
 	faChartLine,
 	faClock,
 	faClone,
+	faCloudUploadAlt,
 	faCode,
 	faCogs,
 	faComments,
+	faFile,
 	faFire,
 	faFont,
 	faFutbol,
@@ -32,8 +34,10 @@ import {
 	faPizzaSlice,
 	faRedo,
 	faRss,
+	faSearch,
 	faShareAlt,
 	faSlidersH,
+	faSpinner,
 	faThumbtack,
 	faUnderline,
 	faUser,
@@ -48,9 +52,11 @@ library.add(faBuilding);
 library.add(faChartLine);
 library.add(faClock);
 library.add(faClone);
+library.add(faCloudUploadAlt);
 library.add(faCode);
 library.add(faCogs);
 library.add(faComments);
+library.add(faFile);
 library.add(faFire);
 library.add(faFont);
 library.add(faFutbol);
@@ -72,8 +78,10 @@ library.add(faPaperPlane);
 library.add(faPizzaSlice);
 library.add(faRedo);
 library.add(faRss);
+library.add(faSearch);
 library.add(faShareAlt);
 library.add(faSlidersH);
+library.add(faSpinner);
 library.add(faThumbtack);
 library.add(faUnderline);
 library.add(faUser);

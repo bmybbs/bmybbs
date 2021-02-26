@@ -2,6 +2,7 @@
 #include "bmy/convcode.h"
 
 // bbscon
+extern bool g_has_code;
 int testmozilla(void);
 void processMath(void);
 static int show_file(char *board, struct fileheader *x, int n);
@@ -218,6 +219,11 @@ bbstcon_main()
 
 //	printf("</center></body>\n");
 	processMath();
+	if (g_has_code) {
+		printf("<link rel='stylesheet' href='/node_modules/prismjs/themes/prism-tomorrow.css'/>");
+		printf("<script src='/node_modules/prismjs/components/prism-core.min.js'></script>");
+		printf("<script src='/node_modules/prismjs/plugins/autoloader/prism-autoloader.min.js'></script>");
+	}
 	printf("</table></td></tr></table></body>\n");
 	brc_update(currentuser.userid);
 	http_quit();
@@ -231,6 +237,7 @@ fshow_file(FILE * output, char *board, struct fileheader *x, int n)
 	char path[80], buf[512], *ptr,*bufptr;
 	int ano = 0, nquote = 0, lastq = 0;
 	char interurl[256];
+	bool in_code_block = false;
 	//add by macintosh 050619 for Tex Math Equ
 	if ((x->accessed & FH_MATH)) {
 		usedMath = 1;
@@ -245,13 +252,41 @@ fshow_file(FILE * output, char *board, struct fileheader *x, int n)
 		return -1;
 	fdisplay_attach(NULL, NULL, NULL, NULL);
 	while (1) {
-		if (fgets(buf, 500, fp) == 0)
+		if (fgets(buf, sizeof(buf) - 1, fp) == 0)
 			break;
+		buf[sizeof(buf) - 1] = 0;
 		if (!strncmp(buf, "begin 644 ", 10)) {
 			errlog("old attach %s", path);
 			ano++;
 			fdisplay_attach(output, fp, buf, fh2fname(x));
 			fprintf(output, "\n<br>");
+			continue;
+		}
+		if (!strncmp(buf, "```", 3)) {
+			if (in_code_block) {
+				in_code_block = false;
+				fprintf(output, "</code></pre>");
+			} else {
+				in_code_block = true;
+				g_has_code = true;
+
+				char lang[12 /* 当前最长 unrealscript */ + 1];
+				char *p = lang;
+				ytht_strsncpy(lang, buf + 3, sizeof(lang));
+				while (*p) {
+					if (*p >= 'A' && *p <= 'Z') {
+						*p += 32;
+					}
+
+					if (!(*p >= 'a' && *p <= 'z')) {
+						*p = 0;
+						break;
+					}
+					p++;
+				}
+
+				fprintf(output, "<pre><code class=\"language-%s\">", lang);
+			}
 			continue;
 		}
 		if (!strncmp(buf, "beginbinaryattach ", 18)) {

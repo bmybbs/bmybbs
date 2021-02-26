@@ -1,21 +1,5 @@
 #include "bbslib.h"
-
-int
-testmath(char *ptr)
-{
-	int i = 0;
-	if (!*ptr)
-		return 0;
-	if (*ptr == '$')
-		i = 1;
-	ptr++;
-	while ((ptr = strchr(ptr, '$')) != NULL) {
-		if (*(ptr - 1) != '\\')
-			i++;
-		ptr++;
-	}
-	return (i + 1) % 2;
-}
+#include "bmy/article.h"
 
 int
 bbssnd_main()
@@ -104,7 +88,7 @@ bbssnd_main()
 	content0 = strdup(content);
 	printf("text=%s\n", content);
 	//http_fatal("just for test");
-	if (usemath && testmath(content))
+	if (usemath && bmy_article_include_math(content))
 		mark |= FH_MATH;
 	if (nore)
 		mark |= FH_NOREPLY;

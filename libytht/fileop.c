@@ -304,7 +304,7 @@ openlockfile(const char *filename, int flag, int op)
 }
 
 struct stat *
-f_stat(char *file)
+f_stat(const char *file)
 {
 	static struct stat buf;
 	if (stat(file, &buf) == -1)
@@ -322,7 +322,7 @@ f_stat_s(struct stat *s, const char *file) {
 }
 
 struct stat *
-l_stat(char *file)
+l_stat(const char *file)
 {
 	static struct stat buf;
 	if (lstat(file, &buf) == -1)

@@ -6,21 +6,23 @@
 #include <string.h>
 #include "ythtbbs/ythtbbs.h"
 
-static int
-appendonebinaryattach(char *filename, char *attachname, char *attachfname)
-{
+static int appendonebinaryattach(const char *filename, const char *attachname, const char *attachfname) {
 	FILE *fp;
 	int size, origsize;
 	struct mmapfile mf = { .ptr = NULL };
 	char ch = 0;
+	struct stat st_attach, st_file;
 
-	if (!file_isfile(attachfname))
+	f_stat_s(&st_attach, attachfname);
+	// file_isfile
+	if (!(st_attach.st_mode & S_IFREG))
 		return -1;
 
 	if (mmapfile(attachfname, &mf) < 0)
 		return -1;
 
-	origsize = file_size(filename);
+	f_stat_s(&st_file, filename);
+	origsize = st_file.st_size;
 	fp = fopen(filename, "a");
 	if (!fp) {
 		mmapfile(NULL, &mf);
@@ -33,7 +35,9 @@ appendonebinaryattach(char *filename, char *attachname, char *attachfname)
 	fwrite(&size, sizeof (size), 1, fp);
 	fwrite(mf.ptr, mf.size, 1, fp);
 	fclose(fp);
-	if (file_size(filename) != origsize + 5 + mf.size + strlen("\nbeginbinaryattach \n") + strlen(attachname)) {
+
+	f_stat_s(&st_file, filename);
+	if (st_file.st_size != origsize + 5 + mf.size + strlen("\nbeginbinaryattach \n") + strlen(attachname)) {
 		truncate(filename, origsize);
 		mmapfile(NULL, &mf);
 		return -1;
@@ -43,9 +47,36 @@ appendonebinaryattach(char *filename, char *attachname, char *attachfname)
 	return 0;
 }
 
-int
-appendbinaryattach(char *filename, char *userid, char *attachname)
-{
+#define MAX_ATTACH_COUNT 128
+#define MAX_ATTACH_PATH  1024
+#define MAX_ATTACH_NAME  256
+
+struct AttachFile {
+	char name[MAX_ATTACH_NAME];
+	char path[MAX_ATTACH_PATH];
+};
+
+bool hasbinaryattach(const char *userid) {
+	bool result = false;
+	DIR *pdir;
+	struct dirent *pdent;
+	char path[512];
+	snprintf(path, sizeof(path), PATHUSERATTACH "/%s", userid);
+	if ((pdir = opendir(path)) != NULL) {
+		while ((pdent = readdir(pdir)) != NULL) {
+			if (!strcmp(pdent->d_name, "..") || !strcmp(pdent->d_name, ".")) {
+				continue;
+			} else {
+				result = true;
+				break;
+			}
+		}
+		closedir(pdir);
+	}
+	return result;
+}
+
+int appendbinaryattach(const char *filename, const char *userid, const char *attachname) {
 	DIR *pdir;
 	struct dirent *pdent;
 	char attachfname[1024], path[512];
@@ -62,29 +93,33 @@ appendbinaryattach(char *filename, char *userid, char *attachname)
 	pdir = opendir(path);
 	if (!pdir)
 		return -1;
-	int attachcount=0;
-	char attachfilenames[128][256];
-	char attachfilepaths[128][1024];
+
+	int attachcount = 0;
+	struct AttachFile *attachfiles = calloc(MAX_ATTACH_COUNT, sizeof(struct AttachFile));
+	if (attachfiles == NULL) {
+		closedir(pdir);
+		return -1;
+	}
+
+	// 将文件夹列表先读取到缓冲区
 	while ((pdent = readdir(pdir))) {
 		if (!strcmp(pdent->d_name, "..") || !strcmp(pdent->d_name, "."))
 			continue;
-		snprintf(attachfilepaths[attachcount], sizeof(attachfname), "%s/%s", path, pdent->d_name);
-		snprintf(attachfilenames[attachcount],256,"%s",pdent->d_name);
+		snprintf(attachfiles[attachcount].path, MAX_ATTACH_PATH, "%s/%s", path, pdent->d_name);
+		ytht_strsncpy(attachfiles[attachcount].name, pdent->d_name, MAX_ATTACH_NAME);
 		attachcount++;
-		/*if (appendonebinaryattach(filename, pdent->d_name, attachfname) == 0)
-			count++;*/
+		if (attachcount >= MAX_ATTACH_COUNT)
+			break;
 	}
 	attachcount--;
-	while(attachcount>=0)
-	{
-		if(appendonebinaryattach(filename,attachfilenames[attachcount],attachfilepaths[attachcount])==0)
-		{
+	while (attachcount >= 0) {
+		if (appendonebinaryattach(filename, attachfiles[attachcount].name, attachfiles[attachcount].path) == 0) {
 			count++;
 			attachcount--;
 		}
-
 	}
 	closedir(pdir);
+	free(attachfiles);
 
 	return count;
 }

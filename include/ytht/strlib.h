@@ -41,6 +41,14 @@ char *ytht_strltrim(char *s);
 char *ytht_strrtrim(char *s);
 
 /**
+ * @brief ytht_strrtrim 的多线程安全版本，从右侧裁减空白字符 " \t\r\n"
+ * @warning 使用 free(3) 释放资源
+ * @param s 待裁剪的字符串
+ * @return 当 s 为空，或者资源分配失败时，返回 NULL，否则返回 s 副本的地址
+ */
+char *ytht_strrtrim_s(const char *s);
+
+/**
  * @warning 多线程不安全
  */
 #define ytht_strtrim(s) ytht_strltrim(ytht_strrtrim(s))

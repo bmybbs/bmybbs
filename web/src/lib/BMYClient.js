@@ -13,6 +13,9 @@ function myFetchPost(url, obj) {
 }
 
 export const BMYClient = {
+	delete_attach(filename) {
+		return fetch(`/api/attach/delete?file=${filename}`, { method: "DELETE" }).then(response => response.json());
+	},
 	get_announce() {
 		return myFetchGet("/api/article/list?type=announce");
 	},
@@ -24,6 +27,9 @@ export const BMYClient = {
 	},
 	get_article_list_by_section(secstr) {
 		return myFetchGet(`/api/article/list?type=section&secstr=${secstr}`);
+	},
+	get_attach_list() {
+		return myFetchGet("/api/attach/list");
 	},
 	get_board_info(boardname_en) {
 		return myFetchGet(`/api/board/info?bname=${boardname_en}`);
@@ -64,11 +70,24 @@ export const BMYClient = {
 	oauth_remove_wx() {
 		return myFetchPost("/api/oauth/remove_wx");
 	},
+	post_article(article) {
+		return myFetchPost("/api/article/post", article);
+	},
 	search_board(start_with) {
 		return myFetchGet(`/api/board/autocomplete?search_str=${start_with}`);
 	},
 	search_user(start_with) {
 		return myFetchGet(`/api/user/autocomplete?search_str=${start_with}`);
+	},
+	async upload_attach(file) {
+		const formData = new FormData();
+		formData.append("file", file);
+		const response = await fetch("/api/attach/upload", { method: "POST", body: formData });
+		if (!response.ok) {
+			throw new Error(`HTTP error! status: ${response.status}`);
+		} else {
+			return await response.json();
+		}
 	},
 	user_check() {
 		return myFetchGet("/BMY/user_check");

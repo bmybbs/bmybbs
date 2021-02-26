@@ -9,6 +9,8 @@ import BoardView from "@/views/BoardView.vue"
 import Thread from "@/views/Thread.vue"
 import Settings from "@/views/Settings.vue"
 import Section from "@/views/Section.vue"
+import Submit from "@/views/Submit.vue"
+import SubmitWrapper from "@/views/SubmitWrapper.vue"
 
 const routes = [{
 	path: "/",
@@ -42,6 +44,10 @@ const routes = [{
 			name: "board",
 			component: BoardView
 		}, {
+			path: "/web/board/:boardname/submit",
+			component: Submit,
+			name: "boardSubmit",
+		}, {
 			path: "/web/board/:boardname/thread/:tid",
 			name: "thread",
 			component: Thread
@@ -49,6 +55,14 @@ const routes = [{
 	}, {
 		path: "/web/settings",
 		component: Settings
+	}, {
+		path: "/web/submit",
+		component: SubmitWrapper,
+		children: [{
+			path: "",
+			component: Submit,
+			name: "RAWSUBMIT",
+		}]
 	}]
 }];
 

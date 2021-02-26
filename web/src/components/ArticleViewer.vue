@@ -8,7 +8,7 @@
 			<div class="article" v-html="content" @click="toggleAha" ref="article"></div>
 		</div>
 		<div class="card-footer">
-			<TabbedEditor />
+			<TabbedEditor :_boardname_en="_boardname_en"/>
 		</div>
 	</div>
 </template>
@@ -20,6 +20,7 @@ import BadgeArticleFlags from "@/components/BadgeArticleFlags.vue"
 import TabbedEditor from "@/components/TabbedEditor.vue"
 import bmyParser from "@bmybbs/bmybbs-content-parser"
 import Prism from "prismjs"
+import { BMY_FILE_HEADER } from "@/lib/BMYConstants.js"
 
 export default {
 	data() {
@@ -45,6 +46,11 @@ export default {
 			this.author = response.author;
 			setTimeout(() => {
 				Prism.highlightAll();
+				if (this._mark & BMY_FILE_HEADER.FH_MATH) {
+					if (window.MathJax && typeof window.MathJax.typeset === "function") {
+						window.MathJax.typeset();
+					}
+				}
 			}, 1500);
 		});
 	},
@@ -71,6 +77,15 @@ export default {
 }
 </script>
 
+<style>
+mjx-container {
+	font-size: 120%
+}
+</style>
+
 <style scoped>
+.article >>> img {
+	width: 100%
+}
 </style>
 
