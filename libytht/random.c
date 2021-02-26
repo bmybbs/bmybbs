@@ -6,13 +6,17 @@ static const char *DEV_RAN = "/dev/urandom";
 
 int ytht_get_random_buf(char *buf, size_t len) {
 	int fd;
+	ssize_t size;
 
 	fd = open(DEV_RAN, O_RDONLY);
 	if (fd < 0)
 		return -1;
 
-	read(fd, buf, len);
+	size = read(fd, buf, len);
 	close(fd);
+
+	if (size <= 0 || (unsigned) size < len)
+		return -1;
 	return 0;
 }
 
