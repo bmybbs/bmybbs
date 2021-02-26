@@ -44,12 +44,17 @@ int ytht_get_random_str(char *s) {
 int ytht_get_random_str_r(char *s, size_t len) {
 	int fd;
 	size_t i;
+	ssize_t size;
 	fd = open(DEV_RAN, O_RDONLY);
 	if (fd < 0)
 		return -1;
 
-	read(fd, s, len);
+	size = read(fd, s, len);
 	close(fd);
+
+	if (size <= 0 || (unsigned) size < len)
+		return -1;
+
 	for(i=0; i<len; ++i) {
 		s[i] = ((unsigned char)s[i])%26 + 'A';
 	}
