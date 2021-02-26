@@ -176,6 +176,7 @@ int ythtbbs_cache_utmp_count_active(void) {
 	if (now <= shm_utmp->activetime + 1)
 		return shm_utmp->activeuser;
 	shm_utmp->activetime = now;
+	shm_utmp->activeuser = 0;
 	ythtbbs_cache_utmp_apply(count_active, &(shm_utmp->activeuser));
 	return shm_utmp->activeuser;
 }
