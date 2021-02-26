@@ -72,6 +72,7 @@ do_ts(struct tshirt *t, int index)
 			http_fatal("内部错误1");
 		}
 		fread(&tmp, sizeof (struct tshirt), 1, fp);
+		tmp.id[sizeof(tmp.id) - 1] = 0;
 		if (strcmp(tmp.id, currentuser.userid)) {
 			fclose(fp);
 			http_fatal("内部错误2");
