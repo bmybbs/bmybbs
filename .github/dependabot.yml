@@ -1,0 +1,18 @@
+version: 2
+updates:
+
+  - package-ecosystem: "npm"
+    directory: "/minibmy"
+    schedule:
+      interval: "daily"
+
+  - package-ecosystem: "npm"
+    directory: "/nju09"
+    schedule:
+      interval: "daily"
+
+  - package-ecosystem: "npm"
+    directory: "/web"
+    schedule:
+      interval: "daily"
+
