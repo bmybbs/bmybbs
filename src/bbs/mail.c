@@ -1787,7 +1787,7 @@ int ov_send(const char *s) {
 	}
 	G_SENDMODE = 1;
 	all = (uinfo.fnum >= maxrecp) ? maxrecp : uinfo.fnum;
-	for (i = 0; i < all; i++) {
+	for (i = 0; i < all && i < MAXFRIENDS; i++) {
 		char uid[IDLEN + 2];
 
 		ythtbbs_cache_UserTable_getuserid(uinfo.friend[i], uid, sizeof(uid));

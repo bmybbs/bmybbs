@@ -306,7 +306,7 @@ int id1, id2;
 					if((fhdr.accessed & FH_MINUSDEL) && (strncasecmp(fhdr.title, "¡¾ºÏ¼¯¡¿", 8))){        //add by mintbaggio for minus-postnums delete
 						char usrid[STRLEN];
 						int owned = 0, IScurrent = 0, posttime;
-						strcpy(usrid, fhdr.owner);
+						ytht_strsncpy(usrid, fhdr.owner, sizeof(usrid));
 						if ( !strstr(usrid, ".") )
 							IScurrent = !strcmp(usrid, currentuser.userid);
 						posttime = fhdr.filetime;

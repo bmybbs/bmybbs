@@ -6,7 +6,7 @@ bbsfdel_main()
 	unsigned int i;
 	int lockfd;
 	char userid[80];
-	struct ythtbbs_override f[MAXFRIENDS];
+	struct ythtbbs_override f[MAXFRIENDS], EMPTY;
 	struct userec *lookupuser;
 
 	html_header(1);
@@ -39,6 +39,7 @@ bbsfdel_main()
 
 	ythtbbs_override_get_records(currentuser.userid, f, friendnum, YTHTBBS_OVERRIDE_FRIENDS);
 	for (i = 0; i < friendnum; i++) {
+		f[i].id[sizeof(EMPTY.id) - 1] = 0;
 		if (strcasecmp(f[i].id, userid) == 0) {
 			f[i].id[0] = '\0';
 			friendnum--;
