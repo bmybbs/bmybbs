@@ -415,6 +415,7 @@ int ent_chat(const char *chatbuf) {
 			close(cfd);
 			return 0;
 		}
+		inbuf[3] = 0;
 		move(3, 0);
 		if (!strcmp(inbuf, CHAT_LOGIN_OK))
 			break;
