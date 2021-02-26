@@ -27,20 +27,6 @@ int ytht_get_random_int(unsigned int *s) {
 	return 0;
 }
 
-int ytht_get_random_str(char *s) {
-	int i;
-	int fd;
-	fd = open(DEV_RAN, O_RDONLY);
-	if (fd < 0)
-		return -1;
-	read(fd, s, 30);
-	close(fd);
-	for (i = 0; i < 30; i++)
-		s[i] = 65 + ((unsigned char)s[i]) % 26;
-	s[30] = 0;
-	return 0;
-}
-
 int ytht_get_random_str_r(char *s, size_t len) {
 	int fd;
 	size_t i;
