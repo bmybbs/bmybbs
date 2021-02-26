@@ -49,6 +49,7 @@ bbsbknsel_main()
 			for (i = 0; i < w_info->t_lines; i++) {
 				if (fread(&x, sizeof (x), 1, fp) <= 0)
 					break;
+				x.boardname[sizeof(x.boardname) - 1] = 0;
 				printf("<tr><td>%d</td><td>%s</td>", start + i, x.boardname);
 				if (!i)
 					printf("<td><nobr>%12.12s</td>", ytht_ctime(x.filetime) + 4);
