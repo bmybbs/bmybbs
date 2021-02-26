@@ -84,5 +84,8 @@ mjx-container {
 </style>
 
 <style scoped>
+.article >>> img {
+	width: 100%
+}
 </style>
 
