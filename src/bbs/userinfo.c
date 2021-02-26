@@ -66,7 +66,7 @@ static void register_success(int usernum, char *userid, char *realname,
 	struct userec uinfo;
 	FILE *fout, *fn;
 	char buf[STRLEN];
-	int n;
+	time_t n;
 
 	//int id = getuser(userid);
 	usernum = getuser(userid);
@@ -110,7 +110,7 @@ static void register_success(int usernum, char *userid, char *realname,
 		fprintf(fout, "%s: %s\n", "assoc", assoc);
 
 		n = time(NULL);
-		fprintf(fout, "Date: %s", ctime((time_t *) &n));
+		fprintf(fout, "Date: %s", ctime(&n));
 		fprintf(fout, "Approved: %s\n", userid);
 		fclose(fout);
 	}
