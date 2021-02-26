@@ -480,6 +480,7 @@ begin:
 				break;
 			}
 			if (data[0] == '\0') {
+				data[((unsigned /* safe */) datac < sizeof(data)) ? datac : (sizeof(data) - 1)] = 0;
 				five_chat(data + 1, 0);
 				if (chating)
 					move(PROMPT, ptr + 6);
