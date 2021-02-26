@@ -889,7 +889,7 @@ int a_edits2(const char *s) {
 	ch = atoi(ans);
 	if (!isdigit(ans[0]) || ch <= 0 || ch > num || ans[0] == '\n' || ans[0] == '\0')
 		return 0;
-	ch -= 1;
+	ch = ch % 6; // items of e_file
 	sprintf(buf2, "etc/%s", e_file[ch]);
 	move(3, 0);
 	clrtobot();
