@@ -18,12 +18,16 @@ int ytht_get_random_buf(char *buf, size_t len) {
 
 int ytht_get_random_int(unsigned int *s) {
 	int fd;
+	ssize_t size;
 	fd = open(DEV_RAN, O_RDONLY);
 	if (fd < 0)
 		return -1;
 
-	read(fd, s, sizeof(unsigned int));
+	size = read(fd, s, sizeof(unsigned int));
 	close(fd);
+
+	if (size <= 0 || (unsigned) size < sizeof(unsigned int))
+		return -1;
 	return 0;
 }
 
