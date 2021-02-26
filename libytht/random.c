@@ -1,6 +1,5 @@
 #include <fcntl.h>
 #include <unistd.h>
-#include <stdlib.h>
 
 static const char *DEV_RAN = "/dev/urandom";
 
