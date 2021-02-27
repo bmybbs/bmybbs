@@ -68,7 +68,7 @@ struct newpostdata nbrd[MAXBOARD];
 int *zapbuf;
 int zapbufchanged = 0;
 int yank_flag = 0;
-static unsigned char boardprefix[5];
+static char boardprefix[5];
 
 struct goodboard GoodBrd;
 
@@ -93,7 +93,7 @@ int GoodBrds(const char *s) {
 	(void) s;
 //  if(!strcmp(currentuser.userid,"guest")) return;
 	GoodBrd.num = 9999;
-	boardprefix[0] = 255;
+	boardprefix[0] = 0xFF;
 	boardprefix[1] = 0;
 	choose_board(1, NULL);
 	return 0;
@@ -139,7 +139,7 @@ int EGroup(const char *cmd) {
 
 int Boards(const char *s) {
 	(void) s;
-	boardprefix[0] = 255;
+	boardprefix[0] = 0xFF;
 	boardprefix[1] = 0;
 	GoodBrd.num = 0;
 	choose_board(0, NULL);
@@ -148,7 +148,7 @@ int Boards(const char *s) {
 
 int New(const char *s) {
 	(void) s;
-	boardprefix[0] = 255;
+	boardprefix[0] = 0xFF;
 	boardprefix[1] = 0;
 	GoodBrd.num = 0;
 	choose_board(1, NULL);
@@ -1181,7 +1181,7 @@ int clear_all_new_flag(const char *s) {
 	int i;
 	char ans[3];
 	int brdnum;
-	boardprefix[0] = 255;
+	boardprefix[0] = 0xFF;
 	boardprefix[1] = 0;
 	GoodBrd.num = 0;
 	brdnum = -1;
