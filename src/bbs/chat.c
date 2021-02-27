@@ -162,10 +162,12 @@ int fd;
 char *buf;
 {
 	size_t len;
+	ssize_t size;
 
-	sprintf(genbuf, "%s\n", buf);
+	snprintf(genbuf, sizeof(genbuf), "%s\n", buf);
 	len = strlen(genbuf);
-	return (send(fd, genbuf, len, 0) == len);
+	size = send(fd, genbuf, len, 0);
+	return ((size < 0) ? 0 : ((unsigned) size == len));
 }
 
 static int
