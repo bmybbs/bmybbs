@@ -39,15 +39,15 @@
 #define INPUT_ACTIVE 0
 #define INPUT_IDLE 1
 
-unsigned char outbuffer[OBUFSIZE + 1];
-unsigned char *outbuf = outbuffer + 1;
+static char outbuffer[OBUFSIZE + 1];
+static char *outbuf = outbuffer + 1;
 int obufsize = 0;
 
-unsigned char inbuffer[IBUFSIZE + 1];
-unsigned char *inbuf = inbuffer + 1;
+char inbuffer[IBUFSIZE + 1];
+char *inbuf = inbuffer + 1;
 int ibufsize = 0;
 int icurrchar = 0;
-unsigned char inbuffer2[21];
+char inbuffer2[21];
 int ibufsize2 = 0;
 int icurrchar2 = 0;
 
@@ -58,7 +58,7 @@ time_t now_t, old;
 
 static void hit_alarm_clock(void);
 static int telnet_machine(int ch);
-static int filter_telnet(unsigned char *s, int *len);
+static int filter_telnet(char *s, int *len);
 static int igetch2(void);
 static int trans0(char *pinyin, char *trans0pinyin);
 static int dochinput(char *remstr, char *chstr, int ch);
@@ -133,7 +133,7 @@ void
 io_output(const char *s, int len)
 {
 	int l, n;
-	char *p0, *p1;
+	const char *p0, *p1;
 	p0 = s;
 	l = len;
 	while ((p1 = memchr(p0, IAC, l)) != NULL) {
@@ -150,7 +150,7 @@ io_output(const char *s, int len)
 		obufsize += n;
 		p0 += n;
 		l -= n;
-		outbuf[obufsize++] = IAC;
+		outbuf[obufsize++] = (char) IAC;
 	}
 	if (obufsize + l > OBUFSIZE) {
 #ifdef SSHBBS
@@ -272,22 +272,23 @@ unsigned char ch;
 }
 
 static int
-filter_telnet(unsigned char *s, int *len)
+filter_telnet(char *s, int *len)
 {
-	unsigned char *p1, *p2, *pend;
+	char *p1, *p2, *pend;
 	int newlen;
 	newlen = 0;
 	for (p1 = s, p2 = s, pend = s + (*len); p1 != pend; p1++) {
 		if (telnet_state) {
 			int ch = 0;
 			ch = telnet_machine(*p1);
-			if (ch == IAC) {	/* 两个IAC */
-				*p2 = IAC;
+			if (ch == IAC) {
+				/* 两个IAC */
+				*p2 = (char) IAC;
 				p2++;
 				newlen++;
 			}
 		} else {
-			if (*p1 == IAC)
+			if (*p1 == (char) IAC)
 				telnet_state = 255;
 			else {
 				*p2 = *p1;
