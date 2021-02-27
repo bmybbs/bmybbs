@@ -484,7 +484,7 @@ int nomsg;
 	char fname[STRLEN], *ip, bname[PATHLEN];
 	char ans[5], filepath[PATHLEN];
 	MENU pm;
-	char anboard[24], tmpboard[24];
+	char anboard[STRLEN], tmpboard[24];
 
 	memset(&pm, 0, sizeof(MENU));
 	memset(anboard, 0, sizeof(anboard));
