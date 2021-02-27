@@ -995,7 +995,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, int c
 }
 
 int ZmodemRateLimit = 0;
-
+#if 0
 static int raw_write(int fd, char *buf, int len) {
 	static int lastcounter = 0;
 	int nowcounter, i;
@@ -1048,6 +1048,7 @@ static int raw_read(int fd, char *buf, int len) {
 	return read(fd, buf, len);
 #endif
 }
+#endif
 
 int
 multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len,
