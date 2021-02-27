@@ -392,11 +392,7 @@ struct newpostdata *ptr;
 	return 0;
 }
 
-int
-unread_position(dirfile, bptr)
-char *dirfile;
-struct boardmem *bptr;
-{
+int unread_position(char *dirfile, struct boardmem *bptr) {
 	int fd, offset, step, num, filetime;
 
 	num = bptr->total + 1;
@@ -404,7 +400,7 @@ struct boardmem *bptr;
 		if (!brc_initial(bptr->header.filename, 1)) {
 			num = 1;
 		} else {
-			offset = (int) &((struct fileheader *) 0)->filetime;
+			offset = offsetof(struct fileheader, filetime);
 			num = bptr->total - 1;
 			step = 4;
 			while (num > 0) {
