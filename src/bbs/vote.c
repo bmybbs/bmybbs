@@ -1580,12 +1580,12 @@ b_results()
 
 int m_vote(const char *s) {
 	(void) s;
-	char buf[STRLEN];
-	strcpy(buf, currboard);
-	strcpy(currboard, DEFAULTBOARD);
+	char buf[24];
+	ytht_strsncpy(buf, currboard, sizeof(buf));
+	ytht_strsncpy(currboard, DEFAULTBOARD, sizeof(currboard));
 	modify_user_mode(ADMIN);
 	vote_maintain(DEFAULTBOARD);
-	strcpy(currboard, buf);
+	ytht_strsncpy(currboard, buf, sizeof(currboard));
 	return 0;
 }
 
