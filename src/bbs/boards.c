@@ -824,7 +824,7 @@ const struct sectree *sec;
 						if (num == 0)
 							break;
 
-						char dir[80];
+						char dir[80 * 2];
 						struct mmapfile mf = { .ptr = NULL };
 						struct fileheader *x = NULL;
 
@@ -1590,7 +1590,7 @@ makedatestar(char *datestr, struct fileheader *ent)
 	if (filetime > 740000000)
 		strncpy(str + 1, ctime(&filetime) + 4, 6);
 	else
-		strncpy(str + 1, "      ", 6);
+		strcpy(str + 1, "      ");
 	sprintf(datestr, "\033[1;4;3%c;4%cm", fg, bg);
 	j = strlen(datestr);
 	for (i = 0; i < 7; i++) {
