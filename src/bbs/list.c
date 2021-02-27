@@ -144,10 +144,9 @@ UseronlineSearch(curr_num, offset)
 int curr_num;
 int offset;
 {
-	static char method[2], queryID[IDLEN + 2], queryIP[20], queryNick[NAMELEN + 2];
+	static char method[2] = { 0 }, queryID[IDLEN + 2], queryIP[20], queryNick[NAMELEN + 2];
 	char ans[STRLEN + 1], pmt[STRLEN];
-	strcpy(ans, method);
-	sprintf(pmt, "查找方式:(A)ID (B)呢称 (C)IP [%s]:", ans);
+	sprintf(pmt, "查找方式:(A)ID (B)呢称 (C)IP [%s]:", method);
 	move(t_lines - 1, 0);
 	clrtoeol();
 	getdata(t_lines - 1, 0, pmt, ans, 2, DOECHO, YEA);
