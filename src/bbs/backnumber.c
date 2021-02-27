@@ -156,12 +156,8 @@ char *direct;
 	return FULLUPDATE;
 }
 
-static int
-backnumber_hide(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+static int backnumber_hide(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) direct;
 	if (!IScurrBM)
 		return DONOTHING;
 	if (fileinfo->accessed & FH_HIDE)
@@ -207,6 +203,7 @@ static const struct one_key backnumber_comms[] = {
 };
 
 static int readbacknumber(int ent, struct bknheader *bkninfo, char *direct) {
+	(void) ent;
 	char buf[MAXPATHLEN], *t;
 	strcpy(buf, direct);
 	if ((t = strrchr(buf, '/')) != NULL)
@@ -375,7 +372,7 @@ time_t t;
 	char tmpfile[MAXPATHLEN], deleted[MAXPATHLEN];
 	char bnpath[MAXPATHLEN], buf1[MAXPATHLEN], buf2[MAXPATHLEN];
 	int fdr, fdw, fd;
-	int count;
+	//int count;
 	time_t filet;
 
 	if (digestmode != NA)
@@ -412,7 +409,7 @@ time_t t;
 	}
 	flock(fdw, LOCK_EX);
 
-	count = 1;
+	//count = 1;
 	while (read(fdr, &fhdr, sizeof (fhdr)) == sizeof (fhdr)) {
 		filet = fhdr.filetime;
 		if (filet > 0 && filet < t) {
