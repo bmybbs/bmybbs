@@ -250,8 +250,6 @@ int uinfo_query(struct userec *u, int real, int unum)
 	char ans[3], buf[STRLEN], genbuf[128];
 	char src[STRLEN], dst[STRLEN];
 	int i, fail = 0; //, netty_check = 0;
-	FILE *fin, *fout, *dp;
-	time_t code;
 
 	memcpy(&newinfo, u, sizeof(currentuser));
 	getdata(t_lines - 1, 0,
