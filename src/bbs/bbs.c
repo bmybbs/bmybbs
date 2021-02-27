@@ -69,7 +69,7 @@ int digestmode;
 struct userec currentuser;
 int usernum;
 int local_article;
-char currboard[STRLEN];
+char currboard[24]; // boardheader.filename
 char IScurrBM = 0;
 char ISdelrq = 0;
 int selboard = 0;
