@@ -1644,10 +1644,10 @@ int mode;
 	if (mode == 0) {
 		if (in_mail == YEA) {
 			in_mail = NA;
-			write_header(of, 1 /*不写入 .posts */ );
+			write_header(of/*, 1 不写入 .posts */ );
 			in_mail = YEA;
 		} else
-			write_header(of, 1 /*不写入 .posts */ );
+			write_header(of/*, 1 不写入 .posts */ );
 		if (fgets(buf, 256, inf) != NULL) {
 			if (in_mail && strncmp(buf, "寄信人: ", 8)) {
 				hashead = 0;
@@ -1707,7 +1707,7 @@ int mode;
 			MY_BBS_NAME, ctime(&now));
 		fprintf(of, "【此篇文章是由自动发信系统所张贴】\n\n");
 	} else if (mode == 2) {
-		write_header(of, 0 /*写入 .posts */ );
+		write_header(of/*, 0 写入 .posts */ );
 	}
 
 	while ((count = fread(buf, 1, sizeof (buf), inf)) > 0)

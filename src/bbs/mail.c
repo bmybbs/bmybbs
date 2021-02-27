@@ -1747,7 +1747,7 @@ char *buf, userid[], title[];
 		return -1;
 	tmpinmail = in_mail;
 	in_mail = YEA;
-	write_header(fp, 1);
+	write_header(fp);
 	in_mail = tmpinmail;
 	fprintf(fp, "%s", buf);
 	fclose(fp);

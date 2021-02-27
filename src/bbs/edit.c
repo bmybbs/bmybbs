@@ -943,11 +943,7 @@ int modifyheader;
 
 char save_title[STRLEN];
 
-int
-write_header(fp, mode)
-FILE *fp;
-int mode;
-{
+int write_header(FILE *fp) {
 	int noname = 0;
 	extern char fromhost[];
 	extern struct postheader header;
@@ -1239,7 +1235,7 @@ int modifyheader;
 				currentuser.lasthost);
 			fputs(genbuf, fp);
 		} else if (saveheader)
-			write_header(fp, 0);
+			write_header(fp);
 		/* Added by deardragon 1999.11.13 禁止修改文章头部信息 */
 		/* 如果是修改文章, 则在保存时, 恢复文章头信息. */
 		/* Patched by lepton 2002.11.23 */

@@ -26,7 +26,7 @@
 extern int enabledbchar;
 extern char save_title[] ;    /* These are used by the editor when inserting */
 
-int write_header(FILE *fp, int mode);
+int write_header(FILE *fp);
 void addsignature(FILE *fp, int blank);
 void keep_fail_post(void);
 int vedit(char *filename, int saveheader, int modifyheader);
