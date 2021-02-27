@@ -187,6 +187,7 @@ savestrvalue(const char *filename, const char *str, const char *value)
 void
 sigbus(int signo)
 {
+	(void) signo;
 	siglongjmp(bus_jump, 1);
 };
 
