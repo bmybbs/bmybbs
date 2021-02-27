@@ -45,7 +45,7 @@ int addressbook(const char *s) {
 				continue;
 			prints("%s的通讯录内容如下\n", buf);
 			prints("=================================\n");
-			sethomefile(filename, buf, "addressbook");
+			sethomefile_s(filename, sizeof(filename), buf, "addressbook");
 			if (!dashf(filename)) {
 				prints("该用户尚未设置通讯录");
 				pressanykey();
