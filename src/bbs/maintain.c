@@ -860,7 +860,7 @@ do_ordainBM(const char *userid, const char *abname)
 {
 	int id, pos, oldbm = 0, i, bigbm, bmpos, minpos, maxpos;
 	struct boardheader fh;
-	char bname[STRLEN], tmp[STRLEN], buf[5][STRLEN];
+	char bname[24] /* boardheader.filename */, tmp[STRLEN], buf[5][STRLEN];
 	char content[1024], title[STRLEN];
 	modify_user_mode(ADMIN);
 	if (!check_systempasswd()) {
@@ -1037,7 +1037,7 @@ do_retireBM(const char *userid, const char *abname)
 	int bm = 1;
 	struct boardheader fh;
 	char buf[5][STRLEN];
-	char bname[STRLEN];
+	char bname[24] /* boardheader.filename */;
 	char content[1024], title[STRLEN];
 	char tmp[STRLEN];
 	modify_user_mode(ADMIN);
@@ -1275,7 +1275,7 @@ int m_addpersonal(const char *s) {
 
 	move(7, 0);
 	prints("[直接按 ENTER 键, 则标题缺省为: \033[32m%s文集\033[m]", lookupuser.userid);
-	char tmp_buf[40], tmp_title[60];
+	char tmp_buf[40], tmp_title[62];
 	getdata(6, 0, "请输入个人文集之标题: ", tmp_buf, 39, DOECHO, YEA);
 	if (tmp_buf[0] == '\0')
 		snprintf(tmp_title, sizeof(tmp_title), "%s文集", lookupuser.userid);
