@@ -2640,7 +2640,7 @@ import_spec()
 	int put_announce_flag;
 	char direct[STRLEN];
 	struct fileheader fileinfo;
-	char anboard[24], tmpboard[24];
+	char anboard[STRLEN], tmpboard[24];
 //   if(strcmp(currentuser.userid,"ecnegrevid")!=0) return DONOTHING;
 	if (digestmode == 2 || digestmode == 3
 			|| digestmode == 4 || digestmode == 5
