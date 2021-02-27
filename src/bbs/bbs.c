@@ -3186,9 +3186,10 @@ static void quickviewpost(int ent, struct fileheader *fileinfo, char *direct) {
 		prints("\033[0m%s", buf);
 	}
 	if (has_attach) {
-		get_temp_sessionid(buf);
+		char temp_sessionid[10];
+		get_temp_sessionid(temp_sessionid, sizeof(temp_sessionid));
 		prints("http://%s/" SMAGIC "%s/con?B=%s&F=%s&N=%d",
-				MY_BBS_DOMAIN, buf, currboard, fh2fname(fileinfo), ent);
+				MY_BBS_DOMAIN, temp_sessionid, currboard, fh2fname(fileinfo), ent);
 		j++;
 	}
 	if (j < 6) {
@@ -3323,7 +3324,7 @@ static int show_file_info(int ent, struct fileheader *fileinfo, char *direct) {
 	bp = ythtbbs_cache_Board_get_board_by_name(currboard);
 	if (NULL == bp)
 		return DONOTHING;
-	get_temp_sessionid(temp_sessionid);
+	get_temp_sessionid(temp_sessionid, sizeof(temp_sessionid));
 	clear();
 	move(0, 0);
 	prints("这篇文章的详细信息如下:\n");

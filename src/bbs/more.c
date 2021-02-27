@@ -569,7 +569,7 @@ mem_printline(char *ptr, int len, char *fn, char ty,struct MemMoreLines *l)
 			type = 2;
 		else if (!strncmp(fn, "mail", 4))
 			type = 3;
-		get_temp_sessionid(temp_sessionid);
+		get_temp_sessionid(temp_sessionid, sizeof(temp_sessionid));
 		q = strrchr(fn, '/') + 1;
 		switch (type) {
 		case 1:
