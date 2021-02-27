@@ -1241,7 +1241,7 @@ super_select_board(char *bname)
 static int do_select(int ent, struct fileheader *fileinfo, char *direct) {
 	(void) ent;
 	(void) fileinfo;
-	char bname[STRLEN], bpath[STRLEN];
+	char bname[24], bpath[STRLEN];
 	struct stat st;
 	int ret;
 	struct boardmem *board;
@@ -1291,7 +1291,7 @@ static int do_select(int ent, struct fileheader *fileinfo, char *direct) {
 		board->inboard++;
 	selboard = 1;
 	brc_initial(bname, 0);
-	strcpy(currboard, bname);
+	ytht_strsncpy(currboard, bname, sizeof(currboard));
 
 	move(0, 0);
 	clrtoeol();
@@ -2640,7 +2640,7 @@ import_spec()
 	int put_announce_flag;
 	char direct[STRLEN];
 	struct fileheader fileinfo;
-	char anboard[STRLEN], tmpboard[STRLEN];
+	char anboard[24], tmpboard[24];
 //   if(strcmp(currentuser.userid,"ecnegrevid")!=0) return DONOTHING;
 	if (digestmode == 2 || digestmode == 3
 			|| digestmode == 4 || digestmode == 5
@@ -2654,8 +2654,8 @@ import_spec()
 	if (fd == -1)
 		return FULLUPDATE;
 	put_announce_flag = !strcmp(currboard, anboard);
-	strcpy(tmpboard, currboard);
-	strcpy(currboard, anboard);
+	ytht_strsncpy(tmpboard, currboard, sizeof(tmpboard));
+	ytht_strsncpy(currboard, anboard, sizeof(currboard));
 	while (read(fd, &fileinfo, sizeof (fileinfo)) > 0) {
 		if (!(fileinfo.accessed & FH_SPEC))
 			continue;
@@ -2669,7 +2669,7 @@ import_spec()
 		if (write(fd, &fileinfo, sizeof (fileinfo)) < 0)
 			break;
 	}
-	strcpy(currboard, tmpboard);
+	ytht_strsncpy(currboard, tmpboard, sizeof(currboard));
 	close(fd);
 	return DIRCHANGED;
 }

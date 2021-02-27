@@ -169,7 +169,7 @@ char *fname;
 int
 b_closepolls()
 {
-	char buf[80];
+	char buf[24];
 	time_t now, nextpoll;
 	int i, end;
 
@@ -186,7 +186,7 @@ b_closepolls()
 
 	nextpoll = now + 7 * 3600;
 
-	strcpy(buf, currboard);
+	ytht_strsncpy(buf, currboard, sizeof(buf));
 	// TODO
 	for (i = 0; i < ythtbbs_cache_Board_get_number(); i++) {
 		setcontrolfile();
@@ -201,7 +201,7 @@ b_closepolls()
 				nextpoll = closetime + 300;
 		}
 	}
-	strcpy(currboard, buf);
+	ytht_strsncpy(currboard, buf, sizeof(currboard));
 	ythtbbs_cache_Board_set_pollvote(nextpoll);
 	return 0;
 }
@@ -1580,12 +1580,12 @@ b_results()
 
 int m_vote(const char *s) {
 	(void) s;
-	char buf[STRLEN];
-	strcpy(buf, currboard);
-	strcpy(currboard, DEFAULTBOARD);
+	char buf[24];
+	ytht_strsncpy(buf, currboard, sizeof(buf));
+	ytht_strsncpy(currboard, DEFAULTBOARD, sizeof(currboard));
 	modify_user_mode(ADMIN);
 	vote_maintain(DEFAULTBOARD);
-	strcpy(currboard, buf);
+	ytht_strsncpy(currboard, buf, sizeof(currboard));
 	return 0;
 }
 
