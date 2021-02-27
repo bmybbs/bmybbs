@@ -611,9 +611,8 @@ show_userlist()
 	return 1;
 }
 
-static int
-deal_key(int ch, int allnum, int pagenum)
-{
+static int deal_key(int ch, int allnum, int pagenum) {
+	(void) pagenum;
 	char buf[STRLEN];
 	char tempuser[20];
 	static int msgflag;
@@ -818,10 +817,8 @@ int i;
 	range = i;
 }
 
-static int
-do_query(star, curr)
-int star, curr;
-{
+static int do_query(int star, int curr) {
+	(void) star;
 	if (user_record[curr] != NULL) {
 		clear();
 		t_query(user_record[curr]->userid);
