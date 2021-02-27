@@ -453,6 +453,8 @@ int ent;
 struct fileheader *fileinfo;
 char *direct;
 {
+	(void) ent;
+	(void) direct;
 	char msgbuf[512];
 	char user[STRLEN];
 	char ans[8];
