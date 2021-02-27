@@ -277,13 +277,13 @@ int isreject(const struct user_info *uentp) {
 
 	if (HAS_PERM(PERM_SYSOP, currentuser))
 		return NA;
-	if (uentp->uid != uinfo.uid) {
+	if (uentp->uid != uinfo.uid && uinfo.uid >= 0) {
 		for (i = 0; i < MAXREJECTS && uentp->reject[i]; i++) {
-			if (uentp->reject[i] == uinfo.uid)
+			if (uentp->reject[i] == (unsigned) uinfo.uid)
 				return YEA;	/* 被设为黑名单 */
 		}
 		for (i = 0; i < MAXREJECTS && uinfo.reject[i]; i++) {
-			if (uentp->uid == uinfo.reject[i])
+			if ((unsigned) uentp->uid == uinfo.reject[i])
 				return YEA;	/* 被设为黑名单 */
 		}
 	}
