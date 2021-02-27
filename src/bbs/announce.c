@@ -367,12 +367,7 @@ int len;
 }
 
 /* added by netty to handle post saving into (0)Announce */
-int
-a_Save(path, key, fileinfo, nomsg)
-char *path, *key;
-struct fileheader *fileinfo;
-int nomsg;
-{
+int a_Save(char *key, struct fileheader *fileinfo, int nomsg) {
 
 	char board[40];
 	int ans = NA;
@@ -593,11 +588,7 @@ int offset;
 	update_endline();
 }
 
-int
-a_menusearch(path, key, level)
-char *path, *key;
-int level;
-{
+int a_menusearch(char *key, int level) {
 	FILE *fn;
 	char bname[20];
 	char buf[PATHLEN], *ptr;

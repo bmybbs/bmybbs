@@ -3132,7 +3132,7 @@ int Save_post(int ent, struct fileheader *fileinfo, char *direct) {
 	(void) direct;
 	if (!IScurrBM)
 		return DONOTHING;
-	return (a_Save("0Announce", currboard, fileinfo, NA));
+	return (a_Save(currboard, fileinfo, NA));
 }
 
 /* Added by ylsdd */
@@ -3410,7 +3410,7 @@ into_backnumber()
 int
 into_announce()
 {
-	if (a_menusearch("0Announce", currboard, HAS_PERM(PERM_ANNOUNCE | PERM_SYSOP | PERM_OBOARDS, currentuser) ? PERM_BOARDS : 0))
+	if (a_menusearch(currboard, HAS_PERM(PERM_ANNOUNCE | PERM_SYSOP | PERM_OBOARDS, currentuser) ? PERM_BOARDS : 0))
 		return 999;
 	return DONOTHING;
 }
