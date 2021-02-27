@@ -154,22 +154,18 @@ int offset;
 	if (!((ans[0] >= 'A' && ans[0] <= 'C') || ans[0] == '\0'))
 		return curr_num;
 	if (ans[0] != '\0')
-		strcpy(method, ans);
+		ytht_strsncpy(method, ans, sizeof(method));
 	switch (method[0]) {
 	case 'A':
-		strcpy(ans, queryID);
-		sprintf(pmt, "搜寻%s的ID [%s]: ",
-			offset > 0 ? "往后来" : "往先前", ans);
+		sprintf(pmt, "搜寻%s的ID [%s]: ", offset > 0 ? "往后来" : "往先前", queryID);
 		move(t_lines - 1, 0);
 		clrtoeol();
 		getdata(t_lines - 1, 0, pmt, ans, IDLEN + 1, DOECHO, YEA);
 		if (ans[0] != '\0')
-			strcpy(queryID, ans);
+			ytht_strsncpy(queryID, ans, sizeof(queryID));
 		return IDSearch(queryID, curr_num, offset);
 	case 'B':
-		strcpy(ans, queryNick);
-		sprintf(pmt, "搜寻%s的呢称[%s]: ", offset > 0 ? "往后来"
-			: "往先前", ans);
+		sprintf(pmt, "搜寻%s的呢称[%s]: ", offset > 0 ? "往后来" : "往先前", queryNick);
 		move(t_lines - 1, 0);
 		clrtoeol();
 		getdata(t_lines - 1, 0, pmt, ans, NAMELEN + 1, DOECHO, YEA);
@@ -177,14 +173,12 @@ int offset;
 			ytht_strsncpy(queryNick, ans, sizeof(queryNick));
 		return NickSearch(queryNick, curr_num, offset);
 	case 'C':
-		strcpy(ans, queryIP);
-		sprintf(pmt, "%s搜寻来自%s的ID: ", offset > 0 ? "往后来"
-			: "往先前", ans);
+		sprintf(pmt, "%s搜寻来自%s的ID: ", offset > 0 ? "往后来" : "往先前", queryIP);
 		move(t_lines - 1, 0);
 		clrtoeol();
 		getdata(t_lines - 1, 0, pmt, ans, 17, DOECHO, YEA);
 		if (ans[0] != '\0')
-			strcpy(queryIP, ans);
+			ytht_strsncpy(queryIP, ans, sizeof(queryIP));
 		return IPSearch(queryIP, curr_num, offset);
 	default:
 		return curr_num;
