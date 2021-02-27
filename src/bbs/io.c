@@ -1107,7 +1107,7 @@ multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len,
 		ch = igetkey();
 		if ((ch == '\n' || ch == '\r'))	// && num_in_buf()==0)
 			break;
-		for (i = starty; i <= y; i++)
+		for (i = starty; i <= (unsigned) y; i++)
 			saveline(i, 1, savebuffer[i]);
 		if (1 == RMSG && (KEY_UP == ch || KEY_DOWN == ch || Ctrl('Z') == ch || Ctrl('A') == ch) && (!buf[0])) {
 			return -ch;
@@ -1257,7 +1257,7 @@ multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len,
 		case KEY_HOME:
 		case Ctrl('A'):
 			now--;
-			while (now >= 0 && buf[now] != '\n' && buf[now] != '\r')
+			while (now > 0 && buf[now] != '\n' && buf[now] != '\r')
 				now--;
 			now++;
 			break;
@@ -1275,7 +1275,7 @@ multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len,
 		case Ctrl('Y'):
 			i0 = strlen(buf);
 			i = now - 1;
-			while (i >= 0 && buf[i] != '\n' && buf[i] != '\r')
+			while (i > 0 && buf[i] != '\n' && buf[i] != '\r')
 				i--;
 			i++;
 			if (!buf[i])
@@ -1288,7 +1288,7 @@ multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len,
 			j = j - i + 1;
 			if (j < 0)
 				j = 0;
-			for (k = 0; k < i0 - i - j + 1; k++)
+			for (k = 0; (unsigned) k < i0 - i - j + 1; k++)
 				buf[i + k] = buf[i + j + k];
 
 			y = starty;
@@ -1322,7 +1322,7 @@ multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len,
 				now = strlen(buf);
 			break;
 		default:
-			if (isprint2(ch) && strlen(buf) < len - 1) {
+			if (isprint2(ch) && (len > 1 && strlen(buf) < (unsigned) len - 1)) {
 				for (i = strlen(buf) + 1; i > now; i--)
 					buf[i] = buf[i - 1];
 				buf[now++] = ch;
