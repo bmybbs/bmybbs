@@ -1614,7 +1614,6 @@ int action, arg;
 /* valid arg are    '0' - '7' */
 {
 	int newch = 0;
-	int savemode;
 	char msg[80], buf[80];
 	char filename[80];
 	FILE *fp;
