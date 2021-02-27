@@ -1071,7 +1071,6 @@ const struct sectree *sec;
 			if (num >= brdnum + secnum || num < secnum)
 				break;
 			if (GoodBrd.num) {
-				int i, pos;
 				char ans[5];
 				sprintf(genbuf, "要把 %s 从收藏夹中去掉 (Y/N)? [N]",
 					nbrd[num - secnum].name);
@@ -1298,7 +1297,7 @@ readtitle()
 
 	char header[200], title[STRLEN];
 	char readmode[10];
-	int active, invisible, i, bnum;
+	int active, invisible, i;
 	char tmp[40];
 	bp = ythtbbs_cache_Board_get_board_by_name(currboard);
 	if (bp == NULL)
@@ -1306,7 +1305,6 @@ readtitle()
 	IScurrBM = chk_currBM(&(bp->header), 0);
 	//ISdelrq = clubsync("deleterequest");
 
-	bnum = 0;
 	if (bp->header.bm[0][0] == 0) {
 		strcpy(header, "诚征版主中");
 	} else {
