@@ -415,13 +415,11 @@ static void
 searchline(text)
 char text[STRLEN];
 {
-	int tmpline;
 	int addr;
 	int tt;
 
 	register struct textline *p = currline;
 	int count = 0;
-	tmpline = currln;
 	for (;; p = p->next) {
 		count++;
 		if (p) {
