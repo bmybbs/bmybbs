@@ -62,8 +62,7 @@ int addressbook(const char *s) {
 			break;
 		case 'B':
 		case 'b':
-			sethomefile(filename, currentuser.userid,
-				    "addressbook");
+			sethomefile_s(filename, sizeof(filename), currentuser.userid, "addressbook");
 			readaddressbook(filename, items);
 			prints("编辑通讯录(\033[1;31m小心被滥用\033[m)\n");
 			prints("=================================\n");
