@@ -359,8 +359,8 @@ char *uident;
 int
 clubmember()
 {
-	char uident[STRLEN];
-	char ans[8], repbuf[STRLEN], buf[STRLEN], titlebuf[STRLEN];
+	char uident[IDLEN + 1];
+	char ans[8], repbuf[STRLEN * 2], buf[STRLEN], titlebuf[STRLEN];
 	int count, i;
 
 	if (!(IScurrBM)) {
@@ -420,10 +420,10 @@ clubmember()
 				if (askyn(genbuf, YEA, NA))
 					if (delclubmember(uident)) {
 						getdata(5, 0, "删除原因：", buf, 50, DOECHO, YEA);
-						sprintf(titlebuf,
+						snprintf(titlebuf, sizeof(titlebuf),
 							"%s被%s取消%s俱乐部权利",
 							uident, currentuser.userid, currboard);
-						sprintf(repbuf,
+						snprintf(repbuf, sizeof(repbuf),
 							"%s%s%s", titlebuf, buf[0] ? "\n\n原因：":"", buf);
 						if(!strcmp(currboard, "Beggar")
 								|| !strcmp(currboard, "killer")
