@@ -404,10 +404,10 @@ static char *const (yun[]) = {
 	"o", "iu", "ing", "in", "ie", "iao", "iang", "ian", "ia",
 	"i", "er", "eng", "en", "ei", "e", "ao", "ang", "an", "ai",
 	"a", NULL};
-const static char yunt[] = "qwrtypsudfoghjklzxcivbnme1234a";
+static const char yunt[] = "qwrtypsudfoghjklzxcivbnme1234a";
 static char *const (yunsp[]) = {
 "o", "er", "en", "ei", "e", "ao", "ang", "an", "ai", "a", NULL};
-const static char yunspt[] = "ovnme1234a";
+static const char yunspt[] = "ovnme1234a";
 
 static int
 trans0(char *pinyin, char *trans0pinyin)
