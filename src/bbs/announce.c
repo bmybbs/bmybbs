@@ -54,9 +54,9 @@ static int read_anpath(char titles[20][STRLEN], char paths[20][PATHLEN]);
 static int save_anpath(char titles[20][STRLEN], char paths[20][PATHLEN]);
 static int logvisit(time_t timein, const char *path);
 static int chk_currBM_Personal(char *BMstr);
-static int countstr(char *s0, char *s1);
+static int countstr(const char *s0, const char *s1);
 static int getvisit(int n[2], const char *path);
-static int add_anpath(char *title, char *path);
+static int add_anpath(const char *title, const char *path);
 
 extern void a_prompt();		/* added by netty */
 extern int can_R_endline;
@@ -74,7 +74,7 @@ int inlink = 0;
 typedef struct {
 	ITEM *item[MAXITEMS];
 	char mtitle[STRLEN];
-	char *path;
+	const char *path;
 	int num, page, now;
 	int level;
 } MENU;
@@ -206,14 +206,9 @@ MENU *pm;
 	update_endline();
 }
 
-static void
-a_additem(pm, title, fname, host, port)
-MENU *pm;
-char *title, *fname, *host;
-int port;
-{
+static void a_additem(MENU *pm, const char *title, const char *fname, char *host, int port) {
 	ITEM *newitem;
-	char *ptr;
+	const char *ptr;
 
 	if (countstr(pm->path, "/") < countstr(fname, ".."))
 		return;
@@ -238,9 +233,9 @@ int port;
 	}
 }
 
-static int countstr(char *s0, char *s1) {
+static int countstr(const char *s0, const char *s1) {
 	int i = 0, j;
-	char *ptr = s0;
+	const char *ptr = s0;
 	j = strlen(s1);
 	while ((ptr = strstr(ptr, s1)) != NULL) {
 		i++;
@@ -469,7 +464,7 @@ check_import(char *anboard)
 		return -2;
 }
 
-static int an_log(char *action, char *path) {
+static int an_log(const char *action, const char *path) {
 	char anboard[STRLEN], *ptr, buf[256];
 	if (!strncmp(path, "0Announce/groups/GROUP_", 23)) {
 		strncpy(anboard, &(path[25]), STRLEN);
@@ -1630,10 +1625,7 @@ EXPRESS:		/* add by djq,990725 */
 		inlink = 0;
 }
 
-void
-linkto(path, fname, title)
-char *path, *title, *fname;
-{
+void linkto(const char *path, const char *fname, const char *title) {
 	MENU pm;
 
 	memset(&pm, 0, sizeof(MENU));
@@ -1984,7 +1976,7 @@ out:
 	return changed;
 }
 
-static int add_anpath(char *title, char *path) {
+static int add_anpath(const char *title, const char *path) {
 	char titles[20][STRLEN], paths[20][PATHLEN], *ptr;
 	int i;
 	int index = 0, nindex = 0;
