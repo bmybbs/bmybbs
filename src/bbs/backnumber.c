@@ -204,8 +204,8 @@ static const struct one_key backnumber_comms[] = {
 
 static int readbacknumber(int ent, struct bknheader *bkninfo, char *direct) {
 	(void) ent;
-	char buf[MAXPATHLEN], *t;
-	strcpy(buf, direct);
+	char buf[STRLEN], *t;
+	ytht_strsncpy(buf, direct, sizeof(buf));
 	if ((t = strrchr(buf, '/')) != NULL)
 		*t = '\0';
 	sprintf(currbacknumberdir, "%s/%s/%s", buf, bknh2bknname(bkninfo),
@@ -253,9 +253,9 @@ char buf[512];
 int
 new_backnumber()
 {
-	char backnumberboarddir[MAXPATHLEN], dirname[MAXPATHLEN], dpath[MAXPATHLEN];
+	char backnumberboarddir[MAXPATHLEN], dirname[STRLEN], dpath[MAXPATHLEN];
 	char content[1024];
-	int now;
+	time_t now;
 	struct bknheader bn;
 	int count;
 	if (!IScurrBM)
@@ -266,12 +266,12 @@ new_backnumber()
 	if (bn.title[0] == '\0')
 		return FULLUPDATE;
 	now = time(NULL);
-	sprintf(dirname, "B.%d", now);
+	sprintf(dirname, "B.%ld", now);
 	sprintf(dpath, "boards/.backnumbers/%s/%s", currboard, dirname);
 	count = 0;
 	while (mkdir(dpath, 0770) == -1) {
 		now++;
-		sprintf(dirname, "B.%d", now);
+		sprintf(dirname, "B.%ld", now);
 		sprintf(dpath, "boards/.backnumbers/%s/%s", currboard, dirname);
 		if (count++ > MAX_POSTRETRY) {
 			return FULLUPDATE;
@@ -370,7 +370,7 @@ time_t t;
 	struct bknheader bknhdr;
 	struct fileheader fhdr;
 	char tmpfile[MAXPATHLEN], deleted[MAXPATHLEN];
-	char bnpath[MAXPATHLEN], buf1[MAXPATHLEN], buf2[MAXPATHLEN];
+	char bnpath[STRLEN], buf1[STRLEN], buf2[STRLEN * 2];
 	int fdr, fdw, fd;
 	//int count;
 	time_t filet;
