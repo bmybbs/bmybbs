@@ -401,7 +401,7 @@ sort_user_record(int left, int right)
 static int
 fill_userlist()
 {
-	int i, i2, j, uent, testreject, uid;
+	int i, i2, uid;
 	int back_sort_mode;
 	const struct user_info *up;
 
