@@ -1543,8 +1543,9 @@ char buf[512];
 	struct stat st;
 	char msg[32];
 	setbdir(path, currboard, digestmode);
-	if(stat(path,&st)==-1 ) errlog("error");
-	if((stat(path,&st)!=-1 )&& (st.st_size/sizeof(struct fileheader))< num ){
+	if (stat(path, &st) == -1)
+		errlog("error");
+	if ((stat(path, &st) != -1) && (num > 0 && (st.st_size / sizeof(struct fileheader)) < (unsigned) num)) {
 		ent->accessed |= FILE_TOP1;
 		//errlog("slowaction");
 		if((ent->accessed& FH_MARKED)&&(ent->accessed&FH_DIGEST)) strcpy(msg,"\033[1;31m[ÌבÊ¾]\033[0m");
