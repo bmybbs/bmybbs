@@ -1,25 +1,25 @@
 /*
-    Pirate Bulletin Board System
-    Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
-    Eagles Bulletin Board System
-    Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
-    Guy Vega, gtvega@seabass.st.usm.edu
-    Dominic Tynes, dbtynes@seabass.st.usm.edu
-    Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
+	Pirate Bulletin Board System
+	Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
+	Eagles Bulletin Board System
+	Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
+						Guy Vega, gtvega@seabass.st.usm.edu
+						Dominic Tynes, dbtynes@seabass.st.usm.edu
+	Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 1, or (at your option)
-    any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 1, or (at your option)
+	any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
 #include "bbs.h"
@@ -304,7 +304,7 @@ igetch2()
 {
 	char c;
 
-      igetagain2:
+igetagain2:
 	while ((icurrchar2 < ibufsize2) && (inbuf[icurrchar2] == 0))
 		icurrchar2++;
 
@@ -371,8 +371,7 @@ igetch2()
 	if (icurrchar2 >= ibufsize2)
 		goto igetagain2;
 
-	if (((inbuf[icurrchar2] == '\n') && (lastch == '\r'))
-	    || ((inbuf[icurrchar2] == '\r') && (lastch == '\n'))) {
+	if (((inbuf[icurrchar2] == '\n') && (lastch == '\r')) || ((inbuf[icurrchar2] == '\r') && (lastch == '\n'))) {
 		lastch = 0;
 		icurrchar2++;
 		goto igetagain2;
@@ -397,14 +396,14 @@ igetch2()
 
 static char *const (sh[]) = {
 	"zh", "z", "y", "x", "t", "sh",
-	    "s", "r", "q", "p", "n",
-	    "m", "l", "k", "j", "h", "g", "f", "d", "ch", "c", "b", NULL};
+	"s", "r", "q", "p", "n",
+	"m", "l", "k", "j", "h", "g", "f", "d", "ch", "c", "b", NULL};
 static char *const sht = "azyxtosrqpnmlkjhgfdecb";
 static char *const (yun[]) = {
 	"uo", "un", "ui", "uang", "uan", "uai", "ua", "u", "ou", "ong",
-	    "o", "iu", "ing", "in", "ie", "iao", "iang", "ian", "ia",
-	    "i", "er", "eng", "en", "ei", "e", "ao", "ang", "an", "ai",
-	    "a", NULL};
+	"o", "iu", "ing", "in", "ie", "iao", "iang", "ian", "ia",
+	"i", "er", "eng", "en", "ei", "e", "ao", "ang", "an", "ai",
+	"a", NULL};
 const static char yunt[] = "qwrtypsudfoghjklzxcivbnme1234a";
 static char *const (yunsp[]) = {
 "o", "er", "en", "ei", "e", "ao", "ang", "an", "ai", "a", NULL};
@@ -428,8 +427,7 @@ trans0(char *pinyin, char *trans0pinyin)
 				continue;
 			}
 			for (j = 0; yun[j] != NULL; j++)
-				if (strncmp(pinyin + i, yun[j], strlen(yun[j]))
-				    == 0)
+				if (strncmp(pinyin + i, yun[j], strlen(yun[j])) == 0)
 					break;
 			if (yun[j] == NULL)
 				trans0pinyin[t0++] = '?';
@@ -440,9 +438,8 @@ trans0(char *pinyin, char *trans0pinyin)
 		} else {
 			trans0pinyin[t0++] = '-';
 			for (j = 0; yunsp[j] != NULL; j++)
-				if (strncmp
-				    (pinyin + i, yunsp[j],
-				     strlen(yunsp[j])) == 0) break;
+				if (strncmp(pinyin + i, yunsp[j], strlen(yunsp[j])) == 0)
+					break;
 			if (yunsp[j] == NULL)
 				break;
 			else {
@@ -535,7 +532,7 @@ igetch()
 		return ch;
 	}
 
-      CHINPUT:
+CHINPUT:
 	if (chinput) {
 		if (*ptr != 0)
 			return *(ptr++);
@@ -543,7 +540,7 @@ igetch()
 			lp = !lp;
 			redoscr();
 		}
-	      AGAIN:
+AGAIN:
 		if (lp) {
 			outputstr("\033[s\033[8;0H ");
 			//outputstr("\033[8;0H ");
@@ -600,13 +597,13 @@ igetch_org()
 	extern int RMSG;
 
 	if (RMSG == YEA && ((uinfo.mode == CHAT1) || (uinfo.mode == CHAT2)
-			    || (uinfo.mode == CHAT3)
-			    || (uinfo.mode == TALK) || (uinfo.mode == PAGE)
-			    || (uinfo.mode == FIVE)
-			    || (uinfo.mode == PAGE_FIVE)))
+				|| (uinfo.mode == CHAT3)
+				|| (uinfo.mode == TALK) || (uinfo.mode == PAGE)
+				|| (uinfo.mode == FIVE)
+				|| (uinfo.mode == PAGE_FIVE)))
 		return igetch2();
 
-      igetagain:
+igetagain:
 	while ((icurrchar < ibufsize) && (inbuf[icurrchar] == 0))
 		icurrchar++;
 	if (ibufsize <= icurrchar) {
@@ -685,8 +682,7 @@ igetch_org()
 	if (icurrchar >= ibufsize)
 		goto igetagain;
 
-	if (((inbuf[icurrchar] == '\n') && (lastch == '\r'))
-	    || ((inbuf[icurrchar] == '\r') && (lastch == '\n'))) {
+	if (((inbuf[icurrchar] == '\n') && (lastch == '\r')) || ((inbuf[icurrchar] == '\r') && (lastch == '\n'))) {
 		lastch = 0;
 		icurrchar++;
 		goto igetagain;
@@ -722,8 +718,7 @@ igetkey()
 	mode = last = 0;
 	while (1) {
 		ch = igetch();
-		if ((ch == Ctrl('Z')) && (RMSG == NA)
-		    && (uinfo.mode != LOCKSCREEN)) {
+		if ((ch == Ctrl('Z')) && (RMSG == NA) && (uinfo.mode != LOCKSCREEN)) {
 			if (have_msg_unread) {
 				oldblock = msg_blocked;
 				msg_blocked = 0;
@@ -1018,9 +1013,7 @@ static int raw_write(int fd, char *buf, int len) {
 			} else
 				bufcounter += len;
 		} else {
-			/*
-			 * time clocked, clear bufcounter
-			 */
+			/* time clocked, clear bufcounter */
 			bufcounter = len;
 		}
 		lastcounter = nowcounter;
@@ -1058,7 +1051,7 @@ static int raw_read(int fd, char *buf, int len) {
 
 int
 multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len,
-	      int maxline, int clearlabel)
+		int maxline, int clearlabel)
 {
 	int ch, x, y, startx, starty, j, k, i0, cursorx = 0, cursory = 0;
 	size_t i, chk, now;
@@ -1119,10 +1112,7 @@ multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len,
 			break;
 		for (i = starty; i <= y; i++)
 			saveline(i, 1, savebuffer[i]);
-		if (1 == RMSG
-		    && (KEY_UP == ch || KEY_DOWN == ch || Ctrl('Z') == ch
-			|| Ctrl('A') == ch)
-		    && (!buf[0])) {
+		if (1 == RMSG && (KEY_UP == ch || KEY_DOWN == ch || Ctrl('Z') == ch || Ctrl('A') == ch) && (!buf[0])) {
 			return -ch;
 		}
 		switch (ch) {
@@ -1160,9 +1150,8 @@ multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len,
 						y++;
 					}
 					if (!enabledbchar || !chk)
-						if (y == cursory - 1
-						    && x <= cursorx)
-							    now = i + 1;
+						if (y == cursory - 1 && x <= cursorx)
+							now = i + 1;
 				}
 			}
 			break;
@@ -1191,9 +1180,8 @@ multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len,
 						y++;
 					}
 					if (!enabledbchar || !chk)
-						if (y == cursory + 1
-						    && x <= cursorx)
-							    now = i + 1;
+						if (y == cursory + 1 && x <= cursorx)
+							now = i + 1;
 				}
 			}
 			break;
@@ -1212,8 +1200,7 @@ multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len,
 							chk = 1;
 					}
 					if (chk) {
-						for (i = now - 1;
-						     i < strlen(buf); i++)
+						for (i = now - 1; i < strlen(buf); i++)
 							buf[i] = buf[i + 1];
 						now--;
 					}
@@ -1231,8 +1218,7 @@ multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len,
 							chk = 1;
 					}
 					if (chk)
-						for (i = now; i < strlen(buf);
-						     i++)
+						for (i = now; i < strlen(buf); i++)
 							buf[i] = buf[i + 1];
 				}
 				for (i = now; i < strlen(buf); i++)
@@ -1280,8 +1266,7 @@ multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len,
 			break;
 		case KEY_END:
 		case Ctrl('E'):
-			while (now < strlen(buf) && buf[now] != '\n'
-			       && buf[now] != '\r')
+			while (now < strlen(buf) && buf[now] != '\n' && buf[now] != '\r')
 				now++;
 			break;
 		case KEY_PGUP:
