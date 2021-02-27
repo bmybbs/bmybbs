@@ -69,7 +69,7 @@ int digestmode;
 struct userec currentuser;
 int usernum;
 int local_article;
-char currboard[STRLEN];
+char currboard[24]; // boardheader.filename
 char IScurrBM = 0;
 char ISdelrq = 0;
 int selboard = 0;
@@ -1644,10 +1644,10 @@ int mode;
 	if (mode == 0) {
 		if (in_mail == YEA) {
 			in_mail = NA;
-			write_header(of, 1 /*不写入 .posts */ );
+			write_header(of/*, 1 不写入 .posts */ );
 			in_mail = YEA;
 		} else
-			write_header(of, 1 /*不写入 .posts */ );
+			write_header(of/*, 1 不写入 .posts */ );
 		if (fgets(buf, 256, inf) != NULL) {
 			if (in_mail && strncmp(buf, "寄信人: ", 8)) {
 				hashead = 0;
@@ -1707,7 +1707,7 @@ int mode;
 			MY_BBS_NAME, ctime(&now));
 		fprintf(of, "【此篇文章是由自动发信系统所张贴】\n\n");
 	} else if (mode == 2) {
-		write_header(of, 0 /*写入 .posts */ );
+		write_header(of/*, 0 写入 .posts */ );
 	}
 
 	while ((count = fread(buf, 1, sizeof (buf), inf)) > 0)
@@ -3132,7 +3132,7 @@ int Save_post(int ent, struct fileheader *fileinfo, char *direct) {
 	(void) direct;
 	if (!IScurrBM)
 		return DONOTHING;
-	return (a_Save("0Announce", currboard, fileinfo, NA));
+	return (a_Save(currboard, fileinfo, NA));
 }
 
 /* Added by ylsdd */
@@ -3186,9 +3186,10 @@ static void quickviewpost(int ent, struct fileheader *fileinfo, char *direct) {
 		prints("\033[0m%s", buf);
 	}
 	if (has_attach) {
-		get_temp_sessionid(buf);
+		char temp_sessionid[10];
+		get_temp_sessionid(temp_sessionid, sizeof(temp_sessionid));
 		prints("http://%s/" SMAGIC "%s/con?B=%s&F=%s&N=%d",
-				MY_BBS_DOMAIN, buf, currboard, fh2fname(fileinfo), ent);
+				MY_BBS_DOMAIN, temp_sessionid, currboard, fh2fname(fileinfo), ent);
 		j++;
 	}
 	if (j < 6) {
@@ -3323,7 +3324,7 @@ static int show_file_info(int ent, struct fileheader *fileinfo, char *direct) {
 	bp = ythtbbs_cache_Board_get_board_by_name(currboard);
 	if (NULL == bp)
 		return DONOTHING;
-	get_temp_sessionid(temp_sessionid);
+	get_temp_sessionid(temp_sessionid, sizeof(temp_sessionid));
 	clear();
 	move(0, 0);
 	prints("这篇文章的详细信息如下:\n");
@@ -3409,7 +3410,7 @@ into_backnumber()
 int
 into_announce()
 {
-	if (a_menusearch("0Announce", currboard, HAS_PERM(PERM_ANNOUNCE | PERM_SYSOP | PERM_OBOARDS, currentuser) ? PERM_BOARDS : 0))
+	if (a_menusearch(currboard, HAS_PERM(PERM_ANNOUNCE | PERM_SYSOP | PERM_OBOARDS, currentuser) ? PERM_BOARDS : 0))
 		return 999;
 	return DONOTHING;
 }

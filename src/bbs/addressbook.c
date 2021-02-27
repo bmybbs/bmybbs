@@ -45,7 +45,7 @@ int addressbook(const char *s) {
 				continue;
 			prints("%s的通讯录内容如下\n", buf);
 			prints("=================================\n");
-			sethomefile(filename, buf, "addressbook");
+			sethomefile_s(filename, sizeof(filename), buf, "addressbook");
 			if (!dashf(filename)) {
 				prints("该用户尚未设置通讯录");
 				pressanykey();
@@ -62,8 +62,7 @@ int addressbook(const char *s) {
 			break;
 		case 'B':
 		case 'b':
-			sethomefile(filename, currentuser.userid,
-				    "addressbook");
+			sethomefile_s(filename, sizeof(filename), currentuser.userid, "addressbook");
 			readaddressbook(filename, items);
 			prints("编辑通讯录(\033[1;31m小心被滥用\033[m)\n");
 			prints("=================================\n");
@@ -124,11 +123,9 @@ showaddressitem(char *item, int i, int mode)
 	if (item[0] == 0) {
 		prints("%-10s 尚未设定\n", addressitems[i]);
 	} else if (mode == -1) {
-		prints("%-10s %-10s %s\n", addressitems[i],
-		       openlevel[item[0] - '0'], item + 1);
+		prints("%-10s %-10s %s\n", addressitems[i], openlevel[item[0] - '0'], item + 1);
 	} else {
-		prints("%-10s %s\n", addressitems[i],
-		       (mode >= item[0] - '0') ? (item + 1) : "保密");
+		prints("%-10s %s\n", addressitems[i], (mode >= item[0] - '0') ? (item + 1) : "保密");
 	}
 }
 

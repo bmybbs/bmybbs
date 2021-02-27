@@ -1185,7 +1185,7 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
 			strcpy(currboard, tmpboard);
 			break;
 		case SR_BMTMP:
-			a_Save("0Announce", currboard, &SR_fptr, YEA);
+			a_Save(currboard, &SR_fptr, YEA);
 			break;
 		case SR_BMNOREPLY:
 			if (digestmode != 0)

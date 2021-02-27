@@ -1,6 +1,7 @@
 #ifndef BMYBBS_READ_H
 #define BMYBBS_READ_H
 #include "ythtbbs/article.h"
+#include "one_key.h"
 
 extern char currdirect[];
 

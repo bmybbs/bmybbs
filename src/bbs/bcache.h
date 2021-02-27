@@ -31,7 +31,7 @@ void update_utmp(void);
 int get_utmp(void);
 int who_callme(struct user_info *uentp, int (*fptr)(int, struct user_info *), int farg, int me);
 int getbmnum(char *userid);
-char *get_temp_sessionid(char *temp_sessionid);
+char *get_temp_sessionid(char *temp_sessionid, size_t len);
 void show_small_bm(char *board);
 int setbmstatus(int online);
 #endif //BMYBBS_BCACHE_H

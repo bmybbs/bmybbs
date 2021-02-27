@@ -144,10 +144,9 @@ UseronlineSearch(curr_num, offset)
 int curr_num;
 int offset;
 {
-	static char method[2], queryID[IDLEN + 2], queryIP[20], queryNick[NAMELEN + 2];
+	static char method[2] = { 0 }, queryID[IDLEN + 2], queryIP[20], queryNick[NAMELEN + 2];
 	char ans[STRLEN + 1], pmt[STRLEN];
-	strcpy(ans, method);
-	sprintf(pmt, "查找方式:(A)ID (B)呢称 (C)IP [%s]:", ans);
+	sprintf(pmt, "查找方式:(A)ID (B)呢称 (C)IP [%s]:", method);
 	move(t_lines - 1, 0);
 	clrtoeol();
 	getdata(t_lines - 1, 0, pmt, ans, 2, DOECHO, YEA);
@@ -155,22 +154,18 @@ int offset;
 	if (!((ans[0] >= 'A' && ans[0] <= 'C') || ans[0] == '\0'))
 		return curr_num;
 	if (ans[0] != '\0')
-		strcpy(method, ans);
+		ytht_strsncpy(method, ans, sizeof(method));
 	switch (method[0]) {
 	case 'A':
-		strcpy(ans, queryID);
-		sprintf(pmt, "搜寻%s的ID [%s]: ",
-			offset > 0 ? "往后来" : "往先前", ans);
+		sprintf(pmt, "搜寻%s的ID [%s]: ", offset > 0 ? "往后来" : "往先前", queryID);
 		move(t_lines - 1, 0);
 		clrtoeol();
 		getdata(t_lines - 1, 0, pmt, ans, IDLEN + 1, DOECHO, YEA);
 		if (ans[0] != '\0')
-			strcpy(queryID, ans);
+			ytht_strsncpy(queryID, ans, sizeof(queryID));
 		return IDSearch(queryID, curr_num, offset);
 	case 'B':
-		strcpy(ans, queryNick);
-		sprintf(pmt, "搜寻%s的呢称[%s]: ", offset > 0 ? "往后来"
-			: "往先前", ans);
+		sprintf(pmt, "搜寻%s的呢称[%s]: ", offset > 0 ? "往后来" : "往先前", queryNick);
 		move(t_lines - 1, 0);
 		clrtoeol();
 		getdata(t_lines - 1, 0, pmt, ans, NAMELEN + 1, DOECHO, YEA);
@@ -178,14 +173,12 @@ int offset;
 			ytht_strsncpy(queryNick, ans, sizeof(queryNick));
 		return NickSearch(queryNick, curr_num, offset);
 	case 'C':
-		strcpy(ans, queryIP);
-		sprintf(pmt, "%s搜寻来自%s的ID: ", offset > 0 ? "往后来"
-			: "往先前", ans);
+		sprintf(pmt, "%s搜寻来自%s的ID: ", offset > 0 ? "往后来" : "往先前", queryIP);
 		move(t_lines - 1, 0);
 		clrtoeol();
 		getdata(t_lines - 1, 0, pmt, ans, 17, DOECHO, YEA);
 		if (ans[0] != '\0')
-			strcpy(queryIP, ans);
+			ytht_strsncpy(queryIP, ans, sizeof(queryIP));
 		return IPSearch(queryIP, curr_num, offset);
 	default:
 		return curr_num;
@@ -278,13 +271,13 @@ int isreject(const struct user_info *uentp) {
 
 	if (HAS_PERM(PERM_SYSOP, currentuser))
 		return NA;
-	if (uentp->uid != uinfo.uid) {
+	if (uentp->uid != uinfo.uid && uinfo.uid >= 0) {
 		for (i = 0; i < MAXREJECTS && uentp->reject[i]; i++) {
-			if (uentp->reject[i] == uinfo.uid)
+			if (uentp->reject[i] == (unsigned) uinfo.uid)
 				return YEA;	/* 被设为黑名单 */
 		}
 		for (i = 0; i < MAXREJECTS && uinfo.reject[i]; i++) {
-			if (uentp->uid == uinfo.reject[i])
+			if ((unsigned) uentp->uid == uinfo.reject[i])
 				return YEA;	/* 被设为黑名单 */
 		}
 	}
@@ -401,7 +394,7 @@ sort_user_record(int left, int right)
 static int
 fill_userlist()
 {
-	int i, i2, j, uent, testreject, uid;
+	int i, i2, uid;
 	int back_sort_mode;
 	const struct user_info *up;
 
@@ -612,9 +605,8 @@ show_userlist()
 	return 1;
 }
 
-static int
-deal_key(int ch, int allnum, int pagenum)
-{
+static int deal_key(int ch, int allnum, int pagenum) {
+	(void) pagenum;
 	char buf[STRLEN];
 	char tempuser[20];
 	static int msgflag;
@@ -819,10 +811,8 @@ int i;
 	range = i;
 }
 
-static int
-do_query(star, curr)
-int star, curr;
-{
+static int do_query(int star, int curr) {
+	(void) star;
 	if (user_record[curr] != NULL) {
 		clear();
 		t_query(user_record[curr]->userid);

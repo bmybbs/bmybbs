@@ -60,8 +60,6 @@ int is_utf(const char * inbuf, size_t inlen) {
 	unsigned char p = 0;
 	unsigned char q = 0;
 
-	int utf_yes = 0;
-
 	for (i=0;i<inlen;){
 		c=(unsigned char)inbuf[i];
 		if(c>>7==one_byte){

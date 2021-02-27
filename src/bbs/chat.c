@@ -162,10 +162,12 @@ int fd;
 char *buf;
 {
 	size_t len;
+	ssize_t size;
 
-	sprintf(genbuf, "%s\n", buf);
+	snprintf(genbuf, sizeof(genbuf), "%s\n", buf);
 	len = strlen(genbuf);
-	return (send(fd, genbuf, len, 0) == len);
+	size = send(fd, genbuf, len, 0);
+	return ((size < 0) ? 0 : ((unsigned) size == len));
 }
 
 static int
@@ -663,6 +665,7 @@ char *arg;
 {
 	char *userid, msg[STRLEN * 2];
 	char qry_mail_dir[STRLEN];
+	char time_buf[STRLEN];
 
 	userid = strrchr(arg, ' ');
 
@@ -684,10 +687,10 @@ char *arg;
 
 	printchatline(msg);
 
-	strcpy(genbuf, lookupuser.dietime ? ytht_ctime(lookupuser.dietime) : ytht_ctime(lookupuser.lastlogin));
+	ytht_strsncpy(time_buf, lookupuser.dietime ? ytht_ctime(lookupuser.dietime) : ytht_ctime(lookupuser.lastlogin), sizeof(time_buf));
 	if (ifinprison(lookupuser.userid)) {
-		strcpy(genbuf, ytht_ctime(lookupuser.lastlogin));
-		sprintf(msg, "在监狱服刑，入狱时间[\033[1m%s\033[m]", genbuf);
+		ytht_strsncpy(time_buf, ytht_ctime(lookupuser.lastlogin), sizeof(time_buf));
+		sprintf(msg, "在监狱服刑，入狱时间[\033[1m%s\033[m]", time_buf);
 	} else if (lookupuser.dietime) {
 		sprintf(msg,
 			"已经死亡，还有 [\033[1m%d\033[m] 天就要转世投胎了",
@@ -695,7 +698,7 @@ char *arg;
 	} else {
 		sprintf(msg,
 			"上次在 [\033[1;37m%-24.24s\033[m] 由 [\033[1;37m%s\033[m] 到本站一游",
-			genbuf, (lookupuser.lasthost[0] == '\0' ? "(不详)" : lookupuser.lasthost));
+			time_buf, (lookupuser.lasthost[0] == '\0' ? "(不详)" : lookupuser.lasthost));
 	}
 
 	printchatline(msg);

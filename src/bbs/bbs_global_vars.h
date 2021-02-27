@@ -4,7 +4,7 @@
 #include "config.h"
 #include "one_key.h"
 extern char save_title[STRLEN];
-extern char currboard[STRLEN];
+extern char currboard[24];
 extern int currfiletime;
 extern char currmaildir[STRLEN];
 extern char fromhost[];
@@ -58,7 +58,6 @@ extern int disable_move;
 extern char ISdelrq;
 extern int readingthread;
 extern char genbuf[1024] ;      /* generally used global buffer */
-extern char currboard[] ;       /* name of currently selected board */
 
 /**
  * user structure is loaded from passwd file at logon,

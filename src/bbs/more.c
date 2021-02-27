@@ -372,8 +372,8 @@ measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
 		unsigned int len;
 		p = p0 + *s + 1;
 		len = ntohl(*(unsigned int *) p);
-		if (len > size - 5)
-			len = size - 5;
+		if (len > (unsigned) size - 5) /* safe */
+			len = (unsigned) size - 5;
 		*s += 5 + len;
 		*ty = 102;
 		if (size - *s >= 1 && p0[*s] == '\n')
@@ -544,8 +544,6 @@ mem_printline(char *ptr, int len, char *fn, char ty,struct MemMoreLines *l)
 		if (p != NULL && l != NULL)
 		{
 			int nPos = 0;
-			int last_line;
-			last_line = l->curr_line;
 			nPos = l->curr - l->ptr + 20 + strlen(attachname); /* Magic Number 20: "beginbinaryattach " + 2 -> size (4 bytes) noted by IronBlood 2020.02.08 */
 			if (!strcasecmp(p, ".bmp") || !strcasecmp(p, ".jpg") || !strcasecmp(p, ".gif") || !strcasecmp(p, ".jpeg") ||!strcasecmp(p, ".png"))
 				prints("\033[m¸½Í¼: \033[1;4mhttp://%s/attach/%s/M%s/%d/%d%s\033[0m\n",
@@ -571,7 +569,7 @@ mem_printline(char *ptr, int len, char *fn, char ty,struct MemMoreLines *l)
 			type = 2;
 		else if (!strncmp(fn, "mail", 4))
 			type = 3;
-		get_temp_sessionid(temp_sessionid);
+		get_temp_sessionid(temp_sessionid, sizeof(temp_sessionid));
 		q = strrchr(fn, '/') + 1;
 		switch (type) {
 		case 1:
@@ -622,7 +620,7 @@ mem_show(char *ptr, int size, int row, int numlines, char *fn)
 {
 	extern int t_lines;
 	struct MemMoreLines l;
-	int i, curr_line;
+	int i;
 	if (size <= 0)
 		return;
 	memset(&l, 0, sizeof(struct MemMoreLines));
@@ -630,7 +628,6 @@ mem_show(char *ptr, int size, int row, int numlines, char *fn)
 	move(row, 0);
 	clrtobot();
 	prints("\033[m");
-	curr_line = l.curr_line;
 	for (i = 0; i < t_lines - 1 - row && i < numlines; i++) {
 		mem_printline(l.curr, l.currlen, fn, l.currty,&l);
 		if (next_MemMoreLines(&l) < 0)

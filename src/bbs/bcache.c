@@ -588,14 +588,13 @@ char *userid;
 	return oldbm;
 }
 
-char *
-get_temp_sessionid(char *temp_sessionid)
-{
-	snprintf(temp_sessionid, 10, "%c%c%c%s",
+// term 下取 sessionid 的开头部分，未来不需要
+char *get_temp_sessionid(char *temp_sessionid, size_t len) {
+	snprintf(temp_sessionid, len, "%c%c%c%s",
 		(utmpent - 1) / (26 * 26) + 'A',
 		(utmpent - 1) / 26 % 26 + 'A',
 		(utmpent - 1) % 26 + 'A', uinfo.sessionid);
-	temp_sessionid[9] = 0;
+	temp_sessionid[len - 1] = 0;
 	return temp_sessionid;
 }
 

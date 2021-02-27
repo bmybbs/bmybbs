@@ -860,7 +860,7 @@ do_ordainBM(const char *userid, const char *abname)
 {
 	int id, pos, oldbm = 0, i, bigbm, bmpos, minpos, maxpos;
 	struct boardheader fh;
-	char bname[STRLEN], tmp[STRLEN], buf[5][STRLEN];
+	char bname[24] /* boardheader.filename */, tmp[STRLEN], buf[5][STRLEN];
 	char content[1024], title[STRLEN];
 	modify_user_mode(ADMIN);
 	if (!check_systempasswd()) {
@@ -1037,7 +1037,7 @@ do_retireBM(const char *userid, const char *abname)
 	int bm = 1;
 	struct boardheader fh;
 	char buf[5][STRLEN];
-	char bname[STRLEN];
+	char bname[24] /* boardheader.filename */;
 	char content[1024], title[STRLEN];
 	char tmp[STRLEN];
 	modify_user_mode(ADMIN);
@@ -1200,10 +1200,12 @@ do_retireBM(const char *userid, const char *abname)
 	return 0;
 }
 
+static const char *DIGEST_BASE = "0Announce/groups/GROUP_0/PersonalCorpus";
+
 int m_addpersonal(const char *s) {
 	(void) s;
 	FILE *fn;
-	char digestpath[80] = "0Announce/groups/GROUP_0/PersonalCorpus";
+	char digestpath[80];
 	char personalpath[80], title[STRLEN];
 	char firstchar[1];
 	int id;
@@ -1212,8 +1214,8 @@ int m_addpersonal(const char *s) {
 		return 1;
 	}
 	clear();
-	if (!dashd(digestpath)) {		//add by mintbaggio@BMY
-		prints("请先建立个人文集讨论区：Personal_Corpus, 路径是:%s", digestpath);
+	if (!dashd(DIGEST_BASE)) {		//add by mintbaggio@BMY
+		prints("请先建立个人文集讨论区：Personal_Corpus, 路径是:%s", DIGEST_BASE);
 		pressanykey();
 		return 1;
 	}
@@ -1238,10 +1240,10 @@ int m_addpersonal(const char *s) {
 	} else
 		firstchar[0] = lookupuser.userid[0];
 	printf("%c", firstchar[0]);
-	sprintf(personalpath, "%s/%c", digestpath, firstchar[0]);	//add by mintbaggio@BMY
+	snprintf(personalpath, sizeof(personalpath), "%s/%c", DIGEST_BASE, firstchar[0]);	//add by mintbaggio@BMY
 	if (!dashd(personalpath)) {		//add by mintbaggio@BMY
 		mkdir(personalpath, 0755);
-		sprintf(personalpath, "%s/.Names", personalpath);
+		snprintf(personalpath, sizeof(personalpath), "%s/%c/.Names", DIGEST_BASE, firstchar[0]);
 		if ((fn = fopen(personalpath, "w")) == NULL) {
 			return -1;
 		}
@@ -1249,11 +1251,9 @@ int m_addpersonal(const char *s) {
 		fprintf(fn, "# Title=%s\n", firstchar);
 		fprintf(fn, "#\n");
 		fclose(fn);
-		linkto(digestpath, firstchar, firstchar);
-		sprintf(personalpath, "%s/%c", digestpath, firstchar[0]);
+		linkto(DIGEST_BASE, firstchar, firstchar);
 	}
-	sprintf(personalpath, "%s/%c/%s", digestpath,
-		toupper(firstchar[0]), lookupuser.userid);
+	sprintf(personalpath, "%s/%c/%s", DIGEST_BASE, toupper(firstchar[0]), lookupuser.userid);
 	if (dashd(personalpath)) {
 		prints("该用户的个人文集目录已存在, 按任意键取消..");
 		pressanykey();
@@ -1275,16 +1275,17 @@ int m_addpersonal(const char *s) {
 
 	move(7, 0);
 	prints("[直接按 ENTER 键, 则标题缺省为: \033[32m%s文集\033[m]", lookupuser.userid);
-	getdata(6, 0, "请输入个人文集之标题: ", genbuf, 39, DOECHO, YEA);
-	if (genbuf[0] == '\0')
-		sprintf(title, "%s文集", lookupuser.userid);
+	char tmp_buf[40], tmp_title[62];
+	getdata(6, 0, "请输入个人文集之标题: ", tmp_buf, 39, DOECHO, YEA);
+	if (tmp_buf[0] == '\0')
+		snprintf(tmp_title, sizeof(tmp_title), "%s文集", lookupuser.userid);
 	else
-		sprintf(title, "%s文集——%s", lookupuser.userid, genbuf);
-	sprintf(title, "%-38.38s(BM: %s _Personal)", title, lookupuser.userid);
+		snprintf(tmp_title, sizeof(tmp_title), "%s文集——%s", lookupuser.userid, tmp_buf);
+	snprintf(title, sizeof(title), "%-38.38s(BM: %s _Personal)", tmp_title, lookupuser.userid);
 	//by bjgyt sprintf(title, "%-38.38s(BM: %s)", title, lookupuser.userid);
-	sprintf(digestpath, "%s/%c", digestpath, toupper(firstchar[0]));
+	sprintf(digestpath, "%s/%c", DIGEST_BASE, toupper(firstchar[0]));
 	linkto(digestpath, lookupuser.userid, title);
-	sprintf(personalpath, "%s/.Names", personalpath);
+	sprintf(personalpath, "%s/%c/%s/.Names", DIGEST_BASE, toupper(firstchar[0]), lookupuser.userid);
 	if ((fn = fopen(personalpath, "w")) == NULL) {
 		return -1;
 	}

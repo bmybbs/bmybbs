@@ -335,6 +335,8 @@ int get_con(char *servername, int port) {
 }
 
 static int do_gopher(int page, int num) {
+	(void) page;
+	(void) num;
 	return -1;
 }
 

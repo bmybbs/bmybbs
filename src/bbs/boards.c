@@ -68,7 +68,7 @@ struct newpostdata nbrd[MAXBOARD];
 int *zapbuf;
 int zapbufchanged = 0;
 int yank_flag = 0;
-static unsigned char boardprefix[5];
+static char boardprefix[5];
 
 struct goodboard GoodBrd;
 
@@ -93,7 +93,7 @@ int GoodBrds(const char *s) {
 	(void) s;
 //  if(!strcmp(currentuser.userid,"guest")) return;
 	GoodBrd.num = 9999;
-	boardprefix[0] = 255;
+	boardprefix[0] = 0xFF;
 	boardprefix[1] = 0;
 	choose_board(1, NULL);
 	return 0;
@@ -139,7 +139,7 @@ int EGroup(const char *cmd) {
 
 int Boards(const char *s) {
 	(void) s;
-	boardprefix[0] = 255;
+	boardprefix[0] = 0xFF;
 	boardprefix[1] = 0;
 	GoodBrd.num = 0;
 	choose_board(0, NULL);
@@ -148,7 +148,7 @@ int Boards(const char *s) {
 
 int New(const char *s) {
 	(void) s;
-	boardprefix[0] = 255;
+	boardprefix[0] = 0xFF;
 	boardprefix[1] = 0;
 	GoodBrd.num = 0;
 	choose_board(1, NULL);
@@ -270,7 +270,6 @@ static int load_boards_callback(struct boardmem *board, int curr_idx, va_list ap
 static int
 load_boards(int *brdnum, int secnum)
 {
-	struct boardmem *bptr;
 	int goodbrd = 0;
 	static int loadtime = 0;
 
@@ -393,11 +392,7 @@ struct newpostdata *ptr;
 	return 0;
 }
 
-int
-unread_position(dirfile, bptr)
-char *dirfile;
-struct boardmem *bptr;
-{
+int unread_position(char *dirfile, struct boardmem *bptr) {
 	int fd, offset, step, num, filetime;
 
 	num = bptr->total + 1;
@@ -405,7 +400,7 @@ struct boardmem *bptr;
 		if (!brc_initial(bptr->header.filename, 1)) {
 			num = 1;
 		} else {
-			offset = (int) &((struct fileheader *) 0)->filetime;
+			offset = offsetof(struct fileheader, filetime);
 			num = bptr->total - 1;
 			step = 4;
 			while (num > 0) {
@@ -829,7 +824,7 @@ const struct sectree *sec;
 						if (num == 0)
 							break;
 
-						char dir[80];
+						char dir[80 * 2];
 						struct mmapfile mf = { .ptr = NULL };
 						struct fileheader *x = NULL;
 
@@ -1076,7 +1071,6 @@ const struct sectree *sec;
 			if (num >= brdnum + secnum || num < secnum)
 				break;
 			if (GoodBrd.num) {
-				int i, pos;
 				char ans[5];
 				sprintf(genbuf, "要把 %s 从收藏夹中去掉 (Y/N)? [N]",
 					nbrd[num - secnum].name);
@@ -1186,7 +1180,7 @@ int clear_all_new_flag(const char *s) {
 	int i;
 	char ans[3];
 	int brdnum;
-	boardprefix[0] = 255;
+	boardprefix[0] = 0xFF;
 	boardprefix[1] = 0;
 	GoodBrd.num = 0;
 	brdnum = -1;
@@ -1303,7 +1297,7 @@ readtitle()
 
 	char header[200], title[STRLEN];
 	char readmode[10];
-	int active, invisible, i, bnum;
+	int active, invisible, i;
 	char tmp[40];
 	bp = ythtbbs_cache_Board_get_board_by_name(currboard);
 	if (bp == NULL)
@@ -1311,7 +1305,6 @@ readtitle()
 	IScurrBM = chk_currBM(&(bp->header), 0);
 	//ISdelrq = clubsync("deleterequest");
 
-	bnum = 0;
 	if (bp->header.bm[0][0] == 0) {
 		strcpy(header, "诚征版主中");
 	} else {
@@ -1550,8 +1543,9 @@ char buf[512];
 	struct stat st;
 	char msg[32];
 	setbdir(path, currboard, digestmode);
-	if(stat(path,&st)==-1 ) errlog("error");
-	if((stat(path,&st)!=-1 )&& (st.st_size/sizeof(struct fileheader))< num ){
+	if (stat(path, &st) == -1)
+		errlog("error");
+	if ((stat(path, &st) != -1) && (num > 0 && (st.st_size / sizeof(struct fileheader)) < (unsigned) num)) {
 		ent->accessed |= FILE_TOP1;
 		//errlog("slowaction");
 		if((ent->accessed& FH_MARKED)&&(ent->accessed&FH_DIGEST)) strcpy(msg,"\033[1;31m[提示]\033[0m");
@@ -1596,7 +1590,7 @@ makedatestar(char *datestr, struct fileheader *ent)
 	if (filetime > 740000000)
 		strncpy(str + 1, ctime(&filetime) + 4, 6);
 	else
-		strncpy(str + 1, "      ", 6);
+		strcpy(str + 1, "      ");
 	sprintf(datestr, "\033[1;4;3%c;4%cm", fg, bg);
 	j = strlen(datestr);
 	for (i = 0; i < 7; i++) {

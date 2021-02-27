@@ -1,25 +1,25 @@
 /*
-    Pirate Bulletin Board System
-    Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
-    Eagles Bulletin Board System
-    Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
-    Guy Vega, gtvega@seabass.st.usm.edu
-    Dominic Tynes, dbtynes@seabass.st.usm.edu
-    Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
+	Pirate Bulletin Board System
+	Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
+	Eagles Bulletin Board System
+	Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
+						Guy Vega, gtvega@seabass.st.usm.edu
+						Dominic Tynes, dbtynes@seabass.st.usm.edu
+	Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 1, or (at your option)
-    any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 1, or (at your option)
+	any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
 #include "bbs.h"
@@ -39,15 +39,15 @@
 #define INPUT_ACTIVE 0
 #define INPUT_IDLE 1
 
-unsigned char outbuffer[OBUFSIZE + 1];
-unsigned char *outbuf = outbuffer + 1;
+static char outbuffer[OBUFSIZE + 1];
+static char *outbuf = outbuffer + 1;
 int obufsize = 0;
 
-unsigned char inbuffer[IBUFSIZE + 1];
-unsigned char *inbuf = inbuffer + 1;
+char inbuffer[IBUFSIZE + 1];
+char *inbuf = inbuffer + 1;
 int ibufsize = 0;
 int icurrchar = 0;
-unsigned char inbuffer2[21];
+char inbuffer2[21];
 int ibufsize2 = 0;
 int icurrchar2 = 0;
 
@@ -58,7 +58,7 @@ time_t now_t, old;
 
 static void hit_alarm_clock(void);
 static int telnet_machine(int ch);
-static int filter_telnet(unsigned char *s, int *len);
+static int filter_telnet(char *s, int *len);
 static int igetch2(void);
 static int trans0(char *pinyin, char *trans0pinyin);
 static int dochinput(char *remstr, char *chstr, int ch);
@@ -129,11 +129,9 @@ int c;
 	}
 }
 
-void
-io_output(const char *s, int len)
-{
+void io_output(const char *s, int len) {
 	int l, n;
-	char *p0, *p1;
+	const char *p0, *p1;
 	p0 = s;
 	l = len;
 	while ((p1 = memchr(p0, IAC, l)) != NULL) {
@@ -150,7 +148,7 @@ io_output(const char *s, int len)
 		obufsize += n;
 		p0 += n;
 		l -= n;
-		outbuf[obufsize++] = IAC;
+		outbuf[obufsize++] = (char) IAC;
 	}
 	if (obufsize + l > OBUFSIZE) {
 #ifdef SSHBBS
@@ -164,10 +162,7 @@ io_output(const char *s, int len)
 	obufsize += l;
 }
 
-void inline
-outputstr(s)
-char *s;
-{
+static inline void outputstr(const char *s) {
 	io_output(s, strlen(s));
 }
 
@@ -272,22 +267,23 @@ unsigned char ch;
 }
 
 static int
-filter_telnet(unsigned char *s, int *len)
+filter_telnet(char *s, int *len)
 {
-	unsigned char *p1, *p2, *pend;
+	char *p1, *p2, *pend;
 	int newlen;
 	newlen = 0;
 	for (p1 = s, p2 = s, pend = s + (*len); p1 != pend; p1++) {
 		if (telnet_state) {
 			int ch = 0;
 			ch = telnet_machine(*p1);
-			if (ch == IAC) {	/* 两个IAC */
-				*p2 = IAC;
+			if (ch == IAC) {
+				/* 两个IAC */
+				*p2 = (char) IAC;
 				p2++;
 				newlen++;
 			}
 		} else {
-			if (*p1 == IAC)
+			if (*p1 == (char) IAC)
 				telnet_state = 255;
 			else {
 				*p2 = *p1;
@@ -304,7 +300,7 @@ igetch2()
 {
 	char c;
 
-      igetagain2:
+igetagain2:
 	while ((icurrchar2 < ibufsize2) && (inbuf[icurrchar2] == 0))
 		icurrchar2++;
 
@@ -371,8 +367,7 @@ igetch2()
 	if (icurrchar2 >= ibufsize2)
 		goto igetagain2;
 
-	if (((inbuf[icurrchar2] == '\n') && (lastch == '\r'))
-	    || ((inbuf[icurrchar2] == '\r') && (lastch == '\n'))) {
+	if (((inbuf[icurrchar2] == '\n') && (lastch == '\r')) || ((inbuf[icurrchar2] == '\r') && (lastch == '\n'))) {
 		lastch = 0;
 		icurrchar2++;
 		goto igetagain2;
@@ -397,18 +392,18 @@ igetch2()
 
 static char *const (sh[]) = {
 	"zh", "z", "y", "x", "t", "sh",
-	    "s", "r", "q", "p", "n",
-	    "m", "l", "k", "j", "h", "g", "f", "d", "ch", "c", "b", NULL};
+	"s", "r", "q", "p", "n",
+	"m", "l", "k", "j", "h", "g", "f", "d", "ch", "c", "b", NULL};
 static char *const sht = "azyxtosrqpnmlkjhgfdecb";
 static char *const (yun[]) = {
 	"uo", "un", "ui", "uang", "uan", "uai", "ua", "u", "ou", "ong",
-	    "o", "iu", "ing", "in", "ie", "iao", "iang", "ian", "ia",
-	    "i", "er", "eng", "en", "ei", "e", "ao", "ang", "an", "ai",
-	    "a", NULL};
-const static char yunt[] = "qwrtypsudfoghjklzxcivbnme1234a";
+	"o", "iu", "ing", "in", "ie", "iao", "iang", "ian", "ia",
+	"i", "er", "eng", "en", "ei", "e", "ao", "ang", "an", "ai",
+	"a", NULL};
+static const char yunt[] = "qwrtypsudfoghjklzxcivbnme1234a";
 static char *const (yunsp[]) = {
 "o", "er", "en", "ei", "e", "ao", "ang", "an", "ai", "a", NULL};
-const static char yunspt[] = "ovnme1234a";
+static const char yunspt[] = "ovnme1234a";
 
 static int
 trans0(char *pinyin, char *trans0pinyin)
@@ -428,8 +423,7 @@ trans0(char *pinyin, char *trans0pinyin)
 				continue;
 			}
 			for (j = 0; yun[j] != NULL; j++)
-				if (strncmp(pinyin + i, yun[j], strlen(yun[j]))
-				    == 0)
+				if (strncmp(pinyin + i, yun[j], strlen(yun[j])) == 0)
 					break;
 			if (yun[j] == NULL)
 				trans0pinyin[t0++] = '?';
@@ -440,9 +434,8 @@ trans0(char *pinyin, char *trans0pinyin)
 		} else {
 			trans0pinyin[t0++] = '-';
 			for (j = 0; yunsp[j] != NULL; j++)
-				if (strncmp
-				    (pinyin + i, yunsp[j],
-				     strlen(yunsp[j])) == 0) break;
+				if (strncmp(pinyin + i, yunsp[j], strlen(yunsp[j])) == 0)
+					break;
 			if (yunsp[j] == NULL)
 				break;
 			else {
@@ -535,7 +528,7 @@ igetch()
 		return ch;
 	}
 
-      CHINPUT:
+CHINPUT:
 	if (chinput) {
 		if (*ptr != 0)
 			return *(ptr++);
@@ -543,7 +536,7 @@ igetch()
 			lp = !lp;
 			redoscr();
 		}
-	      AGAIN:
+AGAIN:
 		if (lp) {
 			outputstr("\033[s\033[8;0H ");
 			//outputstr("\033[8;0H ");
@@ -600,13 +593,13 @@ igetch_org()
 	extern int RMSG;
 
 	if (RMSG == YEA && ((uinfo.mode == CHAT1) || (uinfo.mode == CHAT2)
-			    || (uinfo.mode == CHAT3)
-			    || (uinfo.mode == TALK) || (uinfo.mode == PAGE)
-			    || (uinfo.mode == FIVE)
-			    || (uinfo.mode == PAGE_FIVE)))
+				|| (uinfo.mode == CHAT3)
+				|| (uinfo.mode == TALK) || (uinfo.mode == PAGE)
+				|| (uinfo.mode == FIVE)
+				|| (uinfo.mode == PAGE_FIVE)))
 		return igetch2();
 
-      igetagain:
+igetagain:
 	while ((icurrchar < ibufsize) && (inbuf[icurrchar] == 0))
 		icurrchar++;
 	if (ibufsize <= icurrchar) {
@@ -685,8 +678,7 @@ igetch_org()
 	if (icurrchar >= ibufsize)
 		goto igetagain;
 
-	if (((inbuf[icurrchar] == '\n') && (lastch == '\r'))
-	    || ((inbuf[icurrchar] == '\r') && (lastch == '\n'))) {
+	if (((inbuf[icurrchar] == '\n') && (lastch == '\r')) || ((inbuf[icurrchar] == '\r') && (lastch == '\n'))) {
 		lastch = 0;
 		icurrchar++;
 		goto igetagain;
@@ -722,8 +714,7 @@ igetkey()
 	mode = last = 0;
 	while (1) {
 		ch = igetch();
-		if ((ch == Ctrl('Z')) && (RMSG == NA)
-		    && (uinfo.mode != LOCKSCREEN)) {
+		if ((ch == Ctrl('Z')) && (RMSG == NA) && (uinfo.mode != LOCKSCREEN)) {
 			if (have_msg_unread) {
 				oldblock = msg_blocked;
 				msg_blocked = 0;
@@ -1000,7 +991,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, int c
 }
 
 int ZmodemRateLimit = 0;
-
+#if 0
 static int raw_write(int fd, char *buf, int len) {
 	static int lastcounter = 0;
 	int nowcounter, i;
@@ -1018,9 +1009,7 @@ static int raw_write(int fd, char *buf, int len) {
 			} else
 				bufcounter += len;
 		} else {
-			/*
-			 * time clocked, clear bufcounter
-			 */
+			/* time clocked, clear bufcounter */
 			bufcounter = len;
 		}
 		lastcounter = nowcounter;
@@ -1055,10 +1044,11 @@ static int raw_read(int fd, char *buf, int len) {
 	return read(fd, buf, len);
 #endif
 }
+#endif
 
 int
 multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len,
-	      int maxline, int clearlabel)
+		int maxline, int clearlabel)
 {
 	int ch, x, y, startx, starty, j, k, i0, cursorx = 0, cursory = 0;
 	size_t i, chk, now;
@@ -1117,12 +1107,9 @@ multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len,
 		ch = igetkey();
 		if ((ch == '\n' || ch == '\r'))	// && num_in_buf()==0)
 			break;
-		for (i = starty; i <= y; i++)
+		for (i = starty; i <= (unsigned) y; i++)
 			saveline(i, 1, savebuffer[i]);
-		if (1 == RMSG
-		    && (KEY_UP == ch || KEY_DOWN == ch || Ctrl('Z') == ch
-			|| Ctrl('A') == ch)
-		    && (!buf[0])) {
+		if (1 == RMSG && (KEY_UP == ch || KEY_DOWN == ch || Ctrl('Z') == ch || Ctrl('A') == ch) && (!buf[0])) {
 			return -ch;
 		}
 		switch (ch) {
@@ -1160,9 +1147,8 @@ multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len,
 						y++;
 					}
 					if (!enabledbchar || !chk)
-						if (y == cursory - 1
-						    && x <= cursorx)
-							    now = i + 1;
+						if (y == cursory - 1 && x <= cursorx)
+							now = i + 1;
 				}
 			}
 			break;
@@ -1191,9 +1177,8 @@ multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len,
 						y++;
 					}
 					if (!enabledbchar || !chk)
-						if (y == cursory + 1
-						    && x <= cursorx)
-							    now = i + 1;
+						if (y == cursory + 1 && x <= cursorx)
+							now = i + 1;
 				}
 			}
 			break;
@@ -1212,8 +1197,7 @@ multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len,
 							chk = 1;
 					}
 					if (chk) {
-						for (i = now - 1;
-						     i < strlen(buf); i++)
+						for (i = now - 1; i < strlen(buf); i++)
 							buf[i] = buf[i + 1];
 						now--;
 					}
@@ -1231,8 +1215,7 @@ multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len,
 							chk = 1;
 					}
 					if (chk)
-						for (i = now; i < strlen(buf);
-						     i++)
+						for (i = now; i < strlen(buf); i++)
 							buf[i] = buf[i + 1];
 				}
 				for (i = now; i < strlen(buf); i++)
@@ -1274,14 +1257,13 @@ multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len,
 		case KEY_HOME:
 		case Ctrl('A'):
 			now--;
-			while (now >= 0 && buf[now] != '\n' && buf[now] != '\r')
+			while (now > 0 && buf[now] != '\n' && buf[now] != '\r')
 				now--;
 			now++;
 			break;
 		case KEY_END:
 		case Ctrl('E'):
-			while (now < strlen(buf) && buf[now] != '\n'
-			       && buf[now] != '\r')
+			while (now < strlen(buf) && buf[now] != '\n' && buf[now] != '\r')
 				now++;
 			break;
 		case KEY_PGUP:
@@ -1293,7 +1275,7 @@ multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len,
 		case Ctrl('Y'):
 			i0 = strlen(buf);
 			i = now - 1;
-			while (i >= 0 && buf[i] != '\n' && buf[i] != '\r')
+			while (i > 0 && buf[i] != '\n' && buf[i] != '\r')
 				i--;
 			i++;
 			if (!buf[i])
@@ -1306,7 +1288,7 @@ multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len,
 			j = j - i + 1;
 			if (j < 0)
 				j = 0;
-			for (k = 0; k < i0 - i - j + 1; k++)
+			for (k = 0; (unsigned) k < i0 - i - j + 1; k++)
 				buf[i + k] = buf[i + j + k];
 
 			y = starty;
@@ -1340,7 +1322,7 @@ multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len,
 				now = strlen(buf);
 			break;
 		default:
-			if (isprint2(ch) && strlen(buf) < len - 1) {
+			if (isprint2(ch) && (len > 1 && strlen(buf) < (unsigned) len - 1)) {
 				for (i = strlen(buf) + 1; i > now; i--)
 					buf[i] = buf[i - 1];
 				buf[now++] = ch;

@@ -1,18 +1,18 @@
 /*
-    Firebird Bulletin Board System
-    Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
+	Firebird Bulletin Board System
+	Copyright (C) 1999, KCN,Zhou Lin, kcn@cic.tsinghua.edu.cn
 
-    get some function from hztty.:)
+	get some function from hztty.:)
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 1, or (at your option)
-    any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 1, or (at your option)
+	any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 */
 
 #include "bbs.h"
@@ -115,9 +115,7 @@ void (*resolv_file) (char *);
 }
 
 void conv_init() {
-	BtoG =
-	    attach_shm2(CONVTABLE_SHMKEY, GtoB_count * 2 + BtoG_count * 2,
-			resolv_file);
+	BtoG = attach_shm2(CONVTABLE_SHMKEY, GtoB_count * 2 + BtoG_count * 2, resolv_file);
 	GtoB = BtoG + BtoG_count * 2;
 	gb2big_savec[0] = 0;
 	big2gb_savec[0] = 0;

@@ -384,9 +384,9 @@ int first;
 
 	int quitf, cx, ch, cy, datac, fdone, x;
 	char genbuf[100], data[90], xy_po[5], genbuf1[20];
-	int i, j, fway, banf, idone;
+	int i, j, /* fway,*/ banf, idone;
 	int player, px, py;
-	int chess[250][2] = { {0, 0} };
+	//int chess[250][2] = { {0, 0} };
 	char abcd[15] = {
 		'A', 'B', 'C', 'D', 'E', 'F', 'G',
 		'H', 'I', 'J', 'K', 'L', 'M',
@@ -430,7 +430,7 @@ begin:
 	quitf = 0;
 	px = 14;
 	py = 7;
-	fway = 1;
+	//fway = 1;
 	banf = 1;
 	idone = 0;
 	x = 0;
@@ -458,8 +458,8 @@ begin:
 	outs("●");
 	player = white;
 	fc.playboard[7][7] = black;
-	chess[1][0] = 14;	/*纪录所下位址 */
-	chess[1][1] = 7;
+	//chess[1][0] = 14;	/*纪录所下位址 */
+	//chess[1][1] = 7;
 	move(4, 35);
 	outs("第 1手 ●H 8");
 
@@ -480,7 +480,7 @@ begin:
 				break;
 			}
 			if (data[0] == '\0') {
-				data[((unsigned /* safe */) datac < sizeof(data)) ? datac : (sizeof(data) - 1)] = 0;
+				data[((unsigned /* safe */) datac < sizeof(data)) ? (unsigned) datac : (sizeof(data) - 1)] = 0;
 				five_chat(data + 1, 0);
 				if (chating)
 					move(PROMPT, ptr + 6);
@@ -823,8 +823,8 @@ begin:
 					outs("○");
 					player = black;
 				}
-				chess[fc.hand][0] = px;
-				chess[fc.hand][1] = py;
+				//chess[fc.hand][0] = px;
+				//chess[fc.hand][1] = py;
 				if (fc.hand % 2 == 0)
 					move(((fc.hand - 1) % 20) / 2 + 4, 48);
 				else
@@ -987,7 +987,7 @@ five_chat(char *msg, int init)
 static void
 press(void)
 {
-	int c;
+	//int c;
 	extern int showansi;
 	int tmpansi;
 
@@ -997,7 +997,7 @@ press(void)
 	move(t_lines - 1, 0);
 	clrtoeol();
 	prints("\033[37;40m\033[0m                               \033[33m按任意键继续 ...\033[37;40m\033[0m");
-	c = egetch();
+	//c = egetch();
 	move(t_lines - 1, 0);
 	saveline(t_lines - 1, 1, NULL);
 	showansi = tmpansi;
