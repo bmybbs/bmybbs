@@ -270,7 +270,6 @@ static int load_boards_callback(struct boardmem *board, int curr_idx, va_list ap
 static int
 load_boards(int *brdnum, int secnum)
 {
-	struct boardmem *bptr;
 	int goodbrd = 0;
 	static int loadtime = 0;
 
