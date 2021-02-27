@@ -1241,7 +1241,7 @@ super_select_board(char *bname)
 static int do_select(int ent, struct fileheader *fileinfo, char *direct) {
 	(void) ent;
 	(void) fileinfo;
-	char bname[STRLEN], bpath[STRLEN];
+	char bname[24], bpath[STRLEN];
 	struct stat st;
 	int ret;
 	struct boardmem *board;
@@ -1291,7 +1291,7 @@ static int do_select(int ent, struct fileheader *fileinfo, char *direct) {
 		board->inboard++;
 	selboard = 1;
 	brc_initial(bname, 0);
-	strcpy(currboard, bname);
+	ytht_strsncpy(currboard, bname, sizeof(currboard));
 
 	move(0, 0);
 	clrtoeol();
