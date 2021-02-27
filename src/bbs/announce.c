@@ -484,7 +484,7 @@ int nomsg;
 	char fname[STRLEN], *ip, bname[PATHLEN];
 	char ans[5], filepath[PATHLEN];
 	MENU pm;
-	char anboard[STRLEN], tmpboard[STRLEN];
+	char anboard[24], tmpboard[24];
 
 	memset(&pm, 0, sizeof(MENU));
 	memset(anboard, 0, sizeof(anboard));
@@ -550,14 +550,14 @@ int nomsg;
 			a_prompt(-1, "已将该文章放进精华区, 请按<Enter>继续...", ans, 2);
 		}
 	if (!nomsg) {
-		strcpy(tmpboard, currboard);
-		strcpy(currboard, anboard);
+		ytht_strsncpy(tmpboard, currboard, sizeof(tmpboard));
+		ytht_strsncpy(currboard, anboard, sizeof(currboard));
 	}
 	snprintf(genbuf, 256, "%s import %s %s %s", currentuser.userid,
 		currboard, fileinfo->owner, fileinfo->title);
 	newtrace(genbuf);
 	if (!nomsg)
-		strcpy(currboard, tmpboard);
+		ytht_strsncpy(currboard, tmpboard, sizeof(currboard));
 	freeitem(&pm);
 	return 1;
 }
