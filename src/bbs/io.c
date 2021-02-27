@@ -129,9 +129,7 @@ int c;
 	}
 }
 
-void
-io_output(const char *s, int len)
-{
+void io_output(const char *s, int len) {
 	int l, n;
 	const char *p0, *p1;
 	p0 = s;
@@ -164,10 +162,7 @@ io_output(const char *s, int len)
 	obufsize += l;
 }
 
-void inline
-outputstr(s)
-char *s;
-{
+static inline void outputstr(const char *s) {
 	io_output(s, strlen(s));
 }
 
