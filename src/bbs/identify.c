@@ -248,10 +248,10 @@ static int update_active(char* userid)
 	struct active_data act_data;
 	char genbuf[STRLEN];
 	char an[2];
-	int response;
+	//int response;
 
 	getuser(userid);
-	response=read_active(userid, &act_data);
+	read_active(userid, &act_data);
 
 	move(4,0);
 	clear();
