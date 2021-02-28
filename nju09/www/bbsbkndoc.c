@@ -71,6 +71,7 @@ bbsbkndoc_main()
 				sprintf(filename,
 					"boards/.backnumbers/%s/%s/%s", board,
 					bkn, fh2fname(&x));
+				x.owner[sizeof(x.owner) - 1] = 0;
 				printf("<tr><td>%d<td>%s<td>%s", start + i, ptr, userid_str(x.owner));
 				printf("<td>%12.12s", ytht_ctime(x.filetime) + 4);
 				x.title[40] = 0;

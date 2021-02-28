@@ -129,7 +129,7 @@ check_submit_form()
 	FILE *fp;
 	char dept[80], phone[80], assoc[80];
 	struct active_data act_data;
-	int count, mail_diff;
+	int count, mail_diff = 0;
 	int isprivilege = 0;
 	char path[128];
 
@@ -250,7 +250,7 @@ check_captcha_form(void)
 {
 	char code[6];
 	char tmp_email[STRLEN+1], *domain, path[128];
-	int rc, isprivilege;
+	int rc, isprivilege = 0;
 	struct active_data act_data;
 
 	memset(&act_data, 0, sizeof(struct active_data));

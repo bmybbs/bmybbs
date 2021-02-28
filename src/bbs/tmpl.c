@@ -62,6 +62,7 @@ orig_tmpl_init(char * nboard, int mode, struct a_template template_array[], size
 	struct s_template tmpl;
 	struct s_content content;
 	size_t templ_num;
+	ssize_t size_read;
 
 	setbfile(tmpldir, sizeof(tmpldir), nboard, TEMPLATE_DIR);
 
@@ -80,8 +81,11 @@ orig_tmpl_init(char * nboard, int mode, struct a_template template_array[], size
 			lseek( fd, sizeof(struct s_content) * tmpl.content_num , SEEK_CUR );
 			continue;
 		}
-		memset(&content, 0, sizeof(struct s_content) * tmpl.content_num );
-		if(read(fd, &content, sizeof(struct s_content)*tmpl.content_num) != sizeof(struct s_content)*tmpl.content_num)
+		memset(&content, 0, sizeof(struct s_content));
+		if ((size_read = read(fd, &content, sizeof(struct s_content))) < 0)
+			break;
+
+		if ((unsigned) size_read != sizeof(struct s_content))
 			continue;
 
 		template_array[templ_num].tmpl = malloc(sizeof(struct s_template));
@@ -320,9 +324,8 @@ content_refresh(){
 }
 
 
-static int
-content_key(int key, size_t allnum, int pagenum)
-{
+static int content_key(int key, size_t allnum, int pagenum) {
+	(void) pagenum;
 	switch (key) {
 	case 'M':
 	case 'm':
@@ -437,9 +440,8 @@ content_key(int key, size_t allnum, int pagenum)
 	return 0;
 }
 
-static int
-tmpl_key(int key, int _allnum, int pagenum)
-{
+static int tmpl_key(int key, int _allnum, int pagenum) {
+	(void) pagenum;
 	if (_allnum < 0)
 		return -1;
 
@@ -602,10 +604,8 @@ tmpl_key(int key, int _allnum, int pagenum)
 	return 0;
 }
 
-
-static int
-tmpl_select(int star, int curr)
-{
+static int tmpl_select(int star, int curr) {
+	(void) star;
 	int ch, deal;
 	int page = -1;
 	int number = 0;
@@ -715,10 +715,8 @@ tmpl_select(int star, int curr)
 	return DOQUIT;
 }
 
-int
-m_template()
-{
-	int tmplist;
+int m_template() {
+	//int tmplist;
 	if (!IScurrBM)
 		return DONOTHING;
 	if( tmpl_init(1) < 0 )
@@ -737,7 +735,8 @@ m_template()
 		}
 	}
 	clear();
-	tmplist = choose(NA, 0, tmpl_refresh, tmpl_key, tmpl_show, tmpl_select);
+	//tmplist = choose(NA, 0, tmpl_refresh, tmpl_key, tmpl_show, tmpl_select);
+	choose(NA, 0, tmpl_refresh, tmpl_key, tmpl_show, tmpl_select);
 	tmpl_free();
 	return FULLUPDATE;
 }
@@ -755,8 +754,8 @@ choose_tmpl_refresh(){
 	update_endline();
 }
 
-static int
-choose_tmpl_key(int key, int _allnum, int pagenum){
+static int choose_tmpl_key(int key, int _allnum, int pagenum){
+	(void) pagenum;
 	if (_allnum < 0)
 		return -1;
 
@@ -812,9 +811,8 @@ choose_tmpl_key(int key, int _allnum, int pagenum){
 
 char fname[STRLEN];
 
-static int
-choose_tmpl_post(int star, int curr){
-
+static int choose_tmpl_post(int star, int curr) {
+	(void) star;
 	FILE *fp;
 	FILE *fpsrc;
 	char filepath[STRLEN];
@@ -1049,7 +1047,7 @@ choose_tmpl_post(int star, int curr){
 int
 choose_tmpl()
 {
-	int tmpllist;
+	//int tmpllist;
 
 	sprintf(fname, MY_BBS_HOME "/bbstmpfs/tmp/%s.%d",
 		currentuser.userid, getpid());
@@ -1068,7 +1066,8 @@ choose_tmpl()
 	}
 	clear();
 	t_now = 0;
-	tmpllist = choose(NA, 0, choose_tmpl_refresh, choose_tmpl_key, tmpl_show, choose_tmpl_post);
+	//tmpllist = choose(NA, 0, choose_tmpl_refresh, choose_tmpl_key, tmpl_show, choose_tmpl_post);
+	choose(NA, 0, choose_tmpl_refresh, choose_tmpl_key, tmpl_show, choose_tmpl_post);
 	tmpl_free();
 	return 1;
 }

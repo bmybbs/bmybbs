@@ -50,7 +50,7 @@ static int dowall(const struct user_info *, void *);
 static int dowall_telnet(const struct user_info *, void *);
 static int myfriend_wall(const struct user_info *, void *);
 static int hisfriend_wall(const struct user_info *, void *);
-static int sendmsgfunc(char *uid, struct user_info *uin, int userpid, const char *msgstr, int mode, char *msgerr);
+static int sendmsgfunc(char *uid, const struct user_info *uin, int userpid, const char *msgstr, int mode, char *msgerr);
 static void mail_msg(struct userec *user);
 static int canmsg_offline(char *uid);
 
@@ -115,7 +115,7 @@ int s_msg(const char *s) {
 int do_sendmsg(const char *uid, const struct user_info *uentp, char *msgstr, int mode, int userpid) {
 	char uident[STRLEN];
 	char msgerr[256];
-	struct user_info *uinptr;
+	const struct user_info *uinptr;
 	char buf[MAX_MSG_SIZE];
 	int result, Gmode, upid;
 
@@ -363,7 +363,6 @@ r_msg2()
 	int i, y, x, ch, count;
 	int MsgNum;
 	int savemode;
-	int totalmsg;
 	struct msghead head;
 
 	block_msg();
@@ -371,7 +370,6 @@ r_msg2()
 	modify_user_mode(MSG);
 	getyx(&y, &x);
 	line = y;
-	totalmsg = 0;
 	count = get_msgcount(1, currentuser.userid);
 	if (count == 0)
 		return;
@@ -657,7 +655,7 @@ friend_login_wall(const struct user_info *pageinfo, void *x_param) {
 }
 
 static int
-sendmsgfunc(char *uid, struct user_info *uin, int userpid, const char *msgstr, int mode, char *msgerr)
+sendmsgfunc(char *uid, const struct user_info *uin, int userpid, const char *msgstr, int mode, char *msgerr)
 {
 	struct msghead head, head2;
 	int offline_msg = 0;
@@ -725,7 +723,7 @@ sendmsgfunc(char *uid, struct user_info *uin, int userpid, const char *msgstr, i
 		if (uin->pid != 1)
 			kill(uin->pid, SIGUSR2);
 		else
-			(uin->unreadmsg)++;
+			ythtbbs_cache_utmp_increase_unreadmsg(uin);
 	}
 	return 1;
 }

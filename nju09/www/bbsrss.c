@@ -229,7 +229,7 @@ prt_item(int j, int *rssform, struct fileheader *rssdata, char* board, int nodes
 static void
 prt_summary(int j, int *rssform, struct fileheader *rssdata, char* board)
 {
-	char title[256], dir[80];
+	char dir[80];
 	char ffowner[15]; //Â¥Ö÷µÄID
 	struct fileheader *x;
 	int num = 0, found = 0, total;
@@ -260,10 +260,6 @@ prt_summary(int j, int *rssform, struct fileheader *rssdata, char* board)
 				if (x->thread != thread) {
 					continue;
 				}
-			} else {
-				if (strncmp(x->title, title, 39)) {
-					continue;
-				}
 			}
 			floor++;
 			if (floor == 1) {
@@ -275,10 +271,6 @@ prt_summary(int j, int *rssform, struct fileheader *rssdata, char* board)
 			x = (struct fileheader *) (mf.ptr + num * sizeof (struct fileheader));
 			if (thread != 0) {
 				if (x->thread != thread) {
-					continue;
-				}
-			} else {
-				if (strncmp(x->title, title, 39)) {
 					continue;
 				}
 			}

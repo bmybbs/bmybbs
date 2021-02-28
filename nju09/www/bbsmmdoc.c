@@ -83,6 +83,7 @@ bbsmmdoc_main()
 	for (i = 0; i < w_info->t_lines; i++) {
 		if (fread(&x, sizeof (x), 1, fp) <= 0)
 			break;
+		x.owner[sizeof(x.owner) - 1] = 0;
 		printf("<tr><td class=tdborder>%d</td><td class=tdborder> </td><td class=tduser>%s</td>",
 				start + i,
 				//flag_str(x.accessed) ,
