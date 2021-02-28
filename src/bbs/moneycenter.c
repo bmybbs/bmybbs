@@ -6479,6 +6479,7 @@ static int shop_present(int order, char *kind, char *touserid) {
 }
 
 static int buy_present(int order, char *kind, char *cardname, char *filepath, int price_per,char *touserid) {
+	(void) order;
 	int i;
 	int inputNum=1;
 	char uident[IDLEN + 1], note[3][STRLEN], tmpname[STRLEN];
