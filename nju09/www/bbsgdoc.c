@@ -79,6 +79,7 @@ bbsgdoc_main()
 	for (i = 0; i < w_info->t_lines; i++) {
 		if (fread(&x, sizeof (x), 1, fp) <= 0)
 			break;
+		x.owner[sizeof(x.owner) - 1] = 0;
 		printf("<tr><td class=tdborder>%d</td><td class=tdborder>%s</td><td class=tduser>%s</td>", start + i, flag_str(x.accessed), userid_str(x.owner));
 		printf("<td align=center class=tdborder>%12.12s</td>", ytht_ctime(x.filetime) + 4);
 		printf("<td class=tdborder><a href=bbsgcon?board=%s&file=%s&num=%d>%s%s</a></td><td class=tdborder>%d</td><td class=tdborder>%d»À</td></tr>\n", board, fh2fname(&x), start + i - 1, strncmp(x.title, "Re: ", 4) ? "°Ò " : "", void1(titlestr(x.title)), x.staravg50 / 50, x.hasvoted);
