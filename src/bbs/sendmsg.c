@@ -363,7 +363,6 @@ r_msg2()
 	int i, y, x, ch, count;
 	int MsgNum;
 	int savemode;
-	int totalmsg;
 	struct msghead head;
 
 	block_msg();
@@ -371,7 +370,6 @@ r_msg2()
 	modify_user_mode(MSG);
 	getyx(&y, &x);
 	line = y;
-	totalmsg = 0;
 	count = get_msgcount(1, currentuser.userid);
 	if (count == 0)
 		return;
