@@ -25,8 +25,8 @@ Server main loop for handling the interactive session.
  *
  * Revision 1.1.1.1  2002/10/01 09:42:06  clearboy
  * update on 20051031
- * by clearboy 
- * for transfering the source codes from main site to the experimental site 
+ * by clearboy
+ * for transfering the source codes from main site to the experimental site
  * for the first time.
  *
  *
@@ -163,6 +163,7 @@ int ssh_read(int fd, void *buf, size_t count)
 int ssh_init(void)
 {
     buffer_init(&NetworkBuf);
+    return 0;
 }
 void ProcessOnePacket(int wait)
 {
@@ -240,10 +241,10 @@ void ProcessOnePacket(int wait)
 
         default:
             /* In this phase, any unexpected messages cause a protocol
-               error.  This is to ease debugging; also, since no 
-               confirmations are sent messages, unprocessed unknown 
-               messages could cause strange problems.  Any compatible 
-               protocol extensions must be negotiated before entering the 
+               error.  This is to ease debugging; also, since no
+               confirmations are sent messages, unprocessed unknown
+               messages could cause strange problems.  Any compatible
+               protocol extensions must be negotiated before entering the
                interactive session. */
             packet_disconnect("Protocol error during session: type %d", type);
         }
