@@ -105,6 +105,8 @@ char *direct;
 
 static struct fileheader *select_cur;
 static void power_dir(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
+	(void) direct;
 	append_record(currdirect, fileinfo, sizeof (struct fileheader));
 }
 
@@ -173,9 +175,9 @@ int full_search_action(char *whattosearch)
 			break;
 
 		char f_buf[16];
-		int filetime;
-		char t_buf[81];
-		char o_buf[16];
+		//int filetime;
+		//char t_buf[81];
+		//char o_buf[16];
 
 		int len = strlen(line);
 		ytht_strsncpy(f_buf, line, 15);
@@ -420,12 +422,9 @@ checkevas(char *buf)
 		return 0;
 }
 
-int
-power_select(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
+int power_select(int ent, struct fileheader *fileinfo, char *direct) {
+	(void) ent;
+	(void) fileinfo;
 	char num[8];
 	static char select[STRLEN];
 	unsigned int inum1, inum2, answer;
