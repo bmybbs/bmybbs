@@ -1168,9 +1168,8 @@ list_refresh()
 	update_endline();
 }
 
-static int
-voter_key(int key, int allnum, int pagenum)
-{
+static int voter_key(int key, int allnum, int pagenum) {
+	(void) pagenum;
 	char titlebuf[STRLEN * 4];
 	switch(key) {
 		case 'a':
@@ -1229,18 +1228,15 @@ voter_key(int key, int allnum, int pagenum)
 }
 
 
-static int
-voter_list_select(int star, int curr)
-{
+static int voter_list_select(int star, int curr) {
+	(void) star;
 	currlist = curr;
 	voter(currlist);
 	return DOQUIT;
 }
 
-int
-m_voter()
-{
-	int votelist;
+int m_voter() {
+	//int votelist;
 	int i;
 	int IScurrSYS=currentuser.userlevel & PERM_SYSOP;
 	int ISvoteBOARD=seek_in_file(MY_BBS_HOME"/etc/voteidboards", currboard);
@@ -1262,7 +1258,8 @@ m_voter()
 		}
 	}
 	clear();
-	votelist =choose(NA, 0, list_refresh, voter_key,voterlist_show, voter_list_select);
+	//votelist =choose(NA, 0, list_refresh, voter_key,voterlist_show, voter_list_select);
+	choose(NA, 0, list_refresh, voter_key,voterlist_show, voter_list_select);
 	free_lists();
 	return FULLUPDATE;
 }
@@ -1380,7 +1377,7 @@ voter(int listnum)
 {
 	char uident[IDLEN + 2];
 	char ans[8], buf[STRLEN * 2], titlebuf[STRLEN * 2];
-	int count, i;
+	int count/*, i*/;
 	setbfile(genbuf, sizeof(genbuf), currboard, vlists[listnum]->listfname);
 	ansimore(genbuf, YEA);
 	while (1) {
@@ -1435,14 +1432,11 @@ voter(int listnum)
 	return FULLUPDATE;
 }
 
-static int
-vote_key(ch, allnum, pagenum)
-int ch;
-int allnum, pagenum;
-{
+static int vote_key(int ch, int allnum, int pagenum) {
+	(void) pagenum;
 	int deal = 0, ans;
 	char buf[STRLEN * 2];
-	int count;
+	//int count;
 
 	switch (ch) {
 	case 'v':
@@ -1543,11 +1537,9 @@ Show_Votes()
 	return 0;
 }
 
-int
-b_vote()
-{
+int b_vote() {
 	int num_of_vote;
-	int voting;
+	//int voting;
 
 	if (!HAS_PERM(PERM_VOTE, currentuser) || (currentuser.stay < 1800)) {
 		return -1;
@@ -1567,7 +1559,8 @@ b_vote()
 	}
 	setlistrange(num_of_vote);
 	clear();
-	voting = choose(NA, 0, vote_title, vote_key, Show_Votes, (void *) user_vote);
+	//voting = choose(NA, 0, vote_title, vote_key, Show_Votes, (void *) user_vote);
+	choose(NA, 0, vote_title, vote_key, Show_Votes, (void *) user_vote);
 	clear();
 	return /*user_vote( currboard ) */ FULLUPDATE;
 }
