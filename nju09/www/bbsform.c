@@ -250,7 +250,7 @@ check_captcha_form(void)
 {
 	char code[6];
 	char tmp_email[STRLEN+1], *domain, path[128];
-	int rc, isprivilege;
+	int rc, isprivilege = 0;
 	struct active_data act_data;
 
 	memset(&act_data, 0, sizeof(struct active_data));
