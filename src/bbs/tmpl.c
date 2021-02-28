@@ -62,6 +62,7 @@ orig_tmpl_init(char * nboard, int mode, struct a_template template_array[], size
 	struct s_template tmpl;
 	struct s_content content;
 	size_t templ_num;
+	ssize_t size_read;
 
 	setbfile(tmpldir, sizeof(tmpldir), nboard, TEMPLATE_DIR);
 
@@ -80,8 +81,11 @@ orig_tmpl_init(char * nboard, int mode, struct a_template template_array[], size
 			lseek( fd, sizeof(struct s_content) * tmpl.content_num , SEEK_CUR );
 			continue;
 		}
-		memset(&content, 0, sizeof(struct s_content) * tmpl.content_num );
-		if(read(fd, &content, sizeof(struct s_content)*tmpl.content_num) != sizeof(struct s_content)*tmpl.content_num)
+		memset(&content, 0, sizeof(struct s_content));
+		if ((size_read = read(fd, &content, sizeof(struct s_content))) < 0)
+			break;
+
+		if ((unsigned) size_read != sizeof(struct s_content))
 			continue;
 
 		template_array[templ_num].tmpl = malloc(sizeof(struct s_template));
