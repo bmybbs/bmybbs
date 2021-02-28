@@ -155,10 +155,10 @@ static void nomoney_show_stat(char *position);
 static int money_gamble(void);
 static int money_777(void);
 static int calc777(int t1, int t2, int t3);
-static int guess_number(void);
-static int an(char *a, char *b);
-static int bn(char *a, char *b);
-static void itoa(int i, char *a);
+//static int guess_number(void);
+//static int an(char *a, char *b);
+//static int bn(char *a, char *b);
+//static void itoa(int i, char *a);
 static void time2string(int num, char *str);
 static int money_police(void);
 static void persenal_stock_info(int stock_num[15], int stock_price[15],
@@ -2102,7 +2102,7 @@ static int init_stock_v(struct boardmem *board, int curr_idx, va_list ap) {
 
 //管理系统  股票系统
 static int money_admin() {
-	int ch, i, j, quit = 0;
+	int ch, /* i, */ j, quit = 0;
 	char buf[100], letter[100], uident[IDLEN + 1];
 	char stockboard[STRLEN][MAX_STOCK_NUM];
 	FILE *fp1;
@@ -5992,6 +5992,7 @@ static int calc777(int t1, int t2, int t3) {
 }
 
 /*赌博--猜数字*/
+#if 0
 static int guess_number() {
 	int quit = 0;
 	int ch, num, money;
@@ -6140,7 +6141,9 @@ static int guess_number() {
 	}
 	return 0;
 }
+#endif
 
+#if 0
 static int an(char *a, char *b) {
 	int i, k = 0;
 	for (i = 0; i < 4; i++)
@@ -6171,6 +6174,7 @@ static void itoa(int i, char *a) {
 	a[3] = i + 48;
 	a[4] = 0;
 }
+#endif
 
 /*警署--警察临检*/
 static int money_police() {
@@ -8449,7 +8453,7 @@ static int marry_query_records(char *id) {
 	struct MC_Marry *marryMem;
 	void *buffer = NULL;
 	size_t filesize;
-	time_t local_now_t;
+	//time_t local_now_t;
 	int n;
 
 	if (!file_exist(MC_MARRY_RECORDS_ALL)){
@@ -8477,7 +8481,7 @@ static int marry_query_records(char *id) {
 	prints("--------------------------------------------------------------------------------------");
 	pages = n / 10 + 1;
 	for(i = 0; ;i++) {	//i用于控制页数
-		local_now_t = time(NULL);
+		//local_now_t = time(NULL);
 		for(j=0; j<10; j++){
 			move(8 + j , 0);
 			clrtoeol();
@@ -8550,7 +8554,7 @@ static int marry_all_records() {
 	struct MC_Marry *marryMem;
 	void *buffer = NULL;
 	size_t filesize;
-	time_t local_now_t;
+	//time_t local_now_t;
 	int n;
 
 	if (!file_exist(MC_MARRY_RECORDS_ALL)){
@@ -8578,7 +8582,7 @@ static int marry_all_records() {
 	prints("--------------------------------------------------------------------------------------");
 	pages = n / 10 + 1;
 	for(i = 0; ;i++) {	//i用于控制页数
-		local_now_t = time(NULL);
+		//local_now_t = time(NULL);
 		for(j=0; j<10; j++){
 			move(8 + j , 0);
 			clrtoeol();
@@ -8641,7 +8645,7 @@ static int marry_active_records(struct MC_Marry *marryMem, int n) {
 	int count;
 	struct MC_Marry *mm;
 	char timestr[STRLEN];
-	time_t local_now_t;
+	//time_t local_now_t;
 
 	money_show_stat("兵马俑教堂档案馆");
 	move(5, 4);
@@ -8653,7 +8657,7 @@ static int marry_active_records(struct MC_Marry *marryMem, int n) {
 	prints("--------------------------------------------------------------------------------------");
 	pages = n / 10 + 1;
 	for(i = 0; ;i++) {	//i用于控制页数
-		local_now_t = time(NULL);
+		//local_now_t = time(NULL);
 		count = 0;
 		for(j=0;j<10;j++) {
 			move(8 + j , 0);
@@ -10152,12 +10156,14 @@ struct TrainInfo XianTrain[]= {
 };
 
 //四舍五入
+#if 0
 static float Round(float num) {
 	num = (float)(int) (num + 0.5);
 	return num;
 }
+#endif
 
-
+#if 0
 //计算硬席基本票
 static float calc_basic_price(int LiCheng, int flag) {
 	int mininum, distance = 0, order = 0, i, j;
@@ -10209,8 +10215,9 @@ static float calc_basic_price(int LiCheng, int flag) {
 	}
 	return basic_price;
 }
+#endif
 
-
+#if 0
 static float show_ticket() {
 	float JiBenPiao, BaoXian, KePiao, KuaiPiao, KongPiao, WoPiao, QuanJia, JiJin, CheZhan, KePiao2;
 	int YouXiaoQi=2, i;
@@ -10516,7 +10523,9 @@ static float show_ticket() {
 
 	return QuanJia;
 }
+#endif
 
+#if 0
 /* 捐款 by macintosh  */
 static int loadContributions(char *cname, char *user) {
 	char value[20];
@@ -10527,6 +10536,7 @@ static int loadContributions(char *cname, char *user) {
 	else
 		return limitValue(atoi(value), sizeof(int));
 }  //读取各基金捐款数值
+#endif
 
 static int saveContributions(char *cname, char *user, int valueToAdd) {
 	int valueInt;
