@@ -255,6 +255,10 @@ int ythtbbs_cache_utmp_insert(struct user_info *ptr_user_info);
  */
 void ythtbbs_cache_utmp_remove(int utmp_idx);
 
+/**
+ * @brief 更新未读消息记录
+ */
+void ythtbbs_cache_utmp_increase_unreadmsg(const struct user_info *ptr_info);
 typedef int (*ythtbbs_cache_utmp_apply_callback)(const struct user_info *, void *x_param);
 
 /**

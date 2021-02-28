@@ -181,6 +181,16 @@ int ythtbbs_cache_utmp_count_active(void) {
 	return shm_utmp->activeuser;
 }
 
+void ythtbbs_cache_utmp_increase_unreadmsg(const struct user_info *ptr_info) {
+	unsigned long offset;
+	if (ptr_info >= shm_utmp->uinfo) {
+		offset = ((void *) ptr_info - (void *) shm_utmp->uinfo) / sizeof(struct user_info);
+		if (offset < USHM_SIZE) {
+			shm_utmp->uinfo[offset].unreadmsg++;
+		}
+	}
+}
+
 /**
  * @brief 将 utmp 缓存中的用户信息序列化出来
  * 输出形式 utmp_idx, userid："0, SYSOP\n"
