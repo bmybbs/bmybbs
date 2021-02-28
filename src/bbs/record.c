@@ -280,6 +280,7 @@ int id1, id2;
 			count++;
 			continue;
 		}
+		fhdr.owner[sizeof(fhdr.owner) - 1] = 0;
 		if ((id2 == -1 && !(fhdr.accessed & FH_DEL) && !(fhdr.accessed & FH_MINUSDEL)) || //modify by mintbaggio for minus-numposts delete
 				(id2 != -1 && (count < id1 || count > id2 || fhdr.accessed & FH_MARKED || fhdr.accessed & FILE_TOP1))) {
 			if ((safewrite(fdw, &fhdr, sizeof (fhdr)) == -1)) {
