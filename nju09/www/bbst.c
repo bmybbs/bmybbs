@@ -19,6 +19,7 @@ bbst_main()
 	flock(fileno(fp), LOCK_SH);
 	bzero(tstat, sizeof (tstat));
 	while (fread(&t, 1, sizeof (struct tshirt), fp) == sizeof (struct tshirt)) {
+		t.id[sizeof(t.id) - 1] = 0;
 		if ((!strcmp(t.id, currentuser.userid))
 				|| (currentuser.userlevel & PERM_SYSOP)
 				|| (!strcmp(currentuser.userid, "duckling"))
