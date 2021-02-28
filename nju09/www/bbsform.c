@@ -129,7 +129,7 @@ check_submit_form()
 	FILE *fp;
 	char dept[80], phone[80], assoc[80];
 	struct active_data act_data;
-	int count, mail_diff;
+	int count, mail_diff = 0;
 	int isprivilege = 0;
 	char path[128];
 
