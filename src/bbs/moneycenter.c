@@ -2088,6 +2088,7 @@ static int money_sackOrAppoint(int type) {
 }
 
 static int init_stock_v(struct boardmem *board, int curr_idx, va_list ap) {
+	(void) curr_idx;
 	const char *name = va_arg(ap, const char *);
 
 	if (!strcmp(board->header.filename, name)) {
