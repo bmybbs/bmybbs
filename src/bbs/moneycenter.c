@@ -6328,7 +6328,7 @@ static int shop_present(int order, char *kind, char *touserid) {
 
 	fp=fopen(indexpath, "r");
 	if(fp!=0) {
-		while(fgets(buf, STRLEN, fp)>0 && numDir<10) {
+		while (fgets(buf, STRLEN, fp) != NULL && numDir < 10) {
 			if(!strncmp(buf, "Name=", 5)) {
 				sprintf(title, "%s", buf+5);
 				if(strstr(title + 38,"(BM: SYSOPS)") || strstr(title + 38,"(BM: BMS)")|| !strncmp(title, "<HIDE>",6))
@@ -6376,7 +6376,7 @@ static int shop_present(int order, char *kind, char *touserid) {
 	sprintf(indexpath, "%s/.Names", dirpath);
 	fp=fopen(indexpath, "r");
 	if(fp!=0) {
-		while(fgets(buf, STRLEN, fp)>0 && numFile<10) {
+		while (fgets(buf, STRLEN, fp) != NULL && numFile < 10) {
 			if(!strncmp(buf, "Name=", 5)) {
 				sprintf(title, "%s", buf+5);
 				if(strstr(title + 38,"(BM: SYSOPS)") || strstr(title + 38,"(BM: BMS)")|| !strncmp(title, "<HIDE>",6))
