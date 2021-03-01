@@ -8,7 +8,7 @@ int
 bbsmmdoc_main()
 {	//developed by macintosh 050519 for new www
 	FILE *fp, *fp1, *fp2;
-	char board[32], dir[80],buf[128],name[80];
+	char board[32], dir[80],buf[128];
 	struct boardmem *x1;
 	struct fileheader x;
 	int i, start, total=0;
