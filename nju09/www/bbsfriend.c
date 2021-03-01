@@ -5,7 +5,6 @@ bbsfriend_main()
 {
 	int i, total = 0;
 	struct user_info user_list[MAXFRIENDS];
-	struct user_info *x;
 	html_header(1);
 	check_msg();
 	changemode(FRIEND);

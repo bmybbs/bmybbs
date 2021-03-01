@@ -13,6 +13,7 @@ printdocform(char *cginame, char *board)
 
 //吧lepton的这个代码写成一个函数
 static int nosuchboard_callback(struct boardmem *board, int curr_idx, va_list ap) {
+	(void) curr_idx;
 	const char *bname = va_arg(ap, const char *);
 	const char *cginame = va_arg(ap, const char *);
 	int *j = va_arg(ap, int *);
@@ -40,7 +41,7 @@ static int nosuchboard_callback(struct boardmem *board, int curr_idx, va_list ap
 }
 
 void nosuchboard(char *board, char *cginame) {
-	int i, j = 0;
+	int j = 0;
 	char buf[128];
 	printf("没有这个讨论区啊，可能的选择:<p>");
 	printf("<table width=300>");
@@ -75,9 +76,9 @@ printboardhot(struct boardmem *x)
 }
 
 void
-printboardtop(struct boardmem *x, int num)
+printboardtop(struct boardmem *x)
 {	//modify by mintbaggio 040522 for new www
-	char genbuf[STRLEN * 2], *board = x->header.filename, bmbuf[IDLEN * 4 + 4];
+	char *board = x->header.filename, bmbuf[IDLEN * 4 + 4];
 	char sbmbuf[IDLEN * 12 + 12];
 	printf("%s","<tr><td height=30 colspan=2>\n"
 		"<table width=\"100%\"  border=0 cellspacing=0 cellpadding=0>\n"
@@ -233,7 +234,7 @@ bbsdoc_main()
 	printf("<body topmargin=0 leftmargin=0>\n");
 	printf("<table width=\"100%%\" border=0 cellpadding=0 cellspacing=0>\n"
 		"<td><form name=form1 action=bbsdoc>\n");
-	printboardtop(x1, 3);
+	printboardtop(x1);
 //	printf("一般模式 文章数[%d] ", total);
 	printf("<tr><td><a href=\"pst?B=%s\" class=\"btnsubmittheme\" title=\"我要发表文章 accesskey: p\" accesskey=\"p\">我要发表文章</a>\n", board);
 	if (hastmpl > 0)
@@ -450,7 +451,7 @@ int top_file(const char *call_type)
 	char board[80], buf[128], title[80], *ptr;
 	struct boardmem *x1;
 	struct fileheader x;
-	int i, j, start, total;
+	int i, start, total;
 	int flag; // 0 为 bbsdoc, 1 为 bbstdoc，两者标记判断调用方法不一致
 	if(!strcmp(call_type,"bbsdoc")) flag = 0;
 	if(!strcmp(call_type,"bbstdoc")) flag = 1;
@@ -474,7 +475,6 @@ int top_file(const char *call_type)
 
 		x.title[sizeof(x.title) - 1] = 0;
 		x.owner[sizeof(x.owner) - 1] = 0;
-		j=0;
 		strcpy(title, fh2fname(&x));
 		if(title[0]=='T')
 			title[0]='M';

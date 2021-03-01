@@ -21,7 +21,7 @@ char needcgi[STRLEN];
 static void __unhcode(char *s);
 static void extraparam_init(const char *extrastr);
 static int user_init(struct userec *x, struct user_info **y, const char *userid, const char *sessid);
-static int post_imail(char *userid, char *title, char *file, char *id, char *nickname, char *ip, int sig);
+static int post_imail(char *userid, char *title, char *file, char *id, char *ip, int sig);
 static void sig_append(FILE * fp, char *id, int sig);
 
 struct wwwstyle wwwstyle[NWWWSTYLE] = {
@@ -74,7 +74,7 @@ struct mmapfile mf_badwords  = { .ptr = NULL };
 struct mmapfile mf_sbadwords = { .ptr = NULL };
 struct mmapfile mf_pbadwords = { .ptr = NULL };
 char *ummap_ptr = NULL;
-int ummap_size = 0;
+size_t ummap_size = 0;
 char fromhost[BMY_IPV6_LEN]; // 从环境变量获取 IP 地址，IPv4/IPv6 已经由 apache 处理过
 struct in6_addr from_addr;   //ipv6 by leoncom
 
@@ -383,10 +383,6 @@ fqhprintf(FILE * output, char *str)
 int fhhprintf(FILE * output, char *fmt, ...) {
 	char buf0[1024], buf[1024], *s;
 	int len = 0;
-	char vlink[STRLEN];
-	char vfile[STRLEN];
-	char cmdline[STRLEN];
-	FILE* vfp;
 
 	va_list ap;
 	va_start(ap, fmt);
@@ -567,7 +563,7 @@ GUEST:
 int
 url_parse()
 {
-	char *url, *end, name[STRLEN], *p, *extraparam;
+	char *url, *end, name[STRLEN], *p;
 	// e.g. url = /BMY/foo
 	if (g_is_nginx) {
 		// 对于 nginx 的运行方式（其实 lighttpd 也适用）
@@ -1037,7 +1033,7 @@ post_mail(char *userid, char *title, char *file, char *id,
 			*pos = '\0';
 	}
 	if (strstr(userid, "@"))
-		return post_imail(userid, title, file, id, nickname, ip, sig);
+		return post_imail(userid, title, file, id, ip, sig);
 	if (getuser(userid) == NULL)
 		http_fatal("\xB4\xED\xCE\xF3\xB5\xC4\xCA\xD5\xD0\xC5\xC8\xCB\xB5\xD8\xD6\xB7"); // 错误的收信人地址
 	bzero(&header, sizeof (header));
@@ -1093,8 +1089,7 @@ post_mail_buf(char *userid, char *title, char *buf, char *id, char *nickname,
 	return 0;
 }
 
-static int post_imail(char *userid, char *title, char *file, char *id,
-		char *nickname, char *ip, int sig)
+static int post_imail(char *userid, char *title, char *file, char *id, char *ip, int sig)
 {
 	FILE *fp1, *fp2;
 	char buf[256], *ptr;
@@ -1146,7 +1141,7 @@ static int post_imail(char *userid, char *title, char *file, char *id,
 int
 post_article_1984(char *board, char *title, char *file, char *id,
 		char *nickname, char *ip, int sig, int mark,
-		int outgoing, char *realauthor, int thread)
+		int outgoing, int thread)
 {
 	FILE *fp, *fp2;
 	char buf3[1024], buf[80];
@@ -1167,6 +1162,7 @@ post_article_1984(char *board, char *title, char *file, char *id,
 	if (t < 0)
 		return -1;
 	header.filetime = t;
+	header.accessed = mark;
 	if (thread != -1)
 		header.thread = thread;
 	ytht_strsncpy(header.title, title, sizeof(header.title));
@@ -1549,7 +1545,7 @@ struct boardmem *getboard(char *board)
 }
 
 int
-send_msg(char *myuserid, int i, char *touserid, int topid, char *msg, int offline)
+send_msg(int i, char *touserid, int topid, char *msg, int offline)
 {
 	struct msghead head, head2;
 	memset(&head, 0, sizeof(struct msghead));
@@ -1644,7 +1640,7 @@ getuser(char *id)
 	uid = getusernum(id);
 	if (uid < 0)
 		return NULL;
-	if ((uid + 1) * sizeof (struct userec) > ummap_size)
+	if (((unsigned) uid + 1) * sizeof (struct userec) > ummap_size)
 		ummap();
 	if (!ummap_ptr)
 		return NULL;
@@ -2153,9 +2149,7 @@ get_mail_size()
 
 }
 
-int
-check_maxmail(char *currmaildir)
-{
+int check_maxmail() {
 	int currsize, maxsize;
 	if(HAS_PERM(PERM_SYSOP|PERM_OBOARDS, currentuser))	//add by mintbaggio 040323 for unlimitted mail volum of SYSOPs
 		return 0;
@@ -2365,7 +2359,7 @@ char to_hex(char code) {
 void
 NHsprintf(char *s, char *s0)
 {
-	char ansibuf[80], buf2[80];
+	char ansibuf[80];
 	char *tmp;
 	int bold, m, i, len, lsp = -1;
 	char c;
@@ -2486,6 +2480,7 @@ NHsprintf(char *s, char *s0)
 }
 
 int filter_board_v(struct boardmem *board, int curr_idx, va_list ap) {
+	(void) curr_idx;
 	// 一定会使用的变量
 	int flag = va_arg(ap, int);
 	struct boardmem **data = va_arg(ap, struct boardmem **);

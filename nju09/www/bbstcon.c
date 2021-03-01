@@ -5,7 +5,7 @@
 extern bool g_has_code;
 int testmozilla(void);
 void processMath(void);
-static int show_file(char *board, struct fileheader *x, int n);
+static int show_file(char *board, struct fileheader *x);
 
 char* userid_str_class(char *s, char* class)
 {
@@ -165,7 +165,7 @@ bbstcon_main()
 				printf("<td colspan=2 class=%s>\n", odd_even_class);
 			}
 			printf("<div id='filecontent' style='width:800px;'>\n");
-			show_file(board, x, num);
+			show_file(board, x);
 			printf("</div>");
 #ifdef ENABLE_MYSQL
 			if (loginok && now_t - x->filetime <= 3 * 86400) {
@@ -231,12 +231,11 @@ bbstcon_main()
 }
 
 int
-fshow_file(FILE * output, char *board, struct fileheader *x, int n)
+fshow_file(FILE * output, char *board, struct fileheader *x)
 {
 	FILE *fp;
 	char path[80], buf[512], *ptr,*bufptr;
 	int ano = 0, nquote = 0, lastq = 0;
-	char interurl[256];
 	bool in_code_block = false;
 	//add by macintosh 050619 for Tex Math Equ
 	if ((x->accessed & FH_MATH)) {
@@ -354,17 +353,8 @@ fshow_file(FILE * output, char *board, struct fileheader *x, int n)
 	return 0;
 }
 
-static int show_file(char *board, struct fileheader *x, int n) {
-	char showfile[NAME_MAX + 1];
-	char filename[NAME_MAX + 1];
-	static char showpath[PATH_MAX + 1];
-	struct stat st;
-	char *ptr;
-	FILE *fp;
-	int fd;
-	int level;
+static int show_file(char *board, struct fileheader *x) {
 	brc_add_read(x);
-
-	fshow_file(stdout, board, x, n);
+	fshow_file(stdout, board, x);
 	return 0;
 }

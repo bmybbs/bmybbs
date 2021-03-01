@@ -12,7 +12,6 @@ bbsfwdmail_main()
 	int num;
 	struct mmapfile mf = { .ptr = NULL };
 	//struct userdata currentdata;
-	struct userec *up;
 	FILE *fp, *fp1;
 	int i, retv;
 	html_header(1);
@@ -48,7 +47,7 @@ bbsfwdmail_main()
 	if (HAS_PERM(PERM_DENYMAIL, currentuser))
 		http_fatal( "您已经被封禁了发信权\n");
 	//only check in-box
-	if (box_type == 0 && check_maxmail(dir)){
+	if (box_type == 0 && check_maxmail()){
 		sprintf(buff,"出错原因: 您的私人信件总大小高达 %d k,超过 %d k 时 ,您将无法使用本站的发信功能.<br>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp 请整理信件,将信件总大小控制在 %d k 内,以保证发信功能正常使用",get_mail_size(),max_mail_size()+20,max_mail_size());
 		http_fatal(buff);
 		}

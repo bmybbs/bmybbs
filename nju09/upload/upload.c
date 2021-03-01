@@ -135,7 +135,6 @@ static void GoAhead(char **Input, int *InputLength, int len) {
  * @param Boundary     Character string that delimits segments.
  */
 static void AcceptSegment(char **Input, int *InputLength, char *Boundary) {
-	char *FieldName;	/* Name of the variable from the form. */
 	char *ContentEnd;
 	char *contentstr, *ptr;
 	/* The input stream should begin with a Boundary line. Error-exit if not found. */
@@ -154,7 +153,6 @@ static void AcceptSegment(char **Input, int *InputLength, char *Boundary) {
 	if (strncasecmp(*Input, contentstr, strlen(contentstr)))
 		http_fatal("文件传送错误 12");
 	GoAhead(Input, InputLength, strlen(contentstr));
-	FieldName = *Input;
 	ptr = strchr(*Input, '\"');
 	if (!ptr)
 		http_fatal("文件传送错误 13");
@@ -197,15 +195,6 @@ static void AcceptSegment(char **Input, int *InputLength, char *Boundary) {
 		ContentEnd--;
 		ContentLength--;
 	}
-}
-
-static int
-myatoi(char *a)
-{
-	int i = 0;
-	while ((unsigned char)*a)
-		i = i * 26 + (*(a++) - 'A');
-	return i;
 }
 
 int
@@ -315,6 +304,9 @@ printuploadform()
 int
 main(int argc, char *argv[], char *environment[])
 {
+	(void) argc;
+	(void) argv;
+	(void) environment;
 	char *ptr, *buf;
 	char Boundary[1024] = "--";
 	int len, i;

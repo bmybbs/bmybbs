@@ -78,7 +78,7 @@ rss_chartrans(char *s, char *s0)  // transfer characters according to XML standa
 }
 
 static int
-rss_fshow_file(FILE* output, char* board, struct fileheader* x, int n)
+rss_fshow_file(FILE* output, char* board, struct fileheader* x)
 {
 	FILE *fp;
 	const int max_output_length = 1024 + 512;  // summary maximum length
@@ -279,7 +279,7 @@ prt_summary(int j, int *rssform, struct fileheader *rssdata, char* board)
 				strcpy(ffowner,fh2owner(x));  // 记下楼主名字
 			}
 
-			rss_fshow_file(stdout, board, x, num);
+			rss_fshow_file(stdout, board, x);
 
 			if (!found) found = 1;
 			if (floor == 1) break;  // only display the first post
@@ -376,8 +376,8 @@ showboard(char *B, int nodes)
 	struct fileheader *data = NULL;
 	int i, j, total = 0, sum = 0;
 	int start, direction, num = 0;
-	int first = 0, last = 0;
-	int nothingmore = 0;
+	//int first = 0, last = 0;
+	//int nothingmore = 0;
 	struct mmapfile mf = { .ptr = NULL };
 	static struct fileheader *rssdata = NULL;
 	static int *rssform = NULL;
@@ -462,15 +462,15 @@ showboard(char *B, int nodes)
 				continue;
 			memcpy(&(rssdata[sum]), &(data[i]), sizeof (struct fileheader));
 			rssform[sum] = i;
-			last = data[i].filetime;
+			//last = data[i].filetime;
 			sum++;
-			if (sum == 1)
-				first = data[i].filetime;
+			//if (sum == 1)
+				//first = data[i].filetime;
 			if (sum > w_info->t_lines - 2)
 				break;
 		}
-		if (i < 0 || i >= total)
-			nothingmore = 1;
+		//if (i < 0 || i >= total)
+			//nothingmore = 1;
 
 		prt_header();
 		prt_channel(x1);  // print copyright of TJUBBS and board informations.

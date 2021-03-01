@@ -135,8 +135,7 @@ bbssnd_main()
 	if (is1984 || to1984) {
 		r = post_article_1984(board, title, filename,
 				currentuser.userid, currentuser.username,
-				fromhost, sig - 1, mark, outgoing,
-				currentuser.userid, thread);
+				fromhost, sig - 1, mark, outgoing, thread);
 	} else if (anony)
 		r = post_article(board, title, filename, "Anonymous",
 				"我是匿名天使", "匿名天使的家", 0, mark,

@@ -5,9 +5,7 @@ extern bool nju09_mybrd_has_read_perm(const char *userid, const char *boardname)
 int
 bbsbrddel_main()
 {
-	FILE *fp;
-	char file[200], board[200];
-	int i;
+	char board[200];
 	html_header(1);
 	changemode(ZAP);
 	ytht_strsncpy(board, getparm("B"), 32);

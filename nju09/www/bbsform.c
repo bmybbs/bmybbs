@@ -125,8 +125,6 @@ check_if_ok()
 static void
 check_submit_form()
 {
-
-	FILE *fp;
 	char dept[80], phone[80], assoc[80];
 	struct active_data act_data;
 	int count, mail_diff = 0;

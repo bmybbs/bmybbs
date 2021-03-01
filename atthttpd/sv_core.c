@@ -52,12 +52,14 @@ bindport(int port)
 void
 dopipesig(int s)
 {
+	(void) s;
 	signal(SIGPIPE, dopipesig);
 }
 
 void
 dosigbus(int s)
 {
+	(void) s;
 	signal(SIGBUS, dosigbus);
 }
 

@@ -4,7 +4,7 @@
 char *size_str(int size);
 void nosuchboard(char *, char *);
 int getdocstart(int total, int lines);
-void printboardtop(struct boardmem *x, int num);
+void printboardtop(struct boardmem *x);
 void bbsdoc_helper(char *cgistr, int start, int total, int lines);
 
 int
@@ -46,7 +46,7 @@ bbsbkndoc_main()
 		start = getdocstart(total, w_info->t_lines);
 		printf("<body topmargin=0>");
 		printf("<nobr><center>\n");
-		printboardtop(x1, 5);
+		printboardtop(x1);
 		printf("阅览过刊 文章数[%d] ", total);
 		printf("<a href=bbsbknsel?board=%s>选择过刊</a> ", board);
 		snprintf(genbuf, sizeof(genbuf), "bbsbkndoc?board=%s&bkn=%s", board, bkn);

@@ -50,7 +50,7 @@ extern char fromhost[BMY_IPV6_LEN];
 extern struct in6_addr from_addr; //ipv6 by leoncom
 extern int quote_quote;
 extern char *ummap_ptr;
-extern int ummap_size;
+extern size_t ummap_size;
 /*add by macintosh 050619 for Tex Math Equ*/
 extern int usedMath;
 extern int usingMath;
@@ -133,7 +133,7 @@ int mail_file(char *filename, char *userid, char *title, char *sender);
 int post_mail_to_sent_box(char *userid, char *title, char *file, char *id, char *nickname, char *ip, int sig, int mark);
 int post_mail(char *userid, char *title, char *file, char *id, char *nickname, char *ip, int sig, int mark);
 int post_mail_buf(char *userid, char *title, char *buf, char *id, char *nickname, char *ip, int sig, int mark);
-int post_article_1984(char *board, char *title, char *file, char *id, char *nickname, char *ip, int sig, int mark, int outgoing, char *realauthor, int thread);
+int post_article_1984(char *board, char *title, char *file, char *id, char *nickname, char *ip, int sig, int mark, int outgoing, int thread);
 int post_article(char *board, char *title, char *file, char *id, char *nickname, char *ip, int sig, int mark, int outgoing, char *realauthor, int thread);
 int securityreport(char *title, char *content);
 char *anno_path_of(char *board);
@@ -149,7 +149,7 @@ int political_board(char *bname);
 int anony_board(char *bname);
 int noadm4political(char *bname);
 struct boardmem *getboard(char *board);	//返回shm中这个board的指针, 同时把shm中的版名拷贝到board, 如果没有权限则返回NULL
-int send_msg(char *myuserid, int i, char *touserid, int topid, char *msg, int offline);
+int send_msg(int i, char *touserid, int topid, char *msg, int offline);
 int count_life_value(struct userec *urec);
 int save_user_data(struct userec *x);
 int user_perm(struct userec *x, int level);
@@ -189,7 +189,7 @@ void loaddenyuser(char *board);
 void savedenyuser(char *board);
 int max_mail_size(void);
 int get_mail_size(void);
-int check_maxmail(char *currmaildir);
+int check_maxmail();
 int countln(char *fname);
 double *system_load(void);
 int dofilter(char *title, char *fn, int level);

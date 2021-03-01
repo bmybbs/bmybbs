@@ -143,7 +143,8 @@ static void cgi_time(struct cgi_applet *a) {
 	r0 = r1;
 }
 
-void wantquit(int signal) {
+static void wantquit(int sig) {
+	(void) sig;
 	if (incgiloop)
 		incgiloop = 0;
 	else
@@ -167,9 +168,10 @@ int nologin = 1;
 
 
 int main(int argc, char *argv[]) {
+	(void) argc;
+	(void) argv;
 	struct cgi_applet *a = NULL;
 	struct rlimit rl;
-	int i;
 	seteuid(BBSUID);
 	setuid(BBSUID);
 	setgid(BBSGID);

@@ -71,7 +71,7 @@ bbssendmsg_main()
 				destpid = x->pid;
 				mode = x->mode;
 				if (mode == BBSNET || mode == PAGE || mode == LOCKSCREEN) offline = 1;
-				if (send_msg(currentuser.userid, i, destid, destpid, msg, offline) == 1)
+				if (send_msg(i, destid, destpid, msg, offline) == 1)
 					printf("已经帮你送出%s消息", offline ? "离线" : "");
 				else
 					printf("发送消息失败");
@@ -85,7 +85,7 @@ bbssendmsg_main()
 		}
 	}
 
-	if (send_msg(currentuser.userid, i, destid, destpid, msg, 1) == 1)
+	if (send_msg(i, destid, destpid, msg, 1) == 1)
 		printf("已经帮你送出离线消息");
 	else
 		printf("发送消息失败");

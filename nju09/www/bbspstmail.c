@@ -18,7 +18,7 @@ bbspstmail_main()
 		http_fatal("您被封禁发信权");
 	sprintf(mymaildir, "mail/%c/%s/.DIR", mytoupper(currentuser.userid[0]),
 		currentuser.userid);
-	if (check_maxmail(mymaildir)){
+	if (check_maxmail()){
 		sprintf(buff,"出错原因: 您的私人信件总大小高达 %d k,超过 %d k 时 ,您将无法使用本站的发信功能.<br>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp 请整理信件,将信件总大小控制在 %d k 内,以保证发信功能正常使用",get_mail_size(),max_mail_size()+20,max_mail_size());
 		http_fatal(buff);
 		}

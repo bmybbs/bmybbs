@@ -159,6 +159,7 @@ conn_insert(int sd)
 }
 
 static int getbcache_callback(struct boardmem *board, int curr_idx, va_list ap) {
+	(void) curr_idx;
 	int *num = va_arg(ap, int *);
 	char *upperstr = va_arg(ap, char *);
 	size_t upperstr_size = va_arg(ap, size_t);
@@ -181,7 +182,7 @@ static int getbcache_callback(struct boardmem *board, int curr_idx, va_list ap) 
 struct boardmem *
 getbcache(char *board)
 {
-	int i, j;
+	int j;
 	static int num = 0;
 	char upperstr[STRLEN];
 	static ght_hash_table_t *p_table = NULL;
@@ -377,7 +378,7 @@ getreq(conn_t * c)
 		return 0;
 	}
 	c->pos = atoi(posstr);
-	if (c->pos < 1 || c->pos >= c->mf.size - 4 || c->mf.ptr[c->pos - 1] != 0) {
+	if (c->pos < 1 || /* safe */ (unsigned) c->pos >= c->mf.size - 4 || c->mf.ptr[c->pos - 1] != 0) {
 		c->state = SENDING_ERROR_HEADER;
 		c->head = get_error_type(404);
 		c->hlen = strlen(c->head);
@@ -385,7 +386,7 @@ getreq(conn_t * c)
 		return 0;
 	}
 	c->size = ntohl(*(unsigned int *) (c->mf.ptr + c->pos));
-	if (c->pos + 4 + c->size >= c->mf.size) {
+	if (/* safe */ (unsigned) c->pos + 4 + c->size >= c->mf.size) {
 		c->state = SENDING_ERROR_HEADER;
 		c->head = get_error_type(404);
 		c->hlen = strlen(c->head);

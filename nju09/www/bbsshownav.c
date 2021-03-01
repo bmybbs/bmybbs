@@ -1,20 +1,18 @@
 #include "bbslib.h"
 
-int shownavpart(int mode, const char *secstr);
+int shownavpart(int mode);
 void shownavpartline(char *buf, int mode);
 
 int
 bbsshownav_main()
 {
-	char *secstr;
-	secstr=getparm("secstr");
 	html_header(1);
 	changemode(SELECT);
 	printf("<style type=text/css>A {color: #0000f0}</style>");
 	printf("<body bgcolor=#FFFFFF>");
 	printf("<center><div class=rhead>\n");
 	printf("%s--<span class=h11>近日精彩话题</span></div><hr>", BBSNAME);
-	if (shownavpart(1, secstr))
+	if (shownavpart(1))
 		printf("错误的参数!");
 	printf("<hr>");
 	printf("</body>");
@@ -22,7 +20,7 @@ bbsshownav_main()
 	return 0;
 }
 
-int shownavpart(int mode, const char *secstr) {
+int shownavpart(int mode) {
 	char buf[2048]="wwwtmp/navpart.txt";
 	FILE *fp;
 	int j = 0, r;

@@ -11,7 +11,6 @@ processdollar(buf, ret)
 char buf[256];
 char *ret;
 {
-	extern time_t login_start_time;
 	int frg, i, matchfrg, strlength, cnt, tmpnum;
 	static char numlogins[10], numposts[10], rgtday[35], lasttime[35],
 	thistime[35], lastlogout[35], stay[10], alltime[20], ccperf[20],
@@ -171,7 +170,6 @@ bbsfoot_main()
 	int dt = 0, mail_total = 0, mail_unread = 0, lasttime = 0;
 	int count_friends=0, i=0;
 	char *id = "guest";
-	static int r = 0;
 	html_header(2);
 
 	printf("<script>function t(){return (new Date()).valueOf();}</script>\n");
