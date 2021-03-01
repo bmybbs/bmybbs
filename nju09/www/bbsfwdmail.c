@@ -12,7 +12,6 @@ bbsfwdmail_main()
 	int num;
 	struct mmapfile mf = { .ptr = NULL };
 	//struct userdata currentdata;
-	struct userec *up;
 	FILE *fp, *fp1;
 	int i, retv;
 	html_header(1);
