@@ -44,6 +44,7 @@ bbsfind_main()
 }
 
 static int search_callback(struct boardmem *board, int curr_idx, va_list ap) {
+	(void) curr_idx;
 	const char *id = va_arg(ap, const char *);
 	const char *pat = va_arg(ap, const char *);
 	const char *pat2 = va_arg(ap, const char *);
