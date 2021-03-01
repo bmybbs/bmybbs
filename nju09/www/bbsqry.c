@@ -4,6 +4,7 @@ static int bm_printboard(struct boardmanager *bm, void *farg);
 
 // const char *, int *, char *
 static int fuzzy_matching_userid_v(const struct ythtbbs_cache_User *user, int curr_idx, va_list ap) {
+	(void) curr_idx;
 	const char *userid;
 	int *j;
 	char *buf;
@@ -222,6 +223,7 @@ show_special(char *id2)
 }
 
 static int bm_printboard(struct boardmanager *bm, void *farg) {
+	(void) farg;
 	if (getboard(bm->board)){
 		printf("<a href=%s%s target=f3>", showByDefMode(), bm->board);
 		hprintf("%s", bm->board);
