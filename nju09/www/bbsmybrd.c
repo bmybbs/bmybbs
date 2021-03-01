@@ -4,6 +4,7 @@ static int read_submit();
 //secstr == NULL: all boards
 //secstr == "": boards that doesnn't belong to any group
 static int showlist_callback(struct boardmem *board, int curr_idx, va_list ap) {
+	(void) curr_idx;
 	struct boardmem **data = va_arg(ap, struct boardmem **);
 	int *total = va_arg(ap, int *);
 	const char *secstr = va_arg(ap, const char *);
@@ -157,8 +158,6 @@ int readmybrd(char *userid) {
 
 static int read_submit() {
 	int i;
-	char buf1[200];
-	FILE *fp;
 	struct boardmem *x;
 	g_GoodBrd.num = 0;
 	int count = 0;
