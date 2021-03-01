@@ -1141,7 +1141,7 @@ static int post_imail(char *userid, char *title, char *file, char *id, char *ip,
 int
 post_article_1984(char *board, char *title, char *file, char *id,
 		char *nickname, char *ip, int sig, int mark,
-		int outgoing, char *realauthor, int thread)
+		int outgoing, int thread)
 {
 	FILE *fp, *fp2;
 	char buf3[1024], buf[80];

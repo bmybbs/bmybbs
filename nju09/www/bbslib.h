@@ -133,7 +133,7 @@ int mail_file(char *filename, char *userid, char *title, char *sender);
 int post_mail_to_sent_box(char *userid, char *title, char *file, char *id, char *nickname, char *ip, int sig, int mark);
 int post_mail(char *userid, char *title, char *file, char *id, char *nickname, char *ip, int sig, int mark);
 int post_mail_buf(char *userid, char *title, char *buf, char *id, char *nickname, char *ip, int sig, int mark);
-int post_article_1984(char *board, char *title, char *file, char *id, char *nickname, char *ip, int sig, int mark, int outgoing, char *realauthor, int thread);
+int post_article_1984(char *board, char *title, char *file, char *id, char *nickname, char *ip, int sig, int mark, int outgoing, int thread);
 int post_article(char *board, char *title, char *file, char *id, char *nickname, char *ip, int sig, int mark, int outgoing, char *realauthor, int thread);
 int securityreport(char *title, char *content);
 char *anno_path_of(char *board);
