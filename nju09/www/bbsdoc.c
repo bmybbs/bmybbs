@@ -451,7 +451,7 @@ int top_file(const char *call_type)
 	char board[80], buf[128], title[80], *ptr;
 	struct boardmem *x1;
 	struct fileheader x;
-	int i, j, start, total;
+	int i, start, total;
 	int flag; // 0 为 bbsdoc, 1 为 bbstdoc，两者标记判断调用方法不一致
 	if(!strcmp(call_type,"bbsdoc")) flag = 0;
 	if(!strcmp(call_type,"bbstdoc")) flag = 1;
@@ -475,7 +475,6 @@ int top_file(const char *call_type)
 
 		x.title[sizeof(x.title) - 1] = 0;
 		x.owner[sizeof(x.owner) - 1] = 0;
-		j=0;
 		strcpy(title, fh2fname(&x));
 		if(title[0]=='T')
 			title[0]='M';
