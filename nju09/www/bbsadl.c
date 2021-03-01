@@ -1,6 +1,7 @@
 #include "bbslib.h"
 
 static int bbsadl_callback(struct boardmem *board, int curr_idx, va_list ap) {
+	(void) curr_idx;
 	int *no = va_arg(ap, int *);
 	char buf[256];
 	snprintf(buf, sizeof(buf), "www/an/%s.tgz", board->header.filename);
