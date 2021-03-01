@@ -78,7 +78,7 @@ rss_chartrans(char *s, char *s0)  // transfer characters according to XML standa
 }
 
 static int
-rss_fshow_file(FILE* output, char* board, struct fileheader* x, int n)
+rss_fshow_file(FILE* output, char* board, struct fileheader* x)
 {
 	FILE *fp;
 	const int max_output_length = 1024 + 512;  // summary maximum length
@@ -279,7 +279,7 @@ prt_summary(int j, int *rssform, struct fileheader *rssdata, char* board)
 				strcpy(ffowner,fh2owner(x));  // 记下楼主名字
 			}
 
-			rss_fshow_file(stdout, board, x, num);
+			rss_fshow_file(stdout, board, x);
 
 			if (!found) found = 1;
 			if (floor == 1) break;  // only display the first post
