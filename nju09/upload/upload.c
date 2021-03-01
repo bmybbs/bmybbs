@@ -304,6 +304,9 @@ printuploadform()
 int
 main(int argc, char *argv[], char *environment[])
 {
+	(void) argc;
+	(void) argv;
+	(void) environment;
 	char *ptr, *buf;
 	char Boundary[1024] = "--";
 	int len, i;
