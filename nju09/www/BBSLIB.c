@@ -21,7 +21,7 @@ char needcgi[STRLEN];
 static void __unhcode(char *s);
 static void extraparam_init(const char *extrastr);
 static int user_init(struct userec *x, struct user_info **y, const char *userid, const char *sessid);
-static int post_imail(char *userid, char *title, char *file, char *id, char *nickname, char *ip, int sig);
+static int post_imail(char *userid, char *title, char *file, char *id, char *ip, int sig);
 static void sig_append(FILE * fp, char *id, int sig);
 
 struct wwwstyle wwwstyle[NWWWSTYLE] = {
@@ -1033,7 +1033,7 @@ post_mail(char *userid, char *title, char *file, char *id,
 			*pos = '\0';
 	}
 	if (strstr(userid, "@"))
-		return post_imail(userid, title, file, id, nickname, ip, sig);
+		return post_imail(userid, title, file, id, ip, sig);
 	if (getuser(userid) == NULL)
 		http_fatal("\xB4\xED\xCE\xF3\xB5\xC4\xCA\xD5\xD0\xC5\xC8\xCB\xB5\xD8\xD6\xB7"); // 错误的收信人地址
 	bzero(&header, sizeof (header));
@@ -1089,8 +1089,7 @@ post_mail_buf(char *userid, char *title, char *buf, char *id, char *nickname,
 	return 0;
 }
 
-static int post_imail(char *userid, char *title, char *file, char *id,
-		char *nickname, char *ip, int sig)
+static int post_imail(char *userid, char *title, char *file, char *id, char *ip, int sig)
 {
 	FILE *fp1, *fp2;
 	char buf[256], *ptr;
