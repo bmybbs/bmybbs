@@ -35,11 +35,11 @@ int
 bbsboa_main()
 {
 	struct boardmem *(data[MAXBOARD]);
-	int i, total = 0;
+	int total = 0;
 	char *secstr; //, session_name[STRLEN], pname[STRLEN], *p;
 	const struct sectree *sec;
 	//int show_Commend();
-	int hasintro = 0, len;
+	int hasintro = 0;
 
 	secstr = getparm("secstr");
 	sec = getsectree(secstr);
@@ -63,7 +63,6 @@ bbsboa_main()
 		show_content();
 		goto out;
 	}
-	len = strlen(secstr);
 	if (sec->introstr[0])
 		hasintro = 1;
 	ythtbbs_cache_Board_foreach_v(filter_board_v, FILTER_BOARD_with_secstr, data, &total, hasintro, secstr);
@@ -175,6 +174,7 @@ static int showsecnav(const struct sectree *sec) {
 
 // 这个函数就不和 filter_board_v 合并了，有些独有逻辑
 static int showhotboard_callback(struct boardmem *board, int curr_idx, va_list ap) {
+	(void) curr_idx;
 	const char *basestr = va_arg(ap, const char *);
 	struct boardmem **bmem = va_arg(ap, struct boardmem **);
 	int *count = va_arg(ap, int *);
@@ -215,12 +215,11 @@ static int showhotboard_callback(struct boardmem *board, int curr_idx, va_list a
 }
 
 static int showhotboard(const struct sectree *sec, char *s) {
-	int count = 0, i, j, len, max;
+	int count = 0, i, max;
 	struct boardmem *bmem[MAXBOARD];
 	max = atoi(s);
 	if (max < 3 || max > 30)
 		max = 10;
-	len = strlen(sec->basestr);
 	ythtbbs_cache_Board_foreach_v(showhotboard_callback, sec->basestr, bmem, &count, max);
 	printf("<table width=588 border=1><tr><td bgcolor=%s width=55 align=center>热门讨论区推荐</td><td>", currstyle->colortb1);
 	for (i = 0; i < count; i++) {
@@ -548,9 +547,8 @@ void title_end()
 int show_content()
 {
 	FILE* fp, *secorderfile;
-	char buf[512], str[1], buf1[512], buf2[512], secorder[16];
+	char buf[512], buf1[512], buf2[512], secorder[16];
 	size_t sec_index, sec_length;
-	struct sectree * psec;
 	const char * secorderfilepath = BBSHOME "/etc/secorder";
 
 	//show commend
@@ -817,7 +815,7 @@ void show_sec(const struct sectree *sec) {
 void show_boards(const char *secstr) {
 	struct boardmem *(data[MAXBOARD]);
 	int hasintro = 0;
-	int i, total = 0;
+	int total = 0;
 	const struct sectree *sec;
 
 	sec = getsectree(secstr);
