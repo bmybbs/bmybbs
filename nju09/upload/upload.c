@@ -197,15 +197,6 @@ static void AcceptSegment(char **Input, int *InputLength, char *Boundary) {
 	}
 }
 
-static int
-myatoi(char *a)
-{
-	int i = 0;
-	while ((unsigned char)*a)
-		i = i * 26 + (*(a++) - 'A');
-	return i;
-}
-
 int
 save_attach()
 {
