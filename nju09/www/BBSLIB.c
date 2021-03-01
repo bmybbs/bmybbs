@@ -2359,7 +2359,7 @@ char to_hex(char code) {
 void
 NHsprintf(char *s, char *s0)
 {
-	char ansibuf[80], buf2[80];
+	char ansibuf[80];
 	char *tmp;
 	int bold, m, i, len, lsp = -1;
 	char c;
@@ -2480,6 +2480,7 @@ NHsprintf(char *s, char *s0)
 }
 
 int filter_board_v(struct boardmem *board, int curr_idx, va_list ap) {
+	(void) curr_idx;
 	// 一定会使用的变量
 	int flag = va_arg(ap, int);
 	struct boardmem **data = va_arg(ap, struct boardmem **);
