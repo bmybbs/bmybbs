@@ -1,6 +1,6 @@
 #include "bbslib.h"
 
-extern void printboardtop(struct boardmem *x, int num);
+extern void printboardtop(struct boardmem *x);
 extern int getdocstart(int total, int lines);
 extern void nosuchboard(char *board, char *cginame);
 
@@ -47,7 +47,7 @@ bbsmmdoc_main()
 	printf("<body topmargin=0 leftmargin=0>\n");
 	printf("<table width=\"100%%\" border=0 cellpadding=0 cellspacing=0>\n"
 		"<td><form name=form1 action=bbsmmdoc>\n");
-	printboardtop(x1, 4);
+	printboardtop(x1);
 
 	printf("<tr><td><a href=\"pst?B=%s\" class=\"btnsubmittheme\" title=\"发表文章 accesskey: p\" accesskey=\"p\">发表文章</a>\n", board);
 	printf("文章数&lt;%d&gt; 在线&lt;%d&gt;</td>", total, x1->inboard);

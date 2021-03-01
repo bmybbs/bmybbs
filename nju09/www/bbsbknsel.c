@@ -1,7 +1,7 @@
 #include "bbslib.h"
 
 extern void nosuchboard(char *board, char *cginame);
-extern void printboardtop(struct boardmem *x, int num);
+extern void printboardtop(struct boardmem *x);
 extern int getdocstart(int total, int lines);
 extern void bbsdoc_helper(char *cgistr, int start, int total, int lines);
 extern void printdocform(char *cginame, char *board);
@@ -33,7 +33,7 @@ bbsbknsel_main()
 		total = file_size(dir) / sizeof (struct bknheader);
 		start = getdocstart(total, w_info->t_lines);
 		printf("<body topmargin=0><nobr><center>\n");
-		printboardtop(x1, 5);
+		printboardtop(x1);
 		printf("选择过刊 过刊数[%d] ", total);
 		sprintf(genbuf, "bbsbknsel?board=%s", board);
 		bbsdoc_helper(genbuf, start, total, w_info->t_lines);

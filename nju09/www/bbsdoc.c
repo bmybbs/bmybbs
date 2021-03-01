@@ -76,7 +76,7 @@ printboardhot(struct boardmem *x)
 }
 
 void
-printboardtop(struct boardmem *x, int num)
+printboardtop(struct boardmem *x)
 {	//modify by mintbaggio 040522 for new www
 	char *board = x->header.filename, bmbuf[IDLEN * 4 + 4];
 	char sbmbuf[IDLEN * 12 + 12];
@@ -234,7 +234,7 @@ bbsdoc_main()
 	printf("<body topmargin=0 leftmargin=0>\n");
 	printf("<table width=\"100%%\" border=0 cellpadding=0 cellspacing=0>\n"
 		"<td><form name=form1 action=bbsdoc>\n");
-	printboardtop(x1, 3);
+	printboardtop(x1);
 //	printf("一般模式 文章数[%d] ", total);
 	printf("<tr><td><a href=\"pst?B=%s\" class=\"btnsubmittheme\" title=\"我要发表文章 accesskey: p\" accesskey=\"p\">我要发表文章</a>\n", board);
 	if (hastmpl > 0)

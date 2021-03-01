@@ -5,7 +5,7 @@ static char *stat1(struct fileheader *data, int from, int total);
 /* bbsdoc.c */
 extern void nosuchboard(char *board, char *cginame);
 extern int getdocstart(int total, int lines);
-extern void printboardtop(struct boardmem *x, int num);
+extern void printboardtop(struct boardmem *x);
 extern void printboardhot(struct boardmem *x);
 extern int top_file(const char *call_type);
 extern int printkeywords(char* keywordstr);
@@ -67,7 +67,7 @@ bbstdoc_main()
 		printf("<table width=\"100%%\" border=0 cellpadding=0 cellspacing=0>\n"
 				"<form name=form1 action=bbstdoc>");
 // 	lanboy
-		printboardtop(x1, 3);
+		printboardtop(x1);
 		printf("<tr><td><a href=\"pst?B=%s\" class=\"btnsubmittheme\" title=\"我要发表文章 accesskey: p\" accesskey=\"p\">我要发表文章</a>\n", board);
 		if (hastmpl > 0)
 				printf("<a href=bbstmpl?action=show&board=%s class=\"btnsubmittheme\" title=\"模板发文 accesskey: t\" accesskey=\"t\">模板发文</a>\n", board);
