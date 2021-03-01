@@ -29,7 +29,7 @@ void show_right_click_header(int i);
 // int show_manager_team(); 未使用
 
 // bbsshownav
-int shownavpart(int mode, const char *secstr);
+int shownavpart(int mode);
 
 int
 bbsboa_main()
@@ -167,7 +167,7 @@ static int showsecnav(const struct sectree *sec) {
 		"查看全部</a>)", sec->basestr);
 	showstarline(buf);
 	printf("<tr><td>");
-	shownavpart(0, sec->basestr);
+	shownavpart(0);
 	printf("</td></tr></table>");
 	return 0;
 }
