@@ -13,7 +13,7 @@ bbsman_main()
 	char dir[80];
 	struct boardmem *brd;
 	char *data= NULL;
-	int size, last;
+	int size;
 	int fd;
 	html_header(1);
 	check_msg();
@@ -46,7 +46,6 @@ bbsman_main()
 			MMAP_UNTRY;
 			http_fatal("无法读取文章列表");
 		}
-		last = 0;
 		for (i = 0; i < parm_num && i < 40; i++) {
 			if (!strncmp(parm_name[i], "box", 3)) {
 				total++;
