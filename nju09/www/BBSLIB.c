@@ -74,7 +74,7 @@ struct mmapfile mf_badwords  = { .ptr = NULL };
 struct mmapfile mf_sbadwords = { .ptr = NULL };
 struct mmapfile mf_pbadwords = { .ptr = NULL };
 char *ummap_ptr = NULL;
-int ummap_size = 0;
+size_t ummap_size = 0;
 char fromhost[BMY_IPV6_LEN]; // 从环境变量获取 IP 地址，IPv4/IPv6 已经由 apache 处理过
 struct in6_addr from_addr;   //ipv6 by leoncom
 
@@ -1644,7 +1644,7 @@ getuser(char *id)
 	uid = getusernum(id);
 	if (uid < 0)
 		return NULL;
-	if ((uid + 1) * sizeof (struct userec) > ummap_size)
+	if (((unsigned) uid + 1) * sizeof (struct userec) > ummap_size)
 		ummap();
 	if (!ummap_ptr)
 		return NULL;

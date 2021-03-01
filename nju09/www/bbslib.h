@@ -50,7 +50,7 @@ extern char fromhost[BMY_IPV6_LEN];
 extern struct in6_addr from_addr; //ipv6 by leoncom
 extern int quote_quote;
 extern char *ummap_ptr;
-extern int ummap_size;
+extern size_t ummap_size;
 /*add by macintosh 050619 for Tex Math Equ*/
 extern int usedMath;
 extern int usingMath;
