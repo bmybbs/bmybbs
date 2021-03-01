@@ -13,6 +13,7 @@ printdocform(char *cginame, char *board)
 
 //吧lepton的这个代码写成一个函数
 static int nosuchboard_callback(struct boardmem *board, int curr_idx, va_list ap) {
+	(void) curr_idx;
 	const char *bname = va_arg(ap, const char *);
 	const char *cginame = va_arg(ap, const char *);
 	int *j = va_arg(ap, int *);
@@ -40,7 +41,7 @@ static int nosuchboard_callback(struct boardmem *board, int curr_idx, va_list ap
 }
 
 void nosuchboard(char *board, char *cginame) {
-	int i, j = 0;
+	int j = 0;
 	char buf[128];
 	printf("没有这个讨论区啊，可能的选择:<p>");
 	printf("<table width=300>");
@@ -77,7 +78,7 @@ printboardhot(struct boardmem *x)
 void
 printboardtop(struct boardmem *x, int num)
 {	//modify by mintbaggio 040522 for new www
-	char genbuf[STRLEN * 2], *board = x->header.filename, bmbuf[IDLEN * 4 + 4];
+	char *board = x->header.filename, bmbuf[IDLEN * 4 + 4];
 	char sbmbuf[IDLEN * 12 + 12];
 	printf("%s","<tr><td height=30 colspan=2>\n"
 		"<table width=\"100%\"  border=0 cellspacing=0 cellpadding=0>\n"
