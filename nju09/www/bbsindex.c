@@ -112,7 +112,7 @@ shownologin()
 int
 bbsindex_main()
 {
-	char str[20], redbuf[50]; //, main_page[STRLEN];
+	char str[20]; //, redbuf[50], main_page[STRLEN];
 	if (nologin) {
 		shownologin();
 		http_quit();
