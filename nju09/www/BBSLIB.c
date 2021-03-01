@@ -563,7 +563,7 @@ GUEST:
 int
 url_parse()
 {
-	char *url, *end, name[STRLEN], *p, *extraparam;
+	char *url, *end, name[STRLEN], *p;
 	// e.g. url = /BMY/foo
 	if (g_is_nginx) {
 		// 对于 nginx 的运行方式（其实 lighttpd 也适用）
