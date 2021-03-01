@@ -12,6 +12,7 @@ tmpl_init(char * nboard, struct a_template ** pptemp){
 	struct s_template tmpl;
 	struct s_content * cont;
 	int templ_num;
+	ssize_t size;
 
 	setbfile(tmpldir, nboard, TEMPLATE_DIR);
 	if( pptemp == NULL ){
@@ -29,20 +30,20 @@ tmpl_init(char * nboard, struct a_template ** pptemp){
 	if( (fd = open( tmpldir, O_RDONLY ) ) == -1 ){
 		return 0;
 	}
-	while( read(fd, &tmpl, sizeof( struct s_template )) == sizeof(struct s_template) ){
-		if( tmpl.version > TMPL_NOW_VERSION ){
+	while ((size = read(fd, &tmpl, sizeof(struct s_template)) >= 0) && (unsigned) size == sizeof(struct s_template)) {
+		if (tmpl.version > TMPL_NOW_VERSION) {
 			close(fd);
 			return -1;
 		}
-		if((!has_BM_perm(&currentuser, getboard(nboard))) && tmpl.flag & TMPL_BM_FLAG ) {
-			lseek( fd, sizeof(struct s_content) * tmpl.content_num , SEEK_CUR );
+		if ((!has_BM_perm(&currentuser, getboard(nboard))) && tmpl.flag & TMPL_BM_FLAG ) {
+			lseek(fd, sizeof(struct s_content) * tmpl.content_num , SEEK_CUR);
 			continue;
 		}
-		cont = (struct s_content *) malloc( sizeof( struct s_content ) * tmpl.content_num );
-		if( cont == NULL )
+		cont = (struct s_content *) malloc(sizeof(struct s_content) * tmpl.content_num);
+		if (cont == NULL)
 			break;
 		bzero(cont, sizeof(struct s_content) * tmpl.content_num );
-		if(read(fd, cont, sizeof(struct s_content)*tmpl.content_num) != sizeof(struct s_content)*tmpl.content_num)
+		if ((size = read(fd, cont, sizeof(struct s_content) * tmpl.content_num)) >= 0 && (unsigned) size != sizeof(struct s_content) * tmpl.content_num)
 			continue;
 		(* pptemp)[templ_num].tmpl = (struct s_template *)malloc(sizeof(struct s_template));
 		if( (* pptemp)[templ_num].tmpl == NULL ){
