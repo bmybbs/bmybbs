@@ -2149,9 +2149,7 @@ get_mail_size()
 
 }
 
-int
-check_maxmail(char *currmaildir)
-{
+int check_maxmail() {
 	int currsize, maxsize;
 	if(HAS_PERM(PERM_SYSOP|PERM_OBOARDS, currentuser))	//add by mintbaggio 040323 for unlimitted mail volum of SYSOPs
 		return 0;

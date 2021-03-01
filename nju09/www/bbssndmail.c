@@ -15,7 +15,7 @@ bbssndmail_main()
 	if (HAS_PERM(PERM_DENYMAIL, currentuser))
 		http_fatal("您被封禁发信权");
 	sprintf(mymaildir, "mail/%c/%s/.DIR", mytoupper(currentuser.userid[0]),currentuser.userid);
-	if (check_maxmail(mymaildir))
+	if (check_maxmail())
 		http_fatal("您的个人信件过多，请整理");
 	changemode(SMAIL);
 	ytht_strsncpy(title, getparm("title"), 50);

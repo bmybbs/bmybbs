@@ -189,7 +189,7 @@ void loaddenyuser(char *board);
 void savedenyuser(char *board);
 int max_mail_size(void);
 int get_mail_size(void);
-int check_maxmail(char *currmaildir);
+int check_maxmail();
 int countln(char *fname);
 double *system_load(void);
 int dofilter(char *title, char *fn, int level);
