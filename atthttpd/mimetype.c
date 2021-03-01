@@ -51,5 +51,6 @@ get_mime_type(char *name)
 char *
 get_error_type(int errornum)
 {
+	(void) errornum;
 	return "HTTP/1.1 404 Not Found" EOL;
 }

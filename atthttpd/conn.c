@@ -159,6 +159,7 @@ conn_insert(int sd)
 }
 
 static int getbcache_callback(struct boardmem *board, int curr_idx, va_list ap) {
+	(void) curr_idx;
 	int *num = va_arg(ap, int *);
 	char *upperstr = va_arg(ap, char *);
 	size_t upperstr_size = va_arg(ap, size_t);
@@ -181,7 +182,7 @@ static int getbcache_callback(struct boardmem *board, int curr_idx, va_list ap) 
 struct boardmem *
 getbcache(char *board)
 {
-	int i, j;
+	int j;
 	static int num = 0;
 	char upperstr[STRLEN];
 	static ght_hash_table_t *p_table = NULL;
