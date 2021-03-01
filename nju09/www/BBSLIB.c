@@ -1545,7 +1545,7 @@ struct boardmem *getboard(char *board)
 }
 
 int
-send_msg(char *myuserid, int i, char *touserid, int topid, char *msg, int offline)
+send_msg(int i, char *touserid, int topid, char *msg, int offline)
 {
 	struct msghead head, head2;
 	memset(&head, 0, sizeof(struct msghead));
