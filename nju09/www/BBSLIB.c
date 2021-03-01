@@ -1162,6 +1162,7 @@ post_article_1984(char *board, char *title, char *file, char *id,
 	if (t < 0)
 		return -1;
 	header.filetime = t;
+	header.accessed = mark;
 	if (thread != -1)
 		header.thread = thread;
 	ytht_strsncpy(header.title, title, sizeof(header.title));
