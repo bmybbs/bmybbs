@@ -383,10 +383,6 @@ fqhprintf(FILE * output, char *str)
 int fhhprintf(FILE * output, char *fmt, ...) {
 	char buf0[1024], buf[1024], *s;
 	int len = 0;
-	char vlink[STRLEN];
-	char vfile[STRLEN];
-	char cmdline[STRLEN];
-	FILE* vfp;
 
 	va_list ap;
 	va_start(ap, fmt);
