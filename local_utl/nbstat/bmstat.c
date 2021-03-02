@@ -29,15 +29,16 @@ struct bmstat {
 };
 
 void
-bm_posted(int day, char *time, char *user, char *other)
+bm_posted(int day, char *t, char *user, char *other)
 {
+	(void) day;
+	(void) t;
 	struct hword *a;
 	struct bmstat *data;
 	char buf[STRLEN];
 	char board[30], title[128];
 	char *tmp[2] = { board, title };
-	int i;
-	i = ytht_strtok(other, ' ', tmp, 2);
+	ytht_strtok(other, ' ', tmp, 2);
 	snprintf(buf, STRLEN - 1, "%s %s", board, user);
 	a = finddic(bmd, buf);
 	if (a != NULL) {
@@ -47,15 +48,16 @@ bm_posted(int day, char *time, char *user, char *other)
 }
 
 void
-bm_use(int day, char *time, char *user, char *other)
+bm_use(int day, char *t, char *user, char *other)
 {
+	(void) day;
+	(void) t;
 	struct hword *a;
 	struct bmstat *data;
 	char buf[STRLEN];
 	char board[30], staytime[30];
 	char *tmp[2] = { board, staytime };
-	int i;
-	i = ytht_strtok(other, ' ', tmp, 2);
+	ytht_strtok(other, ' ', tmp, 2);
 	snprintf(buf, STRLEN - 1, "%s %s", board, user);
 	a = finddic(bmd, buf);
 	if (a != NULL) {
@@ -66,15 +68,16 @@ bm_use(int day, char *time, char *user, char *other)
 }
 
 void
-bm_import(int day, char *time, char *user, char *other)
+bm_import(int day, char *t, char *user, char *other)
 {
+	(void) day;
+	(void) t;
 	struct hword *a;
 	struct bmstat *data;
 	char buf[STRLEN];
 	char board[30], author[20], title[128];
 	char *tmp[3] = { board, author, title };
-	int i;
-	i = ytht_strtok(other, ' ', tmp, 3);
+	ytht_strtok(other, ' ', tmp, 3);
 	snprintf(buf, STRLEN - 1, "%s %s", board, user);
 	a = finddic(bmd, buf);
 	if (a != NULL) {
@@ -84,15 +87,16 @@ bm_import(int day, char *time, char *user, char *other)
 }
 
 void
-bm_move(int day, char *time, char *user, char *other)
+bm_move(int day, char *t, char *user, char *other)
 {
+	(void) day;
+	(void) t;
 	struct hword *a;
 	struct bmstat *data;
 	char buf[STRLEN];
 	char board[30], path[512];
 	char *tmp[2] = { board, path };
-	int i;
-	i = ytht_strtok(other, ' ', tmp, 2);
+	ytht_strtok(other, ' ', tmp, 2);
 	snprintf(buf, STRLEN - 1, "%s %s", board, user);
 	a = finddic(bmd, buf);
 	if (a != NULL) {
@@ -102,15 +106,16 @@ bm_move(int day, char *time, char *user, char *other)
 }
 
 void
-bm_undigest(int day, char *time, char *user, char *other)
+bm_undigest(int day, char *t, char *user, char *other)
 {
+	(void) day;
+	(void) t;
 	struct hword *a;
 	struct bmstat *data;
 	char buf[STRLEN];
 	char board[30], author[20], title[128];
 	char *tmp[3] = { board, author, title };
-	int i;
-	i = ytht_strtok(other, ' ', tmp, 3);
+	ytht_strtok(other, ' ', tmp, 3);
 	snprintf(buf, STRLEN - 1, "%s %s", board, user);
 	a = finddic(bmd, buf);
 	if (a != NULL) {
@@ -120,15 +125,16 @@ bm_undigest(int day, char *time, char *user, char *other)
 }
 
 void
-bm_digest(int day, char *time, char *user, char *other)
+bm_digest(int day, char *t, char *user, char *other)
 {
+	(void) day;
+	(void) t;
 	struct hword *a;
 	struct bmstat *data;
 	char buf[STRLEN];
 	char board[30], author[20], title[128];
 	char *tmp[3] = { board, author, title };
-	int i;
-	i = ytht_strtok(other, ' ', tmp, 3);
+	ytht_strtok(other, ' ', tmp, 3);
 	snprintf(buf, STRLEN - 1, "%s %s", board, user);
 	a = finddic(bmd, buf);
 	if (a != NULL) {
@@ -138,15 +144,16 @@ bm_digest(int day, char *time, char *user, char *other)
 }
 
 void
-bm_mark(int day, char *time, char *user, char *other)
+bm_mark(int day, char *t, char *user, char *other)
 {
+	(void) day;
+	(void) t;
 	struct hword *a;
 	struct bmstat *data;
 	char buf[STRLEN];
 	char board[30], author[20], title[128];
 	char *tmp[3] = { board, author, title };
-	int i;
-	i = ytht_strtok(other, ' ', tmp, 3);
+	ytht_strtok(other, ' ', tmp, 3);
 	snprintf(buf, STRLEN - 1, "%s %s", board, user);
 	a = finddic(bmd, buf);
 	if (a != NULL) {
@@ -156,15 +163,16 @@ bm_mark(int day, char *time, char *user, char *other)
 }
 
 void
-bm_unmark(int day, char *time, char *user, char *other)
+bm_unmark(int day, char *t, char *user, char *other)
 {
+	(void) day;
+	(void) t;
 	struct hword *a;
 	struct bmstat *data;
 	char buf[STRLEN];
 	char board[30], author[20], title[128];
 	char *tmp[3] = { board, author, title };
-	int i;
-	i = ytht_strtok(other, ' ', tmp, 3);
+	ytht_strtok(other, ' ', tmp, 3);
 	snprintf(buf, STRLEN - 1, "%s %s", board, user);
 	a = finddic(bmd, buf);
 	if (a != NULL) {
@@ -174,15 +182,16 @@ bm_unmark(int day, char *time, char *user, char *other)
 }
 
 void
-bm_range(int day, char *time, char *user, char *other)
+bm_range(int day, char *t, char *user, char *other)
 {
+	(void) day;
+	(void) t;
 	struct hword *a;
 	struct bmstat *data;
 	char buf[STRLEN];
 	char board[30], num1[10], num2[10];
 	char *tmp[3] = { board, num1, num2 };
-	int i;
-	i = ytht_strtok(other, ' ', tmp, 3);
+	ytht_strtok(other, ' ', tmp, 3);
 	snprintf(buf, STRLEN - 1, "%s %s", board, user);
 	a = finddic(bmd, buf);
 	if (a != NULL) {
@@ -192,15 +201,16 @@ bm_range(int day, char *time, char *user, char *other)
 }
 
 void
-bm_del(int day, char *time, char *user, char *other)
+bm_del(int day, char *t, char *user, char *other)
 {
+	(void) day;
+	(void) t;
 	struct hword *a;
 	struct bmstat *data;
 	char buf[STRLEN];
 	char board[30], author[20], title[128];
 	char *tmp[3] = { board, author, title };
-	int i;
-	i = ytht_strtok(other, ' ', tmp, 3);
+	ytht_strtok(other, ' ', tmp, 3);
 	snprintf(buf, STRLEN - 1, "%s %s", board, user);
 	a = finddic(bmd, buf);
 	if (a != NULL) {
@@ -210,15 +220,16 @@ bm_del(int day, char *time, char *user, char *other)
 }
 
 void
-bm_deny(int day, char *time, char *user, char *other)
+bm_deny(int day, char *t, char *user, char *other)
 {
+	(void) day;
+	(void) t;
 	struct hword *a;
 	struct bmstat *data;
 	char buf[STRLEN];
 	char board[30], denyuser[20];
 	char *tmp[2] = { board, denyuser };
-	int i;
-	i = ytht_strtok(other, ' ', tmp, 2);
+	ytht_strtok(other, ' ', tmp, 2);
 	snprintf(buf, STRLEN - 1, "%s %s", board, user);
 	a = finddic(bmd, buf);
 	if (a != NULL) {
@@ -228,15 +239,16 @@ bm_deny(int day, char *time, char *user, char *other)
 }
 
 void
-bm_same(int day, char *time, char *user, char *other)
+bm_same(int day, char *t, char *user, char *other)
 {
+	(void) day;
+	(void) t;
 	struct hword *a;
 	struct bmstat *data;
 	char buf[STRLEN];
 	char board[30], title[128];
 	char *tmp[2] = { board, title };
-	int i;
-	i = ytht_strtok(other, ' ', tmp, 2);
+	ytht_strtok(other, ' ', tmp, 2);
 	snprintf(buf, STRLEN - 1, "%s %s", board, user);
 	a = finddic(bmd, buf);
 	if (a != NULL) {
@@ -330,6 +342,8 @@ bm_exit()
 }
 
 static int bm_callback(struct boardmem *board, int curr_idx, va_list ap) {
+	(void) curr_idx;
+	(void) ap;
 	int k;
 	struct hword *tmp;
 	if (board->header.filename[0] == '\0')

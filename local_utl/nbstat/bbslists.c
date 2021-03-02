@@ -26,14 +26,14 @@ int login[24];
 int stay[24];
 
 void
-bbslists_newaccount(int day, char *time, char *user, char *other)
+bbslists_newaccount(int day, char *t, char *user, char *other)
 {
+	(void) day;
 	char uid[10], fromhost[40];
 	char *temp[2] = { uid, fromhost };
-	int i;
 	int hour;
-	i = ytht_strtok(other, ' ', temp, 2);
-	hour = atoi(time);
+	ytht_strtok(other, ' ', temp, 2);
+	hour = atoi(t);
 	if (hour < 0 || hour > 23) {
 		errlog("Invalid newaccount time, %s %s", user, other);
 		return;
@@ -43,10 +43,11 @@ bbslists_newaccount(int day, char *time, char *user, char *other)
 }
 
 void
-bbslists_enter(int day, char *time, char *user, char *other)
+bbslists_enter(int day, char *t, char *user, char *other)
 {
+	(void) day;
 	int hour;
-	hour = atoi(time);
+	hour = atoi(t);
 	if (hour < 0 || hour > 23) {
 		errlog("Invalid login time, %s %s", user, other);
 		return;
@@ -55,10 +56,11 @@ bbslists_enter(int day, char *time, char *user, char *other)
 }
 
 void
-bbslists_drop(int day, char *time, char *user, char *other)
+bbslists_drop(int day, char *t, char *user, char *other)
 {
+	(void) day;
 	int hour;
-	hour = atoi(time);
+	hour = atoi(t);
 	if (hour < 0 || hour > 23) {
 		errlog("Invalid drop time, %s %s", user, other);
 		return;
@@ -67,10 +69,11 @@ bbslists_drop(int day, char *time, char *user, char *other)
 }
 
 void
-bbslists_exitbbs(int day, char *time, char *user, char *other)
+bbslists_exitbbs(int day, char *t, char *user, char *other)
 {
+	(void) day;
 	int hour;
-	hour = atoi(time);
+	hour = atoi(t);
 	if (hour < 0 || hour > 23) {
 		errlog("Invalid exitbbs time, %s %s", user, other);
 		return;
@@ -79,14 +82,16 @@ bbslists_exitbbs(int day, char *time, char *user, char *other)
 }
 
 void
-bbslists_use(int day, char *time, char *user, char *other)
+bbslists_use(int day, char *t, char *user, char *other)
 {
+	(void) day;
+	(void) t;
+	(void) user;
 	struct hword *a;
 	struct bstat *data;
 	char board[30], staytime[10];
 	char *temp[2] = { board, staytime };
-	int i;
-	i = ytht_strtok(other, ' ', temp, 2);
+	ytht_strtok(other, ' ', temp, 2);
 	a = finddic(busage, board);
 	if (a != NULL) {
 		data = a->value;

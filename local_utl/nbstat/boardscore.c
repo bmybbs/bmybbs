@@ -22,15 +22,17 @@ struct sstay {
 };
 
 void
-bs_use(int day, char *time, char *user, char *other)
+bs_use(int day, char *t, char *user, char *other)
 {
+	(void) day;
+	(void) t;
 	struct hword *a, *tmp;
 	struct bscore *data;
 	char board[30], staytime[10];
 	char *temp[2] = { board, staytime };
-	int i, stay, countstay;
+	int stay, countstay;
 //      int hour = 2;
-	i = ytht_strtok(other, ' ', temp, 2);
+	ytht_strtok(other, ' ', temp, 2);
 	a = finddic(bsstat, board);
 	stay = atoi(staytime);
 //      if (stay > hour * 3600)
@@ -72,14 +74,15 @@ bs_cmp(struct bscore *b, struct bscore *a)
 }
 
 void
-bs_post(int day, char *time, char *user, char *other)
+bs_post(int day, char *t, char *user, char *other)
 {
+	(void) day;
+	(void) t;
 	struct hword *a, *tmp;
 	struct bscore *data;
 	char board[30], title[128];
 	char *temp[2] = { board, title };
-	int i;
-	i = ytht_strtok(other, ' ', temp, 2);
+	ytht_strtok(other, ' ', temp, 2);
 	a = finddic(bsstat, board);
 	if (a != NULL) {
 		data = a->value;
@@ -117,11 +120,10 @@ static int bs_update_score_callback(struct boardmem *board, int curr_idx, va_lis
 void
 bs_exit()
 {
-	int buc, i, count, numboards;
+	int buc, i, count;
 	int boards;
 	struct bscore *data;
 	FILE *fp;
-	struct hword *a;
 	buc = getdic(bsstat, sizeof (struct bscore), (void **) &data);
 	if (buc < 0) {
 		errlog("Can't malloc bu result!");

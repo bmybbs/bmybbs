@@ -16,14 +16,15 @@ struct buser {
 };
 
 void
-bu_use(int day, char *time, char *user, char *other)
+bu_use(int day, char *t, char *user, char *other)
 {
+	(void) day;
+	(void) t;
 	struct hword *a, *tmp;
 	struct buser *data;
 	char board[30], staytime[10];
 	char *temp[2] = { board, staytime };
-	int i;
-	i = ytht_strtok(other, ' ', temp, 2);
+	ytht_strtok(other, ' ', temp, 2);
 	a = finddic(bustat, board);
 	if (a != NULL) {
 		data = a->value;
@@ -131,7 +132,6 @@ static int bu_callback(struct boardmem *board, int curr_idx, va_list ap) {
 void
 bu_init()
 {
-	int i, j, k;
 	ythtbbs_cache_Board_foreach_v(bu_callback);
 	register_stat(bu, bu_exit);
 }
