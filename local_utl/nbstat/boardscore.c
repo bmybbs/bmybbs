@@ -120,11 +120,10 @@ static int bs_update_score_callback(struct boardmem *board, int curr_idx, va_lis
 void
 bs_exit()
 {
-	int buc, i, count, numboards;
+	int buc, i, count;
 	int boards;
 	struct bscore *data;
 	FILE *fp;
-	struct hword *a;
 	buc = getdic(bsstat, sizeof (struct bscore), (void **) &data);
 	if (buc < 0) {
 		errlog("Can't malloc bu result!");

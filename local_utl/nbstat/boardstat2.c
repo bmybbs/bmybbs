@@ -132,7 +132,6 @@ static int bu_callback(struct boardmem *board, int curr_idx, va_list ap) {
 void
 bu_init()
 {
-	int i, j, k;
 	ythtbbs_cache_Board_foreach_v(bu_callback);
 	register_stat(bu, bu_exit);
 }
