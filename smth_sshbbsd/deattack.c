@@ -9,6 +9,7 @@
 #include "ssh.h"
 #include "getput.h"
 #include "xmalloc.h"
+#include "crc32.h"
 
 /* SSH Constants */
 #define SSH_MAXBLOCKS (32 * 1024)
