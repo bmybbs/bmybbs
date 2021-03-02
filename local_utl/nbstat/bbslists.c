@@ -30,9 +30,8 @@ bbslists_newaccount(int day, char *time, char *user, char *other)
 {
 	char uid[10], fromhost[40];
 	char *temp[2] = { uid, fromhost };
-	int i;
 	int hour;
-	i = ytht_strtok(other, ' ', temp, 2);
+	ytht_strtok(other, ' ', temp, 2);
 	hour = atoi(time);
 	if (hour < 0 || hour > 23) {
 		errlog("Invalid newaccount time, %s %s", user, other);
@@ -85,8 +84,7 @@ bbslists_use(int day, char *time, char *user, char *other)
 	struct bstat *data;
 	char board[30], staytime[10];
 	char *temp[2] = { board, staytime };
-	int i;
-	i = ytht_strtok(other, ' ', temp, 2);
+	ytht_strtok(other, ' ', temp, 2);
 	a = finddic(busage, board);
 	if (a != NULL) {
 		data = a->value;

@@ -22,8 +22,7 @@ bu_use(int day, char *time, char *user, char *other)
 	struct buser *data;
 	char board[30], staytime[10];
 	char *temp[2] = { board, staytime };
-	int i;
-	i = ytht_strtok(other, ' ', temp, 2);
+	ytht_strtok(other, ' ', temp, 2);
 	a = finddic(bustat, board);
 	if (a != NULL) {
 		data = a->value;

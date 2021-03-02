@@ -28,9 +28,9 @@ bs_use(int day, char *time, char *user, char *other)
 	struct bscore *data;
 	char board[30], staytime[10];
 	char *temp[2] = { board, staytime };
-	int i, stay, countstay;
+	int stay, countstay;
 //      int hour = 2;
-	i = ytht_strtok(other, ' ', temp, 2);
+	ytht_strtok(other, ' ', temp, 2);
 	a = finddic(bsstat, board);
 	stay = atoi(staytime);
 //      if (stay > hour * 3600)
@@ -78,8 +78,7 @@ bs_post(int day, char *time, char *user, char *other)
 	struct bscore *data;
 	char board[30], title[128];
 	char *temp[2] = { board, title };
-	int i;
-	i = ytht_strtok(other, ' ', temp, 2);
+	ytht_strtok(other, ' ', temp, 2);
 	a = finddic(bsstat, board);
 	if (a != NULL) {
 		data = a->value;
