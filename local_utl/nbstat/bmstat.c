@@ -29,8 +29,10 @@ struct bmstat {
 };
 
 void
-bm_posted(int day, char *time, char *user, char *other)
+bm_posted(int day, char *t, char *user, char *other)
 {
+	(void) day;
+	(void) t;
 	struct hword *a;
 	struct bmstat *data;
 	char buf[STRLEN];
@@ -46,8 +48,10 @@ bm_posted(int day, char *time, char *user, char *other)
 }
 
 void
-bm_use(int day, char *time, char *user, char *other)
+bm_use(int day, char *t, char *user, char *other)
 {
+	(void) day;
+	(void) t;
 	struct hword *a;
 	struct bmstat *data;
 	char buf[STRLEN];
@@ -64,8 +68,10 @@ bm_use(int day, char *time, char *user, char *other)
 }
 
 void
-bm_import(int day, char *time, char *user, char *other)
+bm_import(int day, char *t, char *user, char *other)
 {
+	(void) day;
+	(void) t;
 	struct hword *a;
 	struct bmstat *data;
 	char buf[STRLEN];
@@ -81,8 +87,10 @@ bm_import(int day, char *time, char *user, char *other)
 }
 
 void
-bm_move(int day, char *time, char *user, char *other)
+bm_move(int day, char *t, char *user, char *other)
 {
+	(void) day;
+	(void) t;
 	struct hword *a;
 	struct bmstat *data;
 	char buf[STRLEN];
@@ -98,8 +106,10 @@ bm_move(int day, char *time, char *user, char *other)
 }
 
 void
-bm_undigest(int day, char *time, char *user, char *other)
+bm_undigest(int day, char *t, char *user, char *other)
 {
+	(void) day;
+	(void) t;
 	struct hword *a;
 	struct bmstat *data;
 	char buf[STRLEN];
@@ -115,8 +125,10 @@ bm_undigest(int day, char *time, char *user, char *other)
 }
 
 void
-bm_digest(int day, char *time, char *user, char *other)
+bm_digest(int day, char *t, char *user, char *other)
 {
+	(void) day;
+	(void) t;
 	struct hword *a;
 	struct bmstat *data;
 	char buf[STRLEN];
@@ -132,8 +144,10 @@ bm_digest(int day, char *time, char *user, char *other)
 }
 
 void
-bm_mark(int day, char *time, char *user, char *other)
+bm_mark(int day, char *t, char *user, char *other)
 {
+	(void) day;
+	(void) t;
 	struct hword *a;
 	struct bmstat *data;
 	char buf[STRLEN];
@@ -149,8 +163,10 @@ bm_mark(int day, char *time, char *user, char *other)
 }
 
 void
-bm_unmark(int day, char *time, char *user, char *other)
+bm_unmark(int day, char *t, char *user, char *other)
 {
+	(void) day;
+	(void) t;
 	struct hword *a;
 	struct bmstat *data;
 	char buf[STRLEN];
@@ -166,8 +182,10 @@ bm_unmark(int day, char *time, char *user, char *other)
 }
 
 void
-bm_range(int day, char *time, char *user, char *other)
+bm_range(int day, char *t, char *user, char *other)
 {
+	(void) day;
+	(void) t;
 	struct hword *a;
 	struct bmstat *data;
 	char buf[STRLEN];
@@ -183,8 +201,10 @@ bm_range(int day, char *time, char *user, char *other)
 }
 
 void
-bm_del(int day, char *time, char *user, char *other)
+bm_del(int day, char *t, char *user, char *other)
 {
+	(void) day;
+	(void) t;
 	struct hword *a;
 	struct bmstat *data;
 	char buf[STRLEN];
@@ -200,8 +220,10 @@ bm_del(int day, char *time, char *user, char *other)
 }
 
 void
-bm_deny(int day, char *time, char *user, char *other)
+bm_deny(int day, char *t, char *user, char *other)
 {
+	(void) day;
+	(void) t;
 	struct hword *a;
 	struct bmstat *data;
 	char buf[STRLEN];
@@ -217,8 +239,10 @@ bm_deny(int day, char *time, char *user, char *other)
 }
 
 void
-bm_same(int day, char *time, char *user, char *other)
+bm_same(int day, char *t, char *user, char *other)
 {
+	(void) day;
+	(void) t;
 	struct hword *a;
 	struct bmstat *data;
 	char buf[STRLEN];
@@ -318,6 +342,8 @@ bm_exit()
 }
 
 static int bm_callback(struct boardmem *board, int curr_idx, va_list ap) {
+	(void) curr_idx;
+	(void) ap;
 	int k;
 	struct hword *tmp;
 	if (board->header.filename[0] == '\0')

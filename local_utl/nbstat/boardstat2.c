@@ -16,8 +16,10 @@ struct buser {
 };
 
 void
-bu_use(int day, char *time, char *user, char *other)
+bu_use(int day, char *t, char *user, char *other)
 {
+	(void) day;
+	(void) t;
 	struct hword *a, *tmp;
 	struct buser *data;
 	char board[30], staytime[10];

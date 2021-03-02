@@ -22,8 +22,10 @@ struct sstay {
 };
 
 void
-bs_use(int day, char *time, char *user, char *other)
+bs_use(int day, char *t, char *user, char *other)
 {
+	(void) day;
+	(void) t;
 	struct hword *a, *tmp;
 	struct bscore *data;
 	char board[30], staytime[10];
@@ -72,8 +74,10 @@ bs_cmp(struct bscore *b, struct bscore *a)
 }
 
 void
-bs_post(int day, char *time, char *user, char *other)
+bs_post(int day, char *t, char *user, char *other)
 {
+	(void) day;
+	(void) t;
 	struct hword *a, *tmp;
 	struct bscore *data;
 	char board[30], title[128];
