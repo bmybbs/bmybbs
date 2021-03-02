@@ -1760,10 +1760,10 @@ void sshbbs_end(void)
 }
 
 extern int ssh_init(void);
-extern int bbs_entry(int argc, char *argv[]);
+extern int bbs_entry(int argc, const char *argv[]);
 void do_exec_no_pty(const char *command, char *pw, const char *display, const char *auth_proto, const char *auth_data, int quick_login)
 {
-    char *argv[3]={"bbs","d",get_remote_ipaddr()};
+    const char *argv[3] = { "bbs", "d", get_remote_ipaddr() };
     ssh_init();
     chdir(MY_BBS_HOME);
     dup2(packet_get_connection_in(), 0);

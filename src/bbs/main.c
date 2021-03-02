@@ -91,7 +91,7 @@ static void talk_request(int signum);
 static void multi_user_check(void);
 static int simplepasswd(char *str, int check);
 static void reaper(void);
-static void system_init(int argc, char **argv);
+static void system_init(int argc, const char *argv[]);
 static int getuptime(void);
 static void login_query(void);
 static void direct_login(void);
@@ -361,11 +361,7 @@ reaper()
 	signal(SIGCHLD, (void *) reaper);
 }
 
-static void
-system_init(argc, argv)
-int argc;
-char **argv;
-{
+static void system_init(int argc, const char *argv[]) {
 	struct sigaction act;
 
 	mallopt(M_MMAP_THRESHOLD, 10000);
@@ -971,15 +967,9 @@ check_tty_lines()
 }
 
 #ifndef SSHBBS
-int
-main(argc, argv)
-int argc;
-char **argv;
+int main(int argc, const char *argv[])
 #else
-int
-bbs_entry(argc, argv)
-int argc;
-char *argv[];
+int bbs_entry(int argc, const char *argv[])
 #endif
 {
 	char fname[STRLEN];
