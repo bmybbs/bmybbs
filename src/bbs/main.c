@@ -83,6 +83,7 @@ int orderWish = 0;
 int runtest;
 int runssh = 0;
 
+int egetch(void);
 static void u_enter(void);
 static void setflags(int mask, int value);
 static void u_exit(void);

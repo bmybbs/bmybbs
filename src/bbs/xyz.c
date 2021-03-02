@@ -40,6 +40,11 @@
 #include "main.h"
 #include "bbs-internal.h"
 
+#ifdef SSHBBS
+extern int ssh_write(int fd, const void *buf, size_t count);
+extern int ssh_read(int fd, void *buf, size_t count);
+#endif
+
 pid_t childpid;
 static int loadkeys(struct one_key *key, char *name);
 static int savekeys(struct one_key *key, char *name);

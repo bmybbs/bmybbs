@@ -66,6 +66,11 @@ static int igetch(void);
 static int igetch_org(void);
 static void top_show(char *prompt);
 
+#ifdef SSHBBS
+extern int ssh_write(int fd, const void *buf, size_t count);
+extern int ssh_read(int fd, void *buf, size_t count);
+#endif
+
 void
 oflush()
 {
