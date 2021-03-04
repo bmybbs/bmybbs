@@ -132,7 +132,10 @@ checkbinaryattach(char *buf, FILE * fp, size_t *len)
 	if (strncmp(buf, "beginbinaryattach ", 18))
 		return NULL;
 
-	fread(&ch, 1, 1, fp);
+	if (fread(&ch, 1, 1, fp) != 1) {
+		return NULL;
+	}
+
 	if (ch != 0) {
 		ungetc(ch, fp);
 		return NULL;
