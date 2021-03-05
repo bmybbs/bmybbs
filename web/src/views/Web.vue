@@ -38,7 +38,7 @@
 	<div class="container-fluid">
 		<div class="row">
 			<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block d-none sidebar">
-				<div class="sidebar-sticky pt-3">
+				<div class="sidebar-sticky pt-3 overflow-auto">
 					<ul class="nav flex-column">
 						<li class="nav-item">
 							<router-link to="/web" class="nav-link">
@@ -189,8 +189,6 @@ export default {
 	top: 0;
 	height: calc(100vh - 48px);
 	padding-top: .5rem;
-	overflow-x: hidden;
-	overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
 }
 
 .sidebar-icon {
@@ -221,7 +219,6 @@ footer .navbar-nav .nav-link {
 /* Main */
 main {
 	padding-top: 16px;
-	background-color: #DAE0E6;
 	padding-bottom: 50px;
 }
 </style>
