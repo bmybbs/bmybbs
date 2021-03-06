@@ -1,6 +1,6 @@
 <template>
-	<section class="card mb-4 shadow-lg bmy-dashboard-card">
-		<div class="card-header bg-secondary bg-gradient text-white fs-5">
+	<section class="card mb-4 bmy-dashboard-card border-bmy-blue1">
+		<div class="card-header bg-bmy-blue1 bg-gradient text-white fs-5">
 			推荐版面
 		</div>
 		<ul class="list-group list-group-flush">

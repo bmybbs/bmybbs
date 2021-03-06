@@ -189,6 +189,7 @@ export default {
 	top: 0;
 	height: calc(100vh - 48px);
 	padding-top: .5rem;
+	background-color: #f5f9ff;
 }
 
 .sidebar-icon {

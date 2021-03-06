@@ -1,6 +1,6 @@
 <template>
-	<section class="card mb-4 shadow-lg bmy-dashboard-card">
-		<div class="card-header bg-secondary bg-gradient fs-5">
+	<section class="card mb-4 bmy-dashboard-card border-bmy-blue1">
+		<div class="card-header bg-bmy-blue1 bg-gradient fs-5">
 			<router-link :to="{ name: 'section', params: { secid: _secstr }}" class="text-white text-decoration-none">{{ _name }}</router-link>
 			<span class="float-end text-white font-monospace">{{_secstr}}</span>
 		</div>
