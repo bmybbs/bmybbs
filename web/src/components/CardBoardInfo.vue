@@ -5,8 +5,8 @@
 			<span class="title-sec">{{ _secstr }}/{{ _boardname_en }}</span>
 		</div>
 
-		<div class="numbers mt-2">
-			<div class="numbers-item" v-for="info in infoArray" :key="info.name">
+		<div class="d-flex justify-content-between mt-2">
+			<div class="d-flex flex-column align-items-center" v-for="info in infoArray" :key="info.name">
 				<div class="numbers-item-number">{{ info.num }}</div>
 				<div class="numbers-item-text">{{ info.name }}</div>
 			</div>
@@ -64,21 +64,6 @@ export default {
 .title-main {
 	font-size: 20px;
 	font-weight: 600;
-}
-.numbers {
-	display: flex;
-	justify-content: space-between;
-}
-
-.numbers-item {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	margin-left: 10px;
-}
-
-.numbers-item:first-child {
-	margin-left: 0px;
 }
 
 .numbers-item-number {
