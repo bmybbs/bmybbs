@@ -51,6 +51,11 @@
 							</router-link>
 						</li>
 						<li class="nav-item">
+							<router-link :to="($route.name == 'RAWSUBMIT' || $route.name == 'boardSubmit') ? '#' : (($route.name == 'board' || $route.name == 'thread' ) ? { name: 'boardSubmit', params: { boardname: $route.params.boardname }} : { name: 'RAWSUBMIT' })" class="nav-link">
+								<span class="sidebar-icon"><fa icon="plus" /></span> 发布
+							</router-link>
+						</li>
+						<li class="nav-item">
 							<router-link to="/web/follow" class="nav-link">
 								<span class="sidebar-icon"><fa icon="share-alt" /></span> 好友
 							</router-link >

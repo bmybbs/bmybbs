@@ -32,6 +32,7 @@ import {
 	faPaperclip,
 	faPaperPlane,
 	faPizzaSlice,
+	faPlus,
 	faRedo,
 	faRss,
 	faSearch,
@@ -76,6 +77,7 @@ library.add(faMusic);
 library.add(faPaperclip);
 library.add(faPaperPlane);
 library.add(faPizzaSlice);
+library.add(faPlus);
 library.add(faRedo);
 library.add(faRss);
 library.add(faSearch);
