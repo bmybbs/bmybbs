@@ -1,5 +1,5 @@
 <template>
-	<header class="row sticky-top bg-dark m-0 shadow">
+	<header class="row sticky-top bg-dark m-0">
 		<nav class="navbar navbar-dark p-0">
 			<div class="navbar-brand col-3 col-sm-3 col-md-3 col-lg-2 mr-0 px-3">BMYBBS</div>
 			<div class="col-6 col-sm-7 col-md-8 col-lg-9">
