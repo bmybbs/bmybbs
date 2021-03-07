@@ -1,9 +1,13 @@
-$custom-colors: (
-	"bmy-blue1": #004c97,
-);
-
 @import "bootstrap/scss/functions";
 @import "bootstrap/scss/variables";
+
+$custom-colors: (
+	"bmy-blue1": #004c97,
+	"bmy-dark6": $gray-600,
+	"bmy-dark7": $gray-700,
+	"bmy-dark8": $gray-800,
+);
+
 $theme-colors: map-merge($theme-colors, $custom-colors);
 
 @import "bootstrap/scss/mixins";

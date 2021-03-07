@@ -1,10 +1,10 @@
 <template>
 	<li class="list-group-item">
 		<div class="d-flex justify-content-between">
-			<router-link :to="{ name: 'thread', params: { boardname: _boardname_en, tid: _aid }}" class="fs-5 fw-bold text-dark text-decoration-none">{{ _title }}</router-link>
+			<router-link :to="{ name: 'thread', params: { boardname: _boardname_en, tid: _aid }}" class="fs-5 fw-bold text-bmy-dark8 text-decoration-none">{{ _title }}</router-link>
 			<BadgeArticleFlags :_accessed="_accessed" />
 		</div>
-		<div class="meta d-flex justify-content-between justify-content-sm-start">
+		<div class="meta d-flex justify-content-between justify-content-sm-start text-bmy-dark6">
 			<span class="board"><span class="icon"><fa icon="hashtag" /></span><PopoverBoardInfo :_boardname_zh="_boardname_zh" :_boardname_en="_boardname_en" /></span>
 
 			<span class="dot align-self-center d-none d-sm-inline-block">•</span>
@@ -57,13 +57,12 @@ export default {
 }
 
 .meta >>> * {
-	color: #787c7e;
 	font-size: .9rem;
 	font-weight: 400;
 }
 
 .board >>> * {
-	color: #1c1c1c;
+	color: var(--bs-bmy-dark6);
 	font-weight: 700;
 }
 
