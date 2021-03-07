@@ -6,9 +6,13 @@
 		</div>
 
 		<div class="d-flex justify-content-between mt-2">
-			<div class="d-flex flex-column align-items-center" v-for="info in infoArray" :key="info.name">
-				<div class="numbers-item-number">{{ info.num }}</div>
-				<div class="numbers-item-text">{{ info.name }}</div>
+			<div class="numbers-item-wrapper d-flex align-items-center" v-for="info in infoArray" :key="info.name">
+				<div class="ratio ratio-1x1 m-2">
+					<div class="d-flex flex-column align-items-center justify-content-center">
+						<div class="numbers-item-number">{{ info.num }}</div>
+						<div class="numbers-item-text">{{ info.name }}</div>
+					</div>
+				</div>
 			</div>
 		</div>
 
@@ -81,5 +85,27 @@ h3 {
 	color: #1c1c1c;
 }
 
+</style>
+
+<style lang="scss" scoped>
+/* credit: https://css-tricks.com/gradient-borders-in-css/ */
+.numbers-item-wrapper {
+	$border: 5px;
+	border: $border solid transparent;
+	border-radius: 50%;
+	background: white;
+	background-clip: padding-box;
+	position: relative;
+	width: 22.5%;
+	&:before {
+		content: '';
+		position: absolute;
+		top: 0; right: 0; bottom: 0; left: 0;
+		z-index: -1;
+		margin: -$border;
+		border-radius: inherit;
+		background: linear-gradient(45deg, #267dcf 0%, #74fac8 100%);
+	}
+}
 </style>
 
