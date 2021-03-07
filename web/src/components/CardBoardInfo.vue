@@ -5,22 +5,10 @@
 			<span class="title-sec">{{ _secstr }}/{{ _boardname_en }}</span>
 		</div>
 
-		<div class="numbers block">
-			<div class="numbers-item">
-				<div class="numbers-item-number">{{ kFormatter(_thread_num) }}</div>
-				<div class="numbers-item-text">主题</div>
-			</div>
-			<div class="numbers-item">
-				<div class="numbers-item-number">{{ kFormatter(_article_num) }}</div>
-				<div class="numbers-item-text">帖子</div>
-			</div>
-			<div class="numbers-item">
-				<div class="numbers-item-number">{{ kFormatter(_today_new) }}</div>
-				<div class="numbers-item-text">新增</div>
-			</div>
-			<div class="numbers-item">
-				<div class="numbers-item-number">{{ kFormatter(_inboard_num) }}</div>
-				<div class="numbers-item-text">在线</div>
+		<div class="numbers mt-2">
+			<div class="numbers-item" v-for="info in infoArray" :key="info.name">
+				<div class="numbers-item-number">{{ info.num }}</div>
+				<div class="numbers-item-text">{{ info.name }}</div>
 			</div>
 		</div>
 
@@ -40,9 +28,23 @@
 </template>
 
 <script>
+const kFormatter = num => {
+	if (num > 999)
+		return (num/1000).toFixed(1) + "k";
+	else
+		return num;
+};
+
 export default {
 	data() {
-		return {};
+		return {
+			infoArray: [
+				{ name: "主题", num: kFormatter(this._thread_num) },
+				{ name: "帖子", num: kFormatter(this._article_num) },
+				{ name: "新增", num: kFormatter(this._today_new) },
+				{ name: "在线", num: kFormatter(this._inboard_num) },
+			],
+		};
 	},
 	props: {
 		_boardname_en: String,
@@ -54,12 +56,6 @@ export default {
 		_inboard_num: Number,
 	},
 	methods: {
-		kFormatter(num) {
-			if (num > 999)
-				return (num/1000).toFixed(1) + "k";
-			else
-				return num;
-		},
 	},
 }
 </script>
@@ -100,8 +96,5 @@ h3 {
 	color: #1c1c1c;
 }
 
-.block {
-	margin-top: 5px;
-}
 </style>
 
