@@ -58,9 +58,11 @@
 </template>
 
 <script>
-import DashboardArticleListItem from "@/components/DashboardArticleListItem.vue"
+import { defineAsyncComponent } from "vue"
 import { BMYClient } from "@/lib/BMYClient.js"
 import { BOARD_SORT_MODE, BMY_EC } from "@/lib/BMYConstants.js"
+
+const DashboardArticleListItem = defineAsyncComponent(() => import("@/components/DashboardArticleListItem.vue"));
 
 export default {
 	data() {
