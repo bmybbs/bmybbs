@@ -110,10 +110,12 @@
 </template>
 
 <script>
+import { defineAsyncComponent } from "vue"
 import { BMYSECSTRS, BMY_EC } from "@/lib/BMYConstants.js";
 import { BMYClient } from "@/lib/BMYClient.js";
-import SidebarSecList from "@/components/SidebarSecList.vue";
-import NavSearch from "@/components/NavSearch.vue";
+
+const SidebarSecList = defineAsyncComponent(() => import("@/components/SidebarSecList.vue"));
+const NavSearch = defineAsyncComponent(() => import("@/components/NavSearch.vue"));
 
 export default {
 	data() {
