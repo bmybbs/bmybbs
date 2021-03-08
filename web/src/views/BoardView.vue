@@ -15,9 +15,10 @@
 </template>
 
 <script>
+import { defineAsyncComponent } from "vue"
 import { BMYClient } from "@/lib/BMYClient.js"
 import { BOARD_ARTICLE_MODE } from "@/lib/BMYConstants.js"
-import BoardArticleListItem from "@/components/BoardArticleListItem.vue"
+const BoardArticleListItem = defineAsyncComponent(() => import("@/components/BoardArticleListItem.vue"));
 
 export default {
 	data() {
