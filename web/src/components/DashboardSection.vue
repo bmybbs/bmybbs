@@ -21,8 +21,9 @@
 </template>
 
 <script>
+import { defineAsyncComponent } from "vue"
 import { BMYClient } from "@/lib/BMYClient.js"
-import DashboardArticleListItem from "@/components/DashboardArticleListItem.vue"
+const DashboardArticleListItem = defineAsyncComponent(() => import("./DashboardArticleListItem.vue"));
 
 export default {
 	data() {
