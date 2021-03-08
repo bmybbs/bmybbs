@@ -19,6 +19,7 @@ import { BMYClient } from "@/lib/BMYClient.js"
 import bmyParser from "@bmybbs/bmybbs-content-parser"
 import Prism from "prismjs"
 import { BMY_FILE_HEADER } from "@/lib/BMYConstants.js"
+import "@/plugins/mathjax.js"
 
 const TooltipTimestamp = defineAsyncComponent(() => import("./TooltipTimestamp.vue"));
 const BadgeArticleFlags = defineAsyncComponent(() => import("./BadgeArticleFlags.vue"));

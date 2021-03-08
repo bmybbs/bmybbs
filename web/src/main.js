@@ -8,7 +8,6 @@ import Toaster from "@meforma/vue-toaster"
 import "@/assets/aha.scss"
 import "file-icons-js/css/style.css"
 import "@/assets/article.css"
-import "@/plugins/mathjax.js"
 
 createApp(App)
 	.use(router)
