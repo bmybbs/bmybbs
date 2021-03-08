@@ -22,13 +22,15 @@
 </template>
 
 <script>
+import { defineAsyncComponent } from "vue"
 import { BMYClient } from "@/lib/BMYClient.js"
 import { BMYSECSTRS } from "@/lib/BMYConstants.js"
-import DashboardCommend from "@/components/DashboardCommend.vue"
-import DashboardAsideAd from "@/components/DashboardAsideAd.vue"
-import DashboardAsideRecommend from "@/components/DashboardAsideRecommend.vue"
-import DashboardAsideAbout from "@/components/DashboardAsideAbout.vue"
-import DashboardSection from "@/components/DashboardSection.vue"
+
+const DashboardCommend = defineAsyncComponent(() => import("@/components/DashboardCommend.vue"));
+const DashboardAsideAd = defineAsyncComponent(() => import("@/components/DashboardAsideAd.vue"));
+const DashboardAsideRecommend = defineAsyncComponent(() => import("@/components/DashboardAsideRecommend.vue"));
+const DashboardAsideAbout = defineAsyncComponent(() => import("@/components/DashboardAsideAbout.vue"));
+const DashboardSection = defineAsyncComponent(() => import("@/components/DashboardSection.vue"));
 
 export default {
 	data() {
