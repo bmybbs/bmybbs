@@ -16,8 +16,10 @@
 </template>
 
 <script>
+import { defineAsyncComponent } from "vue"
 import { BMYClient } from "@/lib/BMYClient.js"
-import ArticleViewer from "@/components/ArticleViewer.vue"
+
+const ArticleViewer = defineAsyncComponent(() => import("@/components/ArticleViewer.vue"));
 
 export default {
 	data() {
