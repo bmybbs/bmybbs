@@ -26,8 +26,10 @@
 </template>
 
 <script>
+import { defineAsyncComponent } from "vue"
 import { BMYClient } from "@/lib/BMYClient.js"
-import TabbedEditor from "@/components/TabbedEditor.vue"
+
+const TabbedEditor = defineAsyncComponent(() => import("@/components/TabbedEditor.vue"));
 
 export default {
 	data() {
