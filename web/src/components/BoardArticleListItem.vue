@@ -14,8 +14,10 @@
 </template>
 
 <script>
-import TooltipTimestamp from "@/components/TooltipTimestamp.vue"
-import PopoverUserInfo from "@/components/PopoverUserInfo.vue"
+import { defineAsyncComponent } from "vue"
+
+const TooltipTimestamp = defineAsyncComponent(() => import("./TooltipTimestamp.vue"));
+const PopoverUserInfo = defineAsyncComponent(() => import("./PopoverUserInfo.vue"));
 
 export default {
 	data() {
