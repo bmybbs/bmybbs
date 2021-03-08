@@ -1,7 +1,7 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
-import 'bootstrap'
+import '@/plugins/bootstrap.js'
 import '@/plugins/bootstrap.scss'
 import { FontAwesomeIcon } from "./plugins/font-awesome.js"
 import Toaster from "@meforma/vue-toaster"
