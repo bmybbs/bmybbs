@@ -10,9 +10,11 @@
 </template>
 
 <script>
+import { defineAsyncComponent } from "vue"
 import { BMYClient } from "@/lib/BMYClient.js"
 import { BMY_EC } from "@/lib/BMYConstants.js"
-import AccordionSettingWechat from "@/components/AccordionSettingWechat.vue"
+
+const AccordionSettingWechat = defineAsyncComponent(() => import("@/components/AccordionSettingWechat.vue"));
 
 export default {
 	data() {
