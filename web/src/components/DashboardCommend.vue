@@ -20,7 +20,8 @@
 </template>
 
 <script>
-import DashboardArticleListItem from "@/components/DashboardArticleListItem.vue"
+import { defineAsyncComponent } from "vue"
+const DashboardArticleListItem = defineAsyncComponent(() => import("./DashboardArticleListItem.vue"));
 
 export default {
 	data() {
