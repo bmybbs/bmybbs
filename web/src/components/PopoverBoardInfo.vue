@@ -3,10 +3,10 @@
 </template>
 
 <script>
-import { createApp } from "vue"
+import { createApp, defineAsyncComponent } from "vue"
 import Popover from "bootstrap/js/dist/popover"
 import { BMYClient } from "@/lib/BMYClient.js"
-import CardBoardInfo from "@/components/CardBoardInfo.vue"
+const CardBoardInfo = defineAsyncComponent(() => import("./CardBoardInfo.vue"));
 
 export default {
 	data() {
