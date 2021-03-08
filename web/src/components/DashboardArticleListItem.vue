@@ -24,10 +24,12 @@
 </template>
 
 <script>
-import BadgeArticleFlags from "@/components/BadgeArticleFlags.vue"
-import TooltipTimestamp from "@/components/TooltipTimestamp.vue"
-import PopoverBoardInfo from "@/components/PopoverBoardInfo.vue"
-import PopoverUserInfo from "@/components/PopoverUserInfo.vue"
+import { defineAsyncComponent } from "vue"
+
+const BadgeArticleFlags = defineAsyncComponent(() => import("./BadgeArticleFlags.vue"));
+const TooltipTimestamp = defineAsyncComponent(() => import("./TooltipTimestamp.vue"));
+const PopoverBoardInfo = defineAsyncComponent(() => import("./PopoverBoardInfo.vue"));
+const PopoverUserInfo = defineAsyncComponent(() => import("./PopoverUserInfo.vue"));
 
 export default {
 	data() {
