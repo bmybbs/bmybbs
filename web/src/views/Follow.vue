@@ -32,10 +32,12 @@
 </template>
 
 <script>
-import FriendsCard from "@/components/FriendsCard.vue"
+import { defineAsyncComponent } from "vue"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import "dayjs/locale/zh-cn"
+
+const FriendsCard = defineAsyncComponent(() => import("@/components/FriendsCard.vue"));
 
 dayjs.locale("zh-cn");
 dayjs.extend(relativeTime);
