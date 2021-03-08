@@ -1,66 +1,54 @@
 import { createWebHistory, createRouter } from "vue-router";
-import Home from "@/views/Home.vue"
-import Web from "@/views/Web.vue"
-import Dashboard from "@/views/Dashboard.vue"
-import Follow from "@/views/Follow.vue"
-import Feed from "@/views/Feed.vue"
-import Board from "@/views/Board.vue"
-import BoardView from "@/views/BoardView.vue"
-import Thread from "@/views/Thread.vue"
-import Settings from "@/views/Settings.vue"
-import Section from "@/views/Section.vue"
-import Submit from "@/views/Submit.vue"
-import SubmitWrapper from "@/views/SubmitWrapper.vue"
 
 const routes = [{
 	path: "/",
 	name: "Home",
-	component: Home,
+	component: () => import("@/views/Home.vue"),
 }, {
 	path: "/web",
-	component: Web,
+	component: () => import("@/views/Web.vue"),
 	children: [{
 		path: "",
-		component: Dashboard
+		component: () => import("@/views/Dashboard.vue"),
 	}, {
 		path: "/web/feed",
 		name: "feed",
-		component: Feed
+		component: () => import("@/views/Feed.vue"),
 	}, {
 		path: "/web/follow",
-		component: Follow
+		component: () => import("@/views/Follow.vue"),
 	}, {
 		path: "/web/section",
-		component: Section
+		component: () => import("@/views/Section.vue"),
 	}, {
 		path: "/web/section/:secid",
 		name: "section",
-		component: Feed
+		component: () => import("@/views/Feed.vue"),
 	}, {
 		path: "/web/board/:boardname",
-		component: Board,
+		component: () => import("@/views/Board.vue"),
 		children: [{
 			path: "",
 			name: "board",
-			component: BoardView
+			component: () => import("@/views/BoardView.vue"),
 		}, {
 			path: "/web/board/:boardname/submit",
-			component: Submit,
+			component: () => import("@/views/Submit.vue"),
 			name: "boardSubmit",
 		}, {
 			path: "/web/board/:boardname/thread/:tid",
 			name: "thread",
-			component: Thread
+			component: () => import("@/views/Thread.vue"),
 		}]
 	}, {
 		path: "/web/settings",
-		component: Settings
+		component: () => import("@/views/Settings.vue"),
 	}, {
 		path: "/web/submit",
-		component: SubmitWrapper,
+		component: () => import("@/views/SubmitWrapper.vue"),
 		children: [{
 			path: "",
-			component: Submit,
+			component: () => import("@/views/Submit.vue"),
 			name: "RAWSUBMIT",
 		}]
 	}]
