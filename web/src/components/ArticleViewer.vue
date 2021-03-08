@@ -14,13 +14,15 @@
 </template>
 
 <script>
+import { defineAsyncComponent } from "vue"
 import { BMYClient } from "@/lib/BMYClient.js"
-import TooltipTimestamp from "@/components/TooltipTimestamp.vue"
-import BadgeArticleFlags from "@/components/BadgeArticleFlags.vue"
-import TabbedEditor from "@/components/TabbedEditor.vue"
 import bmyParser from "@bmybbs/bmybbs-content-parser"
 import Prism from "prismjs"
 import { BMY_FILE_HEADER } from "@/lib/BMYConstants.js"
+
+const TooltipTimestamp = defineAsyncComponent(() => import("./TooltipTimestamp.vue"));
+const BadgeArticleFlags = defineAsyncComponent(() => import("./BadgeArticleFlags.vue"));
+const TabbedEditor = defineAsyncComponent(() => import("./TabbedEditor.vue"));
 
 export default {
 	data() {
