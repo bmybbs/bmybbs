@@ -18,8 +18,9 @@
 </template>
 
 <script>
+import { defineAsyncComponent } from "vue"
 import { BMYClient } from "@/lib/BMYClient.js"
-import CardBoardInfo from "@/components/CardBoardInfo.vue"
+const CardBoardInfo = defineAsyncComponent(() => import("@/components/CardBoardInfo.vue"));
 
 export default {
 	data() {
