@@ -21,7 +21,7 @@ export default {
 </script>
 
 <style scoped>
-span >>> span {
+span:deep(span) {
 	font-weight: 900;
 	color: yellow;
 }

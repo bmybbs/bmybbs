@@ -36,7 +36,7 @@ export default {
 </script>
 
 <style scoped>
-.accordion >>> .accordion-item > div {
+.accordion:deep(.accordion-item > div) {
 	padding: 16px 20px;
 }
 </style>

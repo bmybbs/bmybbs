@@ -58,12 +58,12 @@ export default {
 	margin-right: 2px;
 }
 
-.meta >>> * {
+.meta:deep(*) {
 	font-size: .9rem;
 	font-weight: 400;
 }
 
-.board >>> * {
+.board:deep(*) {
 	color: var(--bs-bmy-dark6);
 	font-weight: 700;
 }
