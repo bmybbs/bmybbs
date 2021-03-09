@@ -5,8 +5,8 @@
 			<span class="title-sec">{{ _secstr }}/{{ _boardname_en }}</span>
 		</div>
 
-		<div class="d-flex justify-content-between mt-2">
-			<div class="numbers-item-wrapper d-flex align-items-center" v-for="info in infoArray" :key="info.name">
+		<div class="d-flex justify-content-between flex-wrap">
+			<div class="numbers-item-wrapper d-flex align-items-center mt-2" v-for="info in infoArray" :key="info.name">
 				<div class="ratio ratio-1x1 m-2">
 					<div class="d-flex flex-column align-items-center justify-content-center">
 						<div class="numbers-item-number">{{ info.num }}</div>
@@ -85,6 +85,23 @@ h3 {
 	color: #1c1c1c;
 }
 
+@media (max-width: 576px) {
+	.numbers-item-wrapper {
+		width: 22.5%;
+	}
+}
+
+@media (min-width: 576px) {
+	.numbers-item-wrapper {
+		width: 48%;
+	}
+}
+
+@media (min-width: 1200px) {
+	.numbers-item-wrapper {
+		width: 22.5%;
+	}
+}
 </style>
 
 <style lang="scss" scoped>
@@ -96,7 +113,6 @@ h3 {
 	background: white;
 	background-clip: padding-box;
 	position: relative;
-	width: 22.5%;
 	&:before {
 		content: '';
 		position: absolute;

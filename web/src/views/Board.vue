@@ -1,9 +1,6 @@
 <template>
 	<div class="row">
-		<div class="col-md-9">
-			<router-view />
-		</div>
-		<div class="col-md-3" v-if="info">
+		<div class="col-sm-4 order-sm-5 col-xxl-3 col-xs-12" v-if="info">
 			<CardBoardInfo
 				v-bind:_boardname_en="$route.params.boardname"
 				v-bind:_boardname_zh="info.zh_name"
@@ -13,6 +10,9 @@
 				v-bind:_inboard_num="info.inboard_num"
 				v-bind:_today_new="info.today_new"
 			/>
+		</div>
+		<div class="col-sm-8 col-xxl-9 col-xs-12">
+			<router-view />
 		</div>
 	</div>
 </template>
