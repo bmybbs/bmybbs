@@ -60,6 +60,7 @@ export default {
 				_inboard_num: that.info.inboard_num,
 				_today_new: that.info.today_new,
 				_prevent_events: true,
+				_in_popover: true,
 				_events: {
 					mouseover() {
 						if (that.timeout_mouse_out) {
@@ -77,6 +78,7 @@ export default {
 				container: "body",
 				placement: "bottom",
 				html: true,
+				customClass: "bmy-popover-card",
 				content: "<div id='card" + that.internal_id + "'></div>"
 			});
 
@@ -112,5 +114,11 @@ export default {
 
 <style scoped>
 span { display: inline-block; }
+</style>
+
+<style>
+.bmy-popover-card {
+	max-width: 352px;
+}
 </style>
 

@@ -1,5 +1,5 @@
 <template>
-	<div @mouseenter="onMouseOver" @mouseout="onMouseOut" :class="{ 'prevent-events': _prevent_events }">
+	<div @mouseenter="onMouseOver" @mouseout="onMouseOut" :class="{ 'prevent-events': _prevent_events, 'in-popover': _in_popover }">
 		<div class="title">
 			<span class="title-main">{{ _boardname_zh }}</span>
 			<span class="title-sec">{{ _secstr }}/{{ _boardname_en }}</span>
@@ -62,6 +62,10 @@ export default {
 			type: Boolean,
 			default: false
 		},
+		_in_popover: {
+			type: Boolean,
+			default: false
+		},
 		_events: Object,
 	},
 	methods: {
@@ -82,6 +86,10 @@ export default {
 <style scoped>
 .prevent-events * {
 	pointer-events: none;
+}
+
+.in-popover {
+	width: 320px;
 }
 
 .title-main {
@@ -120,6 +128,10 @@ h3 {
 	.numbers-item-wrapper {
 		width: 22.5%;
 	}
+}
+
+.in-popover .numbers-item-wrapper {
+	width: 22.5% !important;
 }
 </style>
 
