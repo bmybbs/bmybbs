@@ -1,32 +1,34 @@
 <template>
-	<div @mouseenter="onMouseOver" @mouseout="onMouseOut" :class="{ 'prevent-events': _prevent_events, 'in-popover': _in_popover }">
-		<div class="title">
-			<span class="title-main">{{ _boardname_zh }}</span>
-			<span class="title-sec">{{ _secstr }}/{{ _boardname_en }}</span>
+	<div class="card border-bmy-blue1" @mouseenter="onMouseOver" @mouseout="onMouseOut" :class="{ 'prevent-events': _prevent_events, 'in-popover': _in_popover }" style="z-index: -2">
+		<div class="card-header bg-bmy-blue1 bg-gradient text-white title d-flex justify-content-between">
+			<span>{{ _boardname_zh }}</span>
+			<span class="font-monospace">{{ _secstr }}/{{ _boardname_en }}</span>
 		</div>
 
-		<div class="d-flex justify-content-between flex-wrap">
-			<div class="numbers-item-wrapper d-flex align-items-center mt-2" v-for="info in infoArray" :key="info.name">
-				<div class="ratio ratio-1x1 m-2">
-					<div class="d-flex flex-column align-items-center justify-content-center">
-						<div class="numbers-item-number">{{ info.num }}</div>
-						<div class="numbers-item-text">{{ info.name }}</div>
+		<div class="card-body">
+			<div class="d-flex justify-content-between flex-wrap mb-3">
+				<div class="numbers-item-wrapper d-flex align-items-center mb-1" v-for="info in infoArray" :key="info.name">
+					<div class="ratio ratio-1x1 m-2">
+						<div class="d-flex flex-column align-items-center justify-content-center">
+							<div class="numbers-item-number">{{ info.num }}</div>
+							<div class="numbers-item-text">{{ info.name }}</div>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
 
-		<div class="intro block">
-			<h3>简介</h3>
-			<p>{{ _intro }}</p>
-		</div>
+			<div class="intro block">
+				<h3>简介</h3>
+				<p>{{ _intro }}</p>
+			</div>
 
-		<div class="keyword block">
-			<h3>关键字</h3>
-		</div>
+			<div class="keyword block">
+				<h3>关键字</h3>
+			</div>
 
-		<div class="hot block">
-			<h3>热门话题</h3>
+			<div class="hot block">
+				<h3>热门话题</h3>
+			</div>
 		</div>
 	</div>
 </template>
@@ -90,11 +92,6 @@ export default {
 
 .in-popover {
 	width: 320px;
-}
-
-.title-main {
-	font-size: 20px;
-	font-weight: 600;
 }
 
 .numbers-item-number {
