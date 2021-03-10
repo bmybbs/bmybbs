@@ -78,7 +78,7 @@ export default {
 				container: "body",
 				placement: "bottom",
 				html: true,
-				customClass: "bmy-popover-card",
+				customClass: "bmy-popover-card shadow-lg",
 				content: "<div id='card" + that.internal_id + "'></div>"
 			});
 
