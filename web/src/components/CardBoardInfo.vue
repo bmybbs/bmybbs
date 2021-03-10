@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div @mouseenter="onMouseOver" @mouseout="onMouseOut" :class="{ 'prevent-events': _prevent_events }">
 		<div class="title">
 			<span class="title-main">{{ _boardname_zh }}</span>
 			<span class="title-sec">{{ _secstr }}/{{ _boardname_en }}</span>
@@ -58,13 +58,32 @@ export default {
 		_thread_num: Number,
 		_today_new: Number,
 		_inboard_num: Number,
+		_prevent_events: {
+			type: Boolean,
+			default: false
+		},
+		_events: Object,
 	},
 	methods: {
+		onMouseOver() {
+			if (this._events && typeof(this._events.mouseover) === "function") {
+				this._events.mouseover();
+			}
+		},
+		onMouseOut() {
+			if (this._events && typeof(this._events.mouseout) === "function") {
+				this._events.mouseout();
+			}
+		}
 	},
 }
 </script>
 
 <style scoped>
+.prevent-events * {
+	pointer-events: none;
+}
+
 .title-main {
 	font-size: 20px;
 	font-weight: 600;

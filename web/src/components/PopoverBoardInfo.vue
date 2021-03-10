@@ -1,5 +1,5 @@
 <template>
-	<span ref="span" @mouseover="openPopover" @mouseout="closePopover" @click="closePopover"><router-link :to="{ name: 'board', params: { boardname: _boardname_en }}" class="text-decoration-none">{{_boardname_zh}}</router-link></span>
+	<span ref="span" @mouseenter="openPopover" @mouseout="closePopover" @click="closePopover"><router-link :to="{ name: 'board', params: { boardname: _boardname_en }}" class="text-decoration-none">{{_boardname_zh}}</router-link></span>
 </template>
 
 <script>
@@ -8,10 +8,13 @@ import Popover from "bootstrap/js/dist/popover"
 import { BMYClient } from "@/lib/BMYClient.js"
 const CardBoardInfo = defineAsyncComponent(() => import("./CardBoardInfo.vue"));
 
+const TIMEOUT_INTERVAL = 1000;
+
 export default {
 	data() {
 		return {
-			timeout: null,
+			timeout_mouse_on: null,
+			timeout_mouse_out: null,
 			internal_id: (new Date().getTime()),
 			status_mouse_on: false,
 			info: null,
@@ -25,8 +28,13 @@ export default {
 	},
 	methods: {
 		openPopover() {
+			if (this.timeout_mouse_out) {
+				clearTimeout(this.timeout_mouse_out);
+				this.timeout_mouse_out = null;
+			}
+
 			if (!this.status_mouse_on) {
-				this.timeout = setTimeout(() => {
+				this.timeout_mouse_on = setTimeout(() => {
 					this.status_mouse_on = true;
 					if (this.info == null) {
 						BMYClient.get_board_info(this._boardname_en).then(response => {
@@ -36,8 +44,8 @@ export default {
 					} else {
 						this.doOpen();
 					}
-					this.timeout = null;
-				}, 1000);
+					this.timeout_mouse_on = null;
+				}, TIMEOUT_INTERVAL);
 			}
 		},
 		doOpen() {
@@ -51,6 +59,18 @@ export default {
 				_thread_num: that.info.thread_num,
 				_inboard_num: that.info.inboard_num,
 				_today_new: that.info.today_new,
+				_prevent_events: true,
+				_events: {
+					mouseover() {
+						if (that.timeout_mouse_out) {
+							clearTimeout(that.timeout_mouse_out);
+							that.timeout_mouse_out = null;
+						}
+					},
+					mouseout() {
+						that.closePopover();
+					},
+				},
 			});
 
 			this.popover = new Popover(this.$refs.span, {
@@ -64,19 +84,25 @@ export default {
 			this.v_instance.mount("#card" + this.internal_id);
 		},
 		closePopover() {
-			this.status_mouse_on = false;
-			if (this.timeout) {
-				clearTimeout(this.timeout);
-				this.timeout = null;
+			if (this.timeout_mouse_on) {
+				clearTimeout(this.timeout_mouse_on);
+				this.timeout_mouse_on = null;
+				this.status_mouse_on = false;
 			} else {
-				if (this.v_instance) {
-					this.v_instance.unmount("#card" + this.internal_id);
-					this.v_instance = null;
-				}
+				if (!this.timeout_mouse_out) {
+					this.timeout_mouse_out = setTimeout(() => {
+						if (this.v_instance) {
+							this.v_instance.unmount("#card" + this.internal_id);
+							this.v_instance = null;
+						}
 
-				if (this.popover) {
-					this.popover.dispose();
-					this.popover = null;
+						if (this.popover) {
+							this.popover.dispose();
+							this.popover = null;
+						}
+						this.timeout_mouse_out = null;
+						this.status_mouse_on = false;
+					}, TIMEOUT_INTERVAL);
 				}
 			}
 		},

@@ -9,6 +9,7 @@
 				v-bind:_thread_num="info.thread_num"
 				v-bind:_inboard_num="info.inboard_num"
 				v-bind:_today_new="info.today_new"
+				v-bind:_events="{}"
 			/>
 		</div>
 		<div class="col-sm-8 col-xxl-9 col-xs-12">
