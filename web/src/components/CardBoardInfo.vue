@@ -28,9 +28,13 @@
 				<div class="my-3" v-html="mdNotes"></div>
 			</div>
 
-			<div class="keyword block">
+			<div class="keyword block" v-if="info.keyword && info.keyword.length > 0">
 				<div class="bmy-card-heading">关键字</div>
-				<div class="my-3"></div>
+				<div class="my-3">
+					<ul>
+						<li v-for="k in keywordArray" :key="k">{{ k }}</li>
+					</ul>
+				</div>
 			</div>
 
 			<div class="hot block">
@@ -77,6 +81,9 @@ export default {
 				{ name: "新增", num: this.info.today_new ? kFormatter(this.info.today_new) : 0 },
 				{ name: "在线", num: this.info.inboard_num ? kFormatter(this.info.inboard_num) : 0 },
 			];
+		},
+		keywordArray() {
+			return (this.info.keyword && this.info.keyword.length > 0) ? this.info.keyword.split(/[\s,;.:]+/) : [];
 		},
 		mdNotes() {
 			if (this.info.notes && this.info.notes.length > 0) {
