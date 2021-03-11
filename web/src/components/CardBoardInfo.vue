@@ -23,23 +23,27 @@
 				</div>
 			</div>
 
-			<div class="intro block">
-				<h3>简介</h3>
-				<p></p>
+			<div class="intro block" v-if="info.notes && info.notes.length > 0">
+				<div class="bmy-card-heading">简介</div>
+				<div class="my-3" v-html="mdNotes"></div>
 			</div>
 
 			<div class="keyword block">
-				<h3>关键字</h3>
+				<div class="bmy-card-heading">关键字</div>
+				<div class="my-3"></div>
 			</div>
 
 			<div class="hot block">
-				<h3>热门话题</h3>
+				<div class="bmy-card-heading">热门话题</div>
+				<div class="my-3"></div>
 			</div>
 		</div>
 	</div>
 </template>
 
 <script>
+import DOMPurify from "dompurify";
+import marked from "marked";
 import { BMYClient } from "@/lib/BMYClient.js"
 import { BMY_EC } from "@/lib/BMYConstants.js"
 
@@ -73,7 +77,14 @@ export default {
 				{ name: "新增", num: this.info.today_new ? kFormatter(this.info.today_new) : 0 },
 				{ name: "在线", num: this.info.inboard_num ? kFormatter(this.info.inboard_num) : 0 },
 			];
-		}
+		},
+		mdNotes() {
+			if (this.info.notes && this.info.notes.length > 0) {
+				return DOMPurify.sanitize(marked(this.info.notes));
+			} else {
+				return "";
+			}
+		},
 	},
 	props: {
 		_boardname_en: String,
@@ -172,10 +183,12 @@ export default {
 	font-size: 12px;
 }
 
-h3 {
-	font-size: 14px;
-	font-weight: 600;
-	color: #1c1c1c;
+.bmy-card-heading {
+	margin: 0 -1rem;
+	padding: 0.5rem 1rem;
+	background: var(--bs-bmy-blue0);
+	border-top: 1px solid var(--bs-bmy-blue);
+	border-bottom: 1px solid var(--bs-bmy-blue);
 }
 
 @media (max-width: 576px) {
