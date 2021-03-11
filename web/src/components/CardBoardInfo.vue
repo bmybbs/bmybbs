@@ -2,7 +2,7 @@
 	<div class="card border-bmy-blue1" @mouseenter="onMouseOver" @mouseout="onMouseOut" :class="{ 'prevent-events': _prevent_events, 'in-popover': _in_popover }" style="z-index: -2">
 		<div class="card-header bg-bmy-blue1 bg-gradient text-white title d-flex justify-content-between">
 			<span>
-				<span>
+				<span @click="toggleFav" style="cursor: pointer">
 					<fa :icon="['fas', 'star']" v-if="info.is_fav == 1" />
 					<fa :icon="['far', 'star']" v-else />
 				</span>
@@ -41,6 +41,7 @@
 
 <script>
 import { BMYClient } from "@/lib/BMYClient.js"
+import { BMY_EC } from "@/lib/BMYConstants.js"
 
 const kFormatter = num => {
 	if (num > 999)
@@ -101,7 +102,54 @@ export default {
 			if (this._events && typeof(this._events.mouseout) === "function") {
 				this._events.mouseout();
 			}
-		}
+		},
+		toggleFav() {
+			if (this.info.is_fav == 1) {
+				BMYClient.fav_del(this._boardname_en).then(response => {
+					if (response.errcode == 0 || response.errcode == BMY_EC.API_RT_NOTINRCD) {
+						this.$toast.success("移除成功", {
+							position: "top"
+						});
+						this.info.is_fav = 0;
+					} else if (response.errcode == BMY_EC.API_RT_NOTLOGGEDIN) {
+						this.$toast.error("请重新登录", {
+							position: "top"
+						});
+					}
+				});
+			} else {
+				BMYClient.fav_add(this._boardname_en).then(response => {
+					const cfg = {
+						type: "error",
+						position: "top",
+					};
+					let msg = "";
+
+					switch (response.errcode) {
+						case BMY_EC.API_RT_SUCCESSFUL:
+						case BMY_EC.API_RT_ALRDYINRCD:
+							msg = "添加成功";
+							cfg.type = "success";
+							this.info.is_fav = 1;
+							break;
+						case BMY_EC.API_RT_NOTLOGGEDIN:
+							msg = "请重新登录";
+							break;
+						case BMY_EC.API_RT_REACHMAXRCD:
+							msg = "已达到收藏夹上限，无法添加";
+							break;
+						case BMY_EC.API_RT_NOSUCHBRD:
+						case BMY_EC.API_RT_FBDNUSER:
+							msg = "找不到这个版面";
+							break;
+						default:
+							break;
+					}
+
+					this.$toast.show(msg, cfg);
+				});
+			}
+		},
 	},
 }
 </script>

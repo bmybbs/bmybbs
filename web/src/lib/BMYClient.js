@@ -16,6 +16,12 @@ export const BMYClient = {
 	delete_attach(filename) {
 		return fetch(`/api/attach/delete?file=${filename}`, { method: "DELETE" }).then(response => response.json());
 	},
+	fav_add(boardname_en) {
+		return myFetchPost(`/api/board/fav/add?board=${boardname_en}`);
+	},
+	fav_del(boardname_en) {
+		return myFetchPost(`/api/board/fav/del?board=${boardname_en}`);
+	},
 	get_announce() {
 		return myFetchGet("/api/article/list?type=announce");
 	},
