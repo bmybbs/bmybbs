@@ -230,7 +230,7 @@ export default {
 		z-index: -1;
 		margin: -$border;
 		border-radius: inherit;
-		background: linear-gradient(45deg, #267dcf 0%, #74fac8 100%);
+		background: linear-gradient(45deg, #267dcf 0%, #74fac8 95%);
 	}
 }
 </style>
