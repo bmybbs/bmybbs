@@ -5,7 +5,6 @@
 <script>
 import { createApp, defineAsyncComponent } from "vue"
 import Popover from "bootstrap/js/dist/popover"
-import { BMYClient } from "@/lib/BMYClient.js"
 const CardBoardInfo = defineAsyncComponent(() => import("./CardBoardInfo.vue"));
 
 const TIMEOUT_INTERVAL = 1000;
@@ -17,7 +16,6 @@ export default {
 			timeout_mouse_out: null,
 			internal_id: (new Date().getTime()),
 			status_mouse_on: false,
-			info: null,
 			popover: null,
 			v_instance: null,
 		};
@@ -36,14 +34,7 @@ export default {
 			if (!this.status_mouse_on) {
 				this.timeout_mouse_on = setTimeout(() => {
 					this.status_mouse_on = true;
-					if (this.info == null) {
-						BMYClient.get_board_info(this._boardname_en).then(response => {
-							this.info = response;
-							this.doOpen();
-						});
-					} else {
-						this.doOpen();
-					}
+					this.doOpen();
 					this.timeout_mouse_on = null;
 				}, TIMEOUT_INTERVAL);
 			}
@@ -53,12 +44,6 @@ export default {
 
 			this.v_instance = createApp(CardBoardInfo, {
 				_boardname_en: that._boardname_en,
-				_boardname_zh: that._boardname_zh,
-				_secstr: that.info.secstr,
-				_article_num: that.info.article_num,
-				_thread_num: that.info.thread_num,
-				_inboard_num: that.info.inboard_num,
-				_today_new: that.info.today_new,
 				_prevent_events: true,
 				_in_popover: true,
 				_events: {

@@ -1,17 +1,17 @@
 <template>
 	<div class="card border-bmy-blue1" @mouseenter="onMouseOver" @mouseout="onMouseOut" :class="{ 'prevent-events': _prevent_events, 'in-popover': _in_popover }" style="z-index: -2">
 		<div class="card-header bg-bmy-blue1 bg-gradient text-white title d-flex justify-content-between">
-			<span>{{ _boardname_zh }}</span>
-			<span class="font-monospace">{{ _secstr }}/{{ _boardname_en }}</span>
+			<span>{{ info.zh_name }}</span>
+			<span class="font-monospace">{{ info.secstr }}/{{ info.name }}</span>
 		</div>
 
 		<div class="card-body">
 			<div class="d-flex justify-content-between flex-wrap mb-3">
-				<div class="numbers-item-wrapper d-flex align-items-center mb-1" v-for="info in infoArray" :key="info.name">
+				<div class="numbers-item-wrapper d-flex align-items-center mb-1" v-for="i in infoArray" :key="i.name">
 					<div class="ratio ratio-1x1 m-2">
 						<div class="d-flex flex-column align-items-center justify-content-center">
-							<div class="numbers-item-number">{{ info.num }}</div>
-							<div class="numbers-item-text">{{ info.name }}</div>
+							<div class="numbers-item-number">{{ i.num }}</div>
+							<div class="numbers-item-text">{{ i.name }}</div>
 						</div>
 					</div>
 				</div>
@@ -19,7 +19,7 @@
 
 			<div class="intro block">
 				<h3>简介</h3>
-				<p>{{ _intro }}</p>
+				<p></p>
 			</div>
 
 			<div class="keyword block">
@@ -34,6 +34,8 @@
 </template>
 
 <script>
+import { BMYClient } from "@/lib/BMYClient.js"
+
 const kFormatter = num => {
 	if (num > 999)
 		return (num/1000).toFixed(1) + "k";
@@ -44,22 +46,30 @@ const kFormatter = num => {
 export default {
 	data() {
 		return {
-			infoArray: [
-				{ name: "主题", num: kFormatter(this._thread_num) },
-				{ name: "帖子", num: kFormatter(this._article_num) },
-				{ name: "新增", num: kFormatter(this._today_new) },
-				{ name: "在线", num: kFormatter(this._inboard_num) },
-			],
+			info: {
+			},
 		};
+	},
+	created() {
+		this.$watch(() => this._boardname_en, (toBoardName) => {
+			this.get_info(toBoardName);
+		});
+	},
+	mounted() {
+		this.get_info(this._boardname_en);
+	},
+	computed: {
+		infoArray() {
+			return [
+				{ name: "主题", num: this.info.thread_num ? kFormatter(this.info.thread_num) : 0 },
+				{ name: "帖子", num: this.info.article_num ? kFormatter(this.info.article_num) : 0 },
+				{ name: "新增", num: this.info.today_new ? kFormatter(this.info.today_new) : 0 },
+				{ name: "在线", num: this.info.inboard_num ? kFormatter(this.info.inboard_num) : 0 },
+			];
+		}
 	},
 	props: {
 		_boardname_en: String,
-		_boardname_zh: String,
-		_secstr: String,
-		_article_num: Number,
-		_thread_num: Number,
-		_today_new: Number,
-		_inboard_num: Number,
 		_prevent_events: {
 			type: Boolean,
 			default: false
@@ -71,6 +81,11 @@ export default {
 		_events: Object,
 	},
 	methods: {
+		get_info(boardname) {
+			BMYClient.get_board_info(boardname).then(response => {
+				this.info = response;
+			});
+		},
 		onMouseOver() {
 			if (this._events && typeof(this._events.mouseover) === "function") {
 				this._events.mouseover();
