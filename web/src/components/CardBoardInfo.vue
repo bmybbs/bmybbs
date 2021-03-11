@@ -1,5 +1,5 @@
 <template>
-	<div class="card border-bmy-blue1" @mouseenter="onMouseOver" @mouseout="onMouseOut" :class="{ 'prevent-events': _prevent_events, 'in-popover': _in_popover }" style="z-index: -2">
+	<div class="card border-bmy-blue1" @mouseenter="onMouseOver" @mouseout="onMouseOut" :class="{ 'prevent-events': _prevent_events, 'in-popover': _in_popover }">
 		<div class="card-header bg-bmy-blue1 bg-gradient text-white title d-flex justify-content-between">
 			<span>
 				<span @click="toggleFav" style="cursor: pointer">
@@ -11,7 +11,7 @@
 			<span class="font-monospace">{{ info.secstr }}/{{ info.name }}</span>
 		</div>
 
-		<div class="card-body">
+		<div class="card-body" style="z-index: 0">
 			<div class="d-flex justify-content-between flex-wrap mb-3">
 				<div class="numbers-item-wrapper d-flex align-items-center mb-1" v-for="i in infoArray" :key="i.name">
 					<div class="ratio ratio-1x1 m-2">
