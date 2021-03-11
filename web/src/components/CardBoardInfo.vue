@@ -1,7 +1,13 @@
 <template>
 	<div class="card border-bmy-blue1" @mouseenter="onMouseOver" @mouseout="onMouseOut" :class="{ 'prevent-events': _prevent_events, 'in-popover': _in_popover }" style="z-index: -2">
 		<div class="card-header bg-bmy-blue1 bg-gradient text-white title d-flex justify-content-between">
-			<span>{{ info.zh_name }}</span>
+			<span>
+				<span>
+					<fa :icon="['fas', 'star']" v-if="info.is_fav == 1" />
+					<fa :icon="['far', 'star']" v-else />
+				</span>
+				{{ info.zh_name }}
+			</span>
 			<span class="font-monospace">{{ info.secstr }}/{{ info.name }}</span>
 		</div>
 

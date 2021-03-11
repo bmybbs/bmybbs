@@ -39,10 +39,16 @@ import {
 	faShareAlt,
 	faSlidersH,
 	faSpinner,
+	faStar,
 	faThumbtack,
 	faUnderline,
 	faUser,
 } from "@fortawesome/free-solid-svg-icons"
+
+import {
+	faStar as faStarR
+} from "@fortawesome/free-regular-svg-icons"
+
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 
 library.add(faAlignJustify);
@@ -84,6 +90,8 @@ library.add(faSearch);
 library.add(faShareAlt);
 library.add(faSlidersH);
 library.add(faSpinner);
+library.add(faStar);
+library.add(faStarR);
 library.add(faThumbtack);
 library.add(faUnderline);
 library.add(faUser);

@@ -5,6 +5,7 @@
 <script>
 import { createApp, defineAsyncComponent } from "vue"
 import Popover from "bootstrap/js/dist/popover"
+import { FontAwesomeIcon } from "@/plugins/font-awesome.js"
 const CardBoardInfo = defineAsyncComponent(() => import("./CardBoardInfo.vue"));
 
 const TIMEOUT_INTERVAL = 1000;
@@ -57,7 +58,7 @@ export default {
 						that.closePopover();
 					},
 				},
-			});
+			}).component('fa', FontAwesomeIcon);
 
 			this.popover = new Popover(this.$refs.span, {
 				container: "body",
