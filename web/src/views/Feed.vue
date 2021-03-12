@@ -36,17 +36,17 @@
 				</div>
 			</div>
 			<div class="col-md-3">
-				<div class="card">
-					<div v-if="feedmode" class="card-header">
+				<div class="card border-bmy-blue1">
+					<div v-if="feedmode" class="card-header bg-bmy-blue1 bg-gradient text-white">
 						收藏夹列表
 					</div>
-					<div v-else class="card-header">
+					<div v-else class="card-header bg-bmy-blue1 bg-gradient text-white">
 						{{$route.params.secid}}区版面列表
 					</div>
 					<ul class="list-group list-group-flush">
 						<li class="list-group-item"
 							v-for="board in favboards"
-							v-bind:key="board.name">{{ board.name }}</li>
+							v-bind:key="board.name"><PopoverBoardInfo :_boardname_zh="board.name" :_boardname_en="board.name" /></li>
 					</ul>
 				</div>
 			</div>
@@ -63,6 +63,7 @@ import { BMYClient } from "@/lib/BMYClient.js"
 import { BOARD_SORT_MODE, BMY_EC } from "@/lib/BMYConstants.js"
 
 const DashboardArticleListItem = defineAsyncComponent(() => import("@/components/DashboardArticleListItem.vue"));
+const PopoverBoardInfo = defineAsyncComponent(() => import("@/components/PopoverBoardInfo.vue"));
 
 export default {
 	data() {
@@ -149,6 +150,7 @@ export default {
 	},
 	components: {
 		DashboardArticleListItem,
+		PopoverBoardInfo,
 	}
 }
 </script>
