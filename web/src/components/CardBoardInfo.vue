@@ -52,9 +52,7 @@
 			<div class="keyword block" v-if="info.keyword && info.keyword.length > 0">
 				<div class="bmy-card-heading">关键字</div>
 				<div class="my-3">
-					<ul>
-						<li v-for="k in keywordArray" :key="k">{{ k }}</li>
-					</ul>
+					<BadgeKeywords v-for="k in keywordArray" :key="k" :_text="k" />
 				</div>
 			</div>
 
@@ -71,6 +69,7 @@ import DOMPurify from "dompurify";
 import marked from "marked";
 import { BMYClient } from "@/lib/BMYClient.js"
 import { BMY_EC } from "@/lib/BMYConstants.js"
+import BadgeKeywords from "./BadgeKeywords.vue"
 
 const kFormatter = num => {
 	if (num > 999)
@@ -212,6 +211,9 @@ export default {
 			}
 		},
 	},
+	components: {
+		BadgeKeywords,
+	}
 }
 </script>
 
