@@ -28,6 +28,27 @@
 				<div class="my-3" v-html="mdNotes"></div>
 			</div>
 
+			<div>
+				<div class="bmy-card-heading">版主</div>
+
+				<div class="my-3">
+					<div v-if="moderators.length == 0">诚征版主中</div>
+					<div v-else>
+						<div v-for="m in moderators" :key="m">
+							<fa icon="at" />
+							{{ m }}
+						</div>
+					</div>
+
+					<div v-if="viceModerators.length > 0">
+						<div v-for="m in viceModerators" :key="m">
+							<fa icon="at" />
+							{{ m }}
+						</div>
+					</div>
+				</div>
+			</div>
+
 			<div class="keyword block" v-if="info.keyword && info.keyword.length > 0">
 				<div class="bmy-card-heading">关键字</div>
 				<div class="my-3">
@@ -92,6 +113,28 @@ export default {
 				return "";
 			}
 		},
+		moderators() {
+			const arr = [];
+			if (Array.isArray(this.info.bm)) {
+				for (let i = 0; i < 4; i++) {
+					if (this.info.bm[i]) {
+						arr.push(this.info.bm[i]);
+					}
+				}
+			}
+			return arr;
+		},
+		viceModerators() {
+			const arr = [];
+			if (Array.isArray(this.info.bm)) {
+				for (let i = 4, l = this.info.bm.length; i < l; i++) {
+					if (this.info.bm[i]) {
+						arr.push(this.info.bm[i]);
+					}
+				}
+			}
+			return arr;
+		}
 	},
 	props: {
 		_boardname_en: String,
