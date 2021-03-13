@@ -1,6 +1,6 @@
 <template>
 	<div class="card">
-		<ul class="list-gourp list-group-flush">
+		<ul class="list-group list-group-flush">
 			<BoardArticleListItem
 				v-for="article in articles"
 				v-bind:key="[$route.params.boardname, '/', article.aid].join('')"
