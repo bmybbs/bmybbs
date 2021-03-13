@@ -75,7 +75,7 @@
 					</div>
 				</div>
 			</nav>
-			<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 min-vh-100">
+			<main class="col-md-9 ms-sm-auto col-lg-10 px-0 px-md-4 min-vh-100">
 				<router-view />
 			</main>
 		</div>
@@ -227,6 +227,18 @@ footer .navbar-nav .nav-link {
 main {
 	padding-top: 16px;
 	padding-bottom: 50px;
+}
+</style>
+
+<style>
+html {
+	font-size: 18px;
+}
+
+@media (min-width: 576px) {
+	html {
+		font-size: 16px;
+	}
 }
 </style>
 
