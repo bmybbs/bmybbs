@@ -6,7 +6,7 @@
 				v-bind:_events="{}"
 			/>
 		</div>
-		<div class="col-sm-8 col-xxl-9 col-xs-12">
+		<div class="col-sm-8 col-xxl-9 col-xs-12 mt-4 mt-sm-0">
 			<router-view />
 		</div>
 	</div>

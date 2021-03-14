@@ -1,5 +1,5 @@
 <template>
-	<div class="card">
+	<div class="card border-bmy-blue">
 		<ul class="list-group list-group-flush">
 			<BoardArticleListItem
 				v-for="article in articles"
@@ -9,6 +9,7 @@
 				v-bind:_author="article.author"
 				v-bind:_comments="article.th_num"
 				v-bind:_aid="article.tid"
+				v-bind:_accessed="article.mark"
 				/>
 		</ul>
 	</div>
