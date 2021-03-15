@@ -12,7 +12,13 @@ $custom-colors: (
 	"bmy-dark8": $gray-800,
 );
 
+$h7-font-size: $font-size-base * 0.8 !default;
+$custom-font-sizes: (
+	7: $h7-font-size
+);
+
 $theme-colors: map-merge($theme-colors, $custom-colors);
+$font-sizes: map-merge($font-sizes, $custom-font-sizes);
 
 @import "bootstrap/scss/mixins";
 @import "bootstrap/scss/utilities";
