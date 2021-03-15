@@ -1,5 +1,5 @@
 <template>
-	<div class="card border-bmy-blue">
+	<div class="card border-bmy-blue border-start-0 border-end-0">
 		<ul class="list-group list-group-flush">
 			<BoardArticleListItem
 				v-for="article in articles"

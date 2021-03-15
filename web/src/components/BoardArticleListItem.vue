@@ -1,10 +1,10 @@
 <template>
 	<li class="list-group-item border-bmy-blue">
-		<div>
+		<div class="d-flex">
 			<router-link :to="{ name: 'thread', params: { boardname: _boardname_en, tid: _aid }}" class="fs-5 text-bmy-dark8 text-decoration-none">{{ _title }}</router-link>
 			<BadgeArticleFlags :_accessed="_accessed" />
 		</div>
-		<div class="meta d-flex justify-content-between justify-content-sm-start">
+		<div class="meta d-flex justify-content-between justify-content-sm-start fs-7">
 			<span>
 				<span class="author"><span class="icon"><fa icon="at" /></span><PopoverUserInfo :_userid="_author" /></span>
 				<span class="post">发表于</span>
@@ -46,10 +46,6 @@ export default {
 </script>
 
 <style scoped>
-* {
-	font-size: 12px;
-}
-
 h3 {
 	color: #222222;
 	font-size: 16px;
