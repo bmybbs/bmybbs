@@ -1,7 +1,7 @@
 <template>
-	<div class="container-fluid" v-if="loggedin">
-		<div class="row">
-			<div class="col-6 col-xs-6 col-md-6">
+	<div v-if="loggedin">
+		<div class="row px-4">
+			<div class="col-6 col-xs-6 col-md-6 px-1">
 				<h2 v-if="feedmode">订阅</h2>
 				<h2 v-else>{{$route.params.secid}}区</h2>
 			</div>
@@ -16,7 +16,7 @@
 		</div>
 		<div class="row">
 			<div class="col-md-9">
-				<div class="card">
+				<div class="card border-bmy-blue border-start-0 border-end-0">
 					<ul class="list-group list-group-flush">
 						<DashboardArticleListItem
 							v-for="article in articles"
