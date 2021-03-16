@@ -74,7 +74,6 @@ export default {
 	font-weight: 500;
 	color: initial;
 	background-color: initial;
-	border-left: 5px solid rgba(0,0,0,.4);
 	padding-left: -5px;
 }
 
@@ -84,7 +83,6 @@ export default {
 
 .accordion-body {
 	padding: 0 1.25rem;
-	border-left: 5px solid rgba(0,0,0,.4);
 }
 
 .list-group {
