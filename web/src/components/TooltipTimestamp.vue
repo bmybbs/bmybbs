@@ -1,9 +1,8 @@
 <template>
-	<span ref="span" data-bs-toggle="tooltip" data-bs-placement="top" :title="longVersionTime">{{ readableTime }}</span>
+	<span ref="span" :title="longVersionTime">{{ readableTime }}</span>
 </template>
 
 <script>
-import { Tooltip } from "bootstrap"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import localizedFormat from "dayjs/plugin/localizedFormat"
@@ -20,9 +19,6 @@ export default {
 	props: {
 		_unix_timestamp: Number,
 	},
-	mounted() {
-		new Tooltip(this.$refs.span);
-	},
 	computed: {
 		readableTime: function() {
 			return dayjs(this._unix_timestamp * 1000).fromNow();
@@ -33,4 +29,10 @@ export default {
 	},
 }
 </script>
+
+<style scoped>
+span {
+	cursor: pointer;
+}
+</style>
 
