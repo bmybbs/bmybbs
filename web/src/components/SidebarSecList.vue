@@ -13,7 +13,7 @@
 			<div class="accordion-body">
 				<ul class="list-group list-group-flush">
 					<li class="list-group-item" v-for="board in boards" v-bind:key="board.name">
-						<router-link :to="{ name: 'board', params: { boardname: board.name }}">{{ board.zh_name }}</router-link>
+						<PopoverBoardInfo :_boardname_zh="board.zh_name" :_boardname_en="board.name" />
 					</li>
 				</ul>
 			</div>
@@ -22,8 +22,11 @@
 </template>
 
 <script>
+import { defineAsyncComponent } from "vue"
 import { BOARD_SORT_MODE } from "@/lib/BMYConstants.js"
 import { BMYClient } from "@/lib/BMYClient.js";
+
+const PopoverBoardInfo = defineAsyncComponent(() => import("./PopoverBoardInfo.vue"));
 
 export default {
 	data() {
@@ -50,6 +53,9 @@ export default {
 		_sec_id: String,
 		_icon: String,
 	},
+	components: {
+		PopoverBoardInfo,
+	}
 }
 </script>
 
