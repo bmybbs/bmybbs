@@ -90,5 +90,17 @@ mjx-container {
 .article:deep(img) {
 	max-width: 100%
 }
+
+.article:deep(blockquote) {
+	padding: 0.5rem 1rem;
+	border-left: 5px solid var(--bs-bmy-grey2);
+	color: var(--bs-gray);
+	background: var(--bs-bmy-grey1);
+}
+
+.article:deep(blockquote p) {
+	margin-bottom: 0.1rem;
+	margin-block-end: 0.1rem;
+}
 </style>
 
