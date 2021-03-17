@@ -204,8 +204,8 @@ export default {
 
 .sidebar-icon {
 	display: inline-block;
-	width: 16px;
-	height: 16px;
+	width: 1rem;
+	height: 1rem;
 	color: #6c757daa;
 }
 
