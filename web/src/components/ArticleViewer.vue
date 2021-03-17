@@ -5,7 +5,7 @@
 			<BadgeArticleFlags :_accessed="_mark" />
 		</div>
 		<div class="card-body">
-			<div class="article" v-html="content" @click="toggleAha" ref="article"></div>
+			<div class="article" v-html="content" @click="toggleAnsi" ref="article"></div>
 		</div>
 		<div class="card-footer">
 			<TabbedEditor :_boardname_en="_boardname_en"/>
@@ -28,7 +28,7 @@ const TabbedEditor = defineAsyncComponent(() => import("./TabbedEditor.vue"));
 export default {
 	data() {
 		return {
-			aha_list: [],
+			ansi_list: [],
 			show_ansi: true,
 			content: "",
 			author: "",
@@ -45,9 +45,9 @@ export default {
 				text: response.content,
 				attaches: response.attach
 			});
-			this.aha_list = [].slice.call(this.$refs.article.querySelectorAll("span.aha"));
 			this.author = response.author;
 			setTimeout(() => {
+				this.ansi_list = [].slice.call(this.$refs.article.querySelectorAll("span.bmybbs-ansi"));
 				Prism.highlightAll();
 				if (this._mark & BMY_FILE_HEADER.FH_MATH) {
 					if (window.MathJax && typeof window.MathJax.typeset === "function") {
@@ -58,16 +58,16 @@ export default {
 		});
 	},
 	methods: {
-		toggleAha() {
+		toggleAnsi() {
 			if (this.show_ansi) {
 				this.show_ansi = false;
-				this.aha_list.forEach((x) => {
-					x.classList.remove("aha");
+				this.ansi_list.forEach((x) => {
+					x.classList.remove("bmybbs-ansi");
 				});
 			} else {
 				this.show_ansi = true;
-				this.aha_list.forEach((x) => {
-					x.classList.add("aha");
+				this.ansi_list.forEach((x) => {
+					x.classList.add("bmybbs-ansi");
 				});
 			}
 		},
