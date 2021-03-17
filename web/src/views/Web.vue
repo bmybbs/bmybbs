@@ -198,6 +198,10 @@ export default {
 	padding-top: .5rem;
 }
 
+.sidebar-sticky .nav-link {
+	padding: 0.5rem 1.25rem;
+}
+
 .sidebar-icon {
 	display: inline-block;
 	width: 16px;
