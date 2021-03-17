@@ -5,7 +5,7 @@ import '@/plugins/bootstrap.js'
 import '@/plugins/bootstrap.scss'
 import { FontAwesomeIcon } from "./plugins/font-awesome.js"
 import Toaster from "@meforma/vue-toaster"
-import "@/assets/aha.scss"
+import "@/assets/bmybbs-ansi.scss"
 import "file-icons-js/css/style.css"
 import "@/assets/article.css"
 
