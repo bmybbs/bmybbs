@@ -13,9 +13,6 @@
 		<div class="card-body">
 			<div class="article" v-html="content" @click="toggleAnsi" ref="article"></div>
 		</div>
-		<div class="card-footer">
-			<TabbedEditor :_boardname_en="_boardname_en"/>
-		</div>
 	</div>
 </template>
 
@@ -29,7 +26,6 @@ import "@/plugins/mathjax.js"
 
 const TooltipTimestamp = defineAsyncComponent(() => import("./TooltipTimestamp.vue"));
 const BadgeArticleFlags = defineAsyncComponent(() => import("./BadgeArticleFlags.vue"));
-const TabbedEditor = defineAsyncComponent(() => import("./TabbedEditor.vue"));
 
 export default {
 	data() {
@@ -82,7 +78,6 @@ export default {
 	},
 	components: {
 		BadgeArticleFlags,
-		TabbedEditor,
 		TooltipTimestamp,
 	},
 }
