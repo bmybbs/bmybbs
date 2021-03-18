@@ -18,8 +18,6 @@ const ArticleViewer = defineAsyncComponent(() => import("@/components/ArticleVie
 export default {
 	data() {
 		return {
-			thread_title: "",
-			board: "",
 			articlelist: [],
 		};
 	},
@@ -27,10 +25,6 @@ export default {
 		BMYClient.get_thread_list(this.$route.params.boardname, this.$route.params.tid).then(response => {
 			if (response.errcode == 0) {
 				this.articlelist = response.articlelist;
-				if (Array.isArray(response.articlelist) && response.articlelist.length > 0) {
-					this.thread_title = response.articlelist[0].title;
-					this.board = response.articlelist[0].board;
-				}
 			}
 		});
 	},
