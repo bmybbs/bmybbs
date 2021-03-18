@@ -262,7 +262,6 @@ export default {
 				board: this._boardname_en,
 				title: this.title,
 				content: this.$refs.textarea.value.replaceAll("[ESC][", "\x1b["),
-				using_math: this.using_math,
 				anony: this.is_anony,
 				norep: this.is_norep,
 				math: this.using_math,
