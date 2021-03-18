@@ -8,23 +8,21 @@ $bmybbs-ansi-color-cyan:    #00ffff;
 $bmybbs-ansi-color-grey:    #808080;
 $bmybbs-ansi-color-white:   #ffffff;
 
-.bmybbs-ansi.bmybbs-ansi-fc0 { color: $bmybbs-ansi-color-black; }
-.bmybbs-ansi.bmybbs-ansi-fc1 { color: $bmybbs-ansi-color-red; }
-.bmybbs-ansi.bmybbs-ansi-fc2 { color: $bmybbs-ansi-color-green; }
-.bmybbs-ansi.bmybbs-ansi-fc3 { color: $bmybbs-ansi-color-yellow; }
-.bmybbs-ansi.bmybbs-ansi-fc4 { color: $bmybbs-ansi-color-blue; }
-.bmybbs-ansi.bmybbs-ansi-fc5 { color: $bmybbs-ansi-color-magenta; }
-.bmybbs-ansi.bmybbs-ansi-fc6 { color: $bmybbs-ansi-color-cyan; }
-.bmybbs-ansi.bmybbs-ansi-fc7 { color: $bmybbs-ansi-color-grey; }
+$bmybbs-ansi-colors: (
+	0: $bmybbs-ansi-color-black,
+	1: $bmybbs-ansi-color-red,
+	2: $bmybbs-ansi-color-green,
+	3: $bmybbs-ansi-color-yellow,
+	4: $bmybbs-ansi-color-blue,
+	5: $bmybbs-ansi-color-magenta,
+	6: $bmybbs-ansi-color-cyan,
+	7: $bmybbs-ansi-color-grey,
+);
 
-.bmybbs-ansi.bmybbs-ansi-bg0 { color: $bmybbs-ansi-color-white; background-color: $bmybbs-ansi-color-black; }
-.bmybbs-ansi.bmybbs-ansi-bg1 { color: $bmybbs-ansi-color-white; background-color: $bmybbs-ansi-color-red; }
-.bmybbs-ansi.bmybbs-ansi-bg2 { color: $bmybbs-ansi-color-white; background-color: $bmybbs-ansi-color-green; }
-.bmybbs-ansi.bmybbs-ansi-bg3 { color: $bmybbs-ansi-color-white; background-color: $bmybbs-ansi-color-yellow; }
-.bmybbs-ansi.bmybbs-ansi-bg4 { color: $bmybbs-ansi-color-white; background-color: $bmybbs-ansi-color-blue; }
-.bmybbs-ansi.bmybbs-ansi-bg5 { color: $bmybbs-ansi-color-white; background-color: $bmybbs-ansi-color-magenta; }
-.bmybbs-ansi.bmybbs-ansi-bg6 { color: $bmybbs-ansi-color-white; background-color: $bmybbs-ansi-color-cyan; }
-.bmybbs-ansi.bmybbs-ansi-bg7 { color: $bmybbs-ansi-color-white; background-color: $bmybbs-ansi-color-grey; }
+@each $num, $color in $bmybbs-ansi-colors {
+	.bmybbs-ansi.bmybbs-ansi-fc#{$num} { color: $color }
+	.bmybbs-ansi.bmybbs-ansi-bg#{$num} { color: $bmybbs-ansi-color-white; background-color: $color }
+}
 
 .bmybbs-ansi.bmybbs-ansi-underline { text-decoration: underline; }
 .bmybbs-ansi.bmybbs-ansi-italic { font-style: italic }
