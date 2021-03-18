@@ -1,8 +1,14 @@
 <template>
-	<div class="card">
-		<div class="card-header">
-			{{author}} 发表于 <TooltipTimestamp :_unix_timestamp="_aid" />
-			<BadgeArticleFlags :_accessed="_mark" />
+	<div class="card border-bmy-blue1 mb-4">
+		<div class="card-header bg-gradient">
+			<div class="d-flex">
+				<span class="fw-bold text-bmy-dark8">{{ title }}</span>
+				<BadgeArticleFlags :_accessed="_mark" />
+			</div>
+
+			<div class="text-bmy-dark6 fs-7">
+				{{author}} 发表于 <TooltipTimestamp :_unix_timestamp="_aid" />
+			</div>
 		</div>
 		<div class="card-body">
 			<div class="article" v-html="content" @click="toggleAnsi" ref="article"></div>
@@ -32,6 +38,7 @@ export default {
 			show_ansi: true,
 			content: "",
 			author: "",
+			title: "",
 		}
 	},
 	props: {
@@ -46,6 +53,7 @@ export default {
 				attaches: response.attach
 			});
 			this.author = response.author;
+			this.title = response.title;
 			setTimeout(() => {
 				this.ansi_list = [].slice.call(this.$refs.article.querySelectorAll("span.bmybbs-ansi"));
 				Prism.highlightAll();

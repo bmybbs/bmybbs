@@ -1,11 +1,5 @@
 <template>
 	<div>
-		<nav>
-			<ol class="breadcrumb">
-				<li class="breadcrumb-item">{{board}}</li>
-				<li class="breadcrumb-item active">{{thread_title}}</li>
-			</ol>
-		</nav>
 		<ArticleViewer v-for="article in articlelist"
 			v-bind:key="article.aid"
 			v-bind:_boardname_en="$route.params.boardname"
