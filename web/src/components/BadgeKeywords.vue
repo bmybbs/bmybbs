@@ -1,5 +1,5 @@
 <template>
-	<span class="bg-bmy-grey1 px-4 py-1 me-3 mb-3 rounded-pill">{{ _text }}</span>
+	<span class="d-inline-block bg-bmy-grey1 px-4 py-1 me-3 mb-3 rounded-pill">{{ _text }}</span>
 </template>
 
 <script>
