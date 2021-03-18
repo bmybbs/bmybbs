@@ -34,8 +34,10 @@ import {
 	faPizzaSlice,
 	faPlus,
 	faRedo,
+	faRetweet,
 	faRss,
 	faSearch,
+	faShare,
 	faShareAlt,
 	faSlidersH,
 	faSpinner,
@@ -46,7 +48,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons"
 
 import {
-	faStar as faStarR
+	faEnvelope,
+	faStar as faStarR,
 } from "@fortawesome/free-regular-svg-icons"
 
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
@@ -63,6 +66,7 @@ library.add(faCloudUploadAlt);
 library.add(faCode);
 library.add(faCogs);
 library.add(faComments);
+library.add(faEnvelope);
 library.add(faFile);
 library.add(faFire);
 library.add(faFont);
@@ -85,8 +89,10 @@ library.add(faPaperPlane);
 library.add(faPizzaSlice);
 library.add(faPlus);
 library.add(faRedo);
+library.add(faRetweet);
 library.add(faRss);
 library.add(faSearch);
+library.add(faShare);
 library.add(faShareAlt);
 library.add(faSlidersH);
 library.add(faSpinner);

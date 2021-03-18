@@ -1,6 +1,6 @@
 <template>
 	<div class="card border-bmy-blue1 mb-4">
-		<div class="card-header bg-gradient">
+		<div class="card-header bg-bmy-blue0 bg-gradient">
 			<div class="d-flex">
 				<span class="fw-bold text-bmy-dark8">{{ title }}</span>
 				<BadgeArticleFlags :_accessed="_mark" />
@@ -12,6 +12,14 @@
 		</div>
 		<div class="card-body">
 			<div class="article" v-html="content" @click="toggleAnsi" ref="article"></div>
+		</div>
+		<div class="card-footer bg-bmy-blue0">
+			<div class="d-flex justify-content-between">
+				<button v-for="b in buttons" :key="b.text" @click="b.func">
+					<span class="me-1"><fa :icon="b.icon" /></span>
+					{{ b.text }}
+				</button>
+			</div>
 		</div>
 	</div>
 </template>
@@ -35,6 +43,12 @@ export default {
 			content: "",
 			author: "",
 			title: "",
+			buttons: [
+				{ icon: "comments",          text: "回复", func: this.unimplemented },
+				{ icon: "retweet",           text: "转载", func: this.unimplemented },
+				{ icon: "share",             text: "转寄", func: this.unimplemented },
+				{ icon: ["far", "envelope"], text: "回信", func: this.unimplemented },
+			],
 		}
 	},
 	props: {
@@ -75,6 +89,11 @@ export default {
 				});
 			}
 		},
+		unimplemented() {
+			this.$toast.error("功能未实现", {
+				position: "top"
+			});
+		},
 	},
 	components: {
 		BadgeArticleFlags,
@@ -105,5 +124,20 @@ mjx-container {
 	margin-bottom: 0.1rem;
 	margin-block-end: 0.1rem;
 }
+
+button {
+	border: 0px !important;
+	padding: 0.5rem 1rem;
+	border-radius: 1.25rem;
+	background-color: var(--bs-bmy-blue0);
+	font-weight: 700;
+	font-size: 0.8rem;
+	color: var(--bs-secondary);
+}
+
+button:hover {
+	background-color: var(--bs-bmy-grey1);
+}
+
 </style>
 
