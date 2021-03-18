@@ -1,5 +1,5 @@
 <template>
-	<section class="card mb-4 bmy-dashboard-card border-bmy-blue1">
+	<section class="card mb-4 border-bmy-blue1">
 		<div class="card-header bg-bmy-blue1 bg-gradient text-white fs-5">
 			广告信息
 		</div>

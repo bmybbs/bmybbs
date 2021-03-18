@@ -62,9 +62,3 @@ export default {
 };
 </script>
 
-<style>
-.bmy-dashboard-card {
-	border-color: #BBBBBB !important;
-}
-</style>
-

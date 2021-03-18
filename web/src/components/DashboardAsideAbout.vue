@@ -1,5 +1,5 @@
 <template>
-	<section class="card mb-4 bmy-dashboard-card border-bmy-blue1">
+	<section class="card mb-4 border-bmy-blue1">
 		<div class="card-header bg-bmy-blue1 bg-gradient text-white fs-5">
 			关于 BMY
 		</div>
@@ -10,7 +10,7 @@
 			<li class="list-group-item">网卡: 双1000Mbps NIC</li>
 		</ul>
 	</section>
-	<section class="card mb-4 bmy-dashboard-card border-bmy-blue1">
+	<section class="card mb-4 border-bmy-blue1">
 		<div class="card-header bg-bmy-blue1 bg-gradient text-white fs-5">
 			管理团队
 		</div>
