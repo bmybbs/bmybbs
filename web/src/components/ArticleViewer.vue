@@ -14,11 +14,22 @@
 			<div class="article" v-html="content" @click="toggleAnsi" ref="article"></div>
 		</div>
 		<div class="card-footer bg-bmy-blue0">
-			<div class="d-flex justify-content-between">
+			<div class="action-container d-flex justify-content-between">
 				<button v-for="b in buttons" :key="b.text" @click="b.func">
 					<span class="me-1"><fa :icon="b.icon" /></span>
 					{{ b.text }}
 				</button>
+			</div>
+
+			<div class="replyForm p-2" v-if="actionForm.isReplying">
+				<textarea ref="replyForm" placeholder="您想说点什么？" rows="1"></textarea>
+				<div class="d-flex justify-content-between fs-7">
+					<button>切换为完整编辑框</button>
+					<div>
+						<button @click="closeForm">取消</button>
+						<button @click="doReply">回复</button>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -29,11 +40,13 @@ import { defineAsyncComponent } from "vue"
 import { BMYClient } from "@/lib/BMYClient.js"
 import bmyParser from "@bmybbs/bmybbs-content-parser"
 import Prism from "prismjs"
-import { BMY_FILE_HEADER } from "@/lib/BMYConstants.js"
+import { BMY_EC, BMY_FILE_HEADER } from "@/lib/BMYConstants.js"
+import { generateContent } from "@/lib/BMYUtils.js"
 import "@/plugins/mathjax.js"
 
 const TooltipTimestamp = defineAsyncComponent(() => import("./TooltipTimestamp.vue"));
 const BadgeArticleFlags = defineAsyncComponent(() => import("./BadgeArticleFlags.vue"));
+const RE = "Re: ";
 
 export default {
 	data() {
@@ -43,21 +56,27 @@ export default {
 			content: "",
 			author: "",
 			title: "",
+			rawContent: "",
 			buttons: [
-				{ icon: "comments",          text: "回复", func: this.unimplemented },
+				{ icon: "comments",          text: "回复", func: this.openReplyForm },
 				{ icon: "retweet",           text: "转载", func: this.unimplemented },
 				{ icon: "share",             text: "转寄", func: this.unimplemented },
 				{ icon: ["far", "envelope"], text: "回信", func: this.unimplemented },
 			],
+			actionForm: {
+				isReplying: false,
+			},
 		}
 	},
 	props: {
 		_boardname_en: String,
 		_aid: Number,
 		_mark: Number,
+		_reply_callback: Function,
 	},
 	mounted() {
 		BMYClient.get_article_content(this._boardname_en, this._aid).then(response => {
+			this.rawContent = response.content;
 			this.content = bmyParser({
 				text: response.content,
 				attaches: response.attach
@@ -94,6 +113,67 @@ export default {
 				position: "top"
 			});
 		},
+		closeForm() {
+			this.actionForm.isReplying = false;
+		},
+		openReplyForm() {
+			this.closeForm();
+
+			this.actionForm.isReplying = true;
+		},
+		doReply() {
+			const el = this.$refs.replyForm;
+			const content = el.value.replaceAll("[ESC][", "\x1b[");
+			if (content.length == 0) {
+				this.$toast.warning("您并没有写些什么...", {
+					position: "top"
+				});
+				return;
+			}
+
+			const article = {
+				board: this._boardname_en,
+				title: this.title.startsWith(RE) ? this.title : `${RE} ${this.title}`,
+				content: generateContent(content, this.author, this.rawContent),
+				anony: false,
+				norep: false,
+				math: false,
+				ref: this._aid,
+				rid: 0,
+			};
+
+			BMYClient.reply_article(article).then(response => {
+				if (response.errcode == BMY_EC.API_RT_SUCCESSFUL) {
+					el.value = "";
+					this.closeForm();
+					this.$toast.success("发布成功", {
+						position: "top"
+					});
+					this._reply_callback();
+				} else {
+					let msg = "未知错误";
+
+					switch (response.errcode) {
+					case BMY_EC.API_RT_NOTLOGGEDIN:  msg = "请先登录";       break;
+					case BMY_EC.API_RT_WRONGPARAM:   msg = "参数错误";       break;
+					case BMY_EC.API_RT_ATCLNOTITLE:  msg = "缺少标题";       break;
+					case BMY_EC.API_RT_NOSUCHBRD:    msg = "版面不存在";     break;
+					case BMY_EC.API_RT_NOSUCHUSER:   msg = "用户不存在";     break;
+					case BMY_EC.API_RT_NOBRDPPERM:   msg = "您被禁止发帖";   break;
+					case BMY_EC.API_RT_CNTMAPBRDIR:  msg = "版面内部错误";   break;
+					case BMY_EC.API_RT_ATCLFBDREPLY: msg = "本文不可回复";   break;
+					case BMY_EC.API_RT_USERLOCKFAIL: msg = "用户内部错误";   break;
+					case BMY_EC.API_RT_WRONGTOKEN:   msg = "请再试一次";     break;
+					case BMY_EC.API_RT_FBDGSTIP:     msg = "GUEST 无法发帖"; break;
+					case BMY_EC.API_RT_ATCLINNERR:   msg = "文章内部错误";   break;
+					}
+
+					this.$toast.error(msg, {
+						position: "top"
+					});
+				}
+			});
+		},
 	},
 	components: {
 		BadgeArticleFlags,
@@ -125,7 +205,7 @@ mjx-container {
 	margin-block-end: 0.1rem;
 }
 
-button {
+.action-container button {
 	border: 0px !important;
 	padding: 0.5rem 1rem;
 	border-radius: 1.25rem;
@@ -135,8 +215,13 @@ button {
 	color: var(--bs-secondary);
 }
 
-button:hover {
+.action-container button:hover {
 	background-color: var(--bs-bmy-grey1);
+}
+
+.replyForm textarea {
+	height: 4rem;
+	width: 100%;
 }
 
 </style>

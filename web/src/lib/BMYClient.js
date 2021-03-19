@@ -79,6 +79,9 @@ export const BMYClient = {
 	post_article(article) {
 		return myFetchPost("/api/article/post", article);
 	},
+	reply_article(article) {
+		return myFetchPost("/api/article/reply", article);
+	},
 	search_board(start_with) {
 		return myFetchGet(`/api/board/autocomplete?search_str=${start_with}`);
 	},
