@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<TabbedEditor :_boardname_en="$route.params.boardname" />
+		<TabbedEditor />
 	</div>
 </template>
 

@@ -246,9 +246,6 @@ export default {
 			},
 		};
 	},
-	props: {
-		_boardname_en: String,
-	},
 	mounted() {
 		let elements = this.$refs.editor_toolbar.querySelectorAll('[data-bs-toggle="tooltip"]');
 		let tooltipTriggerList = [].slice.call(elements);
@@ -266,8 +263,15 @@ export default {
 	},
 	methods: {
 		post() {
+			if (this.$route.name == "RAWSUBMIT") {
+				this.$toast.error("请先选择版面", {
+					position: "top"
+				});
+				return;
+			}
+
 			const article = {
-				board: this._boardname_en,
+				board: this.$route.boardname,
 				title: this.title,
 				content: this.$refs.textarea.value.replaceAll("[ESC][", "\x1b["),
 				anony: this.is_anony,
@@ -279,7 +283,7 @@ export default {
 					this.$router.push({
 						name: "thread",
 						params: {
-							boardname: this._boardname_en,
+							boardname: this.$route.boardname,
 							tid: response.aid,
 						}
 					});
