@@ -9,8 +9,9 @@ import "@/assets/bmybbs-ansi.scss"
 import "file-icons-js/css/style.css"
 import "@/assets/article.css"
 
-createApp(App)
-	.use(router)
+const app = createApp(App);
+app.config.globalProperties.bmy_cache = {};
+app.use(router)
 	.use(Toaster)
 	.component('fa', FontAwesomeIcon)
 	.mount("#app");

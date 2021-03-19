@@ -39,6 +39,10 @@ const routes = [{
 			path: "/web/board/:boardname/thread/:tid",
 			name: "thread",
 			component: () => import("@/views/Thread.vue"),
+		}, {
+			path: "/web/board/:boardname/reply/:aid",
+			name: "reply",
+			component: () => import("@/views/Reply.vue"),
 		}]
 	}, {
 		path: "/web/settings",

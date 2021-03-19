@@ -255,6 +255,14 @@ export default {
 		tooltipTriggerList.forEach((el) => {
 			new Tooltip(el);
 		});
+
+		if (this.$route.name == "reply" && this.bmy_cache.article != null) {
+			if (this.bmy_cache.article.board == this.$route.params.boardname
+				&& this.bmy_cache.article.aid == this.$route.params.aid) {
+				this.title = this.bmy_cache.article.title;
+				this.$refs.textarea.value = this.bmy_cache.article.content;
+			}
+		}
 	},
 	methods: {
 		post() {

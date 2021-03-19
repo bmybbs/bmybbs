@@ -24,7 +24,7 @@
 			<div class="replyForm p-2" v-if="actionForm.isReplying">
 				<textarea class="form-control mb-2" ref="replyForm" placeholder="您想说点什么？Remember, be nice..." rows="1"></textarea>
 				<div class="d-flex justify-content-between fs-7">
-					<button>切换为完整编辑框</button>
+					<button @click="gotoReply">切换为完整编辑框</button>
 					<div>
 						<button class="me-1" @click="closeForm">取消</button>
 						<button @click="doReply">回复</button>
@@ -120,6 +120,21 @@ export default {
 			this.closeForm();
 
 			this.actionForm.isReplying = true;
+		},
+		gotoReply() {
+			this.bmy_cache.article = {
+				board: this._boardname_en,
+				aid: this._aid,
+				title: this.title.startsWith(RE) ? this.title : `${RE} ${this.title}`,
+				content: generateContent(this.$refs.replyForm.value, this.author, this.rawContent),
+			};
+			this.$router.push({
+				name: "reply",
+				params: {
+					boardname: this._boardname_en,
+					aid: this._aid,
+				}
+			});
 		},
 		doReply() {
 			const el = this.$refs.replyForm;
