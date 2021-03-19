@@ -5,6 +5,7 @@
 			v-bind:_boardname_en="$route.params.boardname"
 			v-bind:_aid="article.aid"
 			v-bind:_mark="article.mark"
+			v-bind:_reply_callback="updateList"
 		/>
 	</div>
 </template>
@@ -22,11 +23,16 @@ export default {
 		};
 	},
 	mounted() {
-		BMYClient.get_thread_list(this.$route.params.boardname, this.$route.params.tid).then(response => {
-			if (response.errcode == 0) {
-				this.articlelist = response.articlelist;
-			}
-		});
+		this.updateList();
+	},
+	methods: {
+		updateList() {
+			BMYClient.get_thread_list(this.$route.params.boardname, this.$route.params.tid).then(response => {
+				if (response.errcode == 0) {
+					this.articlelist = response.articlelist;
+				}
+			});
+		},
 	},
 	components: {
 		ArticleViewer,
