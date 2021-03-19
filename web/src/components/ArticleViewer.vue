@@ -22,11 +22,11 @@
 			</div>
 
 			<div class="replyForm p-2" v-if="actionForm.isReplying">
-				<textarea ref="replyForm" placeholder="您想说点什么？" rows="1"></textarea>
+				<textarea class="form-control mb-2" ref="replyForm" placeholder="您想说点什么？Remember, be nice..." rows="1"></textarea>
 				<div class="d-flex justify-content-between fs-7">
 					<button>切换为完整编辑框</button>
 					<div>
-						<button @click="closeForm">取消</button>
+						<button class="me-1" @click="closeForm">取消</button>
 						<button @click="doReply">回复</button>
 					</div>
 				</div>
@@ -205,23 +205,36 @@ mjx-container {
 	margin-block-end: 0.1rem;
 }
 
-.action-container button {
-	border: 0px !important;
+.card-footer button {
+	border: 0px;
 	padding: 0.5rem 1rem;
 	border-radius: 1.25rem;
 	background-color: var(--bs-bmy-blue0);
-	font-weight: 700;
-	font-size: 0.8rem;
 	color: var(--bs-secondary);
 }
 
-.action-container button:hover {
+.card-footer button:hover {
 	background-color: var(--bs-bmy-grey1);
+}
+
+.action-container button {
+	font-weight: 700;
+	font-size: 0.8rem;
 }
 
 .replyForm textarea {
 	height: 4rem;
 	width: 100%;
+}
+
+.replyForm textarea::placeholder {
+	font-size: 0.9rem;
+}
+
+.replyForm button {
+	font-weight: 700;
+	padding: 0.3rem 0.8rem;
+	border: 2px solid var(--bs-bmy-grey2);
 }
 
 </style>
