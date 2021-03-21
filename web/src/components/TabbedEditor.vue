@@ -176,7 +176,10 @@
 import Tooltip from "bootstrap/js/dist/tooltip"
 import { BMYClient } from "@/lib/BMYClient.js"
 import { ANSI_TAGS, BMY_EC } from "@/lib/BMYConstants.js"
-import { getErrorMessage } from "@/lib/BMYUtils.js"
+import {
+	generateContent,
+	getErrorMessage
+} from "@/lib/BMYUtils.js"
 import { readableSize } from "@bmybbs/bmybbs-content-parser/dist/utils.js"
 
 const UPLOAD_ERROR_MSG = {
@@ -189,6 +192,8 @@ const UPLOAD_ERROR_MSG = {
 };
 
 const sleep = async (ms) => new Promise(r => setTimeout(r, ms));
+
+const RE = "Re: ";
 
 const titleLen = (str) => {
 	let count = 0;
@@ -254,11 +259,28 @@ export default {
 			new Tooltip(el);
 		});
 
-		if (this.isReplyMode() && this.bmy_cache.article != null) {
-			if (this.bmy_cache.article.board == this.$route.params.boardname
+		if (this.isReplyMode()) {
+			if (this.bmy_cache.article != null
+				&& this.bmy_cache.article.board == this.$route.params.boardname
 				&& this.bmy_cache.article.aid == this.$route.params.aid) {
 				this.title = this.bmy_cache.article.title;
 				this.$refs.textarea.value = this.bmy_cache.article.content;
+			} else {
+				BMYClient.get_article_content(this.$route.params.boardname, this.$route.params.aid).then(response => {
+					if (response.errcode == BMY_EC.API_RT_SUCCESSFUL) {
+						this.title = response.title.startsWith(RE) ? response.title : `${RE} ${response.title}`;
+						this.$refs.textarea.value = generateContent("", response.author, response.content);
+					} else {
+						this.$toast.error("原文不存在，将跳转到发布新文章", {
+							position: "top"
+						});
+
+						this.$router.push({
+							name: "boardSubmit",
+							boardname: this.$route.params.boardname
+						});
+					}
+				});
 			}
 		} else if (this.$route.name == "RAWSUBMIT" || this.$route.name == "boardSubmit") {
 			this.load();
