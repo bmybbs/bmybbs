@@ -236,13 +236,7 @@ main {
 
 <style>
 html {
-	font-size: 18px;
-}
-
-@media (min-width: 576px) {
-	html {
-		font-size: 16px;
-	}
+	font-size: 16px;
 }
 </style>
 
