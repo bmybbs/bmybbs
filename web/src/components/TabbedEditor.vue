@@ -254,7 +254,7 @@ export default {
 			new Tooltip(el);
 		});
 
-		if (this.$route.name == "reply" && this.bmy_cache.article != null) {
+		if (this.isReplyMode() && this.bmy_cache.article != null) {
 			if (this.bmy_cache.article.board == this.$route.params.boardname
 				&& this.bmy_cache.article.aid == this.$route.params.aid) {
 				this.title = this.bmy_cache.article.title;
@@ -270,6 +270,9 @@ export default {
 		}
 	},
 	methods: {
+		isReplyMode() {
+			return this.$route.name == "reply";
+		},
 		post() {
 			if (this.$route.name == "RAWSUBMIT") {
 				this.$toast.error("请先选择版面", {
@@ -287,12 +290,12 @@ export default {
 				math: this.using_math,
 			};
 
-			if (this.$route.name == "reply") {
+			if (this.isReplyMode()) {
 				article.ref = this.$route.params.aid;
 				article.rid = 0;
 			}
 
-			const request = (this.$route.name == "reply") ? BMYClient.reply_article(article) : BMYClient.post_article(article);
+			const request = (this.isReplyMode()) ? BMYClient.reply_article(article) : BMYClient.post_article(article);
 
 			request.then(response => {
 				if (response.errcode == 0) {
@@ -300,7 +303,7 @@ export default {
 						name: "thread",
 						params: {
 							boardname: this.$route.boardname,
-							tid: (this.$route.name == "reply") ? response.tid : response.aid,
+							tid: (this.isReplyMode()) ? response.tid : response.aid,
 						}
 					});
 				} else {
