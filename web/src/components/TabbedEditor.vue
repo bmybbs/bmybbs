@@ -300,7 +300,7 @@ export default {
 			}
 
 			const article = {
-				board: this.$route.boardname,
+				board: this.$route.params.boardname,
 				title: this.title,
 				content: this.$refs.textarea.value.replaceAll("[ESC][", "\x1b["),
 				anony: this.is_anony,
@@ -321,7 +321,7 @@ export default {
 					this.$router.push({
 						name: "thread",
 						params: {
-							boardname: this.$route.boardname,
+							boardname: this.$route.params.boardname,
 							tid: (this.isReplyMode()) ? response.tid : response.aid,
 						}
 					});
