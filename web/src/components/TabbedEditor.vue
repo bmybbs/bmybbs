@@ -19,7 +19,7 @@
 			</ul>
 
 			<ul class="editor-toolbar nav nav-tabs" v-if="isEditing" ref="editor_toolbar">
-				<li class="nav-item dropdown" data-bs-toggle="tooltip" data-bs-placement="top" title="前景色">
+				<li class="nav-item dropdown" title="前景色">
 					<span class="nav-link" @click="openFcdd">
 						<fa icon="font" />
 					</span>
@@ -40,7 +40,7 @@
 						</li>
 					</ul>
 				</li>
-				<li class="nav-item dropdown" data-bs-toggle="tooltip" data-bs-placement="top" title="背景色">
+				<li class="nav-item dropdown" title="背景色">
 					<span class="nav-link" @click="openBgdd">
 						<fa icon="clone" />
 					</span>
@@ -61,17 +61,17 @@
 						</li>
 					</ul>
 				</li>
-				<li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="top" title="闪烁">
+				<li class="nav-item" title="闪烁">
 					<span class="nav-link" @click="insertBlink">
 						<fa icon="lightbulb" />
 					</span>
 				</li>
-				<li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="top" title="斜体">
+				<li class="nav-item" title="斜体">
 					<span class="nav-link" @click="insertItalic">
 						<fa icon="italic" />
 					</span>
 				</li>
-				<li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="top" title="下划线">
+				<li class="nav-item" title="下划线">
 					<span class="nav-link" @click="insertUnderl">
 						<fa icon="underline" />
 					</span>
@@ -79,22 +79,22 @@
 			</ul>
 
 			<ul class="editor-toolbar nav nav-tabs" v-if="isAttach" ref="attach_toolbar">
-				<li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="top" title="选择文件">
+				<li class="nav-item" title="选择文件">
 					<span class="nav-link" @click="pickFiles">
 						<fa icon="paperclip" />
 					</span>
 				</li>
-				<li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="top" title="刷新">
+				<li class="nav-item" title="刷新">
 					<span class="nav-link" @click="loadUploaded">
 						<fa icon="redo" />
 					</span>
 				</li>
-				<li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="top" title="上传">
+				<li class="nav-item" title="上传">
 					<span class="nav-link" @click="doUpload">
 						<fa icon="cloud-upload-alt" />
 					</span>
 				</li>
-				<li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="top" title="参考代码">
+				<li class="nav-item" title="参考代码">
 					<span class="nav-link" @click="showCodeModal">
 						<fa icon="code" />
 					</span>
@@ -173,7 +173,6 @@
 </template>
 
 <script>
-import Tooltip from "bootstrap/js/dist/tooltip"
 import { BMYClient } from "@/lib/BMYClient.js"
 import { ANSI_TAGS, BMY_EC } from "@/lib/BMYConstants.js"
 import {
@@ -254,12 +253,6 @@ export default {
 		};
 	},
 	mounted() {
-		let elements = this.$refs.editor_toolbar.querySelectorAll('[data-bs-toggle="tooltip"]');
-		let tooltipTriggerList = [].slice.call(elements);
-		tooltipTriggerList.forEach((el) => {
-			new Tooltip(el);
-		});
-
 		if (this.isReplyMode()) {
 			if (this.bmy_cache.article != null
 				&& this.bmy_cache.article.board == this.$route.params.boardname
