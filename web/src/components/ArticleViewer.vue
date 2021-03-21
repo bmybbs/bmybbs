@@ -41,7 +41,7 @@ import { BMYClient } from "@/lib/BMYClient.js"
 import bmyParser from "@bmybbs/bmybbs-content-parser"
 import Prism from "prismjs"
 import { BMY_EC, BMY_FILE_HEADER } from "@/lib/BMYConstants.js"
-import { generateContent } from "@/lib/BMYUtils.js"
+import { generateContent, getErrorMessage } from "@/lib/BMYUtils.js"
 import "@/plugins/mathjax.js"
 
 const TooltipTimestamp = defineAsyncComponent(() => import("./TooltipTimestamp.vue"));
@@ -166,24 +166,7 @@ export default {
 					});
 					this._reply_callback();
 				} else {
-					let msg = "未知错误";
-
-					switch (response.errcode) {
-					case BMY_EC.API_RT_NOTLOGGEDIN:  msg = "请先登录";       break;
-					case BMY_EC.API_RT_WRONGPARAM:   msg = "参数错误";       break;
-					case BMY_EC.API_RT_ATCLNOTITLE:  msg = "缺少标题";       break;
-					case BMY_EC.API_RT_NOSUCHBRD:    msg = "版面不存在";     break;
-					case BMY_EC.API_RT_NOSUCHUSER:   msg = "用户不存在";     break;
-					case BMY_EC.API_RT_NOBRDPPERM:   msg = "您被禁止发帖";   break;
-					case BMY_EC.API_RT_CNTMAPBRDIR:  msg = "版面内部错误";   break;
-					case BMY_EC.API_RT_ATCLFBDREPLY: msg = "本文不可回复";   break;
-					case BMY_EC.API_RT_USERLOCKFAIL: msg = "用户内部错误";   break;
-					case BMY_EC.API_RT_WRONGTOKEN:   msg = "请再试一次";     break;
-					case BMY_EC.API_RT_FBDGSTIP:     msg = "GUEST 无法发帖"; break;
-					case BMY_EC.API_RT_ATCLINNERR:   msg = "文章内部错误";   break;
-					}
-
-					this.$toast.error(msg, {
+					this.$toast.error(getErrorMessage(response.errcode), {
 						position: "top"
 					});
 				}
