@@ -259,6 +259,13 @@ export default {
 				this.title = this.bmy_cache.article.title;
 				this.$refs.textarea.value = this.bmy_cache.article.content;
 			}
+		} else if (this.$route.name == "RAWSUBMIT" || this.$route.name == "boardSubmit") {
+			this.load();
+		}
+	},
+	beforeUnmount() {
+		if (this.$route.name == "RAWSUBMIT" || this.$route.name == "boardSubmit") {
+			this.save();
 		}
 	},
 	methods: {
@@ -289,6 +296,24 @@ export default {
 					});
 				}
 			});
+		},
+		save() {
+			this.bmy_cache.article = {
+				title: this.title,
+				content: this.$refs.textarea.value,
+				anony: this.is_anony,
+				norep: this.is_norep,
+				math: this.using_math,
+			}
+		},
+		load() {
+			if (this.bmy_cache.article != null && this.bmy_cache.article.aid == null) { // todo
+				this.title = this.bmy_cache.article.title;
+				this.$refs.textarea.value = this.bmy_cache.article.content;
+				this.is_anony = this.bmy_cache.article.anony;
+				this.is_norep = this.bmy_cache.article.norep;
+				this.using_math = this.bmy_cache.article.math;
+			}
 		},
 		openFcdd() {
 			this.showBgdd = false;
