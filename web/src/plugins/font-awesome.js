@@ -31,6 +31,7 @@ import {
 	faMusic,
 	faPaperclip,
 	faPaperPlane,
+	faPen,
 	faPizzaSlice,
 	faPlus,
 	faRedo,
@@ -49,6 +50,7 @@ import {
 
 import {
 	faEnvelope,
+	faEye,
 	faStar as faStarR,
 } from "@fortawesome/free-regular-svg-icons"
 
@@ -67,6 +69,7 @@ library.add(faCode);
 library.add(faCogs);
 library.add(faComments);
 library.add(faEnvelope);
+library.add(faEye);
 library.add(faFile);
 library.add(faFire);
 library.add(faFont);
@@ -86,6 +89,7 @@ library.add(faMap);
 library.add(faMusic);
 library.add(faPaperclip);
 library.add(faPaperPlane);
+library.add(faPen);
 library.add(faPizzaSlice);
 library.add(faPlus);
 library.add(faRedo);

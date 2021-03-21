@@ -8,13 +8,13 @@
 		<div class="editor-header">
 			<ul class="nav nav-tabs">
 				<li class="nav-item">
-					<span class="nav-link" :class="{ active: isEditing }" @click="turnOnEdit">编辑</span>
+					<span class="nav-link" :class="{ active: isEditing }" @click="turnOnEdit" title="编辑"><span class="me-1"><fa icon="pen" /></span><span class="d-none d-lg-inline-block">编辑</span></span>
 				</li>
 				<li class="nav-item">
-					<span class="nav-link" :class="{ active: isAttach }" @click="turnOnAttach">附件</span>
+					<span class="nav-link" :class="{ active: isAttach }" @click="turnOnAttach" title="附件"><span class="me-1"><fa icon="paperclip" /></span><span class="d-none d-lg-inline-block">附件</span></span>
 				</li>
 				<li class="nav-item">
-					<span class="nav-link" :class="{ active: !isEditing && !isAttach }" @click="turnOnPreview">预览</span>
+					<span class="nav-link" :class="{ active: !isEditing && !isAttach }" @click="turnOnPreview" title="预览"><span class="me-1"><fa :icon="['far', 'eye']" /></span><span class="d-none d-lg-inline-block">预览</span></span>
 				</li>
 			</ul>
 
