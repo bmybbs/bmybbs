@@ -68,6 +68,8 @@ export default {
 			});
 		},
 		pickBoard(board) {
+			this.isPickingBoard = false;
+			this.isSearching = false;
 			this.board = board;
 			this.$router.push({
 				name: "boardSubmit",
@@ -75,8 +77,6 @@ export default {
 					boardname: board,
 				}
 			});
-			this.isPickingBoard = false;
-			this.isSearching = false;
 		},
 		doLasySearch() {
 			if (this.lazySearchTimer) {
