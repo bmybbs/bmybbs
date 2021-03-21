@@ -586,6 +586,11 @@ textarea {
 	background-color: #ccc;
 }
 
+.editor-toolbar .nav-link {
+	padding-left: 0.9rem;
+	padding-right: 0.9rem;
+}
+
 .editor-toolbar .dropdown-menu {
 	background: #ddd;
 }
