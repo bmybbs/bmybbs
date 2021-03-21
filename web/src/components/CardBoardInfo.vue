@@ -13,7 +13,7 @@
 
 		<div class="card-body" style="z-index: 0">
 			<div class="d-flex justify-content-between flex-wrap mb-3">
-				<div class="numbers-item-wrapper d-flex align-items-center mb-1" v-for="i in infoArray" :key="i.name">
+				<div class="numbers-item-wrapper bmy-circle-border d-flex align-items-center mb-1" v-for="i in infoArray" :key="i.name">
 					<div class="ratio ratio-1x1 m-2">
 						<div class="d-flex flex-column align-items-center justify-content-center">
 							<div class="numbers-item-number">{{ i.num }}</div>
@@ -267,23 +267,6 @@ export default {
 </style>
 
 <style lang="scss" scoped>
-/* credit: https://css-tricks.com/gradient-borders-in-css/ */
-.numbers-item-wrapper {
-	$border: 5px;
-	border: $border solid transparent;
-	border-radius: 50%;
-	background: white;
-	background-clip: padding-box;
-	position: relative;
-	&:before {
-		content: '';
-		position: absolute;
-		top: 0; right: 0; bottom: 0; left: 0;
-		z-index: -1;
-		margin: -$border;
-		border-radius: inherit;
-		background: linear-gradient(45deg, #267dcf 0%, #74fac8 95%);
-	}
-}
+@import "@/assets/gradient-circle-border.scss"
 </style>
 
