@@ -250,6 +250,7 @@ export default {
 			progressStyleObj: {
 				width: "0%",
 			},
+			shouldSave: true,
 		};
 	},
 	mounted() {
@@ -287,8 +288,10 @@ export default {
 		}
 	},
 	beforeUnmount() {
-		if (this.$route.name == "RAWSUBMIT" || this.$route.name == "boardSubmit") {
+		if (this.shouldSave && (this.$route.name == "RAWSUBMIT" || this.$route.name == "boardSubmit")) {
 			this.save();
+		} else {
+			this.bmy_cache.article = null;
 		}
 	},
 	methods: {
@@ -321,6 +324,7 @@ export default {
 
 			request.then(response => {
 				if (response.errcode == 0) {
+					this.shouldSave = false;
 					this.$router.push({
 						name: "thread",
 						params: {
@@ -345,7 +349,7 @@ export default {
 			}
 		},
 		load() {
-			if (this.bmy_cache.article != null && this.bmy_cache.article.aid == null) { // todo
+			if (this.bmy_cache.article != null && this.bmy_cache.article.aid == null) {
 				this.title = this.bmy_cache.article.title;
 				this.$refs.textarea.value = this.bmy_cache.article.content;
 				this.is_anony = this.bmy_cache.article.anony;
