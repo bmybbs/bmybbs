@@ -148,7 +148,7 @@ export default {
 
 			const article = {
 				board: this._boardname_en,
-				title: this.title.startsWith(RE) ? this.title : `${RE} ${this.title}`,
+				title: this.title.startsWith(RE) ? this.title : `${RE}${this.title}`,
 				content: generateContent(content, this.author, this.rawContent),
 				anony: false,
 				norep: false,

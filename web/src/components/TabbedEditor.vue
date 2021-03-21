@@ -262,7 +262,7 @@ export default {
 			} else {
 				BMYClient.get_article_content(this.$route.params.boardname, this.$route.params.aid).then(response => {
 					if (response.errcode == BMY_EC.API_RT_SUCCESSFUL) {
-						this.title = response.title.startsWith(RE) ? response.title : `${RE} ${response.title}`;
+						this.title = response.title.startsWith(RE) ? response.title : `${RE}${response.title}`;
 						this.$refs.textarea.value = generateContent("", response.author, response.content);
 					} else {
 						this.$toast.error("原文不存在，将跳转到发布新文章", {
