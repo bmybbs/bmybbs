@@ -176,6 +176,7 @@
 import Tooltip from "bootstrap/js/dist/tooltip"
 import { BMYClient } from "@/lib/BMYClient.js"
 import { ANSI_TAGS, BMY_EC } from "@/lib/BMYConstants.js"
+import { getErrorMessage } from "@/lib/BMYUtils.js"
 import { readableSize } from "@bmybbs/bmybbs-content-parser/dist/utils.js"
 
 const UPLOAD_ERROR_MSG = {
@@ -285,14 +286,26 @@ export default {
 				norep: this.is_norep,
 				math: this.using_math,
 			};
-			BMYClient.post_article(article).then(response => {
+
+			if (this.$route.name == "reply") {
+				article.ref = this.$route.params.aid;
+				article.rid = 0;
+			}
+
+			const request = (this.$route.name == "reply") ? BMYClient.reply_article(article) : BMYClient.post_article(article);
+
+			request.then(response => {
 				if (response.errcode == 0) {
 					this.$router.push({
 						name: "thread",
 						params: {
 							boardname: this.$route.boardname,
-							tid: response.aid,
+							tid: (this.$route.name == "reply") ? response.tid : response.aid,
 						}
+					});
+				} else {
+					this.$toast.error(getErrorMessage(response.errcode), {
+						position: "top"
 					});
 				}
 			});
