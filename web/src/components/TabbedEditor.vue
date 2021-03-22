@@ -180,6 +180,7 @@ import {
 	getErrorMessage
 } from "@/lib/BMYUtils.js"
 import { readableSize } from "@bmybbs/bmybbs-content-parser/dist/utils.js"
+import bmyParser from "@bmybbs/bmybbs-content-parser"
 
 const UPLOAD_ERROR_MSG = {
 	NOTLOGGEDIN: "请先登录",
@@ -224,6 +225,11 @@ const getUploadErrorMsg = (errcode) => {
 	}
 	return msg;
 };
+
+const downloadFile = async (url) => {
+	const resp = await fetch(url);
+	return resp.blob();
+}
 
 export default {
 	data() {
@@ -367,19 +373,32 @@ export default {
 			this.isAttach = true;
 			this.loadUploaded();
 		},
-		turnOnPreview() {
+		async turnOnPreview() {
 			this.isEditing = false;
 			this.isAttach = false;
 
-			BMYClient.get_draft_preview({
-				content: this.$refs.textarea.value,
-			}).then(response => {
-				if (response.errcode == 0) {
-					this.previewContent = response.content;
-				} else {
-					this.previewContent = "";
+			const attach_list_resp = await BMYClient.get_attach_list();
+			const attaches = [];
+
+			if (attach_list_resp.errcode == 0) {
+				for (const file of attach_list_resp.attach_array) {
+					const blob = await downloadFile(`/api/attach/get?file=${file.file_name}`);
+					attaches.push({
+						name: file.file_name,
+						size: file.size,
+						link: window.URL.createObjectURL(blob),
+						signature: Array.from(new Uint8Array(await blob.arrayBuffer())),
+					});
 				}
-			});
+			}
+
+			const article = {
+				text: this.$refs.textarea.value.replaceAll("[ESC][", "\x1b["),
+				attaches: attaches,
+			}
+
+			const content = bmyParser(article);
+			this.previewContent = content;
 		},
 		showCodeModal() {
 			this.showCode = true;
