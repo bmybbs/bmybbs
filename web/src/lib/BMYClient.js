@@ -46,9 +46,6 @@ export const BMYClient = {
 	get_commend() {
 		return myFetchGet("/api/article/list?type=commend");
 	},
-	get_draft_preview(obj) {
-		return myFetchPost("/api/article/preview", obj);
-	},
 	get_fav_board_list() {
 		return myFetchGet("/api/board/fav/list");
 	},
