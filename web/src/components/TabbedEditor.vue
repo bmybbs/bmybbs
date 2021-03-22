@@ -103,7 +103,7 @@
 		</div>
 		<div class="tab-content">
 			<div class="tab-pane fade" :class="{ active: isEditing, show: isEditing }">
-				<textarea ref="textarea" class="form-control" rows="5"></textarea>
+				<textarea ref="textarea" class="form-control" rows="5" @focus="closePalette"></textarea>
 				<div class="form-check form-switch">
 					<input class="form-check-input" type="checkbox" v-model="using_math">
 					<label class="form-check-label">使用 Tex 风格的数学公式</label>
@@ -509,9 +509,11 @@ export default {
 			}
 			this.isDeleting = false;
 		},
-		insertAtCursor(left, right) {
+		closePalette() {
 			this.showFcdd = false;
 			this.showBgdd = false;
+		},
+		insertAtCursor(left, right) {
 			let textarea = this.$refs.textarea;
 			if (textarea.selectionStart || textarea.selectionStart == '0') {
 				let startPos = textarea.selectionStart,
