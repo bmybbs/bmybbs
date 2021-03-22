@@ -26,16 +26,16 @@
 					<ul class="dropdown-menu" :class="{ show: showFcdd }">
 						<li>
 							<div class="palette">
-								<span class="aha aha-bg-black" @click="insertFcBlack"></span>
-								<span class="aha aha-bg-red" @click="insertFcRed"></span>
-								<span class="aha aha-bg-green" @click="insertFcGreen"></span>
-								<span class="aha aha-bg-olive" @click="insertFcOlive"></span>
+								<span class="bmybbs-ansi bmybbs-ansi-bg0" @click="insertFcBlack" title="前景色黑"></span>
+								<span class="bmybbs-ansi bmybbs-ansi-bg1" @click="insertFcRed" title="前景色红"></span>
+								<span class="bmybbs-ansi bmybbs-ansi-bg2" @click="insertFcGreen" title="前景色绿"></span>
+								<span class="bmybbs-ansi bmybbs-ansi-bg3" @click="insertFcOlive" title="前景色黄"></span>
 							</div>
 							<div class="palette">
-								<span class="aha aha-bg-blue" @click="insertFcBlue"></span>
-								<span class="aha aha-bg-purple" @click="insertFcPurple"></span>
-								<span class="aha aha-bg-teal" @click="insertFcTeal"></span>
-								<span class="aha aha-bg-grey" @click="insertFcGrey"></span>
+								<span class="bmybbs-ansi bmybbs-ansi-bg4" @click="insertFcBlue" title="前景色蓝"></span>
+								<span class="bmybbs-ansi bmybbs-ansi-bg5" @click="insertFcPurple" title="前景色粉"></span>
+								<span class="bmybbs-ansi bmybbs-ansi-bg6" @click="insertFcTeal" title="前景色青"></span>
+								<span class="bmybbs-ansi bmybbs-ansi-bg7" @click="insertFcGrey" title="前景色灰"></span>
 							</div>
 						</li>
 					</ul>
@@ -47,16 +47,16 @@
 					<ul class="dropdown-menu" :class="{ show: showBgdd }">
 						<li>
 							<div class="palette">
-								<span class="aha aha-bg-black" @click="insertBgBlack"></span>
-								<span class="aha aha-bg-red" @click="insertBgRed"></span>
-								<span class="aha aha-bg-green" @click="insertBgGreen"></span>
-								<span class="aha aha-bg-olive" @click="insertBgOlive"></span>
+								<span class="bmybbs-ansi bmybbs-ansi-bg0" @click="insertBgBlack" title="背景色黑"></span>
+								<span class="bmybbs-ansi bmybbs-ansi-bg1" @click="insertBgRed" title="背景色红"></span>
+								<span class="bmybbs-ansi bmybbs-ansi-bg2" @click="insertBgGreen" title="背景色绿"></span>
+								<span class="bmybbs-ansi bmybbs-ansi-bg3" @click="insertBgOlive" title="背景色黄"></span>
 							</div>
 							<div class="palette">
-								<span class="aha aha-bg-blue" @click="insertBgBlue"></span>
-								<span class="aha aha-bg-purple" @click="insertBgPurple"></span>
-								<span class="aha aha-bg-teal" @click="insertBgTeal"></span>
-								<span class="aha aha-bg-grey" @click="insertBgGrey"></span>
+								<span class="bmybbs-ansi bmybbs-ansi-bg4" @click="insertBgBlue" title="背景色蓝"></span>
+								<span class="bmybbs-ansi bmybbs-ansi-bg5" @click="insertBgPurple" title="背景色粉"></span>
+								<span class="bmybbs-ansi bmybbs-ansi-bg6" @click="insertBgTeal" title="背景色青"></span>
+								<span class="bmybbs-ansi bmybbs-ansi-bg7" @click="insertBgGrey" title="背景色灰"></span>
 							</div>
 						</li>
 					</ul>
