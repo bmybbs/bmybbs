@@ -43,6 +43,7 @@ import Prism from "prismjs"
 import { BMY_EC, BMY_FILE_HEADER } from "@/lib/BMYConstants.js"
 import { generateContent, getErrorMessage } from "@/lib/BMYUtils.js"
 import "@/plugins/mathjax.js"
+import "@/assets/article.css"
 
 const TooltipTimestamp = defineAsyncComponent(() => import("./TooltipTimestamp.vue"));
 const BadgeArticleFlags = defineAsyncComponent(() => import("./BadgeArticleFlags.vue"));
@@ -180,29 +181,7 @@ export default {
 }
 </script>
 
-<style>
-mjx-container {
-	font-size: 120%
-}
-</style>
-
 <style scoped>
-.article:deep(img) {
-	max-width: 100%
-}
-
-.article:deep(blockquote) {
-	padding: 0.5rem 1rem;
-	border-left: 5px solid var(--bs-bmy-grey2);
-	color: var(--bs-gray);
-	background: var(--bs-bmy-grey1);
-}
-
-.article:deep(blockquote p) {
-	margin-bottom: 0.1rem;
-	margin-block-end: 0.1rem;
-}
-
 .card-footer button {
 	border: 0px;
 	padding: 0.5rem 1rem;

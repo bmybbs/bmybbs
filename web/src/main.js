@@ -7,7 +7,6 @@ import { FontAwesomeIcon } from "./plugins/font-awesome.js"
 import Toaster from "@meforma/vue-toaster"
 import "@/assets/bmybbs-ansi.scss"
 import "file-icons-js/css/style.css"
-import "@/assets/article.css"
 
 const app = createApp(App);
 app.config.globalProperties.bmy_cache = {};
