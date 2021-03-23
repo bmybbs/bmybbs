@@ -166,7 +166,7 @@
 				</div>
 			</div>
 
-			<div class="tab-pane fade" :class="{ active: !isEditing && !isAttach, show: !isEditing && !isAttach }" v-html="previewContent">
+			<div class="tab-pane fade article" :class="{ active: !isEditing && !isAttach, show: !isEditing && !isAttach }" v-html="previewContent">
 			</div>
 		</div>
 	</div>
@@ -181,6 +181,7 @@ import {
 } from "@/lib/BMYUtils.js"
 import { readableSize } from "@bmybbs/bmybbs-content-parser/dist/utils.js"
 import bmyParser from "@bmybbs/bmybbs-content-parser"
+import "@/assets/article.css"
 
 const UPLOAD_ERROR_MSG = {
 	NOTLOGGEDIN: "请先登录",
