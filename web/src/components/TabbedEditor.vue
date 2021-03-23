@@ -182,6 +182,8 @@ import {
 import { readableSize } from "@bmybbs/bmybbs-content-parser/dist/utils.js"
 import bmyParser from "@bmybbs/bmybbs-content-parser"
 import "@/assets/article.css"
+import Prism from "prismjs"
+import "@/plugins/mathjax.js"
 
 const UPLOAD_ERROR_MSG = {
 	NOTLOGGEDIN: "请先登录",
@@ -400,6 +402,12 @@ export default {
 
 			const content = bmyParser(article);
 			this.previewContent = content;
+
+			await sleep(1500);
+			Prism.highlightAll();
+			if (this.using_math && window.MathJax && typeof window.MathJax.typeset === "function") {
+				window.MathJax.typeset();
+			}
 		},
 		showCodeModal() {
 			this.showCode = true;
