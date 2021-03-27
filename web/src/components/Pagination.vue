@@ -104,7 +104,7 @@ export default {
 			default: 1,
 		},
 		_current: {
-			type: Number,
+			type: [Number, String],
 			default: 1,
 		},
 		_callback: {
