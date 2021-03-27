@@ -66,8 +66,8 @@ const generateButtonList = (current, total) => {
 				new PButton(1, false, true),
 				new PButton(2, true),
 				new PButton(3, true),
-				new PButton(STR_NEXT),
-				new PButton(STR_LAST),
+				new PButton(STR_NEXT, true),
+				new PButton(STR_LAST, true),
 			];
 		} else if (current == total) {
 			return [
