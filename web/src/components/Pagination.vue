@@ -26,6 +26,7 @@ class PButton {
 }
 
 const generateButtonList = (current, total) => {
+	current = Math.ceil(current);
 	if (current < 1 || total < 1) {
 		return [
 			new PButton(STR_FIRST),
@@ -121,12 +122,13 @@ export default {
 			if (!button.enabled)
 				return;
 
+			const current = Math.ceil(+this._current);
 			let target;
 			switch (button.text) {
-			case STR_FIRST: target = 1;                 break;
-			case STR_LAST:  target = this._total;       break;
-			case STR_PREV:  target = this._current - 1; break;
-			case STR_NEXT:  target = this._current + 1; break;
+			case STR_FIRST: target = 1;            break;
+			case STR_LAST:  target = this._total;  break;
+			case STR_PREV:  target = current - 1;  break;
+			case STR_NEXT:  target = current + 1;  break;
 			default:        target = button.text;
 			}
 
