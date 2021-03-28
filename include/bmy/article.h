@@ -51,6 +51,8 @@ void bmy_article_update_thread_accessed(int boardnum, time_t tid, int accessed);
 
 struct bmy_articles *bmy_article_list_selected_boards(const int boardnum_array[], size_t num, size_t limit, time_t t);
 
+struct bmy_articles *bmy_article_list_selected_boards_by_offset(const int boardnum_array[], size_t num, size_t limit, size_t offset);
+
 void bmy_article_list_free(struct bmy_articles *ptr);
 
 /**
