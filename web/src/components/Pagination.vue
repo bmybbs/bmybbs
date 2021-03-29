@@ -1,11 +1,16 @@
 <template>
 	<div>
-		<nav>
+		<nav class="d-flex justify-content-between">
 			<ul class="pagination">
 				<li class="page-item" :class="{ active: button.active }" v-for="button in navButtons" :key="button.text" @click="doJump(button)">
 					<span class="page-link">{{ button.text }}</span>
 				</li>
 			</ul>
+
+			<div class="input-group mb-3 pagination-meta">
+				<input type="number" class="form-control" :placeholder="`1 / ${_total}`" min="1" :max="_total" step="1" ref="input_number">
+				<button type="button" class="btn btn-outline-primary" @click="go">Go</button>
+			</div>
 		</nav>
 	</div>
 </template>
@@ -118,6 +123,26 @@ export default {
 		}
 	},
 	methods: {
+		go() {
+			const v = this.$refs.input_number.value;
+
+			if (!/^\d+$/.test(v)) {
+				this.$toast.warning("请输入正确的整数", {
+					position: "top"
+				});
+				return;
+			}
+
+			const page = +v;
+			if (page > this._total || page < 1) {
+				this.$toast.warning("您输入的页码超过范围", {
+					position: "top"
+				});
+				return;
+			}
+
+			this._callback(page);
+		},
 		doJump(button) {
 			if (!button.enabled)
 				return;
@@ -137,4 +162,10 @@ export default {
 	},
 }
 </script>
+
+<style scoped>
+.pagination-meta {
+	max-width: 12rem;
+}
+</style>
 
