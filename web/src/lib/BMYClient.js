@@ -31,8 +31,8 @@ export const BMYClient = {
 	get_article_list_by_board(boardname_en, mode, page) {
 		return myFetchGet(`/api/article/list?type=board&board=${boardname_en}&btype=${mode}&page=${page}`);
 	},
-	get_article_list_by_section(secstr) {
-		return myFetchGet(`/api/article/list?type=section&secstr=${secstr}`);
+	get_article_list_by_section(secstr, page = 1) {
+		return myFetchGet(`/api/article/list?type=section&secstr=${secstr}&page=${page}`);
 	},
 	get_attach_list() {
 		return myFetchGet("/api/attach/list");
@@ -49,8 +49,8 @@ export const BMYClient = {
 	get_fav_board_list() {
 		return myFetchGet("/api/board/fav/list");
 	},
-	get_feed(start) {
-		return myFetchGet(`/api/subscription/list?start=${start}`);
+	get_feed(page = 1) {
+		return myFetchGet(`/api/subscription/list?page=${page}`);
 	},
 	get_sectop(secstr) {
 		return myFetchGet(`/api/article/list?type=sectop&secstr=${secstr}`);
