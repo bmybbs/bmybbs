@@ -16,6 +16,7 @@
 		</div>
 		<div class="row">
 			<div class="col-md-9">
+				<Pagination :_current="page" :_total="total" :_callback="gotoPage" />
 				<div class="card border-bmy-blue border-start-0 border-end-0">
 					<ul class="list-group list-group-flush">
 						<DashboardArticleListItem
@@ -64,6 +65,7 @@ import { BOARD_SORT_MODE, BMY_EC } from "@/lib/BMYConstants.js"
 
 const DashboardArticleListItem = defineAsyncComponent(() => import("@/components/DashboardArticleListItem.vue"));
 const PopoverBoardInfo = defineAsyncComponent(() => import("@/components/PopoverBoardInfo.vue"));
+const Pagination = defineAsyncComponent(() => import("@/components/Pagination.vue"));
 
 export default {
 	data() {
@@ -73,6 +75,8 @@ export default {
 			articles: [ ],
 			favboards: [ ],
 			loggedin: true,
+			total: 1,
+			page: 1,
 		}
 	},
 	created() {
@@ -98,6 +102,18 @@ export default {
 				this.load_section_boards();
 			}
 		},
+		gotoPage(pagenumber) {
+			const r = {
+				name: this.$route.name,
+				params: this.$route.params
+			};
+
+			if (pagenumber > 1) {
+				r.query = { page: pagenumber };
+			}
+
+			this.$router.push(r);
+		},
 		load_more() {
 			if (this.feedmode) {
 				this.load_feed_more();
@@ -106,7 +122,8 @@ export default {
 			}
 		},
 		load_feed_more() {
-			BMYClient.get_feed(this.time).then(response => {
+			this.page = this.$route.query.page ? this.$route.query.page : 1;
+			BMYClient.get_feed(this.page).then(response => {
 				switch (response.errcode) {
 				case BMY_EC.API_RT_SUCCESSFUL:
 					if (Array.isArray(response.articles)) {
@@ -114,6 +131,7 @@ export default {
 						let l = response.articles.length;
 						this.time = response.articles[l - 1].tid - 1;
 					}
+					this.total = response.total;
 					break;
 				case BMY_EC.API_RT_NOTLOGGEDIN:
 					this.loggedin = false;
@@ -141,15 +159,18 @@ export default {
 			});
 		},
 		load_section_more() {
-			BMYClient.get_article_list_by_section(this.$route.params.secid).then(response => {
+			this.page = this.$route.query.page ? this.$route.query.page : 1;
+			BMYClient.get_article_list_by_section(this.$route.params.secid, this.page).then(response => {
 				if (Array.isArray(response.articles)) {
 					this.articles = response.articles;
 				}
+				this.total = response.total;
 			});
 		},
 	},
 	components: {
 		DashboardArticleListItem,
+		Pagination,
 		PopoverBoardInfo,
 	}
 }
