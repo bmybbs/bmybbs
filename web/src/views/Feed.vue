@@ -31,9 +31,6 @@
 							v-bind:_accessed="article.accessed"
 						/>
 					</ul>
-					<div class="card-footer text-center" @click="load_more">
-						加载更多
-					</div>
 				</div>
 			</div>
 			<div class="col-md-3">
@@ -71,7 +68,6 @@ export default {
 	data() {
 		return {
 			feedmode: this.$route.name == "feed",
-			time: Math.floor(new Date().getTime() / 1000),
 			articles: [ ],
 			favboards: [ ],
 			loggedin: true,
@@ -82,7 +78,6 @@ export default {
 	created() {
 		this.$watch(() => this.$route, (toRoute) => {
 			this.feedmode = toRoute.name == "feed";
-			this.time = Math.floor(new Date().getTime() / 1000);
 			this.articles = [ ];
 			this.favboards = [ ];
 
@@ -114,22 +109,13 @@ export default {
 
 			this.$router.push(r);
 		},
-		load_more() {
-			if (this.feedmode) {
-				this.load_feed_more();
-			} else {
-				this.load_section_more();
-			}
-		},
 		load_feed_more() {
 			this.page = this.$route.query.page ? this.$route.query.page : 1;
 			BMYClient.get_feed(this.page).then(response => {
 				switch (response.errcode) {
 				case BMY_EC.API_RT_SUCCESSFUL:
 					if (Array.isArray(response.articles)) {
-						this.articles = this.articles.concat(response.articles);
-						let l = response.articles.length;
-						this.time = response.articles[l - 1].tid - 1;
+						this.articles = response.articles;
 					}
 					this.total = response.total;
 					break;
