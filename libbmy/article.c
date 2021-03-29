@@ -273,6 +273,45 @@ END:
 	return p;
 }
 
+static void bmy_article_count_callback(MYSQL_STMT *stmt, MYSQL_BIND *result_col, void *result_set) {
+	(void) result_col;
+	(void) result_set;
+	mysql_stmt_fetch(stmt);
+}
+
+unsigned long bmy_article_total_selected_boards(const int boardnum_array[], size_t num) {
+	char *sqlbuf = NULL, *s = NULL;
+	size_t size = 0;
+	char count[12];
+	int total = 0;
+	int status;
+	MYSQL_BIND results[1];
+
+	s = bmy_algo_join_int_array_to_string(boardnum_array, num, ',');
+	if (s == NULL)
+		goto END;
+	size = strlen(s) + 512;
+	sqlbuf = calloc(size, sizeof(char));
+	if (sqlbuf == NULL)
+		goto END;
+
+	snprintf(sqlbuf, size, "SELECT COUNT(*) from `t_boards`, `t_threads` WHERE `t_boards`.`boardnum` IN (%s) AND `t_boards`.`boardnum` = `t_threads`.`boardnum`", s);
+
+	memset(results, 0, sizeof(results));
+	memset(count, 0, sizeof(count));
+	results[0].buffer_type = MYSQL_TYPE_STRING;
+	results[0].buffer = count;
+	results[0].buffer_length = sizeof(count);
+	status = execute_prep_stmt(sqlbuf, MYSQL_CHARSET_UTF8, NULL, results, NULL, bmy_article_count_callback);
+	total = (status != MYSQL_OK) ? 0 : atoi(count);
+	if (total < 0)
+		total = 0;
+END:
+	if (s) free(s);
+	if (sqlbuf) free(sqlbuf);
+	return total;
+}
+
 void bmy_article_list_free(struct bmy_articles *ptr) {
 	if (ptr) {
 		if (ptr->count > 0 && ptr->articles) {
