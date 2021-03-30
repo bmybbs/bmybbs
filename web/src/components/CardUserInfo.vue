@@ -1,36 +1,40 @@
 <template>
-	<div>
+	<div v-if="info">
 		<div class="title">
-			<span class="userid">{{ _userid }}</span>
-			<span>{{ _exp_level }}</span>
-			<span>{{ _job }}</span>
+			<span class="userid">{{ info.userid }}</span>
+			<span>{{ info.exp_level }}</span>
+			<span>{{ info.job }}</span>
 		</div>
 		<div class="figure">
 			<div class="item">
-				<div class="number">{{ _login_counts }}</div>
+				<div class="number">{{ info.login_counts }}</div>
 				<div class="text">次上线</div>
 			</div>
 
 			<div class="item">
-				<div class="number">{{ _post_counts }}</div>
+				<div class="number">{{ info.post_counts }}</div>
 				<div class="text">篇文章</div>
 			</div>
 		</div>
 	</div>
+	<div v-else></div>
 </template>
 
 <script>
+import { BMYClient } from "@/lib/BMYClient.js"
 export default {
 	data() {
-		return {};
+		return {
+			info: null,
+		};
+	},
+	mounted() {
+		BMYClient.get_user_info(this._userid).then(response => {
+			this.info = response;
+		});
 	},
 	props: {
 		_userid: String,
-		_exp_level: String,
-		_perf_level: String,
-		_job: String,
-		_login_counts: Number,
-		_post_counts: Number,
 	}
 }
 </script>

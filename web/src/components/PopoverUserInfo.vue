@@ -5,7 +5,6 @@
 <script>
 import { createApp, defineAsyncComponent } from "vue"
 import Popover from "bootstrap/js/dist/popover"
-import { BMYClient } from "@/lib/BMYClient.js"
 const CardUserInfo = defineAsyncComponent(() => import("./CardUserInfo.vue"));
 
 export default {
@@ -13,7 +12,6 @@ export default {
 		return {
 			timeout: null,
 			mount_id: "usercard" + (new Date().getTime()),
-			info: null,
 			popover: null,
 			v_instance: null,
 		};
@@ -24,28 +22,15 @@ export default {
 	methods: {
 		openPopover() {
 			this.timeout = setTimeout(() => {
-				if (this.info == null) {
-					BMYClient.get_user_info(this._userid).then(response => {
-						this.info = response;
-						this.doOpen();
-					});
-				} else {
-					this.doOpen();
-				}
-
+				this.doOpen();
 				this.timeout = null;
 			}, 1000);
 		},
 		doOpen() {
-			var that = this;
+			const that = this;
 
 			this.v_instance = createApp(CardUserInfo, {
-				_userid: that.info.userid,
-				_exp_level: that.info.exp_level,
-				_job: that.info.job,
-				_perf_level: that.info.perf_level,
-				_login_counts: that.info.login_counts,
-				_post_counts: that.info.post_counts,
+				_userid: that._userid,
 			});
 
 			this.popover = new Popover(this.$refs.span, {
