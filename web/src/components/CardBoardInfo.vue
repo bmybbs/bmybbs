@@ -1,88 +1,229 @@
 <template>
-	<div>
-		<div class="title">
-			<span class="title-main">{{ _boardname_zh }}</span>
-			<span class="title-sec">{{ _secstr }}/{{ _boardname_en }}</span>
+	<div class="card border-bmy-blue1" @mouseenter="onMouseOver" @mouseout="onMouseOut" :class="{ 'prevent-events': _prevent_events, 'in-popover': _in_popover }">
+		<div class="card-header bg-bmy-blue1 bg-gradient text-white title d-flex justify-content-between">
+			<span>
+				<span @click="toggleFav" style="cursor: pointer">
+					<fa :icon="['fas', 'star']" v-if="info.is_fav == 1" />
+					<fa :icon="['far', 'star']" v-else />
+				</span>
+				{{ info.zh_name }}
+			</span>
+			<span class="font-monospace">{{ info.secstr }}/{{ info.name }}</span>
 		</div>
 
-		<div class="numbers block">
-			<div class="numbers-item">
-				<div class="numbers-item-number">{{ kFormatter(_thread_num) }}</div>
-				<div class="numbers-item-text">主题</div>
+		<div class="card-body" style="z-index: 0">
+			<div class="d-flex justify-content-between flex-wrap mb-3">
+				<div class="numbers-item-wrapper bmy-circle-border d-flex align-items-center mb-1" v-for="i in infoArray" :key="i.name">
+					<div class="ratio ratio-1x1 m-2">
+						<div class="d-flex flex-column align-items-center justify-content-center">
+							<div class="numbers-item-number">{{ i.num }}</div>
+							<div class="numbers-item-text">{{ i.name }}</div>
+						</div>
+					</div>
+				</div>
 			</div>
-			<div class="numbers-item">
-				<div class="numbers-item-number">{{ kFormatter(_article_num) }}</div>
-				<div class="numbers-item-text">帖子</div>
-			</div>
-			<div class="numbers-item">
-				<div class="numbers-item-number">{{ kFormatter(_today_new) }}</div>
-				<div class="numbers-item-text">新增</div>
-			</div>
-			<div class="numbers-item">
-				<div class="numbers-item-number">{{ kFormatter(_inboard_num) }}</div>
-				<div class="numbers-item-text">在线</div>
-			</div>
-		</div>
 
-		<div class="intro block">
-			<h3>简介</h3>
-			<p>{{ _intro }}</p>
-		</div>
+			<div class="intro block" v-if="info.notes && info.notes.length > 0">
+				<div class="bmy-card-heading">简介</div>
+				<div class="my-3" v-html="mdNotes"></div>
+			</div>
 
-		<div class="keyword block">
-			<h3>关键字</h3>
-		</div>
+			<div>
+				<div class="bmy-card-heading">版主</div>
 
-		<div class="hot block">
-			<h3>热门话题</h3>
+				<div class="my-3">
+					<div v-if="moderators.length == 0">诚征版主中</div>
+					<div v-else>
+						<div v-for="m in moderators" :key="m">
+							<fa icon="at" />
+							{{ m }}
+						</div>
+					</div>
+
+					<div v-if="viceModerators.length > 0">
+						<div v-for="m in viceModerators" :key="m">
+							<fa icon="at" />
+							{{ m }}
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="keyword block" v-if="info.keyword && info.keyword.length > 0">
+				<div class="bmy-card-heading">关键字</div>
+				<div class="my-3">
+					<BadgeKeywords v-for="k in keywordArray" :key="k" :_text="k" />
+				</div>
+			</div>
+
+			<div class="hot block">
+				<div class="bmy-card-heading">热门话题</div>
+				<div class="my-3"></div>
+			</div>
 		</div>
 	</div>
 </template>
 
 <script>
+import DOMPurify from "dompurify";
+import marked from "marked";
+import { BMYClient } from "@/lib/BMYClient.js"
+import { BMY_EC } from "@/lib/BMYConstants.js"
+import BadgeKeywords from "./BadgeKeywords.vue"
+
+const kFormatter = num => {
+	if (num > 999)
+		return (num/1000).toFixed(1) + "k";
+	else
+		return num;
+};
+
 export default {
 	data() {
-		return {};
+		return {
+			info: {
+			},
+		};
+	},
+	created() {
+		this.$watch(() => this._boardname_en, (toBoardName) => {
+			this.get_info(toBoardName);
+		});
+	},
+	mounted() {
+		this.get_info(this._boardname_en);
+	},
+	computed: {
+		infoArray() {
+			return [
+				{ name: "主题", num: this.info.thread_num ? kFormatter(this.info.thread_num) : 0 },
+				{ name: "帖子", num: this.info.article_num ? kFormatter(this.info.article_num) : 0 },
+				{ name: "新增", num: this.info.today_new ? kFormatter(this.info.today_new) : 0 },
+				{ name: "在线", num: this.info.inboard_num ? kFormatter(this.info.inboard_num) : 0 },
+			];
+		},
+		keywordArray() {
+			return (this.info.keyword && this.info.keyword.length > 0) ? this.info.keyword.split(/[\s,;.:]+/) : [];
+		},
+		mdNotes() {
+			if (this.info.notes && this.info.notes.length > 0) {
+				return DOMPurify.sanitize(marked(this.info.notes));
+			} else {
+				return "";
+			}
+		},
+		moderators() {
+			const arr = [];
+			if (Array.isArray(this.info.bm)) {
+				for (let i = 0; i < 4; i++) {
+					if (this.info.bm[i]) {
+						arr.push(this.info.bm[i]);
+					}
+				}
+			}
+			return arr;
+		},
+		viceModerators() {
+			const arr = [];
+			if (Array.isArray(this.info.bm)) {
+				for (let i = 4, l = this.info.bm.length; i < l; i++) {
+					if (this.info.bm[i]) {
+						arr.push(this.info.bm[i]);
+					}
+				}
+			}
+			return arr;
+		}
 	},
 	props: {
 		_boardname_en: String,
-		_boardname_zh: String,
-		_secstr: String,
-		_article_num: Number,
-		_thread_num: Number,
-		_today_new: Number,
-		_inboard_num: Number,
+		_prevent_events: {
+			type: Boolean,
+			default: false
+		},
+		_in_popover: {
+			type: Boolean,
+			default: false
+		},
+		_events: Object,
 	},
 	methods: {
-		kFormatter(num) {
-			if (num > 999)
-				return (num/1000).toFixed(1) + "k";
-			else
-				return num;
+		get_info(boardname) {
+			BMYClient.get_board_info(boardname).then(response => {
+				this.info = response;
+			});
+		},
+		onMouseOver() {
+			if (this._events && typeof(this._events.mouseover) === "function") {
+				this._events.mouseover();
+			}
+		},
+		onMouseOut() {
+			if (this._events && typeof(this._events.mouseout) === "function") {
+				this._events.mouseout();
+			}
+		},
+		toggleFav() {
+			if (this.info.is_fav == 1) {
+				BMYClient.fav_del(this._boardname_en).then(response => {
+					if (response.errcode == 0 || response.errcode == BMY_EC.API_RT_NOTINRCD) {
+						this.$toast.success("移除成功", {
+							position: "top"
+						});
+						this.info.is_fav = 0;
+					} else if (response.errcode == BMY_EC.API_RT_NOTLOGGEDIN) {
+						this.$toast.error("请重新登录", {
+							position: "top"
+						});
+					}
+				});
+			} else {
+				BMYClient.fav_add(this._boardname_en).then(response => {
+					const cfg = {
+						type: "error",
+						position: "top",
+					};
+					let msg = "";
+
+					switch (response.errcode) {
+						case BMY_EC.API_RT_SUCCESSFUL:
+						case BMY_EC.API_RT_ALRDYINRCD:
+							msg = "添加成功";
+							cfg.type = "success";
+							this.info.is_fav = 1;
+							break;
+						case BMY_EC.API_RT_NOTLOGGEDIN:
+							msg = "请重新登录";
+							break;
+						case BMY_EC.API_RT_REACHMAXRCD:
+							msg = "已达到收藏夹上限，无法添加";
+							break;
+						case BMY_EC.API_RT_NOSUCHBRD:
+						case BMY_EC.API_RT_FBDNUSER:
+							msg = "找不到这个版面";
+							break;
+						default:
+							break;
+					}
+
+					this.$toast.show(msg, cfg);
+				});
+			}
 		},
 	},
+	components: {
+		BadgeKeywords,
+	}
 }
 </script>
 
 <style scoped>
-.title-main {
-	font-size: 20px;
-	font-weight: 600;
-}
-.numbers {
-	display: flex;
-	justify-content: space-between;
+.prevent-events * {
+	pointer-events: none;
 }
 
-.numbers-item {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	margin-left: 10px;
-}
-
-.numbers-item:first-child {
-	margin-left: 0px;
+.in-popover {
+	width: 320px;
 }
 
 .numbers-item-number {
@@ -94,14 +235,38 @@ export default {
 	font-size: 12px;
 }
 
-h3 {
-	font-size: 14px;
-	font-weight: 600;
-	color: #1c1c1c;
+.bmy-card-heading {
+	margin: 0 -1rem;
+	padding: 0.5rem 1rem;
+	background: var(--bs-bmy-blue0);
+	border-top: 1px solid var(--bs-bmy-blue);
+	border-bottom: 1px solid var(--bs-bmy-blue);
 }
 
-.block {
-	margin-top: 5px;
+@media (max-width: 576px) {
+	.numbers-item-wrapper {
+		width: 22.5%;
+	}
 }
+
+@media (min-width: 576px) {
+	.numbers-item-wrapper {
+		width: 48%;
+	}
+}
+
+@media (min-width: 1200px) {
+	.numbers-item-wrapper {
+		width: 22.5%;
+	}
+}
+
+.in-popover .numbers-item-wrapper {
+	width: 22.5% !important;
+}
+</style>
+
+<style lang="scss" scoped>
+@import "@/assets/gradient-circle-border.scss"
 </style>
 

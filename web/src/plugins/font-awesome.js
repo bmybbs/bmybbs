@@ -31,17 +31,29 @@ import {
 	faMusic,
 	faPaperclip,
 	faPaperPlane,
+	faPen,
 	faPizzaSlice,
+	faPlus,
 	faRedo,
+	faRetweet,
 	faRss,
 	faSearch,
+	faShare,
 	faShareAlt,
 	faSlidersH,
 	faSpinner,
+	faStar,
 	faThumbtack,
 	faUnderline,
 	faUser,
 } from "@fortawesome/free-solid-svg-icons"
+
+import {
+	faEnvelope,
+	faEye,
+	faStar as faStarR,
+} from "@fortawesome/free-regular-svg-icons"
+
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 
 library.add(faAlignJustify);
@@ -56,6 +68,8 @@ library.add(faCloudUploadAlt);
 library.add(faCode);
 library.add(faCogs);
 library.add(faComments);
+library.add(faEnvelope);
+library.add(faEye);
 library.add(faFile);
 library.add(faFire);
 library.add(faFont);
@@ -75,13 +89,19 @@ library.add(faMap);
 library.add(faMusic);
 library.add(faPaperclip);
 library.add(faPaperPlane);
+library.add(faPen);
 library.add(faPizzaSlice);
+library.add(faPlus);
 library.add(faRedo);
+library.add(faRetweet);
 library.add(faRss);
 library.add(faSearch);
+library.add(faShare);
 library.add(faShareAlt);
 library.add(faSlidersH);
 library.add(faSpinner);
+library.add(faStar);
+library.add(faStarR);
 library.add(faThumbtack);
 library.add(faUnderline);
 library.add(faUser);

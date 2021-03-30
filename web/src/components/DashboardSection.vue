@@ -1,6 +1,6 @@
 <template>
-	<section class="card mb-4 shadow-lg bmy-dashboard-card">
-		<div class="card-header bg-secondary bg-gradient fs-5">
+	<section class="card mb-4 border-bmy-blue1">
+		<div class="card-header bg-bmy-blue1 bg-gradient fs-5">
 			<router-link :to="{ name: 'section', params: { secid: _secstr }}" class="text-white text-decoration-none">{{ _name }}</router-link>
 			<span class="float-end text-white font-monospace">{{_secstr}}</span>
 		</div>
@@ -21,8 +21,9 @@
 </template>
 
 <script>
+import { defineAsyncComponent } from "vue"
 import { BMYClient } from "@/lib/BMYClient.js"
-import DashboardArticleListItem from "@/components/DashboardArticleListItem.vue"
+const DashboardArticleListItem = defineAsyncComponent(() => import("./DashboardArticleListItem.vue"));
 
 export default {
 	data() {

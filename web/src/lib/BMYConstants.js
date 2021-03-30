@@ -1,3 +1,5 @@
+export const ITEMS_PER_PAGE = 20;
+
 export const BMYSECSTRS = [
 	{ id: '0', name: "本站系统", icon: "paper-plane" },
 	{ id: '1', name: "交通大学", icon: "graduation-cap" },

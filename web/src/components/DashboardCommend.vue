@@ -1,6 +1,6 @@
 <template>
-	<section class="card mb-4 shadow-lg bmy-dashboard-card">
-		<div class="card-header bg-secondary bg-gradient text-white fs-5">
+	<section class="card mb-4 border-bmy-blue1">
+		<div class="card-header bg-bmy-blue1 bg-gradient text-white fs-5">
 			{{ _name }}
 			<span class="float-end text-white font-monospace"><fa :icon="_icon" /></span>
 		</div>
@@ -20,7 +20,8 @@
 </template>
 
 <script>
-import DashboardArticleListItem from "@/components/DashboardArticleListItem.vue"
+import { defineAsyncComponent } from "vue"
+const DashboardArticleListItem = defineAsyncComponent(() => import("./DashboardArticleListItem.vue"));
 
 export default {
 	data() {

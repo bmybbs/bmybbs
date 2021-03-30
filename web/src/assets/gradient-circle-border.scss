@@ -1,0 +1,19 @@
+/* credit: https://css-tricks.com/gradient-borders-in-css/ */
+.bmy-circle-border {
+	$border: 5px;
+	border: $border solid transparent;
+	border-radius: 50%;
+	background: white;
+	background-clip: padding-box;
+	position: relative;
+	&:before {
+		content: '';
+		position: absolute;
+		top: 0; right: 0; bottom: 0; left: 0;
+		z-index: -1;
+		margin: -$border;
+		border-radius: inherit;
+		background: linear-gradient(45deg, #267dcf 0%, #74fac8 95%);
+	}
+}
+

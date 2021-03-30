@@ -8,9 +8,11 @@
 </template>
 
 <script>
+import { defineAsyncComponent } from "vue"
 import { BMYClient } from "@/lib/BMYClient.js"
-import LoginPC from "@/components/LoginPC.vue";
-import LoginMobile from "@/components/LoginMobile.vue";
+
+const LoginPC = defineAsyncComponent(() => import("@/components/LoginPC.vue"));
+const LoginMobile = defineAsyncComponent(() => import("@/components/LoginMobile.vue"));
 
 export default {
 	data() {

@@ -1,5 +1,5 @@
 <template>
-	<header class="row sticky-top bg-dark m-0 shadow">
+	<header class="row sticky-top bg-dark m-0">
 		<nav class="navbar navbar-dark p-0">
 			<div class="navbar-brand col-3 col-sm-3 col-md-3 col-lg-2 mr-0 px-3">BMYBBS</div>
 			<div class="col-6 col-sm-7 col-md-8 col-lg-9">
@@ -38,7 +38,7 @@
 	<div class="container-fluid">
 		<div class="row">
 			<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block d-none sidebar">
-				<div class="sidebar-sticky pt-3">
+				<div class="sidebar-sticky pt-3 overflow-auto bg-bmy-blue0">
 					<ul class="nav flex-column">
 						<li class="nav-item">
 							<router-link to="/web" class="nav-link">
@@ -48,6 +48,11 @@
 						<li class="nav-item">
 							<router-link to="/web/feed" class="nav-link">
 								<span class="sidebar-icon"><fa icon="rss" /></span> 订阅
+							</router-link>
+						</li>
+						<li class="nav-item">
+							<router-link :to="($route.name == 'RAWSUBMIT' || $route.name == 'boardSubmit') ? '#' : (($route.name == 'board' || $route.name == 'thread' ) ? { name: 'boardSubmit', params: { boardname: $route.params.boardname }} : { name: 'RAWSUBMIT' })" class="nav-link">
+								<span class="sidebar-icon"><fa icon="plus" /></span> 发布
 							</router-link>
 						</li>
 						<li class="nav-item">
@@ -70,7 +75,7 @@
 					</div>
 				</div>
 			</nav>
-			<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 min-vh-100">
+			<main class="col-md-9 ms-sm-auto col-lg-10 px-0 px-md-4 min-vh-100">
 				<router-view />
 			</main>
 		</div>
@@ -105,10 +110,12 @@
 </template>
 
 <script>
+import { defineAsyncComponent } from "vue"
 import { BMYSECSTRS, BMY_EC } from "@/lib/BMYConstants.js";
 import { BMYClient } from "@/lib/BMYClient.js";
-import SidebarSecList from "@/components/SidebarSecList.vue";
-import NavSearch from "@/components/NavSearch.vue";
+
+const SidebarSecList = defineAsyncComponent(() => import("@/components/SidebarSecList.vue"));
+const NavSearch = defineAsyncComponent(() => import("@/components/NavSearch.vue"));
 
 export default {
 	data() {
@@ -189,14 +196,16 @@ export default {
 	top: 0;
 	height: calc(100vh - 48px);
 	padding-top: .5rem;
-	overflow-x: hidden;
-	overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+}
+
+.sidebar-sticky .nav-link {
+	padding: 0.5rem 1.25rem;
 }
 
 .sidebar-icon {
 	display: inline-block;
-	width: 16px;
-	height: 16px;
+	width: 1rem;
+	height: 1rem;
 	color: #6c757daa;
 }
 
@@ -221,8 +230,13 @@ footer .navbar-nav .nav-link {
 /* Main */
 main {
 	padding-top: 16px;
-	background-color: #DAE0E6;
 	padding-bottom: 50px;
+}
+</style>
+
+<style>
+html {
+	font-size: 16px;
 }
 </style>
 

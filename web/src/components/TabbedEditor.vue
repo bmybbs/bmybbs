@@ -8,70 +8,70 @@
 		<div class="editor-header">
 			<ul class="nav nav-tabs">
 				<li class="nav-item">
-					<span class="nav-link" :class="{ active: isEditing }" @click="turnOnEdit">编辑</span>
+					<span class="nav-link" :class="{ active: isEditing }" @click="turnOnEdit" title="编辑"><span><fa icon="pen" /></span><span class="d-none d-lg-inline-block ms-1">编辑</span></span>
 				</li>
 				<li class="nav-item">
-					<span class="nav-link" :class="{ active: isAttach }" @click="turnOnAttach">附件</span>
+					<span class="nav-link" :class="{ active: isAttach }" @click="turnOnAttach" title="附件"><span><fa icon="paperclip" /></span><span class="d-none d-lg-inline-block ms-1">附件</span></span>
 				</li>
 				<li class="nav-item">
-					<span class="nav-link" :class="{ active: !isEditing && !isAttach }" @click="turnOnPreview">预览</span>
+					<span class="nav-link" :class="{ active: !isEditing && !isAttach }" @click="turnOnPreview" title="预览"><span><fa :icon="['far', 'eye']" /></span><span class="d-none d-lg-inline-block ms-1">预览</span></span>
 				</li>
 			</ul>
 
 			<ul class="editor-toolbar nav nav-tabs" v-if="isEditing" ref="editor_toolbar">
-				<li class="nav-item dropdown" data-bs-toggle="tooltip" data-bs-placement="top" title="前景色">
+				<li class="nav-item dropdown" title="前景色">
 					<span class="nav-link" @click="openFcdd">
 						<fa icon="font" />
 					</span>
 					<ul class="dropdown-menu" :class="{ show: showFcdd }">
 						<li>
 							<div class="palette">
-								<span class="aha aha-bg-black" @click="insertFcBlack"></span>
-								<span class="aha aha-bg-red" @click="insertFcRed"></span>
-								<span class="aha aha-bg-green" @click="insertFcGreen"></span>
-								<span class="aha aha-bg-olive" @click="insertFcOlive"></span>
+								<span class="bmybbs-ansi bmybbs-ansi-bg0" @click="insertFcBlack" title="前景色黑"></span>
+								<span class="bmybbs-ansi bmybbs-ansi-bg1" @click="insertFcRed" title="前景色红"></span>
+								<span class="bmybbs-ansi bmybbs-ansi-bg2" @click="insertFcGreen" title="前景色绿"></span>
+								<span class="bmybbs-ansi bmybbs-ansi-bg3" @click="insertFcOlive" title="前景色黄"></span>
 							</div>
 							<div class="palette">
-								<span class="aha aha-bg-blue" @click="insertFcBlue"></span>
-								<span class="aha aha-bg-purple" @click="insertFcPurple"></span>
-								<span class="aha aha-bg-teal" @click="insertFcTeal"></span>
-								<span class="aha aha-bg-grey" @click="insertFcGrey"></span>
+								<span class="bmybbs-ansi bmybbs-ansi-bg4" @click="insertFcBlue" title="前景色蓝"></span>
+								<span class="bmybbs-ansi bmybbs-ansi-bg5" @click="insertFcPurple" title="前景色粉"></span>
+								<span class="bmybbs-ansi bmybbs-ansi-bg6" @click="insertFcTeal" title="前景色青"></span>
+								<span class="bmybbs-ansi bmybbs-ansi-bg7" @click="insertFcGrey" title="前景色灰"></span>
 							</div>
 						</li>
 					</ul>
 				</li>
-				<li class="nav-item dropdown" data-bs-toggle="tooltip" data-bs-placement="top" title="背景色">
+				<li class="nav-item dropdown" title="背景色">
 					<span class="nav-link" @click="openBgdd">
 						<fa icon="clone" />
 					</span>
 					<ul class="dropdown-menu" :class="{ show: showBgdd }">
 						<li>
 							<div class="palette">
-								<span class="aha aha-bg-black" @click="insertBgBlack"></span>
-								<span class="aha aha-bg-red" @click="insertBgRed"></span>
-								<span class="aha aha-bg-green" @click="insertBgGreen"></span>
-								<span class="aha aha-bg-olive" @click="insertBgOlive"></span>
+								<span class="bmybbs-ansi bmybbs-ansi-bg0" @click="insertBgBlack" title="背景色黑"></span>
+								<span class="bmybbs-ansi bmybbs-ansi-bg1" @click="insertBgRed" title="背景色红"></span>
+								<span class="bmybbs-ansi bmybbs-ansi-bg2" @click="insertBgGreen" title="背景色绿"></span>
+								<span class="bmybbs-ansi bmybbs-ansi-bg3" @click="insertBgOlive" title="背景色黄"></span>
 							</div>
 							<div class="palette">
-								<span class="aha aha-bg-blue" @click="insertBgBlue"></span>
-								<span class="aha aha-bg-purple" @click="insertBgPurple"></span>
-								<span class="aha aha-bg-teal" @click="insertBgTeal"></span>
-								<span class="aha aha-bg-grey" @click="insertBgGrey"></span>
+								<span class="bmybbs-ansi bmybbs-ansi-bg4" @click="insertBgBlue" title="背景色蓝"></span>
+								<span class="bmybbs-ansi bmybbs-ansi-bg5" @click="insertBgPurple" title="背景色粉"></span>
+								<span class="bmybbs-ansi bmybbs-ansi-bg6" @click="insertBgTeal" title="背景色青"></span>
+								<span class="bmybbs-ansi bmybbs-ansi-bg7" @click="insertBgGrey" title="背景色灰"></span>
 							</div>
 						</li>
 					</ul>
 				</li>
-				<li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="top" title="闪烁">
+				<li class="nav-item" title="闪烁">
 					<span class="nav-link" @click="insertBlink">
 						<fa icon="lightbulb" />
 					</span>
 				</li>
-				<li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="top" title="斜体">
+				<li class="nav-item" title="斜体">
 					<span class="nav-link" @click="insertItalic">
 						<fa icon="italic" />
 					</span>
 				</li>
-				<li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="top" title="下划线">
+				<li class="nav-item" title="下划线">
 					<span class="nav-link" @click="insertUnderl">
 						<fa icon="underline" />
 					</span>
@@ -79,22 +79,22 @@
 			</ul>
 
 			<ul class="editor-toolbar nav nav-tabs" v-if="isAttach" ref="attach_toolbar">
-				<li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="top" title="选择文件">
+				<li class="nav-item" title="选择文件">
 					<span class="nav-link" @click="pickFiles">
 						<fa icon="paperclip" />
 					</span>
 				</li>
-				<li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="top" title="刷新">
+				<li class="nav-item" title="刷新">
 					<span class="nav-link" @click="loadUploaded">
 						<fa icon="redo" />
 					</span>
 				</li>
-				<li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="top" title="上传">
+				<li class="nav-item" title="上传">
 					<span class="nav-link" @click="doUpload">
 						<fa icon="cloud-upload-alt" />
 					</span>
 				</li>
-				<li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="top" title="参考代码">
+				<li class="nav-item" title="参考代码">
 					<span class="nav-link" @click="showCodeModal">
 						<fa icon="code" />
 					</span>
@@ -103,7 +103,7 @@
 		</div>
 		<div class="tab-content">
 			<div class="tab-pane fade" :class="{ active: isEditing, show: isEditing }">
-				<textarea ref="textarea" class="form-control" rows="5"></textarea>
+				<textarea ref="textarea" class="form-control" rows="5" @focus="closePalette"></textarea>
 				<div class="form-check form-switch">
 					<input class="form-check-input" type="checkbox" v-model="using_math">
 					<label class="form-check-label">使用 Tex 风格的数学公式</label>
@@ -166,17 +166,24 @@
 				</div>
 			</div>
 
-			<div class="tab-pane fade" :class="{ active: !isEditing && !isAttach, show: !isEditing && !isAttach }" v-html="previewContent">
+			<div class="tab-pane fade article" :class="{ active: !isEditing && !isAttach, show: !isEditing && !isAttach }" v-html="previewContent">
 			</div>
 		</div>
 	</div>
 </template>
 
 <script>
-import Tooltip from "bootstrap/js/dist/tooltip"
 import { BMYClient } from "@/lib/BMYClient.js"
 import { ANSI_TAGS, BMY_EC } from "@/lib/BMYConstants.js"
+import {
+	generateContent,
+	getErrorMessage
+} from "@/lib/BMYUtils.js"
 import { readableSize } from "@bmybbs/bmybbs-content-parser/dist/utils.js"
+import bmyParser from "@bmybbs/bmybbs-content-parser"
+import "@/assets/article.css"
+import Prism from "prismjs"
+import "@/plugins/mathjax.js"
 
 const UPLOAD_ERROR_MSG = {
 	NOTLOGGEDIN: "请先登录",
@@ -188,6 +195,8 @@ const UPLOAD_ERROR_MSG = {
 };
 
 const sleep = async (ms) => new Promise(r => setTimeout(r, ms));
+
+const RE = "Re: ";
 
 const titleLen = (str) => {
 	let count = 0;
@@ -220,6 +229,11 @@ const getUploadErrorMsg = (errcode) => {
 	return msg;
 };
 
+const downloadFile = async (url) => {
+	const resp = await fetch(url);
+	return resp.blob();
+}
+
 export default {
 	data() {
 		return {
@@ -244,40 +258,106 @@ export default {
 			progressStyleObj: {
 				width: "0%",
 			},
+			shouldSave: true,
 		};
 	},
-	props: {
-		_boardname_en: String,
-	},
 	mounted() {
-		let elements = this.$refs.editor_toolbar.querySelectorAll('[data-bs-toggle="tooltip"]');
-		let tooltipTriggerList = [].slice.call(elements);
-		tooltipTriggerList.forEach((el) => {
-			new Tooltip(el);
-		});
+		if (this.isReplyMode()) {
+			if (this.bmy_cache.article != null
+				&& this.bmy_cache.article.board == this.$route.params.boardname
+				&& this.bmy_cache.article.aid == this.$route.params.aid) {
+				this.title = this.bmy_cache.article.title;
+				this.$refs.textarea.value = this.bmy_cache.article.content;
+			} else {
+				BMYClient.get_article_content(this.$route.params.boardname, this.$route.params.aid).then(response => {
+					if (response.errcode == BMY_EC.API_RT_SUCCESSFUL) {
+						this.title = response.title.startsWith(RE) ? response.title : `${RE}${response.title}`;
+						this.$refs.textarea.value = generateContent("", response.author, response.content);
+					} else {
+						this.$toast.error("原文不存在，将跳转到发布新文章", {
+							position: "top"
+						});
+
+						this.$router.push({
+							name: "boardSubmit",
+							boardname: this.$route.params.boardname
+						});
+					}
+				});
+			}
+		} else if (this.$route.name == "RAWSUBMIT" || this.$route.name == "boardSubmit") {
+			this.load();
+		}
+	},
+	beforeUnmount() {
+		if (this.shouldSave && (this.$route.name == "RAWSUBMIT" || this.$route.name == "boardSubmit")) {
+			this.save();
+		} else {
+			this.bmy_cache.article = null;
+		}
 	},
 	methods: {
+		isReplyMode() {
+			return this.$route.name == "reply";
+		},
 		post() {
+			if (this.$route.name == "RAWSUBMIT") {
+				this.$toast.error("请先选择版面", {
+					position: "top"
+				});
+				return;
+			}
+
 			const article = {
-				board: this._boardname_en,
+				board: this.$route.params.boardname,
 				title: this.title,
 				content: this.$refs.textarea.value.replaceAll("[ESC][", "\x1b["),
-				using_math: this.using_math,
 				anony: this.is_anony,
 				norep: this.is_norep,
 				math: this.using_math,
 			};
-			BMYClient.post_article(article).then(response => {
+
+			if (this.isReplyMode()) {
+				article.ref = this.$route.params.aid;
+				article.rid = 0;
+			}
+
+			const request = (this.isReplyMode()) ? BMYClient.reply_article(article) : BMYClient.post_article(article);
+
+			request.then(response => {
 				if (response.errcode == 0) {
+					this.shouldSave = false;
 					this.$router.push({
 						name: "thread",
 						params: {
-							boardname: this._boardname_en,
-							tid: response.aid,
+							boardname: this.$route.params.boardname,
+							tid: (this.isReplyMode()) ? response.tid : response.aid,
 						}
+					});
+				} else {
+					this.$toast.error(getErrorMessage(response.errcode), {
+						position: "top"
 					});
 				}
 			});
+		},
+		save() {
+			this.bmy_cache.article = {
+				title: this.title,
+				content: this.$refs.textarea.value,
+				anony: this.is_anony,
+				norep: this.is_norep,
+				math: this.using_math,
+			}
+		},
+		load() {
+			if (this.bmy_cache.article != null && this.bmy_cache.article.aid == null) {
+				this.title = this.bmy_cache.article.title;
+				this.$refs.textarea.value = this.bmy_cache.article.content;
+				this.is_anony = this.bmy_cache.article.anony;
+				this.is_norep = this.bmy_cache.article.norep;
+				this.using_math = this.bmy_cache.article.math;
+			}
 		},
 		openFcdd() {
 			this.showBgdd = false;
@@ -296,19 +376,38 @@ export default {
 			this.isAttach = true;
 			this.loadUploaded();
 		},
-		turnOnPreview() {
+		async turnOnPreview() {
 			this.isEditing = false;
 			this.isAttach = false;
 
-			BMYClient.get_draft_preview({
-				content: this.$refs.textarea.value,
-			}).then(response => {
-				if (response.errcode == 0) {
-					this.previewContent = response.content;
-				} else {
-					this.previewContent = "";
+			const attach_list_resp = await BMYClient.get_attach_list();
+			const attaches = [];
+
+			if (attach_list_resp.errcode == 0) {
+				for (const file of attach_list_resp.attach_array) {
+					const blob = await downloadFile(`/api/attach/get?file=${file.file_name}`);
+					attaches.push({
+						name: file.file_name,
+						size: file.size,
+						link: window.URL.createObjectURL(blob),
+						signature: Array.from(new Uint8Array(await blob.arrayBuffer())),
+					});
 				}
-			});
+			}
+
+			const article = {
+				text: this.$refs.textarea.value.replaceAll("[ESC][", "\x1b["),
+				attaches: attaches,
+			}
+
+			const content = bmyParser(article);
+			this.previewContent = content;
+
+			await sleep(1500);
+			Prism.highlightAll();
+			if (this.using_math && window.MathJax && typeof window.MathJax.typeset === "function") {
+				window.MathJax.typeset();
+			}
 		},
 		showCodeModal() {
 			this.showCode = true;
@@ -438,9 +537,11 @@ export default {
 			}
 			this.isDeleting = false;
 		},
-		insertAtCursor(left, right) {
+		closePalette() {
 			this.showFcdd = false;
 			this.showBgdd = false;
+		},
+		insertAtCursor(left, right) {
 			let textarea = this.$refs.textarea;
 			if (textarea.selectionStart || textarea.selectionStart == '0') {
 				let startPos = textarea.selectionStart,
@@ -513,6 +614,11 @@ textarea {
 
 .editor-toolbar .nav-item:hover {
 	background-color: #ccc;
+}
+
+.editor-toolbar .nav-link {
+	padding-left: 0.9rem;
+	padding-right: 0.9rem;
 }
 
 .editor-toolbar .dropdown-menu {

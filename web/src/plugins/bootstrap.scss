@@ -1,0 +1,53 @@
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+
+$custom-colors: (
+	"bmy-blue": #267dcf,
+	"bmy-blue0": #f5f9ff,
+	"bmy-blue1": #004c97,
+	"bmy-blue2": #0064b2,
+	"bmy-grey1": #e0e7f1,
+	"bmy-grey2": #c1c8d2,
+	"bmy-dark6": $gray-600,
+	"bmy-dark7": $gray-700,
+	"bmy-dark8": $gray-800,
+);
+
+$h7-font-size: $font-size-base * 0.8 !default;
+$custom-font-sizes: (
+	7: $h7-font-size
+);
+
+$theme-colors: map-merge($theme-colors, $custom-colors);
+$font-sizes: map-merge($font-sizes, $custom-font-sizes);
+
+@import "bootstrap/scss/mixins";
+@import "bootstrap/scss/utilities";
+
+@import "bootstrap/scss/root";
+@import "bootstrap/scss/reboot";
+@import "bootstrap/scss/type";
+@import "bootstrap/scss/images";
+@import "bootstrap/scss/containers";
+@import "bootstrap/scss/grid";
+@import "bootstrap/scss/forms";
+@import "bootstrap/scss/buttons";
+@import "bootstrap/scss/transitions";
+@import "bootstrap/scss/dropdown";
+@import "bootstrap/scss/button-group";
+@import "bootstrap/scss/nav";
+@import "bootstrap/scss/navbar";
+@import "bootstrap/scss/card";
+@import "bootstrap/scss/accordion";
+@import "bootstrap/scss/breadcrumb";
+@import "bootstrap/scss/pagination";
+@import "bootstrap/scss/badge";
+@import "bootstrap/scss/progress";
+@import "bootstrap/scss/list-group";
+@import "bootstrap/scss/close";
+@import "bootstrap/scss/modal";
+@import "bootstrap/scss/popover";
+@import "bootstrap/scss/helpers";
+@import "bootstrap/scss/utilities/api";
+
+

@@ -6,9 +6,11 @@
 				class="col-4"
 			>
 				<div class="d-flex flex-column align-items-center section-item mb-4" @click="gotoSection(section.id)">
-					<div class="border border-dark border-5 rounded-circle ratio ratio-1x1 section-icon-border text-center">
-						<div class="section-icon align-middle">
-							<fa :icon="section.icon" class="d-inline-block h-100"/>
+					<div class="bmy-circle-border w-100">
+						<div class="ratio ratio-1x1 text-center">
+							<div class="fs-1 align-middle text-bmy-blue2">
+								<fa :icon="section.icon" class="d-inline-block h-100"/>
+							</div>
 						</div>
 					</div>
 					<div class="section-name fs-5 pt-2">
@@ -37,9 +39,7 @@ export default {
 }
 </script>
 
-<style scoped>
-.section-icon {
-	font-size: 2.5rem;
-}
+<style lang="scss" scoped>
+@import "@/assets/gradient-circle-border.scss"
 </style>
 

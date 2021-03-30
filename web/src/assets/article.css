@@ -1,3 +1,23 @@
+mjx-container {
+	font-size: 120%
+}
+
+.article img {
+	max-width: 100%
+}
+
+.article blockquote {
+	padding: 0.5rem 1rem;
+	border-left: 5px solid var(--bs-bmy-grey2);
+	color: var(--bs-gray);
+	background: var(--bs-bmy-grey1);
+}
+
+.article blockquote p {
+	margin-bottom: 0.1rem;
+	margin-block-end: 0.1rem;
+}
+
 .bmy-attach {
 	display: flex;
 }

@@ -16,17 +16,23 @@ export const BMYClient = {
 	delete_attach(filename) {
 		return fetch(`/api/attach/delete?file=${filename}`, { method: "DELETE" }).then(response => response.json());
 	},
+	fav_add(boardname_en) {
+		return myFetchPost(`/api/board/fav/add?board=${boardname_en}`);
+	},
+	fav_del(boardname_en) {
+		return myFetchPost(`/api/board/fav/del?board=${boardname_en}`);
+	},
 	get_announce() {
 		return myFetchGet("/api/article/list?type=announce");
 	},
 	get_article_content(boardname_en, aid) {
 		return myFetchGet(`/api/article/getContent?board=${boardname_en}&aid=${aid}`);
 	},
-	get_article_list_by_board(boardname_en, mode) {
-		return myFetchGet(`/api/article/list?type=board&board=${boardname_en}&btype=${mode}`);
+	get_article_list_by_board(boardname_en, mode, page) {
+		return myFetchGet(`/api/article/list?type=board&board=${boardname_en}&btype=${mode}&page=${page}`);
 	},
-	get_article_list_by_section(secstr) {
-		return myFetchGet(`/api/article/list?type=section&secstr=${secstr}`);
+	get_article_list_by_section(secstr, page = 1) {
+		return myFetchGet(`/api/article/list?type=section&secstr=${secstr}&page=${page}`);
 	},
 	get_attach_list() {
 		return myFetchGet("/api/attach/list");
@@ -40,14 +46,11 @@ export const BMYClient = {
 	get_commend() {
 		return myFetchGet("/api/article/list?type=commend");
 	},
-	get_draft_preview(obj) {
-		return myFetchPost("/api/article/preview", obj);
-	},
 	get_fav_board_list() {
 		return myFetchGet("/api/board/fav/list");
 	},
-	get_feed(start) {
-		return myFetchGet(`/api/subscription/list?start=${start}`);
+	get_feed(page = 1) {
+		return myFetchGet(`/api/subscription/list?page=${page}`);
 	},
 	get_sectop(secstr) {
 		return myFetchGet(`/api/article/list?type=sectop&secstr=${secstr}`);
@@ -72,6 +75,9 @@ export const BMYClient = {
 	},
 	post_article(article) {
 		return myFetchPost("/api/article/post", article);
+	},
+	reply_article(article) {
+		return myFetchPost("/api/article/reply", article);
 	},
 	search_board(start_with) {
 		return myFetchGet(`/api/board/autocomplete?search_str=${start_with}`);
