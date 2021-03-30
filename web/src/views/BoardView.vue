@@ -1,19 +1,20 @@
 <template>
-	<div class="card border-bmy-blue border-start-0 border-end-0">
+	<div>
 		<Pagination :_current="page" :_total="total" :_callback="gotoPage" />
-
-		<ul class="list-group list-group-flush">
-			<BoardArticleListItem
-				v-for="article in articles"
-				v-bind:key="[$route.params.boardname, '/', article.aid].join('')"
-				v-bind:_boardname_en="$route.params.boardname"
-				v-bind:_title="article.title"
-				v-bind:_author="article.author"
-				v-bind:_comments="article.th_num"
-				v-bind:_aid="article.tid"
-				v-bind:_accessed="article.mark"
+		<div class="card border-bmy-blue border-start-0 border-end-0">
+			<ul class="list-group list-group-flush">
+				<BoardArticleListItem
+					v-for="article in articles"
+					v-bind:key="[$route.params.boardname, '/', article.aid].join('')"
+					v-bind:_boardname_en="$route.params.boardname"
+					v-bind:_title="article.title"
+					v-bind:_author="article.author"
+					v-bind:_comments="article.th_num"
+					v-bind:_aid="article.tid"
+					v-bind:_accessed="article.mark"
 				/>
-		</ul>
+			</ul>
+		</div>
 	</div>
 </template>
 
