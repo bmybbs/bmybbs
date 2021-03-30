@@ -37,6 +37,7 @@ export default {
 				container: "body",
 				placement: "bottom",
 				html: true,
+				customClass: "shadow-lg",
 				content: "<div id='" + that.mount_id + "'></div>",
 			});
 
