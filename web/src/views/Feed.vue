@@ -1,19 +1,7 @@
 <template>
 	<div v-if="loggedin">
-		<div class="row px-4">
-			<div class="col-6 col-xs-6 col-md-6 px-1">
-				<h2 v-if="feedmode">订阅</h2>
-				<h2 v-else>{{$route.params.secid}}区</h2>
-			</div>
-			<div class="col-6 col-xs-6 col-md-6 right-col d-flex align-items-center justify-content-end">
-				<span class="icon me-3">
-					<fa icon="align-justify" />
-				</span>
-				<span class="icon">
-					<fa icon="redo" />
-				</span>
-			</div>
-		</div>
+		<h2 v-if="feedmode">订阅</h2>
+		<h2 v-else>{{$route.params.secid}}区</h2>
 		<div class="row">
 			<div class="col-md-9">
 				<Pagination :_current="page" :_total="total" :_callback="gotoPage" />
