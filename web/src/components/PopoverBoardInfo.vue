@@ -63,6 +63,7 @@ export default {
 			this.popover = new Popover(this.$refs.span, {
 				container: "body",
 				placement: "bottom",
+				template: '<div class="popover" role="tooltip"><div class="popover-body p-0"></div></div>',
 				html: true,
 				customClass: "bmy-popover-card shadow-lg",
 				content: "<div id='card" + that.internal_id + "'></div>"
