@@ -12,7 +12,7 @@ Page({
 			switch (response.errcode) {
 			case BMY_EC.API_RT_SUCCESSFUL:
 				if (Array.isArray(response.articles)) {
-					response.articles.map((x) => {
+					response.articles.forEach((x) => {
 						x.id = x.boardname_en + x.tid;
 					});
 					this.setData({

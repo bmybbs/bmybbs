@@ -28,7 +28,7 @@ Component({
 
 			const doc = new DOMParser().parseFromString(this.data.article.content, "text/html");
 			const aha_arr = [].slice.call(doc.getElementsByTagName("span"));
-			aha_arr.map((x) => {
+			aha_arr.forEach((x) => {
 				let classes = x.getAttribute("class");
 				if (this.data.show_ansi) {
 					x.setAttribute("class", "aha " + classes);
