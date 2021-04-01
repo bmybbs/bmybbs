@@ -2,6 +2,7 @@ import { BMYClient } from "../../utils/BMYClient.js"
 import { getLongVersionTime } from "../../utils/Time.js"
 import { DOMParser, XMLSerializer } from "xmldom"
 import bmyParser from "@bmybbs/bmybbs-content-parser"
+import { minibmyFormatArticle } from "../../utils/ArticleUtils.js"
 
 Component({
 	properties: {
@@ -23,7 +24,7 @@ Component({
 					article: {
 						title: response.title,
 						author: response.author,
-						content: content,
+						content: minibmyFormatArticle(content),
 					}
 				});
 			});
