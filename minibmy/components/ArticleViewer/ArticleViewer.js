@@ -31,20 +31,20 @@ Component({
 		},
 	},
 	methods: {
-		toggleAha() {
+		toggleAnsi() {
 			this.setData({
 				show_ansi: !this.data.show_ansi
 			});
 
 			const article = this.data.article;
 			const doc = new DOMParser().parseFromString(article.content, "text/html");
-			const aha_arr = [].slice.call(doc.getElementsByTagName("span"));
-			aha_arr.forEach((x) => {
+			const ansi_arr = [].slice.call(doc.getElementsByTagName("span"));
+			ansi_arr.forEach((x) => {
 				let classes = x.getAttribute("class");
 				if (this.data.show_ansi) {
-					x.setAttribute("class", "aha " + classes);
+					x.setAttribute("class", "bmybbs-ansi " + classes);
 				} else {
-					x.setAttribute("class", classes.replace("aha ", ""));
+					x.setAttribute("class", classes.replace("bmybbs-ansi ", ""));
 				}
 			});
 
