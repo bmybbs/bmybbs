@@ -1,6 +1,7 @@
 import { BMYClient } from "../../utils/BMYClient.js"
 import { getLongVersionTime } from "../../utils/Time.js"
 import { DOMParser, XMLSerializer } from "xmldom"
+import bmyParser from "@bmybbs/bmybbs-content-parser"
 
 Component({
 	properties: {
@@ -10,12 +11,20 @@ Component({
 	lifetimes: {
 		attached: function() {
 			BMYClient.get_article_content(this.data.board, this.data.aid).then(response => {
-				response.content = response.content.replace("<article>", "<div>").replace("</article>", "</div>");
+				const content = bmyParser({
+					text: response.content,
+					attaches: response.attach
+				}).replace("<article>", "<div>").replace("</article>", "</div>");
 
 				this.setData({
+					rawContent: response.content,
 					show_ansi: true,
 					time: getLongVersionTime(this.data.aid),
-					article: response,
+					article: {
+						title: response.title,
+						author: response.author,
+						content: content,
+					}
 				});
 			});
 		},
@@ -26,7 +35,8 @@ Component({
 				show_ansi: !this.data.show_ansi
 			});
 
-			const doc = new DOMParser().parseFromString(this.data.article.content, "text/html");
+			const article = this.data.article;
+			const doc = new DOMParser().parseFromString(article.content, "text/html");
 			const aha_arr = [].slice.call(doc.getElementsByTagName("span"));
 			aha_arr.forEach((x) => {
 				let classes = x.getAttribute("class");
@@ -37,7 +47,6 @@ Component({
 				}
 			});
 
-			let article = this.data.article;
 			article.content = new XMLSerializer().serializeToString(doc);
 			this.setData({
 				article

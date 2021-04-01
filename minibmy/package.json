@@ -9,6 +9,7 @@
 	"author": "",
 	"license": "GPL-2.0",
 	"dependencies": {
+		"@bmybbs/bmybbs-content-parser": "file:../content-parser",
 		"dayjs": "^1.9.6",
 		"xmldom": "^0.5.0"
 	}

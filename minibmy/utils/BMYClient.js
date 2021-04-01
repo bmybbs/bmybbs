@@ -38,7 +38,7 @@ export const BMYClient = {
 		return myFetchGet("/api/article/list?type=announce");
 	},
 	get_article_content(boardname_en, aid) {
-		return myFetchGet(`/api/article/getHTMLContent?board=${boardname_en}&aid=${aid}`);
+		return myFetchGet(`/api/article/getContent?board=${boardname_en}&aid=${aid}`);
 	},
 	get_article_list_by_board(boardname_en, mode) {
 		return myFetchGet(`/api/article/list?type=board&board=${boardname_en}&btype=${mode}`);
