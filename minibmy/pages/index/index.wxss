@@ -16,7 +16,12 @@
 }
 
 .button-group {
-	margin-top: 200px;
+	margin-top: 256rpx;
 	display: flex;
+	flex-direction: column;
+}
+
+.button-group button {
+	margin-bottom: 32rpx;
 }
 
