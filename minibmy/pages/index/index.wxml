@@ -7,8 +7,8 @@
 
 			<text>欢迎使用 BMY 小程序</text>
 			<view class="button-group">
-				<button type="default" bindtap="bindGuest">游客访问</button>
 				<button class="btnP" type="primary" bindtap="bindLogin">微信登录</button>
+				<button type="default" bindtap="bindGuest">游客访问</button>
 			</view>
 		</block>
 	</view>
