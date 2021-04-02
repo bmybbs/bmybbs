@@ -15,7 +15,7 @@
 	"window":{
 		"backgroundTextStyle":"light",
 		"navigationBarBackgroundColor": "#fff",
-		"navigationBarTitleText": "Weixin",
+		"navigationBarTitleText": "西安交通大学 BMYBBS",
 		"navigationBarTextStyle":"black"
 	},
 	"style": "v2",
