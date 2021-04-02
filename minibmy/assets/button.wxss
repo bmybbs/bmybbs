@@ -1,0 +1,8 @@
+button[type="default"] {
+	color: var(--bmy-blue1) !important;
+}
+
+button[type="primary"] {
+	background-color: var(--bmy-blue1) !important;
+}
+
