@@ -1,15 +1,3 @@
-page {
-	--bmybbs-ansi-color-black:   #000000;
-	--bmybbs-ansi-color-red:     #ff0000;
-	--bmybbs-ansi-color-green:   #00ff00;
-	--bmybbs-ansi-color-yellow:  #ffff00;
-	--bmybbs-ansi-color-blue:    #0000ff;
-	--bmybbs-ansi-color-magenta: #ff00ff;
-	--bmybbs-ansi-color-cyan:    #00ffff;
-	--bmybbs-ansi-color-grey:    #808080;
-	--bmybbs-ansi-color-white:   #ffffff;
-}
-
 .bmybbs-ansi.bmybbs-ansi-fc0 { color: var(--bmybbs-ansi-color-black); }
 .bmybbs-ansi.bmybbs-ansi-fc1 { color: var(--bmybbs-ansi-color-red); }
 .bmybbs-ansi.bmybbs-ansi-fc2 { color: var(--bmybbs-ansi-color-green); }

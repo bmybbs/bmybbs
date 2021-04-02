@@ -1,0 +1,19 @@
+page {
+	--bmybbs-ansi-color-black:   #000000;
+	--bmybbs-ansi-color-red:     #ff0000;
+	--bmybbs-ansi-color-green:   #00ff00;
+	--bmybbs-ansi-color-yellow:  #ffff00;
+	--bmybbs-ansi-color-blue:    #0000ff;
+	--bmybbs-ansi-color-magenta: #ff00ff;
+	--bmybbs-ansi-color-cyan:    #00ffff;
+	--bmybbs-ansi-color-grey:    #808080;
+	--bmybbs-ansi-color-white:   #ffffff;
+	--bmy-blue:  #267dcf;
+	--bmy-blue0: #f5f9ff;
+	--bmy-blue1: #004c97;
+	--bmy-blue2: #0064b2;
+	--bmy-grey1: #e0e7f1;
+	--bmy-grey2: #c1c8d2;
+	--bs-gray: #6c757d;
+}
+
