@@ -1,7 +1,7 @@
 button {
-	height: 80rpx;
-	width: 368rpx;
-	border-radius: 40rpx;
+	height: 80rpx !important;
+	width: 368rpx !important;
+	border-radius: 40rpx !important;
 }
 
 button[type="default"] {
@@ -14,7 +14,7 @@ button[type="primary"] {
 
 button[type="primary"][plain] {
 	background-color: #fff !important;
-	border: 4rpx solid var(--bmy-blue1);
+	border: 4rpx solid var(--bmy-blue1) !important;
 	color: var(--bmy-blue1) !important;
 }
 
