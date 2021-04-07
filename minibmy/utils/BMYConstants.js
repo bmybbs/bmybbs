@@ -18,6 +18,12 @@ export const BMYSECSTRS = [
 	{ id: "C", text: "俱乐部区" },
 ];
 
+export const BOARD_SORT_MODE = {
+	BY_ALPHABET: 1,
+	BY_SCORE: 2,
+	BY_INBOARD: 3,
+};
+
 export const BMY_EC = {
 	API_RT_SUCCESSFUL     : 0,
 	API_RT_NOEMTSESS      : 1,

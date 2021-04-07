@@ -1,9 +1,10 @@
 import { BMYClient } from "../../utils/BMYClient.js"
-import { BMYSECSTRS } from "../../utils/BMYConstants.js"
+import { BOARD_SORT_MODE, BMYSECSTRS } from "../../utils/BMYConstants.js"
 
 Page({
 	data: {
 		articles: [],
+		boards: [],
 		sec_en: "",
 		sec_zh: "",
 		activeTab: 0,
@@ -20,6 +21,13 @@ Page({
 				});
 				this.setData({
 					articles: response.articles
+				});
+			}
+		});
+		BMYClient.get_boards_by_section(options.id, BOARD_SORT_MODE.BY_ALPHABET).then(response => {
+			if (response.errcode == 0) {
+				this.setData({
+					boards: response.boardlist
 				});
 			}
 		});
