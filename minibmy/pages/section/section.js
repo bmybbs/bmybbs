@@ -6,6 +6,11 @@ Page({
 		articles: [],
 		sec_en: "",
 		sec_zh: "",
+		activeTab: 0,
+		tabs: [
+			{ title: "话题", },
+			{ title: "版面", }
+		]
 	},
 	onLoad: function (options) {
 		BMYClient.get_article_list_by_section(options.id).then(response => {
@@ -26,6 +31,16 @@ Page({
 				});
 			}
 		})
+	},
+	onTabClick(e) {
+		this.setData({
+			activeTab: e.detail.index
+		});
+	},
+	onChange(e) {
+		this.setData({
+			activeTab: e.detail.index
+		});
 	},
 })
 

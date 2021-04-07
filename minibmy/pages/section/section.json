@@ -1,5 +1,6 @@
 {
 	"usingComponents": {
+		"mp-tabs": "@miniprogram-component-plus/tabs",
 		"feed-item-card": "../../components/FeedItemCard/FeedItemCard"
 	}
 }

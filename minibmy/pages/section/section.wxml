@@ -1,3 +1,25 @@
-<text class="header">{{sec_en}}区/{{sec_zh}}</text>
+<view class="flex-container">
+	<text class="header">{{sec_en}}区/{{sec_zh}}</text>
 
-<feed-item-card wx:for="{{articles}}" article="{{item}}" wx:key="id"></feed-item-card>
+	<view class="body">
+		<mp-tabs
+			id="foo"
+			tabs="{{tabs}}"
+			activeTab="{{activeTab}}"
+			swiperClass="weui-tabs-swiper"
+			bindtabclick="onTabClick"
+			bindchange="onChange"
+			tab-class="bmy-tab"
+			activeClass="tab-bar-title__selected"
+		>
+			<view class="tab-content" slot="tab-content-0">
+				<scroll-view scroll-y="true" class="tab-content-scroll">
+					<feed-item-card wx:for="{{articles}}" article="{{item}}" wx:key="id"></feed-item-card>
+				</scroll-view>
+			</view>
+			<view class="tab-content" slot="tab-content-1">
+			</view>
+		</mp-tabs>
+	</view>
+</view>
+

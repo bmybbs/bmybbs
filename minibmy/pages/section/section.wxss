@@ -1,4 +1,16 @@
+@import "../../assets/tabs.wxss";
+
+.flex-container {
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
+}
+
 .header {
 	padding-left: 40rpx;
+}
+
+.body {
+	flex: 1;
 }
 
