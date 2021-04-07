@@ -1,0 +1,36 @@
+@import "../../assets/card.wxss";
+
+.board-header {
+	display: flex;
+	justify-content: space-between;
+	font-weight: 700;
+}
+
+.board-name {
+	display: flex;
+}
+
+.board-zh {
+	color: #aaa;
+	font-weight: 500;
+}
+
+.board-meta {
+	display: flex;
+	justify-content: space-between;
+	font-size: 0.9rem;
+}
+
+.board-meta-item {
+	width: 40%;
+	display: flex;
+	justify-content: space-between;
+}
+
+.board-meta-num {
+	padding: 4rpx 32rpx;
+	border-radius: 32rpx;
+	background-color: var(--bmy-grey1);
+	font-size: 0.8rem;
+}
+

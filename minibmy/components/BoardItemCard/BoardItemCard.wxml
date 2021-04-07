@@ -1,0 +1,26 @@
+<view class="board-item card">
+	<view class="board-header">
+		<view class="board-name">
+			<view>
+				<mp-icon icon="star" color="#333" size="{{18}}"></mp-icon>
+			</view>
+			<view>{{board.name}}</view>
+		</view>
+		<view class="board-zh">#{{board.zh_name}}</view>
+	</view>
+	<view class="board-meta">
+		<view class="board-meta-item">
+			<text>文章数</text>
+			<text class="board-meta-num">{{board.article_num}}</text>
+		</view>
+
+		<view class="board-meta-item">
+			<text>在线</text>
+			<text class="board-meta-num">{{board.inboard_num}}</text>
+		</view>
+	</view>
+	<view wx:if="{{board.keyword.length > 0}}">
+		<text>关键字</text>{{board.keyword}}
+	</view>
+</view>
+
