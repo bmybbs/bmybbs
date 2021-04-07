@@ -7,7 +7,7 @@
 }
 
 .header {
-	padding-left: 40rpx;
+	text-align: center;
 }
 
 .body {

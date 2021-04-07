@@ -1,5 +1,5 @@
 <view class="flex-container">
-	<text class="header">{{sec_en}}区/{{sec_zh}}</text>
+	<text class="header">{{sec_en}}区 ({{sec_zh}})</text>
 
 	<view class="body">
 		<mp-tabs
