@@ -36,3 +36,8 @@
 	color: var(--bmy-blue);
 	border-bottom-color: var(--bmy-blue) !important;
 }
+
+.tab-content {
+	display: flex;
+	height: 100%;
+}
