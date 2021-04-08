@@ -75,6 +75,7 @@ int ythtbbs_cache_utmp_insert(struct user_info *ptr_user_info) {
 	}
 
 	if (j >= USHM_SIZE) {
+		flock(utmpfd, LOCK_UN);
 		close(utmpfd);
 		return -1;
 	}
@@ -122,6 +123,7 @@ int ythtbbs_cache_utmp_insert(struct user_info *ptr_user_info) {
 			}
 		}
 	}
+	flock(utmpfd, LOCK_UN);
 	close(utmpfd);
 	return j;
 }
