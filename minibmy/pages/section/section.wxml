@@ -13,7 +13,16 @@
 			activeClass="tab-bar-title__selected"
 		>
 			<view class="tab-content" slot="tab-content-0">
-				<scroll-view scroll-y="true" class="tab-content-scroll">
+				<scroll-view
+					scroll-y="true"
+					class="tab-content-scroll"
+					refresher-enabled="true"
+					refresher-background="#333"
+					refresher-default-style="white"
+					refresher-triggered="{{feedRefreshTriggered}}"
+					bindscrolltolower="onFeedEnd"
+					bindrefresherrefresh="onFeedRefresh"
+				>
 					<feed-item-card wx:for="{{articles}}" article="{{item}}" wx:key="id"></feed-item-card>
 				</scroll-view>
 			</view>
