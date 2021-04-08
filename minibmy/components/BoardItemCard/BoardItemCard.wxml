@@ -1,8 +1,8 @@
 <view class="board-item card">
 	<view class="board-header">
 		<view class="board-name">
-			<view>
-				<mp-icon icon="star" color="#333" size="{{18}}"></mp-icon>
+			<view style="margin-top: -3px">
+				<mp-icon icon="star" color="{{board.is_fav == 1 ? '#267dcf' : '#333'}}" type="{{board.is_fav == 1 ? 'field' : 'outline'}}" size="{{20}}"></mp-icon>
 			</view>
 			<view>{{board.name}}</view>
 		</view>
