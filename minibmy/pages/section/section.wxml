@@ -3,7 +3,6 @@
 
 	<view class="body">
 		<mp-tabs
-			id="foo"
 			tabs="{{tabs}}"
 			activeTab="{{activeTab}}"
 			swiperClass="weui-tabs-swiper"
