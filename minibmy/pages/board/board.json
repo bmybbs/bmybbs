@@ -1,0 +1,8 @@
+{
+	"usingComponents": {
+		"mp-tabs": "@miniprogram-component-plus/tabs",
+		"post-item-card": "../../components/PostItemCard/PostItemCard"
+	}
+}
+
+
