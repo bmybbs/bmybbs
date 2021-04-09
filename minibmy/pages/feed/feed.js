@@ -31,5 +31,10 @@ Page({
 	onLoad: function() {
 		this.load_feed();
 	},
+	gotoLogin() {
+		wx.reLaunch({
+			url: "../index/index"
+		});
+	},
 })
 
