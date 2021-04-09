@@ -1,9 +1,10 @@
 {
 	"pages":[
+		"pages/index/index",
 		"pages/bind/step1",
 		"pages/bind/step2",
 		"pages/bind/step3",
-		"pages/index/index",
+		"pages/board/board",
 		"pages/dashboard/dashboard",
 		"pages/feed/feed",
 		"pages/section/section",
