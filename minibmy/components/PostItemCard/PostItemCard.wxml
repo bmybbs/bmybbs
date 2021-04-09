@@ -1,16 +1,14 @@
-<view class="post_item">
+<view class="post_item card" bindtap="gotoThread">
 	<view class="post_title">{{postItem.title}}</view>
-	<view class="post_header">
-		<view class="post_author">@{{postItem.author}}</view>
-		<view class="post_time">{{postItem.timestamp}}</view>
-	</view>
-	<view class="post_digest">{{postItem.digest}}</view>
 	<view class="post_footer">
-		<view class="post_board">#{{postItem.board}}</view>
+		<view class="post_info">
+			<view class="post_author">@{{postItem.author}}</view>
+			发表于
+			<view class="post_time">{{readableTime}}</view>
+		</view>
 		<view class="post_meta">
-			<view class="post_bookmark"><mp-icon type="field" icon="like" color="red" size="{{18}}"></mp-icon>{{postItem.bookmarks}}</view>
 			<view class="post_comment"><mp-icon icon="comment" color="#333" size="{{18}}"></mp-icon>
-{{postItem.comments}}</view>
+{{postItem.th_num}}</view>
 		</view>
 	</view>
 </view>
