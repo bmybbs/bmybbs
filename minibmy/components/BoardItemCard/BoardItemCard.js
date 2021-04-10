@@ -14,6 +14,9 @@ Component({
 		}
 	},
 	methods: {
+		gotoBoard() {
+			wx.navigateTo({ url: `../../pages/board/board?boardname=${this.data.board.name}` })
+		},
 	},
 });
 

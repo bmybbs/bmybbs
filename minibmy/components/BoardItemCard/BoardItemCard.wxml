@@ -1,4 +1,4 @@
-<view class="board-item card">
+<view class="board-item card" bindtap="gotoBoard">
 	<view class="board-header">
 		<view class="board-name">
 			<view style="margin-top: -3px">
