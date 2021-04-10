@@ -28,7 +28,7 @@
 					</view>
 					<view class="tab-content" slot="tab-content-1">
 						<scroll-view scroll-y="true" class="tab-content-scroll">
-							<board-item-card wx:for="{{boards}}" board="{{item}}" wx:key="name"></board-item-card>
+							<board-item-card wx:for="{{boards}}" board="{{item}}" digest="{{true}}" wx:key="name"></board-item-card>
 						</scroll-view>
 					</view>
 				</mp-tabs>
