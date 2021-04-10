@@ -14,3 +14,13 @@
 	flex: 1;
 }
 
+.heading {
+	padding: 4rpx 32rpx;
+	text-align: center;
+	background-color: var(--bmy-grey1);
+}
+
+.content {
+	padding: 16rpx 32rpx;
+}
+

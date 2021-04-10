@@ -28,20 +28,24 @@
 			<view class="tab-content" slot="tab-content-1">
 				<scroll-view scroll-y="true" class="tab-content-scroll">
 					<view class="heading">简介</view>
-					<rich-text nodes="{{mdNotes}}"></rich-text>
+					<view class="content">
+						<rich-text nodes="{{mdNotes}}"></rich-text>
+					</view>
 
 					<view class="heading">版主</view>
-					<view wx:if="{{moderators.length == 0}}">诚征版主中</view>
-					<view wx:else>
+					<view wx:if="{{moderators.length == 0}}" class="content">诚征版主中</view>
+					<view wx:else class="content">
 						<view wx:for="{{moderators}}" wx:key="*this">@{{item}}</view>
 					</view>
-					<view wx:if="{{viceModerators.length > 0}}">
+					<view wx:if="{{viceModerators.length > 0}}" class="content">
 						<view wx:for="{{viceModerators}}" wx:key="*this">@{{item}}</view>
 					</view>
 
 					<view wx:if="{{board.keyword && board.keyword.length > 0}}">
 						<view class="heading">关键字</view>
-						<inline-board-keywords str="{{board.keyword}}"></inline-board-keywords>
+						<view class="content">
+							<inline-board-keywords str="{{board.keyword}}"></inline-board-keywords>
+						</view>
 					</view>
 				</scroll-view>
 			</view>
