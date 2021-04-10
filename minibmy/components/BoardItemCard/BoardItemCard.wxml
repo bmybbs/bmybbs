@@ -20,7 +20,8 @@
 		</view>
 	</view>
 	<view wx:if="{{board.keyword.length > 0}}">
-		<text>关键字</text>{{board.keyword}}
+		<text>关键字</text>
+		<inline-board-keywords str="{{board.keyword}}"></inline-board-keywords>
 	</view>
 </view>
 
