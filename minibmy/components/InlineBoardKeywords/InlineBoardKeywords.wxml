@@ -1,0 +1,4 @@
+<view class="keyword-container">
+	<view wx:for="{{keywords}}" wx:key="*this" class="keyword-badge">{{item}}</view>
+</view>
+

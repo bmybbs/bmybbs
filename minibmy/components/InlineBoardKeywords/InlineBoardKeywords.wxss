@@ -1,0 +1,13 @@
+.keyword-container {
+	display: inline;
+}
+
+.keyword-badge {
+	display: inline-block;
+	font-size: 0.8rem;
+	padding: 4rpx 32rpx;
+	border-radius: 30rpx;
+	background-color: var(--bmy-grey1);
+	margin-left: 32rpx;
+}
+
