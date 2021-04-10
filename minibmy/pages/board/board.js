@@ -1,3 +1,5 @@
+import insane from "insane";
+import marked from "marked";
 import { BMYClient } from "../../utils/BMYClient.js"
 import { BOARD_ARTICLE_MODE, ITEMS_PER_PAGE } from "../../utils/BMYConstants.js"
 
@@ -49,7 +51,7 @@ Page({
 	updateNotes(notes) {
 		if (notes && notes.length > 0) {
 			this.setData({
-				mdNotes: notes
+				mdNotes: insane(marked(notes))
 			});
 		}
 	},
