@@ -1,6 +1,7 @@
 {
 	"usingComponents": {
 		"mp-tabs": "@miniprogram-component-plus/tabs",
+		"inline-board-keywords": "../../components/InlineBoardKeywords/InlineBoardKeywords",
 		"post-item-card": "../../components/PostItemCard/PostItemCard"
 	}
 }

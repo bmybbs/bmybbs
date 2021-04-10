@@ -38,7 +38,7 @@
 
 					<view wx:if="{{board.keyword && board.keyword.length > 0}}">
 						<view class="heading">关键字</view>
-						<view wx:for="{{keywords}}" wx:key="*this">{{item}}</view>
+						<inline-board-keywords str="{{board.keyword}}"></inline-board-keywords>
 					</view>
 				</scroll-view>
 			</view>

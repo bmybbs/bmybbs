@@ -27,7 +27,6 @@ Page({
 		mdNotes: "",
 		moderators: [],
 		viceModerators: [],
-		keywords: [],
 		feedSet: new Set(),
 		page: 1,
 		activeTab: 0,
@@ -40,7 +39,6 @@ Page({
 		BMYClient.get_board_info(options.boardname).then(response => {
 			this.updateNotes(response.notes);
 			this.updateModerators(response.bm);
-			this.updateKeywords(response.keyword);
 			this.setData({
 				board: response
 			});
@@ -73,13 +71,6 @@ Page({
 			moderators: bm,
 			viceModerators: vbm,
 		});
-	},
-	updateKeywords(keyword) {
-		if (keyword && keyword.length > 0) {
-			this.setData({
-				keywords: keyword.split(/[\s,;.:]+/)
-			});
-		}
 	},
 	get_list(boardname, mode, page, append = false, callback = null) {
 		BMYClient.get_article_list_by_board(boardname, mode, page).then(response => {
