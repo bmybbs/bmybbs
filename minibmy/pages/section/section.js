@@ -1,5 +1,5 @@
 import { BMYClient } from "../../utils/BMYClient.js"
-import { BOARD_SORT_MODE, BMYSECSTRS } from "../../utils/BMYConstants.js"
+import { BOARD_SORT_MODE, BMYSECSTRS, ITEMS_PER_PAGE } from "../../utils/BMYConstants.js"
 
 const update_article_callback = (response, article_arr, set, page, that) => {
 	if (Array.isArray(response.articles)) {
@@ -14,6 +14,7 @@ const update_article_callback = (response, article_arr, set, page, that) => {
 		that.setData({
 			articles: article_arr,
 			feedSet: set,
+			total: Math.ceil(response.total / ITEMS_PER_PAGE),
 			page: page + 1
 		});
 	}
@@ -27,6 +28,7 @@ Page({
 		sec_zh: "",
 		feedSet: new Set(),
 		page: 1,
+		total: 1,
 		activeTab: 0,
 		tabs: [
 			{ title: "话题", },
@@ -64,9 +66,17 @@ Page({
 		});
 	},
 	onFeedEnd() {
-		BMYClient.get_article_list_by_section(this.data.sec_en, this.data.page).then(response => {
-			update_article_callback(response, this.data.articles, this.data.feedSet, this.data.page, this);
-		});
+		if (this.data.page <= this.data.total) {
+			BMYClient.get_article_list_by_section(this.data.sec_en, this.data.page).then(response => {
+				update_article_callback(response, this.data.articles, this.data.feedSet, this.data.page, this);
+			});
+		} else {
+			wx.showToast({
+				title: "已到达最后一篇啦",
+				icon: "none",
+				duration: 2000,
+			});
+		}
 	},
 	onFeedRefresh() {
 		BMYClient.get_article_list_by_section(this.data.sec_en, 1).then(response => {
