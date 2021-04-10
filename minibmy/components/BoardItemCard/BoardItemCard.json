@@ -2,7 +2,7 @@
 	"component": true,
 	"usingComponents": {
 		"inline-board-keywords": "../InlineBoardKeywords/InlineBoardKeywords",
-		"mp-icon": "weui-miniprogram/icon/icon"
+		"fav-board-star": "../FavBoardStar/FavBoardStar"
 	}
 }
 

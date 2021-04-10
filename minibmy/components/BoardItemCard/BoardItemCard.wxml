@@ -1,12 +1,12 @@
-<view class="board-item card" bindtap="gotoBoard">
+<view class="board-item card">
 	<view class="board-header">
 		<view class="board-name">
 			<view style="margin-top: -3px">
-				<mp-icon icon="star" color="{{board.is_fav == 1 ? '#267dcf' : '#333'}}" type="{{board.is_fav == 1 ? 'field' : 'outline'}}" size="{{20}}"></mp-icon>
+				<fav-board-star is_fav="{{board.is_fav}}" size="{{20}}" boardname="{{board.name}}"></fav-board-star>
 			</view>
-			<view>{{board.name}}</view>
+			<view bindtap="gotoBoard">{{board.name}}</view>
 		</view>
-		<view class="board-zh">#{{board.zh_name}}</view>
+		<view class="board-zh" bindtap="gotoBoard">#{{board.zh_name}}</view>
 	</view>
 	<view class="board-meta">
 		<view class="board-meta-item">
