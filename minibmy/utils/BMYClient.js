@@ -34,6 +34,12 @@ const myFetchPost = (url) => {
 };
 
 export const BMYClient = {
+	fav_add(boardname_en) {
+		return myFetchPost(`/api/board/fav/add?board=${boardname_en}`);
+	},
+	fav_del(boardname_en) {
+		return myFetchPost(`/api/board/fav/del?board=${boardname_en}`);
+	},
 	get_announce() {
 		return myFetchGet("/api/article/list?type=announce");
 	},
