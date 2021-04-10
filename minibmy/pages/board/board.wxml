@@ -1,5 +1,8 @@
 <view class="flex-container">
-	<text class="header">{{board.secstr}}区 {{board.name}} ({{board.zh_name}})</text>
+	<view class="header">
+		<text>{{board.secstr}}区 {{board.name}} ({{board.zh_name}})</text>
+		<fav-board-star is_fav="{{board.is_fav}}" size="{{20}}" boardname="{{board.name}}"></fav-board-star>
+	</view>
 
 	<view class="body">
 		<mp-tabs

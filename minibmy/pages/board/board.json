@@ -2,6 +2,7 @@
 	"usingComponents": {
 		"mp-tabs": "@miniprogram-component-plus/tabs",
 		"inline-board-keywords": "../../components/InlineBoardKeywords/InlineBoardKeywords",
+		"fav-board-star": "../../components/FavBoardStar/FavBoardStar",
 		"post-item-card": "../../components/PostItemCard/PostItemCard"
 	}
 }
