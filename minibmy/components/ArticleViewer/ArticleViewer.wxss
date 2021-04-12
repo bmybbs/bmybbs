@@ -32,9 +32,10 @@
 	justify-content: space-between;
 }
 
-.article-footer button {
+.article-footer .btn {
 	font-weight: normal;
 	font-size: 1rem;
+	background: var(--bmy-blue0);
 }
 
 .bmybbs-ansi.bmybbs-ansi-fc0 { color: var(--bmybbs-ansi-color-black); }
