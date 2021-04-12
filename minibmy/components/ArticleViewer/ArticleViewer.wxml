@@ -7,7 +7,7 @@
 		<rich-text nodes="{{article.content}}"></rich-text>
 	</view>
 	<view class="article-footer">
-		<button>回复</button>
+		<button bindtap="openReply">回复</button>
 		<button>转载</button>
 		<button>转寄</button>
 		<button>回信</button>

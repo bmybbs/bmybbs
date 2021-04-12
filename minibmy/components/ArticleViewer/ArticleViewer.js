@@ -2,7 +2,9 @@ import { BMYClient } from "../../utils/BMYClient.js"
 import { getLongVersionTime } from "../../utils/Time.js"
 import { DOMParser, XMLSerializer } from "xmldom"
 import bmyParser from "@bmybbs/bmybbs-content-parser"
-import { minibmyFormatArticle } from "../../utils/ArticleUtils.js"
+import { minibmyFormatArticle, generateContent } from "../../utils/ArticleUtils.js"
+import { BMY_EC, RE } from "../../utils/BMYConstants.js"
+import { getErrorMessage } from "../../utils/ErrorMsgUtils.js"
 
 Component({
 	properties: {
@@ -31,6 +33,40 @@ Component({
 		},
 	},
 	methods: {
+		openReply() {
+			this.triggerEvent("reply", {
+				that: this,
+				title: `您正在回复${this.data.article.author}网友的帖子《${this.data.article.title}》`,
+			}, {});
+		},
+		doReply(obj /* 与 editor triggerEvent 传递的数据相关*/) {
+			if (obj.isReply) {
+				const article = {
+					board: this.data.board,
+					title: this.data.article.title.startsWith(RE) ? this.data.article.title : `${RE}${this.data.article.title}`,
+					content: generateContent(obj.body, this.data.article.author, this.data.rawContent),
+					anony: false,
+					norep: false,
+					math: false,
+					ref: this.data.aid,
+					rid: 0,
+				}
+
+				BMYClient.reply_article(article).then(response => {
+					if (response.errcode == BMY_EC.API_RT_SUCCESSFUL) {
+						if (obj.onSuccess !== null && typeof obj.onSuccess === "function") {
+							obj.onSuccess();
+						}
+					} else {
+						wx.showToast({
+							title: getErrorMessage(response.errcode),
+							icon: "none",
+							duration: 2000,
+						});
+					}
+				});
+			}
+		},
 		toggleAnsi() {
 			this.setData({
 				show_ansi: !this.data.show_ansi
