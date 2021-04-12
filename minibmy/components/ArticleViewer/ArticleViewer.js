@@ -33,6 +33,13 @@ Component({
 		},
 	},
 	methods: {
+		doNothing() {
+			wx.showToast({
+				title: "功能未实现",
+				icon: "error",
+				duration: 1000,
+			});
+		},
 		openReply() {
 			this.triggerEvent("reply", {
 				that: this,
