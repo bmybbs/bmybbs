@@ -1,5 +1,5 @@
-<view class="article" bindtap="toggleAnsi">
-	<view class="article-header">
+<view class="article">
+	<view class="article-header" bindtap="toggleAnsi">
 		<view class="article-title">{{article.title}}</view>
 		<view class="article-meta">{{article.author}} 发表于 {{time}}</view>
 	</view>
