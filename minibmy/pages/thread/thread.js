@@ -10,6 +10,7 @@ Page({
 		tid: "",
 		articlelist: [],
 		set: new Set(),
+		triggered: false,
 	},
 	onLoad: function(options) {
 		this.setData({ board: options.boardname_en, tid: options.tid });
@@ -68,9 +69,21 @@ Page({
 			title: `${this.data.articlelist[0].title} #${this.data.articlelist[0].board}`,
 		}
 	},
-	loadThread(board, tid, append = false) {
+	onThreadRefresh() {
+		this.loadThread(this.data.board, this.data.tid, false, () => {
+			this.setData({ triggered: false });
+		});
+	},
+	loadThread(board, tid, append = false, callback = null) {
 		const arr = append ? this.data.articlelist : [],
 			set   = append ? this.data.set         : new Set();
+
+		if (!append) {
+			this.setData({
+				articlelist: arr,
+				set: set,
+			})
+		}
 
 		BMYClient.get_thread_list(board, tid).then(response => {
 			if (response.errcode == 0 && Array.isArray(response.articlelist) && response.articlelist.length > 0) {
@@ -85,6 +98,10 @@ Page({
 					articlelist: arr,
 					set: set,
 				});
+
+				if (callback !== null && typeof callback === "function") {
+					callback();
+				}
 			}
 		});
 	}
