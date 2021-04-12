@@ -2,6 +2,8 @@ export const BASE_URL = "https://bbs.xjtu.edu.cn";
 
 export const ITEMS_PER_PAGE = 20;
 
+export const RE = "Re: ";
+
 export const BMYSECSTRS = [
 	{ id: "0", text: "本站系统" },
 	{ id: "1", text: "交通大学" },
