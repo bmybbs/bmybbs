@@ -3,6 +3,8 @@
 .post_title {
 	font-size: 1.2rem;
 	font-weight: 600;
+	display: flex;
+	justify-content: space-between;
 }
 .post_board {
 	display: inline-block;
