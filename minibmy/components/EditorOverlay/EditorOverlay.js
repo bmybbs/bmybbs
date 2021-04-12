@@ -1,6 +1,5 @@
 Component({
 	properties: {
-		callback: { type: Function },
 		isReply:  { type: Boolean, value: false },
 		show:     { type: Boolean },
 		title:    { type: String },
@@ -33,21 +32,20 @@ Component({
 			this.setData({ title: "", body: "" });
 		},
 		post() {
-			if (this.data.callback != null && typeof this.data.callback === "function") {
-				const obj = {
-					isReply: this.data.isReply,
-					body: this.data.body,
-				};
-
-				if (!this.data.isReply) {
-					obj.title = this.data.title;
-				}
-
-				this.data.callback(obj, () => {
+			const obj = {
+				isReply: this.data.isReply,
+				body: this.data.body,
+				onSuccess: () => {
 					this.cleanInput();
 					this.closeOverlay();
-				});
+				}
+			};
+
+			if (!this.data.isReply) {
+				obj.title = this.data.title;
 			}
+
+			this.triggerEvent("post", obj, {});
 		},
 	},
 });
