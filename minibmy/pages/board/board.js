@@ -48,6 +48,17 @@ Page({
 
 		this.get_list(options.boardname, BOARD_ARTICLE_MODE.THREAD_MODE, 1);
 	},
+	onShareAppMessage() {
+		return {
+			title: `兵马俑BBS${this.data.board.zh_name}版(${this.data.board.name})`,
+			path: `/pages/board/board?boardname=${this.data.board.name}`,
+		}
+	},
+	onShareTimeline() {
+		return {
+			title: `兵马俑BBS${this.data.board.zh_name}版(${this.data.board.name})`,
+		}
+	},
 	updateNotes(notes) {
 		if (notes && notes.length > 0) {
 			this.setData({
