@@ -1,2 +1,4 @@
-<article-viewer wx:for="{{articlelist}}" board="{{item.board}}" aid="{{item.aid}}" wx:key="aid"></article-viewer>
+<article-viewer wx:for="{{articlelist}}" board="{{item.board}}" aid="{{item.aid}}" wx:key="aid" bindreply="onOpenEditor"></article-viewer>
+
+<editor-overlay show="{{editorShow}}" isReply="{{true}}" title="{{editorTitle}}" bindpost="onPost" />
 

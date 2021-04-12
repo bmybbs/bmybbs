@@ -1,5 +1,6 @@
 {
 	"usingComponents": {
+		"editor-overlay": "../../components/EditorOverlay/EditorOverlay",
 		"article-viewer": "../../components/ArticleViewer/ArticleViewer"
 	}
 }
