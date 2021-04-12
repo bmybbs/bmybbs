@@ -1,4 +1,10 @@
-<article-viewer wx:for="{{articlelist}}" board="{{item.board}}" aid="{{item.aid}}" wx:key="aid" bindreply="onOpenEditor"></article-viewer>
+<scroll-view
+	scroll-y="true"
+	class="scroll-view"
+	enable-back-to-top="true"
+>
+	<article-viewer wx:for="{{articlelist}}" board="{{item.board}}" aid="{{item.aid}}" wx:key="aid" bindreply="onOpenEditor"></article-viewer>
+</scroll-view>
 
 <editor-overlay show="{{editorShow}}" isReply="{{true}}" title="{{editorTitle}}" bindpost="onPost" />
 
