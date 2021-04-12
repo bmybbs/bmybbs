@@ -53,6 +53,21 @@ Page({
 			path: `/pages/thread/thread?boardname_en=${this.data.board}&tid=${this.data.tid}`,
 		}
 	},
+	onShareTimeline() {
+		if (this.data.articlelist == null || !Array.isArray(this.data.articlelist) || this.data.articlelist.length == 0) {
+			wx.showToast({
+				title: "话题未空？",
+				icon: "error",
+				duration: 1000,
+			});
+
+			return {};
+		}
+
+		return {
+			title: `${this.data.articlelist[0].title} #${this.data.articlelist[0].board}`,
+		}
+	},
 	loadThread(board, tid, append = false) {
 		const arr = append ? this.data.articlelist : [],
 			set   = append ? this.data.set         : new Set();
