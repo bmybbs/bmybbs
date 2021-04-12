@@ -16,10 +16,11 @@ const myFetchGet = (url) => {
 	});
 };
 
-const myFetchPost = (url) => {
+const myFetchPost = (url, obj = {}) => {
 	return new Promise((resolve) => {
 		wx.request({
 			url: BASE_URL + url,
+			data: obj,
 			method: "POST",
 			header: {
 				"cookie": cookie_str
