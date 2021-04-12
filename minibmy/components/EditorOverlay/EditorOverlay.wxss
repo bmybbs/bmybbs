@@ -3,6 +3,11 @@
 	padding: 48rpx;
 }
 
+.title {
+	width: calc(100% - 140rpx) !important;
+	margin-bottom: 16rpx;
+}
+
 .form-control {
 	width: calc(100% - 140rpx) !important;
 	padding: 16rpx;

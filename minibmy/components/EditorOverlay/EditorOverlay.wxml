@@ -7,7 +7,7 @@
 >
 	<view class="editor-wrapper">
 		<block wx:if="{{isReply}}">
-			<text>{{title}}</text>
+			<view class="title">{{title}}</view>
 		</block>
 		<block wx:else>
 			<input class="form-control" placeholder="标题" model:value="{{title}}" bindinput="doNothing" />
