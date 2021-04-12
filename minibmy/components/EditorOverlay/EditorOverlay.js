@@ -27,6 +27,9 @@ Component({
 		},
 		closeOverlay() {
 			this.setData({ doClose: true, show: false });
+			setTimeout(() => {
+				this.setData({ doClose: false });
+			}, 200);
 		},
 		cleanInput() {
 			this.setData({ title: "", body: "" });
