@@ -1,5 +1,8 @@
-<view class="post_item">
-	<view class="post_title">{{article.title}}<view class="post_board">#{{article.board}}</view></view>
+<view class="post_item card">
+	<view class="post_title">
+		<view bindtap="gotoThread">{{article.title}}</view>
+		<view class="post_board" bindtap="gotoBoard">#{{article.board}}</view>
+	</view>
 	<view class="post_footer">
 		<view class="post_info">
 			<view class="post_author">@{{article.author}}</view>

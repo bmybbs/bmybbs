@@ -1,0 +1,58 @@
+<view class="flex-container">
+	<view class="header">
+		<text>{{board.secstr}}区 {{board.name}} ({{board.zh_name}})</text>
+		<fav-board-star is_fav="{{board.is_fav}}" size="{{20}}" boardname="{{board.name}}"></fav-board-star>
+		<mp-icon icon="add2" color="#267dcf" bindtap="openEditor" />
+	</view>
+
+	<view class="body">
+		<mp-tabs
+			tabs="{{tabs}}"
+			activeTab="{{activeTab}}"
+			swiperClass="weui-tabs-swiper"
+			bindtabclick="onTabClick"
+			bindchange="onChange"
+			activeClass="tab-bar-title__selected"
+		>
+			<view class="tab-content" slot="tab-content-0">
+				<scroll-view scroll-y="true" class="tab-content-scroll"
+					refresher-enabled="true"
+					refresher-background="#333"
+					refresher-default-style="white"
+					refresher-triggered="{{articleRefreshTriggered}}"
+					bindscrolltolower="onArticleEnd"
+					bindrefresherrefresh="onArticleRefresh"
+				>
+					<post-item-card wx:for="{{articles}}" postItem="{{item}}" wx:key="aid"></post-item-card>
+				</scroll-view>
+			</view>
+			<view class="tab-content" slot="tab-content-1">
+				<scroll-view scroll-y="true" class="tab-content-scroll">
+					<view class="heading">简介</view>
+					<view class="content">
+						<rich-text nodes="{{mdNotes}}"></rich-text>
+					</view>
+
+					<view class="heading">版主</view>
+					<view wx:if="{{moderators.length == 0}}" class="content">诚征版主中</view>
+					<view wx:else class="content">
+						<view wx:for="{{moderators}}" wx:key="*this">@{{item}}</view>
+					</view>
+					<view wx:if="{{viceModerators.length > 0}}" class="content">
+						<view wx:for="{{viceModerators}}" wx:key="*this">@{{item}}</view>
+					</view>
+
+					<view wx:if="{{board.keyword && board.keyword.length > 0}}">
+						<view class="heading">关键字</view>
+						<view class="content">
+							<inline-board-keywords str="{{board.keyword}}"></inline-board-keywords>
+						</view>
+					</view>
+				</scroll-view>
+			</view>
+		</mp-tabs>
+	</view>
+</view>
+
+<editor-overlay show="{{editorShow}}" bindpost="onPost" />
+

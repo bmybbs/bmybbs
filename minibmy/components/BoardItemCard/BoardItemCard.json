@@ -1,0 +1,8 @@
+{
+	"component": true,
+	"usingComponents": {
+		"inline-board-keywords": "../InlineBoardKeywords/InlineBoardKeywords",
+		"fav-board-star": "../FavBoardStar/FavBoardStar"
+	}
+}
+

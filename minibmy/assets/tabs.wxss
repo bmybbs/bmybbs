@@ -1,0 +1,43 @@
+.bmy-tab {
+	padding: 0 4px;
+}
+
+.weui-tabs {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
+.weui-tabs-bar__wrp {
+	border-bottom: 1px solid #eee;
+	margin-top: 10px;
+}
+
+.weui-tabs-swiper {
+	width: 100%;
+	flex: 1;
+}
+
+.weui-tabs-bar__content {
+	display: flex;
+	justify-content: center;
+}
+
+.weui-tabs-bar__item {
+	align-self: center;
+}
+
+.weui-tabs-bar__title {
+	margin: 0px 10px;
+}
+
+.tab-bar-title__selected {
+	font-weight: bold;
+	color: var(--bmy-blue);
+	border-bottom-color: var(--bmy-blue) !important;
+}
+
+.tab-content {
+	display: flex;
+	height: 100%;
+}

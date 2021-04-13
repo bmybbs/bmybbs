@@ -1,9 +1,16 @@
-<view class="article" bindtap="toggleAha">
-	<view class="article-header">
-		{{article.author}} 发表于 {{time}}
+<view class="article">
+	<view class="article-header" bindtap="toggleAnsi">
+		<view class="article-title">{{article.title}}</view>
+		<view class="article-meta">{{article.author}} 发表于 {{time}}</view>
 	</view>
 	<view class="article-body">
 		<rich-text nodes="{{article.content}}"></rich-text>
+	</view>
+	<view class="article-footer">
+		<button class="btn" bindtap="openReply">回复</button>
+		<button class="btn" bindtap="doNothing">转载</button>
+		<button class="btn" bindtap="doNothing">转寄</button>
+		<button class="btn" bindtap="doNothing">回信</button>
 	</view>
 </view>
 

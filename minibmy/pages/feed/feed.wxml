@@ -1,12 +1,44 @@
 <view>
 	<block wx:if="{{login_ok}}">
-		<feed-item-card article="{{item}}"
-			wx:for="{{articles}}"
-			wx:key="id">
-		</feed-item-card>
+		<view class="flex-container">
+			<view class="body">
+				<mp-tabs
+					tabs="{{tabs}}"
+					activeTab="{{activeTab}}"
+					swiperClass="weui-tabs-swiper"
+					bindtabclick="onTabClick"
+					bindchange="onChange"
+					tab-class="bmy-tab"
+					activeClass="tab-bar-title__selected"
+				>
+					<view class="tab-content" slot="tab-content-0">
+						<scroll-view scroll-y="true" class="tab-content-scroll"
+							refresher-enabled="true"
+							refresher-background="#333"
+							refresher-default-style="white"
+							refresher-triggered="{{feedRefreshTriggered}}"
+							bindscrolltolower="onFeedEnd"
+							bindrefresherrefresh="onFeedRefresh"
+						>
+							<feed-item-card article="{{item}}"
+								wx:for="{{articles}}"
+								wx:key="id">
+							</feed-item-card>
+						</scroll-view>
+					</view>
+					<view class="tab-content" slot="tab-content-1">
+						<scroll-view scroll-y="true" class="tab-content-scroll">
+							<board-item-card wx:for="{{boards}}" board="{{item}}" digest="{{true}}" wx:key="name"></board-item-card>
+						</scroll-view>
+					</view>
+				</mp-tabs>
+			</view>
+		</view>
 	</block>
 	<block wx:else>
-		请先登录
+		<view class="login-container">
+			<text bindtap="gotoLogin">请先登录</text>
+		</view>
 	</block>
 </view>
 

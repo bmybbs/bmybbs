@@ -36,7 +36,9 @@
 		</mp-cells>
 	</block>
 	<block wx:else>
-		请先登录
+		<view class="login-container">
+			<text bindtap="gotoLogin">请先登录</text>
+		</view>
 	</block>
 </view>
 

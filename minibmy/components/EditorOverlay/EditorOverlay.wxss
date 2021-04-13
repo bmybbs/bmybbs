@@ -1,0 +1,33 @@
+.editor-wrapper {
+	width: 100%;
+	padding: 48rpx;
+}
+
+.title {
+	width: calc(100% - 140rpx) !important;
+	margin-bottom: 16rpx;
+}
+
+.form-control {
+	width: calc(100% - 140rpx) !important;
+	padding: 16rpx;
+	border: 2rpx solid var(--bmy-blue1);
+	border-radius: 16rpx;
+	margin-bottom: 16rpx;
+}
+
+.textarea {
+	padding: 16rpx;
+	height: 4.5rem;
+}
+
+.button-group {
+	display: flex;
+	flex-grow: row;
+}
+
+.button-group .btn {
+	width: 180rpx !important;
+	margin: 8rpx !important;
+}
+

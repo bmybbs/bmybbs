@@ -1,6 +1,6 @@
 import { BMYClient } from "../../utils/BMYClient.js"
 
-const create_article_id = function(el) {
+const create_article_id = (el) => {
 	el.id = el.board + el.aid;
 };
 
@@ -13,7 +13,7 @@ Page({
 	onLoad: function() {
 		BMYClient.get_announce().then(response => {
 			if (response.errcode == 0 && Array.isArray(response.articlelist)) {
-				response.articlelist.map(create_article_id);
+				response.articlelist.forEach(create_article_id);
 				this.setData({
 					announce_list: response.articlelist
 				});
@@ -22,7 +22,7 @@ Page({
 
 		BMYClient.get_commend().then(response => {
 			if (response.errcode == 0 && Array.isArray(response.articlelist)) {
-				response.articlelist.map(create_article_id);
+				response.articlelist.forEach(create_article_id);
 				this.setData({
 					commend_list: response.articlelist
 				});
@@ -31,7 +31,7 @@ Page({
 
 		BMYClient.get_top10().then(response => {
 			if (response.errcode == 0 && Array.isArray(response.articlelist)) {
-				response.articlelist.map(create_article_id);
+				response.articlelist.forEach(create_article_id);
 				this.setData({
 					top10: response.articlelist
 				});

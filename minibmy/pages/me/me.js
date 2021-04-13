@@ -36,5 +36,10 @@ Page({
 			});
 		}
 	},
+	gotoLogin() {
+		wx.reLaunch({
+			url: "../index/index"
+		});
+	},
 })
 

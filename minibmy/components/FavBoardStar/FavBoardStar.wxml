@@ -1,0 +1,2 @@
+<mp-icon icon="star" color="#267dcf" type="{{is_fav == 1 ? 'field' : 'outline'}}" size="{{size}}" bindtap="onToggle" />
+

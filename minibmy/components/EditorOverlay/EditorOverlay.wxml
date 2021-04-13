@@ -1,0 +1,22 @@
+<page-container
+	show="{{show}}"
+	round="true"
+	overlayStyle="background-color: rgba(0, 0, 0, 0.7)"
+	customStyle="height: 45%"
+	bindbeforeleave="preventClose"
+>
+	<view class="editor-wrapper">
+		<block wx:if="{{isReply}}">
+			<view class="title">{{title}}</view>
+		</block>
+		<block wx:else>
+			<input class="form-control" placeholder="标题" model:value="{{title}}" bindinput="doNothing" />
+		</block>
+		<textarea class="form-control textarea" maxlength="-1" placeholder="您想说点什么？Remember, be nice..." model:value="{{body}}" bindinput="doNothing" />
+		<view class="button-group">
+			<button type="primary" class="btn" bindtap="post">{{isReply ? '回复' : '发表'}}</button>
+			<button type="default" class="btn" bindtap="closeOverlay">取消</button>
+		</view>
+	</view>
+</page-container>
+

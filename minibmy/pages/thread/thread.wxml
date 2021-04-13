@@ -1,4 +1,15 @@
-<text class="header">{{boardname_en}}/{{thread_title}}</text>
+<scroll-view
+	scroll-y="true"
+	class="scroll-view"
+	enable-back-to-top="true"
+	refresher-enabled="true"
+	refresher-background="#333"
+	refresher-default-style="white"
+	refresher-triggered="{{triggered}}"
+	bindrefresherrefresh="onThreadRefresh"
+>
+	<article-viewer wx:for="{{articlelist}}" board="{{item.board}}" aid="{{item.aid}}" wx:key="aid" bindreply="onOpenEditor"></article-viewer>
+</scroll-view>
 
-<article-viewer wx:for="{{articlelist}}" board="{{item.board}}" aid="{{item.aid}}" wx:key="aid"></article-viewer>
+<editor-overlay show="{{editorShow}}" isReply="{{true}}" title="{{editorTitle}}" bindpost="onPost" />
 

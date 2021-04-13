@@ -1,0 +1,26 @@
+@import "../../assets/tabs.wxss";
+
+.flex-container {
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
+}
+
+.header {
+	text-align: center;
+}
+
+.body {
+	flex: 1;
+}
+
+.heading {
+	padding: 4rpx 32rpx;
+	text-align: center;
+	background-color: var(--bmy-grey1);
+}
+
+.content {
+	padding: 16rpx 32rpx;
+}
+

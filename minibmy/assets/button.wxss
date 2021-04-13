@@ -1,0 +1,20 @@
+button {
+	height: 80rpx !important;
+	width: 368rpx !important;
+	border-radius: 40rpx !important;
+}
+
+button[type="default"] {
+	color: var(--bmy-blue1) !important;
+}
+
+button[type="primary"] {
+	background-color: var(--bmy-blue1) !important;
+}
+
+button[type="primary"][plain] {
+	background-color: #fff !important;
+	border: 4rpx solid var(--bmy-blue1) !important;
+	color: var(--bmy-blue1) !important;
+}
+

@@ -1,9 +1,10 @@
 {
 	"pages":[
+		"pages/index/index",
 		"pages/bind/step1",
 		"pages/bind/step2",
 		"pages/bind/step3",
-		"pages/index/index",
+		"pages/board/board",
 		"pages/dashboard/dashboard",
 		"pages/feed/feed",
 		"pages/section/section",
@@ -15,23 +16,32 @@
 	"window":{
 		"backgroundTextStyle":"light",
 		"navigationBarBackgroundColor": "#fff",
-		"navigationBarTitleText": "Weixin",
+		"navigationBarTitleText": "西安交通大学 BMYBBS",
 		"navigationBarTextStyle":"black"
 	},
 	"style": "v2",
 	"tabBar": {
 		"color": "#999999",
-		"position": "top",
+		"selectedColor": "#004c97",
+		"backgroundColor": "#ffffff",
 		"list": [{
+			"iconPath": "assets/icons/chart-line-solid-grey.png",
+			"selectedIconPath": "assets/icons/chart-line-solid.png",
 			"pagePath": "pages/dashboard/dashboard",
 			"text": "导读"
 		}, {
+			"iconPath": "assets/icons/rss-solid-grey.png",
+			"selectedIconPath": "assets/icons/rss-solid.png",
 			"pagePath": "pages/feed/feed",
 			"text": "订阅"
 		}, {
+			"iconPath": "assets/icons/layer-group-solid-grey.png",
+			"selectedIconPath": "assets/icons/layer-group-solid.png",
 			"pagePath": "pages/sections/sections",
 			"text": "分区"
 		}, {
+			"iconPath": "assets/icons/sliders-h-solid-grey.png",
+			"selectedIconPath": "assets/icons/sliders-h-solid.png",
 			"pagePath": "pages/me/me",
 			"text": "我的"
 		}]

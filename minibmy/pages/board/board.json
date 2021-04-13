@@ -1,0 +1,12 @@
+{
+	"usingComponents": {
+		"mp-tabs": "@miniprogram-component-plus/tabs",
+		"mp-icon": "weui-miniprogram/icon/icon",
+		"inline-board-keywords": "../../components/InlineBoardKeywords/InlineBoardKeywords",
+		"editor-overlay": "../../components/EditorOverlay/EditorOverlay",
+		"fav-board-star": "../../components/FavBoardStar/FavBoardStar",
+		"post-item-card": "../../components/PostItemCard/PostItemCard"
+	}
+}
+
+

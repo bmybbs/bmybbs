@@ -9,7 +9,11 @@
 	"author": "",
 	"license": "GPL-2.0",
 	"dependencies": {
+		"@bmybbs/bmybbs-content-parser": "file:../content-parser",
+		"@miniprogram-component-plus/tabs": "^1.0.0",
 		"dayjs": "^1.9.6",
+		"insane": "^2.6.2",
+		"marked": "^2.0.1",
 		"xmldom": "^0.5.0"
 	}
 }

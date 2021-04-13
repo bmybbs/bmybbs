@@ -1,5 +1,7 @@
 {
 	"usingComponents": {
+		"mp-tabs": "@miniprogram-component-plus/tabs",
+		"board-item-card": "../../components/BoardItemCard/BoardItemCard",
 		"feed-item-card": "../../components/FeedItemCard/FeedItemCard"
 	}
 }

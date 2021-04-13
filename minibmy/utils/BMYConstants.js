@@ -1,5 +1,9 @@
 export const BASE_URL = "https://bbs.xjtu.edu.cn";
 
+export const ITEMS_PER_PAGE = 20;
+
+export const RE = "Re: ";
+
 export const BMYSECSTRS = [
 	{ id: "0", text: "本站系统" },
 	{ id: "1", text: "交通大学" },
@@ -17,6 +21,17 @@ export const BMYSECSTRS = [
 	{ id: "A", text: "校务信息" },
 	{ id: "C", text: "俱乐部区" },
 ];
+
+export const BOARD_SORT_MODE = {
+	BY_ALPHABET: 1,
+	BY_SCORE: 2,
+	BY_INBOARD: 3,
+};
+
+export const BOARD_ARTICLE_MODE = {
+	THREAD_MODE: "thread",
+	NORMAL_MODE: "",
+};
 
 export const BMY_EC = {
 	API_RT_SUCCESSFUL     : 0,

@@ -1,35 +1,70 @@
-page {
-	--aha-color-black:   #000000;
-	--aha-color-red:     #ff0000;
-	--aha-color-green:   #00ff00;
-	--aha-color-yellow:  #ffff00;
-	--aha-color-blue:    #0000ff;
-	--aha-color-magenta: #ff00ff;
-	--aha-color-cyan:    #00ffff;
-	--aha-color-grey:    #808080;
-	--aha-color-white:   #ffffff;
+.article {
+	margin-bottom: 40rpx;
 }
 
-.aha.aha-fc-black  { color: var(--aha-color-black); }
-.aha.aha-fc-red    { color: var(--aha-color-red); }
-.aha.aha-fc-green  { color: var(--aha-color-green); }
-.aha.aha-fc-olive  { color: var(--aha-color-yellow); }
-.aha.aha-fc-blue   { color: var(--aha-color-blue); }
-.aha.aha-fc-purple { color: var(--aha-color-magenta); }
-.aha.aha-fc-teal   { color: var(--aha-color-cyan); }
-.aha.aha-fc-grey   { color: var(--aha-color-grey); }
+.article-header {
+	padding: 8rpx 32rpx;
+	border-top: 2rpx solid rgba(0,0,0,0.125);
+	border-bottom: 2rpx solid rgba(0,0,0,0.125);
+	background-color: var(--bmy-blue0);
+}
 
-.aha.aha-bg-black  { color: var(--aha-color-white); background-color: var(--aha-color-black); }
-.aha.aha-bg-red    { color: var(--aha-color-white); background-color: var(--aha-color-red); }
-.aha.aha-bg-green  { color: var(--aha-color-white); background-color: var(--aha-color-green); }
-.aha.aha-bg-olive  { color: var(--aha-color-white); background-color: var(--aha-color-yellow); }
-.aha.aha-bg-blue   { color: var(--aha-color-white); background-color: var(--aha-color-blue); }
-.aha.aha-bg-purple { color: var(--aha-color-white); background-color: var(--aha-color-magenta); }
-.aha.aha-bg-teal   { color: var(--aha-color-white); background-color: var(--aha-color-cyan); }
-.aha.aha-bg-grey   { color: var(--aha-color-white); background-color: var(--aha-color-grey); }
+.article-title {
+	font-weight: 700;
+}
 
-.aha.aha-text-underline { text-decoration: underline; }
-.aha.aha-text-italic { font-style: italic }
-@keyframes aha-text-blinker { from { visibility: hidden; } 50% { visibility: hidden; } to { visibility: visible; } }
-.aha.aha-text-blink { animation: aha-text-blinker 4s linear infinite; }
+.article-meta {
+	color: #6c757d;
+	font-size: 0.8rem;
+}
+
+.article-body {
+	padding: 8rpx 32rpx;
+	background-color: #fff;
+}
+
+.article-footer {
+	padding: 8rpx 32rpx;
+	border-top: 2rpx solid rgba(0,0,0,0.125);
+	border-bottom: 2rpx solid rgba(0,0,0,0.125);
+	background-color: var(--bmy-blue0);
+	display: flex;
+	justify-content: space-between;
+}
+
+.article-footer .btn {
+	font-weight: normal;
+	font-size: 1rem;
+	background: var(--bmy-blue0);
+}
+
+.bmybbs-ansi.bmybbs-ansi-fc0 { color: var(--bmybbs-ansi-color-black); }
+.bmybbs-ansi.bmybbs-ansi-fc1 { color: var(--bmybbs-ansi-color-red); }
+.bmybbs-ansi.bmybbs-ansi-fc2 { color: var(--bmybbs-ansi-color-green); }
+.bmybbs-ansi.bmybbs-ansi-fc3 { color: var(--bmybbs-ansi-color-yellow); }
+.bmybbs-ansi.bmybbs-ansi-fc4 { color: var(--bmybbs-ansi-color-blue); }
+.bmybbs-ansi.bmybbs-ansi-fc5 { color: var(--bmybbs-ansi-color-magenta); }
+.bmybbs-ansi.bmybbs-ansi-fc6 { color: var(--bmybbs-ansi-color-cyan); }
+.bmybbs-ansi.bmybbs-ansi-fc7 { color: var(--bmybbs-ansi-color-grey); }
+
+.bmybbs-ansi.bmybbs-ansi-bg0 { color: var(--bmybbs-ansi-color-white); background-color: var(--bmybbs-ansi-color-black); }
+.bmybbs-ansi.bmybbs-ansi-bg1 { color: var(--bmybbs-ansi-color-white); background-color: var(--bmybbs-ansi-color-red); }
+.bmybbs-ansi.bmybbs-ansi-bg2 { color: var(--bmybbs-ansi-color-white); background-color: var(--bmybbs-ansi-color-green); }
+.bmybbs-ansi.bmybbs-ansi-bg3 { color: var(--bmybbs-ansi-color-white); background-color: var(--bmybbs-ansi-color-yellow); }
+.bmybbs-ansi.bmybbs-ansi-bg4 { color: var(--bmybbs-ansi-color-white); background-color: var(--bmybbs-ansi-color-blue); }
+.bmybbs-ansi.bmybbs-ansi-bg5 { color: var(--bmybbs-ansi-color-white); background-color: var(--bmybbs-ansi-color-magenta); }
+.bmybbs-ansi.bmybbs-ansi-bg6 { color: var(--bmybbs-ansi-color-white); background-color: var(--bmybbs-ansi-color-cyan); }
+.bmybbs-ansi.bmybbs-ansi-bg7 { color: var(--bmybbs-ansi-color-white); background-color: var(--bmybbs-ansi-color-grey); }
+
+.bmybbs-ansi.bmybbs-ansi-text-underline { text-decoration: underline; }
+.bmybbs-ansi.bmybbs-ansi-text-italic { font-style: italic }
+@keyframes bmybbs-ansi-text-blinker { from { visibility: hidden; } 50% { visibility: hidden; } to { visibility: visible; } }
+.bmybbs-ansi.bmybbs-ansi-text-blink { animation: bmybbs-ansi-text-blinker 4s linear infinite; }
+
+.blockquote {
+	padding-left: 32rpx;
+	border-left: 8rpx solid var(--bmy-grey2);
+	color: var(--bs-gray);
+	background-color: var(--bs-bmy-grey1) !important;
+}
 

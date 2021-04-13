@@ -1,3 +1,36 @@
-<text class="header">{{sec_en}}区/{{sec_zh}}</text>
+<view class="flex-container">
+	<text class="header">{{sec_en}}区 ({{sec_zh}})</text>
 
-<feed-item-card wx:for="{{articles}}" article="{{item}}" wx:key="id"></feed-item-card>
+	<view class="body">
+		<mp-tabs
+			tabs="{{tabs}}"
+			activeTab="{{activeTab}}"
+			swiperClass="weui-tabs-swiper"
+			bindtabclick="onTabClick"
+			bindchange="onChange"
+			tab-class="bmy-tab"
+			activeClass="tab-bar-title__selected"
+		>
+			<view class="tab-content" slot="tab-content-0">
+				<scroll-view
+					scroll-y="true"
+					class="tab-content-scroll"
+					refresher-enabled="true"
+					refresher-background="#333"
+					refresher-default-style="white"
+					refresher-triggered="{{feedRefreshTriggered}}"
+					bindscrolltolower="onFeedEnd"
+					bindrefresherrefresh="onFeedRefresh"
+				>
+					<feed-item-card wx:for="{{articles}}" article="{{item}}" wx:key="id"></feed-item-card>
+				</scroll-view>
+			</view>
+			<view class="tab-content" slot="tab-content-1">
+				<scroll-view scroll-y="true" class="tab-content-scroll">
+					<board-item-card wx:for="{{boards}}" board="{{item}}" wx:key="name"></board-item-card>
+				</scroll-view>
+			</view>
+		</mp-tabs>
+	</view>
+</view>
+

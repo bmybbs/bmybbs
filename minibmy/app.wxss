@@ -1,4 +1,6 @@
-/**app.wxss**/
+@import "assets/colors.wxss";
+@import "assets/button.wxss";
+
 .container {
 	height: 100%;
 	display: flex;

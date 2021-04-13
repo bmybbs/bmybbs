@@ -1,1 +1,24 @@
+@import "../../assets/tabs.wxss";
+
+.flex-container {
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
+}
+
+.header {
+	text-align: center;
+}
+
+.body {
+	flex: 1;
+}
+
+.login-container {
+	width: 100vw;
+	height: 100vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
 

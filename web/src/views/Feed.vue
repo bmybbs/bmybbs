@@ -46,7 +46,7 @@
 <script>
 import { defineAsyncComponent } from "vue"
 import { BMYClient } from "@/lib/BMYClient.js"
-import { BOARD_SORT_MODE, BMY_EC } from "@/lib/BMYConstants.js"
+import { BOARD_SORT_MODE, BMY_EC, ITEMS_PER_PAGE } from "@/lib/BMYConstants.js"
 
 const DashboardArticleListItem = defineAsyncComponent(() => import("@/components/DashboardArticleListItem.vue"));
 const PopoverBoardInfo = defineAsyncComponent(() => import("@/components/PopoverBoardInfo.vue"));
@@ -105,7 +105,7 @@ export default {
 					if (Array.isArray(response.articles)) {
 						this.articles = response.articles;
 					}
-					this.total = response.total;
+					this.total = Math.ceil(response.total / ITEMS_PER_PAGE);
 					break;
 				case BMY_EC.API_RT_NOTLOGGEDIN:
 					this.loggedin = false;
@@ -138,7 +138,7 @@ export default {
 				if (Array.isArray(response.articles)) {
 					this.articles = response.articles;
 				}
-				this.total = response.total;
+				this.total = Math.ceil(response.total / ITEMS_PER_PAGE);
 			});
 		},
 	},
