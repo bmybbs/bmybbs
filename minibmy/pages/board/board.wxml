@@ -2,6 +2,7 @@
 	<view class="header">
 		<text>{{board.secstr}}区 {{board.name}} ({{board.zh_name}})</text>
 		<fav-board-star is_fav="{{board.is_fav}}" size="{{20}}" boardname="{{board.name}}"></fav-board-star>
+		<mp-icon icon="add2" color="#267dcf" bindtap="openEditor" />
 	</view>
 
 	<view class="body">
@@ -52,4 +53,6 @@
 		</mp-tabs>
 	</view>
 </view>
+
+<editor-overlay show="{{editorShow}}" bindpost="onPost" />
 

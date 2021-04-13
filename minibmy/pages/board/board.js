@@ -1,7 +1,8 @@
 import insane from "insane";
 import marked from "marked";
 import { BMYClient } from "../../utils/BMYClient.js"
-import { BOARD_ARTICLE_MODE, ITEMS_PER_PAGE } from "../../utils/BMYConstants.js"
+import { BOARD_ARTICLE_MODE, ITEMS_PER_PAGE, BMY_EC } from "../../utils/BMYConstants.js"
+import { getErrorMessage } from "../../utils/ErrorMsgUtils.js"
 
 const update_article_callback = (response, article_arr, set, page, that) => {
 	if (Array.isArray(response.articlelist)) {
@@ -31,6 +32,7 @@ Page({
 		viceModerators: [],
 		feedSet: new Set(),
 		page: 1,
+		editorShow: false,
 		activeTab: 0,
 		tabs: [
 			{ title: "话题", },
@@ -58,6 +60,36 @@ Page({
 		return {
 			title: `兵马俑BBS${this.data.board.zh_name}版(${this.data.board.name})`,
 		}
+	},
+	onPost(e) {
+		const article = {
+			board: this.data.board.name,
+			title: e.detail.title,
+			content: e.detail.body.replaceAll("[ESC][", "\x1b["),
+			anony: false,
+			norep: false,
+			math: false,
+		};
+
+		BMYClient.post_article(article).then(response => {
+			if (response.errcode == BMY_EC.API_RT_SUCCESSFUL) {
+				if (e.detail.onSuccess !== null && typeof e.detail.onSuccess === "function") {
+					e.detail.onSuccess();
+				}
+				wx.navigateTo({
+					url: `../thread/thread?boardname_en=${this.data.board.name}&tid=${response.aid}`,
+				});
+			} else {
+				wx.showToast({
+					title: getErrorMessage(response.errcode),
+					icon: "none",
+					duration: 2000,
+				});
+			}
+		});
+	},
+	openEditor() {
+		this.setData({ editorShow: true });
 	},
 	updateNotes(notes) {
 		if (notes && notes.length > 0) {
