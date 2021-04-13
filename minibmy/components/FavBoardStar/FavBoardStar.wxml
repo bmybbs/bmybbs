@@ -1,4 +1,2 @@
-<view class="icon-container" bindtap="onToggle">
-	<mp-icon icon="star" color="{{is_fav == 1 ? '#267dcf' : '#333'}}" type="{{is_fav == 1 ? 'field' : 'outline'}}" size="{{size}}"></mp-icon>
-</view>
+<mp-icon icon="star" color="#267dcf" type="{{is_fav == 1 ? 'field' : 'outline'}}" size="{{size}}" bindtap="onToggle" />
 
