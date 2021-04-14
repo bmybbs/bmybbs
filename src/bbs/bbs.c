@@ -94,7 +94,7 @@ static int do_select(int ent, struct fileheader *fileinfo, char *direct);
 static int dele_digest(int filetime, char *direc);
 static int garbage_line(char *str);
 static void getcross(char *filepath, int mode);
-static int post_cross(char *bname, int mode, int islocal, int hascheck, int dangerous);
+static time_t post_cross(char *bname, int mode, int islocal, int hascheck, int dangerous);
 static int post_article(struct fileheader *sfh);
 static int dofilter(char *title, char *fn, int mode);
 //static int edit_title(int ent, struct fileheader *fileinfo, char *direct);
@@ -500,8 +500,8 @@ Post()
 	return 0;
 }
 #endif
-int postfile(char *filename, char *nboard, char *posttitle, int mode) {
-	int retv;
+time_t postfile(char *filename, char *nboard, char *posttitle, int mode) {
+	time_t retv;
 	int save_in_mail;
 	save_in_mail = in_mail;
 	in_mail = NA;
@@ -1724,7 +1724,7 @@ int do_post() {
 }
 
 /* Add by SmallPig */
-static int
+static time_t
 post_cross(char *bname, int mode, int islocal, int hascheck, int dangerous)
 {
 	struct fileheader postfile;
@@ -1826,7 +1826,7 @@ post_cross(char *bname, int mode, int islocal, int hascheck, int dangerous)
 		}
 		pressreturn();
 		clear();
-		return (int)now; // return filetime instead of 1 by IronBlood 20130807
+		return now; // return filetime instead of 1 by IronBlood 20130807
 	}
 	outgo_post(&postfile, bname, currentuser.userid, currentuser.username);
 	updatelastpost(bname);
@@ -1837,7 +1837,7 @@ post_cross(char *bname, int mode, int islocal, int hascheck, int dangerous)
 
 		bmy_article_add_thread(ythtbbs_cache_Board_get_idx_by_name(bname) + 1, postfile.thread, postfile.title, currentuser.username, postfile.accessed);
 	}
-	return (int)now;  // return filetime instead of 1 by IronBlood 20130807
+	return now;  // return filetime instead of 1 by IronBlood 20130807
 }
 
 void

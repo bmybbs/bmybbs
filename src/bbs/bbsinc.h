@@ -32,7 +32,7 @@ void make_blist(void);
 void make_blist_full(void);
 int junkboard(void);
 int Select(const char *s);
-int postfile(char *filename, char *nboard, char *posttitle, int mode);
+time_t postfile(char *filename, char *nboard, char *posttitle, int mode);
 int get_a_boardname(char *bname, char *prompt);
 int do_cross(int ent, struct fileheader *fileinfo, char *direct);
 int cmpfilename(struct fileheader *fhdr);

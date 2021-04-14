@@ -14,6 +14,7 @@
 #include "ytht/common.h"
 #include "ytht/strlib.h"
 #include "ytht/msg.h"
+#include "bmy/user.h"
 #include "ythtbbs/cache.h"
 #include "ythtbbs/permissions.h"
 #include "ythtbbs/modes.h"
@@ -997,6 +998,8 @@ void ythtbbs_user_clean(void) {
 				remove_directory(local_buf);
 
 				release_email(utmp.userid, utmp.email); // TODO 通过身份验证的用户顺带发送提醒邮件
+
+				bmy_user_delete(i + 1, utmp.userid);
 
 				// 最后一步，清零原来的 utmp 数据
 				lseek(fd, -size, SEEK_CUR);
