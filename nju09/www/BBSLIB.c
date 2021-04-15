@@ -1433,19 +1433,6 @@ innd_board(char *bname)
 }
 
 int
-political_board(char *bname)
-{
-	struct boardmem *x;
-	x = ythtbbs_cache_Board_get_board_by_name(bname);
-	if (x == 0)
-		return 0;
-	if (x->header.flag & POLITICAL_FLAG)
-		return 1;
-	else
-		return 0;
-}
-
-int
 anony_board(char *bname)
 {
 	struct boardmem *x;

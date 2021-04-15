@@ -145,7 +145,6 @@ int has_vote_perm(struct userec *user, struct boardmem *x);
 int hideboard(char *bname);
 int hideboard_x(struct boardmem *x);
 int innd_board(char *bname);
-int political_board(char *bname);
 int anony_board(char *bname);
 int noadm4political(const char *bname);
 struct boardmem *getboard(char *board);	//返回shm中这个board的指针, 同时把shm中的版名拷贝到board, 如果没有权限则返回NULL

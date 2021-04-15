@@ -245,7 +245,7 @@ update_form(char *board, char *file, char *title)
 	if (title[0] == 0)
 		http_fatal("标题不能为空");
 	if (!hideboard(board)) {
-		dangerous = dofilter_edit(title, buf, political_board(board));
+		dangerous = dofilter_edit(title, buf, ythtbbs_board_is_political(board));
 		if (dangerous == 1) {
 			post_mail_buf(currentuser.userid, title, buf, currentuser.userid, currentuser.username, fromhost, -1, 0);
 			http_fatal(BAD_WORD_NOTICE);

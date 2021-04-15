@@ -111,7 +111,7 @@ bbssnd_main()
 	sprintf(filename, "bbstmpfs/tmp/%d.tmp", thispid);
 	f_write(filename, content);
 	if (!hideboard_x(brd)) {
-		int dangerous = dofilter(title, filename, political_board(board));
+		int dangerous = dofilter(title, filename, ythtbbs_board_is_political(board));
 		if (dangerous == 1){
 			to1984 = 1;
 			mail_file(filename, currentuser.userid, title, currentuser.userid);
