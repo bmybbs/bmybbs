@@ -22,8 +22,8 @@
                        "\xC8\xE7\xB9\xFB\xC4\xFA\xD3\xD0\xD2\xC9\xCE\xCA\xA3\xAC\xC7\xEB\xC1\xAA\xCF\xB5\xD4\xDA\xCF\xDF\xB5\xC4\xD5\xBE\xB3\xA4\xC9\xF3\xBA\xCB\xB8\xC3\xCE\xC4\xD5\xC2"
 
 int ytht_smth_reload_badwords(char *wordlistf, char *imgf);
-int ytht_smth_filter_file(char *checkfile, struct mmapfile *badword_img);
 int ytht_smth_filter_string(char *string, struct mmapfile *badword_img);
 int ytht_smth_filter_article(char *title, char *filename, struct mmapfile *badword_img);
 
 #endif
+
