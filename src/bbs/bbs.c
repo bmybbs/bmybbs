@@ -96,7 +96,7 @@ static int garbage_line(char *str);
 static void getcross(char *filepath, int mode);
 static time_t post_cross(char *bname, int mode, int islocal, int hascheck, int dangerous);
 static int post_article(struct fileheader *sfh);
-static int dofilter(char *title, char *fn, int mode);
+static enum ytht_smth_filter_result dofilter(char *title, char *fn, enum ytht_smth_filter_option mode);
 //static int edit_title(int ent, struct fileheader *fileinfo, char *direct);
 static int markspec_post(int ent, struct fileheader *fileinfo, char *direct);
 static int import_spec(void);
@@ -648,7 +648,7 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct) {
 	int ddigestmode;
 	int islocal;
 	int hide1, hide2;
-	int dangerous;
+	enum ytht_smth_filter_result dangerous;
 
 	if (!HAS_PERM(PERM_POST, currentuser))
 		return DONOTHING;
@@ -690,8 +690,8 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct) {
 	hide2 = hideboard(bname);
 	if (hide1 && !hide2)
 		return FULLUPDATE;
-	dangerous = dofilter(quote_title, quote_file, ythtbbs_board_is_political(bname));
-	if (!hide2 && ((uinfo.mode == RMAIL) || (uinfo.mode == BACKNUMBER)) && dangerous == -1)
+	dangerous = dofilter(quote_title, quote_file, ythtbbs_board_is_political(bname) ? YTHT_SMTH_FILTER_OPTION_NORMAL : YTHT_SMTH_FILTER_OPTION_SIMPLE);
+	if (!hide2 && ((uinfo.mode == RMAIL) || (uinfo.mode == BACKNUMBER)) && dangerous == YTHT_SMTH_FILTER_RESULT_1984)
 		return FULLUPDATE;
 	if (is1984_board(bname))
 		return FULLUPDATE;
@@ -2068,18 +2068,17 @@ post_article(struct fileheader *sfh)
 
 	if (!hideboard(currboard))
 	{
-		int dangerous;
-		dangerous = dofilter(postfile.title, filepath, ythtbbs_board_is_political(currboard));
+		enum ytht_smth_filter_result dangerous = dofilter(postfile.title, filepath, ythtbbs_board_is_political(currboard) ? YTHT_SMTH_FILTER_OPTION_NORMAL : YTHT_SMTH_FILTER_OPTION_SIMPLE);
 		switch (dangerous)
 		{
 			char mtitle[256];
-		case - 1:
+		case YTHT_SMTH_FILTER_RESULT_1984:
 			post_to_1984(filepath, &postfile, 0);
 			unlink(filepath);
 			clear();
 			do_delay( -1);
 			return FULLUPDATE;
-		case -2:
+		case YTHT_SMTH_FILTER_RESULT_WARN:
 			snprintf(mtitle, sizeof (mtitle), "[发表报警] %s %.60s",
 					currboard, postfile.title);
 			mail_file(filepath, "delete", mtitle);
@@ -2241,55 +2240,51 @@ get_mention_ids(char *article_path, char **mention_ids)
 	return 0;
 }
 
-static int
-dofilter(title, fn, mode)
-char *title, *fn;
-int mode;			// 1: politics    0: non-politics
-{
-	//this function return 0 if article is safe, return -1 if article is dangerous
-	//return -2 if article is possbily dangerous.
+// this function return 0 if article is safe, return -1 if article is dangerous
+// return -2 if article is possbily dangerous.
+static enum ytht_smth_filter_result dofilter(char *title, char *fn, enum ytht_smth_filter_option mode) {
 	struct mmapfile *mf;
 	char *bf;
 	switch (mode) {
-	case 1:
+	case YTHT_SMTH_FILTER_OPTION_NORMAL:
 		mf = &mf_badwords;
 		bf = BADWORDS;
 		break;
-	case 0:
+	case YTHT_SMTH_FILTER_OPTION_SIMPLE:
 		mf = &mf_sbadwords;
 		bf = SBADWORDS;
 		break;
-	case 2:
+	case YTHT_SMTH_FILTER_OPTION_PLTCAL:
 		mf = &mf_pbadwords;
 		bf = PBADWORDS;
 		break;
 	default:
-		return -1;
+		return YTHT_SMTH_FILTER_RESULT_1984;
 	}
 	if (mmapfile(bf, mf) < 0)
 		goto CHECK2;
 	if (ytht_smth_filter_article(title, fn, mf)) {
-		if (mode != 2) {
+		if (mode != YTHT_SMTH_FILTER_OPTION_PLTCAL) {
 			move(0, 0);
 			clear();
 			prints("%s", BAD_WORD_NOTICE);
 			pressanykey();
 			mail_file(fn, currentuser.userid, title);
-			return -1;
+			return YTHT_SMTH_FILTER_RESULT_1984;
 		}
-		return -2;
+		return YTHT_SMTH_FILTER_RESULT_WARN;
 	}
 CHECK2:
-	if (1 != mode)
-		return 0;
+	if (YTHT_SMTH_FILTER_OPTION_NORMAL != mode)
+		return YTHT_SMTH_FILTER_RESULT_SAFE;
 	mf = &mf_pbadwords;
 	bf = PBADWORDS;
 	if (mmapfile(bf, mf) < 0)
-		return 0;
+		return YTHT_SMTH_FILTER_RESULT_SAFE;
 	if (ytht_smth_filter_article(title, fn, mf))
-		return -2;
+		return YTHT_SMTH_FILTER_RESULT_WARN;
 	else
-		return 0;
+		return YTHT_SMTH_FILTER_RESULT_SAFE;
 }
 
 int
@@ -2393,16 +2388,16 @@ char *direct;
 		return FULLUPDATE;
 	}
 	if (!in_mail && !hideboard(currboard)) {
-		int dangerous = dofilter(fileinfo->title, tmpfile, ythtbbs_board_is_political(currboard));
+		enum ytht_smth_filter_result dangerous = dofilter(fileinfo->title, tmpfile, ythtbbs_board_is_political(currboard) ? YTHT_SMTH_FILTER_OPTION_NORMAL : YTHT_SMTH_FILTER_OPTION_SIMPLE);
 		switch (dangerous) {
 			char mtitle[256];
-		case -1:
+		case YTHT_SMTH_FILTER_RESULT_1984:
 			fileinfo->sizebyte = ytht_num2byte(eff_size(tmpfile));
 			fileinfo->edittime = time(0);
 			post_to_1984(tmpfile, fileinfo, 0);
 			unlink(tmpfile);
 			return FULLUPDATE;
-		case -2:
+		case YTHT_SMTH_FILTER_RESULT_WARN:
 			snprintf(mtitle, sizeof (mtitle), "[修改报警] %s %.60s", currboard, fileinfo->title);
 			change_dir(direct, fileinfo, (void *) DIR_do_dangerous, ent, digestmode, 1);
 			mail_file(tmpfile, "delete", mtitle);
