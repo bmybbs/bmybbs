@@ -1455,12 +1455,9 @@ anony_board(char *bname)
 	return (x->header.flag & ANONY_FLAG);
 }
 
-int
-noadm4political(bname)
-char *bname;
-{
+int noadm4political(const char *bname) {
 	time_t t = ythtbbs_cache_utmp_get_watchman();
-	return (!t || now_t < t) ? 0 : political_board(bname);
+	return (!t || now_t < t) ? 0 : ythtbbs_board_is_political(bname);
 }
 
 int

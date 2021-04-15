@@ -147,7 +147,7 @@ int hideboard_x(struct boardmem *x);
 int innd_board(char *bname);
 int political_board(char *bname);
 int anony_board(char *bname);
-int noadm4political(char *bname);
+int noadm4political(const char *bname);
 struct boardmem *getboard(char *board);	//返回shm中这个board的指针, 同时把shm中的版名拷贝到board, 如果没有权限则返回NULL
 int send_msg(int i, char *touserid, int topid, char *msg, int offline);
 int count_life_value(struct userec *urec);
