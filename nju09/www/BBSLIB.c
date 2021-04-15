@@ -2192,88 +2192,85 @@ system_load()
 	return load;
 }
 
-int
-dofilter(char *title, char *fn, int level)
+enum ytht_smth_filter_result dofilter(char *title, char *fn, enum ytht_smth_filter_option level)
 {
 	struct mmapfile *mb;
 	char *bf;
 	switch (level) {
-	case 1:
+	case YTHT_SMTH_FILTER_OPTION_NORMAL:
 		mb = &mf_badwords;
 		bf = BADWORDS;
 		break;
-	case 0:
+	case YTHT_SMTH_FILTER_OPTION_SIMPLE:
 		mb = &mf_sbadwords;
 		bf = SBADWORDS;
 		break;
-	case 2:
+	case YTHT_SMTH_FILTER_OPTION_PLTCAL:
 		mb = &mf_pbadwords;
 		bf = PBADWORDS;
 		break;
 	default:
-		return 1;
+		return YTHT_SMTH_FILTER_RESULT_1984;
 	}
 	if (mmapfile(bf, mb) < 0)
 		goto CHECK2;
 
 	if (ytht_smth_filter_article(title, fn, mb)) {
-		if (level != 2)
-			return 1;
-		return 2;
+		if (level != YTHT_SMTH_FILTER_OPTION_PLTCAL)
+			return YTHT_SMTH_FILTER_RESULT_1984;
+		return YTHT_SMTH_FILTER_RESULT_WARN;
 	}
 CHECK2:
-	if (level != 1)
-		return 0;
+	if (level != YTHT_SMTH_FILTER_OPTION_NORMAL)
+		return YTHT_SMTH_FILTER_RESULT_SAFE;
 	mb = &mf_pbadwords;
 	bf = PBADWORDS;
 	if (mmapfile(bf, mb) < 0)
-		return 0;
+		return YTHT_SMTH_FILTER_RESULT_SAFE;
 	if (ytht_smth_filter_article(title, fn, mb))
-		return 2;
+		return YTHT_SMTH_FILTER_RESULT_WARN;
 	else
-		return 0;
+		return YTHT_SMTH_FILTER_RESULT_SAFE;
 }
 
-int
-dofilter_edit(char *title, char *buf, int level)
-{
+enum ytht_smth_filter_result dofilter_edit(char *title, char *buf, enum ytht_smth_filter_option level) {
 	struct mmapfile *mb;
 	char *bf;
 	switch (level) {
-	case 1:
+	case YTHT_SMTH_FILTER_OPTION_NORMAL:
 		mb = &mf_badwords;
 		bf = BADWORDS;
 		break;
-	case 0:
+	case YTHT_SMTH_FILTER_OPTION_SIMPLE:
 		mb = &mf_sbadwords;
 		bf = SBADWORDS;
 		break;
-	case 2:
+	case YTHT_SMTH_FILTER_OPTION_PLTCAL:
 		mb = &mf_pbadwords;
 		bf = PBADWORDS;
 		break;
 	default:
-		return 1;
+		return YTHT_SMTH_FILTER_RESULT_1984;
 	}
 	if (mmapfile(bf, mb) < 0)
 		goto CHECK2;
 
 	if (ytht_smth_filter_string(buf, mb) || ytht_smth_filter_string(title, mb)) {
-		if (level != 2)
-			return 1;
-		return 2;
+		if (level != YTHT_SMTH_FILTER_OPTION_PLTCAL)
+			return YTHT_SMTH_FILTER_RESULT_1984;
+		return YTHT_SMTH_FILTER_RESULT_WARN;
 	}
 CHECK2:
-	if (level != 1)
-		return 0;
+	if (level != YTHT_SMTH_FILTER_OPTION_NORMAL)
+		return YTHT_SMTH_FILTER_RESULT_SAFE;
 	mb = &mf_pbadwords;
 	bf = PBADWORDS;
 	if (mmapfile(bf, mb) < 0)
-		return 0;
+		return YTHT_SMTH_FILTER_RESULT_SAFE;
 	if (ytht_smth_filter_string(buf, mb) || ytht_smth_filter_string(title, mb))
-		return 2;
+		return YTHT_SMTH_FILTER_RESULT_WARN;
 	else
-		return 0;
+		return YTHT_SMTH_FILTER_RESULT_SAFE;
 }
 
 int
