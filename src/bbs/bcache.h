@@ -17,7 +17,6 @@ int hideboard(char *bname);
 int normal_board(char *bname);
 int innd_board(char *bname);
 int is1984_board(char *bname);
-int political_board(const char *bname);
 int club_board(char *bname);
 int clubsync(char *boardname);
 int getuser(const char *userid);

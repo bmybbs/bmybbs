@@ -690,7 +690,7 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct) {
 	hide2 = hideboard(bname);
 	if (hide1 && !hide2)
 		return FULLUPDATE;
-	dangerous = dofilter(quote_title, quote_file, political_board(bname));
+	dangerous = dofilter(quote_title, quote_file, ythtbbs_board_is_political(bname));
 	if (!hide2 && ((uinfo.mode == RMAIL) || (uinfo.mode == BACKNUMBER)) && dangerous == -1)
 		return FULLUPDATE;
 	if (is1984_board(bname))
@@ -1800,7 +1800,7 @@ post_cross(char *bname, int mode, int islocal, int hascheck, int dangerous)
 
 	if (mode != 1) {
 		if (!hascheck)
-			dangerous = dofilter(postfile.title, filepath, political_board(bname));
+			dangerous = dofilter(postfile.title, filepath, ythtbbs_board_is_political(bname));
 		if (dangerous) {
 			char mtitle[256];
 			snprintf(mtitle, sizeof (mtitle), "[×ªÔØ±¨¾¯] %s %.60s", bname, postfile.title);
@@ -2069,9 +2069,7 @@ post_article(struct fileheader *sfh)
 	if (!hideboard(currboard))
 	{
 		int dangerous;
-		dangerous =
-			dofilter(postfile.title, filepath,
-					political_board(currboard));
+		dangerous = dofilter(postfile.title, filepath, ythtbbs_board_is_political(currboard));
 		switch (dangerous)
 		{
 			char mtitle[256];
@@ -2395,7 +2393,7 @@ char *direct;
 		return FULLUPDATE;
 	}
 	if (!in_mail && !hideboard(currboard)) {
-		int dangerous = dofilter(fileinfo->title, tmpfile, political_board(currboard));
+		int dangerous = dofilter(fileinfo->title, tmpfile, ythtbbs_board_is_political(currboard));
 		switch (dangerous) {
 			char mtitle[256];
 		case -1:
