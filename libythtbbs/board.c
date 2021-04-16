@@ -91,12 +91,16 @@ bool ythtbbs_board_is_hidden(const char *bname) {
 	if (bname == NULL || bname[0] <= 32)
 		return true;
 
-	if (!strcmp(bname, DEFAULTBOARD))
-		return false;
-
 	const struct boardmem *x = ythtbbs_cache_Board_get_board_by_name(bname);
+	return ythtbbs_board_is_hidden_x(x);
+}
+
+bool ythtbbs_board_is_hidden_x(const struct boardmem *x) {
 	if (x == NULL)
 		return true;
+
+	if (!strcmp(x->header.filename, DEFAULTBOARD))
+		return false;
 
 	if (x->header.level & PERM_NOZAP)
 		return false;
