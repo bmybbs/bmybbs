@@ -87,3 +87,23 @@ bool ythtbbs_board_is_political(const char *bname) {
 	return (x != NULL) ? ((x->header.flag & POLITICAL_FLAG) ? true : false) : false;
 }
 
+bool ythtbbs_board_is_hidden(const char *bname) {
+	if (bname == NULL || bname[0] <= 32)
+		return true;
+
+	if (!strcmp(bname, DEFAULTBOARD))
+		return false;
+
+	const struct boardmem *x = ythtbbs_cache_Board_get_board_by_name(bname);
+	if (x == NULL)
+		return true;
+
+	if (x->header.level & PERM_NOZAP)
+		return false;
+
+	if (x->header.clubnum != 0)
+		return !(x->header.flag & CLUBTYPE_FLAG);
+
+	return (x->header.level & PERM_POSTMASK) ? false : x->header.level;
+}
+
