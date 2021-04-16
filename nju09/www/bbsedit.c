@@ -224,7 +224,7 @@ update_form(char *board, char *file, char *title)
 	char filename[STRLEN];
 	struct fileheader x;
 	struct mmapfile mf = { .ptr = NULL };
-	int dangerous = 0;
+	enum ytht_smth_filter_result dangerous = YTHT_SMTH_FILTER_RESULT_SAFE;
 	size_t i;
 	long l;
 	unsigned old_accessed;
@@ -245,11 +245,11 @@ update_form(char *board, char *file, char *title)
 	if (title[0] == 0)
 		http_fatal("标题不能为空");
 	if (!ythtbbs_board_is_hidden(board)) {
-		dangerous = dofilter_edit(title, buf, ythtbbs_board_is_political(board));
-		if (dangerous == 1) {
+		dangerous = dofilter_edit(title, buf, ythtbbs_board_is_political(board) ? YTHT_SMTH_FILTER_OPTION_NORMAL : YTHT_SMTH_FILTER_OPTION_SIMPLE);
+		if (dangerous == YTHT_SMTH_FILTER_RESULT_1984) {
 			post_mail_buf(currentuser.userid, title, buf, currentuser.userid, currentuser.username, fromhost, -1, 0);
 			http_fatal(BAD_WORD_NOTICE);
-		} else if (dangerous == 2) {
+		} else if (dangerous == YTHT_SMTH_FILTER_RESULT_WARN) {
 			char mtitle[256];
 			sprintf(mtitle, "[修改报警] %s %.60s", board, title);
 			post_mail_buf("delete", mtitle, buf, currentuser.userid, currentuser.username, fromhost, -1, 0);
@@ -316,7 +316,7 @@ update_form(char *board, char *file, char *title)
 				x.accessed |= FH_ATTACHED;
 			else
 				x.accessed &= ~FH_ATTACHED;
-			if (dangerous)
+			if (dangerous != YTHT_SMTH_FILTER_RESULT_SAFE)
 				x.accessed |= FH_DANGEROUS;
 			if (!bmy_board_is_system_board(board) && x.filetime == x.thread && x.accessed != old_accessed) {
 				// 对于主题帖且标记发生变化

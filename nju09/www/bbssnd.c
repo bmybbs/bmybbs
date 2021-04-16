@@ -111,11 +111,11 @@ bbssnd_main()
 	sprintf(filename, "bbstmpfs/tmp/%d.tmp", thispid);
 	f_write(filename, content);
 	if (!ythtbbs_board_is_hidden_x(brd)) {
-		int dangerous = dofilter(title, filename, ythtbbs_board_is_political(board));
-		if (dangerous == 1){
+		enum ytht_smth_filter_result dangerous = dofilter(title, filename, ythtbbs_board_is_political(board) ? YTHT_SMTH_FILTER_OPTION_NORMAL : YTHT_SMTH_FILTER_OPTION_SIMPLE);
+		if (dangerous == YTHT_SMTH_FILTER_RESULT_1984){
 			to1984 = 1;
 			mail_file(filename, currentuser.userid, title, currentuser.userid);
-		}else if (dangerous == 2) {
+		}else if (dangerous == YTHT_SMTH_FILTER_RESULT_WARN) {
 			char mtitle[256];
 			sprintf(mtitle, "[·¢±í±¨¾¯] %s %.60s", board, title);
 			post_mail("delete", mtitle, filename,

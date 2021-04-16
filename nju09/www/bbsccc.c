@@ -106,7 +106,7 @@ int do_ccc(struct fileheader *x, struct boardmem *brd1, struct boardmem *brd) {
 	} else {
 		sprintf(title, "[×ªÔØ] %.55s", x->title);
 	}
-	if (dofilter(title, path2, 2)) {
+	if (dofilter(title, path2, YTHT_SMTH_FILTER_OPTION_PLTCAL) != YTHT_SMTH_FILTER_RESULT_SAFE) {
 		char mtitle[256];
 		sprintf(mtitle, "[×ªÔØ±¨¾¯] %s %.60s", board, title);
 		post_mail("delete", mtitle, path2,
