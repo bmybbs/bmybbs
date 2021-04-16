@@ -50,9 +50,7 @@ static int ytht_smth_filter_file(char *checkfile, struct mmapfile *badword_img) 
 	return retv;
 }
 
-int
-ytht_smth_filter_string(char *string, struct mmapfile *badword_img)
-{
+int ytht_smth_filter_string(const char *string, struct mmapfile *badword_img) {
 	int retv;
 	ytht_mgrep_default_setting();
 	CurrentFileName = "";

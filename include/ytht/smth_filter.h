@@ -34,7 +34,7 @@ enum ytht_smth_filter_result {
 };
 
 int ytht_smth_reload_badwords(char *wordlistf, char *imgf);
-int ytht_smth_filter_string(char *string, struct mmapfile *badword_img);
+int ytht_smth_filter_string(const char *string, struct mmapfile *badword_img);
 int ytht_smth_filter_article(char *title, char *filename, struct mmapfile *badword_img);
 
 #endif
