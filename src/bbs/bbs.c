@@ -2852,11 +2852,7 @@ char *direct;
 	if (fileinfo->owner[0] == '-')
 		return PARTUPDATE;
 	keep = sysconf_eval("KEEP_DELETED_HEADER");
-	if (qnyjzx(currentuser.userid)) {
-		if (!politics(currboard)) {
-			return DONOTHING;
-		}
-	} else if (!ISdelrq)
+	if (!ISdelrq)
 		return DONOTHING;
 	clear();
 	sprintf(genbuf, "É¾³ýÎÄÕÂ [%-.55s]", fileinfo->title);
