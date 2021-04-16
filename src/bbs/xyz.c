@@ -982,7 +982,7 @@ int x_lockscreen(const char *s) {
 						break;
 					}
 				}
-				if(!stringfilter(user_self,0)&&!flag)
+				if ((stringfilter(user_self,0) == YTHT_SMTH_FILTER_RESULT_SAFE) && !flag)
 				{
 					strcpy(uinfo.user_state_temp,user_self);
 					update_ulist(&uinfo, utmpent);

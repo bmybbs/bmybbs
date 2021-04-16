@@ -2287,33 +2287,31 @@ CHECK2:
 		return YTHT_SMTH_FILTER_RESULT_SAFE;
 }
 
-int
-stringfilter(char *title, int mode)
-{
+enum ytht_smth_filter_result stringfilter(char *title, enum ytht_smth_filter_option mode) {
 	struct mmapfile *mf;
 	char *bf;
 	switch (mode) {
-	case 1:
+	case YTHT_SMTH_FILTER_OPTION_NORMAL:
 		mf = &mf_badwords;
 		bf = BADWORDS;
 		break;
-	case 0:
+	case YTHT_SMTH_FILTER_OPTION_SIMPLE:
 		mf = &mf_sbadwords;
 		bf = SBADWORDS;
 		break;
-	case 2:
+	case YTHT_SMTH_FILTER_OPTION_PLTCAL:
 		mf = &mf_pbadwords;
 		bf = PBADWORDS;
 		break;
 	default:
-		return -1;
+		return YTHT_SMTH_FILTER_RESULT_1984;
 	}
 	if (mmapfile(bf, mf) < 0)
-		return 0;
+		return YTHT_SMTH_FILTER_RESULT_SAFE;
 	if (ytht_smth_filter_string(title, mf)) {
-		return -1;
+		return YTHT_SMTH_FILTER_RESULT_1984;
 	}
-	return 0;
+	return YTHT_SMTH_FILTER_RESULT_SAFE;
 }
 
 static int
@@ -2495,7 +2493,7 @@ char *direct;
 	ytht_strsncpy(buf, fileinfo->title, sizeof(buf));
 	getdata(t_lines - 1, 0, "新文章标题: ", buf, 50, DOECHO, NA);
 
-	if (buf[0] != '\0' && strcmp(fileinfo->title, buf) && (!stringfilter(buf, ythtbbs_board_is_political(currboard)))) {
+	if (buf[0] != '\0' && strcmp(fileinfo->title, buf) && stringfilter(buf, ythtbbs_board_is_political(currboard) == YTHT_SMTH_FILTER_RESULT_SAFE)) {
 		char str[300];
 		sprintf(str,
 			"%s changetitle %s %s oldtitle:%s newtitle:%s",
