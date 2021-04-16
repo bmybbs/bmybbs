@@ -2495,7 +2495,7 @@ char *direct;
 	ytht_strsncpy(buf, fileinfo->title, sizeof(buf));
 	getdata(t_lines - 1, 0, "新文章标题: ", buf, 50, DOECHO, NA);
 
-	if (buf[0] != '\0' && strcmp(fileinfo->title, buf) && (!stringfilter(buf, politics(currboard)))) {
+	if (buf[0] != '\0' && strcmp(fileinfo->title, buf) && (!stringfilter(buf, ythtbbs_board_is_political(currboard)))) {
 		char str[300];
 		sprintf(str,
 			"%s changetitle %s %s oldtitle:%s newtitle:%s",
