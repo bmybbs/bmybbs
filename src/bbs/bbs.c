@@ -2306,8 +2306,24 @@ enum ytht_smth_filter_result stringfilter(char *title, enum ytht_smth_filter_opt
 	default:
 		return YTHT_SMTH_FILTER_RESULT_1984;
 	}
-	if (mmapfile(bf, mf) < 0)
-		return YTHT_SMTH_FILTER_RESULT_SAFE;
+
+	if (mmapfile(bf, mf) < 0) {
+		if (mode != YTHT_SMTH_FILTER_OPTION_NORMAL)
+			return YTHT_SMTH_FILTER_RESULT_SAFE;
+
+		mf = &mf_pbadwords;
+		bf = PBADWORDS;
+
+		if (mmapfile(bf, mf) < 0)
+			return YTHT_SMTH_FILTER_RESULT_SAFE;
+
+		if (ytht_smth_filter_string(title, mf)) {
+			return YTHT_SMTH_FILTER_RESULT_WARN;
+		} else {
+			return YTHT_SMTH_FILTER_RESULT_SAFE;
+		}
+	}
+
 	if (ytht_smth_filter_string(title, mf)) {
 		return YTHT_SMTH_FILTER_RESULT_1984;
 	}
