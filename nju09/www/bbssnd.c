@@ -110,7 +110,7 @@ bbssnd_main()
 	w_info->lastposttime = now_t;
 	sprintf(filename, "bbstmpfs/tmp/%d.tmp", thispid);
 	f_write(filename, content);
-	if (!hideboard_x(brd)) {
+	if (!ythtbbs_board_is_hidden_x(brd)) {
 		int dangerous = dofilter(title, filename, ythtbbs_board_is_political(board));
 		if (dangerous == 1){
 			to1984 = 1;

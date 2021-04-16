@@ -142,8 +142,6 @@ int has_read_perm(struct userec *user, char *board);
 int has_read_perm_x(struct userec *user, struct boardmem *x);
 int has_post_perm(struct userec *user, struct boardmem *x);
 int has_vote_perm(struct userec *user, struct boardmem *x);
-int hideboard(char *bname);
-int hideboard_x(struct boardmem *x);
 int innd_board(char *bname);
 int anony_board(char *bname);
 int noadm4political(const char *bname);

@@ -1401,28 +1401,6 @@ has_read_perm_x(struct userec *user, struct boardmem *x)
 }
 
 int
-hideboard(char *bname)
-{
-	struct boardmem *x;
-	if (bname[0] <= 32)
-		return 1;
-	x = ythtbbs_cache_Board_get_board_by_name(bname);
-	if (x == 0)
-		return 0;
-	return hideboard_x(x);
-}
-
-int
-hideboard_x(struct boardmem *x)
-{
-	if (x->header.clubnum != 0)
-		return (!(x->header.flag & CLUBTYPE_FLAG));
-	if (x->header.level & PERM_NOZAP)
-		return 0;
-	return (x->header.level & PERM_POSTMASK) ? 0 : x->header.level;
-}
-
-int
 innd_board(char *bname)
 {
 	struct boardmem *x;

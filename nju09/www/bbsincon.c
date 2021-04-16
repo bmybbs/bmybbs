@@ -34,7 +34,7 @@ bbsincon_main()
 	} else {
 		usingMath = 0;
 	}
-	if (hideboard(path_info))
+	if (ythtbbs_board_is_hidden(path_info))
 		http_fatal("错误的文件名3");
 	if (strncmp(name, "M.", 2) && strncmp(name, "G.", 2))
 		http_fatal("错误的参数1");
