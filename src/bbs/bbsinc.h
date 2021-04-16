@@ -11,6 +11,7 @@
 #include <setjmp.h>
 #include "ytht/smth_filter.h"
 #include "ythtbbs/article.h"
+#include "ythtbbs/board.h"
 #include "postheader.h"
 extern int nettyNN;
 extern int selboard;           /* THis flag is true if above is active */
