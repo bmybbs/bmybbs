@@ -686,8 +686,8 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct) {
 	if (!get_a_boardname(bname, "请输入要转贴的讨论区名称: ")) {
 		return FULLUPDATE;
 	}
-	hide1 = hideboard(currboard);
-	hide2 = hideboard(bname);
+	hide1 = ythtbbs_board_is_hidden(currboard);
+	hide2 = ythtbbs_board_is_hidden(bname);
 	if (hide1 && !hide2)
 		return FULLUPDATE;
 	dangerous = dofilter(quote_title, quote_file, ythtbbs_board_is_political(bname) ? YTHT_SMTH_FILTER_OPTION_NORMAL : YTHT_SMTH_FILTER_OPTION_SIMPLE);
@@ -2066,8 +2066,7 @@ post_article(struct fileheader *sfh)
 	if (header.mailreply == 1)
 		postfile.accessed |= FH_MAILREPLY;
 
-	if (!hideboard(currboard))
-	{
+	if (!ythtbbs_board_is_hidden(currboard)) {
 		enum ytht_smth_filter_result dangerous = dofilter(postfile.title, filepath, ythtbbs_board_is_political(currboard) ? YTHT_SMTH_FILTER_OPTION_NORMAL : YTHT_SMTH_FILTER_OPTION_SIMPLE);
 		switch (dangerous)
 		{
@@ -2401,7 +2400,7 @@ char *direct;
 		unlink(tmpfile);
 		return FULLUPDATE;
 	}
-	if (!in_mail && !hideboard(currboard)) {
+	if (!in_mail && !ythtbbs_board_is_hidden(currboard)) {
 		enum ytht_smth_filter_result dangerous = dofilter(fileinfo->title, tmpfile, ythtbbs_board_is_political(currboard) ? YTHT_SMTH_FILTER_OPTION_NORMAL : YTHT_SMTH_FILTER_OPTION_SIMPLE);
 		switch (dangerous) {
 			char mtitle[256];
@@ -2861,7 +2860,7 @@ char *direct;
 		change_dir(direct, fileinfo, (void *) DIR_do_changetitle, ent, digestmode, 1);
 		return FULLUPDATE;
 	}
-	if (hideboard(currboard))
+	if (ythtbbs_board_is_hidden(currboard))
 		return DONOTHING;
 	if (fileinfo->owner[0] == '-')
 		return PARTUPDATE;

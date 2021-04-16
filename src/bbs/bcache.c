@@ -247,27 +247,6 @@ char *bname;
 	return (lookupuser.userlevel & ((board_ptr->header.level & ~PERM_NOZAP) & ~PERM_POSTMASK));
 }
 
-
-int
-hideboard(bname)
-char *bname;
-{
-	register int i;
-	const struct boardmem *board_ptr = NULL;
-
-	if (strcmp(bname, DEFAULTBOARD) == 0)
-		return 0;
-	if ((i = getbnum(bname)) == 0)
-		return 1;
-
-	board_ptr = ythtbbs_cache_Board_get_board_by_idx(i - 1);
-	if (board_ptr->header.level & PERM_NOZAP)
-		return 0;
-	if (board_ptr->header.clubnum != 0)
-		return !(board_ptr->header.flag & CLUBTYPE_FLAG);
-	return (board_ptr->header.level & PERM_POSTMASK) ? 0 : board_ptr->header.level;
-}
-
 int
 normal_board(bname)
 char *bname;

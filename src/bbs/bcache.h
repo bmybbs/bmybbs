@@ -13,7 +13,6 @@ int canberead(const char *bname);
 int noadm4political(const char *bname);
 int haspostperm(char *bname);
 int posttest(char *uid, char *bname);
-int hideboard(char *bname);
 int normal_board(char *bname);
 int innd_board(char *bname);
 int is1984_board(char *bname);
