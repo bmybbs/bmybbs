@@ -170,6 +170,10 @@ void ythtbbs_cache_Board_foreach_v(ythtbbs_cache_Board_foreach_callback callback
 int ythtbbs_cache_Board_updatelastpost(const char *board) {
 	struct boardmem *bptr;
 	bptr = ythtbbs_cache_Board_get_board_by_name(board);
+	return ythtbbs_cache_Board_updatelastpost_x(bptr);
+}
+
+int ythtbbs_cache_Board_updatelastpost_x(struct boardmem *bptr) {
 	if (bptr == NULL)
 		return -1;
 	return getlastpost(bptr->header.filename, &bptr->lastpost, &bptr->total);
