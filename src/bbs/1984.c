@@ -275,7 +275,7 @@ post_1984_to_board(char *dir, struct fileheader *fileinfo)
 
 	if (postfile.accessed & FH_INND)
 		outgo_post(&postfile, targetboard, currentuser.userid, currentuser.username);
-	updatelastpost(targetboard);
+	ythtbbs_cache_Board_updatelastpost(targetboard);
 	snprintf(genbuf, 256, "%s check1984 %s %s", currentuser.userid, currboard, postfile.title);
 	genbuf[256] = 0;
 	newtrace(genbuf);
@@ -327,9 +327,9 @@ post_to_1984(char *file, struct fileheader *fileinfo, int mode)
 	}
 	switch (mode) {
 	case 0:
-		updatelastpost("tochecktoday");
+		ythtbbs_cache_Board_updatelastpost("tochecktoday");
 	case 1:
-		updatelastpost("delete4request");
+		ythtbbs_cache_Board_updatelastpost("delete4request");
 	default:
 		break;
 	}

@@ -38,7 +38,6 @@ int usernumber;
 int numboards = -1;
 extern int die;
 
-static int getlastpost(char *board, int *lastpost, int *total);
 static int setbmhat(struct boardmanager *bm, int *online);
 
 void
@@ -62,47 +61,6 @@ int shmkey, shmsize;
 	if (shmptr == NULL)
 		attach_err(shmkey, "shmat");
 	return shmptr;
-}
-
-static int
-getlastpost(char *board, int *lastpost, int *total)
-{
-	struct fileheader fh;
-	struct stat st;
-	char filename[STRLEN * 2];
-	int fd, atotal;
-
-	snprintf(filename, sizeof (filename), MY_BBS_HOME "/boards/%s/.DIR", board);
-	if ((fd = open(filename, O_RDONLY)) < 0)
-		return 0;
-	fstat(fd, &st);
-	atotal = st.st_size / sizeof (fh);
-	if (atotal <= 0) {
-		*lastpost = 0;
-		*total = 0;
-		close(fd);
-		return 0;
-	}
-	*total = atotal;
-	lseek(fd, (atotal - 1) * sizeof (fh), SEEK_SET);
-	if (read(fd, &fh, sizeof (fh)) > 0) {
-		if (fh.edittime == 0)
-			*lastpost = fh.filetime;
-		else
-			*lastpost = fh.edittime;
-	}
-	close(fd);
-	return 0;
-}
-
-int updatelastpost(char *board)
-{
-	struct boardmem *bptr;
-	bptr = ythtbbs_cache_Board_get_board_by_name(board);
-	if (bptr == NULL)
-		return -1;
-	getlastpost(bptr->header.filename, &bptr->lastpost, &bptr->total);
-	return 0;
 }
 
 int

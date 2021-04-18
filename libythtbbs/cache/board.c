@@ -20,6 +20,7 @@ static struct BCACHE *shm_board;
 
 static int fillbcache(void *, void *);
 static void bmonlinesync(void);
+static int getlastpost(const char *board, int *lastpost, int *total);
 
 void ythtbbs_cache_Board_resolve() {
 	struct stat st;
@@ -166,8 +167,16 @@ void ythtbbs_cache_Board_foreach_v(ythtbbs_cache_Board_foreach_callback callback
 	}
 }
 
+int ythtbbs_cache_Board_updatelastpost(const char *board) {
+	struct boardmem *bptr;
+	bptr = ythtbbs_cache_Board_get_board_by_name(board);
+	if (bptr == NULL)
+		return -1;
+	return getlastpost(bptr->header.filename, &bptr->lastpost, &bptr->total);
+}
+
 /***** implementations of private functions *****/
-static int getlastpost(char *board, int *lastpost, int *total) {
+static int getlastpost(const char *board, int *lastpost, int *total) {
 	struct fileheader fh;
 	struct stat st;
 	char filename[STRLEN * 2];
@@ -175,7 +184,7 @@ static int getlastpost(char *board, int *lastpost, int *total) {
 
 	snprintf(filename, sizeof (filename), MY_BBS_HOME "/boards/%s/.DIR", board);
 	if ((fd = open(filename, O_RDONLY)) < 0)
-		return 0;
+		return -1;
 	fstat(fd, &st);
 	atotal = st.st_size / sizeof (fh);
 	if (atotal <= 0) {

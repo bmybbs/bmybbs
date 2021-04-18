@@ -112,7 +112,7 @@ int do_ccc(struct fileheader *x, struct boardmem *brd1, struct boardmem *brd) {
 		post_mail("delete", mtitle, path2,
 				currentuser.userid, currentuser.username,
 				fromhost, -1, 0);
-		updatelastpost("deleterequest");
+		ythtbbs_cache_Board_updatelastpost("deleterequest");
 		mark |= FH_DANGEROUS;
 	}
 	post_article(board2, title, path2, currentuser.userid,

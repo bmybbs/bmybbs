@@ -253,7 +253,7 @@ update_form(char *board, char *file, char *title)
 			char mtitle[256];
 			sprintf(mtitle, "[ÐÞ¸Ä±¨¾¯] %s %.60s", board, title);
 			post_mail_buf("delete", mtitle, buf, currentuser.userid, currentuser.username, fromhost, -1, 0);
-			updatelastpost("deleterequest");
+			ythtbbs_cache_Board_updatelastpost("deleterequest");
 		}
 	}
 	sprintf(filename, "bbstmpfs/tmp/%d.tmp", thispid);
@@ -323,7 +323,7 @@ update_form(char *board, char *file, char *title)
 				bmy_article_update_thread_accessed(ythtbbs_cache_Board_get_idx_by_name(board) + 1, x.thread, x.accessed);
 			}
 			put_record(&x, sizeof (struct fileheader), num, dir);
-			updatelastpost(board);
+			ythtbbs_cache_Board_updatelastpost(board);
 			break;
 		}
 		num++;

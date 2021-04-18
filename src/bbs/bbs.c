@@ -625,7 +625,7 @@ char *direct;
 	}
 	fh_find_thread(&UFile, currboard);
 	append_record(buf, &UFile, sizeof (UFile));
-	updatelastpost(currboard);
+	ythtbbs_cache_Board_updatelastpost(currboard);
 	fileinfo->filetime = 0;
 	substitute_record(direct, fileinfo, sizeof (*fileinfo), ent);
 	sprintf(buf, "%s undel %s %s %s", currentuser.userid, currboard,
@@ -1805,7 +1805,7 @@ post_cross(char *bname, int mode, int islocal, int hascheck, int dangerous)
 			char mtitle[256];
 			snprintf(mtitle, sizeof (mtitle), "[转载报警] %s %.60s", bname, postfile.title);
 			mail_file(filepath, "delete", mtitle);
-			updatelastpost("deleterequest");
+			ythtbbs_cache_Board_updatelastpost("deleterequest");
 			postfile.accessed |= FH_DANGEROUS;
 		}
 	}
@@ -1829,7 +1829,7 @@ post_cross(char *bname, int mode, int islocal, int hascheck, int dangerous)
 		return now; // return filetime instead of 1 by IronBlood 20130807
 	}
 	outgo_post(&postfile, bname, currentuser.userid, currentuser.username);
-	updatelastpost(bname);
+	ythtbbs_cache_Board_updatelastpost(bname);
 	if (!mode) {
 		add_crossinfo(filepath, 1);
 		sprintf(buf, "%s crosspost %s %s", currentuser.userid, bname, postfile.title);
@@ -2081,7 +2081,7 @@ post_article(struct fileheader *sfh)
 			snprintf(mtitle, sizeof (mtitle), "[发表报警] %s %.60s",
 					currboard, postfile.title);
 			mail_file(filepath, "delete", mtitle);
-			updatelastpost("deleterequest");
+			ythtbbs_cache_Board_updatelastpost("deleterequest");
 			postfile.accessed |= FH_DANGEROUS;
 			break;
 		default:
@@ -2143,7 +2143,7 @@ post_article(struct fileheader *sfh)
 	local_article = 0;
 	SETREAD(&postfile, &brc);
 	//    if(strcmp(currboard,"triangle")==0) checksomewords();
-	updatelastpost(currboard);
+	ythtbbs_cache_Board_updatelastpost(currboard);
 	snprintf(genbuf, 256, "%s post %s %s",
 			currentuser.userid, currboard, postfile.title);
 	genbuf[256] = 0;
@@ -2414,7 +2414,7 @@ char *direct;
 			snprintf(mtitle, sizeof (mtitle), "[修改报警] %s %.60s", currboard, fileinfo->title);
 			change_dir(direct, fileinfo, (void *) DIR_do_dangerous, ent, digestmode, 1);
 			mail_file(tmpfile, "delete", mtitle);
-			updatelastpost("deleterequest");
+			ythtbbs_cache_Board_updatelastpost("deleterequest");
 			break;
 		default:
 			break;
@@ -2431,7 +2431,7 @@ char *direct;
 	change_dir(direct, fileinfo, (void *) DIR_do_edit, ent, digestmode, 1);
 	if (!in_mail) {
 		outgo_post(fileinfo, currboard, currentuser.userid, currentuser.username);
-		updatelastpost(currboard);
+		ythtbbs_cache_Board_updatelastpost(currboard);
 		sprintf(genbuf, "%s edit %s %s %s",
 			currentuser.userid, currboard,
 			fh2owner(fileinfo), fileinfo->title);
@@ -2732,7 +2732,7 @@ static int moveintobacknumber(int ent, struct fileheader *fileinfo, char *direct
 	if (askyn("确定要把该时间之前的文章放进过刊么(可能需要几分钟)?", NA, NA) == YEA) {
 		int retv;
 		retv = do_intobacknumber(direct, t);
-		updatelastpost(currboard);
+		ythtbbs_cache_Board_updatelastpost(currboard);
 		if (retv < 0) {
 			prints("retv=%d", retv);
 			pressanykey();
@@ -2815,7 +2815,7 @@ THERE:
 		fixkeep(direct, (inum1 <= 0) ? 1 : inum1,
 			(inum2 <= 0) ? 1 : inum2);
 		if (uinfo.mode == READING) {
-			updatelastpost(currboard);
+			ythtbbs_cache_Board_updatelastpost(currboard);
 			sprintf(genbuf, "Range delete %d-%d on %s",
 				inum1, inum2, currboard);
 			sprintf(content, "%s 区段删除 %s 版 %d-%d篇",
@@ -2906,7 +2906,7 @@ char *direct;
 				(void *) cpyfilename);
 	}
 	if (!fail) {
-		updatelastpost(currboard);
+		ythtbbs_cache_Board_updatelastpost(currboard);
 		unlink(filepath);
 		limit_cpu();
 		return DIRCHANGED;
@@ -2969,7 +2969,7 @@ char *direct;
 				(void *) cpyfilename);
 	}
 	if (!fail) {
-		updatelastpost(currboard);
+		ythtbbs_cache_Board_updatelastpost(currboard);
 		cancelpost(currboard, currentuser.userid, fileinfo, owned);
 
 		if (!bmy_board_is_system_board(currboard)) {

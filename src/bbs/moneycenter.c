@@ -414,7 +414,7 @@ int millionairesrec(char *title, char *str, char *owner) {
 		//errlog("Posting '%s' on '%s': append_record failed!", postfile.title, "millionairesrec");
 		return 0;
 	}
-	updatelastpost("millionairesrec");
+	ythtbbs_cache_Board_updatelastpost("millionairesrec");
 	unlink(fname);
 	return 1;
 }//用于系统记录区发文

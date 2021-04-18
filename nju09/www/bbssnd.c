@@ -121,7 +121,7 @@ bbssnd_main()
 			post_mail("delete", mtitle, filename,
 					currentuser.userid, currentuser.username,
 					fromhost, -1, 0);
-			updatelastpost("deleterequest");
+			ythtbbs_cache_Board_updatelastpost("deleterequest");
 			mark |= FH_DANGEROUS;
 		}
 	}
