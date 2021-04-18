@@ -13,6 +13,7 @@ errorMsgMap.set(BMY_EC.API_RT_USERLOCKFAIL, "用户内部错误");
 errorMsgMap.set(BMY_EC.API_RT_WRONGTOKEN,   "请再试一次");
 errorMsgMap.set(BMY_EC.API_RT_FBDGSTIP,     "GUEST 无法发帖");
 errorMsgMap.set(BMY_EC.API_RT_ATCLINNERR,   "文章内部错误");
+errorMsgMap.set(BMY_EC.API_RT_ATCL1984,     "不适宜发表");
 
 export const getErrorMessage = (errcode) => {
 	return errorMsgMap.has(errcode) ? errorMsgMap.get(errcode) : "未知错误";
