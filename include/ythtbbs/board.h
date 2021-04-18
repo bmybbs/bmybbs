@@ -90,6 +90,7 @@ enum YTHTBBS_BOARD_INFO_STATUS ythtbbs_board_load_note(char *buf, size_t len, co
 #endif
 
 bool ythtbbs_board_is_political(const char *bname);
+bool ythtbbs_board_is_political_x(const struct boardmem *x);
 bool ythtbbs_board_is_hidden(const char *bname);
 bool ythtbbs_board_is_hidden_x(const struct boardmem *x);
 

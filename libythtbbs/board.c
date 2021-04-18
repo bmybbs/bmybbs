@@ -84,6 +84,10 @@ enum YTHTBBS_BOARD_INFO_STATUS ythtbbs_board_load_note(char *buf, size_t len, co
 
 bool ythtbbs_board_is_political(const char *bname) {
 	const struct boardmem *x = ythtbbs_cache_Board_get_board_by_name(bname);
+	return ythtbbs_board_is_political_x(x);
+}
+
+bool ythtbbs_board_is_political_x(const struct boardmem *x) {
 	return (x != NULL) ? ((x->header.flag & POLITICAL_FLAG) ? true : false) : false;
 }
 
