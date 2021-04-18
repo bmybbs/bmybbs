@@ -5,7 +5,6 @@
 
 void attach_err(int shmkey, char *name);
 void *attach_shm(int shmkey, int shmsize);
-int updatelastpost(char *board);
 int hasreadperm(struct boardheader *bh);
 int hasreadperm_ext(char *username, char *boardname);
 int getbnum(const char *bname);
@@ -13,11 +12,9 @@ int canberead(const char *bname);
 int noadm4political(const char *bname);
 int haspostperm(char *bname);
 int posttest(char *uid, char *bname);
-int hideboard(char *bname);
 int normal_board(char *bname);
 int innd_board(char *bname);
 int is1984_board(char *bname);
-int political_board(const char *bname);
 int club_board(char *bname);
 int clubsync(char *boardname);
 int getuser(const char *userid);

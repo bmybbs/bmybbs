@@ -302,6 +302,8 @@ struct boardmem *ythtbbs_cache_Board_get_board_by_name(const char *bname);
 int ythtbbs_cache_Board_get_idx_by_ptr(const struct boardmem *ptr);
 int ythtbbs_cache_Board_get_idx_by_name(const char *bname);
 int ythtbbs_cache_Board_set_bm_hat_v(void *b, va_list ap);
+int ythtbbs_cache_Board_updatelastpost(const char *board);
+int ythtbbs_cache_Board_updatelastpost_x(struct boardmem *ptr);
 
 time_t ythtbbs_cache_Board_get_pollvote(void);
 void ythtbbs_cache_Board_set_pollvote(time_t t);

@@ -76,8 +76,8 @@ int do_ccc(struct fileheader *x, struct boardmem *brd1, struct boardmem *brd) {
 	sprintf(path, "boards/%s/%s", board, fh2fname(x));
 	if (brd->header.flag & IS1984_FLAG)
 		http_fatal("该版面禁止转载");
-	hide1 = hideboard_x(brd1);
-	hide2 = hideboard_x(brd);
+	hide1 = ythtbbs_board_is_hidden_x(brd1);
+	hide2 = ythtbbs_board_is_hidden_x(brd);
 	if (hide1 && !hide2)
 		http_fatal("非法转载");
 	fp = fopen(path, "r");
@@ -106,13 +106,13 @@ int do_ccc(struct fileheader *x, struct boardmem *brd1, struct boardmem *brd) {
 	} else {
 		sprintf(title, "[转载] %.55s", x->title);
 	}
-	if (dofilter(title, path2, 2)) {
+	if (dofilter(title, path2, YTHT_SMTH_FILTER_OPTION_PLTCAL) != YTHT_SMTH_FILTER_RESULT_SAFE) {
 		char mtitle[256];
 		sprintf(mtitle, "[转载报警] %s %.60s", board, title);
 		post_mail("delete", mtitle, path2,
 				currentuser.userid, currentuser.username,
 				fromhost, -1, 0);
-		updatelastpost("deleterequest");
+		ythtbbs_cache_Board_updatelastpost("deleterequest");
 		mark |= FH_DANGEROUS;
 	}
 	post_article(board2, title, path2, currentuser.userid,

@@ -38,7 +38,6 @@ add_library(ythtbbs SHARED
 	modetype.c
 	docutil.c
 	msg.c
-	politics.c
 	goodgbid.c
 	binaryattach.c
 	bbseva.c

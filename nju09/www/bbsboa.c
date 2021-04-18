@@ -186,7 +186,7 @@ static int showhotboard_callback(struct boardmem *board, int curr_idx, va_list a
 	if (board->header.filename[0] <= 32 || board->header.filename[0] > 'z')
 		return 0;
 
-	if (hideboard_x(board))
+	if (ythtbbs_board_is_hidden_x(board))
 		return 0;
 
 	if (strncmp(basestr, board->header.sec1, len) && strncmp(basestr, board->header.sec2, len))

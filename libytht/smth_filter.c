@@ -5,6 +5,7 @@
 #include "ytht/mgrep.h"
 
 char *CurrentFileName;
+static int ytht_smth_filter_file(char *checkfile, struct mmapfile *badword_img);
 
 int
 ytht_smth_reload_badwords(char *wordlistf, char *imgf)
@@ -36,9 +37,7 @@ ytht_smth_reload_badwords(char *wordlistf, char *imgf)
 	return 0;
 }
 
-int
-ytht_smth_filter_file(char *checkfile, struct mmapfile *badword_img)
-{
+static int ytht_smth_filter_file(char *checkfile, struct mmapfile *badword_img) {
 	int retv;
 	struct mmapfile mf = { .ptr = NULL };
 	ytht_mgrep_default_setting();
@@ -51,9 +50,7 @@ ytht_smth_filter_file(char *checkfile, struct mmapfile *badword_img)
 	return retv;
 }
 
-int
-ytht_smth_filter_string(char *string, struct mmapfile *badword_img)
-{
+int ytht_smth_filter_string(const char *string, struct mmapfile *badword_img) {
 	int retv;
 	ytht_mgrep_default_setting();
 	CurrentFileName = "";

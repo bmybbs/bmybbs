@@ -38,7 +38,6 @@ int usernumber;
 int numboards = -1;
 extern int die;
 
-static int getlastpost(char *board, int *lastpost, int *total);
 static int setbmhat(struct boardmanager *bm, int *online);
 
 void
@@ -62,47 +61,6 @@ int shmkey, shmsize;
 	if (shmptr == NULL)
 		attach_err(shmkey, "shmat");
 	return shmptr;
-}
-
-static int
-getlastpost(char *board, int *lastpost, int *total)
-{
-	struct fileheader fh;
-	struct stat st;
-	char filename[STRLEN * 2];
-	int fd, atotal;
-
-	snprintf(filename, sizeof (filename), MY_BBS_HOME "/boards/%s/.DIR", board);
-	if ((fd = open(filename, O_RDONLY)) < 0)
-		return 0;
-	fstat(fd, &st);
-	atotal = st.st_size / sizeof (fh);
-	if (atotal <= 0) {
-		*lastpost = 0;
-		*total = 0;
-		close(fd);
-		return 0;
-	}
-	*total = atotal;
-	lseek(fd, (atotal - 1) * sizeof (fh), SEEK_SET);
-	if (read(fd, &fh, sizeof (fh)) > 0) {
-		if (fh.edittime == 0)
-			*lastpost = fh.filetime;
-		else
-			*lastpost = fh.edittime;
-	}
-	close(fd);
-	return 0;
-}
-
-int updatelastpost(char *board)
-{
-	struct boardmem *bptr;
-	bptr = ythtbbs_cache_Board_get_board_by_name(board);
-	if (bptr == NULL)
-		return -1;
-	getlastpost(bptr->header.filename, &bptr->lastpost, &bptr->total);
-	return 0;
 }
 
 int
@@ -191,7 +149,7 @@ int canberead(const char *bname) {
 int noadm4political(const char *bname) {
 	time_t now = time(NULL);
 	time_t t = ythtbbs_cache_utmp_get_watchman();
-	return (!t || now < t) ? 0 : political_board(bname);
+	return (!t || now < t) ? 0 : ythtbbs_board_is_political(bname);
 }
 
 int
@@ -247,27 +205,6 @@ char *bname;
 	return (lookupuser.userlevel & ((board_ptr->header.level & ~PERM_NOZAP) & ~PERM_POSTMASK));
 }
 
-
-int
-hideboard(bname)
-char *bname;
-{
-	register int i;
-	const struct boardmem *board_ptr = NULL;
-
-	if (strcmp(bname, DEFAULTBOARD) == 0)
-		return 0;
-	if ((i = getbnum(bname)) == 0)
-		return 1;
-
-	board_ptr = ythtbbs_cache_Board_get_board_by_idx(i - 1);
-	if (board_ptr->header.level & PERM_NOZAP)
-		return 0;
-	if (board_ptr->header.clubnum != 0)
-		return !(board_ptr->header.flag & CLUBTYPE_FLAG);
-	return (board_ptr->header.level & PERM_POSTMASK) ? 0 : board_ptr->header.level;
-}
-
 int
 normal_board(bname)
 char *bname;
@@ -314,17 +251,6 @@ char *bname;
 
 	board_ptr = ythtbbs_cache_Board_get_board_by_idx(i - 1);
 	return (board_ptr->header.flag & IS1984_FLAG);
-}
-
-int political_board(const char *bname) {
-	register int i;
-	const struct boardmem *board_ptr = NULL;
-
-	if ((i = getbnum(bname)) == 0)
-		return 0;
-
-	board_ptr = ythtbbs_cache_Board_get_board_by_idx(i - 1);
-	return (board_ptr->header.flag & POLITICAL_FLAG) ? 1 : 0;
 }
 
 int

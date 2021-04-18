@@ -1265,7 +1265,7 @@ post_article(char *board, char *title, char *file, char *id,
 
 	if (outgoing)
 		outgo_post(&header, board, id, nickname);
-	updatelastpost(board);
+	ythtbbs_cache_Board_updatelastpost(board);
 	return t;
 }
 
@@ -1401,28 +1401,6 @@ has_read_perm_x(struct userec *user, struct boardmem *x)
 }
 
 int
-hideboard(char *bname)
-{
-	struct boardmem *x;
-	if (bname[0] <= 32)
-		return 1;
-	x = ythtbbs_cache_Board_get_board_by_name(bname);
-	if (x == 0)
-		return 0;
-	return hideboard_x(x);
-}
-
-int
-hideboard_x(struct boardmem *x)
-{
-	if (x->header.clubnum != 0)
-		return (!(x->header.flag & CLUBTYPE_FLAG));
-	if (x->header.level & PERM_NOZAP)
-		return 0;
-	return (x->header.level & PERM_POSTMASK) ? 0 : x->header.level;
-}
-
-int
 innd_board(char *bname)
 {
 	struct boardmem *x;
@@ -1430,19 +1408,6 @@ innd_board(char *bname)
 	if (x == 0)
 		return 0;
 	return (x->header.flag & INNBBSD_FLAG);
-}
-
-int
-political_board(char *bname)
-{
-	struct boardmem *x;
-	x = ythtbbs_cache_Board_get_board_by_name(bname);
-	if (x == 0)
-		return 0;
-	if (x->header.flag & POLITICAL_FLAG)
-		return 1;
-	else
-		return 0;
 }
 
 int
@@ -1455,12 +1420,9 @@ anony_board(char *bname)
 	return (x->header.flag & ANONY_FLAG);
 }
 
-int
-noadm4political(bname)
-char *bname;
-{
+int noadm4political(const char *bname) {
 	time_t t = ythtbbs_cache_utmp_get_watchman();
-	return (!t || now_t < t) ? 0 : political_board(bname);
+	return (!t || now_t < t) ? 0 : ythtbbs_board_is_political(bname);
 }
 
 int
@@ -2208,88 +2170,85 @@ system_load()
 	return load;
 }
 
-int
-dofilter(char *title, char *fn, int level)
+enum ytht_smth_filter_result dofilter(char *title, char *fn, enum ytht_smth_filter_option level)
 {
 	struct mmapfile *mb;
 	char *bf;
 	switch (level) {
-	case 1:
+	case YTHT_SMTH_FILTER_OPTION_NORMAL:
 		mb = &mf_badwords;
 		bf = BADWORDS;
 		break;
-	case 0:
+	case YTHT_SMTH_FILTER_OPTION_SIMPLE:
 		mb = &mf_sbadwords;
 		bf = SBADWORDS;
 		break;
-	case 2:
+	case YTHT_SMTH_FILTER_OPTION_PLTCAL:
 		mb = &mf_pbadwords;
 		bf = PBADWORDS;
 		break;
 	default:
-		return 1;
+		return YTHT_SMTH_FILTER_RESULT_1984;
 	}
 	if (mmapfile(bf, mb) < 0)
 		goto CHECK2;
 
 	if (ytht_smth_filter_article(title, fn, mb)) {
-		if (level != 2)
-			return 1;
-		return 2;
+		if (level != YTHT_SMTH_FILTER_OPTION_PLTCAL)
+			return YTHT_SMTH_FILTER_RESULT_1984;
+		return YTHT_SMTH_FILTER_RESULT_WARN;
 	}
 CHECK2:
-	if (level != 1)
-		return 0;
+	if (level != YTHT_SMTH_FILTER_OPTION_NORMAL)
+		return YTHT_SMTH_FILTER_RESULT_SAFE;
 	mb = &mf_pbadwords;
 	bf = PBADWORDS;
 	if (mmapfile(bf, mb) < 0)
-		return 0;
+		return YTHT_SMTH_FILTER_RESULT_SAFE;
 	if (ytht_smth_filter_article(title, fn, mb))
-		return 2;
+		return YTHT_SMTH_FILTER_RESULT_WARN;
 	else
-		return 0;
+		return YTHT_SMTH_FILTER_RESULT_SAFE;
 }
 
-int
-dofilter_edit(char *title, char *buf, int level)
-{
+enum ytht_smth_filter_result dofilter_edit(char *title, char *buf, enum ytht_smth_filter_option level) {
 	struct mmapfile *mb;
 	char *bf;
 	switch (level) {
-	case 1:
+	case YTHT_SMTH_FILTER_OPTION_NORMAL:
 		mb = &mf_badwords;
 		bf = BADWORDS;
 		break;
-	case 0:
+	case YTHT_SMTH_FILTER_OPTION_SIMPLE:
 		mb = &mf_sbadwords;
 		bf = SBADWORDS;
 		break;
-	case 2:
+	case YTHT_SMTH_FILTER_OPTION_PLTCAL:
 		mb = &mf_pbadwords;
 		bf = PBADWORDS;
 		break;
 	default:
-		return 1;
+		return YTHT_SMTH_FILTER_RESULT_1984;
 	}
 	if (mmapfile(bf, mb) < 0)
 		goto CHECK2;
 
 	if (ytht_smth_filter_string(buf, mb) || ytht_smth_filter_string(title, mb)) {
-		if (level != 2)
-			return 1;
-		return 2;
+		if (level != YTHT_SMTH_FILTER_OPTION_PLTCAL)
+			return YTHT_SMTH_FILTER_RESULT_1984;
+		return YTHT_SMTH_FILTER_RESULT_WARN;
 	}
 CHECK2:
-	if (level != 1)
-		return 0;
+	if (level != YTHT_SMTH_FILTER_OPTION_NORMAL)
+		return YTHT_SMTH_FILTER_RESULT_SAFE;
 	mb = &mf_pbadwords;
 	bf = PBADWORDS;
 	if (mmapfile(bf, mb) < 0)
-		return 0;
+		return YTHT_SMTH_FILTER_RESULT_SAFE;
 	if (ytht_smth_filter_string(buf, mb) || ytht_smth_filter_string(title, mb))
-		return 2;
+		return YTHT_SMTH_FILTER_RESULT_WARN;
 	else
-		return 0;
+		return YTHT_SMTH_FILTER_RESULT_SAFE;
 }
 
 int

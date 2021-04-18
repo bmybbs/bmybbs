@@ -1,6 +1,6 @@
 # BMYBBS ![Backend Build Status](https://github.com/bmybbs/bmybbs/workflows/BMYBBS%20Backend/badge.svg) ![Frontend Build Status](https://github.com/bmybbs/bmybbs/workflows/BMYBBS%20Frontend/badge.svg) [![Coverity Scan Build Status](https://scan.coverity.com/projects/4511/badge.svg)](https://scan.coverity.com/projects/4511)
 
-**BMYBBS** 是 [YTHT](https://zh.wikipedia.org/wiki/%E4%B8%80%E5%A1%8C%E7%B3%8A%E6%B6%82BBS) 代码的一个分支，被使用在[西安交通大学兵马俑 BBS](http://bbs.xjtu.edu.cn)。 当前开发和运行环境使用的是 Ubuntu 18.04 / gcc 7.5.0，测试环境使用的是 Ubuntu 20.04 / gcc 10.2.0。
+**BMYBBS** 是 [YTHT](https://zh.wikipedia.org/wiki/%E4%B8%80%E5%A1%8C%E7%B3%8A%E6%B6%82BBS) 代码的一个分支，被使用在[西安交通大学兵马俑 BBS](http://bbs.xjtu.edu.cn)。 当前开发和运行环境使用的是 Ubuntu 20.04 / gcc 9.3.0，测试环境使用的是 Ubuntu 20.04 / gcc 10.2.0。
 
 BMYBBS 已经和最初的 YTHT 系统不兼容。由于能力和精力有限，本项目未提供升级或者转换程序，同时代码中或许移除掉了一些可移植性相关的宏或者代码，因此本项目亦不能保证在其他 Linux 发行版或者 POSIX 系统上运行。
 
@@ -25,7 +25,7 @@ sudo apt install build-essential libtool cmake gdb chrpath \
 sudo apt install language-pack-zh-hans git zsh tmux
 ```
 
-本项目还依赖于 libghthash、[onion](https://github.com/davidmoreno/onion) 以及 [check](https://github.com/libcheck/check) ，相关编译安装可以在 [travis-ci 配置文件](.travis.yml) 找到。
+本项目还依赖于 libghthash、[onion](https://github.com/davidmoreno/onion) 以及 [check](https://github.com/libcheck/check) ，相关编译安装可以在 [GitHub CI 配置文件](.github/workflows/cmake.yml) 找到。
 
 ### 用户环境
 

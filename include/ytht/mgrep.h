@@ -37,7 +37,7 @@ struct pattern_image {
 void ytht_mgrep_default_setting(void);
 int ytht_mgrep_releasepf(struct pattern_image *patt_img);
 int ytht_mgrep_prepf(int fp, struct pattern_image **ppatt_img, size_t *patt_image_len);
-int ytht_mgrep_mgrep_str(char *text, int num, struct pattern_image *patt_img);
+int ytht_mgrep_mgrep_str(const char *text, int num, struct pattern_image *patt_img);
 
 
 #endif

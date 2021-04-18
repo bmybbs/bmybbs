@@ -55,7 +55,7 @@ bbsdel_main()
 			http_fatal("无权删除系统记录");
 		del_record(dir, sizeof (struct fileheader), num);
 		cancelpost(board, currentuser.userid, &f, !strcmp(currentuser.userid, f.owner));
-		updatelastpost(board);
+		ythtbbs_cache_Board_updatelastpost(board);
 		printf("删除成功.<br><a href='%s%s&S=%d'>返回本讨论区</a>", showByDefMode(), board, num - 10);
 
 		if (!bmy_board_is_system_board(board)) {

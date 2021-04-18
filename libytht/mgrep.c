@@ -17,8 +17,8 @@ extern unsigned char *CurrentFileName;
 //static void countline(unsigned char *text, int len);
 
 //static int mgrep(int fd, struct pattern_image *patt_img);
-static void monkey1(register unsigned char *text, int start, int end, struct pattern_image *patt_img);
-static int m_short(unsigned char *text, int start, int end, struct pattern_image *patt_img);
+static void monkey1(register const unsigned char *text, int start, int end, struct pattern_image *patt_img);
+static int m_short(const unsigned char *text, int start, int end, struct pattern_image *patt_img);
 static void f_prep(int pat_index, unsigned char *Pattern, struct pattern_image *patt_img);
 
 void ytht_mgrep_default_setting() {
@@ -141,13 +141,11 @@ ytht_mgrep_prepf(int fp, struct pattern_image **ppatt_img, size_t * patt_image_l
 	return 0;
 }
 
-int
-ytht_mgrep_mgrep_str(char *text, int num, struct pattern_image *patt_img)
-{
+int ytht_mgrep_mgrep_str(const char *text, int num, struct pattern_image *patt_img) {
 	if (patt_img->SHORT)
-		m_short((unsigned char *) text, 0, num - 1, patt_img);
+		m_short((const unsigned char *) text, 0, num - 1, patt_img);
 	else
-		monkey1((unsigned char *) text, 0, num - 1, patt_img);
+		monkey1((const unsigned char *) text, 0, num - 1, patt_img);
 	return num_of_matched;
 } /* end ytht_mgrep_mgrep_str */
 
@@ -205,9 +203,8 @@ static void countline(unsigned char *text, int len) {
 }
 */
 
-static void monkey1(register unsigned char *text, int start, int end, struct pattern_image *patt_img)
-{
-	register unsigned char *textend;
+static void monkey1(register const unsigned char *text, int start, int end, struct pattern_image *patt_img) {
+	register const unsigned char *textend;
 	register unsigned hash, i;
 	register unsigned char shift;
 	register unsigned j;
@@ -216,9 +213,9 @@ static void monkey1(register unsigned char *text, int start, int end, struct pat
 	size_t m = patt_img->p_size;
 	size_t m1;
 	int MATCHED = 0;
-	register unsigned char *qx;
+	register const unsigned char *qx;
 	register struct pat_list *p;
-	unsigned char *lastout;
+	const unsigned char *lastout;
 	int OUT = 0;
 
 	textend = text + end;
@@ -310,17 +307,15 @@ static void monkey1(register unsigned char *text, int start, int end, struct pat
 			putchar(*lastout++);
 }
 
-static int
-m_short(unsigned char *text, int start, int end, struct pattern_image *patt_img)
-{
-	register unsigned char *textend;
+static int m_short(const unsigned char *text, int start, int end, struct pattern_image *patt_img) {
+	register const unsigned char *textend;
 	register int j;
 	register struct pat_list *p;
 	register int pat_index;
 	int MATCHED = 0;
 	int OUT = 0;
-	unsigned char *lastout;
-	unsigned char *qx;
+	const unsigned char *lastout;
+	const unsigned char *qx;
 
 	textend = text + end;
 	lastout = text + start + 1;

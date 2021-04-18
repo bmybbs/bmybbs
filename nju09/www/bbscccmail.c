@@ -108,7 +108,7 @@ static int do_cccmail(struct fileheader *x, struct boardmem *brd) {
 	sprintf(tmpfn, "bbstmpfs/tmp/filter.%s.%d", currentuser.userid, thispid);
 	copyfile(path2, tmpfn);
 	filter_attach(tmpfn);
-	if (dofilter(title, tmpfn, 2)) {
+	if (dofilter(title, tmpfn, YTHT_SMTH_FILTER_OPTION_PLTCAL) != YTHT_SMTH_FILTER_RESULT_SAFE) {
 	#ifdef POST_WARNING
 		char mtitle[256];
 		sprintf(mtitle, "[×ªÔØ±¨¾¯] %s %.60s", board, title);

@@ -82,3 +82,36 @@ enum YTHTBBS_BOARD_INFO_STATUS ythtbbs_board_load_note(char *buf, size_t len, co
 	return ythtbbs_board_load_internal(buf, len, filename);
 }
 
+bool ythtbbs_board_is_political(const char *bname) {
+	const struct boardmem *x = ythtbbs_cache_Board_get_board_by_name(bname);
+	return ythtbbs_board_is_political_x(x);
+}
+
+bool ythtbbs_board_is_political_x(const struct boardmem *x) {
+	return (x != NULL) ? ((x->header.flag & POLITICAL_FLAG) ? true : false) : false;
+}
+
+bool ythtbbs_board_is_hidden(const char *bname) {
+	if (bname == NULL || bname[0] <= 32)
+		return true;
+
+	const struct boardmem *x = ythtbbs_cache_Board_get_board_by_name(bname);
+	return ythtbbs_board_is_hidden_x(x);
+}
+
+bool ythtbbs_board_is_hidden_x(const struct boardmem *x) {
+	if (x == NULL)
+		return true;
+
+	if (!strcmp(x->header.filename, DEFAULTBOARD))
+		return false;
+
+	if (x->header.level & PERM_NOZAP)
+		return false;
+
+	if (x->header.clubnum != 0)
+		return !(x->header.flag & CLUBTYPE_FLAG);
+
+	return (x->header.level & PERM_POSTMASK) ? false : x->header.level;
+}
+

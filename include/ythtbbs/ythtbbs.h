@@ -11,7 +11,6 @@
 #include "docutil.h"
 #include "modetype.h"
 #include "msg.h"
-#include "politics.h"
 #include "goodgbid.h"
 #include "binaryattach.h"
 #include "permissions.h"

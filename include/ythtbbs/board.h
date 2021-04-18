@@ -2,6 +2,7 @@
 #ifndef __BOARD_H
 #define __BOARD_H
 #include <stddef.h>
+#include <stdbool.h>
 #include "config.h"
 
 #define BMNUM 16
@@ -87,3 +88,9 @@ char *ythtbbs_board_set_board_file(char *buf, size_t len, const char *boardname,
 enum YTHTBBS_BOARD_INFO_STATUS ythtbbs_board_load_intro(char *buf, size_t len, const struct boardheader *bh);
 enum YTHTBBS_BOARD_INFO_STATUS ythtbbs_board_load_note(char *buf, size_t len, const struct boardheader *bh);
 #endif
+
+bool ythtbbs_board_is_political(const char *bname);
+bool ythtbbs_board_is_political_x(const struct boardmem *x);
+bool ythtbbs_board_is_hidden(const char *bname);
+bool ythtbbs_board_is_hidden_x(const struct boardmem *x);
+

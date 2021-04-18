@@ -389,11 +389,11 @@ int ent_chat(const char *chatbuf) {
 	while (1) {
 		getdata(2, 0, "请输入聊天代号(输入'*'退出)：", inbuf,
 			CHAT_IDLEN, DOECHO, YEA);
-		if (!strcmp(inbuf, "*") || stringfilter(inbuf, 0)) {
+		if (!strcmp(inbuf, "*") || stringfilter(inbuf, YTHT_SMTH_FILTER_OPTION_SIMPLE) != YTHT_SMTH_FILTER_RESULT_SAFE) {
 			if (strcmp(inbuf, "*")) {
 				strcpy(genbuf, "在聊天室起过滤名");
 				mail_buf(inbuf, "delete", genbuf);
-				updatelastpost("deleterequest");
+				ythtbbs_cache_Board_updatelastpost("deleterequest");
 			}
 			close(cfd);
 			clear();
@@ -402,10 +402,10 @@ int ent_chat(const char *chatbuf) {
 			update_utmp();
 			return 0;
 		}
-		if (stringfilter(inbuf, 2)) {
+		if (stringfilter(inbuf, YTHT_SMTH_FILTER_OPTION_PLTCAL) != YTHT_SMTH_FILTER_RESULT_SAFE) {
 			strcpy(genbuf, "在聊天室起过滤名");
 			mail_buf(inbuf, "delete", genbuf);
-			updatelastpost("deleterequest");
+			ythtbbs_cache_Board_updatelastpost("deleterequest");
 		}
 		sprintf(chatid, "%.8s",
 			((inbuf[0] != '\0' && inbuf[0] != '\n') ? inbuf : cuser.userid));
@@ -525,10 +525,10 @@ int ent_chat(const char *chatbuf) {
 
 		if (ch == '\n' || ch == '\r') {
 			if (currchar) {
-				if (stringfilter(inbuf, 0)) {
+				if (stringfilter(inbuf, YTHT_SMTH_FILTER_OPTION_SIMPLE) != YTHT_SMTH_FILTER_RESULT_SAFE) {
 					strcpy(genbuf, "在聊天室说过滤词");
 					mail_buf(inbuf, "delete", genbuf);
-					updatelastpost("deleterequest");
+					ythtbbs_cache_Board_updatelastpost("deleterequest");
 					printchatline("\033[1;32m聊天室禁止污言秽语哦\033[m");
 					inbuf[0] = '\0';
 					currchar = 0;
@@ -537,10 +537,10 @@ int ent_chat(const char *chatbuf) {
 					chatting = 1;
 					continue;
 				}
-				if (stringfilter(inbuf, 2)) {
+				if (stringfilter(inbuf, YTHT_SMTH_FILTER_OPTION_PLTCAL) != YTHT_SMTH_FILTER_RESULT_SAFE) {
 					sprintf(genbuf, "在聊天室说过滤词");
 					mail_buf(inbuf, "delete", genbuf);
-					updatelastpost("deleterequest");
+					ythtbbs_cache_Board_updatelastpost("deleterequest");
 				}
 				chatting = chat_cmd(inbuf, cfd);
 				if (chatting == 0)

@@ -9,7 +9,9 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <setjmp.h>
+#include "ytht/smth_filter.h"
 #include "ythtbbs/article.h"
+#include "ythtbbs/board.h"
 #include "postheader.h"
 extern int nettyNN;
 extern int selboard;           /* THis flag is true if above is active */
@@ -46,7 +48,7 @@ int do_post(void);
 void add_loginfo(char *filepath);
 void add_crossinfo(char *filepath, int mode);
 int show_board_notes(char bname[30]);
-int stringfilter(char *title, int mode);
+enum ytht_smth_filter_result stringfilter(char *title, enum ytht_smth_filter_option mode);
 int edit_post(int ent, struct fileheader *fileinfo, char *direct);
 int edit_title(int ent, struct fileheader *fileinfo, char *direct);
 int mark_post(int ent, struct fileheader *fileinfo, char *direct);
