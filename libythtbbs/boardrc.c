@@ -162,10 +162,8 @@ brc_c_unreadt(struct onebrc_c *brc_c, int t)
 	return 0;
 }
 
-static void
-settmpbrc(char *filename, char *userid)
-{
-	sprintf(filename, "%s/%s", PATHTMPBRC, userid);
+static void settmpbrc_s(char *filename, size_t len, const char *userid) {
+	snprintf(filename, len, "%s/%s", PATHTMPBRC, userid);
 }
 
 void
@@ -174,7 +172,7 @@ brc_init(struct allbrc *allbrc, char *userid, char *filename)
 	int fd;
 	char filename1[80];
 	allbrc->changed = 0;
-	settmpbrc(filename1, userid);
+	settmpbrc_s(filename1, sizeof(filename1), userid);
 	if ((fd = open(filename1, O_RDONLY)) < 0) {
 		if (filename == NULL || (fd = open(filename, O_RDONLY)) < 0)
 			return;
@@ -190,17 +188,17 @@ brc_fini(struct allbrc *allbrc, char *userid)
 {
 	int fd;
 	char filename1[80];
-	char tmpfile[80];
+	char tmpfile1[80];
 	if (!allbrc->changed)
 		return;
 	sprintf(filename1, "%s.tmp", userid);
-	settmpbrc(tmpfile, filename1);
-	if ((fd = open(tmpfile, O_WRONLY | O_CREAT, 0660)) < 0)
+	settmpbrc_s(tmpfile1, sizeof(tmpfile1), filename1);
+	if ((fd = open(tmpfile1, O_WRONLY | O_CREAT, 0660)) < 0)
 		return;
 	write(fd, allbrc->brc_c, allbrc->size);
 	close(fd);
-	settmpbrc(filename1, userid);
-	rename(tmpfile, filename1);
+	settmpbrc_s(filename1, sizeof(filename1), userid);
+	rename(tmpfile1, filename1);
 	allbrc->changed = 0;
 }
 
