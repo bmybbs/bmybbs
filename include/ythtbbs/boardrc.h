@@ -25,7 +25,16 @@ struct allbrc {
 	char brc_c[BRC_MAXSIZE];
 };
 
-void brc_init(struct allbrc *allbrc, char *userid, char *filename);
+/**
+ * @brief 初始化 brc 记录
+ * 首先以只读方式打开位于 bbstmpfs 中的临时文件。
+ * 如果打开失败，再只读打开 brc_file。
+ * 文件打开后读取最多 BRC_MAXSIZE 的内容存放在 allbrc->brc_c 中。
+ * @param allbrc 用于存放记录的缓冲区
+ * @param userid
+ * @param brc_file 位于用户数据目录下的 brc 文件
+ */
+void brc_init(struct allbrc *allbrc, const char *userid, const char *brc_file);
 void brc_fini(struct allbrc *allbrc, char *userid);
 void brc_getboard(struct allbrc *allbrc, struct onebrc *brc, char *board);
 void brc_putboard(struct allbrc *allbrc, struct onebrc *brc);

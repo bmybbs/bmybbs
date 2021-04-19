@@ -166,15 +166,13 @@ static void settmpbrc_s(char *filename, size_t len, const char *userid) {
 	snprintf(filename, len, "%s/%s", PATHTMPBRC, userid);
 }
 
-void
-brc_init(struct allbrc *allbrc, char *userid, char *filename)
-{
+void brc_init(struct allbrc *allbrc, const char *userid, const char *brc_file) {
 	int fd;
-	char filename1[80];
+	char brc_tmpfile[80];
 	allbrc->changed = 0;
-	settmpbrc_s(filename1, sizeof(filename1), userid);
-	if ((fd = open(filename1, O_RDONLY)) < 0) {
-		if (filename == NULL || (fd = open(filename, O_RDONLY)) < 0)
+	settmpbrc_s(brc_tmpfile, sizeof(brc_tmpfile), userid);
+	if ((fd = open(brc_tmpfile, O_RDONLY)) < 0) {
+		if (brc_file == NULL || (fd = open(brc_file, O_RDONLY)) < 0)
 			return;
 	}
 	allbrc->size = read(fd, allbrc->brc_c, BRC_MAXSIZE);
