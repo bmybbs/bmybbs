@@ -64,11 +64,9 @@ compress_brc(struct onebrc_c *brc_c, struct onebrc *brc)
 	brc_c->len = ptr - (char *) brc_c;
 }
 
-static void
-uncompress_brc(struct onebrc *brc, struct onebrc_c *brc_c)
-{
+static void uncompress_brc(struct onebrc *brc, const struct onebrc_c *brc_c) {
 	int i, diff, bl, bh;
-	char *ptr, *bits;
+	const char *ptr, *bits;
 	brc->changed = 0;
 	ptr = brc_c->data;
 	ytht_strsncpy(brc->board, ptr, sizeof(brc->board));
@@ -200,21 +198,21 @@ brc_fini(struct allbrc *allbrc, char *userid)
 	allbrc->changed = 0;
 }
 
-void
-brc_getboard(struct allbrc *allbrc, struct onebrc *brc, char *board)
-{
-	char *ptr, *ptr0;
-	ptr0 = allbrc->brc_c + allbrc->size;
+void brc_getboard(const struct allbrc *allbrc, struct onebrc *brc, const char *board) {
+	const char *ptr /* 活动指针 */, *ptr0 /* 终止指针 */;
+	const struct onebrc_c *compressed;    // 分段压缩数据
+	ptr0 = allbrc->brc_c + allbrc->size;  // 计算结束地址
 	for (ptr = allbrc->brc_c; ptr < ptr0;) {
-		if (!((struct onebrc_c *) ptr)->len)
+		compressed = (const struct onebrc_c *) ptr;
+		if (!compressed->len)
 			break;
-		if (ptr + ((struct onebrc_c *) ptr)->len > ptr0)
+		if (ptr + compressed->len > ptr0)
 			break;
-		if (!strncmp(((struct onebrc_c *) ptr)->data, board, BRC_STRLEN - 1)) {
-			uncompress_brc(brc, (struct onebrc_c *) ptr);
+		if (!strncmp(compressed->data, board, BRC_STRLEN - 1)) {
+			uncompress_brc(brc, compressed);
 			return;
 		}
-		ptr += ((struct onebrc_c *) ptr)->len;
+		ptr += compressed->len; // 跳转到下一条压缩记录
 	}
 	strncpy(brc->board, board, BRC_STRLEN - 1);
 	brc->changed = 0;
