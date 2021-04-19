@@ -250,7 +250,9 @@ brc_putboard(struct allbrc *allbrc, struct onebrc *brc)
 	if (!brc->changed)
 		return;
 	brc->changed = 0;
-	tmpallbrc = malloc(sizeof (struct allbrc));
+	if ((tmpallbrc = calloc(1, sizeof (struct allbrc))) == NULL) {
+		return;
+	}
 	ptr1 = tmpallbrc->brc_c;
 	ptr10 = tmpallbrc->brc_c + sizeof (tmpallbrc->brc_c);
 	shorter_brc(brc);
