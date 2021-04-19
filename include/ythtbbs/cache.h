@@ -63,7 +63,8 @@ struct user_info {
 	unsigned friend[MAXFRIENDS]; ///< 用于存放好友的 uid 列表
 	unsigned reject[MAXREJECTS]; ///< 用于存放黑名单的 uid 列表
 	struct wwwsession wwwinfo;
-	struct onebrc brc;
+	struct onebrc brc;           ///< 用于存放某个版面未读信息的数据，在 bbs / www 中使用
+	struct allbrc allbrc;        ///< 用于加载全部未读信息（压缩后的），在 api 中避免反复申请内存
 	char user_state_temp[16];  //add by leoncom
 };
 
