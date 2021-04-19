@@ -365,3 +365,11 @@ brc_clearto(struct onebrc *brc, int t)
 	brc_set(brc, t);
 }
 
+int UNREAD(const struct fileheader *fh, struct onebrc *brc) {
+	return brc_unreadt(brc, fh->edittime ? fh->edittime : fh->filetime);
+}
+
+void SETREAD(const struct fileheader *fh, struct onebrc *brc) {
+	brc_addlistt(brc, fh->edittime ? fh->edittime : fh->filetime);
+}
+

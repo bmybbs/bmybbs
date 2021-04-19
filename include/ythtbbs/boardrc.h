@@ -1,6 +1,7 @@
 /* boardrc.c */
 #ifndef __BOADRC_H
 #define __BOADRC_H
+#include "ythtbbs/article.h"
 #define BRC_MAXSIZE     25000
 #define BRC_MAXNUM      60
 #define BRC_STRLEN      15
@@ -32,4 +33,6 @@ void brc_addlistt(struct onebrc *brc, int t);
 int brc_unreadt(struct onebrc *brc, int t);
 int brc_unreadt_quick(struct allbrc *allbrc, char *board, int t);
 void brc_clearto(struct onebrc *brc, int t);
+int UNREAD(const struct fileheader *fh, struct onebrc *brc);
+void SETREAD(const struct fileheader *fh, struct onebrc *brc);
 #endif
