@@ -66,8 +66,6 @@
 #define HAS_PERM(x, _currentuser)    (((x)&PERM_SPECIAL3)?(_currentuser.dietime):((x)?_currentuser.userlevel&(x):1))
 #define HAS_CLUBRIGHT(x, clubrights) ((x)?(clubrights[x/32]&(1<<(x%32))):1)
 #define DEFINE(x, _currentuser)     ((x)?_currentuser.userdefine&(x):1)
-#define UNREAD(x, y) (((x)->edittime)?(brc_unreadt(y, (x)->edittime)):brc_unreadt(y, (x)->filetime))
-#define SETREAD(x, y) (((x)->edittime)?(brc_addlistt(y, (x)->edittime)):brc_addlistt(y, (x)->filetime))
 
 #define DEF_FRIENDCALL   000001
 #define DEF_ALLMSG       000002

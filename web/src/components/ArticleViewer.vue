@@ -1,5 +1,5 @@
 <template>
-	<div class="card border-bmy-blue1 mb-4">
+	<div class="card border-bmy-blue1 mb-4" :class="{ 'unread-shadow': _unread > 0 }">
 		<div class="card-header bg-bmy-blue0 bg-gradient">
 			<div class="d-flex">
 				<span class="fw-bold text-bmy-dark8">{{ title }}</span>
@@ -73,6 +73,7 @@ export default {
 		_boardname_en: String,
 		_aid: Number,
 		_mark: Number,
+		_unread: Number,
 		_reply_callback: Function,
 	},
 	mounted() {
@@ -212,6 +213,10 @@ export default {
 	font-weight: 700;
 	padding: 0.3rem 0.8rem;
 	border: 2px solid var(--bs-bmy-grey2);
+}
+
+.unread-shadow {
+	box-shadow: 0px 2px 10px 1px rgba(0,76,151,0.20);
 }
 
 </style>

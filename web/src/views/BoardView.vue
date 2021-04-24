@@ -12,6 +12,7 @@
 					v-bind:_comments="article.th_num"
 					v-bind:_aid="article.tid"
 					v-bind:_accessed="article.mark"
+					v-bind:_unread="article.unread"
 				/>
 			</ul>
 		</div>

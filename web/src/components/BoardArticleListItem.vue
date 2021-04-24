@@ -1,5 +1,5 @@
 <template>
-	<li class="list-group-item border-bmy-blue">
+	<li class="list-group-item border-bmy-blue" :class="{ 'bg-bmy-blue0': _unread > 0 }">
 		<div class="d-flex">
 			<router-link :to="{ name: 'thread', params: { boardname: _boardname_en, tid: _aid }}" class="fs-5 text-bmy-dark8 text-decoration-none">{{ _title }}</router-link>
 			<BadgeArticleFlags :_accessed="_accessed" />
@@ -36,6 +36,7 @@ export default {
 		_comments: Number,
 		_aid: Number,
 		_accessed: Number,
+		_unread: Number,
 	},
 	components: {
 		BadgeArticleFlags,

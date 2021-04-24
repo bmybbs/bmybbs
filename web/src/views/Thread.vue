@@ -5,6 +5,7 @@
 			v-bind:_boardname_en="$route.params.boardname"
 			v-bind:_aid="article.aid"
 			v-bind:_mark="article.mark"
+			v-bind:_unread="article.unread"
 			v-bind:_reply_callback="updateList"
 		/>
 	</div>
