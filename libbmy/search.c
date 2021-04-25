@@ -7,6 +7,7 @@
 #include "ytht/msg.h"
 #include "memorystruct.h"
 #include "bmy/search.h"
+#include "bmy/convcode.h"
 
 static const char *ILLEGAL_CMD_CHARS = "\\><'\";`()[]{}$#|";
 static const char *SEARCH_CMD = "LD_LIBRARY_PATH=" MY_BBS_HOME "/lib java -cp \"" MY_BBS_HOME "/java/*\" edu.xjtu.bmybbs.App search";
@@ -101,6 +102,20 @@ struct fileheader_utf *bmy_search_board(const char *board, const char *whattosea
 
 	if (chunk.memory) {
 		free(chunk.memory);
+	}
+
+	return articles;
+}
+
+struct fileheader_utf *bmy_search_board_gbk(const char *board, const char *whattosearch_gbk, size_t *search_size) {
+	char *whattosearch;
+	struct fileheader_utf *articles = NULL;
+	size_t len;
+
+	len = strlen(whattosearch_gbk);
+	if ((whattosearch = calloc(len * 2, 1)) != NULL) {
+		g2u(whattosearch_gbk, len, whattosearch, len * 2);
+		articles = bmy_search_board(board, whattosearch, search_size);
 	}
 
 	return articles;

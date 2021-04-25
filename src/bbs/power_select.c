@@ -162,9 +162,9 @@ int full_search_action(char *whattosearch)
 	newtrace(genbuf);
 
 	size_t search_size, i;
-	struct fileheader_utf *articles = bmy_search_board(currboard, whattosearch, &search_size);
+	struct fileheader_utf *articles = bmy_search_board_gbk(currboard, whattosearch, &search_size);
 
-	if (articles == 0)
+	if (articles == NULL)
 		return PARTUPDATE;
 
 	struct fileheader fh;

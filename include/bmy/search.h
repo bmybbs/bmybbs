@@ -11,5 +11,7 @@
  * @return fileheader_utf 数组，标题采用 utf8 编码，使用完成需调用 free(3)
  */
 struct fileheader_utf *bmy_search_board(const char *board, const char *whattosearch, size_t *search_size);
+
+struct fileheader_utf *bmy_search_board_gbk(const char *board, const char *whattosearch_gbk, size_t *search_size);
 #endif
 

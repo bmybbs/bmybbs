@@ -114,7 +114,7 @@ bbsbfind_main()
 		if (brd == 0)
 			http_fatal("错误的讨论区");
 
-		struct fileheader_utf *articles = bmy_search_board(board, content, &search_size);
+		struct fileheader_utf *articles = bmy_search_board_gbk(board, content, &search_size);
 		if (articles == NULL)
 			http_fatal("检索程序出错，或者无法搜索到相关内容");
 
