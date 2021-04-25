@@ -100,9 +100,7 @@ struct fileheader_utf *bmy_search_board(const char *board, const char *whattosea
 		free(dup_whattosearch);
 	}
 
-	if (chunk.memory) {
-		free(chunk.memory);
-	}
+	free(chunk.memory);
 
 	return articles;
 }
