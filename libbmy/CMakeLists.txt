@@ -11,6 +11,7 @@ add_library(bmy SHARED
 	subscription.c
 	algorithms.c
 	2fa.c
+	search.c
 )
 
 target_link_libraries(bmy ytht mysqlclient ssl crypto curl json-c hiredis)
