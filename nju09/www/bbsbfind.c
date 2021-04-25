@@ -198,7 +198,7 @@ bbsbfind_main()
 E:
 	if (type == 1 && fp != NULL)
 		fclose(fp);
-	else if ((type == 2 || type == 3) && fp != NULL)
+	else if (type == 3 && fp != NULL)
 		pclose(fp);
 	printf("</table>\n");
 	printf("<br>共找到 %d 篇文章符合条件", total);
