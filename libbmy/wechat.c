@@ -9,14 +9,10 @@
 #include "ytht/msg.h"
 #include "ytht/fileop.h"
 #include "bmy/wechat.h"
+#include "memorystruct.h"
 
 static const char *BMY_USER_AGENT = "libbmy/1.0";
 static const char *WECHAT_CONFIG_FILE = MY_BBS_HOME "/etc/wechatconfig";
-
-struct MemoryStruct {
-	char *memory;
-	size_t size;
-};
 
 // ref https://curl.se/libcurl/c/getinmemory.html
 static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp) {
