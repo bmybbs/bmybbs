@@ -32,6 +32,8 @@
 #include "read.h"
 #include "boards.h"
 #include "bbs_global_vars.h"
+#include "bmy/search.h"
+#include "bmy/convcode.h"
 
 
 typedef void (*power_dofunc) (int, struct fileheader *, char *);
@@ -150,6 +152,7 @@ power_range(char *filename, unsigned int id1, int id2, char *select, power_dofun
 }
 
 // 全文搜索,interma@bmy
+// 由 PyLucene 改为 Lucene IronBlood@bmy
 int full_search_action(char *whattosearch)
 {
 	digestmode = 3;
@@ -157,45 +160,27 @@ int full_search_action(char *whattosearch)
 	unlink(currdirect);
 	sprintf(genbuf, "%s full_search %s %s",currentuser.userid, currboard, whattosearch);
 	newtrace(genbuf);
-	//
-	char cmd[256];
-	sprintf(cmd, MY_BBS_HOME "/bin/searcher.py %s '%s'", currboard, whattosearch);
 
-	FILE *fp = popen(cmd, "r");
-	if (fp == 0)
+	size_t search_size, i;
+	struct fileheader_utf *articles = bmy_search_board(currboard, whattosearch, &search_size);
+
+	if (articles == 0)
 		return PARTUPDATE;
 
-	char line[256];
 	struct fileheader fh;
-	bzero(&fh, sizeof(struct fileheader));
 	int nr = 0;
-	while (fgets(line, 256, fp) != NULL)
-	{
-		if (line[0] != 'M')
-			break;
-
-		char f_buf[16];
-		//int filetime;
-		//char t_buf[81];
-		//char o_buf[16];
-
-		int len = strlen(line);
-		ytht_strsncpy(f_buf, line, 15);
-		sscanf(f_buf, "M.%ld.A", &(fh.filetime));
-		sscanf(f_buf, "M.%ld.A", &(fh.edittime));
-
-		char *p2s = strchr(line+15, ' ');
-		int owner_len = p2s-line-15;
-		ytht_strsncpy(fh.owner, line + 15, owner_len + 1);
-
-		ytht_strsncpy(fh.title, p2s + 1, len - 2 - owner_len - 14 + 1);
-		fh.title[strlen(fh.title)-1] = 0;
+	for (i = 0; i < search_size; i++) {
+		memset(&fh, 0, sizeof(struct fileheader));
+		fh.filetime = articles[i].filetime;
+		fh.edittime = articles[i].filetime;
 		fh.thread = nr++;
+		ytht_strsncpy(fh.owner, articles[i].owner, sizeof(fh.owner));
+		u2g(articles[i].title, strlen(articles[i].title), fh.title, sizeof(fh.title));
 		append_record(currdirect, &fh, sizeof(struct fileheader));
 	}
 
-	pclose(fp);
-	//
+	free(articles);
+
 	limit_cpu();
 	return NEWDIRECT;
 }

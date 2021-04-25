@@ -1,4 +1,6 @@
 #include "bbslib.h"
+#include "bmy/search.h"
+#include "bmy/convcode.h"
 
 static int show_form(char *board);
 
@@ -105,51 +107,29 @@ bbsbfind_main()
 
 	{
 		char content[200];
-		char cmd[512];
+		size_t search_size, i;
 		ytht_strsncpy(content, getparm("content"), 200);
-		snprintf(cmd, sizeof(cmd), MY_BBS_HOME "/bin/searcher.py %s '%s'", board, content);
 
 		brd = getboard(board);
 		if (brd == 0)
 			http_fatal("错误的讨论区");
 
-		fp = popen(cmd, "r");
-		if (fp == 0)
-			http_fatal("检索程序出错");
+		struct fileheader_utf *articles = bmy_search_board(board, content, &search_size);
+		if (articles == NULL)
+			http_fatal("检索程序出错，或者无法搜索到相关内容");
 
 		printf("查找讨论区'%s'内, 正文含: '%s' 的所有文章", board, nohtml(content));
 		printf("<table>\n");
 		printf("<tr><td>作者<td>日期<td>标题\n");
-		char line[256];
-		while (fgets(line, 256, fp) != NULL)
-		{
-			if (line[0] != 'M')
-				break;
-
-			char f_buf[16];
-			time_t filetime;
-			char t_buf[81];
-			char o_buf[16];
-
-			int len = strlen(line);
-			ytht_strsncpy(f_buf, line, 15);
-			sscanf(f_buf, "M.%ld.A", &filetime);
-
-			char *p2s = strchr(line+15, ' ');
-			int owner_len = p2s-line-15;
-			ytht_strsncpy(o_buf, line + 15, owner_len + 1);
-
-			ytht_strsncpy(t_buf, p2s + 1, len - 2 - owner_len - 14 + 1);
-
-			printf("<tr><td><a href=qry?U=%s>%s", o_buf, o_buf);
-			printf("<td>%s", ytht_ctime(filetime));
-
-			printf("<td><a href=con?B=%s&F=%s>%40.40s </a>\n", board, f_buf, t_buf);
-
+		for (i = 0; i < search_size; i++) {
+			// 这里偷懒使用 content，200 字节应该足够容纳 120 字节转换后的编码内容
+			u2g(articles[i].title, strlen(articles[i].title), content, sizeof(content));
+			printf("<tr><td><a href=qry?U=\"%s\">%s</a></td><td>%s</td><td><a href=\"con?B=%s&F=M.%ld.A\">%40.40s</a></td></tr>", articles[i].owner, articles[i].owner, ytht_ctime(articles[i].filetime), board, articles[i].filetime, content);
 			total++;
 			if (total >= 999)
 				break;
 		}
+		free(articles);
 		goto E;
 	}
 	//精华区检索
