@@ -116,6 +116,7 @@ struct fileheader_utf *bmy_search_board_gbk(const char *board, const char *whatt
 	if ((whattosearch = calloc(len * 2, 1)) != NULL) {
 		g2u(whattosearch_gbk, len, whattosearch, len * 2);
 		articles = bmy_search_board(board, whattosearch, search_size);
+		free(whattosearch);
 	}
 
 	return articles;
