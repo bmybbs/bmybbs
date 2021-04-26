@@ -127,7 +127,7 @@ export default {
 			this.bmy_cache.article = {
 				board: this._boardname_en,
 				aid: this._aid,
-				title: this.title.startsWith(RE) ? this.title : `${RE} ${this.title}`,
+				title: this.title.startsWith(RE) ? this.title : `${RE}${this.title}`,
 				content: generateContent(this.$refs.replyForm.value, this.author, this.rawContent),
 			};
 			this.$router.push({
