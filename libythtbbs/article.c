@@ -24,12 +24,24 @@ char *
 fh2fname(struct fileheader *fh)
 {
 	static char s[16];
-	sprintf(s, "M.%lu.A", (long)fh->filetime);
+	sprintf(s, "M.%lu.A", fh->filetime);
 	if (fh->accessed & FH_ISDIGEST)
 		s[0] = 'G';
 	if (fh->accessed & FILE_ISTOP1)  //add by wjbta
 		s[0] = 'T';
 	return s;
+}
+
+char *fh2fname_s(const struct fileheader *fh, char *buf, size_t len) {
+	if (fh && buf) {
+		snprintf(buf, len, "M.%lu.A", fh->filetime);
+		if (fh->accessed & FH_ISDIGEST)
+			buf[0] = 'G';
+		if (fh->accessed & FILE_ISTOP1)
+			buf[0] = 'T';
+	}
+
+	return buf;
 }
 
 char *

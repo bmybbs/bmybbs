@@ -68,6 +68,14 @@ struct boardtop {
 char *fh2fname(struct fileheader *fh);
 
 /**
+ * @brief 依据日期、标记位转换为文件名
+ * @param fh 文件头
+ * @param buf 缓冲区，至少 16 byte
+ * @param len 缓冲区长度
+ * @return buf
+ */
+char *fh2fname_s(const struct fileheader *fh, char *buf, size_t len);
+/**
  * @brief 生成过刊文件名
  * @warning 多线程不安全
  */
