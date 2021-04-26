@@ -253,7 +253,7 @@ write_cache_header(conn_t * c, time_t t, int age, char *old)
 		sprintf(c_header, "Last-Modified: %s GMT\r\n", buf);
 	t = now_t + age;
 	if (strftime(buf, STRLEN, "%a, %d %b %Y %H:%M:%S", gmtime(&t))) {
-		strcat(c_header, "Expires ");
+		strcat(c_header, "Expires: ");
 		strcat(c_header, buf);
 		strcat(c_header, " GMT\r\n");
 	}
