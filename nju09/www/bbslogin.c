@@ -11,6 +11,11 @@ int bbslogin_main() {
 	ytht_strsncpy(id, getparm("id"), 13);
 	ytht_strsncpy(pw, getparm("pw"), 13);
 
+	const char *host = bmy_cookie_check_host(getenv("Host"));
+	if (host == NULL) {
+		http_fatal("无效的域名");
+	}
+
 	if (loginok && strcasecmp(id, currentuser.userid) && !isguest) {
 		http_fatal("系统检测到目前你的计算机上已经登录有一个帐号 %s，请先退出.(选择正常logout)", currentuser.userid);
 	}
@@ -67,7 +72,7 @@ int bbslogin_main() {
 	cookie.extraparam = getextrparam_str(wwwstylenum);
 	bmy_cookie_gen(buf, sizeof(buf), &cookie);
 
-	printf("Set-Cookie: " SMAGIC "=%s; Path=/; Domain=" MY_BBS_DOMAIN "; SameSite=Strict; HttpOnly; Max-Age=%d;\n", buf, MAX_SESS_TIME - 10);
+	printf("Set-Cookie: " SMAGIC "=%s; Path=/; Domain=%s; SameSite=Strict; HttpOnly; Max-Age=%d;\n", buf, host, MAX_SESS_TIME - 10);
 	html_header(3);
 	redirect("/" SMAGIC "/"); // URL 不再附带 session 信息
 	http_quit();
