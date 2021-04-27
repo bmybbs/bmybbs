@@ -18,7 +18,7 @@ bbslogout_main()
 
 	const char *host = bmy_cookie_check_host(getenv("HTTP_HOST"));
 	if (host == NULL) {
-		http_fatal("无效的域名");
+		http_fatal("\xCE\xDE\xD0\xA7\xB5\xC4\xD3\xF2\xC3\xFB"); // 无效的域名
 	}
 
 	ythtbbs_user_logout(currentuser.userid, utmpent - 1);
