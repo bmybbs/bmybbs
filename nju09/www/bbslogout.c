@@ -16,7 +16,7 @@ bbslogout_main()
 	if (isguest)
 		http_fatal("guest\xB2\xBB\xB4\xF8\xD7\xA2\xCF\xFA"); // guest不带注销的
 
-	const char *host = bmy_cookie_check_host(getenv("Host"));
+	const char *host = bmy_cookie_check_host(getenv("HTTP_HOST"));
 	if (host == NULL) {
 		http_fatal("无效的域名");
 	}

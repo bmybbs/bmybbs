@@ -11,7 +11,7 @@ int bbslogin_main() {
 	ytht_strsncpy(id, getparm("id"), 13);
 	ytht_strsncpy(pw, getparm("pw"), 13);
 
-	const char *host = bmy_cookie_check_host(getenv("Host"));
+	const char *host = bmy_cookie_check_host(getenv("HTTP_HOST"));
 	if (host == NULL) {
 		http_fatal("无效的域名");
 	}
