@@ -28,5 +28,12 @@ void bmy_cookie_parse(char *buf, struct bmy_cookie *cookie);
  * @return buf 中保存的 cookie 的实际长度
  */
 int bmy_cookie_gen(char *buf, size_t len, const struct bmy_cookie *cookie);
+
+/**
+ * @brief 检查域名
+ * @param host 传入域名
+ * @return 若域名不合法，返回 NULL
+ */
+const char *bmy_cookie_check_host(const char *host);
 #endif
 
