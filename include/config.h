@@ -167,18 +167,19 @@ You must also set "EightBitMode=pass8" in /etc/sendmail.cf
 #define SENDMAIL_MIME_AUTOCONVERT    1
 #define NOREMOTECHAT
 
-#define MY_BBS_HOME   "/home/bbs"
-#define MY_BBS_NAME   "\xB1\xF8\xC2\xED\xD9\xB8\x42\x42\x53"  /* 兵马俑BBS */
-#define MY_BBS_DOMAIN "bbs.xjtu.edu.cn"
-#define MY_BBS_IP     "202.117.1.8"
-#define MY_BBS_ID     "BMY"
-#define MY_BBS_LOC    "\xCE\xF7\xB0\xB2\xBD\xBB\xCD\xA8\xB4\xF3\xD1\xA7" /* 西安交通大学 */
-#define BBSUSER	      "bbs"
-#define BBSGID	      999
-#define BBSUID	      999
-#define BBS_PORT      23
-#define BBS_BIG5_PORT 2300
-#define SMAGIC	      "BMY"
+#define MY_BBS_HOME    "/home/bbs"
+#define MY_BBS_NAME    "\xB1\xF8\xC2\xED\xD9\xB8\x42\x42\x53"  /* 兵马俑BBS */
+#define MY_BBS_DOMAIN6 "bbs.xjtu6.edu.cn"
+#define MY_BBS_DOMAIN  "bbs.xjtu.edu.cn"
+#define MY_BBS_IP      "202.117.1.8"
+#define MY_BBS_ID      "BMY"
+#define MY_BBS_LOC     "\xCE\xF7\xB0\xB2\xBD\xBB\xCD\xA8\xB4\xF3\xD1\xA7" /* 西安交通大学 */
+#define BBSUSER        "bbs"
+#define BBSGID         999
+#define BBSUID         999
+#define BBS_PORT       23
+#define BBS_BIG5_PORT  2300
+#define SMAGIC         "BMY"
 
 #define CONVTABLE_SHMKEY   0x0C1D
 #define BCACHE_SHMKEY      0x1E85

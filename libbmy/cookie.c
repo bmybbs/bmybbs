@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "config.h"
 #include "bmy/cookie.h"
 
 static const char SEPRATOR = '-';
@@ -54,5 +55,15 @@ int bmy_cookie_gen(char *buf, size_t len, const struct bmy_cookie *cookie) {
 	buf[len - 1] = '\0';
 
 	return strlen(buf);
+}
+
+const char *bmy_cookie_check_host(const char *host) {
+	if (host == NULL)
+		return host;
+
+	if (!strcmp(host, MY_BBS_DOMAIN6))
+		return MY_BBS_DOMAIN6;
+
+	return (!strcmp(host, MY_BBS_DOMAIN)) ? MY_BBS_DOMAIN : NULL;
 }
 

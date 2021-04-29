@@ -549,9 +549,6 @@ char *pnt;
 	case Ctrl('L'):
 		redoscr();
 		break;
-	case 'y': // Ë®ÎÄ±ê×¢
-		mode = water_post(locmem->crs_line, &SR_fptr, currdirect);
-		break;
 	case 'k':
 	case KEY_UP:
 		if (cursor_pos(locmem, locmem->crs_line - 1, screen_len - 2))
