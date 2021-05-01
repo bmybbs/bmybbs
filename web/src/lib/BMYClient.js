@@ -82,6 +82,12 @@ export const BMYClient = {
 	search_board(start_with) {
 		return myFetchGet(`/api/board/autocomplete?search_str=${start_with}`);
 	},
+	search_content(board, query) {
+		return myFetchPost("/api/search/content", {
+			board: board,
+			query: query,
+		});
+	},
 	search_user(start_with) {
 		return myFetchGet(`/api/user/autocomplete?search_str=${start_with}`);
 	},
