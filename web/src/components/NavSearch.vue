@@ -69,33 +69,32 @@ export default {
 				clearTimeout(this.lazySearchTimer);
 			}
 
-			const that = this;
-			this.lazySearchTimer = setTimeout(function() {
-				if (that.search_str.length == 0) {
-					that.boards.length = 0;
-					that.users.length = 0;
+			this.lazySearchTimer = setTimeout(() => {
+				if (this.search_str.length == 0) {
+					this.boards.length = 0;
+					this.users.length = 0;
 				} else {
-					BMYClient.search_board(that.search_str).then(response => {
+					BMYClient.search_board(this.search_str).then(response => {
 						if (response.errcode == 0 && Array.isArray(response.board_array)) {
-							that.boards = response.board_array;
-							that.hasMoreBoards = that.boards.length > MAXRECORDS;
-							if (that.hasMoreBoards)
-								that.boards.length = MAXRECORDS;
+							this.boards = response.board_array;
+							this.hasMoreBoards = this.boards.length > MAXRECORDS;
+							if (this.hasMoreBoards)
+								this.boards.length = MAXRECORDS;
 						} else {
-							that.boards.length = 0;
-							that.hasMoreBoards = false;
+							this.boards.length = 0;
+							this.hasMoreBoards = false;
 						}
 					});
 
-					BMYClient.search_user(that.search_str).then(response => {
+					BMYClient.search_user(this.search_str).then(response => {
 						if (response.errcode == 0 && Array.isArray(response.user_array)) {
-							that.users = response.user_array;
-							that.hasMoreUsers = that.users.length > MAXRECORDS;
-							if (that.hasMoreUsers)
-								that.users.length = MAXRECORDS;
+							this.users = response.user_array;
+							this.hasMoreUsers = this.users.length > MAXRECORDS;
+							if (this.hasMoreUsers)
+								this.users.length = MAXRECORDS;
 						} else {
-							that.users.length = 0;
-							that.hasMoreUsers = false;
+							this.users.length = 0;
+							this.hasMoreUsers = false;
 						}
 					});
 				}
