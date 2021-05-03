@@ -31,7 +31,7 @@ export default {
 	},
 	mounted() {
 		if (this.$route.query.q != null) {
-			this.query = this.$route.query.q.replaceAll("+", " ").trim();
+			this.query = this.$route.query.q.trim();
 			if (this.query.length > 0) {
 				BMYClient.search_content(this.$route.params.boardname, this.query).then(response => {
 					if (response.errcode == BMY_EC.API_RT_SUCCESSFUL) {
