@@ -29,6 +29,9 @@
 					<li class="dropdown-item" v-if="hasMoreUsers">更多用户...</li>
 				</ul>
 			</li>
+			<li v-if="searchContent">
+				<h6 class="dropdown-header" @click="gotoSearchContent">搜索包含"{{ search_str }}"的文章</h6>
+			</li>
 		</ul>
 	</div>
 </template>
@@ -38,6 +41,7 @@ import { BMYClient } from "@/lib/BMYClient.js"
 import NavSearchHighlightItem from "@/components/NavSearchHighlightItem.vue"
 
 const MAXRECORDS = 5;
+const VALID_BMYID_REG = /^[a-zA-Z0-9_]*$/;
 
 export default {
 	data() {
@@ -50,6 +54,7 @@ export default {
 			lazySearchTimer: null,
 			hasMoreUsers: false,
 			hasMoreBoards: false,
+			searchContent: false,
 		};
 	},
 	mounted() {
@@ -75,30 +80,37 @@ export default {
 				if (this.search_str.length == 0) {
 					this.boards.length = 0;
 					this.users.length = 0;
+					this.searchContent = false;
 				} else {
-					BMYClient.search_board(this.search_str).then(response => {
-						if (response.errcode == 0 && Array.isArray(response.board_array)) {
-							this.boards = response.board_array;
-							this.hasMoreBoards = this.boards.length > MAXRECORDS;
-							if (this.hasMoreBoards)
-								this.boards.length = MAXRECORDS;
-						} else {
-							this.boards.length = 0;
-							this.hasMoreBoards = false;
-						}
-					});
+					if (VALID_BMYID_REG.test(this.search_str)) {
+						BMYClient.search_board(this.search_str).then(response => {
+							if (response.errcode == 0 && Array.isArray(response.board_array)) {
+								this.boards = response.board_array;
+								this.hasMoreBoards = this.boards.length > MAXRECORDS;
+								if (this.hasMoreBoards)
+									this.boards.length = MAXRECORDS;
+							} else {
+								this.boards.length = 0;
+								this.hasMoreBoards = false;
+							}
+						});
 
-					BMYClient.search_user(this.search_str).then(response => {
-						if (response.errcode == 0 && Array.isArray(response.user_array)) {
-							this.users = response.user_array;
-							this.hasMoreUsers = this.users.length > MAXRECORDS;
-							if (this.hasMoreUsers)
-								this.users.length = MAXRECORDS;
-						} else {
-							this.users.length = 0;
-							this.hasMoreUsers = false;
-						}
-					});
+						BMYClient.search_user(this.search_str).then(response => {
+							if (response.errcode == 0 && Array.isArray(response.user_array)) {
+								this.users = response.user_array;
+								this.hasMoreUsers = this.users.length > MAXRECORDS;
+								if (this.hasMoreUsers)
+									this.users.length = MAXRECORDS;
+							} else {
+								this.users.length = 0;
+								this.hasMoreUsers = false;
+							}
+						});
+					}
+
+					if (["board", "boardSubmit", "thread", "reply", "boardSearch"].includes(this.$route.name)) {
+						this.searchContent = true;
+					}
 				}
 			}, 200);
 		},
@@ -109,7 +121,18 @@ export default {
 					boardname: boardname,
 				}
 			});
-		}
+		},
+		gotoSearchContent() {
+			this.$router.push({
+				name: "boardSearch",
+				params: {
+					boardname: this.$route.params.boardname,
+				},
+				query: {
+					q: this.search_str,
+				},
+			});
+		},
 	},
 	computed: {
 		realShow() {
