@@ -29,9 +29,26 @@ export default {
 			msg: "",
 		};
 	},
+	created() {
+		this.$watch(() => this.$route, (toRoute) => {
+			if (toRoute.query.q != null) {
+				this.query = toRoute.query.q.trim();
+				this.doSearchContent();
+			} else {
+				this.has_query = false;
+			}
+		});
+	},
 	mounted() {
 		if (this.$route.query.q != null) {
 			this.query = this.$route.query.q.trim();
+			this.doSearchContent();
+		} else {
+			this.has_query = false;
+		}
+	},
+	methods: {
+		doSearchContent() {
 			if (this.query.length > 0) {
 				BMYClient.search_content(this.$route.params.boardname, this.query).then(response => {
 					if (response.errcode == BMY_EC.API_RT_SUCCESSFUL) {
@@ -43,9 +60,7 @@ export default {
 			} else {
 				this.has_query = false;
 			}
-		} else {
-			this.has_query = false;
-		}
+		},
 	},
 	components: {
 		PopoverUserInfo,
