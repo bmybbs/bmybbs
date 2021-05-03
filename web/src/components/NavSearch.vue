@@ -13,7 +13,7 @@
 			<li v-if="boards.length > 0">
 				<h6 class="dropdown-header">找到的版面有：</h6>
 				<ul class="search-results">
-					<li class="dropdown-item" v-for="board in boards" v-bind:key="board.name">
+					<li class="dropdown-item" v-for="board in boards" v-bind:key="board.name" @click="gotoBoard(board.name)">
 						<NavSearchHighlightItem v-bind:_text="board.name" v-bind:_key="search_str" />
 					</li>
 					<li class="dropdown-item" v-if="hasMoreBoards">更多版面...</li>
@@ -62,7 +62,9 @@ export default {
 			this.show = true;
 		},
 		closeDropdown() {
-			this.show = false;
+			setTimeout(() => {
+				this.show = false;
+			}, 200);
 		},
 		doLasySearch() {
 			if (this.lazySearchTimer) {
@@ -100,6 +102,14 @@ export default {
 				}
 			}, 200);
 		},
+		gotoBoard(boardname) {
+			this.$router.push({
+				name: "board",
+				params: {
+					boardname: boardname,
+				}
+			});
+		}
 	},
 	computed: {
 		realShow() {
