@@ -55,37 +55,35 @@ export default {
 	},
 	created() {
 		this.$watch(() => this.$route, (toRoute) => {
-			if (toRoute.query.q != null) {
-				this.query = toRoute.query.q.trim();
-				this.doSearchContent();
-			} else {
-				this.has_query = false;
-			}
+			this.init(toRoute);
 		});
 	},
 	mounted() {
-		if (this.$route.query.q != null) {
-			this.query = this.$route.query.q.trim();
-		} else {
-			this.has_query = false;
-		}
-
-		if (this.$route.name == "contentSearch") {
-			this.type = SEARCH_TYPE.CONTENT;
-			this.doSearchContent();
-		} else if (this.$route.name == "search") {
-			if (this.$route.query.type != null) {
-				if (this.$route.query.type == "user") {
-					this.type = SEARCH_TYPE.USER;
-					this.doSearchUser();
-				} else {
-					this.type = SEARCH_TYPE.BOARD;
-					this.doSearchBoard();
-				}
-			}
-		}
+		this.init(this.$route);
 	},
 	methods: {
+		init(route) {
+			if (route.query.q != null) {
+				this.query = route.query.q.trim();
+			} else {
+				this.has_query = false;
+			}
+
+			if (route.name == "contentSearch") {
+				this.type = SEARCH_TYPE.CONTENT;
+				this.doSearchContent();
+			} else if (route.name == "search") {
+				if (route.query.type != null) {
+					if (route.query.type == "user") {
+						this.type = SEARCH_TYPE.USER;
+						this.doSearchUser();
+					} else {
+						this.type = SEARCH_TYPE.BOARD;
+						this.doSearchBoard();
+					}
+				}
+			}
+		},
 		doSearchBoard() {
 			BMYClient.search_board(this.query).then(response => {
 				if (response.errcode == 0 && Array.isArray(response.board_array)) {
