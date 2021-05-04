@@ -108,7 +108,7 @@ export default {
 						});
 					}
 
-					if (["board", "boardSubmit", "thread", "reply", "boardSearch"].includes(this.$route.name)) {
+					if (["board", "boardSubmit", "thread", "reply", "contentSearch"].includes(this.$route.name)) {
 						this.searchContent = true;
 					}
 				}
@@ -124,7 +124,7 @@ export default {
 		},
 		gotoSearchContent() {
 			this.$router.push({
-				name: "boardSearch",
+				name: "contentSearch",
 				params: {
 					boardname: this.$route.params.boardname,
 				},

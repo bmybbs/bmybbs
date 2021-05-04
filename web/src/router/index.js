@@ -45,7 +45,7 @@ const routes = [{
 			component: () => import("@/views/Reply.vue"),
 		}, {
 			path: "/web/board/:boardname/search",
-			name: "boardSearch",
+			name: "contentSearch",
 			component: () => import("@/views/Search.vue"),
 		}]
 	}, {
