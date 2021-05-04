@@ -52,6 +52,10 @@ const routes = [{
 		path: "/web/settings",
 		component: () => import("@/views/Settings.vue"),
 	}, {
+		path: "/web/search",
+		name: "search",
+		component: () => import("@/views/Search.vue"),
+	}, {
 		path: "/web/submit",
 		component: () => import("@/views/SubmitWrapper.vue"),
 		children: [{
