@@ -16,7 +16,7 @@
 					<li class="dropdown-item" v-for="board in boards" v-bind:key="board.name" @click="gotoBoard(board.name)">
 						<NavSearchHighlightItem v-bind:_text="board.name" v-bind:_key="search_str" />
 					</li>
-					<li class="dropdown-item" v-if="hasMoreBoards">更多版面...</li>
+					<li class="dropdown-item" v-if="hasMoreBoards" @click="gotoSearchBoard">更多版面...</li>
 				</ul>
 			</li>
 			<li v-if="boards.length > 0 && users.length > 0"><hr class="dropdown-divider"></li>
@@ -26,7 +26,7 @@
 					<li class="dropdown-item" v-for="user in users" v-bind:key="user">
 						<NavSearchHighlightItem v-bind:_text="user" v-bind:_key="search_str" />
 					</li>
-					<li class="dropdown-item" v-if="hasMoreUsers">更多用户...</li>
+					<li class="dropdown-item" v-if="hasMoreUsers" @click="gotoSearchUser">更多用户...</li>
 				</ul>
 			</li>
 			<li v-if="searchContent">
@@ -133,6 +133,24 @@ export default {
 				},
 			});
 		},
+		gotoSearchBoard() {
+			this.$router.push({
+				name: "search",
+				query: {
+					q: this.search_str,
+					type: "board",
+				}
+			});
+		},
+		gotoSearchUser() {
+			this.$router.push({
+				name: "search",
+				query: {
+					q: this.search_str,
+					type: "user",
+				}
+			});
+		}
 	},
 	computed: {
 		realShow() {
