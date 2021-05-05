@@ -13,10 +13,10 @@
 			<li v-if="boards.length > 0">
 				<h6 class="dropdown-header">找到的版面有：</h6>
 				<ul class="search-results">
-					<li class="dropdown-item" v-for="board in boards" v-bind:key="board.name">
+					<li class="dropdown-item" v-for="board in boards" v-bind:key="board.name" @click="gotoBoard(board.name)">
 						<NavSearchHighlightItem v-bind:_text="board.name" v-bind:_key="search_str" />
 					</li>
-					<li class="dropdown-item" v-if="hasMoreBoards">更多版面...</li>
+					<li class="dropdown-item" v-if="hasMoreBoards" @click="gotoSearchBoard">更多版面...</li>
 				</ul>
 			</li>
 			<li v-if="boards.length > 0 && users.length > 0"><hr class="dropdown-divider"></li>
@@ -26,8 +26,11 @@
 					<li class="dropdown-item" v-for="user in users" v-bind:key="user">
 						<NavSearchHighlightItem v-bind:_text="user" v-bind:_key="search_str" />
 					</li>
-					<li class="dropdown-item" v-if="hasMoreUsers">更多用户...</li>
+					<li class="dropdown-item" v-if="hasMoreUsers" @click="gotoSearchUser">更多用户...</li>
 				</ul>
+			</li>
+			<li v-if="searchContent">
+				<h6 class="dropdown-header" @click="gotoSearchContent">搜索包含"{{ search_str }}"的文章</h6>
 			</li>
 		</ul>
 	</div>
@@ -38,6 +41,7 @@ import { BMYClient } from "@/lib/BMYClient.js"
 import NavSearchHighlightItem from "@/components/NavSearchHighlightItem.vue"
 
 const MAXRECORDS = 5;
+const VALID_BMYID_REG = /^[a-zA-Z0-9_]*$/;
 
 export default {
 	data() {
@@ -50,6 +54,7 @@ export default {
 			lazySearchTimer: null,
 			hasMoreUsers: false,
 			hasMoreBoards: false,
+			searchContent: false,
 		};
 	},
 	mounted() {
@@ -62,45 +67,90 @@ export default {
 			this.show = true;
 		},
 		closeDropdown() {
-			this.show = false;
+			setTimeout(() => {
+				this.show = false;
+			}, 200);
 		},
 		doLasySearch() {
 			if (this.lazySearchTimer) {
 				clearTimeout(this.lazySearchTimer);
 			}
 
-			const that = this;
-			this.lazySearchTimer = setTimeout(function() {
-				if (that.search_str.length == 0) {
-					that.boards.length = 0;
-					that.users.length = 0;
+			this.lazySearchTimer = setTimeout(() => {
+				if (this.search_str.length == 0) {
+					this.boards.length = 0;
+					this.users.length = 0;
+					this.searchContent = false;
 				} else {
-					BMYClient.search_board(that.search_str).then(response => {
-						if (response.errcode == 0 && Array.isArray(response.board_array)) {
-							that.boards = response.board_array;
-							that.hasMoreBoards = that.boards.length > MAXRECORDS;
-							if (that.hasMoreBoards)
-								that.boards.length = MAXRECORDS;
-						} else {
-							that.boards.length = 0;
-							that.hasMoreBoards = false;
-						}
-					});
+					if (VALID_BMYID_REG.test(this.search_str)) {
+						BMYClient.search_board(this.search_str).then(response => {
+							if (response.errcode == 0 && Array.isArray(response.board_array)) {
+								this.boards = response.board_array;
+								this.hasMoreBoards = this.boards.length > MAXRECORDS;
+								if (this.hasMoreBoards)
+									this.boards.length = MAXRECORDS;
+							} else {
+								this.boards.length = 0;
+								this.hasMoreBoards = false;
+							}
+						});
 
-					BMYClient.search_user(that.search_str).then(response => {
-						if (response.errcode == 0 && Array.isArray(response.user_array)) {
-							that.users = response.user_array;
-							that.hasMoreUsers = that.users.length > MAXRECORDS;
-							if (that.hasMoreUsers)
-								that.users.length = MAXRECORDS;
-						} else {
-							that.users.length = 0;
-							that.hasMoreUsers = false;
-						}
-					});
+						BMYClient.search_user(this.search_str).then(response => {
+							if (response.errcode == 0 && Array.isArray(response.user_array)) {
+								this.users = response.user_array;
+								this.hasMoreUsers = this.users.length > MAXRECORDS;
+								if (this.hasMoreUsers)
+									this.users.length = MAXRECORDS;
+							} else {
+								this.users.length = 0;
+								this.hasMoreUsers = false;
+							}
+						});
+					}
+
+					if (["board", "boardSubmit", "thread", "reply", "contentSearch"].includes(this.$route.name)) {
+						this.searchContent = true;
+					}
 				}
 			}, 200);
 		},
+		gotoBoard(boardname) {
+			this.$router.push({
+				name: "board",
+				params: {
+					boardname: boardname,
+				}
+			});
+		},
+		gotoSearchContent() {
+			this.$router.push({
+				name: "contentSearch",
+				params: {
+					boardname: this.$route.params.boardname,
+				},
+				query: {
+					q: this.search_str,
+				},
+			});
+		},
+		gotoSearchBoard() {
+			this.$router.push({
+				name: "search",
+				query: {
+					q: this.search_str,
+					type: "board",
+				}
+			});
+		},
+		gotoSearchUser() {
+			this.$router.push({
+				name: "search",
+				query: {
+					q: this.search_str,
+					type: "user",
+				}
+			});
+		}
 	},
 	computed: {
 		realShow() {

@@ -43,10 +43,18 @@ const routes = [{
 			path: "/web/board/:boardname/reply/:aid",
 			name: "reply",
 			component: () => import("@/views/Reply.vue"),
+		}, {
+			path: "/web/board/:boardname/search",
+			name: "contentSearch",
+			component: () => import("@/views/Search.vue"),
 		}]
 	}, {
 		path: "/web/settings",
 		component: () => import("@/views/Settings.vue"),
+	}, {
+		path: "/web/search",
+		name: "search",
+		component: () => import("@/views/Search.vue"),
 	}, {
 		path: "/web/submit",
 		component: () => import("@/views/SubmitWrapper.vue"),
