@@ -3,16 +3,16 @@
 	<SidebarSecList v-bind:_name="" v-bind:_sec_id="" v-bind:_icon=""/>
 -->
 <template>
-	<div class="accordion-item">
+	<div class="accordion-item border-0 bg-transparent">
 		<h2 class="accordion-header" @mouseover="doLoad">
-			<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" v-bind:data-bs-target="'#sidebar-collapse-' + _sec_id" aria-expanded="false" v-bind:aria-controls="'sidebar-collapse-' + _sec_id">
+			<button class="accordion-button collapsed bg-transparent" type="button" data-bs-toggle="collapse" v-bind:data-bs-target="'#sidebar-collapse-' + _sec_id" aria-expanded="false" v-bind:aria-controls="'sidebar-collapse-' + _sec_id">
 				<span class="sidebar-icon"><fa v-bind:icon="_icon" /></span> {{ _name }}
 			</button>
 		</h2>
 		<div v-bind:id="'sidebar-collapse-' + _sec_id" class="accordion-collapse collapse">
 			<div class="accordion-body">
 				<ul class="list-group list-group-flush">
-					<li class="list-group-item" v-for="board in boards" v-bind:key="board.name">
+					<li class="list-group-item border-0" v-for="board in boards" v-bind:key="board.name">
 						<PopoverBoardInfo :_boardname_zh="board.zh_name" :_boardname_en="board.name" />
 					</li>
 				</ul>

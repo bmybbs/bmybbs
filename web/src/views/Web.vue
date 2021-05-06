@@ -56,11 +56,6 @@
 							</router-link>
 						</li>
 						<li class="nav-item">
-							<router-link to="/web/follow" class="nav-link">
-								<span class="sidebar-icon"><fa icon="share-alt" /></span> 好友
-							</router-link >
-						</li>
-						<li class="nav-item">
 							<router-link to="/web/settings" class="nav-link">
 								<span class="sidebar-icon"><fa icon="sliders-h" /></span> 设置
 							</router-link>

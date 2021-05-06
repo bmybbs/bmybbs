@@ -1,6 +1,6 @@
 <template>
 	<div class="card border-bmy-blue1 mb-4" :class="{ 'unread-shadow': _unread > 0 }">
-		<div class="card-header bg-bmy-blue0 bg-gradient">
+		<div class="card-header bg-bmy-blue0 bg-gradient" @click="toggleAnsi">
 			<div class="d-flex">
 				<span class="fw-bold text-bmy-dark8">{{ title }}</span>
 				<BadgeArticleFlags :_accessed="_mark" />
@@ -11,7 +11,7 @@
 			</div>
 		</div>
 		<div class="card-body">
-			<div class="article" v-html="content" @click="toggleAnsi" ref="article"></div>
+			<div class="article" v-html="content" ref="article"></div>
 		</div>
 		<div class="card-footer bg-bmy-blue0">
 			<div class="action-container d-flex justify-content-between">

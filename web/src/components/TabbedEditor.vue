@@ -600,6 +600,15 @@ export default {
 	justify-content: space-between;
 }
 
+.nav-link {
+	color: var(--bs-bmy-dark6);
+}
+
+.nav-link.active {
+	color: var(--bs-bmy-dark8);
+	font-weight: 500;
+}
+
 .nav-link:hover {
 	cursor: pointer;
 }
