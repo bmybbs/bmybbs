@@ -21,7 +21,7 @@
 		"dompurify": "^2.2.8",
 		"file-icons-js": "github:websemantics/file-icons-js",
 		"marked": "^2.0.1",
-		"mathjax-full": "^3.1.2",
+		"mathjax-full": "^3.1.4",
 		"prismjs": "^1.23.0",
 		"qrcode": "^1.4.4",
 		"vue": "^3.0.11",
