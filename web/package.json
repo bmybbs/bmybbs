@@ -18,7 +18,7 @@
 		"bootstrap": "5.0.0",
 		"core-js": "^3.12.0",
 		"dayjs": "^1.9.6",
-		"dompurify": "^2.2.6",
+		"dompurify": "^2.2.8",
 		"file-icons-js": "github:websemantics/file-icons-js",
 		"marked": "^2.0.1",
 		"mathjax-full": "^3.1.2",
