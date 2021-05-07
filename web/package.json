@@ -24,14 +24,14 @@
 		"mathjax-full": "^3.1.2",
 		"prismjs": "^1.23.0",
 		"qrcode": "^1.4.4",
-		"vue": "^3.0.4",
+		"vue": "^3.0.11",
 		"vue-router": "^4.0.1"
 	},
 	"devDependencies": {
 		"@vue/cli-plugin-babel": "~4.5.0",
 		"@vue/cli-plugin-eslint": "~4.5.0",
 		"@vue/cli-service": "~4.5.0",
-		"@vue/compiler-sfc": "^3.0.4",
+		"@vue/compiler-sfc": "^3.0.11",
 		"@vue/eslint-config-prettier": "^6.0.0",
 		"babel-eslint": "^10.1.0",
 		"babel-plugin-prismjs": "^2.0.1",
