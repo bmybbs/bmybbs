@@ -1053,7 +1053,18 @@ static int remove_directory(const char *path) {
 	return r;
 }
 
-void ythtbbs_user_touchnew(const char *userid) {
+/**
+ * @brief 更新 FLUSH 文件
+ *
+ * 这个实现来自于 src/bbs/stuff.c，意图是在新用户注册后记录最新的
+ * 用户，并更新 FLUSH 文件时间，用于缓存对比判断。
+ *
+ * 这个函数并非多线程安全的，但是在系统运行环境不产生实质性的影响。
+ *
+ * TODO 后续判断是否有 FLUSH 的使用必要，因为在原有的缓存算法中有
+ * 一个短暂的数据不同步的窗口期。
+ */
+static void ythtbbs_user_touchnew(const char *userid) {
 	int fd;
 	char local_buf[128];
 
