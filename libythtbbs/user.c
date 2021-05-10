@@ -1097,6 +1097,8 @@ enum ythtbbs_register_status ythtbbs_user_create(const struct userec *user, int 
 
 	if (usernum != NULL)
 		*usernum = local_usernum;
+	ythtbbs_user_touchnew(user->userid);
+	ythtbbs_cache_UserTable_resolve();
 	return YTHTBBS_REGISTER_OK;
 }
 

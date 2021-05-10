@@ -94,7 +94,8 @@ void ythtbbs_cache_UserTable_resolve() {
 			shm_err(UCACHE_SHMKEY);
 	}
 
-	if (stat(FLUSH, &st) < 0) {
+	if (stat(MY_BBS_HOME "/" FLUSH, &st) < 0) {
+		memset(&st, 0, sizeof(struct stat));
 		st.st_mtime++;
 	}
 
@@ -107,6 +108,7 @@ void ythtbbs_cache_UserTable_resolve() {
 		shm_user_table->usersum = 0; // TODO;
 
 		sprintf(local_buf, "system reload ucache %d", shm_user_table->usersum);
+		newtrace(local_buf);
 		// TODO detach shm and reattach?
 	}
 	close(fd);
@@ -635,7 +637,7 @@ static int ythtbbs_cache_UserIDHashTable_insert(char *userid, int idx) {
 		// 记录已存在于 UserIDHashTable 中，则不处理
 		if (old_idx != idx) {
 			// 理应相等
-			snprintf(local_buf, sizeof(local_buf), "user_idx changed? %d --> %d", old_idx, idx);
+			snprintf(local_buf, sizeof(local_buf), "user_idx changed? %s: %d --> %d", userid, old_idx, idx);
 			newtrace(local_buf);
 		}
 

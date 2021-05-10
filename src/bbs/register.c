@@ -64,7 +64,6 @@ getnewuserid(struct userec *newuser)
 	prints("Ñ°ÕÒÐÂÕÊºÅÖÐ, ÇëÉÔ´ýÆ¬¿Ì...\n\r");
 	refresh();
 	ythtbbs_user_clean();
-	ythtbbs_user_touchnew(newuser->userid);
 
 	rc = ythtbbs_user_create(newuser, &i, &val);
 
