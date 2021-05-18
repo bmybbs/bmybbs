@@ -42,6 +42,6 @@
 		"prettier": "^2.3.0",
 		"sass": "^1.32.12",
 		"sass-loader": "^10.1.0",
-		"webpack-bundle-analyzer": "^4.4.1"
+		"webpack-bundle-analyzer": "^4.4.2"
 	}
 }
