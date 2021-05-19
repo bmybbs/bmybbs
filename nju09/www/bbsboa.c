@@ -303,7 +303,7 @@ static int showboardlist(struct boardmem *(data[]), int total, char *secstr, con
 		"<TD class=tdtitle>文章数</TD>\n"
 		"<TD class=tdtitle><a href=\"boa?secstr=%s&sortmode=2\" class=linktheme>人气</a></TD>\n"
 		"<TD class=tdtitle><a href=\"boa?secstr=%s&sortmode=3\" class=linktheme>在线</a></TD>\n"
-		"</TR>\n", secstr, secstr, secstr);
+		"</TR>\n", sec->basestr, sec->basestr, sec->basestr);
 	brc_initial(currentuser.userid, NULL);
 	printf("<tr>\n");
 
