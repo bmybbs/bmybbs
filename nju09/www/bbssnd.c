@@ -86,7 +86,6 @@ bbssnd_main()
 	currentuser.signature = sig;
 	content = getparm("text");
 	content0 = strdup(content);
-	printf("text=%s\n", content);
 	//http_fatal("just for test");
 	if (usemath && bmy_article_include_math(content))
 		mark |= FH_MATH;
@@ -193,5 +192,6 @@ bbssnd_main()
 		++i;
 	}
 	// ·¢ËÍ @ ÌáĞÑ½áÊø
+	free(content0);
 	return 0;
 }
