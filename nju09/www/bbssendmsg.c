@@ -34,7 +34,7 @@ bbssendmsg_main()
 		printf("<form name=form0 action=bbssendmsg method=post>"
 				"<input type=hidden name=destpid value=%d>"
 				"送讯息给: <input name=destid maxlength=12 value='%s' size=12><br>"
-				"讯息内容:\n<br>", destpid, destid);
+				"讯息内容:\n<br>", destpid, nohtml(destid));
 		printf("<table><tr><td><textarea name=msg rows=5 cols=76>"
 				"%s" "</textarea></td><td>", nohtml(void1(msg)));
 		print_emote_table("form0", "msg");
