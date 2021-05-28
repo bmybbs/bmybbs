@@ -83,7 +83,6 @@ NJUAPI int bbsindex_main(void);
 NJUAPI int bbslform_main(void);
 NJUAPI int regreq_main(void);
 NJUAPI int bbsselstyle_main(void);
-NJUAPI int bbscon1_main(void);
 NJUAPI int bbsattach_main(void);
 NJUAPI int bbskick_main(void);
 NJUAPI int bbsincon_main(void);

@@ -93,7 +93,6 @@ set(SRC
 	regreq.c
 
 	bbsselstyle.c
-	bbscon1.c
 	bbsattach.c
 	bbskick.c
 
