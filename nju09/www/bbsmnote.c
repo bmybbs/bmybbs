@@ -17,7 +17,8 @@ bbsmnote_main()
 		http_fatal("匆匆过客，请先登录");
 	changemode(EDIT);
 	ytht_strsncpy(board, getparm("board"), sizeof(board));
-	x = getboard(board);
+	if ((x = getboard(board)) == NULL)
+		http_fatal("错误的版面");
 	mode = atoi(getparm("mode"));
 	if (!has_BM_perm(&currentuser, x))
 		http_fatal("你无权进行本操作");
