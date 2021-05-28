@@ -31,7 +31,6 @@ bbsdenyadd_main()
 		http_fatal("错误的使用者帐号");
 	if (!has_post_perm(x, x1))
 		http_fatal("这个人本来就没有post权");
-	strcpy(userid, x->userid);
 	if (!(currentuser.userlevel & PERM_SYSOP) && (dt > 20))
 		http_fatal("封禁时间大于20天,超过了权限,若需要,请联系站长");
 	if (dt < 1 || dt > 99)
@@ -39,19 +38,19 @@ bbsdenyadd_main()
 	if (expbuf[0] == 0)
 		http_fatal("请输入封人原因");
 	for (i = 0; i < denynum; i++)
-		if (!strcasecmp(denyuser[i].id, userid))
+		if (!strcasecmp(denyuser[i].id, x->userid))
 			http_fatal("此用户已经被封");
 	if (denynum > 40)
 		http_fatal("太多人被封了");
-	ytht_strsncpy(denyuser[denynum].id, userid, 13);
+	ytht_strsncpy(denyuser[denynum].id, x->userid, 13);
 	ytht_strsncpy(denyuser[denynum].exp, expbuf, 30);
 	denyuser[denynum].free_time = now_t + dt * 86400;
 	denynum++;
 	savedenyuser(x1->header.filename);
-	printf("封禁 %s 成功<br>\n", userid);
-	snprintf(buf, 256, "%s deny %s %s", currentuser.userid, x1->header.filename, userid);
+	printf("封禁 %s 成功<br>\n", x->userid);
+	snprintf(buf, 256, "%s deny %s %s", currentuser.userid, x1->header.filename, x->userid);
 	newtrace(buf);
-	inform(x1->header.filename, userid, expbuf, dt);
+	inform(x1->header.filename, x->userid, expbuf, dt);
 	printf("[<a href=bbsdenyall?board=%s>返回被封帐号名单</a>]", x1->header.filename);
 	http_quit();
 	return 0;
