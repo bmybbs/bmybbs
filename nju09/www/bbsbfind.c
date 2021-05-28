@@ -20,8 +20,13 @@ bbsbfind_main()
 	ytht_strsncpy(board, getparm("B"), sizeof(board));
 	if (!board[0])
 		ytht_strsncpy(board, getparm("board"), sizeof(board));
-	if (type == 0)
-		return show_form(board);
+	if (type == 0) {
+		if ((brd = getboard(board)) != NULL) {
+			return show_form(brd->header.filename);
+		} else {
+			http_fatal("错误的讨论区");
+		}
+	}
 	// 一般搜索
 	else if (type == 1)
 	{
