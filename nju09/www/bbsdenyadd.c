@@ -23,10 +23,10 @@ bbsdenyadd_main()
 		http_fatal("错误的讨论区");
 	if (!has_BM_perm(&currentuser, x1))
 		http_fatal("你无权进行本操作");
-	loaddenyuser(board);
+	loaddenyuser(x1->header.filename);
 	userid = getparm("userid");
 	if (userid[0] == 0)
-		return show_form(board);
+		return show_form(x1->header.filename);
 	if ((x = getuser(userid)) == 0)
 		http_fatal("错误的使用者帐号");
 	if (!has_post_perm(x, x1))
@@ -47,12 +47,12 @@ bbsdenyadd_main()
 	ytht_strsncpy(denyuser[denynum].exp, expbuf, 30);
 	denyuser[denynum].free_time = now_t + dt * 86400;
 	denynum++;
-	savedenyuser(board);
+	savedenyuser(x1->header.filename);
 	printf("封禁 %s 成功<br>\n", userid);
-	snprintf(buf, 256, "%s deny %s %s", currentuser.userid, board, userid);
+	snprintf(buf, 256, "%s deny %s %s", currentuser.userid, x1->header.filename, userid);
 	newtrace(buf);
-	inform(board, userid, expbuf, dt);
-	printf("[<a href=bbsdenyall?board=%s>返回被封帐号名单</a>]", board);
+	inform(x1->header.filename, userid, expbuf, dt);
+	printf("[<a href=bbsdenyall?board=%s>返回被封帐号名单</a>]", x1->header.filename);
 	http_quit();
 	return 0;
 }
