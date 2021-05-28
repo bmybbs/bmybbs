@@ -178,7 +178,8 @@ static int read_submit() {
 		}
 	}
 	count = ythtbbs_mybrd_save(currentuser.userid, &g_GoodBrd, nju09_mybrd_has_read_perm);
-	saveuservalue(currentuser.userid, "mybrdmode", getparm("mybrdmode"));
+	char *mybrdmode = getparm("mybrdmode");
+	saveuservalue(currentuser.userid, "mybrdmode", (mybrdmode != NULL && mybrdmode[0] == '0') ? "0" : "1");
 	printf("<script>top.f2.location='bbsleft?t=%ld'</script>修改预定讨论区成功，您现在一共预定了%d个讨论区:<hr>\n", now_t, count);
 	printf("[<a href='javascript:history.go(-2)'>返回</a>]");
 	return 0;
