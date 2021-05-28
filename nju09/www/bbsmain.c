@@ -104,7 +104,6 @@ struct cgi_applet applets[] = {
 	{bbscon1_main, {"bbscon1", "c1", NULL}, 0L, 0L, 0},
 	{bbsattach_main, {"attach", NULL}, 0L, 0L, 0},
 	{bbskick_main, {"kick", NULL}, 0L, 0L, 0},
-	{bbsshowfile_main, {"bbshowfile", "showfile", NULL}, 0L, 0L, 0},
 	{bbsincon_main, {"boards", NULL}, 0L, 0L, 0},
 	{bbssetscript_main, {"setscript",NULL}, 0L, 0L, 0},
 	{bbsucss_main,{"bbsucss",NULL}, 0L, 0L, 0},
