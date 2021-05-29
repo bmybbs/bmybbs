@@ -148,7 +148,10 @@ bbsbfind_main()
 			http_fatal("´íÎóµÄÌÖÂÛÇø");
 
 		char essential_path[80]="\0";
-		strncpy(title,getparm("title"),60);
+		ytht_strsncpy(title, getparm("title"), sizeof(title));
+		for (char *ptr = title; *ptr; ptr++) {
+			if (strchr(BADPOPENCHARS, *ptr)) *ptr = ' ';
+		}
 		fp=fopen("0Announce/.Search","r");
 		char linebuf[512];
 		char *tempbuf = NULL;
