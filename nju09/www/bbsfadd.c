@@ -19,8 +19,8 @@ bbsfadd_main()
 		if (of.exp[0])
 			printf("<font color=red>请输入好友说明</font>");
 		printf("<form action=bbsfadd>\n");
-		printf("请输入欲加入的好友帐号: <input type=text name=userid value='%s'><br>\n", (of.id[0] == 0) ? "" : of.id);
-		printf("请输入对这个好友的说明: <input type=text name=exp value='%s'>\n", (of.exp[0] == 0) ? "" : of.exp);
+		printf("请输入欲加入的好友帐号: <input type=text name=userid value='%s'><br>\n", (of.id[0] == 0) ? "" : nohtml(of.id));
+		printf("请输入对这个好友的说明: <input type=text name=exp value='%s'>\n", (of.exp[0] == 0) ? "" : nohtml(of.exp));
 		printf("<br><input type=submit value=确定></form>\n");
 		http_quit();
 	}

@@ -45,6 +45,9 @@ struct fileheader_utf *bmy_search_board(const char *board, const char *whattosea
 				}
 			}
 			snprintf(cmd, cmdlen, "%s %s \"%s\"", SEARCH_CMD, board, dup_whattosearch);
+			for (char *ptr = cmd; *ptr; ptr++) {
+				if (strchr(BADPOPENCHARS, *ptr)) *ptr = ' ';
+			}
 			if ((fp = popen(cmd, "r")) != NULL) {
 				while ((bufread = fread(buf, 1, sizeof(buf), fp)) != 0) {
 					if ((ptr = realloc(chunk.memory, chunk.size + bufread + 1)) != NULL) {

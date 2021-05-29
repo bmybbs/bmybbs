@@ -20,8 +20,13 @@ bbsbfind_main()
 	ytht_strsncpy(board, getparm("B"), sizeof(board));
 	if (!board[0])
 		ytht_strsncpy(board, getparm("board"), sizeof(board));
-	if (type == 0)
-		return show_form(board);
+	if (type == 0) {
+		if ((brd = getboard(board)) != NULL) {
+			return show_form(brd->header.filename);
+		} else {
+			http_fatal("错误的讨论区");
+		}
+	}
 	// 一般搜索
 	else if (type == 1)
 	{
@@ -46,11 +51,11 @@ bbsbfind_main()
 	brd = getboard(board);
 	if (brd == 0)
 		http_fatal("错误的讨论区");
-	sprintf(dir, "boards/%s/.DIR", board);
+	sprintf(dir, "boards/%s/.DIR", brd->header.filename);
 	fp = fopen(dir, "r");
 	if (fp == 0)
 		http_fatal("讨论区错误或没有目前文章");
-	printf("查找讨论区'%s'内, 标题含: '%s' ", board, nohtml(title));
+	printf("查找讨论区'%s'内, 标题含: '%s' ", brd->header.filename, nohtml(title));
 
 	if (title2[0])
 		printf("和 '%s' ", nohtml(title2));
@@ -95,7 +100,7 @@ bbsbfind_main()
 		printf("<td>%s", flag_str(x.accessed));
 		printf("<td>%s", userid_str(x.owner));
 		printf("<td>%12.12s", 4 + ytht_ctime(x.filetime));
-		printf("<td><a href=con?B=%s&F=%s&N=%d&T=%ld>%40.40s </a>\n", board,
+		printf("<td><a href=con?B=%s&F=%s&N=%d&T=%ld>%40.40s </a>\n", brd->header.filename,
 				fh2fname(&x), num, feditmark(x), x.title);
 		if (total >= 999)
 			break;
@@ -114,17 +119,17 @@ bbsbfind_main()
 		if (brd == 0)
 			http_fatal("错误的讨论区");
 
-		struct fileheader_utf *articles = bmy_search_board_gbk(board, content, &search_size);
+		struct fileheader_utf *articles = bmy_search_board_gbk(brd->header.filename, content, &search_size);
 		if (articles == NULL)
 			http_fatal("检索程序出错，或者无法搜索到相关内容");
 
-		printf("查找讨论区'%s'内, 正文含: '%s' 的所有文章", board, nohtml(content));
+		printf("查找讨论区'%s'内, 正文含: '%s' 的所有文章", brd->header.filename, nohtml(content));
 		printf("<table>\n");
 		printf("<tr><td>作者<td>日期<td>标题\n");
 		for (i = 0; i < search_size; i++) {
 			// 这里偷懒使用 content，200 字节应该足够容纳 120 字节转换后的编码内容
 			u2g(articles[i].title, strlen(articles[i].title), content, sizeof(content));
-			printf("<tr><td><a href=qry?U=\"%s\">%s</a></td><td>%s</td><td><a href=\"con?B=%s&F=M.%ld.A\">%40.40s</a></td></tr>", articles[i].owner, articles[i].owner, ytht_ctime(articles[i].filetime), board, articles[i].filetime, content);
+			printf("<tr><td><a href=qry?U=\"%s\">%s</a></td><td>%s</td><td><a href=\"con?B=%s&F=M.%ld.A\">%40.40s</a></td></tr>", articles[i].owner, articles[i].owner, ytht_ctime(articles[i].filetime), brd->header.filename, articles[i].filetime, content);
 			total++;
 			if (total >= 999)
 				break;
@@ -143,14 +148,17 @@ bbsbfind_main()
 			http_fatal("错误的讨论区");
 
 		char essential_path[80]="\0";
-		strncpy(title,getparm("title"),60);
+		ytht_strsncpy(title, getparm("title"), sizeof(title));
+		for (char *ptr = title; *ptr; ptr++) {
+			if (strchr(BADPOPENCHARS, *ptr)) *ptr = ' ';
+		}
 		fp=fopen("0Announce/.Search","r");
 		char linebuf[512];
 		char *tempbuf = NULL;
 		int flag=0;
-		int brdlen=strlen(board);
+		int brdlen=strlen(brd->header.filename);
 		while(fgets(linebuf,512,fp)!=NULL) {
-			if(strncmp(linebuf,board,brdlen)==0)
+			if(strncmp(linebuf,brd->header.filename,brdlen)==0)
 			{
 				linebuf[sizeof(linebuf) - 1] = 0;
 				tempbuf=strstr(linebuf,": ")+2;
@@ -163,11 +171,11 @@ bbsbfind_main()
 			http_fatal("错误的讨论区");
 
 		ytht_strsncpy(essential_path, tempbuf, sizeof(essential_path));
-		printf("查找讨论区'%s'的精华区内, 标题含: '%s' 的所有文章", board, nohtml(title));
+		printf("查找讨论区'%s'的精华区内, 标题含: '%s' 的所有文章", brd->header.filename, nohtml(title));
 		printf("<table>\n");
 		printf("<tr><td width=80px>编号<td width=350px>标题<td width=200px>存放路径\n");
 		char searchcmd[256];
-		sprintf(searchcmd,MY_BBS_HOME "/bin/esearch %s %s",essential_path,title);
+		sprintf(searchcmd,MY_BBS_HOME "/bin/esearch %s \"%s\"",essential_path,title);
 		fp = popen(searchcmd,"r");
 		if (fp == NULL)
 			http_fatal("无法搜索");

@@ -122,7 +122,7 @@ static int search(char *id, char *pat, char *pat2, char *pat3, int dt) {
 	int sum = 0;
 	time_t starttime;
 	printf("%s -- 站内文章查询结果 <br>\n", BBSNAME);
-	printf("作者: %s ", id);
+	printf("作者: %s ", userid_str(id));
 	printf("标题含有: '%s' ", nohtml(pat));
 	if (pat2[0])
 		printf("和 '%s' ", nohtml(pat2));

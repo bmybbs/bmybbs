@@ -10,10 +10,10 @@ static void printkickitem(const struct user_info *x) {
 	printf("<td><a href=bbsqry?userid=%s>%s</a></td>", x->userid, x->userid);
 	printf("<td><a href=bbsqry?userid=%s>%s</a></td>", x->userid, x->userid);
 	printf("<td><font class=c%d>%20.20s</font></td>", x->pid == 1 ? 35 : 32, x->from);
-	if(x -> mode != USERDF4 )
-	printf("<td>%s</td>", x->invisible ? "隐身中..." : ModeType(x->mode));
+	if(x->mode != USERDF4)
+		printf("<td>%s</td>", x->invisible ? "隐身中..." : ModeType(x->mode));
 	else
-	printf("<td>%s</td>", x->invisible ? "隐身中..." : x->user_state_temp);
+		printf("<td>%s</td>", x->invisible ? "隐身中..." : x->user_state_temp);
 	if (dt == 0) {
 		printf("<td></td>\n");
 	} else {

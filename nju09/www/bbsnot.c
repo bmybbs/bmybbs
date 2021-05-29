@@ -8,7 +8,7 @@ bbsnot_main()
 	struct boardmem *x;
 	int mode;
 	size_t i;
-	
+
 	html_header(1);
 	check_msg();
 	changemode(READING);
@@ -34,7 +34,7 @@ bbsnot_main()
 		sprintf(notestr, "°æÃæ¼ò½é");
 		break;
 	}
-	
+
 	printf("<center>\n");
 	printf("%s -- %s [ÌÖÂÛÇø: %s]<hr>\n", notestr, BBSNAME, board);
 	fp = fopen(filename, "r");

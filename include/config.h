@@ -257,5 +257,8 @@ You must also set "EightBitMode=pass8" in /etc/sendmail.cf
 #define ZAPPED  0x1           /* For boards...tells if board is Zapped */
 
 #define GOOD_BRD_NUM    40      // 最多有 GOOD_BRD_NUM 个个人定制版面
+
+// POPEN 要防止 shell 注入
+#define BADPOPENCHARS "\"|<>\\;/?~-`%%^()[]{}!&*'"
 #endif  /* BBS_CONFIG */
 

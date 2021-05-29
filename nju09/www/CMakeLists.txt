@@ -93,14 +93,9 @@ set(SRC
 	regreq.c
 
 	bbsselstyle.c
-	bbscon1.c
 	bbsattach.c
 	bbskick.c
 
-	bbsshowfile.c
-	bbst.c
-	bbsdt.c
-	bbslt.c
 	bbsincon.c
 	bbssetscript.c
 

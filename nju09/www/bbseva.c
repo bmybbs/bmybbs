@@ -26,7 +26,7 @@ bbseva_main()
 	if (star == 1)
 		star++;
 	printf("<center>%s -- 评价文章 [使用者: %s]<hr>\n", BBSNAME,
-	       currentuser.userid);
+			currentuser.userid);
 	printf("<table><td>");
 	do_eva(board, file, star);
 	printf("</td></table>");
@@ -48,9 +48,7 @@ set_eva(char *board, char *file, int star, int result[2], char *buf)
 		return 0;
 	}
 	//oldstar = 0/1都认为是未评价状态
-	if (bbseva_qset
-	    (utmpent, board, file, currentuser.userid, star, &oldstar, &count,
-	     &avg) < 0) {
+	if (bbseva_qset(utmpent, board, file, currentuser.userid, star, &oldstar, &count, &avg) < 0) {
 		sprintf(buf, "对文章的评价未能改变");
 		return 0;
 	}
@@ -91,8 +89,7 @@ do_eva(char *board, char *file, int star)
 			if (set_eva(board, file, star, result, dir)) {
 				f.staravg50 = result[0];
 				f.hasvoted = result[1];
-				fseek(fp, -1 * sizeof (struct fileheader),
-				      SEEK_CUR);
+				fseek(fp, -1 * sizeof (struct fileheader), SEEK_CUR);
 				fwrite(&f, sizeof (struct fileheader), 1, fp);
 			}
 			fclose(fp);
