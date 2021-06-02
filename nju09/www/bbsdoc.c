@@ -48,7 +48,7 @@ void nosuchboard(char *board, char *cginame) {
 	ythtbbs_cache_Board_foreach_v(nosuchboard_callback, board, cginame, &j, buf, sizeof(buf));
 	printf("</table>");
 	if (!j)
-		printf("喔？我真的帮你找了，你那个讨论区一定输入错了, 没有叫做 \"%s\" 的讨论区啊", board);
+		printf("喔？我真的帮你找了，你那个讨论区一定输入错了, 没有叫做 \"%s\" 的讨论区啊", nohtml(board));
 	if (j == 1)
 		redirect(buf);
 	printf("<p><a href=javascript:history.go(-1)>快速返回</a>");

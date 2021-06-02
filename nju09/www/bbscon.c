@@ -66,7 +66,7 @@ void fprintbinaryattachlink(FILE * fp, int ano, char *attachname, int pos, int s
 	struct boardmem *x;
 
 	//check read_perm for guest, refer to has_read_perm()
-	board = getparm2("B", "board");
+	board = nohtml(getparm2("B", "board"));
 	x = getboard(board);
 	if (x && !x->header.clubnum && !x->header.level) {
 		ptr = "/" SMAGIC "/";
@@ -88,15 +88,13 @@ void fprintbinaryattachlink(FILE * fp, int ano, char *attachname, int pos, int s
 		if (w_info->att_mode)
 			snprintf(link, sizeof (link),
 				"%sbbscon/%s?B=%s&F=%s&attachpos=%d&attachname=/%s",
-				ptr, attachname, board, getparm2("F", "file"),
-				pos, attachname);
+				ptr, attachname, board, nohtml(getparm2("F", "file")), pos, attachname);
 		else
-			snprintf(link, sizeof (link),"/attach/%s/%s/%d/%s", board, getparm2("F", "file"), pos, attachname);
+			snprintf(link, sizeof (link),"/attach/%s/%s/%d/%s", board, nohtml(getparm2("F", "file")), pos, attachname);
 	} else
 		snprintf(link, sizeof (link),
-			"bbscon/%s?%s&attachpos=%d&attachname=/%s",
-			attachname, getsenv("QUERY_STRING"), pos,
-			attachname);
+			"bbscon/%s?B=%s&F=%s&attachpos=%d&attachname=/%s",
+			attachname, board, nohtml(getparm2("F", "file")), pos, attachname);
 
 	if ((ext = strrchr(attachname, '.')) != NULL) {
 		if (!strcasecmp(ext, ".bmp") || !strcasecmp(ext, ".jpg")
@@ -113,7 +111,7 @@ void fprintbinaryattachlink(FILE * fp, int ano, char *attachname, int pos, int s
 	switch (pic) {
 	case 1:
 		fprintf(fp, "%d ¸½Í¼: <a href='%s'>%s</a> (%d ×Ö½Ú)<br>"
-			"<IMG style=\" max-width:800px; width: expression(this.width > 800 ? 800: true); height:auto\" SRC='%s'  border=0/></a>",
+			"<IMG style=\" max-width:800px; width: expression(this.width > 800 ? 800: true); height:auto\" SRC='%s'  border=0/>",
 			ano, link, attachname, size, link);
 		break;
 	case 2:
@@ -288,6 +286,12 @@ bbscon_main()
 	ytht_strsncpy(file, getparm("F"), sizeof(file));
 	if (!file[0])
 		ytht_strsncpy(file, getparm("file"), sizeof(file));
+	for (ptr = file; *ptr; ptr++) {
+		if (strchr("MGTA.0123456789", *ptr) == NULL) {
+			*ptr = 0;
+			break;
+		}
+	}
 	num = atoi((ptr = getparm("N"))) - 1;
 	if (!ptr[0])
 		num = atoi(getparm("num")) - 1;
