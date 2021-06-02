@@ -18,7 +18,7 @@ bbsclear_main()
 	brc_initial(currentuser.userid, board);
 	brc_clear();
 	brc_update(currentuser.userid);
-	sprintf(buf, "%s%s&S=%s", showByDefMode(), board, start);
+	sprintf(buf, "%s%s&S=%d", showByDefMode(), board, atoi(start));
 	refreshto(buf, 0);
 	http_quit();
 	return 0;
