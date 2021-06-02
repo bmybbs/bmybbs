@@ -286,6 +286,12 @@ bbscon_main()
 	ytht_strsncpy(file, getparm("F"), sizeof(file));
 	if (!file[0])
 		ytht_strsncpy(file, getparm("file"), sizeof(file));
+	for (ptr = file; *ptr; ptr++) {
+		if (strchr("MGTA.0123456789", *ptr) == NULL) {
+			*ptr = 0;
+			break;
+		}
+	}
 	num = atoi((ptr = getparm("N"))) - 1;
 	if (!ptr[0])
 		num = atoi(getparm("num")) - 1;
