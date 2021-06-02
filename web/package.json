@@ -15,7 +15,7 @@
 		"@fortawesome/vue-fontawesome": "^3.0.0-4",
 		"@meforma/vue-toaster": "^1.1.1",
 		"@popperjs/core": "^2.9.2",
-		"bootstrap": "5.0.0",
+		"bootstrap": "5.0.1",
 		"core-js": "^3.12.1",
 		"dayjs": "^1.9.6",
 		"dompurify": "^2.2.8",
