@@ -20,7 +20,7 @@
 		"dayjs": "^1.10.6",
 		"dompurify": "^2.2.8",
 		"file-icons-js": "github:websemantics/file-icons-js",
-		"marked": "^2.0.7",
+		"marked": "^4.2.12",
 		"mathjax-full": "^3.1.4",
 		"prismjs": "^1.23.0",
 		"qrcode": "^1.4.4",
