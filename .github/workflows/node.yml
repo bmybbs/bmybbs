@@ -20,20 +20,23 @@ jobs:
   build:
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: true
 
       - name: Use Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
-          node-version: '14.x'
+          node-version: '18.x'
 
-      - name: Build deps
+      - name: Build content-parser
         working-directory: content-parser
         run: (npm install && npm run build && rm .eslintrc.json)
 
+      - name: Install deps
+        run: yarn --frozen-lockfile
+
       - name: Build front-end
         working-directory: web
-        run: (npm install && npm run build)
+        run: npm run build
 

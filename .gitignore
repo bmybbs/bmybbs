@@ -22,3 +22,7 @@ nju09/html/css
 # ln -s /path/to/cloned/api/folder api-local
 api-local
 
+# nodejs
+node_modules/
+yarn-error.log
+
