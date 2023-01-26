@@ -11,7 +11,7 @@
 		"@bmybbs/bmybbs-content-parser": "file:../content-parser",
 		"@fortawesome/fontawesome-svg-core": "^1.2.32",
 		"@fortawesome/free-regular-svg-icons": "^5.15.2",
-		"@fortawesome/free-solid-svg-icons": "^5.15.1",
+		"@fortawesome/free-solid-svg-icons": "^6.2.1",
 		"@fortawesome/vue-fontawesome": "^3.0.0-4",
 		"@meforma/vue-toaster": "^1.1.1",
 		"@popperjs/core": "^2.9.2",
