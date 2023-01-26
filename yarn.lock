@@ -3355,9 +3355,10 @@ file-entry-cache@^6.0.1:
   dependencies:
     flat-cache "^3.0.4"
 
-"file-icons-js@github:websemantics/file-icons-js":
+file-icons-js@^1.1.0:
   version "1.1.0"
-  resolved "git+ssh://git@github.com/websemantics/file-icons-js.git#8b397223dc14fa57600f1b06c787dfd2107c4449"
+  resolved "https://registry.yarnpkg.com/file-icons-js/-/file-icons-js-1.1.0.tgz#da5e0679a58ab661abf9ec6c2a47c5f14f638ab6"
+  integrity sha512-EwR5RJoNIp5Wnzc+AF1oyBYZhOqPuPm0QHzfCaeh5KJpLB5lWIsxswiAwj3m8lIj7ddBzYBJDDnIr6IVrRCy8Q==
 
 fill-range@^7.0.1:
   version "7.0.1"
