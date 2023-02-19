@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
-
+import prismjsOption from "./prismjs.config.js";
+import { BundlePrismjs } from "rollup-plugin-prismjs"
 import path from "path";
 
 import fs from "fs";
@@ -19,6 +20,7 @@ const PROXY_CONFIG = fs.readFileSync(proxy_config_file, "utf8").trim();
 export default defineConfig({
 	plugins: [
 		vue(),
+		BundlePrismjs(prismjsOption),
 	],
 	resolve: {
 		alias: {
