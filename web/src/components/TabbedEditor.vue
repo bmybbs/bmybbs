@@ -182,7 +182,7 @@ import {
 import { readableSize } from "@bmybbs/bmybbs-content-parser/dist/utils.js"
 import bmyParser from "@bmybbs/bmybbs-content-parser"
 import "@/assets/article.css"
-import Prism from "prismjs"
+import { Prism } from "@/plugins/prismjs.js"
 import "@/plugins/mathjax.js"
 
 const UPLOAD_ERROR_MSG = {

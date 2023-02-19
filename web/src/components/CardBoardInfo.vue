@@ -66,7 +66,7 @@
 
 <script>
 import DOMPurify from "dompurify";
-import marked from "marked";
+import { marked } from "marked";
 import { BMYClient } from "@/lib/BMYClient.js"
 import { BMY_EC } from "@/lib/BMYConstants.js"
 import BadgeKeywords from "./BadgeKeywords.vue"

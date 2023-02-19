@@ -3,6 +3,7 @@ node_modules
 /dist
 
 vue.config.js
+proxy.config.txt
 # local env files
 .env.local
 .env.*.local

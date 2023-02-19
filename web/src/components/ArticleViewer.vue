@@ -39,7 +39,7 @@
 import { defineAsyncComponent } from "vue"
 import { BMYClient } from "@/lib/BMYClient.js"
 import bmyParser from "@bmybbs/bmybbs-content-parser"
-import Prism from "prismjs"
+import { Prism } from "@/plugins/prismjs.js"
 import { BMY_EC, BMY_FILE_HEADER } from "@/lib/BMYConstants.js"
 import { generateContent, getErrorMessage } from "@/lib/BMYUtils.js"
 import "@/plugins/mathjax.js"
