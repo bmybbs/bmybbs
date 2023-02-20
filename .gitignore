@@ -2,6 +2,7 @@
 tags
 cscope*
 .clangd/
+.cache/
 compile_commands.json
 .idea/
 cmake-build-debug/
