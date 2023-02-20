@@ -18,7 +18,7 @@
 		"@popperjs/core": "^2.9.2",
 		"bootstrap": "5.2.3",
 		"dayjs": "^1.10.6",
-		"dompurify": "^2.2.8",
+		"dompurify": "^3.0.0",
 		"file-icons-js": "^1.1.0",
 		"marked": "^4.2.12",
 		"mathjax-full": "^3.1.4",
