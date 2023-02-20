@@ -7,15 +7,16 @@ import path from "path";
 import fs from "fs";
 const proxy_config_file = path.resolve(__dirname, "./proxy.config.txt");
 
+let PROXY_CONFIG;
 if (!fs.existsSync(proxy_config_file)) {
-	console.error("ERROR: Proxy config file doesn't exist!");
-	console.error("       To create this config file, here's an example");
-	console.error("       echo 'http://ip:port' > /path/to/web/.proxy.txt");
-	console.error("       where bmyapi listens on ip:port");
-	process.exit();
+	console.warn("ERROR: Proxy config file doesn't exist, will use the main site as backend");
+	console.warn("       To create this config file, here's an example");
+	console.warn("       echo 'http://ip:port' > /path/to/web/.proxy.txt");
+	console.warn("       where bmyapi listens on ip:port");
+	PROXY_CONFIG = "https://bbs.xjtu.edu.cn";
+} else {
+	PROXY_CONFIG = fs.readFileSync(proxy_config_file, "utf8").trim();
 }
-
-const PROXY_CONFIG = fs.readFileSync(proxy_config_file, "utf8").trim();
 
 export default defineConfig({
 	plugins: [
