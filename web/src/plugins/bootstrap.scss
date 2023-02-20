@@ -21,6 +21,8 @@ $custom-font-sizes: (
 $theme-colors: map-merge($theme-colors, $custom-colors);
 $font-sizes: map-merge($font-sizes, $custom-font-sizes);
 
+@import "bootstrap/scss/maps";
+
 @import "bootstrap/scss/mixins";
 @import "bootstrap/scss/utilities";
 
