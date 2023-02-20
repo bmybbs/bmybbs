@@ -9,7 +9,7 @@
 		"lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src"
 	},
 	"dependencies": {
-		"@bmybbs/bmybbs-content-parser": "file:../content-parser",
+		"@bmybbs/bmybbs-content-parser": "^0.3.4",
 		"@fortawesome/fontawesome-svg-core": "^6.3.0",
 		"@fortawesome/free-regular-svg-icons": "^6.3.0",
 		"@fortawesome/free-solid-svg-icons": "^6.3.0",
