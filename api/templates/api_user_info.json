@@ -1,0 +1,9 @@
+{
+	"errcode":0,
+	"User": {
+		"UserID":"<% UserID %>",
+		"UserNickName":"<% UserNickName %>",
+		"LoginCounts":<% LoginCounts %>,
+		"PostCounts":<% PostCounts %>
+	}
+}
