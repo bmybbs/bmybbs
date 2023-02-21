@@ -29,10 +29,6 @@ jobs:
         with:
           node-version: '18.x'
 
-      - name: Build content-parser
-        working-directory: content-parser
-        run: (npm install && npm run build && rm .eslintrc.json)
-
       - name: Install deps
         run: yarn --frozen-lockfile
 

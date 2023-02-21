@@ -1,0 +1,7 @@
+{
+	"errcode":0,
+	"userid": "<% userid %>",
+	"sessid": "<% sessid %>",
+	"token": "<% token %>"
+}
+
