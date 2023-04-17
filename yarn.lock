@@ -12,9 +12,6 @@
   resolved "https://registry.yarnpkg.com/@bmybbs/bmybbs-content-parser/-/bmybbs-content-parser-0.3.4.tgz#712509cbd6592d176e02516a5c4b7f7ffccaeafb"
   integrity sha512-TlC0dVwr1+gtpMdtBbVAQicJB1IvABNGD+8nXPz9LXDKXtM7x0BSf74+crZCcCgsxlRDcv6xgcfZz1DpiWzlcQ==
 
-"@bmybbs/bmybbs-content-parser@file:content-parser":
-  version "0.3.1"
-
 "@esbuild/android-arm64@0.16.17":
   version "0.16.17"
   resolved "https://registry.yarnpkg.com/@esbuild/android-arm64/-/android-arm64-0.16.17.tgz#cf91e86df127aa3d141744edafcba0abdc577d23"
@@ -602,10 +599,10 @@ doctrine@^3.0.0:
   dependencies:
     esutils "^2.0.2"
 
-dompurify@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/dompurify/-/dompurify-3.0.0.tgz#6adc6f918376d93419ed1ee35811850680027cba"
-  integrity sha512-0g/yr2IJn4nTbxwL785YxS7/AvvgGFJw6LLWP+BzWzB1+BYOqPUT9Hy0rXrZh5HLdHnxH72aDdzvC9SdTjsuaA==
+dompurify@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/dompurify/-/dompurify-3.0.2.tgz#bc4c7c011c825e7704341a285461d8d407d9429a"
+  integrity sha512-B8c6JdiEpxAKnd8Dm++QQxJL4lfuc757scZtcapj6qjTjrQzyq5iAyznLKVvK+77eYNiFblHBlt7MM0fOeqoKw==
 
 emoji-regex@^8.0.0:
   version "8.0.0"
