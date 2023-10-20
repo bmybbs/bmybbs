@@ -8,7 +8,7 @@ checkfile(char *fn, int maxsz)
 {
 	char path[456];
 	int sz;
-	sprintf(path, HTMPATH "%s", fn);
+	snprintf(path, sizeof(path), HTMPATH "%s", fn);
 	sz = file_size(path);
 	if (sz < 100 || sz > maxsz)
 		return -1;
@@ -41,7 +41,8 @@ void loginwindow()
 			"/bbslogin?id=guest&t='+(new Date()).valueOf();}\n"
 			"</script>\n");
 	printf("<link href=\"/images/oras.css\" rel=stylesheet type=text/css>\n");
-	printf("<title>»¶Ó­¹âÁÙ "MY_BBS_NAME"</title>");
+	// æ¬¢è¿å…‰ä¸´
+	printf("<title>\xBB\xB6\xD3\xAD\xB9\xE2\xC1\xD9 "MY_BBS_NAME"</title>");
 	printf("<script type=\"text/javascript\" src=\"jquery-1.6.4.min.js\"></script>");
 	printf("<script type=\"text/javascript\" src=\"showloginpics.min.js\"></script>");
 	printf("<link type=\"text/css\" rel=\"Stylesheet\" href=\"showloginpics.css\" />");
@@ -51,10 +52,14 @@ void loginwindow()
 		"<td rowspan=4>&nbsp;</td>\n  </tr>\n  <tr> \n"
 		"<td height=264 valign=top bgcolor=#FFFFFF>\n"
 		"<table width=780 border=0 align=center cellpadding=0 cellspacing=0 bgcolor=#FFFFFF>\n"
-		"<tr>\n<td height=35 align=right class=0004><a href='javascript:lg();' class=linkindex>ÄäÃûµÇÂ¼</a>"
-		"/ <a href='telnet://" MY_BBS_DOMAIN "' class=linkindex>telnetµÇÂ¼</a> /"
-		"<a href='CTerm.rar' class=linkindex>CTerm¹¤¾ßÏÂÔØ</a> /"
-		"<a href='javascript: openreg();' class=linkindex>ĞÂÓÃ»§×¢²á</a><font color=#FFFFFF> \n"
+		// åŒ¿åç™»å½•
+		"<tr>\n<td height=35 align=right class=0004><a href='javascript:lg();' class=linkindex>\xC4\xE4\xC3\xFB\xB5\xC7\xC2\xBC</a>"
+		// telnetç™»å½•
+		"/ <a href='telnet://" MY_BBS_DOMAIN "' class=linkindex>telnet\xB5\xC7\xC2\xBC</a> /"
+		// CTermå·¥å…·ä¸‹è½½
+		"<a href='CTerm.rar' class=linkindex>CTerm\xB9\xA4\xBE\xDF\xCF\xC2\xD4\xD8</a> /"
+		// æ–°ç”¨æˆ·æ³¨å†Œ
+		"<a href='javascript: openreg();' class=linkindex>\xD0\xC2\xD3\xC3\xBB\xA7\xD7\xA2\xB2\xE1</a><font color=#FFFFFF> \n"
 		"/</font></font> </td>\n"
 		"</tr>\n <tr> \n"
 		"<td width=770 height=400><div id=\"container\"></div></td>" /* modified by IronBlood 11.09.08 */
@@ -67,13 +72,16 @@ void loginwindow()
 		"<td height=35> <table border=0 align=center cellpadding=0 cellspacing=0>\n"
 		"<tr>\n"
 		"<form name=l action=/" SMAGIC "/bbslogin method=post><td>\n"
-		"<td>ÕÊºÅ&nbsp&nbsp&nbsp</td>\n"
+		// å¸å·
+		"<td>\xD5\xCA\xBA\xC5&nbsp&nbsp&nbsp</td>\n"
 		"<td><input name=id type=text id=usrname style=\"font-size:11px;font-family:verdana\" size=10></td>\n"
-		"<td>&nbsp&nbsp&nbspÃÜÂë&nbsp&nbsp&nbsp</td>\n"
+		// å¯†ç 
+		"<td>&nbsp&nbsp&nbsp\xC3\xDC\xC2\xEB&nbsp&nbsp&nbsp</td>\n"
 		"<td><input name=pw type=password id=pwd style=\"font-size:11px;font-family:verdana\" size=10></td>\n"
 		"<td>&nbsp&nbsp&nbsp<input name=login_btn type=image id=login_btn src=\"images/index_log.gif\" width=40 height=18 border=0 onMouseOver=\"this.src='images/index_log2.gif'\" onMouseOut=\"this.src='images/index_log.gif'\"></td>\n"
 	//add by liuche@BMY 20120205
-		"<td>&nbsp&nbsp&nbsp<a href='/findpass.html' target='_blank' class=linkindex>ÕÒ»ØÓÃ»§Ãû»òÃÜÂë£¿</a></td>\n"
+		// æ‰¾å›ç”¨æˆ·åæˆ–å¯†ç ï¼Ÿ
+		"<td>&nbsp&nbsp&nbsp<a href='/findpass.html' target='_blank' class=linkindex>\xD5\xD2\xBB\xD8\xD3\xC3\xBB\xA7\xC3\xFB\xBB\xF2\xC3\xDC\xC2\xEB\xA3\xBF</a></td>\n"
 		"</form></tr></table>\n"
 		"</tr>\n </td>\n"
 		"</tr>\n"
@@ -81,9 +89,10 @@ void loginwindow()
 		"</tr>\n"
 		"<tr>\n"
 		"<td align=center bgcolor=#FFFFFF><img src=\"images/index_line.gif\" name=Image1 width=650 height=20 id=Image1></td>\n"
-		"<tr><td align=center>ÉÂICP±¸ 05001571ºÅ<br />"
-		//"±¾BBSÁ¥ÊôÓÚ£ºÎ÷°²½»Í¨´óÑ§ÍøÂçÖĞĞÄ£¯ÖĞ¹ú½ÌÓı¿ÆÑĞÍøÎ÷±±ÖĞĞÄ<br />"
-		"¿ª·¢Î¬»¤£ºÎ÷°²½»Í¨´óÑ§ÍøÂçÖĞĞÄ  BBS³ÌĞò×é</td></tr>"
+		// é™•ICPå¤‡ 06008037å·-5
+		"<tr><td align=center><a href='https://beian.miit.gov.cn/' target='_blank'>\xC9\xC2ICP\xB1\xB8 06008037\xBA\xC5-5</a><br />"
+		// å¼€å‘ç»´æŠ¤ï¼šè¥¿å®‰äº¤é€šå¤§å­¦ç½‘ç»œä¸­å¿ƒ  BBSç¨‹åºç»„
+		"\xBF\xAA\xB7\xA2\xCE\xAC\xBB\xA4\xA3\xBA\xCE\xF7\xB0\xB2\xBD\xBB\xCD\xA8\xB4\xF3\xD1\xA7\xCD\xF8\xC2\xE7\xD6\xD0\xD0\xC4  BBS\xB3\xCC\xD0\xF2\xD7\xE9</td></tr>"
 	"</tr>\n"
 "</table>");/* modified by linux 05.9.11 */
 	showannounce();
@@ -98,12 +107,13 @@ shownologin()
 		.ptr = NULL
 	};
 	html_header(4);
-	// Ê¹ÓÃ bmy Í¼Æ¬È¡´ú ytht µÄÅäÖÃ
+	// ä½¿ç”¨ bmy å›¾ç‰‡å–ä»£ ytht çš„é…ç½®
 	printf("<STYLE type=text/css>A{COLOR: #99ccff; text-decoration: none;}</STYLE>"
 			"</head><BODY text=#99ccff bgColor=#ffffff leftmargin=1 MARGINWIDTH=1><br>"
 			"<CENTER>");
 	printf("<IMG src=cai.jpg border=0 alt='' width=70%%><BR>");
-	printf("<b>Í£Õ¾Í¨Öª</b><br>");
+	// åœç«™é€šçŸ¥
+	printf("<b>\xCD\xA3\xD5\xBE\xCD\xA8\xD6\xAA</b><br>");
 	if (!mmapfile("NOLOGIN", &mf))
 		fwrite(mf.ptr, mf.size, 1, stdout);
 	printf("</CENTER></BODY></HTML>");
@@ -132,7 +142,8 @@ bbsindex_main()
 			saveuservalue(currentuser.userid, "wwwstyle", str);
 		}
 		//add by mintbaggio 040411 for new www
-		printf("<title>»¶Ó­¹âÁÙ %s</title>"
+		// æ¬¢è¿å…‰ä¸´
+		printf("<title>\xBB\xB6\xD3\xAD\xB9\xE2\xC1\xD9 %s</title>"
 				"<frameset cols=135,* frameSpacing=0 frameborder=no id=fs0>\n"
 				"<frame src=bbsleft?t=%ld name=f2 frameborder=no scrolling=auto>\n"
 				"<frameset id=fs1 rows=0,*,20 frameSpacing=0 frameborder=no border=0>\n"
@@ -148,7 +159,7 @@ bbsindex_main()
 		http_quit();
 	}
 
-	// ²»·ûºÏµÄÇé¿ö
+	// ä¸ç¬¦åˆçš„æƒ…å†µ
 	html_header(3);
 	redirect(FIRST_PAGE);
 	http_quit();
