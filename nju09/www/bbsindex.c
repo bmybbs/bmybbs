@@ -8,7 +8,7 @@ checkfile(char *fn, int maxsz)
 {
 	char path[456];
 	int sz;
-	sprintf(path, HTMPATH "%s", fn);
+	snprintf(path, sizeof(path), HTMPATH "%s", fn);
 	sz = file_size(path);
 	if (sz < 100 || sz > maxsz)
 		return -1;
