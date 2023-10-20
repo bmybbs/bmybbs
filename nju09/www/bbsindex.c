@@ -89,8 +89,8 @@ void loginwindow()
 		"</tr>\n"
 		"<tr>\n"
 		"<td align=center bgcolor=#FFFFFF><img src=\"images/index_line.gif\" name=Image1 width=650 height=20 id=Image1></td>\n"
-		// 陕ICP备 05001571号
-		"<tr><td align=center>\xC9\xC2ICP\xB1\xB8 05001571\xBA\xC5<br />"
+		// 陕ICP备 06008037号-5
+		"<tr><td align=center><a href='https://beian.miit.gov.cn/' target='_blank'>\xC9\xC2ICP\xB1\xB8 06008037\xBA\xC5-5</a><br />"
 		// 开发维护：西安交通大学网络中心  BBS程序组
 		"\xBF\xAA\xB7\xA2\xCE\xAC\xBB\xA4\xA3\xBA\xCE\xF7\xB0\xB2\xBD\xBB\xCD\xA8\xB4\xF3\xD1\xA7\xCD\xF8\xC2\xE7\xD6\xD0\xD0\xC4  BBS\xB3\xCC\xD0\xF2\xD7\xE9</td></tr>"
 	"</tr>\n"

@@ -45,7 +45,7 @@
 				<!-- welback/loginform switch end -->
 
 				<div id="footer">
-					陕ICP备 05001571号<br>开发维护：西安交通大学网络中心 BBS程序组
+					<a  href='https://beian.miit.gov.cn/' target='_blank'>陕ICP备 06008037号-5</a><br>开发维护：西安交通大学网络中心 BBS程序组
 				</div>
 			</div>
 		</div>
