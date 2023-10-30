@@ -11,7 +11,7 @@
 	"dependencies": {
 		"@bmybbs/bmybbs-content-parser": "^0.3.4",
 		"@fortawesome/fontawesome-svg-core": "^6.3.0",
-		"@fortawesome/free-regular-svg-icons": "^6.3.0",
+		"@fortawesome/free-regular-svg-icons": "^6.4.2",
 		"@fortawesome/free-solid-svg-icons": "^6.3.0",
 		"@fortawesome/vue-fontawesome": "^3.0.0-4",
 		"@meforma/vue-toaster": "^1.1.1",
