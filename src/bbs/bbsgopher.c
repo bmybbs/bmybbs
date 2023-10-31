@@ -40,6 +40,10 @@
 
 #define MAXGOPHERITEMS     9999    /*max of gopher items*/
 
+#ifdef SSHBBS
+extern int ssh_write(int fd, const void *buf, size_t count);
+#endif
+
 int a;
 int inrp_by_user = YEA;
 

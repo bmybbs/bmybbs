@@ -1,5 +1,6 @@
 #include <stdbool.h>
 #include <string.h>
+#include <stdlib.h>
 #include "ytht/random.h"
 #include "bmy/redis.h"
 #include "bmy/2fa.h"
