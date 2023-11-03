@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
 		if (5 !=
 		    sscanf(buf, "%s%d%d%d%d", au[count], &n1, &n2, &n3,
 			   &n4)) continue;
-		sethomefile(buf, au[count], "sucessreg");
+		sethomefile_s(buf, sizeof buf, au[count], "sucessreg");
 		if (!file_exist(buf))
 			continue;
 		score[count] = n1 + n2 / 2 + n3 / 4 + n4 / 8;

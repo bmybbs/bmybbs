@@ -17,7 +17,7 @@ bbsdefcss_main()
 		sethomefile_s(buf, sizeof(buf), currentuser.userid, "ubbs.css");
 		ptr=getparm("ucss");
 		f_write(buf,ptr);
-/*		sethomefile(buf, currentuser.userid, "uleft.css");
+/*		sethomefile_s(buf, sizeof buf, currentuser.userid, "uleft.css");
 		ptr=getparm("uleftcss");
 		f_write(buf,ptr);*/
 		printf("WWW用户定制样式设定成功.<br>\n");
@@ -37,7 +37,7 @@ bbsdefcss_main()
 	printf("</textarea><br>");
 /*	printf("</textarea><br><br>当前的左侧选单的CSS设置如下(body.foot是底行的css)：<br><textarea name=uleftcss rows=5 cols=76>");
 	if(strstr(currstyle->leftcssfile,"uleft.css"))
-		sethomefile(buf, currentuser.userid, "uleft.css");
+		sethomefile_s(buf, sizeof buf, currentuser.userid, "uleft.css");
 	else
 		sprintf(buf,HTMPATH "%s", currstyle->leftcssfile);
 	showfile(buf);

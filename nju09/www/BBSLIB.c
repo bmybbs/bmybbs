@@ -458,7 +458,7 @@ int fhhprintf(FILE * output, char *fmt, ...) {
 			if (1) {
 				if (!strncasecmp(s+7, "http://v.youku.com"), 18) {
 					strcpy(vlink, s+7);
-					sethomefile(vfile, currentuser.userid, "vfile");
+					sethomefile_s(vfile, sizeof vfile, currentuser.userid, "vfile");
 					sprintf(cmdline, "wget -o %s %s", vfile, vlink);
 					system(cmdline);
 					fopen(vfile, "r");

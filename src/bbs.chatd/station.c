@@ -156,13 +156,6 @@ char *s;
 #ifdef WWW_CHAT
 /* define for WWW Chat password attempt */
 #define BADLOGINFILE    "logins.bad"
-char *
-sethomefile(char *buf, char *userid, char *filename)
-{
-	sprintf(buf, MY_BBS_HOME "/home/%c/%s/%s", mytoupper(userid[0]), userid, filename);
-	return buf;
-}
-
 void
 logattempt(char *uid, char *frm)
 {
@@ -176,7 +169,7 @@ logattempt(char *uid, char *frm)
 		write(fd, genbuf, len);
 		close(fd);
 	}
-	sethomefile(fname, uid, BADLOGINFILE);
+	sethomefile_s(fname, sizeof fname, uid, BADLOGINFILE);
 	if ((fd = open(fname, O_WRONLY | O_CREAT | O_APPEND, 0644)) > 0) {
 		write(fd, genbuf, len);
 		close(fd);

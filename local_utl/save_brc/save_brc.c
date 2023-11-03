@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
 				unlink(ent);
 			continue;
 		}
-		sethomefile(newent, direntp->d_name, "brc");
+		sethomefile_s(newent, sizeof newent, direntp->d_name, "brc");
 		//sethomefile(tmpent, direntp->d_name, "brc.tmp");
 		//printf("%s\nnewent %s\ntmpent %s\n", ent, newent, tmpent);
 //		t1 = file_time(ent);
