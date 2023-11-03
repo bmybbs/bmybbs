@@ -964,7 +964,7 @@ int do_mail_post_to_sent_box(const char *userid, const char *title, const char *
 
 	memset(&header, 0, sizeof(header));
 	fh_setowner(&header, id, 0);
-	setsentmailfile(buf, userid, "");
+	setsentmailfile_s(buf, sizeof buf, userid, "");
 
 	time_t now_t = time(NULL);
 	t = trycreatefile(buf, "M.%d.A", now_t, 100);
@@ -1011,7 +1011,7 @@ int do_mail_post_to_sent_box(const char *userid, const char *title, const char *
 	fwrite(tmp_gbk_buf, 1, strlen(tmp_gbk_buf), fp);
 	fclose(fp);	// 输出完成
 
-	setsentmailfile(buf, userid, ".DIR");
+	setsentmailfile_s(buf, sizeof buf, userid, ".DIR");
 	append_record(buf, &header, sizeof(header));
 	return 0;
 }

@@ -36,7 +36,7 @@ bbsmailcon_main()
 	if (strstr(file, "..") || strstr(file, "/"))
 		http_fatal("´íÎóµÄ²ÎÊý2");
 	if(box_type == 1) {
-		setsentmailfile(path, id, file);
+		setsentmailfile_s(path, sizeof path, id, file);
 	}else {
 		setmailfile_s(path, sizeof(path), id, file);
 	}
@@ -46,7 +46,7 @@ bbsmailcon_main()
 	}
 	if (!tempuser) {
 		if(box_type == 1) {
-			setsentmailfile(dir, id, ".DIR");
+			setsentmailfile_s(dir, sizeof dir, id, ".DIR");
 		}else {
 			setmailfile_s(dir, sizeof(dir), id, ".DIR");
 		}
@@ -121,7 +121,7 @@ bbsmailcon_main()
 		fclose(fp);
 	}
 	if(box_type == 1) {
-		setsentmailfile(path, id, file);
+		setsentmailfile_s(path, sizeof path, id, file);
 	} else {
 		setmailfile_s(path, sizeof(path), id, file);
 	}

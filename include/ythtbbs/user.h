@@ -58,7 +58,7 @@ char *sethomepath_s(char *buf, size_t buf_size, const char *userid);
 char *sethomefile_s(char *buf, size_t buf_size, const char *userid, const char *filename);
 char *setmailfile_s(char *buf, size_t buf_size, const char *userid, const char *filename);
 /* for sent mail */
-char *setsentmailfile(char *buf, const char *userid, const char *filename);
+char *setsentmailfile_s(char *buf, size_t buf_size, const char *userid, const char *filename);
 int saveuservalue(char *userid, char *key, char *value);
 int readuservalue(char *userid, char *key, char *value, int size);
 char *charexp(int);

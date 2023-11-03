@@ -124,9 +124,8 @@ setmailfile_s(char *buf, size_t buf_size, const char *userid, const char *filena
 get the file path of sent mail box
 */
 char *
-setsentmailfile(char *buf, const char *userid, const char *filename)
-{
-	sprintf(buf, MY_BBS_HOME "/sent_mail/%c/%s/%s", mytoupper(userid[0]), userid, filename);
+setsentmailfile_s(char *buf, size_t buf_size, const char *userid, const char *filename) {
+	snprintf(buf, buf_size, MY_BBS_HOME "/sent_mail/%c/%s/%s", mytoupper(userid[0]), userid, filename);
 	return buf;
 }
 
