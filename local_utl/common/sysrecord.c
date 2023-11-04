@@ -4,7 +4,7 @@ char *
 setbfile(buf, boardname, filename)
 char *buf, *boardname, *filename;
 {
-	sprintf(buf, MY_BBS_HOME "/boards/%s/%s", boardname, filename);
+	snprintf(buf, sizeof buf, MY_BBS_HOME "/boards/%s/%s", boardname, filename);
 	return buf;
 }
 
@@ -16,7 +16,7 @@ char *buf, *boardname;
 
 	strncpy(dir, DOT_DIR, STRLEN);
 	dir[STRLEN - 1] = '\0';
-	sprintf(buf, MY_BBS_HOME "/boards/%s/%s", boardname, dir);
+	snprintf(buf, sizeof buf, MY_BBS_HOME "/boards/%s/%s", boardname, dir);
 	return buf;
 }
 

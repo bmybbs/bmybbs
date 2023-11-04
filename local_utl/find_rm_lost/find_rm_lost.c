@@ -76,7 +76,7 @@ testPOWERJUNK(char *path, char *fn)
 {
 	char buf[1024];
 	int s;
-	sprintf(buf, "%s/%s", path, fn);
+	snprintf(buf, sizeof buf, "%s/%s", path, fn);
 	if (strncmp(fn, ".POWER", 6) && strncmp(buf, ".SOMEONE", 8)
 	    && strncmp(buf, ".UNREAD", 7))
 		return 0;
@@ -148,7 +148,7 @@ rm_lost(char *path)
 					//printf("Too young to die, %d %d\n", t, time(NULL));
 					continue;
 				}
-				sprintf(buf, "%s/%s", path, allpost[h][i]);
+				snprintf(buf, sizeof buf, "%s/%s", path, allpost[h][i]);
 				unlink(buf);
 			}
 		}
@@ -180,26 +180,26 @@ find_rm_lost(struct boardheader *bhp)
 		nfile[i] = 0;
 	}
 	otherfile[0] = 0;
-	sprintf(buf, MY_BBS_HOME "/boards/%s", bhp->filename);
+	snprintf(buf, sizeof buf, MY_BBS_HOME "/boards/%s", bhp->filename);
 	if (getallpost(buf) < 0)
 		return -1;
-	sprintf(buf, MY_BBS_HOME "/boards/%s/.DIR", bhp->filename);
+	snprintf(buf, sizeof buf, MY_BBS_HOME "/boards/%s/.DIR", bhp->filename);
 	if (dashf(buf))
 		if (useindexfile(buf) < 0)
 			return -1;
-	sprintf(buf, MY_BBS_HOME "/boards/%s/.DIGEST", bhp->filename);
+	snprintf(buf, sizeof buf, MY_BBS_HOME "/boards/%s/.DIGEST", bhp->filename);
 	if (dashf(buf))
 		if (useindexfile(buf) < 0)
 			return -1;
-	sprintf(buf, MY_BBS_HOME "/boards/%s/.DELETED", bhp->filename);
+	snprintf(buf, sizeof buf, MY_BBS_HOME "/boards/%s/.DELETED", bhp->filename);
 	if (dashf(buf))
 		if (useindexfile(buf) < 0)
 			return -1;
-	sprintf(buf, MY_BBS_HOME "/boards/%s/.JUNK", bhp->filename);
+	snprintf(buf, sizeof buf, MY_BBS_HOME "/boards/%s/.JUNK", bhp->filename);
 	if (dashf(buf))
 		if (useindexfile(buf) < 0)
 			return -1;
-	sprintf(buf, MY_BBS_HOME "/boards/%s", bhp->filename);
+	snprintf(buf, sizeof buf, MY_BBS_HOME "/boards/%s", bhp->filename);
 	rm_lost(buf);
 	return 0;
 }

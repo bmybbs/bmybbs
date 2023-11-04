@@ -122,8 +122,8 @@ main()
 	while (read(b_fd, &bh, size) == size) {
 		if (!bh.filename[0])
 			continue;
-		sprintf(buf, MY_BBS_HOME "/boards/%s/.DIR", bh.filename);
-		sprintf(recfile, MY_BBS_HOME "/wwwtmp/lastmark/%s",
+		snprintf(buf, sizeof buf, MY_BBS_HOME "/boards/%s/.DIR", bh.filename);
+		snprintf(recfile, sizeof recfile, MY_BBS_HOME "/wwwtmp/lastmark/%s",
 			bh.filename);
 		if (file_time(buf) < file_time(recfile))
 			continue;

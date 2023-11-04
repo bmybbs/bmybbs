@@ -38,7 +38,7 @@ main(int argc, char *argv[])
 			continue;
 		if (board1.clubnum != 0)
 			continue;
-		sprintf(dirfile, MY_BBS_HOME "/boards/%s/.DIR",
+		snprintf(dirfile, sizeof dirfile, MY_BBS_HOME "/boards/%s/.DIR",
 			board1.filename);
 		MMAP_TRY {
 			if (mmapfile(dirfile, &mf) < 0) {

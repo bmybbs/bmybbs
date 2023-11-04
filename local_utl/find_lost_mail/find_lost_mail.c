@@ -223,7 +223,7 @@ main()
 	printf("\033[1mbbs home=%s now time = %s\033[0m\n", MY_BBS_HOME,
 	       ctime(&nowtime));
 	for (ch = 'A'; ch <= 'Z'; ch++) {
-		sprintf(path, MY_BBS_HOME "/mail/%c", ch);
+		snprintf(path, sizeof path, MY_BBS_HOME "/mail/%c", ch);
 		printf("processing %s\n", path);
 		dirp = opendir(path);
 		if (dirp == NULL)

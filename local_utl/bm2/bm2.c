@@ -19,11 +19,11 @@ main(int argc, char *argv[])
 		visit = 0;
 		if (rec.userlevel & PERM_BOARDS) {
 			printf("%s ", rec.userid);
-			sprintf(buf, MY_BBS_HOME "/tmp/%s.anpath", rec.userid);
+			snprintf(buf, sizeof buf, MY_BBS_HOME "/tmp/%s.anpath", rec.userid);
 			if (stat(buf, &info) != -1)
 				if (visit < info.st_mtime)
 					visit = info.st_mtime;
-			sprintf(buf, MY_BBS_HOME "/tmp/%s.copypaste",
+			snprintf(buf, sizeof buf, MY_BBS_HOME "/tmp/%s.copypaste",
 				rec.userid);
 			if (stat(buf, &info) != -1)
 				if (visit < info.st_mtime)

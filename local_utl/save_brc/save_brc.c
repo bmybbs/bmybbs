@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
 	if (dirp == NULL)
 		return -1;
 	while ((direntp = readdir(dirp)) != NULL) {
-		sprintf(ent, PATHTMPBRC "/%s", direntp->d_name);
+		snprintf(ent, sizeof ent, PATHTMPBRC "/%s", direntp->d_name);
 		if (strchr(direntp->d_name, '.')) {
 			if (direntp->d_name[0] != '.'
 			    && nowtime - file_rtime(ent) > 3600)

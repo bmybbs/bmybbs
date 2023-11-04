@@ -131,7 +131,7 @@ main()
 			continue;
 		if (!testperm(&x))
 			continue;
-		sprintf(path, MY_BBS_HOME "/boards/%s/.DIR", x.header.filename);
+		snprintf(path, sizeof path, MY_BBS_HOME "/boards/%s/.DIR", x.header.filename);
 		if (mmapfile(path, &mf)<0)
 			continue;
 	        total = mf.size / sizeof(struct fileheader) - 1;     //¹² 0 - total ÌõÄ¿

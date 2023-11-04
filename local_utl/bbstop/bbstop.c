@@ -64,11 +64,11 @@ top_login(FILE * fp)
 ==== ===============================   ==== ================================\n\033[0m\
 ");
 	for (i = 0; i < rows; i++) {
-		sprintf(buf1, "[%2d] %-10.10s %-14.14s %3d",
+		snprintf(buf1, sizeof buf1, "[%2d] %-10.10s %-14.14s %3d",
 			i + 1, login_q[i].userid, login_q[i].username,
 			login_q[i].numlogins);
 		j = i + rows;
-		sprintf(buf2, "[%2d] %-10.10s %-14.14s   %3d",
+		snprintf(buf2, sizeof buf2, "[%2d] %-10.10s %-14.14s   %3d",
 			j + 1, login_q[j].userid, login_q[j].username,
 			login_q[j].numlogins);
 
@@ -88,11 +88,11 @@ top_stay(FILE * fp)
 ==== ================================  ==== ================================\n\033[0m\
 ");
 	for (i = 0; i < rows; i++) {
-		sprintf(buf1, "[%2d] %-10.10s %-14.14s%4ld:%2ld",
+		snprintf(buf1, sizeof buf1, "[%2d] %-10.10s %-14.14s%4ld:%2ld",
 			i + 1, stay_q[i].userid, stay_q[i].username,
 			stay_q[i].stay / 3600, (stay_q[i].stay % 3600) / 60);
 		j = i + rows;
-		sprintf(buf2, "[%2d] %-10.10s %-14.14s%4ld:%2ld",
+		snprintf(buf2, sizeof buf2, "[%2d] %-10.10s %-14.14s%4ld:%2ld",
 			j + 1, stay_q[j].userid, stay_q[j].username,
 			stay_q[j].stay / 3600, (stay_q[j].stay % 3600) / 60);
 

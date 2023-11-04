@@ -51,7 +51,7 @@ auto_rm_fakedir(struct boardheader *bhp)
 {
 	char buf[200];
 	int i;
-	sprintf(buf, MY_BBS_HOME "/boards/%s", bhp->filename);
+	snprintf(buf, sizeof buf, MY_BBS_HOME "/boards/%s", bhp->filename);
 	if (rm_fakedir(buf) < 0)
 		return -1;
 	return 0;
