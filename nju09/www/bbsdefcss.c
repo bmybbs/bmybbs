@@ -32,7 +32,7 @@ bbsdefcss_main()
 	if(strstr(currstyle->cssfile,"ubbs.css"))
 		sethomefile_s(buf, sizeof(buf), currentuser.userid, "ubbs.css");
 	else
-		sprintf(buf,HTMPATH "%s",currstyle->cssfile);
+		snprintf(buf, sizeof buf, HTMPATH "%s", currstyle->cssfile);
 	showfile(buf);
 	printf("</textarea><br>");
 /*	printf("</textarea><br><br>当前的左侧选单的CSS设置如下(body.foot是底行的css)：<br><textarea name=uleftcss rows=5 cols=76>");
