@@ -2276,7 +2276,7 @@ void sstrcat(char *s, const char *format, ...){
 	va_list ap;
 	char temp[4096];
 	va_start(ap, format);
-	vsprintf(temp,format,ap);
+	vsnprintf(temp, sizeof temp, format, ap);
 	strcat(s,temp);
 	va_end(ap);
 }
