@@ -74,13 +74,6 @@ mytoupper(unsigned char ch)
 }
 
 char *
-sethomepath(char *buf, const char *userid)
-{
-	sprintf(buf, MY_BBS_HOME "/home/%c/%s", mytoupper(userid[0]), userid);
-	return buf;
-}
-
-char *
 sethomepath_s(char *buf, size_t buf_size, const char *userid)
 {
 	snprintf(buf, buf_size, MY_BBS_HOME "/home/%c/%s", mytoupper(userid[0]), userid);

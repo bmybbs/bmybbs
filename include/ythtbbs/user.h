@@ -50,7 +50,6 @@ struct userec {
 };
 
 char mytoupper(unsigned char ch);
-char *sethomepath(char *buf, const char *userid)  __attribute__((deprecated("use sethomepath_s instead")));
 
 char *sethomepath_s(char *buf, size_t buf_size, const char *userid);
 char *sethomefile_s(char *buf, size_t buf_size, const char *userid, const char *filename);
