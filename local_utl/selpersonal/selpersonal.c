@@ -24,15 +24,15 @@ gettitle(char ch, char *author)
 	static char retstr[100];
 	char teststr[80], *ptr, buf[512];
 	FILE *fp;
-	sprintf(buf,
+	snprintf(buf, sizeof buf,
 		MY_BBS_HOME
 		"/0Announce/groups/GROUP_0/Personal_Corpus/%c/.Names", ch);
-	sprintf(retstr, "%s文集", author);
+	snprintf(retstr, sizeof retstr, "%s文集", author);
 	fp = fopen(buf, "r");
 	if (!fp) {
 		return retstr;
 	}
-	sprintf(teststr, "(BM: %s _Personal)", author);
+	snprintf(teststr, sizeof teststr, "(BM: %s _Personal)", author);
 	while (fgets(buf, 512, fp)) {
 		if (strncmp(buf, "Name=", 5) || !strstr(buf, teststr))
 			continue;
