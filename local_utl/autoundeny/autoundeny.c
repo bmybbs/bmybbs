@@ -25,7 +25,7 @@ char *buf, userid[], title[];
 	ytht_strsncpy(newmessage.title, title, sizeof(newmessage.title));
 	//ytht_strsncpy(save_title, newmessage.title, sizeof (save_title));
 
-	setmailfile(filepath, userid, "");
+	setmailfile_s(filepath, sizeof filepath, userid, "");
 	if (stat(filepath, &st) == -1) {
 		if (mkdir(filepath, 0775) == -1)
 			return -1;
@@ -35,12 +35,12 @@ char *buf, userid[], title[];
 	}
 	now = time(NULL);
 	sprintf(fname, "M.%lu.A", now);
-	setmailfile(filepath, userid, fname);
+	setmailfile_s(filepath, sizeof filepath, userid, fname);
 	count = 0;
 	while ((fd = open(filepath, O_CREAT | O_EXCL | O_WRONLY, 0644)) == -1) {
 		now++;
 		sprintf(fname, "M.%lu.A", now);
-		setmailfile(filepath, userid, fname);
+		setmailfile_s(filepath, sizeof filepath, userid, fname);
 		if (count++ > MAX_POSTRETRY) {
 			return -1;
 		}
@@ -64,7 +64,7 @@ char *buf, userid[], title[];
 	fclose(fp);
 
 	char genbuf[STRLEN];
-	setmailfile(genbuf, userid, DOT_DIR);
+	setmailfile_s(genbuf, sizeof genbuf, userid, DOT_DIR);
 	if (append_record(genbuf, &newmessage, sizeof (newmessage)) == -1)
 		return -1;
 	sprintf(genbuf, "%s mail %s", "XJTU-XANET", userid);

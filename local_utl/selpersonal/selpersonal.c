@@ -24,15 +24,15 @@ gettitle(char ch, char *author)
 	static char retstr[100];
 	char teststr[80], *ptr, buf[512];
 	FILE *fp;
-	sprintf(buf,
+	snprintf(buf, sizeof buf,
 		MY_BBS_HOME
 		"/0Announce/groups/GROUP_0/Personal_Corpus/%c/.Names", ch);
-	sprintf(retstr, "%s文集", author);
+	snprintf(retstr, sizeof retstr, "%s文集", author);
 	fp = fopen(buf, "r");
 	if (!fp) {
 		return retstr;
 	}
-	sprintf(teststr, "(BM: %s _Personal)", author);
+	snprintf(teststr, sizeof teststr, "(BM: %s _Personal)", author);
 	while (fgets(buf, 512, fp)) {
 		if (strncmp(buf, "Name=", 5) || !strstr(buf, teststr))
 			continue;
@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
 		if (5 !=
 		    sscanf(buf, "%s%d%d%d%d", au[count], &n1, &n2, &n3,
 			   &n4)) continue;
-		sethomefile(buf, au[count], "sucessreg");
+		sethomefile_s(buf, sizeof buf, au[count], "sucessreg");
 		if (!file_exist(buf))
 			continue;
 		score[count] = n1 + n2 / 2 + n3 / 4 + n4 / 8;

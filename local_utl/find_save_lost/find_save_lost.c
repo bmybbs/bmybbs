@@ -124,11 +124,11 @@ save_lost(char *path)
 			totalref += refcount[h][i];
 			if (!refcount[h][i]) {
 				lost++;
-				sprintf(buf, "%s/%s", path, allpost[h][i]);
+				snprintf(buf, sizeof buf, "%s/%s", path, allpost[h][i]);
 				if (allpost[h][i][0] == 'M'
 				    && makefileheader(buf, allpost[h][i],
 						      &fh) == 0) {
-					sprintf(buf, "%s/%s", path, ".DIR");
+					snprintf(buf, sizeof buf, "%s/%s", path, ".DIR");
 					fd = open(buf, O_WRONLY | O_APPEND);
 					if (fd < 0) {
 						printf
@@ -223,26 +223,26 @@ find_save_lost(struct boardheader *bhp)
 		nfile[i] = 0;
 	}
 	otherfile[0] = 0;
-	sprintf(buf, MY_BBS_HOME "/boards/%s", bhp->filename);
+	snprintf(buf, sizeof buf, MY_BBS_HOME "/boards/%s", bhp->filename);
 	if (getallpost(buf) < 0)
 		return -1;
-	sprintf(buf, MY_BBS_HOME "/boards/%s/.DIR", bhp->filename);
+	snprintf(buf, sizeof buf, MY_BBS_HOME "/boards/%s/.DIR", bhp->filename);
 	if (dashf(buf))
 		if (useindexfile(buf) < 0)
 			return -1;
-	sprintf(buf, MY_BBS_HOME "/boards/%s/.DIGEST", bhp->filename);
+	snprintf(buf, sizeof buf, MY_BBS_HOME "/boards/%s/.DIGEST", bhp->filename);
 	if (dashf(buf))
 		if (useindexfile(buf) < 0)
 			return -1;
-	sprintf(buf, MY_BBS_HOME "/boards/%s/.DELETED", bhp->filename);
+	snprintf(buf, sizeof buf, MY_BBS_HOME "/boards/%s/.DELETED", bhp->filename);
 	if (dashf(buf))
 		if (useindexfile(buf) < 0)
 			return -1;
-	sprintf(buf, MY_BBS_HOME "/boards/%s/.JUNK", bhp->filename);
+	snprintf(buf, sizeof buf, MY_BBS_HOME "/boards/%s/.JUNK", bhp->filename);
 	if (dashf(buf))
 		if (useindexfile(buf) < 0)
 			return -1;
-	sprintf(buf, MY_BBS_HOME "/boards/%s", bhp->filename);
+	snprintf(buf, sizeof buf, MY_BBS_HOME "/boards/%s", bhp->filename);
 	save_lost(buf);
 	return 0;
 }

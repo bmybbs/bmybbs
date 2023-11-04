@@ -50,15 +50,12 @@ struct userec {
 };
 
 char mytoupper(unsigned char ch);
-char *sethomepath(char *buf, const char *userid)  __attribute__((deprecated("use sethomepath_s instead")));
-char *sethomefile(char *buf, const char *userid, const char *filename)  __attribute__((deprecated("use sethomefile_s instead")));
-char *setmailfile(char *buf, const char *userid, const char *filename)  __attribute__((deprecated("use setmailfile_s instead")));
 
 char *sethomepath_s(char *buf, size_t buf_size, const char *userid);
 char *sethomefile_s(char *buf, size_t buf_size, const char *userid, const char *filename);
 char *setmailfile_s(char *buf, size_t buf_size, const char *userid, const char *filename);
 /* for sent mail */
-char *setsentmailfile(char *buf, const char *userid, const char *filename);
+char *setsentmailfile_s(char *buf, size_t buf_size, const char *userid, const char *filename);
 int saveuservalue(char *userid, char *key, char *value);
 int readuservalue(char *userid, char *key, char *value, int size);
 char *charexp(int);

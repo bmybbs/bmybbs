@@ -298,7 +298,7 @@ check_register_info()
 		if (!invalid_realmail(urec->userid, urec->realmail, STRLEN - 16))
 		{
 			#ifndef POP_CHECK /* 防止拣回尸体后，不用输入信箱名。interma@BMY*/
-			sethomefile(buf, urec->userid, "sucessreg");
+			sethomefile_s(buf, sizeof buf, urec->userid, "sucessreg");
 			if (((dashf(buf)) && !sysconf_str("EMAILFILE"))
 					|| (sysconf_str("EMAILFILE"))) {
 				set_safe_record();
@@ -320,7 +320,7 @@ check_register_info()
 				if (askyn("您要我们现在就寄这一封信吗", YEA, NA) == YEA) {
 					randomize();
 					code = (time(0) / 2) + (rand() / 10);
-					sethomefile(genbuf, urec->userid, "mailcheck");
+					sethomefile_s(genbuf, sizeof genbuf, urec->userid, "mailcheck");
 					if ((dp = fopen(genbuf, "w")) == NULL) {
 						fclose(dp);
 						return;

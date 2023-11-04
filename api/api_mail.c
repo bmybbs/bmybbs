@@ -66,7 +66,7 @@ int api_mail_list(ONION_FUNC_PROTO_STR)
 	if (box_type_i == API_MAIL_RECIEVE_BOX)
 		setmailfile_s(mail_dir, sizeof(mail_dir), ptr_info->userid, ".DIR");
 	else
-		setsentmailfile(mail_dir, ptr_info->userid, ".DIR");
+		setsentmailfile_s(mail_dir, sizeof(mail_dir), ptr_info->userid, ".DIR");
 
 	int total = ytht_file_size_s(mail_dir) / sizeof(struct fileheader);
 
@@ -232,7 +232,7 @@ static int api_mail_get_content(ONION_FUNC_PROTO_STR, int mode)
 	if(box_type_i == API_MAIL_RECIEVE_BOX)
 		setmailfile_s(mail_dir, sizeof(mail_dir), ptr_info->userid, ".DIR");
 	else
-		setsentmailfile(mail_dir, ptr_info->userid, ".DIR");
+		setsentmailfile_s(mail_dir, sizeof(mail_dir), ptr_info->userid, ".DIR");
 
 	FILE *fp = fopen(mail_dir, "r");
 	if (fp == 0) {

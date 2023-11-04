@@ -8,7 +8,7 @@ static char *get_login_pic_link (char *picname, char *linkback) {
 	char link[256];
 	memset(link, '\0',sizeof(link));
 	char linkfile[256];
-	sprintf(linkfile, MY_BBS_HOME "/loglinks/%s", picname);
+	snprintf(linkfile, sizeof linkfile, MY_BBS_HOME "/loglinks/%s", picname);
 	if (!(fp = fopen ( linkfile,"r")))
 		goto DEFAULT;
 	if (!fgets (link,sizeof (link),fp))

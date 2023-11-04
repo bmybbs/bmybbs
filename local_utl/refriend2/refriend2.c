@@ -30,8 +30,8 @@ char *uid;
 	memset(&fh, 0, sizeof (struct oldfriend));
 	memset(&nfh, 0, sizeof (struct newfriend));
 
-	sprintf(fname, MY_BBS_HOME "/home/%c/%s/friends", toupper(uid[0]), uid);
-	sprintf(dname, MY_BBS_HOME "/home/%c/%s/friends.new", toupper(uid[0]),
+	snprintf(fname, sizeof fname, MY_BBS_HOME "/home/%c/%s/friends", toupper(uid[0]), uid);
+	snprintf(dname, sizeof dname, MY_BBS_HOME "/home/%c/%s/friends.new", toupper(uid[0]),
 		uid);
 
 	if ((fp = fopen(fname, "rb")) == NULL) {

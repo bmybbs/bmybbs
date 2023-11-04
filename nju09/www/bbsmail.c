@@ -25,7 +25,7 @@ bbsmail_main()
 	}
 	snprintf(type_string, sizeof(type_string), "box_type=%d", box_type);
 	if(box_type == 1) {
-		setsentmailfile(dir, currentuser.userid, ".DIR");
+		setsentmailfile_s(dir, sizeof dir, currentuser.userid, ".DIR");
 	} else {
 		setmailfile_s(dir, sizeof(dir), currentuser.userid, ".DIR");
 	}

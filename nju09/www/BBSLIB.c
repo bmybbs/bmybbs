@@ -458,7 +458,7 @@ int fhhprintf(FILE * output, char *fmt, ...) {
 			if (1) {
 				if (!strncasecmp(s+7, "http://v.youku.com"), 18) {
 					strcpy(vlink, s+7);
-					sethomefile(vfile, currentuser.userid, "vfile");
+					sethomefile_s(vfile, sizeof vfile, currentuser.userid, "vfile");
 					sprintf(cmdline, "wget -o %s %s", vfile, vlink);
 					system(cmdline);
 					fopen(vfile, "r");
@@ -982,7 +982,7 @@ post_mail_to_sent_box(char *userid, char *title, char *file,
 	}
 	bzero(&header, sizeof (header));
 	fh_setowner(&header, id, 0);
-	setsentmailfile(buf, userid, "");
+	setsentmailfile_s(buf, sizeof buf, userid, "");
 	t = trycreatefile(buf, "M.%ld.A", now_t, 100);
 	if (t < 0)
 		return -1;
@@ -1013,7 +1013,7 @@ post_mail_to_sent_box(char *userid, char *title, char *file,
 	fprintf(fp, "\n\n\033[1;%dm\xA1\xF9 \xC0\xB4\xD4\xB4:\xA3\xAE%s %s [FROM: %.40s]\033[m\n",
 		31 + rand() % 7, BBSNAME, "http://" MY_BBS_DOMAIN, ip);
 	fclose(fp);
-	setsentmailfile(dir, userid, ".DIR");
+	setsentmailfile_s(dir, sizeof dir, userid, ".DIR");
 	append_record(dir, &header, sizeof (header));
 	return 0;
 }
@@ -2276,7 +2276,7 @@ void sstrcat(char *s, const char *format, ...){
 	va_list ap;
 	char temp[4096];
 	va_start(ap, format);
-	vsprintf(temp,format,ap);
+	vsnprintf(temp, sizeof temp, format, ap);
 	strcat(s,temp);
 	va_end(ap);
 }

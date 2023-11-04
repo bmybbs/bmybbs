@@ -34,7 +34,7 @@ bbseditmail_main()
 	snprintf(type_string, sizeof(type_string), "box_type=%d", box_type);
 
 	if(box_type == 1) {
-		setsentmailfile(path, currentuser.userid, ".DIR");
+		setsentmailfile_s(path, sizeof path, currentuser.userid, ".DIR");
 	} else {
 		setmailfile_s(path, sizeof(path), currentuser.userid, ".DIR");
 	}
@@ -88,7 +88,7 @@ bbseditmail_main()
 	printf("</td></tr></table></td></tr>\n");
 	printf("<tr><td><a href=home/boards/BBSHelp/html/itex/itexintro.html target=_blank>使用Tex风格的数学公式</a><input type=checkbox name=usemath%s>\n", x->accessed & FH_MATH ? " checked" : "");
 	if(box_type == 1) {
-		setsentmailfile(path, currentuser.userid,  file);
+		setsentmailfile_s(path, sizeof path, currentuser.userid,  file);
 	} else {
 		setmailfile_s(path, sizeof(path), currentuser.userid,  file);
 	}
@@ -179,7 +179,7 @@ static int update_form_mail(char *file, char *title, int box_type) {
 	sprintf(filename, "bbstmpfs/tmp/%d.tmp", thispid);
 	useattach = (insertattachments(filename, buf, currentuser.userid));
 	if(box_type == 1) {
-		setsentmailfile(path, currentuser.userid, file);
+		setsentmailfile_s(path, sizeof path, currentuser.userid, file);
 	} else {
 		setmailfile_s(path, sizeof(path), currentuser.userid, file);
 	}
@@ -194,7 +194,7 @@ static int update_form_mail(char *file, char *title, int box_type) {
 	fclose(fp);
 	add_edit_mark(path, currentuser.userid, now_t, fromhost);
 	if(box_type == 1) {
-		setsentmailfile(dir, currentuser.userid, ".DIR");
+		setsentmailfile_s(dir, sizeof dir, currentuser.userid, ".DIR");
 	} else {
 		setmailfile_s(dir, sizeof(dir), currentuser.userid, ".DIR");
 	}

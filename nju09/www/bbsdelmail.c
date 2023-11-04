@@ -31,8 +31,8 @@ bbsdelmail_main()
 	}
 	snprintf(type_string, sizeof(type_string), "box_type=%d", box_type);
 	if(box_type == 1) {
-		setsentmailfile(path, currentuser.userid, ".DIR");
-		setsentmailfile(tmppath, currentuser.userid, ".DIR.tmp");
+		setsentmailfile_s(path,    sizeof path,    currentuser.userid, ".DIR");
+		setsentmailfile_s(tmppath, sizeof tmppath, currentuser.userid, ".DIR.tmp");
 	} else {
 		setmailfile_s(path, sizeof(path), currentuser.userid, ".DIR");
 		setmailfile_s(tmppath, sizeof(tmppath), currentuser.userid, ".DIR.tmp");

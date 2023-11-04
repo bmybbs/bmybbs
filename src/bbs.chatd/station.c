@@ -140,7 +140,7 @@ char *s;
 		char buf[160];
 		flock(fd, LOCK_EX);
 		lseek(fd, 0, L_XTND);
-		sprintf(buf, "%s\n", s);
+		snprintf(buf, sizeof buf, "%s\n", s);
 		write(fd, buf, strlen(buf));
 		flock(fd, LOCK_UN);
 		close(fd);
@@ -156,13 +156,6 @@ char *s;
 #ifdef WWW_CHAT
 /* define for WWW Chat password attempt */
 #define BADLOGINFILE    "logins.bad"
-char *
-sethomefile(char *buf, char *userid, char *filename)
-{
-	sprintf(buf, MY_BBS_HOME "/home/%c/%s/%s", mytoupper(userid[0]), userid, filename);
-	return buf;
-}
-
 void
 logattempt(char *uid, char *frm)
 {
@@ -176,7 +169,7 @@ logattempt(char *uid, char *frm)
 		write(fd, genbuf, len);
 		close(fd);
 	}
-	sethomefile(fname, uid, BADLOGINFILE);
+	sethomefile_s(fname, sizeof fname, uid, BADLOGINFILE);
 	if ((fd = open(fname, O_WRONLY | O_CREAT | O_APPEND, 0644)) > 0) {
 		write(fd, genbuf, len);
 		close(fd);
@@ -448,7 +441,7 @@ exit_room(int unum, int disp, char *msg)
 		if (--rooms[oldrnum].occupants) {
 			switch (disp) {
 			case EXIT_LOGOUT:
-				sprintf(chatbuf, "\033[1;37m★ \033[32m[\033[36m%s\033[32m] 慢慢离开了 \033[37m★\033[m", users[unum].chatid);
+				snprintf(chatbuf, sizeof chatbuf, "\033[1;37m★ \033[32m[\033[36m%s\033[32m] 慢慢离开了 \033[37m★\033[m", users[unum].chatid);
 				if (msg && *msg) {
 					strcat(chatbuf, ": ");
 					strncat(chatbuf, msg, 80);
@@ -456,11 +449,11 @@ exit_room(int unum, int disp, char *msg)
 				break;
 
 			case EXIT_LOSTCONN:
-				sprintf(chatbuf, "\033[1;37m★ \033[32m[\033[36m%s\033[32m] 缓缓的离开了 \033[37m★\033[m", users[unum].chatid);
+				snprintf(chatbuf, sizeof chatbuf, "\033[1;37m★ \033[32m[\033[36m%s\033[32m] 缓缓的离开了 \033[37m★\033[m", users[unum].chatid);
 				break;
 
 			case EXIT_KICK:
-				sprintf(chatbuf, "\033[1;37m★ \033[32m[\033[36m%s\033[32m] 被老大赶出去了 \033[37m★\033[m", users[unum].chatid);
+				snprintf(chatbuf, sizeof chatbuf, "\033[1;37m★ \033[32m[\033[36m%s\033[32m] 被老大赶出去了 \033[37m★\033[m", users[unum].chatid);
 				break;
 			}
 			if (users[unum].cloak == 0)
@@ -493,9 +486,9 @@ chat_topic(int unum, char *msg)
 
 	strncpy(rooms[rnum].topic, msg, 48);
 	rooms[rnum].topic[47] = '\0';
-	sprintf(chatbuf, "/t%.47s", msg);
+	snprintf(chatbuf, sizeof chatbuf, "/t%.47s", msg);
 	send_to_room(rnum, chatbuf);
-	sprintf(chatbuf, "\033[1;37m★ \033[32m[\033[36m%s\033[32m] 将话题改为 \033[1;33m%s \033[37m★\033[m", users[unum].chatid, msg);
+	snprintf(chatbuf, sizeof chatbuf, "\033[1;37m★ \033[32m[\033[36m%s\033[32m] 将话题改为 \033[1;33m%s \033[37m★\033[m", users[unum].chatid, msg);
 	send_to_room(rnum, chatbuf);
 }
 
@@ -552,12 +545,12 @@ enter_room(int unum, char *room, char *msg)
 	rooms[rnum].occupants++;
 	rooms[rnum].invites[unum] = 0;
 	if (users[unum].cloak == 0) {
-		sprintf(chatbuf, "\033[1;31m□ \033[37m[\033[36;1m%s \033[34;1m(\033[33;1m %s \033[34;1m)\033[37m] 进入 \033[35m%s \033[37m包厢 \033[31m□\033[m", users[unum].chatid, users[unum].userid, rooms[rnum].name);
+		snprintf(chatbuf, sizeof chatbuf, "\033[1;31m□ \033[37m[\033[36;1m%s \033[34;1m(\033[33;1m %s \033[34;1m)\033[37m] 进入 \033[35m%s \033[37m包厢 \033[31m□\033[m", users[unum].chatid, users[unum].userid, rooms[rnum].name);
 		send_to_room(rnum, chatbuf);
 	}
-	sprintf(chatbuf, "/r%s", room);
+	snprintf(chatbuf, sizeof chatbuf, "/r%s", room);
 	send_to_unum(unum, chatbuf);
-	sprintf(chatbuf, "/t%s", rooms[rnum].topic);
+	snprintf(chatbuf, sizeof chatbuf, "/t%s", rooms[rnum].topic);
 	send_to_unum(unum, chatbuf);
 #ifdef WWW_CHAT
 	if ((rnum == oldrnum) || ((rnum == 0) && (rooms[0].occupants == 1)) || (op) || (rooms[oldrnum].occupants == 0))
@@ -602,14 +595,14 @@ print_user_counts(int unum)
 				userc++;
 		}
 	}
-	sprintf(chatbuf, "\033[1;31m□\033[37m 欢迎A光临『\033[32m%s\033[37m』的【\033[36m%s\033[37m】\033[31m□\033[m", MY_BBS_NAME, chatname);
+	snprintf(chatbuf, sizeof chatbuf, "\033[1;31m□\033[37m 欢迎A光临『\033[32m%s\033[37m』的【\033[36m%s\033[37m】\033[31m□\033[m", MY_BBS_NAME, chatname);
 	send_to_unum(unum, chatbuf);
-	sprintf(chatbuf, "\033[1;31m□\033[37m 目前已经有 \033[1;33m%d \033[37m间会议室有客人 \033[31m□\033[m", roomc + 1);
+	snprintf(chatbuf, sizeof chatbuf, "\033[1;31m□\033[37m 目前已经有 \033[1;33m%d \033[37m间会议室有客人 \033[31m□\033[m", roomc + 1);
 	send_to_unum(unum, chatbuf);
-	sprintf(chatbuf, "\033[1;31m□ \033[37m本会议厅内共有 \033[36m%d\033[37m 人 ", userc + 1);
+	snprintf(chatbuf, sizeof chatbuf, "\033[1;31m□ \033[37m本会议厅内共有 \033[36m%d\033[37m 人 ", userc + 1);
 	if (suserc)
-		sprintf(chatbuf + strlen(chatbuf), "[\033[36m%d\033[37m 人在高机密讨论室]", suserc);
-	sprintf(chatbuf + strlen(chatbuf), "\033[31m□\033[m");
+		snprintf(chatbuf + strlen(chatbuf), sizeof chatbuf - strlen(chatbuf), "[\033[36m%d\033[37m 人在高机密讨论室]", suserc);
+	snprintf(chatbuf + strlen(chatbuf), sizeof chatbuf - strlen(chatbuf), "\033[31m□\033[m");
 	send_to_unum(unum, chatbuf);
 	return 0;
 }
@@ -715,7 +708,7 @@ chat_list_rooms(int unum, char *msg)
 			if (!SYSOP(unum) && !CHATOP(unum))
 				if ((rooms[i].flags & ROOM_SECRET) && (users[unum].room != i))
 					continue;
-			sprintf(chatbuf, " \033[1;32m%-12s\033[37m│\033[36m%4d\033[37m│\033[33m%s\033[m", rooms[i].name, occupants, rooms[i].topic);
+			snprintf(chatbuf, sizeof chatbuf, " \033[1;32m%-12s\033[37m│\033[36m%4d\033[37m│\033[33m%s\033[m", rooms[i].name, occupants, rooms[i].topic);
 			if (rooms[i].flags & ROOM_LOCKED)
 				strcat(chatbuf, " [锁住]");
 			if (rooms[i].flags & ROOM_SECRET)
@@ -757,7 +750,7 @@ chat_do_user_list(int unum, char *msg, int whichroom)
 				continue;
 			else if (stop && (curr > stop))
 				break;
-			sprintf(chatbuf,
+			snprintf(chatbuf, sizeof chatbuf,
 				"\033[1;5m%c\033[0;1;37m%-8s│\033[31m%s%-12s\033[37m│\033[32m%-14s\033[37m┃\033[34m%-2s\033[37m┃\033[35m%-30s\033[m",
 				(users[i].cloak == 1) ? 'C' : ' ',
 				users[i].chatid,
@@ -781,7 +774,7 @@ chat_list_by_room(int unum, char *msg)
 		whichroom = users[unum].room;
 	else {
 		if ((whichroom = roomid_to_indx(roomstr)) == -1) {
-			sprintf(chatbuf, "\033[1;31m◎ \033[37m没 %s 这个房间喔 \033[31m◎\033[m", roomstr);
+			snprintf(chatbuf, sizeof chatbuf, "\033[1;31m◎ \033[37m没 %s 这个房间喔 \033[31m◎\033[m", roomstr);
 			send_to_unum(unum, chatbuf);
 			return;
 		}
@@ -816,7 +809,7 @@ chat_map_chatids(int unum, int whichroom)
 				if ((rooms[rnum].flags & ROOM_SECRET) && !SYSOP(unum) && !CHATOP(unum))
 					continue;
 			}
-			sprintf(chatbuf + (c * 50),
+			snprintf(chatbuf + (c * 50), sizeof chatbuf - (c * 50),
 				"\033[1;34;5m%c\033[m\033[1m%-8s%c%s%-12s%s\033[m",
 				(users[i].cloak == 1) ? 'C' : ' ',
 				users[i].chatid, (ROOMOP(i)) ? '*' : ' ',
@@ -882,13 +875,13 @@ chat_setroom(int unum, char *msg)
 			fstr = "禁止动作";
 			break;
 		default:
-			sprintf(chatbuf, "\033[1;31m◎ \033[37m抱歉，看不懂你的意思：[\033[36m%c\033[37m] \033[31m◎\033[m", *modestr);
+			snprintf(chatbuf, sizeof chatbuf, "\033[1;31m◎ \033[37m抱歉，看不懂你的意思：[\033[36m%c\033[37m] \033[31m◎\033[m", *modestr);
 			send_to_unum(unum, chatbuf);
 			return;
 		}
 		if (flag && ((rooms[rnum].flags & flag) != sign * flag)) {
 			rooms[rnum].flags ^= flag;
-			sprintf(chatbuf,
+			snprintf(chatbuf, sizeof chatbuf,
 				"\033[1;37m★\033[32m 这房间被 %s %s%s的形式 \033[37m★\033[m",
 				users[unum].chatid, sign ? "设定为" : "取消",
 				fstr);
@@ -915,10 +908,10 @@ chat_nick(int unum, char *msg)
 		send_to_unum(unum, "\033[1;31m◎ \033[37m抱歉！有人跟你同名，所以你不能进来 \033[31m◎\033[m");
 		return;
 	}
-	sprintf(chatbuf, "\033[1;31m◎ \033[36m%s \033[0;37m已经改名为 \033[1;33m%s \033[31m◎\033[m", users[unum].chatid, chatid);
+	snprintf(chatbuf, sizeof chatbuf, "\033[1;31m◎ \033[36m%s \033[0;37m已经改名为 \033[1;33m%s \033[31m◎\033[m", users[unum].chatid, chatid);
 	send_to_room(users[unum].room, chatbuf);
 	strcpy(users[unum].chatid, chatid);
-	sprintf(chatbuf, "/n%s", users[unum].chatid);
+	snprintf(chatbuf, sizeof chatbuf, "/n%s", users[unum].chatid);
 	send_to_unum(unum, chatbuf);
 #ifdef WWW_CHAT
 	www_user_list(-1, users[unum].room);
@@ -936,21 +929,21 @@ chat_private(int unum, char *msg)
 	if (recunum < 0) {
 		/* no such user, or ambiguous */
 		if (recunum == -1)
-			sprintf(chatbuf, msg_no_such_id, recipient);
+			snprintf(chatbuf, sizeof chatbuf, msg_no_such_id, recipient);
 		else
-			sprintf(chatbuf, "\033[1;31m ◎\033[37m 那位参与者叫什么名字 \033[31m◎\033[m");
+			snprintf(chatbuf, sizeof chatbuf, "\033[1;31m ◎\033[37m 那位参与者叫什么名字 \033[31m◎\033[m");
 		send_to_unum(unum, chatbuf);
 		return;
 	}
 	if (*msg) {
-		sprintf(chatbuf, "\033[1;32m ※ \033[36m%s \033[37m传纸条小秘书来到\033[m: ", users[unum].chatid);
+		snprintf(chatbuf, sizeof chatbuf, "\033[1;32m ※ \033[36m%s \033[37m传纸条小秘书来到\033[m: ", users[unum].chatid);
 		strncat(chatbuf, msg, 80);
 		send_to_unum(recunum, chatbuf);
-		sprintf(chatbuf, "\033[1;32m ※ \033[37m纸条已经交给了 \033[36m%s\033[m: ", users[recunum].chatid);
+		snprintf(chatbuf, sizeof chatbuf, "\033[1;32m ※ \033[37m纸条已经交给了 \033[36m%s\033[m: ", users[recunum].chatid);
 		strncat(chatbuf, msg, 80);
 		send_to_unum(unum, chatbuf);
 	} else {
-		sprintf(chatbuf, "\033[1;31m ◎\033[37m 你要跟对方说些什么呀？\033[31m◎\033[m");
+		snprintf(chatbuf, sizeof chatbuf, "\033[1;31m ◎\033[37m 你要跟对方说些什么呀？\033[31m◎\033[m");
 		send_to_unum(unum, chatbuf);
 	}
 }
@@ -987,9 +980,9 @@ chat_allmsg(int unum, char *msg)
 					else
 						color = c - '0';
 					if (color > 7)
-						sprintf(colorstr, "\x1b[1;%dm", color + 30);
+						snprintf(colorstr, sizeof colorstr, "\x1b[1;%dm", color + 30);
 					else
-						sprintf(colorstr, "\x1b[%dm", color + 30);
+						snprintf(colorstr, sizeof colorstr, "\x1b[%dm", color + 30);
 					if (strlen(colorstr + i) < 252) {
 						chatbuf[i] = 0;
 						strcat(chatbuf, colorstr);
@@ -1027,7 +1020,7 @@ chat_act(int unum, char *msg)
 	};
 	if (*msg) {
 /*    sprintf(chatbuf, "\033[1;36m%s \033[37m%s\033[m", users[unum].chatid, msg); */
-		sprintf(chatbuf, "\x1b[1;36m%s \x1b[1;33m\x1b[m", users[unum].chatid);
+		snprintf(chatbuf, sizeof chatbuf, "\x1b[1;36m%s \x1b[1;33m\x1b[m", users[unum].chatid);
 		i = strlen(chatbuf);
 		while ((*msg != 0) && (i < 252)) {
 			if (*msg == '%') {
@@ -1039,9 +1032,9 @@ chat_act(int unum, char *msg)
 					else
 						color = c - '0';
 					if (color > 7)
-						sprintf(colorstr, "\x1b[1;%dm", color + 30);
+						snprintf(colorstr, sizeof colorstr, "\x1b[1;%dm", color + 30);
 					else
-						sprintf(colorstr, "\x1b[%dm", color + 30);
+						snprintf(colorstr, sizeof colorstr, "\x1b[%dm", color + 30);
 					if (strlen(colorstr + i) < 252) {
 						chatbuf[i] = 0;
 						strcat(chatbuf, colorstr);
@@ -1073,7 +1066,7 @@ chat_cloak(int unum, char *msg)
 			users[unum].cloak = 0;
 		else
 			users[unum].cloak = 1;
-		sprintf(chatbuf, "\033[1;36m%s \033[37m%s 隐身状态...\033[m",
+		snprintf(chatbuf, sizeof chatbuf, "\033[1;36m%s \033[37m%s 隐身状态...\033[m",
 			users[unum].chatid,
 			(users[unum].cloak == 1) ? "进入" : "停止");
 		send_to_unum(unum, chatbuf);
@@ -1111,12 +1104,12 @@ chat_kick(int unum, char *msg)
 		return;
 	}
 	if ((recunum = chatid_to_indx(unum, twit)) == -1) {
-		sprintf(chatbuf, msg_no_such_id, twit);
+		snprintf(chatbuf, sizeof chatbuf, msg_no_such_id, twit);
 		send_to_unum(unum, chatbuf);
 		return;
 	}
 	if (rnum != users[recunum].room) {
-		sprintf(chatbuf, msg_not_here, users[recunum].chatid);
+		snprintf(chatbuf, sizeof chatbuf, msg_not_here, users[recunum].chatid);
 		send_to_unum(unum, chatbuf);
 		return;
 	}
@@ -1141,23 +1134,23 @@ chat_makeop(int unum, char *msg)
 	}
 	if ((recunum = chatid_to_indx(unum, newop)) == -1) {
 		/* no such user */
-		sprintf(chatbuf, msg_no_such_id, newop);
+		snprintf(chatbuf, sizeof chatbuf, msg_no_such_id, newop);
 		send_to_unum(unum, chatbuf);
 		return;
 	}
 	if (unum == recunum) {
-		sprintf(chatbuf, "\033[1;37m★ \033[32m你忘了你本来就是老大喔 \033[37m★\033[m");
+		snprintf(chatbuf, sizeof chatbuf, "\033[1;37m★ \033[32m你忘了你本来就是老大喔 \033[37m★\033[m");
 		send_to_unum(unum, chatbuf);
 		return;
 	}
 	if (rnum != users[recunum].room) {
-		sprintf(chatbuf, msg_not_here, users[recunum].chatid);
+		snprintf(chatbuf, sizeof chatbuf, msg_not_here, users[recunum].chatid);
 		send_to_unum(unum, chatbuf);
 		return;
 	}
 	users[unum].flags &= ~PERM_CHATROOM;
 	users[recunum].flags |= PERM_CHATROOM;
-	sprintf(chatbuf, "\033[1;37m★ \033[36m %s\033[32m决定让 \033[35m%s \033[32m当老大 \033[37m★\033[m",
+	snprintf(chatbuf, sizeof chatbuf, "\033[1;37m★ \033[36m %s\033[32m决定让 \033[35m%s \033[32m当老大 \033[37m★\033[m",
 		users[unum].chatid, users[recunum].chatid);
 	send_to_room(rnum, chatbuf);
 #ifdef WWW_CHAT
@@ -1246,7 +1239,7 @@ chat_knock_room(int unum, char *msg)
 		send_to_unum(unum, "\033[1;31m◎ \033[37m 请勿打扰，谢谢合作！ 记得要乖哦~~:PP \033[31m◎\033[m");
 		return;
 	}
-	sprintf(chatbuf, "\033[1;37m◎ \033[31m当当当...  \033[33m%s [%s] \033[37m在%s敲门: \033[32m%s \033[37m◎\033[m", users[unum].chatid, users[unum].userid, (rnum == users[unum].room) ? (outd) : (ind), (msg));
+	snprintf(chatbuf, sizeof chatbuf, "\033[1;37m◎ \033[31m当当当...  \033[33m%s [%s] \033[37m在%s敲门: \033[32m%s \033[37m◎\033[m", users[unum].chatid, users[unum].userid, (rnum == users[unum].room) ? (outd) : (ind), (msg));
 	send_to_room(rnum, chatbuf);
 	if (rnum != users[unum].room)
 		send_to_unum(unum, chatbuf);
@@ -1267,26 +1260,26 @@ chat_clear_op(int unum, char *msg)
 		return;		/* only SYSOP can do this */
 	if ((recunum = chatid_to_indx(unum, newop)) == -1) {
 		/* no such user */
-		sprintf(chatbuf, msg_no_such_id, newop);
+		snprintf(chatbuf, sizeof chatbuf, msg_no_such_id, newop);
 		send_to_unum(unum, chatbuf);
 		return;
 	}
 	if (unum == recunum) {
-		sprintf(chatbuf, "\033[1;37m★ \033[32m要自裁？何必呢？？何苦呢？？ \033[37m★\033[m");
+		snprintf(chatbuf, sizeof chatbuf, "\033[1;37m★ \033[32m要自裁？何必呢？？何苦呢？？ \033[37m★\033[m");
 		send_to_unum(unum, chatbuf);
 		return;
 	}
 	if (rnum != users[recunum].room) {
-		sprintf(chatbuf, msg_not_here, users[recunum].chatid);
+		snprintf(chatbuf, sizeof chatbuf, msg_not_here, users[recunum].chatid);
 		send_to_unum(unum, chatbuf);
 		return;
 	}
 	if ((users[recunum].flags & PERM_CHATROOM) != PERM_CHATROOM) {
-		sprintf(chatbuf, "\033[1;37m★ \033[32m奇怪，\033[35m%s \033[32m不是老大呀！\033[37m★\033[m",
+		snprintf(chatbuf, sizeof chatbuf, "\033[1;37m★ \033[32m奇怪，\033[35m%s \033[32m不是老大呀！\033[37m★\033[m",
 			users[recunum].chatid);
 	}
 	users[recunum].flags &= ~PERM_CHATROOM;
-	sprintf(chatbuf, "\033[1;37m★ \033[36m %s\033[32m决定撤了 \033[35m%s \033[32m的职 \033[37m★\033[m", users[unum].chatid, users[recunum].chatid);
+	snprintf(chatbuf, sizeof chatbuf, "\033[1;37m★ \033[36m %s\033[32m决定撤了 \033[35m%s \033[32m的职 \033[37m★\033[m", users[unum].chatid, users[recunum].chatid);
 	send_to_room(rnum, chatbuf);
 }
 
@@ -1304,19 +1297,19 @@ chat_invite(int unum, char *msg)
 		return;
 	}
 	if ((recunum = chatid_to_indx(unum, invitee)) == -1) {
-		sprintf(chatbuf, msg_not_here, invitee);
+		snprintf(chatbuf, sizeof chatbuf, msg_not_here, invitee);
 		send_to_unum(unum, chatbuf);
 		return;
 	}
 	if (rooms[rnum].invites[recunum] == 1) {
-		sprintf(chatbuf, "\033[1;37m★ \033[36m%s \033[32m等一下就来 \033[37m★\033[m", users[recunum].chatid);
+		snprintf(chatbuf, sizeof chatbuf, "\033[1;37m★ \033[36m%s \033[32m等一下就来 \033[37m★\033[m", users[recunum].chatid);
 		send_to_unum(unum, chatbuf);
 		return;
 	}
 	rooms[rnum].invites[recunum] = 1;
-	sprintf(chatbuf, "\033[1;37m★ \033[36m%s \033[32m邀请您到 [\033[33m%s\033[32m] 房间聊天\033[37m ★\033[m", users[unum].chatid, rooms[rnum].name);
+	snprintf(chatbuf, sizeof chatbuf, "\033[1;37m★ \033[36m%s \033[32m邀请您到 [\033[33m%s\033[32m] 房间聊天\033[37m ★\033[m", users[unum].chatid, rooms[rnum].name);
 	send_to_unum(recunum, chatbuf);
-	sprintf(chatbuf, "\033[1;37m★ \033[36m%s \033[32m等一下就来 \033[37m★\033[m", users[recunum].chatid);
+	snprintf(chatbuf, sizeof chatbuf, "\033[1;37m★ \033[36m%s \033[32m等一下就来 \033[37m★\033[m", users[recunum].chatid);
 	send_to_unum(unum, chatbuf);
 }
 
@@ -1331,9 +1324,9 @@ chat_broadcast(int unum, char *msg)
 		send_to_unum(unum, "\033[1;37m★ \033[32m广播内容是什么 \033[37m★\033[m");
 		return;
 	}
-	sprintf(chatbuf, "\033[1m Ding Dong!! 传达室报告： \033[36m%s\033[37m 有话对大家宣布：\033[m", users[unum].chatid);
+	snprintf(chatbuf, sizeof chatbuf, "\033[1m Ding Dong!! 传达室报告： \033[36m%s\033[37m 有话对大家宣布：\033[m", users[unum].chatid);
 	send_to_room(ROOM_ALL, chatbuf);
-	sprintf(chatbuf, "\033[1;34m【\033[33m%s\033[34m】\033[m", msg);
+	snprintf(chatbuf, sizeof chatbuf, "\033[1;34m【\033[33m%s\033[34m】\033[m", msg);
 	send_to_room(ROOM_ALL, chatbuf);
 }
 
@@ -1426,15 +1419,15 @@ party_action(int unum, char *cmd, char *party)
 				if (recunum < 0) {
 					/* no such user, or ambiguous */
 					if (recunum == -1)
-						sprintf(chatbuf, msg_no_such_id, party);
+						snprintf(chatbuf, sizeof chatbuf, msg_no_such_id, party);
 					else
-						sprintf(chatbuf, "\033[1;31m◎ \033[37m请问哪间房间 \033[31m◎\033[m");
+						snprintf(chatbuf, sizeof chatbuf, "\033[1;31m◎ \033[37m请问哪间房间 \033[31m◎\033[m");
 					send_to_unum(unum, chatbuf);
 					return 0;
 				}
 				party = users[recunum].chatid;
 			}
-			sprintf(chatbuf, "\033[1;36m%s \033[32m%s\033[33m %s \033[32m%s\033[37;0m", users[unum].chatid, party_data[i].part1_msg, party, party_data[i].part2_msg);
+			snprintf(chatbuf, sizeof chatbuf, "\033[1;36m%s \033[32m%s\033[33m %s \033[32m%s\033[37;0m", users[unum].chatid, party_data[i].part1_msg, party, party_data[i].part2_msg);
 			send_to_room(users[unum].room, chatbuf);
 			return 0;
 		}
@@ -1483,7 +1476,7 @@ speak_action(int unum, char *cmd, char *msg)
 
 	for (i = 0; speak_data[i].verb; i++) {
 		if (!strcmp(cmd, speak_data[i].verb)) {
-			sprintf(chatbuf, "\033[1;36m%s \033[32m%s：\033[33m %s\033[37;0m", users[unum].chatid, speak_data[i].part1_msg, msg);
+			snprintf(chatbuf, sizeof chatbuf, "\033[1;36m%s \033[32m%s：\033[33m %s\033[37;0m", users[unum].chatid, speak_data[i].part1_msg, msg);
 			send_to_room(users[unum].room, chatbuf);
 			return 0;
 		}
@@ -1523,7 +1516,7 @@ condition_action(int unum, char *cmd)
 
 	for (i = 0; condition_data[i].verb; i++) {
 		if (!strcmp(cmd, condition_data[i].verb)) {
-			sprintf(chatbuf, "\033[1;36m%s \033[33m%s\033[37;0m", users[unum].chatid, condition_data[i].part1_msg);
+			snprintf(chatbuf, sizeof chatbuf, "\033[1;36m%s \033[33m%s\033[37;0m", users[unum].chatid, condition_data[i].part1_msg);
 			send_to_room(users[unum].room, chatbuf);
 			return 1;
 		}
@@ -1649,7 +1642,7 @@ command_execute(int unum)
 	}
 
 	if (!match) {
-		sprintf(chatbuf, "\033[1;31m ◎ \033[37m抱歉，看不懂你的意思：\033[36m/%s \033[31m◎\033[m", cmd);
+		snprintf(chatbuf, sizeof chatbuf, "\033[1;31m ◎ \033[37m抱歉，看不懂你的意思：\033[36m/%s \033[31m◎\033[m", cmd);
 		send_to_unum(unum, chatbuf);
 	}
 	memset(users[unum].ibuf, 0, sizeof (users[unum].ibuf));

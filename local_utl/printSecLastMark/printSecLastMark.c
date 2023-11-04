@@ -79,7 +79,7 @@ readlastmark(char *board, int *thread, char *title)
 	char buf[200], *ptr;
 	FILE *fp;
 	int found = 0;
-	sprintf(buf, MY_BBS_HOME "/wwwtmp/lastmark/%s", board);
+	snprintf(buf, sizeof buf, MY_BBS_HOME "/wwwtmp/lastmark/%s", board);
 	*thread = 0;
 	if (!file_exist(buf))
 		goto END;
@@ -181,7 +181,7 @@ makeallseclastmark(const struct sectree *sec)
 	FILE *fp;
 	if (!sec->introstr[0])
 		return -1;
-	sprintf(tmp, "%s/wwwtmp/lastmark.sec%s.new", MY_BBS_HOME, sec->basestr);
+	snprintf(tmp, sizeof tmp, "%s/wwwtmp/lastmark.sec%s.new", MY_BBS_HOME, sec->basestr);
 	fp = fopen(tmp, "w");
 	if (!fp)
 		return -1;
@@ -199,7 +199,7 @@ makeallseclastmark(const struct sectree *sec)
 			fprintf(fp, "</td><td>&nbsp;</td><td valign=top width=49%%>\n");
 		if(sec->introstr[i]=='|')
 			continue;
-		sprintf(buf, "%s%c", sec->basestr, sec->introstr[i]);
+		snprintf(buf, sizeof buf, "%s%c", sec->basestr, sec->introstr[i]);
 		subsec = getsectree(buf);
 		if (!subsec)
 			continue;
@@ -208,7 +208,7 @@ makeallseclastmark(const struct sectree *sec)
 	}
 	fprintf(fp, "</td></tr></table>\n");
 	fclose(fp);
-	sprintf(buf, "%s/wwwtmp/lastmark.sec%s", MY_BBS_HOME, sec->basestr);
+	snprintf(buf, sizeof buf, "%s/wwwtmp/lastmark.sec%s", MY_BBS_HOME, sec->basestr);
 	rename(tmp, buf);
 	for (i = 0; i < sec->nsubsec; i++)
 		makeallseclastmark(sec->subsec[i]);

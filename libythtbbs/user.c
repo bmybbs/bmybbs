@@ -74,13 +74,6 @@ mytoupper(unsigned char ch)
 }
 
 char *
-sethomepath(char *buf, const char *userid)
-{
-	sprintf(buf, MY_BBS_HOME "/home/%c/%s", mytoupper(userid[0]), userid);
-	return buf;
-}
-
-char *
 sethomepath_s(char *buf, size_t buf_size, const char *userid)
 {
 	snprintf(buf, buf_size, MY_BBS_HOME "/home/%c/%s", mytoupper(userid[0]), userid);
@@ -93,23 +86,9 @@ char *setmailpath_s(char *buf, const size_t buf_size, const char *userid) {
 }
 
 char *
-sethomefile(char *buf, const char *userid, const char *filename)
-{
-	sprintf(buf, MY_BBS_HOME "/home/%c/%s/%s", mytoupper(userid[0]), userid, filename);
-	return buf;
-}
-
-char *
 sethomefile_s(char *buf, size_t buf_size, const char *userid, const char *filename)
 {
 	snprintf(buf, buf_size, MY_BBS_HOME "/home/%c/%s/%s", mytoupper(userid[0]), userid, filename);
-	return buf;
-}
-
-char *
-setmailfile(char *buf, const char *userid, const char *filename)
-{
-	sprintf(buf, MY_BBS_HOME "/mail/%c/%s/%s", mytoupper(userid[0]), userid, filename);
 	return buf;
 }
 
@@ -124,9 +103,8 @@ setmailfile_s(char *buf, size_t buf_size, const char *userid, const char *filena
 get the file path of sent mail box
 */
 char *
-setsentmailfile(char *buf, const char *userid, const char *filename)
-{
-	sprintf(buf, MY_BBS_HOME "/sent_mail/%c/%s/%s", mytoupper(userid[0]), userid, filename);
+setsentmailfile_s(char *buf, size_t buf_size, const char *userid, const char *filename) {
+	snprintf(buf, buf_size, MY_BBS_HOME "/sent_mail/%c/%s/%s", mytoupper(userid[0]), userid, filename);
 	return buf;
 }
 

@@ -63,7 +63,7 @@ main(int argn, char **argv)
 	filetime = atoi(fn + 2);
 	if (filetime == 0)
 		return 0;
-	sprintf(path, MY_BBS_HOME "/boards/%s/.DIR", argv[1]);
+	snprintf(path, sizeof path, MY_BBS_HOME "/boards/%s/.DIR", argv[1]);
 
 	MMAP_TRY {
 		if (mmapfile(path, &mf) == -1)

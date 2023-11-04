@@ -339,7 +339,7 @@ html_topten(int mode, char *file)
 	{
 		bt = bt_area[i];
 		char path[256];
-		sprintf(path, AREA_DIR "/%c", area[i]);
+		snprintf(path, sizeof path, AREA_DIR "/%c", area[i]);
 		fp = fopen(path, "w");
 		fprintf(fp, "%s<table width='90%%'>", BDSTYLE);
 		for (j = 0; j < AREA_TOP_CNT && bt->unum != 0; j++, bt++)

@@ -335,14 +335,14 @@ cancelpost(char *board, char *userid, struct fileheader *fh, int owned)
 	ytht_strsncpy(postfile.title, buf, sizeof(postfile.title));
 	digestmode = (owned) ? 5 : 4;
 	if (5 == digestmode)
-		sprintf(buf, MY_BBS_HOME "/boards/%s/.JUNK", board);
+		snprintf(buf, sizeof buf, MY_BBS_HOME "/boards/%s/.JUNK", board);
 	else
-		sprintf(buf, MY_BBS_HOME "/boards/%s/.DELETED", board);
+		snprintf(buf, sizeof buf, MY_BBS_HOME "/boards/%s/.DELETED", board);
 	append_record(buf, &postfile, sizeof (postfile));
 	if (strrchr(fh->owner, '.'))
 		return;
 	if ((fh->accessed & FH_INND) && fh->filetime > now_t - 14 * 86400) {
-		sprintf(buf, MY_BBS_HOME "/boards/%s/%s", board, fh2fname(fh));
+		snprintf(buf, sizeof buf, MY_BBS_HOME "/boards/%s/%s", board, fh2fname(fh));
 		from[0] = '\0';
 		if ((fin = fopen(buf, "r")) != NULL) {
 			while (fgets(buf, sizeof (buf), fin) != NULL) {
@@ -396,7 +396,7 @@ fh_find_thread(struct fileheader *fh, char *board)
 	if (fh->thread != 0)
 		return 0;
 	fh->thread = fh->filetime;
-	sprintf(direct, MY_BBS_HOME "/boards/%s/.DIR", board);
+	snprintf(direct, sizeof direct, MY_BBS_HOME "/boards/%s/.DIR", board);
 	if (mmapfile(direct, &mf) < 0)
 		return -1;
 	if (!strncasecmp(title, "Re:", 3))

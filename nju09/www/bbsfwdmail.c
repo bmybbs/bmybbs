@@ -38,7 +38,7 @@ bbsfwdmail_main()
 	snprintf(type_string, sizeof(type_string), "box_type=%d", box_type);
 
 	if(box_type == 1) {
-		setsentmailfile(dir, currentuser.userid, ".DIR");
+		setsentmailfile_s(dir, sizeof dir, currentuser.userid, ".DIR");
 	} else {
 		setmailfile_s(dir, sizeof(dir), currentuser.userid, ".DIR");
 	}
@@ -75,7 +75,7 @@ bbsfwdmail_main()
 		}
 		snprintf(bbsfwdmail_tmpfn, 80, "bbstmpfs/tmp/bbsfwdmail.%s.%d", currentuser.userid, thispid);
 		if(box_type == 1) {
-			setsentmailfile(path, currentuser.userid, fh2fname(x));
+			setsentmailfile_s(path, sizeof path, currentuser.userid, fh2fname(x));
 		} else {
 			setmailfile_s(path, sizeof(path), currentuser.userid, fh2fname(x));
 		}

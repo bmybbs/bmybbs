@@ -67,7 +67,7 @@ delete_old_junk(char *filename)
 	ndeleted = 0;
 	while (read(fdr, &fhdr, sizeof (fhdr)) == sizeof (fhdr)) {
 		char fullpath[STRLEN];
-		sprintf(fullpath, MY_BBS_HOME "/boards/%s/%s", currboard,
+		snprintf(fullpath, sizeof fullpath, MY_BBS_HOME "/boards/%s/%s", currboard,
 			fh2fname(&fhdr));
 		fmday = fhdr.deltime;
 		while (fmday > mday)
@@ -119,15 +119,15 @@ rm_junk(struct boardheader *bhp)
 	char buf[200];
 //   printf("%s\n",bhp->filename);
 //   if(!strcmp(bhp->filename,"test")) {
-	sprintf(buf, MY_BBS_HOME "/boards/%s/.DELETED", bhp->filename);
+	snprintf(buf, sizeof buf, MY_BBS_HOME "/boards/%s/.DELETED", bhp->filename);
 	digestmode = 4;
-	sprintf(currboard, "%s", bhp->filename);
+	snprintf(currboard, sizeof currboard, "%s", bhp->filename);
 	printf(".DELETED ");
 	if (delete_old_junk(buf) != 0)
 		return -1;
-	sprintf(buf, MY_BBS_HOME "/boards/%s/.JUNK", bhp->filename);
+	snprintf(buf, sizeof buf, MY_BBS_HOME "/boards/%s/.JUNK", bhp->filename);
 	digestmode = 5;
-	sprintf(currboard, "%s", bhp->filename);
+	snprintf(currboard, sizeof currboard, "%s", bhp->filename);
 	printf(".JUNK ");
 	if (delete_old_junk(buf) != 0)
 		return -1;

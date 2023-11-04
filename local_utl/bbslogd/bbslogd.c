@@ -46,7 +46,7 @@ getfilename()
 	struct tm *n;
 	time(&dtime);
 	n = localtime(&dtime);
-	sprintf(logf, MY_BBS_HOME "/newtrace/%d-%02d-%02d.log",
+	snprintf(logf, sizeof logf, MY_BBS_HOME "/newtrace/%d-%02d-%02d.log",
 		1900 + n->tm_year, 1 + n->tm_mon, n->tm_mday);
 	return logf;
 }
