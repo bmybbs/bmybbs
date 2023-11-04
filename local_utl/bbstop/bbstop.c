@@ -112,11 +112,11 @@ top_post(FILE * fp)
 ==== ===============================  ===== ================================\n\033[0m\
 ");
 	for (i = 0; i < rows; i++) {
-		sprintf(buf1, "[%2d] %-10.10s %-14.14s %3d",
+		snprintf(buf1, sizeof buf1, "[%2d] %-10.10s %-14.14s %3d",
 			i + 1, post_q[i].userid, post_q[i].username,
 			post_q[i].numposts);
 		j = i + rows;
-		sprintf(buf2, "[%2d] %-10.10s %-14.14s   %3d",
+		snprintf(buf2, sizeof buf2, "[%2d] %-10.10s %-14.14s   %3d",
 			j + 1, post_q[j].userid, post_q[j].username,
 			post_q[j].numposts);
 
@@ -137,12 +137,12 @@ top_perm(FILE * fp)
 ==== ===============================   ==== =================================\n\033[0m\
 ");
 	for (i = 0; i < rows; i++) {
-		sprintf(buf1, "[%2d] %-10.10s %-14.14s %5ld",
+		snprintf(buf1, sizeof buf1, "[%2d] %-10.10s %-14.14s %5ld",
 			i + 1, perm_q[i].userid, perm_q[i].username,
 			(perm_q[i].numlogins / 3) + perm_q[i].numposts +
 			(perm_q[i].stay / 3600));
 		j = i + rows;
-		sprintf(buf2, "[%2d] %-10.10s %-14.14s   %5ld",
+		snprintf(buf2, sizeof buf2, "[%2d] %-10.10s %-14.14s   %5ld",
 			j + 1, perm_q[j].userid, perm_q[j].username,
 			(perm_q[j].numlogins / 3) + perm_q[j].numposts +
 			(perm_q[j].stay / 3600));
@@ -234,7 +234,7 @@ output(char *file, int mode)
 {
 	FILE *fp;
 	char fn[80];
-	sprintf(fn, MY_BBS_HOME "/%s", file);
+	snprintf(fn, sizeof fn, MY_BBS_HOME "/%s", file);
 	fp = fopen(fn, "w");
 	if (fp) {
 		switch (mode) {
@@ -290,7 +290,7 @@ output_c(char *file, int mode)
 	}
 	if (ms == NULL)
 		return;
-	sprintf(fn, MY_BBS_HOME "/%s", file);
+	snprintf(fn, sizeof fn, MY_BBS_HOME "/%s", file);
 	fd = open(fn, O_WRONLY | O_CREAT, 0660);
 	if (fd) {
 		qsort(ms, count, sizeof(struct mystat), cmpstat);
@@ -310,7 +310,7 @@ char **argv;
 	int i;
 	struct userec aman;
 	char passwd_file[256];
-	sprintf(passwd_file, MY_BBS_HOME "/" PASSFILE);
+	snprintf(passwd_file, sizeof passwd_file, MY_BBS_HOME "/" PASSFILE);
 
 	inf = fopen(passwd_file, "rb");
 
