@@ -37,6 +37,6 @@
 		"prettier": "^2.8.4",
 		"rollup-plugin-prismjs": "^0.1.0",
 		"sass": "^1.69.5",
-		"vite": "^4.1.5"
+		"vite": "^4.5.0"
 	}
 }
