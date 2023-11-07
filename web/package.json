@@ -15,7 +15,7 @@
 		"@fortawesome/free-solid-svg-icons": "^6.4.2",
 		"@fortawesome/vue-fontawesome": "^3.0.0-4",
 		"@meforma/vue-toaster": "^1.1.1",
-		"@popperjs/core": "^2.9.2",
+		"@popperjs/core": "^2.11.8",
 		"bootstrap": "5.2.3",
 		"dayjs": "^1.10.6",
 		"dompurify": "^3.0.3",
