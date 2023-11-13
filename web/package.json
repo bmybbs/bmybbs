@@ -13,7 +13,7 @@
 		"@fortawesome/fontawesome-svg-core": "^6.3.0",
 		"@fortawesome/free-regular-svg-icons": "^6.4.2",
 		"@fortawesome/free-solid-svg-icons": "^6.4.2",
-		"@fortawesome/vue-fontawesome": "^3.0.0-4",
+		"@fortawesome/vue-fontawesome": "^3.0.5",
 		"@meforma/vue-toaster": "^1.1.1",
 		"@popperjs/core": "^2.11.8",
 		"bootstrap": "5.2.3",
