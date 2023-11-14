@@ -42,8 +42,7 @@ void getcross(char *filepath, char *filepath2, char *nboard, char *posttitle) {
 int post_cross(char *filename, char *nboard, char *posttitle, char *owner) {
 	struct fileheader postfile;
 	char filepath[STRLEN];
-	char buf[256], buf4[STRLEN];
-	int fp;
+	char buf[256];
 	time_t now;
 
 	memset(&postfile, 0, sizeof (postfile));
