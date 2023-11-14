@@ -1,17 +1,11 @@
 #include "bbs.h"
 
-char *
-setbfile(buf, boardname, filename)
-char *buf, *boardname, *filename;
-{
+char * setbfile(char *buf, char *boardname, char *filename) {
 	snprintf(buf, sizeof buf, MY_BBS_HOME "/boards/%s/%s", boardname, filename);
 	return buf;
 }
 
-char *
-setbdir(buf, boardname)
-char *buf, *boardname;
-{
+char * setbdir(char *buf, char *boardname) {
 	char dir[STRLEN];
 
 	strncpy(dir, DOT_DIR, STRLEN);
@@ -20,10 +14,7 @@ char *buf, *boardname;
 	return buf;
 }
 
-void
-getcross(filepath, filepath2, nboard, posttitle)
-char *filepath, *filepath2, *nboard, *posttitle;
-{
+void getcross(char *filepath, char *filepath2, char *nboard, char *posttitle) {
 	FILE *inf, *of;
 	char buf[256];
 	time_t now;
@@ -48,10 +39,7 @@ char *filepath, *filepath2, *nboard, *posttitle;
 	fclose(of);
 }
 
-int
-post_cross(filename, nboard, posttitle, owner)
-char *filename, *nboard, *posttitle, *owner;
-{
+int post_cross(char *filename, char *nboard, char *posttitle, char *owner) {
 	struct fileheader postfile;
 	char filepath[STRLEN];
 	char buf[256], buf4[STRLEN];
@@ -82,11 +70,9 @@ char *filename, *nboard, *posttitle, *owner;
 	return 1;
 }
 
-int
-cmpbnames(bname, brec)
-char *bname;
-struct boardheader *brec;
-{
+int cmpbnames(void *a, void *b) {
+	char *bname = (char *) a;
+	struct boardheader *brec = (struct boardheader *) b;
 	if (!strncmp(bname, brec->filename, sizeof (brec->filename)))
 		return 1;
 	else
