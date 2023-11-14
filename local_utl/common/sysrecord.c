@@ -1,16 +1,16 @@
 #include "bbs.h"
 
-char * setbfile(char *buf, char *boardname, char *filename) {
-	snprintf(buf, sizeof buf, MY_BBS_HOME "/boards/%s/%s", boardname, filename);
+static char *setbfile(char *buf, size_t len, char *boardname, char *filename) {
+	snprintf(buf, len, MY_BBS_HOME "/boards/%s/%s", boardname, filename);
 	return buf;
 }
 
-char * setbdir(char *buf, char *boardname) {
+static char *setbdir(char *buf, size_t len, char *boardname) {
 	char dir[STRLEN];
 
 	strncpy(dir, DOT_DIR, STRLEN);
 	dir[STRLEN - 1] = '\0';
-	snprintf(buf, sizeof buf, MY_BBS_HOME "/boards/%s/%s", boardname, dir);
+	snprintf(buf, len, MY_BBS_HOME "/boards/%s/%s", boardname, dir);
 	return buf;
 }
 
@@ -49,7 +49,7 @@ int post_cross(char *filename, char *nboard, char *posttitle, char *owner) {
 	memset(&postfile, 0, sizeof (postfile));
 
 	now = time(0);
-	setbfile(filepath, nboard, "");
+	setbfile(filepath, sizeof(filepath), nboard, "");
 	now = trycreatefile(filepath, "M.%ld.A", now, 100);
 	if (now < 0)
 		return -1;
@@ -61,7 +61,7 @@ int post_cross(char *filename, char *nboard, char *posttitle, char *owner) {
 	getcross(filepath, filename, nboard, posttitle);
 	chmod(filepath, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
 
-	setbdir(buf, nboard);
+	setbdir(buf, sizeof(buf), nboard);
 	if (append_record(buf, &postfile, sizeof (postfile)) == -1) {
 		printf("post recored fail!\n");
 		return 0;
