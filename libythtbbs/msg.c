@@ -89,7 +89,7 @@ save_msgtext(char *uident, struct msghead *head, const char *msgbuf)
 }
 
 int
-translate_msg(char *src, struct msghead *head, char *dest, int add_site)
+translate_msg(char *src, struct msghead *head, char *dest, size_t dest_len, int add_site)
 {
 	char *time, attstr[STRLEN];
 	char uid[STRLEN];
@@ -99,53 +99,53 @@ translate_msg(char *src, struct msghead *head, char *dest, int add_site)
 	dest[0] = 0;
 	if (head->mode == 0) {
 		if (add_site)
-			snprintf(uid, STRLEN, "Õ¾³¤@%s", MY_BBS_ID);
+			snprintf(uid, sizeof uid, "Õ¾³¤@%s", MY_BBS_ID);
 		else
-			sprintf(uid, "Õ¾³¤");
+			snprintf(uid, sizeof uid, "Õ¾³¤");
 	} else {
 		if (add_site)
-			snprintf(uid, STRLEN, "%s@%s", head->id, MY_BBS_ID);
+			snprintf(uid, sizeof uid, "%s@%s", head->id, MY_BBS_ID);
 		else
-			sprintf(uid, "%-14.14s", head->id);
+			snprintf(uid, sizeof uid, "%-14.14s", head->id);
 	}
 	switch (head->mode) {
 	case 2:
 		if (!head->sent) {
-			sprintf(dest,
+			snprintf(dest, dest_len,
 				"\x1b[1;44m\x1b[36m%s\x1b[33m(%-16.16s)\x1b[37m                                                \x1b[m\n", uid, time);
-			sprintf(attstr, "\x1b[44m\x1b[37;1m");
+			snprintf(attstr, sizeof attstr, "\x1b[44m\x1b[37;1m");
 		} else {
-			sprintf(dest,
+			snprintf(dest, dest_len,
 				"\x1b[0;1;32m=>\x1b[37m%s\x1b[33m(%-16.16s)\x1b[36m                                                \x1b[m\n",
 				uid, time);
-			sprintf(attstr, "\x1b[36;1m");
+			snprintf(attstr, sizeof attstr, "\x1b[36;1m");
 		}
 		break;
 	case 0:
-		sprintf(dest,
+		snprintf(dest, dest_len,
 			"\x1b[44m\x1b[33m%sÓÚ %16.16s Ê±¹ã²¥\x1b[37m                                                  \x1b[m\n", uid, time);
-		sprintf(attstr, "\x1b[44m\x1b[1;37m");
+		snprintf(attstr, sizeof attstr, "\x1b[44m\x1b[1;37m");
 		break;
 	case 1:
 		if (!head->sent) {
-			sprintf(dest,
+			snprintf(dest, dest_len,
 				"\x1b[44m\x1b[36m%-14.14s(%-16.16s) ÑûÇëÄã\x1b[37m                                           \x1b[m\n",
 				head->id, time);
-			sprintf(attstr, "\x1b[44m\x1b[1;37m");
+			snprintf(attstr, sizeof attstr, "\x1b[44m\x1b[1;37m");
 		} else {
-			sprintf(dest,
+			snprintf(dest, dest_len,
 				"\x1b[44m\x1b[37mÄã(%-16.16s) ÑûÇë%-14.14s\x1b[36m                                           \x1b[m\n",
 				time, head->id);
-			sprintf(attstr, "\x1b[44m\x1b[1;36m");
+			snprintf(attstr, sizeof attstr, "\x1b[44m\x1b[1;36m");
 		}
 		break;
 	default:
-		sprintf(dest,
+		snprintf(dest, dest_len,
 			"\x1b[45m\x1b[36m%s\x1b[33m(\x1b[36m%-16.16s\x1b[33m)\x1b[37m                                                \x1b[m\n", uid, time);
-		sprintf(attstr, "\x1b[45m\x1b[1;37m");
+		snprintf(attstr, sizeof attstr, "\x1b[45m\x1b[1;37m");
 		break;
 	}
-	strcat(dest, attstr);
+	ytht_strncat(dest, dest_len, attstr, strlen(attstr));
 	len = strlen(dest);
 	pos = 0;
 	for (i = 0; i < strlen(src); i++) {

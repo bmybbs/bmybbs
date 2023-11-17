@@ -174,6 +174,16 @@ void ytht_strsncpy(char *s1, const char *s2, int n)
 	s1[n - 1] = 0;
 }
 
+void ytht_strncat(char *s1, size_t s1_len, const char *s2, size_t n)
+{
+	size_t l = strlen(s1);
+
+	if (l + n + 1 > s1_len)
+		return;
+
+	strncat(s1, s2, n);
+}
+
 char *ytht_strltrim(char *s)
 {
 	char *s2 = s;
