@@ -790,7 +790,7 @@ valuevote(struct ballot *uv)
 	do {
 		getdata(3, 0, "请输入一个值? [0]: ", buf, 5, DOECHO, NA);
 		uv->voted = abs(atoi(buf));
-	} while (uv->voted > currvote.maxtkt && buf[0] != '\n' && buf[0] != '\0');
+	} while (uv->voted > (unsigned int) abs(currvote.maxtkt) && buf[0] != '\n' && buf[0] != '\0');
 	if (buf[0] == '\n' || buf[0] == '\0' || uv->voted == chs)
 		return -1;
 	return 1;
