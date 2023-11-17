@@ -21,7 +21,7 @@ bbsmsg_main()
 	for (i=0; i<count; i++) {
 		load_msghead(0, currentuser.userid, &head, i);
 		load_msgtext(currentuser.userid, &head, buf);
-		translate_msg(buf, &head, msgbuf, 0);
+		translate_msg(buf, &head, msgbuf, sizeof msgbuf, 0);
 		hprintf("%s", msgbuf);
 	}
 	u_info->unreadmsg = 0;

@@ -77,7 +77,7 @@ bbsgetmsg_main()
 			printf("<bgsound src=/msg.wav>\n");
 		load_msghead(1, currentuser.userid, &head, count);
 		load_msgtext(currentuser.userid, &head, buf);
-		line = translate_msg(buf, &head, msg, 0);
+		line = translate_msg(buf, &head, msg, sizeof msg, 0);
 		printf("<body topmargin=1 MARGINHEIGHT=1 style='BACKGROUND-COLOR: #f0ffd0'>\n");
 		printf("<script>top.document.getElementById('fs1').rows=\"%d, *, 15\";</script>\n",
 			(line + 11) * 16 + 32);
