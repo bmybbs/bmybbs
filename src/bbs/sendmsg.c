@@ -900,7 +900,7 @@ mail_msg(struct userec *user)
 	FILE *fn;
 	int count;
 
-	sprintf(fname, "tmp/%s.msg", user->userid);
+	snprintf(fname, sizeof fname, "tmp/%s.msg", user->userid);
 	fn = fopen(fname, "w");
 	count = get_msgcount(0, user->userid);
 	for (i = 0; i < count; i++) {
