@@ -1652,8 +1652,7 @@ static int do_gsend_voter(const char *userid[], int num, const char *fname) {
 }
 
 time_t
-mail_file(tmpfile, userid, title)
-char tmpfile[STRLEN], userid[STRLEN], title[STRLEN];
+mail_file(const char *tmpfile, const char *userid, const char *title)
 {
 	struct fileheader newmessage;
 	struct stat st;
@@ -1675,12 +1674,12 @@ char tmpfile[STRLEN], userid[STRLEN], title[STRLEN];
 			return -1;
 	}
 	now = time(NULL);
-	sprintf(fname, "M.%ld.A", now);
+	snprintf(fname, sizeof fname, "M.%ld.A", now);
 	setmailfile_s(filepath, sizeof(filepath), userid, fname);
 	count = 0;
 	while ((fp = open(filepath, O_CREAT | O_EXCL | O_WRONLY, 0644)) == -1) {
 		now++;
-		sprintf(fname, "M.%ld.A", now);
+		snprintf(fname, sizeof fname, "M.%ld.A", now);
 		setmailfile_s(filepath, sizeof(filepath), userid, fname);
 		if (count++ > MAX_POSTRETRY) {
 			return -1;

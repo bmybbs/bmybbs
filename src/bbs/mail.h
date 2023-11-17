@@ -20,7 +20,7 @@ int mail_u_forward(int ent, struct fileheader *fileinfo, char *direct);
 int m_read(const char *s);
 int invalidaddr(char *addr);
 int g_send(const char *s);
-time_t mail_file(char tmpfile[80], char userid[80], char title[80]);
+time_t mail_file(const char *tmpfile, const char *userid, const char *title);
 int mail_buf(char *buf, char userid[], char title[]);
 int ov_send(const char *s);
 int voter_send(char *fname);
