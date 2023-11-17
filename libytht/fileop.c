@@ -253,7 +253,7 @@ trycreatefile(char *path, char *fnformat, time_t startnum, int maxtry)
 }
 
 int
-copyfile(char *from, char *to)
+copyfile(const char *from, const char *to)
 {
 	int input, output;
 	void *source, *target;
