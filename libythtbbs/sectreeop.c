@@ -65,7 +65,7 @@ gensecm(const char *txtfile)
 struct secmanager *
 getsecm(const char *str)
 {
-	static struct mmapfile mf = { ptr:NULL };
+	static struct mmapfile mf = { .ptr = NULL };
 	struct secmanager *secmlist;
 	int n, i;
 	if (!mf.ptr) {
