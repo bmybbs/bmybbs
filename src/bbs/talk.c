@@ -1441,10 +1441,10 @@ int addtooverride(const char *uident) {
 	memset(&tmp, 0, sizeof (tmp));
 	if (friendflag) {
 		n = MAXFRIENDS;
-		strcpy(desc, "好友");
+		snprintf(desc, sizeof desc, "好友");
 	} else {
 		n = MAXREJECTS;
-		strcpy(desc, "坏人");
+		snprintf(desc, sizeof desc, "坏人");
 	}
 
 	if (ythtbbs_override_count(currentuser.userid, friendflag ? YTHTBBS_OVERRIDE_FRIENDS : YTHTBBS_OVERRIDE_REJECTS) >= n) {
@@ -1510,10 +1510,10 @@ override_title()
 		strcpy(genbuf, MY_BBS_NAME);
 	if (friendflag) {
 		showtitle("[编辑好友名单]", genbuf);
-		strcpy(desc, "好友");
+		snprintf(desc, sizeof desc, "好友");
 	} else {
 		showtitle("[编辑坏人名单]", genbuf);
-		strcpy(desc, "坏人");
+		snprintf(desc, sizeof desc, "坏人");
 	}
 	prints(" [\033[1;32m←\033[m,\033[1;32me\033[m] 离开 [\033[1;32mh\033[m] 求助 [\033[1;32m→\033[m,\033[1;32mRtn\033[m] %s说明档 [\033[1;32m↑\033[m,\033[1;32m↓\033[m] 选择 [\033[1;32ma\033[m] 增加%s [\033[1;32md\033[m] 删除%s\n", desc, desc, desc);
 	prints("\033[1;44m 编号  %s代号      %s说明                                                   \033[m\n", desc, desc);
@@ -1578,11 +1578,11 @@ static int override_dele(int ent, struct ythtbbs_override *fh, char *direct) {
 	int deleted = NA;
 
 	if (friendflag) {
-		strcpy(desc, "好友");
-		strcpy(fname, "friends");
+		snprintf(desc, sizeof desc, "好友");
+		snprintf(fname, sizeof fname, "friends");
 	} else {
-		strcpy(desc, "坏人");
-		strcpy(fname, "rejects");
+		snprintf(desc, sizeof desc, "坏人");
+		snprintf(fname, sizeof fname, "rejects");
 	}
 	saveline(t_lines - 2, 0, NULL);
 	move(t_lines - 2, 0);
