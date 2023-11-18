@@ -1,8 +1,10 @@
 #include "bbs.h"
 #define PASSWDFILE MY_BBS_HOME"/.PASSWDS"
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
+	(void) argc;
+	(void) argv;
 	int fd1;
 	struct userec rec;
 	struct stat info;
