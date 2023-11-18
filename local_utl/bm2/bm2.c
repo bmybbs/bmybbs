@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 			if (visit == 0)
 				printf("0 ¥”Œ¥\n");
 			else
-				printf("%d %s", visit, ctime(&visit));
+				printf("%ld %s", visit, ctime(&visit));
 		}
 	}
 	close(fd1);
