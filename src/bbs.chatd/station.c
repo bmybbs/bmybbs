@@ -128,8 +128,7 @@ char *msg_not_here   = "\033[1;37m★\033[32m [\033[36m%s\033[32m] 并没有前来本会
 
 #ifdef  HAVE_REPORT
 void
-report(s)
-char *s;
+report(char *s)
 {
 	static int disable = NA;
 	int fd;
