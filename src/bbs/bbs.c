@@ -294,10 +294,7 @@ do_delay(int i)
 /* start by gluon for no reply */
 /* Added by deardragon 1999.11.21 增加不可 RE 属性 */
 int
-underline_post(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+underline_post(int ent, struct fileheader *fileinfo, char *direct)
 {
 	if (!IScurrBM && !isowner(&currentuser, fileinfo)) {
 		return DONOTHING;
@@ -335,9 +332,7 @@ char quote_file[120], quote_user[120];
 int totalusers, usercounter;
 
 static int
-isowner(user, fileinfo)
-struct userec *user;
-struct fileheader *fileinfo;
+isowner(struct userec *user, struct fileheader *fileinfo)
 {
 	if (strcmp(fileinfo->owner, user->userid))
 		return 0;
@@ -383,9 +378,7 @@ void setqtitle(char *stitle) {
 }
 
 int
-chk_currBM(bh, isbig)
-struct boardheader *bh;
-int isbig;
+chk_currBM(struct boardheader *bh, int isbig)
 {
 	if (HAS_PERM(PERM_BLEVELS, currentuser))
 		return YEA;
@@ -397,8 +390,7 @@ int isbig;
 }
 
 void
-setquotefile(filepath)
-char filepath[];
+setquotefile(char *filepath)
 {
 	strcpy(quote_file, filepath);
 }
@@ -516,8 +508,7 @@ time_t postfile(char *filename, char *nboard, char *posttitle, int mode) {
 }
 
 int
-get_a_boardname(bname, prompt)
-char *bname, *prompt;
+get_a_boardname(char *bname, char *prompt)
 {
 	struct boardheader fh;
 
@@ -539,10 +530,7 @@ char *bname, *prompt;
 /* undelete 一篇文章 Leeward 98.05.18 */
 /* modified by ylsdd */
 static int
-UndeleteArticle(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+UndeleteArticle(int ent, struct fileheader *fileinfo, char *direct)
 {
 	char *p, buf[1024];
 	char UTitle[128];
@@ -757,15 +745,13 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct) {
 int currfiletime;
 
 int
-cmpfilename(fhdr)
-struct fileheader *fhdr;
+cmpfilename(struct fileheader *fhdr)
 {
 	return (fhdr->filetime == currfiletime);
 }
 
 static void
-cpyfilename(fhdr)
-struct fileheader *fhdr;
+cpyfilename(struct fileheader *fhdr)
 {
 	char buf[STRLEN];
 	time_t tnow;
@@ -844,9 +830,7 @@ do_evaluate(int ent, struct fileheader *fhdr, char *direct, int mode)
 #endif
 
 static int // slowaction
-dele_digest_top(filetime, direc)
-int filetime;
-char *direc;
+dele_digest_top(int filetime, char *direc)
 {
 	char digest_name[STRLEN];
 	char new_dir[STRLEN];
@@ -913,10 +897,7 @@ static int topfile_post(int ent, struct fileheader *fhdr, char *direct) //slowac
 }
 
 static int
-read_post(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+read_post(int ent, struct fileheader *fileinfo, char *direct)
 {
 	int ch;
 #ifdef ENABLE_MYSQL
@@ -1313,9 +1294,7 @@ static int do_select(int ent, struct fileheader *fileinfo, char *direct) {
 }
 
 static int
-dele_digest(filetime, direc)
-int filetime;
-char *direc;
+dele_digest(int filetime, char *direc)
 {
 	char digest_name[STRLEN];
 	char new_dir[STRLEN];
@@ -1361,10 +1340,7 @@ int water_post(int ent, struct fileheader *fileinfo, char *dirent)
 }
 
 int
-digest_post(ent, fhdr, direct)
-int ent;
-struct fileheader *fhdr;
-char *direct;
+digest_post(int ent, struct fileheader *fhdr, char *direct)
 {
 
 	if (!IScurrBM) {
@@ -1416,8 +1392,7 @@ char *direct;
 
 #ifndef NOREPLY
 int
-do_reply(fh)
-struct fileheader *fh;
+do_reply(struct fileheader *fh)
 {
 	if (fh->accessed & FH_INND || strchr(fh->owner, '.'))
 		local_article = 0;
@@ -1429,8 +1404,7 @@ struct fileheader *fh;
 #endif
 
 static int
-garbage_line(str)
-char *str;
+garbage_line(char *str)
 {
 	int qlevel = 0;
 	while (*str == ':' || *str == '>') {
@@ -1516,9 +1490,7 @@ skipattach(char *buf, int size, FILE * fp)
 
 /* When there is an old article that can be included -jjyang */
 void
-do_quote(filepath, quote_mode)
-char *filepath;
-char quote_mode;
+do_quote(char *filepath, char quote_mode)
 {
 	FILE *inf, *outf;
 	char *qfile, *quser;
@@ -1620,9 +1592,7 @@ char quote_mode;
 
 /* Add by SmallPig */
 static void
-getcross(filepath, mode)
-char *filepath;
-int mode;
+getcross(char *filepath, int mode)
 {
 	FILE *inf, *of;
 	char buf[256],oritime[256],temptime[256];
@@ -1841,8 +1811,7 @@ post_cross(char *bname, int mode, int islocal, int hascheck, int dangerous)
 }
 
 void
-add_loginfo(filepath)
-char *filepath;
+add_loginfo(char *filepath)
 {
 	FILE *fp;
 	int color, noidboard;
@@ -1863,9 +1832,7 @@ char *filepath;
 }
 
 void
-add_crossinfo(filepath, mode)
-char *filepath;
-int mode;
+add_crossinfo(char *filepath, int mode)
 {
 	FILE *fp;
 	int color;
@@ -1881,8 +1848,7 @@ int mode;
 }
 
 int
-show_board_notes(bname)
-char bname[30];
+show_board_notes(char *bname)
 {
 	char buf[256];
 	move(2, 0);
@@ -2330,9 +2296,7 @@ enum ytht_smth_filter_result stringfilter(char *title, enum ytht_smth_filter_opt
 }
 
 static int
-change_content_title(fname, title)
-char *fname;
-char *title;
+change_content_title(char *fname, char *title)
 {
 	FILE *fp, *out;
 	char buf[256];
@@ -2362,10 +2326,7 @@ char *title;
 }
 
 /*ARGSUSED*/
-int edit_post(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+int edit_post(int ent, struct fileheader *fileinfo, char *direct)
 {
 	extern char currmaildir[STRLEN];
 	char filepath[STRLEN];
@@ -2478,10 +2439,7 @@ char *direct;
 
 // 邮箱界面中也要用这个函数
 int
-edit_title(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+edit_title(int ent, struct fileheader *fileinfo, char *direct)
 {
 	struct stat st; //add by hace
 	char buf[STRLEN], filepath[STRLEN];
@@ -2532,10 +2490,7 @@ char *direct;
 }
 
 int
-mark_post(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+mark_post(int ent, struct fileheader *fileinfo, char *direct)
 {
 	if (!IScurrBM) {
 		return DONOTHING;
@@ -2600,10 +2555,7 @@ static int mark_commend2(int ent, struct fileheader *fileinfo, char *direct) {
 }
 
 int
-markdel_post(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+markdel_post(int ent, struct fileheader *fileinfo, char *direct)
 {
 	if (!strcmp(currboard, "deleted") || !strcmp(currboard, "junk") || !IScurrBM)
 		return DONOTHING;
@@ -2614,10 +2566,7 @@ char *direct;
 }
 
 int
-mark_minus_del_post(ent, fileinfo, direct)			//add by mintbaggio 040321 for minus-postnums delete
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+mark_minus_del_post(int ent, struct fileheader *fileinfo, char *direct)			//add by mintbaggio 040321 for minus-postnums delete
 {
 	if (!strcmp(currboard, "deleted") || !strcmp(currboard, "junk") || !IScurrBM)
 		return DONOTHING;
@@ -2628,10 +2577,7 @@ char *direct;
 }
 
 static int
-markspec_post(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+markspec_post(int ent, struct fileheader *fileinfo, char *direct)
 {
 	if (!strcmp(currboard, "deleted") || !strcmp(currboard, "junk") || !IScurrBM)
 		return DONOTHING;
@@ -2839,10 +2785,7 @@ THERE:
 }
 
 static int
-del_post_backup(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+del_post_backup(int ent, struct fileheader *fileinfo, char *direct)
 {
 	int keep, fail;
 	char filepath[STRLEN];
@@ -2920,10 +2863,7 @@ char *direct;
 }
 
 int
-del_post(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+del_post(int ent, struct fileheader *fileinfo, char *direct)
 {
 	int keep, fail;
 	int owned;
@@ -3013,8 +2953,7 @@ char *direct;
 
 static int sequent_ent;
 static int
-sequent_messages(fptr)
-struct fileheader *fptr;
+sequent_messages(struct fileheader *fptr)
 {
 	static int idc;
 	if (fptr == NULL) {
@@ -3114,8 +3053,7 @@ static int sequential_read(int ent, struct fileheader *fileinfo, char *direct) {
 	return sequential_read2(ent);
 }
 /*ARGSUSED*/
-static int sequential_read2(ent /*,fileinfo,direct */ )
-int ent;
+static int sequential_read2(int ent /*,fileinfo,direct */ )
 /*struct fileheader *fileinfo ;
 char *direct ;*/
 {
@@ -3244,10 +3182,7 @@ post_saved()
 /* Added by netty to handle post saving into (0)Announce */
 /* 修改以用于对个人精华区的支持, by ylsdd*/
 int
-Import_post(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+Import_post(int ent, struct fileheader *fileinfo, char *direct)
 {
 	if (!HAS_PERM(PERM_BOARDS | PERM_SYSOP, currentuser) && !HAS_PERM(PERM_SPECIAL8, currentuser))
 		return FULLUPDATE;
@@ -3438,10 +3373,7 @@ select_Personal()
 
 #ifdef INTERNET_EMAIL
 int
-forward_post(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+forward_post(int ent, struct fileheader *fileinfo, char *direct)
 {
 	if (strcmp("guest", currentuser.userid) == 0)
 		return DONOTHING;
@@ -3449,10 +3381,7 @@ char *direct;
 }
 
 int
-forward_u_post(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+forward_u_post(int ent, struct fileheader *fileinfo, char *direct)
 {
 	if (strcmp("guest", currentuser.userid) == 0)
 		return DONOTHING;
@@ -3768,9 +3697,7 @@ char *s;
 #endif
 
 int
-cmpbnames(brec, bname)
-struct boardheader *brec;
-char *bname;
+cmpbnames(struct boardheader *brec, char *bname)
 {
 	if (!strncasecmp(bname, brec->filename, sizeof (brec->filename)))
 		return 1;
@@ -3823,8 +3750,7 @@ int zmodem_sendfile(int ent, struct fileheader *fileinfo, char *direct) {
 }
 
 static int
-Origin2(text)
-char text[256];
+Origin2(char *text)
 {
 	char tmp[STRLEN];
 
@@ -4220,9 +4146,7 @@ b_notes_passwd()
 }
 
 static int
-catnotepad(fp, fname)
-FILE *fp;
-char *fname;
+catnotepad(FILE *fp, char *fname)
 {
 	char inbuf[256];
 	FILE *sfp;
@@ -4246,9 +4170,7 @@ char *fname;
 
 //add by bjgyt for combine
 //modify by macintosh 050425 for combine_with_attach
-void Add_Combine(board,fileinfo)
-char *board;
-struct fileheader *fileinfo;
+void Add_Combine(char *board, struct fileheader *fileinfo)
 {
 	FILE *fp, *fp1;
 	char buf[STRLEN];
