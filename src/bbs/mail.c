@@ -158,8 +158,7 @@ chkmail()
 }
 
 int
-check_query_mail(qry_mail_dir)
-char qry_mail_dir[STRLEN];
+check_query_mail(char *qry_mail_dir)
 {
 	struct stat st;
 	int fd;
@@ -298,8 +297,7 @@ m_init()
 }
 
 static int
-do_send(userid, title)
-char *userid, *title;
+do_send(char *userid, char *title)
 {
 	struct fileheader newmessage;
 	struct stat st;
@@ -501,8 +499,7 @@ int M_send(const char *s) {
 	return m_send(NULL);
 }
 static int
-read_mail(fptr)
-struct fileheader *fptr;
+read_mail(struct fileheader *fptr)
 {
 	setmailfile_s(genbuf, sizeof(genbuf), currentuser.userid, fh2fname(fptr));
 	ansimore(genbuf, NA);
@@ -516,8 +513,7 @@ int delmsgs[1024];
 int delcnt;
 
 static int
-read_new_mail(fptr)
-struct fileheader *fptr;
+read_new_mail(struct fileheader *fptr)
 {
 	static int idc;
 	char done = NA, delete_it;
@@ -622,10 +618,7 @@ mailtitle()
 }
 
 static char *
-maildoent(num, ent, buf)
-int num;
-struct fileheader *ent;
-char buf[512];
+maildoent(int num, struct fileheader *ent, char *buf)
 {
 	char b2[512];
 	char status;
@@ -688,10 +681,7 @@ char buf[512];
 }
 
 static int
-mail_read(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+mail_read(int ent, struct fileheader *fileinfo, char *direct)
 {
 	char notgenbuf[128];
 	int readnext;
@@ -742,10 +732,7 @@ char *direct;
 }
 
 /*ARGSUSED*/ int
-mail_reply(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+mail_reply(int ent, struct fileheader *fileinfo, char *direct)
 {
 	char uid[STRLEN];
 	char title[STRLEN];
@@ -813,10 +800,7 @@ char *direct;
 }
 
 static int
-mail_del(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+mail_del(int ent, struct fileheader *fileinfo, char *direct)
 {
 	char buf[512];
 
@@ -900,10 +884,7 @@ int mail_u_forward(int ent, struct fileheader *fileinfo, char *direct) {
 #endif
 
 static int
-mail_del_range(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+mail_del_range(int ent, struct fileheader *fileinfo, char *direct)
 {
 	return (del_range(ent, fileinfo, direct));
 }
@@ -1229,8 +1210,7 @@ int m_read(const char *s) {
 }
 
 int
-invalidaddr(addr)
-char *addr;
+invalidaddr(char *addr)
 {
 	if (*addr == '\0' || !strchr(addr, '@'))
 		return 1;
@@ -1246,13 +1226,10 @@ char *addr;
 
 #ifdef SENDMAIL_MIME_AUTOCONVERT
 static int
-bbs_sendmail(fname, title, receiver, mime)
-char *fname, *title, *receiver;
-int mime;
+bbs_sendmail(char *fname, char *title, char *receiver, int mime)
 #else
 static int
-bbs_sendmail(fname, title, receiver)
-char *fname, *title, *receiver;
+bbs_sendmail(char *fname, char *title, char *receiver)
 #endif
 {
 	FILE *fin, *fout;
@@ -1703,8 +1680,7 @@ mail_file(const char *tmpfile, const char *userid, const char *title)
 }
 
 int
-mail_buf(buf, userid, title)
-char *buf, userid[], title[];
+mail_buf(char *buf, char *userid, char *title)
 {
 	struct fileheader newmessage;
 	struct stat st;
@@ -1900,9 +1876,7 @@ int cnt;
 
 #ifdef INTERNET_EMAIL
 int
-doforward(filepath, oldtitle, mode)
-char *filepath, *oldtitle;
-int mode;
+doforward(char *filepath, char *oldtitle, int mode)
 {
 	static char address[STRLEN];
 	char fname[STRLEN], tmpfname[STRLEN];
@@ -2303,8 +2277,7 @@ show_user_notes()
 }
 
 static int
-mailto(uentp)
-struct userec *uentp;
+mailto(struct userec *uentp)
 {
 	char filename[STRLEN];
 
