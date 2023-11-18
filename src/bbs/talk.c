@@ -135,8 +135,7 @@ struct one_key reject_list[] = {
 };
 
 static char
-canpage(friend, pager)
-int friend, pager;
+canpage(int friend, int pager)
 {
 	if ((pager & ALL_PAGER) || HAS_PERM(PERM_SYSOP | PERM_FORCEPAGE, currentuser))
 		return YEA;
@@ -194,8 +193,7 @@ int t_pager(const char *s) {
 /*Add by SmallPig*/
 /*此函数只负责列印说明档，并不管清除或定位的问题。*/
 static int
-show_user_plan(userid)
-char *userid;
+show_user_plan(char *userid)
 {
 	int i;
 	char pfile[STRLEN], pbuf[256];
@@ -568,9 +566,7 @@ static int cmpfnames(const char *userid, const struct ythtbbs_override *uv) {
 }
 
 int
-t_cmpuids(uid, up)
-int uid;
-struct user_info *up;
+t_cmpuids(int uid, struct user_info *up)
 {
 	return (up->active && uid == up->uid);
 }
@@ -894,9 +890,7 @@ char page_requestor[STRLEN];
 char page_requestorid[STRLEN];
 
 static int
-cmpunums(unum, up)
-int unum;
-struct user_info *up;
+cmpunums(int unum, struct user_info *up)
 {
 	if (!up->active)
 		return 0;
@@ -904,9 +898,7 @@ struct user_info *up;
 }
 
 static int
-cmpmsgnum(unum, up)
-int unum;
-struct user_info *up;
+cmpmsgnum(int unum, struct user_info *up)
 {
 	if (!up->active)
 		return 0;
@@ -914,8 +906,7 @@ struct user_info *up;
 }
 
 static int
-setpagerequest(mode)
-int mode;
+setpagerequest(int mode)
 {
 	int tuid;
 	if (mode == 0)
@@ -933,9 +924,7 @@ int mode;
 }
 
 int
-servicepage(line, mesg)
-int line;
-char *mesg;
+servicepage(int line, char *mesg)
 {
 	static time_t last_check;
 	time_t now;
@@ -1090,8 +1079,7 @@ talkreply()
 }
 
 static void
-do_talk_nextline(twin)
-struct talk_win *twin;
+do_talk_nextline(struct talk_win *twin)
 {
 
 	twin->curln = twin->curln + 1;
@@ -1107,9 +1095,7 @@ struct talk_win *twin;
 }
 
 static void
-do_talk_char(twin, ch)
-struct talk_win *twin;
-int ch;
+do_talk_char(struct talk_win *twin, int ch)
 {
 
 	if (isprint2(ch)) {
@@ -1160,9 +1146,7 @@ talkflush()
 }
 
 static void
-moveto(mode, twin)
-int mode;
-struct talk_win *twin;
+moveto(int mode, struct talk_win *twin)
 {
 	if (mode == 1)
 		twin->curln--;
@@ -1210,8 +1194,7 @@ endmsg()
 }
 
 static int
-do_talk(fd)
-int fd;
+do_talk(int fd)
 {
 	struct talk_win mywin, itswin;
 	char mid_line[256];
@@ -1390,8 +1373,7 @@ int fd;
 }
 
 int
-listfilecontent(fname)
-char *fname;
+listfilecontent(char *fname)
 {
 	FILE *fp;
 	int y = 3, cnt = 0;
@@ -1539,10 +1521,7 @@ override_title()
 }
 
 static char *
-override_doentry(ent, fh, buf)
-int ent;
-struct ythtbbs_override *fh;
-char buf[512];
+override_doentry(int ent, struct ythtbbs_override *fh, char *buf)
 {
 	sprintf(buf, " %4d  %-12.12s  %s", ent, fh->id, fh->exp);
 	return buf;
@@ -1629,10 +1608,7 @@ static int override_dele(int ent, struct ythtbbs_override *fh, char *direct) {
 }
 
 static int
-friend_edit(ent, fh, direct)
-int ent;
-struct ythtbbs_override *fh;
-char *direct;
+friend_edit(int ent, struct ythtbbs_override *fh, char *direct)
 {
 	friendflag = YEA;
 	return override_edit(ent, fh, direct);
@@ -1647,10 +1623,7 @@ static int friend_add(int ent, struct ythtbbs_override *fh, char *direct) {
 }
 
 static int
-friend_dele(ent, fh, direct)
-int ent;
-struct ythtbbs_override *fh;
-char *direct;
+friend_dele(int ent, struct ythtbbs_override *fh, char *direct)
 {
 	friendflag = YEA;
 	return override_dele(ent, fh, direct);
@@ -1710,10 +1683,7 @@ friend_help()
 }
 
 static int
-reject_edit(ent, fh, direct)
-int ent;
-struct ythtbbs_override *fh;
-char *direct;
+reject_edit(int ent, struct ythtbbs_override *fh, char *direct)
 {
 	friendflag = NA;
 	return override_edit(ent, fh, direct);
@@ -1956,8 +1926,7 @@ do_log(char *msg, int who)
 
 //#endif
 static char *
-Cdate(clock)
-time_t *clock;
+Cdate(time_t *clock)
 {
 	static char foo[22];
 	struct tm *mytm = localtime(clock);
