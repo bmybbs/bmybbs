@@ -44,7 +44,7 @@
 #define  BADEMAIL       0x0020
 #define  NEWREG         0x0040
 */
-char *sysconf_str();
+extern char *sysconf_str(char *);
 char *genpasswd();
 
 extern char fromhost[60];
