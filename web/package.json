@@ -28,7 +28,7 @@
 		"vue-router": "^4.2.5"
 	},
 	"devDependencies": {
-		"@vitejs/plugin-vue": "^4.4.0",
+		"@vitejs/plugin-vue": "^4.5.1",
 		"@vue/compiler-sfc": "^3.3.8",
 		"@vue/eslint-config-prettier": "^8.0.0",
 		"eslint": "^8.54.0",
