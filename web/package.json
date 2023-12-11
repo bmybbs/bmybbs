@@ -32,7 +32,7 @@
 		"@vue/compiler-sfc": "^3.3.8",
 		"@vue/eslint-config-prettier": "^8.0.0",
 		"eslint": "^8.54.0",
-		"eslint-plugin-prettier": "^4.2.1",
+		"eslint-plugin-prettier": "^5.0.1",
 		"eslint-plugin-vue": "^9.18.1",
 		"prettier": "^3.1.0",
 		"rollup-plugin-prismjs": "^0.1.0",
