@@ -1661,6 +1661,57 @@ int x_denylevel(const char *s) {
 	return 0;
 }
 
+int
+s_checkid(const char *s)
+{
+	(void) s;
+	char buf[256];
+	char checkuser[20];
+	int day, id;
+	modify_user_mode(GMENU);
+	clear();
+	stand_title("调查ID发文情况\n");
+	clrtoeol();
+	move(2, 0);
+	usercomplete("输入欲调查的使用者帐号: ", genbuf);
+	if (genbuf[0] == '\0') {
+	clear();
+		return 0;
+	}
+	strcpy(checkuser, genbuf);
+	if (!(id = getuser(genbuf))) {
+		move(4, 0);
+		prints("无效的使用者帐号");
+		clrtoeol();
+		pressreturn();
+	clear();
+		return 0;
+	}
+	getdata(5, 0, "输入天数(0-所有时间): ", buf, 7, DOECHO, YEA);
+	day = atoi(buf);
+	sprintf(buf,
+		 "/usr/bin/nice " MY_BBS_HOME "/bin/finddf %d %d %s > " MY_BBS_HOME
+		 "/bbstmpfs/tmp/checkid.%s 2>/dev/null", currentuser.userlevel,
+		 day, checkuser, currentuser.userid);
+	if ((HAS_PERM(PERM_SYSOP, currentuser) && heavyload(2.5))
+		|| (!HAS_PERM(PERM_SYSOP, currentuser) && heavyload(1.5))) {
+		prints("系统负载过重, 无法执行本指令");
+		pressreturn();
+		return 1;
+	}
+	system(buf);
+	sprintf(buf, "%s finddf %s %d", currentuser.userid, checkuser, day);
+	newtrace(buf);
+	sprintf(buf, MY_BBS_HOME "/bbstmpfs/tmp/checkid.%s",
+		 currentuser.userid);
+	mail_file(buf, currentuser.userid, "\"System Report\"");
+	prints("完毕");
+	clrtoeol();
+	pressreturn();
+	clear();
+	return 1;
+}
+
 char *directfile(char *fpath, char *direct, char *filename) {
 	char *t;
 	strcpy(fpath, direct);

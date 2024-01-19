@@ -103,6 +103,7 @@ const struct scommandlist sysconf_cmdlist[] = {
 	{"DenyLevel", x_denylevel},
 	{"OrdainBM", m_ordainBM},
 	{"RetireBM", m_retireBM},
+	{"CheckID", s_checkid},
 	{"Hell", showhell},
 	{"Prison", showprison},
 	{"Live", online},
