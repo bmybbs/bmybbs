@@ -1,11 +1,6 @@
 {
 	"name": "bmybbs",
 	"private": "true",
-	"license": "GPL-2.0",
-	"workspaces": [
-		"minibmy",
-		"nju09",
-		"web"
-	]
+	"license": "GPL-2.0"
 }
 
