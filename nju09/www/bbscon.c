@@ -116,7 +116,7 @@ void fprintbinaryattachlink(FILE * fp, int ano, char *attachname, int pos, int s
 		break;
 	case 2:
 		fprintf(fp, "%d ÊÓÆµ: <a href='%s'>%s</a> (%d ×Ö½Ú)<br>"
-			"<video controls src='%s'>",
+			"<video controls src='%s'></video>",
 			ano, link, attachname, size, link);
 		break;
 	default:
