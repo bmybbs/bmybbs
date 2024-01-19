@@ -88,13 +88,13 @@ void fprintbinaryattachlink(FILE * fp, int ano, char *attachname, int pos, int s
 		if (w_info->att_mode)
 			snprintf(link, sizeof (link),
 				"%sbbscon/%s?B=%s&F=%s&attachpos=%d&attachname=/%s",
-				ptr, attachname, board, nohtml(getparm2("F", "file")), pos, attachname);
+				ptr, attachname, x->header.filename, nohtml(getparm2("F", "file")), pos, attachname);
 		else
-			snprintf(link, sizeof (link),"/attach/%s/%s/%d/%s", board, nohtml(getparm2("F", "file")), pos, attachname);
+			snprintf(link, sizeof (link),"/attach/%s/%s/%d/%s", x->header.filename, nohtml(getparm2("F", "file")), pos, attachname);
 	} else
 		snprintf(link, sizeof (link),
 			"bbscon/%s?B=%s&F=%s&attachpos=%d&attachname=/%s",
-			attachname, board, nohtml(getparm2("F", "file")), pos, attachname);
+			attachname, x->header.filename, nohtml(getparm2("F", "file")), pos, attachname);
 
 	if ((ext = strrchr(attachname, '.')) != NULL) {
 		if (!strcasecmp(ext, ".bmp") || !strcasecmp(ext, ".jpg")
