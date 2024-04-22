@@ -26,8 +26,8 @@ importers:
         specifier: ^2.6.2
         version: 2.6.2
       marked:
-        specifier: ^10.0.0
-        version: 10.0.0
+        specifier: ^12.0.2
+        version: 12.0.2
 
   nju09:
     dependencies:
@@ -74,8 +74,8 @@ importers:
         specifier: ^1.1.0
         version: 1.1.0
       marked:
-        specifier: ^10.0.0
-        version: 10.0.0
+        specifier: ^12.0.2
+        version: 12.0.2
       mathjax-full:
         specifier: ^3.1.4
         version: 3.2.2
@@ -1534,8 +1534,8 @@ packages:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.4.15
 
-  /marked@10.0.0:
-    resolution: {integrity: sha512-YiGcYcWj50YrwBgNzFoYhQ1hT6GmQbFG8SksnYJX1z4BXTHSOrz1GB5/Jm2yQvMg4nN1FHP4M6r03R10KrVUiA==}
+  /marked@12.0.2:
+    resolution: {integrity: sha512-qXUm7e/YKFoqFPYPa3Ukg9xlI5cyAtGmyEIzMfW//m6kXwCy2Ps9DYf5ioijFKQ8qyuscrHoY04iJGctu2Kg0Q==}
     engines: {node: '>= 18'}
     hasBin: true
     dev: false
