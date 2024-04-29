@@ -68,8 +68,8 @@ importers:
         specifier: ^1.11.10
         version: 1.11.10
       dompurify:
-        specifier: ^3.0.6
-        version: 3.0.6
+        specifier: ^3.1.1
+        version: 3.1.1
       file-icons-js:
         specifier: ^1.1.0
         version: 1.1.0
@@ -1031,8 +1031,8 @@ packages:
       esutils: 2.0.3
     dev: true
 
-  /dompurify@3.0.6:
-    resolution: {integrity: sha512-ilkD8YEnnGh1zJ240uJsW7AzE+2qpbOUYjacomn3AvJ6J4JhKGSZ2nh4wUIXPZrEPppaCLx5jFe8T89Rk8tQ7w==}
+  /dompurify@3.1.1:
+    resolution: {integrity: sha512-tVP8C/GJwnABOn/7cx/ymx/hXpmBfWIPihC1aOEvS8GbMqy3pgeYtJk1HXN3CO7tu+8bpY18f6isjR5Cymj0TQ==}
     dev: false
 
   /emoji-regex@8.0.0:
