@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stdlib.h>
 #include "bmy/mysql_wrapper.h"
 
 struct sql_bnum_buf {
