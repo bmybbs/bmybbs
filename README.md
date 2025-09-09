@@ -25,7 +25,7 @@ sudo apt install build-essential libtool cmake gdb chrpath \
 sudo apt install language-pack-zh-hans git zsh tmux
 ```
 
-本项目还依赖于 libghthash、[onion](https://github.com/davidmoreno/onion) 以及 [check](https://github.com/libcheck/check) ，相关编译安装可以在 [GitHub CI 配置文件](.github/workflows/cmake.yml) 找到。
+本项目还依赖于 [onion](https://github.com/davidmoreno/onion) 以及 [check](https://github.com/libcheck/check) ，相关编译安装可以在 [GitHub CI 配置文件](.github/workflows/cmake.yml) 找到。
 
 ### 用户环境
 

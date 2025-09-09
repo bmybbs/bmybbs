@@ -61,10 +61,6 @@ jobs:
       working-directory: ${{runner.workspace}}
       run: (git clone https://github.com/davidmoreno/onion ; mkdir onion-build; cd onion-build; cmake ../onion; make; cd src/onion; sudo make install)
 
-    - name: Install libghthash
-      working-directory: ${{runner.workspace}}
-      run: (mkdir ght_build && cd ght_build && tar xf $GITHUB_WORKSPACE/software/libghthash-0.5.0-x86_64.tar.gz && cd libghthash-0.5.0-x86_64 && ./configure && make && sudo make install && sudo ldconfig)
-
     - name: Create Build Environment
       run: cmake -E make_directory ${{runner.workspace}}/build
 
