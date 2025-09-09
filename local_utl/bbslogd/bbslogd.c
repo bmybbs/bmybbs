@@ -1,9 +1,9 @@
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/msg.h>
-#include <ght_hash_table.h>
 #include <signal.h>
 #include "bbs.h"
+#include "3rd/uthash.h"
 
 int
 init_bbslogmsq()
@@ -73,8 +73,20 @@ struct sitelimit {
 struct sitelimit limit[MAX_SPEC_SITE];
 int sitelimit_cnt;
 
-ght_hash_table_t *passerrtable = NULL;
-ght_hash_table_t *bansitetable = NULL;
+struct passerr_kv {
+	struct in_addr from;
+	int count;
+	UT_hash_handle hh;
+};
+
+struct bansite_kv {
+	struct in_addr from;
+	time_t t;
+	UT_hash_handle hh;
+};
+
+static struct passerr_kv *passerrtable = NULL;
+static struct bansite_kv *bansitetable = NULL;
 
 int
 m_cmp(struct sitelimit *a, struct sitelimit *b)
@@ -137,30 +149,23 @@ site_limit(struct in_addr *from)
 int
 bansiteop(struct in_addr *from)
 {
-	struct bansite *b;
-	ght_iterator_t iterator;
-	ght_hash_table_t *tmptable;
+	struct bansite_kv *b, *tmp;
+	struct bansite_kv *tmptable;
 	static time_t last = 0;
 	time_t now_t = time(NULL);
 	FILE *fp;
-	if (!bansitetable)
-		bansitetable = ght_create(200, NULL, 0);
-	if (!bansitetable)
-		return -1;
 	if (from) {
-		if ((b = ght_get(bansitetable, sizeof (*from), from))) {
+		HASH_FIND(hh, bansitetable, from, sizeof(*from), b);
+		if (b) {
 			b->t = now_t;
 			return 0;
 		}
-		b = malloc(sizeof (*b));
+		b = malloc(sizeof(*b));
 		if (!b)
 			return -1;
 		b->t = time(NULL);
 		b->from = *from;
-		if (ght_insert(bansitetable, b, sizeof (*from), from) < 0) {
-			free(b);
-			return -1;
-		}
+		HASH_ADD(hh, bansitetable, from, sizeof(b->from), b);
 	}
 	if (!from && now_t - last < 100)
 		return 0;
@@ -169,23 +174,16 @@ bansiteop(struct in_addr *from)
 		return -1;
 	last = now_t;
 	tmptable = bansitetable;
-	bansitetable = ght_create(200, NULL, 0);
-	if (!bansitetable) {
-		bansitetable = tmptable;
-		fclose(fp);
-		return -1;
-	}
-	for (b = ght_first(tmptable, &iterator); b; b = ght_next(tmptable, &iterator)) {
+	bansitetable = NULL;
+	HASH_ITER(hh, tmptable, b, tmp) {
+		HASH_DEL(tmptable, b);
 		if (b->t < now_t - 6000) {
 			free(b);
 			continue;
 		}
 		fprintf(fp, "%s\n", inet_ntoa(b->from));
-		if (ght_insert(bansitetable, b, sizeof (b->from), &b->from) < 0) {
-			free(b);
-		}
+		HASH_ADD(hh, bansitetable, from, sizeof(b->from), b);
 	}
-	ght_finalize(tmptable);
 	fclose(fp);
 	return 0;
 }
@@ -194,29 +192,26 @@ int
 filter_passerr(int n, char *arg[])
 {
 	struct event *e;
-	int *count;
+	struct passerr_kv *kv;
 	if (n < 4 || strcmp(arg[1], "system") || strcmp(arg[2], "passerr"))
 		return 0;
-	if (passerrtable == NULL)
-		passerrtable = ght_create(10000, NULL, 0);
-	if (!passerrtable)
-		goto ERROR;
 	e = malloc(sizeof (struct event));
 	if (!e)
 		goto ERROR;
 	e->t = time(NULL);
 	inet_aton(arg[3], &e->from);
-	if ((count = ght_get(passerrtable, sizeof (e->from), &e->from))) {
-		(*count)++;
-		if (*count > site_limit(&e->from))
+	HASH_FIND(hh, passerrtable, &e->from, sizeof(e->from), kv);
+	if (kv) {
+		kv->count++;
+		if (kv->count > site_limit(&e->from))
 			bansiteop(&e->from);
 	} else {
-		count = malloc(sizeof (int));
-		if (!count)
+		kv = malloc(sizeof(*kv));
+		if (!kv)
 			goto ERROR1;
-		*count = 1;
-		if (ght_insert(passerrtable, count, sizeof (e->from), &e->from) < 0)
-			goto ERROR2;
+		kv->from = e->from;
+		kv->count = 1;
+		HASH_ADD(hh, passerrtable, from, sizeof(kv->from), kv);
 	}
 	//add to list
 	if (eventhead == NULL) {
@@ -228,8 +223,6 @@ filter_passerr(int n, char *arg[])
 	}
 	e->next = NULL;
 	return 1;
-ERROR2:
-	free(count);
 ERROR1:
 	free(e);
 ERROR:
@@ -240,18 +233,20 @@ int
 expireevent()
 {
 	struct event *e;
-	int *count;
+	struct passerr_kv *kv;
 	time_t now_t = time(NULL);
 	while (eventhead) {
 		e = eventhead;
 		if (e->t > now_t - 600)
 			break;
 		eventhead = e->next;
-		count = ght_get(passerrtable, sizeof (e->from), &e->from);
-		(*count)--;
-		if (!*count) {
-			ght_remove(passerrtable, sizeof (e->from), &e->from);
-			free(count);
+		HASH_FIND(hh, passerrtable, &e->from, sizeof(e->from), kv);
+		if (kv) {
+			kv->count--;
+			if (kv->count <= 0) {
+				HASH_DEL(passerrtable, kv);
+				free(kv);
+			}
 		}
 		free(e);
 	}

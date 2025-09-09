@@ -3,7 +3,7 @@
 #include <time.h>
 #include <sys/types.h>
 #include <sys/mman.h>
-#include <ght_hash_table.h>
+#include "3rd/uthash.h"
 #include "www.h"
 #define TOPN 2
 #define TOPFN "TOPN"
@@ -14,9 +14,21 @@
 #define LEN(Array)		(sizeof(Array)/sizeof(Array[0]))
 #define AREA_DIR		"etc/Area_Dir"	// 每个区的热门话题文件的存放目录
 
+struct user_kv {
+	char *key; // malloc 作者名
+	int num;   // 出现次数
+	UT_hash_handle hh;
+};
+
 struct data_s {
-	ght_hash_table_t *user_hash;
+	struct user_kv *user_hash;
 	struct boardtop bt;
+};
+
+struct thread_kv {
+	int thread;          // key
+	struct data_s *data; // value
+	UT_hash_handle hh;
 };
 
 time_t now_t;
@@ -114,8 +126,8 @@ _topn(void *bh_void, void * fargs)
 	int i, j, k, *usernum;
 	struct mmapfile mf = { .ptr = NULL };
 	struct fileheader *ptr;
-	ght_hash_table_t *p_table = NULL;
-	ght_iterator_t iterator, iterator1;
+	struct thread_kv *p_table = NULL;
+	struct thread_kv *tk, *tmp_tk;
 	struct data_s *data;
 	char owner[14];
 	int start, tocount;
@@ -153,95 +165,120 @@ _topn(void *bh_void, void * fargs)
 	snprintf(topnfilename, sizeof(topnfilename), "%s/%s", path, TOPFN);
 	unlink(topnfilename);
 	MMAP_TRY {
-	if (mmapfile(DOTDIR, &mf) == -1) {
-		errlog("open .DIR error, %s\n", DOTDIR);
-		MMAP_RETURN(0);
-	}
-	if (mf.size == 0) {	//空版面
-		mmapfile(NULL, &mf);
-		MMAP_RETURN(0);
-	}
-	total = mf.size / size - 1;	//共 0 - total 条目
-	start = Search_Bin(mf.ptr, now_t - 86400, 0, total);
-	if (start < 0) {
-		start = -(start + 1);
-	}
-	if (start > total) {	//没有新文章
-		mmapfile(NULL, &mf);
-		MMAP_RETURN(0);
-	}
-	tocount = total - start + 1;
-	bt = malloc(sizeof (struct boardtop) * tocount);
-	if (bt == NULL) {
-		errlog("malloc failed");
-		exit(-1);
-	}
-	p_table = ght_create(tocount, NULL, GHT_HEURISTICS_MOVE_TO_FRONT);
-	for (i = start; i <= total; i++) {
-		ptr = (struct fileheader *) (mf.ptr + i * sizeof (struct fileheader));
-		if(ptr->accessed & FH_ISWATER)	// 水文跳过不处理
-			continue;
+		if (mmapfile(DOTDIR, &mf) == -1) {
+			errlog("open .DIR error, %s\n", DOTDIR);
+			MMAP_RETURN(0);
+		}
+		if (mf.size == 0) {	//空版面
+			mmapfile(NULL, &mf);
+			MMAP_RETURN(0);
+		}
+		total = mf.size / size - 1;	//共 0 - total 条目
+		start = Search_Bin(mf.ptr, now_t - 86400, 0, total);
+		if (start < 0) {
+			start = -(start + 1);
+		}
+		if (start > total) {	//没有新文章
+			mmapfile(NULL, &mf);
+			MMAP_RETURN(0);
+		}
+		tocount = total - start + 1;
+		bt = malloc(sizeof (struct boardtop) * tocount);
+		if (bt == NULL) {
+			errlog("malloc failed");
+			exit(-1);
+		}
+		for (i = start; i <= total; i++) {
+			ptr = (struct fileheader *) (mf.ptr + i * sizeof (struct fileheader));
+			if(ptr->accessed & FH_ISWATER)	// 水文跳过不处理
+				continue;
 
-		if ((data = ght_get(p_table, sizeof (int), &(ptr->thread))) == NULL) {
-			if(ptr->thread != ptr->filetime) { // 主题不存在，并且该篇帖子 id 和主题不相同，视为回帖
-				// 依据 ptr->thread 搜寻文章
-				int th_num = Search_Bin(mf.ptr, ptr->thread, 0, total);
-				if (th_num < 0) {
-					th_num = -(th_num+1);
+			HASH_FIND(hh, p_table, &(ptr->thread), sizeof(ptr->thread), tk);
+			data = tk ? tk->data : NULL;
+			if (data == NULL) {
+				if(ptr->thread != ptr->filetime) { // 主题不存在，并且该篇帖子 id 和主题不相同，视为回帖
+					// 依据 ptr->thread 搜寻文章
+					int th_num = Search_Bin(mf.ptr, ptr->thread, 0, total);
+					if (th_num < 0) {
+						th_num = -(th_num+1);
+					}
+					if (th_num > total) {
+						th_num = total;
+					}
+					struct fileheader * th_ptr = (struct fileheader*) (mf.ptr + th_num * sizeof(struct fileheader));
+
+					// 如果原贴已经删除
+					if (th_ptr->filetime != ptr->thread)
+						continue;
+
+					// 如果原帖被标注 y
+					if (th_ptr->accessed & FH_ISWATER)
+						continue;
 				}
-				if (th_num > total) {
-					th_num = total;
-				}
-				struct fileheader * th_ptr = (struct fileheader*) (mf.ptr + th_num * sizeof(struct fileheader));
 
-				// 如果原贴已经删除
-				if (th_ptr->filetime != ptr->thread)
-					continue;
-
-				// 如果原帖被标注 y
-				if (th_ptr->accessed & FH_ISWATER)
-					continue;
-			}
-
-			if ((data = malloc(sizeof (struct data_s))) == NULL) {
-				errlog("malloc failed");
-				exit(-1);
-			}
-			if ((usernum = malloc(sizeof (int))) == NULL) {
-				errlog("malloc failed");
-				exit(-1);
-			}
-			real_title = ptr->title;
-			if (!strncmp(real_title, "Re: ", 4))
-				real_title += 4;
-			strncpy(data->bt.title, real_title, 60);
-			data->user_hash = NULL;
-			data->user_hash = ght_create(tocount, NULL, GHT_HEURISTICS_MOVE_TO_FRONT);
-			data->bt.unum = 1;
-			(data->bt.lasttime) = ptr->filetime;
-			data->bt.thread = ptr->thread;
-			strncpy(data->bt.board, bh->filename, 24);
-			strncpy(owner, fh2realauthor(ptr), 14);
-			owner[sizeof(owner) - 1] = 0;
-			strncpy(data->bt.firstowner, fh2owner(ptr), 14);
-			*usernum = 0;
-			ght_insert(data->user_hash, usernum, sizeof (char) * strlen(owner), owner);
-			ght_insert(p_table, data, sizeof (int), &(ptr->thread));
-		} else {
-			strncpy(owner, fh2realauthor(ptr), 14);
-			if ((usernum = ght_get(data->user_hash, sizeof (char) * strlen(owner), owner)) == NULL) {
-				(data->bt.unum)++;
-				(data->bt.lasttime) = ptr->filetime;
-				if ((usernum = malloc(sizeof (int))) == NULL) {
+				if ((data = malloc(sizeof (struct data_s))) == NULL) {
 					errlog("malloc failed");
 					exit(-1);
 				}
-				ght_insert(data->user_hash, usernum, sizeof (char) * strlen(owner), owner);
+				real_title = ptr->title;
+				if (!strncmp(real_title, "Re: ", 4))
+					real_title += 4;
+				strncpy(data->bt.title, real_title, 60);
+				data->user_hash = NULL;
+				data->bt.unum = 1;
+				(data->bt.lasttime) = ptr->filetime;
+				data->bt.thread = ptr->thread;
+				strncpy(data->bt.board, bh->filename, 24);
+				strncpy(owner, fh2realauthor(ptr), 14);
+				owner[sizeof(owner) - 1] = 0;
+				strncpy(data->bt.firstowner, fh2owner(ptr), 14);
+				*usernum = 0;
+				{
+					struct user_kv *uk = malloc(sizeof(*uk));
+					if (!uk) {
+						errlog("malloc failed");
+						exit(-1);
+					}
+					uk->key = strdup(owner);
+					if (!uk->key) {
+						errlog("malloc failed");
+						exit(-1);
+					}
+					uk->num = 0;
+					HASH_ADD_KEYPTR(hh, data->user_hash, uk->key, strlen(uk->key), uk);
+				}
+				tk = malloc(sizeof(*tk));
+				if (!tk) {
+					errlog("malloc failed");
+					exit(-1);
+				}
+				tk->thread = ptr->thread;
+				tk->data = data;
+				HASH_ADD(hh, p_table, thread, sizeof(tk->thread), tk);
 			} else {
-				(*usernum)++;
+				strncpy(owner, fh2realauthor(ptr), 14);
+				struct user_kv *uk = NULL;
+				HASH_FIND(hh, data->user_hash, owner, strlen(owner), uk);
+				if (uk == NULL) {
+					(data->bt.unum)++;
+					(data->bt.lasttime) = ptr->filetime;
+					uk = malloc(sizeof(*uk));
+					if (!uk) {
+						errlog("malloc failed");
+						exit(-1);
+					}
+					uk->key = strdup(owner);
+					if (!uk->key) {
+						errlog("malloc failed");
+						exit(-1);
+					}
+					uk->num = 0;
+					HASH_ADD_KEYPTR(hh, data->user_hash, uk->key, strlen(uk->key), uk);
+				} else {
+					uk->num++;
+				}
 			}
 		}
-	}
 	}
 	MMAP_CATCH {
 		mmapfile(NULL, &mf);
@@ -250,18 +287,23 @@ _topn(void *bh_void, void * fargs)
 	MMAP_END mmapfile(NULL, &mf);
 	i = 0;
 	bt1 = bt;
-	for (data = ght_first(p_table, &iterator); data; data = ght_next(p_table, &iterator)) {
+	HASH_ITER(hh, p_table, tk, tmp_tk) {
 		memcpy(bt1, &(data->bt), sizeof (struct boardtop));
 		bt1++;
 		i++;
-		for (usernum = ght_first(data->user_hash, &iterator1); usernum; usernum = ght_next(data->user_hash, &iterator1)) {
-			free(usernum);
+		{
+			struct user_kv *uk, *tmp_uk;
+			HASH_ITER(hh, data->user_hash, uk, tmp_uk) {
+				HASH_DEL(data->user_hash, uk);
+				free(uk->key);
+				free(uk);
+			}
+			data->user_hash = NULL;
 		}
-		ght_finalize(data->user_hash);
-		data->user_hash = NULL;
 		free(data);
+		HASH_DEL(p_table, tk);
+		free(tk);
 	}
-	ght_finalize(p_table);
 	p_table = NULL;
 	qsort(bt, i, sizeof (struct boardtop), cmpbt);
 	snprintf(tmpfn, sizeof(tmpfn), "%s/topntmp", path);
