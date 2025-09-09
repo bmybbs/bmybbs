@@ -1,7 +1,7 @@
 //查找和删除丢失到board目录下的文章     ylsdd   2001/6/16
 
 #include "bbs.h"
-#include "ythtbbs.h"
+#include "ythtbbs/ythtbbs.h"
 #define MAXFILE 5000
 #define MINAGE 50000		//at least 50000 sec old
 #ifdef NUMBUFFER
@@ -198,7 +198,7 @@ makefileheader(char *filepath, char *filename, struct fileheader *fh)
 		fh->accessed |= FH_ISDIGEST;
 	fh->filetime = atoi(filename + 2);
 	fh->thread = fh->filetime;
-	strsncpy(fh->title, buf2 + 8, sizeof (fh->title));
+	ytht_strsncpy(fh->title, buf2 + 8, sizeof (fh->title));
 	found = 1;
 	if (strncmp(buf1, "发信站", 6)
 	    && strncmp(buf1, "寄信人: ", 8)

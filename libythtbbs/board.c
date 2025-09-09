@@ -2,9 +2,7 @@
 #include "bbs.h"
 
 char *
-bm2str(buf, bh)
-char *buf;
-struct boardheader *bh;
+bm2str(char *buf, struct boardheader *bh)
 {
 	int i;
 	buf[0] = 0;
@@ -20,9 +18,7 @@ struct boardheader *bh;
 }
 
 char *
-sbm2str(buf, bh)
-char *buf;
-struct boardheader *bh;
+sbm2str(char *buf, struct boardheader *bh)
 {
 	int i;
 	buf[0] = 0;

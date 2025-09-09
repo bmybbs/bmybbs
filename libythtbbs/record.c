@@ -18,8 +18,7 @@
 #define PATHLEN 256
 
 void
-tmpfilename(filename, tmpfile, deleted)
-char *filename, *tmpfile, *deleted;
+tmpfilename(char *filename, char *tmpfile, char *deleted)
 {
 	char *ptr, *delfname, *tmpfname;
 
@@ -37,10 +36,7 @@ char *filename, *tmpfile, *deleted;
 }
 
 int
-safewrite(fd, buf, size)
-int fd;
-void *buf;
-int size;
+safewrite(int fd, void *buf, int size)
 {
 	int cc, sz = size, origsz = size;
 	char *bp = buf;
@@ -61,9 +57,7 @@ int size;
 
 //id=1 refer to the first record
 int
-delete_record(filename, size, id)
-char *filename;
-int size, id;
+delete_record(char *filename, int size, int id)
 {
 	char tmpfile[PATHLEN], deleted[PATHLEN];
 	char abuf[BUFSIZE];
@@ -233,10 +227,7 @@ search_record(char *filename, void *rptr, int size, int (*fptr) (void *, void *)
 }
 
 int
-delete_file(dirname, size, ent, filecheck)
-char *dirname;
-int size, ent;
-int (*filecheck) (void *);
+delete_file(char *dirname, int size, int ent, int (*filecheck) (void *))
 {
 	int fd;
 	struct stat st;

@@ -52,7 +52,7 @@
 
 struct allbrc *allbrc = NULL;
 struct onebrc brc = { 0, 0, 0, "", { 0 }, 0 };
-char *sysconf_str();
+extern char *sysconf_str(char *);
 struct newpostdata {
 	char *name;
 	char flag;

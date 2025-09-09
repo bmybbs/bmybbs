@@ -163,8 +163,7 @@ u_enter()
 }
 
 static void
-setflags(mask, value)
-int mask, value;
+setflags(int mask, int value)
 {
 	if (((currentuser.flags[0] & mask) && 1) != value) {
 		if (value)
@@ -204,16 +203,13 @@ u_exit()
 }
 
 int
-cmpuids(uid, up)
-char *uid;
-struct userec *up;
+cmpuids(char *uid, struct userec *up)
 {
 	return !strncasecmp(uid, up->userid, sizeof (up->userid));
 }
 
 int
-dosearchuser(userid)
-char *userid;
+dosearchuser(char *userid)
 {
 	int id;
 
@@ -338,9 +334,7 @@ multi_user_check()
 }
 
 static int
-simplepasswd(str, check)
-char *str;
-int check;
+simplepasswd(char *str, int check)
 {
 	char ch;
 
@@ -1251,8 +1245,7 @@ void showtitle(char *title, char *mid)
 }
 
 void
-docmdtitle(title, prompt)
-char *title, *prompt;
+docmdtitle(char *title, char *prompt)
 {
 	char *middoc;
 	if (chkmail()) {

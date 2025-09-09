@@ -1,8 +1,10 @@
 #include "bbs.h"
 #define PASSWDFILE MY_BBS_HOME"/.PASSWDS"
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
+	(void) argc;
+	(void) argv;
 	int fd1;
 	struct userec rec;
 	struct stat info;
@@ -31,7 +33,7 @@ main(int argc, char *argv[])
 			if (visit == 0)
 				printf("0 ¥”Œ¥\n");
 			else
-				printf("%d %s", visit, ctime(&visit));
+				printf("%ld %s", visit, ctime(&visit));
 		}
 	}
 	close(fd1);

@@ -96,17 +96,13 @@ static int voter(int listnum);
 
 
 static int
-cmpvuid(userid, uv)
-char *userid;
-struct ballot *uv;
+cmpvuid(char *userid, struct ballot *uv)
 {
 	return !strcmp(userid, uv->uid);
 }
 
 static void
-setvoteflag(bname, flag)
-char *bname;
-int flag;
+setvoteflag(char *bname, int flag)
 {
 	int pos;
 	struct boardheader fh;
@@ -122,8 +118,7 @@ int flag;
 }
 
 void
-makevdir(bname)
-char *bname;
+makevdir(char *bname)
 {
 	struct stat st;
 	char buf[STRLEN];
@@ -134,8 +129,7 @@ char *bname;
 }
 
 void
-setvfile(buf, bname, filename)
-char *buf, *bname, *filename;
+setvfile(char *buf, char *bname, char *filename)
 {
 	sprintf(buf, "vote/%s/%s", bname, filename);
 }
@@ -151,9 +145,7 @@ setcontrolfile()
 }
 
 static int
-b_suckinfile(fp, fname)
-FILE *fp;
-char *fname;
+b_suckinfile(FILE *fp, char *fname)
 {
 	char inbuf[256];
 	FILE *sfp;
@@ -207,8 +199,7 @@ b_closepolls()
 }
 
 static int
-count_result(ptr)
-struct ballot *ptr;
+count_result(struct ballot *ptr)
 {
 	int i;
 
@@ -245,8 +236,7 @@ struct ballot *ptr;
 }
 
 static int
-count_log(ptr)
-struct votelog *ptr;
+count_log(struct votelog *ptr)
 {
 	if (ptr == NULL) {
 		if (sug != NULL) {
@@ -276,8 +266,7 @@ get_result_title()
 }
 
 static int
-compareip(a, b)
-struct votelog *a, *b;
+compareip(struct votelog *a, struct votelog *b)
 {
 	return cmpIP(a->ip, b->ip);
 }
@@ -443,8 +432,7 @@ mk_result()
 }
 
 static int
-get_vitems(bal)
-struct votebal *bal;
+get_vitems(struct votebal *bal)
 {
 	int num;
 	char buf[STRLEN];
@@ -467,8 +455,7 @@ struct votebal *bal;
 }
 
 int
-vote_maintain(bname)
-char *bname;
+vote_maintain(char *bname)
 {
 	char buf[STRLEN * 4];
 	struct votebal *ball = &currvote;
@@ -640,8 +627,7 @@ char *bname;
 }
 
 static int
-vote_check(bits)
-int bits;
+vote_check(int bits)
 {
 	int i, count;
 
@@ -653,9 +639,7 @@ int bits;
 }
 
 static int
-showvoteitems(pbits, i, flag)
-unsigned int pbits;
-int i, flag;
+showvoteitems(unsigned int pbits, int i, int flag)
 {
 	char buf[STRLEN];
 	int count;
@@ -692,8 +676,7 @@ show_voteing_title()
 }
 
 static int
-getsug(uv)
-struct ballot *uv;
+getsug(struct ballot *uv)
 {
 	int i, line;
 
@@ -741,8 +724,7 @@ strollvote(struct ballot *uv, struct votebal *vote, int s)
 }
 
 static int
-multivote(uv)
-struct ballot *uv;
+multivote(struct ballot *uv)
 {
 	unsigned int i;
 	int multivotestroll = time(NULL) % currvote.totalitems;
@@ -763,8 +745,7 @@ struct ballot *uv;
 }
 
 static int
-smultivote(uv)
-struct ballot *uv;
+smultivote(struct ballot *uv)
 {
 	unsigned int i;
 	int multivotestroll = time(NULL) % currvote.totalitems;
@@ -793,8 +774,7 @@ begin:
 
 
 static int
-valuevote(uv)
-struct ballot *uv;
+valuevote(struct ballot *uv)
 {
 	unsigned int chs;
 	char buf[10];
@@ -810,7 +790,7 @@ struct ballot *uv;
 	do {
 		getdata(3, 0, "请输入一个值? [0]: ", buf, 5, DOECHO, NA);
 		uv->voted = abs(atoi(buf));
-	} while (uv->voted > currvote.maxtkt && buf[0] != '\n' && buf[0] != '\0');
+	} while (uv->voted > (unsigned int) abs(currvote.maxtkt) && buf[0] != '\n' && buf[0] != '\0');
 	if (buf[0] == '\n' || buf[0] == '\0' || uv->voted == chs)
 		return -1;
 	return 1;
@@ -855,8 +835,7 @@ valid_voter(char *board, char *name, char* listname)
 }
 
 static void
-user_vote(num)
-int num;
+user_vote(int num)
 {
 	char fname[STRLEN * 2], bname[STRLEN];
 	char buf[STRLEN];
@@ -969,8 +948,7 @@ voteexp()
 }
 
 static int
-printvote(ent)
-struct votebal *ent;
+printvote(struct votebal *ent)
 {
 	static int i;
 	struct ballot uservote;
@@ -1034,8 +1012,7 @@ dele_vote()
 }
 
 static int
-vote_results(bname)
-char *bname;
+vote_results(char *bname)
 {
 	char buf[STRLEN];
 	setvfile(buf, bname, "results");
@@ -1064,8 +1041,7 @@ vote_title()
 }
 
 static int
-addvoter(uident)
-char *uident;
+addvoter(char *uident)
 {
 	char buf[80];
 	int id;
@@ -1096,8 +1072,7 @@ char *uident;
 }
 
 static int
-delvoter(uident)
-char *uident;
+delvoter(char *uident)
 {
 	char fn[STRLEN];
 	int id;

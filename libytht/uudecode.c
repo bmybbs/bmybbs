@@ -62,9 +62,7 @@
 #define	DEC(Char) (((Char) - ' ') & 077)
 
 int
-uudecode(fp, outname)
-FILE *fp;
-char *outname;
+uudecode(FILE *fp, char *outname)
 {
 	int fd;
 	size_t nw = 0;

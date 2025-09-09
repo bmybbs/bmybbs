@@ -1,8 +1,9 @@
 #include "bbslib.h"
 
+//modify by mintbaggio 20040829 for new www
 int
 bbsmsg_main()
-{	//modify by mintbaggio 20040829 for new www
+{
 	char buf[MAX_MSG_SIZE];
 	char msgbuf[MAX_MSG_SIZE*2];
 	int count, i;
@@ -18,9 +19,9 @@ bbsmsg_main()
 	if (count == 0)
 		http_fatal("没有任何讯息");
 	for (i=0; i<count; i++) {
-                        load_msghead(0, currentuser.userid, &head, i);
-                        load_msgtext(currentuser.userid, &head, buf);
-			translate_msg(buf, &head, msgbuf, 0);
+		load_msghead(0, currentuser.userid, &head, i);
+		load_msgtext(currentuser.userid, &head, buf);
+		translate_msg(buf, &head, msgbuf, sizeof msgbuf, 0);
 		hprintf("%s", msgbuf);
 	}
 	u_info->unreadmsg = 0;

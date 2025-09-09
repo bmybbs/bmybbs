@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/file.h>
@@ -47,7 +48,7 @@ static MYSQL * my_connect_mysql(MYSQL *s)
 	return mysql_real_connect(s, sql_host, sql_user, sql_pass, sql_db, atoi(sql_port), NULL, CLIENT_IGNORE_SIGPIPE);
 }
 
-int execute_prep_stmt(const char* sqlbuf, enum MYSQL_CHARSET charset, MYSQL_BIND *params, MYSQL_BIND *result_cols, void *result_set, BMY_MYSQL_WRAPPER_CALLBACK callback) {
+int execute_prep_stmt(const char* sqlbuf, enum MYSQL_CHARSET_BMY charset, MYSQL_BIND *params, MYSQL_BIND *result_cols, void *result_set, BMY_MYSQL_WRAPPER_CALLBACK callback) {
 	MYSQL *s;
 	MYSQL_STMT *stmt;
 	int mysql_status;

@@ -15,6 +15,7 @@ delete_old_junk(char *filename)
 	int count, mday, fmday, total, ndeleted;
 	time_t now;
 	struct stat statbuf;
+	char fullpath[STRLEN];
 
 	if (stat(filename, &statbuf)) {
 		if (errno == ENOENT)
@@ -66,7 +67,6 @@ delete_old_junk(char *filename)
 	count = 1;
 	ndeleted = 0;
 	while (read(fdr, &fhdr, sizeof (fhdr)) == sizeof (fhdr)) {
-		char fullpath[STRLEN];
 		snprintf(fullpath, sizeof fullpath, MY_BBS_HOME "/boards/%s/%s", currboard,
 			fh2fname(&fhdr));
 		fmday = fhdr.deltime;

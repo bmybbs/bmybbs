@@ -12,7 +12,7 @@ main(int argc, char *argv[])
 	char dirfile[100];
 	time_t fbtime, nowtime, starttime;
 	int userlevel, day, count = 0;
-	struct mmapfile mf = { ptr:NULL };
+	struct mmapfile mf = { .ptr = NULL };
 	int start, total, i;
 	if (argc != 4) {
 		printf("Argument error!\n");

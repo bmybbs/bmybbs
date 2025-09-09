@@ -2,6 +2,7 @@
  * 局部文件，便于批量导入数据
  * 基本是 libbmy/mysql_wrapper.c 的拆解
  */
+#include <stdlib.h>
 #include <sys/file.h>
 #include "config.h"
 #include "ytht/fileop.h"

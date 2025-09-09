@@ -219,9 +219,7 @@ int modify_user_mode(int mode) {
 }
 
 int
-showperminfo(pbits, i, use_define)
-unsigned int pbits;
-int i, use_define;
+showperminfo(unsigned int pbits, int i, int use_define)
 {
 	char buf[STRLEN];
 
@@ -506,12 +504,7 @@ int x_setkeys5(const char *s) {
 }
 
 unsigned int
-setperms(pbits, prompt, numbers, showfunc, param)
-unsigned int pbits;
-char *prompt;
-int numbers;
-int (*showfunc) (unsigned int, int, int);
-int param;
+setperms(unsigned int pbits, char *prompt, int numbers, int (*showfunc) (unsigned int, int, int), int param)
 {
 	int lastperm = numbers - 1;
 	int i, done = NA;
@@ -1039,9 +1032,7 @@ heavyload(float maxload)
 }
 
 static void
-myexec_cmd(umode, pager, cmdfile, param)
-int umode, pager;
-const char *cmdfile, *param;
+myexec_cmd(int umode, int pager, const char *cmdfile, const char *param)
 {
 	char buf[STRLEN * 8], param1[256];
 	int save_pager;
@@ -1831,8 +1822,7 @@ bbs_zsendfile(char *filename)
 }
 
 static void
-get_load(load)
-double load[];
+get_load(double load[])
 {
 #if defined(LINUX)
 	FILE *fp;

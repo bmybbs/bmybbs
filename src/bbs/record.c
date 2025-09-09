@@ -77,9 +77,7 @@ int size, pos;
 #endif
 
 long
-get_num_records(filename, size)
-char *filename;
-int size;
+get_num_records(char *filename, int size)
 {
 	struct stat st;
 
@@ -113,10 +111,7 @@ long get_num_records_excludeBottom(char *filename, int size) {
 }
 
 int
-apply_record(filename, fptr, size)
-char *filename;
-int (*fptr) (void *);
-int size;
+apply_record(char *filename, int (*fptr) (void *), int size)
 {
 	char *buf;
 	int fd, sizeread, n, i;
@@ -151,10 +146,7 @@ int size;
 
 
 int
-get_records(filename, rptr, size, id, number)
-char *filename;
-void *rptr;
-int size, id, number;
+get_records(char *filename, void *rptr, int size, int id, int number)
 {
 	int fd;
 	int n;
@@ -194,12 +186,7 @@ int size, id, number;
 }
 
 int
-insert_record(fpath, data, size, pos, num)
-char *fpath;
-void *data;
-int size;
-int pos;
-int num;
+insert_record(char *fpath, void *data, int size, int pos, int num)
 {
 	int fd;
 	off_t off, len;
@@ -243,9 +230,7 @@ int num;
 #ifndef EXT_UTL
 
 int
-delete_range(filename, id1, id2)
-char *filename;
-int id1, id2;
+delete_range(char *filename, int id1, int id2)
 {
 	struct fileheader fhdr;
 	char tmpfile[STRLEN], deleted[STRLEN];
@@ -353,11 +338,7 @@ int id1, id2;
 #endif
 
 int
-update_file(dirname, size, ent, filecheck, fileupdate)
-char *dirname;
-int size, ent;
-int (*filecheck) (void *);
-void (*fileupdate) (void *);
+update_file(char *dirname, int size, int ent, int (*filecheck) (void *), void (*fileupdate) (void *))
 {
 	char abuf[BUFSIZE];
 	int fd;

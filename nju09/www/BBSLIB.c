@@ -78,8 +78,6 @@ size_t ummap_size = 0;
 char fromhost[BMY_IPV6_LEN]; // 从环境变量获取 IP 地址，IPv4/IPv6 已经由 apache 处理过
 struct in6_addr from_addr;   //ipv6 by leoncom
 
-struct userec *getuser();
-char *anno_path_of();
 static void updatelastboard(void);
 
 int
@@ -1851,31 +1849,19 @@ has_fill_form()
 	return 0;
 }
 
-int
-cmpboard(b1, b2)
-struct boardmem **b1, **b2;
-{
+int cmpboard(struct boardmem **b1, struct boardmem **b2) {
 	return strcasecmp((*b1)->header.filename, (*b2)->header.filename);
 }
 
-int
-cmpboardscore(b1, b2)
-struct boardmem **b1, **b2;
-{
+int cmpboardscore(struct boardmem **b1, struct boardmem **b2) {
 	return ((*b2)->score - (*b1)->score);
 }
 
-int
-cmpboardinboard(b1, b2)
-struct boardmem **b1, **b2;
-{
+int cmpboardinboard(struct boardmem **b1, struct boardmem **b2) {
 	return ((*b2)->inboard - (*b1)->inboard);
 }
 
-int
-cmpuser(a, b)
-struct user_info *a, *b;
-{
+int cmpuser(struct user_info *a, struct user_info *b) {
 	return strcasecmp(a->userid, b->userid);
 }
 
@@ -2124,10 +2110,7 @@ int check_maxmail() {
 		return (0);
 }
 
-int
-countln(fname)
-char *fname;
-{
+int countln(char *fname) {
 	FILE *fp;
 	char tmp[256];
 	int count = 0;
@@ -2264,10 +2247,7 @@ search_filter(char *pat1, char *pat2, char *pat3)
 	return 0;
 }
 
-char *
-setbfile(buf, boardname, filename)
-char *buf, *boardname, *filename;
-{
+char *setbfile(char *buf, char *boardname, char *filename) {
 	sprintf(buf, "boards/%s/%s", boardname, filename);
 	return buf;
 }

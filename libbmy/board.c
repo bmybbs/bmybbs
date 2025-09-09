@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include <string.h>
 #include "bmy/mysql_wrapper.h"
 #include "bmy/convcode.h"

@@ -2,7 +2,7 @@
 #define BMY_MYSQL_WRAPPER
 #include <mysql/mysql.h>
 
-enum MYSQL_CHARSET {
+enum MYSQL_CHARSET_BMY {
 	MYSQL_CHARSET_GBK,
 	MYSQL_CHARSET_UTF8
 };
@@ -31,6 +31,6 @@ typedef void (*BMY_MYSQL_WRAPPER_CALLBACK)(MYSQL_STMT *stmt, MYSQL_BIND *result_
  * @param callback 处理查询结果的回调函数
  * @return 返回 mysql 调用状态
  */
-int execute_prep_stmt(const char* sqlbuf, enum MYSQL_CHARSET charset, MYSQL_BIND *params, MYSQL_BIND *result_cols, void *result_set, BMY_MYSQL_WRAPPER_CALLBACK callback);
+int execute_prep_stmt(const char* sqlbuf, enum MYSQL_CHARSET_BMY charset, MYSQL_BIND *params, MYSQL_BIND *result_cols, void *result_set, BMY_MYSQL_WRAPPER_CALLBACK callback);
 
 #endif

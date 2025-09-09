@@ -9,7 +9,7 @@ cmake-build-debug/
 
 # 中间文件
 bin/
-build/
+build*/
 
 # 临时生成的代码文件
 libythtbbs/sectree.c
@@ -28,3 +28,5 @@ node_modules/
 yarn-error.log
 package-lock.json
 
+.vscode/
+cov-build/

@@ -25,6 +25,15 @@ void ytht_normalize(char *buf);
 void ytht_strsncpy(char *s1, const char *s2, int n);
 
 /**
+ * 类似于 strncat(3) 但是会检查目标缓冲区长度
+ * @param s1     目标缓冲区
+ * @param s1_len 目标缓冲区长度
+ * @param s2     源
+ * @param n      源长度
+ */
+void ytht_strncat(char *s1, size_t s1_len, const char *s2, size_t n);
+
+/**
  * @brief 从左侧裁剪空白字符
  * 包括 " ", "\t", "\r", "\n"
  * @param s 待裁剪的字符串

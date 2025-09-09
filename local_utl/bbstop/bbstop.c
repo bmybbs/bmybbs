@@ -24,29 +24,25 @@ int login_c=0, stay_c=0, post_c=0 , age_c=0;
 time_t now;
 
 int
-login_cmp(b, a)
-struct userec *a, *b;
+login_cmp(struct userec *b, struct userec *a)
 {
 	return (a->numlogins - b->numlogins);
 }
 
 int
-post_cmp(b, a)
-struct userec *a, *b;
+post_cmp(struct userec *b, struct userec *a)
 {
 	return (a->numposts - b->numposts);
 }
 
 int
-stay_cmp(b, a)
-struct userec *a, *b;
+stay_cmp(struct userec *b, struct userec *a)
 {
 	return (a->stay - b->stay);
 }
 
 int
-perm_cmp(b, a)
-struct userec *a, *b;
+perm_cmp(struct userec *b, struct userec *a)
 {
 	return (a->numlogins / 3 + a->numposts + a->stay / 3600) -
 		(b->numlogins / 3 + b->numposts + b->stay / 3600);
@@ -302,12 +298,11 @@ output_c(char *file, int mode)
 	}
 }
 int
-main(argc, argv)
-int argc;
-char **argv;
+main(int argc, char **argv)
 {
+	(void) argc;
+	(void) argv;
 	FILE *inf;
-	int i;
 	struct userec aman;
 	char passwd_file[256];
 	snprintf(passwd_file, sizeof passwd_file, MY_BBS_HOME "/" PASSFILE);
@@ -324,7 +319,7 @@ char **argv;
 	bzero(post_q, sizeof (post_q));
 	bzero(perm_q, sizeof (perm_q));
 
-	for (i = 0;; i++) {
+	for (;;) {
 		if (fread(&aman, sizeof (aman), 1, inf) <= 0)
 			break;
 		if (!aman.userid[0])

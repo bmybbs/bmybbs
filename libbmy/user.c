@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stdbool.h>
 #include "bmy/mysql_wrapper.h"
 #include "config.h"
 

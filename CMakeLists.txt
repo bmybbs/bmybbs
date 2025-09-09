@@ -10,7 +10,7 @@ include_directories(include ${LIBXML2_INCLUDE_DIR})
 
 link_directories(libytht libbmy libythtbbs)
 
-set(CMAKE_C_FLAGS "-Wall -g -pipe -Wextra -std=gnu11")
+set(CMAKE_C_FLAGS "-Wall -g -pipe -Wextra -std=gnu11 -Wno-invalid-source-encoding")
 
 add_definitions(-D_GNU_SOURCE -DCONF_HAVE_OPENPTY -DLINUX -DSMTP_OPENSSL)
 

@@ -1,29 +1,20 @@
 #include "bbs.h"
 
-char *
-setbfile(buf, boardname, filename)
-char *buf, *boardname, *filename;
-{
-	snprintf(buf, sizeof buf, MY_BBS_HOME "/boards/%s/%s", boardname, filename);
+static char *setbfile(char *buf, size_t len, char *boardname, char *filename) {
+	snprintf(buf, len, MY_BBS_HOME "/boards/%s/%s", boardname, filename);
 	return buf;
 }
 
-char *
-setbdir(buf, boardname)
-char *buf, *boardname;
-{
+static char *setbdir(char *buf, size_t len, char *boardname) {
 	char dir[STRLEN];
 
 	strncpy(dir, DOT_DIR, STRLEN);
 	dir[STRLEN - 1] = '\0';
-	snprintf(buf, sizeof buf, MY_BBS_HOME "/boards/%s/%s", boardname, dir);
+	snprintf(buf, len, MY_BBS_HOME "/boards/%s/%s", boardname, dir);
 	return buf;
 }
 
-void
-getcross(filepath, filepath2, nboard, posttitle)
-char *filepath, *filepath2, *nboard, *posttitle;
-{
+void getcross(char *filepath, char *filepath2, char *nboard, char *posttitle) {
 	FILE *inf, *of;
 	char buf[256];
 	time_t now;
@@ -48,20 +39,16 @@ char *filepath, *filepath2, *nboard, *posttitle;
 	fclose(of);
 }
 
-int
-post_cross(filename, nboard, posttitle, owner)
-char *filename, *nboard, *posttitle, *owner;
-{
+int post_cross(char *filename, char *nboard, char *posttitle, char *owner) {
 	struct fileheader postfile;
 	char filepath[STRLEN];
-	char buf[256], buf4[STRLEN];
-	int fp;
+	char buf[256];
 	time_t now;
 
 	memset(&postfile, 0, sizeof (postfile));
 
 	now = time(0);
-	setbfile(filepath, nboard, "");
+	setbfile(filepath, sizeof(filepath), nboard, "");
 	now = trycreatefile(filepath, "M.%ld.A", now, 100);
 	if (now < 0)
 		return -1;
@@ -73,7 +60,7 @@ char *filename, *nboard, *posttitle, *owner;
 	getcross(filepath, filename, nboard, posttitle);
 	chmod(filepath, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
 
-	setbdir(buf, nboard);
+	setbdir(buf, sizeof(buf), nboard);
 	if (append_record(buf, &postfile, sizeof (postfile)) == -1) {
 		printf("post recored fail!\n");
 		return 0;
@@ -82,11 +69,9 @@ char *filename, *nboard, *posttitle, *owner;
 	return 1;
 }
 
-int
-cmpbnames(bname, brec)
-char *bname;
-struct boardheader *brec;
-{
+int cmpbnames(void *a, void *b) {
+	char *bname = (char *) a;
+	struct boardheader *brec = (struct boardheader *) b;
 	if (!strncmp(bname, brec->filename, sizeof (brec->filename)))
 		return 1;
 	else
