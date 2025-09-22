@@ -1,2 +1,2 @@
 add_executable(bbslogd bbslogd.c)
-target_link_libraries(bbslogd ythtbbs ytht ghthash)
+target_link_libraries(bbslogd ythtbbs ytht)

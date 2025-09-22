@@ -9,7 +9,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <ght_hash_table.h>
+#include "3rd/uthash.h"
 
 #include <time.h>
 
@@ -42,6 +42,13 @@ typedef struct conn_t {
 	time_t lasttime;
 } conn_t;
 
+struct board_kv {
+	char *key;
+	size_t klen;
+	struct boardmem *val;
+	UT_hash_handle hh;
+};
+
 conn_t *vector[MAX_CONNECTIONS];
 time_t now_t;
 size_t num_connections;
@@ -57,9 +64,7 @@ conn_init(void)
 	num_connections = 0;
 }
 
-void
-get_load(load)
-double load[];
+void get_load(double load[])
 {
 #if defined(LINUX)
 	FILE *fp;
@@ -163,7 +168,7 @@ static int getbcache_callback(struct boardmem *board, int curr_idx, va_list ap) 
 	int *num = va_arg(ap, int *);
 	char *upperstr = va_arg(ap, char *);
 	size_t upperstr_size = va_arg(ap, size_t);
-	ght_hash_table_t *table = va_arg(ap, ght_hash_table_t *);
+	struct board_kv **tablep = va_arg(ap, struct board_kv**);
 
 	int j;
 	*num = *num + 1;
@@ -175,7 +180,17 @@ static int getbcache_callback(struct boardmem *board, int curr_idx, va_list ap) 
 	for (j = 0; upperstr[j]; j++)
 		upperstr[j] = toupper(upperstr[j]);
 
-	ght_insert(table, board, j, upperstr);
+	struct board_kv *node = malloc(sizeof(*node));
+	if (!node)
+		return 0;
+	node->key = strndup(upperstr, j);
+	if (!node->key) {
+		free(node);
+		return 0;
+	}
+	node->klen = j;
+	node->val = board;
+	HASH_ADD_KEYPTR(hh, *tablep, node->key, node->klen, node);
 	return 0;
 }
 
@@ -185,25 +200,32 @@ getbcache(char *board)
 	int j;
 	static int num = 0;
 	char upperstr[STRLEN];
-	static ght_hash_table_t *p_table = NULL;
+	static struct board_kv *p_table = NULL;
 	static time_t uptime = 0;
 	ythtbbs_cache_Board_resolve();
 	if (board[0] == 0)
 		return NULL;
 	if (p_table && (num != ythtbbs_cache_Board_get_number() || ythtbbs_cache_Board_get_uptime() > uptime)) {
-		ght_finalize(p_table);
+		struct board_kv *it, *tmp;
+		HASH_ITER(hh, p_table, it, tmp) {
+			HASH_DEL(p_table, it);
+			free(it->key);
+			free(it);
+		}
 		p_table = NULL;
 	}
 	if (p_table == NULL) {
 		num = 0;
-		p_table = ght_create(MAXBOARD, NULL, 0);
 		ythtbbs_cache_Board_foreach_v(getbcache_callback, &num, upperstr, sizeof(upperstr), p_table);
 		uptime = now_t;
 	}
 	ytht_strsncpy(upperstr, board, sizeof(upperstr));
 	for (j = 0; upperstr[j]; j++)
 		upperstr[j] = toupper(upperstr[j]);
-	return ght_get(p_table, j, upperstr);
+
+	struct board_kv *found = NULL;
+	HASH_FIND(hh, p_table, upperstr, (size_t) j, found);
+	return found ? found->val : NULL;
 }
 
 int

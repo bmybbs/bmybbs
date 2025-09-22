@@ -54,20 +54,14 @@ mkdir -p ${CGIPATH}
 mkdir -p ${HTMPATH}
 
 # call Makefile
-make all
-make install
+mkdir build
+( cd build; cmake ..; make )
 
 # crontab bbs
 ( cd local_utl; su -c "crontab crontab.bbs" -s /bin/sh bbs )
 
 # new top 10
-cp /usr/local/lib/libghthash.so.0 /usr/lib/
-${BBS_HOME}/bin/newtop10 -a
-
-if [ -f src/pty/ptyexec ]
-then
-${INSTALL} -m 4550  -s -g root -o root  src/pty/ptyexec    ${TARGET}
-fi
+# FIXME ${BBS_HOME}/bin/newtop10 -a
 
 cat > ${BBS_HOME}/etc/sysconf.ini << EOF
 #---------------------------------------------------------------
