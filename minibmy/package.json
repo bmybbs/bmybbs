@@ -12,8 +12,8 @@
 		"@bmybbs/bmybbs-content-parser": "^0.3.4",
 		"@miniprogram-component-plus/tabs": "^1.0.0",
 		"@xmldom/xmldom": "^0.8.10",
-		"dayjs": "^1.11.10",
+		"dayjs": "^1.11.18",
 		"insane": "^2.6.2",
-		"marked": "^10.0.0"
+		"marked": "^16.3.0"
 	}
 }

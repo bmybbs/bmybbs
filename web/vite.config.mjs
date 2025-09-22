@@ -11,7 +11,7 @@ let PROXY_CONFIG;
 if (!fs.existsSync(proxy_config_file)) {
 	console.warn("ERROR: Proxy config file doesn't exist, will use the main site as backend");
 	console.warn("       To create this config file, here's an example");
-	console.warn("       echo 'http://ip:port' > /path/to/web/.proxy.txt");
+	console.warn("       echo 'http://ip:port' > /path/to/web/proxy.config.txt");
 	console.warn("       where bmyapi listens on ip:port");
 	PROXY_CONFIG = "https://bbs.xjtu.edu.cn";
 } else {
@@ -44,4 +44,3 @@ export default defineConfig({
 		},
 	},
 });
-
