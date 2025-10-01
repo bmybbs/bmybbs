@@ -35,7 +35,7 @@
 		"eslint-plugin-vue": "^10.5.0",
 		"prettier": "^3.6.2",
 		"rollup-plugin-prismjs": "^0.1.0",
-		"sass": "^1.93.0",
+		"sass": "^1.93.2",
 		"vite": "^7",
 		"vue-eslint-parser": "^10.2.0"
 	}
