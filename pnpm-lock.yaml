@@ -105,8 +105,8 @@ importers:
         specifier: ^5.5.4
         version: 5.5.4(eslint-config-prettier@10.1.8(eslint@9.37.0))(eslint@9.37.0)(prettier@3.6.2)
       eslint-plugin-vue:
-        specifier: ^10.5.0
-        version: 10.5.0(eslint@9.37.0)(vue-eslint-parser@10.2.0(eslint@9.37.0))
+        specifier: ^10.5.1
+        version: 10.5.1(eslint@9.37.0)(vue-eslint-parser@10.2.0(eslint@9.37.0))
       prettier:
         specifier: ^3.6.2
         version: 3.6.2
@@ -845,8 +845,8 @@ packages:
       eslint-config-prettier:
         optional: true
 
-  eslint-plugin-vue@10.5.0:
-    resolution: {integrity: sha512-7BZHsG3kC2vei8F2W8hnfDi9RK+cv5eKPMvzBdrl8Vuc0hR5odGQRli8VVzUkrmUHkxFEm4Iio1r5HOKslO0Aw==}
+  eslint-plugin-vue@10.5.1:
+    resolution: {integrity: sha512-SbR9ZBUFKgvWAbq3RrdCtWaW0IKm6wwUiApxf3BVTNfqUIo4IQQmreMg2iHFJJ6C/0wss3LXURBJ1OwS/MhFcQ==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
     peerDependencies:
       '@stylistic/eslint-plugin': ^2.0.0 || ^3.0.0 || ^4.0.0 || ^5.0.0
@@ -1087,6 +1087,7 @@ packages:
 
   mathjax-full@3.2.2:
     resolution: {integrity: sha512-+LfG9Fik+OuI8SLwsiR02IVdjcnRCy5MufYLi0C3TdMT56L/pjB0alMVGgoWJF8pN9Rc7FESycZB9BMNWIid5w==}
+    deprecated: Version 4 replaces this package with the scoped package @mathjax/src
 
   mhchemparser@4.2.1:
     resolution: {integrity: sha512-kYmyrCirqJf3zZ9t/0wGgRZ4/ZJw//VwaRVGA75C4nhE60vtnIzhl9J9ndkX/h6hxSN7pjg/cE0VxbnNM+bnDQ==}
@@ -1270,6 +1271,11 @@ packages:
 
   semver@7.7.2:
     resolution: {integrity: sha512-RF0Fw+rO5AMf9MAyaRXI4AV0Ulj5lMHqVxxdSgiVbixSCXoEmmX/jk0CuJw4+3SqroYO9VoUh+HcuJivvtJemA==}
+    engines: {node: '>=10'}
+    hasBin: true
+
+  semver@7.7.3:
+    resolution: {integrity: sha512-SdsKMrI9TdgjdweUSR9MweHA4EJ8YxHn8DFaDisvhVlUOe4BF1tLD7GAj0lIqWVl+dPb/rExr0Btby5loQm20Q==}
     engines: {node: '>=10'}
     hasBin: true
 
@@ -2035,14 +2041,14 @@ snapshots:
     optionalDependencies:
       eslint-config-prettier: 10.1.8(eslint@9.37.0)
 
-  eslint-plugin-vue@10.5.0(eslint@9.37.0)(vue-eslint-parser@10.2.0(eslint@9.37.0)):
+  eslint-plugin-vue@10.5.1(eslint@9.37.0)(vue-eslint-parser@10.2.0(eslint@9.37.0)):
     dependencies:
       '@eslint-community/eslint-utils': 4.9.0(eslint@9.37.0)
       eslint: 9.37.0
       natural-compare: 1.4.0
       nth-check: 2.1.1
       postcss-selector-parser: 6.1.2
-      semver: 7.7.2
+      semver: 7.7.3
       vue-eslint-parser: 10.2.0(eslint@9.37.0)
       xml-name-validator: 4.0.0
 
@@ -2448,6 +2454,8 @@ snapshots:
   semver@6.3.1: {}
 
   semver@7.7.2: {}
+
+  semver@7.7.3: {}
 
   set-blocking@2.0.0: {}
 
