@@ -26,8 +26,8 @@ importers:
         specifier: ^2.6.2
         version: 2.6.2
       marked:
-        specifier: ^16.4.1
-        version: 16.4.1
+        specifier: ^17.0.0
+        version: 17.0.0
 
   nju09:
     dependencies:
@@ -74,8 +74,8 @@ importers:
         specifier: ^1.1.0
         version: 1.1.0
       marked:
-        specifier: ^16.4.1
-        version: 16.4.1
+        specifier: ^17.0.0
+        version: 17.0.0
       mathjax-full:
         specifier: ^3.2.2
         version: 3.2.2
@@ -1080,8 +1080,8 @@ packages:
   magic-string@0.30.19:
     resolution: {integrity: sha512-2N21sPY9Ws53PZvsEpVtNuSW+ScYbQdp4b9qUaL+9QkHUrGFKo56Lg9Emg5s9V/qrtNBmiR01sYhUOwu3H+VOw==}
 
-  marked@16.4.1:
-    resolution: {integrity: sha512-ntROs7RaN3EvWfy3EZi14H4YxmT6A5YvywfhO+0pm+cH/dnSQRmdAmoFIc3B9aiwTehyk7pESH4ofyBY+V5hZg==}
+  marked@17.0.0:
+    resolution: {integrity: sha512-KkDYEWEEiYJw/KC+DVm1zzlpMQSMIu6YRltkcCvwheCp8HWPXCk9JwOmHJKBlGfzcpzcIt6x3sMnTsRm/51oDg==}
     engines: {node: '>= 20'}
     hasBin: true
 
@@ -2269,7 +2269,7 @@ snapshots:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  marked@16.4.1: {}
+  marked@17.0.0: {}
 
   mathjax-full@3.2.2:
     dependencies:
