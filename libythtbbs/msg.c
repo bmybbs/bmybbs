@@ -16,12 +16,12 @@ save_msgtext(char *uident, struct msghead *head, const char *msgbuf)
 
 	if ((fd = open(fname, O_WRONLY | O_CREAT, 0664)) == -1) {
 		errlog("msgopen err, %s", uident);
-		return -1;	/* ´´½¨ÎÄ¼ş·¢Éú´íÎó */
+		return -1;	/* åˆ›å»ºæ–‡ä»¶å‘ç”Ÿé”™è¯¯ */
 	}
 	if ((fd2 = open(fname2, O_WRONLY | O_CREAT, 0664)) == -1) {
 		errlog("msgopen err, %s", uident);
 		close(fd);
-		return -1;	/* ´´½¨ÎÄ¼ş·¢Éú´íÎó */
+		return -1;	/* åˆ›å»ºæ–‡ä»¶å‘ç”Ÿé”™è¯¯ */
 	}
 	ldata.l_type = F_WRLCK;
 	ldata.l_whence = 0;
@@ -61,7 +61,7 @@ save_msgtext(char *uident, struct msghead *head, const char *msgbuf)
 		sethomefile_s(fname, sizeof(fname), uident, "msgindex2");
 		if ((fd = open(fname, O_WRONLY | O_CREAT, 0664)) == -1) {
 			errlog("msgopen err, %s", uident);
-			return -1;	/* ´´½¨ÎÄ¼ş·¢Éú´íÎó */
+			return -1;	/* åˆ›å»ºæ–‡ä»¶å‘ç”Ÿé”™è¯¯ */
 		}
 		ldata.l_type = F_WRLCK;
 		ldata.l_whence = 0;
@@ -99,9 +99,11 @@ translate_msg(char *src, struct msghead *head, char *dest, size_t dest_len, int 
 	dest[0] = 0;
 	if (head->mode == 0) {
 		if (add_site)
-			snprintf(uid, sizeof uid, "Õ¾³¤@%s", MY_BBS_ID);
+			// ç«™é•¿
+			snprintf(uid, sizeof uid, "\xD5\xBE\xB3\xA4@%s", MY_BBS_ID);
 		else
-			snprintf(uid, sizeof uid, "Õ¾³¤");
+			// ç«™é•¿
+			snprintf(uid, sizeof uid, "\xD5\xBE\xB3\xA4");
 	} else {
 		if (add_site)
 			snprintf(uid, sizeof uid, "%s@%s", head->id, MY_BBS_ID);
@@ -123,18 +125,21 @@ translate_msg(char *src, struct msghead *head, char *dest, size_t dest_len, int 
 		break;
 	case 0:
 		snprintf(dest, dest_len,
-			"\x1b[44m\x1b[33m%sÓÚ %16.16s Ê±¹ã²¥\x1b[37m                                                  \x1b[m\n", uid, time);
+			// %säº %16.16s æ—¶å¹¿æ’­
+			"\x1b[44m\x1b[33m%s\xD3\xDA %16.16s \xCA\xB1\xB9\xE3\xB2\xA5\x1b[37m                                                  \x1b[m\n", uid, time);
 		snprintf(attstr, sizeof attstr, "\x1b[44m\x1b[1;37m");
 		break;
 	case 1:
 		if (!head->sent) {
 			snprintf(dest, dest_len,
-				"\x1b[44m\x1b[36m%-14.14s(%-16.16s) ÑûÇëÄã\x1b[37m                                           \x1b[m\n",
+				// %-14.14s(%-16.16s) é‚€è¯·ä½ 
+				"\x1b[44m\x1b[36m%-14.14s(%-16.16s) \xD1\xFB\xC7\xEB\xC4\xE3\x1b[37m                                           \x1b[m\n",
 				head->id, time);
 			snprintf(attstr, sizeof attstr, "\x1b[44m\x1b[1;37m");
 		} else {
 			snprintf(dest, dest_len,
-				"\x1b[44m\x1b[37mÄã(%-16.16s) ÑûÇë%-14.14s\x1b[36m                                           \x1b[m\n",
+				// ä½ (%-16.16s) é‚€è¯·%-14.14s
+				"\x1b[44m\x1b[37m\xC4\xE3(%-16.16s) \xD1\xFB\xC7\xEB%-14.14s\x1b[36m                                           \x1b[m\n",
 				time, head->id);
 			snprintf(attstr, sizeof attstr, "\x1b[44m\x1b[1;36m");
 		}
@@ -193,7 +198,7 @@ get_unreadcount(char *uident)
 	sethomefile_s(fname, sizeof(fname), uident, "msgindex2");
 
 	if ((fd = open(fname, O_RDONLY, 0664)) == -1) {
-		return 0;	/* ´´½¨ÎÄ¼ş·¢Éú´íÎó */
+		return 0;	/* åˆ›å»ºæ–‡ä»¶å‘ç”Ÿé”™è¯¯ */
 	}
 	ldata.l_type = F_RDLCK;
 	ldata.l_whence = 0;
@@ -238,7 +243,7 @@ get_msgcount(int id, char *uident)
 	sethomefile_s(fname, sizeof(fname), uident, idname);
 
 	if ((fd = open(fname, O_RDONLY, 0664)) == -1) {
-		return 0;	/* ´´½¨ÎÄ¼ş·¢Éú´íÎó */
+		return 0;	/* åˆ›å»ºæ–‡ä»¶å‘ç”Ÿé”™è¯¯ */
 	}
 	ldata.l_type = F_RDLCK;
 	ldata.l_whence = 0;
@@ -273,7 +278,7 @@ load_msghead(int id, char *uident, struct msghead *head, int index)
 
 	if ((fd = open(fname, O_RDONLY, 0664)) == -1) {
 		errlog("msgopen err, %s", uident);
-		return -1;	/* ´´½¨ÎÄ¼ş·¢Éú´íÎó */
+		return -1;	/* åˆ›å»ºæ–‡ä»¶å‘ç”Ÿé”™è¯¯ */
 	}
 	ldata.l_type = F_RDLCK;
 	ldata.l_whence = 0;
@@ -314,7 +319,7 @@ load_msgtext(char *uident, struct msghead *head, char *msgbuf)
 
 	if ((fd2 = open(fname2, O_RDONLY, 0664)) == -1) {
 		errlog("msgopen err, %s", uident);
-		return -1;	/* ´´½¨ÎÄ¼ş·¢Éú´íÎó */
+		return -1;	/* åˆ›å»ºæ–‡ä»¶å‘ç”Ÿé”™è¯¯ */
 	}
 	lseek(fd2, head->pos, SEEK_SET);
 	i = head->len;
@@ -339,7 +344,7 @@ get_unreadmsg(char *uident)
 
 	if ((fd = open(fname, O_RDWR | O_CREAT, 0664)) == -1) {
 		errlog("msgopen err, %s", uident);
-		return -1;	/* ´´½¨ÎÄ¼ş·¢Éú´íÎó */
+		return -1;	/* åˆ›å»ºæ–‡ä»¶å‘ç”Ÿé”™è¯¯ */
 	}
 	ldata.l_type = F_RDLCK;
 	ldata.l_whence = 0;
