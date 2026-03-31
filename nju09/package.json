@@ -7,7 +7,7 @@
 	},
 	"license": "GPL-2.0",
 	"dependencies": {
-		"mathjax-full": "^3.2.2",
+		"@mathjax/src": "catalog:",
 		"prismjs": "^1.30.0"
 	}
 }

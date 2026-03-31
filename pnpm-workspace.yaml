@@ -2,5 +2,8 @@ packages:
   - minibmy/
   - nju09/
   - web/
+catalog:
+  "@mathjax/src": ^4.1.1
 onlyBuiltDependencies:
+  - '@parcel/watcher'
   - esbuild
