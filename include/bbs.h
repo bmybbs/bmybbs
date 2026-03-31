@@ -106,7 +106,7 @@ extern int errno ;
 
 #define NUMPERMS   (31)
 
-#define MAX_DIGEST         1000    /* 最大文摘数 */
+#define MAX_DIGEST         1000    /* 鏈�澶ф枃鎽樻暟 */
 #define MAX_POSTRETRY       100
 
 #define DONOTHING       0       /* Read menu command return states */
