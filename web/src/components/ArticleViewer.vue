@@ -81,7 +81,11 @@ export default {
 		_reply_callback: Function,
 	},
 	mounted() {
-		BMYClient.get_article_content(this._boardname_en, this._aid).then(response => {
+		this.loadArticle();
+	},
+	methods: {
+		async loadArticle() {
+			const response = await BMYClient.get_article_content(this._boardname_en, this._aid);
 			this.rawContent = response.content;
 			this.content = bmyParser({
 				text: response.content,
@@ -95,9 +99,7 @@ export default {
 			if (this._mark & BMY_FILE_HEADER.FH_MATH) {
 				await typesetMath(this.$refs.article);
 			}
-		});
-	},
-	methods: {
+		},
 		toggleAnsi() {
 			if (this.show_ansi) {
 				this.show_ansi = false;
