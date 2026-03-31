@@ -399,7 +399,7 @@ export default {
 			const article = {
 				text: this.$refs.textarea.value.replaceAll("[ESC][", "\x1b["),
 				attaches: attaches,
-			}
+			};
 
 			const content = bmyParser(article);
 			this.previewContent = content;
@@ -719,4 +719,3 @@ textarea {
 	background-color: #fff;
 }
 </style>
-

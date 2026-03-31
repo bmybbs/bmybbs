@@ -7,7 +7,8 @@
 			</div>
 
 			<div class="text-bmy-dark6 fs-7">
-				{{author}} 发表于 <TooltipTimestamp :_unix_timestamp="_aid" />
+				{{ author }} 发表于
+				<TooltipTimestamp :_unix_timestamp="_aid" />
 			</div>
 		</div>
 		<div class="card-body">
@@ -16,13 +17,16 @@
 		<div class="card-footer bg-bmy-blue0">
 			<div class="action-container d-flex justify-content-between">
 				<button v-for="b in buttons" :key="b.text" @click="b.func">
-					<span class="me-1"><fa :icon="b.icon" /></span>
+					<span class="me-1">
+						<fa :icon="b.icon" />
+					</span>
 					{{ b.text }}
 				</button>
 			</div>
 
 			<div class="replyForm p-2" v-if="actionForm.isReplying">
-				<textarea class="form-control mb-2" ref="replyForm" placeholder="您想说点什么？Remember, be nice..." rows="1"></textarea>
+				<textarea class="form-control mb-2" ref="replyForm" placeholder="您想说点什么？Remember, be nice..."
+					rows="1"></textarea>
 				<div class="d-flex justify-content-between fs-7">
 					<button @click="gotoReply">切换为完整编辑框</button>
 					<div>
@@ -59,9 +63,9 @@ export default {
 			title: "",
 			rawContent: "",
 			buttons: [
-				{ icon: "comments",          text: "回复", func: this.openReplyForm },
-				{ icon: "retweet",           text: "转载", func: this.unimplemented },
-				{ icon: "share",             text: "转寄", func: this.unimplemented },
+				{ icon: "comments", text: "回复", func: this.openReplyForm },
+				{ icon: "retweet", text: "转载", func: this.unimplemented },
+				{ icon: "share", text: "转寄", func: this.unimplemented },
 				{ icon: ["far", "envelope"], text: "回信", func: this.unimplemented },
 			],
 			actionForm: {
@@ -213,8 +217,6 @@ export default {
 }
 
 .unread-shadow {
-	box-shadow: 0px 2px 10px 1px rgba(0,76,151,0.20);
+	box-shadow: 0px 2px 10px 1px rgba(0, 76, 151, 0.20);
 }
-
 </style>
-
