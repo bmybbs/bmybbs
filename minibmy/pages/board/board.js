@@ -1,4 +1,4 @@
-import insane from "insane";
+import * as sanitizeHtml from "sanitize-html";
 import marked from "marked";
 import { BMYClient } from "../../utils/BMYClient.js"
 import { BOARD_ARTICLE_MODE, ITEMS_PER_PAGE, BMY_EC } from "../../utils/BMYConstants.js"
@@ -94,7 +94,7 @@ Page({
 	updateNotes(notes) {
 		if (notes && notes.length > 0) {
 			this.setData({
-				mdNotes: insane(marked(notes))
+				mdNotes: sanitizeHtml(marked(notes))
 			});
 		}
 	},
