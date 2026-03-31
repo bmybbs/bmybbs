@@ -1,10 +1,7 @@
 version: 2
 updates:
   - package-ecosystem: "npm"
-    directories:
-      - "/minibmy"
-      - "/nju09"
-      - "/web"
+    directory: "/"
     schedule:
       interval: "weekly"
   - package-ecosystem: "github-actions"
