@@ -3,16 +3,16 @@ name: BMYBBS Frontend
 on:
   push:
     paths:
-      - '.github/workflows/node.yml'
-      - 'web/**'
-      - 'content-parser'
+      - ".github/workflows/node.yml"
+      - "web/**"
+      - "content-parser"
     branches:
       - master
   pull_request:
     paths:
-      - '.github/workflows/node.yml'
-      - 'web/**'
-      - 'content-parser'
+      - ".github/workflows/node.yml"
+      - "web/**"
+      - "content-parser"
     branches:
       - master
 
@@ -24,15 +24,15 @@ jobs:
         with:
           submodules: true
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5.0.0
         with:
           version: 10
 
       - name: Use Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: '22.x'
-          cache: 'pnpm'
+          node-version: "22.x"
+          cache: "pnpm"
 
       - name: Install deps
         run: pnpm install
@@ -40,4 +40,3 @@ jobs:
       - name: Build front-end
         working-directory: web
         run: npm run build
-
