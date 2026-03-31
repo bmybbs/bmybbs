@@ -36,13 +36,13 @@
 </template>
 
 <script>
-import { defineAsyncComponent } from "vue"
+import { defineAsyncComponent, nextTick } from "vue"
 import { BMYClient } from "@/lib/BMYClient.js"
 import bmyParser from "@bmybbs/bmybbs-content-parser"
 import { Prism } from "@/plugins/prismjs.js"
 import { BMY_EC, BMY_FILE_HEADER } from "@/lib/BMYConstants.js"
 import { generateContent, getErrorMessage } from "@/lib/BMYUtils.js"
-import "@/plugins/mathjax.js"
+import { typesetMath } from "@/plugins/mathjax.js"
 import "@/assets/article.css"
 
 const TooltipTimestamp = defineAsyncComponent(() => import("./TooltipTimestamp.vue"));
@@ -85,15 +85,12 @@ export default {
 			});
 			this.author = response.author;
 			this.title = response.title;
-			setTimeout(() => {
-				this.ansi_list = [].slice.call(this.$refs.article.querySelectorAll("span.bmybbs-ansi"));
-				Prism.highlightAll();
-				if (this._mark & BMY_FILE_HEADER.FH_MATH) {
-					if (window.MathJax && typeof window.MathJax.typeset === "function") {
-						window.MathJax.typeset();
-					}
-				}
-			}, 1500);
+			await nextTick();
+			this.ansi_list = [].slice.call(this.$refs.article.querySelectorAll("span.bmybbs-ansi"));
+			Prism.highlightAllUnder(this.$refs.article);
+			if (this._mark & BMY_FILE_HEADER.FH_MATH) {
+				await typesetMath(this.$refs.article);
+			}
 		});
 	},
 	methods: {
