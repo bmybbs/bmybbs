@@ -255,6 +255,7 @@ processMath()
 	// add by macintosh 050619 for Tex Math Equ
 	// switching from jsMath to mathjax by IronBlood Feb 14th, 2021.
 	if(usedMath) {
+		printf("<script src=\"/mathjax-config.js\"></script>");
 		printf("<script src=\"/node_modules/mathjax-full/es5/tex-svg.js\"></script>");
 		printf("<style>mjx-container { font-size: 120%% }</style>");
 	}

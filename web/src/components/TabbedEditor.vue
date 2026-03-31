@@ -166,13 +166,14 @@
 				</div>
 			</div>
 
-			<div class="tab-pane fade article" :class="{ active: !isEditing && !isAttach, show: !isEditing && !isAttach }" v-html="previewContent">
+			<div class="tab-pane fade article" :class="{ active: !isEditing && !isAttach, show: !isEditing && !isAttach }" v-html="previewContent" ref="previewArticle">
 			</div>
 		</div>
 	</div>
 </template>
 
 <script>
+import { nextTick } from "vue"
 import { BMYClient } from "@/lib/BMYClient.js"
 import { ANSI_TAGS, BMY_EC } from "@/lib/BMYConstants.js"
 import {
@@ -183,7 +184,7 @@ import { readableSize } from "@bmybbs/bmybbs-content-parser/dist/utils.js"
 import bmyParser from "@bmybbs/bmybbs-content-parser"
 import "@/assets/article.css"
 import { Prism } from "@/plugins/prismjs.js"
-import "@/plugins/mathjax.js"
+import { typesetMath } from "@/plugins/mathjax.js"
 
 const UPLOAD_ERROR_MSG = {
 	NOTLOGGEDIN: "请先登录",
@@ -398,15 +399,17 @@ export default {
 			const article = {
 				text: this.$refs.textarea.value.replaceAll("[ESC][", "\x1b["),
 				attaches: attaches,
-			}
+			};
 
 			const content = bmyParser(article);
 			this.previewContent = content;
 
-			await sleep(1500);
-			Prism.highlightAll();
-			if (this.using_math && window.MathJax && typeof window.MathJax.typeset === "function") {
-				window.MathJax.typeset();
+			await nextTick();
+			if (this.$refs.previewArticle != null) {
+				Prism.highlightAllUnder(this.$refs.previewArticle);
+				if (this.using_math) {
+					await typesetMath(this.$refs.previewArticle);
+				}
 			}
 		},
 		showCodeModal() {
@@ -716,4 +719,3 @@ textarea {
 	background-color: #fff;
 }
 </style>
-
