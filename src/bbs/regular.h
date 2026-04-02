@@ -16,6 +16,7 @@ typedef struct {
 	char *first, *second;
 } ExtStru;
 extern ExtStru *extstru;
-#define NotWord "≤ª"
+// ‰∏ç
+#define NotWord "\xB2\xBB"
 #define Pair( a, b ) a b , a NotWord b
 #endif				/*  */
