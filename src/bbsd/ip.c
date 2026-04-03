@@ -1,4 +1,4 @@
-#include <string.h>
+#include <strings.h>
 
 int is4map6addr(char *s){
 	return !strncasecmp(s,"::ffff:",7);
@@ -6,6 +6,6 @@ int is4map6addr(char *s){
 
 char *getv4addr(char *fromhost){
 	char *addr;
-	addr=rindex(fromhost,':');
+	addr = rindex(fromhost,':');
 	return ++addr;
 }

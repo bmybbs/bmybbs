@@ -31,155 +31,227 @@ ModeType(int mode)
 	case IDLE:
 		return "";
 	case NEW:
-		return "ĞÂÕ¾ÓÑ×¢²á";
+		// æ–°ç«™å‹æ³¨å†Œ
+		return "\xD0\xC2\xD5\xBE\xD3\xD1\xD7\xA2\xB2\xE1";
 	case LOGIN:
-		return "½øÈë±¾Õ¾";
+		// è¿›å…¥æœ¬ç«™
+		return "\xBD\xF8\xC8\xEB\xB1\xBE\xD5\xBE";
 	case DIGEST:
-		return "ä¯ÀÀ¾«»ªÇø";
+		// æµè§ˆç²¾ååŒº
+		return "\xE4\xAF\xC0\xC0\xBE\xAB\xBB\xAA\xC7\xF8";
 	case MMENU:
-		return "Ö÷Ñ¡µ¥";
+		// ä¸»é€‰å•
+		return "\xD6\xF7\xD1\xA1\xB5\xA5";
 	case ADMIN:
-		return "¹ÜÀíÕßÑ¡µ¥";
+		// ç®¡ç†è€…é€‰å•
+		return "\xB9\xDC\xC0\xED\xD5\xDF\xD1\xA1\xB5\xA5";
 	case SELECT:
-		return "Ñ¡ÔñÌÖÂÛÇø";
+		// é€‰æ‹©è®¨è®ºåŒº
+		return "\xD1\xA1\xD4\xF1\xCC\xD6\xC2\xDB\xC7\xF8";
 	case READBRD:
-		return "ÀÀ±éÌìÏÂ";
+		// è§ˆéå¤©ä¸‹
+		return "\xC0\xC0\xB1\xE9\xCC\xEC\xCF\xC2";
 	case READNEW:
-		return "ÀÀĞÂÎÄÕÂ";
+		// è§ˆæ–°æ–‡ç« 
+		return "\xC0\xC0\xD0\xC2\xCE\xC4\xD5\xC2";
 	case READING:
-		return "Æ·Î¶ÎÄÕÂ";
+		// å“å‘³æ–‡ç« 
+		return "\xC6\xB7\xCE\xB6\xCE\xC4\xD5\xC2";
 	case POSTING:
-		return "ÎÄºÀ»Ó±Ê";
+		// æ–‡è±ªæŒ¥ç¬”
+		return "\xCE\xC4\xBA\xC0\xBB\xD3\xB1\xCA";
 	case MAIL:
-		return "´¦ÀíĞÅ¼ã";
+		// å¤„ç†ä¿¡ç¬º
+		return "\xB4\xA6\xC0\xED\xD0\xC5\xBC\xE3";
 	case SMAIL:
-		return "¼ÄÓïĞÅ¸ë";
+		// å¯„è¯­ä¿¡é¸½
+		return "\xBC\xC4\xD3\xEF\xD0\xC5\xB8\xEB";
 	case RMAIL:
-		return "ÔÄÀÀĞÅ¼ã";
+		// é˜…è§ˆä¿¡ç¬º
+		return "\xD4\xC4\xC0\xC0\xD0\xC5\xBC\xE3";
 	case TMENU:
-		return "ÁÄÌìÑ¡µ¥";
+		// èŠå¤©é€‰å•
+		return "\xC1\xC4\xCC\xEC\xD1\xA1\xB5\xA5";
 	case LUSERS:
-		return "»·¹ËËÄ·½";
+		// ç¯é¡¾å››æ–¹
+		return "\xBB\xB7\xB9\xCB\xCB\xC4\xB7\xBD";
 	case FRIEND:
-		return "Ñ°ÕÒºÃÓÑ";
+		// å¯»æ‰¾å¥½å‹
+		return "\xD1\xB0\xD5\xD2\xBA\xC3\xD3\xD1";
 	case MONITOR:
-		return "Ì½ÊÓÃñÇé";
+		// æ¢è§†æ°‘æƒ…
+		return "\xCC\xBD\xCA\xD3\xC3\xF1\xC7\xE9";
 	case QUERY:
-		return "²éÑ¯ÍøÓÑ";
+		// æŸ¥è¯¢ç½‘å‹
+		return "\xB2\xE9\xD1\xAF\xCD\xF8\xD3\xD1";
 	case TALK:
-		return "ÁÄÌì";
+		// èŠå¤©
+		return "\xC1\xC4\xCC\xEC";
 	case PAGE:
-		return "ºô½Ğ";
+		// å‘¼å«
+		return "\xBA\xF4\xBD\xD0";
 	case CHAT1:
-		return "ÁÄÌìÊÒÖĞ";
+		// èŠå¤©å®¤ä¸­
+		return "\xC1\xC4\xCC\xEC\xCA\xD2\xD6\xD0";
 	case CHAT2:
-		return "Ò¹Ã¨×Ó¿ÍÕ»";
+		// å¤œçŒ«å­å®¢æ ˆ
+		return "\xD2\xB9\xC3\xA8\xD7\xD3\xBF\xCD\xD5\xBB";
 	case CHAT3:
-		return "°æÖ÷»áÒéÊÒ";
+		// ç‰ˆä¸»ä¼šè®®å®¤
+		return "\xB0\xE6\xD6\xF7\xBB\xE1\xD2\xE9\xCA\xD2";
 	case CHAT4:
-		return "Õ¾Îñ»áÒéÊÒ";
+		// ç«™åŠ¡ä¼šè®®å®¤
+		return "\xD5\xBE\xCE\xF1\xBB\xE1\xD2\xE9\xCA\xD2";
 	case IRCCHAT:
-		return "»áÌ¸IRC";
+		// ä¼šè°ˆIRC
+		return "\xBB\xE1\xCC\xB8IRC";
 	case LAUSERS:
-		return "Ì½ÊÓÍøÓÑ";
+		// æ¢è§†ç½‘å‹
+		return "\xCC\xBD\xCA\xD3\xCD\xF8\xD3\xD1";
 	case XMENU:
-		return "ÏµÍ³×ÊÑ¶";
+		// ç³»ç»Ÿèµ„è®¯
+		return "\xCF\xB5\xCD\xB3\xD7\xCA\xD1\xB6";
 	case VOTING:
-		return "Í¶Æ±";
+		// æŠ•ç¥¨
+		return "\xCD\xB6\xC6\xB1";
 	case BBSNET:
 		return "BBSNET";
 	case EDITWELC:
-		return "±à¼­Welc";
+		// ç¼–è¾‘Welc
+		return "\xB1\xE0\xBC\xADWelc";
 	case EDITUFILE:
-		return "±à¼­¸öÈËµµ";
+		// ç¼–è¾‘ä¸ªäººæ¡£
+		return "\xB1\xE0\xBC\xAD\xB8\xF6\xC8\xCB\xB5\xB5";
 	case EDITSFILE:
-		return "±àĞŞÏµÍ³µµ";
+		// ç¼–ä¿®ç³»ç»Ÿæ¡£
+		return "\xB1\xE0\xD0\xDE\xCF\xB5\xCD\xB3\xB5\xB5";
 	case ZAP:
-		return "¶©ÔÄÌÖÂÛÇø";
+		// è®¢é˜…è®¨è®ºåŒº
+		return "\xB6\xA9\xD4\xC4\xCC\xD6\xC2\xDB\xC7\xF8";
 	case GAME:
-		return "ÄÔÁ¦¼¤µ´";
+		// è„‘åŠ›æ¿€è¡
+		return "\xC4\xD4\xC1\xA6\xBC\xA4\xB5\xB4";
 	case SYSINFO:
-		return "¼ì²éÏµÍ³";
+		// æ£€æŸ¥ç³»ç»Ÿ
+		return "\xBC\xEC\xB2\xE9\xCF\xB5\xCD\xB3";
 	case ARCHIE:
 		return "ARCHIE";
 	case DICT:
-		return "·­²é×Öµä";
+		// ç¿»æŸ¥å­—å…¸
+		return "\xB7\xAD\xB2\xE9\xD7\xD6\xB5\xE4";
 	case LOCKSCREEN:
-		return "ÆÁÄ»Ëø¶¨";
+		// å±å¹•é”å®š
+		return "\xC6\xC1\xC4\xBB\xCB\xF8\xB6\xA8";
 	case NOTEPAD:
-		return "ÁôÑÔ°å";
+		// ç•™è¨€æ¿
+		return "\xC1\xF4\xD1\xD4\xB0\xE5";
 	case GMENU:
-		return "¹¤¾ßÏä";
+		// å·¥å…·ç®±
+		return "\xB9\xA4\xBE\xDF\xCF\xE4";
 	case MSG:
-		return "Ñ¶Ï¢ÖĞ";
+		// è®¯æ¯ä¸­
+		return "\xD1\xB6\xCF\xA2\xD6\xD0";
 	case USERDEF:
-		return "×Ô¶©²ÎÊı";
+		// è‡ªè®¢å‚æ•°
+		return "\xD7\xD4\xB6\xA9\xB2\xCE\xCA\xFD";
 	case EDIT:
-		return "ĞŞ¸ÄÎÄÕÂ";
+		// ä¿®æ”¹æ–‡ç« 
+		return "\xD0\xDE\xB8\xC4\xCE\xC4\xD5\xC2";
 	case OFFLINE:
-		return "×ÔÉ±ÖĞ..";
+		// è‡ªæ€ä¸­..
+		return "\xD7\xD4\xC9\xB1\xD6\xD0..";
 	case EDITANN:
-		return "±àĞŞ¾«»ª";
+		// ç¼–ä¿®ç²¾å
+		return "\xB1\xE0\xD0\xDE\xBE\xAB\xBB\xAA";
 	case WWW:
-		return "ÓÆÓÎ WWW";
+		// æ‚ æ¸¸ WWW
+		return "\xD3\xC6\xD3\xCE WWW";
 	case HYTELNET:
 		return "Hytelnet";
 	case CCUGOPHER:
-		return "ËûÕ¾¾«»ª";
+		// ä»–ç«™ç²¾å
+		return "\xCB\xFB\xD5\xBE\xBE\xAB\xBB\xAA";
 	case LOOKMSGS:
-		return "²ì¿´Ñ¶Ï¢";
+		// å¯Ÿçœ‹è®¯æ¯
+		return "\xB2\xEC\xBF\xB4\xD1\xB6\xCF\xA2";
 	case WFRIEND:
-		return "Ñ°ÈËÃû²á";
+		// å¯»äººåå†Œ
+		return "\xD1\xB0\xC8\xCB\xC3\xFB\xB2\xE1";
 	case FIVE:
-		return "Îå×ÓÆå VS";
+		// äº”å­æ£‹ VS
+		return "\xCE\xE5\xD7\xD3\xC6\xE5 VS";
 	case PAGE_FIVE:
-		return "ÑûÇëÏÂÆå";
+		// é‚€è¯·ä¸‹æ£‹
+		return "\xD1\xFB\xC7\xEB\xCF\xC2\xC6\xE5";
 	case WORKER:
-		return "ÍÆÏä×Ó";
+		// æ¨ç®±å­
+		return "\xCD\xC6\xCF\xE4\xD7\xD3";
 	case TETRIS:
-		return "¶íÂŞË¹·½¿é";
+		// ä¿„ç½—æ–¯æ–¹å—
+		return "\xB6\xED\xC2\xDE\xCB\xB9\xB7\xBD\xBF\xE9";
 	case WINMINE:
-		return "É¨À×";
+		// æ‰«é›·
+		return "\xC9\xA8\xC0\xD7";
 	case WINMINE2:
-		return "¸ĞÓ¦Ê½É¨À×";
+		// æ„Ÿåº”å¼æ‰«é›·
+		return "\xB8\xD0\xD3\xA6\xCA\xBD\xC9\xA8\xC0\xD7";
 	case TT:
-		return "´ò×ÖÁ·Ï°";
+		// æ‰“å­—ç»ƒä¹ 
+		return "\xB4\xF2\xD7\xD6\xC1\xB7\xCF\xB0";
 	case ADDRESSBOOK:
-		return "²ì¿´Í¨Ñ¶Â¼";
+		// å¯Ÿçœ‹é€šè®¯å½•
+		return "\xB2\xEC\xBF\xB4\xCD\xA8\xD1\xB6\xC2\xBC";
 	case SELBACKNUMBER:
-		return "Ñ¡Ôñ¹ı¿¯";
+		// é€‰æ‹©è¿‡åˆŠ
+		return "\xD1\xA1\xD4\xF1\xB9\xFD\xBF\xAF";
 	case BACKNUMBER:
-		return "ä¯ÀÀ¹ı¿¯";
+		// æµè§ˆè¿‡åˆŠ
+		return "\xE4\xAF\xC0\xC0\xB9\xFD\xBF\xAF";
 	case RECITE:
-		return "±³µ¥´Ê";
+		// èƒŒå•è¯
+		return "\xB1\xB3\xB5\xA5\xB4\xCA";
 	case CHESS:
-		return "ÆåÅÆÖĞĞÄ";
+		// æ£‹ç‰Œä¸­å¿ƒ
+		return "\xC6\xE5\xC5\xC6\xD6\xD0\xD0\xC4";
 	case QKMJ:
-		return "´òÂé½«";
+		// æ‰“éº»å°†
+		return "\xB4\xF2\xC2\xE9\xBD\xAB";
 	case NCCE:
-		return "¿Æ¼¼´Êµä";
+		// ç§‘æŠ€è¯å…¸
+		return "\xBF\xC6\xBC\xBC\xB4\xCA\xB5\xE4";
 	case GOODWISH:
-		return "ËÍ×£¸£";
+		// é€ç¥ç¦
+		return "\xCB\xCD\xD7\xA3\xB8\xA3";
 	case M_2NDHAND:
-		return "ÌøÔéÊĞ³¡";
+		// è·³èš¤å¸‚åœº
+		return "\xCC\xF8\xD4\xE9\xCA\xD0\xB3\xA1";
 	case DO1984:
-		return "ÑĞ¾¿ÎÄÕÂ";
+		// ç ”ç©¶æ–‡ç« 
+		return "\xD1\xD0\xBE\xBF\xCE\xC4\xD5\xC2";
 	case MONEY:
-		return "×¨ĞÄÕõÇ®";
+		// ä¸“å¿ƒæŒ£é’±
+		return "\xD7\xA8\xD0\xC4\xD5\xF5\xC7\xAE";
 	case QUICKCALC:
-		return "´¦ÀíÊı×Ö";
+		// å¤„ç†æ•°å­—
+		return "\xB4\xA6\xC0\xED\xCA\xFD\xD7\xD6";
 	case FREEIP:
-		return "²éÑ¯IP";
+		// æŸ¥è¯¢IP
+		return "\xB2\xE9\xD1\xAF\x49\x50";
 	case USERDF1:
-		return "³Ô·¹È¥ÁË";
+		// åƒé¥­å»äº†
+		return "\xB3\xD4\xB7\xB9\xC8\xA5\xC1\xCB";
 	case USERDF2:
-		return "ºÍMMÁÄÌì";
+		// å’ŒMMèŠå¤©
+		return "\xBA\xCDMM\xC1\xC4\xCC\xEC";
 	case USERDF3:
-		return "±ğÀ´·³ÎÒ";
+		// åˆ«æ¥çƒ¦æˆ‘
+		return "\xB1\xF0\xC0\xB4\xB7\xB3\xCE\xD2";
 	case USERDF4:
-		return "Ó«Ä»Ëø¶¨";
+		// è§å¹•é”å®š
+		return "\xD3\xAB\xC4\xBB\xCB\xF8\xB6\xA8";
 	default:
-		return "È¥ÁËÄÄÀï!?";
+		// å»äº†å“ªé‡Œ!?
+		return "\xC8\xA5\xC1\xCB\xC4\xC4\xC0\xEF!?";
 	}
 }
 

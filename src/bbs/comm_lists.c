@@ -624,7 +624,8 @@ int domenu(const char *menu_name) {
 	extern int refscreen;
 	struct smenuitem *pm;
 	struct menupos *pos;
-	char *cmdprompt = "Ŀǰѡ��";
+	// 目前选择：
+	char *cmdprompt = "\xC4\xBF\xC7\xB0\xD1\xA1\xD4\xF1\xA3\xBA";
 	int size, now;
 	int cmdplen, cmd, i;
 
@@ -657,7 +658,8 @@ int domenu(const char *menu_name) {
 				now = 0;
 		}
 		move(pos[now].line, pos[now].col);
-		prints("��");
+		// ◆
+		prints("\xA1\xF4");
 		move(1, cmdplen);
 		prints("[%-12s]", sysconf_ptr(pm[now].name_off));
 		clrtoeol();

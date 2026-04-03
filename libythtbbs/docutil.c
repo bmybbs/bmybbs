@@ -41,9 +41,11 @@ size_t eff_size(const char *file) {
 			break;
 		if (!strncmp(buf, ": ", 2))
 			continue;
-		if (!strncmp(buf, "°æ ‘⁄ ", 4))
+		// „Äê Âú®
+		if (!strncmp(buf, "\xA1\xBE \xD4\xDA " , 4))
 			continue;
-		if (strstr(buf, "°˘ ¿¥‘¥:£Æ"))
+		// ‚Äª Êù•Ê∫ê:Ôºé
+		if (strstr(buf, "\xA1\xF9 \xC0\xB4\xD4\xB4:\xA3\xAE"))
 			continue;
 		for (i = 0; buf[i]; i++)
 			if (buf[i] < 0)
@@ -76,7 +78,9 @@ getdocauthor(char *filename, char *author, int len)
 	while (i++ < 5) {
 		if (!fgets(buf, sizeof (buf), fp))
 			break;
-		if (strncmp(buf, "ºƒ–≈»À: ", 8) && strncmp(buf, "∑¢–≈»À: ", 8))
+		// ÂØÑ‰ø°‰∫∫
+		// Âèë‰ø°‰∫∫
+		if (strncmp(buf, "\xBC\xC4\xD0\xC5\xC8\xCB: " , 8) && strncmp(buf, "\xB7\xA2\xD0\xC5\xC8\xCB: " , 8))
 			continue;
 		ptr = buf + 8;
 		f1 = strsep(&ptr, " ,\n\r\t");
@@ -115,7 +119,10 @@ keepoldheader(FILE * fp, int dowhat)
 			if (!strcmp(tmpbuf[i - 1], "\n") || !strcmp(tmpbuf[i - 1], "\r\n") || i > 4)
 				break;
 		}
-		if (i < 4 || (strncmp(tmpbuf[0], "∑¢–≈»À: ", 8) && strncmp(tmpbuf[0], "ºƒ–≈»À: ", 8)) || strncmp(tmpbuf[1], "±Í  Ã‚: ", 8)) {
+		// Âèë‰ø°‰∫∫:
+		// ÂØÑ‰ø°‰∫∫:
+		// Ê†á  È¢ò:
+		if (i < 4 || (strncmp(tmpbuf[0], "\xB7\xA2\xD0\xC5\xC8\xCB: " , 8) && strncmp(tmpbuf[0], "\xBC\xC4\xD0\xC5\xC8\xCB: " , 8)) || strncmp(tmpbuf[1], "\xB1\xEA  \xCC\xE2: " , 8)) {
 			fseek(fp, 0, SEEK_SET);
 			i = 0;
 			goto RET1;
@@ -149,7 +156,7 @@ int copyheadertofile(FILE *from_fp, FILE *to_fp) {
 	if (tmpbuf == NULL)
 		return -1;
 
-	// ø™ º∂¡»°Œƒº˛Õ∑µΩ tmpbuf ÷–
+	// ÂºÄÂßãËØªÂèñÊñá‰ª∂Â§¥Âà∞ tmpbuf ‰∏≠
 	while (fgets(tmpbuf[i], STRLEN, from_fp)) {
 		++i;
 		if (!strcmp(tmpbuf[i-1], "\n") || !strcmp(tmpbuf[i-1], "\r\n") || i > 4)

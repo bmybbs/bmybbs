@@ -70,7 +70,8 @@ uudecode(FILE *fp, char *outname)
 	char buf[2 * BUFSIZ], wbuf[1024 * 16 + 2];
 
 	if (strstr(outname, "..") != NULL) {
-		errlog("uudecode: ·Ç·¨ÎÄ¼şÃû!%s", outname);
+		// éæ³•æ–‡ä»¶å
+		errlog("uudecode: \xB7\xC7\xB7\xA8\xCE\xC4\xBC\xFE\xC3\xFB!%s", outname);
 		return -999;
 	}
 

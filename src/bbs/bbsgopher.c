@@ -133,10 +133,14 @@ int savetmpfile(char *tmpname) {
 
 	if ((fp = fopen(tmpname, "w")) == NULL)
 		return -1;
-	show_message("\033[5m×ª»»ÎÄ¼ş×ÊÁÏÎªÔİ´æµµ");
-	fprintf(fp, "À´  Ô´: %s\n", tmpitem->server);
-	fprintf(fp, "µµ  Ãû: %s(Ê¹ÓÃ %d ²º)\n", tmpitem->file, tmpitem->port);
-	fprintf(fp, "±ê  Ìâ: %s\n\n", tmpitem->title + 1);
+	// \033[5mè½¬æ¢æ–‡ä»¶èµ„æ–™ä¸ºæš‚å­˜æ¡£
+	show_message("\033[5m\xD7\xAA\xBB\xBB\xCE\xC4\xBC\xFE\xD7\xCA\xC1\xCF\xCE\xAA\xD4\xDD\xB4\xE6\xB5\xB5");
+	// æ¥  æº: %s\n
+	fprintf(fp, "\xC0\xB4  \xD4\xB4: %s\n", tmpitem->server);
+	// æ¡£  å: %s(ä½¿ç”¨ %d åŸ )\n
+	fprintf(fp, "\xB5\xB5  \xC3\xFB: %s(\xCA\xB9\xD3\xC3 %d \xB2\xBA)\n", tmpitem->file, tmpitem->port);
+	// æ ‡  é¢˜: %s\n\n
+	fprintf(fp, "\xB1\xEA  \xCC\xE2: %s\n\n", tmpitem->title + 1);
 	while (1) {
 		if ((cc = read(a, buf, 255)) > 0) {
 			buf[cc] = '\0';
@@ -163,14 +167,16 @@ static void print_gophertitle(void) {
 	clrtobot();
 	sprintf(buf, "%*s", (int) (80 - strlen(title)) / 2, " ");
 	prints("\033[1;44m%s%s%s\033[m\n", buf, title, buf);
-	prints("             \033[1;32mF \033[37m¼Ä»Ø×Ô¼ºµÄĞÅÏä \033[32m ¡ü¡ı\033[37m ÒÆ¶¯  \033[32m¡ú <Enter>\033[37m ¶ÁÈ¡ \033[32m ¡û\033[37m Àë¿ª");
+	//              \033[1;32mF \033[37må¯„å›è‡ªå·±çš„ä¿¡ç®± \033[32m â†‘â†“\033[37m ç§»åŠ¨  \033[32mâ†’ <Enter>\033[37m è¯»å– \033[32m â†\033[37m ç¦»å¼€
+	prints("             \033[1;32mF \033[37m\xBC\xC4\xBB\xD8\xD7\xD4\xBC\xBA\xB5\xC4\xD0\xC5\xCF\xE4 \033[32m \xA1\xFC\xA1\xFD\033[37m \xD2\xC6\xB6\xAF  \033[32m\xA1\xFA <Enter>\033[37m \xB6\xC1\xC8\xA1 \033[32m \xA1\xFB\033[37m \xC0\xEB\xBF\xAA");
 }
 
 static void printgopher_title(void) {
 	move(2, 0);
 	clrtoeol();
 
-	prints("\033[1;37;44m ±àºÅ [Àà±ğ] ±ê    Ìâ                                                          \033[m\n");
+	// \033[1;37;44m ç¼–å· [ç±»åˆ«] æ ‡    é¢˜                                                          \033[m\n
+	prints("\033[1;37;44m \xB1\xE0\xBA\xC5 [\xC0\xE0\xB1\xF0] \xB1\xEA    \xCC\xE2                                                          \033[m\n");
 }
 
 static void g_refresh(void) {
@@ -212,14 +218,22 @@ static int deal_gopherkey(int ch, int allnum, int pagenum) {
 			move(2, 0);
 			clrtobot();
 			prints("\033[1;44;37m");
-			printdash("BBS Gopher Îï¼ş»ù±¾×ÊÁÏ");
+			// BBS Gopher ç‰©ä»¶åŸºæœ¬èµ„æ–™
+			printdash("BBS Gopher \xCE\xEF\xBC\xFE\xBB\xF9\xB1\xBE\xD7\xCA\xC1\xCF");
 			prints("\033[m");
-			prints("ÀàĞÍ£º%c (%s)\n", tmpitem->title[0],
-					(tmpitem->title[0] == '0') ? "ÎÄ¼ş" : "Ä¿Â¼");
-			prints("±êÌâ£º%s\n", tmpitem->title + 1);
-			prints("Â·¾¶£º%s\n", tmpitem->file);
-			prints("Î»ÖÃ£º%s\n", tmpitem->server);
-			prints("Ê¹ÓÃ£º%d²º\n", tmpitem->port);
+			// ç±»å‹ï¼š%c (%s)\n
+			prints("\xC0\xE0\xD0\xCD\xA3\xBA%c (%s)\n", tmpitem->title[0],
+					// æ–‡ä»¶
+					// ç›®å½•
+					(tmpitem->title[0] == '0') ? "\xCE\xC4\xBC\xFE" : "\xC4\xBF\xC2\xBC");
+			// æ ‡é¢˜ï¼š%s\n
+			prints("\xB1\xEA\xCC\xE2\xA3\xBA%s\n", tmpitem->title + 1);
+			// è·¯å¾„ï¼š%s\n
+			prints("\xC2\xB7\xBE\xB6\xA3\xBA%s\n", tmpitem->file);
+			// ä½ç½®ï¼š%s\n
+			prints("\xCE\xBB\xD6\xC3\xA3\xBA%s\n", tmpitem->server);
+			// ä½¿ç”¨ï¼š%dåŸ \n
+			prints("\xCA\xB9\xD3\xC3\xA3\xBA%d\xB2\xBA\n", tmpitem->port);
 			pressanykey();
 			g_refresh();
 		}
@@ -239,14 +253,17 @@ static int deal_gopherkey(int ch, int allnum, int pagenum) {
 		if (dashf(fname)) {
 			char bname[30];
 			clear();
-			if (get_a_boardname(bname, "ÇëÊäÈëÒª×ªÌùµÄÌÖÂÛÇøÃû³Æ: ")) {
+			// è¯·è¾“å…¥è¦è½¬è´´çš„è®¨è®ºåŒºåç§°:
+			if (get_a_boardname(bname, "\xC7\xEB\xCA\xE4\xC8\xEB\xD2\xAA\xD7\xAA\xCC\xF9\xB5\xC4\xCC\xD6\xC2\xDB\xC7\xF8\xC3\xFB\xB3\xC6: ")) {
 				move(1, 0);
-				sprintf(fpath, "ÄãÈ·¶¨Òª×ªÌùµ½ %s °æÂğ", bname);
+				// ä½ ç¡®å®šè¦è½¬è´´åˆ° %s ç‰ˆå—
+				sprintf(fpath, "\xC4\xE3\xC8\xB7\xB6\xA8\xD2\xAA\xD7\xAA\xCC\xF9\xB5\xBD %s \xB0\xE6\xC2\xF0", bname);
 				if (askyn(fpath, NA, NA) == 1) {
 					move(2, 0);
 					postfile(fname, bname, tmpitem->title + 1, 2);
 					sprintf(fpath,
-						"\033[1mÒÑ¾­°ïÄã×ªÌùµ½ %s °æÁË...\033[m",
+						// \033[1må·²ç»å¸®ä½ è½¬è´´åˆ° %s ç‰ˆäº†...\033[m
+						"\033[1m\xD2\xD1\xBE\xAD\xB0\xEF\xC4\xE3\xD7\xAA\xCC\xF9\xB5\xBD %s \xB0\xE6\xC1\xCB...\033[m",
 						bname);
 					prints(fpath);
 					refresh();
@@ -276,7 +293,8 @@ static int deal_gopherkey(int ch, int allnum, int pagenum) {
 			return 1;
 		switch (doforward(fname, tmpitem->title + 1, (ch == 'u' || ch == 'U') ? 1 : 0)) {
 		case 0:
-			show_message("ÎÄÕÂ×ª¼ÄÍê³É!");
+			// æ–‡ç« è½¬å¯„å®Œæˆ!
+			show_message("\xCE\xC4\xD5\xC2\xD7\xAA\xBC\xC4\xCD\xEA\xB3\xC9!");
 			break;
 		case -1:
 			show_message("system error!!.");
@@ -285,7 +303,8 @@ static int deal_gopherkey(int ch, int allnum, int pagenum) {
 			show_message("invalid address.");
 			break;
 		default:
-			show_message("È¡Ïû×ª¼Ä¶¯×÷.");
+			// å–æ¶ˆè½¬å¯„åŠ¨ä½œ.
+			show_message("\xC8\xA1\xCF\xFB\xD7\xAA\xBC\xC4\xB6\xAF\xD7\xF7.");
 		}
 		sleep(2);
 		pressanykey();
@@ -309,7 +328,8 @@ int get_con(char *servername, int port) {
 	struct sockaddr_in sin;
 
 	inrp_by_user = YEA;
-	show_message("½¨Á¢Á¬ÏßÖĞ (Ctrl-C ÖĞ¶Ï) ...");
+	// å»ºç«‹è¿çº¿ä¸­ (Ctrl-C ä¸­æ–­) ...
+	show_message("\xBD\xA8\xC1\xA2\xC1\xAC\xCF\xDF\xD6\xD0 (Ctrl-C \xD6\xD0\xB6\xCF) ...");
 	if ((h2 = gethostbyname(servername)) == NULL)
 		sin.sin_addr.s_addr = inet_addr(servername);
 	else
@@ -357,7 +377,9 @@ static int show_gopher(void) {
 		tmpnode = nth_item(i - page);
 		move(i - page + 3, 0);
 		prints(" %4d [\033[1m%9s\033[m] %-65s\n", i + 1,
-				((tmpnode->title[0] == '0') ? "\033[32mÁ¬ÎÄ" : "\033[33mÁ¬Ä¿"),
+				// \033[32mè¿æ–‡
+				// \033[33mè¿ç›®
+				((tmpnode->title[0] == '0') ? "\033[32m\xC1\xAC\xCE\xC4" : "\033[33m\xC1\xAC\xC4\xBF"),
 				tmpnode->title + 1);
 	}
 	return 0;
@@ -388,7 +410,8 @@ static void showout(void) {
 				continue;
 			}
 			enterdir(g_main[gopher_position]->file);
-			show_message("¶ÁÈ¡×¼±¸ÖĞ");
+			// è¯»å–å‡†å¤‡ä¸­
+			show_message("\xB6\xC1\xC8\xA1\xD7\xBC\xB1\xB8\xD6\xD0");
 			for (i = 0; i < MAXGOPHERITEMS; i++) {
 				if (readfield(a, foo, 1024) <= 0) {
 					break;
@@ -422,7 +445,8 @@ static void showout(void) {
 				refresh();
 				append_record(gophertmpfile, &newitem, sizeof (GOPHER));
 				snprintf(buf, sizeof(buf),
-					"\033[1;3%dm×ª\033[3%dm»»\033[3%dm×Ê\033[3%dmÁÏ\033[3%dmÖĞ\033[m",
+					// \033[1;3%dmè½¬\033[3%dmæ¢\033[3%dmèµ„\033[3%dmæ–™\033[3%dmä¸­\033[m
+					"\033[1;3%dm\xD7\xAA\033[3%dm\xBB\xBB\033[3%dm\xD7\xCA\033[3%dm\xC1\xCF\033[3%dm\xD6\xD0\033[m",
 					(i % 7) + 1, ((i + 1) % 7) + 1,
 					((i + 2) % 7) + 1, ((i + 3) % 7) + 1,
 					((i + 4) % 7) + 1);
@@ -436,7 +460,8 @@ static void showout(void) {
 			clrtobot();
 			move(10, 0);
 			clrtoeol();
-			prints("                             \033[1;31mÃ»ÓĞÈÎºÎµÄ×ÊÁÏ...\033[m");
+			//                              \033[1;31mæ²¡æœ‰ä»»ä½•çš„èµ„æ–™...\033[m
+			prints("                             \033[1;31m\xC3\xBB\xD3\xD0\xC8\xCE\xBA\xCE\xB5\xC4\xD7\xCA\xC1\xCF...\033[m");
 			pressanykey();
 			free(g_main[gopher_position]);
 			gopher_position--;
