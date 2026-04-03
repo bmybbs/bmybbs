@@ -34,6 +34,9 @@ on:
     branches:
       - master
 
+permissions:
+  contents: read
+
 env:
   BUILD_TYPE: Release
 
