@@ -31,7 +31,7 @@
 		"@vitejs/plugin-vue": "^6.0.1",
 		"@vue/eslint-config-prettier": "^10.2.0",
 		"eslint": "^10.1.0",
-		"eslint-plugin-prettier": "^5.5.4",
+		"eslint-plugin-prettier": "^5.5.5",
 		"eslint-plugin-vue": "^10.8.0",
 		"prettier": "^3.8.1",
 		"rollup-plugin-prismjs": "^0.1.0",
