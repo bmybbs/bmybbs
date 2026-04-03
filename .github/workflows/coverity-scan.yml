@@ -2,6 +2,9 @@ name: coverity-scan # ref: ruby/.github/workflows
 
 on: workflow_dispatch
 
+permissions:
+  contents: read
+
 env:
   BUILD_TYPE: Release
 
@@ -57,4 +60,3 @@ jobs:
         env:
           TOKEN: ${{ secrets.COVERITY_SCAN_TOKEN }}
           EMAIL: ${{ secrets.COVERITY_NOTIFY_EMAIL }}
-
