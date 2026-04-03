@@ -19,13 +19,15 @@ static int code_convert(const char *from_charset, const char *to_charset, const 
 	return (rc == (size_t) -1) ? -1 : 0;
 }
 
-//UNICODE码转为GBK码
-int u2g(const char *inbuf,size_t inlen,char *outbuf,size_t outlen) {
-	return code_convert("utf-8","gbk",inbuf,inlen,outbuf,outlen);
+static const char *CHARSET_UTF8 = "utf-8";
+static const char *CHARSET_GBK = "gbk";
+
+int u2g(const char *inbuf, size_t inlen, char *outbuf, size_t outlen) {
+	return code_convert(CHARSET_UTF8, CHARSET_GBK, inbuf, inlen, outbuf, outlen);
 }
-//GBK码转为UNICODE码
-int g2u(const char *inbuf,size_t inlen,char *outbuf,size_t outlen) {
-	return code_convert("gbk","utf-8",inbuf,inlen,outbuf,outlen);
+
+int g2u(const char *inbuf, size_t inlen, char *outbuf, size_t outlen) {
+	return code_convert(CHARSET_GBK, CHARSET_UTF8, inbuf, inlen, outbuf, outlen);
 }
 
 int is_utf_special_byte(unsigned char c){
