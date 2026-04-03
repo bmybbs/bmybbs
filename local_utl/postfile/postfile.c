@@ -15,7 +15,7 @@ int main(int argc, char **argv)
 		return 1;
 	}
 	if (!strcmp(argv[5], "1")) {
-		u2g(argv[4], strlen(argv[4]), title, 128);
+		u2g(argv[4], strlen(argv[4]), title, sizeof title);
 	}
 	int ret = postfile(argv[1], argv[2], argv[3], title);
 	return ret;

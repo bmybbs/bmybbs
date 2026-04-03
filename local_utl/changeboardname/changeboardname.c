@@ -20,9 +20,10 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	char *newtitle_gbk = (char *)malloc(strlen(argv[2])*2);
-	memset(newtitle_gbk, 0, strlen(argv[2])*2);
-	u2g(argv[2], strlen(argv[2]), newtitle_gbk, strlen(argv[2])*2);
+	const size_t newtitle_len = strlen(argv[2])*2;
+	char *newtitle_gbk = (char *)malloc(newtitle_len);
+	memset(newtitle_gbk, 0, newtitle_len);
+	u2g(argv[2], strlen(argv[2]), newtitle_gbk, newtitle_len);
 
 	memset(fh.title, 0, sizeof(fh.title));
 	strncpy(fh.title, newtitle_gbk, 24);

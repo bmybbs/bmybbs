@@ -30,3 +30,5 @@ package-lock.json
 
 .vscode/
 cov-build/
+
+.codex

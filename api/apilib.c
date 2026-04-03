@@ -390,9 +390,10 @@ char *parse_article(const char *bname, const char *fname, int mode, struct attac
 
 	char *utf_content;
 	if(mode == ARTICLE_PARSE_WITHOUT_ANSICOLOR) { // 不包含 '\033'，直接转码
-		utf_content = (char *)malloc(3*mem_buf_len);
-		memset(utf_content, 0, 3*mem_buf_len);
-		g2u(mem_buf, mem_buf_len, utf_content, 3*mem_buf_len);
+		const size_t utf_content_len = 3 * mem_buf_len;
+		utf_content = (char *) malloc(utf_content_len);
+		memset(utf_content, 0, utf_content_len);
+		g2u(mem_buf, mem_buf_len, utf_content, utf_content_len);
 	} else { // 将 ansi 色彩转为 HTML 标记
 		html_stream = open_memstream(&html_buf, &html_buf_len);
 		fseek(mem_stream, 0, SEEK_SET);
@@ -405,9 +406,10 @@ char *parse_article(const char *bname, const char *fname, int mode, struct attac
 		fflush(html_stream);
 		fclose(html_stream);
 
-		utf_content = (char*)malloc(3*html_buf_len);
-		memset(utf_content, 0, 3*html_buf_len);
-		g2u(html_buf, html_buf_len, utf_content, 3*html_buf_len);
+		const size_t utf_content_len = 3 * html_buf_len;
+		utf_content = (char *) malloc(utf_content_len);
+		memset(utf_content, 0, utf_content_len);
+		g2u(html_buf, html_buf_len, utf_content, utf_content_len);
 		free(html_buf);
 	}
 
@@ -923,9 +925,10 @@ int do_mail_post(const char *to_userid, const char *title, const char *filename,
 
 	char timestr_buf[30];
 	ytht_ctime_r(now_t, timestr_buf);
-	sprintf(tmp_utf_buf, "寄信人: %s (%s)\n标  题: %s\n发信站: 兵马俑BBS (%s)\n来  源: %s\n\n",
+	snprintf(tmp_utf_buf, sizeof tmp_utf_buf, "寄信人: %s (%s)\n标  题: %s\n发信站: 兵马俑BBS (%s)\n来  源: %s\n\n",
 			id, nickname, title, timestr_buf, ip);
-	u2g(tmp_utf_buf, 1024, tmp_gbk_buf, 1024);
+	tmp_utf_buf[sizeof tmp_utf_buf - 1] = '\0';
+	u2g(tmp_utf_buf, strlen(tmp_utf_buf), tmp_gbk_buf, sizeof tmp_gbk_buf);
 	fwrite(tmp_gbk_buf, 1, strlen(tmp_gbk_buf), fp);
 
 	if(fp2) {
@@ -943,9 +946,10 @@ int do_mail_post(const char *to_userid, const char *title, const char *filename,
 	// TODO QMD
 	// sig_append();
 
-	sprintf(tmp_utf_buf, "\033[1;%dm※ 来源:．兵马俑BBS %s [FROM: %.20s]\033[0m\n",
+	snprintf(tmp_utf_buf, sizeof tmp_utf_buf, "\033[1;%dm※ 来源:．兵马俑BBS %s [FROM: %.20s]\033[0m\n",
 			31+rand()%7, MY_BBS_DOMAIN " API", ip);
-	u2g(tmp_utf_buf, 1024, tmp_gbk_buf, 1024);
+	tmp_utf_buf[sizeof tmp_utf_buf - 1] = '\0';
+	u2g(tmp_utf_buf, strlen(tmp_utf_buf), tmp_gbk_buf, sizeof tmp_gbk_buf);
 	fwrite(tmp_gbk_buf, 1, strlen(tmp_gbk_buf), fp);
 	fclose(fp);	// 输出完成
 
@@ -985,9 +989,10 @@ int do_mail_post_to_sent_box(const char *userid, const char *title, const char *
 
 	char timestr_buf[30];
 	ytht_ctime_r(now_t, timestr_buf);
-	sprintf(tmp_utf_buf, "收信人: %s (%s)\n标  题: %s\n发信站: 兵马俑BBS (%s)\n来  源: %s\n\n",
+	snprintf(tmp_utf_buf, sizeof tmp_utf_buf, "收信人: %s (%s)\n标  题: %s\n发信站: 兵马俑BBS (%s)\n来  源: %s\n\n",
 			id, nickname, title, timestr_buf, ip);
-	u2g(tmp_utf_buf, 1024, tmp_gbk_buf, 1024);
+	tmp_utf_buf[sizeof tmp_utf_buf - 1] = '\0';
+	u2g(tmp_utf_buf, strlen(tmp_utf_buf), tmp_gbk_buf, sizeof tmp_gbk_buf);
 	fwrite(tmp_gbk_buf, 1, strlen(tmp_gbk_buf), fp);
 
 	if(fp2) {
@@ -1005,9 +1010,10 @@ int do_mail_post_to_sent_box(const char *userid, const char *title, const char *
 	// TODO QMD
 	// sig_append();
 
-	sprintf(tmp_utf_buf, "\033[1;%dm※ 来源:．兵马俑BBS %s [FROM: %.20s]\033[0m\n",
+	snprintf(tmp_utf_buf, sizeof tmp_utf_buf, "\033[1;%dm※ 来源:．兵马俑BBS %s [FROM: %.20s]\033[0m\n",
 			31+rand()%7, MY_BBS_DOMAIN " API", ip);
-	u2g(tmp_utf_buf, 1024, tmp_gbk_buf, 1024);
+	tmp_utf_buf[sizeof tmp_utf_buf - 1] = '\0';
+	u2g(tmp_utf_buf, strlen(tmp_utf_buf), tmp_gbk_buf, sizeof tmp_gbk_buf);
 	fwrite(tmp_gbk_buf, 1, strlen(tmp_gbk_buf), fp);
 	fclose(fp);	// 输出完成
 
