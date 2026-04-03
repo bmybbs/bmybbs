@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <iconv.h>
 
-int code_convert(const char *from_charset, const char *to_charset, const char *inbuf, size_t inlen, char *outbuf, size_t outlen) {
+static int code_convert(const char *from_charset, const char *to_charset, const char *inbuf, size_t inlen, char *outbuf, size_t outlen) {
 	iconv_t cd;
 	size_t rc;
 	char *tmp_p = (char *) inbuf;
