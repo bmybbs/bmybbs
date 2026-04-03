@@ -12,7 +12,7 @@ int code_convert(const char *from_charset, const char *to_charset, const char *i
 		return -1;
 
 	cd = iconv_open(to_charset, from_charset);
-	if (cd == 0) {
+	if (cd == (iconv_t) -1) {
 		free(tmp);
 		return -1;
 	}
