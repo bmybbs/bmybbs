@@ -187,7 +187,7 @@ show_cake(char *filename, int num)
 			i++;
 	}
 	i = 0;
-	prints("\033[1;28H\033[35mA PIECE OF CAKE\033[2;29H小 菜 一 碟\033[0m\n\n\n");
+	prints_nofmt("\033[1;28H\033[35mA PIECE OF CAKE\033[2;29H小 菜 一 碟\033[0m\n\n\n");
 
 	while (NULL != fgets(line, 200, fp)) {
 		i++;
@@ -205,10 +205,10 @@ show_cake(char *filename, int num)
 				sprintf(line, " 请输入数字'%d': ", tmp_mod);
 				getdata(20, 1, line, str, 29, DOECHO, YEA);
 				if (atoi(str) != tmp_mod) {
-					prints ("\033[22;1H??..好象不大对吧, 您还有一次机会...");
+					prints_nofmt("\033[22;1H??..好象不大对吧, 您还有一次机会...");
 					getdata(20, 1, line, str, 29, DOECHO, YEA);
 					if (atoi(str) != tmp_mod) {
-						prints ("啊? 竟然还不对? 真的是你么, 我好伤心...");
+						prints_nofmt("啊? 竟然还不对? 真的是你么, 我好伤心...");
 						pressreturn();
 						Q_Goodbye();
 					}
@@ -225,17 +225,17 @@ show_cake(char *filename, int num)
 					break;
 			}
 			if (strcasecmp(str, line + 1) == 0)
-				prints("\033[22;1H哈, 正确!");
+				prints_nofmt("\033[22;1H哈, 正确!");
 			else
-				prints("\033[22;1H恩...好象不大对吧? //think");
+				prints_nofmt("\033[22;1H恩...好象不大对吧? //think");
 			fclose(fp);
 			pressreturn();
 			return 0;
 		}
 		if (line[0] == '#' && line[1] == '#')
-			prints(line + 1);
+			prints_nofmt(line + 1);
 		else
-			prints(line);
+			prints_nofmt(line);
 	}
 CAKEERROR1:
 	fclose(fp);
@@ -519,7 +519,7 @@ get_a_boardname(char *bname, char *prompt)
 	}
 	if (new_search_record(BOARDS, &fh, sizeof (fh), (void *) cmpbnames, bname) <= 0) {
 		move(1, 0);
-		prints("错误的讨论区名称\n");
+		prints_nofmt("错误的讨论区名称\n");
 		pressreturn();
 		move(1, 0);
 		return 0;
@@ -547,7 +547,7 @@ UndeleteArticle(int ent, struct fileheader *fileinfo, char *direct)
 	if (!dashf(filepath)) {
 		clear();
 		move(2, 0);
-		prints("该文章不存在，已被恢复, 删除或列表出错");
+		prints_nofmt("该文章不存在，已被恢复, 删除或列表出错");
 		pressreturn();
 		return FULLUPDATE;
 	}
@@ -644,7 +644,7 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct) {
 	if (inprison) {
 		move(0, 0);
 		clear();
-		prints("安心坐牢,不要胡闹! :)");
+		prints_nofmt("安心坐牢,不要胡闹! :)");
 		pressanykey();
 		return FULLUPDATE;
 	}
@@ -652,7 +652,7 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct) {
 	if (currentuser.dietime) {
 		move(0, 0);
 		clear();
-		prints("不颡镥族稹弩篑啊,豚犭卷囡甑点喔.\n(这是鬼话,你不懂的,反正就是不让转贴就是啦!!!)");
+		prints_nofmt("不颡镥族稹弩篑啊,豚犭卷囡甑点喔.\n(这是鬼话,你不懂的,反正就是不让转贴就是啦!!!)");
 		pressanykey();
 		return FULLUPDATE;
 	}
@@ -667,9 +667,9 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct) {
 	ytht_strsncpy(quote_title, fileinfo->title, sizeof(quote_title));
 
 	clear();
-	prints("\033[1m请注意：本站站规规定：内容相同或类似的文章严禁在\033[31m3(不含)\033[37m个以上讨论区重复张贴。\n");
-	prints("\033[1m转贴超过3个讨论区者除所贴文章会被全部删除之外，还将被剥夺全站发表文章的权利。\n");
-	prints("\033[1m             请大家共同维护 BBS 的环境，节省系统资源。谢谢合作。\n\033[0m");
+	prints_nofmt("\033[1m请注意：本站站规规定：内容相同或类似的文章严禁在\033[31m3(不含)\033[37m个以上讨论区重复张贴。\n");
+	prints_nofmt("\033[1m转贴超过3个讨论区者除所贴文章会被全部删除之外，还将被剥夺全站发表文章的权利。\n");
+	prints_nofmt("\033[1m             请大家共同维护 BBS 的环境，节省系统资源。谢谢合作。\n\033[0m");
 	move(4, 0);
 	if (!get_a_boardname(bname, "请输入要转贴的讨论区名称: ")) {
 		return FULLUPDATE;
@@ -707,7 +707,7 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct) {
 		if (deny_me(bname) && !HAS_PERM(PERM_SYSOP, currentuser)) {
 			move(8, 0);
 			clrtobot();
-			prints("\n\n                 很抱歉，你被版主停止 POST 的权利。");
+			prints_nofmt("\n\n                 很抱歉，你被版主停止 POST 的权利。");
 			pressreturn();
 			clear();
 			return FULLUPDATE;
@@ -715,7 +715,7 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct) {
 		if (deny_me_global() && !HAS_PERM(PERM_SYSOP, currentuser)) {
 			move(8, 0);
 			clrtobot();
-			prints("\n\n                 很抱歉，你被站务停止全站 POST 的权利。");
+			prints_nofmt("\n\n                 很抱歉，你被站务停止全站 POST 的权利。");
 			pressreturn();
 			clear();
 			return FULLUPDATE;
@@ -726,7 +726,7 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct) {
 
 		if (post_cross(bname, 0, islocal, 1, dangerous) == -1) {
 			move(8, 0);
-			prints("Failed!");
+			prints_nofmt("Failed!");
 			pressreturn();
 			digestmode = ddigestmode;
 			return FULLUPDATE;
@@ -736,7 +736,7 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct) {
 		prints("' %s ' 已转贴到 %s 版 \n", quote_title, bname);
 	} else {
 		move(8, 0);
-		prints("取消");
+		prints_nofmt("取消");
 	}
 	pressreturn();
 	return FULLUPDATE;
@@ -869,7 +869,7 @@ static int topfile_post(int ent, struct fileheader *fhdr, char *direct) //slowac
 			move(3, 0);
 			clrtobot();
 			move(4, 10);
-			prints ("抱歉，置底数量超过5篇，无法再加入...\n");
+			prints_nofmt("抱歉，置底数量超过5篇，无法再加入...\n");
 			pressanykey();
 			return PARTUPDATE;
 		}
@@ -940,9 +940,9 @@ read_post(int ent, struct fileheader *fileinfo, char *direct)
 	move(t_lines - 1, 0);
 	clrtoeol();
 	if (haspostperm(currboard) && (time(NULL) - fileinfo->filetime < 86400 * 3)) {
-		prints("\033[1;44;31m[阅读文章] \033[33m回文 R│推荐给网友 E│结束 ←│上一封↑l│下一封↓n│主题阅读 x p\033[m");
+		prints_nofmt("\033[1;44;31m[阅读文章] \033[33m回文 R│推荐给网友 E│结束 ←│上一封↑l│下一封↓n│主题阅读 x p\033[m");
 	} else {
-		prints("\033[1;44;31m[阅读文章] \033[33m结束 Q,←│上一封 ↑,l│下一封 n, <Space>,<Enter>,↓│主题阅读 x p \033[m");
+		prints_nofmt("\033[1;44;31m[阅读文章] \033[33m结束 Q,←│上一封 ↑,l│下一封 n, <Space>,<Enter>,↓│主题阅读 x p \033[m");
 	}
 
 	// 删除提醒开始
@@ -1016,7 +1016,7 @@ read_post(int ent, struct fileheader *fileinfo, char *direct)
 		else {
 			move(3, 0);
 			clrtobot();
-			prints("\n\n    对不起, 本文被设置为不可Re!!!    ");
+			prints_nofmt("\n\n    对不起, 本文被设置为不可Re!!!    ");
 			pressreturn();
 			clear();
 		}
@@ -1189,7 +1189,7 @@ super_select_board(char *bname)
 	clear();
 	bname[0]='\0';
 	move(1, 0);
-	prints("\033[1;31m在这里可以输入版面中文名称/英文名称/版面关键字进行搜索，支持模糊搜索。\033[m\n"
+	prints_nofmt("\033[1;31m在这里可以输入版面中文名称/英文名称/版面关键字进行搜索，支持模糊搜索。\033[m\n"
 		"\033[1;31m例如，输入“铁路”“车迷”，均可定位至traffic版。\033[m");
 	getdata(4, 0, "搜索版面关键字: ", buf, 64, DOECHO, YEA);
 	strcpy(searchname, ytht_strtrim(buf));
@@ -1197,7 +1197,7 @@ super_select_board(char *bname)
 		return -1;
 	if ((super_board_count = fill_super_board(searchname, result, MAXBOARD)) <= 0){
 		move(5, 0);
-		prints("没有找到任何相关版面\n");
+		prints_nofmt("没有找到任何相关版面\n");
 		pressanykey();
 		return -1;
 	}
@@ -1233,8 +1233,8 @@ static int do_select(int ent, struct fileheader *fileinfo, char *direct) {
 		return DONOTHING;	//by ylsdd
 	move(0, 0);
 	clrtoeol();
-	prints("选择讨论区 [ \033[1;32m# \033[0;37m- \033[1;31m版面名称/关键字搜索\033[0;37m, \033[1;32mSPACE \033[0;37m- 自动补全, \033[1;32mENTER \033[0;37m- 退出 ] \033[m\n");
-	prints("输入讨论区名 (英文字母大小写皆可): ");
+	prints_nofmt("选择讨论区 [ \033[1;32m# \033[0;37m- \033[1;31m版面名称/关键字搜索\033[0;37m, \033[1;32mSPACE \033[0;37m- 自动补全, \033[1;32mENTER \033[0;37m- 退出 ] \033[m\n");
+	prints_nofmt("输入讨论区名 (英文字母大小写皆可): ");
 	clrtoeol();
 
 	make_blist();
@@ -1245,19 +1245,19 @@ static int do_select(int ent, struct fileheader *fileinfo, char *direct) {
 		return FULLUPDATE;
 	if (stat(bpath, &st) == -1) {
 		move(2, 0);
-		prints("不正确的讨论区.\n");
+		prints_nofmt("不正确的讨论区.\n");
 		pressreturn();
 		return FULLUPDATE;
 	}
 	if (!(st.st_mode & S_IFDIR)) {
 		move(2, 0);
-		prints("不正确的讨论区.\n");
+		prints_nofmt("不正确的讨论区.\n");
 		pressreturn();
 		return FULLUPDATE;
 	}
 	if (!clubsync(bname)) {
 		move(2, 0);
-		prints("不正确的讨论区.\n");
+		prints_nofmt("不正确的讨论区.\n");
 		pressreturn();
 		return FULLUPDATE;
 	}
@@ -1710,7 +1710,7 @@ post_cross(char *bname, int mode, int islocal, int hascheck, int dangerous)
 	}
 	if (noadm4political(bname) && !mode && strcasecmp(bname, "AnonyLog")!=0) {
 		move(1, 0);
-		prints("对不起,因为没有版面管理人员在线,本版暂时封闭.");
+		prints_nofmt("对不起,因为没有版面管理人员在线,本版暂时封闭.");
 		return -1;
 	}
 	bzero(&postfile, sizeof (postfile));
@@ -1894,16 +1894,13 @@ post_article(struct fileheader *sfh)
 			if (digestmode == NA)
 			{
 				if (ythtbbs_cache_Board_get_board_by_idx(getbnum(currboard) - 1)->header.secnumber2 == 'C')
-					prints
-					("\n\n     俱乐部版面，请联系版主，申请加入俱乐部方能发文.");
+					prints_nofmt("\n\n     俱乐部版面，请联系版主，申请加入俱乐部方能发文.");
 				else
-					prints
-					("\n\n        此讨论区是唯读的, 或是您尚无权限在此发表文章。");
+					prints_nofmt("\n\n        此讨论区是唯读的, 或是您尚无权限在此发表文章。");
 			}
 			else
 			{
-				prints
-				("\n\n     目前是文摘或主题模式, 所以不能发表文章 (按左键可离开此模式)。");
+				prints_nofmt("\n\n     目前是文摘或主题模式, 所以不能发表文章 (按左键可离开此模式)。");
 			}
 			pressreturn();
 			clear();
@@ -1913,8 +1910,7 @@ post_article(struct fileheader *sfh)
 		{
 			move(3, 0);
 			clrtobot();
-			prints
-			("\n\n               对不起,因为没有版面管理人员在线,本版暂时封闭.");
+			prints_nofmt("\n\n               对不起,因为没有版面管理人员在线,本版暂时封闭.");
 			pressreturn();
 			clear();
 			return FULLUPDATE;
@@ -1923,8 +1919,7 @@ post_article(struct fileheader *sfh)
 		{
 			move(3, 0);
 			clrtobot();
-			prints
-			("\n\n                 很抱歉，你被版主停止 POST 的权利。");
+			prints_nofmt("\n\n                 很抱歉，你被版主停止 POST 的权利。");
 			pressreturn();
 			clear();
 			return FULLUPDATE;
@@ -1936,8 +1931,7 @@ post_article(struct fileheader *sfh)
 		{
 			move(3, 0);
 			clrtobot();
-			prints
-			("\n\n                 很抱歉，你被站务停止全站 POST 的权利。");
+			prints_nofmt("\n\n                 很抱歉，你被站务停止全站 POST 的权利。");
 			pressreturn();
 			clear();
 			return FULLUPDATE;
@@ -1947,8 +1941,7 @@ post_article(struct fileheader *sfh)
 	{
 		move(3, 0);
 		clrtobot();
-		prints
-		("\n\n                 很抱歉，你的ip被禁止使用guest在本版发文。");
+		prints_nofmt("\n\n                 很抱歉，你的ip被禁止使用guest在本版发文。");
 		pressreturn();
 		clear();
 		return FULLUPDATE;
@@ -2067,7 +2060,7 @@ post_article(struct fileheader *sfh)
 		}
 		move(0, 0);
 		clear();
-		prints("%s", DO1984_NOTICE);
+		prints_nofmt(DO1984_NOTICE);
 		pressanykey();
 		return FULLUPDATE;
 	}
@@ -2232,7 +2225,7 @@ static enum ytht_smth_filter_result dofilter(char *title, char *fn, enum ytht_sm
 		if (mode != YTHT_SMTH_FILTER_OPTION_PLTCAL) {
 			move(0, 0);
 			clear();
-			prints("%s", BAD_WORD_NOTICE);
+			prints_nofmt(BAD_WORD_NOTICE);
 			pressanykey();
 			mail_file(fn, currentuser.userid, title);
 			return YTHT_SMTH_FILTER_RESULT_1984;
@@ -2524,7 +2517,7 @@ int has_perm_commend(char* userid)			//add by mintbaggio 040406 for front page c
 
 	fp = fopen(MY_BBS_HOME"/etc/commendlist", "r");
 	if(!fp){
-		prints("fatal error, couldn't open commendlist, please contact the SYSOP\n");
+		prints_nofmt("fatal error, couldn't open commendlist, please contact the SYSOP\n");
 		return -1;
 	}
 	while(fgets(buf, IDLEN+2, fp)){
@@ -2638,7 +2631,7 @@ static int moveintobacknumber(int ent, struct fileheader *fileinfo, char *direct
 		return DONOTHING;
 	clear();
 	memset(&atm, 0, sizeof(atm));
-	prints("整理过刊, 请指定日期, 在该日期之前所发表的文章将被\n"
+	prints_nofmt("整理过刊, 请指定日期, 在该日期之前所发表的文章将被\n"
 			"迁移到最后一个过刊目录里, 而且不再存在于版面\n");
 	if (askyn("要继续吗?", NA, NA) == NA)
 		return FULLUPDATE;
@@ -2652,21 +2645,21 @@ static int moveintobacknumber(int ent, struct fileheader *fileinfo, char *direct
 		atm.tm_year = atoi(buf) - 1900;
 		if (atm.tm_year + 1900 >= 1999)
 			break;
-		prints("不恰当的年份(1999～)");
+		prints_nofmt("不恰当的年份(1999～)");
 	}
 	while (1) {
 		getdata(4, 0, "月: ", buf, 6, DOECHO, YEA);
 		atm.tm_mon = atoi(buf) - 1;
 		if (atm.tm_mon + 1 > 0 && atm.tm_mon + 1 <= 12)
 			break;
-		prints("不恰当的月份(1～12)");
+		prints_nofmt("不恰当的月份(1～12)");
 	}
 	while (1) {
 		getdata(5, 0, "日: ", buf, 6, DOECHO, YEA);
 		atm.tm_mday = atoi(buf);
 		if (atm.tm_mday > 0 && atm.tm_mday <= 31)
 			break;
-		prints("不恰当的日期(1～31)");
+		prints_nofmt("不恰当的日期(1～31)");
 	}
 	t = mktime(&atm);
 	if (t <= 0 || t >= (time(NULL) - (time_t) 3600 * 24 * 7)) {
@@ -2707,7 +2700,7 @@ int del_range(int ent, struct fileheader *fileinfo, char *direct) {
 	if (((digestmode >= 2 && digestmode <= 5) || !strcmp(currboard, "syssecurity")) && uinfo.mode == READING)
 		return DONOTHING;
 	clear();
-	prints("区域删除\n");
+	prints_nofmt("区域删除\n");
 	getdata(1, 0,
 		"首篇文章编号(输入0清除标记为删除的文章): ",
 		num, 6, DOECHO, YEA);
@@ -2718,14 +2711,14 @@ int del_range(int ent, struct fileheader *fileinfo, char *direct) {
 	}
 
 	if (inum1 <= 0) {
-		prints("错误编号\n");
+		prints_nofmt("错误编号\n");
 		pressreturn();
 		return FULLUPDATE;
 	}
 	getdata(2, 0, "末篇文章编号: ", num, 14, DOECHO, YEA);
 	inum2 = atoi(num);
 	if (inum2 - inum1 <= 1) {
-		prints("错误编号\n");
+		prints_nofmt("错误编号\n");
 		pressreturn();
 		return FULLUPDATE;
 	}
@@ -2752,7 +2745,7 @@ THERE:
 				sprintf(fullpath, "boards/%s/.tmpfilJ",
 					currboard);
 				unlink(fullpath);
-				prints("\n错误已经消除,请重新执行区段删除!");
+				prints_nofmt("\n错误已经消除,请重新执行区段删除!");
 			}
 
 			pressreturn();
@@ -2775,11 +2768,11 @@ THERE:
 				currentuser.userid, inum1, inum2);
 			newtrace(genbuf);
 		}
-		prints("删除完成\n");
+		prints_nofmt("删除完成\n");
 		pressreturn();
 		return DIRCHANGED;
 	}
-	prints("Delete Aborted\n");
+	prints_nofmt("Delete Aborted\n");
 	pressreturn();
 	return FULLUPDATE;
 }
@@ -2820,13 +2813,13 @@ del_post_backup(int ent, struct fileheader *fileinfo, char *direct)
 				change_dir(direct, fileinfo,
 					(void *) DIR_clear_dangerous, ent,
 					digestmode, 1);
-				prints("已经清除本文的危险标记\n");
+				prints_nofmt("已经清除本文的危险标记\n");
 				pressreturn();
 				return FULLUPDATE;
 			}
 		}
 		move(2, 0);
-		prints("取消\n");
+		prints_nofmt("取消\n");
 		pressreturn();
 		clear();
 		return FULLUPDATE;
@@ -2856,7 +2849,7 @@ del_post_backup(int ent, struct fileheader *fileinfo, char *direct)
 	}
 
 	move(2, 0);
-	prints("删除失败\n");
+	prints_nofmt("删除失败\n");
 	pressreturn();
 	clear();
 	return FULLUPDATE;
@@ -2890,7 +2883,7 @@ del_post(int ent, struct fileheader *fileinfo, char *direct)
 		sprintf(genbuf, "删除文章 [%-.55s]", fileinfo->title);
 		if (askyn(genbuf, NA, NA) == NA) {
 			move(2, 0);
-			prints("取消\n");
+			prints_nofmt("取消\n");
 			pressreturn();
 			clear();
 			return FULLUPDATE;
@@ -2945,7 +2938,7 @@ del_post(int ent, struct fileheader *fileinfo, char *direct)
 	}
 
 	move(2, 0);
-	prints("删除失败\n");
+	prints_nofmt("删除失败\n");
 	pressreturn();
 	clear();
 	return FULLUPDATE;
@@ -2989,7 +2982,7 @@ sequent_messages(struct fileheader *fptr)
 		ansimore_withzmodem(genbuf, NA, fptr->title);
 		move(t_lines - 1, 0);
 		clrtoeol();
-		prints("\033[1;44;31m[连续读信]  \033[33m回信 R │ 结束 Q,← │下一封 ' ',↓ │^R 回信给作者                \033[m");
+		prints_nofmt("\033[1;44;31m[连续读信]  \033[33m回信 R │ 结束 Q,← │下一封 ' ',↓ │^R 回信给作者                \033[m");
 		continue_flag = 0;
 		switch (egetch()) {
 		case 'N':
@@ -3008,7 +3001,7 @@ sequent_messages(struct fileheader *fptr)
 			else {
 				move(3, 0);
 				clrtobot();
-				prints("\n\n    老大,有人不让你Re这篇文章啊!!!    ");
+				prints_nofmt("\n\n    老大,有人不让你Re这篇文章啊!!!    ");
 				pressreturn();
 				clear();
 			}
@@ -3134,7 +3127,7 @@ static void quickviewpost(int ent, struct fileheader *fileinfo, char *direct) {
 	}
 	if (j < 6) {
 		move(t_lines - 7 + j, 0);
-		prints("==========================结束=============================");
+		prints_nofmt("==========================结束=============================");
 	}
 	fclose(fp);
 	move(y, x);
@@ -3205,7 +3198,7 @@ static int check_notespasswd() {
 			return NA;
 		if (!ytht_crypt_checkpasswd(prepass, passbuf)) {
 			move(3, 0);
-			prints("错误的秘密备忘录密码...");
+			prints_nofmt("错误的秘密备忘录密码...");
 			pressanykey();
 			return NA;
 		}
@@ -3226,7 +3219,7 @@ show_b_secnote()
 		ansimore(buf, NA);
 	} else {
 		move(3, 25);
-		prints("此讨论区尚无「秘密备忘录」。");
+		prints_nofmt("此讨论区尚无「秘密备忘录」。");
 	}
 	pressanykey();
 	return FULLUPDATE;
@@ -3238,13 +3231,13 @@ show_b_note()
 	clear();
 	if (show_board_notes(currboard) == -1) {
 		move(4, 30);
-		prints("此讨论区尚无「备忘录」。");
+		prints_nofmt("此讨论区尚无「备忘录」。");
 	}
 	show_small_bm(currboard);
 	if (!strcmp(currboard, "deleterequest")) {
 		move(1, 0);
 		if (!ythtbbs_cache_utmp_get_watchman())
-			prints("政治性版面当前都处在解锁状态");
+			prints_nofmt("政治性版面当前都处在解锁状态");
 		else
 			prints("政治性版面已锁定,晚于 %s 就不能发表文章了.解锁码: %d",
 				ytht_ctime(ythtbbs_cache_utmp_get_watchman()), ythtbbs_cache_utmp_get_unlock() % 10000);
@@ -3264,7 +3257,7 @@ static int show_file_info(int ent, struct fileheader *fileinfo, char *direct) {
 	get_temp_sessionid(temp_sessionid, sizeof(temp_sessionid));
 	clear();
 	move(0, 0);
-	prints("这篇文章的详细信息如下:\n");
+	prints_nofmt("这篇文章的详细信息如下:\n");
 	prints("版面名称:     %s\n", currboard);
 	prints("本版版主:     %s\n", bp->header.bm[0]);
 	prints("版内在线:     %d人\n", bp->inboard);
@@ -3274,7 +3267,7 @@ static int show_file_info(int ent, struct fileheader *fileinfo, char *direct) {
 	prints("文章日期:     %s", ctime(&t));
 	prints("文章等级:     %d级\n", (fileinfo->staravg50 / 50));
 	prints("文件大小:     %d字节\n", ytht_byte2num(fileinfo->sizebyte));
-	prints("URL 地址:\n");
+	prints_nofmt("URL 地址:\n");
 	prints("http://%s/" SMAGIC "%s/%scon?B=%s&F=%s\n", MY_BBS_DOMAIN,
 			temp_sessionid, (digestmode == YEA) ? "g" : "", currboard,
 			fh2fname(fileinfo));
@@ -3293,24 +3286,24 @@ what_to_do()
 			HAS_PERM(PERM_CHAT, currentuser) ? "(c)咖啡红茶店" : "",
 			HAS_PERM(PERM_BASIC, currentuser) ? "(o)好友名单" : "");
 	move(t_lines - 1, 0);
-	prints("请选择功能, 或按空格键继续");
+	prints_nofmt("请选择功能, 或按空格键继续");
 	switch (igetkey()) {
 	case 'u':
 		clear();
-		prints("查询网友状态");
+		prints_nofmt("查询网友状态");
 		t_query(NULL);
 		break;
 	case 'm':
 		clear();
 		move(0, 0);
-		prints("发送站内信件");
+		prints_nofmt("发送站内信件");
 		if (HAS_PERM(PERM_POST, currentuser))
 			m_send(NULL);
 		break;
 	case 'i':
 		clear();
 		move(0, 0);
-		prints("发送Internet信件");
+		prints_nofmt("发送Internet信件");
 		if (HAS_PERM(PERM_POST, currentuser))
 			m_internet(NULL);
 		break;
@@ -3485,7 +3478,7 @@ notepad()
 	extern int talkrequest;
 	clear();
 	move(0, 0);
-	prints("开始你的留言吧！大家正拭目以待....\n");
+	prints_nofmt("开始你的留言吧！大家正拭目以待....\n");
 	sprintf(tmpname, "tmp/notepad.%s.%05d", currentuser.userid, uinfo.pid);
 	if ((in = fopen(tmpname, "w")) != NULL) {
 		for (i = 0; i < 3; i++)
@@ -3563,31 +3556,31 @@ int Goodbye(const char *s) {
 	clear();
 	move(0, 0);
 	prints("你就要离开 %s ，可有什么建议吗？\n", MY_BBS_NAME);
-	prints("[\033[1;33m1\033[m] 寄信给管理人员\n");
-	prints("[\033[1;33m2\033[m] 按错了啦，我还要玩\n");
+	prints_nofmt("[\033[1;33m1\033[m] 寄信给管理人员\n");
+	prints_nofmt("[\033[1;33m2\033[m] 按错了啦，我还要玩\n");
 	if (strcmp(currentuser.userid, "guest") != 0) {
 		if (USE_NOTEPAD == 1)
-			prints ("[\033[1;33m3\033[m] 写写\033[1;32m留\033[33m言\033[35m版\033[m罗\n");
+			prints_nofmt("[\033[1;33m3\033[m] 写写\033[1;32m留\033[33m言\033[35m版\033[m罗\n");
 	}
-	prints("[\033[1;33m4\033[m] 不寄罗，要离开啦\n");
+	prints_nofmt("[\033[1;33m4\033[m] 不寄罗，要离开啦\n");
 	sprintf(spbuf, "你的选择是 [\033[1;32m4\033[m]：");
 	getdata(7, 0, spbuf, genbuf, 4, DOECHO, YEA);
 	clear();
 	choose = genbuf[0] - '0';
 	if (choose == 1) {
 		if (!strcmp(currentuser.userid, "guest")) {
-			prints("先注册再给管理员写信吧。\n");
+			prints_nofmt("先注册再给管理员写信吧。\n");
 			pressanykey();
 		} else {	//add by mintbaggio 040406 for mail OBOARDS when logout
 			clear();
-			prints("你想寄信给哪个主管站长？\n");
+			prints_nofmt("你想寄信给哪个主管站长？\n");
 			char userid[50][IDLEN+2], board[20];
 			int i=0, ch;
 			char *buf_ptr;
 
 			fp = fopen(MY_BBS_HOME"/etc/secmlist", "r");
 			if(!fp){
-				prints("fatal error, couldn't open secmlist, please contact the SYSOP\n");
+				prints_nofmt("fatal error, couldn't open secmlist, please contact the SYSOP\n");
 				pressreturn();
 				goto goodbye;
 			}
@@ -3615,7 +3608,7 @@ int Goodbye(const char *s) {
 			getdata(i+2, 0, spbuf, genbuf, 4, DOECHO, YEA);
 			ch = atoi(genbuf);
 			if(ch<0 || ch>i){
-				prints("不寄咯，哈哈\n");
+				prints_nofmt("不寄咯，哈哈\n");
 				pressreturn();
 				goto goodbye;
 			}
@@ -3966,7 +3959,7 @@ do_thread()
 	newtrace(buf);
 	move(t_lines - 1, 0);
 	clrtoeol();
-	prints("\x1b[1;5m系统处理标题中, 请稍候...\x1b[m\n");
+	prints_nofmt("\x1b[1;5m系统处理标题中, 请稍候...\x1b[m\n");
 	refresh();
 	snprintf(buf, sizeof(buf), "bin/thread %s 1>/dev/null 2>/dev/null", currboard);
 	system(buf);
@@ -3987,13 +3980,13 @@ b_notes_edit()
 
 	clear();
 	move(1, 0);
-	prints("编辑、删除备忘录\n\n");
+	prints_nofmt("编辑、删除备忘录\n\n");
 	while (1) {
-		prints("[\033[1;32m0\033[m] 都不想改\n");
-		prints("[\033[1;32m1\033[m] 一般备忘录\n");
-		prints("[\033[1;32m2\033[m] 秘密备忘录\n");
-		prints("[\033[1;32m3\033[m] 版面简介\n");
-		prints("[\033[1;32m4\033[m] 版面关键字\n");
+		prints_nofmt("[\033[1;32m0\033[m] 都不想改\n");
+		prints_nofmt("[\033[1;32m1\033[m] 一般备忘录\n");
+		prints_nofmt("[\033[1;32m2\033[m] 秘密备忘录\n");
+		prints_nofmt("[\033[1;32m3\033[m] 版面简介\n");
+		prints_nofmt("[\033[1;32m4\033[m] 版面关键字\n");
 		getdata(9, 0,
 			"你要编辑或删除本讨论区的哪一项档案: ",
 			ans, 2, DOECHO, YEA);
@@ -4068,7 +4061,7 @@ b_notes_edit()
 				sprintf(secu, "删除%s版版面关键字", fh.filename);
 				securityreport(secu, secu);
 				move(14, 0);
-				prints("版面关键字已经删除...\n");
+				prints_nofmt("版面关键字已经删除...\n");
 				pressanykey();
 				aborted = 1;
 			} else
@@ -4086,7 +4079,7 @@ b_notes_edit()
 				sprintf(secu, "修改%s版版面关键字", fh.filename);
 				securityreport(secu, secu);
 				move(16, 0);
-				prints("版面关键字已经修改...\n");
+				prints_nofmt("版面关键字已经修改...\n");
 				pressanykey();
 				aborted = 1;
 			}else
@@ -4111,12 +4104,12 @@ b_notes_passwd()
 	}
 	clear();
 	move(1, 0);
-	prints("设定/更改「秘密备忘录」密码...");
+	prints_nofmt("设定/更改「秘密备忘录」密码...");
 	setvfile(buf, currboard, "secnotes");
 	if (!dashf(buf)) {
 		move(3, 0);
-		prints("本讨论区尚无「秘密备忘录」。\n\n");
-		prints("请先用 W 编好「秘密备忘录」再来设定密码...");
+		prints_nofmt("本讨论区尚无「秘密备忘录」。\n\n");
+		prints_nofmt("请先用 W 编好「秘密备忘录」再来设定密码...");
 		pressanykey();
 		return FULLUPDATE;
 	}
@@ -4125,14 +4118,14 @@ b_notes_passwd()
 	getdata(3, 0, "请输入新的秘密备忘录密码: ", passbuf, 19, NOECHO, YEA);
 	getdata(4, 0, "确认新的秘密备忘录密码: ", prepass, 19, NOECHO, YEA);
 	if (strcmp(passbuf, prepass)) {
-		prints("\n密码不相符, 无法设定或更改....");
+		prints_nofmt("\n密码不相符, 无法设定或更改....");
 		pressanykey();
 		return FULLUPDATE;
 	}
 	setvfile(buf, currboard, "notespasswd");
 	if ((pass = fopen(buf, "w")) == NULL) {
 		move(5, 0);
-		prints("备忘录密码无法设定....");
+		prints_nofmt("备忘录密码无法设定....");
 		pressanykey();
 		return FULLUPDATE;
 	}
@@ -4140,7 +4133,7 @@ b_notes_passwd()
 	fclose(pass);
 	pass = 0;
 	move(5, 0);
-	prints("秘密备忘录密码设定完成....");
+	prints_nofmt("秘密备忘录密码设定完成....");
 	pressanykey();
 	return FULLUPDATE;
 }
@@ -4224,7 +4217,7 @@ static int commend_article(char* board, struct fileheader* fileinfo) {
 	else{
 		if(count_commend() >= 20){
 			move(t_lines-2, 0);
-			prints("您已经推荐了20篇文章啦！不要太贪心哦~~~\n");
+			prints_nofmt("您已经推荐了20篇文章啦！不要太贪心哦~~~\n");
 			pressreturn();
 		}
 		else{
@@ -4309,7 +4302,7 @@ static int do_commend(struct fileheader* fileinfo) {
 	y.accessed=fileinfo->accessed;
 	y.time=time(NULL);
 	if(fwrite(&y, sizeof(struct commend), 1, fp) != 1){
-		prints("write fail\n");
+		prints_nofmt("write fail\n");
 		pressanykey();
 		if (fp) fclose(fp);
 		return 0;
@@ -4348,11 +4341,11 @@ int show_commend() {
 	fp = fopen(COMMENDFILE, "r");
 	if(!fp)
 	{
-		prints("无法打开推荐文件，请与系统管理员联系\n");
+		prints_nofmt("无法打开推荐文件，请与系统管理员联系\n");
 		return -1;
 	}
 	fseek(fp, -20*sizeof(struct commend), SEEK_END);
-	prints("                \033[1;34m-------\033[37m=======\033[41m BMY推荐文章 \033[40m=======\033[34m-------\033[0m\n\n");
+	prints_nofmt("                \033[1;34m-------\033[37m=======\033[41m BMY推荐文章 \033[40m=======\033[34m-------\033[0m\n\n");
 	for(num=20; num>0; num--){
 		if(fread(&x, sizeof(struct commend), 1, fp) != 1)
 			break;
@@ -4375,7 +4368,7 @@ static int commend_article2(char* board, struct fileheader* fileinfo) {
 	else{
 		if(count_commend2() >= 15){
 			move(t_lines-2, 0);
-			prints("您已经推荐了15篇文章啦！不要太贪心哦~~~\n");
+			prints_nofmt("您已经推荐了15篇文章啦！不要太贪心哦~~~\n");
 			pressreturn();
 		}
 		else{
@@ -4462,7 +4455,7 @@ static int do_commend2(struct fileheader* fileinfo) {
 	y.time=time(NULL);
 	if(fwrite(&y, sizeof(struct commend), 1, fp) != 1){
 		fclose(fp);
-		prints("write fail\n");
+		prints_nofmt("write fail\n");
 		pressanykey();
 		return 0;
 	}
@@ -4500,11 +4493,11 @@ int show_commend2() {
 	fp = fopen(COMMENDFILE2, "r");
 	if(!fp)
 	{
-		prints("无法打开推荐文件，请与系统管理员联系\n");
+		prints_nofmt("无法打开推荐文件，请与系统管理员联系\n");
 		return -1;
 	}
 	fseek(fp, -20*sizeof(struct commend), SEEK_END);
-	prints("                \033[1;34m-------\033[37m=======\033[41m BMY推荐文章 \033[40m=======\033[34m-------\033[0m\n\n");
+	prints_nofmt("                \033[1;34m-------\033[37m=======\033[41m BMY推荐文章 \033[40m=======\033[34m-------\033[0m\n\n");
 	for(num=20; num>0; num--){
 		if(fread(&x, sizeof(struct commend), 1, fp) != 1)
 			break;

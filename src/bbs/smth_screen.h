@@ -37,6 +37,7 @@ void outc(unsigned char c);
 void outns(const char *str, int n);
 void outs(const char *str);
 void prints(char *format, ...);
+void prints_nofmt(const char *s);
 void scroll(void);
 void rscroll(void);
 void saveline(int line, int mode, char *buffer);

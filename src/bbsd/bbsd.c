@@ -61,6 +61,12 @@ prints(char *format, ...)
 }
 
 void
+prints_nofmt(const char *s)
+{
+	prints("%s", s);
+}
+
+void
 get_load(load)
 double load[];
 {
@@ -272,7 +278,7 @@ show_proc_info(void)
 	FILE *fp;
 	char buf[256];
 	// \033[1;32m健康状态\033[36m
-	prints("\033[1;32m\xBD\xA1\xBF\xB5\xD7\xB4\xCC\xAC\033[36m");
+	prints_nofmt("\033[1;32m\xBD\xA1\xBF\xB5\xD7\xB4\xCC\xAC\033[36m");
 	for (i = 0; my_proc[i].path; i++) {
 		fp = fopen(my_proc[i].path, "r");
 		if (NULL == fp)
@@ -281,7 +287,7 @@ show_proc_info(void)
 			prints(" %s [\033[33m%s\033[36m]", my_proc[i].name, buf);
 		fclose(fp);
 	}
-	prints("\033[m\n\r");
+	prints_nofmt("\033[m\n\r");
 }
 
 void
@@ -293,11 +299,11 @@ show_bandwidth_info(void)
 	if (NULL == fp)
 		return;
 	// \033[1;32m网络流量监测
-	prints("\033[1;32m\xCD\xF8\xC2\xE7\xC1\xF7\xC1\xBF\xBC\xE0\xB2\xE2");
+	prints_nofmt("\033[1;32m\xCD\xF8\xC2\xE7\xC1\xF7\xC1\xBF\xBC\xE0\xB2\xE2");
 	if (fgets(buf, 256, fp))
-		prints("%s", buf);
+		prints_nofmt(buf);
 	fclose(fp);
-	prints("\033[m\n\r");
+	prints_nofmt("\033[m\n\r");
 }
 #endif
 
@@ -328,10 +334,10 @@ char *hid;
 		if (load < 0 || load > max_load) {
 			if (big5)
 				// 很抱歉,目前系統負荷過重, 請稍後再來\n\r
-				prints("\xAB\xDC\xA9\xEA\xBA\x70,\xA5\xD8\xAB\x65\xA8\x74\xB2\xCE\xAD\x74\xB2\xFC\xB9\x4C\xAD\xAB, \xBD\xD0\xB5\x79\xAB\xE1\xA6\x41\xA8\xD3\n\r");
+				prints_nofmt("\xAB\xDC\xA9\xEA\xBA\x70,\xA5\xD8\xAB\x65\xA8\x74\xB2\xCE\xAD\x74\xB2\xFC\xB9\x4C\xAD\xAB, \xBD\xD0\xB5\x79\xAB\xE1\xA6\x41\xA8\xD3\n\r");
 			else
 				// 很抱歉,目前系统负荷过重, 请稍后再来\n\r
-				prints("\xBA\xDC\xB1\xA7\xC7\xB8,\xC4\xBF\xC7\xB0\xCF\xB5\xCD\xB3\xB8\xBA\xBA\xC9\xB9\xFD\xD6\xD8, \xC7\xEB\xC9\xD4\xBA\xF3\xD4\xD9\xC0\xB4\n\r");
+				prints_nofmt("\xBA\xDC\xB1\xA7\xC7\xB8,\xC4\xBF\xC7\xB0\xCF\xB5\xCD\xB3\xB8\xBA\xBA\xC9\xB9\xFD\xD6\xD8, \xC7\xEB\xC9\xD4\xBA\xF3\xD4\xD9\xC0\xB4\n\r");
 			close(csock);
 			exit(-1);
 		}
@@ -342,7 +348,7 @@ char *hid;
 
 		if ((fp = fopen("NOLOGIN", "r")) != NULL && (!runtest || access("CANTEST", F_OK))) {
 			while (fgets(buf, 256, fp) != NULL)
-				prints(buf);
+				prints("%s", buf);
 			fclose(fp);
 			close(csock);
 			exit(-1);

@@ -702,13 +702,13 @@ begin:
 						memcpy(&cbuf[ptr], &cbuf[ptr + 1], BSIZE - ptr);
 						move(PROMPT, ptr + 6);
 						clrtoeol();
-						prints(&cbuf[ptr]);
+						prints_nofmt(&cbuf[ptr]);
 					}
 				} else if (ch == KEY_DEL) {
 					if (cbuf[ptr]) {
 						memcpy(&cbuf[ptr], &cbuf[ptr + 1], BSIZE - ptr);
 						clrtoeol();
-						prints(&cbuf[ptr]);
+						prints_nofmt(&cbuf[ptr]);
 					}
 				} else if (ch == Ctrl('A')) {
 					ptr = 0;
@@ -725,7 +725,7 @@ begin:
 					ptr = 0;
 					move(PROMPT, ptr + 6);
 					clrtoeol();
-					prints(cbuf);
+					prints_nofmt(cbuf);
 				} else if (ch == Ctrl('W')) {
 					if (ptr) {
 						int optr;
@@ -746,7 +746,7 @@ begin:
 						memcpy(&cbuf[ptr], &cbuf[optr], BSIZE - optr + 1);
 						move(PROMPT, ptr + 6);
 						clrtoeol();
-						prints(&cbuf[ptr]);
+						prints_nofmt(&cbuf[ptr]);
 					}
 				} else if (isprint2(ch)) {
 					if (ptr == BSIZE)
@@ -760,7 +760,7 @@ begin:
 						memmove(&cbuf[ptr + 1], &cbuf[ptr], BSIZE - ptr + 1);
 						cbuf[ptr] = ch;
 						move(PROMPT, 6 + ptr);
-						prints(&cbuf[ptr]);
+						prints_nofmt(&cbuf[ptr]);
 						ptr++;
 					}
 				}
@@ -955,9 +955,9 @@ five_chat(char *msg, int init)
 			outc('-');
 		move(curr, 0);
 		clrtoeol();
-		prints(prompt);
+		prints_nofmt(prompt);
 		move(PROMPT, 0);
-		prints(chat);
+		prints_nofmt(chat);
 		return;
 	}
 
@@ -965,7 +965,7 @@ five_chat(char *msg, int init)
 		ytht_strsncpy(win[p], msg, sizeof(win[p]));
 		move(curr, 0);
 		clrtoeol();
-		prints(win[p]);
+		prints_nofmt(win[p]);
 		p++;
 		if (p == MAX)
 			p = 0;
@@ -974,13 +974,13 @@ five_chat(char *msg, int init)
 			for (i = START; i < END; i++) {
 				move(i, 0);
 				clrtoeol();
-				prints(win[(p + MAX + (i - START)) % MAX]);
+				prints_nofmt(win[(p + MAX + (i - START)) % MAX]);
 			}
 			curr = END;
 		}
 		move(curr, 0);
 		clrtoeol();
-		prints(prompt);
+		prints_nofmt(prompt);
 	}
 }
 
@@ -996,7 +996,7 @@ press(void)
 	saveline(t_lines - 1, 0, NULL);
 	move(t_lines - 1, 0);
 	clrtoeol();
-	prints("\033[37;40m\033[0m                               \033[33m按任意键继续 ...\033[37;40m\033[0m");
+	prints_nofmt("\033[37;40m\033[0m                               \033[33m按任意键继续 ...\033[37;40m\033[0m");
 	//c = egetch();
 	move(t_lines - 1, 0);
 	saveline(t_lines - 1, 1, NULL);
