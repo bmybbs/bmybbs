@@ -5,21 +5,15 @@
 int code_convert(const char *from_charset, const char *to_charset, const char *inbuf, size_t inlen, char *outbuf, size_t outlen) {
 	iconv_t cd;
 	size_t rc;
-	char *tmp = strdup(inbuf);
-	char *tmp_p = tmp;
-
-	if (tmp == NULL)
-		return -1;
+	char *tmp_p = (char *) inbuf;
 
 	cd = iconv_open(to_charset, from_charset);
 	if (cd == (iconv_t) -1) {
-		free(tmp);
 		return -1;
 	}
 
 	memset(outbuf, 0, outlen);
 	rc = iconv(cd, &tmp_p, &inlen, &outbuf, &outlen);
-	free(tmp);
 	iconv_close(cd);
 
 	return (rc == (size_t) -1) ? -1 : 0;
