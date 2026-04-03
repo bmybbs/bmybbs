@@ -1,11 +1,20 @@
+#include <time.h>
+#include <stdio.h>
 #include <stddef.h>
+#include <netinet/in.h>
+#include <sys/file.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/msg.h>
 #include <signal.h>
-#include "bbs.h"
+#include "config.h"
 #include "3rd/uthash.h"
 #include "ytht/msg.h"
+#include "ytht/fileop.h"
+#include "ytht/strlib.h"
+#include "ytht/common.h"
 
 int
 init_bbslogmsq()
@@ -287,11 +296,13 @@ int n = 0;
 
 static void
 set_sync_flag(int signno){
+	(void) signno;
 	sync_flag = 1;
 }
 
 static void
 write_back_all(int signno) {
+	(void) signno;
 	if (fd >= 0)
 		write(fd, buf, n);
 	exit(0);
