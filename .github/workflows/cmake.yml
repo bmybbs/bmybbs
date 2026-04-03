@@ -3,34 +3,34 @@ name: BMYBBS Backend
 on:
   push:
     paths:
-      - '.github/workflows/cmake.yml'
-      - 'api/**'
-      - 'atthttpd/**'
-      - 'include/**'
-      - 'libbmy/**'
-      - 'libytht/**'
-      - 'libythtbbs/**'
-      - 'local_utl/**'
-      - 'nju09/www/**'
-      - 'nju09/upload/**'
-      - 'nju09/CMakeLists.txt'
-      - 'src/**'
+      - ".github/workflows/cmake.yml"
+      - "api/**"
+      - "atthttpd/**"
+      - "include/**"
+      - "libbmy/**"
+      - "libytht/**"
+      - "libythtbbs/**"
+      - "local_utl/**"
+      - "nju09/www/**"
+      - "nju09/upload/**"
+      - "nju09/CMakeLists.txt"
+      - "src/**"
     branches:
       - master
   pull_request:
     paths:
-      - '.github/workflows/cmake.yml'
-      - 'api/**'
-      - 'atthttpd/**'
-      - 'include/**'
-      - 'libbmy/**'
-      - 'libytht/**'
-      - 'libythtbbs/**'
-      - 'local_utl/**'
-      - 'nju09/www/**'
-      - 'nju09/upload/**'
-      - 'nju09/CMakeLists.txt'
-      - 'src/**'
+      - ".github/workflows/cmake.yml"
+      - "api/**"
+      - "atthttpd/**"
+      - "include/**"
+      - "libbmy/**"
+      - "libytht/**"
+      - "libythtbbs/**"
+      - "local_utl/**"
+      - "nju09/www/**"
+      - "nju09/upload/**"
+      - "nju09/CMakeLists.txt"
+      - "src/**"
     branches:
       - master
 
@@ -45,35 +45,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v6
-      with:
-        submodules: true
+      - uses: actions/checkout@v6
+        with:
+          submodules: true
 
-    - name: Install dependencies with apt
-      run: (sudo apt-get update -qq && sudo apt-get install -qq libmysqlclient-dev libxml2-dev libhiredis-dev libpcre3-dev libgmp-dev libcurl4-openssl-dev)
+      - name: Install dependencies with apt
+        run: (sudo apt-get update -qq && sudo apt-get install -qq libmysqlclient-dev libxml2-dev libhiredis-dev libpcre3-dev libgmp-dev libcurl4-openssl-dev)
 
-    - name: Install libjson-c from source code
-      working-directory: ${{runner.workspace}}
-      run: (git clone https://github.com/json-c/json-c.git ; mkdir json-c-build; cd json-c-build; cmake ../json-c; make; sudo make install)
+      - name: Install libjson-c from source code
+        working-directory: ${{runner.workspace}}
+        run: (git clone https://github.com/json-c/json-c.git ; mkdir json-c-build; cd json-c-build; cmake ../json-c; make; sudo make install)
 
-    - name: Install libcheck from source code
-      working-directory: ${{runner.workspace}}
-      run: (git clone https://github.com/libcheck/check ; cd check; autoreconf --install; ./configure; make; sudo make install; sudo cp check_stdint.h /usr/local/include; sudo ldconfig)
+      - name: Install libcheck from source code
+        working-directory: ${{runner.workspace}}
+        run: (git clone https://github.com/libcheck/check ; cd check; autoreconf --install; ./configure; make; sudo make install; sudo cp check_stdint.h /usr/local/include; sudo ldconfig)
 
-    - name: Install onion from source code
-      working-directory: ${{runner.workspace}}
-      run: (git clone https://github.com/davidmoreno/onion ; mkdir onion-build; cd onion-build; cmake ../onion; make; cd src/onion; sudo make install)
+      - name: Install onion from source code
+        working-directory: ${{runner.workspace}}
+        run: (git clone https://github.com/davidmoreno/onion ; mkdir onion-build; cd onion-build; cmake ../onion; make; cd src/onion; sudo make install)
 
-    - name: Create Build Environment
-      run: cmake -E make_directory ${{runner.workspace}}/build
+      - name: Create Build Environment
+        run: cmake -E make_directory ${{runner.workspace}}/build
 
-    - name: Configure CMake
-      shell: bash
-      working-directory: ${{runner.workspace}}/build
-      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+      - name: Configure CMake
+        shell: bash
+        working-directory: ${{runner.workspace}}/build
+        run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE
 
-    - name: Build
-      working-directory: ${{runner.workspace}}/build
-      shell: bash
-      run: cmake --build . --config $BUILD_TYPE
-
+      - name: Build
+        working-directory: ${{runner.workspace}}/build
+        shell: bash
+        run: cmake --build . --config $BUILD_TYPE
