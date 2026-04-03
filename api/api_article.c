@@ -419,7 +419,7 @@ static int api_article_list_commend(ONION_FUNC_PROTO_STR, int mode, int startnum
 			commend_list[i].mark = x.accessed;
 		commend_list[i].type = 0;
 		length = strlen(x.title);
-		g2u(x.title, length, commend_list[i].title, 80);
+		g2u(x.title, length, commend_list[i].title, sizeof(((struct api_article *) 0)->title));
 		ytht_strsncpy(commend_list[i].author, x.userid, sizeof(EMPTY_ARTICLE.author));
 		ytht_strsncpy(commend_list[i].board, x.board, sizeof(EMPTY_ARTICLE.board));
 		commend_list[i].filetime = atoi((char *)x.filename + 2);
@@ -568,7 +568,7 @@ static int api_article_list_board(ONION_FUNC_PROTO_STR)
 
 		ytht_strsncpy(board_list[num].board, board, sizeof(EMPTY_ARTICLE.board));
 		ytht_strsncpy(board_list[num].author, data[i].owner, sizeof(EMPTY_ARTICLE.author));
-		g2u(data[i].title, strlen(data[i].title), board_list[num].title, 80);
+		g2u(data[i].title, strlen(data[i].title), board_list[num].title, sizeof(((struct api_article *) 0)->title));
 		++num;
 		if (num >= count) {
 			break;
@@ -738,7 +738,7 @@ static int api_article_list_thread(ONION_FUNC_PROTO_STR)
 
 				ytht_strsncpy(board_list[num].board, board, sizeof(EMPTY_ARTICLE.board));
 				ytht_strsncpy(board_list[num].author, data[i].owner, sizeof(EMPTY_ARTICLE.author));
-				g2u(data[i].title, strlen(data[i].title), board_list[num].title, 80);
+				g2u(data[i].title, strlen(data[i].title), board_list[num].title, sizeof(((struct api_article *) 0)->title));
 				++num;
 				if (num >= count)
 					break;
@@ -822,7 +822,7 @@ static int api_article_list_boardtop(ONION_FUNC_PROTO_STR)
 		strcpy(board_list[i].board, b->header.filename);
 		strcpy(board_list[i].author, fh2owner(&x));
 		x.title[sizeof(x.title) - 1] = 0;
-		g2u(x.title, strlen(x.title), board_list[i].title, 80);
+		g2u(x.title, strlen(x.title), board_list[i].title, sizeof(((struct api_article *) 0)->title));
 	}
 
 	fclose(fp);
@@ -923,7 +923,7 @@ static int api_article_get_content(ONION_FUNC_PROTO_STR, int mode)
 
 	char title_utf8[180];
 	memset(title_utf8, 0, 180);
-	g2u(fh->title, strlen(fh->title), title_utf8, 180);
+	g2u(fh->title, strlen(fh->title), title_utf8, sizeof(title_utf8));
 
 	struct attach_link *attach_link_list=NULL;
 	char *article_content_utf8;

@@ -189,10 +189,11 @@ int api_board_info(ONION_FUNC_PROTO_STR)
 	snprintf(filename, sizeof(filename), "boards/%s/introduction", bmem->header.filename);
 	if (mmapfile(filename, &mf) == 0) {
 		size_t note_len = strlen(mf.ptr);
-		char *note_utf = malloc(note_len * 2);
+		size_t note_utf_len = note_len * 2;
+		char *note_utf = malloc(note_utf_len);
 		if (note_utf) {
-			memset(note_utf, 0, note_len * 2);
-			g2u(mf.ptr, note_len, note_utf, note_len * 2);
+			memset(note_utf, 0, note_utf_len);
+			g2u(mf.ptr, note_len, note_utf, note_utf_len);
 			struct json_object *json_note = json_object_new_string(note_utf);
 			if (json_note) {
 				json_object_object_add(jp, "notes", json_note);

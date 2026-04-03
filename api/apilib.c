@@ -390,9 +390,10 @@ char *parse_article(const char *bname, const char *fname, int mode, struct attac
 
 	char *utf_content;
 	if(mode == ARTICLE_PARSE_WITHOUT_ANSICOLOR) { // 不包含 '\033'，直接转码
-		utf_content = (char *)malloc(3*mem_buf_len);
-		memset(utf_content, 0, 3*mem_buf_len);
-		g2u(mem_buf, mem_buf_len, utf_content, 3*mem_buf_len);
+		const size_t utf_content_len = 3 * mem_buf_len;
+		utf_content = (char *) malloc(utf_content_len);
+		memset(utf_content, 0, utf_content_len);
+		g2u(mem_buf, mem_buf_len, utf_content, utf_content_len);
 	} else { // 将 ansi 色彩转为 HTML 标记
 		html_stream = open_memstream(&html_buf, &html_buf_len);
 		fseek(mem_stream, 0, SEEK_SET);
@@ -405,9 +406,10 @@ char *parse_article(const char *bname, const char *fname, int mode, struct attac
 		fflush(html_stream);
 		fclose(html_stream);
 
-		utf_content = (char*)malloc(3*html_buf_len);
-		memset(utf_content, 0, 3*html_buf_len);
-		g2u(html_buf, html_buf_len, utf_content, 3*html_buf_len);
+		const size_t utf_content_len = 3 * html_buf_len;
+		utf_content = (char *) malloc(utf_content_len);
+		memset(utf_content, 0, utf_content_len);
+		g2u(html_buf, html_buf_len, utf_content, utf_content_len);
 		free(html_buf);
 	}
 

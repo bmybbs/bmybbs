@@ -22,7 +22,7 @@ void copy_to_utf_header(struct fileheader_utf *dest, struct fileheader *src) {
 	int len = strlen(src->title);
 	if (len > 60)
 		len = 60;
-	g2u(src->title, len, dest->title, 120);
+	g2u(src->title, len, dest->title, sizeof dest->title);
 
 	dest->count = 1; // the first one!
 }

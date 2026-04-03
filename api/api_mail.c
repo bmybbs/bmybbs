@@ -107,7 +107,7 @@ int api_mail_list(ONION_FUNC_PROTO_STR)
 		ytht_strsncpy(mail_list[i].author, fh2owner(&x), sizeof(mail_list[i].author));
 		mail_list[i].filetime = x.filetime;
 		x.title[sizeof(x.title) - 1] = 0;
-		g2u(x.title, strlen(x.title), mail_list[i].title, sizeof(mail_list[i].title));
+		g2u(x.title, strlen(x.title), mail_list[i].title, sizeof(((struct api_article *) 0)->title));
 	}
 
 	fclose(fp);
@@ -256,7 +256,7 @@ static int api_mail_get_content(ONION_FUNC_PROTO_STR, int mode)
 
 	char title_utf[240];
 	fh.title[sizeof(fh.title) - 1] = 0;
-	g2u(fh.title, strlen(fh.title), title_utf, 240);
+	g2u(fh.title, strlen(fh.title), title_utf, sizeof title_utf);
 
 	struct attach_link *attach_link_list = NULL;
 	char * mail_content_utf8 = parse_mail(ptr_info->userid, fh.filetime, mode, &attach_link_list);
@@ -520,9 +520,10 @@ static char * parse_mail(char * userid, int filetime, int mode, struct attach_li
 		if(strlen(mem_buf)==0) {
 			utf_content = strdup("");
 		} else {
-			utf_content = (char *)malloc(3*mem_buf_len);
-			memset(utf_content, 0, 3*mem_buf_len);
-			g2u(mem_buf, mem_buf_len, utf_content, 3*mem_buf_len);
+			const size_t utf_content_len = 3 * mem_buf_len;
+			utf_content = (char *) malloc(utf_content_len);
+			memset(utf_content, 0, utf_content_len);
+			g2u(mem_buf, mem_buf_len, utf_content, utf_content_len);
 		}
 	} else {
 		html_stream = open_memstream(&html_buf, &html_buf_len);
@@ -535,9 +536,10 @@ static char * parse_mail(char * userid, int filetime, int mode, struct attach_li
 		fflush(html_stream);
 		fclose(html_stream);
 
-		utf_content = (char*)malloc(3*html_buf_len);
-		memset(utf_content, 0, 3*html_buf_len);
-		g2u(html_buf, html_buf_len, utf_content, 3*html_buf_len);
+		const size_t utf_content_len = 3 * html_buf_len;
+		utf_content = (char*) malloc(utf_content_len);
+		memset(utf_content, 0, utf_content_len);
+		g2u(html_buf, html_buf_len, utf_content, utf_content_len);
 		free(html_buf);
 	}
 

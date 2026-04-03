@@ -26,13 +26,15 @@ static int add_notification(const char * to_userid, const char * from_userid, co
 		return -1;
 	}
 
-	char * title_utf8 = (char *)malloc(2*strlen(title_gbk));
+	const size_t title_gbk_len = strlen(title_gbk);
+	const size_t title_utf8_len = 2 * title_gbk_len;
+	char * title_utf8 = (char *)malloc(title_utf8_len);
 	if (title_utf8 == NULL) {
 		userunlock(to_userid, ulock);
 		return -1;
 	}
 
-	g2u(title_gbk, strlen(title_gbk), title_utf8, 2*strlen(title_gbk));
+	g2u(title_gbk, strlen(title_gbk), title_utf8, title_utf8_len);
 
 	char notify_file_path[80], article_id_str[16];
 	sethomefile_s(notify_file_path, sizeof(notify_file_path), to_userid, NOTIFILE);
