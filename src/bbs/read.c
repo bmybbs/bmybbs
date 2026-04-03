@@ -43,6 +43,7 @@
 #include "read.h"
 #include "bm.h"
 #include "bbs-internal.h"
+#include "ythtbbs/article.h"
 
 /*SREAD Define*/
 #define SR_BMBASE       (10)
@@ -334,7 +335,7 @@ void i_read(int cmdmode, char *direct, int (*dotitle) (), char *(*doentry) (int,
 	while (1) {
 		if (savet_lines != 0) {
 			quickviewdata.crs_line = locmem->crs_line;
-			quickviewdata.data = &pnt[(locmem->crs_line - locmem->top_line) * ssize];
+			quickviewdata.data = (struct fileheader *) &pnt[(locmem->crs_line - locmem->top_line) * ssize];
 			quickviewdata.currdirect = currdirect;
 			signal(SIGALRM, doquickview);
 			ualarm(300000, 0);
