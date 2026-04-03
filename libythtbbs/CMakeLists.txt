@@ -40,7 +40,6 @@ add_library(ythtbbs SHARED
 	msg.c
 	goodgbid.c
 	binaryattach.c
-	bbseva.c
 	attach.c
 	announce.c
 	board.c

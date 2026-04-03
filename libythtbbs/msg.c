@@ -234,12 +234,12 @@ get_msgcount(int id, char *uident)
 	int fd, count;
 	struct flock ldata;
 	struct stat buf;
-	char idname[10];
+	char idname[24];
 
 	if (id)
-		sprintf(idname, "msgindex%d", id + 1);
+		snprintf(idname, sizeof idname, "msgindex%d", id + 1);
 	else
-		strcpy(idname, "msgindex");
+		strncpy(idname, "msgindex", sizeof idname);
 	sethomefile_s(fname, sizeof(fname), uident, idname);
 
 	if ((fd = open(fname, O_RDONLY, 0664)) == -1) {
@@ -265,15 +265,15 @@ get_msgcount(int id, char *uident)
 int
 load_msghead(int id, char *uident, struct msghead *head, int index)
 {
-	char fname[STRLEN], idname[10];
+	char fname[STRLEN], idname[24];
 	int fd, count;
 	struct flock ldata;
 	struct stat buf;
 
 	if (id)
-		sprintf(idname, "msgindex%d", id + 1);
+		snprintf(idname, sizeof idname, "msgindex%d", id + 1);
 	else
-		strcpy(idname, "msgindex");
+		strncpy(idname, "msgindex", sizeof idname);
 	sethomefile_s(fname, sizeof(fname), uident, idname);
 
 	if ((fd = open(fname, O_RDONLY, 0664)) == -1) {

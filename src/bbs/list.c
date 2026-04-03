@@ -822,8 +822,7 @@ static int do_query(int star, int curr) {
 	return 0;
 }
 
-int t_friends(const char *s) {
-	(void) s;
+int t_friends() {
 	char buf[STRLEN];
 	user_record = malloc(sizeof (struct user_info *) * MAXACTIVE);
 

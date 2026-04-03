@@ -860,6 +860,12 @@ void prints(char *format, ...)
 }
 
 void
+prints_nofmt(const char *s)
+{
+	prints("%s", s);
+}
+
+void
 scroll()
 {
 	int ln;

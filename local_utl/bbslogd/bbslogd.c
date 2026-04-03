@@ -1,9 +1,20 @@
+#include <time.h>
+#include <stdio.h>
+#include <stddef.h>
+#include <netinet/in.h>
+#include <sys/file.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/msg.h>
 #include <signal.h>
-#include "bbs.h"
+#include "config.h"
 #include "3rd/uthash.h"
+#include "ytht/msg.h"
+#include "ytht/fileop.h"
+#include "ytht/strlib.h"
+#include "ytht/common.h"
 
 int
 init_bbslogmsq()
@@ -24,18 +35,21 @@ rcvlog(int msqid, int nowait)
 {
 	static char buf[1024];
 	struct mymsgbuf *msgp = (struct mymsgbuf *) buf;
+	char *payload = buf + offsetof(struct mymsgbuf, mtext);
+	size_t payload_len = sizeof(buf) - offsetof(struct mymsgbuf, mtext);
 	int retv;
-	retv = msgrcv(msqid, msgp, sizeof (buf) - sizeof (msgp->mtype) - 2, 0, (nowait ? IPC_NOWAIT : 0) | MSG_NOERROR);
+	memset(buf, 0, sizeof(buf));
+	retv = msgrcv(msqid, msgp, payload_len - 2, 0, (nowait ? IPC_NOWAIT : 0) | MSG_NOERROR);
 	while (retv > 0 && msgp->mtext[retv - 1] == 0)
 		retv--;
 	if (retv <= 0)
 		return NULL;
-	if (msgp->mtext[retv - 1] != '\n') {
-		msgp->mtext[retv] = '\n';
+	if (payload[retv - 1] != '\n') {
+		payload[retv] = '\n';
 		retv++;
 	}
-	msgp->mtext[retv] = 0;
-	return msgp->mtext;
+	payload[retv] = 0;
+	return payload;
 }
 
 char *
@@ -282,11 +296,13 @@ int n = 0;
 
 static void
 set_sync_flag(int signno){
+	(void) signno;
 	sync_flag = 1;
 }
 
 static void
 write_back_all(int signno) {
+	(void) signno;
 	if (fd >= 0)
 		write(fd, buf, n);
 	exit(0);

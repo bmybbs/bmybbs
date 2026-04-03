@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stddef.h>
 #include <time.h>
 #include <string.h>
 #include <sys/ipc.h>
@@ -27,13 +28,16 @@ void newtrace(const char *s) {
 	char *ptr;
 	struct tm *n;
 	struct mymsgbuf *msg = (struct mymsgbuf *) buf;
+	char *payload = buf + offsetof(struct mymsgbuf, mtext);
+	size_t payload_len = sizeof(buf) - offsetof(struct mymsgbuf, mtext);
+	memset(buf, 0, sizeof buf);
 	if (disable)
 		return;
 	time(&dtime);
 	n = localtime(&dtime);
 	sprintf(timestr, "%02d:%02d:%02d", n->tm_hour, n->tm_min, n->tm_sec);
-	snprintf(msg->mtext, sizeof (buf) - sizeof (msg->mtype), "%s %s\n", timestr, s);
-	ptr = msg->mtext;
+	snprintf(payload, payload_len, "%s %s\n", timestr, s);
+	ptr = payload;
 	while ((ptr = strchr(ptr, '\n'))) {
 		if (!ptr[1])
 			break;
@@ -47,7 +51,7 @@ void newtrace(const char *s) {
 			return;
 		}
 	}
-	msgsnd(msqid, msg, strlen(msg->mtext), IPC_NOWAIT | MSG_NOERROR);
+	msgsnd(msqid, msg, strlen(payload), IPC_NOWAIT | MSG_NOERROR);
 	return;
 }
 

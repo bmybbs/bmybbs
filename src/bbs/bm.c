@@ -68,7 +68,7 @@ int ischange, isglobal, isanony;
 	seek = seek_in_file(genbuf, uident);
 	if ((ischange && !seek) || (!ischange && seek)) {
 		move(2, 0);
-		prints("输入的ID不对!");
+		prints_nofmt("输入的ID不对!");
 		pressreturn();
 		return -1;
 	}
@@ -85,7 +85,7 @@ int ischange, isglobal, isanony;
 			continue;
 		if (!(currentuser.userlevel & PERM_SYSOP) && (!day || day > 20)) {
 			move(4, 0);
-			prints("超过权限,若需要,请联系站长!");
+			prints_nofmt("超过权限,若需要,请联系站长!");
 			pressreturn();
 		} else
 			break;
@@ -216,7 +216,7 @@ deny_user()
 //      ansimore(genbuf, YEA);
 	while (1) {
 		clear();
-		prints("设定无法 Post 的名单\n");
+		prints_nofmt("设定无法 Post 的名单\n");
 		if (isglobal)
 			strcpy(genbuf, "deny_users");
 		else
@@ -294,7 +294,7 @@ int clubnum;
 	if (clubnum == 0) {
 		if (!(id = getuser(uident))) {
 			move(3, 0);
-			prints("Invalid User Id");
+			prints_nofmt("Invalid User Id");
 			clrtoeol();
 			pressreturn();
 			clear();
@@ -304,7 +304,7 @@ int clubnum;
 		seek = seek_in_file(genbuf, uident);
 		if (seek) {
 			move(2, 0);
-			prints("输入的ID 已经存在!");
+			prints_nofmt("输入的ID 已经存在!");
 			pressreturn();
 			return -1;
 		}
@@ -341,7 +341,7 @@ char *uident;
 	int i;
 	if (!(id = getuser(uident))) {
 		move(3, 0);
-		prints("Invalid User Id");
+		prints_nofmt("Invalid User Id");
 		clrtoeol();
 		pressreturn();
 		clear();
@@ -374,7 +374,7 @@ clubmember()
 	ansimore(genbuf, YEA);
 	while (1) {
 		clear();
-		prints("设定俱乐部名单\n");
+		prints_nofmt("设定俱乐部名单\n");
 		setbfile(genbuf, sizeof(genbuf), currboard, "club_users");
 		count = listfilecontent(genbuf);
 		if (count)

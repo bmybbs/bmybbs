@@ -14,7 +14,6 @@
 #include "goodgbid.h"
 #include "binaryattach.h"
 #include "permissions.h"
-#include "bbseva.h"
 #include "attach.h"
 #include "announce.h"
 #include "board.h"
