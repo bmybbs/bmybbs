@@ -405,8 +405,10 @@ static int api_mail_do_post(ONION_FUNC_PROTO_STR, int mode)
 	while (strstr(data2, "[ESC]") != NULL)
 		data2 = string_replace(data2, "[ESC]", "\033");
 
-	char *data_gbk = (char *) malloc(strlen(data2) * 2);
-	u2g(data2, strlen(data2), data_gbk, strlen(data2) * 2);
+	const size_t data2_len = strlen(data2);
+	const size_t data_gbk_len = data2_len * 2;
+	char *data_gbk = (char *) malloc(data_gbk_len);
+	u2g(data2, data2_len, data_gbk, data_gbk_len);
 
 	f_write(filename, data_gbk);
 	free(data2);
@@ -417,8 +419,10 @@ static int api_mail_do_post(ONION_FUNC_PROTO_STR, int mode)
 
 	free(data_gbk);
 
-	char * title_tmp = (char *) malloc(strlen(title)*2);
-	u2g(title, strlen(title), title_tmp, strlen(title)*2);
+	const size_t title_len = strlen(title);
+	const size_t title_tmp_len = title_len * 2;
+	char * title_tmp = (char *) malloc(title_tmp_len);
+	u2g(title, title_len, title_tmp, title_tmp_len);
 	char title_gbk[80], title_tmp2[80];
 	strncpy(title_gbk, title_tmp[0]==0 ? "No Subject" : title_tmp, 80);
 	snprintf(title_tmp2, 80, "{%s} %s", to_user.userid, title);

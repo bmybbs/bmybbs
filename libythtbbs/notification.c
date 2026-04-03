@@ -311,7 +311,7 @@ static struct NotifyItem * parse_to_item(xmlNodePtr xmlItem) {
 		return NULL;
 	}
 	if(is_utf((char *)xml_str_title_utf8, title_len)) {
-		u2g((char *)xml_str_title_utf8, title_len, item->title_gbk, title_len);
+		u2g((char *)xml_str_title_utf8, title_len, item->title_gbk, title_len + 1);
 	} else {
 		strncpy(item->title_gbk, (const char *)xml_str_title_utf8, title_len);
 	}

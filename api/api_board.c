@@ -97,9 +97,9 @@ int api_board_info(ONION_FUNC_PROTO_STR)
 
 	char buf[512];
 	char zh_name[80], keyword[sizeof(bmem->header.keyword) * 2];//, type[16];
-	g2u(bmem->header.title, 24, zh_name, 80);
+	g2u(bmem->header.title, strlen(bmem->header.title), zh_name, sizeof zh_name);
 	bmem->header.keyword[sizeof(bmem->header.keyword) - 1] = 0;
-	g2u(bmem->header.keyword, sizeof(bmem->header.keyword), keyword, sizeof(keyword));
+	g2u(bmem->header.keyword, strlen(bmem->header.keyword), keyword, sizeof keyword);
 	//g2u(bmem->header.type, 5, type, 16);
 
 	int today_num=0, thread_num=0, i;
