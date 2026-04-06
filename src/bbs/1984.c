@@ -9,7 +9,6 @@
 #include "read.h"
 #include "sendmsg.h"
 #include "stuff.h"
-#include "bcache.h"
 #include "io.h"
 #include "one_key.h"
 #include "bbs_global_vars.h"
