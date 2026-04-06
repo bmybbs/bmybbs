@@ -1926,6 +1926,7 @@ out:
 
 static int add_anpath(const char *title, const char *path) {
 	char titles[20][STRLEN], paths[20][PATHLEN], *ptr;
+	char titlebuf[STRLEN], pathbuf[PATHLEN];
 	int i;
 	int index = 0, nindex = 0;
 	memset(titles, 0, sizeof(titles));
@@ -1971,13 +1972,16 @@ static int add_anpath(const char *title, const char *path) {
 			index = nindex;
 		}
 	}
-	if ((ptr = strchr(title, '\n')) != NULL)
+
+	ytht_strsncpy(titlebuf, title, sizeof titlebuf);
+	ytht_strsncpy(pathbuf, path, sizeof pathbuf);
+	if ((ptr = strchr(titlebuf, '\n')) != NULL)
 		*ptr = 0;
-	if ((ptr = strchr(path, '\n')) != NULL)
+	if ((ptr = strchr(pathbuf, '\n')) != NULL)
 		*ptr = 0;
-	strncpy(titles[index], title, sizeof (titles[index]));
+	strncpy(titles[index], titlebuf, sizeof (titles[index]));
 	titles[index][sizeof (titles[index]) - 1] = 0;
-	strncpy(paths[index], path, sizeof (paths[index]));
+	strncpy(paths[index], pathbuf, sizeof (paths[index]));
 	paths[index][sizeof (paths[index]) - 1] = 0;
 	move(t_lines - 22 + 1 + index, 0);
 	clrtoeol();
