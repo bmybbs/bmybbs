@@ -52,11 +52,7 @@ do1984title()
 	return 0;
 }
 
-static char *
-do1984doent(num, ent, buf)
-int num;
-struct fileheader *ent;
-char buf[512];
+static char *do1984doent(int num, struct fileheader *ent, char buf[512])
 {
 	char b2[512];
 	time_t filetime;
@@ -103,11 +99,7 @@ char buf[512];
 	return buf;
 }
 
-static int
-do1984_read(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+static int do1984_read(int ent, struct fileheader *fileinfo, char *direct)
 {
 	char notgenbuf[128];
 	int ch;
@@ -164,11 +156,7 @@ char *direct;
 	return FULLUPDATE;
 }
 
-static int
-do1984_done(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+static int do1984_done(int ent, struct fileheader *fileinfo, char *direct)
 {
 	if (fileinfo->accessed & FH_1984)
 		return (PARTUPDATE);
