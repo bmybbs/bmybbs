@@ -88,9 +88,7 @@ freeitem(MENU * me)
 	return;
 }
 
-int
-valid_fname(str)
-char *str;
+int valid_fname(char *str)
 {
 	char ch;
 
@@ -104,9 +102,7 @@ char *str;
 	return 1;
 }
 
-static void
-a_showmenu(pm)
-MENU *pm;
+static void a_showmenu(MENU *pm)
 {
 	struct stat st;
 	struct tm *pt;
@@ -244,9 +240,7 @@ static int countstr(const char *s0, const char *s1) {
 	return i;
 }
 
-static int
-a_loadnames(pm)
-MENU *pm;
+static int a_loadnames(MENU *pm)
 {
 	FILE *fn;
 	ITEM litem;
@@ -309,9 +303,7 @@ MENU *pm;
 	return 1;
 }
 
-static void
-a_savenames(pm)
-MENU *pm;
+static void a_savenames(MENU *pm)
 {
 	FILE *fn;
 	ITEM *item;
@@ -355,11 +347,7 @@ MENU *pm;
 	chmod(fpath, 0664);
 }
 
-void
-a_prompt(bot, pmt, buf, len)
-int bot;
-char *pmt, *buf;
-int len;
+void a_prompt(int bot, char *pmt, char *buf, int len)
 {
 	move(t_lines + bot, 0);
 	clrtoeol();
@@ -475,10 +463,7 @@ static int an_log(const char *action, const char *path) {
 }
 
 int
-a_Import(direct, fileinfo, nomsg)
-char *direct;
-struct fileheader *fileinfo;
-int nomsg;
+a_Import(char *direct, struct fileheader *fileinfo, int nomsg)
 {
 
 	char fname[STRLEN], *ip, bname[PATHLEN];
@@ -562,10 +547,7 @@ int nomsg;
 	return 1;
 }
 
-static void
-a_search(pm, offset)
-MENU *pm;
-int offset;
+static void a_search(MENU *pm, int offset)
 {
 	int i;
 	static char title[STRLEN];
@@ -631,11 +613,7 @@ int a_menusearch(char *key, int level) {
 	return 0;
 }
 
-static void
-a_forward(path, pitem, mode)
-char *path;
-ITEM *pitem;
-int mode;
+static void a_forward(char *path, ITEM *pitem, int mode)
 {
 	char fname[PATHLEN], *mesg;
 
@@ -662,10 +640,7 @@ int mode;
 	pressanykey();
 }
 
-static void
-a_newitem(pm, mode)
-MENU *pm;
-int mode;
+static void a_newitem(MENU *pm, int mode)
 {
 	char uident[STRLEN];
 	char board[STRLEN], title[STRLEN];
@@ -812,10 +787,13 @@ static void a_delete(MENU *, int);
 static int a_repair(MENU *);
 static int a_rjunk(MENU *);
 
-static void
-a_copypaste(pm, paste)
-MENU *pm;
-int paste;			// -1:cut 0:copy have perm 1:paste 2:copy have no perm
+/**
+ * @param paste -1:cut
+ *               0:copy have perm
+ *               1:paste
+ *               2:copy have no perm
+ */
+static void a_copypaste(MENU *pm, int paste)
 {
 	char title[STRLEN], filename[STRLEN], fpath[PATHLEN];
 	ITEM *item;
@@ -997,10 +975,7 @@ int paste;			// -1:cut 0:copy have perm 1:paste 2:copy have no perm
 	pm->page = 9999;
 }
 
-static void
-a_delete(pm, mode)
-MENU *pm;
-int mode;
+static void a_delete(MENU *pm, int mode)
 {
 	ITEM *item;
 	char fpath[PATHLEN];
@@ -1054,9 +1029,7 @@ a_changemtitle(char *fpath, char *newmtitle)
 	return 0;
 }
 
-static void
-a_newname(pm)
-MENU *pm;
+static void a_newname(MENU *pm)
 {
 	ITEM *item;
 	char fname[STRLEN];
@@ -1087,10 +1060,7 @@ MENU *pm;
 	egetch();
 }
 
-static void
-a_manager(pm, ch)
-MENU *pm;
-int ch;
+static void a_manager(MENU *pm, int ch)
 {
 	char uident[STRLEN];
 	ITEM *item = NULL;
@@ -1272,10 +1242,7 @@ int ch;
 	modify_user_mode(DIGEST);
 }
 
-void
-a_menu(maintitle, path, lastlevel, lastbmonly)
-char *maintitle, *path;
-int lastlevel, lastbmonly;
+void a_menu(char *maintitle, char *path, int lastlevel, int lastbmonly)
 {
 	MENU me;
 	char fname[PATHLEN], tmp[STRLEN];
@@ -1628,9 +1595,7 @@ void linkto(const char *path, const char *fname, const char *title) {
 	freeitem(&pm);
 }
 
-int
-add_grp(group, gname, bname, title)
-char group[STRLEN], bname[STRLEN], title[STRLEN], gname[STRLEN];
+int add_grp(char group[STRLEN], char gname[STRLEN], char bname[STRLEN], char title[STRLEN])
 {
 	FILE *fn;
 	char buf[PATHLEN];
@@ -1681,9 +1646,7 @@ char group[STRLEN], bname[STRLEN], title[STRLEN], gname[STRLEN];
 
 }
 
-int
-del_grp(grp, bname, title)
-char grp[STRLEN], bname[STRLEN], title[STRLEN];
+int del_grp(char grp[STRLEN], char bname[STRLEN], char title[STRLEN])
 {
 	char buf[STRLEN], buf2[STRLEN], buf3[30];
 	char gpath[STRLEN * 2];
@@ -1719,9 +1682,7 @@ char grp[STRLEN], bname[STRLEN], title[STRLEN];
 	return 0;
 }
 
-int
-edit_grp(bname, grp, title, newtitle)
-char bname[STRLEN], grp[STRLEN], title[STRLEN], newtitle[100];
+int edit_grp(char bname[STRLEN], char grp[STRLEN], char title[STRLEN], char newtitle[100])
 {
 	char buf[STRLEN], buf2[STRLEN], buf3[30];
 	char gpath[STRLEN * 2];
@@ -1891,9 +1852,7 @@ static int getvisit(int n[2], const char *path) {
 
 /* 下面的函数a_repair用来收集丢失的条目, 把它们放进精华区的目录中  by ylsdd*/
 
-static int
-a_repair(pm)
-MENU *pm;
+static int a_repair(MENU *pm)
 {
 	DIR *dirp;
 	struct dirent *direntp;
@@ -1926,9 +1885,7 @@ MENU *pm;
 
 /* 下面的函数a_rjunk用来恢复从精华区中删除的目录或者文章,把它们放进精华区的目录中  by lepton*/
 
-static int
-a_rjunk(pm)
-MENU *pm;
+static int a_rjunk(MENU *pm)
 {
 	DIR *dirp;
 	struct dirent *direntp;
