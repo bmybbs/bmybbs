@@ -49,7 +49,7 @@
 #define ADDMAIL         2
 #define ADDGOPHER       3
 
-void a_menu();
+void a_menu(char *maintitle, char *path, int lastlevel, int lastbmonly);
 static int read_anpath(char titles[20][STRLEN], char paths[20][PATHLEN]);
 static int save_anpath(char titles[20][STRLEN], char paths[20][PATHLEN]);
 static int logvisit(time_t timein, const char *path);
@@ -58,7 +58,7 @@ static int countstr(const char *s0, const char *s1);
 static int getvisit(int n[2], const char *path);
 static int add_anpath(const char *title, const char *path);
 
-extern void a_prompt();		/* added by netty */
+extern void a_prompt(int bot, char *pmt, char *buf, int len);		/* added by netty */
 extern int can_R_endline;
 typedef struct {
 	char title[72];
