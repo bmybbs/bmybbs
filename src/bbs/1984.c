@@ -1,6 +1,7 @@
 //copy by lepton from backnumber.c writen by ecnegrevid, 2002.9.30
 #include "bbs.h"
 
+#include "config.h"
 #include "main.h"
 #include "smth_screen.h"
 #include "bbsinc.h"
@@ -9,7 +10,6 @@
 #include "read.h"
 #include "sendmsg.h"
 #include "stuff.h"
-#include "bcache.h"
 #include "io.h"
 #include "one_key.h"
 #include "bbs_global_vars.h"
@@ -18,8 +18,8 @@
 static char boarddir1984[STRLEN * 2];
 static int do1984title(void);
 static char *do1984doent(int num, struct fileheader *ent, char buf[512]);
-static int do1984_read(int ent, struct fileheader *fileinfo, char *direct);
-static int do1984_done(int ent, struct fileheader *fileinfo, char *direct);
+static int do1984_read(int, void *, char *);
+static int do1984_done(int, void *, char *);
 static int gettarget_board_title(char *board, char *title, char *filename);
 static int do1984(time_t dtime, int mode);
 static void post_1984_to_board(char *dir, struct fileheader *fileinfo);
@@ -52,11 +52,7 @@ do1984title()
 	return 0;
 }
 
-static char *
-do1984doent(num, ent, buf)
-int num;
-struct fileheader *ent;
-char buf[512];
+static char *do1984doent(int num, struct fileheader *ent, char buf[512])
 {
 	char b2[512];
 	time_t filetime;
@@ -103,12 +99,9 @@ char buf[512];
 	return buf;
 }
 
-static int
-do1984_read(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+static int do1984_read(int ent, void *record, char *direct)
 {
+	struct fileheader *fileinfo = record;
 	char notgenbuf[128];
 	int ch;
 
@@ -164,18 +157,16 @@ char *direct;
 	return FULLUPDATE;
 }
 
-static int
-do1984_done(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+static int do1984_done(int ent, void *record, char *direct)
 {
+	char titlebuf[60 /* see fileheader.title */];
+	struct fileheader *fileinfo = record;
 	if (fileinfo->accessed & FH_1984)
 		return (PARTUPDATE);
 	post_1984_to_board(direct, fileinfo);
 	fileinfo->accessed |= FH_1984;
-	sprintf(fileinfo->title, "%-32.32s - %s", fileinfo->title,
-		currentuser.userid);
+	snprintf(titlebuf, sizeof titlebuf, "%-32.32s - %s", fileinfo->title, currentuser.userid);
+	ytht_strsncpy(fileinfo->title, titlebuf, sizeof(fileinfo->title));
 	substitute_record(direct, fileinfo, sizeof (*fileinfo), ent);
 	return (PARTUPDATE);
 }
@@ -305,8 +296,9 @@ post_1984_to_board(char *dir, struct fileheader *fileinfo)
 void
 post_to_1984(char *file, struct fileheader *fileinfo, int mode)
 {
-	char buf[STRLEN * 2];
-	char newfilepath[STRLEN], newfname[STRLEN];
+	char buf[40];
+	char dotbuf[48];
+	char newfilepath[STRLEN], newfname[24];
 	struct fileheader postfile;
 	time_t now;
 	int count;
@@ -315,7 +307,7 @@ post_to_1984(char *file, struct fileheader *fileinfo, int mode)
 	now = time(NULL);
 	if (0 == mode) {
 		n = localtime(&now);
-		sprintf(buf, "boards/.1984/%04d%02d%02d", n->tm_year + 1900,
+		snprintf(buf, sizeof buf, "boards/.1984/%04d%02d%02d", n->tm_year + 1900,
 			n->tm_mon + 1, n->tm_mday);
 	} else if (1 == mode) {
 		sprintf(buf, "boards/.1985");
@@ -339,17 +331,21 @@ post_to_1984(char *file, struct fileheader *fileinfo, int mode)
 		if (count++ > MAX_POSTRETRY)
 			break;
 	}
-	strcat(buf, "/" DOT_DIR);
-	if (append_record(buf, &postfile, sizeof (postfile)) == -1) {
+	snprintf(dotbuf, sizeof dotbuf, "%s/%s", buf, DOT_DIR);
+	if (append_record(dotbuf, &postfile, sizeof (postfile)) == -1) {
 		errlog("post1984 '%s' on '%s': append_record failed!", postfile.title, currboard);
 		pressreturn();
 		return;
 	}
 	switch (mode) {
 	case 0:
+		// NOTE: board tochecktoday needs to be created first
 		ythtbbs_cache_Board_updatelastpost("tochecktoday");
+		break;
 	case 1:
+		// NOTE: board delete4request needs to be created first
 		ythtbbs_cache_Board_updatelastpost("delete4request");
+		break;
 	default:
 		break;
 	}

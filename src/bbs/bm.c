@@ -46,11 +46,7 @@ static int deldeny(char *uident, int isglobal, int isanony);
 static int delclubmember(char *uident);
 static int deny_notice(int action, char *user, int isglobal, int isanony, char *msgbuf);
 
-static int
-addtodeny(uident, msg, ischange, isglobal, isanony)
-char *uident;
-char *msg;
-int ischange, isglobal, isanony;
+static int addtodeny(char *uident, char *msg, int ischange, int isglobal, int isanony)
 {
 	char buf[50], strtosave[256];
 	char buf2[50];
@@ -68,24 +64,29 @@ int ischange, isglobal, isanony;
 	seek = seek_in_file(genbuf, uident);
 	if ((ischange && !seek) || (!ischange && seek)) {
 		move(2, 0);
-		prints_nofmt("ÊäÈëµÄID²»¶Ô!");
+		// è¾“å…¥çš„IDä¸å¯¹!
+		prints_nofmt("\xCA\xE4\xC8\xEB\xB5\xC4" "ID" "\xB2\xBB\xB6\xD4" "!");
 		pressreturn();
 		return -1;
 	}
 	buf[0] = 0;
 	move(2, 0);
-	prints("·â½û¶ÔÏó£º%s", (isanony) ? "Anonymous" : uident);
+	// å°ç¦å¯¹è±¡ï¼š%s
+	prints("\xB7\xE2\xBD\xFB\xB6\xD4\xCF\xF3\xA3\xBA" "%s", (isanony) ? "Anonymous" : uident);
 	while (strlen(buf) < 4)
-		getdata(3, 0, "ÊäÈëËµÃ÷(ÖÁÉÙÁ½×Ö): ", buf, 40, DOECHO, YEA);
+		// è¾“å…¥è¯´æ˜(è‡³å°‘ä¸¤å­—):
+		getdata(3, 0, "\xCA\xE4\xC8\xEB\xCB\xB5\xC3\xF7" "(" "\xD6\xC1\xC9\xD9\xC1\xBD\xD7\xD6" "): ", buf, 40, DOECHO, YEA);
 
 	do {
-		getdata(4, 0, "ÊäÈëÌìÊı(0-ÊÖ¶¯½â·â): ", buf2, 4, DOECHO, YEA);
+		// è¾“å…¥å¤©æ•°(0-æ‰‹åŠ¨è§£å°):
+		getdata(4, 0, "\xCA\xE4\xC8\xEB\xCC\xEC\xCA\xFD" "(0-" "\xCA\xD6\xB6\xAF\xBD\xE2\xB7\xE2" "): ", buf2, 4, DOECHO, YEA);
 		day = atoi(buf2);
 		if (day < 0)
 			continue;
 		if (!(currentuser.userlevel & PERM_SYSOP) && (!day || day > 20)) {
 			move(4, 0);
-			prints_nofmt("³¬¹ıÈ¨ÏŞ,ÈôĞèÒª,ÇëÁªÏµÕ¾³¤!");
+			// è¶…è¿‡æƒé™,è‹¥éœ€è¦,è¯·è”ç³»ç«™é•¿!
+			prints_nofmt("\xB3\xAC\xB9\xFD\xC8\xA8\xCF\xDE" "," "\xC8\xF4\xD0\xE8\xD2\xAA" "," "\xC7\xEB\xC1\xAA\xCF\xB5\xD5\xBE\xB3\xA4" "!");
 			pressreturn();
 		} else
 			break;
@@ -99,65 +100,97 @@ int ischange, isglobal, isanony;
 		time_t undenytime = nowtime + day * 24 * 60 * 60;
 		//tmtime = gmtime(&daytime); by bjgyt
 		tmtime = gmtime(&undenytime);
-		sprintf(strtosave, "%-12s %-40s %2dÔÂ%2dÈÕ½â \x1b[%ldm", uident,
+		// %-12s %-40s %2dæœˆ%2dæ—¥è§£ \x1b[%ldm
+		sprintf(strtosave, "%-12s %-40s %2d" "\xD4\xC2" "%2d" "\xC8\xD5\xBD\xE2" " \x1b[%ldm", uident,
 			buf, tmtime->tm_mon + 1, tmtime->tm_mday,
 			(long int) undenytime);
 		//modified by pzhg
 		if (currentuser.userlevel & PERM_SPECIAL5) {
 			if (isglobal)
 				sprintf(msg,
-						"·âÈËÔ­Òò: %s\n±»·âÌìÊı: %d%s\n½â·âÈÕÆÚ: %dÔÂ%dÈÕ\n"
-						"±¾Õ¾²»½ÓÊÜ¶Ô´Ë·â½ûµÄĞéÄâÍ¶Ëß\n", buf, day,
-						"(È«Õ¾)" , tmtime->tm_mon + 1,
+						// å°äººåŸå› : %s\nè¢«å°å¤©æ•°: %d%s\nè§£å°æ—¥æœŸ: %dæœˆ%dæ—¥\n
+						"\xB7\xE2\xC8\xCB\xD4\xAD\xD2\xF2" ": %s\n" "\xB1\xBB\xB7\xE2\xCC\xEC\xCA\xFD" ": %d%s\n" "\xBD\xE2\xB7\xE2\xC8\xD5\xC6\xDA" ": %d" "\xD4\xC2" "%d" "\xC8\xD5" "\n"
+						// æœ¬ç«™ä¸æ¥å—å¯¹æ­¤å°ç¦çš„è™šæ‹ŸæŠ•è¯‰\n
+						"\xB1\xBE\xD5\xBE\xB2\xBB\xBD\xD3\xCA\xDC\xB6\xD4\xB4\xCB\xB7\xE2\xBD\xFB\xB5\xC4\xD0\xE9\xC4\xE2\xCD\xB6\xCB\xDF" "\n", buf, day,
+						// (å…¨ç«™)
+						"(" "\xC8\xAB\xD5\xBE" ")" , tmtime->tm_mon + 1,
 						tmtime->tm_mday);
 			else
 				sprintf(msg,
-						"·âÈËÔ­Òò: %s\n±»·âÌìÊı: %d%s\n½â·âÈÕÆÚ: %dÔÂ%dÈÕ\n"
-						"±¾Õ¾²»½ÓÊÜ¶Ô´Ë·â½ûµÄĞéÄâÍ¶Ëß\n", buf, day,
-						isglobal ? "(È«Õ¾)" : "", tmtime->tm_mon + 1,
+						// å°äººåŸå› : %s\nè¢«å°å¤©æ•°: %d%s\nè§£å°æ—¥æœŸ: %dæœˆ%dæ—¥\n
+						"\xB7\xE2\xC8\xCB\xD4\xAD\xD2\xF2" ": %s\n" "\xB1\xBB\xB7\xE2\xCC\xEC\xCA\xFD" ": %d%s\n" "\xBD\xE2\xB7\xE2\xC8\xD5\xC6\xDA" ": %d" "\xD4\xC2" "%d" "\xC8\xD5" "\n"
+						// æœ¬ç«™ä¸æ¥å—å¯¹æ­¤å°ç¦çš„è™šæ‹ŸæŠ•è¯‰\n
+						"\xB1\xBE\xD5\xBE\xB2\xBB\xBD\xD3\xCA\xDC\xB6\xD4\xB4\xCB\xB7\xE2\xBD\xFB\xB5\xC4\xD0\xE9\xC4\xE2\xCD\xB6\xCB\xDF" "\n", buf, day,
+						// (å…¨ç«™)
+						isglobal ? "(" "\xC8\xAB\xD5\xBE" ")" : "", tmtime->tm_mon + 1,
 						tmtime->tm_mday);
 		}
 		else if(isglobal || day>20)
 		sprintf(msg,
-				"·âÈËÔ­Òò: %s\n±»·âÌìÊı: %d%s\n½â·âÈÕÆÚ: %dÔÂ%dÈÕ\n"
-				"ÈçÓĞÒìÒé£¬¿ÉÏò%sÌá³ö£¬»òµ½ committee °æÍ¶Ëß\n", buf, day,
-				"(È«Õ¾)" , tmtime->tm_mon + 1,
-				tmtime->tm_mday, "Õ¾Îñ");
+				// å°äººåŸå› : %s\nè¢«å°å¤©æ•°: %d%s\nè§£å°æ—¥æœŸ: %dæœˆ%dæ—¥\n
+				"\xB7\xE2\xC8\xCB\xD4\xAD\xD2\xF2" ": %s\n" "\xB1\xBB\xB7\xE2\xCC\xEC\xCA\xFD" ": %d%s\n" "\xBD\xE2\xB7\xE2\xC8\xD5\xC6\xDA" ": %d" "\xD4\xC2" "%d" "\xC8\xD5" "\n"
+				// å¦‚æœ‰å¼‚è®®ï¼Œå¯å‘%sæå‡ºï¼Œæˆ–åˆ° committee ç‰ˆæŠ•è¯‰\n
+				"\xC8\xE7\xD3\xD0\xD2\xEC\xD2\xE9\xA3\xAC\xBF\xC9\xCF\xF2" "%s" "\xCC\xE1\xB3\xF6\xA3\xAC\xBB\xF2\xB5\xBD" " committee " "\xB0\xE6\xCD\xB6\xCB\xDF" "\n", buf, day,
+				// (å…¨ç«™)
+				"(" "\xC8\xAB\xD5\xBE" ")" , tmtime->tm_mon + 1,
+				// ç«™åŠ¡
+				tmtime->tm_mday, "\xD5\xBE\xCE\xF1");
 		else {
 			if (seek_in_file(MY_BBS_HOME"/etc/sysboards",currboard)) {
 				sprintf(msg,
-						"·âÈËÔ­Òò: %s\n±»·âÌìÊı: %d%s\n½â·âÈÕÆÚ: %dÔÂ%dÈÕ\n"
-						"ÈçÓĞÒìÒé£¬¿ÉÏò%sÌá³ö£¬»òµ½ committee °æÍ¶Ëß\n", buf, day,
-						isglobal ? "(È«Õ¾)" : "", tmtime->tm_mon + 1,
-						tmtime->tm_mday, "Õ¾Îñ" );
+						// å°äººåŸå› : %s\nè¢«å°å¤©æ•°: %d%s\nè§£å°æ—¥æœŸ: %dæœˆ%dæ—¥\n
+						"\xB7\xE2\xC8\xCB\xD4\xAD\xD2\xF2" ": %s\n" "\xB1\xBB\xB7\xE2\xCC\xEC\xCA\xFD" ": %d%s\n" "\xBD\xE2\xB7\xE2\xC8\xD5\xC6\xDA" ": %d" "\xD4\xC2" "%d" "\xC8\xD5" "\n"
+						// å¦‚æœ‰å¼‚è®®ï¼Œå¯å‘%sæå‡ºï¼Œæˆ–åˆ° committee ç‰ˆæŠ•è¯‰\n
+						"\xC8\xE7\xD3\xD0\xD2\xEC\xD2\xE9\xA3\xAC\xBF\xC9\xCF\xF2" "%s" "\xCC\xE1\xB3\xF6\xA3\xAC\xBB\xF2\xB5\xBD" " committee " "\xB0\xE6\xCD\xB6\xCB\xDF" "\n", buf, day,
+						// (å…¨ç«™)
+						isglobal ? "(" "\xC8\xAB\xD5\xBE" ")" : "", tmtime->tm_mon + 1,
+						// ç«™åŠ¡
+						tmtime->tm_mday, "\xD5\xBE\xCE\xF1" );
 			}
 			else {
 				sprintf(msg,
-					"·âÈËÔ­Òò: %s\n±»·âÌìÊı: %d%s\n½â·âÈÕÆÚ: %dÔÂ%dÈÕ\n"
-					"ÈçÓĞÒìÒé£¬¿ÉÏò%sÌá³ö£¬»òµ½ committee °æÍ¶Ëß\n", buf, day,	// Ô­À´ÊÇÈ¥ Appeal
-					isglobal ? "(È«Õ¾)" : "", tmtime->tm_mon + 1,
-					tmtime->tm_mday, isglobal ? "Õ¾Îñ" : "°æÖ÷");
+					// å°äººåŸå› : %s\nè¢«å°å¤©æ•°: %d%s\nè§£å°æ—¥æœŸ: %dæœˆ%dæ—¥\n
+					"\xB7\xE2\xC8\xCB\xD4\xAD\xD2\xF2" ": %s\n" "\xB1\xBB\xB7\xE2\xCC\xEC\xCA\xFD" ": %d%s\n" "\xBD\xE2\xB7\xE2\xC8\xD5\xC6\xDA" ": %d" "\xD4\xC2" "%d" "\xC8\xD5" "\n"
+					// å¦‚æœ‰å¼‚è®®ï¼Œå¯å‘%sæå‡ºï¼Œæˆ–åˆ° committee ç‰ˆæŠ•è¯‰\n
+					"\xC8\xE7\xD3\xD0\xD2\xEC\xD2\xE9\xA3\xAC\xBF\xC9\xCF\xF2" "%s" "\xCC\xE1\xB3\xF6\xA3\xAC\xBB\xF2\xB5\xBD" " committee " "\xB0\xE6\xCD\xB6\xCB\xDF" "\n", buf, day,	// åŸæ¥æ˜¯å» Appeal
+					// (å…¨ç«™)
+					isglobal ? "(" "\xC8\xAB\xD5\xBE" ")" : "", tmtime->tm_mon + 1,
+					// ç«™åŠ¡
+					// ç‰ˆä¸»
+					tmtime->tm_mday, isglobal ? "\xD5\xBE\xCE\xF1" : "\xB0\xE6\xD6\xF7");
 			}
 		}
 	} else {
 		if (currentuser.userlevel & PERM_SPECIAL5) {
-			sprintf(strtosave, "%-12s %-35s ÊÖ¶¯½â·â", uident, buf);
-			sprintf(msg, "·âÈËÔ­Òò: %s\n±»·âÌìÊı: ÊÖ¶¯½â·â%s\n"
-				"±¾Õ¾²»½ÓÊÜ¶Ô´Ë·â½ûµÄĞéÄâÍ¶Ëß\n",
-				buf, isglobal ? "(È«Õ¾)" : "");
+			// %-12s %-35s æ‰‹åŠ¨è§£å°
+			sprintf(strtosave, "%-12s %-35s " "\xCA\xD6\xB6\xAF\xBD\xE2\xB7\xE2", uident, buf);
+			// å°äººåŸå› : %s\nè¢«å°å¤©æ•°: æ‰‹åŠ¨è§£å°%s\n
+			sprintf(msg, "\xB7\xE2\xC8\xCB\xD4\xAD\xD2\xF2" ": %s\n" "\xB1\xBB\xB7\xE2\xCC\xEC\xCA\xFD" ": " "\xCA\xD6\xB6\xAF\xBD\xE2\xB7\xE2" "%s\n"
+				// æœ¬ç«™ä¸æ¥å—å¯¹æ­¤å°ç¦çš„è™šæ‹ŸæŠ•è¯‰\n
+				"\xB1\xBE\xD5\xBE\xB2\xBB\xBD\xD3\xCA\xDC\xB6\xD4\xB4\xCB\xB7\xE2\xBD\xFB\xB5\xC4\xD0\xE9\xC4\xE2\xCD\xB6\xCB\xDF" "\n",
+				// (å…¨ç«™)
+				buf, isglobal ? "(" "\xC8\xAB\xD5\xBE" ")" : "");
 		}
 		else {
-			sprintf(strtosave, "%-12s %-35s ÊÖ¶¯½â·â", uident, buf);
-			sprintf(msg, "·âÈËÔ­Òò: %s\n±»·âÌìÊı: ÊÖ¶¯½â·â%s\n"
-				"ÈçÓĞÒìÒé£¬¿ÉÏò%sÌá³ö£¬»òµ½ committee °æÍ¶Ëß\n",
-				buf, isglobal ? "(È«Õ¾)" : "",
-				isglobal ? "Õ¾Îñ" : "°æÖ÷");
+			// %-12s %-35s æ‰‹åŠ¨è§£å°
+			sprintf(strtosave, "%-12s %-35s " "\xCA\xD6\xB6\xAF\xBD\xE2\xB7\xE2", uident, buf);
+			// å°äººåŸå› : %s\nè¢«å°å¤©æ•°: æ‰‹åŠ¨è§£å°%s\n
+			sprintf(msg, "\xB7\xE2\xC8\xCB\xD4\xAD\xD2\xF2" ": %s\n" "\xB1\xBB\xB7\xE2\xCC\xEC\xCA\xFD" ": " "\xCA\xD6\xB6\xAF\xBD\xE2\xB7\xE2" "%s\n"
+				// å¦‚æœ‰å¼‚è®®ï¼Œå¯å‘%sæå‡ºï¼Œæˆ–åˆ° committee ç‰ˆæŠ•è¯‰\n
+				"\xC8\xE7\xD3\xD0\xD2\xEC\xD2\xE9\xA3\xAC\xBF\xC9\xCF\xF2" "%s" "\xCC\xE1\xB3\xF6\xA3\xAC\xBB\xF2\xB5\xBD" " committee " "\xB0\xE6\xCD\xB6\xCB\xDF" "\n",
+				// (å…¨ç«™)
+				buf, isglobal ? "(" "\xC8\xAB\xD5\xBE" ")" : "",
+				// ç«™åŠ¡
+				// ç‰ˆä¸»
+				isglobal ? "\xD5\xBE\xCE\xF1" : "\xB0\xE6\xD6\xF7");
 		}
 	}
 	if (ischange)
-		getdata(5, 0, "ÕæµÄÒª¸Ä±äÃ´?[Y/N]: ", ans, 7, DOECHO, YEA);
+		// çœŸçš„è¦æ”¹å˜ä¹ˆ?[Y/N]:
+		getdata(5, 0, "\xD5\xE6\xB5\xC4\xD2\xAA\xB8\xC4\xB1\xE4\xC3\xB4" "?[Y/N]: ", ans, 7, DOECHO, YEA);
 	else
-		getdata(5, 0, "ÕæµÄÒª·âÃ´?[Y/N]: ", ans, 7, DOECHO, YEA);
+		// çœŸçš„è¦å°ä¹ˆ?[Y/N]:
+		getdata(5, 0, "\xD5\xE6\xB5\xC4\xD2\xAA\xB7\xE2\xC3\xB4" "?[Y/N]: ", ans, 7, DOECHO, YEA);
 	if ((*ans != 'Y') && (*ans != 'y'))
 		return -1;
 	if (ischange)
@@ -171,11 +204,7 @@ int ischange, isglobal, isanony;
 	return ytht_add_to_file(genbuf, strtosave);
 }
 
-static int
-deldeny(uident, isglobal, isanony)
-char *uident;
-int isglobal;
-int isanony;
+static int deldeny(char *uident, int isglobal, int isanony)
 {
 	char fn[STRLEN];
 
@@ -202,7 +231,8 @@ deny_user()
 
 	if (!strcmp(currboard, "sysop")) {
 		getdata(0, 0,
-			"Éè¶¨ÄÄ¸öÎŞ·¨ Post µÄÃûµ¥£¿(A) sysop°æ (B) ÏµÍ³ (E)Àë¿ª [E]:",
+			// è®¾å®šå“ªä¸ªæ— æ³• Post çš„åå•ï¼Ÿ(A) sysopç‰ˆ (B) ç³»ç»Ÿ (E)ç¦»å¼€ [E]:
+			"\xC9\xE8\xB6\xA8\xC4\xC4\xB8\xF6\xCE\xDE\xB7\xA8" " Post " "\xB5\xC4\xC3\xFB\xB5\xA5\xA3\xBF" "(A) sysop" "\xB0\xE6" " (B) " "\xCF\xB5\xCD\xB3" " (E)" "\xC0\xEB\xBF\xAA" " [E]:",
 			ans, 7, DOECHO, YEA);
 		if (!strchr("AaBb", *ans))
 			return FULLUPDATE;
@@ -216,7 +246,8 @@ deny_user()
 //      ansimore(genbuf, YEA);
 	while (1) {
 		clear();
-		prints_nofmt("Éè¶¨ÎŞ·¨ Post µÄÃûµ¥\n");
+		// è®¾å®šæ— æ³• Post çš„åå•\n
+		prints_nofmt("\xC9\xE8\xB6\xA8\xCE\xDE\xB7\xA8" " Post " "\xB5\xC4\xC3\xFB\xB5\xA5" "\n");
 		if (isglobal)
 			strcpy(genbuf, "deny_users");
 		else
@@ -224,21 +255,25 @@ deny_user()
 		count = listfilecontent(genbuf);
 		if (count)
 			getdata(1, 0,
-				"(A)Ôö¼Ó (D)É¾³ı (C)¸Ä±ä or (E)Àë¿ª [E]: ", ans,
+				// (A)å¢åŠ  (D)åˆ é™¤ (C)æ”¹å˜ or (E)ç¦»å¼€ [E]:
+				"(A)" "\xD4\xF6\xBC\xD3" " (D)" "\xC9\xBE\xB3\xFD" " (C)" "\xB8\xC4\xB1\xE4" " or (E)" "\xC0\xEB\xBF\xAA" " [E]: ", ans,
 				7, DOECHO, YEA);
 		else
-			getdata(1, 0, "(A)Ôö¼Ó or (E)Àë¿ª [E]: ", ans, 7,
+			// (A)å¢åŠ  or (E)ç¦»å¼€ [E]:
+			getdata(1, 0, "(A)" "\xD4\xF6\xBC\xD3" " or (E)" "\xC0\xEB\xBF\xAA" " [E]: ", ans, 7,
 				DOECHO, YEA);
 		if (*ans == 'A' || *ans == 'a') {
 			move(1, 0);
 			if (isglobal)
-				usercomplete("Ôö¼ÓÎŞ·¨ POST µÄÊ¹ÓÃÕß: ", uident);
+				// å¢åŠ æ— æ³• POST çš„ä½¿ç”¨è€…:
+				usercomplete("\xD4\xF6\xBC\xD3\xCE\xDE\xB7\xA8" " POST " "\xB5\xC4\xCA\xB9\xD3\xC3\xD5\xDF" ": ", uident);
 			else {
 				int canpost = 0;
 				while (!canpost) {
 					move(1, 0);
 					clrtoeol();
-					usercomplete("Ôö¼ÓÎŞ·¨ POST µÄÊ¹ÓÃÕß£º", uident);
+					// å¢åŠ æ— æ³• POST çš„ä½¿ç”¨è€…ï¼š
+					usercomplete("\xD4\xF6\xBC\xD3\xCE\xDE\xB7\xA8" " POST " "\xB5\xC4\xCA\xB9\xD3\xC3\xD5\xDF\xA3\xBA", uident);
 					if (*uident == '\0')
 						break;
 					canpost = posttest(uident, currboard);
@@ -256,7 +291,8 @@ deny_user()
 			}
 		} else if ((*ans == 'C' || *ans == 'c')) {
 			move(1, 0);
-			usercomplete("¸Ä±äË­µÄ·â½ûÊ±¼ä»òËµÃ÷: ", uident);
+			// æ”¹å˜è°çš„å°ç¦æ—¶é—´æˆ–è¯´æ˜:
+			usercomplete("\xB8\xC4\xB1\xE4\xCB\xAD\xB5\xC4\xB7\xE2\xBD\xFB\xCA\xB1\xBC\xE4\xBB\xF2\xCB\xB5\xC3\xF7" ": ", uident);
 			if (*uident != '\0') {
 				if (addtodeny(uident, msgbuf, 1, isglobal, 0) == 1) {
 					deny_notice(CHANGEDENY, uident, isglobal, 0, msgbuf);
@@ -264,7 +300,8 @@ deny_user()
 			}
 		} else if ((*ans == 'D' || *ans == 'd') && count) {
 			move(1, 0);
-			namecomplete("É¾³ıÎŞ·¨ POST µÄÊ¹ÓÃÕß: ", uident);
+			// åˆ é™¤æ— æ³• POST çš„ä½¿ç”¨è€…:
+			namecomplete("\xC9\xBE\xB3\xFD\xCE\xDE\xB7\xA8" " POST " "\xB5\xC4\xCA\xB9\xD3\xC3\xD5\xDF" ": ", uident);
 			move(1, 0);
 			clrtoeol();
 			if (uident[0] != '\0') {
@@ -280,10 +317,7 @@ deny_user()
 	return FULLUPDATE;
 }
 
-int
-addclubmember(uident, clubnum)
-char *uident;
-int clubnum;
+int addclubmember(char *uident, int clubnum)
 {
 	char genbuf1[80], genbuf2[80];
 	int id;
@@ -304,12 +338,14 @@ int clubnum;
 		seek = seek_in_file(genbuf, uident);
 		if (seek) {
 			move(2, 0);
-			prints_nofmt("ÊäÈëµÄID ÒÑ¾­´æÔÚ!");
+			// è¾“å…¥çš„ID å·²ç»å­˜åœ¨!
+			prints_nofmt("\xCA\xE4\xC8\xEB\xB5\xC4" "ID " "\xD2\xD1\xBE\xAD\xB4\xE6\xD4\xDA" "!");
 			pressreturn();
 			return -1;
 		}
 
-		getdata(4, 0, "ÕæµÄÒªÌí¼ÓÃ´?[Y/N]: ", ans, 7, DOECHO, YEA);
+		// çœŸçš„è¦æ·»åŠ ä¹ˆ?[Y/N]:
+		getdata(4, 0, "\xD5\xE6\xB5\xC4\xD2\xAA\xCC\xED\xBC\xD3\xC3\xB4" "?[Y/N]: ", ans, 7, DOECHO, YEA);
 		if ((*ans != 'Y') && (*ans != 'y'))
 			return -1;
 		setbfile(genbuf, sizeof(genbuf), currboard, "club_users");
@@ -331,9 +367,7 @@ int clubnum;
 	}
 }
 
-static int
-delclubmember(uident)
-char *uident;
+static int delclubmember(char *uident)
 {
 	char genbuf1[80], genbuf2[80];
 	char fn[STRLEN];
@@ -357,8 +391,12 @@ char *uident;
 }
 
 int
-clubmember()
+clubmember(int ent, void *record, char *direct)
 {
+	(void) ent;
+	(void) record;
+	(void) direct;
+
 	char uident[IDLEN + 1];
 	char ans[8], repbuf[STRLEN * 2], buf[STRLEN], titlebuf[STRLEN];
 	int count, i;
@@ -374,33 +412,41 @@ clubmember()
 	ansimore(genbuf, YEA);
 	while (1) {
 		clear();
-		prints_nofmt("Éè¶¨¾ãÀÖ²¿Ãûµ¥\n");
+		// è®¾å®šä¿±ä¹éƒ¨åå•\n
+		prints_nofmt("\xC9\xE8\xB6\xA8\xBE\xE3\xC0\xD6\xB2\xBF\xC3\xFB\xB5\xA5" "\n");
 		setbfile(genbuf, sizeof(genbuf), currboard, "club_users");
 		count = listfilecontent(genbuf);
 		if (count)
 			getdata(1, 0,
-				"(A)Ôö¼Ó (D)É¾³ıor (E)Àë¿ªor (M)Ğ´ĞÅ¸øËùÓĞ³ÉÔ± [E]: ",
+				// (A)å¢åŠ  (D)åˆ é™¤or (E)ç¦»å¼€or (M)å†™ä¿¡ç»™æ‰€æœ‰æˆå‘˜ [E]:
+				"(A)" "\xD4\xF6\xBC\xD3" " (D)" "\xC9\xBE\xB3\xFD" "or (E)" "\xC0\xEB\xBF\xAA" "or (M)" "\xD0\xB4\xD0\xC5\xB8\xF8\xCB\xF9\xD3\xD0\xB3\xC9\xD4\xB1" " [E]: ",
 				ans, 7, DOECHO, YEA);
 		else
-			getdata(1, 0, "(A)Ôö¼Ó or (E)Àë¿ª [E]: ", ans, 7,
+			// (A)å¢åŠ  or (E)ç¦»å¼€ [E]:
+			getdata(1, 0, "(A)" "\xD4\xF6\xBC\xD3" " or (E)" "\xC0\xEB\xBF\xAA" " [E]: ", ans, 7,
 				DOECHO, YEA);
 		if (*ans == 'A' || *ans == 'a') {
 			move(1, 0);
-			usercomplete("Ôö¼Ó¾ãÀÖ²¿³ÉÔ±: ", uident);
+			// å¢åŠ ä¿±ä¹éƒ¨æˆå‘˜:
+			usercomplete("\xD4\xF6\xBC\xD3\xBE\xE3\xC0\xD6\xB2\xBF\xB3\xC9\xD4\xB1" ": ", uident);
 			if (*uident != '\0') {
 				if (addclubmember(uident, 0) == 1) {
-					getdata(5, 0, "¼ÓÈëÔ­Òò£º", buf, 50, DOECHO, YEA);
+					// åŠ å…¥åŸå› ï¼š
+					getdata(5, 0, "\xBC\xD3\xC8\xEB\xD4\xAD\xD2\xF2\xA3\xBA", buf, 50, DOECHO, YEA);
 					sprintf(titlebuf,
-						"%sÓÉ%sÊÚÓè%s¾ãÀÖ²¿È¨Àû",
+						// %sç”±%sæˆäºˆ%sä¿±ä¹éƒ¨æƒåˆ©
+						"%s" "\xD3\xC9" "%s" "\xCA\xDA\xD3\xE8" "%s" "\xBE\xE3\xC0\xD6\xB2\xBF\xC8\xA8\xC0\xFB",
 						uident, currentuser.userid,
 						currboard);
 					sprintf(repbuf,
-						"%s%s%s", titlebuf, buf[0] ? "\n\nÔ­Òò£º":"", buf);
+						// \n\nåŸå› ï¼š
+						"%s%s%s", titlebuf, buf[0] ? "\n\n" "\xD4\xAD\xD2\xF2\xA3\xBA":"", buf);
 					if(!strcmp(currboard, "Beggar")
 							|| !strcmp(currboard, "killer")
 							|| !strcmp(currboard, "Rober")
 							|| !strcmp(currboard, "Police")) {
-						millionairesrec(titlebuf, buf, "³ÉÔ±±ä¸ü");
+						// æˆå‘˜å˜æ›´
+						millionairesrec(titlebuf, buf, "\xB3\xC9\xD4\xB1\xB1\xE4\xB8\xFC");
 					} else {
 						securityreport(titlebuf, buf);
 					}
@@ -411,25 +457,31 @@ clubmember()
 			}
 		} else if ((*ans == 'D' || *ans == 'd') && count) {
 			move(1, 0);
-			namecomplete("É¾³ı¾ãÀÖ²¿Ê¹ÓÃÕß: ", uident);
+			// åˆ é™¤ä¿±ä¹éƒ¨ä½¿ç”¨è€…:
+			namecomplete("\xC9\xBE\xB3\xFD\xBE\xE3\xC0\xD6\xB2\xBF\xCA\xB9\xD3\xC3\xD5\xDF" ": ", uident);
 			move(1, 0);
 			clrtoeol();
 			if (uident[0] != '\0') {
-				sprintf(genbuf, "ÕæµÄÒªÈ¡Ïû%sµÄ¾ãÀÖ²¿È¨ÀûÃ´£¿",
+				// çœŸçš„è¦å–æ¶ˆ%sçš„ä¿±ä¹éƒ¨æƒåˆ©ä¹ˆï¼Ÿ
+				sprintf(genbuf, "\xD5\xE6\xB5\xC4\xD2\xAA\xC8\xA1\xCF\xFB" "%s" "\xB5\xC4\xBE\xE3\xC0\xD6\xB2\xBF\xC8\xA8\xC0\xFB\xC3\xB4\xA3\xBF",
 					uident);
 				if (askyn(genbuf, YEA, NA))
 					if (delclubmember(uident)) {
-						getdata(5, 0, "É¾³ıÔ­Òò£º", buf, 50, DOECHO, YEA);
+						// åˆ é™¤åŸå› ï¼š
+						getdata(5, 0, "\xC9\xBE\xB3\xFD\xD4\xAD\xD2\xF2\xA3\xBA", buf, 50, DOECHO, YEA);
 						snprintf(titlebuf, sizeof(titlebuf),
-							"%s±»%sÈ¡Ïû%s¾ãÀÖ²¿È¨Àû",
+							// %sè¢«%så–æ¶ˆ%sä¿±ä¹éƒ¨æƒåˆ©
+							"%s" "\xB1\xBB" "%s" "\xC8\xA1\xCF\xFB" "%s" "\xBE\xE3\xC0\xD6\xB2\xBF\xC8\xA8\xC0\xFB",
 							uident, currentuser.userid, currboard);
 						snprintf(repbuf, sizeof(repbuf),
-							"%s%s%s", titlebuf, buf[0] ? "\n\nÔ­Òò£º":"", buf);
+							// \n\nåŸå› ï¼š
+							"%s%s%s", titlebuf, buf[0] ? "\n\n" "\xD4\xAD\xD2\xF2\xA3\xBA":"", buf);
 						if(!strcmp(currboard, "Beggar")
 								|| !strcmp(currboard, "killer")
 								|| !strcmp(currboard, "Rober")
 								|| !strcmp(currboard, "Police")) {
-							millionairesrec(titlebuf, buf, "³ÉÔ±±ä¸ü");
+							// æˆå‘˜å˜æ›´
+							millionairesrec(titlebuf, buf, "\xB3\xC9\xD4\xB1\xB1\xE4\xB8\xFC");
 						} else {
 							securityreport(titlebuf, buf);
 						}
@@ -447,11 +499,7 @@ clubmember()
 	return FULLUPDATE;
 }
 
-int
-deny_from_article(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+int deny_from_article(int ent, struct fileheader *fileinfo, char *direct)
 {
 	(void) ent;
 	(void) direct;
@@ -462,7 +510,7 @@ char *direct;
 	if (!IScurrBM) {
 		return DONOTHING;
 	}
-	if (!strcmp(fh2owner(fileinfo), "Anonymous")) {	/* ¶ÔÄäÃûÎÄÕÂ */
+	if (!strcmp(fh2owner(fileinfo), "Anonymous")) {	/* å¯¹åŒ¿åæ–‡ç«  */
 		isanony = 1;
 		setbfile(genbuf, sizeof(genbuf), currboard, "deny_anony");
 		strcpy(user, fh2realauthor(fileinfo));
@@ -472,15 +520,16 @@ char *direct;
 		strcpy(user, fileinfo->owner);
 	}
 	seek = seek_in_file(genbuf, user);
-	if (seek) {		/* ½â·â */
+	if (seek) {		/* è§£å° */
 		move(2, 0);
-		getdata(4, 0, "ÕæµÄÒª½â·âÃ´?[Y/N]: ", ans, 7, DOECHO, YEA);
+		// çœŸçš„è¦è§£å°ä¹ˆ?[Y/N]:
+		getdata(4, 0, "\xD5\xE6\xB5\xC4\xD2\xAA\xBD\xE2\xB7\xE2\xC3\xB4" "?[Y/N]: ", ans, 7, DOECHO, YEA);
 		if ((*ans != 'Y') && (*ans != 'y'))
 			return -1;
 		if (deldeny(user, 0, isanony) == 1)
 			deny_notice(UNDENY, user, 0, isanony, msgbuf);
 
-	} else {		/* ÄäÃû·â½û */
+	} else {		/* åŒ¿åå°ç¦ */
 		canpost = posttest(user, currboard);
 		if ((canpost) && (addtodeny(user, msgbuf, 0, 0, isanony) == 1)) {
 			deny_notice(DENY, user, 0, isanony, msgbuf);
@@ -495,10 +544,7 @@ char *direct;
 	return 0;
 }
 
-static int
-deny_notice(action, user, isglobal, isanony, msgbuf)
-char *user, *msgbuf;
-int action, isglobal, isanony;
+static int deny_notice(int action, char *user, int isglobal, int isanony, char *msgbuf)
 {
 	char repbuf[STRLEN];
 	char tmpbuf[STRLEN], tmpbuf2[STRLEN];
@@ -512,7 +558,8 @@ int action, isglobal, isanony;
 	case DENY:
 		if (isglobal) {
 			sprintf(repbuf,
-				"%s±»%sÈ¡ÏûÔÚÈ«Õ¾µÄPOSTÈ¨Àû",
+				// %sè¢«%så–æ¶ˆåœ¨å…¨ç«™çš„POSTæƒåˆ©
+				"%s" "\xB1\xBB" "%s" "\xC8\xA1\xCF\xFB\xD4\xDA\xC8\xAB\xD5\xBE\xB5\xC4" "POST" "\xC8\xA8\xC0\xFB",
 				user, currentuser.userid);
 			securityreport(repbuf, msgbuf);
 			deliverreport(repbuf, msgbuf);
@@ -524,23 +571,31 @@ int action, isglobal, isanony;
 			strcpy(tmpbuf, msgbuf + 11);
 			strcpy(tmpbuf2, msgbuf + i + 1);
 			sprintf(repbuf,
-				"%s±»Õ¾Îñ%sÔİÊ±ÏŞÖÆÔÚ%sµÄPOSTÈ¨Àû",
+				// %sè¢«ç«™åŠ¡%sæš‚æ—¶é™åˆ¶åœ¨%sçš„POSTæƒåˆ©
+				"%s" "\xB1\xBB\xD5\xBE\xCE\xF1" "%s" "\xD4\xDD\xCA\xB1\xCF\xDE\xD6\xC6\xD4\xDA" "%s" "\xB5\xC4" "POST" "\xC8\xA8\xC0\xFB",
 				repuser, currentuser.userid, currboard);
 			sprintf(msgbuf,
-				"Õ¾Îñ%sÈÏÎª%sÓĞ%sÏÓÒÉ.Çë±¾°æ°æÖ÷/¸±\n"
-				"¼°Ê±¶Ô%sµÄĞĞÎª°´±¾°æ¹ÜÀí±ê×¼½øĞĞÈ·ÈÏ.\n"
-				"»Ö¸´POSTÈ¨»òÕß¸ø³öÕıÈ··â½ûÆÚÏŞ.\n\n%s",
+				// ç«™åŠ¡%sè®¤ä¸º%sæœ‰%så«Œç–‘.è¯·æœ¬ç‰ˆç‰ˆä¸»/å‰¯\n
+				"\xD5\xBE\xCE\xF1" "%s" "\xC8\xCF\xCE\xAA" "%s" "\xD3\xD0" "%s" "\xCF\xD3\xD2\xC9" "." "\xC7\xEB\xB1\xBE\xB0\xE6\xB0\xE6\xD6\xF7" "/" "\xB8\xB1" "\n"
+				// åŠæ—¶å¯¹%sçš„è¡Œä¸ºæŒ‰æœ¬ç‰ˆç®¡ç†æ ‡å‡†è¿›è¡Œç¡®è®¤.\n
+				"\xBC\xB0\xCA\xB1\xB6\xD4" "%s" "\xB5\xC4\xD0\xD0\xCE\xAA\xB0\xB4\xB1\xBE\xB0\xE6\xB9\xDC\xC0\xED\xB1\xEA\xD7\xBC\xBD\xF8\xD0\xD0\xC8\xB7\xC8\xCF" ".\n"
+				// æ¢å¤POSTæƒæˆ–è€…ç»™å‡ºæ­£ç¡®å°ç¦æœŸé™.\n\n%s
+				"\xBB\xD6\xB8\xB4" "POST" "\xC8\xA8\xBB\xF2\xD5\xDF\xB8\xF8\xB3\xF6\xD5\xFD\xC8\xB7\xB7\xE2\xBD\xFB\xC6\xDA\xCF\xDE" ".\n\n%s",
 				currentuser.userid, repuser, tmpbuf, repuser,
 				tmpbuf2);
 			securityreport(repbuf, msgbuf);
 			deliverreport(repbuf, msgbuf);
 			sprintf(repbuf,
-				"%s±»Õ¾Îñ%sÔİÊ±ÏŞÖÆÔÚ%sµÄPOSTÈ¨Àû",
+				// %sè¢«ç«™åŠ¡%sæš‚æ—¶é™åˆ¶åœ¨%sçš„POSTæƒåˆ©
+				"%s" "\xB1\xBB\xD5\xBE\xCE\xF1" "%s" "\xD4\xDD\xCA\xB1\xCF\xDE\xD6\xC6\xD4\xDA" "%s" "\xB5\xC4" "POST" "\xC8\xA8\xC0\xFB",
 				user, currentuser.userid, currboard);
 			sprintf(msgbuf,
-				"Õ¾Îñ%sÈÏÎª%sÓĞ%sÏÓÒÉ.Çë±¾°æ°æÖ÷/¸±\n"
-				"¼°Ê±¶Ô%sµÄĞĞÎª°´±¾°æ¹ÜÀí±ê×¼½øĞĞÈ·ÈÏ.\n"
-				"»Ö¸´POSTÈ¨»òÕß¸ø³öÕıÈ··â½ûÆÚÏŞ.\n\n%s",
+				// ç«™åŠ¡%sè®¤ä¸º%sæœ‰%så«Œç–‘.è¯·æœ¬ç‰ˆç‰ˆä¸»/å‰¯\n
+				"\xD5\xBE\xCE\xF1" "%s" "\xC8\xCF\xCE\xAA" "%s" "\xD3\xD0" "%s" "\xCF\xD3\xD2\xC9" "." "\xC7\xEB\xB1\xBE\xB0\xE6\xB0\xE6\xD6\xF7" "/" "\xB8\xB1" "\n"
+				// åŠæ—¶å¯¹%sçš„è¡Œä¸ºæŒ‰æœ¬ç‰ˆç®¡ç†æ ‡å‡†è¿›è¡Œç¡®è®¤.\n
+				"\xBC\xB0\xCA\xB1\xB6\xD4" "%s" "\xB5\xC4\xD0\xD0\xCE\xAA\xB0\xB4\xB1\xBE\xB0\xE6\xB9\xDC\xC0\xED\xB1\xEA\xD7\xBC\xBD\xF8\xD0\xD0\xC8\xB7\xC8\xCF" ".\n"
+				// æ¢å¤POSTæƒæˆ–è€…ç»™å‡ºæ­£ç¡®å°ç¦æœŸé™.\n\n%s
+				"\xBB\xD6\xB8\xB4" "POST" "\xC8\xA8\xBB\xF2\xD5\xDF\xB8\xF8\xB3\xF6\xD5\xFD\xC8\xB7\xB7\xE2\xBD\xFB\xC6\xDA\xCF\xDE" ".\n\n%s",
 				currentuser.userid, user, tmpbuf, user,
 				tmpbuf2);
 			mail_buf(msgbuf, user, repbuf);
@@ -548,37 +603,46 @@ int action, isglobal, isanony;
 		/*old action */
 		else {
 			sprintf(repbuf,
-				"%s±»%sÈ¡ÏûÔÚ%sµÄPOSTÈ¨Àû",
+				// %sè¢«%så–æ¶ˆåœ¨%sçš„POSTæƒåˆ©
+				"%s" "\xB1\xBB" "%s" "\xC8\xA1\xCF\xFB\xD4\xDA" "%s" "\xB5\xC4" "POST" "\xC8\xA8\xC0\xFB",
 				repuser, currentuser.userid, currboard);
 			securityreport(repbuf, msgbuf);
 			deliverreport(repbuf, msgbuf);
 			sprintf(repbuf,
-				"%s±»%sÈ¡ÏûÔÚ%sµÄPOSTÈ¨Àû",
+				// %sè¢«%så–æ¶ˆåœ¨%sçš„POSTæƒåˆ©
+				"%s" "\xB1\xBB" "%s" "\xC8\xA1\xCF\xFB\xD4\xDA" "%s" "\xB5\xC4" "POST" "\xC8\xA8\xC0\xFB",
 				user, currentuser.userid, currboard);
 			mail_buf(msgbuf, user, repbuf);
 		}
 		break;
 	case CHANGEDENY:
 		sprintf(repbuf,
-			"%s¸Ä±ä·â%sµÄÊ±¼ä»òËµÃ÷", currentuser.userid, user);
+			// %sæ”¹å˜å°%sçš„æ—¶é—´æˆ–è¯´æ˜
+			"%s" "\xB8\xC4\xB1\xE4\xB7\xE2" "%s" "\xB5\xC4\xCA\xB1\xBC\xE4\xBB\xF2\xCB\xB5\xC3\xF7", currentuser.userid, user);
 		securityreport(repbuf, msgbuf);
 		deliverreport(repbuf, msgbuf);
 		mail_buf(msgbuf, user, repbuf);
 		break;
 	case UNDENY:
 		sprintf(repbuf,
-			"»Ö¸´ %s ÔÚ %s µÄPOSTÈ¨",
-			repuser, isglobal ? "È«Õ¾" : currboard);
+			// æ¢å¤ %s åœ¨ %s çš„POSTæƒ
+			"\xBB\xD6\xB8\xB4" " %s " "\xD4\xDA" " %s " "\xB5\xC4" "POST" "\xC8\xA8",
+			// å…¨ç«™
+			repuser, isglobal ? "\xC8\xAB\xD5\xBE" : currboard);
 		snprintf(msgbuf, 256, "%s %s\n"
-			"ÇëÀí½â°æÎñ¹ÜÀí¹¤×÷,Ğ»Ğ»!\n", currentuser.userid,
+			// è¯·ç†è§£ç‰ˆåŠ¡ç®¡ç†å·¥ä½œ,è°¢è°¢!\n
+			"\xC7\xEB\xC0\xED\xBD\xE2\xB0\xE6\xCE\xF1\xB9\xDC\xC0\xED\xB9\xA4\xD7\xF7" "," "\xD0\xBB\xD0\xBB" "!\n", currentuser.userid,
 			repbuf);
 		securityreport(repbuf, msgbuf);
 		deliverreport(repbuf, msgbuf);
 		sprintf(repbuf,
-			"»Ö¸´ %s ÔÚ %s µÄPOSTÈ¨",
-			user, isglobal ? "È«Õ¾" : currboard);
+			// æ¢å¤ %s åœ¨ %s çš„POSTæƒ
+			"\xBB\xD6\xB8\xB4" " %s " "\xD4\xDA" " %s " "\xB5\xC4" "POST" "\xC8\xA8",
+			// å…¨ç«™
+			user, isglobal ? "\xC8\xAB\xD5\xBE" : currboard);
 		snprintf(msgbuf, 256, "%s %s\n"
-			"ÇëÀí½â°æÎñ¹ÜÀí¹¤×÷,Ğ»Ğ»!\n", currentuser.userid,
+			// è¯·ç†è§£ç‰ˆåŠ¡ç®¡ç†å·¥ä½œ,è°¢è°¢!\n
+			"\xC7\xEB\xC0\xED\xBD\xE2\xB0\xE6\xCE\xF1\xB9\xDC\xC0\xED\xB9\xA4\xD7\xF7" "," "\xD0\xBB\xD0\xBB" "!\n", currentuser.userid,
 			repbuf);
 		mail_buf(msgbuf, user, repbuf);
 		break;

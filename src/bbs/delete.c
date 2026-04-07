@@ -102,7 +102,7 @@ int offline(const char *s) {
 		set_safe_record();
 		currentuser.dietime = currentuser.stay + 6*18 * 24 * 60 * 60;//改自杀恢复为6*18天   六道轮回+18层地狱
 		substitute_record(PASSFILE, &currentuser, sizeof (currentuser), usernum);
-		Q_Goodbye();
+		Q_Goodbye(0, NULL, NULL);
 		return 0;
 	}
 
@@ -155,7 +155,7 @@ int online(const char *s) {
 		clear();
 		currentuser.dietime = 0;
 		substitute_record(PASSFILE, &currentuser, sizeof (currentuser), usernum);
-		return Q_Goodbye();
+		return Q_Goodbye(0, NULL, NULL);
 	}
 	return 0;
 }

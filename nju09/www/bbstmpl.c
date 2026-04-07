@@ -1,5 +1,5 @@
 #include "bbslib.h"
-#include "tmpl.h"
+#include "tmpl_defs.h"
 
 struct a_template * ptemplate = NULL ;
 int template_num = 0;

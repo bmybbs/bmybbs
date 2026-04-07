@@ -2,6 +2,7 @@
 #include <math.h>
 #include "bbs.h"
 #include "bbs_global_vars.h"
+#include "config.h"
 #include "stuff.h"
 #include "smth_screen.h"
 #include "maintain.h"
@@ -1934,7 +1935,7 @@ static int addOrDel_contrb() {
 			if (tag == 1){
 				while (buf[0] == 0)
 					getdata(2, 0, "请输入新的名称: ", buf, 18, DOECHO, YEA);
-				sprintf(JijinMem[i].name, "%s", buf);
+				ytht_strsncpy(JijinMem[i].name, buf, sizeof JijinMem[i].name);
 				sprintf(title, "%s行使管理权限(设置捐款基金)", currentuser.userid);
 				sprintf(buf,"%s改变%s的名称为 %s基金", currentuser.userid, JijinMem[i].userid, JijinMem[i].name);
 				millionairesrec(title,buf, "");
@@ -2107,6 +2108,7 @@ static int money_admin() {
 	char stockboard[STRLEN][MAX_STOCK_NUM];
 	FILE *fp1;
 	int count;
+	int num=0;
 
 	if (!seek_in_file(MC_ADMIN_FILE, currentuser.userid)
 			&& !(currentuser.userlevel & PERM_SPECIAL5) && strcmp(currentuser.userid, "macintosh")) {
@@ -2592,7 +2594,6 @@ static int money_admin() {
 				money_deny();
 				break;
 
-				int num=0;
 			case '1':
 				clear();
 				move(12, 4);
@@ -3013,7 +3014,7 @@ static void saveSoccerRecord(char *complexBet) {
 			}
 		}
 		genbuf[j] = '\0';
-		sprintf(buf, "%s %s", currentuser.userid, genbuf);
+		snprintf(buf, sizeof buf, "%s %s", currentuser.userid, genbuf);
 		ytht_add_to_file(DIR_MC_TEMP "soccer_list", buf);
 	} else {
 		for (i = 0; i < len; i++) {	/*寻找第一个复式单元 */
@@ -3306,7 +3307,7 @@ static int money_check_guard() {
 			prints("你的保镖一棒子敲晕了你,拿走了你身上一半的钱，跑路了。");
 			saveValue(currentuser.userid, MONEY_NAME, -money / 2, MAX_MONEY_NUM);
 			pressanykey();
-			Q_Goodbye();
+			Q_Goodbye(0, NULL, NULL);
 		}
 		return 1;
 	}
@@ -3522,7 +3523,7 @@ static int money_robber() {
 				if (currentuser.dietime > 0) {
 					prints("你已经死了啊！抓鬼啊！");
 					pressanykey();
-					Q_Goodbye();
+					Q_Goodbye(0, NULL, NULL);
 					break;
 				}
 				usercomplete("你要拍谁:", uident);
@@ -3567,7 +3568,7 @@ static int money_robber() {
 				if (currentuser.dietime > 0) {
 					prints("你已经死了啊！抓鬼啊！");
 					pressanykey();
-					Q_Goodbye();
+					Q_Goodbye(0, NULL, NULL);
 					break;
 				}
 				move(8, 4);
@@ -3615,7 +3616,7 @@ static int money_robber() {
 						if (currentuser.dietime > 0) {
 							prints("你已经死了啊！抓鬼啊！");
 							pressanykey();
-							Q_Goodbye();
+							Q_Goodbye(0, NULL, NULL);
 							break;
 						}
 						sleep(5);
@@ -3717,7 +3718,7 @@ static int money_robber() {
 								saveValue(currentuser.userid, MONEY_NAME,  -MAX_MONEY_NUM,  MAX_MONEY_NUM);
 								saveValue(currentuser.userid, CREDIT_NAME,  -MAX_MONEY_NUM,  MAX_MONEY_NUM);
 								pressanykey();
-								Q_Goodbye();
+								Q_Goodbye(0, NULL, NULL);
 							} else {
 								saveValue(currentuser.userid, MONEY_NAME, -num, MAX_MONEY_NUM);
 								move(17, 4);
@@ -3797,7 +3798,7 @@ static int money_robber() {
 				set_safe_record();
 				if (currentuser.dietime > 0) {
 					showAt(11, 4, "你已经死了啊！抓鬼啊！", 1);
-					Q_Goodbye();
+					Q_Goodbye(0, NULL, NULL);
 					break;
 				}
 				if (money_check_guard()) {
@@ -3896,7 +3897,7 @@ static int money_robber() {
 						substitute_record(PASSFILE, &currentuser, sizeof (currentuser), usernum);
 						saveValue(currentuser.userid, MONEY_NAME, -MAX_MONEY_NUM, MAX_MONEY_NUM);
 						pressanykey();
-						Q_Goodbye();
+						Q_Goodbye(0, NULL, NULL);
 					} else {
 						if (askyn("被警察发现了,你要逃跑么?", YEA, NA) == NA) {
 							saveValue(currentuser.userid, "rob", 1, 50);
@@ -3962,7 +3963,7 @@ static int money_robber() {
 								sprintf(buf,"%s偷%s, 被击毙, 损失%d兵马俑币(全部)", currentuser.userid, uident, money);
 								if (money != 0)
 									millionairesrec(title, buf, "黑帮活动");
-								Q_Goodbye();
+								Q_Goodbye(0, NULL, NULL);
 							}
 						}
 					}
@@ -3980,7 +3981,7 @@ static int money_robber() {
 				showAt(4, 4, "黑帮为你提供勒索信件发送业务,每次收费视情形而定。", 0);
 				if (currentuser.dietime > 0) {
 					showAt(5, 4, "你已经死了啊！抓鬼啊！", 1);
-					Q_Goodbye();
+					Q_Goodbye(0, NULL, NULL);
 					break;
 				}
 				if (seek_in_file(DIR_MC "mingren", currentuser.userid)){
@@ -4088,7 +4089,7 @@ static int money_robber() {
 				set_safe_record();
 				if (currentuser.dietime > 0) {
 					showAt(11, 4, "你已经死了啊！抓鬼啊！", 1);
-					Q_Goodbye();
+					Q_Goodbye(0, NULL, NULL);
 					break;
 				}
 				if (money_check_guard()) {
@@ -4181,7 +4182,7 @@ static int money_robber() {
 						substitute_record(PASSFILE, &currentuser, sizeof (currentuser), usernum);
 						saveValue(currentuser.userid, MONEY_NAME, -MAX_MONEY_NUM, MAX_MONEY_NUM);
 						pressanykey();
-						Q_Goodbye();
+						Q_Goodbye(0, NULL, NULL);
 					} else {
 						if (askyn("被警察发现了,你要逃跑么?", YEA, NA) == NA) {
 							saveValue(currentuser.userid, "rob", 1, 50);
@@ -4228,7 +4229,7 @@ static int money_robber() {
 								sprintf(title, "%s进行黑帮活动(抢劫)", currentuser.userid);
 								sprintf(buf,"%s抢%s, 被击毙, 损失%d兵马俑币(全部)", currentuser.userid, uident, money);
 								millionairesrec(title, buf, "黑帮活动");
-								Q_Goodbye();
+								Q_Goodbye(0, NULL, NULL);
 							}
 						}
 					}
@@ -4675,7 +4676,7 @@ static int money_killer() {
 				prints("每个人每天只能杀一次，每次最多可以买杀他三次。");
 				if (currentuser.dietime > 0) {
 					showAt(7, 4, "你已经死了啊！抓鬼啊！", 1);
-					Q_Goodbye();
+					Q_Goodbye(0, NULL, NULL);
 					break;
 				}
 				move(6, 4);
@@ -4790,7 +4791,7 @@ static int money_killer() {
 							}
 							if (currentuser.dietime > 0) {
 								showAt(9, 4, "你已经死了啊！抓鬼啊！", 1);
-								Q_Goodbye();
+								Q_Goodbye(0, NULL, NULL);
 								break;
 							}
 							usercomplete("你要炸谁:", uident);
@@ -4864,7 +4865,7 @@ static int money_killer() {
 							currentuser.dietime = currentuser.stay +1000 * 60;
 							substitute_record (PASSFILE, &currentuser, sizeof(currentuser), usernum);
 							pressanykey();
-							Q_Goodbye();
+							Q_Goodbye(0, NULL, NULL);
 					}
 					limit_cpu();
 				}
@@ -6216,7 +6217,7 @@ static int money_police() {
 		sprintf(buf, "系统临检, %s被罚掉所有现金%d兵马俑币", currentuser.userid, money);
 		millionairesrec(title, buf, "系统临检");
 		pressanykey();
-		Q_Goodbye();
+		Q_Goodbye(0, NULL, NULL);
 	} else {
 		saveValue(currentuser.userid, MONEY_NAME, money, MAX_MONEY_NUM);
 		move(t_lines - 2, 4);
@@ -7221,7 +7222,7 @@ static void russian_gun() {
 						prints("蒙面男子得意的狞笑着，把枪口对准了你...");
 						prints("\033[1;31m砰！一声巨响，你只觉得意识瞬间模糊...\033[m");
 						pressanykey();
-						Q_Goodbye();
+						Q_Goodbye(0, NULL, NULL);
 					}
 				}
 
@@ -7246,7 +7247,7 @@ static void russian_gun() {
 					} else {
 						prints("\033[1;31m砰！一声巨响，你只觉得意识瞬间模糊...\033[m");
 						pressanykey();
-						Q_Goodbye();
+						Q_Goodbye(0, NULL, NULL);
 					}
 				}
 			} else {
@@ -7254,7 +7255,7 @@ static void russian_gun() {
 				if (first) {
 					prints("\033[1;31m砰！一声巨响，你只觉得意识瞬间模糊...\033[m");
 					pressanykey();
-					Q_Goodbye();
+					Q_Goodbye(0, NULL, NULL);
 				} else {
 					prints("\033[1;31m砰！一声巨响，蒙面男子血流满地...\033[m");
 					break;
@@ -7405,14 +7406,14 @@ static int money_cop() {
 					if (loadValue(currentuser.userid, "freeTime", 2000000000) > 0) {
 						prints("你已经被监禁了，想认罪也来不及了。");
 						pressanykey();
-						Q_Goodbye();
+						Q_Goodbye(0, NULL, NULL);
 					}
 					prints("悬崖勒马,还来得及。好好改造吧！");
 					saveValue(currentuser.userid, "freeTime", time(0) + 86400 * (robTimes / 2 + 1), 2000000000);
 					saveValue(currentuser.userid, "rob", -robTimes, 50);
 					ytht_del_from_file(DIR_MC "criminals_list", currentuser.userid, true);
 					pressanykey();
-					Q_Goodbye();
+					Q_Goodbye(0, NULL, NULL);
 				} else {
 					move(9, 4);
 					prints("躲得了初一，躲不过十五。好自为知吧！");
@@ -7655,7 +7656,7 @@ static int money_cop() {
 								policereport(buf);
 								sprintf(title, "%s参与抓人", currentuser.userid);
 								millionairesrec(title, buf, "警署活动");
-								Q_Goodbye();
+								Q_Goodbye(0, NULL, NULL);
 							}
 						}
 					} else {
@@ -9787,7 +9788,7 @@ static int mc_autoundeny() {
 	readstrvalue(MC_DENY_FILE, currentuser.userid, buf, STRLEN);
 	ptr=strchr(buf, 0x1b);
 	if (ptr)
-		memmove(buf, ptr+2, sizeof(buf));
+		ytht_strsncpy(buf, ptr+2, sizeof(buf));
 	else return 0;
 	undenytime=atoi(buf);
 	if (undenytime > time(0))
@@ -9856,7 +9857,7 @@ static int delstockboard(char *sbname, char *fname) {
 
 static int stockboards() {
 	char uident[STRLEN];
-	char ans[8], repbuf[200], buf[200], titlebuf[STRLEN], bname[STRLEN],  bpath[STRLEN];
+	char ans[8], repbuf[200], buf[200], titlebuf[STRLEN], bname[24 /* see boardheader */],  bpath[STRLEN], reasonbuf[50];
 	int count, ch2;
 	struct stat st;
 	FILE *f_fp;
@@ -9930,12 +9931,12 @@ static int stockboards() {
 						clrtoeol();
 						if (bname[0] != '\0' && bname[0] != '\n' && bname[0] != '\r') {
 							if (delstockboard(bname, MC_STOCK_BOARDS)) {
-								getdata(6, 0, "取消原因：", buf, 50, DOECHO, YEA);
-								sprintf(repbuf, "原因：%s", buf);
-								sprintf(titlebuf, "[公告]%s版退市", bname);
+								getdata(6, 0, "取消原因：", reasonbuf, 50, DOECHO, YEA);
+								snprintf(repbuf, sizeof repbuf, "原因：%s", reasonbuf);
+								snprintf(titlebuf, sizeof titlebuf, "[公告]%s版退市", bname);
 								deliverreport(titlebuf, repbuf);
-								sprintf(titlebuf, "%s行使股市管理权限", currentuser.userid);
-								sprintf(repbuf, "取消上市版面: %s版\n\n取消原因：%s\n", bname, buf);
+								snprintf(titlebuf, sizeof titlebuf, "%s行使股市管理权限", currentuser.userid);
+								snprintf(repbuf, sizeof repbuf, "取消上市版面: %s版\n\n取消原因：%s\n", bname, reasonbuf);
 								millionairesrec(titlebuf, repbuf, "");
 							}
 						}
@@ -9980,17 +9981,17 @@ static int stockboards() {
 
 						if (bname[0] != '\0' && bname[0] != '\n' && bname[0] != '\r') {
 							if (addstockboard(bname, MC_STOCK_STOPBUY)) {
-								getdata(6, 0, "暂停原因：", buf, 50, DOECHO, YEA);
+								getdata(6, 0, "暂停原因：", reasonbuf, 50, DOECHO, YEA);
 								move(7, 0);
 								if (askyn("确定吗？", NA, NA) == NA) {
 									pressanykey();
 									break;
 								}
-								sprintf(repbuf, "暂停原因：%s", buf);
-								sprintf(titlebuf, "[公告]%s版股票停牌", bname);
+								snprintf(repbuf, sizeof repbuf, "暂停原因：%s", reasonbuf);
+								snprintf(titlebuf, sizeof titlebuf, "[公告]%s版股票停牌", bname);
 								deliverreport(titlebuf, repbuf);
-								sprintf(titlebuf, "%s行使股市管理权限", currentuser.userid);
-								sprintf(repbuf, "暂停%s版股票交易\n\n原因：%s\n", bname, buf);
+								snprintf(titlebuf, sizeof titlebuf, "%s行使股市管理权限", currentuser.userid);
+								snprintf(repbuf, sizeof repbuf, "暂停%s版股票交易\n\n原因：%s\n", bname, reasonbuf);
 								millionairesrec(titlebuf, repbuf, "");
 							}
 						}
@@ -10001,12 +10002,12 @@ static int stockboards() {
 						clrtoeol();
 						if (bname[0] != '\0' && bname[0] != '\n' && bname[0] != '\r') {
 							if (delstockboard(bname, MC_STOCK_STOPBUY)) {
-								getdata(6, 0, "恢复原因：", buf, 50, DOECHO, YEA);
-								sprintf(repbuf, "恢复原因：%s", buf);
-								sprintf(titlebuf, "[公告]%s版股票复牌", bname);
+								getdata(6, 0, "恢复原因：", reasonbuf, 50, DOECHO, YEA);
+								snprintf(repbuf, sizeof repbuf, "恢复原因：%s", reasonbuf);
+								snprintf(titlebuf, sizeof titlebuf, "[公告]%s版股票复牌", bname);
 								deliverreport(titlebuf, repbuf);
-								sprintf(titlebuf, "%s行使股市管理权限", currentuser.userid);
-								sprintf(repbuf, "恢复%s版股票交易\n\n原因：%s\n", bname, buf);
+								snprintf(titlebuf, sizeof titlebuf, "%s行使股市管理权限", currentuser.userid);
+								snprintf(repbuf, sizeof repbuf, "恢复%s版股票交易\n\n原因：%s\n", bname, reasonbuf);
 								millionairesrec(titlebuf, repbuf, "");
 							}
 						}

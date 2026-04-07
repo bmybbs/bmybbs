@@ -15,7 +15,7 @@ typedef struct {
 	ExtF *f;
 	char *first, *second;
 } ExtStru;
-extern ExtStru *extstru;
+extern const ExtStru extstru[];
 // 不
 #define NotWord "\xB2\xBB"
 #define Pair( a, b ) a b , a NotWord b

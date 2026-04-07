@@ -467,7 +467,7 @@ int ent_chat(const char *chatbuf) {
 		switch (ch) {
 		case KEY_UP:
 			cmdpos += MAXLASTCMD - 2;
-
+			__attribute__((fallthrough));
 		case KEY_DOWN:
 			cmdpos++;
 			cmdpos %= MAXLASTCMD;

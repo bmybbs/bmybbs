@@ -15,17 +15,18 @@
 #include "one_key.h"
 #include "bbs_global_vars.h"
 #include "bbs-internal.h"
+#include "ythtbbs/article.h"
 
 extern char quote_file[], quote_user[];
 char currbacknumberdir[STRLEN * 2];
 static int backnumbertitle(void);
 static char *backnumberdoent(int num, struct fileheader *ent, char buf[512]);
-static int backnumber_read(int ent, struct fileheader *fileinfo, char *direct);
-static int backnumber_hide(int ent, struct fileheader *fileinfo, char *direct);
+static int backnumber_read(int, void *, char *);
+static int backnumber_hide(int, void *, char *);
 static int selectbacknumbertitle(void);
 static char *selectbacknumberdoent(int num, struct bknheader *ent, char buf[512]);
-static int delete_backnumber(int ent, struct bknheader *bkninfo, char *direct);
-static int change_title(int ent, struct bknheader *bkninfo, char *direct);
+static int delete_backnumber(int, void *, char *);
+static int change_title(int, void *, char *);
 int do_intobacknumber(char *filename, time_t t);
 
 void
@@ -100,13 +101,11 @@ char buf[512];
 }
 
 static int
-backnumber_read(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+backnumber_read(int ent, void *record, char *direct)
 {
 	char notgenbuf[128];
 	int ch;
+	struct fileheader *fileinfo = record;
 
 	clear();
 	setqtitle(fileinfo->title);
@@ -156,8 +155,9 @@ char *direct;
 	return FULLUPDATE;
 }
 
-static int backnumber_hide(int ent, struct fileheader *fileinfo, char *direct) {
+static int backnumber_hide(int ent, void *record, char *direct) {
 	(void) direct;
+	struct fileheader *fileinfo = record;
 	if (!IScurrBM)
 		return DONOTHING;
 	if (fileinfo->accessed & FH_HIDE)
@@ -202,8 +202,11 @@ static const struct one_key backnumber_comms[] = {
 	{'\0', NULL, ""}
 };
 
-static int readbacknumber(int ent, struct bknheader *bkninfo, char *direct) {
+static int readbacknumber(int ent, void *record, char *direct) {
 	(void) ent;
+	struct fileheader *fileinfo = record;
+	// cast by IronBlood 20260407
+	struct bknheader *bkninfo = (struct bknheader *) fileinfo;
 	char buf[STRLEN], *t;
 	ytht_strsncpy(buf, direct, sizeof(buf));
 	if ((t = strrchr(buf, '/')) != NULL)
@@ -290,12 +293,10 @@ new_backnumber()
 }
 
 static int
-delete_backnumber(ent, bkninfo, direct)
-int ent;
-struct bknheader *bkninfo;
-char *direct;
+delete_backnumber(int ent, void *record, char *direct)
 {
 	char dpath[MAXPATHLEN];
+	struct bknheader *bkninfo = record;
 	if (!IScurrBM)
 //by bjgyt        if (!HAS_PERM(PERM_OBOARDS) && !HAS_PERM(PERM_SYSOP))
 		return DONOTHING;
@@ -311,12 +312,10 @@ char *direct;
 }
 
 static int
-change_title(ent, bkninfo, direct)
-int ent;
-struct bknheader *bkninfo;
-char *direct;
+change_title(int ent, void *record, char *direct)
 {
 	char buf[STRLEN];
+	struct bknheader *bkninfo = record;
 	if (!IScurrBM)
 //by bjgyt        if (!HAS_PERM(PERM_OBOARDS) && !HAS_PERM(PERM_SYSOP))
 		return DONOTHING;

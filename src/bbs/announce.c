@@ -49,7 +49,7 @@
 #define ADDMAIL         2
 #define ADDGOPHER       3
 
-void a_menu();
+void a_menu(char *maintitle, char *path, int lastlevel, int lastbmonly);
 static int read_anpath(char titles[20][STRLEN], char paths[20][PATHLEN]);
 static int save_anpath(char titles[20][STRLEN], char paths[20][PATHLEN]);
 static int logvisit(time_t timein, const char *path);
@@ -58,7 +58,7 @@ static int countstr(const char *s0, const char *s1);
 static int getvisit(int n[2], const char *path);
 static int add_anpath(const char *title, const char *path);
 
-extern void a_prompt();		/* added by netty */
+extern void a_prompt(int bot, char *pmt, char *buf, int len);		/* added by netty */
 extern int can_R_endline;
 typedef struct {
 	char title[72];
@@ -88,9 +88,7 @@ freeitem(MENU * me)
 	return;
 }
 
-int
-valid_fname(str)
-char *str;
+int valid_fname(char *str)
 {
 	char ch;
 
@@ -104,9 +102,7 @@ char *str;
 	return 1;
 }
 
-static void
-a_showmenu(pm)
-MENU *pm;
+static void a_showmenu(MENU *pm)
 {
 	struct stat st;
 	struct tm *pt;
@@ -244,9 +240,7 @@ static int countstr(const char *s0, const char *s1) {
 	return i;
 }
 
-static int
-a_loadnames(pm)
-MENU *pm;
+static int a_loadnames(MENU *pm)
 {
 	FILE *fn;
 	ITEM litem;
@@ -309,9 +303,7 @@ MENU *pm;
 	return 1;
 }
 
-static void
-a_savenames(pm)
-MENU *pm;
+static void a_savenames(MENU *pm)
 {
 	FILE *fn;
 	ITEM *item;
@@ -355,11 +347,7 @@ MENU *pm;
 	chmod(fpath, 0664);
 }
 
-void
-a_prompt(bot, pmt, buf, len)
-int bot;
-char *pmt, *buf;
-int len;
+void a_prompt(int bot, char *pmt, char *buf, int len)
 {
 	move(t_lines + bot, 0);
 	clrtoeol();
@@ -475,10 +463,7 @@ static int an_log(const char *action, const char *path) {
 }
 
 int
-a_Import(direct, fileinfo, nomsg)
-char *direct;
-struct fileheader *fileinfo;
-int nomsg;
+a_Import(char *direct, struct fileheader *fileinfo, int nomsg)
 {
 
 	char fname[STRLEN], *ip, bname[PATHLEN];
@@ -562,10 +547,7 @@ int nomsg;
 	return 1;
 }
 
-static void
-a_search(pm, offset)
-MENU *pm;
-int offset;
+static void a_search(MENU *pm, int offset)
 {
 	int i;
 	static char title[STRLEN];
@@ -631,11 +613,7 @@ int a_menusearch(char *key, int level) {
 	return 0;
 }
 
-static void
-a_forward(path, pitem, mode)
-char *path;
-ITEM *pitem;
-int mode;
+static void a_forward(char *path, ITEM *pitem, int mode)
 {
 	char fname[PATHLEN], *mesg;
 
@@ -662,10 +640,7 @@ int mode;
 	pressanykey();
 }
 
-static void
-a_newitem(pm, mode)
-MENU *pm;
-int mode;
+static void a_newitem(MENU *pm, int mode)
 {
 	char uident[STRLEN];
 	char board[STRLEN], title[STRLEN];
@@ -812,10 +787,13 @@ static void a_delete(MENU *, int);
 static int a_repair(MENU *);
 static int a_rjunk(MENU *);
 
-static void
-a_copypaste(pm, paste)
-MENU *pm;
-int paste;			// -1:cut 0:copy have perm 1:paste 2:copy have no perm
+/**
+ * @param paste -1:cut
+ *               0:copy have perm
+ *               1:paste
+ *               2:copy have no perm
+ */
+static void a_copypaste(MENU *pm, int paste)
 {
 	char title[STRLEN], filename[STRLEN], fpath[PATHLEN];
 	ITEM *item;
@@ -949,6 +927,7 @@ int paste;			// -1:cut 0:copy have perm 1:paste 2:copy have no perm
 					symlink(realfpath, newpath);
 					break;
 				}
+				__attribute__((fallthrough));
 			case 'C':
 			case 'c':
 				if (copymode == -1) {
@@ -997,10 +976,7 @@ int paste;			// -1:cut 0:copy have perm 1:paste 2:copy have no perm
 	pm->page = 9999;
 }
 
-static void
-a_delete(pm, mode)
-MENU *pm;
-int mode;
+static void a_delete(MENU *pm, int mode)
 {
 	ITEM *item;
 	char fpath[PATHLEN];
@@ -1054,9 +1030,7 @@ a_changemtitle(char *fpath, char *newmtitle)
 	return 0;
 }
 
-static void
-a_newname(pm)
-MENU *pm;
+static void a_newname(MENU *pm)
 {
 	ITEM *item;
 	char fname[STRLEN];
@@ -1087,10 +1061,7 @@ MENU *pm;
 	egetch();
 }
 
-static void
-a_manager(pm, ch)
-MENU *pm;
-int ch;
+static void a_manager(MENU *pm, int ch)
 {
 	char uident[STRLEN];
 	ITEM *item = NULL;
@@ -1272,10 +1243,7 @@ int ch;
 	modify_user_mode(DIGEST);
 }
 
-void
-a_menu(maintitle, path, lastlevel, lastbmonly)
-char *maintitle, *path;
-int lastlevel, lastbmonly;
+void a_menu(char *maintitle, char *path, int lastlevel, int lastbmonly)
 {
 	MENU me;
 	char fname[PATHLEN], tmp[STRLEN];
@@ -1488,6 +1456,7 @@ EXPRESS:		/* add by djq,990725 */
 				number = 0;
 				continue;
 			}
+			__attribute__((fallthrough));
 		case 'R':
 		case 'r':
 		case KEY_RIGHT:
@@ -1503,7 +1472,7 @@ EXPRESS:		/* add by djq,990725 */
 							tmpitem = &tmp;
 							strcpy(tmp.server, me.item[me.now]->host);
 							strcpy(tmp.file, me.item[me.now]->fname);
-							sprintf(tmp.title, "0%s", me.item[me.now]->title);
+							snprintf(tmp.title, sizeof tmp.title, "0%s", me.item[me.now]->title);
 							tmp.port = me.item[me.now]-> port;
 							enterdir(me.item[me.now]->fname);
 							sethomefile_s(tmp_file, sizeof(tmp_file), currentuser.userid, "gopher.tmp");
@@ -1571,8 +1540,9 @@ EXPRESS:		/* add by djq,990725 */
 			}
 			break;
 		case '!':
-			if (!Q_Goodbye())
+			if (!Q_Goodbye(0, NULL, NULL))
 				break;	/* youzi leave */
+			__attribute__((fallthrough));
 		case 'c':
 			if (me.now < me.num) {
 				if (snprintf(fname, PATHLEN, "%s/%s", path, me.item[me.now]->fname) > PATHLEN - 1)
@@ -1628,9 +1598,7 @@ void linkto(const char *path, const char *fname, const char *title) {
 	freeitem(&pm);
 }
 
-int
-add_grp(group, gname, bname, title)
-char group[STRLEN], bname[STRLEN], title[STRLEN], gname[STRLEN];
+int add_grp(const char *group, const char *gname, const char *bname, const char *title)
 {
 	FILE *fn;
 	char buf[PATHLEN];
@@ -1638,9 +1606,9 @@ char group[STRLEN], bname[STRLEN], title[STRLEN], gname[STRLEN];
 	char gpath[STRLEN * 2];
 	char bpath[STRLEN * 4];
 
-	sprintf(searchname, "%s: groups/%s/%s", bname, group, bname);
-	sprintf(gpath, "0Announce/groups/%s", group);
-	sprintf(bpath, "%s/%s", gpath, bname);
+	snprintf(searchname, sizeof searchname, "%s: groups/%s/%s", bname, group, bname);
+	snprintf(gpath, sizeof gpath, "0Announce/groups/%s", group);
+	snprintf(bpath, sizeof bpath, "%s/%s", gpath, bname);
 	if (!dashd("0Announce")) {
 		mkdir("0Announce", 0770);
 		chmod("0Announce", 0770);
@@ -1668,7 +1636,7 @@ char group[STRLEN], bname[STRLEN], title[STRLEN], gname[STRLEN];
 		mkdir(bpath, 0770);
 		chmod(bpath, 0770);
 		linkto(gpath, bname, title);
-		sprintf(buf, "%s/.Names", bpath);
+		snprintf(buf, sizeof buf, "%s/.Names", bpath);
 		if ((fn = fopen(buf, "w")) == NULL) {
 			return -1;
 		}
@@ -1681,9 +1649,7 @@ char group[STRLEN], bname[STRLEN], title[STRLEN], gname[STRLEN];
 
 }
 
-int
-del_grp(grp, bname, title)
-char grp[STRLEN], bname[STRLEN], title[STRLEN];
+int del_grp(const char *grp, const char *bname, const char *title)
 {
 	char buf[STRLEN], buf2[STRLEN], buf3[30];
 	char gpath[STRLEN * 2];
@@ -1694,10 +1660,10 @@ char grp[STRLEN], bname[STRLEN], title[STRLEN];
 
 	memset(&pm, 0, sizeof(MENU));
 	strncpy(buf3, grp, 29);
-	buf3[29] = '\0';
-	sprintf(buf, "0Announce/.Search");
-	sprintf(gpath, "0Announce/groups/%s", buf3);
-	sprintf(bpath, "%s/%s", gpath, bname);
+	buf3[sizeof buf3 - 1] = '\0';
+	snprintf(buf, sizeof buf, "0Announce/.Search");
+	snprintf(gpath, sizeof gpath, "0Announce/groups/%s", buf3);
+	snprintf(bpath, sizeof bpath, "%s/%s", gpath, bname);
 	deltree(bpath);
 
 	pm.path = gpath;
@@ -1705,7 +1671,7 @@ char grp[STRLEN], bname[STRLEN], title[STRLEN];
 	a_loadnames(&pm);
 	for (i = 0; i < pm.num; i++) {
 		ytht_strsncpy(buf2, pm.item[i]->fname, sizeof(buf2));
-		strcpy(check, strtok(buf2, "/~\n\b"));
+		ytht_strsncpy(check, strtok(buf2, "/~\n\b"), sizeof check);
 		if (strstr(pm.item[i]->title, title) && !strcmp(check, bname)) {
 			free(pm.item[i]);
 			(pm.num)--;
@@ -1719,9 +1685,7 @@ char grp[STRLEN], bname[STRLEN], title[STRLEN];
 	return 0;
 }
 
-int
-edit_grp(bname, grp, title, newtitle)
-char bname[STRLEN], grp[STRLEN], title[STRLEN], newtitle[100];
+int edit_grp(const char *bname, const char *grp, const char *title, const char *newtitle)
 {
 	char buf[STRLEN], buf2[STRLEN], buf3[30];
 	char gpath[STRLEN * 2];
@@ -1731,11 +1695,10 @@ char bname[STRLEN], grp[STRLEN], title[STRLEN], newtitle[100];
 	MENU pm;
 
 	memset(&pm, 0, sizeof(MENU));
-	strncpy(buf3, grp, 29);
-	buf3[29] = '\0';
-	sprintf(buf, "0Announce/.Search");
-	sprintf(gpath, "0Announce/groups/%s", buf3);
-	sprintf(bpath, "%s/%s", gpath, bname);
+	ytht_strsncpy(buf3, grp, sizeof buf3);
+	snprintf(buf, sizeof buf, "0Announce/.Search");
+	snprintf(gpath, sizeof gpath, "0Announce/groups/%s", buf3);
+	snprintf(bpath, sizeof bpath, "%s/%s", gpath, bname);
 	if (!seek_in_file(buf, bname))
 		return 0;
 
@@ -1744,7 +1707,7 @@ char bname[STRLEN], grp[STRLEN], title[STRLEN], newtitle[100];
 	a_loadnames(&pm);
 	for (i = 0; i < pm.num; i++) {
 		ytht_strsncpy(buf2, pm.item[i]->fname, sizeof(buf2));
-		strcpy(check, strtok(buf2, "/~\n\b"));
+		ytht_strsncpy(check, strtok(buf2, "/~\n\b"), sizeof check);
 		if (strstr(pm.item[i]->title, title) && !strcmp(check, bname)) {
 			ytht_strsncpy(pm.item[i]->title, newtitle, sizeof(pm.item[i]->title));
 			break;
@@ -1891,9 +1854,7 @@ static int getvisit(int n[2], const char *path) {
 
 /* 下面的函数a_repair用来收集丢失的条目, 把它们放进精华区的目录中  by ylsdd*/
 
-static int
-a_repair(pm)
-MENU *pm;
+static int a_repair(MENU *pm)
 {
 	DIR *dirp;
 	struct dirent *direntp;
@@ -1926,9 +1887,7 @@ MENU *pm;
 
 /* 下面的函数a_rjunk用来恢复从精华区中删除的目录或者文章,把它们放进精华区的目录中  by lepton*/
 
-static int
-a_rjunk(pm)
-MENU *pm;
+static int a_rjunk(MENU *pm)
 {
 	DIR *dirp;
 	struct dirent *direntp;
@@ -1969,6 +1928,7 @@ out:
 
 static int add_anpath(const char *title, const char *path) {
 	char titles[20][STRLEN], paths[20][PATHLEN], *ptr;
+	char titlebuf[STRLEN], pathbuf[PATHLEN];
 	int i;
 	int index = 0, nindex = 0;
 	memset(titles, 0, sizeof(titles));
@@ -2014,13 +1974,16 @@ static int add_anpath(const char *title, const char *path) {
 			index = nindex;
 		}
 	}
-	if ((ptr = strchr(title, '\n')) != NULL)
+
+	ytht_strsncpy(titlebuf, title, sizeof titlebuf);
+	ytht_strsncpy(pathbuf, path, sizeof pathbuf);
+	if ((ptr = strchr(titlebuf, '\n')) != NULL)
 		*ptr = 0;
-	if ((ptr = strchr(path, '\n')) != NULL)
+	if ((ptr = strchr(pathbuf, '\n')) != NULL)
 		*ptr = 0;
-	strncpy(titles[index], title, sizeof (titles[index]));
+	strncpy(titles[index], titlebuf, sizeof (titles[index]));
 	titles[index][sizeof (titles[index]) - 1] = 0;
-	strncpy(paths[index], path, sizeof (paths[index]));
+	strncpy(paths[index], pathbuf, sizeof (paths[index]));
 	paths[index][sizeof (paths[index]) - 1] = 0;
 	move(t_lines - 22 + 1 + index, 0);
 	clrtoeol();

@@ -1,5 +1,5 @@
 #include "bbslib.h"
-#include "vote.h"
+#include "vote_defs.h"
 static char *vote_type[] = { "是非", "单选", "复选", "数字", "问答" ,"限定票数复选"};
 static int valid_voter(char *board, char *name, char* listname);
 

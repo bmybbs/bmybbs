@@ -24,6 +24,7 @@
 #include <sys/ipc.h>
 #include <sys/msg.h>
 #include <sys/mman.h>
+#include "ythtbbs/article.h"
 #include "ythtbbs/commend.h"
 #include "ythtbbs/override.h"
 #include "bbs.h"
@@ -87,10 +88,10 @@ static int show_cake(char *filename, int num);
 static float myexp(float x);
 static int isowner(struct userec *user, struct fileheader *fileinfo);
 
-static int UndeleteArticle(int ent, struct fileheader *fileinfo, char *direct);
+static int UndeleteArticle(int, void *, char *);
 static void cpyfilename(struct fileheader *fhdr);
-static int read_post(int ent, struct fileheader *fileinfo, char *direct);
-static int do_select(int ent, struct fileheader *fileinfo, char *direct);
+static int read_post(int, void *, char *);
+static int do_select(int, void *, char *);
 static int dele_digest(int filetime, char *direc);
 static int garbage_line(char *str);
 static void getcross(char *filepath, int mode);
@@ -98,36 +99,36 @@ static time_t post_cross(char *bname, int mode, int islocal, int hascheck, int d
 static int post_article(struct fileheader *sfh);
 static enum ytht_smth_filter_result dofilter(char *title, char *fn, enum ytht_smth_filter_option mode);
 //static int edit_title(int ent, struct fileheader *fileinfo, char *direct);
-static int markspec_post(int ent, struct fileheader *fileinfo, char *direct);
-static int import_spec(void);
-static int moveintobacknumber(int ent, struct fileheader *fileinfo, char *direct);
-static int del_post_backup(int ent, struct fileheader *fileinfo, char *direct);
+static int markspec_post(int, void *, char *);
+static int import_spec(int, void *, char *);
+static int moveintobacknumber(int, void *, char *);
+static int del_post_backup(int, void *, char *);
 static int sequent_messages(struct fileheader *fptr);
-static int sequential_read(int ent, struct fileheader *fileinfo, char *direct);
+static int sequential_read(int, void *, char *);
 static int sequential_read2(int ent);
 static void quickviewpost(int ent, struct fileheader *fileinfo, char *direct);
-static int change_t_lines(void);
-static int post_saved(void);
-static int show_b_secnote(void);
-static int show_b_note(void);
-static int show_file_info(int ent, struct fileheader *fileinfo, char *direct);
-static int do_t_query(void);
-static int into_backnumber(void);
-static int into_my_Personal(void);
-static int select_Personal(void);
+static int change_t_lines(int, void *, char *);
+static int post_saved(int, void *, char *);
+static int show_b_secnote(int, void *, char *);
+static int show_b_note(int, void *, char *);
+static int show_file_info(int, void *, char *);
+static int do_t_query(int, void *, char *);
+static int into_backnumber(int, void *, char *);
+static int into_my_Personal(int, void *, char *);
+static int select_Personal(int, void *, char *);
 static void notepad(void);
-static int Origin2(char text[256]);
+static int Origin2(const char *);
 static int deny_me_global(void);
 static int do_thread(void);
 static int skipattach(char *buf, int size, FILE * fp);
-static int clear_new_flag(int ent, struct fileheader *fileinfo, char *direct);
+static int clear_new_flag(int, void *, char *);
 static int b_notes_edit();
 static int b_notes_passwd();
 static int catnotepad(FILE * fp, char *fname);
 static int change_content_title(char *fname, char *title);
 static int get_mention_ids(char *article_path, char *mention_ids[]);
-static int mark_commend(int ent, struct fileheader *fileinfo, char *direct);
-static int mark_commend2(int ent, struct fileheader *fileinfo, char *direct);
+static int mark_commend(int, void *, char *);
+static int mark_commend2(int, void *, char *);
 static int commend_article(char* board, struct fileheader* fileinfo);
 static int commend_article2(char* board, struct fileheader* fileinfo);
 static int del_commend(int offset);
@@ -210,7 +211,7 @@ show_cake(char *filename, int num)
 					if (atoi(str) != tmp_mod) {
 						prints_nofmt("啊? 竟然还不对? 真的是你么, 我好伤心...");
 						pressreturn();
-						Q_Goodbye();
+						Q_Goodbye(0, NULL, NULL);
 					}
 				}
 				fclose(fp);
@@ -294,8 +295,9 @@ do_delay(int i)
 /* start by gluon for no reply */
 /* Added by deardragon 1999.11.21 增加不可 RE 属性 */
 int
-underline_post(int ent, struct fileheader *fileinfo, char *direct)
+underline_post(int ent, void *record, char *direct)
 {
+	struct fileheader *fileinfo = record;
 	if (!IScurrBM && !isowner(&currentuser, fileinfo)) {
 		return DONOTHING;
 	}
@@ -306,7 +308,8 @@ underline_post(int ent, struct fileheader *fileinfo, char *direct)
 	return PARTUPDATE;
 }
 
-static int allcanre_post(int ent, struct fileheader *fileinfo, char *direct) {
+static int allcanre_post(int ent, void *record, char *direct) {
+	struct fileheader *fileinfo = record;
 	if (!HAS_PERM(PERM_SYSOP, currentuser))
 		return DONOTHING;
 	change_dir(direct, fileinfo, (void *) DIR_do_allcanre, ent, digestmode, 0);
@@ -530,7 +533,7 @@ get_a_boardname(char *bname, char *prompt)
 /* undelete 一篇文章 Leeward 98.05.18 */
 /* modified by ylsdd */
 static int
-UndeleteArticle(int ent, struct fileheader *fileinfo, char *direct)
+UndeleteArticle(int ent, void *record, char *direct)
 {
 	char *p, buf[1024];
 	char UTitle[128];
@@ -538,6 +541,7 @@ UndeleteArticle(int ent, struct fileheader *fileinfo, char *direct)
 	struct fileheader UFile;
 	int i;
 	FILE *fp;
+	struct fileheader *fileinfo = record;
 
 	if (digestmode != 4 && digestmode != 5)
 		return DONOTHING;
@@ -629,7 +633,7 @@ UndeleteArticle(int ent, struct fileheader *fileinfo, char *direct)
 }
 
 /* Add by SmallPig */
-int do_cross(int ent, struct fileheader *fileinfo, char *direct) {
+int do_cross(int ent, void *record, char *direct) {
 	(void) ent;
 	char bname[STRLEN];
 	char ispost[10];
@@ -637,6 +641,7 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct) {
 	int islocal;
 	int hide1, hide2;
 	enum ytht_smth_filter_result dangerous;
+	struct fileheader *fileinfo = record;
 
 	if (!HAS_PERM(PERM_POST, currentuser))
 		return DONOTHING;
@@ -851,8 +856,9 @@ dele_digest_top(int filetime, char *direc)
 	return 0;
 }
 
-static int topfile_post(int ent, struct fileheader *fhdr, char *direct) //slowaction
+static int topfile_post(int ent, void *record, char *direct) //slowaction
 {
+	struct fileheader *fhdr = record;
 	if (!IScurrBM) return DONOTHING;
 
 	if (fhdr->accessed & FILE_TOP1) {
@@ -897,9 +903,10 @@ static int topfile_post(int ent, struct fileheader *fhdr, char *direct) //slowac
 }
 
 static int
-read_post(int ent, struct fileheader *fileinfo, char *direct)
+read_post(int ent, void *record, char *direct)
 {
 	int ch;
+	struct fileheader *fileinfo = record;
 #ifdef ENABLE_MYSQL
 	time_t starttime;
 	int cou;
@@ -1061,7 +1068,8 @@ read_post(int ent, struct fileheader *fileinfo, char *direct)
 		if (!HAS_PERM(PERM_PAGE, currentuser))
 			break;
 		clear();
-		s_msg(NULL);
+		// TODO 20260407
+		s_msg(0, NULL, NULL);
 		break;
 	case Ctrl('D'):	/*by yuhuan for deny anonymous */
 		if (!IScurrBM)
@@ -1219,9 +1227,9 @@ super_select_board(char *bname)
 	return 0;
 }
 
-static int do_select(int ent, struct fileheader *fileinfo, char *direct) {
+static int do_select(int ent, void *record, char *direct) {
 	(void) ent;
-	(void) fileinfo;
+	(void) record;
 	char bname[24], bpath[STRLEN];
 	struct stat st;
 	int ret;
@@ -1315,8 +1323,9 @@ dele_digest(int filetime, char *direc)
 	return 0;
 }
 
-int water_post(int ent, struct fileheader *fileinfo, char *dirent)
+int water_post(int ent, void *record, char *dirent)
 {
+	struct fileheader *fileinfo = record;
 	if (!IScurrBM) {
 		return DONOTHING;
 	}
@@ -1340,8 +1349,9 @@ int water_post(int ent, struct fileheader *fileinfo, char *dirent)
 }
 
 int
-digest_post(int ent, struct fileheader *fhdr, char *direct)
+digest_post(int ent, void *record, char *direct)
 {
+	struct fileheader *fhdr = record;
 
 	if (!IScurrBM) {
 		return DONOTHING;
@@ -1687,7 +1697,10 @@ getcross(char *filepath, int mode)
 	*quote_file = '\0';
 }
 
-int do_post() {
+int do_post(int ent, void *record, char *direct) {
+	(void) ent;
+	(void) record;
+	(void) direct;
 	*quote_file = '\0';
 	*quote_user = '\0';
 	return post_article(NULL);
@@ -1852,7 +1865,7 @@ show_board_notes(char *bname)
 {
 	char buf[256];
 	move(2, 0);
-	sprintf(buf, "vote/%s/notes", bname);
+	snprintf(buf, sizeof buf, "vote/%s/notes", bname);
 	if (dashf(buf)) {
 		ansimore2stuff(buf, NA, 2, 24);
 		return 1;
@@ -2319,12 +2332,13 @@ change_content_title(char *fname, char *title)
 }
 
 /*ARGSUSED*/
-int edit_post(int ent, struct fileheader *fileinfo, char *direct)
+int edit_post(int ent, void *record, char *direct)
 {
 	extern char currmaildir[STRLEN];
 	char filepath[STRLEN];
 	char tmpfile[STRLEN];
 	char attach_path[256];
+	struct fileheader *fileinfo = record;
 	if (!in_mail) {
 		if (digestmode == 4 || digestmode == 5)
 			return DONOTHING;
@@ -2432,11 +2446,12 @@ int edit_post(int ent, struct fileheader *fileinfo, char *direct)
 
 // 邮箱界面中也要用这个函数
 int
-edit_title(int ent, struct fileheader *fileinfo, char *direct)
+edit_title(int ent, void *record, char *direct)
 {
 	struct stat st; //add by hace
 	char buf[STRLEN], filepath[STRLEN];
 	int now;
+	struct fileheader *fileinfo = record;
 	if(ent < 0 || stat(direct,&st)==-1 || (st.st_size/sizeof(struct fileheader) < (unsigned int /* safe */) ent))
 		return DONOTHING;//add by hace
 	if (!in_mail)
@@ -2483,8 +2498,9 @@ edit_title(int ent, struct fileheader *fileinfo, char *direct)
 }
 
 int
-mark_post(int ent, struct fileheader *fileinfo, char *direct)
+mark_post(int ent, void *record, char *direct)
 {
+	struct fileheader *fileinfo = record;
 	if (!IScurrBM) {
 		return DONOTHING;
 	}
@@ -2530,8 +2546,9 @@ int has_perm_commend(char* userid)			//add by mintbaggio 040406 for front page c
 }
 
 //add by mintbaggio 040331 for front page commend
-static int mark_commend(int ent, struct fileheader *fileinfo, char *direct) {
+static int mark_commend(int ent, void *record, char *direct) {
 	(void) ent; (void) direct;
+	struct fileheader *fileinfo = record;
 	if(!HAS_PERM(PERM_SYSOP, currentuser) && !has_perm_commend(currentuser.userid))
 		return DONOTHING;
 	commend_article(currboard, fileinfo);
@@ -2539,8 +2556,9 @@ static int mark_commend(int ent, struct fileheader *fileinfo, char *direct) {
 }
 
 //add by mintbaggio 040331 for front page commend
-static int mark_commend2(int ent, struct fileheader *fileinfo, char *direct) {
+static int mark_commend2(int ent, void *record, char *direct) {
 	(void) ent; (void) direct;
+	struct fileheader *fileinfo = record;
 	if(!HAS_PERM(PERM_SYSOP, currentuser) && !has_perm_commend(currentuser.userid))
 		return DONOTHING;
 	commend_article2(currboard, fileinfo);
@@ -2548,8 +2566,9 @@ static int mark_commend2(int ent, struct fileheader *fileinfo, char *direct) {
 }
 
 int
-markdel_post(int ent, struct fileheader *fileinfo, char *direct)
+markdel_post(int ent, void *record, char *direct)
 {
+	struct fileheader *fileinfo = record;
 	if (!strcmp(currboard, "deleted") || !strcmp(currboard, "junk") || !IScurrBM)
 		return DONOTHING;
 	if (fileinfo->owner[0] == '-')
@@ -2559,8 +2578,9 @@ markdel_post(int ent, struct fileheader *fileinfo, char *direct)
 }
 
 int
-mark_minus_del_post(int ent, struct fileheader *fileinfo, char *direct)			//add by mintbaggio 040321 for minus-postnums delete
+mark_minus_del_post(int ent, void *record, char *direct)			//add by mintbaggio 040321 for minus-postnums delete
 {
+	struct fileheader *fileinfo = record;
 	if (!strcmp(currboard, "deleted") || !strcmp(currboard, "junk") || !IScurrBM)
 		return DONOTHING;
 	if (fileinfo->owner[0] == '-')
@@ -2570,8 +2590,9 @@ mark_minus_del_post(int ent, struct fileheader *fileinfo, char *direct)			//add 
 }
 
 static int
-markspec_post(int ent, struct fileheader *fileinfo, char *direct)
+markspec_post(int ent, void *record, char *direct)
 {
+	struct fileheader *fileinfo = record;
 	if (!strcmp(currboard, "deleted") || !strcmp(currboard, "junk") || !IScurrBM)
 		return DONOTHING;
 	change_dir(direct, fileinfo, (void *) DIR_do_spec, ent, digestmode, 0);
@@ -2579,13 +2600,16 @@ markspec_post(int ent, struct fileheader *fileinfo, char *direct)
 }
 
 static int
-import_spec()
+import_spec(int ent, void *record, char *d)
 {
 	int fd;
 	int put_announce_flag;
 	char direct[STRLEN];
 	struct fileheader fileinfo;
 	char anboard[STRLEN], tmpboard[24];
+	(void) ent;
+	(void) record;
+	(void) d;
 //   if(strcmp(currentuser.userid,"ecnegrevid")!=0) return DONOTHING;
 	if (digestmode == 2 || digestmode == 3
 			|| digestmode == 4 || digestmode == 5
@@ -2619,9 +2643,9 @@ import_spec()
 	return DIRCHANGED;
 }
 
-static int moveintobacknumber(int ent, struct fileheader *fileinfo, char *direct) {
+static int moveintobacknumber(int ent, void *record, char *direct) {
 	(void) ent;
-	(void) fileinfo;
+	(void) record;
 	struct tm atm;
 	time_t t;
 	char buf[STRLEN], content[1024];
@@ -2685,9 +2709,9 @@ static int moveintobacknumber(int ent, struct fileheader *fileinfo, char *direct
 	return FULLUPDATE;
 }
 
-int del_range(int ent, struct fileheader *fileinfo, char *direct) {
+int del_range(int ent, void *record, char *direct) {
 	(void) ent;
-	(void) fileinfo;
+	(void) record;
 	char num[16], content[1024];
 	int inum1, inum2, ret;
 	if (uinfo.mode == READING)
@@ -2778,10 +2802,11 @@ THERE:
 }
 
 static int
-del_post_backup(int ent, struct fileheader *fileinfo, char *direct)
+del_post_backup(int ent, void *record, char *direct)
 {
 	int keep, fail;
 	char filepath[STRLEN];
+	struct fileheader *fileinfo = record;
 	if (digestmode == 2 || digestmode == 3
 			|| digestmode == 4 || digestmode == 5
 			|| !strcmp(currboard, "deleted")
@@ -2856,10 +2881,11 @@ del_post_backup(int ent, struct fileheader *fileinfo, char *direct)
 }
 
 int
-del_post(int ent, struct fileheader *fileinfo, char *direct)
+del_post(int ent, void *record, char *direct)
 {
 	int keep, fail;
 	int owned;
+	struct fileheader *fileinfo = record;
 	struct boardmem *bp;
 	if (digestmode == 2 || digestmode == 3
 			|| digestmode == 4 || digestmode == 5
@@ -3026,10 +3052,11 @@ sequent_messages(struct fileheader *fptr)
 	return 0;
 }
 
-static int clear_new_flag(int ent, struct fileheader *fileinfo, char *direct) {
+static int clear_new_flag(int ent, void *record, char *direct) {
 	(void) ent;
 	(void) direct;
 	static int lastf;
+	struct fileheader *fileinfo = record;
 	if (now_t - lastf > 2)
 		clear_new_flag_quick(max(fileinfo->filetime, fileinfo->edittime));
 	else
@@ -3038,9 +3065,9 @@ static int clear_new_flag(int ent, struct fileheader *fileinfo, char *direct) {
 	return PARTUPDATE;
 }
 
-static int sequential_read(int ent, struct fileheader *fileinfo, char *direct) {
+static int sequential_read(int ent, void *record, char *direct) {
 	(void) direct;
-	(void) fileinfo;
+	(void) record;
 	readpost = 1;
 	clear();
 	return sequential_read2(ent);
@@ -3060,9 +3087,10 @@ char *direct ;*/
 }
 
 /* Added by netty to handle post saving into (0)Announce */
-int Save_post(int ent, struct fileheader *fileinfo, char *direct) {
+int Save_post(int ent, void *record, char *direct) {
 	(void) ent;
 	(void) direct;
+	struct fileheader *fileinfo = record;
 	if (!IScurrBM)
 		return DONOTHING;
 	return (a_Save(currboard, fileinfo, NA));
@@ -3136,8 +3164,12 @@ static void quickviewpost(int ent, struct fileheader *fileinfo, char *direct) {
 
 /* Added by ylsdd */
 static int
-change_t_lines()
+change_t_lines(int ent, void *record, char *direct)
 {
+	(void) ent;
+	(void) record;
+	(void) direct;
+
 	extern void (*quickview) (int ent, struct fileheader *fileinfo, char *direct);
 	if (0)
 		if (!IScurrBM)
@@ -3147,9 +3179,13 @@ change_t_lines()
 }
 
 static int
-post_saved()
+post_saved(int ent, void *record, char *direct)
 {
 	char fname[STRLEN], title[STRLEN];
+	(void) ent;
+	(void) record;
+	(void) direct;
+
 	if (!IScurrBM)
 		return DONOTHING;
 	sprintf(fname, "bm/%s", currentuser.userid);
@@ -3175,8 +3211,9 @@ post_saved()
 /* Added by netty to handle post saving into (0)Announce */
 /* 修改以用于对个人精华区的支持, by ylsdd*/
 int
-Import_post(int ent, struct fileheader *fileinfo, char *direct)
+Import_post(int ent, void *record, char *direct)
 {
+	struct fileheader *fileinfo = record;
 	if (!HAS_PERM(PERM_BOARDS | PERM_SYSOP, currentuser) && !HAS_PERM(PERM_SPECIAL8, currentuser))
 		return FULLUPDATE;
 	a_Import(direct, fileinfo, NA);
@@ -3207,9 +3244,12 @@ static int check_notespasswd() {
 }
 
 static int
-show_b_secnote()
+show_b_secnote(int ent, void *record, char *direct)
 {
 	char buf[256];
+	(void) ent;
+	(void) record;
+	(void) direct;
 	clear();
 	setvfile(buf, currboard, "secnotes");
 	if (dashf(buf)) {
@@ -3226,8 +3266,12 @@ show_b_secnote()
 }
 
 static int
-show_b_note()
+show_b_note(int ent, void *record, char *direct)
 {
+	(void) ent;
+	(void) record;
+	(void) direct;
+
 	clear();
 	if (show_board_notes(currboard) == -1) {
 		move(4, 30);
@@ -3246,10 +3290,11 @@ show_b_note()
 	return what_to_do();
 }
 
-static int show_file_info(int ent, struct fileheader *fileinfo, char *direct) {
+static int show_file_info(int ent, void *record, char *direct) {
 	(void) direct;
 	struct boardmem *bp;
 	char temp_sessionid[10];
+	struct fileheader *fileinfo = record;
 	time_t t = fileinfo->filetime;
 	bp = ythtbbs_cache_Board_get_board_by_name(currboard);
 	if (NULL == bp)
@@ -3322,15 +3367,21 @@ what_to_do()
 }
 
 static int
-do_t_query()
+do_t_query(int ent, void *record, char *direct)
 {
+	(void) ent;
+	(void) record;
+	(void) direct;
 	t_query(NULL);
 	return FULLUPDATE;
 }
 
 static int
-into_backnumber()
+into_backnumber(int ent, void *record, char *direct)
 {
+	(void) ent;
+	(void) record;
+	(void) direct;
 	int savemode = uinfo.mode;
 	selectbacknumber();
 	modify_user_mode(savemode);
@@ -3338,23 +3389,32 @@ into_backnumber()
 }
 
 int
-into_announce()
+into_announce(int ent, void *record, char *direct)
 {
+	(void) ent;
+	(void) record;
+	(void) direct;
 	if (a_menusearch(currboard, HAS_PERM(PERM_ANNOUNCE | PERM_SYSOP | PERM_OBOARDS, currentuser) ? PERM_BOARDS : 0))
 		return 999;
 	return DONOTHING;
 }
 
 static int
-into_my_Personal()
+into_my_Personal(int ent, void *record, char *direct)
 {
+	(void) ent;
+	(void) record;
+	(void) direct;
 	Personal("*");
 	return FULLUPDATE;
 }
 
 static int
-select_Personal()
+select_Personal(int ent, void *record, char *direct)
 {
+	(void) ent;
+	(void) record;
+	(void) direct;
 	char uident[STRLEN], cmd[STRLEN];
 	move(0, 0);
 	clrtoeol();
@@ -3366,16 +3426,18 @@ select_Personal()
 
 #ifdef INTERNET_EMAIL
 int
-forward_post(int ent, struct fileheader *fileinfo, char *direct)
+forward_post(int ent, void *record, char *direct)
 {
+	struct fileheader *fileinfo = record;
 	if (strcmp("guest", currentuser.userid) == 0)
 		return DONOTHING;
 	return (mail_forward(ent, fileinfo, direct));
 }
 
 int
-forward_u_post(int ent, struct fileheader *fileinfo, char *direct)
+forward_u_post(int ent, void *record, char *direct)
 {
+	struct fileheader *fileinfo = record;
 	if (strcmp("guest", currentuser.userid) == 0)
 		return DONOTHING;
 	return (mail_u_forward(ent, fileinfo, direct));
@@ -3545,7 +3607,7 @@ int Goodbye(const char *s) {
 	if (strcmp(currentuser.userid, "guest") && ythtbbs_cache_UserTable_count(usernum) == 1) {
 		if (DEFINE(DEF_MAILMSG, currentuser)) {
 			if (get_msgcount(0, currentuser.userid) > 0)
-				show_allmsgs(NULL);
+				show_allmsgs(0, NULL, NULL);
 		} else {
 			clear_msg(currentuser.userid);
 		}
@@ -3630,7 +3692,7 @@ int Goodbye(const char *s) {
 goodbye:
 	if (fp) fclose(fp);
 	if (buf) free(buf);
-	return Q_Goodbye();
+	return Q_Goodbye(0, NULL, NULL);
 }
 
 #if 0
@@ -3730,10 +3792,11 @@ setbdir(char *buf, char *boardname, int Digestmode)
 		sprintf(buf, "boards/%s/%s", boardname, dir);
 }
 
-int zmodem_sendfile(int ent, struct fileheader *fileinfo, char *direct) {
+int zmodem_sendfile(int ent, void *record, char *direct) {
 	(void) ent;
 	char *t;
 	char buf1[512];
+	struct fileheader *fileinfo = record;
 
 	strcpy(buf1, direct);
 	if ((t = strrchr(buf1, '/')) != NULL)
@@ -3743,11 +3806,11 @@ int zmodem_sendfile(int ent, struct fileheader *fileinfo, char *direct) {
 }
 
 static int
-Origin2(char *text)
+Origin2(const char *text)
 {
 	char tmp[STRLEN];
 
-	sprintf(tmp, ":．%s %s．[FROM:", MY_BBS_NAME, email_domain());
+	snprintf(tmp, sizeof tmp, ":．%s %s．[FROM:", MY_BBS_NAME, email_domain());
 	if (strstr(text, tmp))
 		return 1;
 	else
@@ -3755,8 +3818,11 @@ Origin2(char *text)
 }
 
 int
-deleted_mode()
+deleted_mode(int ent, void *record, char *direct)
 {
+	(void) ent;
+	(void) record;
+	(void) direct;
 	extern char currdirect[STRLEN];
 
 	if (!IScurrBM && !HAS_PERM(PERM_ARBITRATE, currentuser)
@@ -3779,8 +3845,11 @@ deleted_mode()
 }
 
 int
-junk_mode()
+junk_mode(int ent, void *record, char *direct)
 {
+	(void) ent;
+	(void) record;
+	(void) direct;
 	extern char currdirect[STRLEN];
 
 	if (!HAS_PERM(PERM_BLEVELS, currentuser) && !HAS_PERM(PERM_ARBITRATE, currentuser)) {
@@ -3804,8 +3873,11 @@ junk_mode()
 
 //modify by macintosh 050427 for recycle_bin_res.
 int
-marked_mode()
+marked_mode(int ent, void *record, char *d)
 {
+	(void) ent;
+	(void) record;
+	(void) d;
 	extern char currdirect[STRLEN];
 	char ans[3];
 	char whattosearch[31];
@@ -3932,8 +4004,11 @@ marked_mode()
 /* end */
 
 int
-thread_mode()
+thread_mode(int ent, void *record, char *direct)
 {
+	(void) ent;
+	(void) record;
+	(void) direct;
 	extern char currdirect[STRLEN];
 	if (digestmode == 2) {
 		digestmode = NA;

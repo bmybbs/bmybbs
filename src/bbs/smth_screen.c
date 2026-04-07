@@ -348,13 +348,13 @@ refresh()
 	int i, j, k, ii, p, tailcolor, tailmode;
 	struct screenline *bp = big_picture;
 	int count = 0;
+	char buf[16];
 
 	if (num_in_buf() != 0)
 		return;
 	if (scrollcnt < 0) {
-		char buf[10];
 		rel_move(tc_col, tc_line, 0, 0);
-		sprintf(buf, "\033[%dL", -scrollcnt);
+		snprintf(buf, sizeof buf, "\033[%dL", -scrollcnt);
 		io_output(buf, strlen(buf));
 		scrollcnt = 0;
 	}

@@ -7,9 +7,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 //"not" inserted in identifier
-static const char *And = "\xC7\xD2";  // «“
-static const char *Or  = "\xBB\xF2";  // ªÚ
-static const char *Not = "\xB7\xC7";  // ∑«
+static const char *And = "\xC7\xD2";  // ‰∏î
+static const char *Or  = "\xBB\xF2";  // Êàñ
+static const char *Not = "\xB7\xC7";  // Èùû
 static const char LeftBracket = '(';
 static const char RightBracket = ')';
 static const char Separator[] = { ' ', '\t' };	//seperator, you can add ',', ';' to it, etc
@@ -29,11 +29,9 @@ static int do_term(void);
 static int do_and(void);
 static int do_or(void);
 
-ExtStru *extstru;
-
 static __inline int is_str(int temp, const char *Str) {
 	if ((temp - start + 1 == (int) strlen(Str))
-	    && (start == strstr(exp + start, Str) - exp))
+			&& (start == strstr(exp + start, Str) - exp))
 		return 1;
 
 	else
@@ -56,7 +54,7 @@ static __inline int next_token() {
 		start++;
 	i = start;
 	while (i <= end && !is_sep(exp[i]) && (exp[i] != LeftBracket)
-	       && (exp[i] != RightBracket))
+			&& (exp[i] != RightBracket))
 		i++;
 	return i - 1;
 }
