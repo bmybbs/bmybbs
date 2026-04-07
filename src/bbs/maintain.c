@@ -47,8 +47,8 @@ static int freeclubnum(void);
 static int setsecstr(char *buf, int ln);
 static void anno_title(char *buf, struct boardheader *bh);
 
-//proto.hÖĞÓĞÁË
-//int release_email(char *userid, char *email); //ÊÍ·ÅÓÊÏä
+//proto.hä¸­æœ‰äº†
+//int release_email(char *userid, char *email); //é‡Šæ”¾é‚®ç®±
 
 int
 check_systempasswd()
@@ -61,13 +61,17 @@ check_systempasswd()
 		fgets(prepass, STRLEN, pass);
 		fclose(pass);
 		prepass[strlen(prepass) - 1] = '\0';
-		getdata(1, 0, "ÇëÊäÈëÏµÍ³ÃÜÂë: ", passbuf, 19, NOECHO, YEA);
+		// è¯·è¾“å…¥ç³»ç»Ÿå¯†ç :
+		getdata(1, 0, "\xC7\xEB\xCA\xE4\xC8\xEB\xCF\xB5\xCD\xB3\xC3\xDC\xC2\xEB: ", passbuf, 19, NOECHO, YEA);
 		if (passbuf[0] == '\0' || passbuf[0] == '\n')
 			return NA;
 		if (!ytht_crypt_checkpasswd(prepass, passbuf)) {
 			move(2, 0);
-			prints("´íÎóµÄÏµÍ³ÃÜÂë...");
-			securityreport("ÏµÍ³ÃÜÂëÊäÈë´íÎó...", "ÏµÍ³ÃÜÂëÊäÈë´íÎó...");
+			// é”™è¯¯çš„ç³»ç»Ÿå¯†ç ...
+			prints("\xB4\xED\xCE\xF3\xB5\xC4\xCF\xB5\xCD\xB3\xC3\xDC\xC2\xEB...");
+			// ç³»ç»Ÿå¯†ç è¾“å…¥é”™è¯¯...
+			// ç³»ç»Ÿå¯†ç è¾“å…¥é”™è¯¯...
+			securityreport("\xCF\xB5\xCD\xB3\xC3\xDC\xC2\xEB\xCA\xE4\xC8\xEB\xB4\xED\xCE\xF3...", "\xCF\xB5\xCD\xB3\xC3\xDC\xC2\xEB\xCA\xE4\xC8\xEB\xB4\xED\xCE\xF3...");
 			pressanykey();
 			return NA;
 		}
@@ -110,9 +114,12 @@ char *content;
 	sprintf(fname, "bbstmpfs/tmp/security.%s.%05d", currentuser.userid,
 		uinfo.pid);
 	if ((se = fopen(fname, "w")) != NULL) {
-		fprintf(se, "ÏµÍ³°²È«¼ÇÂ¼ÏµÍ³\nÔ­Òò£º\n%s\n", content);
-		fprintf(se, "ÒÔÏÂÊÇ²¿·Ö¸öÈË×ÊÁÏ\n");
-		fprintf(se, "×î½ü¹âÁÙ»úÆ÷: %s", currentuser.lasthost);
+		// ç³»ç»Ÿå®‰å…¨è®°å½•ç³»ç»Ÿ\nåŸå› ï¼š\n%s\n
+		fprintf(se, "\xCF\xB5\xCD\xB3\xB0\xB2\xC8\xAB\xBC\xC7\xC2\xBC\xCF\xB5\xCD\xB3\n\xD4\xAD\xD2\xF2\xA3\xBA\n%s\n", content);
+		// ä»¥ä¸‹æ˜¯éƒ¨åˆ†ä¸ªäººèµ„æ–™\n
+		fprintf(se, "\xD2\xD4\xCF\xC2\xCA\xC7\xB2\xBF\xB7\xD6\xB8\xF6\xC8\xCB\xD7\xCA\xC1\xCF\n");
+		// æœ€è¿‘å…‰ä¸´æœºå™¨: %s
+		fprintf(se, "\xD7\xEE\xBD\xFC\xB9\xE2\xC1\xD9\xBB\xFA\xC6\xF7: %s", currentuser.lasthost);
 		fclose(se);
 		postfile(fname, "syssecurity", str, 2);
 		unlink(fname);
@@ -167,9 +174,11 @@ int m_info(const char *s) {
 		return -1;
 	}
 	clear();
-	stand_title("ĞŞ¸ÄÊ¹ÓÃÕß´úºÅ");
+	// ä¿®æ”¹ä½¿ç”¨è€…ä»£å·
+	stand_title("\xD0\xDE\xB8\xC4\xCA\xB9\xD3\xC3\xD5\xDF\xB4\xFA\xBA\xC5");
 	move(1, 0);
-	usercomplete("ÇëÊäÈëÊ¹ÓÃÕß´úºÅ: ", genbuf);
+	// è¯·è¾“å…¥ä½¿ç”¨è€…ä»£å·:
+	usercomplete("\xC7\xEB\xCA\xE4\xC8\xEB\xCA\xB9\xD3\xC3\xD5\xDF\xB4\xFA\xBA\xC5: ", genbuf);
 	if (*genbuf == '\0') {
 		clear();
 		return -1;
@@ -177,7 +186,8 @@ int m_info(const char *s) {
 
 	if (!(id = getuser(genbuf))) {
 		move(3, 0);
-		prints("´íÎóµÄÊ¹ÓÃÕß´úºÅ");
+		// é”™è¯¯çš„ä½¿ç”¨è€…ä»£å·
+		prints("\xB4\xED\xCE\xF3\xB5\xC4\xCA\xB9\xD3\xC3\xD5\xDF\xB4\xFA\xBA\xC5");
 		clrtoeol();
 		pressreturn();
 		clear();
@@ -215,23 +225,37 @@ chgrp()
 	static char buf[STRLEN];
 	char ans[6];
 
-/*ÏÂÃæÁ½¸öÊı×éÒò·ÖÀà±ä»¯¶øĞŞ¸Ä by ylsdd*/
+/*ä¸‹é¢ä¸¤ä¸ªæ•°ç»„å› åˆ†ç±»å˜åŒ–è€Œä¿®æ”¹ by ylsdd*/
 #if 0
 	static char *const explain[] = {
-		"±¾Õ¾ÏµÍ³",
-		"½»Í¨´óÑ§",
-		"¿ª·¢¼¼Êõ",
-		"µçÄÔÓ¦ÓÃ",
-		"Ñ§Êõ¿ÆÑ§",
-		"Éç»á¿ÆÑ§",
-		"ÎÄÑ§ÒÕÊõ",
-		"ÖªĞÔ¸ĞĞÔ",
-		"ÌåÓıÔË¶¯",
-		"ĞİÏĞÒôÀÖ",
-		"ÓÎÏ·ÌìµØ",
-		"ĞÖµÜÔºĞ£",
-		"ĞÂÎÅĞÅÏ¢",
-		"ÏçÒôÏçÇé",
+		// æœ¬ç«™ç³»ç»Ÿ
+		"\xB1\xBE\xD5\xBE\xCF\xB5\xCD\xB3",
+		// äº¤é€šå¤§å­¦
+		"\xBD\xBB\xCD\xA8\xB4\xF3\xD1\xA7",
+		// å¼€å‘æŠ€æœ¯
+		"\xBF\xAA\xB7\xA2\xBC\xBC\xCA\xF5",
+		// ç”µè„‘åº”ç”¨
+		"\xB5\xE7\xC4\xD4\xD3\xA6\xD3\xC3",
+		// å­¦æœ¯ç§‘å­¦
+		"\xD1\xA7\xCA\xF5\xBF\xC6\xD1\xA7",
+		// ç¤¾ä¼šç§‘å­¦
+		"\xC9\xE7\xBB\xE1\xBF\xC6\xD1\xA7",
+		// æ–‡å­¦è‰ºæœ¯
+		"\xCE\xC4\xD1\xA7\xD2\xD5\xCA\xF5",
+		// çŸ¥æ€§æ„Ÿæ€§
+		"\xD6\xAA\xD0\xD4\xB8\xD0\xD0\xD4",
+		// ä½“è‚²è¿åŠ¨
+		"\xCC\xE5\xD3\xFD\xD4\xCB\xB6\xAF",
+		// ä¼‘é—²éŸ³ä¹
+		"\xD0\xDD\xCF\xD0\xD2\xF4\xC0\xD6",
+		// æ¸¸æˆå¤©åœ°
+		"\xD3\xCE\xCF\xB7\xCC\xEC\xB5\xD8",
+		// å…„å¼Ÿé™¢æ ¡
+		"\xD0\xD6\xB5\xDC\xD4\xBA\xD0\xA3",
+		// æ–°é—»ä¿¡æ¯
+		"\xD0\xC2\xCE\xC5\xD0\xC5\xCF\xA2",
+		// ä¹¡éŸ³ä¹¡æƒ…
+		"\xCF\xE7\xD2\xF4\xCF\xE7\xC7\xE9",
 		"TEMP",
 		NULL
 	};
@@ -257,12 +281,14 @@ chgrp()
 #endif
 	clear();
 	move(2, 0);
-	prints("Ñ¡Ôñ¾«»ªÇøµÄÄ¿Â¼\n\n");
+	// é€‰æ‹©ç²¾ååŒºçš„ç›®å½•\n\n
+	prints("\xD1\xA1\xD4\xF1\xBE\xAB\xBB\xAA\xC7\xF8\xB5\xC4\xC4\xBF\xC2\xBC\n\n");
 	for (i = 0; i < sectree.nsubsec; i++) {
 		prints("\033[1;32m%2d\033[m. %-20s                GROUP_%c\n", i,
 				sectree.subsec[i]->title, sectree.subsec[i]->basestr[0]);
 	}
-	sprintf(buf, "ÇëÊäÈëÄãµÄÑ¡Ôñ(0~%d): ", --i);
+	// è¯·è¾“å…¥ä½ çš„é€‰æ‹©(0~%d):
+	sprintf(buf, "\xC7\xEB\xCA\xE4\xC8\xEB\xC4\xE3\xB5\xC4\xD1\xA1\xD4\xF1(0~%d): ", --i);
 	while (1) {
 		getdata(i + 6, 0, buf, ans, 4, DOECHO, YEA);
 		if (!isdigit(ans[0]))
@@ -310,12 +336,16 @@ setsecstr(char *buf, int ln)
 	move(ln, 0);
 	clrtobot();
 	while (1) {
-		prints("=======µ±Ç°·ÖÇøÑ¡Ôñ: \033[31m%s\033[0;1m %s\033[m =======\n", sec->basestr, sec->title);
+		// =======å½“å‰åˆ†åŒºé€‰æ‹©: \033[31m%s\033[0;1m %s\033[m =======\n
+		prints("=======\xB5\xB1\xC7\xB0\xB7\xD6\xC7\xF8\xD1\xA1\xD4\xF1: \033[31m%s\033[0;1m %s\033[m =======\n", sec->basestr, sec->title);
 		if (sec->parent) {
-			prints(" (\033[4;33m#\033[0m) »ØÉÏ¼¶·ÖÇø\n");
-			prints(" (\033[4;33m%%\033[0m) ¾Í·ÅÔÚÕâÀï\n");
+			//  (\033[4;33m#\033[0m) å›ä¸Šçº§åˆ†åŒº\n
+			prints(" (\033[4;33m#\033[0m) \xBB\xD8\xC9\xCF\xBC\xB6\xB7\xD6\xC7\xF8\n");
+			//  (\033[4;33m%%\033[0m) å°±æ”¾åœ¨è¿™é‡Œ\n
+			prints(" (\033[4;33m%%\033[0m) \xBE\xCD\xB7\xC5\xD4\xDA\xD5\xE2\xC0\xEF\n");
 		}
-		prints(" (\033[4;33m*\033[0m) ±£³ÖÔ­À´Éè¶¨(¿ÉÓÃ»Ø³µÑ¡¶¨±¾Ïî)\n");
+		//  (\033[4;33m*\033[0m) ä¿æŒåŸæ¥è®¾å®š(å¯ç”¨å›è½¦é€‰å®šæœ¬é¡¹)\n
+		prints(" (\033[4;33m*\033[0m) \xB1\xA3\xB3\xD6\xD4\xAD\xC0\xB4\xC9\xE8\xB6\xA8(\xBF\xC9\xD3\xC3\xBB\xD8\xB3\xB5\xD1\xA1\xB6\xA8\xB1\xBE\xCF\xEE)\n");
 		len = strlen(sec->basestr);
 		for (i = 0; i < sec->nsubsec; i++) {
 			if (i && !(i % 3))
@@ -323,7 +353,8 @@ setsecstr(char *buf, int ln)
 			ch = sec->subsec[i]->basestr[len];
 			prints(" (\033[4;33m%c\033[0m) \033[31;1m %s\033[0m", ch, sec->subsec[i]->title);
 		}
-		prints("\nÇë°´À¨ºÅÄÚµÄ×ÖÄ¸Ñ¡Ôñ");
+		// \nè¯·æŒ‰æ‹¬å·å†…çš„å­—æ¯é€‰æ‹©
+		prints("\n\xC7\xEB\xB0\xB4\xC0\xA8\xBA\xC5\xC4\xDA\xB5\xC4\xD7\xD6\xC4\xB8\xD1\xA1\xD4\xF1");
 		while (1) {
 			ch = igetkey();
 			if (ch == '\n' || ch == '\r')
@@ -371,17 +402,20 @@ int m_newbrd(const char *s) {
 		return -1;
 	}
 	clear();
-	stand_title("¿ªÆôĞÂÌÖÂÛÇø");
+	// å¼€å¯æ–°è®¨è®ºåŒº
+	stand_title("\xBF\xAA\xC6\xF4\xD0\xC2\xCC\xD6\xC2\xDB\xC7\xF8");
 	memset(&newboard, 0, sizeof (newboard));
 	move(2, 0);
 	ansimore2("etc/boardref", NA, 1, 11);
 	while (1) {
-		getdata(10, 0, "ÌÖÂÛÇøÃû³Æ:   ", newboard.filename, 18, DOECHO,
+		// è®¨è®ºåŒºåç§°:
+		getdata(10, 0, "\xCC\xD6\xC2\xDB\xC7\xF8\xC3\xFB\xB3\xC6:   ", newboard.filename, 18, DOECHO,
 			YEA);
 		if (newboard.filename[0] != 0) {
 			struct boardheader dh;
 			if (new_search_record(BOARDS, &dh, sizeof (dh), (void *) cmpbnames, newboard.filename)) {
-				prints("\n´íÎó! ´ËÌÖÂÛÇøÒÑ¾­´æÔÚ!!");
+				// \né”™è¯¯! æ­¤è®¨è®ºåŒºå·²ç»å­˜åœ¨!!
+				prints("\n\xB4\xED\xCE\xF3! \xB4\xCB\xCC\xD6\xC2\xDB\xC7\xF8\xD2\xD1\xBE\xAD\xB4\xE6\xD4\xDA!!");
 				pressanykey();
 				return -1;
 			}
@@ -389,9 +423,11 @@ int m_newbrd(const char *s) {
 			return -1;
 		if (valid_brdname(newboard.filename))
 			break;
-		prints("\n²»ºÏ·¨Ãû³Æ!!");
+		// \nä¸åˆæ³•åç§°!!
+		prints("\n\xB2\xBB\xBA\xCF\xB7\xA8\xC3\xFB\xB3\xC6!!");
 	}
-	getdata(11, 0, "ÌÖÂÛÇøÖĞÎÄÃû: ", newboard.title,
+	// è®¨è®ºåŒºä¸­æ–‡å:
+	getdata(11, 0, "\xCC\xD6\xC2\xDB\xC7\xF8\xD6\xD0\xCE\xC4\xC3\xFB: ", newboard.title,
 		sizeof (newboard.title), DOECHO, YEA);
 	if (newboard.title[0] == '\0')
 		return -1;
@@ -399,7 +435,8 @@ int m_newbrd(const char *s) {
 	strcat(vbuf, newboard.filename);
 	setbpath(genbuf, sizeof(genbuf), newboard.filename);
 	if (getbnum(newboard.filename) > 0 || mkdir(genbuf, 0777) == -1 || mkdir(vbuf, 0777) == -1) {
-		prints("\n´íÎóµÄÌÖÂÛÇøÃû³Æ!!\n");
+		// \né”™è¯¯çš„è®¨è®ºåŒºåç§°!!\n
+		prints("\n\xB4\xED\xCE\xF3\xB5\xC4\xCC\xD6\xC2\xDB\xC7\xF8\xC3\xFB\xB3\xC6!!\n");
 		pressreturn();
 		rmdir(vbuf);
 		rmdir(genbuf);
@@ -407,7 +444,8 @@ int m_newbrd(const char *s) {
 		return -1;
 	}
 	move(12, 0);
-	prints("Ñ¡ÔñÖ÷·ÖÇø: ");
+	// é€‰æ‹©ä¸»åˆ†åŒº:
+	prints("\xD1\xA1\xD4\xF1\xD6\xF7\xB7\xD6\xC7\xF8: ");
 	while (1) {
 		genbuf[0] = 0;
 		setsecstr(genbuf, 13);
@@ -415,20 +453,24 @@ int m_newbrd(const char *s) {
 			break;
 	}
 	move(12, 0);
-	prints("Ö÷·ÖÇøÉè¶¨: %s", genbuf);
+	// ä¸»åˆ†åŒºè®¾å®š: %s
+	prints("\xD6\xF7\xB7\xD6\xC7\xF8\xC9\xE8\xB6\xA8: %s", genbuf);
 	newboard.secnumber1 = genbuf[0];
 	ytht_strsncpy(newboard.sec1, genbuf, sizeof(newboard.sec1));
 	move(12, 30);
-	prints("Ñ¡Ôñ·ÖÇøÁ´½Ó: ");
+	// é€‰æ‹©åˆ†åŒºé“¾æ¥:
+	prints("\xD1\xA1\xD4\xF1\xB7\xD6\xC7\xF8\xC1\xB4\xBD\xD3: ");
 	genbuf[0] = 0;
 	setsecstr(genbuf, 13);
 	move(12, 30);
-	prints("·ÖÇøÁ´½ÓÉè¶¨: %s", genbuf);
+	// åˆ†åŒºé“¾æ¥è®¾å®š: %s
+	prints("\xB7\xD6\xC7\xF8\xC1\xB4\xBD\xD3\xC9\xE8\xB6\xA8: %s", genbuf);
 	newboard.secnumber2 = genbuf[0];
 	ytht_strsncpy(newboard.sec2, genbuf, sizeof(newboard.sec2));
 	move(13, 0);
 	while (1) {
-		getdata(13, 0, "ÌÖÂÛÇø·ÖÀà(4×Ö):", newboard.type,
+		// è®¨è®ºåŒºåˆ†ç±»(4å­—):
+		getdata(13, 0, "\xCC\xD6\xC2\xDB\xC7\xF8\xB7\xD6\xC0\xE0(4\xD7\xD6):", newboard.type,
 			sizeof (newboard.type), DOECHO, YEA);
 		if (strlen(newboard.type) == 4)
 			break;
@@ -438,19 +480,23 @@ int m_newbrd(const char *s) {
 		newboard.flag &= ~ANONY_FLAG;
 		newboard.level = 0;
 		if ((newboard.clubnum = freeclubnum()) == -1) {
-			prints("Ã»ÓĞ¿ÕµÄ¾ãÀÖ²¿Î»ÖÃÁË");
+			// æ²¡æœ‰ç©ºçš„ä¿±ä¹éƒ¨ä½ç½®äº†
+			prints("\xC3\xBB\xD3\xD0\xBF\xD5\xB5\xC4\xBE\xE3\xC0\xD6\xB2\xBF\xCE\xBB\xD6\xC3\xC1\xCB");
 			pressreturn();
 			clear();
 			return -1;
 		}
 		sprintf(genbuf, "%d", newboard.clubnum);
-		if (askyn("ÊÇ·ñÊÇ¿ª·ÅÊ½¾ãÀÖ²¿", YEA, NA) == YEA)
+		// æ˜¯å¦æ˜¯å¼€æ”¾å¼ä¿±ä¹éƒ¨
+		if (askyn("\xCA\xC7\xB7\xF1\xCA\xC7\xBF\xAA\xB7\xC5\xCA\xBD\xBE\xE3\xC0\xD6\xB2\xBF", YEA, NA) == YEA)
 			newboard.flag |= CLUBTYPE_FLAG;
 		else
 			newboard.flag &= ~CLUBTYPE_FLAG;
 	} else {
-		if (askyn("ÊÇ·ñÏŞÖÆ´æÈ¡È¨Àû", NA, NA) == YEA) {
-			getdata(15, 0, "ÏŞÖÆ Read/Post? [R]: ", ans, 2, DOECHO,
+		// æ˜¯å¦é™åˆ¶å­˜å–æƒåˆ©
+		if (askyn("\xCA\xC7\xB7\xF1\xCF\xDE\xD6\xC6\xB4\xE6\xC8\xA1\xC8\xA8\xC0\xFB", NA, NA) == YEA) {
+			// é™åˆ¶ Read/Post? [R]:
+			getdata(15, 0, "\xCF\xDE\xD6\xC6 Read/Post? [R]: ", ans, 2, DOECHO,
 				YEA);
 			if (*ans == 'P' || *ans == 'p')
 				newboard.level = PERM_POSTMASK;
@@ -459,29 +505,35 @@ int m_newbrd(const char *s) {
 			move(1, 0);
 			clrtobot();
 			move(2, 0);
-			prints("Éè¶¨ %s È¨Àû. ÌÖÂÛÇø: '%s'\n", (newboard.level & PERM_POSTMASK ? "POST" : "READ"), newboard.filename);
-			newboard.level = setperms(newboard.level, "È¨ÏŞ", NUMPERMS, showperminfo, 0);
+			// è®¾å®š %s æƒåˆ©. è®¨è®ºåŒº: '%s'\n
+			prints("\xC9\xE8\xB6\xA8 %s \xC8\xA8\xC0\xFB. \xCC\xD6\xC2\xDB\xC7\xF8: '%s'\n", (newboard.level & PERM_POSTMASK ? "POST" : "READ"), newboard.filename);
+			// æƒé™
+			newboard.level = setperms(newboard.level, "\xC8\xA8\xCF\xDE", NUMPERMS, showperminfo, 0);
 			clear();
 		} else
 			newboard.level = 0;
 
 		move(15, 0);
-		if (askyn("ÊÇ·ñ¼ÓÈëÄäÃû°æ", NA, NA) == YEA)
+		// æ˜¯å¦åŠ å…¥åŒ¿åç‰ˆ
+		if (askyn("\xCA\xC7\xB7\xF1\xBC\xD3\xC8\xEB\xC4\xE4\xC3\xFB\xB0\xE6", NA, NA) == YEA)
 			newboard.flag |= ANONY_FLAG;
 		else
 			newboard.flag &= ~ANONY_FLAG;
 	}
 	move(16, 0);
-	if (askyn("ÊÇ·ñÊÇ×ªĞÅ°æÃæ", NA, NA) == YEA)
+	// æ˜¯å¦æ˜¯è½¬ä¿¡ç‰ˆé¢
+	if (askyn("\xCA\xC7\xB7\xF1\xCA\xC7\xD7\xAA\xD0\xC5\xB0\xE6\xC3\xE6", NA, NA) == YEA)
 		newboard.flag |= INNBBSD_FLAG;
 	else
 		newboard.flag &= ~INNBBSD_FLAG;
 
-	if (askyn("ÊÇ·ñÊÇĞèÒª½øĞĞÄÚÈİ¼ì²éµÄ°æÃæ", NA, NA) == YEA)
+	// æ˜¯å¦æ˜¯éœ€è¦è¿›è¡Œå†…å®¹æ£€æŸ¥çš„ç‰ˆé¢
+	if (askyn("\xCA\xC7\xB7\xF1\xCA\xC7\xD0\xE8\xD2\xAA\xBD\xF8\xD0\xD0\xC4\xDA\xC8\xDD\xBC\xEC\xB2\xE9\xB5\xC4\xB0\xE6\xC3\xE6", NA, NA) == YEA)
 		newboard.flag |= IS1984_FLAG;
 	else
 		newboard.flag &= ~IS1984_FLAG;
-	if (askyn("°æÃæÄÚÈİÊÇ·ñ¿ÉÄÜºÍÕşÖÎÏà¹Ø", NA, NA) == YEA)
+	// ç‰ˆé¢å†…å®¹æ˜¯å¦å¯èƒ½å’Œæ”¿æ²»ç›¸å…³
+	if (askyn("\xB0\xE6\xC3\xE6\xC4\xDA\xC8\xDD\xCA\xC7\xB7\xF1\xBF\xC9\xC4\xDC\xBA\xCD\xD5\xFE\xD6\xCE\xCF\xE0\xB9\xD8", NA, NA) == YEA)
 		newboard.flag |= POLITICAL_FLAG;
 	else
 		newboard.flag &= ~POLITICAL_FLAG;
@@ -509,15 +561,19 @@ int m_newbrd(const char *s) {
 	sprintf(vbuf, "%-38.38s", newboard.title);
 	if (group != NULL) {
 		if (add_grp(group, cexplain, newboard.filename, vbuf) == -1)
-			prints("\n³ÉÁ¢¾«»ªÇøÊ§°Ü....\n");
+			// \næˆç«‹ç²¾ååŒºå¤±è´¥....\n
+			prints("\n\xB3\xC9\xC1\xA2\xBE\xAB\xBB\xAA\xC7\xF8\xCA\xA7\xB0\xDC....\n");
 		else
-			prints("ÒÑ¾­ÖÃÈë¾«»ªÇø...\n");
+			// å·²ç»ç½®å…¥ç²¾ååŒº...\n
+			prints("\xD2\xD1\xBE\xAD\xD6\xC3\xC8\xEB\xBE\xAB\xBB\xAA\xC7\xF8...\n");
 	}
 
-	prints("\nĞÂÌÖÂÛÇø³ÉÁ¢\n");
+	// \næ–°è®¨è®ºåŒºæˆç«‹\n
+	prints("\n\xD0\xC2\xCC\xD6\xC2\xDB\xC7\xF8\xB3\xC9\xC1\xA2\n");
 	{
 		char secu[STRLEN];
-		sprintf(secu, "³ÉÁ¢ĞÂ°æ£º%s", newboard.filename);
+		// æˆç«‹æ–°ç‰ˆï¼š%s
+		sprintf(secu, "\xB3\xC9\xC1\xA2\xD0\xC2\xB0\xE6\xA3\xBA%s", newboard.filename);
 		securityreport(secu, secu);
 	}
 	pressreturn();
@@ -530,7 +586,7 @@ anno_title(buf, bh)
 char *buf;
 struct boardheader *bh;
 {
-	char bm[IDLEN * 4 + 4];	//·ÅËÄ¸ö°æÎñ
+	char bm[IDLEN * 4 + 4];	//æ”¾å››ä¸ªç‰ˆåŠ¡
 	sprintf(buf, "%-38.38s", bh->title);
 	if (bh->bm[0][0] == 0)
 		return;
@@ -556,13 +612,16 @@ int m_editbrd(const char *s) {
 		return -1;
 	}
 	clear();
-	stand_title("ĞŞ¸ÄÌÖÂÛÇø×ÊÑ¶");
+	// ä¿®æ”¹è®¨è®ºåŒºèµ„è®¯
+	stand_title("\xD0\xDE\xB8\xC4\xCC\xD6\xC2\xDB\xC7\xF8\xD7\xCA\xD1\xB6");
 	move(1, 0);
 	make_blist_full();
-	namecomplete("ÊäÈëÌÖÂÛÇøÃû³Æ: ", bname);
+	// è¾“å…¥è®¨è®ºåŒºåç§°:
+	namecomplete("\xCA\xE4\xC8\xEB\xCC\xD6\xC2\xDB\xC7\xF8\xC3\xFB\xB3\xC6: ", bname);
 	if (*bname == '\0') {
 		move(2, 0);
-		prints("´íÎóµÄÌÖÂÛÇøÃû³Æ");
+		// é”™è¯¯çš„è®¨è®ºåŒºåç§°
+		prints("\xB4\xED\xCE\xF3\xB5\xC4\xCC\xD6\xC2\xDB\xC7\xF8\xC3\xFB\xB3\xC6");
 		pressreturn();
 		clear();
 		return -1;
@@ -570,7 +629,8 @@ int m_editbrd(const char *s) {
 	pos = new_search_record(BOARDS, &fh, sizeof (fh), (void *) cmpbnames, bname);
 	if (!pos) {
 		move(2, 0);
-		prints("´íÎóµÄÌÖÂÛÇøÃû³Æ");
+		// é”™è¯¯çš„è®¨è®ºåŒºåç§°
+		prints("\xB4\xED\xCE\xF3\xB5\xC4\xCC\xD6\xC2\xDB\xC7\xF8\xC3\xFB\xB3\xC6");
 		pressreturn();
 		clear();
 		return -1;
@@ -583,31 +643,45 @@ int m_editbrd(const char *s) {
 	political = fh.flag & POLITICAL_FLAG;
 	move(2, 0);
 	memcpy(&newfh, &fh, sizeof (newfh));
-	prints("ÌÖÂÛÇøÃû³Æ:   %s", fh.filename);
+	// è®¨è®ºåŒºåç§°:   %s
+	prints("\xCC\xD6\xC2\xDB\xC7\xF8\xC3\xFB\xB3\xC6:   %s", fh.filename);
 	move(2, 40);
-	prints("ÌÖÂÛÇøËµÃ÷:   %s\n", fh.title);
-	prints("ÄäÃûÌÖÂÛÇø:   %s  ¾ãÀÖ²¿°æÃæ£º  %s  ×ªĞÅÌÖÂÛÇø£º  %s\n",
+	// è®¨è®ºåŒºè¯´æ˜:   %s\n
+	prints("\xCC\xD6\xC2\xDB\xC7\xF8\xCB\xB5\xC3\xF7:   %s\n", fh.title);
+	// åŒ¿åè®¨è®ºåŒº:   %s  ä¿±ä¹éƒ¨ç‰ˆé¢ï¼š  %s  è½¬ä¿¡è®¨è®ºåŒºï¼š  %s\n
+	prints("\xC4\xE4\xC3\xFB\xCC\xD6\xC2\xDB\xC7\xF8:   %s  \xBE\xE3\xC0\xD6\xB2\xBF\xB0\xE6\xC3\xE6\xA3\xBA  %s  \xD7\xAA\xD0\xC5\xCC\xD6\xC2\xDB\xC7\xF8\xA3\xBA  %s\n",
 			(noidboard) ? "Yes" : "No", (isclub) ? "Yes" : "No",
 			(innboard) ? "Yes" : "No");
 	strcpy(oldtitle, fh.title);
-	prints("ÏŞÖÆ %s È¨Àû: %s",
+	// é™åˆ¶ %s æƒåˆ©: %s
+	prints("\xCF\xDE\xD6\xC6 %s \xC8\xA8\xC0\xFB: %s",
 			(fh.level & PERM_POSTMASK) ? "POST" :
 			(fh.level & PERM_NOZAP) ? "ZAP" : "READ",
-			(fh.level & ~PERM_POSTMASK) == 0 ? "²»ÉèÏŞ" : "ÓĞÉèÏŞ");
-	prints(" %s½øĞĞÈË¹¤ÎÄÕÂÉó²é", is1984 ? "Òª" : "²»");
+			// ä¸è®¾é™
+			// æœ‰è®¾é™
+			(fh.level & ~PERM_POSTMASK) == 0 ? "\xB2\xBB\xC9\xE8\xCF\xDE" : "\xD3\xD0\xC9\xE8\xCF\xDE");
+	//  %sè¿›è¡Œäººå·¥æ–‡ç« å®¡æŸ¥
+	// è¦
+	// ä¸
+	prints(" %s\xBD\xF8\xD0\xD0\xC8\xCB\xB9\xA4\xCE\xC4\xD5\xC2\xC9\xF3\xB2\xE9", is1984 ? "\xD2\xAA" : "\xB2\xBB");
 	if (political)
-		prints(" ÄÚÈİ¿ÉÄÜºÍÕşÖÎÏà¹Ø");
+		//  å†…å®¹å¯èƒ½å’Œæ”¿æ²»ç›¸å…³
+		prints(" \xC4\xDA\xC8\xDD\xBF\xC9\xC4\xDC\xBA\xCD\xD5\xFE\xD6\xCE\xCF\xE0\xB9\xD8");
 	move(5, 0);
-	if (askyn("ÊÇ·ñ¸ü¸ÄÒÔÉÏ×ÊÑ¶", NA, NA) == YEA) {
+	// æ˜¯å¦æ›´æ”¹ä»¥ä¸Šèµ„è®¯
+	if (askyn("\xCA\xC7\xB7\xF1\xB8\xFC\xB8\xC4\xD2\xD4\xC9\xCF\xD7\xCA\xD1\xB6", NA, NA) == YEA) {
 		move(6, 0);
-		prints("Ö±½Ó°´ <Return> ²»ĞŞ¸Ä´ËÀ¸×ÊÑ¶...");
+		// ç›´æ¥æŒ‰ <Return> ä¸ä¿®æ”¹æ­¤æ èµ„è®¯...
+		prints("\xD6\xB1\xBD\xD3\xB0\xB4 <Return> \xB2\xBB\xD0\xDE\xB8\xC4\xB4\xCB\xC0\xB8\xD7\xCA\xD1\xB6...");
 enterbname:
-		getdata(7, 0, "ĞÂÌÖÂÛÇøÃû³Æ: ", genbuf, 18, DOECHO, YEA);
+		// æ–°è®¨è®ºåŒºåç§°:
+		getdata(7, 0, "\xD0\xC2\xCC\xD6\xC2\xDB\xC7\xF8\xC3\xFB\xB3\xC6: ", genbuf, 18, DOECHO, YEA);
 		if (genbuf[0] != 0) {
 			struct boardheader dh;
 			if (new_search_record(BOARDS, &dh, sizeof (dh), (void *) cmpbnames, genbuf)) {
 				move(2, 0);
-				prints("´íÎó! ´ËÌÖÂÛÇøÒÑ¾­´æÔÚ!!");
+				// é”™è¯¯! æ­¤è®¨è®ºåŒºå·²ç»å­˜åœ¨!!
+				prints("\xB4\xED\xCE\xF3! \xB4\xCB\xCC\xD6\xC2\xDB\xC7\xF8\xD2\xD1\xBE\xAD\xB4\xE6\xD4\xDA!!");
 				move(7, 0);
 				clrtoeol();
 				goto enterbname;
@@ -617,60 +691,71 @@ enterbname:
 				strcpy(bname, genbuf);
 			} else {
 				move(2, 0);
-				prints("²»ºÏ·¨µÄÌÖÂÛÇøÃû³Æ!");
+				// ä¸åˆæ³•çš„è®¨è®ºåŒºåç§°!
+				prints("\xB2\xBB\xBA\xCF\xB7\xA8\xB5\xC4\xCC\xD6\xC2\xDB\xC7\xF8\xC3\xFB\xB3\xC6!");
 				move(7, 0);
 				clrtoeol();
 				goto enterbname;
 			}
 		}
-		getdata(8, 0, "ĞÂÌÖÂÛÇøÖĞÎÄÃû: ", genbuf, 24, DOECHO, YEA);
+		// æ–°è®¨è®ºåŒºä¸­æ–‡å:
+		getdata(8, 0, "\xD0\xC2\xCC\xD6\xC2\xDB\xC7\xF8\xD6\xD0\xCE\xC4\xC3\xFB: ", genbuf, 24, DOECHO, YEA);
 		if (genbuf[0] != 0)
 			ytht_strsncpy(newfh.title, genbuf, sizeof(newfh.title));
 		ansimore2("etc/boardref", NA, 9, 7);
 		strcpy(genbuf, newfh.sec1);
 		move(16, 0);
-		prints("Ñ¡ÔñĞÂ·ÖÇø: %s", genbuf);
+		// é€‰æ‹©æ–°åˆ†åŒº: %s
+		prints("\xD1\xA1\xD4\xF1\xD0\xC2\xB7\xD6\xC7\xF8: %s", genbuf);
 		setsecstr(genbuf, 17);
 		if (genbuf[0] != 0) {
 			newfh.secnumber1 = genbuf[0];
 			ytht_strsncpy(newfh.sec1, genbuf, sizeof(newfh.sec1));
 		}
 		move(16, 0);
-		prints("ĞÂ·ÖÇøÉè¶¨: %s", genbuf);
+		// æ–°åˆ†åŒºè®¾å®š: %s
+		prints("\xD0\xC2\xB7\xD6\xC7\xF8\xC9\xE8\xB6\xA8: %s", genbuf);
 		move(16, 40);
 		strcpy(genbuf, newfh.sec2);
-		prints("Ñ¡ÔñĞÂ·ÖÇøÁ´½Ó: %s", genbuf);
+		// é€‰æ‹©æ–°åˆ†åŒºé“¾æ¥: %s
+		prints("\xD1\xA1\xD4\xF1\xD0\xC2\xB7\xD6\xC7\xF8\xC1\xB4\xBD\xD3: %s", genbuf);
 		setsecstr(genbuf, 17);
 		newfh.secnumber2 = genbuf[0];
 		ytht_strsncpy(newfh.sec2, genbuf, sizeof(newfh.sec2));
 		move(16, 40);
-		prints("ĞÂ·ÖÇøÁ´½ÓÉè¶¨: %s", genbuf);
-		getdata(17, 0, "ĞÂÌÖÂÛÇø·ÖÀà(4×Ö): ", genbuf, 5, DOECHO, YEA);
+		// æ–°åˆ†åŒºé“¾æ¥è®¾å®š: %s
+		prints("\xD0\xC2\xB7\xD6\xC7\xF8\xC1\xB4\xBD\xD3\xC9\xE8\xB6\xA8: %s", genbuf);
+		// æ–°è®¨è®ºåŒºåˆ†ç±»(4å­—):
+		getdata(17, 0, "\xD0\xC2\xCC\xD6\xC2\xDB\xC7\xF8\xB7\xD6\xC0\xE0(4\xD7\xD6): ", genbuf, 5, DOECHO, YEA);
 		if (genbuf[0] != 0)
 			ytht_strsncpy(newfh.type, genbuf, sizeof(newfh.type));
 		move(18, 0);
-		if (askyn("ÊÇ·ñÊÇ×ªĞÅ°æÃæ", innboard, NA) == YEA)
+		// æ˜¯å¦æ˜¯è½¬ä¿¡ç‰ˆé¢
+		if (askyn("\xCA\xC7\xB7\xF1\xCA\xC7\xD7\xAA\xD0\xC5\xB0\xE6\xC3\xE6", innboard, NA) == YEA)
 			newfh.flag |= INNBBSD_FLAG;
 		else
 			newfh.flag &= ~INNBBSD_FLAG;
 		move(18, 28);
-		if (askyn("ÊÇ·ñÊÇĞèÒª½øĞĞÄÚÈİ¼ì²éµÄ°æÃæ", is1984, NA) == YEA)
+		// æ˜¯å¦æ˜¯éœ€è¦è¿›è¡Œå†…å®¹æ£€æŸ¥çš„ç‰ˆé¢
+		if (askyn("\xCA\xC7\xB7\xF1\xCA\xC7\xD0\xE8\xD2\xAA\xBD\xF8\xD0\xD0\xC4\xDA\xC8\xDD\xBC\xEC\xB2\xE9\xB5\xC4\xB0\xE6\xC3\xE6", is1984, NA) == YEA)
 			newfh.flag |= IS1984_FLAG;
 		else
 			newfh.flag &= ~IS1984_FLAG;
-		if (askyn("°æÃæÄÚÈİÊÇ·ñ¿ÉÄÜºÍÕşÖÎÏà¹Ø", political, NA) == YEA)
+		// ç‰ˆé¢å†…å®¹æ˜¯å¦å¯èƒ½å’Œæ”¿æ²»ç›¸å…³
+		if (askyn("\xB0\xE6\xC3\xE6\xC4\xDA\xC8\xDD\xCA\xC7\xB7\xF1\xBF\xC9\xC4\xDC\xBA\xCD\xD5\xFE\xD6\xCE\xCF\xE0\xB9\xD8", political, NA) == YEA)
 			newfh.flag |= POLITICAL_FLAG;
 		else
 			newfh.flag &= ~POLITICAL_FLAG;
 
 		genbuf[0] = 0;
 		move(19, 0);
-		if (askyn("ÊÇ·ñÒÆ¶¯¾«»ªÇøµÄÎ»ÖÃ", NA, NA) == YEA)
+		// æ˜¯å¦ç§»åŠ¨ç²¾ååŒºçš„ä½ç½®
+		if (askyn("\xCA\xC7\xB7\xF1\xD2\xC6\xB6\xAF\xBE\xAB\xBB\xAA\xC7\xF8\xB5\xC4\xCE\xBB\xD6\xC3", NA, NA) == YEA)
 			a_mv = 2;
 		else
 			a_mv = 0;
 		move(20, 0);
-		if (newfh.secnumber2 == 'C')	//ÊÇ¾ãÀÖ²¿°æÃæ
+		if (newfh.secnumber2 == 'C')	//æ˜¯ä¿±ä¹éƒ¨ç‰ˆé¢
 		{
 			newfh.flag &= ~ANONY_FLAG;
 			newfh.level = 0;
@@ -678,15 +763,18 @@ enterbname:
 				newfh.clubnum = fh.clubnum;
 			else
 				newfh.clubnum = freeclubnum();
-			if (askyn("ÊÇ·ñÊÇ¿ª·ÅÊ½¾ãÀÖ²¿", isopenclub, NA) == YEA)
+			// æ˜¯å¦æ˜¯å¼€æ”¾å¼ä¿±ä¹éƒ¨
+			if (askyn("\xCA\xC7\xB7\xF1\xCA\xC7\xBF\xAA\xB7\xC5\xCA\xBD\xBE\xE3\xC0\xD6\xB2\xBF", isopenclub, NA) == YEA)
 				newfh.flag |= CLUBTYPE_FLAG;
 			else
 				newfh.flag &= ~CLUBTYPE_FLAG;
-			getdata(21, 0, "È·¶¨Òª¸ü¸ÄÂğ? (Y/N) [N]: ", genbuf, 4,
+			// ç¡®å®šè¦æ›´æ”¹å—? (Y/N) [N]:
+			getdata(21, 0, "\xC8\xB7\xB6\xA8\xD2\xAA\xB8\xFC\xB8\xC4\xC2\xF0? (Y/N) [N]: ", genbuf, 4,
 				DOECHO, YEA);
 		} else {
 			newfh.clubnum = 0;
-			sprintf(buf, "ÄäÃû°æ (Y/N)? [%c]: ",
+			// åŒ¿åç‰ˆ (Y/N)? [%c]:
+			sprintf(buf, "\xC4\xE4\xC3\xFB\xB0\xE6 (Y/N)? [%c]: ",
 				(noidboard) ? 'Y' : 'N');
 			getdata(20, 0, buf, genbuf, 4, DOECHO, YEA);
 			if (*genbuf == 'y' || *genbuf == 'Y' || *genbuf == 'N' || *genbuf == 'n') {
@@ -695,10 +783,12 @@ enterbname:
 				else
 					newfh.flag &= ~ANONY_FLAG;
 			}
-			if (askyn("ÊÇ·ñ¸ü¸Ä´æÈ¡È¨ÏŞ", NA, NA) == YEA) {
+			// æ˜¯å¦æ›´æ”¹å­˜å–æƒé™
+			if (askyn("\xCA\xC7\xB7\xF1\xB8\xFC\xB8\xC4\xB4\xE6\xC8\xA1\xC8\xA8\xCF\xDE", NA, NA) == YEA) {
 				char ans[4];
 				sprintf(genbuf,
-					"ÏŞÖÆ (R)ÔÄ¶Á »ò (P)ÕÅÌù ÎÄÕÂ [%c]: ",
+					// é™åˆ¶ (R)é˜…è¯» æˆ– (P)å¼ è´´ æ–‡ç«  [%c]:
+					"\xCF\xDE\xD6\xC6 (R)\xD4\xC4\xB6\xC1 \xBB\xF2 (P)\xD5\xC5\xCC\xF9 \xCE\xC4\xD5\xC2 [%c]: ",
 					(newfh.level & PERM_POSTMASK ? 'P' : 'R'));
 				getdata(21, 0, genbuf, ans, 2, DOECHO, YEA);
 				if ((newfh.level & PERM_POSTMASK) && (*ans == 'R' || *ans == 'r'))
@@ -707,21 +797,28 @@ enterbname:
 					newfh.level |= PERM_POSTMASK;
 				clear();
 				move(2, 0);
-				prints("Éè¶¨ %s '%s' ÌÖÂÛÇøµÄÈ¨ÏŞ\n",
-						newfh.level & PERM_POSTMASK ? "ÕÅÌù" :
-						"ÔÄ¶Á", newfh.filename);
-				newfh.level = setperms(newfh.level, "È¨ÏŞ", NUMPERMS, showperminfo, 0);
+				// è®¾å®š %s '%s' è®¨è®ºåŒºçš„æƒé™\n
+				prints("\xC9\xE8\xB6\xA8 %s '%s' \xCC\xD6\xC2\xDB\xC7\xF8\xB5\xC4\xC8\xA8\xCF\xDE\n",
+						// å¼ è´´
+						newfh.level & PERM_POSTMASK ? "\xD5\xC5\xCC\xF9" :
+						// é˜…è¯»
+						"\xD4\xC4\xB6\xC1", newfh.filename);
+				// æƒé™
+				newfh.level = setperms(newfh.level, "\xC8\xA8\xCF\xDE", NUMPERMS, showperminfo, 0);
 				clear();
-				getdata(0, 0, "È·¶¨Òª¸ü¸ÄÂğ? (Y/N) [N]: ", genbuf, 4, DOECHO, YEA);
+				// ç¡®å®šè¦æ›´æ”¹å—? (Y/N) [N]:
+				getdata(0, 0, "\xC8\xB7\xB6\xA8\xD2\xAA\xB8\xFC\xB8\xC4\xC2\xF0? (Y/N) [N]: ", genbuf, 4, DOECHO, YEA);
 			} else {
-				getdata(22, 0, "È·¶¨Òª¸ü¸ÄÂğ? (Y/N) [N]: ", genbuf, 4, DOECHO, YEA);
+				// ç¡®å®šè¦æ›´æ”¹å—? (Y/N) [N]:
+				getdata(22, 0, "\xC8\xB7\xB6\xA8\xD2\xAA\xB8\xFC\xB8\xC4\xC2\xF0? (Y/N) [N]: ", genbuf, 4, DOECHO, YEA);
 			}
 		}
 		clear();
 		if (*genbuf == 'Y' || *genbuf == 'y') {
 			{
 				char secu[STRLEN];
-				sprintf(secu, "ĞŞ¸ÄÌÖÂÛÇø£º%s(%s)", fh.filename,
+				// ä¿®æ”¹è®¨è®ºåŒºï¼š%s(%s)
+				sprintf(secu, "\xD0\xDE\xB8\xC4\xCC\xD6\xC2\xDB\xC7\xF8\xA3\xBA%s(%s)", fh.filename,
 					newfh.filename);
 				securityreport(secu, secu);
 			}
@@ -750,9 +847,11 @@ enterbname:
 					if (strcmp(tmp_grp, group) || a_mv != 2) {
 						ytht_del_from_file("0Announce/.Search", fh.filename, true);
 						if (add_grp(group, cexplain, newfh.filename, vbuf) == -1)
-							prints("\n³ÉÁ¢¾«»ªÇøÊ§°Ü....\n");
+							// \næˆç«‹ç²¾ååŒºå¤±è´¥....\n
+							prints("\n\xB3\xC9\xC1\xA2\xBE\xAB\xBB\xAA\xC7\xF8\xCA\xA7\xB0\xDC....\n");
 						else
-							prints("ÒÑ¾­ÖÃÈë¾«»ªÇø...\n");
+							// å·²ç»ç½®å…¥ç²¾ååŒº...\n
+							prints("\xD2\xD1\xBE\xAD\xD6\xC3\xC8\xEB\xBE\xAB\xBB\xAA\xC7\xF8...\n");
 						sprintf(newpath, "0Announce/groups/%s/%s", group, newfh.filename);
 						sprintf(oldpath, "0Announce/groups/%s/%s", tmp_grp, fh.filename);
 						if (dashd(oldpath)) {
@@ -766,15 +865,15 @@ enterbname:
 			substitute_record(BOARDS, &newfh, sizeof (newfh), pos);
 			ythtbbs_cache_Board_resolve();
 			if (bmy_board_is_system_board(newfh.filename) && bmy_board_is_system_board(fh.filename)) {
-				// ĞÂ¾ÉÃû³Æ¶¼ÊôÓÚÏµÍ³°æÃæ£¬ºöÂÔ²»´¦Àí
+				// æ–°æ—§åç§°éƒ½å±äºç³»ç»Ÿç‰ˆé¢ï¼Œå¿½ç•¥ä¸å¤„ç†
 			} else if (bmy_board_is_system_board(fh.filename)) {
-				// ·ñÔò£¬Èç¹ûÔ­ÏÈÊôÓÚÏµÍ³°æÃæ£¬ÔòÌí¼Ó£¬Ôİ²»µ¼Èë°æÃæÊı¾İ
+				// å¦åˆ™ï¼Œå¦‚æœåŸå…ˆå±äºç³»ç»Ÿç‰ˆé¢ï¼Œåˆ™æ·»åŠ ï¼Œæš‚ä¸å¯¼å…¥ç‰ˆé¢æ•°æ®
 				bmy_board_create(pos, newfh.filename, newfh.title, newfh.sec1);
 			} else if (bmy_board_is_system_board(newfh.filename)) {
-				// ÔÙ»òÕß£¬ÏÖÔÚÊôÓÚÏµÍ³°æÃæÁË£¬ÔòÒÆ³ıÔ­¼ÇÂ¼
+				// å†æˆ–è€…ï¼Œç°åœ¨å±äºç³»ç»Ÿç‰ˆé¢äº†ï¼Œåˆ™ç§»é™¤åŸè®°å½•
 				bmy_board_delete(pos, fh.filename);
 			} else {
-				// ×îºó£¬¶ÔÓÚÆÕÍ¨Çé¿ö£¬ÅĞ¶ÏÊÇ·ñÖØÃüÃû
+				// æœ€åï¼Œå¯¹äºæ™®é€šæƒ…å†µï¼Œåˆ¤æ–­æ˜¯å¦é‡å‘½å
 				if (strcmp(newfh.filename, fh.filename) != 0 || strcmp(newfh.title, fh.title) != 0 || strcmp(newfh.sec1, fh.sec1) != 0) {
 					bmy_board_rename(pos, newfh.filename, newfh.title, newfh.sec1);
 				}
@@ -801,10 +900,12 @@ int m_register(const char *s) {
 	}
 	clear();
 
-	stand_title("Éè¶¨Ê¹ÓÃÕß×¢²á×ÊÁÏ(ÇëÊ¹ÓÃĞÂµÄÊµÃûÈÏÖ¤¹ÜÀíÑ¡µ¥)");
+	// è®¾å®šä½¿ç”¨è€…æ³¨å†Œèµ„æ–™(è¯·ä½¿ç”¨æ–°çš„å®åè®¤è¯ç®¡ç†é€‰å•)
+	stand_title("\xC9\xE8\xB6\xA8\xCA\xB9\xD3\xC3\xD5\xDF\xD7\xA2\xB2\xE1\xD7\xCA\xC1\xCF(\xC7\xEB\xCA\xB9\xD3\xC3\xD0\xC2\xB5\xC4\xCA\xB5\xC3\xFB\xC8\xCF\xD6\xA4\xB9\xDC\xC0\xED\xD1\xA1\xB5\xA5)");
 	for (;;) {
 		getdata(1, 0,
-			"[0]Àë¿ª [1]ÓÊÏä°ó¶¨²Ù×÷ [2]²éÑ¯Ê¹ÓÃÕß×¢²á×ÊÁÏ (Ä¬ÈÏ[2]):",
+			// [0]ç¦»å¼€ [1]é‚®ç®±ç»‘å®šæ“ä½œ [2]æŸ¥è¯¢ä½¿ç”¨è€…æ³¨å†Œèµ„æ–™ (é»˜è®¤[2]):
+			"[0]\xC0\xEB\xBF\xAA [1]\xD3\xCA\xCF\xE4\xB0\xF3\xB6\xA8\xB2\xD9\xD7\xF7 [2]\xB2\xE9\xD1\xAF\xCA\xB9\xD3\xC3\xD5\xDF\xD7\xA2\xB2\xE1\xD7\xCA\xC1\xCF (\xC4\xAC\xC8\xCF[2]):",
 			ans, 2, DOECHO, YEA);
 		if (ans[0] == '0')
 			return 0;
@@ -818,21 +919,25 @@ int m_register(const char *s) {
 	if (ans[0] == '1') {
 		clear();
 		move(3, 0);
-		prints("´Ë¹¦ÄÜÒÑ¾­·ÏÆú¡£ÇëÊ¹ÓÃĞÂµÄÊµÃûÈÏÖ¤¹ÜÀíÑ¡µ¥!");
+		// æ­¤åŠŸèƒ½å·²ç»åºŸå¼ƒã€‚è¯·ä½¿ç”¨æ–°çš„å®åè®¤è¯ç®¡ç†é€‰å•!
+		prints("\xB4\xCB\xB9\xA6\xC4\xDC\xD2\xD1\xBE\xAD\xB7\xCF\xC6\xFA\xA1\xA3\xC7\xEB\xCA\xB9\xD3\xC3\xD0\xC2\xB5\xC4\xCA\xB5\xC3\xFB\xC8\xCF\xD6\xA4\xB9\xDC\xC0\xED\xD1\xA1\xB5\xA5!");
 		pressreturn();
 	} else {
 		move(1, 0);
-		usercomplete("ÇëÊäÈëÒª²éÑ¯µÄ´úºÅ: ", uident);
+		// è¯·è¾“å…¥è¦æŸ¥è¯¢çš„ä»£å·:
+		usercomplete("\xC7\xEB\xCA\xE4\xC8\xEB\xD2\xAA\xB2\xE9\xD1\xAF\xB5\xC4\xB4\xFA\xBA\xC5: ", uident);
 		if (uident[0] != '\0') {
 			if (!getuser(uident)) {
 				move(2, 0);
-				prints("´íÎóµÄÊ¹ÓÃÕß´úºÅ...");
+				// é”™è¯¯çš„ä½¿ç”¨è€…ä»£å·...
+				prints("\xB4\xED\xCE\xF3\xB5\xC4\xCA\xB9\xD3\xC3\xD5\xDF\xB4\xFA\xBA\xC5...");
 			} else {
 				sprintf(genbuf, "home/%c/%s/register",
 					mytoupper(lookupuser.userid[0]),
 					lookupuser.userid);
 				if ((fn = fopen(genbuf, "r")) != NULL) {
-					prints("\n×¢²á×ÊÁÏÈçÏÂ:\n\n");
+					// \næ³¨å†Œèµ„æ–™å¦‚ä¸‹:\n\n
+					prints("\n\xD7\xA2\xB2\xE1\xD7\xCA\xC1\xCF\xC8\xE7\xCF\xC2:\n\n");
 					for (x = 1; x <= 15; x++) {
 						if (fgets(genbuf, STRLEN, fn))
 							prints("%s", genbuf);
@@ -841,7 +946,8 @@ int m_register(const char *s) {
 					}
 					fclose(fn);
 				} else
-					prints("\n\nÕÒ²»µ½Ëû/ËıµÄ×¢²á×ÊÁÏ!!\n");
+					// \n\næ‰¾ä¸åˆ°ä»–/å¥¹çš„æ³¨å†Œèµ„æ–™!!\n
+					prints("\n\n\xD5\xD2\xB2\xBB\xB5\xBD\xCB\xFB/\xCB\xFD\xB5\xC4\xD7\xA2\xB2\xE1\xD7\xCA\xC1\xCF!!\n");
 			}
 		}
 		pressanykey();
@@ -867,20 +973,23 @@ do_ordainBM(const char *userid, const char *abname)
 		return -1;
 	}
 	clear();
-	stand_title("ÈÎÃü°æÖ÷\n");
+	// ä»»å‘½ç‰ˆä¸»\n
+	stand_title("\xC8\xCE\xC3\xFC\xB0\xE6\xD6\xF7\n");
 	clrtoeol();
 	move(2, 0);
 	if (userid)
 		ytht_strsncpy(genbuf, userid, sizeof(genbuf));
 	else
-		usercomplete("ÊäÈëÓûÈÎÃüµÄÊ¹ÓÃÕßÕÊºÅ: ", genbuf);
+		// è¾“å…¥æ¬²ä»»å‘½çš„ä½¿ç”¨è€…å¸å·:
+		usercomplete("\xCA\xE4\xC8\xEB\xD3\xFB\xC8\xCE\xC3\xFC\xB5\xC4\xCA\xB9\xD3\xC3\xD5\xDF\xD5\xCA\xBA\xC5: ", genbuf);
 	if (genbuf[0] == '\0') {
 		clear();
 		return 0;
 	}
 	if (!(id = getuser(genbuf))) {
 		move(4, 0);
-		prints("ÎŞĞ§µÄÊ¹ÓÃÕßÕÊºÅ");
+		// æ— æ•ˆçš„ä½¿ç”¨è€…å¸å·
+		prints("\xCE\xDE\xD0\xA7\xB5\xC4\xCA\xB9\xD3\xC3\xD5\xDF\xD5\xCA\xBA\xC5");
 		clrtoeol();
 		pressreturn();
 		clear();
@@ -890,11 +999,13 @@ do_ordainBM(const char *userid, const char *abname)
 		ytht_strsncpy(bname, abname, sizeof(bname));
 	else {
 		make_blist_full();
-		namecomplete("ÊäÈë¸ÃÊ¹ÓÃÕß½«¹ÜÀíµÄÌÖÂÛÇøÃû³Æ: ", bname);
+		// è¾“å…¥è¯¥ä½¿ç”¨è€…å°†ç®¡ç†çš„è®¨è®ºåŒºåç§°:
+		namecomplete("\xCA\xE4\xC8\xEB\xB8\xC3\xCA\xB9\xD3\xC3\xD5\xDF\xBD\xAB\xB9\xDC\xC0\xED\xB5\xC4\xCC\xD6\xC2\xDB\xC7\xF8\xC3\xFB\xB3\xC6: ", bname);
 	}
 	if (*bname == '\0') {
 		move(5, 0);
-		prints("´íÎóµÄÌÖÂÛÇøÃû³Æ");
+		// é”™è¯¯çš„è®¨è®ºåŒºåç§°
+		prints("\xB4\xED\xCE\xF3\xB5\xC4\xCC\xD6\xC2\xDB\xC7\xF8\xC3\xFB\xB3\xC6");
 		pressreturn();
 		clear();
 		return -1;
@@ -902,7 +1013,8 @@ do_ordainBM(const char *userid, const char *abname)
 	pos = new_search_record(BOARDS, &fh, sizeof (fh), (void *) cmpbnames, bname);
 	if (!pos) {
 		move(5, 0);
-		prints("´íÎóµÄÌÖÂÛÇøÃû³Æ");
+		// é”™è¯¯çš„è®¨è®ºåŒºåç§°
+		prints("\xB4\xED\xCE\xF3\xB5\xC4\xCC\xD6\xC2\xDB\xC7\xF8\xC3\xFB\xB3\xC6");
 		pressreturn();
 		clear();
 		return -1;
@@ -910,14 +1022,17 @@ do_ordainBM(const char *userid, const char *abname)
 	oldbm = getbmnum(lookupuser.userid);
 	if (oldbm >= 3 && strcmp(lookupuser.userid, "SYSOP") && normal_board(bname)) {
 		move(5, 0);
-		prints(" %s ÒÑ¾­ÊÇ%d¸ö°æµÄ°æÖ÷ÁË", lookupuser.userid, oldbm);
-		if (askyn("\nÒ»¶¨ÒªÈÎÃüÃ´? ", NA, NA) == NA){
+		//  %s å·²ç»æ˜¯%dä¸ªç‰ˆçš„ç‰ˆä¸»äº†
+		prints(" %s \xD2\xD1\xBE\xAD\xCA\xC7%d\xB8\xF6\xB0\xE6\xB5\xC4\xB0\xE6\xD6\xF7\xC1\xCB", lookupuser.userid, oldbm);
+		// \nä¸€å®šè¦ä»»å‘½ä¹ˆ?
+		if (askyn("\n\xD2\xBB\xB6\xA8\xD2\xAA\xC8\xCE\xC3\xFC\xC3\xB4? ", NA, NA) == NA){
 			pressanykey();
 			clear();
 			return -1;
 		}
 	}
-	if (askyn("ÈÎÃüÎª´ó°æÖ÷Ã´? (¿ÉÒÔÕûÀí¾«»ªÇø)", YEA, NA) == YEA) {
+	// ä»»å‘½ä¸ºå¤§ç‰ˆä¸»ä¹ˆ? (å¯ä»¥æ•´ç†ç²¾ååŒº)
+	if (askyn("\xC8\xCE\xC3\xFC\xCE\xAA\xB4\xF3\xB0\xE6\xD6\xF7\xC3\xB4? (\xBF\xC9\xD2\xD4\xD5\xFB\xC0\xED\xBE\xAB\xBB\xAA\xC7\xF8)", YEA, NA) == YEA) {
 		bigbm = 1;
 		minpos = 0;
 		maxpos = 3;
@@ -932,21 +1047,26 @@ do_ordainBM(const char *userid, const char *abname)
 			bmpos = i;
 		}
 		if (!strncmp(fh.bm[i], lookupuser.userid, IDLEN)) {
-			prints(" %s ÒÑ¾­ÊÇ¸Ã°æ°æÖ÷", lookupuser.userid);
+			//  %s å·²ç»æ˜¯è¯¥ç‰ˆç‰ˆä¸»
+			prints(" %s \xD2\xD1\xBE\xAD\xCA\xC7\xB8\xC3\xB0\xE6\xB0\xE6\xD6\xF7", lookupuser.userid);
 			pressanykey();
 			clear();
 			return -1;
 		}
 	}
 	if (bmpos == -1) {
-		prints(" %s Ã»ÓĞ¿ÕÓà°æÖ÷Î»ÖÃ", bname);
+		//  %s æ²¡æœ‰ç©ºä½™ç‰ˆä¸»ä½ç½®
+		prints(" %s \xC3\xBB\xD3\xD0\xBF\xD5\xD3\xE0\xB0\xE6\xD6\xF7\xCE\xBB\xD6\xC3", bname);
 		pressanykey();
 		clear();
 		return -1;
 	}
-	prints("\nÄã½«ÈÎÃü %s Îª %s °æ°æÖ÷.\n", lookupuser.userid, bname);
-	if (askyn("ÄãÈ·¶¨ÒªÈÎÃüÂğ?", YEA, NA) == NA) {
-		prints("È¡ÏûÈÎÃü°æÖ÷");
+	// \nä½ å°†ä»»å‘½ %s ä¸º %s ç‰ˆç‰ˆä¸».\n
+	prints("\n\xC4\xE3\xBD\xAB\xC8\xCE\xC3\xFC %s \xCE\xAA %s \xB0\xE6\xB0\xE6\xD6\xF7.\n", lookupuser.userid, bname);
+	// ä½ ç¡®å®šè¦ä»»å‘½å—?
+	if (askyn("\xC4\xE3\xC8\xB7\xB6\xA8\xD2\xAA\xC8\xCE\xC3\xFC\xC2\xF0?", YEA, NA) == NA) {
+		// å–æ¶ˆä»»å‘½ç‰ˆä¸»
+		prints("\xC8\xA1\xCF\xFB\xC8\xCE\xC3\xFC\xB0\xE6\xD6\xF7");
 		pressanykey();
 		clear();
 		return -1;
@@ -954,7 +1074,8 @@ do_ordainBM(const char *userid, const char *abname)
 	for (i = 0; i < 5; i++)
 		buf[i][0] = '\0';
 	move(12, 0);
-	prints("ÇëÊäÈëÈÎÃü¸½ÑÔ(×î¶àÎåĞĞ£¬°´ Enter ½áÊø)");
+	// è¯·è¾“å…¥ä»»å‘½é™„è¨€(æœ€å¤šäº”è¡Œï¼ŒæŒ‰ Enter ç»“æŸ)
+	prints("\xC7\xEB\xCA\xE4\xC8\xEB\xC8\xCE\xC3\xFC\xB8\xBD\xD1\xD4(\xD7\xEE\xB6\xE0\xCE\xE5\xD0\xD0\xA3\xAC\xB0\xB4 Enter \xBD\xE1\xCA\xF8)");
 	for (i = 0; i < 5; i++) {
 		getdata(i + 13, 0, ": ", buf[i], STRLEN - 5, DOECHO, YEA);
 		if (buf[i][0] == '\0')
@@ -965,11 +1086,14 @@ do_ordainBM(const char *userid, const char *abname)
 		char secu[STRLEN];
 		lookupuser.userlevel |= PERM_BOARDS;
 		substitute_record(PASSFILE, &lookupuser, sizeof (struct userec), id);
-		sprintf(secu, "°æÖ÷ÈÎÃü, ¸øÓè %s µÄ°æÖ÷È¨ÏŞ", lookupuser.userid);
+		// ç‰ˆä¸»ä»»å‘½, ç»™äºˆ %s çš„ç‰ˆä¸»æƒé™
+		sprintf(secu, "\xB0\xE6\xD6\xF7\xC8\xCE\xC3\xFC, \xB8\xF8\xD3\xE8 %s \xB5\xC4\xB0\xE6\xD6\xF7\xC8\xA8\xCF\xDE", lookupuser.userid);
 		securityreport(secu, secu);
 		move(19, 0);
-		mail_file("etc/bmhelp", lookupuser.userid, "°æÎñ²Ù×÷ÊÖ²á");
-		mail_file("etc/backnumbers", lookupuser.userid, "¹ı¿¯Ê¹ÓÃËµÃ÷");
+		// ç‰ˆåŠ¡æ“ä½œæ‰‹å†Œ
+		mail_file("etc/bmhelp", lookupuser.userid, "\xB0\xE6\xCE\xF1\xB2\xD9\xD7\xF7\xCA\xD6\xB2\xE1");
+		// è¿‡åˆŠä½¿ç”¨è¯´æ˜
+		mail_file("etc/backnumbers", lookupuser.userid, "\xB9\xFD\xBF\xAF\xCA\xB9\xD3\xC3\xCB\xB5\xC3\xF7");
 		prints(secu);
 	}
 	strncpy(fh.bm[bmpos], lookupuser.userid, IDLEN);
@@ -988,30 +1112,41 @@ do_ordainBM(const char *userid, const char *abname)
 		ytht_strsncpy(currboard, tmpb, 30);
 	}
 	ythtbbs_cache_Board_resolve();
-	sprintf(genbuf, "ÈÎÃü %s Îª %s ÌÖÂÛÇø°æÖ÷", lookupuser.userid, fh.filename);
+	// ä»»å‘½ %s ä¸º %s è®¨è®ºåŒºç‰ˆä¸»
+	sprintf(genbuf, "\xC8\xCE\xC3\xFC %s \xCE\xAA %s \xCC\xD6\xC2\xDB\xC7\xF8\xB0\xE6\xD6\xF7", lookupuser.userid, fh.filename);
 	securityreport(genbuf, genbuf);
 	move(19, 0);
 	prints("%s", genbuf);
-	sprintf(title, "[¹«¸æ]ÈÎÃü%s °æ°æÖ÷ %s ", bname, lookupuser.userid);
+	// [å…¬å‘Š]ä»»å‘½%s ç‰ˆç‰ˆä¸» %s
+	sprintf(title, "[\xB9\xAB\xB8\xE6]\xC8\xCE\xC3\xFC%s \xB0\xE6\xB0\xE6\xD6\xF7 %s ", bname, lookupuser.userid);
 	if(strcmp(bname,"BM_exam")&&strcmp(bname,"BM_examII")&&strcmp(bname,"BM_examIII"))
 		sprintf(content,
-			"\n\t\t    ¡¾ °æÎñÈÎÃü¹«¸æ ¡¿\n\n\n" "\t  %s ÍøÓÑ£º\n\n"
-			"\t      ¾­±¾Õ¾Õ¾Îñ×éÉóÅú¡¢¼ÍÂÉÎ¯Ô±»á¿¼ºËÍ¨¹ı£¬\n\t  ÏÖÕıÊ½ÈÎÃüÄãÎª %s °æ°æÎñ¡£\n\n"
-			"\t      ÇëÔÚ 3 ÌìÖ®ÄÚÔÚ BM_home °æÃæ±¨µ½¡£\n",
+			// \n\t\t    ã€ ç‰ˆåŠ¡ä»»å‘½å…¬å‘Š ã€‘\n\n\n
+			// \t  %s ç½‘å‹ï¼š\n\n
+			"\n\t\t    \xA1\xBE \xB0\xE6\xCE\xF1\xC8\xCE\xC3\xFC\xB9\xAB\xB8\xE6 \xA1\xBF\n\n\n" "\t  %s \xCD\xF8\xD3\xD1\xA3\xBA\n\n"
+			// \t      ç»æœ¬ç«™ç«™åŠ¡ç»„å®¡æ‰¹ã€çºªå¾‹å§”å‘˜ä¼šè€ƒæ ¸é€šè¿‡ï¼Œ\n\t  ç°æ­£å¼ä»»å‘½ä½ ä¸º %s ç‰ˆç‰ˆåŠ¡ã€‚\n\n
+			"\t      \xBE\xAD\xB1\xBE\xD5\xBE\xD5\xBE\xCE\xF1\xD7\xE9\xC9\xF3\xC5\xFA\xA1\xA2\xBC\xCD\xC2\xC9\xCE\xAF\xD4\xB1\xBB\xE1\xBF\xBC\xBA\xCB\xCD\xA8\xB9\xFD\xA3\xAC\n\t  \xCF\xD6\xD5\xFD\xCA\xBD\xC8\xCE\xC3\xFC\xC4\xE3\xCE\xAA %s \xB0\xE6\xB0\xE6\xCE\xF1\xA1\xA3\n\n"
+			// \t      è¯·åœ¨ 3 å¤©ä¹‹å†…åœ¨ BM_home ç‰ˆé¢æŠ¥åˆ°ã€‚\n
+			"\t      \xC7\xEB\xD4\xDA 3 \xCC\xEC\xD6\xAE\xC4\xDA\xD4\xDA BM_home \xB0\xE6\xC3\xE6\xB1\xA8\xB5\xBD\xA1\xA3\n",
 			lookupuser.userid,
 			bname);
 	else
 		sprintf(content,
-			"\n\t\t    ¡¾ ÊµÏ°°æÎñÈÎÃü¹«¸æ ¡¿\n\n\n" "\t  %s ÍøÓÑ£º\n\n"
-			"\t      ¾­±¾Õ¾Õ¾Îñ×éÉóÅú¡¢ ÏÖÈÎÃüÄãÎª %s °æÊµÏ°°æÎñ¡£\n\n"
-			"\t      ÇëÓÚÈıÌìµÄÅàÑµÆÚÄÚÊìÏ¤°æÎñ¿¼ÊÔÏà¹ØÖªÊ¶£¬\n\n\t      ¼°Ê±ÁªÏµ¼ÍÎ¯²Î¼Ó¿¼ÊÔ¡£\n",
+			// \n\t\t    ã€ å®ä¹ ç‰ˆåŠ¡ä»»å‘½å…¬å‘Š ã€‘\n\n\n
+			// \t  %s ç½‘å‹ï¼š\n\n
+			"\n\t\t    \xA1\xBE \xCA\xB5\xCF\xB0\xB0\xE6\xCE\xF1\xC8\xCE\xC3\xFC\xB9\xAB\xB8\xE6 \xA1\xBF\n\n\n" "\t  %s \xCD\xF8\xD3\xD1\xA3\xBA\n\n"
+			// \t      ç»æœ¬ç«™ç«™åŠ¡ç»„å®¡æ‰¹ã€ ç°ä»»å‘½ä½ ä¸º %s ç‰ˆå®ä¹ ç‰ˆåŠ¡ã€‚\n\n
+			"\t      \xBE\xAD\xB1\xBE\xD5\xBE\xD5\xBE\xCE\xF1\xD7\xE9\xC9\xF3\xC5\xFA\xA1\xA2 \xCF\xD6\xC8\xCE\xC3\xFC\xC4\xE3\xCE\xAA %s \xB0\xE6\xCA\xB5\xCF\xB0\xB0\xE6\xCE\xF1\xA1\xA3\n\n"
+			// \t      è¯·äºä¸‰å¤©çš„åŸ¹è®­æœŸå†…ç†Ÿæ‚‰ç‰ˆåŠ¡è€ƒè¯•ç›¸å…³çŸ¥è¯†ï¼Œ\n\n\t      åŠæ—¶è”ç³»çºªå§”å‚åŠ è€ƒè¯•ã€‚\n
+			"\t      \xC7\xEB\xD3\xDA\xC8\xFD\xCC\xEC\xB5\xC4\xC5\xE0\xD1\xB5\xC6\xDA\xC4\xDA\xCA\xEC\xCF\xA4\xB0\xE6\xCE\xF1\xBF\xBC\xCA\xD4\xCF\xE0\xB9\xD8\xD6\xAA\xCA\xB6\xA3\xAC\n\n\t      \xBC\xB0\xCA\xB1\xC1\xAA\xCF\xB5\xBC\xCD\xCE\xAF\xB2\xCE\xBC\xD3\xBF\xBC\xCA\xD4\xA1\xA3\n",
 			lookupuser.userid,
 			bname);
 	for (i = 0; i < 5; i++) {
 		if (buf[i][0] == '\0')
 			break;
 		if (i == 0)
-			strcat(content, "\n\nÈÎÃü¸½ÑÔ£º\n");
+			// \n\nä»»å‘½é™„è¨€ï¼š\n
+			strcat(content, "\n\n\xC8\xCE\xC3\xFC\xB8\xBD\xD1\xD4\xA3\xBA\n");
 		strcat(content, buf[i]);
 		strcat(content, "\n");
 	}
@@ -1045,19 +1180,22 @@ do_retireBM(const char *userid, const char *abname)
 		return -1;
 
 	clear();
-	stand_title("°æÖ÷ÀëÖ°\n");
+	// ç‰ˆä¸»ç¦»èŒ\n
+	stand_title("\xB0\xE6\xD6\xF7\xC0\xEB\xD6\xB0\n");
 	clrtoeol();
 	if (userid)
 		ytht_strsncpy(genbuf, userid, sizeof(genbuf));
 	else
-		usercomplete("ÊäÈëÓûÀëÈÎµÄÊ¹ÓÃÕßÕÊºÅ: ", genbuf);
+		// è¾“å…¥æ¬²ç¦»ä»»çš„ä½¿ç”¨è€…å¸å·:
+		usercomplete("\xCA\xE4\xC8\xEB\xD3\xFB\xC0\xEB\xC8\xCE\xB5\xC4\xCA\xB9\xD3\xC3\xD5\xDF\xD5\xCA\xBA\xC5: ", genbuf);
 	if (genbuf[0] == '\0') {
 		clear();
 		return 0;
 	}
 	if (!(id = getuser(genbuf))) {
 		move(4, 0);
-		prints("ÎŞĞ§µÄÊ¹ÓÃÕßÕÊºÅ");
+		// æ— æ•ˆçš„ä½¿ç”¨è€…å¸å·
+		prints("\xCE\xDE\xD0\xA7\xB5\xC4\xCA\xB9\xD3\xC3\xD5\xDF\xD5\xCA\xBA\xC5");
 		clrtoeol();
 		pressreturn();
 		clear();
@@ -1067,11 +1205,13 @@ do_retireBM(const char *userid, const char *abname)
 		ytht_strsncpy(bname, abname, sizeof(bname));
 	else {
 		make_blist_full();
-		namecomplete("ÊäÈë¸ÃÊ¹ÓÃÕß½«¹ÜÀíµÄÌÖÂÛÇøÃû³Æ: ", bname);
+		// è¾“å…¥è¯¥ä½¿ç”¨è€…å°†ç®¡ç†çš„è®¨è®ºåŒºåç§°:
+		namecomplete("\xCA\xE4\xC8\xEB\xB8\xC3\xCA\xB9\xD3\xC3\xD5\xDF\xBD\xAB\xB9\xDC\xC0\xED\xB5\xC4\xCC\xD6\xC2\xDB\xC7\xF8\xC3\xFB\xB3\xC6: ", bname);
 	}
 	if (*bname == '\0') {
 		move(5, 0);
-		prints("´íÎóµÄÌÖÂÛÇøÃû³Æ");
+		// é”™è¯¯çš„è®¨è®ºåŒºåç§°
+		prints("\xB4\xED\xCE\xF3\xB5\xC4\xCC\xD6\xC2\xDB\xC7\xF8\xC3\xFB\xB3\xC6");
 		pressreturn();
 		clear();
 		return -1;
@@ -1079,7 +1219,8 @@ do_retireBM(const char *userid, const char *abname)
 	pos = new_search_record(BOARDS, &fh, sizeof (fh), (void *) cmpbnames, bname);
 	if (!pos) {
 		move(5, 0);
-		prints("´íÎóµÄÌÖÂÛÇøÃû³Æ");
+		// é”™è¯¯çš„è®¨è®ºåŒºåç§°
+		prints("\xB4\xED\xCE\xF3\xB5\xC4\xCC\xD6\xC2\xDB\xC7\xF8\xC3\xFB\xB3\xC6");
 		pressreturn();
 		clear();
 		return -1;
@@ -1098,23 +1239,28 @@ do_retireBM(const char *userid, const char *abname)
 	oldbm = getbmnum(lookupuser.userid);
 	if (bmpos == -1) {
 		move(5, 0);
-		prints(" °æÖ÷Ãûµ¥ÖĞÃ»ÓĞ%s£¬ÈçÓĞ´íÎó£¬ÇëÍ¨ÖªÏµÍ³Î¬»¤¡£", lookupuser.userid);
+		//  ç‰ˆä¸»åå•ä¸­æ²¡æœ‰%sï¼Œå¦‚æœ‰é”™è¯¯ï¼Œè¯·é€šçŸ¥ç³»ç»Ÿç»´æŠ¤ã€‚
+		prints(" \xB0\xE6\xD6\xF7\xC3\xFB\xB5\xA5\xD6\xD0\xC3\xBB\xD3\xD0%s\xA3\xAC\xC8\xE7\xD3\xD0\xB4\xED\xCE\xF3\xA3\xAC\xC7\xEB\xCD\xA8\xD6\xAA\xCF\xB5\xCD\xB3\xCE\xAC\xBB\xA4\xA1\xA3", lookupuser.userid);
 		pressanykey();
 		clear();
 		return -1;
 	}
-	prints("\nÄã½«È¡Ïû %s µÄ %s °æ%s°æÖ°Îñ.\n", lookupuser.userid, bname, bm ? "´ó" : "");
-	if (askyn("ÄãÈ·¶¨ÒªÈ¡ÏûËûµÄ¸Ã°æ°æÖ÷Ö°ÎñÂğ?", YEA, NA) == NA) {
-		prints("\nºÇºÇ£¬Äã¸Ä±äĞÄÒâÁË£¿ %s ¼ÌĞøÁôÈÎ %s °æ°æÖ÷Ö°Îñ£¡", lookupuser.userid, bname);
+	// \nä½ å°†å–æ¶ˆ %s çš„ %s ç‰ˆ%sç‰ˆèŒåŠ¡.\n
+	// å¤§
+	prints("\n\xC4\xE3\xBD\xAB\xC8\xA1\xCF\xFB %s \xB5\xC4 %s \xB0\xE6%s\xB0\xE6\xD6\xB0\xCE\xF1.\n", lookupuser.userid, bname, bm ? "\xB4\xF3" : "");
+	// ä½ ç¡®å®šè¦å–æ¶ˆä»–çš„è¯¥ç‰ˆç‰ˆä¸»èŒåŠ¡å—?
+	if (askyn("\xC4\xE3\xC8\xB7\xB6\xA8\xD2\xAA\xC8\xA1\xCF\xFB\xCB\xFB\xB5\xC4\xB8\xC3\xB0\xE6\xB0\xE6\xD6\xF7\xD6\xB0\xCE\xF1\xC2\xF0?", YEA, NA) == NA) {
+		// \nå‘µå‘µï¼Œä½ æ”¹å˜å¿ƒæ„äº†ï¼Ÿ %s ç»§ç»­ç•™ä»» %s ç‰ˆç‰ˆä¸»èŒåŠ¡ï¼
+		prints("\n\xBA\xC7\xBA\xC7\xA3\xAC\xC4\xE3\xB8\xC4\xB1\xE4\xD0\xC4\xD2\xE2\xC1\xCB\xA3\xBF %s \xBC\xCC\xD0\xF8\xC1\xF4\xC8\xCE %s \xB0\xE6\xB0\xE6\xD6\xF7\xD6\xB0\xCE\xF1\xA3\xA1", lookupuser.userid, bname);
 		pressanykey();
 		clear();
 		return -1;
 	}
 	anno_title(title, &fh);
-	fh.bm[bmpos][0] = 0;	//ÏÈÇåÀíµô, ÃâµÄÓĞÎÊÌâ
+	fh.bm[bmpos][0] = 0;	//å…ˆæ¸…ç†æ‰, å…çš„æœ‰é—®é¢˜
 	fh.hiretime[bmpos] = 0;
 	for (i = bmpos; i < (bm ? 4 : BMNUM); i++) {
-		if (i == (bm ? 3 : BMNUM - 1)) {	//×îºóÒ»¸öBM
+		if (i == (bm ? 3 : BMNUM - 1)) {	//æœ€åä¸€ä¸ªBM
 			fh.bm[i][0] = 0;
 			fh.hiretime[i] = 0;
 		} else {
@@ -1130,7 +1276,8 @@ do_retireBM(const char *userid, const char *abname)
 	}
 	substitute_record(BOARDS, &fh, sizeof (fh), pos);
 	ythtbbs_cache_Board_resolve();
-	sprintf(genbuf, "È¡Ïû %s µÄ %s ÌÖÂÛÇø°æÖ÷Ö°Îñ", lookupuser.userid, fh.filename);
+	// å–æ¶ˆ %s çš„ %s è®¨è®ºåŒºç‰ˆä¸»èŒåŠ¡
+	sprintf(genbuf, "\xC8\xA1\xCF\xFB %s \xB5\xC4 %s \xCC\xD6\xC2\xDB\xC7\xF8\xB0\xE6\xD6\xF7\xD6\xB0\xCE\xF1", lookupuser.userid, fh.filename);
 	securityreport(genbuf, genbuf);
 	move(8, 0);
 	prints("%s", genbuf);
@@ -1139,54 +1286,82 @@ do_retireBM(const char *userid, const char *abname)
 		if (!(lookupuser.userlevel & PERM_OBOARDS) && !(lookupuser.userlevel & PERM_SYSOP)) {
 			lookupuser.userlevel &= ~PERM_BOARDS;
 			substitute_record(PASSFILE, &lookupuser, sizeof (struct userec), id);
-			sprintf(secu, "°æÖ÷Ğ¶Ö°, È¡Ïû %s µÄ°æÖ÷È¨ÏŞ", lookupuser.userid);
+			// ç‰ˆä¸»å¸èŒ, å–æ¶ˆ %s çš„ç‰ˆä¸»æƒé™
+			sprintf(secu, "\xB0\xE6\xD6\xF7\xD0\xB6\xD6\xB0, \xC8\xA1\xCF\xFB %s \xB5\xC4\xB0\xE6\xD6\xF7\xC8\xA8\xCF\xDE", lookupuser.userid);
 			securityreport(secu, secu);
 			move(9, 0);
 			prints(secu);
 		}
 	}
 	prints("\n\n");
-	if (askyn("ĞèÒªÔÚÏà¹Ø°æÃæ·¢ËÍÍ¨¸æÂğ?", YEA, NA) == NA) {
+	// éœ€è¦åœ¨ç›¸å…³ç‰ˆé¢å‘é€é€šå‘Šå—?
+	if (askyn("\xD0\xE8\xD2\xAA\xD4\xDA\xCF\xE0\xB9\xD8\xB0\xE6\xC3\xE6\xB7\xA2\xCB\xCD\xCD\xA8\xB8\xE6\xC2\xF0?", YEA, NA) == NA) {
 		pressanykey();
 		return 0;
 	}
 	prints("\n");
-	if (askyn("Õı³£ÀëÈÎÇë°´ Enter ¼üÈ·ÈÏ£¬³·Ö°³Í·£°´ N ¼ü", YEA, NA) == YEA)
+	// æ­£å¸¸ç¦»ä»»è¯·æŒ‰ Enter é”®ç¡®è®¤ï¼Œæ’¤èŒæƒ©ç½šæŒ‰ N é”®
+	if (askyn("\xD5\xFD\xB3\xA3\xC0\xEB\xC8\xCE\xC7\xEB\xB0\xB4 Enter \xBC\xFC\xC8\xB7\xC8\xCF\xA3\xAC\xB3\xB7\xD6\xB0\xB3\xCD\xB7\xA3\xB0\xB4 N \xBC\xFC", YEA, NA) == YEA)
 		right = 1;
 	else
 		right = 0;
 	if (right)
-		sprintf(title, "[¹«¸æ]%s °æ%s %s ÀëÈÎ", bname,
-			bm ? "´ó°æÖ÷" : "°æÖ÷", lookupuser.userid);
+		// [å…¬å‘Š]%s ç‰ˆ%s %s ç¦»ä»»
+		sprintf(title, "[\xB9\xAB\xB8\xE6]%s \xB0\xE6%s %s \xC0\xEB\xC8\xCE", bname,
+			// å¤§ç‰ˆä¸»
+			// ç‰ˆä¸»
+			bm ? "\xB4\xF3\xB0\xE6\xD6\xF7" : "\xB0\xE6\xD6\xF7", lookupuser.userid);
 	else
-		sprintf(title, "[¹«¸æ]³·³ı %s °æ%s %s ", bname,
-			bm ? "´ó°æÖ÷" : "°æÖ÷", lookupuser.userid);
+		// [å…¬å‘Š]æ’¤é™¤ %s ç‰ˆ%s %s
+		sprintf(title, "[\xB9\xAB\xB8\xE6]\xB3\xB7\xB3\xFD %s \xB0\xE6%s %s ", bname,
+			// å¤§ç‰ˆä¸»
+			// ç‰ˆä¸»
+			bm ? "\xB4\xF3\xB0\xE6\xD6\xF7" : "\xB0\xE6\xD6\xF7", lookupuser.userid);
 	strcpy(currboard, bname);
 	if (right) {
-		sprintf(content, "\n\t\t\t¡¾ ¹«¸æ ¡¿\n\n"
-			"\t¾­Õ¾Îñ×éÌÖÂÛ£º\n"
-			"\tÍ¬Òâ %s ´ÇÈ¥ %s °æµÄ%sÖ°Îñ¡£\n"
-			"\tÔÚ´Ë£¬¶ÔËûÔø¾­ÔÚ %s °æµÄĞÁ¿àÀÍ×÷±íÊ¾¸ĞĞ»¡£\n\n"
-			"\tÏ£Íû½ñºóÒ²ÄÜÖ§³Ö±¾°æµÄ¹¤×÷.",
-			lookupuser.userid, bname, bm ? "´ó°æÖ÷" : "°æÖ÷",
+		// \n\t\t\tã€ å…¬å‘Š ã€‘\n\n
+		sprintf(content, "\n\t\t\t\xA1\xBE \xB9\xAB\xB8\xE6 \xA1\xBF\n\n"
+			// \tç»ç«™åŠ¡ç»„è®¨è®ºï¼š\n
+			"\t\xBE\xAD\xD5\xBE\xCE\xF1\xD7\xE9\xCC\xD6\xC2\xDB\xA3\xBA\n"
+			// \tåŒæ„ %s è¾å» %s ç‰ˆçš„%sèŒåŠ¡ã€‚\n
+			"\t\xCD\xAC\xD2\xE2 %s \xB4\xC7\xC8\xA5 %s \xB0\xE6\xB5\xC4%s\xD6\xB0\xCE\xF1\xA1\xA3\n"
+			// \tåœ¨æ­¤ï¼Œå¯¹ä»–æ›¾ç»åœ¨ %s ç‰ˆçš„è¾›è‹¦åŠ³ä½œè¡¨ç¤ºæ„Ÿè°¢ã€‚\n\n
+			"\t\xD4\xDA\xB4\xCB\xA3\xAC\xB6\xD4\xCB\xFB\xD4\xF8\xBE\xAD\xD4\xDA %s \xB0\xE6\xB5\xC4\xD0\xC1\xBF\xE0\xC0\xCD\xD7\xF7\xB1\xED\xCA\xBE\xB8\xD0\xD0\xBB\xA1\xA3\n\n"
+			// \tå¸Œæœ›ä»Šåä¹Ÿèƒ½æ”¯æŒæœ¬ç‰ˆçš„å·¥ä½œ.
+			"\t\xCF\xA3\xCD\xFB\xBD\xF1\xBA\xF3\xD2\xB2\xC4\xDC\xD6\xA7\xB3\xD6\xB1\xBE\xB0\xE6\xB5\xC4\xB9\xA4\xD7\xF7.",
+			// å¤§ç‰ˆä¸»
+			// ç‰ˆä¸»
+			lookupuser.userid, bname, bm ? "\xB4\xF3\xB0\xE6\xD6\xF7" : "\xB0\xE6\xD6\xF7",
 			bname);
 	} else {
-		sprintf(content, "\n\t\t\t¡¾³·Ö°¹«¸æ¡¿\n\n"
-			"\t¾­Õ¾Îñ×éÌÖÂÛ¾ö¶¨£º\n"
-			"\t³·³ı %s °æ%s %s µÄ%sÖ°Îñ¡£\n",
-			bname, bm ? "´ó°æÖ÷" : "°æÖ÷", lookupuser.userid,
-			bm ? "´ó°æÖ÷" : "°æÖ÷");
+		// \n\t\t\tã€æ’¤èŒå…¬å‘Šã€‘\n\n
+		sprintf(content, "\n\t\t\t\xA1\xBE\xB3\xB7\xD6\xB0\xB9\xAB\xB8\xE6\xA1\xBF\n\n"
+			// \tç»ç«™åŠ¡ç»„è®¨è®ºå†³å®šï¼š\n
+			"\t\xBE\xAD\xD5\xBE\xCE\xF1\xD7\xE9\xCC\xD6\xC2\xDB\xBE\xF6\xB6\xA8\xA3\xBA\n"
+			// \tæ’¤é™¤ %s ç‰ˆ%s %s çš„%sèŒåŠ¡ã€‚\n
+			"\t\xB3\xB7\xB3\xFD %s \xB0\xE6%s %s \xB5\xC4%s\xD6\xB0\xCE\xF1\xA1\xA3\n",
+			// å¤§ç‰ˆä¸»
+			// ç‰ˆä¸»
+			bname, bm ? "\xB4\xF3\xB0\xE6\xD6\xF7" : "\xB0\xE6\xD6\xF7", lookupuser.userid,
+			// å¤§ç‰ˆä¸»
+			// ç‰ˆä¸»
+			bm ? "\xB4\xF3\xB0\xE6\xD6\xF7" : "\xB0\xE6\xD6\xF7");
 	}
 	for (i = 0; i < 5; i++)
 		buf[i][0] = '\0';
 	move(14, 0);
-	prints("ÇëÊäÈë%s¸½ÑÔ(×î¶àÎåĞĞ£¬°´ Enter ½áÊø)", right ? "°æÖ÷ÀëÈÎ" : "°æÖ÷³·Ö°");
+	// è¯·è¾“å…¥%sé™„è¨€(æœ€å¤šäº”è¡Œï¼ŒæŒ‰ Enter ç»“æŸ)
+	// ç‰ˆä¸»ç¦»ä»»
+	// ç‰ˆä¸»æ’¤èŒ
+	prints("\xC7\xEB\xCA\xE4\xC8\xEB%s\xB8\xBD\xD1\xD4(\xD7\xEE\xB6\xE0\xCE\xE5\xD0\xD0\xA3\xAC\xB0\xB4 Enter \xBD\xE1\xCA\xF8)", right ? "\xB0\xE6\xD6\xF7\xC0\xEB\xC8\xCE" : "\xB0\xE6\xD6\xF7\xB3\xB7\xD6\xB0");
 	for (i = 0; i < 5; i++) {
 		getdata(i + 15, 0, ": ", buf[i], STRLEN - 5, DOECHO, YEA);
 		if (buf[i][0] == '\0')
 			break;
 		if (i == 0)
-			strcat(content, right ? "\n\nÀëÈÎ¸½ÑÔ£º\n" : "\n\n³·Ö°ËµÃ÷£º\n");
+			// \n\nç¦»ä»»é™„è¨€ï¼š\n
+			// \n\næ’¤èŒè¯´æ˜ï¼š\n
+			strcat(content, right ? "\n\n\xC0\xEB\xC8\xCE\xB8\xBD\xD1\xD4\xA3\xBA\n" : "\n\n\xB3\xB7\xD6\xB0\xCB\xB5\xC3\xF7\xA3\xBA\n");
 		strcat(content, buf[i]);
 		strcat(content, "\n");
 	}
@@ -1195,7 +1370,8 @@ do_retireBM(const char *userid, const char *abname)
 		strcpy(currboard, "Board");
 		deliverreport(title, content);
 	}
-	prints("\nÖ´ĞĞÍê±Ï£¡");
+	// \næ‰§è¡Œå®Œæ¯•ï¼
+	prints("\n\xD6\xB4\xD0\xD0\xCD\xEA\xB1\xCF\xA3\xA1");
 	pressanykey();
 	return 0;
 }
@@ -1215,27 +1391,32 @@ int m_addpersonal(const char *s) {
 	}
 	clear();
 	if (!dashd(DIGEST_BASE)) {		//add by mintbaggio@BMY
-		prints("ÇëÏÈ½¨Á¢¸öÈËÎÄ¼¯ÌÖÂÛÇø£ºPersonal_Corpus, Â·¾¶ÊÇ:%s", DIGEST_BASE);
+		// è¯·å…ˆå»ºç«‹ä¸ªäººæ–‡é›†è®¨è®ºåŒºï¼šPersonal_Corpus, è·¯å¾„æ˜¯:%s
+		prints("\xC7\xEB\xCF\xC8\xBD\xA8\xC1\xA2\xB8\xF6\xC8\xCB\xCE\xC4\xBC\xAF\xCC\xD6\xC2\xDB\xC7\xF8\xA3\xBAPersonal_Corpus, \xC2\xB7\xBE\xB6\xCA\xC7:%s", DIGEST_BASE);
 		pressanykey();
 		return 1;
 	}
-	stand_title("´´½¨¸öÈËÎÄ¼¯");
+	// åˆ›å»ºä¸ªäººæ–‡é›†
+	stand_title("\xB4\xB4\xBD\xA8\xB8\xF6\xC8\xCB\xCE\xC4\xBC\xAF");
 	clrtoeol();
 	move(2, 0);
-	usercomplete("ÇëÊäÈëÊ¹ÓÃÕß´úºÅ: ", genbuf);
+	// è¯·è¾“å…¥ä½¿ç”¨è€…ä»£å·:
+	usercomplete("\xC7\xEB\xCA\xE4\xC8\xEB\xCA\xB9\xD3\xC3\xD5\xDF\xB4\xFA\xBA\xC5: ", genbuf);
 	if (*genbuf == '\0') {
 		clear();
 		return 1;
 	}
 	if (!(id = getuser(genbuf))) {
-		prints("´íÎóµÄÊ¹ÓÃÕß´úºÅ");
+		// é”™è¯¯çš„ä½¿ç”¨è€…ä»£å·
+		prints("\xB4\xED\xCE\xF3\xB5\xC4\xCA\xB9\xD3\xC3\xD5\xDF\xB4\xFA\xBA\xC5");
 		clrtoeol();
 		pressreturn();
 		clear();
 		return 1;
 	}
 	if (!isalpha(lookupuser.userid[0])) {
-		getdata(3, 0, "·ÇÓ¢ÎÄID£¬ÇëÊäÈëÆ´ÒôÊ××ÖÄ¸:", firstchar, 2,
+		// éè‹±æ–‡IDï¼Œè¯·è¾“å…¥æ‹¼éŸ³é¦–å­—æ¯:
+		getdata(3, 0, "\xB7\xC7\xD3\xA2\xCE\xC4ID\xA3\xAC\xC7\xEB\xCA\xE4\xC8\xEB\xC6\xB4\xD2\xF4\xCA\xD7\xD7\xD6\xC4\xB8:", firstchar, 2,
 			DOECHO, YEA);
 	} else
 		firstchar[0] = lookupuser.userid[0];
@@ -1255,18 +1436,22 @@ int m_addpersonal(const char *s) {
 	}
 	sprintf(personalpath, "%s/%c/%s", DIGEST_BASE, toupper(firstchar[0]), lookupuser.userid);
 	if (dashd(personalpath)) {
-		prints("¸ÃÓÃ»§µÄ¸öÈËÎÄ¼¯Ä¿Â¼ÒÑ´æÔÚ, °´ÈÎÒâ¼üÈ¡Ïû..");
+		// è¯¥ç”¨æˆ·çš„ä¸ªäººæ–‡é›†ç›®å½•å·²å­˜åœ¨, æŒ‰ä»»æ„é”®å–æ¶ˆ..
+		prints("\xB8\xC3\xD3\xC3\xBB\xA7\xB5\xC4\xB8\xF6\xC8\xCB\xCE\xC4\xBC\xAF\xC4\xBF\xC2\xBC\xD2\xD1\xB4\xE6\xD4\xDA, \xB0\xB4\xC8\xCE\xD2\xE2\xBC\xFC\xC8\xA1\xCF\xFB..");
 		pressanykey();
 		return 1;
 	}
 	if (lookupuser.stay / 60 / 60 < 24) {
-		prints("¸ÃÓÃ»§ÉÏÕ¾Ê±¼ä²»¹»,ÎŞ·¨ÉêÇë¸öÈËÎÄ¼¯, °´ÈÎÒâ¼üÈ¡Ïû..");
+		// è¯¥ç”¨æˆ·ä¸Šç«™æ—¶é—´ä¸å¤Ÿ,æ— æ³•ç”³è¯·ä¸ªäººæ–‡é›†, æŒ‰ä»»æ„é”®å–æ¶ˆ..
+		prints("\xB8\xC3\xD3\xC3\xBB\xA7\xC9\xCF\xD5\xBE\xCA\xB1\xBC\xE4\xB2\xBB\xB9\xBB,\xCE\xDE\xB7\xA8\xC9\xEA\xC7\xEB\xB8\xF6\xC8\xCB\xCE\xC4\xBC\xAF, \xB0\xB4\xC8\xCE\xD2\xE2\xBC\xFC\xC8\xA1\xCF\xFB..");
 		pressanykey();
 		return 1;
 	}
 	move(4, 0);
-	if (askyn("È·¶¨ÒªÎª¸ÃÓÃ»§´´½¨Ò»¸ö¸öÈËÎÄ¼¯Âğ?", YEA, NA) == NA) {
-		prints("ÄãÑ¡ÔñÈ¡Ïû´´½¨. °´ÈÎÒâ¼üÈ¡Ïû...");
+	// ç¡®å®šè¦ä¸ºè¯¥ç”¨æˆ·åˆ›å»ºä¸€ä¸ªä¸ªäººæ–‡é›†å—?
+	if (askyn("\xC8\xB7\xB6\xA8\xD2\xAA\xCE\xAA\xB8\xC3\xD3\xC3\xBB\xA7\xB4\xB4\xBD\xA8\xD2\xBB\xB8\xF6\xB8\xF6\xC8\xCB\xCE\xC4\xBC\xAF\xC2\xF0?", YEA, NA) == NA) {
+		// ä½ é€‰æ‹©å–æ¶ˆåˆ›å»º. æŒ‰ä»»æ„é”®å–æ¶ˆ...
+		prints("\xC4\xE3\xD1\xA1\xD4\xF1\xC8\xA1\xCF\xFB\xB4\xB4\xBD\xA8. \xB0\xB4\xC8\xCE\xD2\xE2\xBC\xFC\xC8\xA1\xCF\xFB...");
 		pressanykey();
 		return 1;
 	}
@@ -1274,13 +1459,17 @@ int m_addpersonal(const char *s) {
 	chmod(personalpath, 0755);
 
 	move(7, 0);
-	prints("[Ö±½Ó°´ ENTER ¼ü, Ôò±êÌâÈ±Ê¡Îª: \033[32m%sÎÄ¼¯\033[m]", lookupuser.userid);
+	// [ç›´æ¥æŒ‰ ENTER é”®, åˆ™æ ‡é¢˜ç¼ºçœä¸º: \033[32m%sæ–‡é›†\033[m]
+	prints("[\xD6\xB1\xBD\xD3\xB0\xB4 ENTER \xBC\xFC, \xD4\xF2\xB1\xEA\xCC\xE2\xC8\xB1\xCA\xA1\xCE\xAA: \033[32m%s\xCE\xC4\xBC\xAF\033[m]", lookupuser.userid);
 	char tmp_buf[40], tmp_title[62];
-	getdata(6, 0, "ÇëÊäÈë¸öÈËÎÄ¼¯Ö®±êÌâ: ", tmp_buf, 39, DOECHO, YEA);
+	// è¯·è¾“å…¥ä¸ªäººæ–‡é›†ä¹‹æ ‡é¢˜:
+	getdata(6, 0, "\xC7\xEB\xCA\xE4\xC8\xEB\xB8\xF6\xC8\xCB\xCE\xC4\xBC\xAF\xD6\xAE\xB1\xEA\xCC\xE2: ", tmp_buf, 39, DOECHO, YEA);
 	if (tmp_buf[0] == '\0')
-		snprintf(tmp_title, sizeof(tmp_title), "%sÎÄ¼¯", lookupuser.userid);
+		// %sæ–‡é›†
+		snprintf(tmp_title, sizeof(tmp_title), "%s\xCE\xC4\xBC\xAF", lookupuser.userid);
 	else
-		snprintf(tmp_title, sizeof(tmp_title), "%sÎÄ¼¯¡ª¡ª%s", lookupuser.userid, tmp_buf);
+		// %sæ–‡é›†â€”â€”%s
+		snprintf(tmp_title, sizeof(tmp_title), "%s\xCE\xC4\xBC\xAF\xA1\xAA\xA1\xAA%s", lookupuser.userid, tmp_buf);
 	snprintf(title, sizeof(title), "%-38.38s(BM: %s _Personal)", tmp_title, lookupuser.userid);
 	//by bjgyt sprintf(title, "%-38.38s(BM: %s)", title, lookupuser.userid);
 	sprintf(digestpath, "%s/%c", DIGEST_BASE, toupper(firstchar[0]));
@@ -1297,14 +1486,16 @@ int m_addpersonal(const char *s) {
 		char secu[STRLEN];
 		lookupuser.userlevel |= PERM_SPECIAL8;
 		substitute_record(PASSFILE, &lookupuser, sizeof (struct userec), id);
-		sprintf(secu, "´´½¨¸öÈËÎÄ¼¯, ¸øÓè %s ÎÄ¼¯¹ÜÀíÈ¨ÏŞ",
+		// åˆ›å»ºä¸ªäººæ–‡é›†, ç»™äºˆ %s æ–‡é›†ç®¡ç†æƒé™
+		sprintf(secu, "\xB4\xB4\xBD\xA8\xB8\xF6\xC8\xCB\xCE\xC4\xBC\xAF, \xB8\xF8\xD3\xE8 %s \xCE\xC4\xBC\xAF\xB9\xDC\xC0\xED\xC8\xA8\xCF\xDE",
 			lookupuser.userid);
 		securityreport(secu, secu);
 		move(10, 0);
 		prints(secu);
 
 	}
-	prints("ÒÑ¾­´´½¨¸öÈËÎÄ¼¯, Çë°´ÈÎÒâ¼ü¼ÌĞø...");
+	// å·²ç»åˆ›å»ºä¸ªäººæ–‡é›†, è¯·æŒ‰ä»»æ„é”®ç»§ç»­...
+	prints("\xD2\xD1\xBE\xAD\xB4\xB4\xBD\xA8\xB8\xF6\xC8\xCB\xCE\xC4\xBC\xAF, \xC7\xEB\xB0\xB4\xC8\xCE\xD2\xE2\xBC\xFC\xBC\xCC\xD0\xF8...");
 	pressanykey();
 	return 0;
 }
