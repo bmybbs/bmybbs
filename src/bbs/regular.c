@@ -33,7 +33,7 @@ ExtStru *extstru;
 
 static __inline int is_str(int temp, const char *Str) {
 	if ((temp - start + 1 == (int) strlen(Str))
-	    && (start == strstr(exp + start, Str) - exp))
+			&& (start == strstr(exp + start, Str) - exp))
 		return 1;
 
 	else
@@ -56,7 +56,7 @@ static __inline int next_token() {
 		start++;
 	i = start;
 	while (i <= end && !is_sep(exp[i]) && (exp[i] != LeftBracket)
-	       && (exp[i] != RightBracket))
+			&& (exp[i] != RightBracket))
 		i++;
 	return i - 1;
 }
