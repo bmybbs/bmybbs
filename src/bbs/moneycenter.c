@@ -2108,6 +2108,7 @@ static int money_admin() {
 	char stockboard[STRLEN][MAX_STOCK_NUM];
 	FILE *fp1;
 	int count;
+	int num=0;
 
 	if (!seek_in_file(MC_ADMIN_FILE, currentuser.userid)
 			&& !(currentuser.userlevel & PERM_SPECIAL5) && strcmp(currentuser.userid, "macintosh")) {
@@ -2593,7 +2594,6 @@ static int money_admin() {
 				money_deny();
 				break;
 
-				int num=0;
 			case '1':
 				clear();
 				move(12, 4);
