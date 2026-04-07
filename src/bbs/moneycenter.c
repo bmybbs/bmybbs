@@ -2,6 +2,7 @@
 #include <math.h>
 #include "bbs.h"
 #include "bbs_global_vars.h"
+#include "config.h"
 #include "stuff.h"
 #include "smth_screen.h"
 #include "maintain.h"
@@ -1934,7 +1935,7 @@ static int addOrDel_contrb() {
 			if (tag == 1){
 				while (buf[0] == 0)
 					getdata(2, 0, "请输入新的名称: ", buf, 18, DOECHO, YEA);
-				sprintf(JijinMem[i].name, "%s", buf);
+				ytht_strsncpy(JijinMem[i].name, buf, sizeof JijinMem[i].name);
 				sprintf(title, "%s行使管理权限(设置捐款基金)", currentuser.userid);
 				sprintf(buf,"%s改变%s的名称为 %s基金", currentuser.userid, JijinMem[i].userid, JijinMem[i].name);
 				millionairesrec(title,buf, "");
@@ -3013,7 +3014,7 @@ static void saveSoccerRecord(char *complexBet) {
 			}
 		}
 		genbuf[j] = '\0';
-		sprintf(buf, "%s %s", currentuser.userid, genbuf);
+		snprintf(buf, sizeof buf, "%s %s", currentuser.userid, genbuf);
 		ytht_add_to_file(DIR_MC_TEMP "soccer_list", buf);
 	} else {
 		for (i = 0; i < len; i++) {	/*寻找第一个复式单元 */
@@ -9787,7 +9788,7 @@ static int mc_autoundeny() {
 	readstrvalue(MC_DENY_FILE, currentuser.userid, buf, STRLEN);
 	ptr=strchr(buf, 0x1b);
 	if (ptr)
-		memmove(buf, ptr+2, sizeof(buf));
+		ytht_strsncpy(buf, ptr+2, sizeof(buf));
 	else return 0;
 	undenytime=atoi(buf);
 	if (undenytime > time(0))
@@ -9856,7 +9857,7 @@ static int delstockboard(char *sbname, char *fname) {
 
 static int stockboards() {
 	char uident[STRLEN];
-	char ans[8], repbuf[200], buf[200], titlebuf[STRLEN], bname[STRLEN],  bpath[STRLEN];
+	char ans[8], repbuf[200], buf[200], titlebuf[STRLEN], bname[24 /* see boardheader */],  bpath[STRLEN], reasonbuf[50];
 	int count, ch2;
 	struct stat st;
 	FILE *f_fp;
@@ -9930,12 +9931,12 @@ static int stockboards() {
 						clrtoeol();
 						if (bname[0] != '\0' && bname[0] != '\n' && bname[0] != '\r') {
 							if (delstockboard(bname, MC_STOCK_BOARDS)) {
-								getdata(6, 0, "取消原因：", buf, 50, DOECHO, YEA);
-								sprintf(repbuf, "原因：%s", buf);
-								sprintf(titlebuf, "[公告]%s版退市", bname);
+								getdata(6, 0, "取消原因：", reasonbuf, 50, DOECHO, YEA);
+								snprintf(repbuf, sizeof repbuf, "原因：%s", reasonbuf);
+								snprintf(titlebuf, sizeof titlebuf, "[公告]%s版退市", bname);
 								deliverreport(titlebuf, repbuf);
-								sprintf(titlebuf, "%s行使股市管理权限", currentuser.userid);
-								sprintf(repbuf, "取消上市版面: %s版\n\n取消原因：%s\n", bname, buf);
+								snprintf(titlebuf, sizeof titlebuf, "%s行使股市管理权限", currentuser.userid);
+								snprintf(repbuf, sizeof repbuf, "取消上市版面: %s版\n\n取消原因：%s\n", bname, reasonbuf);
 								millionairesrec(titlebuf, repbuf, "");
 							}
 						}
@@ -9980,17 +9981,17 @@ static int stockboards() {
 
 						if (bname[0] != '\0' && bname[0] != '\n' && bname[0] != '\r') {
 							if (addstockboard(bname, MC_STOCK_STOPBUY)) {
-								getdata(6, 0, "暂停原因：", buf, 50, DOECHO, YEA);
+								getdata(6, 0, "暂停原因：", reasonbuf, 50, DOECHO, YEA);
 								move(7, 0);
 								if (askyn("确定吗？", NA, NA) == NA) {
 									pressanykey();
 									break;
 								}
-								sprintf(repbuf, "暂停原因：%s", buf);
-								sprintf(titlebuf, "[公告]%s版股票停牌", bname);
+								snprintf(repbuf, sizeof repbuf, "暂停原因：%s", reasonbuf);
+								snprintf(titlebuf, sizeof titlebuf, "[公告]%s版股票停牌", bname);
 								deliverreport(titlebuf, repbuf);
-								sprintf(titlebuf, "%s行使股市管理权限", currentuser.userid);
-								sprintf(repbuf, "暂停%s版股票交易\n\n原因：%s\n", bname, buf);
+								snprintf(titlebuf, sizeof titlebuf, "%s行使股市管理权限", currentuser.userid);
+								snprintf(repbuf, sizeof repbuf, "暂停%s版股票交易\n\n原因：%s\n", bname, reasonbuf);
 								millionairesrec(titlebuf, repbuf, "");
 							}
 						}
@@ -10001,12 +10002,12 @@ static int stockboards() {
 						clrtoeol();
 						if (bname[0] != '\0' && bname[0] != '\n' && bname[0] != '\r') {
 							if (delstockboard(bname, MC_STOCK_STOPBUY)) {
-								getdata(6, 0, "恢复原因：", buf, 50, DOECHO, YEA);
-								sprintf(repbuf, "恢复原因：%s", buf);
-								sprintf(titlebuf, "[公告]%s版股票复牌", bname);
+								getdata(6, 0, "恢复原因：", reasonbuf, 50, DOECHO, YEA);
+								snprintf(repbuf, sizeof repbuf, "恢复原因：%s", reasonbuf);
+								snprintf(titlebuf, sizeof titlebuf, "[公告]%s版股票复牌", bname);
 								deliverreport(titlebuf, repbuf);
-								sprintf(titlebuf, "%s行使股市管理权限", currentuser.userid);
-								sprintf(repbuf, "恢复%s版股票交易\n\n原因：%s\n", bname, buf);
+								snprintf(titlebuf, sizeof titlebuf, "%s行使股市管理权限", currentuser.userid);
+								snprintf(repbuf, sizeof repbuf, "恢复%s版股票交易\n\n原因：%s\n", bname, reasonbuf);
 								millionairesrec(titlebuf, repbuf, "");
 							}
 						}
