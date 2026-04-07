@@ -61,13 +61,13 @@ static int read_mail(struct fileheader *fptr);
 static int read_new_mail(struct fileheader *fptr);
 static int mailtitle(void);
 static char *maildoent(int num, struct fileheader *ent, char buf[512]);
-static int mail_read(int ent, struct fileheader *fileinfo, char *direct);
-static int mail_del(int ent, struct fileheader *fileinfo, char *direct);
-static int mail_del_range(int ent, struct fileheader *fileinfo, char *direct);
-static int mail_mark(int ent, struct fileheader *fileinfo, char *direct);
+static int mail_read(int, void *, char *);
+static int mail_del(int, void *, char *);
+static int mail_del_range(int, void *, char *);
+static int mail_mark(int, void *, char *);
 static int do_gsend(const char *userid[], int num);
 static void getmailinfo(char *path, struct fileheader *rst);
-static int mail_rjunk(void);
+static int mail_rjunk(int, void *, char *);
 static int m_cancel_1(struct fileheader *fh, char *receiver);
 static int max_mail_size(void);
 static int get_mail_size(void);
@@ -492,8 +492,10 @@ int m_send(const char *userid) {
 	return FULLUPDATE;
 }
 
-int M_send(const char *s) {
-	(void) s;
+int M_send(int ent, void *record, char *direct) {
+	(void) ent;
+	(void) record;
+	(void) direct;
 	if (!HAS_PERM(PERM_LOGINOK, currentuser))
 		return 0;
 	return m_send(NULL);
@@ -681,11 +683,12 @@ maildoent(int num, struct fileheader *ent, char *buf)
 }
 
 static int
-mail_read(int ent, struct fileheader *fileinfo, char *direct)
+mail_read(int ent, void *record, char *direct)
 {
 	char notgenbuf[128];
 	int readnext;
 	char done = NA, delete_it, replied;
+	struct fileheader *fileinfo = record;
 
 	clear();
 	readnext = NA;
@@ -732,11 +735,12 @@ mail_read(int ent, struct fileheader *fileinfo, char *direct)
 }
 
 /*ARGSUSED*/ int
-mail_reply(int ent, struct fileheader *fileinfo, char *direct)
+mail_reply(int ent, void *record, char *direct)
 {
 	char uid[STRLEN];
 	char title[STRLEN];
 	char *t;
+	struct fileheader *fileinfo = record;
 
 	sprintf(genbuf, "MAILER-DAEMON@%s", email_domain());
 	if (strstr(fileinfo->owner, genbuf)) {
@@ -800,9 +804,10 @@ mail_reply(int ent, struct fileheader *fileinfo, char *direct)
 }
 
 static int
-mail_del(int ent, struct fileheader *fileinfo, char *direct)
+mail_del(int ent, void *record, char *direct)
 {
 	char buf[512];
+	struct fileheader *fileinfo = record;
 
 	clear();
 	prints("删除信件 [%s] ", fileinfo->title);
@@ -829,9 +834,10 @@ mail_del(int ent, struct fileheader *fileinfo, char *direct)
 
 #ifdef INTERNET_EMAIL
 
-int mail_forward(int ent, struct fileheader *fileinfo, char *direct) {
+int mail_forward(int ent, void *record, char *direct) {
 	(void) ent;
 	char buf[STRLEN];
+	struct fileheader *fileinfo = record;
 	if (!HAS_PERM(PERM_FORWARD, currentuser)) {
 		return DONOTHING;
 	}
@@ -855,9 +861,10 @@ int mail_forward(int ent, struct fileheader *fileinfo, char *direct) {
 	return FULLUPDATE;
 }
 
-int mail_u_forward(int ent, struct fileheader *fileinfo, char *direct) {
+int mail_u_forward(int ent, void *record, char *direct) {
 	(void) ent;
 	char buf[STRLEN];
+	struct fileheader *fileinfo = record;
 	if (!HAS_PERM(PERM_FORWARD, currentuser)) {
 		return DONOTHING;
 	}
@@ -884,13 +891,14 @@ int mail_u_forward(int ent, struct fileheader *fileinfo, char *direct) {
 #endif
 
 static int
-mail_del_range(int ent, struct fileheader *fileinfo, char *direct)
+mail_del_range(int ent, void *record, char *direct)
 {
-	return (del_range(ent, fileinfo, direct));
+	return (del_range(ent, record, direct));
 }
 
-static int mail_mark(int ent, struct fileheader *fileinfo, char *direct) {
+static int mail_mark(int ent, void *record, char *direct) {
 	(void) direct;
+	struct fileheader *fileinfo = record;
 	if (fileinfo->accessed & FH_MARKED)
 		fileinfo->accessed &= ~FH_MARKED;
 	else
@@ -1004,9 +1012,9 @@ struct one_key query_comms[];
 
 // 邮箱查询功能，邮箱界面中ctrl+g
 // interma@bmy, 2006-11-23
-static int mail_query(int ent, struct fileheader *fileinfo, char *direct) {
+static int mail_query(int ent, void *record, char *direct) {
 	(void) ent;
-	(void) fileinfo;
+	(void) record;
 	(void) direct;
 	//power_action(currmaildir, 1, -1, "标记含 m", 9);
 	char ans[3];
@@ -2012,8 +2020,11 @@ getmailinfo(char *path, struct fileheader *rst)
 }
 
 static int
-mail_rjunk()
+mail_rjunk(int ent, void *record, char *direct)
 {
+	(void) ent;
+	(void) record;
+	(void) direct;
 	DIR *dirp;
 	struct dirent *direntp;
 	int len, count;
@@ -2196,11 +2207,12 @@ check_maxmail()
 		return (0);
 }
 
-int post_reply(int ent, struct fileheader *fileinfo, char *direct) {
+int post_reply(int ent, void *record, char *direct) {
 	(void) ent;
 	(void) direct;
 	char uid[STRLEN];
 	char title[STRLEN];
+	struct fileheader *fileinfo = record;
 	if (!strcmp(currentuser.userid, "guest"))
 		return DONOTHING;
 

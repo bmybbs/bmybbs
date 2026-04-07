@@ -391,8 +391,12 @@ static int delclubmember(char *uident)
 }
 
 int
-clubmember()
+clubmember(int ent, void *record, char *direct)
 {
+	(void) ent;
+	(void) record;
+	(void) direct;
+
 	char uident[IDLEN + 1];
 	char ans[8], repbuf[STRLEN * 2], buf[STRLEN], titlebuf[STRLEN];
 	int count, i;

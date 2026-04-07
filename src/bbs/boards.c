@@ -651,7 +651,7 @@ static int choose_board(int newflag, const struct sectree *sec)
 			update_endline();
 			break;
 		case 'L':	/* ppfoong */
-			show_allmsgs(NULL);
+			show_allmsgs(0, NULL, NULL);
 			page = -1;
 			break;
 		case 'N':
@@ -679,7 +679,7 @@ static int choose_board(int newflag, const struct sectree *sec)
 			num = brdnum + secnum - 1;
 			break;
 		case '!':	/* youzi leave */
-			return Q_Goodbye();
+			return Q_Goodbye(0, NULL, NULL);
 		case 'w':
 			if ((in_mail != YEA) && HAS_PERM(PERM_READMAIL, currentuser))
 				m_read(NULL);
@@ -887,7 +887,7 @@ static int choose_board(int newflag, const struct sectree *sec)
 		case 'S':	/* sendmsg ... youzi */
 			if (!HAS_PERM(PERM_PAGE, currentuser))
 				break;
-			s_msg(NULL);
+			s_msg(0, NULL, NULL);
 			page = -1;
 			break;
 		case 'c':	/* show friends ... youzi */
@@ -1302,7 +1302,7 @@ int Read(const char *s) {
 			currentuser.userdefine &= ~DEF_INTOANN;
 			substitute_record(PASSFILE, &currentuser, sizeof (currentuser), usernum);
 		} else if (ans[0] != 'N' && ans[0] != 'n') {
-			into_announce();
+			into_announce(0, NULL, NULL);
 			show_board_notes(currboard);
 			move(t_lines - 1, 0);
 			// \033[0m\033[1m欢迎光临, 按任意键进入本版版面, 在版面按'x'可以随时进入精华区

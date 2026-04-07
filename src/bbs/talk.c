@@ -93,17 +93,17 @@ static int override_title(void);
 static char *override_doentry(int ent, struct ythtbbs_override *fh, char buf[512]);
 static int override_edit(int ent, struct ythtbbs_override *fh, char *direc);
 static int override_dele(int ent, struct ythtbbs_override *fh, char *direct);
-static int friend_edit(int ent, struct ythtbbs_override *fh, char *direct);
-static int friend_add(int ent, struct ythtbbs_override *fh, char *direct);
-static int friend_dele(int ent, struct ythtbbs_override *fh, char *direct);
-static int friend_mail(int ent, struct ythtbbs_override *fh, char *direct);
-static int friend_query(int ent, struct ythtbbs_override *fh, char *direct);
-static int friend_help(void);
-static int reject_edit(int ent, struct ythtbbs_override *fh, char *direct);
-static int reject_add(int ent, struct ythtbbs_override *fh, char *direct);
-static int reject_dele(int ent, struct ythtbbs_override *fh, char *direct);
-static int reject_query(int ent, struct ythtbbs_override *fh, char *direct);
-static int reject_help(void);
+static int friend_edit(int ent, void *fh, char *direct);
+static int friend_add(int ent, void *fh, char *direct);
+static int friend_dele(int ent, void *fh, char *direct);
+static int friend_mail(int ent, void *fh, char *direct);
+static int friend_query(int ent, void *fh, char *direct);
+static int friend_help(int ent, void *fh, char *direct);
+static int reject_edit(int ent, void *fh, char *direct);
+static int reject_add(int ent, void *fh, char *direct);
+static int reject_dele(int ent, void *fh, char *direct);
+static int reject_query(int ent, void *fh, char *direct);
+static int reject_help(int ent, void *fh, char *direct);
 static int cmpfuid(unsigned *a, unsigned *b);
 static void do_log(char *msg, int who);
 static char *Cdate(time_t * clock);
@@ -1608,41 +1608,45 @@ static int override_dele(int ent, struct ythtbbs_override *fh, char *direct) {
 }
 
 static int
-friend_edit(int ent, struct ythtbbs_override *fh, char *direct)
+friend_edit(int ent, void *record, char *direct)
 {
+	struct ythtbbs_override *fh = record;
 	friendflag = YEA;
 	return override_edit(ent, fh, direct);
 }
 
-static int friend_add(int ent, struct ythtbbs_override *fh, char *direct) {
+static int friend_add(int ent, void *record, char *direct) {
 	(void) ent;
-	(void) fh;
+	(void) record;
 	(void) direct;
 	friendflag = YEA;
 	return override_add();
 }
 
 static int
-friend_dele(int ent, struct ythtbbs_override *fh, char *direct)
+friend_dele(int ent, void *record, char *direct)
 {
+	struct ythtbbs_override *fh = record;
 	friendflag = YEA;
 	return override_dele(ent, fh, direct);
 }
 
-static int friend_mail(int ent, struct ythtbbs_override *fh, char *direct) {
+static int friend_mail(int ent, void *record, char *direct) {
 	(void) ent;
 	(void) direct;
+	struct ythtbbs_override *fh = record;
 	if (!HAS_PERM(PERM_POST, currentuser))
 		return DONOTHING;
 	m_send(fh->id);
 	return FULLUPDATE;
 }
 
-static int friend_query(int ent, struct ythtbbs_override *fh, char *direct) {
+static int friend_query(int ent, void *record, char *direct) {
 	(void) ent;
 	(void) direct;
 	int ch;
 
+	struct ythtbbs_override *fh = record;
 	if (t_query(fh->id) == -1)
 		return FULLUPDATE;
 	move(t_lines - 1, 0);
@@ -1676,36 +1680,42 @@ static int friend_query(int ent, struct ythtbbs_override *fh, char *direct) {
 }
 
 static int
-friend_help()
+friend_help(int ent, void *record, char *direct)
 {
+	(void) ent;
+	(void) record;
+	(void) direct;
 	show_help("help/friendshelp");
 	return FULLUPDATE;
 }
 
 static int
-reject_edit(int ent, struct ythtbbs_override *fh, char *direct)
+reject_edit(int ent, void *record, char *direct)
 {
 	friendflag = NA;
+	struct ythtbbs_override *fh = record;
 	return override_edit(ent, fh, direct);
 }
 
-static int reject_add(int ent, struct ythtbbs_override *fh, char *direct) {
+static int reject_add(int ent, void *record, char *direct) {
 	(void) ent;
-	(void) fh;
+	(void) record;
 	(void) direct;
 	friendflag = NA;
 	return override_add();
 }
 
-static int reject_dele(int ent, struct ythtbbs_override *fh, char *direct) {
+static int reject_dele(int ent, void *record, char *direct) {
 	friendflag = NA;
+	struct ythtbbs_override *fh = record;
 	return override_dele(ent, fh, direct);
 }
 
-static int reject_query(int ent, struct ythtbbs_override *fh, char *direct) {
+static int reject_query(int ent, void *record, char *direct) {
 	(void) ent;
 	(void) direct;
 	int ch;
+	struct ythtbbs_override *fh = record;
 
 	if (t_query(fh->id) == -1)
 		return FULLUPDATE;
@@ -1736,8 +1746,11 @@ static int reject_query(int ent, struct ythtbbs_override *fh, char *direct) {
 }
 
 static int
-reject_help()
+reject_help(int ent, void *record, char *direct)
 {
+	(void) ent;
+	(void) record;
+	(void) direct;
 	show_help("help/rejectshelp");
 	return FULLUPDATE;
 }

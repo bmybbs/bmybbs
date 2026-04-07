@@ -296,16 +296,16 @@ void i_read(int cmdmode, char *direct, int (*dotitle) (), char *(*doentry) (int,
 					"\xBF\xB4\xB0\xE6\xD0\xC2\xB3\xC9\xC1\xA2" " (P)" "\xB7\xA2\xB1\xED\xCE\xC4\xD5\xC2" " (Q)" "\xC0\xEB\xBF\xAA\xA3\xBF" "[Q] ",
 					genbuf, 4, DOECHO, YEA);
 				if (genbuf[0] == 'p' || genbuf[0] == 'P')
-					do_post();
+					do_post(0, NULL, NULL);
 			} else {
 				getdata(t_lines - 1, 0,
 					// 看版新成立 (P)发表文章 (N)设置俱乐部成员 (Q)离开？ [Q]
 					"\xBF\xB4\xB0\xE6\xD0\xC2\xB3\xC9\xC1\xA2" " (P)" "\xB7\xA2\xB1\xED\xCE\xC4\xD5\xC2" " (N)" "\xC9\xE8\xD6\xC3\xBE\xE3\xC0\xD6\xB2\xBF\xB3\xC9\xD4\xB1" " (Q)" "\xC0\xEB\xBF\xAA\xA3\xBF" " [Q] ",
 					genbuf, 4, DOECHO, YEA);
 				if (genbuf[0] == 'p' || genbuf[0] == 'P')
-					do_post();
+					do_post(0, NULL, NULL);
 				else if (genbuf[0] == 'n' || genbuf[0] == 'N')
-					clubmember();
+					clubmember(0, NULL, NULL);
 			}
 		}
 		free(pnt);
@@ -454,16 +454,16 @@ void i_read(int cmdmode, char *direct, int (*dotitle) (), char *(*doentry) (int,
 					digest_mode();
 					break;
 				case 2:
-					thread_mode();
+					thread_mode(0, NULL, NULL);
 					break;
 				case 3:
-					marked_mode();
+					marked_mode(0, NULL, NULL);
 					break;
 				case 4:
-					deleted_mode();
+					deleted_mode(0, NULL, NULL);
 					break;
 				case 5:
-					junk_mode();
+					junk_mode(0, NULL, NULL);
 					break;
 				}
 			}
@@ -526,13 +526,13 @@ static int i_read_key(const struct one_key *rcmdlist, struct keeploc *locmem, in
 			case YEA:
 				return digest_mode();
 			case 2:
-				return thread_mode();
+				return thread_mode(0, NULL, NULL);
 			case 3:
-				return marked_mode();
+				return marked_mode(0, NULL, NULL);
 			case 4:
-				return deleted_mode();
+				return deleted_mode(0, NULL, NULL);
 			case 5:
-				return junk_mode();
+				return junk_mode(0, NULL, NULL);
 			default:
 				return DOQUIT;
 			}
@@ -552,7 +552,7 @@ static int i_read_key(const struct one_key *rcmdlist, struct keeploc *locmem, in
 			return PARTUPDATE;
 		break;
 	case 'L':		/* ppfoong */
-		show_allmsgs(NULL);
+		show_allmsgs(0, NULL, NULL);
 		return FULLUPDATE;
 	case 'N':
 	case Ctrl('F'):
@@ -617,7 +617,7 @@ static int i_read_key(const struct one_key *rcmdlist, struct keeploc *locmem, in
 	case 'S':		/* youzi */
 		if (!HAS_PERM(PERM_PAGE, currentuser))
 			break;
-		s_msg(NULL);
+		s_msg(0, NULL, NULL);
 		return FULLUPDATE;
 		break;
 		/*      case 'c': *//* youzi */
@@ -633,7 +633,7 @@ static int i_read_key(const struct one_key *rcmdlist, struct keeploc *locmem, in
 			break;
 
 	case '!':		/* youzi leave */
-		return Q_Goodbye();
+		return Q_Goodbye(0, NULL, NULL);
 		break;
 	case '\n':
 	case '\r':
@@ -665,9 +665,10 @@ static int i_read_key(const struct one_key *rcmdlist, struct keeploc *locmem, in
 	return mode;
 }
 
-int auth_search_down(int ent, struct fileheader *fileinfo, char *direct) {
+int auth_search_down(int ent, void *record, char *direct) {
 	(void) ent;
 	struct keeploc *locmem;
+	struct fileheader *fileinfo = record;
 
 	locmem = getkeep(direct, 1, 1);
 	if (search_author(locmem, 1, fileinfo->owner))
@@ -677,9 +678,10 @@ int auth_search_down(int ent, struct fileheader *fileinfo, char *direct) {
 	return DONOTHING;
 }
 
-int auth_search_up(int ent, struct fileheader *fileinfo, char *direct) {
+int auth_search_up(int ent, void *record, char *direct) {
 	(void) ent;
 	struct keeploc *locmem;
+	struct fileheader *fileinfo = record;
 
 	locmem = getkeep(direct, 1, 1);
 	if (search_author(locmem, -1, fileinfo->owner))
@@ -689,9 +691,9 @@ int auth_search_up(int ent, struct fileheader *fileinfo, char *direct) {
 	return DONOTHING;
 }
 
-int post_search_down(int ent, struct fileheader *fileinfo, char *direct) {
+int post_search_down(int ent, void *record, char *direct) {
 	(void) ent;
-	(void) fileinfo;
+	(void) record;
 	struct keeploc *locmem;
 
 	locmem = getkeep(direct, 1, 1);
@@ -702,9 +704,9 @@ int post_search_down(int ent, struct fileheader *fileinfo, char *direct) {
 	return DONOTHING;
 }
 
-int post_search_up(int ent, struct fileheader *fileinfo, char *direct) {
+int post_search_up(int ent, void *record, char *direct) {
 	(void) ent;
-	(void) fileinfo;
+	(void) record;
 	struct keeploc *locmem;
 
 	locmem = getkeep(direct, 1, 1);
@@ -715,16 +717,18 @@ int post_search_up(int ent, struct fileheader *fileinfo, char *direct) {
 	return DONOTHING;
 }
 
-int show_author(int ent, struct fileheader *fileinfo, char *direct) {
+int show_author(int ent, void *record, char *direct) {
 	(void) ent;
 	(void) direct;
+	struct fileheader *fileinfo = record;
 	t_query(fileinfo->owner);
 	return FULLUPDATE;
 }
 
-int friend_author(int ent, struct fileheader *fileinfo, char *direct) {
+int friend_author(int ent, void *record, char *direct) {
 	(void) ent;
 	(void) direct;
+	struct fileheader *fileinfo = record;
 	extern int friendflag;
 	char uident[STRLEN];
 	char *q_id = fileinfo->owner;
@@ -749,10 +753,11 @@ int friend_author(int ent, struct fileheader *fileinfo, char *direct) {
 	return FULLUPDATE;
 }
 
-int SR_BMfunc(int ent, struct fileheader *fileinfo, char *direct) {
+int SR_BMfunc(int ent, void *record, char *direct) {
 	(void) direct;
 	int i, dotype=0;			//add by mintbaggio
 	char buf[STRLEN * 2], ch[4], BMch;
+	struct fileheader *fileinfo = record;
 	static const char *SR_BMitems[] = {
 		// 不减文章数删除
 		// 保留
@@ -871,9 +876,9 @@ int SR_BMfunc(int ent, struct fileheader *fileinfo, char *direct) {
 }
 
 /*先找第一篇, 再找第一篇新的, 如果找到了, 就读之, 否则直接返回*/
-int SR_first_new(int ent, struct fileheader *fileinfo, char *direct)
+int SR_first_new(int ent, void *record, char *direct)
 {
-	SR_first(ent, fileinfo, direct);
+	SR_first(ent, record, direct);
 	if (sread(3, 0, 0, 0, &SR_fptr) == -1) {	/*Found The First One */
 		sread(0, 1, 0, 0, &SR_fptr);
 		return FULLUPDATE;
@@ -881,31 +886,31 @@ int SR_first_new(int ent, struct fileheader *fileinfo, char *direct)
 	return PARTUPDATE;
 }
 
-int SR_last(int ent, struct fileheader *fileinfo, char *direct) {
+int SR_last(int ent, void *record, char *direct) {
 	(void) ent;
 	(void) direct;
-	sread(1, 0, ent, 0, fileinfo);
+	sread(1, 0, ent, 0, record);
 	return PARTUPDATE;
 }
 
-int SR_first(int ent, struct fileheader *fileinfo, char *direct) {
+int SR_first(int ent, void *record, char *direct) {
 	(void) ent;
 	(void) direct;
-	sread(2, 0, ent, 0, fileinfo);
+	sread(2, 0, ent, 0, record);
 	return PARTUPDATE;
 }
 
-int SR_read(int ent, struct fileheader *fileinfo, char *direct) {
+int SR_read(int ent, void *record, char *direct) {
 	(void) ent;
 	(void) direct;
-	sread(0, 1, 0, 0, fileinfo);
+	sread(0, 1, 0, 0, record);
 	return FULLUPDATE;
 }
 
-int SR_author(int ent, struct fileheader *fileinfo, char *direct) {
+int SR_author(int ent, void *record, char *direct) {
 	(void) ent;
 	(void) direct;
-	sread(0, 1, 0, 1, fileinfo);
+	sread(0, 1, 0, 1, record);
 	return FULLUPDATE;
 }
 
@@ -957,9 +962,9 @@ int auth_post_up(int ent, struct fileheader *fileinfo, char *direct)
 	return DONOTHING;
 }
 #endif
-int t_search_down(int ent, struct fileheader *fileinfo, char *direct) {
+int t_search_down(int ent, void *record, char *direct) {
 	(void) ent;
-	(void) fileinfo;
+	(void) record;
 	struct keeploc *locmem;
 
 	locmem = getkeep(direct, 1, 1);
@@ -970,9 +975,9 @@ int t_search_down(int ent, struct fileheader *fileinfo, char *direct) {
 	return DONOTHING;
 }
 
-int t_search_up(int ent, struct fileheader *fileinfo, char *direct) {
+int t_search_up(int ent, void *record, char *direct) {
 	(void) ent;
-	(void) fileinfo;
+	(void) record;
 	struct keeploc *locmem;
 
 	locmem = getkeep(direct, 1, 1);
@@ -983,9 +988,10 @@ int t_search_up(int ent, struct fileheader *fileinfo, char *direct) {
 	return DONOTHING;
 }
 
-int thread_up(int ent, struct fileheader *fileinfo, char *direct) {
+int thread_up(int ent, void *record, char *direct) {
 	(void) ent;
 	struct keeploc *locmem;
+	struct fileheader *fileinfo = record;
 
 	locmem = getkeep(direct, 1, 1);
 	if (uinfo.mode != RMAIL) {
@@ -1003,9 +1009,10 @@ int thread_up(int ent, struct fileheader *fileinfo, char *direct) {
 	return DONOTHING;
 }
 
-int thread_down(int ent, struct fileheader *fileinfo, char *direct) {
+int thread_down(int ent, void *record, char *direct) {
 	(void) ent;
 	struct keeploc *locmem;
+	struct fileheader *fileinfo = record;
 
 	locmem = getkeep(direct, 1, 1);
 	if (uinfo.mode != RMAIL) {
@@ -1071,7 +1078,7 @@ static int search_thread(struct keeploc *locmem, int offset, char *title)
 }
 
 /*Add by SmallPig*/
-int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *ptitle) {
+int sread(int passonly, int readfirst, int pnum, int auser, void *record) {
 	struct keeploc *locmem;
 	int rem_top, rem_crs;	/* youzi 1997.7.7 */
 	extern int readingthread;
@@ -1080,6 +1087,7 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
 	int add_anno_flag = 0;
 	char genbuf[STRLEN], title[STRLEN];
 	char tmpboard[STRLEN], anboard[STRLEN];
+	struct fileheader *ptitle = record;
 
 	previous = pnum;
 

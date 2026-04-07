@@ -1304,8 +1304,11 @@ tlog_recover()
 
 /* youzi quick goodbye */
 int
-Q_Goodbye()
+Q_Goodbye(int ent, struct fileheader *fileinfo, char *direct)
 {
+	(void) ent;
+	(void) fileinfo;
+	(void) direct;
 	extern int started;
 	time_t stay;
 	char fname[STRLEN], notename[STRLEN];

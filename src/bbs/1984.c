@@ -17,8 +17,8 @@
 static char boarddir1984[STRLEN * 2];
 static int do1984title(void);
 static char *do1984doent(int num, struct fileheader *ent, char buf[512]);
-static int do1984_read(int ent, struct fileheader *fileinfo, char *direct);
-static int do1984_done(int ent, struct fileheader *fileinfo, char *direct);
+static int do1984_read(int, void *, char *);
+static int do1984_done(int, void *, char *);
 static int gettarget_board_title(char *board, char *title, char *filename);
 static int do1984(time_t dtime, int mode);
 static void post_1984_to_board(char *dir, struct fileheader *fileinfo);
@@ -98,8 +98,9 @@ static char *do1984doent(int num, struct fileheader *ent, char buf[512])
 	return buf;
 }
 
-static int do1984_read(int ent, struct fileheader *fileinfo, char *direct)
+static int do1984_read(int ent, void *record, char *direct)
 {
+	struct fileheader *fileinfo = record;
 	char notgenbuf[128];
 	int ch;
 
@@ -155,8 +156,9 @@ static int do1984_read(int ent, struct fileheader *fileinfo, char *direct)
 	return FULLUPDATE;
 }
 
-static int do1984_done(int ent, struct fileheader *fileinfo, char *direct)
+static int do1984_done(int ent, void *record, char *direct)
 {
+	struct fileheader *fileinfo = record;
 	if (fileinfo->accessed & FH_1984)
 		return (PARTUPDATE);
 	post_1984_to_board(direct, fileinfo);

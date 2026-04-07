@@ -79,6 +79,10 @@ extern int nettyNN;
 static char *sysconf_buf;
 static int sysconf_menu, sysconf_key, sysconf_len;
 
+static int s_msg_aux(const char *);
+static int show_allmsgs_aux(const char *);
+static int M_send_aux(const char *);
+
 /*Add By Excellent */
 typedef int (*SCommandFunc)(const char *);
 struct scommandlist {
@@ -113,7 +117,7 @@ const struct scommandlist sysconf_cmdlist[] = {
 	{"OffLine", offline},
 	{"ReadNewMail", m_new},
 	{"ReadMail", m_read},
-	{"SendMail", M_send},
+	{"SendMail", M_send_aux},
 	{"GroupSend", g_send},
 	{"OverrideSend", ov_send},
 	{"SendNetMail", m_internet},
@@ -131,8 +135,8 @@ const struct scommandlist sysconf_cmdlist[] = {
 	{"Talk", t_talk},
 	{"SetPager", t_pager},
 	{"SetCloak", x_cloak},
-	{"SendMsg", s_msg},
-	{"ShowMsg", show_allmsgs},
+	{"SendMsg", s_msg_aux},
+	{"ShowMsg", show_allmsgs_aux},
 	{"SetFriends", t_friend},
 	{"SetRejects", t_reject},
 	{"FriendWall", friend_wall},
@@ -755,4 +759,22 @@ int domenu(const char *menu_name) {
 			}
 		}
 	}
+}
+
+static int s_msg_aux(const char *s)
+{
+	(void) s;
+	return s_msg(0, NULL, NULL);
+}
+
+static int show_allmsgs_aux(const char *s)
+{
+	(void) s;
+	return show_allmsgs(0, NULL, NULL);
+}
+
+static int M_send_aux(const char *s)
+{
+	(void) s;
+	return M_send(0, NULL, NULL);
 }

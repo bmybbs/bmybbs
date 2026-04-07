@@ -1027,8 +1027,11 @@ vote_results(char *bname)
 }
 
 int
-b_vote_maintain()
+b_vote_maintain(int ent, void *record, char *direct)
 {
+	(void) ent;
+	(void) record;
+	(void) direct;
 	return vote_maintain(currboard);
 }
 
@@ -1210,7 +1213,10 @@ static int voter_list_select(int star, int curr) {
 	return DOQUIT;
 }
 
-int m_voter() {
+int m_voter(int ent, void *record, char *direct) {
+	(void) ent;
+	(void) record;
+	(void) direct;
 	//int votelist;
 	int i;
 	int IScurrSYS=currentuser.userlevel & PERM_SYSOP;
@@ -1512,7 +1518,10 @@ Show_Votes()
 	return 0;
 }
 
-int b_vote() {
+int b_vote(int ent, void *record, char *direct) {
+	(void) ent;
+	(void) record;
+	(void) direct;
 	int num_of_vote;
 	//int voting;
 
@@ -1541,8 +1550,11 @@ int b_vote() {
 }
 
 int
-b_results()
+b_results(int ent, void *record, char *direct)
 {
+	(void) ent;
+	(void) record;
+	(void) direct;
 	return vote_results(currboard);
 }
 

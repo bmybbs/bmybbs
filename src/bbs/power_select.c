@@ -417,9 +417,9 @@ checkevas(char *buf)
 		return 0;
 }
 
-int power_select(int ent, struct fileheader *fileinfo, char *direct) {
+int power_select(int ent, void *record, char *direct) {
 	(void) ent;
-	(void) fileinfo;
+	(void) record;
 	char num[8];
 	static char select[STRLEN];
 	unsigned int inum1, inum2, answer;

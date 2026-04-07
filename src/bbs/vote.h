@@ -6,9 +6,9 @@ void makevdir(char *bname);
 void setvfile(char *buf, char *bname, char *filename);
 int b_closepolls(void);
 int vote_maintain(char *bname);
-int b_vote_maintain(void);
-int m_voter(void);
-int b_vote(void);
-int b_results(void);
+int b_vote_maintain(int, void *, char *);
+int m_voter(int, void *, char *);
+int b_vote(int, void *, char *);
+int b_results(int, void *, char *);
 int m_vote(const char *s);
 #endif

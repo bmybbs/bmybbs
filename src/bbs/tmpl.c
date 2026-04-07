@@ -43,7 +43,6 @@ static void content_refresh(void);
 static int content_key(int key, size_t allnum, int pagenum);
 static int tmpl_key(int key, int allnum, int pagenum);
 static int tmpl_select(int star, int curr);
-int m_template(void);
 static void choose_tmpl_refresh(void);
 static int choose_tmpl_key(int key, int allnum, int pagenum);
 static int choose_tmpl_post(int star, int curr);
@@ -715,7 +714,10 @@ static int tmpl_select(int star, int curr) {
 	return DOQUIT;
 }
 
-int m_template() {
+int m_template(int ent, void *record, char *direct) {
+	(void) ent;
+	(void) record;
+	(void) direct;
 	//int tmplist;
 	if (!IScurrBM)
 		return DONOTHING;

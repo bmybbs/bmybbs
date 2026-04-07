@@ -1538,7 +1538,7 @@ EXPRESS:		/* add by djq,990725 */
 			}
 			break;
 		case '!':
-			if (!Q_Goodbye())
+			if (!Q_Goodbye(0, NULL, NULL))
 				break;	/* youzi leave */
 		case 'c':
 			if (me.now < me.num) {

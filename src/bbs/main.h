@@ -16,5 +16,5 @@ int egetch(void);
 void update_endline(void);
 void showtitle(char *title, char *mid);
 void docmdtitle(char *title, char *prompt);
-int Q_Goodbye(void);
+int Q_Goodbye(int, void *, char *);
 #endif

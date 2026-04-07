@@ -41,7 +41,7 @@
 #include "bbs-internal.h"
 
 char buf2[MAX_MSG_SIZE];
-struct user_info *t_search();
+extern struct user_info *t_search(char *sid, int pid, int invisible_check);
 int msg_blocked = 0;
 extern int have_msg_unread;
 
@@ -106,8 +106,10 @@ static int canmsg_offline(char *uid) {
 	return NA;
 }
 
-int s_msg(const char *s) {
-	(void) s;
+int s_msg(int ent, void *record, char *direct) {
+	(void) ent;
+	(void) record;
+	(void) direct;
 	do_sendmsg(NULL, NULL, NULL, 0, 0);
 	return 0;
 }
@@ -728,8 +730,10 @@ sendmsgfunc(char *uid, const struct user_info *uin, int userpid, const char *msg
 	return 1;
 }
 
-int show_allmsgs(const char *s) {
-	(void) s;
+int show_allmsgs(int ent, void *record, char *direct) {
+	(void) ent;
+	(void) record;
+	(void) direct;
 	char buf[MAX_MSG_SIZE], showmsg[MAX_MSG_SIZE * 2], chk[STRLEN];
 	int oldmode, count, i, j, page, ch, y, all = 0, reload = 0;
 	struct msghead head;
@@ -835,7 +839,7 @@ reenter:
 				int fd, fd2;
 				char fname[STRLEN], fname2[STRLEN];
 				struct msghead head;
-				int i;
+				int i = 0;
 				sethomefile_s(fname, sizeof(fname), currentuser.userid, "msgindex");
 				sethomefile_s(fname2, sizeof(fname2), currentuser.userid, "msgindex3");
 				fd = open(fname, O_RDONLY, 0644);
