@@ -75,31 +75,19 @@ static char *slowstrlwr(char *str)
 }
 
 
-static void
-sure_markdel(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+static void sure_markdel(int ent, struct fileheader *fileinfo, char *direct)
 {
 	change_dir(direct, fileinfo, (void *) DIR_do_markdel, ent, digestmode, 0);
 	return;
 }
 
-static void
-minus_markdel(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+static void minus_markdel(int ent, struct fileheader *fileinfo, char *direct)
 {
 	change_dir(direct, fileinfo, (void *) DIR_do_mark_minus_del, ent, digestmode, 0);
 	return;
 }
 
-static void
-ann_mark(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+static void ann_mark(int ent, struct fileheader *fileinfo, char *direct)
 {
 	change_dir(direct, fileinfo, (void *) DIR_do_spec, ent, digestmode, 0);
 	return;
@@ -523,4 +511,3 @@ int power_select(int ent, struct fileheader *fileinfo, char *direct) {
 	}
 	return power_action(dir, inum1, inum2, select, answer);
 }
-
