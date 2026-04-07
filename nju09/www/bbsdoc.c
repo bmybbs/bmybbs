@@ -1,6 +1,6 @@
 #include "ythtbbs/commend.h"
 #include "bbslib.h"
-#include "tmpl.h"
+#include "tmpl_defs.h"
 char *size_str(int size);
 
 int top_file(const char *call_type);

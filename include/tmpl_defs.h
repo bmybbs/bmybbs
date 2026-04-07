@@ -31,7 +31,4 @@ struct a_template {
 	struct s_template * tmpl;
 	struct s_content * cont;
 };
-
-int m_template(void);
-int choose_tmpl(void);
 #endif

@@ -1,5 +1,5 @@
 #include "bbslib.h"
-#include "tmpl.h"
+#include "tmpl_defs.h"
 static char *stat1(struct fileheader *data, int from, int total);
 
 /* bbsdoc.c */

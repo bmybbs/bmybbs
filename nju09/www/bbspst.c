@@ -1,5 +1,5 @@
 #include "bbslib.h"
-#include "tmpl.h"
+#include "tmpl_defs.h"
 
 int
 bbspst_main()
