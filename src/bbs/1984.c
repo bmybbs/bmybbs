@@ -158,13 +158,14 @@ static int do1984_read(int ent, void *record, char *direct)
 
 static int do1984_done(int ent, void *record, char *direct)
 {
+	char titlebuf[60 /* see fileheader.title */];
 	struct fileheader *fileinfo = record;
 	if (fileinfo->accessed & FH_1984)
 		return (PARTUPDATE);
 	post_1984_to_board(direct, fileinfo);
 	fileinfo->accessed |= FH_1984;
-	sprintf(fileinfo->title, "%-32.32s - %s", fileinfo->title,
-		currentuser.userid);
+	snprintf(titlebuf, sizeof titlebuf, "%-32.32s - %s", fileinfo->title, currentuser.userid);
+	ytht_strsncpy(fileinfo->title, titlebuf, sizeof(fileinfo->title));
 	substitute_record(direct, fileinfo, sizeof (*fileinfo), ent);
 	return (PARTUPDATE);
 }
