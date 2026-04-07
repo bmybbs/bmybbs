@@ -905,7 +905,7 @@ const struct sectree *sec;
 		case 'c':	/* show friends ... youzi */
 			if (!HAS_PERM(PERM_BASIC, currentuser))
 				break;
-			t_friends(NULL);
+			t_friends();
 			modify_user_mode(newflag ? READNEW : READBRD);
 			page = -1;
 			break;
