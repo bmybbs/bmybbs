@@ -1048,7 +1048,7 @@ int bbs_entry(int argc, const char *argv[])
 		}
 		num_alcounter();
 		if (count_friends > 0 && DEFINE(DEF_LOGFRIEND, currentuser))
-			t_friends(NULL);
+			t_friends();
 		loaduserkeys();
 		if ((!(currentuser.userlevel & PERM_LOGINOK))
 				&& strcmp("guest", currentuser.userid)
