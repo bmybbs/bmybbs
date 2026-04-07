@@ -1015,6 +1015,7 @@ int choose(int update, int defaultn, void (*title_show)(void),
 					num = 0;
 				break;
 			}
+			__attribute__((fallthrough));
 		case 'N':
 		case Ctrl('F'):
 		case KEY_PGDN:

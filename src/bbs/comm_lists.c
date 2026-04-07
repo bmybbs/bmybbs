@@ -667,6 +667,7 @@ int domenu(const char *menu_name) {
 				now = i;
 				break;
 			}
+			__attribute__((fallthrough));
 		case '\n':
 		case '\r':
 			if (strcmp(sysconf_ptr(pm[now].arg_off), "..") == 0) {

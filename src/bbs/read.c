@@ -471,8 +471,10 @@ void i_read(int cmdmode, char *direct, int (*dotitle) (), char *(*doentry) (int,
 				num = last_line - screen_len + 1;
 				locmem = getkeep(currdirect, num < 1 ? 1 : num, last_line);
 			}
+			__attribute__((fallthrough));
 		case FULLUPDATE:
 			draw_title(dotitle);
+			__attribute__((fallthrough));
 		case PARTUPDATE:
 				if (last_line < locmem->top_line + screen_len) {
 				num = get_num_records(currdirect, ssize);
