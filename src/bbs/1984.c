@@ -339,9 +339,13 @@ post_to_1984(char *file, struct fileheader *fileinfo, int mode)
 	}
 	switch (mode) {
 	case 0:
+		// NOTE: board tochecktoday needs to be created first
 		ythtbbs_cache_Board_updatelastpost("tochecktoday");
+		break;
 	case 1:
+		// NOTE: board delete4request needs to be created first
 		ythtbbs_cache_Board_updatelastpost("delete4request");
+		break;
 	default:
 		break;
 	}
