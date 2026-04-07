@@ -51,7 +51,7 @@ static void anno_title(char *buf, struct boardheader *bh);
 //int release_email(char *userid, char *email); //释放邮箱
 
 int
-check_systempasswd()
+check_systempasswd(void)
 {
 	FILE *pass;
 	char passbuf[20], prepass[STRLEN];
@@ -79,10 +79,7 @@ check_systempasswd()
 	return YEA;
 }
 
-void
-deliverreport(title, str)
-char *title;
-char *str;
+void deliverreport(char *title, char *str)
 {
 	FILE *se;
 	char fname[STRLEN];
@@ -100,10 +97,7 @@ char *str;
 	}
 }
 
-void
-securityreport(str, content)
-char *str;
-char *content;
+void securityreport(char *str, char *content)
 {
 	FILE *se;
 	char fname[STRLEN];
@@ -127,9 +121,7 @@ char *content;
 	}
 }
 
-int
-get_grp(seekstr)
-char seekstr[STRLEN];
+int get_grp(char seekstr[STRLEN])
 {
 	FILE *fp;
 	char buf[STRLEN];
@@ -154,9 +146,7 @@ char seekstr[STRLEN];
 	return 0;
 }
 
-void
-stand_title(title)
-char *title;
+void stand_title(char *title)
 {
 	clear();
 	//standout();
@@ -202,9 +192,7 @@ int m_info(const char *s) {
 	return 0;
 }
 
-static int
-valid_brdname(brd)
-char *brd;
+static int valid_brdname(char *brd)
 {
 	char ch;
 
@@ -219,7 +207,7 @@ char *brd;
 }
 
 static char *
-chgrp()
+chgrp(void)
 {
 	int i, ch;
 	static char buf[STRLEN];
@@ -305,7 +293,7 @@ chgrp()
 }
 
 static int
-freeclubnum()
+freeclubnum(void)
 {
 	FILE *fp;
 	int club[4] = { 0, 0, 0, 0 };
@@ -581,10 +569,7 @@ int m_newbrd(const char *s) {
 	return 0;
 }
 
-static void
-anno_title(buf, bh)
-char *buf;
-struct boardheader *bh;
+static void anno_title(char *buf, struct boardheader *bh)
 {
 	char bm[IDLEN * 4 + 4];	//放四个版务
 	sprintf(buf, "%-38.38s", bh->title);
