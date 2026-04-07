@@ -183,9 +183,7 @@ static inline SCommandFunc pm2fptr(struct smenuitem *pm) {
 	return sysconf_funcptr(sysconf_ptr(pm->func_off));
 }
 
-static void
-encodestr(str)
-register char *str;
+static void encodestr(register char *str)
 {
 	register char ch, *buf;
 	int n;
@@ -208,9 +206,7 @@ register char *str;
 	*buf = '\0';
 }
 
-static void
-decodestr(str)
-register char *str;
+static void decodestr(register char *str)
 {
 	register char ch;
 	int n, i = 0;
@@ -240,9 +236,7 @@ static SCommandFunc sysconf_funcptr(const char *func_name) {
 	return NULL;
 }
 
-static int
-sysconf_addstr(str)
-char *str;
+static int sysconf_addstr(char *str)
 {
 	int len = sysconf_len;
 	char *buf;
@@ -253,9 +247,7 @@ char *str;
 	return buf - sysconf_buf;
 }
 
-char *
-sysconf_str(key)
-char *key;
+char *sysconf_str(char *key)
 {
 	int n;
 
@@ -277,10 +269,7 @@ int sysconf_eval(const char *key) {
 	return (strtol(key, NULL, 0));
 }
 
-static void
-sysconf_addkey(key, str, val)
-char *key, *str;
-int val;
+static void sysconf_addkey(char *key, char *str, int val)
 {
 	int num;
 
@@ -295,10 +284,7 @@ int val;
 	}
 }
 
-static void
-sysconf_addmenu(fp, key)
-FILE *fp;
-char *key;
+static void sysconf_addmenu(FILE *fp, char *key)
 {
 	struct smenuitem *pm;
 	char buf[256];
@@ -357,10 +343,7 @@ char *key;
 	pm->level = -1;
 }
 
-static void
-sysconf_addblock(fp, key)
-FILE *fp;
-char *key;
+static void sysconf_addblock(FILE *fp, char *key)
 {
 	char buf[256];
 	int num;
@@ -382,9 +365,7 @@ char *key;
 	}
 }
 
-static void
-parse_sysconf(fname)
-char *fname;
+static void parse_sysconf(char *fname)
 {
 	FILE *fp;
 	char buf[256];
@@ -446,9 +427,7 @@ char *fname;
 	fclose(fp);
 }
 
-static void
-build_sysconf(configfile, imgfile)
-char *configfile, *imgfile;
+static void build_sysconf(char *configfile, char *imgfile)
 {
 	struct smenuitem *old_menuitem;
 	struct sdefine *old_sysvar;
@@ -526,9 +505,7 @@ char *tobuild;
 	return 0;
 }*/
 
-static void
-load_sysconf_image(imgfile)
-char *imgfile;
+static void load_sysconf_image(char *imgfile)
 {
 	struct sysheader *shead;
 	char *ptr;
@@ -570,11 +547,7 @@ domenu_allocpos(struct smenuitem *pm, struct menupos **pptr)
 	return count;
 }
 
-static int
-domenu_screen(pm, cmdprompt, pos)
-struct smenuitem *pm;
-char *cmdprompt;
-struct menupos *pos;
+static int domenu_screen(struct smenuitem *pm, char *cmdprompt, struct menupos *pos)
 {
 	char *str;
 	int line = 3, col = 0, num = 0;
