@@ -1813,7 +1813,7 @@ getfriendstr()
 	if (uinfo.fnum <= 0)
 		return -1;
 	uinfo.fnum = (uinfo.fnum >= MAXFRIENDS) ? MAXFRIENDS : uinfo.fnum;
-	tmp = (struct ythtbbs_override *) calloc(sizeof (struct ythtbbs_override), uinfo.fnum);
+	tmp = (struct ythtbbs_override *) calloc(uinfo.fnum, sizeof (struct ythtbbs_override));
 	get_records(genbuf, tmp, sizeof (struct ythtbbs_override), 1, uinfo.fnum);
 	struct ythtbbs_override EMPTY;
 	for (i = 0; i < uinfo.fnum; i++) {
@@ -1841,7 +1841,7 @@ getrejectstr()
 	if (nr <= 0)
 		return -1;
 	nr = (nr >= MAXREJECTS) ? MAXREJECTS : nr;
-	tmp = (struct ythtbbs_override *) calloc(sizeof (struct ythtbbs_override), nr);
+	tmp = (struct ythtbbs_override *) calloc(nr, sizeof (struct ythtbbs_override));
 	get_records(genbuf, tmp, sizeof (struct ythtbbs_override), 1, nr);
 	struct ythtbbs_override EMPTY;
 	for (i = 0; i < nr; i++) {
