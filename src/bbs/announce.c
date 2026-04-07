@@ -1595,7 +1595,7 @@ void linkto(const char *path, const char *fname, const char *title) {
 	freeitem(&pm);
 }
 
-int add_grp(char group[STRLEN], char gname[STRLEN], char bname[STRLEN], char title[STRLEN])
+int add_grp(const char *group, const char *gname, const char *bname, const char *title)
 {
 	FILE *fn;
 	char buf[PATHLEN];
@@ -1603,9 +1603,9 @@ int add_grp(char group[STRLEN], char gname[STRLEN], char bname[STRLEN], char tit
 	char gpath[STRLEN * 2];
 	char bpath[STRLEN * 4];
 
-	sprintf(searchname, "%s: groups/%s/%s", bname, group, bname);
-	sprintf(gpath, "0Announce/groups/%s", group);
-	sprintf(bpath, "%s/%s", gpath, bname);
+	snprintf(searchname, sizeof searchname, "%s: groups/%s/%s", bname, group, bname);
+	snprintf(gpath, sizeof gpath, "0Announce/groups/%s", group);
+	snprintf(bpath, sizeof bpath, "%s/%s", gpath, bname);
 	if (!dashd("0Announce")) {
 		mkdir("0Announce", 0770);
 		chmod("0Announce", 0770);
@@ -1633,7 +1633,7 @@ int add_grp(char group[STRLEN], char gname[STRLEN], char bname[STRLEN], char tit
 		mkdir(bpath, 0770);
 		chmod(bpath, 0770);
 		linkto(gpath, bname, title);
-		sprintf(buf, "%s/.Names", bpath);
+		snprintf(buf, sizeof buf, "%s/.Names", bpath);
 		if ((fn = fopen(buf, "w")) == NULL) {
 			return -1;
 		}
@@ -1646,7 +1646,7 @@ int add_grp(char group[STRLEN], char gname[STRLEN], char bname[STRLEN], char tit
 
 }
 
-int del_grp(char grp[STRLEN], char bname[STRLEN], char title[STRLEN])
+int del_grp(const char *grp, const char *bname, const char *title)
 {
 	char buf[STRLEN], buf2[STRLEN], buf3[30];
 	char gpath[STRLEN * 2];
@@ -1657,10 +1657,10 @@ int del_grp(char grp[STRLEN], char bname[STRLEN], char title[STRLEN])
 
 	memset(&pm, 0, sizeof(MENU));
 	strncpy(buf3, grp, 29);
-	buf3[29] = '\0';
-	sprintf(buf, "0Announce/.Search");
-	sprintf(gpath, "0Announce/groups/%s", buf3);
-	sprintf(bpath, "%s/%s", gpath, bname);
+	buf3[sizeof buf3 - 1] = '\0';
+	snprintf(buf, sizeof buf, "0Announce/.Search");
+	snprintf(gpath, sizeof gpath, "0Announce/groups/%s", buf3);
+	snprintf(bpath, sizeof bpath, "%s/%s", gpath, bname);
 	deltree(bpath);
 
 	pm.path = gpath;
@@ -1668,7 +1668,7 @@ int del_grp(char grp[STRLEN], char bname[STRLEN], char title[STRLEN])
 	a_loadnames(&pm);
 	for (i = 0; i < pm.num; i++) {
 		ytht_strsncpy(buf2, pm.item[i]->fname, sizeof(buf2));
-		strcpy(check, strtok(buf2, "/~\n\b"));
+		ytht_strsncpy(check, strtok(buf2, "/~\n\b"), sizeof check);
 		if (strstr(pm.item[i]->title, title) && !strcmp(check, bname)) {
 			free(pm.item[i]);
 			(pm.num)--;
@@ -1682,7 +1682,7 @@ int del_grp(char grp[STRLEN], char bname[STRLEN], char title[STRLEN])
 	return 0;
 }
 
-int edit_grp(char bname[STRLEN], char grp[STRLEN], char title[STRLEN], char newtitle[100])
+int edit_grp(const char *bname, const char *grp, const char *title, const char *newtitle)
 {
 	char buf[STRLEN], buf2[STRLEN], buf3[30];
 	char gpath[STRLEN * 2];
@@ -1692,11 +1692,10 @@ int edit_grp(char bname[STRLEN], char grp[STRLEN], char title[STRLEN], char newt
 	MENU pm;
 
 	memset(&pm, 0, sizeof(MENU));
-	strncpy(buf3, grp, 29);
-	buf3[29] = '\0';
-	sprintf(buf, "0Announce/.Search");
-	sprintf(gpath, "0Announce/groups/%s", buf3);
-	sprintf(bpath, "%s/%s", gpath, bname);
+	ytht_strsncpy(buf3, grp, sizeof buf3);
+	snprintf(buf, sizeof buf, "0Announce/.Search");
+	snprintf(gpath, sizeof gpath, "0Announce/groups/%s", buf3);
+	snprintf(bpath, sizeof bpath, "%s/%s", gpath, bname);
 	if (!seek_in_file(buf, bname))
 		return 0;
 
@@ -1705,7 +1704,7 @@ int edit_grp(char bname[STRLEN], char grp[STRLEN], char title[STRLEN], char newt
 	a_loadnames(&pm);
 	for (i = 0; i < pm.num; i++) {
 		ytht_strsncpy(buf2, pm.item[i]->fname, sizeof(buf2));
-		strcpy(check, strtok(buf2, "/~\n\b"));
+		ytht_strsncpy(check, strtok(buf2, "/~\n\b"), sizeof check);
 		if (strstr(pm.item[i]->title, title) && !strcmp(check, bname)) {
 			ytht_strsncpy(pm.item[i]->title, newtitle, sizeof(pm.item[i]->title));
 			break;

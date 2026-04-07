@@ -3,7 +3,7 @@
 int check_systempasswd(void);
 void deliverreport(char *title, char *str);
 void securityreport(char *str, char *content);
-int get_grp(char seekstr[80]);
+int get_grp(const char *seekstr);
 void stand_title(char *title);
 int m_info(const char *s);
 int m_newbrd(const char *s);

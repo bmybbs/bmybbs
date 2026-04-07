@@ -121,7 +121,7 @@ void securityreport(char *str, char *content)
 	}
 }
 
-int get_grp(char seekstr[STRLEN])
+int get_grp(const char *seekstr)
 {
 	FILE *fp;
 	char buf[STRLEN];
