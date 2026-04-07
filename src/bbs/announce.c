@@ -927,6 +927,7 @@ static void a_copypaste(MENU *pm, int paste)
 					symlink(realfpath, newpath);
 					break;
 				}
+				__attribute__((fallthrough));
 			case 'C':
 			case 'c':
 				if (copymode == -1) {
@@ -1455,6 +1456,7 @@ EXPRESS:		/* add by djq,990725 */
 				number = 0;
 				continue;
 			}
+			__attribute__((fallthrough));
 		case 'R':
 		case 'r':
 		case KEY_RIGHT:
@@ -1540,6 +1542,7 @@ EXPRESS:		/* add by djq,990725 */
 		case '!':
 			if (!Q_Goodbye(0, NULL, NULL))
 				break;	/* youzi leave */
+			__attribute__((fallthrough));
 		case 'c':
 			if (me.now < me.num) {
 				if (snprintf(fname, PATHLEN, "%s/%s", path, me.item[me.now]->fname) > PATHLEN - 1)
