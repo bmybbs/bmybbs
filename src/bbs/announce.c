@@ -1470,7 +1470,7 @@ EXPRESS:		/* add by djq,990725 */
 							tmpitem = &tmp;
 							strcpy(tmp.server, me.item[me.now]->host);
 							strcpy(tmp.file, me.item[me.now]->fname);
-							sprintf(tmp.title, "0%s", me.item[me.now]->title);
+							snprintf(tmp.title, sizeof tmp.title, "0%s", me.item[me.now]->title);
 							tmp.port = me.item[me.now]-> port;
 							enterdir(me.item[me.now]->fname);
 							sethomefile_s(tmp_file, sizeof(tmp_file), currentuser.userid, "gopher.tmp");
