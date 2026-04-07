@@ -86,7 +86,7 @@ static int uleveltochar(char *buf, unsigned int lvl);
 static char msgchar(const struct user_info *uin);
 static char pagerchar(int friend, int pager);
 static char *idle_str(const struct user_info *uent);
-static int num_visible_users();
+static int num_visible_users(void);
 static int count_visible_active(const struct user_info *uentp, void *);
 
 static const char *get_color_start_by_session_type(const enum ythtbbs_user_login_type type) {
@@ -139,10 +139,7 @@ friend_search(unsigned uid, const struct user_info *uentp, int tblsize)
 	return NA;
 }
 
-static int
-UseronlineSearch(curr_num, offset)
-int curr_num;
-int offset;
+static int UseronlineSearch(int curr_num, int offset)
 {
 	static char method[2] = { 0 }, queryID[IDLEN + 2], queryIP[20], queryNick[NAMELEN + 2];
 	char ans[STRLEN + 1], pmt[STRLEN];
@@ -194,11 +191,7 @@ int offset;
 		return curr_num;
 	}
 }
-static int
-IDSearch(query, curr_num, offset)
-char query[STRLEN];
-int curr_num;
-int offset;
+static int IDSearch(char query[STRLEN], int curr_num, int offset)
 {
 	int i;
 	if (query[0] == '\0')
@@ -217,11 +210,7 @@ int offset;
 	return curr_num;
 }
 
-static int
-IPSearch(query, curr_num, offset)
-char query[20];
-int curr_num;
-int offset;
+static int IPSearch(char query[20], int curr_num, int offset)
 {
 	int i;
 	if (query[0] == '\0')
@@ -240,11 +229,7 @@ int offset;
 	return curr_num;
 }
 
-static int
-NickSearch(query, curr_num, offset)
-char query[STRLEN];
-int curr_num;
-int offset;
+static int NickSearch(char query[STRLEN], int curr_num, int offset)
 {
 	int i;
 	if (query[0] == '\0')
@@ -263,9 +248,7 @@ int offset;
 	return curr_num;
 }
 
-int
-myfriend(uid)
-unsigned uid;
+int myfriend(unsigned uid)
 {
 	return friend_search(uid, &uinfo, uinfo.fnum);
 }
@@ -295,7 +278,7 @@ int isreject(const struct user_info *uentp) {
 }
 
 static void
-print_title()
+print_title(void)
 {
 
 	char buf[20];
@@ -339,7 +322,7 @@ print_title()
 }
 
 static void
-update_data()
+update_data(void)
 {
 	if (readplan == YEA)
 		return;
@@ -352,7 +335,7 @@ update_data()
 }
 
 static int
-print_user_info_title()
+print_user_info_title(void)
 {
 	char title_str[512];
 	char *field_2;
@@ -375,9 +358,7 @@ print_user_info_title()
 	return 0;
 }
 
-static void
-change_sortmode(mode)
-int mode;
+static void change_sortmode(int mode)
 {
 	char genbuf[3];
 	if (mode) {
@@ -422,7 +403,7 @@ sort_user_record(int left, int right)
 }
 
 static int
-fill_userlist()
+fill_userlist(void)
 {
 	int i, i2, uid;
 	int back_sort_mode;
@@ -465,16 +446,13 @@ fill_userlist()
 	return i2 == 0 ? -1 : 1;
 }
 
-static int
-cfriendname(t1, t2)
-struct ythtbbs_override *t1;
-struct ythtbbs_override *t2;
+static int cfriendname(struct ythtbbs_override *t1, struct ythtbbs_override *t2)
 {
 	return !strcasecmp(t1->id, t2->id);
 }
 
 static int
-do_userlist()
+do_userlist(void)
 {
 	int i;
 	char user_info_str[STRLEN * 2] /*,pagec */ ;
@@ -611,7 +589,7 @@ do_userlist()
 }
 
 static int
-show_userlist()
+show_userlist(void)
 {
 	now_t = time(NULL);
 	if (update_time + refreshtime < now_t) {
@@ -828,9 +806,7 @@ static int deal_key(int ch, int allnum, int pagenum) {
 	return 1;
 }
 
-static int
-countusers(uentp)
-struct userec *uentp;
+static int countusers(struct userec *uentp)
 {
 	static int totalusers;
 	char permstr[10];
@@ -846,7 +822,7 @@ struct userec *uentp;
 }
 
 int
-allusers()
+allusers(void)
 {
 	countusers(NULL);
 	if (apply_record(PASSFILE, (void *) countusers, sizeof (struct userec)) == -1) {
@@ -855,9 +831,7 @@ allusers()
 	return countusers(NULL);
 }
 
-void
-setlistrange(i)
-int i;
+void setlistrange(int i)
 {
 	range = i;
 }
@@ -874,7 +848,7 @@ static int do_query(int star, int curr) {
 	return 0;
 }
 
-int t_friends() {
+int t_friends(void) {
 	char buf[STRLEN];
 	user_record = malloc(sizeof (struct user_info *) * MAXACTIVE);
 
@@ -942,14 +916,9 @@ int t_users(const char *s) {
 	return 0;
 }
 
-int
-choose(update, defaultn, title_show, key_deal, list_show, read)
-int update;
-int defaultn;
-void (*title_show) ();
-int (*key_deal) (int, int, int);
-int (*list_show) ();
-int (*read) (int, int);
+int choose(int update, int defaultn, void (*title_show)(void),
+		int (*key_deal)(int, int, int), int (*list_show)(void),
+		int (*read)(int, int))
 {
 	int ch, number, deal;
 
@@ -1103,10 +1072,7 @@ int (*read) (int, int);
 	return -1;
 }
 
-static int
-uleveltochar(buf, lvl)
-char *buf;
-unsigned int lvl;
+static int uleveltochar(char *buf, unsigned int lvl)
 {
 	if (!(lvl & PERM_BASIC)) {
 		strcpy(buf, "----- ");
@@ -1143,9 +1109,7 @@ static char msgchar(const struct user_info *uin) {
 	return '*';
 }
 
-static char
-pagerchar(friend, pager)
-int friend, pager;
+static char pagerchar(int friend, int pager)
 {
 	if (pager & ALL_PAGER)
 		return ' ';
@@ -1203,7 +1167,7 @@ static char *idle_str(const struct user_info *uent) {
 }
 
 static int
-num_visible_users()
+num_visible_users(void)
 {
 	int count = 0;
 	ythtbbs_cache_utmp_apply(count_visible_active, &count);
