@@ -90,7 +90,7 @@ static void talkflush(void);
 static void moveto(int mode, struct talk_win *twin);
 static int do_talk(int fd);
 static int override_title(void);
-static char *override_doentry(int ent, struct ythtbbs_override *fh, char buf[512]);
+static char *override_doentry(int ent, struct ythtbbs_override *fh, char *buf);
 static int override_edit(int ent, struct ythtbbs_override *fh, char *direc);
 static int override_dele(int ent, struct ythtbbs_override *fh, char *direct);
 static int friend_edit(int ent, void *fh, char *direct);
