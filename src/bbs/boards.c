@@ -1660,11 +1660,12 @@ static char *
 makedatestar(char *datestr, struct fileheader *ent)
 {
 	char str[30] = " ", buf[30];
-	char backcolor[6] = "062351";
+	char backcolor[7];
 	int i, j, better, sz;
 	char fg, bg;
 	time_t filetime;
 
+	ytht_strsncpy(backcolor, "062351", sizeof backcolor);
 	filetime = ent->filetime;
 	fg = '1' + localtime(&filetime)->tm_wday;
 	bg = backcolor[ent->staravg50 / 50];
