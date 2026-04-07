@@ -150,9 +150,7 @@ int setcalltime(const char *s) {
 }
 
 /*Add by SmallPig*/
-int
-countln(fname)
-char *fname;
+int countln(char *fname)
 {
 	FILE *fp;
 	char tmp[256];
@@ -867,11 +865,7 @@ int ansimore(char *filename, int promptend) {
 	return ch;
 }
 
-int
-ansimore_withzmodem(filename, promptend, title)
-char *filename;
-int promptend;
-char *title;
+int ansimore_withzmodem(char *filename, int promptend, char *title)
 {
 	int ch;
 
@@ -884,12 +878,7 @@ char *title;
 	return ch;
 }
 
-int
-ansimore2(filename, promptend, row, numlines)
-char *filename;
-int promptend;
-int row;
-int numlines;
+int ansimore2(char *filename, int promptend, int row, int numlines)
 {
 	int ch;
 	if (numlines)
@@ -901,12 +890,7 @@ int numlines;
 	return ch;
 }
 
-int
-ansimore2stuff(filename, promptend, row, numlines)
-char *filename;
-int promptend;
-int row;
-int numlines;
+int ansimore2stuff(char *filename, int promptend, int row, int numlines)
 {
 	int retv;
 	stuffmode = 1;
