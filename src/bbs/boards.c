@@ -308,9 +308,7 @@ load_boards(int *brdnum, int secnum)
 	return 1;
 }
 
-static int
-search_board(num, brdnum, secnum)
-int *num, brdnum, secnum;
+static int search_board(int *num, int brdnum, int secnum)
 {
 	static int i = 0, find = YEA;
 	static char bname[STRLEN];
@@ -370,9 +368,7 @@ int *num, brdnum, secnum;
 	return 1;
 }
 
-static int
-check_newpostt(ptr)
-struct newpostdata *ptr;
+static int check_newpostt(struct newpostdata *ptr)
 {
 	struct boardmem *bptr;
 	if (!allbrc) {
@@ -429,10 +425,7 @@ int unread_position(char *dirfile, struct boardmem *bptr) {
 	return num;
 }
 
-static void
-show_brdlist(page, clsflag, newflag, brdnum, sec)
-int page, clsflag, newflag, brdnum;
-const struct sectree *sec;
+static void show_brdlist(int page, int clsflag, int newflag, int brdnum, const struct sectree *sec)
 {
 	struct newpostdata *ptr;
 	struct boardmem *bptr;
@@ -527,9 +520,7 @@ const struct sectree *sec;
 		}
 	}
 }
-static int
-cmpboard(brd, tmp)
-struct newpostdata *brd, *tmp;
+static int cmpboard(struct newpostdata *brd, struct newpostdata *tmp)
 {
 	int type = 0;
 	unsigned char sorttype;
@@ -561,10 +552,7 @@ struct newpostdata *brd, *tmp;
 	return type;
 }
 
-static int
-choose_board(newflag, sec)
-int newflag;
-const struct sectree *sec;
+static int choose_board(int newflag, const struct sectree *sec)
 {
 	int num=0;
 	struct newpostdata *ptr;
@@ -1451,11 +1439,7 @@ readtitle()
 	return 0;
 }
 
-static char *
-readdoent(num, ent, buf)
-int num;
-struct fileheader *ent;
-char buf[512];
+static char *readdoent(int num, struct fileheader *ent, char buf[512])
 {
 	char date[80], owner[13];
 	char *TITLE;
