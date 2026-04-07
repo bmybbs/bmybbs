@@ -4,7 +4,7 @@
 
 extern int in_mail;
 
-char *email_domain(void);
+const char *email_domain(void);
 void filter(char *line);
 int chkmail(void);
 int check_query_mail(char qry_mail_dir[80]);

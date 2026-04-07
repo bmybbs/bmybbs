@@ -86,7 +86,7 @@ static int bbs_sendmail(char *fname, char *title, char *receiver);
 #endif
 #endif
 
-char *
+const char *
 email_domain()
 {
 	return MY_BBS_DOMAIN;
