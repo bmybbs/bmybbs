@@ -46,11 +46,7 @@ static int deldeny(char *uident, int isglobal, int isanony);
 static int delclubmember(char *uident);
 static int deny_notice(int action, char *user, int isglobal, int isanony, char *msgbuf);
 
-static int
-addtodeny(uident, msg, ischange, isglobal, isanony)
-char *uident;
-char *msg;
-int ischange, isglobal, isanony;
+static int addtodeny(char *uident, char *msg, int ischange, int isglobal, int isanony)
 {
 	char buf[50], strtosave[256];
 	char buf2[50];
@@ -208,11 +204,7 @@ int ischange, isglobal, isanony;
 	return ytht_add_to_file(genbuf, strtosave);
 }
 
-static int
-deldeny(uident, isglobal, isanony)
-char *uident;
-int isglobal;
-int isanony;
+static int deldeny(char *uident, int isglobal, int isanony)
 {
 	char fn[STRLEN];
 
@@ -325,10 +317,7 @@ deny_user()
 	return FULLUPDATE;
 }
 
-int
-addclubmember(uident, clubnum)
-char *uident;
-int clubnum;
+int addclubmember(char *uident, int clubnum)
 {
 	char genbuf1[80], genbuf2[80];
 	int id;
@@ -378,9 +367,7 @@ int clubnum;
 	}
 }
 
-static int
-delclubmember(uident)
-char *uident;
+static int delclubmember(char *uident)
 {
 	char genbuf1[80], genbuf2[80];
 	char fn[STRLEN];
@@ -508,11 +495,7 @@ clubmember()
 	return FULLUPDATE;
 }
 
-int
-deny_from_article(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+int deny_from_article(int ent, struct fileheader *fileinfo, char *direct)
 {
 	(void) ent;
 	(void) direct;
@@ -557,10 +540,7 @@ char *direct;
 	return 0;
 }
 
-static int
-deny_notice(action, user, isglobal, isanony, msgbuf)
-char *user, *msgbuf;
-int action, isglobal, isanony;
+static int deny_notice(int action, char *user, int isglobal, int isanony, char *msgbuf)
 {
 	char repbuf[STRLEN];
 	char tmpbuf[STRLEN], tmpbuf2[STRLEN];
