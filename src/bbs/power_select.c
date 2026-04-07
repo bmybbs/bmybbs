@@ -173,41 +173,40 @@ int full_search_action(char *whattosearch)
 	return NEWDIRECT;
 }
 
+const ExtStru extstru[] = {
+	// 标题
+	// 含
+	{titlehas, Pair("\xB1\xEA\xCC\xE2", "\xBA\xAC")},
+	// 作者
+	// 是
+	{idis, Pair("\xD7\xF7\xD5\xDF", "\xCA\xC7")},
+	// 灌水字数
+	// 少于
+	{counttextlt, Pair("\xB9\xE0\xCB\xAE\xD7\xD6\xCA\xFD", "\xC9\xD9\xD3\xDA")},
+	// 标记
+	// 含
+	{checkmark, Pair("\xB1\xEA\xBC\xC7", "\xBA\xAC")},
+	// 内容
+	// 含
+	{checktext, Pair("\xC4\xDA\xC8\xDD", "\xBA\xAC")},
+	// 属性
+	// 是
+	{checkattr, Pair("\xCA\xF4\xD0\xD4", "\xCA\xC7")},
+	// 推荐星级
+	// 高于
+	{checkstar, Pair("\xCD\xC6\xBC\xF6\xD0\xC7\xBC\xB6", "\xB8\xDF\xD3\xDA")},
+	// 推荐人数
+	// 高于
+	{checkevas, Pair("\xCD\xC6\xBC\xF6\xC8\xCB\xCA\xFD", "\xB8\xDF\xD3\xDA")},
+	{NULL, NULL, NULL}
+};
 
 int
 power_action(char *filename, unsigned int id1, int id2, char *select, int action)
 {
-	ExtStru myextstru[] = {
-		// 标题
-		// 含
-		{titlehas, Pair("\xB1\xEA\xCC\xE2", "\xBA\xAC")},
-		// 作者
-		// 是
-		{idis, Pair("\xD7\xF7\xD5\xDF", "\xCA\xC7")},
-		// 灌水字数
-		// 少于
-		{counttextlt, Pair("\xB9\xE0\xCB\xAE\xD7\xD6\xCA\xFD", "\xC9\xD9\xD3\xDA")},
-		// 标记
-		// 含
-		{checkmark, Pair("\xB1\xEA\xBC\xC7", "\xBA\xAC")},
-		// 内容
-		// 含
-		{checktext, Pair("\xC4\xDA\xC8\xDD", "\xBA\xAC")},
-		// 属性
-		// 是
-		{checkattr, Pair("\xCA\xF4\xD0\xD4", "\xCA\xC7")},
-		// 推荐星级
-		// 高于
-		{checkstar, Pair("\xCD\xC6\xBC\xF6\xD0\xC7\xBC\xB6", "\xB8\xDF\xD3\xDA")},
-		// 推荐人数
-		// 高于
-		{checkevas, Pair("\xCD\xC6\xBC\xF6\xC8\xCB\xCA\xFD", "\xB8\xDF\xD3\xDA")},
-		{NULL, NULL, NULL}
-	};
 	power_dofunc function;
 	int shoot;
 	int ret;
-	extstru = myextstru;
 	switch (action) {
 	case 9:
 		digestmode = 3;

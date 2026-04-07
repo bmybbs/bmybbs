@@ -29,8 +29,6 @@ static int do_term(void);
 static int do_and(void);
 static int do_or(void);
 
-ExtStru *extstru;
-
 static __inline int is_str(int temp, const char *Str) {
 	if ((temp - start + 1 == (int) strlen(Str))
 			&& (start == strstr(exp + start, Str) - exp))
