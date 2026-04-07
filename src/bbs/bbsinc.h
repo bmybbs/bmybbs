@@ -47,7 +47,7 @@ void do_quote(char *filepath, char quote_mode);
 int do_post(void);
 void add_loginfo(char *filepath);
 void add_crossinfo(char *filepath, int mode);
-int show_board_notes(char bname[30]);
+int show_board_notes(char *bname);
 enum ytht_smth_filter_result stringfilter(char *title, enum ytht_smth_filter_option mode);
 int edit_post(int ent, struct fileheader *fileinfo, char *direct);
 int edit_title(int ent, struct fileheader *fileinfo, char *direct);

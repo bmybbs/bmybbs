@@ -1852,7 +1852,7 @@ show_board_notes(char *bname)
 {
 	char buf[256];
 	move(2, 0);
-	sprintf(buf, "vote/%s/notes", bname);
+	snprintf(buf, sizeof buf, "vote/%s/notes", bname);
 	if (dashf(buf)) {
 		ansimore2stuff(buf, NA, 2, 24);
 		return 1;
