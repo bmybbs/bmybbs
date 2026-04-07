@@ -2387,7 +2387,7 @@ smtp_gen_mime_boundary(char *const boundary){
   size_t i;
   unsigned int seed;
 
-  seed = (unsigned int)time(NULL);
+  seed = time(NULL) & 0xFFFFFFFF;
   srand(seed);
 
   strcpy(boundary, "mime");
