@@ -117,7 +117,7 @@ static int into_backnumber(int, void *, char *);
 static int into_my_Personal(int, void *, char *);
 static int select_Personal(int, void *, char *);
 static void notepad(void);
-static int Origin2(char text[256]);
+static int Origin2(const char *);
 static int deny_me_global(void);
 static int do_thread(void);
 static int skipattach(char *buf, int size, FILE * fp);
@@ -3806,11 +3806,11 @@ int zmodem_sendfile(int ent, void *record, char *direct) {
 }
 
 static int
-Origin2(char *text)
+Origin2(const char *text)
 {
 	char tmp[STRLEN];
 
-	sprintf(tmp, ":го%s %sго[FROM:", MY_BBS_NAME, email_domain());
+	snprintf(tmp, sizeof tmp, ":го%s %sго[FROM:", MY_BBS_NAME, email_domain());
 	if (strstr(text, tmp))
 		return 1;
 	else
