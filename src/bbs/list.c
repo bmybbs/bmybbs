@@ -65,9 +65,9 @@ int friendmode1;
 
 static int friend_search(unsigned uid, const struct user_info *uentp, int tblsize);
 static int UseronlineSearch(int curr_num, int offset);
-static int IDSearch(char query[STRLEN], int curr_num, int offset);
+static int IDSearch(const char *query, int curr_num, int offset);
 static int IPSearch(char query[20], int curr_num, int offset);
-static int NickSearch(char query[STRLEN], int curr_num, int offset);
+static int NickSearch(const char *query, int curr_num, int offset);
 static void print_title(void);
 static void update_data(void);
 static int print_user_info_title(void);
@@ -191,7 +191,7 @@ static int UseronlineSearch(int curr_num, int offset)
 		return curr_num;
 	}
 }
-static int IDSearch(char query[STRLEN], int curr_num, int offset)
+static int IDSearch(const char *query, int curr_num, int offset)
 {
 	int i;
 	if (query[0] == '\0')
@@ -229,7 +229,7 @@ static int IPSearch(char query[20], int curr_num, int offset)
 	return curr_num;
 }
 
-static int NickSearch(char query[STRLEN], int curr_num, int offset)
+static int NickSearch(const char *query, int curr_num, int offset)
 {
 	int i;
 	if (query[0] == '\0')
