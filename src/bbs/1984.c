@@ -1,6 +1,7 @@
 //copy by lepton from backnumber.c writen by ecnegrevid, 2002.9.30
 #include "bbs.h"
 
+#include "config.h"
 #include "main.h"
 #include "smth_screen.h"
 #include "bbsinc.h"
@@ -295,8 +296,9 @@ post_1984_to_board(char *dir, struct fileheader *fileinfo)
 void
 post_to_1984(char *file, struct fileheader *fileinfo, int mode)
 {
-	char buf[STRLEN * 2];
-	char newfilepath[STRLEN], newfname[STRLEN];
+	char buf[40];
+	char dotbuf[48];
+	char newfilepath[STRLEN], newfname[24];
 	struct fileheader postfile;
 	time_t now;
 	int count;
@@ -305,7 +307,7 @@ post_to_1984(char *file, struct fileheader *fileinfo, int mode)
 	now = time(NULL);
 	if (0 == mode) {
 		n = localtime(&now);
-		sprintf(buf, "boards/.1984/%04d%02d%02d", n->tm_year + 1900,
+		snprintf(buf, sizeof buf, "boards/.1984/%04d%02d%02d", n->tm_year + 1900,
 			n->tm_mon + 1, n->tm_mday);
 	} else if (1 == mode) {
 		sprintf(buf, "boards/.1985");
@@ -329,8 +331,8 @@ post_to_1984(char *file, struct fileheader *fileinfo, int mode)
 		if (count++ > MAX_POSTRETRY)
 			break;
 	}
-	strcat(buf, "/" DOT_DIR);
-	if (append_record(buf, &postfile, sizeof (postfile)) == -1) {
+	snprintf(dotbuf, sizeof dotbuf, "%s/%s", buf, DOT_DIR);
+	if (append_record(dotbuf, &postfile, sizeof (postfile)) == -1) {
 		errlog("post1984 '%s' on '%s': append_record failed!", postfile.title, currboard);
 		pressreturn();
 		return;
