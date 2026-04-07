@@ -146,7 +146,8 @@ int offset;
 {
 	static char method[2] = { 0 }, queryID[IDLEN + 2], queryIP[20], queryNick[NAMELEN + 2];
 	char ans[STRLEN + 1], pmt[STRLEN];
-	sprintf(pmt, "²éÕÒ·½Ê½:(A)ID (B)ÄØ³Æ (C)IP [%s]:", method);
+	// æŸ¥æ‰¾æ–¹å¼:(A)ID (B)å‘¢ç§° (C)IP [%s]:
+	sprintf(pmt, "\xB2\xE9\xD5\xD2\xB7\xBD\xCA\xBD:(A)ID (B)\xC4\xD8\xB3\xC6 (C)IP [%s]:", method);
 	move(t_lines - 1, 0);
 	clrtoeol();
 	getdata(t_lines - 1, 0, pmt, ans, 2, DOECHO, YEA);
@@ -157,7 +158,10 @@ int offset;
 		ytht_strsncpy(method, ans, sizeof(method));
 	switch (method[0]) {
 	case 'A':
-		sprintf(pmt, "ËÑÑ°%sµÄID [%s]: ", offset > 0 ? "ÍùºóÀ´" : "ÍùÏÈÇ°", queryID);
+		// æœå¯»%sçš„ID [%s]:
+		// å¾€åæ¥
+		// å¾€å…ˆå‰
+		sprintf(pmt, "\xCB\xD1\xD1\xB0%s\xB5\xC4ID [%s]: ", offset > 0 ? "\xCD\xF9\xBA\xF3\xC0\xB4" : "\xCD\xF9\xCF\xC8\xC7\xB0", queryID);
 		move(t_lines - 1, 0);
 		clrtoeol();
 		getdata(t_lines - 1, 0, pmt, ans, IDLEN + 1, DOECHO, YEA);
@@ -165,7 +169,10 @@ int offset;
 			ytht_strsncpy(queryID, ans, sizeof(queryID));
 		return IDSearch(queryID, curr_num, offset);
 	case 'B':
-		sprintf(pmt, "ËÑÑ°%sµÄÄØ³Æ[%s]: ", offset > 0 ? "ÍùºóÀ´" : "ÍùÏÈÇ°", queryNick);
+		// æœå¯»%sçš„å‘¢ç§°[%s]:
+		// å¾€åæ¥
+		// å¾€å…ˆå‰
+		sprintf(pmt, "\xCB\xD1\xD1\xB0%s\xB5\xC4\xC4\xD8\xB3\xC6[%s]: ", offset > 0 ? "\xCD\xF9\xBA\xF3\xC0\xB4" : "\xCD\xF9\xCF\xC8\xC7\xB0", queryNick);
 		move(t_lines - 1, 0);
 		clrtoeol();
 		getdata(t_lines - 1, 0, pmt, ans, NAMELEN + 1, DOECHO, YEA);
@@ -173,7 +180,10 @@ int offset;
 			ytht_strsncpy(queryNick, ans, sizeof(queryNick));
 		return NickSearch(queryNick, curr_num, offset);
 	case 'C':
-		sprintf(pmt, "%sËÑÑ°À´×Ô%sµÄID: ", offset > 0 ? "ÍùºóÀ´" : "ÍùÏÈÇ°", queryIP);
+		// %sæœå¯»æ¥è‡ª%sçš„ID:
+		// å¾€åæ¥
+		// å¾€å…ˆå‰
+		sprintf(pmt, "%s\xCB\xD1\xD1\xB0\xC0\xB4\xD7\xD4%s\xB5\xC4ID: ", offset > 0 ? "\xCD\xF9\xBA\xF3\xC0\xB4" : "\xCD\xF9\xCF\xC8\xC7\xB0", queryIP);
 		move(t_lines - 1, 0);
 		clrtoeol();
 		getdata(t_lines - 1, 0, pmt, ans, 17, DOECHO, YEA);
@@ -274,11 +284,11 @@ int isreject(const struct user_info *uentp) {
 	if (uentp->uid != uinfo.uid && uinfo.uid >= 0) {
 		for (i = 0; i < MAXREJECTS && uentp->reject[i]; i++) {
 			if (uentp->reject[i] == (unsigned) uinfo.uid)
-				return YEA;	/* ±»ÉèÎªºÚÃûµ¥ */
+				return YEA;	/* è¢«è®¾ä¸ºé»‘åå• */
 		}
 		for (i = 0; i < MAXREJECTS && uinfo.reject[i]; i++) {
 			if ((unsigned) uentp->uid == uinfo.reject[i])
-				return YEA;	/* ±»ÉèÎªºÚÃûµ¥ */
+				return YEA;	/* è¢«è®¾ä¸ºé»‘åå• */
 		}
 	}
 	return NA;
@@ -292,27 +302,40 @@ print_title()
 	switch (sortmode) {
 	case 0:
 		sprintf(buf, "%s %s",
-			(friendmode) ? "[ºÃÅóÓÑÁĞ±í]" : "[Ê¹ÓÃÕßÁĞ±í]",
-			"[ÆÕÍ¨]");
+			// [å¥½æœ‹å‹åˆ—è¡¨]
+			// [ä½¿ç”¨è€…åˆ—è¡¨]
+			(friendmode) ? "[\xBA\xC3\xC5\xF3\xD3\xD1\xC1\xD0\xB1\xED]" : "[\xCA\xB9\xD3\xC3\xD5\xDF\xC1\xD0\xB1\xED]",
+			// [æ™®é€š]
+			"[\xC6\xD5\xCD\xA8]");
 		break;
 	case 1:
 		sprintf(buf, "%s %s",
-			(friendmode) ? "[ºÃÅóÓÑÁĞ±í]" : "[Ê¹ÓÃÕßÁĞ±í]",
-			"[×ÖÄ¸]");
+			// [å¥½æœ‹å‹åˆ—è¡¨]
+			// [ä½¿ç”¨è€…åˆ—è¡¨]
+			(friendmode) ? "[\xBA\xC3\xC5\xF3\xD3\xD1\xC1\xD0\xB1\xED]" : "[\xCA\xB9\xD3\xC3\xD5\xDF\xC1\xD0\xB1\xED]",
+			// [å­—æ¯]
+			"[\xD7\xD6\xC4\xB8]");
 		break;
 	case 2:
 		sprintf(buf, "%s %s",
-			(friendmode) ? "[ºÃÅóÓÑÁĞ±í]" : "[Ê¹ÓÃÕßÁĞ±í]",
-			"[ÍøÖ·]");
+			// [å¥½æœ‹å‹åˆ—è¡¨]
+			// [ä½¿ç”¨è€…åˆ—è¡¨]
+			(friendmode) ? "[\xBA\xC3\xC5\xF3\xD3\xD1\xC1\xD0\xB1\xED]" : "[\xCA\xB9\xD3\xC3\xD5\xDF\xC1\xD0\xB1\xED]",
+			// [ç½‘å€]
+			"[\xCD\xF8\xD6\xB7]");
 		break;
 	case 3:
 		sprintf(buf, "%s %s",
-			(friendmode) ? "[ºÃÅóÓÑÁĞ±í]" : "[Ê¹ÓÃÕßÁĞ±í]",
-			"[¶¯Ì¬]");
+			// [å¥½æœ‹å‹åˆ—è¡¨]
+			// [ä½¿ç”¨è€…åˆ—è¡¨]
+			(friendmode) ? "[\xBA\xC3\xC5\xF3\xD3\xD1\xC1\xD0\xB1\xED]" : "[\xCA\xB9\xD3\xC3\xD5\xDF\xC1\xD0\xB1\xED]",
+			// [åŠ¨æ€]
+			"[\xB6\xAF\xCC\xAC]");
 		break;
 	}
 	docmdtitle(buf,
-			" ÁÄÌì[\033[1;32mt\033[m] ¼ÄĞÅ[\033[1;32mm\033[m] ËÍÑ¶Ï¢[\033[1;32ms\033[m] ¼Ó,¼õÅóÓÑ[\033[1;32mo\033[m,\033[1;32md\033[m] ¿´ËµÃ÷µµ[\033[1;32m¡ú\033[m,\033[1;32mRtn\033[m] ÇĞ»»Ä£Ê½ [\033[1;32mc\033[m] Çó¾È[\033[1;32mh\033[m]");
+			//  èŠå¤©[\033[1;32mt\033[m] å¯„ä¿¡[\033[1;32mm\033[m] é€è®¯æ¯[\033[1;32ms\033[m] åŠ ,å‡æœ‹å‹[\033[1;32mo\033[m,\033[1;32md\033[m] çœ‹è¯´æ˜æ¡£[\033[1;32mâ†’\033[m,\033[1;32mRtn\033[m] åˆ‡æ¢æ¨¡å¼ [\033[1;32mc\033[m] æ±‚æ•‘[\033[1;32mh\033[m]
+			" \xC1\xC4\xCC\xEC[\033[1;32mt\033[m] \xBC\xC4\xD0\xC5[\033[1;32mm\033[m] \xCB\xCD\xD1\xB6\xCF\xA2[\033[1;32ms\033[m] \xBC\xD3,\xBC\xF5\xC5\xF3\xD3\xD1[\033[1;32mo\033[m,\033[1;32md\033[m] \xBF\xB4\xCB\xB5\xC3\xF7\xB5\xB5[\033[1;32m\xA1\xFA\033[m,\033[1;32mRtn\033[m] \xC7\xD0\xBB\xBB\xC4\xA3\xCA\xBD [\033[1;32mc\033[m] \xC7\xF3\xBE\xC8[\033[1;32mh\033[m]");
 }
 
 static void
@@ -336,12 +359,18 @@ print_user_info_title()
 
 	move(2, 0);
 	clrtoeol();
-	field_2 = "Ê¹ÓÃÕßêÇ³Æ";
+	// ä½¿ç”¨è€…æ˜µç§°
+	field_2 = "\xCA\xB9\xD3\xC3\xD5\xDF\xEA\xC7\xB3\xC6";
 	sprintf(title_str,
 		"\033[1;44m%s%-12.12s %-22.22s %-16.16s%c %c %-10.10s %5s\033[m\n",
-		" ±àºÅ  ", "Ê¹ÓÃÕß´úºÅ", field_2, "À´×Ô", 'P',
+		//  ç¼–å·
+		// ä½¿ç”¨è€…ä»£å·
+		// æ¥è‡ª
+		" \xB1\xE0\xBA\xC5  ", "\xCA\xB9\xD3\xC3\xD5\xDF\xB4\xFA\xBA\xC5", field_2, "\xC0\xB4\xD7\xD4", 'P',
 		/*((HAS_PERM(PERM_SYSOP|PERM_SEECLOAK)) ? 'C' : ' ') */ 'M',
-		"¶¯Ì¬", "Ê±:·Ö");
+		// åŠ¨æ€
+		// æ—¶:åˆ†
+		"\xB6\xAF\xCC\xAC", "\xCA\xB1:\xB7\xD6");
 	prints("%s", title_str);
 	return 0;
 }
@@ -357,7 +386,8 @@ int mode;
 			sortmode = 0;
 	} else {
 		getdata(t_lines - 1, 0,
-			"ÓÃ»§ÅÅĞò·½Ê½(A)ÆÕÍ¨ (B)×ÖÄ¸ (C)ÍøÖ· (D)¶¯Ì¬ [A]: ",
+			// ç”¨æˆ·æ’åºæ–¹å¼(A)æ™®é€š (B)å­—æ¯ (C)ç½‘å€ (D)åŠ¨æ€ [A]:
+			"\xD3\xC3\xBB\xA7\xC5\xC5\xD0\xF2\xB7\xBD\xCA\xBD(A)\xC6\xD5\xCD\xA8 (B)\xD7\xD6\xC4\xB8 (C)\xCD\xF8\xD6\xB7 (D)\xB6\xAF\xCC\xAC [A]: ",
 			genbuf, 2, DOECHO, 1);
 		if (genbuf[0] == 'B' || genbuf[0] == 'b')
 			sortmode = 1;
@@ -472,7 +502,8 @@ do_userlist()
 				search_record(overridefile, &t1, sizeof (t1), (void *) cfriendname, &t2);
 				sprintf(user_info_str,
 					" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s\033[m %5.5s\n",
-					i + 1 + page, (override) ? "¡õ" : "",
+					// â–¡
+					i + 1 + page, (override) ? "\xA1\xF5" : "",
 					(override) ? "\033[1;32m" : "",
 					uentp->userid, (override) ? "\033[m" : "",
 					(t1.exp[0] == 0) ? uentp->username : t1.exp,
@@ -489,7 +520,8 @@ do_userlist()
 				search_record(overridefile, &t1, sizeof (t1), (void *) cfriendname, &t2);
 				sprintf(user_info_str,
 					" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s\033[m %5.5s\n",
-					i + 1 + page, (override) ? "¡õ" : "",
+					// â–¡
+					i + 1 + page, (override) ? "\xA1\xF5" : "",
 					(override) ? "\033[1;32m" : "",
 					uentp->userid, (override) ? "\033[m" : "",
 					(t1.exp[0] == 0) ? uentp->username : t1.exp,
@@ -507,7 +539,8 @@ do_userlist()
 				search_record(overridefile, &t1, sizeof (t1), (void *) cfriendname, &t2);
 				sprintf(user_info_str,
 					" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s\033[m %5.5s\n",
-					i + 1 + page, (override) ? "¡õ" : "",
+					// â–¡
+					i + 1 + page, (override) ? "\xA1\xF5" : "",
 					(override) ? "\033[1;32m" : "",
 					uentp->userid, (override) ? "\033[m" : "",
 					(t1.exp[0] == 0) ? uentp->username : t1.exp,
@@ -524,7 +557,8 @@ do_userlist()
 			if(uentp->mode != 78) {
 				sprintf(user_info_str,
 					" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s\033[m %5.5s\n",
-					i + 1 + page, (override) ? "¡õ" : "",
+					// â–¡
+					i + 1 + page, (override) ? "\xA1\xF5" : "",
 					(override) ? "\033[1;32m" : "",
 					uentp->userid, (override) ? "\033[m" : "",
 					uentp->username,
@@ -539,7 +573,8 @@ do_userlist()
 			} else if (uentp->user_state_temp[0]!='\0') {
 				sprintf(user_info_str,
 					" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s\033[m %5.5s\n",
-					i + 1 + page, (override) ? "¡õ" : "",
+					// â–¡
+					i + 1 + page, (override) ? "\xA1\xF5" : "",
 					(override) ? "\033[1;32m" : "",
 					uentp->userid, (override) ? "\033[m" : "",
 					uentp->username,
@@ -554,7 +589,8 @@ do_userlist()
 			} else {
 				sprintf(user_info_str,
 					" %4d%2s%s%-12.12s%s %-22.22s %s%-16.16s%s%c %c %s%-10.10s\033[m %5.5s\n",
-					i + 1 + page, (override) ? "¡õ" : "",
+					// â–¡
+					i + 1 + page, (override) ? "\xA1\xF5" : "",
 					(override) ? "\033[1;32m" : "",
 					uentp->userid, (override) ? "\033[m" : "",
 					uentp->username,
@@ -585,11 +621,13 @@ show_userlist()
 	}
 	if (range == 0) {
 		move(2, 0);
-		prints("Ã»ÓĞÊ¹ÓÃÕß£¨ÅóÓÑ£©ÔÚÁĞ±íÖĞ...\n");
+		// æ²¡æœ‰ä½¿ç”¨è€…ï¼ˆæœ‹å‹ï¼‰åœ¨åˆ—è¡¨ä¸­...\n
+		prints("\xC3\xBB\xD3\xD0\xCA\xB9\xD3\xC3\xD5\xDF\xA3\xA8\xC5\xF3\xD3\xD1\xA3\xA9\xD4\xDA\xC1\xD0\xB1\xED\xD6\xD0...\n");
 		clrtobot();
 		if (friendmode) {
 			move(BBS_PAGESIZE + 3, 0);
-			if (askyn("ÊÇ·ñ×ª»»³ÉÊ¹ÓÃÕßÄ£Ê½", YEA, NA) == YEA) {
+			// æ˜¯å¦è½¬æ¢æˆä½¿ç”¨è€…æ¨¡å¼
+			if (askyn("\xCA\xC7\xB7\xF1\xD7\xAA\xBB\xBB\xB3\xC9\xCA\xB9\xD3\xC3\xD5\xDF\xC4\xA3\xCA\xBD", YEA, NA) == YEA) {
 				//range = num_visible_users();
 				page = -1;
 				friendmode = NA;
@@ -628,7 +666,8 @@ static int deal_key(int ch, int allnum, int pagenum) {
 	case 'F':
 /* if(strcmp(currentuser.userid,user_record[allnum]->userid)) return 0;*/
 		buf[0] = 0;	//add by ylsdd
-		getdata(BBS_PAGESIZE + 3, 0, "±ä»»êÇ³Æ: ", buf, NAMELEN, DOECHO,
+		// å˜æ¢æ˜µç§°:
+		getdata(BBS_PAGESIZE + 3, 0, "\xB1\xE4\xBB\xBB\xEA\xC7\xB3\xC6: ", buf, NAMELEN, DOECHO,
 			NA);
 		if (buf[0] != '\0') {
 			strcpy(uinfo.username, buf);
@@ -638,7 +677,8 @@ static int deal_key(int ch, int allnum, int pagenum) {
 	case 'K':
 		if (!HAS_PERM(PERM_SYSOP, currentuser) && strcmp(currentuser.userid, user_record[allnum]->userid))
 			return 1;
-		sprintf(buf, "ÄãÒª°Ñ %s Ìß³öÕ¾ÍâÂğ",
+		// ä½ è¦æŠŠ %s è¸¢å‡ºç«™å¤–å—
+		sprintf(buf, "\xC4\xE3\xD2\xAA\xB0\xD1 %s \xCC\xDF\xB3\xF6\xD5\xBE\xCD\xE2\xC2\xF0",
 			user_record[allnum]->userid);
 		strcpy(tempuser, user_record[allnum]->userid);
 		move(BBS_PAGESIZE + 3, 0);
@@ -647,20 +687,22 @@ static int deal_key(int ch, int allnum, int pagenum) {
 		/*
 		if (!strcmp(user_record[allnum]->userid, tempuser)
 			&& kick_user(user_record[allnum]) == 1) {
-			sprintf(buf, "%s ÒÑ±»Ìß³öÕ¾Íâ",
+			sprintf(buf, "%s å·²è¢«è¸¢å‡ºç«™å¤–",
 				user_record[allnum]->userid);
 		} else {
-			sprintf(buf, "%s ÎŞ·¨Ìß³öÕ¾Íâ",
+			sprintf(buf, "%s æ— æ³•è¸¢å‡ºç«™å¤–",
 				user_record[allnum]->userid);
 		}
 		*/
 		if (!strcmp(user_record[allnum]->userid, tempuser)) {
 			killmode = (!strcmp(currentuser.userid, tempuser)) ? 1 : 0;
 			if(kick_user(user_record[allnum], killmode) == 1) {
-				sprintf(buf, "%s±»Ìß³öÕ¾Íâ", user_record[allnum]->userid);
+				// %sè¢«è¸¢å‡ºç«™å¤–
+				sprintf(buf, "%s\xB1\xBB\xCC\xDF\xB3\xF6\xD5\xBE\xCD\xE2", user_record[allnum]->userid);
 
 			} else {
-				sprintf(buf, "%sÎŞ·¨Ìß³öÕ¾Íâ", user_record[allnum]->userid);
+				// %sæ— æ³•è¸¢å‡ºç«™å¤–
+				sprintf(buf, "%s\xCE\xDE\xB7\xA8\xCC\xDF\xB3\xF6\xD5\xBE\xCD\xE2", user_record[allnum]->userid);
 			}
 		}
 
@@ -698,7 +740,8 @@ static int deal_key(int ch, int allnum, int pagenum) {
 		if (!HAS_PERM(PERM_PAGE, currentuser))
 			return 1;
 		if (!canmsg(user_record[allnum])) {
-			sprintf(buf, "%s ÒÑ¾­¹Ø±ÕÑ¶Ï¢ºô½ĞÆ÷", user_record[allnum]->userid);
+			// %s å·²ç»å…³é—­è®¯æ¯å‘¼å«å™¨
+			sprintf(buf, "%s \xD2\xD1\xBE\xAD\xB9\xD8\xB1\xD5\xD1\xB6\xCF\xA2\xBA\xF4\xBD\xD0\xC6\xF7", user_record[allnum]->userid);
 			msgflag = YEA;
 			break;
 		}
@@ -710,36 +753,44 @@ static int deal_key(int ch, int allnum, int pagenum) {
 	case 'R':
 		if (ch == 'o' || ch == 'O') {
 			friendflag = YEA;
-			strcpy(desc, "ºÃÓÑ");
+			// å¥½å‹
+			strcpy(desc, "\xBA\xC3\xD3\xD1");
 		} else {
 			friendflag = NA;
-			strcpy(desc, "»µÈË");
+			// åäºº
+			strcpy(desc, "\xBB\xB5\xC8\xCB");
 		}
 		if (!strcmp("guest", currentuser.userid))
 			return 0;
-		sprintf(buf, "È·¶¨Òª°Ñ %s ¼ÓÈë%sÃûµ¥Âğ",
+		// ç¡®å®šè¦æŠŠ %s åŠ å…¥%såå•å—
+		sprintf(buf, "\xC8\xB7\xB6\xA8\xD2\xAA\xB0\xD1 %s \xBC\xD3\xC8\xEB%s\xC3\xFB\xB5\xA5\xC2\xF0",
 			user_record[allnum]->userid, desc);
 		move(BBS_PAGESIZE + 3, 0);
 		if (askyn(buf, NA, NA) == NA)
 			break;
 		if (addtooverride(user_record[allnum]->userid) == -1) {
-			sprintf(buf, "%s ÒÑÔÚ%sÃûµ¥", user_record[allnum]->userid, desc);
+			// %s å·²åœ¨%såå•
+			sprintf(buf, "%s \xD2\xD1\xD4\xDA%s\xC3\xFB\xB5\xA5", user_record[allnum]->userid, desc);
 		} else {
-			sprintf(buf, "%s ÁĞÈë%sÃûµ¥", user_record[allnum]->userid, desc);
+			// %s åˆ—å…¥%såå•
+			sprintf(buf, "%s \xC1\xD0\xC8\xEB%s\xC3\xFB\xB5\xA5", user_record[allnum]->userid, desc);
 		}
 		msgflag = YEA;
 		break;
 	case 'd':
 	case 'D':
-		sprintf(buf, "È·¶¨Òª°Ñ %s ´ÓºÃÓÑÃûµ¥É¾³ıÂğ",
+		// ç¡®å®šè¦æŠŠ %s ä»å¥½å‹åå•åˆ é™¤å—
+		sprintf(buf, "\xC8\xB7\xB6\xA8\xD2\xAA\xB0\xD1 %s \xB4\xD3\xBA\xC3\xD3\xD1\xC3\xFB\xB5\xA5\xC9\xBE\xB3\xFD\xC2\xF0",
 			user_record[allnum]->userid);
 		move(BBS_PAGESIZE + 3, 0);
 		if (askyn(buf, NA, NA) == NA)
 			break;
 		if (deleteoverride(user_record[allnum]->userid, YTHTBBS_OVERRIDE_FRIENDS) == -1) {
-			sprintf(buf, "%s ±¾À´¾Í²»ÔÚÅóÓÑÃûµ¥ÖĞ", user_record[allnum]->userid);
+			// %s æœ¬æ¥å°±ä¸åœ¨æœ‹å‹åå•ä¸­
+			sprintf(buf, "%s \xB1\xBE\xC0\xB4\xBE\xCD\xB2\xBB\xD4\xDA\xC5\xF3\xD3\xD1\xC3\xFB\xB5\xA5\xD6\xD0", user_record[allnum]->userid);
 		} else {
-			sprintf(buf, "%s ÒÑ´ÓÅóÓÑÃûµ¥ÒÆ³ı", user_record[allnum]->userid);
+			// %s å·²ä»æœ‹å‹åå•ç§»é™¤
+			sprintf(buf, "%s \xD2\xD1\xB4\xD3\xC5\xF3\xD3\xD1\xC3\xFB\xB5\xA5\xD2\xC6\xB3\xFD", user_record[allnum]->userid);
 		}
 		msgflag = YEA;
 		break;
@@ -817,7 +868,8 @@ static int do_query(int star, int curr) {
 		clear();
 		t_query(user_record[curr]->userid);
 		move(t_lines - 1, 0);
-		prints("\033[0;1;37;44mÁÄÌì[\033[1;32mt\033[37m] ¼ÄĞÅ[\033[1;32mm\033[37m] ËÍÑ¶Ï¢[\033[1;32ms\033[37m] ¼Ó,¼õÅóÓÑ[\033[1;32mo\033[37m,\033[1;32md\033[37m] Ñ¡ÔñÊ¹ÓÃÕß[\033[1;32m¡ü\033[37m,\033[1;32m¡ı\033[37m] ÇĞ»»Ä£Ê½ [\033[1;32mc\033[37m] Çó¾È[\033[1;32mh\033[37m]\033[m");
+		// \033[0;1;37;44mèŠå¤©[\033[1;32mt\033[37m] å¯„ä¿¡[\033[1;32mm\033[37m] é€è®¯æ¯[\033[1;32ms\033[37m] åŠ ,å‡æœ‹å‹[\033[1;32mo\033[37m,\033[1;32md\033[37m] é€‰æ‹©ä½¿ç”¨è€…[\033[1;32mâ†‘\033[37m,\033[1;32mâ†“\033[37m] åˆ‡æ¢æ¨¡å¼ [\033[1;32mc\033[37m] æ±‚æ•‘[\033[1;32mh\033[37m]\033[m
+		prints("\033[0;1;37;44m\xC1\xC4\xCC\xEC[\033[1;32mt\033[37m] \xBC\xC4\xD0\xC5[\033[1;32mm\033[37m] \xCB\xCD\xD1\xB6\xCF\xA2[\033[1;32ms\033[37m] \xBC\xD3,\xBC\xF5\xC5\xF3\xD3\xD1[\033[1;32mo\033[37m,\033[1;32md\033[37m] \xD1\xA1\xD4\xF1\xCA\xB9\xD3\xC3\xD5\xDF[\033[1;32m\xA1\xFC\033[37m,\033[1;32m\xA1\xFD\033[37m] \xC7\xD0\xBB\xBB\xC4\xA3\xCA\xBD [\033[1;32mc\033[37m] \xC7\xF3\xBE\xC8[\033[1;32mh\033[37m]\033[m");
 	}
 	return 0;
 }
@@ -833,7 +885,8 @@ int t_friends() {
 	if (!dashf(buf)) {
 		move(1, 0);
 		clrtobot();
-		prints("ÄãÉĞÎ´ÀûÓÃ Info -> Override Éè¶¨ºÃÓÑÃûµ¥£¬ËùÒÔ...\n");
+		// ä½ å°šæœªåˆ©ç”¨ Info -> Override è®¾å®šå¥½å‹åå•ï¼Œæ‰€ä»¥...\n
+		prints("\xC4\xE3\xC9\xD0\xCE\xB4\xC0\xFB\xD3\xC3 Info -> Override \xC9\xE8\xB6\xA8\xBA\xC3\xD3\xD1\xC3\xFB\xB5\xA5\xA3\xAC\xCB\xF9\xD2\xD4...\n");
 		range = 0;
 	} else {
 		num_alcounter();
@@ -842,9 +895,11 @@ int t_friends() {
 	if (range == 0) {
 		move(2, 0);
 		clrtobot();
-		prints("Ä¿Ç°ÎŞºÃÓÑÉÏÏß\n");
+		// ç›®å‰æ— å¥½å‹ä¸Šçº¿\n
+		prints("\xC4\xBF\xC7\xB0\xCE\xDE\xBA\xC3\xD3\xD1\xC9\xCF\xCF\xDF\n");
 		move(BBS_PAGESIZE + 3, 0);
-		if (askyn("ÊÇ·ñ×ª»»³ÉÊ¹ÓÃÕßÄ£Ê½", YEA, NA) == YEA) {
+		// æ˜¯å¦è½¬æ¢æˆä½¿ç”¨è€…æ¨¡å¼
+		if (askyn("\xCA\xC7\xB7\xF1\xD7\xAA\xBB\xBB\xB3\xC9\xCA\xB9\xD3\xC3\xD5\xDF\xC4\xA3\xCA\xBD", YEA, NA) == YEA) {
 			range = num_visible_users();
 			page = -1;
 			friendmode = NA;
@@ -876,7 +931,8 @@ int t_users(const char *s) {
 	if (range == 0) {
 		move(3, 0);
 		clrtobot();
-		prints("Ä¿Ç°ÎŞÊ¹ÓÃÕßÉÏÏß\n");
+		// ç›®å‰æ— ä½¿ç”¨è€…ä¸Šçº¿\n
+		prints("\xC4\xBF\xC7\xB0\xCE\xDE\xCA\xB9\xD3\xC3\xD5\xDF\xC9\xCF\xCF\xDF\n");
 	}
 	update_time = 0;
 	choose(YEA, 0, print_title, deal_key, show_userlist, do_query);
@@ -1108,11 +1164,13 @@ static char *idle_str(const struct user_info *uent) {
 	int limit, hh, mm, temppid;
 
 	if (uent == NULL) {
-		strcpy(hh_mm_ss, "²»Ïê");
+		// ä¸è¯¦
+		strcpy(hh_mm_ss, "\xB2\xBB\xCF\xEA");
 		return hh_mm_ss;
 	}
 	if ((temppid = uent->pid) <= 0) {
-		strcpy(hh_mm_ss, "²»Ïê");
+		// ä¸è¯¦
+		strcpy(hh_mm_ss, "\xB2\xBB\xCF\xEA");
 		return hh_mm_ss;
 	}
 
@@ -1162,4 +1220,3 @@ static int count_visible_active(const struct user_info *uentp, void *x_param)
 		*p_i = *p_i - 1;
 	return 1;
 }
-
