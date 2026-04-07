@@ -60,7 +60,7 @@ static int do_send(char *userid, char *title);
 static int read_mail(struct fileheader *fptr);
 static int read_new_mail(struct fileheader *fptr);
 static int mailtitle(void);
-static char *maildoent(int num, struct fileheader *ent, char buf[512]);
+static char *maildoent(int num, struct fileheader *ent, char *buf);
 static int mail_read(int, void *, char *);
 static int mail_del(int, void *, char *);
 static int mail_del_range(int, void *, char *);
