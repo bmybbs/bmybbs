@@ -103,11 +103,7 @@ static int digest_mode(void);
 //getkeep语义: 最开始的一页是1,
 //如果def_topline>=1, 如果没有找到的话, 默认的第一页页码
 //如果def_topline==-1, 如果没有找到的话, 不给默认页, 而是返回空指针
-struct keeploc *
-getkeep(s, def_topline, def_cursline)
-char *s;
-int def_topline;
-int def_cursline;
+struct keeploc *getkeep(char *s, int def_topline, int def_cursline)
 {
 	static struct keeploc *keeplist = NULL;
 	struct keeploc *p;
@@ -141,10 +137,7 @@ void fixkeep(char *s, int first, int last) {
 	}
 }
 
-static void
-modify_locmem(locmem, total)
-struct keeploc *locmem;
-int total;
+static void modify_locmem(struct keeploc *locmem, int total)
 {
 	if (locmem->top_line > total) {
 		locmem->crs_line = total;
@@ -156,10 +149,7 @@ int total;
 	}
 }
 
-static int
-move_cursor_line(locmem, mode)
-struct keeploc *locmem;
-int mode;
+static int move_cursor_line(struct keeploc *locmem, int mode)
 {
 	int top, crs;
 	int reload = 0;
@@ -194,20 +184,13 @@ int mode;
 	return reload;
 }
 
-static int
-draw_title(dotitle)
-int (*dotitle) ();
+static int draw_title(int (*dotitle) ())
 {
 	clear();
 	return (*dotitle) ();
 }
 
-static void
-draw_entry(doentry, locmem, num, ssize, pnt)
-char *(*doentry) (int, void *, char *);
-struct keeploc *locmem;
-int num, ssize;
-char *pnt;
+static void draw_entry(char *(*doentry) (int, void *, char *), struct keeploc *locmem, int num, int ssize, char *pnt)
 {
 	char *str, buf[512];
 	int base, i;
@@ -528,12 +511,7 @@ void i_read(int cmdmode, char *direct, int (*dotitle) (), char *(*doentry) (int,
 	free(pnt);
 }
 
-static int
-i_read_key(rcmdlist, locmem, ch, ssize, pnt)
-const struct one_key *rcmdlist;
-struct keeploc *locmem;
-int ch, ssize;
-char *pnt;
+static int i_read_key(const struct one_key *rcmdlist, struct keeploc *locmem, int ch, int ssize, char *pnt)
 {
 	int i, mode = DONOTHING;
 
@@ -893,11 +871,7 @@ int SR_BMfunc(int ent, struct fileheader *fileinfo, char *direct) {
 }
 
 /*先找第一篇, 再找第一篇新的, 如果找到了, 就读之, 否则直接返回*/
-int
-SR_first_new(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+int SR_first_new(int ent, struct fileheader *fileinfo, char *direct)
 {
 	SR_first(ent, fileinfo, direct);
 	if (sread(3, 0, 0, 0, &SR_fptr) == -1) {	/*Found The First One */
@@ -935,11 +909,7 @@ int SR_author(int ent, struct fileheader *fileinfo, char *direct) {
 	return FULLUPDATE;
 }
 
-static int
-search_author(locmem, offset, powner)
-struct keeploc *locmem;
-int offset;
-char *powner;
+static int search_author(struct keeploc *locmem, int offset, char *powner)
 {
 	static char author[IDLEN + 1];
 	char ans[IDLEN + 2], pmt[STRLEN * 2];
@@ -963,11 +933,7 @@ char *powner;
 	return search_articles(locmem, author, offset, 1);
 }
 #if 0
-static int
-auth_post_down(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+static int auth_post_down(int ent, struct fileheader *fileinfo, char *direct)
 {
 	struct keeploc *locmem;
 
@@ -979,11 +945,7 @@ char *direct;
 	return DONOTHING;
 }
 
-int
-auth_post_up(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+int auth_post_up(int ent, struct fileheader *fileinfo, char *direct)
 {
 	struct keeploc *locmem;
 
@@ -1061,10 +1023,7 @@ int thread_down(int ent, struct fileheader *fileinfo, char *direct) {
 	return DONOTHING;
 }
 
-static int
-search_post(locmem, offset)
-struct keeploc *locmem;
-int offset;
+static int search_post(struct keeploc *locmem, int offset)
 {
 	static char query[STRLEN];
 	char ans[STRLEN], pmt[STRLEN * 2];
@@ -1084,10 +1043,7 @@ int offset;
 	return search_articles(locmem, query, offset, -1);
 }
 
-static int
-search_title(locmem, offset)
-struct keeploc *locmem;
-int offset;
+static int search_title(struct keeploc *locmem, int offset)
 {
 	static char title[STRLEN];
 	char ans[STRLEN], pmt[STRLEN];
@@ -1105,11 +1061,7 @@ int offset;
 	return search_articles(locmem, title, offset, 0);
 }
 
-static int
-search_thread(locmem, offset, title)
-struct keeploc *locmem;
-int offset;
-char *title;
+static int search_thread(struct keeploc *locmem, int offset, char *title)
 {
 
 	if (title[0] == 'R' && (title[1] == 'e' || title[1] == 'E') && title[2] == ':')
@@ -1386,10 +1338,7 @@ redo:
 
 #include <sys/mman.h>
 
-int
-searchpattern(filename, query)
-char *filename;
-char *query;
+int searchpattern(char *filename, char *query)
 {
 	char *ptr = NULL;
 	int fd, ret;
@@ -1452,11 +1401,7 @@ char *query;
 	return ret;
 }
 
-static int
-search_articles(locmem, query, offset, aflag)
-struct keeploc *locmem;
-char *query;
-int offset, aflag;
+static int search_articles(struct keeploc *locmem, char *query, int offset, int aflag)
 {
 	char *ptr;
 	int now, match = 0;
@@ -1542,11 +1487,7 @@ int offset, aflag;
 }
 
 /* calc cursor pos and show cursor correctly -cuteyu */
-static int
-cursor_pos(locmem, val, from_top)
-struct keeploc *locmem;
-int val;
-int from_top;
+static int cursor_pos(struct keeploc *locmem, int val, int from_top)
 {
 	//last_line = get_num_records(currdirect, ssize);
 	//last_line_excludeBottom = get_num_records_excludeBottom(currdirect, ssize);
