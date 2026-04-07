@@ -7,9 +7,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 //"not" inserted in identifier
-static const char *And = "\xC7\xD2";  // «“
-static const char *Or  = "\xBB\xF2";  // ªÚ
-static const char *Not = "\xB7\xC7";  // ∑«
+static const char *And = "\xC7\xD2";  // ‰∏î
+static const char *Or  = "\xBB\xF2";  // Êàñ
+static const char *Not = "\xB7\xC7";  // Èùû
 static const char LeftBracket = '(';
 static const char RightBracket = ')';
 static const char Separator[] = { ' ', '\t' };	//seperator, you can add ',', ';' to it, etc
