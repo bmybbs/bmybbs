@@ -7,7 +7,7 @@ extern int in_mail;
 const char *email_domain(void);
 void filter(char *line);
 int chkmail(void);
-int check_query_mail(char qry_mail_dir[80]);
+int check_query_mail(char *);
 int mailall(const char *s);
 int m_internet(const char *s);
 void m_init(void);
