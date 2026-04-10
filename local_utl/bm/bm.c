@@ -1,7 +1,12 @@
-#include "bbs.h"
+#include <stdio.h>
+#include "config.h"
+#include "ythtbbs/board.h"
+#include "ythtbbs/permissions.h"
 
 int main(int argc, char *argv[])
 {
+	(void) argc;
+	(void) argv;
 	FILE *fd1;
 	struct boardheader rec;
 	char bmbuf[IDLEN * 4 + 4];
