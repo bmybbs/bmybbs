@@ -369,12 +369,18 @@ static int api_article_list_commend(ONION_FUNC_PROTO_STR, int mode, int startnum
 		number = 20;
 	struct api_article *commend_list, EMPTY_ARTICLE;
 	struct commend x;
-	char dir[80];
+	char dir[16] = { 0 };
 	FILE *fp = NULL;
-	if(0 == mode)
+
+	if (0 == mode)
 		strcpy(dir, ".COMMEND");
-	else if(1 == mode)
+	else if (1 == mode)
 		strcpy(dir, ".COMMEND2");
+
+	if (dir[0] == '0') {
+		return api_error(p, req, res, API_RT_WRONGPARAM);
+	}
+
 	int fsize = ytht_file_size_s(dir);
 	int total = fsize / sizeof(struct commend);
 
