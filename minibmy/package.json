@@ -14,9 +14,9 @@
 		"@xmldom/xmldom": "^0.9.9",
 		"dayjs": "^1.11.19",
 		"marked": "^17.0.5",
-		"sanitize-html": "^2.17.0"
+		"sanitize-html": "^2.17.2"
 	},
 	"devDependencies": {
-		"@types/sanitize-html": "^2.16.0"
+		"@types/sanitize-html": "^2.16.1"
 	}
 }
