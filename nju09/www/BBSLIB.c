@@ -3,7 +3,6 @@
 #if defined(ENABLE_GHTHASH) && defined(ENABLE_FASTCGI)
 #include <ght_hash_table.h>
 #endif
-#include "sys/shm.h"
 #include "stdarg.h"
 //#ifdef GPROF
 //#include <iconv_glibc.h>
