@@ -29,9 +29,8 @@ int main(int argc, char **argv)
 	char *name;
 	char buf1[256], buf2[256];
 	struct dirent *ent;
-	int i;
 	FILE *art;
-	int file, file1, flag;
+	int file, flag;
 	struct fileheader fh;
 
 	if (argc > 1)
@@ -55,7 +54,6 @@ int main(int argc, char **argv)
 		closedir(pdir);
 		return -1;
 	}
-	i = 1;
 
 	while (ent = readdir(pdir)) {
 		if ((strcmp(ent->d_name, ".DIR"))
