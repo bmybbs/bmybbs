@@ -52,7 +52,6 @@ else
 
 	install_binary $BUILD_DIR/local_utl/averun/averun                         averun
 	install_binary $BUILD_DIR/local_utl/auto_rm_junk/auto_rm_junk             auto_rm_junk
-	install_binary $BUILD_DIR/local_utl/autoclear/autoclear                   autoclear
 	install_binary $BUILD_DIR/local_utl/autoundeny/autoundeny                 autoundeny
 	install_binary $BUILD_DIR/local_utl/bbslogd/bbslogd                       bbslogd
 	install_binary $BUILD_DIR/local_utl/bbspop3d/bbspop3d                     bbspop3d
