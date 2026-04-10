@@ -20,7 +20,7 @@ mail_buf(char *buf, char *userid, char *title)
 
 	memset(&newmessage, 0, sizeof (newmessage));
 	ytht_strsncpy(newmessage.owner, "XJTU-XANET",
-				  sizeof(newmessage.owner));
+			sizeof(newmessage.owner));
 	ytht_strsncpy(newmessage.title, title, sizeof(newmessage.title));
 	//ytht_strsncpy(save_title, newmessage.title, sizeof (save_title));
 
@@ -106,20 +106,19 @@ showundenymessage(char *linebuf, char *currboard, int anony)
 			break;
 		}
 	sprintf(repbuf, "恢复 %s 在 %s 的 POST 权利",
-		anony ? "Anonymous" : uident, currboard ? currboard : "全站");
+			anony ? "Anonymous" : uident, currboard ? currboard : "全站");
 	sprintf(msgbuf, "解封原因: 封禁时间已到，请理解%s务管理工作，谢谢!",
-        currboard ? "版" : "站");
+			currboard ? "版" : "站");
 	//sprintf(msgbuf, "解封原因: 封人时间已到，请理解版务管理工作,谢谢!");
 	securityreport("XJTU-XANET", msgbuf, repbuf);
 	deliverreport(currboard ? currboard : "sysop", repbuf, msgbuf);
-	
+
 	/* 发封信到被封人的信箱 interma@BMY 2005.4.24 */
 	sprintf(repbuf,
 			"恢复您在 %s 的POST权限！",
 			currboard ? currboard : "全站");
 	snprintf(msgbuf, 256, "封禁时间已到，因此%s\n请理解版务管理工作,谢谢!\n", repbuf);
 	mail_buf(msgbuf, uident, repbuf);
-	
 }
 
 int
@@ -211,19 +210,17 @@ main()
 				idx2 = 0;
 				while (idx2 < st.st_size) {
 					int len =
-					    sgetline(buf, linebuf, &idx2, 255);
+						sgetline(buf, linebuf, &idx2, 255);
 					puts(linebuf);
 					if (!canundeny(linebuf, nowtime)) {
 						if (idx1 != 0) {
 							buf[idx1] = 0x0a;
 							idx1++;
 						}
-						memcpy(buf + idx1, linebuf,
-						       len);
+						memcpy(buf + idx1, linebuf, len);
 						idx1 += len;
 					} else {
-						showundenymessage(linebuf,
-								  NULL, 0);
+						showundenymessage(linebuf, NULL, 0);
 					}
 				}
 				buf[idx1] = 0x0a;
@@ -268,20 +265,17 @@ main()
 				idx2 = 0;
 				while (idx2 < st.st_size) {
 					int len =
-					    sgetline(buf, linebuf, &idx2, 255);
+						sgetline(buf, linebuf, &idx2, 255);
 					puts(linebuf);
 					if (!canundeny(linebuf, nowtime)) {
 						if (idx1 != 0) {
 							buf[idx1] = 0x0a;
 							idx1++;
 						}
-						memcpy(buf + idx1, linebuf,
-						       len);
+						memcpy(buf + idx1, linebuf, len);
 						idx1 += len;
 					} else {
-						showundenymessage(linebuf,
-								  bh.filename,
-								  anony);
+						showundenymessage(linebuf, bh.filename, anony);
 					}
 				}
 				buf[idx1] = 0x0a;
