@@ -95,7 +95,7 @@ void
 showundenymessage(char *linebuf, char *currboard, int anony)
 {
 	char msgbuf[256];
-	char repbuf[256];
+	char repbuf[64];
 	char uident[14];
 	int i;
 	strncpy(uident, linebuf, 12);
@@ -105,19 +105,19 @@ showundenymessage(char *linebuf, char *currboard, int anony)
 			uident[i] = 0;
 			break;
 		}
-	sprintf(repbuf, "恢复 %s 在 %s 的 POST 权利",
+	snprintf(repbuf, sizeof repbuf, "恢复 %s 在 %s 的 POST 权利",
 			anony ? "Anonymous" : uident, currboard ? currboard : "全站");
-	sprintf(msgbuf, "解封原因: 封禁时间已到，请理解%s务管理工作，谢谢!",
+	snprintf(msgbuf, sizeof msgbuf, "解封原因: 封禁时间已到，请理解%s务管理工作，谢谢!",
 			currboard ? "版" : "站");
 	//sprintf(msgbuf, "解封原因: 封人时间已到，请理解版务管理工作,谢谢!");
 	securityreport("XJTU-XANET", msgbuf, repbuf);
 	deliverreport(currboard ? currboard : "sysop", repbuf, msgbuf);
 
 	/* 发封信到被封人的信箱 interma@BMY 2005.4.24 */
-	sprintf(repbuf,
+	snprintf(repbuf, sizeof repbuf,
 			"恢复您在 %s 的POST权限！",
 			currboard ? currboard : "全站");
-	snprintf(msgbuf, 256, "封禁时间已到，因此%s\n请理解版务管理工作,谢谢!\n", repbuf);
+	snprintf(msgbuf, sizeof msgbuf, "封禁时间已到，因此%s\n请理解版务管理工作,谢谢!\n", repbuf);
 	mail_buf(msgbuf, uident, repbuf);
 }
 
