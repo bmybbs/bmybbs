@@ -9,8 +9,7 @@ extern void securityreport(char * owner, char * str, char * title);
 extern void deliverreport(char * board, char * title, char * str);
 
 static int
-mail_buf(buf, userid, title)
-char *buf, userid[], title[];
+mail_buf(char *buf, char *userid, char *title)
 {
 	struct fileheader newmessage;
 	struct stat st;
@@ -79,11 +78,10 @@ char *str;
 }*/
 
 unsigned long
-atoul(p)
-char *p;
+atoul(const char *p)
 {
 	unsigned long s;
-	char *t;
+	const char *t;
 	t = p;
 	s = 0;
 	while ((*t >= '0') && (*t <= '9')) {
@@ -94,10 +92,7 @@ char *p;
 }
 
 void
-showundenymessage(linebuf, currboard, anony)
-char *linebuf;
-char *currboard;
-int anony;
+showundenymessage(char *linebuf, char *currboard, int anony)
 {
 	char msgbuf[256];
 	char repbuf[256];
@@ -128,9 +123,7 @@ int anony;
 }
 
 int
-canundeny(linebuf, nowtime)
-char *linebuf;
-unsigned long nowtime;
+canundeny(char *linebuf, unsigned long nowtime)
 {
 	char *p;
 	unsigned long time2;
@@ -151,10 +144,7 @@ unsigned long nowtime;
 }
 
 int
-sgetline(buf, linebuf, idx, maxlen)
-char *buf, *linebuf;
-int *idx;
-int maxlen;
+sgetline(char *buf, char *linebuf, int *idx, int maxlen)
 {
 	int len = 0;
 	while (len < maxlen) {
