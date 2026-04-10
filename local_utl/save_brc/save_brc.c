@@ -40,14 +40,13 @@ int main(int argc, char *argv[])
 			all = 1;
 		else
 			all = 0;
-	}
-	else 
+	} else {
 		all = 0;
+	}
 	chdir(MY_BBS_HOME);
 	nowtime = time(NULL);
 	printf("save_brc is running~\n");
-	printf("\033[1mbbs home=%s now time = %s\033[0m\n", MY_BBS_HOME,
-	       ctime(&nowtime));
+	printf("\033[1mbbs home=%s now time = %s\033[0m\n", MY_BBS_HOME, ctime(&nowtime));
 
 	printf("processing %s\n", path);
 	dirp = opendir(PATHTMPBRC);
@@ -57,7 +56,7 @@ int main(int argc, char *argv[])
 		snprintf(ent, sizeof ent, PATHTMPBRC "/%s", direntp->d_name);
 		if (strchr(direntp->d_name, '.')) {
 			if (direntp->d_name[0] != '.'
-			    && nowtime - file_rtime(ent) > 3600)
+					&& nowtime - file_rtime(ent) > 3600)
 				unlink(ent);
 			continue;
 		}
@@ -75,7 +74,7 @@ int main(int argc, char *argv[])
 			printf("%s\n", direntp->d_name);
 			if (copy_brc(ent, newent) < 0)
 				continue;
-			if (nowtime - t1a > 7200) 
+			if (nowtime - t1a > 7200)
 				unlink(ent);
 		}
 	}
