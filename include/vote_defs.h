@@ -57,8 +57,8 @@ struct votebal
 	char            type;
 	char            items[32][38];
 	int             maxdays;
-	int             maxtkt;
-	short int       totalitems;
+	unsigned int    maxtkt;
+	unsigned short  totalitems;
 	short int       flag;
 	time_t          opendate;
 	char            listfname[STRLEN];

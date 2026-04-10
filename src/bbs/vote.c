@@ -460,6 +460,7 @@ vote_maintain(char *bname)
 	char buf[STRLEN * 4];
 	struct votebal *ball = &currvote;
 	int aborted;
+	int maxtkt;
 
 	setcontrolfile();
 	if (!HAS_PERM(PERM_OVOTE, currentuser))
@@ -548,9 +549,12 @@ vote_maintain(char *bname)
 		get_vitems(ball);
 		for (;;) {
 			getdata(21, 0, "一个人最多几票? [1]: ", buf, 5, DOECHO, YEA);
-			ball->maxtkt = atoi(buf);
-			if (ball->maxtkt <= 0)
+			maxtkt = atoi(buf);
+			if (maxtkt <= 0) {
 				ball->maxtkt = 1;
+			} else {
+				ball->maxtkt = maxtkt;
+			}
 			if (ball->maxtkt > ball->totalitems)
 				continue;
 			break;
@@ -646,7 +650,7 @@ showvoteitems(unsigned int pbits, int i, int flag)
 
 	if (flag == YEA) {
 		count = vote_check(pbits);
-		if (count > currvote.maxtkt)
+		if (count < 0 || (unsigned int) count > currvote.maxtkt)
 			return NA;
 		move(2, 0);
 		clrtoeol();
@@ -727,6 +731,7 @@ static int
 multivote(struct ballot *uv)
 {
 	unsigned int i;
+	int check;
 	int multivotestroll = time(NULL) % currvote.totalitems;
 	i = uv->voted;
 
@@ -734,7 +739,8 @@ multivote(struct ballot *uv)
 	show_voteing_title();
 
 	strollvote(uv, &currvote, multivotestroll);
-	if (vote_check(uv->voted) > currvote.maxtkt)	//修正先前bug的错误结果
+	check = vote_check(uv->voted);
+	if (check < 0 || (unsigned int) check > currvote.maxtkt)	//修正先前bug的错误结果
 		uv->voted = 0;
 	uv->voted = setperms(uv->voted, "选票", currvote.totalitems, showvoteitems, 1);
 	strollvote(uv, &currvote, -multivotestroll);
@@ -748,6 +754,7 @@ static int
 smultivote(struct ballot *uv)
 {
 	unsigned int i;
+	int check;
 	int multivotestroll = time(NULL) % currvote.totalitems;
 	i = uv->voted;
 begin:
@@ -759,7 +766,8 @@ begin:
 
 	uv->voted = setperms(uv->voted, "选票", currvote.totalitems, showvoteitems, 1);
 	strollvote(uv, &currvote, -multivotestroll);
-	if (vote_check(uv->voted) != currvote.maxtkt)	{
+	check = vote_check(uv->voted);
+	if (check < 0 || (unsigned int) check != currvote.maxtkt)	{
 		clear();
 		move(4,0);
 		prints("您所投票数与本投票之要求不一致!");
@@ -790,7 +798,7 @@ valuevote(struct ballot *uv)
 	do {
 		getdata(3, 0, "请输入一个值? [0]: ", buf, 5, DOECHO, NA);
 		uv->voted = abs(atoi(buf));
-	} while (uv->voted > (unsigned int) abs(currvote.maxtkt) && buf[0] != '\n' && buf[0] != '\0');
+	} while (uv->voted > currvote.maxtkt && buf[0] != '\n' && buf[0] != '\0');
 	if (buf[0] == '\n' || buf[0] == '\0' || uv->voted == chs)
 		return -1;
 	return 1;
