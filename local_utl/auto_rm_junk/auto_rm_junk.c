@@ -12,7 +12,7 @@ delete_old_junk(char *filename)
 	struct fileheader fhdr;
 	char tmpfile[STRLEN], deleted[STRLEN];
 	int fdr, fdw;
-	int count, mday, fmday, total, ndeleted;
+	int count, mday, fmday, ndeleted;
 	time_t now;
 	struct stat statbuf;
 	char fullpath[STRLEN];
@@ -22,7 +22,6 @@ delete_old_junk(char *filename)
 			return 0;
 		return -1;
 	}
-	total = statbuf.st_size / sizeof (fhdr);
 
 	time(&now);
 	mday = now / (3600 * 24) % 100;
