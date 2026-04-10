@@ -417,7 +417,7 @@ fh_find_thread(struct fileheader *fh, char *board)
 }
 
 int
-Search_Bin(char *ptr, int key, int start, int end)
+Search_Bin(char *ptr, time_t key, int start, int end)
 {
 	// 在有序表中折半查找其关键字等于key的数据元素。
 	// 若查找到，返回索引
