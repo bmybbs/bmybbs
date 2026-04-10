@@ -60,6 +60,7 @@ ispostfilename(char *file)
 int
 countfile(void *fhdr_void, void *farg)
 {
+	(void) farg;
 	int i, h;
 	char *fname;
 	nindexitem++;
