@@ -58,8 +58,8 @@ int
 anc_hidetitle(char *title)
 {
 	if (strstr(title, "(BM: SYSOPS)") != NULL
-	    || strstr(title, "(BM: SECRET)") != NULL
-	    || strstr(title, "(BM: BMS)") != NULL)
+			|| strstr(title, "(BM: SECRET)") != NULL
+			|| strstr(title, "(BM: BMS)") != NULL)
 		return 1;
 	if (strstr(title, "<HIDE>") != NULL)
 		return 1;
@@ -82,10 +82,10 @@ howmanynew(char *path, struct Report *rp)
 	while (fgets(str, 500, fp) != NULL) {
 		if (!strncmp(str, "Name=", 5)) {
 			if (!strncmp(str, "Name=<HIDE>", 11) ||
-			    !strncmp(str, "Name=<GUESTBOOK>", 16) ||
-			    !strncmp(str, "Name=【精华区索引】", 19) ||
-			    !strncmp(str, "Name=【精华区文章索引】", 23) ||
-			    !strncmp(str, "Name=【精华区更新索引】", 23))
+					!strncmp(str, "Name=<GUESTBOOK>", 16) ||
+					!strncmp(str, "Name=【精华区索引】", 19) ||
+					!strncmp(str, "Name=【精华区文章索引】", 23) ||
+					!strncmp(str, "Name=【精华区更新索引】", 23))
 				ishideguest = 1;
 			else
 				ishideguest = 0;
@@ -140,14 +140,12 @@ int main(int argc, char *argv[])
 			fclose(fp);
 			continue;
 		}
-		while (anc_readitem(fp, fn, sizeof (fn), name, sizeof (name)) >=
-		       0) {
+		while (anc_readitem(fp, fn, sizeof (fn), name, sizeof (name)) >= 0) {
 			if (anc_hidetitle(name))
 				continue;
 			if (!strstr(name, " _P"))
 				continue;
-			snprintf(path, sizeof (path), "%s/%c/%s", PersonalPATH,
-				 ch, fn);
+			snprintf(path, sizeof (path), "%s/%c/%s", PersonalPATH, ch, fn);
 			sprintf(report.name, "%.12s", fn + 1);
 			report.nfile = 0;
 			report.day = 0;
@@ -158,8 +156,8 @@ int main(int argc, char *argv[])
 			if (report.nfile == 0)
 				continue;
 			printf("%-12.12s%8d%12d%12d%10d\n", report.name,
-			       report.day, report.week, report.week2,
-			       report.nfile);
+					report.day, report.week, report.week2,
+					report.nfile);
 			tday += report.day;
 			tweek += report.week;
 			tweek2 += report.week2;
