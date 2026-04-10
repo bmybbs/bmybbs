@@ -71,7 +71,6 @@ else
 	install_binary $BUILD_DIR/local_utl/finddf/finddf                         finddf
 	install_binary $BUILD_DIR/local_utl/fixdir/fixdir                         fixdir
 	install_binary $BUILD_DIR/local_utl/id_boards/id_boards                   id_boards
-	install_binary $BUILD_DIR/local_utl/makeindex3/makeindex3                 makeindex3
 	install_binary $BUILD_DIR/local_utl/mergeb/mergeb                         mergeb
 	install_binary $BUILD_DIR/local_utl/nbstat/nbstat                         nbstat
 	install_binary $BUILD_DIR/local_utl/newboards/newboards                   newboards
