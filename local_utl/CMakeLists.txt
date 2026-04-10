@@ -60,7 +60,7 @@ add_subdirectory(setdefaultkey)
 add_subdirectory(sortdir)
 #add_subdirectory(sumcgitime)
 #add_subdirectory(tianqi)
-add_subdirectory(transuu2bin)
+# add_subdirectory(transuu2bin)
 #add_subdirectory(tuijian)
 
 #add_subdirectory(upersonal)
