@@ -5,7 +5,7 @@ extern char *cginame;
 bool g_has_code = false;
 
 int testmozilla(void);
-extern char *get_mime_type(const char *name);
+extern const char *get_mime_type(const char *name);
 
 int showbinaryattach(char *filename) {
 	char *attachname;

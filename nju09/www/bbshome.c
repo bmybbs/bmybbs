@@ -30,8 +30,8 @@ userid_str2(char *s)
 	return buf;
 }
 
-char *get_mime_type(const char *name) {
-	char *dot;
+const char *get_mime_type(const char *name) {
+	const char *dot;
 
 	dot = strrchr(name, '.');
 	if (dot == (char *) 0)
