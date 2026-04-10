@@ -127,7 +127,7 @@ int main(int argc, char *argv[])
 	(void) argc;
 	(void) argv;
 
-	char ch, path[500], fn[500], name[500];
+	char ch, path[500], fn[128], name[500];
 	int tday = 0, tweek = 0, tweek2 = 0, tnfile = 0;
 	FILE *fp;
 
@@ -135,7 +135,7 @@ int main(int argc, char *argv[])
 	printf("\n\t\t    个人文集更新统计\n\t\t%s\n", ctime(&nowtime));
 	printf("个人文集    今日更新  一周内更新  两周内更新  总文章数\n");
 	for (ch = 'A'; ch <= 'Z'; ch++) {
-		sprintf(fn, "%s/%c/.Names", PersonalPATH, ch);
+		snprintf(fn, sizeof fn, "%s/%c/.Names", PersonalPATH, ch);
 		fp = fopen(fn, "r");
 		if (!fp)
 			continue;
