@@ -7,9 +7,6 @@ main()
 	struct dirent *direntp;
 	struct stat sbuf;
 	time_t n;
-	int day;
-	int i = 0;
-	char buf[256];
 
 	chdir(ATTACHCACHE);
 	dirp = opendir(ATTACHCACHE);
