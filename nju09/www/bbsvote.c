@@ -3,7 +3,7 @@
 static char *vote_type[] = { "是非", "单选", "复选", "数字", "问答" ,"限定票数复选"};
 static int valid_voter(char *board, char *name, char* listname);
 
-int addtofile();
+int addtofile(const char *, const char *str);
 
 int
 bbsvote_main()
@@ -330,8 +330,7 @@ bbsvote_main()
 }
 
 int
-addtofile(filename, str)
-char filename[STRLEN], str[256];
+addtofile(const char *filename, const char *str)
 {
 	FILE *fp;
 	int rc;
