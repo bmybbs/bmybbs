@@ -53,6 +53,7 @@ isspcname(char *file)
 int
 countfile(void *fhdr, void *farg)
 {
+	(void) farg;
 	int i, h;
 	char *fname = fh2fname((struct fileheader *)fhdr);
 	nindexitem++;
