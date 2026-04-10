@@ -82,7 +82,6 @@ else
 	install_binary $BUILD_DIR/local_utl/save_brc/save_brc                     save_brc
 	install_binary $BUILD_DIR/local_utl/searchDIR/searchDIR                   searchDIR
 	install_binary $BUILD_DIR/local_utl/searchLastMark/searchLastMark         searchLastMark
-	install_binary $BUILD_DIR/local_utl/selpersonal/selpersonal               selpersonal
 	install_binary $BUILD_DIR/local_utl/setdefaultkey/setdefaultkey           setdefaultkey
 	install_binary $BUILD_DIR/local_utl/sortdir/sortdir                       sortdir
 	install_binary $BUILD_DIR/local_utl/transuu2bin/transuu2bin               transuu2bin
