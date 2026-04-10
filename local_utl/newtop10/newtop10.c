@@ -120,6 +120,7 @@ trytoinsert_area(struct boardheader *bh, struct boardtop *bt)
 int
 _topn(void *bh_void, void * fargs)
 {
+	(void) fargs;
 	struct boardheader *bh = (struct boardheader *) bh_void;
 	//从 bh 里面找到TOPN个thread
 	int size = sizeof (struct fileheader), total;
