@@ -55,7 +55,7 @@ int main(int argc, char **argv)
 		return -1;
 	}
 
-	while (ent = readdir(pdir)) {
+	while ((ent = readdir(pdir)) != NULL) {
 		if ((strcmp(ent->d_name, ".DIR"))
 				&& (strcmp(ent->d_name, "."))
 				&& (strcmp(ent->d_name, ".."))
@@ -63,7 +63,7 @@ int main(int argc, char **argv)
 			struct stat st;
 			if (stat(ent->d_name, &st))
 				continue;
-			if (art = fopen(ent->d_name, "r")) {
+			if ((art = fopen(ent->d_name, "r")) != NULL) {
 				char *p;
 				bzero(&fh, sizeof (fh));
 				fgets(buf1, 256, art);
@@ -72,18 +72,18 @@ int main(int argc, char **argv)
 				p = strchr(buf1 + 8, ' ');
 				if (p)
 					*p = 0;
-				if (p = strchr(buf1 + 8, '('))
+				if ((p = strchr(buf1 + 8, '(')) != NULL)
 					*p = 0;
-				if (p = strchr(buf1 + 8, '\n'))
+				if ((p = strchr(buf1 + 8, '\n')) != NULL)
 					*p = 0;
 				fh_setowner(&fh, buf1 + 8, 0);
 				fgets(buf2, 256, art);
 				if (buf2[0] == 0)
 					continue;
 				printf("%s", buf2);
-				if (p = strchr(buf2 + 8, '\n'))
+				if ((p = strchr(buf2 + 8, '\n')) != NULL)
 					*p = 0;
-				if (p = strchr(buf2 + 8, '\r'))
+				if ((p = strchr(buf2 + 8, '\r')) != NULL)
 					*p = 0;
 				fh.filetime = atoi(ent->d_name + 2);
 				fh.thread = fh.filetime;
