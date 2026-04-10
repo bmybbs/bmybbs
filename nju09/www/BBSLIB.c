@@ -2017,9 +2017,9 @@ static void updatelastboard(void) {
 		if (last->inboard > 0)
 			last->inboard--;
 		if (now_t > w_info->lastinboardtime && w_info->lastinboardtime != 0)
-			snprintf(buf, 80, "%s use %s %ld", currentuser.userid, last->header.filename, (long int) (now_t - w_info->lastinboardtime));
+			snprintf(buf, sizeof buf, "%s use %s %ld", currentuser.userid, last->header.filename, now_t - w_info->lastinboardtime);
 		else
-			snprintf(buf, 80, "%s use %s 1", currentuser.userid, last->header.filename);
+			snprintf(buf, sizeof buf, "%s use %s 1", currentuser.userid, last->header.filename);
 		newtrace(buf);
 	}
 	u_info->curboard = 0;
