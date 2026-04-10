@@ -6,6 +6,9 @@
 static const unsigned int TOTAL = 26*26;
 
 int main(int argc, char *argv[]) {
+	(void) argc;
+	(void) argv;
+
 	unsigned int aux[TOTAL], i, hash;
 	FILE *fp;
 	struct userec ue;
