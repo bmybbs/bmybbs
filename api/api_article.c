@@ -95,7 +95,7 @@ static int api_article_do_post(ONION_FUNC_PROTO_STR, int mode);
  * @param filetime : file id
  * @return thread id; return 0 means not find the thread id
  */
-static int get_thread_by_filetime(char *board, int filetime);
+static time_t get_thread_by_filetime(char *board, time_t filetime);
 
 /**
  * @brief 通过同主题ID查找同主题文章的帖子数、总大小，以及参与评论的用户 ID
@@ -1369,12 +1369,12 @@ static struct json_object *api_article_with_num_array_to_json(struct api_article
 	return obj;
 }
 
-static int get_thread_by_filetime(char *board, int filetime)
+static time_t get_thread_by_filetime(char *board, time_t filetime)
 {
 	char dir[80];
 	struct mmapfile mf = { .ptr = NULL };
 	struct fileheader *p_fh;
-	int thread;
+	time_t thread;
 
 	snprintf(dir, sizeof(dir), "boards/%s/.DIR", board);
 
