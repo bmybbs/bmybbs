@@ -27,9 +27,10 @@ copy_brc(char *ent, char *toent)
 
 int main(int argc, char *argv[])
 {
-	char path[1024], ent[1024], newent[1024], tmpent[1024];
+	struct stat stat_buf;
+	char path[1024], ent[1024], newent[1024];
 	time_t nowtime;
-	int t1, t2, t1a;
+	time_t t1a;
 	int all;
 	DIR *dirp;
 	struct dirent *direntp;
@@ -64,7 +65,8 @@ int main(int argc, char *argv[])
 		//sethomefile(tmpent, direntp->d_name, "brc.tmp");
 		//printf("%s\nnewent %s\ntmpent %s\n", ent, newent, tmpent);
 //		t1 = file_time(ent);
-		t1a = file_rtime(ent);
+		f_stat_s(&stat_buf, ent);
+		t1a = stat_buf.st_atime;
 //		t2 = file_time(newent);
 /*		if (nowtime - t1 > 500 && t1 >= t2)
 		{
