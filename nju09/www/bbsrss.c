@@ -36,6 +36,7 @@ rss_chartrans(char *s, char *s0)  // transfer characters according to XML standa
 			break;
 		case '"':   // not strictly needed
 			strnncpy2(s, &len, "&quot;", 6);
+			break;
 		case '\033':
 			if (s0[i + 1] != '[')
 				continue;

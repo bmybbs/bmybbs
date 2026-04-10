@@ -7,13 +7,11 @@ typedef struct {
 
 
 void
-processdollar(buf, ret)
-char buf[256];
-char *ret;
+processdollar(char *buf, char *ret)
 {
 	int frg, i, matchfrg, strlength, cnt, tmpnum;
 	static char numlogins[10], numposts[10], rgtday[35], lasttime[35],
-	thistime[35], lastlogout[35], stay[10], alltime[20], ccperf[20],
+	thistime[35], lastlogout[35], stay[10], alltime[32], ccperf[20],
 	perf[10], exp[10], ccexp[20];
 	char buf2[STRLEN], *ptr, *ptr2;
 	time_t now;
@@ -55,7 +53,7 @@ char *ret;
 	tmpnum = countperf(&currentuser);
 	sprintf(perf, "%d", tmpnum);
 	strcpy(ccperf, cperf(tmpnum));
-	sprintf(alltime, "%ldHr%ldMin", (long int) (currentuser.stay / 3600), (long int) ((currentuser.stay / 60) % 60));
+	sprintf(alltime, "%ldHr%ldMin", (currentuser.stay / 3600), ((currentuser.stay / 60) % 60));
 	sprintf(rgtday, "%24.24s", ctime(&currentuser.firstlogin));
 	sprintf(lasttime, "%24.24s", ctime(&currentuser.lastlogin));
 	sprintf(lastlogout, "%24.24s", ctime(&currentuser.lastlogout));
@@ -102,15 +100,15 @@ void footInfo(){
 	char buf[1030],buf2[1030];
 	FILE *fp2;
 	char *id = "guest";
-	char initial[2] = "G/"; //tou wen zi :)
+	char initial = 'G'; //tou wen zi :)
 	char path[200];     //path of GoodWish
 	char ret[2048];
 	if (loginok) {
 		id = currentuser.userid;
 	}
-	initial[0] = id[0];
-	if(initial[0]>='a' && initial[0]<='z')
-		initial[0] += 'A'-'a';
+	initial = id[0];
+	if (initial >= 'a' && initial <= 'z')
+		initial += 'A'-'a';
 	path[0] = 0;
 	/*
 	strcat(path,MY_BBS_HOME "/home/");
