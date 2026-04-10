@@ -100,15 +100,15 @@ void footInfo(){
 	char buf[1030],buf2[1030];
 	FILE *fp2;
 	char *id = "guest";
-	char initial[2] = "G/"; //tou wen zi :)
+	char initial = 'G'; //tou wen zi :)
 	char path[200];     //path of GoodWish
 	char ret[2048];
 	if (loginok) {
 		id = currentuser.userid;
 	}
-	initial[0] = id[0];
-	if(initial[0]>='a' && initial[0]<='z')
-		initial[0] += 'A'-'a';
+	initial = id[0];
+	if (initial >= 'a' && initial <= 'z')
+		initial += 'A'-'a';
 	path[0] = 0;
 	/*
 	strcat(path,MY_BBS_HOME "/home/");
