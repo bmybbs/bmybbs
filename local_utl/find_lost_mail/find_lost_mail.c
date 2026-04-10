@@ -211,7 +211,7 @@ find_lost_mail(char *path)
 int
 main()
 {
-	char path[1024], ent[1024];
+	char path[32], ent[512];
 	DIR *dirp;
 	struct dirent *direntp;
 	struct stat st;
@@ -230,7 +230,7 @@ main()
 		while ((direntp = readdir(dirp)) != NULL) {
 			if (direntp->d_name[0] == '.')
 				continue;
-			sprintf(ent, "%s/%s", path, direntp->d_name);
+			snprintf(ent, sizeof ent, "%s/%s", path, direntp->d_name);
 			if (!(stat(ent, &st) == 0 && S_ISDIR(st.st_mode)))
 				continue;
 			if (find_lost_mail(ent) < 0)
