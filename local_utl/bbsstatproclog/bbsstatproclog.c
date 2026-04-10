@@ -5,6 +5,9 @@ struct bbsstatlogitem item;
 int
 main(int argc, char *argv[])
 {
+	(void) argc;
+	(void) argv;
+
 	int i, j, fd;
 	struct tm *ptm;
 	time_t t;
