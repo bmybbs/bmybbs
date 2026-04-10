@@ -84,5 +84,4 @@ else
 	install_binary $BUILD_DIR/local_utl/searchLastMark/searchLastMark         searchLastMark
 	install_binary $BUILD_DIR/local_utl/setdefaultkey/setdefaultkey           setdefaultkey
 	install_binary $BUILD_DIR/local_utl/sortdir/sortdir                       sortdir
-	install_binary $BUILD_DIR/local_utl/watchman/watchman                     watchman
 fi
