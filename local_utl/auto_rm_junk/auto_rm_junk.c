@@ -73,7 +73,7 @@ delete_old_junk(char *filename)
 			fmday -= 100;
 		if (fhdr.accessed & FH_MARKED || mday - fmday < 20) {//lanboy change 30 to 10
 			if (mday - fmday > 3 && mday - fmday < 7
-			    && file_size(fullpath) > 30000 && fhdr.accessed & FH_ATTACHED) {
+					&& file_size(fullpath) > 30000 && fhdr.accessed & FH_ATTACHED) {
 				filter_attach(fullpath);
 				fhdr.accessed &= ~FH_ATTACHED;
 			}
@@ -147,7 +147,7 @@ main()
 	chdir(MY_BBS_HOME);
 	nowtime = time(NULL);
 	printf("\033[1mbbs home=%s now time = %s\033[0m\n", MY_BBS_HOME,
-	       ctime(&nowtime));
+			ctime(&nowtime));
 	if ((b_fd = open(MY_BBS_HOME "/.BOARDS", O_RDONLY)) == -1)
 		return -1;
 	flock(b_fd, LOCK_EX);
