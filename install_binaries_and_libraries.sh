@@ -52,26 +52,19 @@ else
 
 	install_binary $BUILD_DIR/local_utl/averun/averun                         averun
 	install_binary $BUILD_DIR/local_utl/auto_rm_junk/auto_rm_junk             auto_rm_junk
-	install_binary $BUILD_DIR/local_utl/autoclear/autoclear                   autoclear
 	install_binary $BUILD_DIR/local_utl/autoundeny/autoundeny                 autoundeny
 	install_binary $BUILD_DIR/local_utl/bbslogd/bbslogd                       bbslogd
-	install_binary $BUILD_DIR/local_utl/bbspop3d/bbspop3d                     bbspop3d
 	install_binary $BUILD_DIR/local_utl/bbsstatlog/bbsstatlog                 bbsstatlog
 	install_binary $BUILD_DIR/local_utl/bbsstatproclog/bbsstatproclog         bbsstatproclog
 	install_binary $BUILD_DIR/local_utl/bbstop/bbstop                         bbstop
 	install_binary $BUILD_DIR/local_utl/bm/bm                                 bm
 	install_binary $BUILD_DIR/local_utl/changeboardname/changeboardname       changeboardname
-	install_binary $BUILD_DIR/local_utl/check_ulevel/check_ulevel             check_ulevel
-	install_binary $BUILD_DIR/local_utl/clear_attach/clear_attach             clear_attach
 	install_binary $BUILD_DIR/local_utl/clear_junk/clear_junk                 clear_junk
-	install_binary $BUILD_DIR/local_utl/combine_arc/combine_arc               combine_arc
-	install_binary $BUILD_DIR/local_utl/cpersonal/cpersonal                   cpersonal
 	install_binary $BUILD_DIR/local_utl/find_lost_mail/find_lost_mail         find_lost_mail
 	install_binary $BUILD_DIR/local_utl/find_rm_lost/find_rm_lost             find_rm_lost
 	install_binary $BUILD_DIR/local_utl/finddf/finddf                         finddf
 	install_binary $BUILD_DIR/local_utl/fixdir/fixdir                         fixdir
 	install_binary $BUILD_DIR/local_utl/id_boards/id_boards                   id_boards
-	install_binary $BUILD_DIR/local_utl/makeindex3/makeindex3                 makeindex3
 	install_binary $BUILD_DIR/local_utl/mergeb/mergeb                         mergeb
 	install_binary $BUILD_DIR/local_utl/nbstat/nbstat                         nbstat
 	install_binary $BUILD_DIR/local_utl/newboards/newboards                   newboards
@@ -79,14 +72,7 @@ else
 	install_binary $BUILD_DIR/local_utl/postfile/postfile                     postfile
 	#install_binary $BUILD_DIR/local_utl/printSecLastMark/printSecLastMark     printSecLastMark
 	#install_binary $BUILD_DIR/local_utl/printSecLastUpdate/printSecLastUpdate printSecLastUpdate
-	install_binary $BUILD_DIR/local_utl/ptyexec/ptyexec                       ptyexec
-	install_binary $BUILD_DIR/local_utl/repsync/repsync                       repsync
 	install_binary $BUILD_DIR/local_utl/save_brc/save_brc                     save_brc
-	install_binary $BUILD_DIR/local_utl/searchDIR/searchDIR                   searchDIR
 	install_binary $BUILD_DIR/local_utl/searchLastMark/searchLastMark         searchLastMark
-	install_binary $BUILD_DIR/local_utl/selpersonal/selpersonal               selpersonal
-	install_binary $BUILD_DIR/local_utl/setdefaultkey/setdefaultkey           setdefaultkey
 	install_binary $BUILD_DIR/local_utl/sortdir/sortdir                       sortdir
-	install_binary $BUILD_DIR/local_utl/transuu2bin/transuu2bin               transuu2bin
-	install_binary $BUILD_DIR/local_utl/watchman/watchman                     watchman
 fi

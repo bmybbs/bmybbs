@@ -9,7 +9,7 @@ static int delete_user_callback(const struct ythtbbs_cache_User *user, int curr_
 	MYSQL_STMT *stmt = va_arg(ap, MYSQL_STMT *);
 	MYSQL_BIND params[2];
 
-	int status, usernum;
+	int status;
 
 	if (!is_valid_username(user->userid))
 		return 0;

@@ -21,6 +21,9 @@ int is_specialid(char* userid);
 
 int main(int argc, char* argv[])
 {
+	(void) argc;
+	(void) argv;
+
 	if(get_userid())
 		printf("unable to open file %s\n", FILE_NAME);
 	switch(do_check()){

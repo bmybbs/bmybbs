@@ -120,10 +120,11 @@ trytoinsert_area(struct boardheader *bh, struct boardtop *bt)
 int
 _topn(void *bh_void, void * fargs)
 {
+	(void) fargs;
 	struct boardheader *bh = (struct boardheader *) bh_void;
 	//从 bh 里面找到TOPN个thread
 	int size = sizeof (struct fileheader), total;
-	int i, j, k, *usernum;
+	int i, j, k;
 	struct mmapfile mf = { .ptr = NULL };
 	struct fileheader *ptr;
 	struct thread_kv *p_table = NULL;
@@ -232,7 +233,6 @@ _topn(void *bh_void, void * fargs)
 				strncpy(owner, fh2realauthor(ptr), 14);
 				owner[sizeof(owner) - 1] = 0;
 				strncpy(data->bt.firstowner, fh2owner(ptr), 14);
-				*usernum = 0;
 				{
 					struct user_kv *uk = malloc(sizeof(*uk));
 					if (!uk) {

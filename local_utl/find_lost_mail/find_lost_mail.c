@@ -9,7 +9,7 @@ char allpost[HASHSIZE][MAXFILE][20];
 int refcount[HASHSIZE][MAXFILE];
 char otherfile[200];
 int allfile = 0, allref = 0, alllost = 0, unknownfn = 0, nindexitem = 0,
-    nstrangeitem = 0;
+	nstrangeitem = 0;
 time_t nowtime;
 
 int
@@ -60,6 +60,7 @@ ispostfilename(char *file)
 int
 countfile(void *fhdr_void, void *farg)
 {
+	(void) farg;
 	int i, h;
 	char *fname;
 	nindexitem++;
@@ -107,8 +108,7 @@ getallpost(char *path)
 		if (!strcmp(direntp->d_name, "deny_anony"))
 			continue;
 		unknownfn++;
-		if (strlen(otherfile) + strlen(direntp->d_name) + 1 <
-		    sizeof (otherfile)) {
+		if (strlen(otherfile) + strlen(direntp->d_name) + 1 < sizeof (otherfile)) {
 			strcat(otherfile, " ");
 			strcat(otherfile, direntp->d_name);
 		}
@@ -163,15 +163,14 @@ save_lost(char *path)
 	alllost += lost;
 	if (lost > 0)
 		printf("%s: total %d, refcount %d, %d file(s) was lost\n", path,
-		       total, totalref, lost);
+				total, totalref, lost);
 	if (strlen(otherfile) > 0)
 		printf("%s\n", otherfile);
 	return 0;
 }
 
 int
-dashf(fname)
-char *fname;
+dashf(const char *fname)
 {
 	struct stat st;
 	return (stat(fname, &st) == 0 && S_ISREG(st.st_mode));
@@ -211,7 +210,7 @@ find_lost_mail(char *path)
 int
 main()
 {
-	char path[1024], ent[1024];
+	char path[32], ent[512];
 	DIR *dirp;
 	struct dirent *direntp;
 	struct stat st;
@@ -220,8 +219,7 @@ main()
 	chdir(MY_BBS_HOME);
 	nowtime = time(NULL);
 	printf("find_lost_mail is running~\n");
-	printf("\033[1mbbs home=%s now time = %s\033[0m\n", MY_BBS_HOME,
-	       ctime(&nowtime));
+	printf("\033[1mbbs home=%s now time = %s\033[0m\n", MY_BBS_HOME, ctime(&nowtime));
 	for (ch = 'A'; ch <= 'Z'; ch++) {
 		snprintf(path, sizeof path, MY_BBS_HOME "/mail/%c", ch);
 		printf("processing %s\n", path);
@@ -231,7 +229,7 @@ main()
 		while ((direntp = readdir(dirp)) != NULL) {
 			if (direntp->d_name[0] == '.')
 				continue;
-			sprintf(ent, "%s/%s", path, direntp->d_name);
+			snprintf(ent, sizeof ent, "%s/%s", path, direntp->d_name);
 			if (!(stat(ent, &st) == 0 && S_ISDIR(st.st_mode)))
 				continue;
 			if (find_lost_mail(ent) < 0)
@@ -241,6 +239,6 @@ main()
 	}
 	printf("allfile %d, allref %d, alllost %d\n", allfile, allref, alllost);
 	printf("unknownfn %d, nindexitem %d, nstrangeitem %d\n", unknownfn,
-	       nindexitem, nstrangeitem);
+			nindexitem, nstrangeitem);
 	return 0;
 }

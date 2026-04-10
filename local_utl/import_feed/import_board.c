@@ -57,7 +57,6 @@ int import_board(void) {
 	MYSQL *s;
 	MYSQL_STMT *stmt = NULL;
 	int mysql_status = 0;
-	MYBOOL bind_status;
 	int result = 0;
 
 	ythtbbs_cache_utmp_resolve();

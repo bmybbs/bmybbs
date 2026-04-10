@@ -8,9 +8,9 @@ struct fileheader *post1;
 int
 main(int argc, char *argv[])
 {
-	FILE *fpb, *fpf;
+	FILE *fpb;
 	char dirfile[100];
-	time_t fbtime, nowtime, starttime;
+	time_t nowtime, starttime;
 	int userlevel, day, count = 0;
 	struct mmapfile mf = { .ptr = NULL };
 	int start, total, i;
@@ -62,7 +62,6 @@ main(int argc, char *argv[])
 							   i *
 							   sizeof (struct
 								   fileheader));
-				fbtime = post1->filetime;
 				if (!strcmp(post1->owner, argv[3])) {
 					count++;
 					printf("%20s %4d %s \n",

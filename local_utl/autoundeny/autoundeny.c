@@ -9,19 +9,18 @@ extern void securityreport(char * owner, char * str, char * title);
 extern void deliverreport(char * board, char * title, char * str);
 
 static int
-mail_buf(buf, userid, title)
-char *buf, userid[], title[];
+mail_buf(char *buf, char *userid, char *title)
 {
 	struct fileheader newmessage;
 	struct stat st;
 	char fname[STRLEN], filepath[STRLEN];
-	int count, tmpinmail, fd;
+	int count, fd;
 	time_t now;
 	FILE *fp;
 
 	memset(&newmessage, 0, sizeof (newmessage));
 	ytht_strsncpy(newmessage.owner, "XJTU-XANET",
-				  sizeof(newmessage.owner));
+			sizeof(newmessage.owner));
 	ytht_strsncpy(newmessage.title, title, sizeof(newmessage.title));
 	//ytht_strsncpy(save_title, newmessage.title, sizeof (save_title));
 
@@ -79,11 +78,10 @@ char *str;
 }*/
 
 unsigned long
-atoul(p)
-char *p;
+atoul(const char *p)
 {
 	unsigned long s;
-	char *t;
+	const char *t;
 	t = p;
 	s = 0;
 	while ((*t >= '0') && (*t <= '9')) {
@@ -94,13 +92,10 @@ char *p;
 }
 
 void
-showundenymessage(linebuf, currboard, anony)
-char *linebuf;
-char *currboard;
-int anony;
+showundenymessage(char *linebuf, char *currboard, int anony)
 {
 	char msgbuf[256];
-	char repbuf[256];
+	char repbuf[64];
 	char uident[14];
 	int i;
 	strncpy(uident, linebuf, 12);
@@ -110,27 +105,24 @@ int anony;
 			uident[i] = 0;
 			break;
 		}
-	sprintf(repbuf, "恢复 %s 在 %s 的 POST 权利",
-		anony ? "Anonymous" : uident, currboard ? currboard : "全站");
-	sprintf(msgbuf, "解封原因: 封禁时间已到，请理解%s务管理工作，谢谢!",
-        currboard ? "版" : "站");
+	snprintf(repbuf, sizeof repbuf, "恢复 %s 在 %s 的 POST 权利",
+			anony ? "Anonymous" : uident, currboard ? currboard : "全站");
+	snprintf(msgbuf, sizeof msgbuf, "解封原因: 封禁时间已到，请理解%s务管理工作，谢谢!",
+			currboard ? "版" : "站");
 	//sprintf(msgbuf, "解封原因: 封人时间已到，请理解版务管理工作,谢谢!");
 	securityreport("XJTU-XANET", msgbuf, repbuf);
 	deliverreport(currboard ? currboard : "sysop", repbuf, msgbuf);
-	
+
 	/* 发封信到被封人的信箱 interma@BMY 2005.4.24 */
-	sprintf(repbuf,
+	snprintf(repbuf, sizeof repbuf,
 			"恢复您在 %s 的POST权限！",
 			currboard ? currboard : "全站");
-	snprintf(msgbuf, 256, "封禁时间已到，因此%s\n请理解版务管理工作,谢谢!\n", repbuf);
+	snprintf(msgbuf, sizeof msgbuf, "封禁时间已到，因此%s\n请理解版务管理工作,谢谢!\n", repbuf);
 	mail_buf(msgbuf, uident, repbuf);
-	
 }
 
 int
-canundeny(linebuf, nowtime)
-char *linebuf;
-unsigned long nowtime;
+canundeny(char *linebuf, unsigned long nowtime)
 {
 	char *p;
 	unsigned long time2;
@@ -151,10 +143,7 @@ unsigned long nowtime;
 }
 
 int
-sgetline(buf, linebuf, idx, maxlen)
-char *buf, *linebuf;
-int *idx;
-int maxlen;
+sgetline(char *buf, char *linebuf, int *idx, int maxlen)
 {
 	int len = 0;
 	while (len < maxlen) {
@@ -221,19 +210,17 @@ main()
 				idx2 = 0;
 				while (idx2 < st.st_size) {
 					int len =
-					    sgetline(buf, linebuf, &idx2, 255);
+						sgetline(buf, linebuf, &idx2, 255);
 					puts(linebuf);
 					if (!canundeny(linebuf, nowtime)) {
 						if (idx1 != 0) {
 							buf[idx1] = 0x0a;
 							idx1++;
 						}
-						memcpy(buf + idx1, linebuf,
-						       len);
+						memcpy(buf + idx1, linebuf, len);
 						idx1 += len;
 					} else {
-						showundenymessage(linebuf,
-								  NULL, 0);
+						showundenymessage(linebuf, NULL, 0);
 					}
 				}
 				buf[idx1] = 0x0a;
@@ -278,20 +265,17 @@ main()
 				idx2 = 0;
 				while (idx2 < st.st_size) {
 					int len =
-					    sgetline(buf, linebuf, &idx2, 255);
+						sgetline(buf, linebuf, &idx2, 255);
 					puts(linebuf);
 					if (!canundeny(linebuf, nowtime)) {
 						if (idx1 != 0) {
 							buf[idx1] = 0x0a;
 							idx1++;
 						}
-						memcpy(buf + idx1, linebuf,
-						       len);
+						memcpy(buf + idx1, linebuf, len);
 						idx1 += len;
 					} else {
-						showundenymessage(linebuf,
-								  bh.filename,
-								  anony);
+						showundenymessage(linebuf, bh.filename, anony);
 					}
 				}
 				buf[idx1] = 0x0a;

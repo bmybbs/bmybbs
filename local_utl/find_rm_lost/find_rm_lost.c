@@ -18,7 +18,7 @@ char allpost[HASHSIZE][MAXFILE][20];
 int refcount[HASHSIZE][MAXFILE];
 char otherfile[200];
 int allfile = 0, allref = 0, alllost = 0, unknownfn = 0, nindexitem = 0,
-    nstrangeitem = 0;
+	nstrangeitem = 0;
 time_t nowtime;
 
 int
@@ -53,6 +53,7 @@ isspcname(char *file)
 int
 countfile(void *fhdr, void *farg)
 {
+	(void) farg;
 	int i, h;
 	char *fname = fh2fname((struct fileheader *)fhdr);
 	nindexitem++;
@@ -78,7 +79,7 @@ testPOWERJUNK(char *path, char *fn)
 	int s;
 	snprintf(buf, sizeof buf, "%s/%s", path, fn);
 	if (strncmp(fn, ".POWER", 6) && strncmp(buf, ".SOMEONE", 8)
-	    && strncmp(buf, ".UNREAD", 7))
+			&& strncmp(buf, ".UNREAD", 7))
 		return 0;
 	if (nowtime - file_time(buf) < 3600 * 5)
 		return 0;
@@ -116,8 +117,7 @@ getallpost(char *path)
 		if (isspcname(direntp->d_name))
 			continue;
 		unknownfn++;
-		if (strlen(otherfile) + strlen(direntp->d_name) + 1 <
-		    sizeof (otherfile)) {
+		if (strlen(otherfile) + strlen(direntp->d_name) + 1 < sizeof (otherfile)) {
 			strcat(otherfile, " ");
 			strcat(otherfile, direntp->d_name);
 		}
@@ -156,8 +156,7 @@ rm_lost(char *path)
 	allfile += total;
 	allref += totalref;
 	alllost += lost;
-	printf(" total %d, refcount %d, %d file(s) was lost\n", total, totalref,
-	       lost);
+	printf(" total %d, refcount %d, %d file(s) was lost\n", total, totalref, lost);
 	if (strlen(otherfile) > 0)
 		printf("%s\n", otherfile);
 	return 0;
@@ -216,8 +215,7 @@ main()
 	chdir(MY_BBS_HOME);
 	nowtime = time(NULL);
 	printf("find_rm_lost is running~\n");
-	printf("\033[1mbbs home=%s now time = %s\033[0m\n", MY_BBS_HOME,
-	       ctime(&nowtime));
+	printf("\033[1mbbs home=%s now time = %s\033[0m\n", MY_BBS_HOME, ctime(&nowtime));
 	if ((b_fd = open(MY_BBS_HOME "/.BOARDS", O_RDONLY)) == -1)
 		return -1;
 	flock(b_fd, LOCK_EX);
@@ -236,7 +234,7 @@ main()
 	}
 	printf("allfile %d, allref %d, alllost %d\n", allfile, allref, alllost);
 	printf("unknownfn %d, nindexitem %d, nstrangeitem %d\n", unknownfn,
-	       nindexitem, nstrangeitem);
+			nindexitem, nstrangeitem);
 	flock(b_fd, LOCK_UN);
 	close(b_fd);
 	printf("totalsize = %d", totalsize);

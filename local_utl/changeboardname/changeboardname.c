@@ -1,5 +1,9 @@
-#include "bbs.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "bmy/convcode.h"
+#include "ythtbbs/board.h"
+#include "ythtbbs/record.h"
 
 extern int cmpbnames(char *bname, struct boardheader *brec);
 
@@ -12,7 +16,7 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	struct boardheader fh, newfh;
+	struct boardheader fh;
 	int pos = new_search_record(BOARDS, &fh, sizeof(fh), (void *)cmpbnames, argv[1]);
 
 	if(!pos) {

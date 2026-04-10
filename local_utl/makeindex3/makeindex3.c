@@ -26,7 +26,7 @@ makeindex(FILE * wfp, char *path, char *prefix, int indextype, int depth)
 	while ((ptr = strstr(prefix, "  ")))
 		memcpy(ptr, "　", 2);
 
-	//printf("======%d=%d=====\n",depth, indextype ); 
+	//printf("======%d=%d=====\n",depth, indextype );
 	t = time(NULL);
 
 	if (depth >= MAXDEPTH)
@@ -43,20 +43,19 @@ makeindex(FILE * wfp, char *path, char *prefix, int indextype, int depth)
 			bzero(title, sizeof (title));
 			strcpy(title, str + strlen("Name="));
 			if (strncmp(title, "<HIDE>", 6) == 0 ||
-			    strstr(title + 38, "(BM: SYSOPS)") != NULL ||
-			    strstr(title + 38, "(BM: BMS)") != NULL) {
+					strstr(title + 38, "(BM: SYSOPS)") != NULL ||
+					strstr(title + 38, "(BM: BMS)") != NULL) {
 				hide = 1;
 			} else
 				hide = 0;
 			title[38] = 0;
-			for (i = strlen(title); i >= 0; i--) {
-				if (strchr("\n\t\r", title[i]) != NULL) {
-					title[i] = 0;
+			for (i = strlen(title); i > 0; i--) {
+				if (strchr("\n\t\r", title[i - 1]) != NULL) {
+					title[i - 1] = 0;
 				}
 			}
-			for (i = strlen(title) - 1; i >= 0 && title[i] == ' ';
-			     i--)
-				title[i] = 0;
+			for (i = strlen(title); i > 0 && title[i - 1] == ' '; i--)
+				title[i - 1] = 0;
 			continue;
 		}
 		if (hide)
@@ -106,17 +105,14 @@ makeindex(FILE * wfp, char *path, char *prefix, int indextype, int depth)
 				ncachetitle--;
 		} else if (S_ISREG(sbuf.st_mode)) {
 			int thisnew = 0;
-			if (t - sbuf.st_mtime < 24 * 3600 * 3
-			    && !ythtbbs_announce_checktitle(title)) thisnew = 1;
+			if (t - sbuf.st_mtime < 24 * 3600 * 3 && !ythtbbs_announce_checktitle(title))
+				thisnew = 1;
 			if (indextype == 3) {
 				if (thisnew) {
 					for (i = 0; i < ncachetitle; i++)
-						fprintf(wfp, "%s",
-							cachetitles[i]);
+						fprintf(wfp, "%s", cachetitles[i]);
 					ncachetitle = 0;
-					fprintf(wfp,
-						"　%s%3d.[\033[33m文件\033[m]%s\n",
-						prefix, n, title);
+					fprintf(wfp, "　%s%3d.[\033[33m文件\033[m]%s\n", prefix, n, title);
 				}
 			} else if (indextype == 1)
 				fprintf(wfp, "%s%s%3d.[\033[33m文件\033[m]%s\n",
@@ -170,10 +166,10 @@ searchindexfile(char *path)
 		}
 		if (!S_ISREG(sbuf.st_mode) || !indextype)
 			continue;
-		/*if (file_time(filen)!=0 && (do_testtime(file_time(filen), path, 1, 20*60)==0)) {
-		   printf("no need to update");
-		   continue;
-		   } */
+		/* if (file_time(filen)!=0 && (do_testtime(file_time(filen), path, 1, 20*60)==0)) {
+			printf("no need to update");
+			continue;
+		} */
 		wfp = fopen(filen, "w");
 		if (wfp == NULL)
 			continue;
