@@ -47,7 +47,7 @@ add_subdirectory(postfile)
 # add_subdirectory(ptyexec)
 
 #add_subdirectory(reminder)
-add_subdirectory(repsync)
+# add_subdirectory(repsync)
 add_subdirectory(save_brc)
 #add_subdirectory(searchauthor)
 add_subdirectory(searchContent)
