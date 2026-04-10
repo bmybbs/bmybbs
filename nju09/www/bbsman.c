@@ -147,19 +147,19 @@ static int do_set(char *dirptr, int size, char *file, int flag, char *board) {
 		}
 		buf[0] = 0;
 		if ((!om) && (nm))
-			snprintf(buf, 256, "%s mark %s %s %s",
+			snprintf(buf, sizeof buf, "%s mark %s %s %s",
 				currentuser.userid, board,
 				fh2owner(f), f->title);
 		if ((om) && (!nm))
-			snprintf(buf, 256, "%s unmark %s %s %s",
+			snprintf(buf, sizeof buf, "%s unmark %s %s %s",
 				currentuser.userid, board,
 				fh2owner(f), f->title);
 		if ((!og) && (ng))
-			snprintf(buf, 256, "%s digest %s %s %s",
+			snprintf(buf, sizeof buf, "%s digest %s %s %s",
 				currentuser.userid, board,
 				fh2owner(f), f->title);
 		if ((og) && (!ng))
-			snprintf(buf, 256, "%s undigest %s %s %s",
+			snprintf(buf, sizeof buf, "%s undigest %s %s %s",
 				currentuser.userid, board,
 				fh2owner(f), f->title);
 		if (buf[0] != 0)
