@@ -1378,10 +1378,10 @@ static time_t get_thread_by_filetime(char *board, time_t filetime)
 
 	snprintf(dir, sizeof(dir), "boards/%s/.DIR", board);
 
-	if(mmapfile(dir, &mf) == -1)
+	if (mmapfile(dir, &mf) == -1)
 		return 0;
 
-	if(mf.size == 0) {
+	if (mf.size == 0) {
 		mmapfile(NULL, &mf);
 		return 0;
 	}
@@ -1389,7 +1389,7 @@ static time_t get_thread_by_filetime(char *board, time_t filetime)
 	int total;
 	total = mf.size / sizeof(struct fileheader);
 	int num = Search_Bin(mf.ptr, filetime, 0, total - 1);
-	if(num >=  0){
+	if (num >= 0) {
 		p_fh = (struct fileheader *)(mf.ptr + num * sizeof(struct fileheader));
 
 		thread = p_fh->thread;
