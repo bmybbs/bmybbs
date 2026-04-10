@@ -124,6 +124,9 @@ howmanynew(char *path, struct Report *rp)
 
 int main(int argc, char *argv[])
 {
+	(void) argc;
+	(void) argv;
+
 	char ch, path[500], fn[500], name[500];
 	int tday = 0, tweek = 0, tweek2 = 0, tnfile = 0;
 	FILE *fp;
