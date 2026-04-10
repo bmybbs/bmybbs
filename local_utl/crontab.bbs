@@ -35,7 +35,7 @@
 # 0 * * * * /home/bbs/bin/newacct
 59 23 * * * /bin/mv /home/bbs/0Announce/bbslist/newacct.today /home/bbs/0Announce/bbslist/newacct.last
 10 * * * * /home/bbs/bin/newtop10 -a &> /dev/null
-53 9 * * * /home/bbs/bin/clear_attach
+#53 9 * * * /home/bbs/bin/clear_attach
 */20 * * * * /home/bbs/bin/save_brc &>/dev/null
 */20 * * * * /home/bbs/bin/bbsstatlog &> /dev/null
 30 23 * * * /home/bbs/bin/newboards
