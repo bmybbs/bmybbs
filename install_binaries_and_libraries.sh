@@ -73,7 +73,6 @@ else
 	#install_binary $BUILD_DIR/local_utl/printSecLastMark/printSecLastMark     printSecLastMark
 	#install_binary $BUILD_DIR/local_utl/printSecLastUpdate/printSecLastUpdate printSecLastUpdate
 	install_binary $BUILD_DIR/local_utl/save_brc/save_brc                     save_brc
-	install_binary $BUILD_DIR/local_utl/searchDIR/searchDIR                   searchDIR
 	install_binary $BUILD_DIR/local_utl/searchLastMark/searchLastMark         searchLastMark
 	install_binary $BUILD_DIR/local_utl/setdefaultkey/setdefaultkey           setdefaultkey
 	install_binary $BUILD_DIR/local_utl/sortdir/sortdir                       sortdir
