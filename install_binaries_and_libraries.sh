@@ -60,7 +60,6 @@ else
 	install_binary $BUILD_DIR/local_utl/bm/bm                                 bm
 	install_binary $BUILD_DIR/local_utl/changeboardname/changeboardname       changeboardname
 	install_binary $BUILD_DIR/local_utl/clear_junk/clear_junk                 clear_junk
-	install_binary $BUILD_DIR/local_utl/combine_arc/combine_arc               combine_arc
 	install_binary $BUILD_DIR/local_utl/cpersonal/cpersonal                   cpersonal
 	install_binary $BUILD_DIR/local_utl/find_lost_mail/find_lost_mail         find_lost_mail
 	install_binary $BUILD_DIR/local_utl/find_rm_lost/find_rm_lost             find_rm_lost
