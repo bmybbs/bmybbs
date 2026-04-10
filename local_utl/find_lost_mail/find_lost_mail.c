@@ -170,8 +170,7 @@ save_lost(char *path)
 }
 
 int
-dashf(fname)
-char *fname;
+dashf(const char *fname)
 {
 	struct stat st;
 	return (stat(fname, &st) == 0 && S_ISREG(st.st_mode));
