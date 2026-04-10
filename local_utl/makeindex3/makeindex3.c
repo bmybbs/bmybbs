@@ -49,13 +49,13 @@ makeindex(FILE * wfp, char *path, char *prefix, int indextype, int depth)
 			} else
 				hide = 0;
 			title[38] = 0;
-			for (i = strlen(title); i >= 0; i--) {
-				if (strchr("\n\t\r", title[i]) != NULL) {
-					title[i] = 0;
+			for (i = strlen(title); i > 0; i--) {
+				if (strchr("\n\t\r", title[i - 1]) != NULL) {
+					title[i - 1] = 0;
 				}
 			}
-			for (i = strlen(title) - 1; i >= 0 && title[i] == ' '; i--)
-				title[i] = 0;
+			for (i = strlen(title); i > 0 && title[i - 1] == ' '; i--)
+				title[i - 1] = 0;
 			continue;
 		}
 		if (hide)
