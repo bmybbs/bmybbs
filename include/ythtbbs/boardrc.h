@@ -10,6 +10,7 @@ struct onebrc {
 	short cur;
 	short changed;
 	char board[BRC_STRLEN];
+	// TODO: should update `list` from `int[]` to `time_t[]` IronBlood 20260410
 	int list[BRC_MAXNUM];
 	int notetime;
 };
@@ -47,10 +48,10 @@ void brc_fini(struct allbrc *allbrc, char *userid);
  */
 void brc_getboard(const struct allbrc *allbrc, struct onebrc *brc, const char *board);
 void brc_putboard(struct allbrc *allbrc, struct onebrc *brc);
-void brc_addlistt(struct onebrc *brc, int t);
-int brc_unreadt(struct onebrc *brc, int t);
-int brc_unreadt_quick(struct allbrc *allbrc, char *board, int t);
-void brc_clearto(struct onebrc *brc, int t);
+void brc_addlistt(struct onebrc *brc, time_t t);
+int brc_unreadt(struct onebrc *brc, time_t t);
+int brc_unreadt_quick(struct allbrc *allbrc, char *board, time_t t);
+void brc_clearto(struct onebrc *brc, time_t t);
 int UNREAD(const struct fileheader *fh, struct onebrc *brc);
 void SETREAD(const struct fileheader *fh, struct onebrc *brc);
 #endif
