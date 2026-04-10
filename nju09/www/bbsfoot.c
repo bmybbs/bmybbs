@@ -11,7 +11,7 @@ processdollar(char *buf, char *ret)
 {
 	int frg, i, matchfrg, strlength, cnt, tmpnum;
 	static char numlogins[10], numposts[10], rgtday[35], lasttime[35],
-	thistime[35], lastlogout[35], stay[10], alltime[20], ccperf[20],
+	thistime[35], lastlogout[35], stay[10], alltime[32], ccperf[20],
 	perf[10], exp[10], ccexp[20];
 	char buf2[STRLEN], *ptr, *ptr2;
 	time_t now;
@@ -53,7 +53,7 @@ processdollar(char *buf, char *ret)
 	tmpnum = countperf(&currentuser);
 	sprintf(perf, "%d", tmpnum);
 	strcpy(ccperf, cperf(tmpnum));
-	sprintf(alltime, "%ldHr%ldMin", (long int) (currentuser.stay / 3600), (long int) ((currentuser.stay / 60) % 60));
+	sprintf(alltime, "%ldHr%ldMin", (currentuser.stay / 3600), ((currentuser.stay / 60) % 60));
 	sprintf(rgtday, "%24.24s", ctime(&currentuser.firstlogin));
 	sprintf(lasttime, "%24.24s", ctime(&currentuser.lastlogin));
 	sprintf(lastlogout, "%24.24s", ctime(&currentuser.lastlogout));
