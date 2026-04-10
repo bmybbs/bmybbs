@@ -132,7 +132,7 @@ int outgo_post(struct fileheader *, char *, char *, char *);
 void cancelpost(char *, char *, struct fileheader *, int);
 int cmp_title(char *title, struct fileheader *fh1);
 int fh_find_thread(struct fileheader *fh, char *board);
-int Search_Bin(char *ptr, int key, int start, int end);
+int Search_Bin(char *ptr, time_t key, int start, int end);
 int add_edit_mark(char *fname, char *userid, time_t now_t, char *fromhost);
 
 /**

@@ -95,7 +95,7 @@ static int api_article_do_post(ONION_FUNC_PROTO_STR, int mode);
  * @param filetime : file id
  * @return thread id; return 0 means not find the thread id
  */
-static int get_thread_by_filetime(char *board, int filetime);
+static time_t get_thread_by_filetime(char *board, time_t filetime);
 
 /**
  * @brief 通过同主题ID查找同主题文章的帖子数、总大小，以及参与评论的用户 ID
@@ -115,7 +115,7 @@ static void parse_thread_info(struct api_article *ba, const struct mmapfile *pmf
  * @param thread : the thread id
  * @return the nubmer of articles in the thread
  */
-static int get_number_of_articles_in_thread(char *board, int thread);
+static int get_number_of_articles_in_thread(const char *board, time_t thread);
 
 /**
  * @brief
@@ -369,12 +369,18 @@ static int api_article_list_commend(ONION_FUNC_PROTO_STR, int mode, int startnum
 		number = 20;
 	struct api_article *commend_list, EMPTY_ARTICLE;
 	struct commend x;
-	char dir[80];
+	char dir[16] = { 0 };
 	FILE *fp = NULL;
-	if(0 == mode)
+
+	if (0 == mode)
 		strcpy(dir, ".COMMEND");
-	else if(1 == mode)
+	else if (1 == mode)
 		strcpy(dir, ".COMMEND2");
+
+	if (dir[0] == '0') {
+		return api_error(p, req, res, API_RT_WRONGPARAM);
+	}
+
 	int fsize = ytht_file_size_s(dir);
 	int total = fsize / sizeof(struct commend);
 
@@ -1363,12 +1369,12 @@ static struct json_object *api_article_with_num_array_to_json(struct api_article
 	return obj;
 }
 
-static int get_thread_by_filetime(char *board, int filetime)
+static time_t get_thread_by_filetime(char *board, time_t filetime)
 {
 	char dir[80];
 	struct mmapfile mf = { .ptr = NULL };
 	struct fileheader *p_fh;
-	int thread;
+	time_t thread;
 
 	snprintf(dir, sizeof(dir), "boards/%s/.DIR", board);
 
@@ -1447,36 +1453,38 @@ static void parse_thread_info(struct api_article *ba, const struct mmapfile *pmf
 	}
 }
 
-static int get_number_of_articles_in_thread(char *board, int thread)
+static int get_number_of_articles_in_thread(const char *board, time_t thread)
 {
 	char dir[80];
 	int i = 0, num_in_thread = 0, num_records = 0;
 	struct mmapfile mf = { .ptr = NULL };
-	if(NULL == board)
+	if (NULL == board)
 		return 0;
-	snprintf(dir, sizeof(dir), "boards/%s/.DIR",board);
+	snprintf(dir, sizeof(dir), "boards/%s/.DIR", board);
 
-	if(-1 == mmapfile(dir, &mf))
+	if (-1 == mmapfile(dir, &mf))
 		return 0;
 
-	if(mf.size == 0) {
+	if (mf.size == 0) {
 		mmapfile(NULL, &mf);
 		return 0;
 	}
 
 	num_records = mf.size / sizeof(struct fileheader);
-	if(0 != thread) {
+	if (0 != thread) {
 		i = Search_Bin(mf.ptr, thread, 0, num_records - 1);
-		if(i < 0)
+		if (i < 0)
 			i = -(i + 1);
-	} else
+	} else {
 		i = 0;
+	}
 
-	for(; i < num_records; ++i) {
-		if(((struct fileheader *)(mf.ptr + i * sizeof(struct fileheader)))->thread != thread)
+	for (; i < num_records; ++i) {
+		if(((struct fileheader *)(mf.ptr + i * sizeof(struct fileheader)))->thread != thread) {
 			continue;
-		else
-			++num_in_thread;
+		}
+
+		++num_in_thread;
 	}
 
 	mmapfile(NULL, &mf);

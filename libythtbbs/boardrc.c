@@ -109,7 +109,7 @@ static void uncompress_brc(struct onebrc *brc, const struct onebrc_c *brc_c) {
 }
 
 static int
-brc_c_unreadt(struct onebrc_c *brc_c, int t)
+brc_c_unreadt(struct onebrc_c *brc_c, time_t t)
 {
 	int i, diff, bl, bh, num, thist;
 	char *ptr, *bits;
@@ -224,7 +224,7 @@ void brc_getboard(const struct allbrc *allbrc, struct onebrc *brc, const char *b
 }
 
 int
-brc_unreadt_quick(struct allbrc *allbrc, char *board, int t)
+brc_unreadt_quick(struct allbrc *allbrc, char *board, time_t t)
 {
 	char *ptr, *ptr0;
 	ptr0 = allbrc->brc_c + allbrc->size;
@@ -283,7 +283,7 @@ brc_putboard(struct allbrc *allbrc, struct onebrc *brc)
 }
 
 static int
-brc_locate(struct onebrc *brc, int t)
+brc_locate(struct onebrc *brc, time_t t)
 {
 	if (brc->num == 0) {
 		brc->cur = 0;
@@ -312,7 +312,7 @@ brc_locate(struct onebrc *brc, int t)
 }
 
 static void
-brc_insert(struct onebrc *brc, int t)
+brc_insert(struct onebrc *brc, time_t t)
 {
 	if (brc->num < BRC_MAXNUM)
 		brc->num++;
@@ -325,7 +325,7 @@ brc_insert(struct onebrc *brc, int t)
 }
 
 static void
-brc_set(struct onebrc *brc, int t)
+brc_set(struct onebrc *brc, time_t t)
 {
 	if (brc->num && brc->cur >= brc->num)
 		return;
@@ -335,7 +335,7 @@ brc_set(struct onebrc *brc, int t)
 }
 
 void
-brc_addlistt(struct onebrc *brc, int t)
+brc_addlistt(struct onebrc *brc, time_t t)
 {
 	if (brc_unreadt(brc, t)) {
 		brc_insert(brc, t);
@@ -343,7 +343,7 @@ brc_addlistt(struct onebrc *brc, int t)
 }
 
 int
-brc_unreadt(struct onebrc *brc, int t)
+brc_unreadt(struct onebrc *brc, time_t t)
 {
 	if (brc_locate(brc, t))
 		return 0;
@@ -355,7 +355,7 @@ brc_unreadt(struct onebrc *brc, int t)
 }
 
 void
-brc_clearto(struct onebrc *brc, int t)
+brc_clearto(struct onebrc *brc, time_t t)
 {
 	brc_locate(brc, t);
 	brc_set(brc, t);
