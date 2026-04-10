@@ -78,7 +78,6 @@ else
 	install_binary $BUILD_DIR/local_utl/postfile/postfile                     postfile
 	#install_binary $BUILD_DIR/local_utl/printSecLastMark/printSecLastMark     printSecLastMark
 	#install_binary $BUILD_DIR/local_utl/printSecLastUpdate/printSecLastUpdate printSecLastUpdate
-	install_binary $BUILD_DIR/local_utl/ptyexec/ptyexec                       ptyexec
 	install_binary $BUILD_DIR/local_utl/repsync/repsync                       repsync
 	install_binary $BUILD_DIR/local_utl/save_brc/save_brc                     save_brc
 	install_binary $BUILD_DIR/local_utl/searchDIR/searchDIR                   searchDIR

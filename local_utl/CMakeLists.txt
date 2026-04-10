@@ -44,7 +44,7 @@ add_subdirectory(newtop10)
 add_subdirectory(postfile)
 #add_subdirectory(printSecLastMark)
 #add_subdirectory(printSecLastUpdate)
-add_subdirectory(ptyexec)
+# add_subdirectory(ptyexec)
 
 #add_subdirectory(reminder)
 add_subdirectory(repsync)
