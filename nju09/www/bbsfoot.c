@@ -7,9 +7,7 @@ typedef struct {
 
 
 void
-processdollar(buf, ret)
-char buf[256];
-char *ret;
+processdollar(char *buf, char *ret)
 {
 	int frg, i, matchfrg, strlength, cnt, tmpnum;
 	static char numlogins[10], numposts[10], rgtday[35], lasttime[35],
