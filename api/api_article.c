@@ -115,7 +115,7 @@ static void parse_thread_info(struct api_article *ba, const struct mmapfile *pmf
  * @param thread : the thread id
  * @return the nubmer of articles in the thread
  */
-static int get_number_of_articles_in_thread(char *board, int thread);
+static int get_number_of_articles_in_thread(const char *board, time_t thread);
 
 /**
  * @brief
@@ -1453,36 +1453,38 @@ static void parse_thread_info(struct api_article *ba, const struct mmapfile *pmf
 	}
 }
 
-static int get_number_of_articles_in_thread(char *board, int thread)
+static int get_number_of_articles_in_thread(const char *board, time_t thread)
 {
 	char dir[80];
 	int i = 0, num_in_thread = 0, num_records = 0;
 	struct mmapfile mf = { .ptr = NULL };
-	if(NULL == board)
+	if (NULL == board)
 		return 0;
-	snprintf(dir, sizeof(dir), "boards/%s/.DIR",board);
+	snprintf(dir, sizeof(dir), "boards/%s/.DIR", board);
 
-	if(-1 == mmapfile(dir, &mf))
+	if (-1 == mmapfile(dir, &mf))
 		return 0;
 
-	if(mf.size == 0) {
+	if (mf.size == 0) {
 		mmapfile(NULL, &mf);
 		return 0;
 	}
 
 	num_records = mf.size / sizeof(struct fileheader);
-	if(0 != thread) {
+	if (0 != thread) {
 		i = Search_Bin(mf.ptr, thread, 0, num_records - 1);
-		if(i < 0)
+		if (i < 0)
 			i = -(i + 1);
-	} else
+	} else {
 		i = 0;
+	}
 
-	for(; i < num_records; ++i) {
-		if(((struct fileheader *)(mf.ptr + i * sizeof(struct fileheader)))->thread != thread)
+	for (; i < num_records; ++i) {
+		if(((struct fileheader *)(mf.ptr + i * sizeof(struct fileheader)))->thread != thread) {
 			continue;
-		else
-			++num_in_thread;
+		}
+
+		++num_in_thread;
 	}
 
 	mmapfile(NULL, &mf);
