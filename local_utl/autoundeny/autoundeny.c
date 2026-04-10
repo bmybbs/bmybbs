@@ -14,7 +14,7 @@ mail_buf(char *buf, char *userid, char *title)
 	struct fileheader newmessage;
 	struct stat st;
 	char fname[STRLEN], filepath[STRLEN];
-	int count, tmpinmail, fd;
+	int count, fd;
 	time_t now;
 	FILE *fp;
 
