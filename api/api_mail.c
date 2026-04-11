@@ -24,7 +24,7 @@ enum api_mail_box_type {
  */
 static int get_user_max_mail_size(struct userec * ue);
 
-static int get_user_mail_size(char * userid);
+static int get_user_mail_size(const char *userid);
 
 static int check_user_maxmail(struct userec *currentuser);
 
@@ -52,6 +52,7 @@ int api_mail_list(ONION_FUNC_PROTO_STR)
 	if (getuser_s(&ue, ptr_info->userid) < 0) {
 		return api_error(p, req, res, API_RT_NOSUCHUSER);
 	}
+	ue.userid[sizeof(ue.userid) - 1] = '\0';
 
 	const char * str_startnum = onion_request_get_query(req, "startnum");
 	const char * str_count    = onion_request_get_query(req, "count");
@@ -64,9 +65,9 @@ int api_mail_list(ONION_FUNC_PROTO_STR)
 
 	int box_type_i = (box_type != NULL && box_type[0] == '1') ? API_MAIL_SENT_BOX : API_MAIL_RECIEVE_BOX;
 	if (box_type_i == API_MAIL_RECIEVE_BOX)
-		setmailfile_s(mail_dir, sizeof(mail_dir), ptr_info->userid, ".DIR");
+		setmailfile_s(mail_dir, sizeof(mail_dir), ue.userid, ".DIR");
 	else
-		setsentmailfile_s(mail_dir, sizeof(mail_dir), ptr_info->userid, ".DIR");
+		setsentmailfile_s(mail_dir, sizeof(mail_dir), ue.userid, ".DIR");
 
 	int total = ytht_file_size_s(mail_dir) / sizeof(struct fileheader);
 
@@ -156,27 +157,31 @@ static int get_user_max_mail_size(struct userec * ue)
 	return maxsize * 10;
 }
 
-static int get_user_mail_size(char * userid)
+static int get_user_mail_size(const char *userid)
 {
 	int currsize = 0;
 	char currmaildir[STRLEN], tmpmail[STRLEN];
+	char safe_userid[IDLEN + 2];
 	struct fileheader tmpfh;
 	FILE *fp;
 	time_t t;
 
-	sethomefile_s(tmpmail, sizeof(tmpmail), userid, "msgindex");
+	memcpy(safe_userid, userid, sizeof(safe_userid));
+	safe_userid[sizeof(safe_userid) - 1] = '\0';
+
+	sethomefile_s(tmpmail, sizeof(tmpmail), safe_userid, "msgindex");
 	if(file_time(tmpmail))
 		currsize += ytht_file_size_s(tmpmail);
 
-	sethomefile_s(tmpmail, sizeof(tmpmail), userid, "msgindex2");
+	sethomefile_s(tmpmail, sizeof(tmpmail), safe_userid, "msgindex2");
 	if(file_time(tmpmail))
 		currsize += ytht_file_size_s(tmpmail);
 
-	sethomefile_s(tmpmail, sizeof(tmpmail), userid, "msgcontent");
+	sethomefile_s(tmpmail, sizeof(tmpmail), safe_userid, "msgcontent");
 	if(file_time(tmpmail))
 		currsize += ytht_file_size_s(tmpmail);
 
-	sprintf(currmaildir, "mail/%c/%s/%s", mytoupper(userid[0]), userid, DOT_DIR);
+	sprintf(currmaildir, "mail/%c/%s/%s", mytoupper(safe_userid[0]), safe_userid, DOT_DIR);
 	t = file_time(currmaildir);
 	if(!t)
 		return (currsize/1024);
@@ -186,7 +191,7 @@ static int get_user_mail_size(char * userid)
 		return (currsize/1024);
 
 	while(fread(&tmpfh, 1, sizeof(tmpfh), fp) == sizeof(tmpfh)) {
-		setmailfile_s(tmpmail, sizeof(tmpmail), userid, fh2fname(&tmpfh));
+		setmailfile_s(tmpmail, sizeof(tmpmail), safe_userid, fh2fname(&tmpfh));
 		currsize += ytht_file_size_s(tmpmail);
 	}
 
@@ -549,7 +554,6 @@ static char * parse_mail(char * userid, int filetime, int mode, struct attach_li
 
 	return utf_content;
 }
-
 
 
 
