@@ -177,7 +177,7 @@ int readuserallbrc(char *userid, int must);
 void brc_update(char *userid);
 int brc_initial(char *userid, char *boardname);
 void brc_add_read(struct fileheader *fh);
-void brc_add_readt(int t);
+void brc_add_readt(time_t t);
 int brc_un_read(struct fileheader *fh);
 void brc_clear(void);
 int brc_un_read_time(time_t ftime);

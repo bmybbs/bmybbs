@@ -68,7 +68,7 @@ brc_add_read(struct fileheader *fh)
 }
 
 void
-brc_add_readt(int t)
+brc_add_readt(time_t t)
 {
 	brc_addlistt(pbrc, t);
 }
