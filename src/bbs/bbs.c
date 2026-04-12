@@ -86,7 +86,7 @@ struct mmapfile mf_pbadwords;
 //void logbuf(char *buf, char *title, int headerindex);
 
 extern int SR_BMDELFLAG;
-static int show_cake(char *filename, int num);
+static int show_cake(char *filename, time_t num);
 static float myexp(float x);
 static int isowner(struct userec *user, struct fileheader *fileinfo);
 
@@ -143,10 +143,10 @@ static int count_commend2();
 /*-------by ylsdd- ------*/
 /*进行一个问答*/
 static int
-show_cake(char *filename, int num)
+show_cake(char *filename, time_t num)
 {
 	int i, count, n;
-	static unsigned int num0 = 0;
+	static unsigned long num0 = 0;
 	int tmp_mod;
 	FILE *fp;
 	char line[200], str[30];
