@@ -16,8 +16,8 @@ struct markeditem {
 	char title[100];
 	int n;
 	char author[MAXAUTHOR][16];
-	int time;		//used for yc
-	int thread;
+	time_t time;		//used for yc
+	time_t thread;
 };
 
 struct markedlist {
@@ -42,7 +42,7 @@ addmiauthor(struct markeditem *mi, char *author)
 }
 
 int
-addmarkedlist(struct markedlist *ml, char *title, char *author, int thread)
+addmarkedlist(struct markedlist *ml, char *title, char *author, time_t thread)
 {
 	int i;
 	for (i = 0; i < ml->n; i++) {

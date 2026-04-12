@@ -112,7 +112,8 @@ struct action_f bbslists[] = {
 void
 draw_account()
 {
-	int i, j, totaltime = 0, total = 0, max = 0, item, now;
+	int i, j, totaltime = 0, total = 0, max = 0, item;
+	time_t now;
 	FILE *fp;
 	char *blk[10] = {
 		"£ß", "¡õ", "¡õ", "¡õ", "¡õ",
@@ -169,7 +170,8 @@ draw_account()
 void
 draw_newacct()
 {
-	int i, j, total = 0, max = 0, item, now;
+	int i, j, total = 0, max = 0, item;
+	time_t now;
 	FILE *fp;
 	char *blk[10] = {
 		"£ß", "¡õ", "¡õ", "¡õ", "¡õ",

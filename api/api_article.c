@@ -128,7 +128,7 @@ static int get_number_of_articles_in_thread(const char *board, time_t thread);
  * @param fh_for_return : 查找到的fileheader，值全为0 表示未找到
  * @return void
  */
-static void get_fileheader_by_filetime_thread(int mode, char *board, int id, struct fileheader * fh_for_return);
+static void get_fileheader_by_filetime_thread(int mode, char *board, time_t id, struct fileheader * fh_for_return);
 
 /**
  * @brief 获取文章内容。
@@ -1378,10 +1378,10 @@ static time_t get_thread_by_filetime(char *board, time_t filetime)
 
 	snprintf(dir, sizeof(dir), "boards/%s/.DIR", board);
 
-	if(mmapfile(dir, &mf) == -1)
+	if (mmapfile(dir, &mf) == -1)
 		return 0;
 
-	if(mf.size == 0) {
+	if (mf.size == 0) {
 		mmapfile(NULL, &mf);
 		return 0;
 	}
@@ -1389,7 +1389,7 @@ static time_t get_thread_by_filetime(char *board, time_t filetime)
 	int total;
 	total = mf.size / sizeof(struct fileheader);
 	int num = Search_Bin(mf.ptr, filetime, 0, total - 1);
-	if(num >=  0){
+	if (num >= 0) {
 		p_fh = (struct fileheader *)(mf.ptr + num * sizeof(struct fileheader));
 
 		thread = p_fh->thread;
@@ -1491,7 +1491,7 @@ static int get_number_of_articles_in_thread(const char *board, time_t thread)
 	return num_in_thread;
 }
 
-static void get_fileheader_by_filetime_thread(int mode, char *board, int id, struct fileheader * fh_for_return)
+static void get_fileheader_by_filetime_thread(int mode, char *board, time_t id, struct fileheader * fh_for_return)
 {
 	char dir[80];
 	int i = 0, num_records = 0;

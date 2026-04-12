@@ -15,7 +15,7 @@ main() {
 	struct boardheader *ptr, *ptr1;
 	int i, size, j;
 	FILE *fp;
-	int now_t;
+	time_t now_t;
 	now_t = time(NULL);
 	chdir(MY_BBS_HOME);
 	if (mmapfile(".BOARDS", &mf) < 0)

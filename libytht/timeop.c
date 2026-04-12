@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#include <stdbool.h>
 
 char *ytht_ctime(const time_t clock)
 {
@@ -26,19 +27,18 @@ char *ytht_ctime_r(const time_t clock, char *buf) {
 char *ytht_Difftime(time_t compared_time) {
 	static char ret[64];
 	time_t now = time(NULL);
-	int now_i = (int)now;
-	int tgt_i = (int)compared_time;
 
-	int diff_i = abs(now_i - tgt_i);
+	long diff = labs(now - compared_time);
+	bool is_past = (now > compared_time);
 
-	if(diff_i < 60) { //一分钟内 %d秒钟%s 前|后
-		sprintf(ret, "%d\xC3\xEB\xD6\xD3%s", diff_i, (now_i>tgt_i) ? "\xC7\xB0" : "\xBA\xF3");
-	} else if (diff_i < 3600) { // 一小时内 %d分钟%s
-		sprintf(ret, "%d\xB7\xD6\xD6\xD3%s", diff_i/60, (now_i>tgt_i) ? "\xC7\xB0" : "\xBA\xF3");
-	} else if (diff_i < 86400) { // 一天以内 %d小时%s
-		sprintf(ret, "%d\xD0\xA1\xCA\xB1%s", diff_i/3600, (now_i>tgt_i) ? "\xC7\xB0" : "\xBA\xF3");
+	if(diff < 60) { //一分钟内 %d秒钟%s 前|后
+		sprintf(ret, "%d\xC3\xEB\xD6\xD3%s", (int) diff, is_past ? "\xC7\xB0" : "\xBA\xF3");
+	} else if (diff < 3600) { // 一小时内 %d分钟%s
+		sprintf(ret, "%d\xB7\xD6\xD6\xD3%s", (int) diff/60, is_past ? "\xC7\xB0" : "\xBA\xF3");
+	} else if (diff < 86400) { // 一天以内 %d小时%s
+		sprintf(ret, "%d\xD0\xA1\xCA\xB1%s", (int) diff/3600, is_past ? "\xC7\xB0" : "\xBA\xF3");
 	} else { // 超过一天 %d天%s
-		sprintf(ret, "%d\xCC\xEC%s", diff_i/86400, (now_i>tgt_i) ? "\xC7\xB0" : "\xBA\xF3");
+		sprintf(ret, "%ld\xCC\xEC%s", diff/86400, is_past ? "\xC7\xB0" : "\xBA\xF3");
 	}
 
 	return ret;

@@ -900,14 +900,14 @@ int do_mail_post(const char *to_userid, const char *title, const char *filename,
 	FILE *fp, *fp2;
 	char buf[256], dir[256], tmp_utf_buf[1024], tmp_gbk_buf[1024];
 	struct fileheader header;
-	int t;
+	time_t t;
 
 	memset(&header, 0, sizeof(header));
 	fh_setowner(&header, id, 0);
 	setmailfile_s(buf, sizeof(buf), to_userid, "");
 
 	time_t now_t = time(NULL);
-	t = trycreatefile(buf, "M.%d.A", now_t, 100);
+	t = trycreatefile(buf, "M.%ld.A", now_t, 100);
 
 	if(t<0)
 		return -1;
@@ -964,14 +964,14 @@ int do_mail_post_to_sent_box(const char *userid, const char *title, const char *
 	FILE *fp, *fp2;
 	char buf[256], dir[256], tmp_utf_buf[1024], tmp_gbk_buf[1024];
 	struct fileheader header;
-	int t;
+	time_t t;
 
 	memset(&header, 0, sizeof(header));
 	fh_setowner(&header, id, 0);
 	setsentmailfile_s(buf, sizeof buf, userid, "");
 
 	time_t now_t = time(NULL);
-	t = trycreatefile(buf, "M.%d.A", now_t, 100);
+	t = trycreatefile(buf, "M.%ld.A", now_t, 100);
 
 	if(t<0)
 		return -1;

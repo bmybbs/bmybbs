@@ -3,6 +3,7 @@
 #define __BOARD_H
 #include <stddef.h>
 #include <stdbool.h>
+#include <time.h>
 #include "config.h"
 
 #define BMNUM 16
@@ -21,7 +22,9 @@ struct boardheader {
 	char type[5];
 	char bm[BMNUM][IDLEN + 1];
 	int hiretime[BMNUM];
+	// TODO Y2K38
 	int board_ctime;
+	// TODO Y2K38
 	int board_mtime;
 	char sec1[4];
 	char sec2[4];
@@ -34,7 +37,7 @@ struct boardheader {
  */
 struct boardmem {
 	struct boardheader header;
-	int lastpost;
+	time_t lastpost;
 	int total;
 	short inboard;
 	short bmonline;

@@ -24,7 +24,7 @@ enum api_mail_box_type {
  */
 static int get_user_max_mail_size(struct userec * ue);
 
-static int get_user_mail_size(char * userid);
+static int get_user_mail_size(const char *userid);
 
 static int check_user_maxmail(struct userec *currentuser);
 
@@ -34,7 +34,7 @@ static int api_mail_do_post(ONION_FUNC_PROTO_STR, int mode);
 
 static char * bmy_mail_array_to_json_string(struct api_article *ba_list, int count, int mode, struct userec *ue);
 
-static char * parse_mail(char * userid, int filetime, int mode, struct attach_link **attach_link_list);
+static char * parse_mail(char * userid, time_t filetime, int mode, struct attach_link **attach_link_list);
 
 int api_mail_list(ONION_FUNC_PROTO_STR)
 {
@@ -52,6 +52,7 @@ int api_mail_list(ONION_FUNC_PROTO_STR)
 	if (getuser_s(&ue, ptr_info->userid) < 0) {
 		return api_error(p, req, res, API_RT_NOSUCHUSER);
 	}
+	ue.userid[sizeof(ue.userid) - 1] = '\0';
 
 	const char * str_startnum = onion_request_get_query(req, "startnum");
 	const char * str_count    = onion_request_get_query(req, "count");
@@ -64,9 +65,9 @@ int api_mail_list(ONION_FUNC_PROTO_STR)
 
 	int box_type_i = (box_type != NULL && box_type[0] == '1') ? API_MAIL_SENT_BOX : API_MAIL_RECIEVE_BOX;
 	if (box_type_i == API_MAIL_RECIEVE_BOX)
-		setmailfile_s(mail_dir, sizeof(mail_dir), ptr_info->userid, ".DIR");
+		setmailfile_s(mail_dir, sizeof(mail_dir), ue.userid, ".DIR");
 	else
-		setsentmailfile_s(mail_dir, sizeof(mail_dir), ptr_info->userid, ".DIR");
+		setsentmailfile_s(mail_dir, sizeof(mail_dir), ue.userid, ".DIR");
 
 	int total = ytht_file_size_s(mail_dir) / sizeof(struct fileheader);
 
@@ -156,27 +157,31 @@ static int get_user_max_mail_size(struct userec * ue)
 	return maxsize * 10;
 }
 
-static int get_user_mail_size(char * userid)
+static int get_user_mail_size(const char *userid)
 {
 	int currsize = 0;
 	char currmaildir[STRLEN], tmpmail[STRLEN];
+	char safe_userid[IDLEN + 2];
 	struct fileheader tmpfh;
 	FILE *fp;
 	time_t t;
 
-	sethomefile_s(tmpmail, sizeof(tmpmail), userid, "msgindex");
+	memcpy(safe_userid, userid, sizeof(safe_userid));
+	safe_userid[sizeof(safe_userid) - 1] = '\0';
+
+	sethomefile_s(tmpmail, sizeof(tmpmail), safe_userid, "msgindex");
 	if(file_time(tmpmail))
 		currsize += ytht_file_size_s(tmpmail);
 
-	sethomefile_s(tmpmail, sizeof(tmpmail), userid, "msgindex2");
+	sethomefile_s(tmpmail, sizeof(tmpmail), safe_userid, "msgindex2");
 	if(file_time(tmpmail))
 		currsize += ytht_file_size_s(tmpmail);
 
-	sethomefile_s(tmpmail, sizeof(tmpmail), userid, "msgcontent");
+	sethomefile_s(tmpmail, sizeof(tmpmail), safe_userid, "msgcontent");
 	if(file_time(tmpmail))
 		currsize += ytht_file_size_s(tmpmail);
 
-	sprintf(currmaildir, "mail/%c/%s/%s", mytoupper(userid[0]), userid, DOT_DIR);
+	sprintf(currmaildir, "mail/%c/%s/%s", mytoupper(safe_userid[0]), safe_userid, DOT_DIR);
 	t = file_time(currmaildir);
 	if(!t)
 		return (currsize/1024);
@@ -186,7 +191,7 @@ static int get_user_mail_size(char * userid)
 		return (currsize/1024);
 
 	while(fread(&tmpfh, 1, sizeof(tmpfh), fp) == sizeof(tmpfh)) {
-		setmailfile_s(tmpmail, sizeof(tmpmail), userid, fh2fname(&tmpfh));
+		setmailfile_s(tmpmail, sizeof(tmpmail), safe_userid, fh2fname(&tmpfh));
 		currsize += ytht_file_size_s(tmpmail);
 	}
 
@@ -392,6 +397,7 @@ static int api_mail_do_post(ONION_FUNC_PROTO_STR, int mode)
 		return api_error(p, req, res, API_RT_NOSUCHUSER);
 	}
 
+	to_user.userid[sizeof(to_user.userid) - 1] = 0;
 	if (ythtbbs_override_included(to_user.userid, YTHTBBS_OVERRIDE_REJECTS, currentuser.userid)) {
 		return api_error(p, req, res, API_RT_INUSERBLIST);
 	}
@@ -447,7 +453,7 @@ static int api_mail_do_post(ONION_FUNC_PROTO_STR, int mode)
 	return OCS_PROCESSED;
 }
 
-static char * parse_mail(char * userid, int filetime, int mode, struct attach_link **attach_link_list)
+static char * parse_mail(char * userid, time_t filetime, int mode, struct attach_link **attach_link_list)
 {
 	if(mode != ARTICLE_PARSE_WITHOUT_ANSICOLOR && mode != ARTICLE_PARSE_WITH_ANSICOLOR)
 		return NULL;
@@ -456,7 +462,7 @@ static char * parse_mail(char * userid, int filetime, int mode, struct attach_li
 		return NULL;
 
 	char path[STRLEN];
-	snprintf(path, STRLEN, "mail/%c/%s/M.%d.A", mytoupper(userid[0]), userid, filetime);
+	snprintf(path, STRLEN, "mail/%c/%s/M.%ld.A", mytoupper(userid[0]), userid, filetime);
 	FILE *article_stream = fopen(path, "r");
 	if(!article_stream)
 		return NULL;
@@ -491,7 +497,7 @@ static char * parse_mail(char * userid, int filetime, int mode, struct attach_li
 			attach_filename = buf + 18;
 			fprintf(mem_stream, "#attach %s\n", attach_filename);
 			memset(attach_link, 0, 256);
-			snprintf(attach_link, 256, "/api/attach/get?mid=%d&pos=%d&attname=%s",
+			snprintf(attach_link, 256, "/api/attach/get?mid=%ld&pos=%d&attname=%s",
 					filetime, -4+(int)ftell(article_stream), attach_filename);
 			add_attach_link(attach_link_list, attach_link, attach_file_size);
 			fseek(article_stream, attach_file_size, SEEK_CUR);
@@ -549,7 +555,6 @@ static char * parse_mail(char * userid, int filetime, int mode, struct attach_li
 
 	return utf_content;
 }
-
 
 
 

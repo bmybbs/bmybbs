@@ -90,15 +90,15 @@ void get_load(double load[])
 #endif
 }
 
-static int
+static ssize_t
 l_write(int fd, const void *buf, size_t size)
 {
-	static int lastcounter = 0;
-	int nowcounter;
-	static int bufcounter;
-	static int load_refresh = 0;
+	static time_t lastcounter = 0;
+	time_t nowcounter;
+	static ssize_t bufcounter;
+	static time_t load_refresh = 0;
 	static double cpu_load[3];
-	int ret;
+	ssize_t ret;
 	nowcounter = time(0);
 	if (nowcounter - load_refresh > 10) {
 		load_refresh = nowcounter;
