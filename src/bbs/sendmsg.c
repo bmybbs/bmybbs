@@ -663,6 +663,7 @@ sendmsgfunc(char *uid, const struct user_info *uin, int userpid, const char *msg
 	int offline_msg = 0;
 	int topid;
 
+	memset(&head, 0, sizeof head);
 	*msgerr = 0;
 	if (msgstr == NULL) {
 		return 0;
