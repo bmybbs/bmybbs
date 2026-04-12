@@ -482,7 +482,7 @@ int is_article_site_top(char *boardname, time_t thread) {
 	return is_article_link_in_file(boardname, thread, site_top_file1);
 }
 
-int update_article_site_top_link(char *boardname, int oldthread, int newfiletime, char *newtitle) {
+int update_article_site_top_link(char *boardname, time_t oldthread, time_t newfiletime, char *newtitle) {
 	char *site_top_file1 = "wwwtmp/topten";
 	char *site_top_file2 = "wwwtmp/indextopten";
 	char *site_top_file3 = "wwwtmp/ctopten";

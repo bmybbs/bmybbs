@@ -68,7 +68,7 @@ brc_add_read(struct fileheader *fh)
 }
 
 void
-brc_add_readt(int t)
+brc_add_readt(time_t t)
 {
 	brc_addlistt(pbrc, t);
 }
@@ -86,7 +86,7 @@ brc_clear()
 }
 
 int
-brc_un_read_time(int ftime)
+brc_un_read_time(time_t ftime)
 {
 	return brc_unreadt(pbrc, ftime);
 }

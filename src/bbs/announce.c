@@ -117,7 +117,7 @@ static void a_showmenu(MENU *pm)
 
 	clear();
 	if (chkmail()) {
-		prints("\033[5m");
+		prints_nofmt("\033[5m");
 		sprintf(pathbuf, "[您有信件,请按w查看信件]");
 	} else
 		strcpy(pathbuf, pm->mtitle);
@@ -137,9 +137,9 @@ static void a_showmenu(MENU *pm)
 	prints("\033[1;44;37m 编号 %-45s 整  理           %8s \033[m",
 			"[类别] 标    题",
 			(a_fmode == 2 && (pm->level & PERM_BOARDS) != 0) ? "档案名称" : "编辑日期");
-	prints("\n");
+	prints_nofmt("\n");
 	if (pm->num == 0)
-		prints("      << 目前没有文章 >>\n");
+		prints_nofmt("      << 目前没有文章 >>\n");
 	for (n = pm->page; n < pm->page + A_PAGESIZE && n < pm->num; n++) {
 		overlen = 0;
 		ytht_strsncpy(title, pm->item[n]->title, sizeof(title));
@@ -631,10 +631,10 @@ static void a_forward(char *path, ITEM *pitem, int mode)
 		default:
 			mesg = "取消转寄动作.\n";
 		}
-		prints(mesg);
+		prints_nofmt(mesg);
 	} else {
 		move(t_lines - 1, 0);
-		prints("无法转寄此项目.\n");
+		prints_nofmt("无法转寄此项目.\n");
 	}
 	sleep(2);
 	pressanykey();
@@ -698,7 +698,7 @@ static void a_newitem(MENU *pm, int mode)
 	do {
 		if (count++ > MAX_POSTRETRY)
 			return;
-		sprintf(fname, "M%d", (int) now++);
+		sprintf(fname, "M%ld", now++);
 		if (snprintf(fpath, PATHLEN, "%s/%s", pm->path, fname) > PATHLEN - 1)
 			return;
 	} while (dashf(fpath) || dashd(fpath));
@@ -816,7 +816,7 @@ static void a_copypaste(MENU *pm, int paste)
 		ytht_strsncpy(title, item->title, sizeof(title));
 		ytht_strsncpy(filename, item->fname, sizeof(filename));
 		if (snprintf(fpath, PATHLEN, "%s/%s", pm->path, filename) > PATHLEN - 1) {
-			prints("档案路径过深, 无法复制");
+			prints_nofmt("档案路径过深, 无法复制");
 			egetch();
 			return;
 		}
@@ -824,7 +824,7 @@ static void a_copypaste(MENU *pm, int paste)
 					|| !strncmp(fpath, AN_PES_PATH, sizeof (AN_PES_PATH) - 1))
 				&& (HAS_PERM(PERM_ANNOUNCE, currentuser) || HAS_PERM(PERM_SYSOP, currentuser)
 					|| HAS_PERM(PERM_OBOARDS, currentuser))) {
-			prints("站长不能拷贝个人文集, 如有需求, 联系系统维护");
+			prints_nofmt("站长不能拷贝个人文集, 如有需求, 联系系统维护");
 			egetch();
 			return;
 		}
@@ -832,7 +832,7 @@ static void a_copypaste(MENU *pm, int paste)
 		sprintf(genbuf, MY_BBS_HOME "/tmp/%s.copypaste",
 			currentuser.userid);
 		if ((fn = fopen(genbuf, "w+")) == NULL) {
-			prints("设置档案标识出错, 请向站长报告. Thanks");
+			prints_nofmt("设置档案标识出错, 请向站长报告. Thanks");
 			egetch();
 			return;
 		}
@@ -843,51 +843,70 @@ static void a_copypaste(MENU *pm, int paste)
 		fclose(fn);
 		//end
 		if (copymode >= 0)
-			prints("档案标识完成. (注意! 粘贴文章后才能将文章 delete!)");
+			prints_nofmt("档案标识完成. (注意! 粘贴文章后才能将文章 delete!)");
 		else
-			prints("档案标识完成. 粘贴后将被删除.");
+			prints_nofmt("档案标识完成. 粘贴后将被删除.");
 		egetch();
 	} else {
 		//add by gluon
 		sprintf(genbuf, MY_BBS_HOME "/tmp/%s.copypaste",
 			currentuser.userid);
 		if ((fn = fopen(genbuf, "r")) == NULL) {
-			prints("请先使用 copy 或 cut 命令再使用 paste 命令.");
+			prints_nofmt("请先使用 copy 或 cut 命令再使用 paste 命令.");
 			egetch();
 			return;
 		}
-		size_t len;
-		if ((len = fread(title, sizeof (item->title), 1, fn)) > 0) {
-			title[len < sizeof(title) ? len : (sizeof(title) - 1)] = 0;
+		memset(title, 0, sizeof title);
+		memset(filename, 0, sizeof filename);
+		memset(fpath, 0, sizeof fpath);
+		copymode = -2;
+
+		if (fread(title, sizeof (item->title), 1, fn) != 1
+				|| fread(filename, sizeof (item->fname), 1, fn) != 1
+				|| fread(fpath, sizeof (fpath), 1, fn) != 1
+				|| fread(&copymode, sizeof (copymode), 1, fn) != 1
+		   ) {
+			fclose(fn);
+			prints_nofmt("读取错误");
+			egetch();
+			return;
 		}
-		if ((len = fread(filename, sizeof (item->fname), 1, fn)) > 0) {
-			filename[len < sizeof(filename) ? len : (sizeof(title) - 1)] = 0;
-		}
-		if ((len = fread(fpath, sizeof (fpath), 1, fn)) > 0) {
-			fpath[len < sizeof(fpath) ? len : (sizeof(fpath) - 1)] = 0;
-		}
-		fread(&copymode, sizeof (copymode), 1, fn);
+
 		fclose(fn);
+
+		if (copymode != -1 && copymode != 0 && copymode != 2) {
+			prints_nofmt("错误的模式");
+			egetch();
+			return;
+		}
+
+		title[sizeof(title) - 1] = 0;
+		filename[sizeof(filename) - 1] = 0;
+		fpath[sizeof(fpath) - 1] = 0;
+
 		//end
 		if (snprintf(newpath, PATHLEN, "%s/%s", pm->path, filename) > PATHLEN - 1) {
-			prints("目录路径太深,无法粘贴");
+			prints_nofmt("目录路径太深,无法粘贴");
+			egetch();
+		} else if (fpath[0] == '\0') {
+			prints_nofmt("参数错误");
 			egetch();
 		} else if (realpath(pm->path, realnewpath) == NULL || realpath(fpath, realfpath) == NULL) {
-			prints("系统内部错误,请联系系统维护!");
+			prints_nofmt("系统内部错误,请联系系统维护!");
 			egetch();
 		} else if (*title == '\0' || *filename == '\0') {
-			prints("请先使用 copy 或 cut 命令再使用 paste 命令. ");
+			prints_nofmt("请先使用 copy 或 cut 命令再使用 paste 命令. ");
 			egetch();
 			//add by gluon
 		} else if (!(dashf(fpath) || dashd(fpath))) {
-			prints("你拷贝的档案/目录不存在,可能被删除,取消粘贴.");
+			prints_nofmt("你拷贝的档案/目录不存在,可能被删除,取消粘贴.");
 			egetch();
 			//end
 		} else if (dashf(newpath) || dashd(newpath)) {
 			prints("%s 档案/目录已经存在. ", filename);
 			egetch();
 		} else if (strstr(newpath, fpath) != NULL || strstr(realnewpath, realfpath) != NULL) {
-			prints("无法将目录搬进自己的子目录中, 会造成死回圈.");
+			prints_nofmt("无法将目录搬进自己的子目录中, 会造成死回圈.");
 			egetch();
 		} else {
 			char defaultans[3];
@@ -988,7 +1007,7 @@ static void a_delete(MENU *pm, int mode)
 	if (mode == 0) {
 		if (item->host == NULL) {
 			if (snprintf(fpath, PATHLEN, "%s/%s", pm->path, item->fname) > PATHLEN - 1) {
-				prints("目录过深,请联系系统维护!");
+				prints_nofmt("目录过深,请联系系统维护!");
 				egetch();
 				return;
 			} else if (dashl(fpath)) {
@@ -1057,7 +1076,7 @@ static void a_newname(MENU *pm)
 		}
 		mesg = "档名更改失败!!";
 	}
-	prints(mesg);
+	prints_nofmt(mesg);
 	egetch();
 }
 
@@ -1200,8 +1219,7 @@ static void a_manager(MENU *pm, int ch)
 							ret = -1;
 							break;
 						}
-						sprintf(fname, "M%d",
-							(int) now++);
+						sprintf(fname, "M%ld", now++);
 						if (snprintf(newfpath, PATHLEN, "%s/%s", pm->path, fname) > PATHLEN - 1) {
 							ret = -2;
 							break;
@@ -1322,12 +1340,12 @@ void a_menu(char *maintitle, char *path, int lastlevel, int lastbmonly)
 			a_showmenu(&me);
 		}
 		move(3 + me.now - me.page, 0);
-		prints("->");
+		prints_nofmt("->");
 		can_R_endline = 1;
 		ch = egetch();
 		can_R_endline = 0;
 		move(3 + me.now - me.page, 0);
-		prints("  ");
+		prints_nofmt("  ");
 		if (ch == 'Q' || ch == 'q' || ch == KEY_LEFT || ch == EOF)
 			break;
 EXPRESS:		/* add by djq,990725 */
@@ -1377,9 +1395,9 @@ EXPRESS:		/* add by djq,990725 */
 			{
 				char bname[30];
 				clear();
-				prints("\033[1m请注意：本站站规规定：内容相同或类似的文章严禁在\033[31m3(不含)\033[37m个以上讨论区重复张贴。\n");
-				prints("\033[1m转贴超过3个讨论区者除所贴文章会被全部删除之外，还将被剥夺全站发表文章的权利。\n");
-				prints("\033[1m             请大家共同维护 BBS 的环境，节省系统资源。谢谢合作。\n\033[0m");
+				prints_nofmt("\033[1m请注意：本站站规规定：内容相同或类似的文章严禁在\033[31m3(不含)\033[37m个以上讨论区重复张贴。\n");
+				prints_nofmt("\033[1m转贴超过3个讨论区者除所贴文章会被全部删除之外，还将被剥夺全站发表文章的权利。\n");
+				prints_nofmt("\033[1m             请大家共同维护 BBS 的环境，节省系统资源。谢谢合作。\n\033[0m");
 				move(4, 0);
 				if (!get_a_boardname(bname, "请输入要转贴的讨论区名称: ")) {
 					me.page = 999;
@@ -1395,7 +1413,7 @@ EXPRESS:		/* add by djq,990725 */
 					&& !HAS_PERM(PERM_SYSOP, currentuser)) {
 					move(5, 0);
 					clrtobot();
-					prints("\n\n                 很抱歉，你被站务停止全站 POST 的权利。");
+					prints_nofmt("\n\n                 很抱歉，你被站务停止全站 POST 的权利。");
 					pressreturn();
 					me.page = 999;
 					break;
@@ -1403,7 +1421,7 @@ EXPRESS:		/* add by djq,990725 */
 				if (deny_me(bname) && !HAS_PERM(PERM_SYSOP, currentuser)) {
 					move(5, 0);
 					clrtobot();
-					prints("\n\n                 很抱歉，你被版主停止 POST 的权利。");
+					prints_nofmt("\n\n                 很抱歉，你被版主停止 POST 的权利。");
 					pressreturn();
 					me.page = 999;
 					break;
@@ -1419,7 +1437,7 @@ EXPRESS:		/* add by djq,990725 */
 				if (noadm4political(bname)) {
 					move(5, 0);
 					clrtobot();
-					prints("\n\n               对不起,因为没有版面管理人员在线,本版暂时封闭.");
+					prints_nofmt("\n\n               对不起,因为没有版面管理人员在线,本版暂时封闭.");
 					pressreturn();
 					me.page = 999;
 					break;
@@ -1433,7 +1451,7 @@ EXPRESS:		/* add by djq,990725 */
 				if (postfile(fname, bname, me.item[me.now]->title, 2) != -1) {
 					move(7, 0);
 					sprintf(tmp, "\033[1m已经帮你转贴至 %s 版了\033[m", bname);
-					prints(tmp);
+					prints_nofmt(tmp);
 				}
 				refresh();
 				sleep(1);
@@ -1493,7 +1511,7 @@ EXPRESS:		/* add by djq,990725 */
 					break;
 				if (dashf(fname)) {
 					ansimore_withzmodem(fname, NA, me.item[me.now]-> title);
-					prints("\033[1m\033[44m\033[31m[阅读精华区资料]  \033[33m结束 Q, ← │ 上一项资料 U,↑│ 下一项资料 <Enter>,<Space>,↓ \033[m");
+					prints_nofmt("\033[1m\033[44m\033[31m[阅读精华区资料]  \033[33m结束 Q, ← │ 上一项资料 U,↑│ 下一项资料 <Enter>,<Space>,↓ \033[m");
 					switch (ch = egetch()) {
 					case KEY_DOWN:
 					case ' ':
@@ -1911,7 +1929,7 @@ static int a_rjunk(MENU *pm)
 		do {
 			if (count++ > MAX_POSTRETRY)
 				goto out;
-			sprintf(fname, "M%d", (int) now++);
+			sprintf(fname, "M%ld", now++);
 			if (snprintf(fpath, PATHLEN, "%s/%s", pm->path, fname) > PATHLEN - 1)
 				goto out;
 		} while (!access(fpath, F_OK));
@@ -1935,7 +1953,7 @@ static int add_anpath(const char *title, const char *path) {
 	read_anpath(titles, paths);
 	move(t_lines - 22, 0);
 	clrtobot();
-	prints("将当前路径设置为丝路的那一项? (按A-T↑↓选择, ' '或回车确定', ←或'X'取消)");
+	prints_nofmt("将当前路径设置为丝路的那一项? (按A-T↑↓选择, ' '或回车确定', ←或'X'取消)");
 	for (i = 0; i < 20; i++) {
 		move(t_lines - 22 + 1 + i, 0);
 		prints(" %s(%c) %s\033[0m", (i == index) ? ">\033[1;7m" : " ", 'A' + i, (titles[i][0] != 0) ? titles[i] : "\033[32m尚未设定\033[0m");
@@ -1989,7 +2007,7 @@ static int add_anpath(const char *title, const char *path) {
 	clrtoeol();
 	prints("  (%c) %s", 'A' + index, (titles[index][0] != 0) ? titles[index] : "\033[32m尚未设定\033[0m");
 	if (save_anpath(titles, paths) < 0) {
-		prints("设置丝路错误! 按任意键继续");
+		prints_nofmt("设置丝路错误! 按任意键继续");
 		igetkey();
 	} else
 		pressreturn();
@@ -2007,11 +2025,11 @@ select_anpath()
 	clrtobot();
 	memset(titles, 0, sizeof(titles));
 	if (read_anpath(titles, paths) <= 0) {
-		prints("丝路未曾设置或过期, 请首先设置丝路");
+		prints_nofmt("丝路未曾设置或过期, 请首先设置丝路");
 		pressreturn();
 		return -1;
 	}
-	prints("将文档保存到哪个丝路? (按A-H↑↓选择, ' '或回车确定', ←或'X'取消)");
+	prints_nofmt("将文档保存到哪个丝路? (按A-H↑↓选择, ' '或回车确定', ←或'X'取消)");
 	for (i = 0; i < 20; i++) {
 		move(t_lines - 22 + 1 + i, 0);
 		prints(" %s(%c) %s\033[0m", (i == index) ? ">\033[1;7m" : " ", 'A' + i, (titles[i][0] != 0) ? titles[i] : "\033[32m尚未设定\033[0m");

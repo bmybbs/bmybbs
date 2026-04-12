@@ -656,7 +656,7 @@ mail_buf_slow(char *userid, char *title, char *content, char *sender)
 	FILE *fp;
 	char buf[256], dir[256];
 	struct fileheader header;
-	int t;
+	time_t t;
 	time_t now;
 	bzero(&header, sizeof (header));
 	fh_setowner(&header, sender, 0);

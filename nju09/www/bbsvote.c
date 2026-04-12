@@ -15,6 +15,7 @@ bbsvote_main()
 	struct votelog log;
 	int aborted = NA, pos;
 	int i;
+	size_t idx;
 	unsigned int j, multiroll = 0;
 	char board[32];
 	char controlfile[STRLEN];
@@ -106,9 +107,8 @@ bbsvote_main()
 		currvote.userid[sizeof(currvote.userid) - 1] = 0;
 		currvote.title[sizeof(currvote.title) - 1] = 0;
 		currvote.listfname[sizeof(currvote.listfname) - 1] = 0;
-		for (i = 0; i < 32; i++) {
-			// MAGIC NUMBERS
-			currvote.items[i][38 - 1] = 0;
+		for (idx = 0; idx < sizeof currvote.items / sizeof currvote.items[0]; idx++) {
+			currvote.items[idx][sizeof currvote.items[0] - 1] = 0;
 		}
 
 		//add by gluon for sm_vote
@@ -154,7 +154,7 @@ bbsvote_main()
 			if (currvote.type != VOTE_ASKING)
 				printf("您可以投%d票<br>", currvote.maxtkt);
 			printf("<hr>投票说明:<br>");
-			sprintf(buf, "vote/%s/desc.%d", board, (int) currvote.opendate);
+			sprintf(buf, "vote/%s/desc.%ld", board, currvote.opendate);
 			fp = fopen(buf, "r");
 			if (fp == 0)
 				http_fatal("投票说明丢失");
@@ -311,7 +311,7 @@ bbsvote_main()
 					strcpy(log.ip, currentuser.lasthost);
 					log.votetime = now_t;
 					log.voted = uservote.voted;
-					sprintf(logname, "vote/%s/newlog.%d", board, (int) currvote.opendate);
+					sprintf(logname, "vote/%s/newlog.%ld", board, currvote.opendate);
 					fp = fopen(logname, "a+");
 					flock(fileno(fp), LOCK_EX);
 					fwrite(&log, sizeof (struct votelog), 1, fp);

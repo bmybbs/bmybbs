@@ -309,7 +309,7 @@ fuzzy_chatid_to_indx(int unum, char *chatid)
 				return -2;
 		}
 	}
-	if (users[indx].cloak == 0 || CLOAK(unum))
+	if ((indx >= 0 && users[(unsigned int) indx].cloak == 0) || CLOAK(unum))
 		return indx;
 	else
 		return -1;
@@ -1036,7 +1036,7 @@ chat_allmsg(int unum, char *msg)
 						snprintf(colorstr, sizeof colorstr, "\x1b[1;%dm", color + 30);
 					else
 						snprintf(colorstr, sizeof colorstr, "\x1b[%dm", color + 30);
-					if (strlen(colorstr + i) < 252) {
+					if (strlen(colorstr) + i < 252) {
 						chatbuf[i] = 0;
 						strcat(chatbuf, colorstr);
 						i += strlen(colorstr);
@@ -1089,7 +1089,7 @@ chat_act(int unum, char *msg)
 						snprintf(colorstr, sizeof colorstr, "\x1b[1;%dm", color + 30);
 					else
 						snprintf(colorstr, sizeof colorstr, "\x1b[%dm", color + 30);
-					if (strlen(colorstr + i) < 252) {
+					if (strlen(colorstr) + i < 252) {
 						chatbuf[i] = 0;
 						strcat(chatbuf, colorstr);
 						i += strlen(colorstr);
