@@ -397,6 +397,7 @@ static int api_mail_do_post(ONION_FUNC_PROTO_STR, int mode)
 		return api_error(p, req, res, API_RT_NOSUCHUSER);
 	}
 
+	to_user.userid[sizeof(to_user.userid) - 1] = 0;
 	if (ythtbbs_override_included(to_user.userid, YTHTBBS_OVERRIDE_REJECTS, currentuser.userid)) {
 		return api_error(p, req, res, API_RT_INUSERBLIST);
 	}
