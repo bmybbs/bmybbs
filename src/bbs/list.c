@@ -475,7 +475,7 @@ do_userlist(void)
 			continue;
 		if (override && friendmode1) {
 			if (uentp->mode!=78) {
-				strcpy(t2.id, uentp->userid);
+				ytht_strsncpy(t2.id, uentp->userid, sizeof t2.id);
 				t1.exp[0] = 0;
 				search_record(overridefile, &t1, sizeof (t1), (void *) cfriendname, &t2);
 				sprintf(user_info_str,
@@ -512,7 +512,7 @@ do_userlist(void)
 					uentp->user_state_temp,
 					idle_str(uentp));
 			} else {
-				strcpy(t2.id, uentp->userid);
+				ytht_strsncpy(t2.id, uentp->userid, sizeof(t2.id));
 				t1.exp[0] = 0;
 				search_record(overridefile, &t1, sizeof (t1), (void *) cfriendname, &t2);
 				sprintf(user_info_str,
