@@ -56,6 +56,7 @@ bbsmnote_main()
 	}
 	printf("<table border=1><tr><td>");
 	printf("<textarea  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.form1.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.form1.submit()' name=text rows=20 cols=80 wrap=virtual>\n");
+	buf[sizeof buf - 1] = 0;
 	printf("%s", nohtml(void1(buf)));
 	printf("</textarea></table>\n");
 	printf("<input type=submit value=´æÅÌ> ");
