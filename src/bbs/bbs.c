@@ -24,6 +24,7 @@
 #include <sys/ipc.h>
 #include <sys/msg.h>
 #include <sys/mman.h>
+#include <limits.h>
 #include "ythtbbs/article.h"
 #include "ythtbbs/commend.h"
 #include "ythtbbs/override.h"
@@ -1436,6 +1437,7 @@ int
 transferattach(char *buf, size_t size, FILE * fp, FILE * fpto)
 {
 	char ch;
+	unsigned int wire_len;
 	size_t len, n;
 
 	if (!strncmp(buf, "begin 644 ", 10)) {
@@ -1455,14 +1457,15 @@ transferattach(char *buf, size_t size, FILE * fp, FILE * fpto)
 			return 0;
 		}
 		fwrite(&ch, 1, 1, fpto);
-		fread(&len, 4, 1, fp);
-		fwrite(&len, 4, 1, fpto);
-		len = ntohl(len);
+		fread(&wire_len, 4, 1, fp);
+		fwrite(&wire_len, 4, 1, fpto);
+		len = ntohl(wire_len);
 		while (len > 0) {
 			n = (len > size) ? size : len;
 			n = fread(buf, 1, n, fp);
 			if (n <= 0) {
-				fseek(fpto, len, SEEK_CUR);
+				if (len <= LONG_MAX)
+					fseek(fpto, (long) len, SEEK_CUR);
 				break;
 			}
 			fwrite(buf, 1, n, fpto);
