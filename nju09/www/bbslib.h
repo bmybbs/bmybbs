@@ -180,7 +180,7 @@ void brc_add_read(struct fileheader *fh);
 void brc_add_readt(int t);
 int brc_un_read(struct fileheader *fh);
 void brc_clear(void);
-int brc_un_read_time(int ftime);
+int brc_un_read_time(time_t ftime);
 void loaddenyuser(char *board);
 void savedenyuser(char *board);
 int max_mail_size(void);

@@ -86,7 +86,7 @@ brc_clear()
 }
 
 int
-brc_un_read_time(int ftime)
+brc_un_read_time(time_t ftime)
 {
 	return brc_unreadt(pbrc, ftime);
 }
