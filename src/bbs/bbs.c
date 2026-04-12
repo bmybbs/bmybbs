@@ -2636,6 +2636,7 @@ import_spec(int ent, void *record, char *d)
 	while (read(fd, &fileinfo, sizeof (fileinfo)) > 0) {
 		if (!(fileinfo.accessed & FH_SPEC))
 			continue;
+		fileinfo.owner[sizeof fileinfo.owner - 1] = 0;
 		fileinfo.accessed &= ~FH_SPEC;
 		if (put_announce_flag)
 			fileinfo.accessed |= FH_ANNOUNCE;
