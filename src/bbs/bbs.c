@@ -749,7 +749,7 @@ int do_cross(int ent, void *record, char *direct) {
 	return FULLUPDATE;
 }
 
-int currfiletime;
+time_t currfiletime;
 
 int
 cmpfilename(struct fileheader *fhdr)
@@ -837,14 +837,14 @@ do_evaluate(int ent, struct fileheader *fhdr, char *direct, int mode)
 #endif
 
 static int // slowaction
-dele_digest_top(int filetime, char *direc)
+dele_digest_top(time_t filetime, char *direc)
 {
 	char digest_name[STRLEN];
 	char new_dir[STRLEN];
-	int tmpcurrfiletime;
+	time_t tmpcurrfiletime;
 	struct fileheader fh;
 	int pos;
-	sprintf(digest_name, "T.%d.A", filetime);
+	snprintf(digest_name, sizeof digest_name, "T.%ld.A", filetime);
 	directfile(new_dir, direc, TOPFILE_DIR);
 	tmpcurrfiletime = currfiletime;
 	currfiletime = filetime;
@@ -1308,7 +1308,7 @@ dele_digest(int filetime, char *direc)
 {
 	char digest_name[STRLEN];
 	char new_dir[STRLEN];
-	int tmpcurrfiletime;
+	time_t tmpcurrfiletime;
 	struct fileheader fh;
 	int pos;
 	sprintf(digest_name, "G.%d.A", filetime);

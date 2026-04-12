@@ -5,7 +5,7 @@
 #include "one_key.h"
 extern char save_title[STRLEN];
 extern char currboard[24];
-extern int currfiletime;
+extern time_t currfiletime;
 extern char currmaildir[STRLEN];
 extern char fromhost[];
 extern char fromhost[60];
