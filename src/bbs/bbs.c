@@ -1721,7 +1721,7 @@ post_cross(char *bname, int mode, int islocal, int hascheck, int dangerous)
 	struct fileheader postfile;
 	char filepath[STRLEN], fname[STRLEN];
 	char buf[256], buf4[STRLEN], whopost[IDLEN + 2];
-	char bkcurrboard[STRLEN];
+	char bkcurrboard[sizeof currboard];
 	int fp, count, ddigestmode;
 	time_t now;
 	if (!haspostperm(bname) && !mode && strcasecmp(bname, "AnonyLog")!=0) {
@@ -1782,10 +1782,10 @@ post_cross(char *bname, int mode, int islocal, int hascheck, int dangerous)
 	ytht_strsncpy(postfile.owner, whopost, sizeof(postfile.owner));
 	setbfile(filepath, sizeof(filepath), bname, fname);
 	modify_user_mode(POSTING);
-	strcpy(bkcurrboard, currboard);
-	strcpy(currboard, bname);
+	ytht_strsncpy(bkcurrboard, currboard, sizeof bkcurrboard);
+	ytht_strsncpy(currboard, bname, sizeof currboard);
 	getcross(filepath, mode);
-	strcpy(currboard, bkcurrboard);
+	ytht_strsncpy(currboard, bkcurrboard, sizeof currboard);
 	postfile.sizebyte = ytht_num2byte(eff_size(filepath));
 	ytht_strsncpy(postfile.title, save_title, sizeof(postfile.title));
 
