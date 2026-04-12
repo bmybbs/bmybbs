@@ -331,7 +331,7 @@ extern int toggle1, toggle2;
 extern char fromhost[];
 
 char genbuf[1024];
-char quote_title[120], quote_board[120];
+char quote_title[60 /* filehead.title*/], quote_board[24 /* boardheader.filename */];
 char quote_file[120], quote_user[120];
 int totalusers, usercounter;
 
@@ -502,10 +502,10 @@ time_t postfile(char *filename, char *nboard, char *posttitle, int mode) {
 	save_in_mail = in_mail;
 	in_mail = NA;
 //	strcpy(quote_board, nboard);
-	memset(quote_board, 0, 120);
+	memset(quote_board, 0, sizeof quote_board);
 	memcpy(quote_board, currboard, strlen(currboard));
-	strcpy(quote_file, filename);
-	strcpy(quote_title, posttitle);
+	ytht_strsncpy(quote_file, filename, sizeof quote_file);
+	ytht_strsncpy(quote_title, posttitle, sizeof quote_title);
 	retv = post_cross(nboard, mode, 1, 0, 0);
 	in_mail = save_in_mail;
 	return retv;
@@ -1736,9 +1736,9 @@ post_cross(char *bname, int mode, int islocal, int hascheck, int dangerous)
 		if (!strstr(quote_title, "[зЊди]"))
 			sprintf(buf4, "[зЊди] %.70s", quote_title);
 		else
-			strcpy(buf4, quote_title);
+			ytht_strsncpy(buf4, quote_title, sizeof buf4);
 	} else
-		strcpy(buf4, quote_title);
+		ytht_strsncpy(buf4, quote_title, sizeof buf4);
 	strncpy(save_title, buf4, STRLEN);
 	save_title[STRLEN - 1] = 0;
 	setbfile(filepath, sizeof(filepath), bname, fname);
