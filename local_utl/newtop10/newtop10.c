@@ -26,7 +26,7 @@ struct data_s {
 };
 
 struct thread_kv {
-	int thread;          // key
+	time_t thread;          // key
 	struct data_s *data; // value
 	UT_hash_handle hh;
 };

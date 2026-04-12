@@ -44,7 +44,6 @@ void get_no_more_than_four_login_pics(char *buf, size_t len) {
 
 	// 读取文件
 	while (fgets(pics, sizeof(pics), fp) != NULL && file_line < MAX_PIC_LINE_COUNT) {
-		char *tmp = file[file_line];
 		if (pics[strlen(pics) - 1] == '\n')
 			pics[strlen(pics) - 1] = 0;
 		strcpy(file[file_line++], pics);

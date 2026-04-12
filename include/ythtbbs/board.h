@@ -22,7 +22,9 @@ struct boardheader {
 	char type[5];
 	char bm[BMNUM][IDLEN + 1];
 	int hiretime[BMNUM];
+	// TODO Y2K38
 	int board_ctime;
+	// TODO Y2K38
 	int board_mtime;
 	char sec1[4];
 	char sec2[4];

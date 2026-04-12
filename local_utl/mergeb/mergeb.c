@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
 	int ssize;
 	int id1, id2;
 	int num1, num2;
-	int time1, time2;
+	time_t time1, time2;
 	ssize = sizeof (struct fileheader);
 
 	if (argc < 3) {
