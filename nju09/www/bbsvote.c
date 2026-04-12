@@ -15,6 +15,7 @@ bbsvote_main()
 	struct votelog log;
 	int aborted = NA, pos;
 	int i;
+	size_t idx;
 	unsigned int j, multiroll = 0;
 	char board[32];
 	char controlfile[STRLEN];
@@ -106,9 +107,8 @@ bbsvote_main()
 		currvote.userid[sizeof(currvote.userid) - 1] = 0;
 		currvote.title[sizeof(currvote.title) - 1] = 0;
 		currvote.listfname[sizeof(currvote.listfname) - 1] = 0;
-		for (i = 0; i < 32; i++) {
-			// MAGIC NUMBERS
-			currvote.items[i][38 - 1] = 0;
+		for (idx = 0; idx < sizeof currvote.items / sizeof currvote.items[0]; idx++) {
+			currvote.items[idx][sizeof currvote.items[0] - 1] = 0;
 		}
 
 		//add by gluon for sm_vote
