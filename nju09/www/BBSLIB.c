@@ -1694,7 +1694,7 @@ void1(char *s)
 }
 
 char *
-flag_str_bm(int access)
+flag_str_bm(unsigned int access)
 {
 	static char buf[80];
 	strcpy(buf, "  ");
@@ -1731,7 +1731,7 @@ flag_str(unsigned int access)
 }
 
 char *
-flag_str2(int access, int has_read)
+flag_str2(unsigned int access, int has_read)
 {
 	static char buf[3];
 	buf[0] = 'N';
