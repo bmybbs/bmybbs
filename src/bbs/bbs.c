@@ -21,6 +21,7 @@
 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 	GNU General Public License for more details.
 */
+#include <string.h>
 #include <sys/ipc.h>
 #include <sys/msg.h>
 #include <sys/mman.h>
@@ -1613,6 +1614,9 @@ getcross(char *filepath, int mode)
 	int count,i,j,mark=0;
 	time_t now;
 	int hashead = 1;
+
+	memset(oritime, 0, sizeof oritime);
+	memset(owner, 0, sizeof owner);
 	now = time(NULL);
 	inf = fopen(quote_file, "r");
 	of = fopen(filepath, "w");
