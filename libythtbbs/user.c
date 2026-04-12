@@ -235,13 +235,13 @@ countlife(struct userec *urec)
 
 	/* if (urec) has XEMPT permission, don't kick it */
 	if ((urec->userlevel & PERM_XEMPT)
-			|| strcmp(urec->userid, "guest") == 0)
+			|| strncmp(urec->userid, "guest", sizeof urec->userid) == 0)
 		return 999;
 //	if (life_special(urec->userid)) return 666;
 //	life_special(urec->userid);
 	value = (time(0) - urec->lastlogin) / 60;	/* min */
 	/* new user should register in 30 mins */
-	if (strcmp(urec->userid, "new") == 0) {
+	if (strncmp(urec->userid, "new", sizeof urec->userid) == 0) {
 		return (30 - value) * 60;
 	}
 	if (urec->numlogins <= 1)
