@@ -11,6 +11,7 @@ bbssnd_main()
 	struct boardmem *brd;
 	struct fileheader *x = NULL;
 	time_t thread = -1;
+	time_t aid;
 	struct mmapfile mf = { .ptr = NULL };
 	html_header(1);
 
@@ -132,22 +133,22 @@ bbssnd_main()
 		mark = mark | FH_ATTACHED;
 
 	if (is1984 || to1984) {
-		r = post_article_1984(board, title, filename,
+		aid = post_article_1984(board, title, filename,
 				currentuser.userid, currentuser.username,
 				fromhost, sig - 1, mark, outgoing, thread);
 	} else if (anony)
-		r = post_article(board, title, filename, "Anonymous",
+		aid = post_article(board, title, filename, "Anonymous",
 				"我是匿名天使", "匿名天使的家", 0, mark,
 				outgoing, currentuser.userid, thread);
 	else
-		r = post_article(board, title, filename, currentuser.userid,
+		aid = post_article(board, title, filename, currentuser.userid,
 				currentuser.username, fromhost, sig - 1, mark,
 				outgoing, currentuser.userid, thread);
-	if (r <= 0)
+	if (aid <= 0)
 		http_fatal("内部错误，无法发文");
 	if (!is1984 && !to1984) {
 		brc_initial(currentuser.userid, board);
-		brc_add_readt(r);
+		brc_add_readt(aid);
 		brc_update(currentuser.userid);
 	}
 	unlink(filename);
@@ -167,14 +168,14 @@ bbssnd_main()
 
 	// 发送回帖提醒开始 by IronBlood
 	char noti_userid[14] = { '\0' };
-	if(x!=NULL && r>0 && strchr(x->owner, '.') == NULL) { // x 不为空（即回复模式）、发帖成功、并且为本站用户
+	if(x!=NULL && aid>0 && strchr(x->owner, '.') == NULL) { // x 不为空（即回复模式）、发帖成功、并且为本站用户
 		if(x->owner[0] == '\0') { // 匿名用户
 			memcpy(noti_userid, &x->owner[1], IDLEN);
 		} else {
 			memcpy(noti_userid, x->owner, IDLEN);
 		}
 		if(strcmp(currentuser.userid, noti_userid) != 0) { // 提醒用户和当前用户不相同的时候
-			add_post_notification(noti_userid, (anony) ? "Anonymous" : currentuser.userid, board, r, title);
+			add_post_notification(noti_userid, (anony) ? "Anonymous" : currentuser.userid, board, aid, title);
 		}
 	} // 发送回帖提醒结束
 
@@ -188,7 +189,7 @@ bbssnd_main()
 		// 因为mention_ids 可能大小写和本站用户 ID 不同，需要特殊处理
 		ue = getuser(mention_ids[i]);
 		if(ue!=NULL && strcmp(currentuser.userid, ue->userid)!=0 && has_read_perm(ue, board) && !ythtbbs_override_included(ue->userid, YTHTBBS_OVERRIDE_REJECTS, currentuser.userid))
-			add_mention_notification(ue->userid, (anony) ? "Anonymous" : currentuser.userid, board, r, title);
+			add_mention_notification(ue->userid, (anony) ? "Anonymous" : currentuser.userid, board, aid, title);
 		++i;
 	}
 	// 发送 @ 提醒结束
