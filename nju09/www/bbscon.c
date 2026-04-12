@@ -267,7 +267,7 @@ bbscon_main()
 	char board[32 /* max 24 */], dir[80], file[32], filename[80], fileback[128], *ptr;
 	char buf[2048];
 	char bmbuf[IDLEN * 4 + 4];
-	int thread;
+	time_t thread;
 	int nbuf = 0;
 	struct fileheader *x = NULL, *dirinfo = NULL;
 	struct boardmem *bx;
