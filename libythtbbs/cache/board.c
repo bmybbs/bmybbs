@@ -20,7 +20,7 @@ static struct BCACHE *shm_board;
 
 static int fillbcache(void *, void *);
 static void bmonlinesync(void);
-static int getlastpost(const char *board, int *lastpost, int *total);
+static int getlastpost(const char *board, time_t *lastpost, int *total);
 
 void ythtbbs_cache_Board_resolve() {
 	struct stat st;
@@ -180,7 +180,7 @@ int ythtbbs_cache_Board_updatelastpost_x(struct boardmem *bptr) {
 }
 
 /***** implementations of private functions *****/
-static int getlastpost(const char *board, int *lastpost, int *total) {
+static int getlastpost(const char *board, time_t *lastpost, int *total) {
 	struct fileheader fh;
 	struct stat st;
 	char filename[STRLEN * 2];

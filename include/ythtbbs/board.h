@@ -3,6 +3,7 @@
 #define __BOARD_H
 #include <stddef.h>
 #include <stdbool.h>
+#include <time.h>
 #include "config.h"
 
 #define BMNUM 16
@@ -34,7 +35,7 @@ struct boardheader {
  */
 struct boardmem {
 	struct boardheader header;
-	int lastpost;
+	time_t lastpost;
 	int total;
 	short inboard;
 	short bmonline;
