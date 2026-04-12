@@ -20,7 +20,8 @@ limit_cpu(void)
 	time_t now;
 	struct rusage u;
 	static time_t sc, sc_u, t = 0;
-	time_t cost, cost_u, d;
+	time_t cost, cost_u;
+	unsigned int d;
 	int ret = 0;
 	if (!start) {
 		start = time(0);
