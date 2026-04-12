@@ -34,7 +34,7 @@ static int api_mail_do_post(ONION_FUNC_PROTO_STR, int mode);
 
 static char * bmy_mail_array_to_json_string(struct api_article *ba_list, int count, int mode, struct userec *ue);
 
-static char * parse_mail(char * userid, int filetime, int mode, struct attach_link **attach_link_list);
+static char * parse_mail(char * userid, time_t filetime, int mode, struct attach_link **attach_link_list);
 
 int api_mail_list(ONION_FUNC_PROTO_STR)
 {
@@ -452,7 +452,7 @@ static int api_mail_do_post(ONION_FUNC_PROTO_STR, int mode)
 	return OCS_PROCESSED;
 }
 
-static char * parse_mail(char * userid, int filetime, int mode, struct attach_link **attach_link_list)
+static char * parse_mail(char * userid, time_t filetime, int mode, struct attach_link **attach_link_list)
 {
 	if(mode != ARTICLE_PARSE_WITHOUT_ANSICOLOR && mode != ARTICLE_PARSE_WITH_ANSICOLOR)
 		return NULL;
@@ -461,7 +461,7 @@ static char * parse_mail(char * userid, int filetime, int mode, struct attach_li
 		return NULL;
 
 	char path[STRLEN];
-	snprintf(path, STRLEN, "mail/%c/%s/M.%d.A", mytoupper(userid[0]), userid, filetime);
+	snprintf(path, STRLEN, "mail/%c/%s/M.%ld.A", mytoupper(userid[0]), userid, filetime);
 	FILE *article_stream = fopen(path, "r");
 	if(!article_stream)
 		return NULL;
@@ -496,7 +496,7 @@ static char * parse_mail(char * userid, int filetime, int mode, struct attach_li
 			attach_filename = buf + 18;
 			fprintf(mem_stream, "#attach %s\n", attach_filename);
 			memset(attach_link, 0, 256);
-			snprintf(attach_link, 256, "/api/attach/get?mid=%d&pos=%d&attname=%s",
+			snprintf(attach_link, 256, "/api/attach/get?mid=%ld&pos=%d&attname=%s",
 					filetime, -4+(int)ftell(article_stream), attach_filename);
 			add_attach_link(attach_link_list, attach_link, attach_file_size);
 			fseek(article_stream, attach_file_size, SEEK_CUR);
