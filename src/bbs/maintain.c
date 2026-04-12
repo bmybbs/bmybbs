@@ -1275,16 +1275,16 @@ do_retireBM(const char *userid, const char *abname)
 			sprintf(secu, "\xB0\xE6\xD6\xF7\xD0\xB6\xD6\xB0, \xC8\xA1\xCF\xFB %s \xB5\xC4\xB0\xE6\xD6\xF7\xC8\xA8\xCF\xDE", lookupuser.userid);
 			securityreport(secu, secu);
 			move(9, 0);
-			prints(secu);
+			prints_nofmt(secu);
 		}
 	}
-	prints("\n\n");
+	prints_nofmt("\n\n");
 	// 需要在相关版面发送通告吗?
 	if (askyn("\xD0\xE8\xD2\xAA\xD4\xDA\xCF\xE0\xB9\xD8\xB0\xE6\xC3\xE6\xB7\xA2\xCB\xCD\xCD\xA8\xB8\xE6\xC2\xF0?", YEA, NA) == NA) {
 		pressanykey();
 		return 0;
 	}
-	prints("\n");
+	prints_nofmt("\n");
 	// 正常离任请按 Enter 键确认，撤职惩罚按 N 键
 	if (askyn("\xD5\xFD\xB3\xA3\xC0\xEB\xC8\xCE\xC7\xEB\xB0\xB4 Enter \xBC\xFC\xC8\xB7\xC8\xCF\xA3\xAC\xB3\xB7\xD6\xB0\xB3\xCD\xB7\xA3\xB0\xB4 N \xBC\xFC", YEA, NA) == YEA)
 		right = 1;
@@ -1356,7 +1356,7 @@ do_retireBM(const char *userid, const char *abname)
 		deliverreport(title, content);
 	}
 	// \n执行完毕！
-	prints("\n\xD6\xB4\xD0\xD0\xCD\xEA\xB1\xCF\xA3\xA1");
+	prints_nofmt("\n\xD6\xB4\xD0\xD0\xCD\xEA\xB1\xCF\xA3\xA1");
 	pressanykey();
 	return 0;
 }
