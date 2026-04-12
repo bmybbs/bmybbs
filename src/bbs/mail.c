@@ -1893,6 +1893,7 @@ doforward(char *filepath, char *oldtitle, int mode)
 	int return_no;
 	time_t now;
 
+	memset(receiver, 0, sizeof receiver);
 	clear();
 	if (address[0] == '\0') {
 		//strncpy(address, currentuser.email, STRLEN);
