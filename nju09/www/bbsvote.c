@@ -69,7 +69,9 @@ bbsvote_main()
 		printf("</tr>");
 		for (i = 1; i <= num_of_vote; i++) {
 			fread(&ent, sizeof (struct votebal), 1, fp);
-			sprintf(flagname, "vote/%s/flag.%d", board, (int) ent.opendate);
+			ent.userid[sizeof ent.userid - 1] = 0;
+			ent.title[sizeof ent.title - 1] = 0;
+			sprintf(flagname, "vote/%s/flag.%ld", board, ent.opendate);
 			num_voted = (stat(flagname, &st) == -1) ? 0 : st.st_size / sizeof (struct ballot);
 			date = ctime(&ent.opendate) + 4;
 			printf("<tr>");
