@@ -1083,7 +1083,6 @@ static int search_thread(struct keeploc *locmem, int offset, char *title)
 int sread(int passonly, int readfirst, int pnum, int auser, void *record) {
 	struct keeploc *locmem;
 	int rem_top, rem_crs;	/* youzi 1997.7.7 */
-	extern int readingthread;
 	int istest = 0, isstart = 0, isnext = 1;
 	int previous;
 	int add_anno_flag = 0;
