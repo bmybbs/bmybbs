@@ -12,6 +12,7 @@ struct onebrc {
 	char board[BRC_STRLEN];
 	// TODO: should update `list` from `int[]` to `time_t[]` IronBlood 20260410
 	int list[BRC_MAXNUM];
+	// TODO: should use `time_t`
 	int notetime;
 };
 

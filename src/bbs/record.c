@@ -291,7 +291,8 @@ delete_range(char *filename, int id1, int id2)
 					cancelpost(currboard, currentuser.userid, &fhdr, 0);
 					if((fhdr.accessed & FH_MINUSDEL) && (strncasecmp(fhdr.title, "¡¾ºÏ¼¯¡¿", 8))){        //add by mintbaggio for minus-postnums delete
 						char usrid[STRLEN];
-						int owned = 0, IScurrent = 0, posttime;
+						int owned = 0, IScurrent = 0;
+						time_t posttime;
 						ytht_strsncpy(usrid, fhdr.owner, sizeof(usrid));
 						if ( !strstr(usrid, ".") )
 							IScurrent = !strcmp(usrid, currentuser.userid);

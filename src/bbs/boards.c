@@ -271,7 +271,7 @@ static int
 load_boards(int *brdnum, int secnum)
 {
 	int goodbrd = 0;
-	static int loadtime = 0;
+	static time_t loadtime = 0;
 
 	ythtbbs_cache_Board_resolve();
 	if (!(GoodBrd.num == 9999 || ythtbbs_cache_Board_get_uptime() >= loadtime || zapbuf == NULL || *brdnum <= 0))
@@ -768,9 +768,9 @@ static int choose_board(int newflag, const struct sectree *sec)
 				modify_user_mode(newflag ? READNEW : READBRD);
 			} else {
 				if (sec) {
-					strcpy(boardprefix, sec->subsec[num]->basestr);
+					ytht_strsncpy(boardprefix, sec->subsec[num]->basestr, sizeof boardprefix);
 					choose_board(newflag, sec->subsec[num]);
-					strcpy(boardprefix, sec->basestr);
+					ytht_strsncpy(boardprefix, sec->basestr, sizeof boardprefix);
 					page = -1;
 					brdnum = -1;
 				}
@@ -1210,7 +1210,7 @@ brc_initial(char *boardname, int keep)
 }
 
 void
-clear_new_flag_quick(int t)
+clear_new_flag_quick(time_t t)
 {
 	int bnum;
 	const struct boardmem *board;

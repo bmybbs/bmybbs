@@ -21,9 +21,11 @@
 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 	GNU General Public License for more details.
 */
+#include <string.h>
 #include <sys/ipc.h>
 #include <sys/msg.h>
 #include <sys/mman.h>
+#include <limits.h>
 #include "ythtbbs/article.h"
 #include "ythtbbs/commend.h"
 #include "ythtbbs/override.h"
@@ -84,7 +86,7 @@ struct mmapfile mf_pbadwords;
 //void logbuf(char *buf, char *title, int headerindex);
 
 extern int SR_BMDELFLAG;
-static int show_cake(char *filename, int num);
+static int show_cake(char *filename, time_t num);
 static float myexp(float x);
 static int isowner(struct userec *user, struct fileheader *fileinfo);
 
@@ -92,7 +94,7 @@ static int UndeleteArticle(int, void *, char *);
 static void cpyfilename(struct fileheader *fhdr);
 static int read_post(int, void *, char *);
 static int do_select(int, void *, char *);
-static int dele_digest(int filetime, char *direc);
+static int dele_digest(time_t filetime, char *direc);
 static int garbage_line(char *str);
 static void getcross(char *filepath, int mode);
 static time_t post_cross(char *bname, int mode, int islocal, int hascheck, int dangerous);
@@ -141,10 +143,10 @@ static int count_commend2();
 /*-------by ylsdd- ------*/
 /*进行一个问答*/
 static int
-show_cake(char *filename, int num)
+show_cake(char *filename, time_t num)
 {
 	int i, count, n;
-	static unsigned int num0 = 0;
+	static unsigned long num0 = 0;
 	int tmp_mod;
 	FILE *fp;
 	char line[200], str[30];
@@ -323,14 +325,14 @@ static int allcanre_post(int ent, void *record, char *direct) {
 
 char ReadPost[STRLEN] = "";
 char ReplyPost[STRLEN] = "";
-int readingthread;
+time_t readingthread;
 
 extern time_t login_start_time;
 extern int toggle1, toggle2;
 extern char fromhost[];
 
 char genbuf[1024];
-char quote_title[120], quote_board[120];
+char quote_title[60 /* filehead.title*/], quote_board[24 /* boardheader.filename */];
 char quote_file[120], quote_user[120];
 int totalusers, usercounter;
 
@@ -501,10 +503,10 @@ time_t postfile(char *filename, char *nboard, char *posttitle, int mode) {
 	save_in_mail = in_mail;
 	in_mail = NA;
 //	strcpy(quote_board, nboard);
-	memset(quote_board, 0, 120);
+	memset(quote_board, 0, sizeof quote_board);
 	memcpy(quote_board, currboard, strlen(currboard));
-	strcpy(quote_file, filename);
-	strcpy(quote_title, posttitle);
+	ytht_strsncpy(quote_file, filename, sizeof quote_file);
+	ytht_strsncpy(quote_title, posttitle, sizeof quote_title);
 	retv = post_cross(nboard, mode, 1, 0, 0);
 	in_mail = save_in_mail;
 	return retv;
@@ -597,13 +599,14 @@ UndeleteArticle(int ent, void *record, char *direct)
 		sprintf(buf, "boards/%s/.DIR", currboard);
 	if (1) {
 		char newfilepath[STRLEN], newfname[STRLEN];
-		int count, now;
+		int count;
+		time_t now;
 		now = time(NULL);
 		count = 0;
 		while (1) {
-			sprintf(newfname, "%c.%d.A",
+			sprintf(newfname, "%c.%ld.A",
 				(fileinfo->accessed & FH_ISDIGEST) ? 'G' : 'M',
-				(int) now);
+				now);
 			setbfile(newfilepath, sizeof(newfilepath), currboard, newfname);
 			if (link(filepath, newfilepath) == 0) {
 				unlink(filepath);
@@ -747,7 +750,7 @@ int do_cross(int ent, void *record, char *direct) {
 	return FULLUPDATE;
 }
 
-int currfiletime;
+time_t currfiletime;
 
 int
 cmpfilename(struct fileheader *fhdr)
@@ -835,14 +838,14 @@ do_evaluate(int ent, struct fileheader *fhdr, char *direct, int mode)
 #endif
 
 static int // slowaction
-dele_digest_top(int filetime, char *direc)
+dele_digest_top(time_t filetime, char *direc)
 {
 	char digest_name[STRLEN];
 	char new_dir[STRLEN];
-	int tmpcurrfiletime;
+	time_t tmpcurrfiletime;
 	struct fileheader fh;
 	int pos;
-	sprintf(digest_name, "T.%d.A", filetime);
+	snprintf(digest_name, sizeof digest_name, "T.%ld.A", filetime);
 	directfile(new_dir, direc, TOPFILE_DIR);
 	tmpcurrfiletime = currfiletime;
 	currfiletime = filetime;
@@ -1302,14 +1305,14 @@ static int do_select(int ent, void *record, char *direct) {
 }
 
 static int
-dele_digest(int filetime, char *direc)
+dele_digest(time_t filetime, char *direc)
 {
 	char digest_name[STRLEN];
 	char new_dir[STRLEN];
-	int tmpcurrfiletime;
+	time_t tmpcurrfiletime;
 	struct fileheader fh;
 	int pos;
-	sprintf(digest_name, "G.%d.A", filetime);
+	sprintf(digest_name, "G.%ld.A", filetime);
 	directfile(new_dir, direc, DIGEST_DIR);
 	tmpcurrfiletime = currfiletime;
 	currfiletime = filetime;
@@ -1436,6 +1439,7 @@ int
 transferattach(char *buf, size_t size, FILE * fp, FILE * fpto)
 {
 	char ch;
+	unsigned int wire_len;
 	size_t len, n;
 
 	if (!strncmp(buf, "begin 644 ", 10)) {
@@ -1455,14 +1459,15 @@ transferattach(char *buf, size_t size, FILE * fp, FILE * fpto)
 			return 0;
 		}
 		fwrite(&ch, 1, 1, fpto);
-		fread(&len, 4, 1, fp);
-		fwrite(&len, 4, 1, fpto);
-		len = ntohl(len);
+		fread(&wire_len, 4, 1, fp);
+		fwrite(&wire_len, 4, 1, fpto);
+		len = ntohl(wire_len);
 		while (len > 0) {
 			n = (len > size) ? size : len;
 			n = fread(buf, 1, n, fp);
 			if (n <= 0) {
-				fseek(fpto, len, SEEK_CUR);
+				if (len <= LONG_MAX)
+					fseek(fpto, (long) len, SEEK_CUR);
 				break;
 			}
 			fwrite(buf, 1, n, fpto);
@@ -1610,6 +1615,9 @@ getcross(char *filepath, int mode)
 	int count,i,j,mark=0;
 	time_t now;
 	int hashead = 1;
+
+	memset(oritime, 0, sizeof oritime);
+	memset(owner, 0, sizeof owner);
 	now = time(NULL);
 	inf = fopen(quote_file, "r");
 	of = fopen(filepath, "w");
@@ -1733,9 +1741,9 @@ post_cross(char *bname, int mode, int islocal, int hascheck, int dangerous)
 		if (!strstr(quote_title, "[转载]"))
 			sprintf(buf4, "[转载] %.70s", quote_title);
 		else
-			strcpy(buf4, quote_title);
+			ytht_strsncpy(buf4, quote_title, sizeof buf4);
 	} else
-		strcpy(buf4, quote_title);
+		ytht_strsncpy(buf4, quote_title, sizeof buf4);
 	strncpy(save_title, buf4, STRLEN);
 	save_title[STRLEN - 1] = 0;
 	setbfile(filepath, sizeof(filepath), bname, fname);
@@ -2450,7 +2458,7 @@ edit_title(int ent, void *record, char *direct)
 {
 	struct stat st; //add by hace
 	char buf[STRLEN], filepath[STRLEN];
-	int now;
+	time_t now;
 	struct fileheader *fileinfo = record;
 	if(ent < 0 || stat(direct,&st)==-1 || (st.st_size/sizeof(struct fileheader) < (unsigned int /* safe */) ent))
 		return DONOTHING;//add by hace
@@ -2628,6 +2636,7 @@ import_spec(int ent, void *record, char *d)
 	while (read(fd, &fileinfo, sizeof (fileinfo)) > 0) {
 		if (!(fileinfo.accessed & FH_SPEC))
 			continue;
+		fileinfo.owner[sizeof fileinfo.owner - 1] = 0;
 		fileinfo.accessed &= ~FH_SPEC;
 		if (put_announce_flag)
 			fileinfo.accessed |= FH_ANNOUNCE;
@@ -3055,7 +3064,7 @@ sequent_messages(struct fileheader *fptr)
 static int clear_new_flag(int ent, void *record, char *direct) {
 	(void) ent;
 	(void) direct;
-	static int lastf;
+	static time_t lastf;
 	struct fileheader *fileinfo = record;
 	if (now_t - lastf > 2)
 		clear_new_flag_quick(max(fileinfo->filetime, fileinfo->edittime));
@@ -4252,13 +4261,13 @@ void Add_Combine(char *board, struct fileheader *fileinfo)
 
 	setbfile(buf, sizeof(buf), board, fh2fname(fileinfo));		//modify by mintbaggio 040321 for heji
 	fp1=fopen(buf, "rt");
-	if (fgets(temp2, 200, fp1)!=NULL){
+	if (fgets(temp2, sizeof temp2, fp1)!=NULL){
 		keepoldheader(fp1, SKIPHEADER);
 		fprintf(fp, "    \033[0;1;32m%s \033[0;1m于 \033[1;36m%s\033[0;1m 提到：\033[0m\n", fh2owner(fileinfo),
 				ytht_ctime(fileinfo->filetime));
 		while (!feof(fp1)) {
-			fgets(temp2, 200, fp1);
-			if (transferattach(temp2, 200, fp1, fp))
+			fgets(temp2, sizeof temp2, fp1);
+			if (transferattach(temp2, sizeof temp2, fp1, fp))
 				continue;
 			if ((unsigned)*temp2<'\x1b'){
 				if (blankline) continue;

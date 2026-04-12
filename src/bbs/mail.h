@@ -25,7 +25,7 @@ int mail_buf(char *buf, char userid[], char title[]);
 int ov_send(const char *s);
 int voter_send(char *fname);
 int club_send(void);
-int doforward(char *filepath, char *oldtitle, int mode);
+time_t doforward(char *filepath, char *oldtitle, int mode);
 int m_cancel(const char *userid);
 int post_reply(int, void *, char *);
 #endif //BMYBBS_MAIL_H

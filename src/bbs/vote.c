@@ -938,7 +938,7 @@ user_vote(int num)
 			append_record(votelogfile, &vlog, sizeof (vlog));
 		}
 		if (!strcmp(currboard, "SM_Election")) {
-			int now;
+			time_t  now;
 			now = time(NULL);
 			sprintf(buf, "%s %s %s", currentuser.userid, currentuser.lasthost, ytht_ctime(now));
 			ytht_add_to_file(MY_BBS_HOME "/vote.log", buf);

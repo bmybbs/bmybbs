@@ -1883,16 +1883,17 @@ int cnt;
 #endif
 
 #ifdef INTERNET_EMAIL
-int
+time_t
 doforward(char *filepath, char *oldtitle, int mode)
 {
 	static char address[STRLEN];
 	char fname[STRLEN], tmpfname[STRLEN];
 	char receiver[STRLEN];
 	char title[STRLEN];
-	int return_no;
+	time_t return_no;
 	time_t now;
 
+	memset(receiver, 0, sizeof receiver);
 	clear();
 	if (address[0] == '\0') {
 		//strncpy(address, currentuser.email, STRLEN);
@@ -1955,7 +1956,7 @@ doforward(char *filepath, char *oldtitle, int mode)
 			fclose(fr);
 			return -4;
 		}
-		snprintf(uuname, sizeof (uuname), "%s-BBSMAIL.%d", MY_BBS_ID, (int) time(NULL));
+		snprintf(uuname, sizeof (uuname), "%s-BBSMAIL.%ld", MY_BBS_ID, time(NULL));
 		uuencode(fr, fw, file_size(tmpfname), uuname);
 		fclose(fw);
 		fclose(fr);

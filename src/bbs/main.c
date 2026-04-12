@@ -692,7 +692,7 @@ notepad_init()
 	if (lastnote == 0) {
 		lastnote = now - (now % maxsec);
 		check = fopen("etc/checknotepad", "w");
-		fprintf(check, "%d", (int) lastnote);
+		fprintf(check, "%ld", lastnote);
 		fclose(check);
 	}
 	if ((now - lastnote) >= maxsec) {
@@ -701,7 +701,7 @@ notepad_init()
 		refresh();
 		check = fopen("etc/checknotepad", "w");
 		lastnote = now - (now % maxsec);
-		fprintf(check, "%d", (int) lastnote);
+		fprintf(check, "%ld", lastnote);
 		fclose(check);
 		if ((check = fopen("etc/autopost", "r")) != NULL) {
 			while (fgets(tmp, STRLEN, check) != NULL) {

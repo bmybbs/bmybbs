@@ -5,7 +5,7 @@
 #include "one_key.h"
 extern char save_title[STRLEN];
 extern char currboard[24];
-extern int currfiletime;
+extern time_t currfiletime;
 extern char currmaildir[STRLEN];
 extern char fromhost[];
 extern char fromhost[60];
@@ -56,7 +56,7 @@ extern int cur_ln;
 extern int scr_cols;
 extern int disable_move;
 extern char ISdelrq;
-extern int readingthread;
+extern time_t readingthread;
 extern char genbuf[1024] ;      /* generally used global buffer */
 
 /**

@@ -141,7 +141,7 @@ int add_edit_mark(char *fname, char *userid, time_t now_t, char *fromhost);
  * @param thread 主题id
  * @return 存在返回1
  */
-int is_article_area_top(char *boardname, int thread);
+int is_article_area_top(char *boardname, time_t thread);
 
 /**
  * 在主题所在讨论区中更新链接
@@ -151,7 +151,7 @@ int is_article_area_top(char *boardname, int thread);
  * @param newtitle 对应新的合集文章的标题，e.g. "【合集】 "
  * @return 更新成功返回1
  */
-int update_article_area_top_link(char *boardname, int oldthread, int newfiletime, char *newtitle);
+int update_article_area_top_link(char *boardname, time_t oldthread, time_t newfiletime, char *newtitle);
 
 /**
  * 判断是否十大。
@@ -160,7 +160,7 @@ int update_article_area_top_link(char *boardname, int oldthread, int newfiletime
  * @param thread 主题id
  * @return 存在返回1
  */
-int is_article_site_top(char *boardname, int thread);
+int is_article_site_top(char *boardname, time_t thread);
 
 /**
  * 更新十大链接。
