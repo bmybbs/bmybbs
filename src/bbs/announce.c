@@ -698,7 +698,7 @@ static void a_newitem(MENU *pm, int mode)
 	do {
 		if (count++ > MAX_POSTRETRY)
 			return;
-		sprintf(fname, "M%d", (int) now++);
+		sprintf(fname, "M%ld", now++);
 		if (snprintf(fpath, PATHLEN, "%s/%s", pm->path, fname) > PATHLEN - 1)
 			return;
 	} while (dashf(fpath) || dashd(fpath));
@@ -1219,8 +1219,7 @@ static void a_manager(MENU *pm, int ch)
 							ret = -1;
 							break;
 						}
-						sprintf(fname, "M%d",
-							(int) now++);
+						sprintf(fname, "M%ld", now++);
 						if (snprintf(newfpath, PATHLEN, "%s/%s", pm->path, fname) > PATHLEN - 1) {
 							ret = -2;
 							break;
@@ -1930,7 +1929,7 @@ static int a_rjunk(MENU *pm)
 		do {
 			if (count++ > MAX_POSTRETRY)
 				goto out;
-			sprintf(fname, "M%d", (int) now++);
+			sprintf(fname, "M%ld", now++);
 			if (snprintf(fpath, PATHLEN, "%s/%s", pm->path, fname) > PATHLEN - 1)
 				goto out;
 		} while (!access(fpath, F_OK));
