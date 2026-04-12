@@ -1135,10 +1135,10 @@ static int post_imail(char *userid, char *title, char *file, char *id, char *ip,
 	return 0;
 }
 
-int
+time_t
 post_article_1984(char *board, char *title, char *file, char *id,
 		char *nickname, char *ip, int sig, int mark,
-		int outgoing, int thread)
+		int outgoing, time_t thread)
 {
 	FILE *fp, *fp2;
 	char buf3[1024], buf[80];
@@ -1195,10 +1195,10 @@ post_article_1984(char *board, char *title, char *file, char *id,
 	return t;
 }
 
-int
+time_t
 post_article(char *board, char *title, char *file, char *id,
 		char *nickname, char *ip, int sig, int mark,
-		int outgoing, char *realauthor, int thread)
+		int outgoing, char *realauthor, time_t thread)
 {
 	FILE *fp, *fp2;
 	char buf3[1024];
@@ -1260,8 +1260,8 @@ post_article(char *board, char *title, char *file, char *id,
 		}
 	}
 
-	if (outgoing)
-		outgo_post(&header, board, id, nickname);
+	// if (outgoing)
+	// 	outgo_post(&header, board, id, nickname);
 	ythtbbs_cache_Board_updatelastpost(board);
 	return t;
 }
@@ -1694,7 +1694,7 @@ void1(char *s)
 }
 
 char *
-flag_str_bm(int access)
+flag_str_bm(unsigned int access)
 {
 	static char buf[80];
 	strcpy(buf, "  ");
@@ -1715,7 +1715,7 @@ flag_str_bm(int access)
 }
 
 char *
-flag_str(int access)
+flag_str(unsigned int access)
 {
 	static char buf[80];
 	strcpy(buf, "  ");
@@ -1731,7 +1731,7 @@ flag_str(int access)
 }
 
 char *
-flag_str2(int access, int has_read)
+flag_str2(unsigned int access, int has_read)
 {
 	static char buf[3];
 	buf[0] = 'N';

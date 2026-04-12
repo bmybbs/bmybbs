@@ -1,7 +1,7 @@
 #include "bbslib.h"
 
 // bbsboa
-int board_read(char *board, int lastpost);
+int board_read(char *board, time_t lastpost);
 void printlastmark(char *board);
 // bbscon
 int fshowcon(FILE * output, char *filename, int show_iframe);

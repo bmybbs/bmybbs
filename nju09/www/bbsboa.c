@@ -11,7 +11,7 @@ static int showsecnav(const struct sectree *sec);
 static int showstarline(char *str);
 static int showhotboard(const struct sectree *sec, char *s);
 static int showsechead(const struct sectree *sec);
-int board_read(char *board, int lastpost);
+int board_read(char *board, time_t lastpost);
 void printlastmark(char *board);
 static int showsecmanager(const struct sectree *sec);
 
@@ -336,7 +336,7 @@ static int showboardlist(struct boardmem *(data[]), int total, char *secstr, con
 	return 0;
 }
 
-int board_read(char *board, int lastpost) {
+int board_read(char *board, time_t lastpost) {
 	brc_initial(NULL, board);
 	return !brc_un_read_time(lastpost);
 }

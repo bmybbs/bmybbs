@@ -50,15 +50,7 @@ jobs:
           submodules: true
 
       - name: Install dependencies with apt
-        run: (sudo apt-get update -qq && sudo apt-get install -qq libmysqlclient-dev libxml2-dev libhiredis-dev libpcre3-dev libgmp-dev libcurl4-openssl-dev)
-
-      - name: Install libjson-c from source code
-        working-directory: ${{runner.workspace}}
-        run: (git clone https://github.com/json-c/json-c.git ; mkdir json-c-build; cd json-c-build; cmake ../json-c; make; sudo make install)
-
-      - name: Install libcheck from source code
-        working-directory: ${{runner.workspace}}
-        run: (git clone https://github.com/libcheck/check ; cd check; autoreconf --install; ./configure; make; sudo make install; sudo cp check_stdint.h /usr/local/include; sudo ldconfig)
+        run: (sudo apt-get update -qq && sudo apt-get install -qq libmysqlclient-dev libxml2-dev libhiredis-dev libpcre3-dev libgmp-dev libcurl4-openssl-dev libjson-c-dev check)
 
       - name: Install onion from source code
         working-directory: ${{runner.workspace}}

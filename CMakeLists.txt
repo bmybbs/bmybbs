@@ -3,6 +3,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS on)
 
 project(BMYBBS)
 
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(CHECK REQUIRED check)
 find_package(LibXml2 REQUIRED)
 #find_package(MySQL REQUIRED)
 

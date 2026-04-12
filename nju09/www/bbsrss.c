@@ -234,7 +234,8 @@ prt_summary(int j, int *rssform, struct fileheader *rssdata, char* board)
 	char ffowner[15]; //Â¥Ö÷µÄID
 	struct fileheader *x;
 	int num = 0, found = 0, total;
-	int start, thread, floor;
+	int start, floor;
+	time_t thread;
 
 	struct mmapfile mf = { .ptr = NULL };
 

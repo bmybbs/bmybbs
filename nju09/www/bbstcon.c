@@ -34,13 +34,22 @@ void tshare(char * board, int start, int thread, int article_count, char * owner
 {
 	char thread_title_utf8[480];
 	char title[256];
+	char *encoded_url;
+
 	strcpy(title, thread_title);
 	g2u(title, strlen(title), thread_title_utf8, sizeof(thread_title_utf8));
+	encoded_url = url_encode(thread_title_utf8);
+
+	if (encoded_url == NULL) {
+		return;
+	}
+
 	printf("∑÷œÌµΩ ");
 	printf("<a href=\"#\" onclick=\"javascript:thread_share('sina','%s','%s','%s','%d','%d','%d');\"><img src=\"/images/share-sina.png\"/></a>",
-			url_encode(thread_title_utf8), owner, board, thread, start, article_count);
+			encoded_url, owner, board, thread, start, article_count);
 	printf("<a href=\"#\" onclick=\"javascript:thread_share('tencent','%s','%s','%s','%d','%d','%d');\"><img src=\"/images/share-tencent.png\"/></a>",
-			url_encode(thread_title_utf8), owner, board, thread, start, article_count);
+			encoded_url, owner, board, thread, start, article_count);
+	free(encoded_url);
 }
 
 int
