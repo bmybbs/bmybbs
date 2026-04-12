@@ -300,6 +300,7 @@ DIR_do_top(struct fileheader *fileinfo, struct fileheader *newfileinfo)
 	SWITCH_FLAG(fileinfo->accessed, FILE_TOP1);
 }
 
+/*
 int
 outgo_post(struct fileheader *fh, char *board, char *id, char *name)
 {
@@ -312,6 +313,7 @@ outgo_post(struct fileheader *fh, char *board, char *id, char *name)
 		}
 	return 0;
 }
+*/
 
 /* modifying by ylsdd
  * unlink action is taked within cancelpost if in mail

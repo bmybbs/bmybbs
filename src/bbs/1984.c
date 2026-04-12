@@ -284,8 +284,8 @@ post_1984_to_board(char *dir, struct fileheader *fileinfo)
 		return;
 	}
 
-	if (postfile.accessed & FH_INND)
-		outgo_post(&postfile, targetboard, currentuser.userid, currentuser.username);
+	// if (postfile.accessed & FH_INND)
+	// 	outgo_post(&postfile, targetboard, currentuser.userid, currentuser.username);
 	ythtbbs_cache_Board_updatelastpost(targetboard);
 	snprintf(genbuf, 256, "%s check1984 %s %s", currentuser.userid, currboard, postfile.title);
 	genbuf[256] = 0;

@@ -1260,8 +1260,8 @@ post_article(char *board, char *title, char *file, char *id,
 		}
 	}
 
-	if (outgoing)
-		outgo_post(&header, board, id, nickname);
+	// if (outgoing)
+	// 	outgo_post(&header, board, id, nickname);
 	ythtbbs_cache_Board_updatelastpost(board);
 	return t;
 }

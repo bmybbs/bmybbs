@@ -1811,7 +1811,7 @@ post_cross(char *bname, int mode, int islocal, int hascheck, int dangerous)
 		clear();
 		return now; // return filetime instead of 1 by IronBlood 20130807
 	}
-	outgo_post(&postfile, bname, currentuser.userid, currentuser.username);
+	// outgo_post(&postfile, bname, currentuser.userid, currentuser.username);
 	ythtbbs_cache_Board_updatelastpost(bname);
 	if (!mode) {
 		add_crossinfo(filepath, 1);
@@ -2110,8 +2110,8 @@ post_article(struct fileheader *sfh)
 		clear();
 		return FULLUPDATE;
 	}
-	if (local_article == 0)
-		outgo_post(&postfile, currboard, currentuser.userid, currentuser.username);
+	// if (local_article == 0)
+	// 	outgo_post(&postfile, currboard, currentuser.userid, currentuser.username);
 	local_article = 0;
 	SETREAD(&postfile, &brc);
 	//    if(strcmp(currboard,"triangle")==0) checksomewords();
@@ -2398,7 +2398,7 @@ int edit_post(int ent, void *record, char *direct)
 	fileinfo->edittime = time(0);
 	change_dir(direct, fileinfo, (void *) DIR_do_edit, ent, digestmode, 1);
 	if (!in_mail) {
-		outgo_post(fileinfo, currboard, currentuser.userid, currentuser.username);
+		// outgo_post(fileinfo, currboard, currentuser.userid, currentuser.username);
 		ythtbbs_cache_Board_updatelastpost(currboard);
 		sprintf(genbuf, "%s edit %s %s %s",
 			currentuser.userid, currboard,

@@ -329,7 +329,7 @@ update_form(char *board, char *file, char *title)
 		num++;
 	}
 	fclose(fp);
-	outgo_post(&x, board, currentuser.userid, currentuser.username);
+	// outgo_post(&x, board, currentuser.userid, currentuser.username);
 	printf("修改文章成功.<br><a href=%s%s>返回本讨论区</a>", showByDefMode(), board);
 	return 0;
 }

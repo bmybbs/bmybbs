@@ -128,7 +128,7 @@ void DIR_do_top(struct fileheader *, struct fileheader *);
  * @param
  */
 void DIR_do_water(struct fileheader *, struct fileheader *);
-int outgo_post(struct fileheader *, char *, char *, char *);
+// int outgo_post(struct fileheader *, char *, char *, char *);
 void cancelpost(char *, char *, struct fileheader *, int);
 int cmp_title(char *title, struct fileheader *fh1);
 int fh_find_thread(struct fileheader *fh, char *board);
