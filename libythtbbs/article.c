@@ -454,7 +454,7 @@ add_edit_mark(char *fname, char *userid, time_t now_t, char *fromhost)
 	return 0;
 }
 
-int is_article_area_top(char *boardname, int thread) {
+int is_article_area_top(char *boardname, time_t thread) {
 	struct boardmem *bm = ythtbbs_cache_Board_get_board_by_name(boardname);
 	if(bm==NULL)
 		return 0;
@@ -465,7 +465,7 @@ int is_article_area_top(char *boardname, int thread) {
 	return is_article_link_in_file(boardname, thread, area_top_filename);
 }
 
-int update_article_area_top_link(char *boardname, int oldthread, int newfiletime, char *newtitle) {
+int update_article_area_top_link(char *boardname, time_t oldthread, time_t newfiletime, char *newtitle) {
 	struct boardmem *bm = ythtbbs_cache_Board_get_board_by_name(boardname);
 	if(bm==NULL)
 		return 0;
@@ -476,7 +476,7 @@ int update_article_area_top_link(char *boardname, int oldthread, int newfiletime
 	return update_article_link_in_file(boardname, oldthread, newfiletime, newtitle, area_top_filename);
 }
 
-int is_article_site_top(char *boardname, int thread) {
+int is_article_site_top(char *boardname, time_t thread) {
 	char *site_top_file1 = "wwwtmp/topten";
 
 	return is_article_link_in_file(boardname, thread, site_top_file1);

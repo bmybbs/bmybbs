@@ -96,7 +96,7 @@ static int search_title(struct keeploc *locmem, int offset);
 static int search_thread(struct keeploc *locmem, int offset, char *title);
 static int search_articles(struct keeploc *locmem, char *query, int offset, int aflag);
 static int cursor_pos(struct keeploc *locmem, int val, int from_top);
-static int search_threadid(struct keeploc *locmem, int offset, int thread, int mode);
+static int search_threadid(struct keeploc *locmem, int offset, time_t thread, int mode);
 static int digest_mode(void);
 
 
@@ -863,7 +863,7 @@ int SR_BMfunc(int ent, void *record, char *direct) {
 		// 【合集】%s
 		sprintf(title_combine, "\xA1\xBE\xBA\xCF\xBC\xAF\xA1\xBF" "%s", title);
 		sprintf(buf, "tmp/%s.combine", currentuser.userid);
-		int newFiletime = postfile(buf, currboard, title_combine, 2);
+		time_t newFiletime = postfile(buf, currboard, title_combine, 2);
 		unlink(buf);
 
 		// 更新www导读下的链接 by IronBlood 20130805
@@ -1528,7 +1528,7 @@ static int cursor_pos(struct keeploc *locmem, int val, int from_top)
 }
 
 static int
-search_threadid(struct keeploc *locmem, int offset, int thread, int mode)
+search_threadid(struct keeploc *locmem, int offset, time_t thread, int mode)
 //从 locmem 位置起，向offset方向，搜索thread相同的fileheader，
 //mode == 0 搜索第一个即退出，否则搜索到最后一个负荷条件的
 {
