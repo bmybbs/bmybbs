@@ -128,7 +128,7 @@ static int get_number_of_articles_in_thread(const char *board, time_t thread);
  * @param fh_for_return : 查找到的fileheader，值全为0 表示未找到
  * @return void
  */
-static void get_fileheader_by_filetime_thread(int mode, char *board, int id, struct fileheader * fh_for_return);
+static void get_fileheader_by_filetime_thread(int mode, char *board, time_t id, struct fileheader * fh_for_return);
 
 /**
  * @brief 获取文章内容。
@@ -1491,7 +1491,7 @@ static int get_number_of_articles_in_thread(const char *board, time_t thread)
 	return num_in_thread;
 }
 
-static void get_fileheader_by_filetime_thread(int mode, char *board, int id, struct fileheader * fh_for_return)
+static void get_fileheader_by_filetime_thread(int mode, char *board, time_t id, struct fileheader * fh_for_return)
 {
 	char dir[80];
 	int i = 0, num_records = 0;
