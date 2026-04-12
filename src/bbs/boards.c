@@ -271,7 +271,7 @@ static int
 load_boards(int *brdnum, int secnum)
 {
 	int goodbrd = 0;
-	static int loadtime = 0;
+	static time_t loadtime = 0;
 
 	ythtbbs_cache_Board_resolve();
 	if (!(GoodBrd.num == 9999 || ythtbbs_cache_Board_get_uptime() >= loadtime || zapbuf == NULL || *brdnum <= 0))
@@ -1210,7 +1210,7 @@ brc_initial(char *boardname, int keep)
 }
 
 void
-clear_new_flag_quick(int t)
+clear_new_flag_quick(time_t t)
 {
 	int bnum;
 	const struct boardmem *board;
