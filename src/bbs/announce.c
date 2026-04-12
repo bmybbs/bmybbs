@@ -856,21 +856,40 @@ static void a_copypaste(MENU *pm, int paste)
 			egetch();
 			return;
 		}
-		size_t len;
-		if ((len = fread(title, sizeof (item->title), 1, fn)) > 0) {
-			title[len < sizeof(title) ? len : (sizeof(title) - 1)] = 0;
+		memset(title, 0, sizeof title);
+		memset(filename, 0, sizeof filename);
+		memset(fpath, 0, sizeof fpath);
+		copymode = -2;
+
+		if (fread(title, sizeof (item->title), 1, fn) != 1
+				|| fread(filename, sizeof (item->fname), 1, fn) != 1
+				|| fread(fpath, sizeof (fpath), 1, fn) != 1
+				|| fread(&copymode, sizeof (copymode), 1, fn) != 1
+		   ) {
+			fclose(fn);
+			prints_nofmt("读取错误");
+			egetch();
+			return;
 		}
-		if ((len = fread(filename, sizeof (item->fname), 1, fn)) > 0) {
-			filename[len < sizeof(filename) ? len : (sizeof(title) - 1)] = 0;
-		}
-		if ((len = fread(fpath, sizeof (fpath), 1, fn)) > 0) {
-			fpath[len < sizeof(fpath) ? len : (sizeof(fpath) - 1)] = 0;
-		}
-		fread(&copymode, sizeof (copymode), 1, fn);
+
 		fclose(fn);
+
+		if (copymode != -1 && copymode != 0 && copymode != 2) {
+			prints_nofmt("错误的模式");
+			egetch();
+			return;
+		}
+
+		title[sizeof(title) - 1] = 0;
+		filename[sizeof(filename) - 1] = 0;
+		fpath[sizeof(fpath) - 1] = 0;
+
 		//end
 		if (snprintf(newpath, PATHLEN, "%s/%s", pm->path, filename) > PATHLEN - 1) {
 			prints("目录路径太深,无法粘贴");
+			egetch();
+		} else if (fpath[0] == '\0') {
+			prints_nofmt("参数错误");
 			egetch();
 		} else if (realpath(pm->path, realnewpath) == NULL || realpath(fpath, realfpath) == NULL) {
 			prints("系统内部错误,请联系系统维护!");
