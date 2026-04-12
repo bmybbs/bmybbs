@@ -94,7 +94,7 @@ static int UndeleteArticle(int, void *, char *);
 static void cpyfilename(struct fileheader *fhdr);
 static int read_post(int, void *, char *);
 static int do_select(int, void *, char *);
-static int dele_digest(int filetime, char *direc);
+static int dele_digest(time_t filetime, char *direc);
 static int garbage_line(char *str);
 static void getcross(char *filepath, int mode);
 static time_t post_cross(char *bname, int mode, int islocal, int hascheck, int dangerous);
@@ -1305,14 +1305,14 @@ static int do_select(int ent, void *record, char *direct) {
 }
 
 static int
-dele_digest(int filetime, char *direc)
+dele_digest(time_t filetime, char *direc)
 {
 	char digest_name[STRLEN];
 	char new_dir[STRLEN];
 	time_t tmpcurrfiletime;
 	struct fileheader fh;
 	int pos;
-	sprintf(digest_name, "G.%d.A", filetime);
+	sprintf(digest_name, "G.%ld.A", filetime);
 	directfile(new_dir, direc, DIGEST_DIR);
 	tmpcurrfiletime = currfiletime;
 	currfiletime = filetime;
