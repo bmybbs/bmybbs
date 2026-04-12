@@ -4252,13 +4252,13 @@ void Add_Combine(char *board, struct fileheader *fileinfo)
 
 	setbfile(buf, sizeof(buf), board, fh2fname(fileinfo));		//modify by mintbaggio 040321 for heji
 	fp1=fopen(buf, "rt");
-	if (fgets(temp2, 200, fp1)!=NULL){
+	if (fgets(temp2, sizeof temp2, fp1)!=NULL){
 		keepoldheader(fp1, SKIPHEADER);
 		fprintf(fp, "    \033[0;1;32m%s \033[0;1mÓÚ \033[1;36m%s\033[0;1m Ìáµ½£º\033[0m\n", fh2owner(fileinfo),
 				ytht_ctime(fileinfo->filetime));
 		while (!feof(fp1)) {
-			fgets(temp2, 200, fp1);
-			if (transferattach(temp2, 200, fp1, fp))
+			fgets(temp2, sizeof temp2, fp1);
+			if (transferattach(temp2, sizeof temp2, fp1, fp))
 				continue;
 			if ((unsigned)*temp2<'\x1b'){
 				if (blankline) continue;
