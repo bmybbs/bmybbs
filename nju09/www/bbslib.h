@@ -158,7 +158,7 @@ char *encode_url(char *s);
 char *noquote_html(char *s);
 char *void1(char *s);
 char *flag_str_bm(int access);
-char *flag_str(int access);
+char *flag_str(unsigned int access);
 char *flag_str2(int access, int has_read);
 char *userid_str(char *s);
 char *getbfroma(char *path);

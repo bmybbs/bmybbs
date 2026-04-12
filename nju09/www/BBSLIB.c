@@ -1715,7 +1715,7 @@ flag_str_bm(int access)
 }
 
 char *
-flag_str(int access)
+flag_str(unsigned int access)
 {
 	static char buf[80];
 	strcpy(buf, "  ");
