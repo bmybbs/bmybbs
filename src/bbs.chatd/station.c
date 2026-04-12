@@ -309,7 +309,7 @@ fuzzy_chatid_to_indx(int unum, char *chatid)
 				return -2;
 		}
 	}
-	if (users[indx].cloak == 0 || CLOAK(unum))
+	if ((indx >= 0 && users[(unsigned int) indx].cloak == 0) || CLOAK(unum))
 		return indx;
 	else
 		return -1;
