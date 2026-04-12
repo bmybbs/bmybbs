@@ -768,9 +768,9 @@ static int choose_board(int newflag, const struct sectree *sec)
 				modify_user_mode(newflag ? READNEW : READBRD);
 			} else {
 				if (sec) {
-					strcpy(boardprefix, sec->subsec[num]->basestr);
+					ytht_strsncpy(boardprefix, sec->subsec[num]->basestr, sizeof boardprefix);
 					choose_board(newflag, sec->subsec[num]);
-					strcpy(boardprefix, sec->basestr);
+					ytht_strsncpy(boardprefix, sec->basestr, sizeof boardprefix);
 					page = -1;
 					brdnum = -1;
 				}
