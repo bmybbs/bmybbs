@@ -5,7 +5,8 @@ int
 bbspst_main()
 {
 	FILE *fp;
-	int local_article, i, num, fullquote = 0, guestre = 0, thread = -1;
+	int local_article, i, num, fullquote = 0, guestre = 0;
+	time_t thread = -1;
 	char userid[IDLEN + 2], buf[512], path[512], file[20], board[32], title[80] = "";
 	struct fileheader *dirinfo = NULL;
 	struct boardmem *x;
@@ -148,7 +149,7 @@ bbspst_main()
 		printf("</td></tr>\n");
 	}
 	printf("<TR><TD class=bordertheme>\n"
-		"<form name=form1 method=post action=bbssnd?board=%s&th=%d%s>\n",
+		"<form name=form1 method=post action=bbssnd?board=%s&th=%ld%s>\n",
 		board, thread, file[0] ? buf : "");
 	printf("<table width=\"100%%\"  border=0 cellspacing=0 cellpadding=0>\n"
 		"<tr>\n<td><table border=0 cellpadding=0 cellspacing=0>\n"
