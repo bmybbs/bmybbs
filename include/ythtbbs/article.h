@@ -171,7 +171,7 @@ int is_article_site_top(char *boardname, time_t thread);
  * @param newtitle 对应新的合集文章的标题，e.g. "【合集】 "
  * @return 更新成功返回1
  */
-int update_article_site_top_link(char *boardname, int oldthread, int newfiletime, char *newtitle);
+int update_article_site_top_link(char *boardname, time_t oldthread, time_t newfiletime, char *newtitle);
 
 /** 将文件名转为时间戳
  * @warn 该过程中将字符串直接转为 time_t，可能有些平台上不支持。同时该方法使用过程中未校验 filename 格式是否正确。谨慎使用。
