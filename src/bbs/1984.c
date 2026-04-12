@@ -20,7 +20,7 @@ static int do1984title(void);
 static char *do1984doent(int num, struct fileheader *ent, char buf[512]);
 static int do1984_read(int, void *, char *);
 static int do1984_done(int, void *, char *);
-static int gettarget_board_title(char *board, char *title, char *filename);
+static int gettarget_board_title(char *board, size_t board_len, char *title, size_t title_len, const char *filename);
 static int do1984(time_t dtime, int mode);
 static void post_1984_to_board(char *dir, struct fileheader *fileinfo);
 
@@ -205,7 +205,7 @@ do1984(time_t dtime, int mode)
 }
 
 static int
-gettarget_board_title(char *board, char *title, char *filename)
+gettarget_board_title(char *board, size_t board_len, char *title, size_t title_len, const char *filename)
 {
 	FILE *fp;
 	char buf[256], *ptr;
@@ -220,7 +220,7 @@ gettarget_board_title(char *board, char *title, char *filename)
 		return -1;
 	}
 	// 信区:
-	snprintf(board, 20, "%s", ptr + sizeof ("\xD0\xC5\xC7\xF8: ") - 1);
+	snprintf(board, board_len, "%s", ptr + sizeof ("\xD0\xC5\xC7\xF8: ") - 1);
 	ptr = strrchr(board, '\n');
 	if (ptr != NULL)
 		*ptr = 0;
@@ -232,7 +232,7 @@ gettarget_board_title(char *board, char *title, char *filename)
 		return -3;
 	}
 	// 标  题:
-	snprintf(title, 60, "%s", ptr + sizeof ("\xB1\xEA  \xCC\xE2: ") - 1);
+	snprintf(title, title_len, "%s", ptr + sizeof ("\xB1\xEA  \xCC\xE2: ") - 1);
 	ptr = strrchr(title, '\n');
 	if (ptr != NULL)
 		*ptr = 0;
@@ -245,7 +245,7 @@ post_1984_to_board(char *dir, struct fileheader *fileinfo)
 {
 	char *ptr;
 	char buf[STRLEN * 2];
-	char newfilepath[STRLEN], newfname[STRLEN], targetboard[STRLEN], title[STRLEN];
+	char newfilepath[STRLEN], newfname[STRLEN], targetboard[20], title[60];
 	struct fileheader postfile;
 	time_t now;
 	int count;
@@ -260,9 +260,9 @@ post_1984_to_board(char *dir, struct fileheader *fileinfo)
 
 	now = time(NULL);
 	count = 0;
-	if (gettarget_board_title(targetboard, title, buf))
+	if (gettarget_board_title(targetboard, sizeof targetboard, title, sizeof title, buf))
 		return;
-	strcpy(postfile.title, title);
+	ytht_strsncpy(postfile.title, title, sizeof postfile.title);
 	while (1) {
 		sprintf(newfname, "M.%ld.A", now);
 		setbfile(newfilepath, sizeof(newfilepath), targetboard, newfname);
