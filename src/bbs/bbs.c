@@ -3062,7 +3062,7 @@ sequent_messages(struct fileheader *fptr)
 static int clear_new_flag(int ent, void *record, char *direct) {
 	(void) ent;
 	(void) direct;
-	static int lastf;
+	static time_t lastf;
 	struct fileheader *fileinfo = record;
 	if (now_t - lastf > 2)
 		clear_new_flag_quick(max(fileinfo->filetime, fileinfo->edittime));
