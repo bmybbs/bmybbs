@@ -154,7 +154,7 @@ bbsvote_main()
 			if (currvote.type != VOTE_ASKING)
 				printf("您可以投%d票<br>", currvote.maxtkt);
 			printf("<hr>投票说明:<br>");
-			sprintf(buf, "vote/%s/desc.%d", board, (int) currvote.opendate);
+			sprintf(buf, "vote/%s/desc.%ld", board, currvote.opendate);
 			fp = fopen(buf, "r");
 			if (fp == 0)
 				http_fatal("投票说明丢失");
@@ -311,7 +311,7 @@ bbsvote_main()
 					strcpy(log.ip, currentuser.lasthost);
 					log.votetime = now_t;
 					log.voted = uservote.voted;
-					sprintf(logname, "vote/%s/newlog.%d", board, (int) currvote.opendate);
+					sprintf(logname, "vote/%s/newlog.%ld", board, currvote.opendate);
 					fp = fopen(logname, "a+");
 					flock(fileno(fp), LOCK_EX);
 					fwrite(&log, sizeof (struct votelog), 1, fp);
