@@ -281,7 +281,7 @@ static void
 print_title(void)
 {
 
-	char buf[20];
+	char buf[20] = { 0 };
 	switch (sortmode) {
 	case 0:
 		sprintf(buf, "%s %s",
