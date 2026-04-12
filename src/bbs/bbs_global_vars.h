@@ -56,7 +56,7 @@ extern int cur_ln;
 extern int scr_cols;
 extern int disable_move;
 extern char ISdelrq;
-extern int readingthread;
+extern time_t readingthread;
 extern char genbuf[1024] ;      /* generally used global buffer */
 
 /**

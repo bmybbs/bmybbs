@@ -325,7 +325,7 @@ static int allcanre_post(int ent, void *record, char *direct) {
 
 char ReadPost[STRLEN] = "";
 char ReplyPost[STRLEN] = "";
-int readingthread;
+time_t readingthread;
 
 extern time_t login_start_time;
 extern int toggle1, toggle2;
