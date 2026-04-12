@@ -615,7 +615,7 @@ print_user_counts(int unum)
 		}
 	}
 	// \033[1;31m□\033[37m 欢迎A光临『\033[32m%s\033[37m』的【\033[36m%s\033[37m】\033[31m□\033[m
-	snprintf(chatbuf, sizeof chatbuf, "\033[1;31m\xA1\xF5\033[37m \xBB\xB6\xD3\xADA\xB9\xE2\xC1\xD9\xA1\xBA\033[32m%s\033[37m\xA1\xBB\xB5\xC4\xA1\xBE\033[36m%s\033[37m\xA1\xBF\033[31m\xA1\xF5\033[m", MY_BBS_NAME, chatname);
+	snprintf(chatbuf, sizeof chatbuf, "\033[1;31m\xA1\xF5\033[37m \xBB\xB6\xD3\xAD" "A\xB9\xE2\xC1\xD9\xA1\xBA\033[32m%s\033[37m\xA1\xBB\xB5\xC4\xA1\xBE\033[36m%s\033[37m\xA1\xBF\033[31m\xA1\xF5\033[m", MY_BBS_NAME, chatname);
 	send_to_unum(unum, chatbuf);
 	// \033[1;31m□\033[37m 目前已经有 \033[1;33m%d \033[37m间会议室有客人 \033[31m□\033[m
 	snprintf(chatbuf, sizeof chatbuf, "\033[1;31m\xA1\xF5\033[37m \xC4\xBF\xC7\xB0\xD2\xD1\xBE\xAD\xD3\xD0 \033[1;33m%d \033[37m\xBC\xE4\xBB\xE1\xD2\xE9\xCA\xD2\xD3\xD0\xBF\xCD\xC8\xCB \033[31m\xA1\xF5\033[m", roomc + 1);
