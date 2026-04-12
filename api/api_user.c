@@ -137,6 +137,7 @@ int api_user_query(ONION_FUNC_PROTO_STR)
 		if (getuser_s(&ue, ptr_info->userid) < 0)
 			return api_error(p, req, res, API_RT_NOSUCHUSER);
 		int unread_mail;
+		ue.userid[sizeof(ue.userid) - 1] = 0;
 		int total_mail = mail_count(ue.userid, &unread_mail);
 		ue.userid[sizeof(ue.userid) - 1] = 0;
 		sprintf(buf, "{\"errcode\":0, \"userid\":\"%s\", \"login_counts\":%d,"
