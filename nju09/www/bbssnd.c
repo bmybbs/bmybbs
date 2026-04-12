@@ -10,7 +10,7 @@ bbssnd_main()
 	size_t i;
 	struct boardmem *brd;
 	struct fileheader *x = NULL;
-	int thread = -1;
+	time_t thread = -1;
 	struct mmapfile mf = { .ptr = NULL };
 	html_header(1);
 
@@ -29,7 +29,7 @@ bbssnd_main()
 	sprintf(dir, "boards/%s/.DIR", board);
 	ref = getparm("ref");
 	r = atoi(getparm("rid"));
-	thread = atoi(getparm("th"));
+	thread = atol(getparm("th"));
 	if (ref[0]) {
 		MMAP_TRY {
 			if (mmapfile(dir, &mf) == -1) {
