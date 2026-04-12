@@ -1135,10 +1135,10 @@ static int post_imail(char *userid, char *title, char *file, char *id, char *ip,
 	return 0;
 }
 
-int
+time_t
 post_article_1984(char *board, char *title, char *file, char *id,
 		char *nickname, char *ip, int sig, int mark,
-		int outgoing, int thread)
+		int outgoing, time_t thread)
 {
 	FILE *fp, *fp2;
 	char buf3[1024], buf[80];
@@ -1195,10 +1195,10 @@ post_article_1984(char *board, char *title, char *file, char *id,
 	return t;
 }
 
-int
+time_t
 post_article(char *board, char *title, char *file, char *id,
 		char *nickname, char *ip, int sig, int mark,
-		int outgoing, char *realauthor, int thread)
+		int outgoing, char *realauthor, time_t thread)
 {
 	FILE *fp, *fp2;
 	char buf3[1024];
