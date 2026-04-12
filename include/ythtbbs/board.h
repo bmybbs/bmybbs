@@ -21,6 +21,7 @@ struct boardheader {
 	char secnumber2;
 	char type[5];
 	char bm[BMNUM][IDLEN + 1];
+	// TODO Y2K38
 	int hiretime[BMNUM];
 	// TODO Y2K38
 	int board_ctime;

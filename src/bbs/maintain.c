@@ -383,7 +383,7 @@ int m_newbrd(const char *s) {
 	char vbuf[100];
 	char *group;
 	int bid;
-	int now;
+	time_t now;
 
 	modify_user_mode(ADMIN);
 	if (!check_systempasswd()) {
