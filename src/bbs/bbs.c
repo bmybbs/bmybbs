@@ -599,13 +599,14 @@ UndeleteArticle(int ent, void *record, char *direct)
 		sprintf(buf, "boards/%s/.DIR", currboard);
 	if (1) {
 		char newfilepath[STRLEN], newfname[STRLEN];
-		int count, now;
+		int count;
+		time_t now;
 		now = time(NULL);
 		count = 0;
 		while (1) {
-			sprintf(newfname, "%c.%d.A",
+			sprintf(newfname, "%c.%ld.A",
 				(fileinfo->accessed & FH_ISDIGEST) ? 'G' : 'M',
-				(int) now);
+				now);
 			setbfile(newfilepath, sizeof(newfilepath), currboard, newfname);
 			if (link(filepath, newfilepath) == 0) {
 				unlink(filepath);
