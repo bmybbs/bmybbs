@@ -14,4 +14,5 @@ add_executable(bmybbs.test
 	libbmy/check_cookie.c
 	libbmy/check_2fa.c
 )
-target_link_libraries(bmybbs.test check ythtbbs bmy ytht)
+
+target_link_libraries(bmybbs.test PRIVATE ythtbbs bmy ytht ${CHECK_LIBRARIES})

@@ -23,4 +23,4 @@ add_executable(bmybbs.api.test
 	tests/apilib.test.c
 )
 
-target_link_libraries(bmybbs.api.test check apilib ythtbbs ytht onion json-c)
+target_link_libraries(bmybbs.api.test apilib ythtbbs ytht onion json-c ${CHECK_LIBRARIES})
