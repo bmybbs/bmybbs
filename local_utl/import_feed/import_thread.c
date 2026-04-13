@@ -96,6 +96,7 @@ static int load_threads_by_board(struct boardmem *board, int curr_idx, va_list a
 	}
 
 	if (thread_count == 0) {
+		mmapfile(NULL, &mf);
 		boards[curr_idx].total = 0;
 		boards[curr_idx].root.next = NULL;
 		return 0;
