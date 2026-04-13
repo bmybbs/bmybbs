@@ -114,6 +114,7 @@ int count_threads_of_board(const char *boardname) {
 		fprintf(stderr, "[%s-%d] %s\n", boardname, j, threads[j].title);
 	}
 
+	free(threads);
 	mmapfile(NULL, &mf);
 	return 0;
 }
