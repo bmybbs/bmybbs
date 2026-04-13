@@ -1496,11 +1496,15 @@ sendGoodWish(char *userid)
 				return -3;
 			}
 			for (n = 0; n < cnt; n++) {
+				memset(uid, 0, sizeof uid);
 				if (fgets(filebuf, STRLEN, mp) != NULL) {
 					if (strtok(filebuf, " \n\r\t") != NULL)
 						strcpy(uid, filebuf);
 					else
 						continue;
+				}
+				if (uid[0] == '\0') {
+					continue;
 				}
 				sethomefile_s(genbuf, sizeof(genbuf), uid, "GoodWish");
 				if ((fp = fopen(genbuf, "a")) == NULL) {
