@@ -479,7 +479,7 @@ int ent_chat(const char *chatbuf) {
 		case KEY_DOWN:
 			cmdpos++;
 			cmdpos %= MAXLASTCMD;
-			strcpy(inbuf, lastcmd[cmdpos]);
+			ytht_strsncpy(inbuf, lastcmd[cmdpos], sizeof inbuf);
 			move(b_lines, 10);
 			clrtoeol();
 			outs(inbuf);
