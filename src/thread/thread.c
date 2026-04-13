@@ -35,7 +35,8 @@ generate_title(char *fname, char *tname)
 	char *t;
 	struct mmapfile mf = { .ptr = NULL };
 	struct hashstruct {
-		int index, data;
+		time_t index;
+		int data;
 	} *hashtable;
 	int *index, *next;
 
