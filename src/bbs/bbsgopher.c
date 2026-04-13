@@ -261,7 +261,7 @@ static int deal_gopherkey(int ch, int allnum, int pagenum) {
 				if (askyn(fpath, NA, NA) == 1) {
 					move(2, 0);
 					postfile(fname, bname, tmpitem->title + 1, 2);
-					sprintf(fpath,
+					snprintf(fpath, sizeof fpath,
 						// \033[1m已经帮你转贴到 %s 版了...\033[m
 						"\033[1m\xD2\xD1\xBE\xAD\xB0\xEF\xC4\xE3\xD7\xAA\xCC\xF9\xB5\xBD %s \xB0\xE6\xC1\xCB...\033[m",
 						bname);
