@@ -58,7 +58,7 @@ char *msg_shortulist = "\033[1;33;44m \xCA\xB9\xD3\xC3\xD5\xDF\xB4\xFA\xBA\xC5  
 
 struct chat_command {
 	char *cmdname;		/* Char-room command length */
-	void (*cmdfunc) ();	/* Pointer to function */
+	void (*cmdfunc) (char *);	/* Pointer to function */
 };
 
 struct chatalias {
@@ -77,16 +77,17 @@ static int printuserent(const struct user_info *uentp, void *);
 static void chat_help(char *arg);
 static void query_user(char *arg);
 static void call_user(char *arg);
-static void chat_date(void);
-static void chat_users(void);
-static void set_rec(void);
+static void chat_date(char *arg);
+static void chat_users(char *arg);
+static void set_rec(char *arg);
 static void define_alias(char *arg);
 static int use_alias(char *arg, int cfd);
 static int print_friend_ent(const struct user_info *uentp, void *);
-static void chat_friends(void);
+static void chat_friends(char *arg);
 static void chat_sendmsg(char *arg);
 static int chat_cmd_match(char *buf, char *str);
 static int chat_cmd(char *buf, int cfd);
+static void setpager(char *);
 
 static void
 chat_load_alias()
@@ -592,7 +593,7 @@ int ent_chat(const char *chatbuf) {
 		if (ch == Ctrl('C') || ch == Ctrl('D')) {
 			chat_send(cfd, "/b");
 			if (recflag == 1) {
-				set_rec();
+				set_rec(NULL);
 			}
 			break;
 		}
@@ -771,8 +772,9 @@ static void call_user(char *arg)
 }
 
 static void
-chat_date()
+chat_date(char *arg)
 {
+	(void) arg;
 	time_t thetime;
 
 	time(&thetime);
@@ -782,8 +784,9 @@ chat_date()
 }
 
 static void
-chat_users()
+chat_users(char *arg)
 {
+	(void) arg;
 	printchatline("");
 	// \033[1m【 \033[36m%s \033[37m的访客列表 】\033[m
 	sprintf(genbuf, "\033[1m\xA1\xBE \033[36m%s \033[37m\xB5\xC4\xB7\xC3\xBF\xCD\xC1\xD0\xB1\xED \xA1\xBF\033[m", MY_BBS_NAME);
@@ -798,8 +801,9 @@ chat_users()
 }
 
 static void
-set_rec()
+set_rec(char *arg)
 {
+	(void) arg;
 	char fname[STRLEN];
 	time_t now;
 	int savemode;
@@ -851,8 +855,9 @@ set_rec()
 }
 
 void
-setpager()
+setpager(char *arg)
 {
+	(void) arg;
 	char buf[STRLEN];
 
 	t_pager(NULL);
@@ -1072,8 +1077,9 @@ static int print_friend_ent(const struct user_info *uentp, void *x_param) {
 }
 
 static void
-chat_friends()
+chat_friends(char *arg)
 {
+	(void) arg;
 	printchatline("");
 	// \033[1m【 当前线上的好友列表 】\033[m
 	sprintf(genbuf, "\033[1m\xA1\xBE \xB5\xB1\xC7\xB0\xCF\xDF\xC9\xCF\xB5\xC4\xBA\xC3\xD3\xD1\xC1\xD0\xB1\xED \xA1\xBF\033[m");
