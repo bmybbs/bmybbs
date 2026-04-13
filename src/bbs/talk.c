@@ -942,7 +942,7 @@ servicepage(int line, char *mesg)
 				printdash(mesg);
 				break;
 			default:	/* a chat mode */
-				sprintf(buf, "** %s 眒礿砦網請.", page_requestor);
+				snprintf(buf, sizeof buf, "** %s 眒礿砦網請.", page_requestor);
 				printchatline(buf);
 			}
 			memset(page_requestor, 0, STRLEN);
@@ -959,11 +959,11 @@ servicepage(int line, char *mesg)
 				switch (uinfo.mode) {
 				case TALK:
 					move(line, 0);
-					sprintf(buf, "** %s 淏婓網請斕", page_requestor);
+					snprintf(buf, sizeof buf, "** %s 淏婓網請斕", page_requestor);
 					printdash(buf);
 					break;
 				default:	/* chat */
-					sprintf(buf, "** %s 淏婓網請斕", page_requestor);
+					snprintf(buf, sizeof buf, "** %s 淏婓網請斕", page_requestor);
 					printchatline(buf);
 				}
 		}
