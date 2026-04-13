@@ -6549,7 +6549,7 @@ static int buy_present(int order, char *kind, char *cardname, char *filepath, in
 		if (uident[0] == '\0') {
 			move(t_lines - 2, 4);
 			clrtobot();
-			sprintf(buf, "居然不写地址，你买的%s丢失在邮寄途中...", kind);
+			snprintf(buf, sizeof buf, "居然不写地址，你买的%s丢失在邮寄途中...", kind);
 			prints_nofmt(buf);
 			pressanykey();
 			return 0;
@@ -6557,7 +6557,7 @@ static int buy_present(int order, char *kind, char *cardname, char *filepath, in
 		if (!getuser(uident)) {
 			move(t_lines - 2, 4);
 			clrtobot();
-			sprintf(buf, "没有这个人啊，你买的%s被邮递员私吞了...", kind);
+			snprintf(buf, sizeof buf, "没有这个人啊，你买的%s被邮递员私吞了...", kind);
 			prints_nofmt(buf);
 			pressanykey();
 			return 0;
