@@ -113,9 +113,7 @@ chat_load_alias()
 	}
 }
 
-void
-printchatline(str)
-const char *str;
+void printchatline(const char *str)
 {
 	const char *ptr1, *ptr2;
 	move(chatline, 0);
@@ -159,10 +157,7 @@ static void print_chatid(char *chatid) {
 	outc(':');
 }
 
-static int
-chat_send(fd, buf)
-int fd;
-char *buf;
+static int chat_send(int fd, char *buf)
 {
 	size_t len;
 	ssize_t size;
@@ -173,10 +168,7 @@ char *buf;
 	return ((size < 0) ? 0 : ((unsigned) size == len));
 }
 
-static int
-chat_recv(fd, chatid)
-int fd;
-char *chatid;
+static int chat_recv(int fd, char *chatid)
 {
 	static char buf[512];
 	static size_t bufstart = 0;
@@ -234,9 +226,7 @@ char *chatid;
 	return 0;
 }
 
-static void
-fixchatid(chatid)
-char *chatid;
+static void fixchatid(char *chatid)
 {
 	chatid[CHAT_IDLEN] = '\0';
 	while (*chatid != '\0' && *chatid != '\n') {
@@ -651,9 +641,7 @@ static int printuserent(const struct user_info *uentp, void *x_param) {
 	return 0;
 }
 
-static void
-chat_help(arg)
-char *arg;
+static void chat_help(char *arg)
 {
 	char *ptr;
 	char buf[256];
@@ -681,9 +669,7 @@ char *arg;
 }
 
 /* youzi 1997.7.25 */
-static void
-query_user(arg)
-char *arg;
+static void query_user(char *arg)
 {
 	char *userid, msg[STRLEN * 2];
 	char qry_mail_dir[STRLEN];
@@ -747,9 +733,7 @@ char *arg;
 	printchatline(msg);
 }
 
-static void
-call_user(arg)
-char *arg;
+static void call_user(char *arg)
 {
 	char *userid, msg[STRLEN * 2];
 	struct user_info *uin = NULL;
@@ -881,9 +865,7 @@ setpager()
 
 }
 
-static void
-define_alias(arg)
-char *arg;
+static void define_alias(char *arg)
 {
 	int i;
 	int del = 0;
@@ -976,10 +958,7 @@ char *arg;
 	substitute_record(buf, &chat_aliases[i], sizeof (chat_aliases[i]), i + 1);
 }
 
-static int
-use_alias(arg, cfd)
-char *arg;
-int cfd;
+static int use_alias(char *arg, int cfd)
 {
 	char buf[256];
 	char buf1[256];
@@ -1108,9 +1087,7 @@ chat_friends()
 	print_friend_ent(NULL, NULL);
 }
 
-static void
-chat_sendmsg(arg)
-char *arg;
+static void chat_sendmsg(char *arg)
 {
 	struct user_info *uentp;
 	char *uident, *msgstr, showstr[80];
@@ -1164,10 +1141,7 @@ static const struct chat_command chat_cmdtbl[] = {
 	{NULL, NULL}
 };
 
-static int
-chat_cmd_match(buf, str)
-char *buf;
-char *str;
+static int chat_cmd_match(char *buf, char *str)
 {
 	while (*str && *buf && !isspace(*buf)) {
 		if (tolower(*buf++) != *str++)
@@ -1176,10 +1150,7 @@ char *str;
 	return 1;
 }
 
-static int
-chat_cmd(buf, cfd)
-char *buf;
-int cfd;
+static int chat_cmd(char *buf, int cfd)
 {
 	int i;
 
