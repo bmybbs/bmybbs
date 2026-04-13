@@ -71,4 +71,4 @@ add_subdirectory(upgrade)
 add_subdirectory(import_feed)
 add_subdirectory(changetid)
 add_subdirectory(user_dump)
-
+add_subdirectory(passwd_crypto_test)
