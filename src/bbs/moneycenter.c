@@ -160,7 +160,7 @@ static int calc777(int t1, int t2, int t3);
 //static int an(char *a, char *b);
 //static int bn(char *a, char *b);
 //static void itoa(int i, char *a);
-static void time2string(int num, char *str);
+static void time2string(time_t num, char *str);
 static int money_police(void);
 static void persenal_stock_info(int stock_num[15], int stock_price[15],
 		int money, char stockboard[STRLEN][MAX_STOCK_NUM],
@@ -643,7 +643,7 @@ static int makeRumor(int num) {
 	return limitValue(num, MAX_MONEY_NUM);
 }
 
-static void time2string(int num, char *str) {
+static void time2string(time_t num, char *str) {
 	int i;
 	for (i = 0; num > 0; i++, num /= 10) {
 		str[9 - i] = num % 10 + '0';
@@ -4644,8 +4644,8 @@ static int money_killer() {
 	int quit = 0;
 	int quit2=0;
 	int count=0;
-	int freeTime;
-	int currentTime = time(0);
+	time_t freeTime;
+	time_t currentTime = time(0);
 	char uident[IDLEN + 1], name[IDLEN + 1], buf[STRLEN];
 	int money,num;
 	int id;
