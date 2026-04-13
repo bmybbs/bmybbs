@@ -9237,7 +9237,7 @@ static int marry_court(struct MC_Marry *marryMem, int n) {
 	mm.court_t = time(NULL);
 	mm.marry_t = 0;
 	mm.divorce_t = 0;
-	strcpy(mm.subject, "×·Öğ°®ÇéµÄ³¯Ñô");
+	ytht_strsncpy(mm.subject, "×·Öğ°®ÇéµÄ³¯Ñô", sizeof mm.subject);
 	mm.setfile = 0;
 	mm.invitationfile = 0;
 
@@ -9519,6 +9519,7 @@ static int marry_perpare(struct MC_Marry *marryMem, int n) {
 			freshflag =0;
 		}
 		move(5, 4);
+		mm->subject[sizeof mm->subject - 1] = '\0';
 		prints_nofmt(mm->subject);
 		move(6, 4);
 		prints("ĞÂÄï:\033[1;31m%s\033[m ĞÂÀÉ:\033[1;32m%s\033[m ",mm->bride, mm->bridegroom);
@@ -9624,7 +9625,7 @@ static int marry_perpare(struct MC_Marry *marryMem, int n) {
 				buf[0] = 0;
 				getdata(9, 0, "ÇëÊäÈë»éÀñÖ÷Ìâ[×î¶à28ºº×Ö]: ", buf, 56, DOECHO, NA);
 				if(buf[0]){
-					strncpy(mm->subject,buf,58);
+					ytht_strsncpy(mm->subject, buf, sizeof mm->subject);
 				}
 				break;
 			case '6':
