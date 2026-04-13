@@ -204,7 +204,7 @@ static int chat_recv(int fd, char *chatid)
 				move(0, 0);
 				clrtoeol();
 				// 房间： \033[32m%s
-				sprintf(genbuf, "\xB7\xBF\xBC\xE4\xA3\xBA \033[32m%s", chatroom);
+				snprintf(genbuf, sizeof genbuf, "\xB7\xBF\xBC\xE4\xA3\xBA \033[32m%s", chatroom);
 				strncpy(buftopic, bptr + 2, STRLEN - 1);
 				// \033[1;44;33m %-21s  \033[33m话题：\033[36m%-47s\033[5;31m%6s\033[m
 				// 录音中
@@ -412,10 +412,10 @@ int ent_chat(const char *chatbuf) {
 			mail_buf(inbuf, "delete", genbuf);
 			ythtbbs_cache_Board_updatelastpost("deleterequest");
 		}
-		sprintf(chatid, "%.8s",
+		snprintf(chatid, sizeof chatid, "%.8s",
 			((inbuf[0] != '\0' && inbuf[0] != '\n') ? inbuf : cuser.userid));
 		fixchatid(chatid);
-		sprintf(inbuf, "/! %d %d %s %s 0", uinfo.uid,
+		snprintf(inbuf, sizeof inbuf, "/! %d %d %s %s 0", uinfo.uid,
 			cuser.userlevel, cuser.userid, chatid);
 		chat_send(cfd, inbuf);
 		if (recv(cfd, inbuf, 3, 0) != 3) {
@@ -626,7 +626,7 @@ static int printuserent(const struct user_info *uentp, void *x_param) {
 	if (!(HAS_PERM(PERM_SYSOP, currentuser) || HAS_PERM(PERM_SEECLOAK, currentuser)) && uentp->invisible)
 		return 0;
 
-	sprintf(pline, " %s%-13s\x1b[m%c%s%-10.10s\x1b[m",
+	snprintf(pline, sizeof pline, " %s%-13s\x1b[m%c%s%-10.10s\x1b[m",
 		myfriend(uentp->uid) ? "\x1b[1;32m" : "",
 		uentp->userid, uentp->invisible ? '#' : ' ',
 		ModeColor(uentp->mode), ModeType(uentp->mode));
@@ -689,7 +689,7 @@ static void query_user(char *arg)
 		printchatline("\033[1;31m\xB2\xBB\xD5\xFD\xC8\xB7\xB5\xC4\xCA\xB9\xD3\xC3\xD5\xDF\xB4\xFA\xBA\xC5\033[m");
 		return;
 	}
-	sprintf(qry_mail_dir, "mail/%c/%s/%s", mytoupper(lookupuser.userid[0]),
+	snprintf(qry_mail_dir, sizeof qry_mail_dir, "mail/%c/%s/%s", mytoupper(lookupuser.userid[0]),
 		lookupuser.userid, DOT_DIR);
 
 	// \033[1;32m%s\033[m (\033[1;37m%s\033[m) 共上站 \033[1;37m%d\033[m 次, 发表
@@ -704,14 +704,14 @@ static void query_user(char *arg)
 	if (ifinprison(lookupuser.userid)) {
 		ytht_strsncpy(time_buf, ytht_ctime(lookupuser.lastlogin), sizeof(time_buf));
 		// 在监狱服刑，入狱时间[\033[1m%s\033[m]
-		sprintf(msg, "\xD4\xDA\xBC\xE0\xD3\xFC\xB7\xFE\xD0\xCC\xA3\xAC\xC8\xEB\xD3\xFC\xCA\xB1\xBC\xE4[\033[1m%s\033[m]", time_buf);
+		snprintf(msg, sizeof msg, "\xD4\xDA\xBC\xE0\xD3\xFC\xB7\xFE\xD0\xCC\xA3\xAC\xC8\xEB\xD3\xFC\xCA\xB1\xBC\xE4[\033[1m%s\033[m]", time_buf);
 	} else if (lookupuser.dietime) {
-		sprintf(msg,
+		snprintf(msg, sizeof msg,
 			// 已经死亡，还有 [\033[1m%d\033[m] 天就要转世投胎了
 			"\xD2\xD1\xBE\xAD\xCB\xC0\xCD\xF6\xA3\xAC\xBB\xB9\xD3\xD0 [\033[1m%d\033[m] \xCC\xEC\xBE\xCD\xD2\xAA\xD7\xAA\xCA\xC0\xCD\xB6\xCC\xA5\xC1\xCB",
 			countlife(&lookupuser));
 	} else {
-		sprintf(msg,
+		snprintf(msg, sizeof msg,
 			// 上次在 [\033[1;37m%-24.24s\033[m] 由 [\033[1;37m%s\033[m] 到本站一游
 			"\xC9\xCF\xB4\xCE\xD4\xDA [\033[1;37m%-24.24s\033[m] \xD3\xC9 [\033[1;37m%s\033[m] \xB5\xBD\xB1\xBE\xD5\xBE\xD2\xBB\xD3\xCE",
 			// (不详)
@@ -721,13 +721,13 @@ static void query_user(char *arg)
 	printchatline(msg);
 
 	// 信箱：[\033[1;5;37m%2s\033[m]，生命力：[\033[1;37m%d\033[m]
-	sprintf(msg, "\xD0\xC5\xCF\xE4\xA3\xBA[\033[1;5;37m%2s\033[m]\xA3\xAC\xC9\xFA\xC3\xFC\xC1\xA6\xA3\xBA[\033[1;37m%d\033[m]",
+	snprintf(msg, sizeof msg, "\xD0\xC5\xCF\xE4\xA3\xBA[\033[1;5;37m%2s\033[m]\xA3\xAC\xC9\xFA\xC3\xFC\xC1\xA6\xA3\xBA[\033[1;37m%d\033[m]",
 		// ⊙
 		(check_query_mail(qry_mail_dir) == 1) ? "\xA1\xD1" : "  ",
 		countlife(&lookupuser));
 	printchatline(msg);
 	// \033[1;37m目前%s站上\033[m
-	sprintf(msg, "\033[1;37m\xC4\xBF\xC7\xB0%s\xD5\xBE\xC9\xCF\033[m", (t_search(userid, NA, 1) != NULL) ?
+	snprintf(msg, sizeof msg, "\033[1;37m\xC4\xBF\xC7\xB0%s\xD5\xBE\xC9\xCF\033[m", (t_search(userid, NA, 1) != NULL) ?
 		// 在
 		// 不在
 		"\xD4\xDA" : "\xB2\xBB\xD4\xDA");
@@ -758,10 +758,10 @@ static void call_user(char *arg)
 	}
 	if (good_id == YEA && canmsg(uin)) {
 		// 到 %s 的 %s 包厢聊聊天
-		sprintf(msg, "\xB5\xBD %s \xB5\xC4 %s \xB0\xFC\xCF\xE1\xC1\xC4\xC1\xC4\xCC\xEC", chat_station, chatroom);
+		snprintf(msg, sizeof msg, "\xB5\xBD %s \xB5\xC4 %s \xB0\xFC\xCF\xE1\xC1\xC4\xC1\xC4\xCC\xEC", chat_station, chatroom);
 		do_sendmsg(userid, uin, msg, 1, uin->pid);
 		// \033[1;37m已经帮你邀请 \033[32m%s\033[37m 了\033[m
-		sprintf(msg, "\033[1;37m\xD2\xD1\xBE\xAD\xB0\xEF\xC4\xE3\xD1\xFB\xC7\xEB \033[32m%s\033[37m \xC1\xCB\033[m",
+		snprintf(msg, sizeof msg, "\033[1;37m\xD2\xD1\xBE\xAD\xB0\xEF\xC4\xE3\xD1\xFB\xC7\xEB \033[32m%s\033[37m \xC1\xCB\033[m",
 			uin->userid);
 	} else
 		snprintf(msg, sizeof msg, "\033[1;32m%s\033[37m %s\033[m", userid,
@@ -779,7 +779,7 @@ chat_date(char *arg)
 
 	time(&thetime);
 	// \033[1m %s标准时间: \033[32m%s\033[0m
-	sprintf(genbuf, "\033[1m %s\xB1\xEA\xD7\xBC\xCA\xB1\xBC\xE4: \033[32m%s\033[0m", MY_BBS_NAME, ctime(&thetime));
+	snprintf(genbuf, sizeof genbuf, "\033[1m %s\xB1\xEA\xD7\xBC\xCA\xB1\xBC\xE4: \033[32m%s\033[0m", MY_BBS_NAME, ctime(&thetime));
 	printchatline(genbuf);
 }
 
@@ -789,7 +789,7 @@ chat_users(char *arg)
 	(void) arg;
 	printchatline("");
 	// \033[1m【 \033[36m%s \033[37m的访客列表 】\033[m
-	sprintf(genbuf, "\033[1m\xA1\xBE \033[36m%s \033[37m\xB5\xC4\xB7\xC3\xBF\xCD\xC1\xD0\xB1\xED \xA1\xBF\033[m", MY_BBS_NAME);
+	snprintf(genbuf, sizeof genbuf, "\033[1m\xA1\xBE \033[36m%s \033[37m\xB5\xC4\xB7\xC3\xBF\xCD\xC1\xD0\xB1\xED \xA1\xBF\033[m", MY_BBS_NAME);
 	printchatline(genbuf);
 	printchatline(msg_shortulist);
 
@@ -810,7 +810,7 @@ set_rec(char *arg)
 
 	now = time(0);
 
-	sprintf(fname, "tmp/chat.%s", currentuser.userid);
+	snprintf(fname, sizeof fname, "tmp/chat.%s", currentuser.userid);
 	if (recflag == 0) {
 		if ((rec = fopen(fname, "w")) == NULL)
 			return;
@@ -821,7 +821,7 @@ set_rec(char *arg)
 		move(0, 0);
 		clrtoeol();
 		// 房间： \033[32m%s
-		sprintf(genbuf, "\xB7\xBF\xBC\xE4\xA3\xBA \033[32m%s", chatroom);
+		snprintf(genbuf, sizeof genbuf, "\xB7\xBF\xBC\xE4\xA3\xBA \033[32m%s", chatroom);
 		// \033[1;44;33m %-21s  \033[33m话题：\033[36m%-47s\033[5;31m%6s\033[m
 		// 录音中
 		prints("\033[1;44;33m %-21s  \033[33m\xBB\xB0\xCC\xE2\xA3\xBA\033[36m%-47s\033[5;31m%6s\033[m", genbuf, buftopic, (recflag == 1) ? "\xC2\xBC\xD2\xF4\xD6\xD0" : "      ");
@@ -836,7 +836,7 @@ set_rec(char *arg)
 		move(0, 0);
 		clrtoeol();
 		// 房间： \033[32m%s
-		sprintf(genbuf, "\xB7\xBF\xBC\xE4\xA3\xBA \033[32m%s", chatroom);
+		snprintf(genbuf, sizeof genbuf, "\xB7\xBF\xBC\xE4\xA3\xBA \033[32m%s", chatroom);
 		// \033[1;44;33m %-21s  \033[33m话题：\033[36m%-47s\033[5;31m%6s\033[m
 		// 录音中
 		prints("\033[1;44;33m %-21s  \033[33m\xBB\xB0\xCC\xE2\xA3\xBA\033[36m%-47s\033[5;31m%6s\033[m", genbuf, buftopic, (recflag == 1) ? "\xC2\xBC\xD2\xF4\xD6\xD0" : "      ");
@@ -862,7 +862,7 @@ setpager(char *arg)
 
 	t_pager(NULL);
 	// \033[1;32m◆ \033[31m呼叫器 %s 了\033[m
-	sprintf(buf, "\033[1;32m\xA1\xF4 \033[31m\xBA\xF4\xBD\xD0\xC6\xF7 %s \xC1\xCB\033[m",
+	snprintf(buf, sizeof buf, "\033[1;32m\xA1\xF4 \033[31m\xBA\xF4\xBD\xD0\xC6\xF7 %s \xC1\xCB\033[m",
 		// 打开
 		// 关闭
 		(uinfo.pager & ALL_PAGER) ? "\xB4\xF2\xBF\xAA" : "\xB9\xD8\xB1\xD5");
@@ -885,7 +885,7 @@ static void define_alias(char *arg)
 			printchatline("\xD2\xD1\xB6\xA8\xD2\xE5\xB5\xC4" "alias:");
 			for (i = 0; i < chat_alias_count; i++) {
 				if (chat_aliases[i].cmd[0] != 0) {
-					sprintf(buf, "%-9s %s\n",
+					snprintf(buf, sizeof buf, "%-9s %s\n",
 						chat_aliases[i].cmd,
 						chat_aliases[i].action);
 					printchatline(buf);
@@ -933,12 +933,12 @@ static void define_alias(char *arg)
 				}
 				substitute_record(buf, &chat_aliases[i], sizeof (chat_aliases[i]), i + 1);
 				// 自定义alias已经删除\n
-				sprintf(buf, "\xD7\xD4\xB6\xA8\xD2\xE5" "alias\xD2\xD1\xBE\xAD\xC9\xBE\xB3\xFD\n");
+				snprintf(buf, sizeof buf, "\xD7\xD4\xB6\xA8\xD2\xE5" "alias\xD2\xD1\xBE\xAD\xC9\xBE\xB3\xFD\n");
 				printchatline(buf);
 				return;
 			} else {
 				// 自定义alias-%s已经存在\n
-				sprintf(buf, "\xD7\xD4\xB6\xA8\xD2\xE5" "alias-%s\xD2\xD1\xBE\xAD\xB4\xE6\xD4\xDA\n", chat_aliases[i].cmd);
+				snprintf(buf, sizeof buf, "\xD7\xD4\xB6\xA8\xD2\xE5" "alias-%s\xD2\xD1\xBE\xAD\xB4\xE6\xD4\xDA\n", chat_aliases[i].cmd);
 				printchatline(buf);
 				return;
 			}
@@ -950,7 +950,7 @@ static void define_alias(char *arg)
 		strncpy(chat_aliases[chat_alias_count].action, action, 80);
 		chat_aliases[chat_alias_count].action[sizeof(EMPTY.cmd) - 1] = 0;
 		// 自定义alias-%s已经创建\n
-		sprintf(buf, "\xD7\xD4\xB6\xA8\xD2\xE5" "alias-%s\xD2\xD1\xBE\xAD\xB4\xB4\xBD\xA8\n", arg);
+		snprintf(buf, sizeof buf, "\xD7\xD4\xB6\xA8\xD2\xE5" "alias-%s\xD2\xD1\xBE\xAD\xB4\xB4\xBD\xA8\n", arg);
 		printchatline(buf);
 		i = chat_alias_count;
 		chat_alias_count++;
@@ -1061,7 +1061,7 @@ static int print_friend_ent(const struct user_info *uentp, void *x_param) {
 	if (!myfriend(uentp->uid))
 		return 0;
 
-	sprintf(pline, " %-13s%c%-10s",
+	snprintf(pline, sizeof pline, " %-13s%c%-10s",
 		uentp->userid, uentp->invisible ? '#' : ' ',
 		ModeType(uentp->mode));
 	if (cnt < 2)
@@ -1082,7 +1082,7 @@ chat_friends(char *arg)
 	(void) arg;
 	printchatline("");
 	// \033[1m【 当前线上的好友列表 】\033[m
-	sprintf(genbuf, "\033[1m\xA1\xBE \xB5\xB1\xC7\xB0\xCF\xDF\xC9\xCF\xB5\xC4\xBA\xC3\xD3\xD1\xC1\xD0\xB1\xED \xA1\xBF\033[m");
+	snprintf(genbuf, sizeof genbuf, "\033[1m\xA1\xBE \xB5\xB1\xC7\xB0\xCF\xDF\xC9\xCF\xB5\xC4\xBA\xC3\xD3\xD1\xC1\xD0\xB1\xED \xA1\xBF\033[m");
 	printchatline(genbuf);
 	printchatline(msg_shortulist);
 
@@ -1124,12 +1124,12 @@ static void chat_sendmsg(char *arg)
 
 	if (do_sendmsg(uentp->userid, uentp, msgstr, 2, 0) != 1) {
 		// \033[1m无法发消息给 %s \033[m
-		sprintf(showstr, "\033[1m\xCE\xDE\xB7\xA8\xB7\xA2\xCF\xFB\xCF\xA2\xB8\xF8 %s \033[m", uentp->userid);
+		snprintf(showstr, sizeof showstr, "\033[1m\xCE\xDE\xB7\xA8\xB7\xA2\xCF\xFB\xCF\xA2\xB8\xF8 %s \033[m", uentp->userid);
 		printchatline(showstr);
 		return;
 	}
 	// \033[1m已经给 %s 发出消息\033[m
-	sprintf(showstr, "\033[1m\xD2\xD1\xBE\xAD\xB8\xF8 %s \xB7\xA2\xB3\xF6\xCF\xFB\xCF\xA2\033[m", uentp->userid);
+	snprintf(showstr, sizeof showstr, "\033[1m\xD2\xD1\xBE\xAD\xB8\xF8 %s \xB7\xA2\xB3\xF6\xCF\xFB\xCF\xA2\033[m", uentp->userid);
 	printchatline(showstr);
 }
 
