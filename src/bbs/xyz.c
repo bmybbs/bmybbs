@@ -289,7 +289,7 @@ showkeyinfo(struct one_key *akey, int i)
 	char buf[STRLEN];
 	char buf2[15];
 	keyprint(buf2, (akey + i)->key);
-	sprintf(buf, "%c. %-26s %6s", '0' + i, (akey + i)->func, buf2);
+	snprintf(buf, sizeof buf, "%c. %-26s %6s", '0' + i, (akey + i)->func, buf2);
 	move(i + 2 - ((i > 19) ? 20 : 0), 0 + ((i > 19) ? 40 : 0));
 	prints(buf);
 	return YEA;
