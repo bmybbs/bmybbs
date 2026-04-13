@@ -130,8 +130,8 @@ static int multex=0;
 static void mc_shm_init(void);
 static void *loadData(char *filepath, void *buffer, size_t filesize);
 static void saveData(void *buffer, size_t filesize);
-static int loadValue(char *user, char *valueName, int sup);
-static int saveValue(char *user, char *valueName, int valueToAdd, int sup);
+static long loadValue(char *user, char *valueName, long sup);
+static int saveValue(char *user, char *valueName, long valueToAdd, long sup);
 static int show_welcome(char *filepath,int startline,int endline);
 static int shop_present(int order, char *kind, char *touserid);
 static int buy_present(int order, char *kind, char *cardname, char *filepath, int price_per,char *touserid);
@@ -440,22 +440,22 @@ static int readmoneyvalue(char *userid, char *key, char *value, int size) {
 	return readstrvalue(path, key, value, size);
 }
 
-static int loadValue(char *user, char *valueName, int sup) {
+static long loadValue(char *user, char *valueName, long sup) {
 	char value[20];
 	if (readmoneyvalue(user, valueName, value, 20) != 0)
 		return 0;
 	else
-		return limitValue(atoi(value), sup);
+		return limitValue(atol(value), sup);
 }  //读取相关数值
 
-static int saveValue(char *user, char *valueName, int valueToAdd, int sup) {
-	int valueInt;
+static int saveValue(char *user, char *valueName, long valueToAdd, long sup) {
+	long valueInt;
 	int retv;
 	char value[20];
 	valueInt = loadValue(user, valueName, sup);
 	valueInt += valueToAdd;
 	valueInt = limitValue(valueInt, sup);
-	snprintf(value, 20, "%d", valueInt);
+	snprintf(value, 20, "%ld", valueInt);
 	if ((retv = savemoneyvalue(user, valueName, value)) != 0) {
 		errlog("save %s %s %s retv=%d err=%s", currentuser.userid, valueName, value, retv, strerror(errno));
 	}
@@ -987,7 +987,7 @@ static int money_bank() {
 						total_num = num;
 						if (num == credit) {
 							move(8, 4);
-							sprintf(genbuf,	"是否一并取出 %d 兵马俑币的存款利息？",
+							sprintf(genbuf,	"是否一并取出 %ld 兵马俑币的存款利息？",
 									loadValue(currentuser.userid, INTEREST_NAME, MAX_MONEY_NUM)
 									+ makeInterest(num, "deposit_time", deposit_rate));
 							if (askyn(genbuf, NA, NA) == YEA) {
@@ -1042,7 +1042,7 @@ static int money_bank() {
 				lendTime = loadValue(currentuser.userid, "lend_time", 2000000000);
 				if (lendTime > 0) {
 					sprintf(genbuf,
-							"您贷款 %d 兵马俑币，当前本息共计 %d 兵马俑币，距到期 %d 小时。",
+							"您贷款 %d 兵马俑币，当前本息共计 %d 兵马俑币，距到期 %ld 小时。",
 							lendMoney, total_num,
 							(loadValue(currentuser.userid, "back_time", 2000000000) - (int) time(0)) / 3600);
 				} else {
@@ -1337,7 +1337,7 @@ static int money_bank() {
 							}
 							move(14, 4);
 							sprintf(genbuf,
-									"该客户有现金%d 兵马俑币，存款 %d 兵马俑币,贷款 %d 兵马俑币。",
+									"该客户有现金%ld 兵马俑币，存款 %ld 兵马俑币,贷款 %ld 兵马俑币。",
 									loadValue(uident, MONEY_NAME, MAX_MONEY_NUM),
 									loadValue(uident, CREDIT_NAME, MAX_MONEY_NUM),
 									loadValue(uident, LEND_NAME, MAX_MONEY_NUM));
