@@ -764,7 +764,7 @@ static void call_user(char *arg)
 		sprintf(msg, "\033[1;37m\xD2\xD1\xBE\xAD\xB0\xEF\xC4\xE3\xD1\xFB\xC7\xEB \033[32m%s\033[37m \xC1\xCB\033[m",
 			uin->userid);
 	} else
-		sprintf(msg, "\033[1;32m%s\033[37m %s\033[m", userid,
+		snprintf(msg, sizeof msg, "\033[1;32m%s\033[37m %s\033[m", userid,
 			// 无法呼叫
 			// 并没有上站
 			uin ? "\xCE\xDE\xB7\xA8\xBA\xF4\xBD\xD0" : "\xB2\xA2\xC3\xBB\xD3\xD0\xC9\xCF\xD5\xBE");
