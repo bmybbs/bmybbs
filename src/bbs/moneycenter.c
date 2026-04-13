@@ -2739,6 +2739,8 @@ static void make367Seq(char *prizeSeq) {
 	int slot = 0;
 	int success;
 
+	memset(temp, 0, sizeof temp);
+
 	srandom(time(0));
 	for (i = 0; i < 7; i++) {
 		do {		/*  数字不能相同  */
