@@ -542,9 +542,10 @@ static int count_useshell(const struct user_info *uentp, void *x_param) {
 void
 num_alcounter()
 {
-	static int last_time = 0;
-	int i, t = time(NULL);
-	if (abs(t - last_time) < 60)
+	static time_t last_time = 0;
+	int i;
+	time_t t = time(NULL);
+	if (labs(t - last_time) < 60)
 		return;
 	last_time = t;
 	count_friends = 0;
