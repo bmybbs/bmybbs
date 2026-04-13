@@ -57,11 +57,8 @@ upgradepasswd()
 		fclose(fr);
 		exit(2);
 	}
-	ytht.dietime = 0;
-	ytht.notemode_nouse = 0;
-	bzero(ytht.ip, 16);
-	bzero(ytht.unuse, 32);
 	while (fread(&fb2000, sizeof (fb2000), 1, fr) == 1) {
+		memset(&ytht, 0, sizeof ytht);
 		snprintf(ytht.userid, IDLEN + 2, "%s", fb2000.userid);
 		ytht.firstlogin = fb2000.firstlogin;
 		snprintf(ytht.lasthost, 16, "%s", fb2000.lasthost);

@@ -65,6 +65,5 @@
 
 void printchatline(const char *str);
 int ent_chat(const char *chatbuf);
-void setpager(void);
 #endif
 

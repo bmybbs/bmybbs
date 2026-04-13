@@ -83,6 +83,7 @@ static int import_user_callback(const struct ythtbbs_cache_User *user, int curr_
 			if (status != 0) {
 				fprintf(stderr, "cannot insert subs %d - %s [exec stmt]\n", curr_idx, user->userid);
 				mysql_error_stmt(stmt_insert_subs);
+				fclose(fp);
 				return -1;
 			}
 		}

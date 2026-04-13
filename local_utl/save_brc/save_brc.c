@@ -28,7 +28,7 @@ copy_brc(char *ent, char *toent)
 int main(int argc, char *argv[])
 {
 	struct stat stat_buf;
-	char path[1024], ent[1024], newent[1024];
+	char ent[1024], newent[1024];
 	time_t nowtime;
 	time_t t1a;
 	int all;
@@ -48,7 +48,6 @@ int main(int argc, char *argv[])
 	printf("save_brc is running~\n");
 	printf("\033[1mbbs home=%s now time = %s\033[0m\n", MY_BBS_HOME, ctime(&nowtime));
 
-	printf("processing %s\n", path);
 	dirp = opendir(PATHTMPBRC);
 	if (dirp == NULL)
 		return -1;

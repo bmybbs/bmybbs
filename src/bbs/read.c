@@ -1087,7 +1087,7 @@ int sread(int passonly, int readfirst, int pnum, int auser, void *record) {
 	int previous;
 	int add_anno_flag = 0;
 	char genbuf[STRLEN], title[STRLEN];
-	char tmpboard[STRLEN], anboard[STRLEN];
+	char tmpboard[24], anboard[STRLEN], title_buf[STRLEN];
 	struct fileheader *ptitle = record;
 
 	previous = pnum;
@@ -1145,7 +1145,8 @@ int sread(int passonly, int readfirst, int pnum, int auser, void *record) {
 	}
 	readingthread = ptitle->thread;
 	if (!strncmp(title, "Re: ", 4) | !strncmp(title, "RE: ", 4)) {
-		strcpy(title, title + 4);
+		ytht_strsncpy(title_buf, title + 4, sizeof title_buf);
+		ytht_strsncpy(title, title_buf, sizeof title);
 	}
 	memcpy(&SR_fptr, ptitle, sizeof (SR_fptr));
 	while (!istest) {
@@ -1180,11 +1181,12 @@ int sread(int passonly, int readfirst, int pnum, int auser, void *record) {
 			digest_post(locmem->crs_line, &SR_fptr, currdirect);
 			break;
 		case SR_BMIMPORT:
-			strcpy(tmpboard, currboard);
-			strcpy(currboard, anboard);
+			ytht_strsncpy(tmpboard, currboard, sizeof tmpboard);
+			// TODO FIXME: bypassing the warnings
+			ytht_strsncpy(currboard, anboard, sizeof currboard);
 			a_Import(currdirect, &SR_fptr, YEA + add_anno_flag);
 			change_dir(currdirect, &SR_fptr, (void *) DIR_do_import, locmem->crs_line, digestmode, 1);
-			strcpy(currboard, tmpboard);
+			ytht_strsncpy(currboard, tmpboard, sizeof currboard);
 			break;
 		case SR_BMTMP:
 			a_Save(currboard, &SR_fptr, YEA);
