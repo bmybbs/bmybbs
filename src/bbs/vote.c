@@ -657,10 +657,10 @@ showvoteitems(unsigned int pbits, int i, int flag)
 		prints("您已经投了 \033[1m%d\033[m 票", count);
 	}
 
-	sprintf(buf, "%c.%2.2s%-36.36s", 'A' + i,
+	snprintf(buf, sizeof buf, "%c.%2.2s%-36.36s", 'A' + i,
 		((pbits >> i) & 1 ? "□" : "  "), currvote.items[i]);
 	move(i + 6 - ((i > 15) ? 16 : 0), 0 + ((i > 15) ? 40 : 0));
-	prints(buf);
+	prints_nofmt(buf);
 	return YEA;
 }
 
