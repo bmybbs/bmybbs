@@ -372,7 +372,7 @@ int millionairesrec(char *title, char *str, char *owner) {
 	FILE *inf, *of;
 
 	now = time(0);
-	sprintf(fname, "tmp/deliver.millionairesrec.%d", (int)now);
+	snprintf(fname, sizeof fname, "tmp/deliver.millionairesrec.%ld", now);
 	if ((inf = fopen(fname, "w")) == NULL)
 		return -1;
 	fprintf(inf, "%s", str);
@@ -499,9 +499,9 @@ static void whoTakeCharge2(int pos, char *boss) {
 
 //检查进入权限
 static int check_allow_in() {
-	int backTime;
-	int freeTime;
-	int currentTime = time(0);
+	long backTime;
+	long freeTime;
+	time_t currentTime = time(0);
 	int num,money;
 	int robTimes;
 
@@ -576,7 +576,7 @@ static int check_allow_in() {
 	/* 欠款不还 */
 	int total_num, lendMoney;
 	backTime = loadValue(currentuser.userid, "back_time", 2000000000);
-	if((backTime - (int) time(0)) / 3600>5000)
+	if((backTime - time(0)) / 3600>5000)
 		saveValue(currentuser.userid, "back_time", time(0) + 1* 86400, 2000000000);
 	lendMoney = loadValue(currentuser.userid, LEND_NAME, MAX_MONEY_NUM);
 	if (backTime < 0 || lendMoney < 0 ) {
