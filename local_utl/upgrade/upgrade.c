@@ -59,6 +59,8 @@ upgradepasswd()
 	}
 	while (fread(&fb2000, sizeof (fb2000), 1, fr) == 1) {
 		memset(&ytht, 0, sizeof ytht);
+		fb2000.userid[sizeof fb2000.userid - 1] = 0;
+		fb2000.lasthost[sizeof fb2000.lasthost - 1] = 0;
 		snprintf(ytht.userid, IDLEN + 2, "%s", fb2000.userid);
 		ytht.firstlogin = fb2000.firstlogin;
 		snprintf(ytht.lasthost, 16, "%s", fb2000.lasthost);
