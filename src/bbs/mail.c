@@ -2174,7 +2174,7 @@ int m_cancel(const char *userid) {
 			return FULLUPDATE;
 		}
 	} else
-		strcpy(uident, userid);
+		ytht_strsncpy(uident, userid, sizeof uident);
 	clear();
 	setmailfile_s(buf, sizeof(buf), uident, ".DIR");
 	if (!new_apply_record(buf, sizeof (struct fileheader), (void *) m_cancel_1, uident))
