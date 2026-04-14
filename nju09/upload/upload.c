@@ -259,7 +259,7 @@ do_del()
 	if (!(p0 = strchr(str, '&')))
 		return;
 	p0++;
-	strcpy(str, p0);
+	ytht_strsncpy(str, p0, sizeof str);
 	if(is_utf(str, strlen(str))){
 		printf("<span style=\"color: red\">utf8</span><br />");
 		u2g(str,strlen(str),str_gbk,sizeof(str_gbk));
