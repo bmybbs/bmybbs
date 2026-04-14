@@ -224,15 +224,14 @@ _topn(void *bh_void, void * fargs)
 				real_title = ptr->title;
 				if (!strncmp(real_title, "Re: ", 4))
 					real_title += 4;
-				strncpy(data->bt.title, real_title, 60);
+				ytht_strsncpy(data->bt.title, real_title, sizeof data->bt.title);
 				data->user_hash = NULL;
 				data->bt.unum = 1;
 				(data->bt.lasttime) = ptr->filetime;
 				data->bt.thread = ptr->thread;
-				strncpy(data->bt.board, bh->filename, 24);
-				strncpy(owner, fh2realauthor(ptr), 14);
-				owner[sizeof(owner) - 1] = 0;
-				strncpy(data->bt.firstowner, fh2owner(ptr), 14);
+				ytht_strsncpy(data->bt.board, bh->filename, sizeof data->bt.board);
+				ytht_strsncpy(owner, fh2realauthor(ptr), sizeof owner);
+				ytht_strsncpy(data->bt.firstowner, fh2owner(ptr), sizeof data->bt.firstowner);
 				{
 					struct user_kv *uk = malloc(sizeof(*uk));
 					if (!uk) {
@@ -256,7 +255,7 @@ _topn(void *bh_void, void * fargs)
 				tk->data = data;
 				HASH_ADD(hh, p_table, thread, sizeof(tk->thread), tk);
 			} else {
-				strncpy(owner, fh2realauthor(ptr), 14);
+				ytht_strsncpy(owner, fh2realauthor(ptr), sizeof owner);
 				struct user_kv *uk = NULL;
 				HASH_FIND(hh, data->user_hash, owner, strlen(owner), uk);
 				if (uk == NULL) {
