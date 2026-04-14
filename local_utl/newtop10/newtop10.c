@@ -381,15 +381,16 @@ html_topten(int mode, char *file)
 		bt = bt_area[i];
 		char path[256];
 		snprintf(path, sizeof path, AREA_DIR "/%c", area[i]);
-		fp = fopen(path, "w");
-		fprintf(fp, "%s<table width='90%%'>", BDSTYLE);
-		for (j = 0; j < AREA_TOP_CNT && bt->unum != 0; j++, bt++)
-		{
-			fprintf(fp, "<tr><td width='120px'>[<a href='tdoc?board=%s'>%s</a>]</td><td><div class='bd-overflow'><a href='tfind?board=%s&amp;th=%ld' title='%s'>%s</a></div></td><td width='20px'>(%d)</td></tr>",
-				bt->board, bt->board, bt->board, bt->thread, void1(nohtml(bt->title)), void1(nohtml(bt->title)),bt->unum);
+		if ((fp = fopen(path, "w")) != NULL) {
+			fprintf(fp, "%s<table width='90%%'>", BDSTYLE);
+			for (j = 0; j < AREA_TOP_CNT && bt->unum != 0; j++, bt++)
+			{
+				fprintf(fp, "<tr><td width='120px'>[<a href='tdoc?board=%s'>%s</a>]</td><td><div class='bd-overflow'><a href='tfind?board=%s&amp;th=%ld' title='%s'>%s</a></div></td><td width='20px'>(%d)</td></tr>",
+						bt->board, bt->board, bt->board, bt->thread, void1(nohtml(bt->title)), void1(nohtml(bt->title)),bt->unum);
+			}
+			fprintf(fp, "</table>");
+			fclose(fp);
 		}
-		fprintf(fp, "</table>");
-		fclose(fp);
 	}
 
 	return 0;
