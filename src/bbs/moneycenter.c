@@ -4736,14 +4736,16 @@ static int money_killer() {
 						char *ptr;
 						int count2=0;
 						fp = fopen(DIR_MC "killerlist","r");
-						while (fgets(buf,sizeof(buf),fp)) {
-							ptr= strstr(buf,uident);
-							if(ptr){
-								count2 = atoi(ptr+strlen(uident)+1);
-								break;
+						if (fp) {
+							while (fgets(buf,sizeof(buf),fp)) {
+								ptr= strstr(buf,uident);
+								if(ptr){
+									count2 = atoi(ptr+strlen(uident)+1);
+									break;
+								}
 							}
+							fclose(fp);
 						}
-						fclose(fp);
 						if (count2+count>3)
 							count2 = 3;
 						else
