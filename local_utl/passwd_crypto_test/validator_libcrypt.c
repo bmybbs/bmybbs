@@ -57,6 +57,8 @@ main(int argc, char *argv[])
 			return 1;
 		}
 		record.plain[sizeof record.plain - 1] = 0;
+		record.hash_bbs[sizeof record.hash_bbs - 1] = 0;
+		record.hash_nju09[sizeof record.hash_nju09 - 1] = 0;
 		if (!checkpasswd_libcrypt(record.hash_bbs, record.plain)) {
 			printf("PW %s failed (bbs)\n", record.plain);
 			record_failed = 1;
