@@ -561,7 +561,7 @@ UndeleteArticle(int ent, void *record, char *direct)
 	if (!fp)
 		return DONOTHING;
 
-	strcpy(UTitle, fileinfo->title);
+	ytht_strsncpy(UTitle, fileinfo->title, sizeof UTitle);
 	if ((p = strrchr(UTitle, '-'))) {	/* create default article title */
 		*p = 0;
 		for (i = strlen(UTitle) - 1; i >= 0; i--) {
@@ -581,7 +581,7 @@ UndeleteArticle(int ent, void *record, char *direct)
 			i++;
 		} else if (strstr(buf, "Бъ  Ьт: ")) {
 			i++;
-			strcpy(UTitle, buf + 8);
+			ytht_strsncpy(UTitle, buf + 8, sizeof UTitle);
 			if ((p = strchr(UTitle, '\n')))
 				*p = 0;
 		}
