@@ -5357,12 +5357,17 @@ static int money_stock_board() {
 	}
 
 	if ((fp1 = fopen( MC_STOCK_BOARDS, "r" )) != NULL) {
-		for (j = 0; j < count; j++)
+		for (j = 0; j < count; j++) {
 			fscanf(fp1, "%s", stockboard[j]);
+			sprintf(stockname[j], "St_%s", stockboard[j]);
+		}
 		fclose(fp1);
+	} else {
+		move(7, 10);
+		prints_nofmt("\033[1;32mÏµÍ³´íÎó\033[0m");
+		pressanykey();
+		return 0;
 	}
-	for (j = 0; j < count; j++)
-		sprintf(stockname[j], "St_%s", stockboard[j]);
 
 	money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
 	clear();
