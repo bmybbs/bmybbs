@@ -200,6 +200,11 @@ main()
 			if (buf)
 				free(buf);
 			buf = malloc(st.st_size + 1);
+			if (!buf) {
+				flock(b_fd, LOCK_UN);
+				close(b_fd);
+				return -1;
+			}
 			buf[st.st_size] = 0;
 			bufsize = st.st_size + 1;
 		}
