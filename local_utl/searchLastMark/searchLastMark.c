@@ -87,18 +87,18 @@ searchLastMark(char *filename, struct markedlist *ml, int addscore)
 				break;
 			continue;
 		}
+		fhdr.title[sizeof fhdr.title - 1] = 0;
+		fhdr.owner[sizeof fhdr.owner - 1] = 0;
 		if (fhdr.owner[0] == '-' || !strcmp(fhdr.owner, "deliver")
 		    || strstr(fhdr.title, "[¾¯¸æ]"))
 			continue;
-		if(fhdr.sizebyte > 20)
-		if ((fhdr.accessed & FH_DIGEST)
-		    || (fhdr.accessed & FH_MARKED)
-		    || (fhdr.hasvoted > 1 + addscore
-			&& fhdr.staravg50 * (int) fhdr.hasvoted / 50 > 4 + addscore * 2)) {
-			if (addmarkedlist
-			    (ml, fhdr.title, fh2owner(&fhdr),
-			     fhdr.thread) >= MAXFOUNDD)
-				break;
+		if (fhdr.sizebyte > 20)
+			if ((fhdr.accessed & FH_DIGEST)
+					|| (fhdr.accessed & FH_MARKED)
+					|| (fhdr.hasvoted > 1 + addscore
+						&& fhdr.staravg50 * (int) fhdr.hasvoted / 50 > 4 + addscore * 2)) {
+				if (addmarkedlist(ml, fhdr.title, fh2owner(&fhdr), fhdr.thread) >= MAXFOUNDD)
+					break;
 		}
 	}
 	close(fd);
@@ -122,6 +122,7 @@ main()
 	while (read(b_fd, &bh, size) == size) {
 		if (!bh.filename[0])
 			continue;
+		bh.filename[sizeof bh.filename - 1] = 0;
 		snprintf(buf, sizeof buf, MY_BBS_HOME "/boards/%s/.DIR", bh.filename);
 		snprintf(recfile, sizeof recfile, MY_BBS_HOME "/wwwtmp/lastmark/%s",
 			bh.filename);
@@ -140,7 +141,7 @@ main()
 					if (i)
 						fprintf(fp, " ");
 				}
-				fprintf(fp, "\t%d", ml.mi[foundd].thread);
+				fprintf(fp, "\t%ld", ml.mi[foundd].thread);
 				fprintf(fp, "\t%s\n", ml.mi[foundd].title);
 			}
 			fclose(fp);
