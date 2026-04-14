@@ -239,6 +239,7 @@ main()
 			if (bh.filename[0] == 0)
 				continue;
 //                      if (strcmp(bh.filename,"test")) continue;
+			bh.filename[sizeof bh.filename - 1] = 0;
 			if (anony)
 				sprintf(denyfile, "boards/%s/deny_anony",
 					bh.filename);
