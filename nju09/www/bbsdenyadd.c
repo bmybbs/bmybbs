@@ -78,6 +78,9 @@ inform(char *board, char *user, char *exp, int dt)
 		currentuser.userid, board);
 	sprintf(path, "bbstmpfs/tmp/%d.tmp", thispid);
 	fp = fopen(path, "w");
+	if (fp == NULL) {
+		http_fatal("系统错误");
+	}
 	fprintf(fp, "【此篇文章是由自动发信系统所张贴】\n\n");
 	snprintf(buf, sizeof (buf),
 		"封人原因: %s\n"
