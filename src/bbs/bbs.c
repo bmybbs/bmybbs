@@ -1203,7 +1203,7 @@ super_select_board(char *bname)
 	prints_nofmt("\033[1;31m在这里可以输入版面中文名称/英文名称/版面关键字进行搜索，支持模糊搜索。\033[m\n"
 		"\033[1;31m例如，输入“铁路”“车迷”，均可定位至traffic版。\033[m");
 	getdata(4, 0, "搜索版面关键字: ", buf, 64, DOECHO, YEA);
-	strcpy(searchname, ytht_strtrim(buf));
+	ytht_strsncpy(searchname, ytht_strtrim(buf), sizeof searchname);
 	if (searchname[0] == '\0')
 		return -1;
 	if ((super_board_count = fill_super_board(searchname, result, MAXBOARD)) <= 0){
