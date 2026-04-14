@@ -131,6 +131,9 @@ main()
 		searchLastMark(buf, &ml, 1);
 		if ((foundd = ml.n) > 0) {
 			FILE *fp = fopen(recfile, "w");
+			if (!fp) {
+				continue;
+			}
 			while (foundd > 0) {
 				foundd--;
 				i = ml.mi[foundd].n;
