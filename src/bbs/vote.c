@@ -860,6 +860,7 @@ user_vote(int num)
 		return;
 	}
 	if (currvote.flag & VOTE_FLAG_LIMITED) {
+		currvote.listfname[sizeof currvote.listfname - 1] = 0;
 		int retv = valid_voter(currboard, currentuser.userid, currvote.listfname);
 		if (retv == 0 || retv == -1) {
 			prints("%s", retv == 0 ? "对不起，您不能参加本次投票\n" : "对不起，您从穿梭站连来，不能投票\n");
