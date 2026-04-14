@@ -1323,8 +1323,9 @@ add_list()
 	}
 	strcpy(vltemp.listfname, fbuf);
 	setbfile(buf, sizeof(buf), currboard, vltemp.listfname);
-	fn=fopen(buf, "w");
-	fclose(fn);
+	if ((fn=fopen(buf, "w")) != NULL) {
+		fclose(fn);
+	}
 	vltemp.voternum=0;
 	for (i=0; i<MAX_VOTERLIST_NUM; ++i) {
 		if (vlists[i]==NULL)
