@@ -809,14 +809,15 @@ static int choose_board(int newflag, const struct sectree *sec)
 
 					FILE *fp2 = fopen("etc/dayf_index", "r");
 					int totalnum = 0;
-					while (fgets(board[totalnum], 80, fp2) != NULL)
-					{
-						board[totalnum][strlen(board[totalnum]) - 1] = 0;
-						fgets(title[totalnum], 80, fp2);
-						title[totalnum][strlen(title[totalnum]) - 1] = 0;
-						totalnum ++;
+					if (fp2) {
+						while (fgets(board[totalnum], 80, fp2) != NULL) {
+							board[totalnum][strlen(board[totalnum]) - 1] = 0;
+							fgets(title[totalnum], 80, fp2);
+							title[totalnum][strlen(title[totalnum]) - 1] = 0;
+							totalnum ++;
+						}
+						fclose(fp2);
 					}
-					fclose(fp2);
 
 					while (1)
 					{
