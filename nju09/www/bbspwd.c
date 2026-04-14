@@ -4,10 +4,13 @@
 // 生成一个长为len的随机字符串
 char *random_str(char *buf, int len)
 {
-	srand((unsigned)time(NULL));
 	int i;
-	for (i = 0; i < len; i++)
-		buf[i] = rand()%10 + '0';
+	unsigned int random;
+	for (i = 0; i < len; i++) {
+		ytht_get_random_int(&random);
+		buf[i] = random % 10 + '0';
+	}
+
 	buf[len] = '\0';
 	return buf;
 }
