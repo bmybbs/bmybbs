@@ -1518,6 +1518,10 @@ do_quote(char *filepath, char quote_mode)
 	quser = quote_user;
 	bflag = strncmp(qfile, "mail", 4);
 	outf = fopen(filepath, "w");
+	if (!outf) {
+		return;
+	}
+
 	if (*qfile != '\0' && (inf = fopen(qfile, "r")) != NULL) {
 		op = quote_mode;
 		if (op != 'N') {
