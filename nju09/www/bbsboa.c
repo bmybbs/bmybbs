@@ -591,12 +591,13 @@ int show_content()
 	memset(secorder,0,sizeof(secorder));
 
 	if( access(secorderfilepath,F_OK) != -1 ){
-		secorderfile = fopen(secorderfilepath, "r");
-		while(fgets(secorder,sizeof(secorder),secorderfile)!=NULL){
-			if (secorder[strlen(secorder) - 1] == '\n')
-				secorder[strlen(secorder) - 1] = 0;
+		if ((secorderfile = fopen(secorderfilepath, "r")) != NULL) {
+			while(fgets(secorder,sizeof(secorder),secorderfile)!=NULL){
+				if (secorder[strlen(secorder) - 1] == '\n')
+					secorder[strlen(secorder) - 1] = 0;
+			}
+			fclose(secorderfile);
 		}
-		fclose(secorderfile);
 	}
 	else{
 		strcpy(secorder,"0123456789GNHAC"); // 如果站长没有配置，那就按照老版本的来
