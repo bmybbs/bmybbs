@@ -59,6 +59,9 @@ bbsvote_main()
 		if (num_of_vote == 0)
 			http_fatal("抱歉, 目前没有任何投票举行");
 		fp = fopen(controlfile, "r");
+		if (!fp) {
+			http_fatal("系统错误");
+		}
 		printf("<center><table border=1><tr>");
 		printf("<td>编号</td>");
 		printf("<td>开启投票箱者</td>");
