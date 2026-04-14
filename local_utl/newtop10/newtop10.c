@@ -432,10 +432,15 @@ telnet_topten(int mode, char *file)
 	else
 		bt = topten;
 	fp = fopen("etc/topten.tmp", "w");
-	fp2 = fopen("etc/dayf_index", "w");	// 建立这个文件是为了实现telnet下边直接看10大，modified by interma@BMY 2005.6.25
-
 	if (!fp) {
 		errlog("topten write error");
+		exit(1);
+	}
+
+	fp2 = fopen("etc/dayf_index", "w");	// 建立这个文件是为了实现telnet下边直接看10大，modified by interma@BMY 2005.6.25
+	if (!fp2) {
+		errlog("dayf_index write error");
+		fclose(fp);
 		exit(1);
 	}
 
