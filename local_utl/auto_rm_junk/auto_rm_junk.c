@@ -154,6 +154,7 @@ main()
 	while (read(b_fd, &bh, size) == size) {
 		if (!bh.filename[0])
 			continue;
+		bh.filename[sizeof bh.filename - 1] = 0;
 		printf("processing %s...", bh.filename);
 		if (rm_junk(&bh) < 0) {
 			time(&nowtime);
