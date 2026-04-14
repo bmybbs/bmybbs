@@ -236,7 +236,7 @@ void i_read(int cmdmode, char *direct, int (*dotitle) (), char *(*doentry) (int,
 	screen_len = t_lines - 4;
 	modify_user_mode(cmdmode);
 	pnt = calloc(screen_len, ssize);
-	strcpy(currdirect, direct);
+	ytht_strsncpy(currdirect, direct, sizeof currdirect);
 	if (draw_title(dotitle) == -1) {
 		free(pnt);
 		return;

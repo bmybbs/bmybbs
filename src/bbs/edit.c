@@ -538,7 +538,7 @@ register int pos;
 	}
 	p->len = line->len - pos;
 	line->len = pos;
-	strcpy(p->data, (line->data + pos));
+	ytht_strsncpy(p->data, (line->data + pos), sizeof p->data);
 	p->attr = line->attr;	/* for copy/paste */
 	*(line->data + pos) = '\0';
 	append(p, line);

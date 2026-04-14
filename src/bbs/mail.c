@@ -310,7 +310,7 @@ do_send(char *userid, char *title)
 	time_t now;
 	int save_in_mail;
 
-	strcpy(uid, userid);
+	ytht_strsncpy(uid, userid, sizeof uid);
 	/* I hate go to , but I use it again for the noodle code :-) */
 	if (strchr(userid, '@')) {
 		internet_mail = YEA;
@@ -472,7 +472,7 @@ int m_send(const char *userid) {
 			return FULLUPDATE;
 		}
 	} else
-		strcpy(uident, userid);
+		ytht_strsncpy(uident, userid, sizeof uident);
 	clear();
 	*quote_file = '\0';
 	switch (do_send(uident, NULL)) {

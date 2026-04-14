@@ -375,10 +375,10 @@ set_safe_record()
 void setqtitle(char *stitle) {
 	if (strncmp(stitle, "Re: ", 4) != 0 && strncmp(stitle, "RE: ", 4) != 0) {
 		snprintf(ReplyPost, 55, "Re: %s", stitle);
-		strcpy(ReadPost, stitle);
+		ytht_strsncpy(ReadPost, stitle, sizeof ReadPost);
 	} else {
-		strcpy(ReplyPost, stitle);
-		strcpy(ReadPost, ReplyPost + 4);
+		ytht_strsncpy(ReplyPost, stitle, sizeof ReplyPost);
+		ytht_strsncpy(ReadPost, ReplyPost + 4, sizeof ReadPost);
 	}
 }
 
@@ -397,7 +397,7 @@ chk_currBM(struct boardheader *bh, int isbig)
 void
 setquotefile(char *filepath)
 {
-	strcpy(quote_file, filepath);
+	ytht_strsncpy(quote_file, filepath, sizeof quote_file);
 }
 
 char *setbpath(char *buf, size_t len, const char *boardname) {
