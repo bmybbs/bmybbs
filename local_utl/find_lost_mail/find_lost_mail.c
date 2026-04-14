@@ -100,7 +100,8 @@ getallpost(char *path)
 				exit(0);
 			}
 			refcount[h][nfile[h]] = 0;
-			strcpy(allpost[h][nfile[h]++], direntp->d_name);
+			ytht_strsncpy(allpost[h][nfile[h]], direntp->d_name, sizeof allpost[h][nfile[h]]);
+			nfile[h]++;
 			continue;
 		}
 		if (!strcmp(direntp->d_name, "deny_users"))
