@@ -2532,12 +2532,14 @@ static int money_admin() {
 			case 'P':
 				clear();
 				fp1 = fopen(MC_STOCK_BOARDS, "r" );
-				count = listfilecontent(MC_STOCK_BOARDS);
-				clear();
-				for (j = 0; j < count; j++) {
-					fscanf(fp1, "%s", stockboard[j]);
+				if (fp1) {
+					count = listfilecontent(MC_STOCK_BOARDS);
+					clear();
+					for (j = 0; j < count; j++) {
+						fscanf(fp1, "%s", stockboard[j]);
+					}
+					fclose(fp1);
 				}
-				fclose(fp1);
 
 				move(12, 4);
 				if (askyn("确定要初始化股市吗？", NA, NA) == YEA) {
