@@ -1499,7 +1499,7 @@ sendGoodWish(char *userid)
 				memset(uid, 0, sizeof uid);
 				if (fgets(filebuf, STRLEN, mp) != NULL) {
 					if (strtok(filebuf, " \n\r\t") != NULL)
-						strcpy(uid, filebuf);
+						ytht_strsncpy(uid, filebuf, sizeof uid);
 					else
 						continue;
 				}
