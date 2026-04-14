@@ -531,9 +531,8 @@ enter_room(int unum, char *room, char *msg)
 				report("new room");
 				rnum = i;
 				memset(rooms[rnum].invites, 0, MAXACTIVE);
-				strcpy(rooms[rnum].topic, maintopic);
-				strncpy(rooms[rnum].name, room, IDLEN - 1);
-				rooms[rnum].name[IDLEN - 1] = '\0';
+				ytht_strsncpy(rooms[rnum].topic, maintopic, sizeof rooms[rnum].topic);
+				ytht_strsncpy(rooms[rnum].name, room, sizeof rooms[rnum].name);
 				rooms[rnum].flags = 0;
 				op++;
 				break;
@@ -707,9 +706,8 @@ login_user(int unum, char *msg)
 	if (utent == -2)
 		users[unum].flags |= PERM_SPECIAL8;
 	users[unum].utent = utent;
-	strcpy(users[unum].userid, userid);
-	strncpy(users[unum].chatid, chatid, CHAT_IDLEN - 1);
-	users[unum].chatid[CHAT_IDLEN - 1] = '\0';
+	ytht_strsncpy(users[unum].userid, userid, sizeof users[unum].userid);
+	ytht_strsncpy(users[unum].chatid, chatid, sizeof users[unum].chatid);
 	send_to_unum(unum, CHAT_LOGIN_OK);
 	print_user_counts(unum);
 	enter_room(unum, mainroom, (char *) NULL);
@@ -959,7 +957,7 @@ chat_nick(int unum, char *msg)
 	// \033[1;31m◎ \033[36m%s \033[0;37m已经改名为 \033[1;33m%s \033[31m◎\033[m
 	snprintf(chatbuf, sizeof chatbuf, "\033[1;31m\xA1\xF2 \033[36m%s \033[0;37m\xD2\xD1\xBE\xAD\xB8\xC4\xC3\xFB\xCE\xAA \033[1;33m%s \033[31m\xA1\xF2\033[m", users[unum].chatid, chatid);
 	send_to_room(users[unum].room, chatbuf);
-	strcpy(users[unum].chatid, chatid);
+	ytht_strsncpy(users[unum].chatid, chatid, sizeof users[unum].chatid);
 	snprintf(chatbuf, sizeof chatbuf, "/n%s", users[unum].chatid);
 	send_to_unum(unum, chatbuf);
 #ifdef WWW_CHAT
@@ -1959,8 +1957,8 @@ main(int argc, char *argv[])
 		break;
 	}
 	maintopic = CHATROOM_TOPIC[chatroom - 1];
-	strcpy(rooms[0].name, mainroom);
-	strcpy(rooms[0].topic, maintopic);
+	ytht_strsncpy(rooms[0].name, mainroom, sizeof rooms[0].name);
+	ytht_strsncpy(rooms[0].topic, maintopic, sizeof rooms[0].topic);
 
 	if (chatport <= 1000) {
 		strcpy(chatname, CHATNAME1);

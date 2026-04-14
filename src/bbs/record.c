@@ -86,7 +86,7 @@ get_num_records(char *filename, int size)
 	//add by hace 2003.05.05
 	char *s,buf[64];
 	int num=st.st_size;
-	strcpy(buf,filename);
+	ytht_strsncpy(buf, filename, sizeof buf);
 	s=strrchr(buf,'/')+1;
 	strcpy(s,".TOPFILE");
 	if(stat(buf,&st)==-1)
@@ -167,7 +167,7 @@ get_records(char *filename, void *rptr, int size, int id, int number)
 	if (n < number*size) {//hace
 		char *s, buf[64];
 		struct stat st;
-		strcpy(buf, filename);
+		ytht_strsncpy(buf, filename, sizeof buf);
 		s = strrchr(buf, '/') + 1;
 		strcpy(s, ".TOPFILE");
 		if ((stat(buf, &st) != -1) && st.st_size > 0) {

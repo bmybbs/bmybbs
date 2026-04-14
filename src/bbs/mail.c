@@ -363,7 +363,7 @@ edit_mail_file:
 		strcpy(header.title, "Ã»Ö÷Ìâ");
 	} else {
 		header.reply_mode = YEA;
-		strcpy(header.title, title);
+		ytht_strsncpy(header.title, title, sizeof header.title);
 	}
 	header.postboard = NA;
 	save_in_mail = in_mail;

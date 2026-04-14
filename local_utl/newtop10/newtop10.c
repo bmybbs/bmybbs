@@ -448,7 +448,7 @@ telnet_topten(int mode, char *file)
 	fprintf(fp,
 		"                \033[1;34m-----\033[37m=====\033[41m 本日十大热门话题 \033[40m=====\033[34m-----\033[0m\n\n");
 	for (j = 0; j < 10 && bt->unum != 0; j++, bt++) {
-		strcpy(buf, ctime(&(bt->lasttime)));
+		ytht_strsncpy(buf, ctime(&(bt->lasttime)), sizeof buf);
 		buf[20] = '\0';
 		p = buf + 4;
 		fprintf(fp,

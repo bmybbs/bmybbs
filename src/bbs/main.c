@@ -643,8 +643,7 @@ direct_login()
 	currentuser.lastlogin = time(NULL);
 	if(uinfo.invisible){			//add by mintbaggio@BMY for normal cloak
 		//currentuser.pseudo_lastlogout = currentuser.lastlogin+10;
-		srand((unsigned)time(NULL));
-		randnum=1+(int) (10000.0*rand()/(RAND_MAX+1.0));//add by bjgyt
+		randnum=1+(int) (10000.0*ytht_random()/(RAND_MAX+1.0));//add by bjgyt
 		currentuser.lastlogout = currentuser.lastlogin+randnum;
 	}else	currentuser.lastlogout = 0;
 	set_safe_record();
@@ -821,8 +820,7 @@ user_login()
 	if(uinfo.invisible) {
 		//add by mintbaggio@BMY for normal cloak
 		//currentuser.pseudo_lastlogout = currentuser.lastlogin+10;
-		srand((unsigned)time(NULL));
-		randnum=1+(int) (10000.0*rand()/(RAND_MAX+1.0));//add by bjgyt
+		randnum=1+(int) (10000.0*ytht_random()/(RAND_MAX+1.0));//add by bjgyt
 		currentuser.lastlogout = currentuser.lastlogin+randnum;
 	} else {
 		currentuser.lastlogout = 0;
@@ -884,7 +882,7 @@ chk_friend_book()
 		if (ptr == NULL)
 			continue;
 		ptr++;
-		strcpy(uid, ptr);
+		ytht_strsncpy(uid, ptr, sizeof uid);
 		if ((ptr = strstr(uid, "\n")) != NULL)
 			*ptr = '\0';
 		idnum = atoi(buf);
@@ -978,7 +976,6 @@ int bbs_entry(int argc, const char *argv[])
 	check_tty_lines();
 	term_init();
 	initscr();
-	srand(time(NULL) + getpid());
 	load_sysconf();
 	conv_init();
 	if (argc < 2 || ((*argv[1] != 'h') && (*argv[1] != 'e') && (*argv[1] != 'd'))) {
@@ -1186,7 +1183,7 @@ nowishfile:
 				buf[STRLEN - 4] = '\0';
 				ptr = strtok(buf, "\n\r");
 				if (ptr == NULL || ptr[0] == '#' || ptr[0] == '\n') continue;
-				strcpy(buf, ptr);
+				ytht_strsncpy(buf, ptr, sizeof buf);
 				for (ptr = buf; *ptr == ' ' && *ptr != 0; ptr++) ;
 				if (*ptr == 0 || ptr[0] == '#')
 					continue;
@@ -1369,7 +1366,7 @@ Q_Goodbye(int ent, struct fileheader *fileinfo, char *direct)
 					continue;
 				}
 				ptr++;
-				strcpy(uid, ptr);
+				ytht_strsncpy(uid, ptr, sizeof uid);
 				if ((ptr = strstr(uid, "\n")) != NULL)
 					*ptr = '\0';
 				if (!strcmp(uid, currentuser.userid))

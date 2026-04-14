@@ -1913,7 +1913,7 @@ static int a_rjunk(MENU *pm)
 	time_t now;
 	if (realpath(pm->path, rpath) == NULL)
 		return -1;
-	strcpy(buf, rpath + sizeof (MY_BBS_HOME "/0Announce"));
+	ytht_strsncpy(buf, rpath + sizeof (MY_BBS_HOME "/0Announce"), sizeof buf);
 	ytht_normalize(buf);
 	len = strlen(buf);
 	dirp = opendir(MY_BBS_HOME "/0Announce/.junk");

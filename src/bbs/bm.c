@@ -568,8 +568,8 @@ static int deny_notice(int action, char *user, int isglobal, int isanony, char *
 			for (i = 10; msgbuf[i]; i++)
 				if (msgbuf[i + 1] == '\n')
 					msgbuf[i + 1] = 0;
-			strcpy(tmpbuf, msgbuf + 11);
-			strcpy(tmpbuf2, msgbuf + i + 1);
+			ytht_strsncpy(tmpbuf, msgbuf + 11, sizeof tmpbuf);
+			ytht_strsncpy(tmpbuf2, msgbuf + i + 1, sizeof tmpbuf2);
 			sprintf(repbuf,
 				// %s被站务%s暂时限制在%s的POST权利
 				"%s" "\xB1\xBB\xD5\xBE\xCE\xF1" "%s" "\xD4\xDD\xCA\xB1\xCF\xDE\xD6\xC6\xD4\xDA" "%s" "\xB5\xC4" "POST" "\xC8\xA8\xC0\xFB",

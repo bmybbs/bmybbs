@@ -1540,7 +1540,7 @@ sendGoodWish(char *userid)
 			return 0;
 		}
 	} else
-		strcpy(uid, userid);
+		ytht_strsncpy(uid, userid, sizeof uid);
 	if (!(tuid = getuser(uid))) {
 		move(7, 0);
 		// \033[1m您输入的使用者代号( ID )不存在！\033[m\n
