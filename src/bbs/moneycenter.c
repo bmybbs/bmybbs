@@ -6575,11 +6575,14 @@ static int buy_present(int order, char *kind, char *cardname, char *filepath, in
 	copyfile(filepath, tmpname);
 	if (i > 0) {
 		int j;
-		FILE *fp = fopen(tmpname, "a");
-		fprintf(fp, "\n以下是 %s 的附言:\n", currentuser.userid);
-		for (j = 0; j < i; j++)
-			fprintf(fp, "%s", note[j]);
-		fclose(fp);
+		FILE *fp;
+		
+		if ((fp = fopen(tmpname, "a")) != NULL) {
+			fprintf(fp, "\n以下是 %s 的附言:\n", currentuser.userid);
+			for (j = 0; j < i; j++)
+				fprintf(fp, "%s", note[j]);
+			fclose(fp);
+		}
 	}
 	char local_buf[STRLEN * 4];
 	sprintf(local_buf,"送你%d%s%s，喜欢吗？",inputNum,unit,cardname);
