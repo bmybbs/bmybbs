@@ -1044,7 +1044,7 @@ static int money_bank() {
 					sprintf(genbuf,
 							"您贷款 %d 兵马俑币，当前本息共计 %d 兵马俑币，距到期 %ld 小时。",
 							lendMoney, total_num,
-							(loadValue(currentuser.userid, "back_time", 2000000000) - (int) time(0)) / 3600);
+							(loadValue(currentuser.userid, "back_time", 2000000000) - time(0)) / 3600);
 				} else {
 					sprintf(genbuf, "您目前没有贷款。");
 				}
@@ -1105,7 +1105,7 @@ static int money_bank() {
 					case '2':
 						move(6, 4);
 						backTime = loadValue(currentuser.userid, "back_time", 2000000000);
-						if((backTime - (int) time(0)) / 3600>5000||(backTime - (int) time(0)) / 3600<-30)
+						if((backTime - time(0)) / 3600>5000||(backTime - time(0)) / 3600<-30)
 							saveValue(currentuser.userid, "back_time", time(0) + 1* 86400, 2000000000);
 						lendTime = loadValue(currentuser.userid, "lend_time", 2000000000);
 						if (lendTime == 0) {
