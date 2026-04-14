@@ -9771,7 +9771,7 @@ static int mc_addtodeny(char *uident, char *msg, int ischange) {
 static int mc_denynotice(int action, char *user, char *msgbuf) {
 	char repbuf[STRLEN];
 	char repuser[IDLEN + 1];
-	strcpy(repuser, user);
+	ytht_strsncpy(repuser, user, sizeof repuser);
 	switch (action) {
 		case 1:
 			sprintf(repbuf, "[号外]%s被列入大富翁黑名单", repuser);
