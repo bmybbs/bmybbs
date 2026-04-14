@@ -101,7 +101,7 @@ int
 issecm(const char *str, const char *userid)
 {
 	char tocheck[10];
-	strcpy(tocheck, str);
+	ytht_strsncpy(tocheck, str, sizeof tocheck);
 	while (tocheck[0] != 0) {
 		if (issecm_strict(tocheck, userid))
 			return 1;
