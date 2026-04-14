@@ -37,10 +37,14 @@ bbssig_main()
 static void save_sig(char *path) {
 	FILE *fp;
 	char *buf;
-	fp = fopen(path, "w");
 	buf = getparm("text");
-	fprintf(fp, "%s", buf);
-	fclose(fp);
-	printf("签名档修改成功。");
-	http_quit();
+	if ((fp = fopen(path, "w")) != NULL) {
+		fprintf(fp, "%s", buf);
+		fclose(fp);
+		printf("签名档修改成功。");
+		http_quit();
+	} else {
+		printf("签名档修改失败。");
+		http_quit();
+	}
 }
