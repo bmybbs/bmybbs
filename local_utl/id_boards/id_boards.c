@@ -36,6 +36,9 @@ id_boards(char *id)
 	else
 		printf("%-15s ", id);
 	fd1 = fopen(MY_BBS_HOME "/.BOARDS", "r");
+	if (!fd1) {
+		return 1;
+	}
 	while (fread(&rec, size1, 1, fd1) == 1) {
 		if (!(rec.level & PERM_POSTMASK) && !(rec.level & PERM_NOZAP)
 		    && rec.level != 0)
