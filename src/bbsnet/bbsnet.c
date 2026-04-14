@@ -235,11 +235,12 @@ syslog(char *s)
 	char timestr[16], *thetime;
 	time_t dtime;
 	FILE *fp;
-	fp = fopen("bbsnet.log", "a");
-	time(&dtime);
-	thetime = (char *) ctime(&dtime);
-	strncpy(timestr, &(thetime[4]), 15);
-	timestr[15] = '\0';
-	fprintf(fp, "%s %s %s\n", userid, timestr, s);
-	fclose(fp);
+	if ((fp = fopen("bbsnet.log", "a")) != NULL) {
+		time(&dtime);
+		thetime = (char *) ctime(&dtime);
+		strncpy(timestr, &(thetime[4]), 15);
+		timestr[15] = '\0';
+		fprintf(fp, "%s %s %s\n", userid, timestr, s);
+		fclose(fp);
+	}
 }
