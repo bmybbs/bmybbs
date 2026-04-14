@@ -66,15 +66,16 @@ void ythtbbs_override_set_records(const char *userid, const struct ythtbbs_overr
 
 	sethomefile_s(buf, sizeof(buf), userid, (override_type == YTHTBBS_OVERRIDE_FRIENDS) ? FRIENDS_FILE : REJECTS_FILE);
 
-	fp = fopen(buf, "w+");
-	for(i = 0, j = 0; j < count; ++i) {
-		if(array[i].id[0]) {
-			fwrite(&(array[i]), sizeof(struct ythtbbs_override), 1, fp);
-			j++;
+	if ((fp = fopen(buf, "w+")) != NULL) {
+		for(i = 0, j = 0; j < count; ++i) {
+			if(array[i].id[0]) {
+				fwrite(&(array[i]), sizeof(struct ythtbbs_override), 1, fp);
+				j++;
+			}
 		}
+		ftruncate(fileno(fp), count * sizeof(struct ythtbbs_override)); // 截断
+		fclose(fp);
 	}
-	ftruncate(fileno(fp), count * sizeof(struct ythtbbs_override)); // 截断
-	fclose(fp);
 }
 
 static int ythtbbs_override_callback_cmp_userid(void *a, void *b) {
