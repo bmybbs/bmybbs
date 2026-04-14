@@ -5,10 +5,8 @@
 char *random_str(char *buf, int len)
 {
 	int i;
-	unsigned int random;
 	for (i = 0; i < len; i++) {
-		ytht_get_random_int(&random);
-		buf[i] = random % 10 + '0';
+		buf[i] = ytht_random() % 10 + '0';
 	}
 
 	buf[len] = '\0';

@@ -1206,7 +1206,6 @@ post_article(char *board, char *title, char *file, char *id,
 	char buf3[1024];
 	struct fileheader header;
 	time_t t;
-	unsigned int random;
 
 	bzero(&header, sizeof (header));
 	if (strcasecmp(id, "Anonymous"))
@@ -1244,9 +1243,8 @@ post_article(char *board, char *title, char *file, char *id,
 	}
 	fprintf(fp, "\n--\n");
 	sig_append(fp, id, sig);
-	ytht_get_random_int(&random);
 	fprintf(fp, "\033[1;%dm\xA1\xF9 \xC0\xB4\xD4\xB4:\xA3\xAE%s %s [FROM: %.40s]\033[m",
-		31 + random % 7, BBSNAME, "http://" MY_BBS_DOMAIN, ip);
+		31 + ytht_random() % 7, BBSNAME, "http://" MY_BBS_DOMAIN, ip);
 	fclose(fp);
 	sprintf(buf3, "boards/%s/M.%ld.A", board, t);
 	header.sizebyte = ytht_num2byte(eff_size(buf3));

@@ -34,6 +34,12 @@ int ytht_get_random_int(unsigned int *s) {
 	return 0;
 }
 
+unsigned int ytht_random() {
+	unsigned int r;
+	ytht_get_random_int(&r);
+	return r;
+}
+
 int ytht_get_random_str_r(char *s, size_t len) {
 	int fd;
 	size_t i;
