@@ -692,9 +692,10 @@ notepad_init()
 		lastnote = 0;
 	if (lastnote == 0) {
 		lastnote = now - (now % maxsec);
-		check = fopen("etc/checknotepad", "w");
-		fprintf(check, "%ld", lastnote);
-		fclose(check);
+		if ((check = fopen("etc/checknotepad", "w")) != NULL) {
+			fprintf(check, "%ld", lastnote);
+			fclose(check);
+		}
 	}
 	if ((now - lastnote) >= maxsec) {
 		move(t_lines - 1, 0);
