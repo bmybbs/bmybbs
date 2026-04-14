@@ -75,6 +75,8 @@ static int do_cccmail(struct fileheader *x, struct boardmem *brd) {
 		http_fatal("信件内容已丢失, 无法转载");
 	sprintf(path2, "bbstmpfs/tmp/%d.tmp", thispid);
 	fp2 = fopen(path2, "w");
+	if (fp2 == 0)
+		http_fatal("无法打开临时文件");
 	if (fgets(buf, 256, fp) != 0) {
 		if (!strncmp(buf, "发信人: ", 8) || !strncmp(buf, "寄信人: ", 8)) {
 			for (i = 0; i < 6; i++) {

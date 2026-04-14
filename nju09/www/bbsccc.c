@@ -85,6 +85,8 @@ int do_ccc(struct fileheader *x, struct boardmem *brd1, struct boardmem *brd) {
 		http_fatal("文件内容已丢失, 无法转载");
 	sprintf(path2, "bbstmpfs/tmp/%d.tmp", thispid);
 	fp2 = fopen(path2, "w");
+	if (fp2 == 0)
+		http_fatal("无法打开临时文件");
 	for (i = 0; i < 3; i++)
 		if (fgets(buf, 256, fp) == 0)
 			break;
