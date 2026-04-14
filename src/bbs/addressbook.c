@@ -183,9 +183,10 @@ saveaddressbook(char *filename, char items[][STRLEN])
 {
 	int i;
 	FILE *fp;
-	fp = fopen(filename, "w");
-	for (i = 0; i < NADDRESSITEM; i++) {
-		fprintf(fp, "%s\n", items[i]);
+	if ((fp = fopen(filename, "w")) != NULL) {
+		for (i = 0; i < NADDRESSITEM; i++) {
+			fprintf(fp, "%s\n", items[i]);
+		}
+		fclose(fp);
 	}
-	fclose(fp);
 }
