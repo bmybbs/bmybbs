@@ -307,17 +307,19 @@ showtop10(int nodes)
 {
 	char board[10][80];
 	char title[10][80];
+	FILE *fp2;
 
-	FILE *fp2 = fopen(MY_BBS_HOME "/etc/dayf_index", "r");
 	int totalnum = 0;
-	while (fgets(board[totalnum], 80, fp2) != NULL)
-	{
-		board[totalnum][strlen(board[totalnum]) - 1] = 0;
-		fgets(title[totalnum], 80, fp2);
-		title[totalnum][strlen(title[totalnum]) - 1] = 0;
-		totalnum ++;
+	if ((fp2 = fopen(MY_BBS_HOME "/etc/dayf_index", "r")) != NULL) {
+		while (fgets(board[totalnum], 80, fp2) != NULL)
+		{
+			board[totalnum][strlen(board[totalnum]) - 1] = 0;
+			fgets(title[totalnum], 80, fp2);
+			title[totalnum][strlen(title[totalnum]) - 1] = 0;
+			totalnum ++;
+		}
+		fclose(fp2);
 	}
-	fclose(fp2);
 
 	struct mmapfile mf = { .ptr = NULL };
 	struct fileheader *x;
