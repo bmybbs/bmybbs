@@ -338,12 +338,14 @@ newcomer(struct userec *x, char *words)
 	char filename[80];
 	sprintf(filename, "bbstmpfs/tmp/%d.tmp", thispid);
 	fp = fopen(filename, "w");
-	fprintf(fp, "大家好, \n\n");
-	fprintf(fp, "我是 %s(%s), 来自 %s\n", x->userid, x->username, fromhost);
-	fprintf(fp, "今天初来此地报到, 请大家多多指教.\n\n");
-	fprintf(fp, "自我介绍:\n\n");
-	fprintf(fp, "%s", words);
-	fclose(fp);
+	if (fp) {
+		fprintf(fp, "大家好, \n\n");
+		fprintf(fp, "我是 %s(%s), 来自 %s\n", x->userid, x->username, fromhost);
+		fprintf(fp, "今天初来此地报到, 请大家多多指教.\n\n");
+		fprintf(fp, "自我介绍:\n\n");
+		fprintf(fp, "%s", words);
+		fclose(fp);
+	}
 	post_article("newcomers", "WWW新手上路", filename, x->userid, x->username, fromhost, -1, 0, 0, x->userid, -1);
 	unlink(filename);
 }
