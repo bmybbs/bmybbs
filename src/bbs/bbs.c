@@ -3812,7 +3812,7 @@ int zmodem_sendfile(int ent, void *record, char *direct) {
 	char buf1[512];
 	struct fileheader *fileinfo = record;
 
-	strcpy(buf1, direct);
+	ytht_strsncpy(buf1, direct, sizeof buf1);
 	if ((t = strrchr(buf1, '/')) != NULL)
 		*t = '\0';
 	snprintf(genbuf, sizeof(genbuf), "%s/%s", buf1, fh2fname(fileinfo));
