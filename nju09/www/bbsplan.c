@@ -42,13 +42,16 @@ bbsplan_main() {
 static int save_plan(char *plan) {
 	FILE *fp;
 	char buf[10000];
-	fp = fopen(plan, "w");
-	ytht_strsncpy(buf, getparm("text"), 9999);
-	buf[9999] = 0;
-	fprintf(fp, "%s", buf);
-	fclose(fp);
-	printf("个人说明档修改成功。");
-	http_quit();
+	if ((fp = fopen(plan, "w")) != NULL) {
+		ytht_strsncpy(buf, getparm("text"), sizeof buf);
+		fprintf(fp, "%s", buf);
+		fclose(fp);
+		printf("个人说明档修改成功。");
+		http_quit();
+	} else {
+		printf("无法修改个人说明档。");
+		http_quit();
+	}
 	return 0;
 }
 
