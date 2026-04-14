@@ -5356,10 +5356,11 @@ static int money_stock_board() {
 		return 0;
 	}
 
-	fp1 = fopen( MC_STOCK_BOARDS, "r" );
-	for (j = 0; j < count; j++)
-		fscanf(fp1, "%s", stockboard[j]);
-	fclose(fp1);
+	if ((fp1 = fopen( MC_STOCK_BOARDS, "r" )) != NULL) {
+		for (j = 0; j < count; j++)
+			fscanf(fp1, "%s", stockboard[j]);
+		fclose(fp1);
+	}
 	for (j = 0; j < count; j++)
 		sprintf(stockname[j], "St_%s", stockboard[j]);
 
