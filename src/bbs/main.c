@@ -459,9 +459,10 @@ else sprintf(str1,"现在是 %s, 新世纪已经开始了%d秒\n",str,-dis);
 			if (temp_max > ythtbbs_cache_utmp_get_maxuser()) {
 				ythtbbs_cache_utmp_set_maxuser(temp_max);
 			} else {
-				maxfp = fopen(".max_login_num", "w+");
-				fprintf(maxfp, "%d", ythtbbs_cache_utmp_get_maxuser());
-				fclose(maxfp);
+				if ((maxfp = fopen(".max_login_num", "w+")) != NULL) {
+					fprintf(maxfp, "%d", ythtbbs_cache_utmp_get_maxuser());
+					fclose(maxfp);
+				}
 			}
 		}
 	}
