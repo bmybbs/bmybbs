@@ -876,7 +876,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, int c
 			if (curr == 0) {
 				continue;
 			}
-			strcpy(tmp, &buf[curr]);
+			ytht_strsncpy(tmp, &buf[curr], sizeof tmp);
 			if (enabledbchar) {
 				dbchar = 0;
 				for (i = 0; i < curr - 1; i++)
