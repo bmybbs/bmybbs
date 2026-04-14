@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "ytht/strlib.h"
 #include "bmy/convcode.h"
 #include "ythtbbs/board.h"
 #include "ythtbbs/record.h"
@@ -30,7 +31,7 @@ int main(int argc, char *argv[])
 	u2g(argv[2], strlen(argv[2]), newtitle_gbk, newtitle_len);
 
 	memset(fh.title, 0, sizeof(fh.title));
-	strncpy(fh.title, newtitle_gbk, 24);
+	ytht_strsncpy(fh.title, newtitle_gbk, sizeof fh.title);
 
 	substitute_record(BOARDS, &fh, sizeof(fh), pos);
 	printf("board %s at position %d updated successfully!\n", argv[1], pos);
