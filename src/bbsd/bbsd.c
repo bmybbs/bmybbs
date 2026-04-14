@@ -487,7 +487,7 @@ char *argv[];
 
 		if(is4map6addr(cp))
 		{
-			strcpy(hid,getv4addr(cp));
+			ytht_strsncpy(hid,getv4addr(cp),sizeof hid);
 		}
 		else
 			strncpy(hid,cp,INET6_ADDRSTRLEN);
