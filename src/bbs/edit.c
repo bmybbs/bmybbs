@@ -36,6 +36,7 @@
 #include "stuff.h"
 #include "postheader.h"
 #include "bbs-internal.h"
+#include "ytht/random.h"
 
 #define WRAPMARGIN (255)
 
@@ -537,7 +538,7 @@ register int pos;
 	}
 	p->len = line->len - pos;
 	line->len = pos;
-	strcpy(p->data, (line->data + pos));
+	ytht_strsncpy(p->data, (line->data + pos), sizeof p->data);
 	p->attr = line->attr;	/* for copy/paste */
 	*(line->data + pos) = '\0';
 	append(p, line);
@@ -997,7 +998,7 @@ int blank;
 	if ((sigfile = fopen(fname, "r")) == NULL) {
 		return;
 	}
-	sig = (currentuser.signature == -1) ? (numofsig ? (rand() % numofsig + 1) : 0) : currentuser.signature;
+	sig = (currentuser.signature == -1) ? (numofsig ? (ytht_random() % numofsig + 1) : 0) : currentuser.signature;
 	for (i = 1; i <= (sig - 1) * MAXSIGLINES && sig != 1; i++) {
 		if (!fgets(inbuf, sizeof (inbuf), sigfile)) {
 			fclose(sigfile);

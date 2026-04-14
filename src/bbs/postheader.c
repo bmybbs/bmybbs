@@ -157,9 +157,9 @@ char *prompt, *buf;
 				curr = clen;
 				continue;
 			}
-			strcpy(tmp, &buf[curr + 1]);
+			ytht_strsncpy(tmp, &buf[curr + 1], sizeof tmp);
 			buf[curr] = '\0';
-			(void) strcat(buf, tmp);
+			strcat(buf, tmp);
 			clen--;
 			move(y, x);
 			prints("%s", buf);

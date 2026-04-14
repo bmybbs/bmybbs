@@ -143,13 +143,13 @@ int do_sendmsg(const char *uid, const struct user_info *uentp, char *msgstr, int
 			pressreturn();
 			return 0;
 		}
-		strcpy(uident, lookupuser.userid);
+		ytht_strsncpy(uident, lookupuser.userid, sizeof uident);
 		uinptr = t_search(uident, NA, 0);
 		if (uinptr)
 			upid = uinptr->pid;
 	} else {
 		uinptr = uentp;
-		strcpy(uident, uid);
+		ytht_strsncpy(uident, uid, sizeof uident);
 	}
 	if (uinptr == NULL) {
 		uinptr = t_search(uident, NA, 0);

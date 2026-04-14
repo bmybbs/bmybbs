@@ -171,10 +171,10 @@ static int force_comfirm(char* userid)
 	prints("È·¶¨²Ù×÷?\n");
 	getdata(8, 0, "Y/N [N] >> ", an, 2, DOECHO, YEA);
 	if (*an == 'Y' || *an == 'y') {
-		strcpy(act_data.userid, userid);
-		strcpy(act_data.operator, currentuser.userid);
+		ytht_strsncpy(act_data.userid, userid, sizeof act_data.userid);
+		ytht_strsncpy(act_data.operator, currentuser.userid, sizeof act_data.operator);
 		act_data.status=FORCE_ACTIVE;
-		strcpy(act_data.ip, currentuser.lasthost);
+		ytht_strsncpy(act_data.ip, currentuser.lasthost, sizeof act_data.ip);
 		write_active(&act_data);
 
 		memcpy(&cuser, &lookupuser, sizeof (lookupuser));

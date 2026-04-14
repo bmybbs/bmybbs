@@ -513,11 +513,11 @@ int deny_from_article(int ent, struct fileheader *fileinfo, char *direct)
 	if (!strcmp(fh2owner(fileinfo), "Anonymous")) {	/* 对匿名文章 */
 		isanony = 1;
 		setbfile(genbuf, sizeof(genbuf), currboard, "deny_anony");
-		strcpy(user, fh2realauthor(fileinfo));
+		ytht_strsncpy(user, fh2realauthor(fileinfo), sizeof user);
 	} else {
 		isanony = 0;
 		setbfile(genbuf, sizeof(genbuf), currboard, "deny_users");
-		strcpy(user, fileinfo->owner);
+		ytht_strsncpy(user, fileinfo->owner, sizeof user);
 	}
 	seek = seek_in_file(genbuf, user);
 	if (seek) {		/* 解封 */
@@ -553,7 +553,7 @@ static int deny_notice(int action, char *user, int isglobal, int isanony, char *
 	if (isanony)
 		strcpy(repuser, "Anonymous");
 	else
-		strcpy(repuser, user);
+		ytht_strsncpy(repuser, user, sizeof repuser);
 	switch (action) {
 	case DENY:
 		if (isglobal) {

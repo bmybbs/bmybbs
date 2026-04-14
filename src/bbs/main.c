@@ -449,9 +449,10 @@ else sprintf(str1,"现在是 %s, 新世纪已经开始了%d秒\n",str,-dis);
 		ythtbbs_cache_utmp_set_maxuser(curr_login_num);
 		maxfp = fopen(".max_login_num", "r");
 		if (maxfp == NULL) {
-			maxfp = fopen(".max_login_num", "w+");
-			fprintf(maxfp, "%d", curr_login_num);
-			fclose(maxfp);
+			if ((maxfp = fopen(".max_login_num", "w+")) != NULL) {
+				fprintf(maxfp, "%d", curr_login_num);
+				fclose(maxfp);
+			}
 		} else {
 			int temp_max;
 			fscanf(maxfp, "%d", &temp_max);
@@ -692,9 +693,10 @@ notepad_init()
 		lastnote = 0;
 	if (lastnote == 0) {
 		lastnote = now - (now % maxsec);
-		check = fopen("etc/checknotepad", "w");
-		fprintf(check, "%ld", lastnote);
-		fclose(check);
+		if ((check = fopen("etc/checknotepad", "w")) != NULL) {
+			fprintf(check, "%ld", lastnote);
+			fclose(check);
+		}
 	}
 	if ((now - lastnote) >= maxsec) {
 		move(t_lines - 1, 0);

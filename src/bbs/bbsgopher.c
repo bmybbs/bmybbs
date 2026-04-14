@@ -419,18 +419,16 @@ static void showout(void) {
 				if (foo[0] == '.' && foo[1] == '\r' && foo[2] == '\n') {
 					break;
 				}
-				strncpy(newitem.title, foo, 70);
-				newitem.title[69] = 0;
+				memset(&newitem, 0, sizeof newitem);
+				ytht_strsncpy(newitem.title, foo, sizeof newitem.title);
 				if (readfield(a, foo, 1024) == 0) {
 					break;
 				}
-				strncpy(newitem.file, foo, 80);
-				newitem.file[79] = 0;
+				ytht_strsncpy(newitem.file, foo, sizeof newitem.file);
 				if (readfield(a, foo, 1024) == 0) {
 					break;
 				}
-				strncpy(newitem.server, foo, 40);
-				newitem.server[39] = 0;
+				ytht_strsncpy(newitem.server, foo, sizeof newitem.server);
 				if (readline(a, foo, 1024) == 0) {
 					break;
 				}

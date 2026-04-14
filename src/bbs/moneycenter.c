@@ -20,6 +20,7 @@
 #include "edit.h"
 #include "bbs-internal.h"
 #include "bcache.h"
+#include "ytht/random.h"
 
 #define MC_BOARD        "millionaires"
 #define DIR_MC          MY_BBS_HOME "/etc/moneyCenter/"
@@ -635,10 +636,10 @@ static int makeInterest(int basicMoney, char *valueName, float rate) {
 }
 
 static int makeRumor(int num) {
-	if (random() % 3) {
-		num += (random() % num) / 5;
+	if (ytht_random() % 3) {
+		num += (ytht_random() % num) / 5;
 	} else {
-		num -= (random() % num) / 5;
+		num -= (ytht_random() % num) / 5;
 	}
 	return limitValue(num, MAX_MONEY_NUM);
 }
@@ -883,7 +884,7 @@ static int money_bank() {
 						sprintf(buf, " %s 通过兵马俑银行向 %s 转帐了 %d 兵马俑币", currentuser.userid, uident, num);
 						mail_buf(buf, "millionaires", title);
 					}
-					if (num >= RUMOR_MONEY && random() % 2) {
+					if (num >= RUMOR_MONEY && ytht_random() % 2) {
 						sprintf(genbuf, "据说 %s 收到了一笔 %d 兵马俑币的转帐！", uident, makeRumor(num));
 						deliverreport("[谣言]来自兵马俑银行的消息", genbuf);
 					}
@@ -950,7 +951,7 @@ static int money_bank() {
 						prints("交易成功，您现在存有 %d 兵马俑币，利息共计 %d 兵马俑币。",
 								loadValue(currentuser.userid, CREDIT_NAME, MAX_MONEY_NUM),
 								loadValue(currentuser.userid, INTEREST_NAME, MAX_MONEY_NUM));
-						if (num >= RUMOR_MONEY && random() % 2) {
+						if (num >= RUMOR_MONEY && ytht_random() % 2) {
 							sprintf(genbuf,
 									"有人目击 %s 在兵马俑银行存入了 %d 的兵马俑币！",
 									currentuser.userid,
@@ -2743,11 +2744,10 @@ static void make367Seq(char *prizeSeq) {
 
 	memset(temp, 0, sizeof temp);
 
-	srandom(time(0));
 	for (i = 0; i < 7; i++) {
 		do {		/*  数字不能相同  */
 			success = 1;
-			num = 1 + random() % 36;
+			num = 1 + ytht_random() % 36;
 			for (j = 0; j <= slot; j++) {
 				if (num == temp[j]) {
 					success = 0;
@@ -3304,7 +3304,7 @@ static int money_check_guard() {
 	if (guard > 0) {
 		saveValue(currentuser.userid, "guard", -guard, 50);
 		move(9, 4);
-		if (random() % 2 == 0) {
+		if (ytht_random() % 2 == 0) {
 			prints_nofmt("你的保镖离你而去,并顺手拿了你两成的现金.");
 			saveValue(currentuser.userid, MONEY_NAME, -money / 5, MAX_MONEY_NUM);
 		} else {
@@ -3409,10 +3409,9 @@ static int money_dice() {
 						pressanykey();
 						break;
 					}
-					//srandom(time(0));
-					t1 = random() % 6 + 1;
-					t2 = random() % 6 + 1;
-					t3 = random() % 6 + 1;
+					t1 = ytht_random() % 6 + 1;
+					t2 = ytht_random() % 6 + 1;
+					t3 = ytht_random() % 6 + 1;
 					move(12, 4);
 					if ((t1 == t2) && (t2 == t3)) {
 						if (num > 2000000)
@@ -3439,7 +3438,7 @@ static int money_dice() {
 						whoTakeCharge(3, slow);//slowaction
 						saveValue(slow, MONEY_NAME, -num, MAX_MONEY_NUM);
 
-						if (num >= RUMOR_MONEY && random() % 2) {
+						if (num >= RUMOR_MONEY && ytht_random() % 2) {
 							int rumor = makeRumor(num);
 							sprintf(genbuf, "有人目击 %s 在兵马俑赌场一把赢了 %d 的兵马俑币！", currentuser.userid, rumor);
 							deliverreport("[谣言]来自兵马俑赌场的消息", genbuf);
@@ -3479,7 +3478,6 @@ static int money_robber() {
 	time_t currentTime = time(0);
 	char uident[IDLEN + 1], buf[200], title[40];
 	double mathtmp;
-	srandom(time(0));
 	char letter1[] = "限你半小时内给我寄钱，不然有你好看！\n";
 	char letter2[] = "快给我寄钱，否则小心你的脑袋挨板砖。\n我会记挂着你的安全的，嘿嘿...";
 	char letter3[] = "快给我寄钱，否则小心我把你的钱全部抢走！";
@@ -3515,7 +3513,7 @@ static int money_robber() {
 					pressanykey();
 					break;
 				}
-				r = random() % 40;
+				r = ytht_random() % 40;
 				if (r < 1)
 					money_police();
 				money_show_stat("黑帮板砖生产基地");
@@ -3626,13 +3624,13 @@ static int money_robber() {
 						sleep(5);
 						x = countexp(&currentuser);
 						y = countexp(&lookupuser);
-						r = random() % 2;
+						r = ytht_random() % 2;
 						if (r == 0)
 							z = x;
 						else
 							z = y;
-						r = random() % 100;
-						num = 1000 + random() % 2000;
+						r = ytht_random() % 100;
+						num = 1000 + ytht_random() % 2000;
 						move(16, 4);
 						if (r < 100 * z / (x + x + y + y) +zhuannum+ count)	//拍人成功
 						{
@@ -3660,7 +3658,7 @@ static int money_robber() {
 									lookupuser.dietime = lookupuser.stay + 999 * 60;
 									substitute_record(PASSFILE, &lookupuser, sizeof(lookupuser), id);
 									if (seek_in_file(DIR_MC "killer", currentuser.userid)){
-										if (random()%3 == 0){
+										if (ytht_random()%3 == 0){
 											sprintf(genbuf, "你被%s用板砖砸死了，好惨", currentuser.userid);
 											mail_buf(genbuf, uident, "替天行道");}
 										sprintf(genbuf,
@@ -3811,10 +3809,10 @@ static int money_robber() {
 				}
 				//currentuser.stay -= 3600 * 1;
 				//substitute_record(PASSFILE, &currentuser, sizeof (currentuser), usernum);
-				r = random() % 100;
+				r = ytht_random() % 100;
 				x = countexp(&currentuser);
 				y = countexp(&lookupuser);
-				if(random() % x *0.7<random() % y)
+				if(ytht_random() % x *0.7<ytht_random() % y)
 				{
 					//saveValue(currentuser.userid, CREDIT_NAME, -2000, MAX_MONEY_NUM);
 					//saveValue("police", MONEY_NAME, +2000, MAX_MONEY_NUM);
@@ -3828,7 +3826,7 @@ static int money_robber() {
 					guard_num = loadValue(uident, "guard", 8);
 					if (guard_num > 0) {
 						if (loadValue(uident, MONEY_NAME, MAX_MONEY_NUM) > guard_num * 1000000) {
-							if (random() % 2 == 0)
+							if (ytht_random() % 2 == 0)
 								saveValue(uident, "guard", -2, 50);
 							else
 								saveValue(uident, "guard", -1, 50);
@@ -3838,9 +3836,9 @@ static int money_robber() {
 						showAt(11, 4, "你干掉了他一个保镖", 1);
 						break;
 					}
-					if (random() % 2 == 0) {
+					if (ytht_random() % 2 == 0) {
 						money = loadValue(uident, MONEY_NAME, MAX_MONEY_NUM);
-						r = random() % 50;
+						r = ytht_random() % 50;
 						money = money / 100 * r;
 						saveValue(uident, MONEY_NAME, -money, MAX_MONEY_NUM);
 						saveValue(currentuser.userid, MONEY_NAME, money, MAX_MONEY_NUM);
@@ -3858,7 +3856,7 @@ static int money_robber() {
 						break;
 					} else {
 						money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
-						r = random() % 70;
+						r = ytht_random() % 70;
 						money = money / 100 * r;
 						saveValue(currentuser.userid, MONEY_NAME, -money, MAX_MONEY_NUM);
 						saveValue(uident, MONEY_NAME, money, MAX_MONEY_NUM);
@@ -3921,7 +3919,7 @@ static int money_robber() {
 								showAt(15, 4, genbuf, 1);
 							} else {
 								money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
-								if (random() % 2 == 0) {
+								if (ytht_random() % 2 == 0) {
 									saveValue(currentuser.userid, MONEY_NAME, -money, MAX_MONEY_NUM);
 									sprintf(title, "%s进行黑帮活动(偷窃)", currentuser.userid);
 									sprintf(buf,"%s偷%s, 被警察没收%d兵马俑币(全部)", currentuser.userid, uident, money);
@@ -3936,7 +3934,7 @@ static int money_robber() {
 							}
 						} else {
 							move(12, 4);
-							if (random() % 2 == 0) {
+							if (ytht_random() % 2 == 0) {
 								saveValue(currentuser.userid, "rob", 5, 50);
 								prints_nofmt("你没命地逃跑,可惜,钱包丢在了路上...");
 								money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
@@ -4106,7 +4104,7 @@ static int money_robber() {
 				}
 				//currentuser.stay -= 3600 * 1;
 				//substitute_record(PASSFILE, &currentuser, sizeof (currentuser), usernum);
-				r = random() % 100;
+				r = ytht_random() % 100;
 				x = countexp(&currentuser);
 				y = countexp(&lookupuser);
 				if (NULL == t_search(uident, NA, 1))
@@ -4125,9 +4123,9 @@ static int money_robber() {
 						break;
 					}
 
-					if (random() % 2 == 0) {
+					if (ytht_random() % 2 == 0) {
 						money = loadValue(uident, CREDIT_NAME, MAX_MONEY_NUM);
-						r = random() % 50;
+						r = ytht_random() % 50;
 						money = money / 100 * r;
 						saveValue(uident, CREDIT_NAME, -money, MAX_MONEY_NUM);
 						saveValue(currentuser.userid, MONEY_NAME, money, MAX_MONEY_NUM);
@@ -4146,7 +4144,7 @@ static int money_robber() {
 						break;
 					} else {
 						money = loadValue(currentuser.userid, CREDIT_NAME, MAX_MONEY_NUM);
-						r = random() % 70;
+						r = ytht_random() % 70;
 						money = money / 100 * r;
 						saveValue(currentuser.userid, CREDIT_NAME, -money, MAX_MONEY_NUM);
 						saveValue(uident, CREDIT_NAME, money, MAX_MONEY_NUM);
@@ -4205,7 +4203,7 @@ static int money_robber() {
 							showAt(14, 4, genbuf, 1);
 						} else {
 							move(12, 4);
-							if (random() % 2 == 0) {
+							if (ytht_random() % 2 == 0) {
 								saveValue(currentuser.userid, "rob", 5, 50);
 								prints_nofmt("逃跑成功,可惜,你的钱包丢在了路上...");
 								saveValue(currentuser.userid, MONEY_NAME, -money, MAX_MONEY_NUM);
@@ -4481,16 +4479,16 @@ static int money_beggar() {
 				credit = loadValue(uident, CREDIT_NAME, MAX_MONEY_NUM);
 				int flag;
 				if (money/2>credit/9){
-					num=random() % (money/2);
+					num=ytht_random() % (money/2);
 					flag=1;
 				}else{
 					num=credit/9;
 					if(num>money)
-						num=random() % (num/2);
+						num=ytht_random() % (num/2);
 					flag=0;
 				}
 				if(num>500000)
-					num=random() % 500000;
+					num=ytht_random() % 500000;
 				if (loadValue(currentuser.userid, "begtime", 2000000000) >=12) {
 					if(time(0) > 24*3600 + loadValue(currentuser.userid, "last_beg", 2000000000)){
 						saveValue(currentuser.userid, "begtime", -12, 2000000000);
@@ -4503,9 +4501,9 @@ static int money_beggar() {
 				}
 				saveValue(currentuser.userid, "begtime", +1, 2000000000);
 				if (!t_search(uident, NA, 1)) {
-					if (random() % 5 == 0) {
+					if (ytht_random() % 5 == 0) {
 						prints("你对着%s哭喊道：“可怜可怜我吧，还有我的小强！呜呜呜...”", uident);
-						//num = (random() % (1 + 100))*10000 + 500000;
+						//num = (ytht_random() % (1 + 100))*10000 + 500000;
 						if(flag==1)
 							saveValue(uident, MONEY_NAME, -num, MAX_MONEY_NUM);
 						else
@@ -4534,7 +4532,7 @@ static int money_beggar() {
 				else {
 					int begmoney= loadValue(uident, MONEY_NAME, MAX_MONEY_NUM);
 					if (seek_in_file(DIR_MC "gongji", uident)){
-						if(random() % 3 == 0){
+						if(ytht_random() % 3 == 0){
 							saveValue(uident, MONEY_NAME, -begmoney, MAX_MONEY_NUM);
 							saveValue(currentuser.userid, MONEY_NAME, begmoney, MAX_MONEY_NUM);
 
@@ -4551,9 +4549,9 @@ static int money_beggar() {
 						}
 					}
 
-					if (random() % 3 == 0) {
+					if (ytht_random() % 3 == 0) {
 						prints("你对着%s哭喊道：“可怜可怜我吧，还有我的小强！呜呜呜...”", uident);
-						//num = (random() % (1 + 100))*10000 + 500000;
+						//num = (ytht_random() % (1 + 100))*10000 + 500000;
 						if(flag==1)
 							saveValue(uident, MONEY_NAME, -num, MAX_MONEY_NUM);
 						else
@@ -4840,7 +4838,7 @@ static int money_killer() {
 							y = countexp(&lookupuser);
 							robTimes = loadValue(currentuser.userid, "rob", 50);
 							saveValue(currentuser.userid, "rob", -robTimes, 50);
-							if(random()/x>(random()/y)/3||(random() % 3==0)){
+							if(ytht_random()/x>(ytht_random()/y)/3||(ytht_random() % 3==0)){
 								lookupuser.dietime = lookupuser.stay + 4500 * 60;
 								substitute_record(PASSFILE, &lookupuser, sizeof(lookupuser), id);
 								deliverreport("[新闻]本站发生自杀攻击",genbuf);
@@ -5357,12 +5355,17 @@ static int money_stock_board() {
 	}
 
 	if ((fp1 = fopen( MC_STOCK_BOARDS, "r" )) != NULL) {
-		for (j = 0; j < count; j++)
+		for (j = 0; j < count; j++) {
 			fscanf(fp1, "%s", stockboard[j]);
+			sprintf(stockname[j], "St_%s", stockboard[j]);
+		}
 		fclose(fp1);
+	} else {
+		move(7, 10);
+		prints_nofmt("\033[1;32m系统错误\033[0m");
+		pressanykey();
+		return 0;
 	}
-	for (j = 0; j < count; j++)
-		sprintf(stockname[j], "St_%s", stockboard[j]);
 
 	money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
 	clear();
@@ -5869,7 +5872,6 @@ static int money_777() {
 	char title[STRLEN], buf[256];
 
 	clear();
-	srandom(time(0));
 	while (!quit) {
 		if (mc->prize777 <= 0)
 			mc->prize777 = 30000;
@@ -5884,7 +5886,7 @@ static int money_777() {
 		prints_nofmt("         777 1:80 且有机会赢得当前累积基金的一半         ");
 		move(9, 4);
 		prints("兵马俑目前累积奖金数: %d，想赢大奖么？压 100 块就行哦。", mc->prize777);
-		r = random() % 40;
+		r = ytht_random() % 40;
 		if (r < 1)
 			money_police();
 
@@ -5916,9 +5918,9 @@ static int money_777() {
 			continue;
 		}
 		saveValue(currentuser.userid, MONEY_NAME, -bid, MAX_MONEY_NUM);
-		t1 = random() % 8;
-		t2 = random() % 8;
-		t3 = random() % 8;
+		t1 = ytht_random() % 8;
+		t2 = ytht_random() % 8;
+		t3 = ytht_random() % 8;
 		move(11, 20);
 		prints("%c", n[t1]);
 		refresh();
@@ -6191,13 +6193,13 @@ static int money_police() {
 	int money = 0, quit = 1, check_num;
 	//int mode = 0, color;
 	move(t_lines - 1, 0);
-	check_num = 97 + random() % 26;
+	check_num = 97 + ytht_random() % 26;
 	money = loadValue(currentuser.userid, MONEY_NAME, MAX_MONEY_NUM);
 	saveValue(currentuser.userid, MONEY_NAME, -money, MAX_MONEY_NUM);
-	if (random() % 4 > 0) {
+	if (ytht_random() % 4 > 0) {
 		sprintf(buf, "\033[1;41m 系统临检 \033[1;46m 请输入字符:%c        \033[m", check_num);
 	}
-	//else if (random() % 3 == 0)
+	//else if (ytht_random() % 3 == 0)
 	else {
 		check_num = 0;
 		sprintf(buf, "\033[1;41m 系统临检 \033[1;46m 请输入你的ID(注意大小写!):        \033[m");
@@ -6643,7 +6645,6 @@ static void p_gp() {
 	mycard = mycard1;
 	cpucard = cpucard1;
 	sty = sty1;
-	srandom(time(0));
 	num = 0;
 	while (!quit) {
 		clear();
@@ -6666,7 +6667,7 @@ static void p_gp() {
 		prints_nofmt("葫　芦　　５倍");
 		move(t_lines - 1, 0);
 		prints_nofmt("\033[1;44m 选单 \033[1;46m [1]下注 [Q]离开                                                \033[m");
-		if (random() % 40 < 1)
+		if (ytht_random() % 40 < 1)
 			money_police();
 		if (!cont)
 			ch = igetkey();
@@ -6712,8 +6713,8 @@ static void p_gp() {
 					card[i] = i;	/* 0~51 ..黑杰克是 1~52 */
 
 				for (i = 0; i < 1000; i++) {
-					j = random() % 52;
-					k = random() % 52;
+					j = ytht_random() % 52;
+					k = ytht_random() % 52;
 					tmp = card[j];
 					card[j] = card[k];
 					card[k] = tmp;
@@ -7202,7 +7203,6 @@ static void russian_gun() {
 		currentuser.dietime = currentuser.stay + 4444 * 60;
 		substitute_record(PASSFILE, &currentuser, sizeof (currentuser), usernum);
 		for (i = 0, line = 6; i < 6; i += 2) {
-			srandom(time(0));
 			move(line++, 4);
 			if (first) {
 				prints_nofmt("你拿起左轮手枪，对准自己的太阳穴，咬咬牙扣动了扳机...");
@@ -7210,7 +7210,7 @@ static void russian_gun() {
 				prints_nofmt("蒙面男子拿起左轮手枪，对准自己的太阳穴，扣动了扳机...");
 			}
 			pressanykey();
-			if (random() % (6 - i)) {
+			if (ytht_random() % (6 - i)) {
 				move(line++, 4);
 				if (first) {
 					prints_nofmt("\033[1;33m咔哒！\033[m一声响过，你惊魂未定之余发现自己还活着...");
@@ -7242,7 +7242,7 @@ static void russian_gun() {
 					prints_nofmt("现在轮到你了...你的心脏\033[5;31m砰砰\033[m跳得厉害...");
 				}
 				pressanykey();
-				if (random() % (5 - i)) {
+				if (ytht_random() % (5 - i)) {
 					move(line++, 4);
 					if (first) {
 						prints_nofmt("\033[1;33m咔哒！\033[m一声响过，蒙面男子毫发无损...");
@@ -7506,12 +7506,11 @@ static int money_cop() {
 					prints("\033[1;33m根据线人提供的消息,你终于找到了%s藏匿的地方。\033[0m", uident);
 					move(11, 4);
 					seized = 0;
-					srandom(time(0));
 					if (askyn("\033[5;31m要破门而入么?\033[0m", NA, NA) == YEA) {
 						move(12, 4);
 						prints_nofmt("\033[1;31m你拔出手枪，一脚将门踹开，冲了进去，喊道：“警察！”\033[0m");
 						move(13, 4);
-						if (random() % 10 == 0) {
+						if (ytht_random() % 10 == 0) {
 							prints("\033[1;32m里面空无一人，窗户是打开的。看来%s刚刚跳窗而逃。\033[0m", uident);
 							move(14, 4);
 							prints_nofmt("你只好懊恼而返。大好的机会啊！");
@@ -7524,7 +7523,7 @@ static int money_cop() {
 							millionairesrec(title, buf, "警署活动");
 							break;
 						} else {
-							if (robTimes < 3 && random() % 10) {
+							if (robTimes < 3 && ytht_random() % 10) {
 								prints("\033[1;32m%s一看到你顿时吓傻了,乖乖举起了双手。\033[0m", uident);
 								sprintf(genbuf,
 										"兵马俑警署在今天的抓捕行动中抓获一名绰号%s的匪徒\n警方透露抓捕过程非常顺利\n\n"
@@ -7533,7 +7532,7 @@ static int money_cop() {
 								//saveValue(currentuser.userid, MONEY_NAME, robTimes*80000*0.3, MAX_MONEY_NUM);
 								move(14, 4);
 								seized = 1;
-							} else if (robTimes >= 3 && robTimes < 6 && random() % 5) {
+							} else if (robTimes >= 3 && robTimes < 6 && ytht_random() % 5) {
 								prints("\033[1;32m%s一看到你就要跳窗逃跑，但你眼明手快，一枪击中其小腿。\033[0m", uident);
 								sprintf(genbuf,
 										"兵马俑警署在今天的抓捕行动中抓获一名绰号%s的匪徒\n警方透露此人在与警察的枪战中负伤\n\n"
@@ -7542,7 +7541,7 @@ static int money_cop() {
 								//saveValue(currentuser.userid, MONEY_NAME, robTimes*80000*0.3, MAX_MONEY_NUM);
 								move(14, 4);
 								seized = 1;
-							} else if (robTimes >= 6 && robTimes < 8 && random() % 3) {
+							} else if (robTimes >= 6 && robTimes < 8 && ytht_random() % 3) {
 								prints("\033[1;32m%s向你猛扑过来，你来不及开枪，只好和其扭成一团...\033[0m", uident);
 								pressanykey();
 								move(14, 4);
@@ -7554,7 +7553,7 @@ static int money_cop() {
 								//saveValue(currentuser.userid, MONEY_NAME, robTimes*80000*0.3, MAX_MONEY_NUM);
 								move(15, 4);
 								seized = 1;
-							} else if (robTimes >= 8 && random() % 2) {
+							} else if (robTimes >= 8 && ytht_random() % 2) {
 								prints("\033[5;32m原来%s也有枪！你们同时瞄准了对方！\033[0m", uident);
 								pressanykey();
 								move(14, 4);
@@ -7582,12 +7581,12 @@ static int money_cop() {
 								saveValue(uident, "escTime", -2000000000, 2000000000);
 								saveValue(uident, "escTime", time(0), 2000000000);
 							}
-							if (random() % 20) {
+							if (ytht_random() % 20) {
 								prints("\033[5;32m原来%s也有枪！你们同时瞄准了对方！\033[0m", uident);
 								move(14, 4);
 								if (askyn("\033[1;31m是否紧急躲避？", NA, NA) == YEA) {
 									move(15, 4);
-									if (random() %3) {
+									if (ytht_random() %3) {
 										prints_nofmt("你一个后仰，子弹带着风声从你面门飞过。");
 										move(16, 4);
 										prints("%s趁机逃走了，你不知道是该懊恼还是庆幸。", uident);
@@ -7609,7 +7608,7 @@ static int money_cop() {
 									move(15, 4);
 									prints_nofmt("\033[1;31m狭路相逢勇者胜！你毫不犹豫的开枪了！\033[0m");
 									move(16, 4);
-									if (random() % 3) {
+									if (ytht_random() % 3) {
 										prints("\033[1;35m枪声响过，%s被击中头部，当场死亡。\033[0m", uident);
 										move(17, 4);
 										prints("你狠狠的踢了一脚%s的尸体，同时暗自庆幸今天走运。", uident);
@@ -9766,7 +9765,7 @@ static int mc_addtodeny(char *uident, char *msg, int ischange) {
 static int mc_denynotice(int action, char *user, char *msgbuf) {
 	char repbuf[STRLEN];
 	char repuser[IDLEN + 1];
-	strcpy(repuser, user);
+	ytht_strsncpy(repuser, user, sizeof repuser);
 	switch (action) {
 		case 1:
 			sprintf(repbuf, "[号外]%s被列入大富翁黑名单", repuser);

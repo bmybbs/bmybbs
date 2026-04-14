@@ -260,13 +260,12 @@ static int a_loadnames(MENU *pm)
 			*ptr = '\0';
 		if (strncmp(buf, "Name=", 5) == 0) {
 			bzero(litem.title, sizeof (litem.title));	/*add by ylsdd */
-			strncpy(litem.title, buf + 5, 72);
-			litem.title[71] = '\0';
+			ytht_strsncpy(litem.title, buf + 5, sizeof litem.title);
 		} else if (strncmp(buf, "Path=", 5) == 0) {
 			if (strncmp(buf, "Path=~/", 7) == 0)
-				strncpy(litem.fname, buf + 7, 80);
+				ytht_strsncpy(litem.fname, buf + 7, sizeof litem.fname);
 			else
-				strncpy(litem.fname, buf + 5, 80);
+				ytht_strsncpy(litem.fname, buf + 5, sizeof litem.fname);
 			litem.fname[79] = '\0';
 
 			curr_board = ythtbbs_cache_Board_get_board_by_name(litem.fname);
@@ -278,11 +277,11 @@ static int a_loadnames(MENU *pm)
 				if (strstr(litem.fname, "!@#$%")) {
 					char *ptr1, *ptr2, gtmp[STRLEN];
 
-					strcpy(gtmp, litem.fname);
+					ytht_strsncpy(gtmp, litem.fname, sizeof gtmp);
 					ptr1 = strtok(gtmp, "!#$%@");
-					strcpy(hostname, ptr1);
+					ytht_strsncpy(hostname, ptr1, sizeof hostname);
 					ptr2 = strtok(NULL, "@");
-					strcpy(litem.fname, ptr2);
+					ytht_strsncpy(litem.fname, ptr2, sizeof litem.fname);
 					litem.port = atoi(strtok(NULL, "@"));
 				}
 				a_additem(pm, litem.title, litem.fname, (strlen(hostname) == 0) ? NULL : hostname, litem.port);

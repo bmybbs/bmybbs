@@ -375,10 +375,10 @@ set_safe_record()
 void setqtitle(char *stitle) {
 	if (strncmp(stitle, "Re: ", 4) != 0 && strncmp(stitle, "RE: ", 4) != 0) {
 		snprintf(ReplyPost, 55, "Re: %s", stitle);
-		strcpy(ReadPost, stitle);
+		ytht_strsncpy(ReadPost, stitle, sizeof ReadPost);
 	} else {
-		strcpy(ReplyPost, stitle);
-		strcpy(ReadPost, ReplyPost + 4);
+		ytht_strsncpy(ReplyPost, stitle, sizeof ReplyPost);
+		ytht_strsncpy(ReadPost, ReplyPost + 4, sizeof ReadPost);
 	}
 }
 
@@ -397,7 +397,7 @@ chk_currBM(struct boardheader *bh, int isbig)
 void
 setquotefile(char *filepath)
 {
-	strcpy(quote_file, filepath);
+	ytht_strsncpy(quote_file, filepath, sizeof quote_file);
 }
 
 char *setbpath(char *buf, size_t len, const char *boardname) {
@@ -561,7 +561,7 @@ UndeleteArticle(int ent, void *record, char *direct)
 	if (!fp)
 		return DONOTHING;
 
-	strcpy(UTitle, fileinfo->title);
+	ytht_strsncpy(UTitle, fileinfo->title, sizeof UTitle);
 	if ((p = strrchr(UTitle, '-'))) {	/* create default article title */
 		*p = 0;
 		for (i = strlen(UTitle) - 1; i >= 0; i--) {
@@ -581,7 +581,7 @@ UndeleteArticle(int ent, void *record, char *direct)
 			i++;
 		} else if (strstr(buf, "标  题: ")) {
 			i++;
-			strcpy(UTitle, buf + 8);
+			ytht_strsncpy(UTitle, buf + 8, sizeof UTitle);
 			if ((p = strchr(UTitle, '\n')))
 				*p = 0;
 		}
@@ -1203,7 +1203,7 @@ super_select_board(char *bname)
 	prints_nofmt("\033[1;31m在这里可以输入版面中文名称/英文名称/版面关键字进行搜索，支持模糊搜索。\033[m\n"
 		"\033[1;31m例如，输入“铁路”“车迷”，均可定位至traffic版。\033[m");
 	getdata(4, 0, "搜索版面关键字: ", buf, 64, DOECHO, YEA);
-	strcpy(searchname, ytht_strtrim(buf));
+	ytht_strsncpy(searchname, ytht_strtrim(buf), sizeof searchname);
 	if (searchname[0] == '\0')
 		return -1;
 	if ((super_board_count = fill_super_board(searchname, result, MAXBOARD)) <= 0){
@@ -3812,7 +3812,7 @@ int zmodem_sendfile(int ent, void *record, char *direct) {
 	char buf1[512];
 	struct fileheader *fileinfo = record;
 
-	strcpy(buf1, direct);
+	ytht_strsncpy(buf1, direct, sizeof buf1);
 	if ((t = strrchr(buf1, '/')) != NULL)
 		*t = '\0';
 	snprintf(genbuf, sizeof(genbuf), "%s/%s", buf1, fh2fname(fileinfo));

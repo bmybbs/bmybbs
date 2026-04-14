@@ -72,8 +72,7 @@ static void register_success(int usernum, char *userid, char *realname,
 	usernum = getuser(userid);
 
 	sethomefile_s(genbuf, sizeof(genbuf), currentuser.userid, "mailcheck");
-	if ((fn = fopen(genbuf, "w")) != NULL) {
-		fclose(fn);
+	if ((fn = fopen(genbuf, "w")) == NULL) {
 		return;
 	}
 	fprintf(fn, "usernum: %d\n", usernum);
