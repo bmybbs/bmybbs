@@ -700,10 +700,11 @@ notepad_init()
 		move(t_lines - 1, 0);
 		prints("对不起，系统自动发信，请稍候.....");
 		refresh();
-		check = fopen("etc/checknotepad", "w");
-		lastnote = now - (now % maxsec);
-		fprintf(check, "%ld", lastnote);
-		fclose(check);
+		if ((check = fopen("etc/checknotepad", "w")) != NULL) {
+			lastnote = now - (now % maxsec);
+			fprintf(check, "%ld", lastnote);
+			fclose(check);
+		}
 		if ((check = fopen("etc/autopost", "r")) != NULL) {
 			while (fgets(tmp, STRLEN, check) != NULL) {
 				fname = strtok(tmp, " \n\t:@");
