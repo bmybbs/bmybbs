@@ -43,6 +43,7 @@ id_boards(char *id)
 		if (rec.clubnum != 0 && (!(rec.flag & CLUBTYPE_FLAG)))
 			continue;
 
+		rec.filename[sizeof rec.filename - 1] = 0;
 		if (chk_BM_id(id, &rec)) {
 			printf("%s%s", i == 0 ? "" : " ", rec.filename);
 			i++;
