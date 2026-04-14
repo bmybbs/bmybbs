@@ -3474,7 +3474,7 @@ static int money_robber() {
 	int num, money, r, ra, id, count = 0, rob,credit;
 	int freeTime;
 	int zhuannum=20;
-	int currentTime = time(0);
+	time_t currentTime = time(0);
 	char uident[IDLEN + 1], buf[200], title[40];
 	double mathtmp;
 	srandom(time(0));
