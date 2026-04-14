@@ -636,8 +636,14 @@ static int makeInterest(int basicMoney, char *valueName, float rate) {
 }
 
 static int makeRumor(int num) {
+	long tmp;
 	if (ytht_random() % 3) {
-		num += (ytht_random() % num) / 5;
+		tmp = num + (ytht_random() % num) / 5;
+		if (tmp < MAX_MONEY_NUM) {
+			num = (int) tmp;
+		} else {
+			num = MAX_MONEY_NUM;
+		}
 	} else {
 		num -= (ytht_random() % num) / 5;
 	}
