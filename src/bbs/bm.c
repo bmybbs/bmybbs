@@ -553,7 +553,7 @@ static int deny_notice(int action, char *user, int isglobal, int isanony, char *
 	if (isanony)
 		strcpy(repuser, "Anonymous");
 	else
-		strcpy(repuser, user);
+		ytht_strsncpy(repuser, user, sizeof repuser);
 	switch (action) {
 	case DENY:
 		if (isglobal) {
