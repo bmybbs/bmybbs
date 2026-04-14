@@ -140,25 +140,30 @@ int api_user_query(ONION_FUNC_PROTO_STR)
 		ue.userid[sizeof(ue.userid) - 1] = 0;
 		int total_mail = mail_count(ue.userid, &unread_mail);
 		ue.userid[sizeof(ue.userid) - 1] = 0;
+
+		const int exp = countexp(&ue);
+		const int perf = countperf(&ue);
 		sprintf(buf, "{\"errcode\":0, \"userid\":\"%s\", \"login_counts\":%d,"
 				"\"post_counts\":%d, \"total_mail\":%d, \"unread_mail\":%d, \"unread_notify\":%d,"
 				"\"job\":\"%s\", \"exp\":%d, \"perf\":%d,"
 				"\"exp_level\":\"%s\", \"perf_level\":\"%s\"}",
 				ue.userid, ue.numlogins, ue.numposts, total_mail, unread_mail,
 				count_notification_num(ue.userid), getuserlevelname(ue.userlevel),
-				countexp(&ue), countperf(&ue),
-				calc_exp_str_utf8(countexp(&ue)), calc_perf_str_utf8(countperf(&ue)));
+				exp, perf,
+				calc_exp_str_utf8(exp), calc_perf_str_utf8(perf));
 	} else {
 		// 查询对方id
 		if (getuser_s(&ue, queryid) < 0)
 			return api_error(p, req, res, API_RT_NOSUCHUSER);
 
 		ue.userid[sizeof(ue.userid) - 1] = 0;
+		const int exp = countexp(&ue);
+		const int perf = countperf(&ue);
 		sprintf(buf, "{\"errcode\":0, \"userid\":\"%s\", \"login_counts\":%d,"
 				"\"post_counts\":%d, \"job\":\"%s\", \"exp_level\":\"%s\","
 				"\"perf_level\":\"%s\"}", ue.userid, ue.numlogins, ue.numposts,
 				getuserlevelname(ue.userlevel),
-				calc_exp_str_utf8(countexp(&ue)), calc_perf_str_utf8(countperf(&ue)));
+				calc_exp_str_utf8(exp), calc_perf_str_utf8(perf));
 	}
 
 	struct json_object *jp = json_tokener_parse(buf);
