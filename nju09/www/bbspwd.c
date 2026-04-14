@@ -50,7 +50,7 @@ bbspwd_main() {
 		if (!ytht_crypt_checkpasswd(currentuser.passwd, pw1))
 			http_fatal("密码不正确");
 		ytht_get_salt(salt);
-		strcpy(currentuser.passwd, ytht_crypt_crypt1(pw2, salt));
+		ytht_strsncpy(currentuser.passwd, ytht_crypt_crypt1(pw2, salt), sizeof currentuser.passwd);
 		save_user_data(&currentuser);
 		printf("[%s] 密码修改成功.", currentuser.userid);
 	}
