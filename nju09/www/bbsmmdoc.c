@@ -28,7 +28,7 @@ bbsmmdoc_main()
 	sprintf(buf, "boards/%s/.POWER.%s_mark", board, currentuser.userid);
 	fp1 = fopen(dir, "r");
 	fp2 = fopen(buf, "w");
-	if (fp1== 0)
+	if (fp1 == 0 || fp2 == 0)
 		http_fatal("本讨论区目前没有文章");
 	/*开始搜索m文章, 写入.POWER文件*/
 	while (1) {
@@ -43,6 +43,9 @@ bbsmmdoc_main()
 	fclose(fp2);
 
 	fp = fopen(buf, "r");
+	if (fp == 0) {
+		http_fatal("本讨论区目前没有文章");
+	}
 	start = getdocstart(total, w_info->t_lines);
 	printf("<body topmargin=0 leftmargin=0>\n");
 	printf("<table width=\"100%%\" border=0 cellpadding=0 cellspacing=0>\n"

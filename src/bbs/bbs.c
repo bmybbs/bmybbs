@@ -1518,6 +1518,10 @@ do_quote(char *filepath, char quote_mode)
 	quser = quote_user;
 	bflag = strncmp(qfile, "mail", 4);
 	outf = fopen(filepath, "w");
+	if (!outf) {
+		return;
+	}
+
 	if (*qfile != '\0' && (inf = fopen(qfile, "r")) != NULL) {
 		op = quote_mode;
 		if (op != 'N') {
@@ -4255,39 +4259,41 @@ void Add_Combine(char *board, struct fileheader *fileinfo)
 	char temp2[200];
 
 	sprintf(buf,"tmp/%s.combine",currentuser.userid);
-	fp=fopen(buf,"at");
-	fprintf(fp,"\033[1;32m☆──────────────────────────────────────☆\033[0;1m\n");
+	if ((fp=fopen(buf,"at")) != NULL) {
+		fprintf(fp,"\033[1;32m☆──────────────────────────────────────☆\033[0;1m\n");
 
-	int blankline=0;
+		int blankline=0;
 
-	setbfile(buf, sizeof(buf), board, fh2fname(fileinfo));		//modify by mintbaggio 040321 for heji
-	fp1=fopen(buf, "rt");
-	if (fgets(temp2, sizeof temp2, fp1)!=NULL){
-		keepoldheader(fp1, SKIPHEADER);
-		fprintf(fp, "    \033[0;1;32m%s \033[0;1m于 \033[1;36m%s\033[0;1m 提到：\033[0m\n", fh2owner(fileinfo),
-				ytht_ctime(fileinfo->filetime));
-		while (!feof(fp1)) {
-			fgets(temp2, sizeof temp2, fp1);
-			if (transferattach(temp2, sizeof temp2, fp1, fp))
-				continue;
-			if ((unsigned)*temp2<'\x1b'){
-				if (blankline) continue;
-				else blankline=1;
+		setbfile(buf, sizeof(buf), board, fh2fname(fileinfo));		//modify by mintbaggio 040321 for heji
+		if ((fp1=fopen(buf, "rt")) != NULL) {
+			if (fgets(temp2, sizeof temp2, fp1)!=NULL){
+				keepoldheader(fp1, SKIPHEADER);
+				fprintf(fp, "    \033[0;1;32m%s \033[0;1m于 \033[1;36m%s\033[0;1m 提到：\033[0m\n", fh2owner(fileinfo),
+						ytht_ctime(fileinfo->filetime));
+				while (!feof(fp1)) {
+					fgets(temp2, sizeof temp2, fp1);
+					if (transferattach(temp2, sizeof temp2, fp1, fp))
+						continue;
+					if ((unsigned)*temp2<'\x1b'){
+						if (blankline) continue;
+						else blankline=1;
+					}
+					else blankline=0;
+					if (!strncmp(temp2, "发信人:", 7)||!strncmp(temp2, "标  题:", 7)||!strncmp(temp2, "发信站:", 7))
+						continue;
+					if (!strncmp(temp2, ": ", 2))
+						continue;
+					if (!strcmp(temp2, "--\n") || !strcmp(temp2, "--\r\n"))
+						break;
+					fputs(temp2, fp);
+
+				}
 			}
-			else blankline=0;
-			if (!strncmp(temp2, "发信人:", 7)||!strncmp(temp2, "标  题:", 7)||!strncmp(temp2, "发信站:", 7))
-				continue;
-			if (!strncmp(temp2, ": ", 2))
-				continue;
-			if (!strcmp(temp2, "--\n") || !strcmp(temp2, "--\r\n"))
-				break;
-			fputs(temp2, fp);
-
+			fclose(fp1);
 		}
+		fprintf(fp,"\n" );
+		fclose(fp);
 	}
-	fclose(fp1);
-	fprintf(fp,"\n" );
-	fclose(fp);
 }
 
 //add by mintbaggio 040326 for front page commend

@@ -242,9 +242,10 @@ save_attach()
 	}
 	//修改结束 add by wsf
 	sprintf(filename, "%s/%s", userattachpath, p0);
-	fp = fopen(filename, "w");
-	fwrite(ContentStart, 1, ContentLength, fp);
-	fclose(fp);
+	if ((fp = fopen(filename, "w")) != NULL) {
+		fwrite(ContentStart, 1, ContentLength, fp);
+		fclose(fp);
+	}
 	printf("文件 %s (%d字节) 上载成功<br>", p0, ContentLength);
 	return 0;
 }

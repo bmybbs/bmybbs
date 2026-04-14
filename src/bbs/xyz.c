@@ -1881,7 +1881,7 @@ s_checkid(const char *s)
 	clear();
 		return 0;
 	}
-	strcpy(checkuser, genbuf);
+	ytht_strsncpy(checkuser, genbuf, sizeof checkuser);
 	if (!(id = getuser(genbuf))) {
 		move(4, 0);
 		// 无效的使用者帐号

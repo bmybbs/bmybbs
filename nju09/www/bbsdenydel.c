@@ -43,6 +43,10 @@ inform(char *board, char *user)
 	sprintf(title, "恢复 %s 在 %s 的POST权", user, board);
 	sprintf(path, "bbstmpfs/tmp/%d.tmp", thispid);
 	fp = fopen(path, "w");
+	if (!fp) {
+		printf("系统错误");
+		return 1;
+	}
 	fprintf(fp, "【此篇文章是由自动发信系统所张贴】\n\n");
 	snprintf(buf, sizeof (buf), "%s 恢复了 %s %s版POST权.\n"
 			"请理解版务管理工作,谢谢!\n", currentuser.userid, user, board);

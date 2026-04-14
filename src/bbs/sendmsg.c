@@ -906,15 +906,16 @@ mail_msg(struct userec *user)
 	int count;
 
 	snprintf(fname, sizeof fname, "tmp/%s.msg", user->userid);
-	fn = fopen(fname, "w");
-	count = get_msgcount(0, user->userid);
-	for (i = 0; i < count; i++) {
-		load_msghead(0, user->userid, &head, i);
-		load_msgtext(user->userid, &head, buf);
-		translate_msg(buf, &head, showmsg, sizeof showmsg, inBBSNET);
-		fprintf(fn, "%s", showmsg);
+	if ((fn = fopen(fname, "w")) != NULL) {
+		count = get_msgcount(0, user->userid);
+		for (i = 0; i < count; i++) {
+			load_msghead(0, user->userid, &head, i);
+			load_msgtext(user->userid, &head, buf);
+			translate_msg(buf, &head, showmsg, sizeof showmsg, inBBSNET);
+			fprintf(fn, "%s", showmsg);
+		}
+		fclose(fn);
 	}
-	fclose(fn);
 
 	now = time(0);
 	sprintf(title, "[%12.12s] 所有讯息备份", ctime(&now) + 4);

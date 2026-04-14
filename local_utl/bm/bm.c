@@ -12,6 +12,8 @@ int main(int argc, char *argv[])
 	char bmbuf[IDLEN * 4 + 4];
 	int size1 = sizeof (rec);
 	fd1 = fopen(MY_BBS_HOME "/.BOARDS", "r");
+	if (!fd1)
+		return 1;
 	while (fread(&rec, size1, 1, fd1) == 1) {
 		if (!(rec.level & PERM_POSTMASK) && !(rec.level & PERM_NOZAP) && rec.level != 0)
 			continue;

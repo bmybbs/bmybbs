@@ -153,6 +153,9 @@ bbsbfind_main()
 			if (strchr(BADPOPENCHARS, *ptr)) *ptr = ' ';
 		}
 		fp=fopen("0Announce/.Search","r");
+		if (fp == 0) {
+			http_fatal("´íÎóµÄÌÖÂÛÇø");
+		}
 		char linebuf[512];
 		char *tempbuf = NULL;
 		int flag=0;

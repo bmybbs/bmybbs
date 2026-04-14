@@ -1078,9 +1078,10 @@ post_mail_buf(char *userid, char *title, char *buf, char *id, char *nickname,
 	char path[80];
 	FILE *fp;
 	sprintf(path, "bbstmpfs/tmp/edit.%d.tmp", thispid);
-	fp = fopen(path, "w");
-	fprintf(fp, "%s", buf);
-	fclose(fp);
+	if ((fp = fopen(path, "w")) != NULL) {
+		fprintf(fp, "%s", buf);
+		fclose(fp);
+	}
 	post_mail(userid, title, path, id, nickname, ip, sig, mark);
 	unlink(path);
 	return 0;

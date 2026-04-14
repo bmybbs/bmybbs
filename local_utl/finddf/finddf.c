@@ -32,12 +32,17 @@ main(int argc, char *argv[])
 	else
 		printf("%20s 的发文情况.\n\n", argv[3]);
 	fpb = fopen(MY_BBS_HOME "/.BOARDS", "r");
+	if (!fpb) {
+		printf("无法打开文件");
+		return 1;
+	}
 	while (fread(&board1, sizeof (board1), 1, fpb)) {
 		if (!(board1.level & PERM_POSTMASK)
 		    && !(board1.level ? userlevel & board1.level : 1))
 			continue;
 		if (board1.clubnum != 0)
 			continue;
+		board1.filename[sizeof board1.filename - 1] = 0;
 		snprintf(dirfile, sizeof dirfile, MY_BBS_HOME "/boards/%s/.DIR",
 			board1.filename);
 		MMAP_TRY {

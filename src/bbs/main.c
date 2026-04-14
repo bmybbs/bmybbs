@@ -459,9 +459,10 @@ else sprintf(str1,"现在是 %s, 新世纪已经开始了%d秒\n",str,-dis);
 			if (temp_max > ythtbbs_cache_utmp_get_maxuser()) {
 				ythtbbs_cache_utmp_set_maxuser(temp_max);
 			} else {
-				maxfp = fopen(".max_login_num", "w+");
-				fprintf(maxfp, "%d", ythtbbs_cache_utmp_get_maxuser());
-				fclose(maxfp);
+				if ((maxfp = fopen(".max_login_num", "w+")) != NULL) {
+					fprintf(maxfp, "%d", ythtbbs_cache_utmp_get_maxuser());
+					fclose(maxfp);
+				}
 			}
 		}
 	}
@@ -699,10 +700,11 @@ notepad_init()
 		move(t_lines - 1, 0);
 		prints("对不起，系统自动发信，请稍候.....");
 		refresh();
-		check = fopen("etc/checknotepad", "w");
-		lastnote = now - (now % maxsec);
-		fprintf(check, "%ld", lastnote);
-		fclose(check);
+		if ((check = fopen("etc/checknotepad", "w")) != NULL) {
+			lastnote = now - (now % maxsec);
+			fprintf(check, "%ld", lastnote);
+			fclose(check);
+		}
 		if ((check = fopen("etc/autopost", "r")) != NULL) {
 			while (fgets(tmp, STRLEN, check) != NULL) {
 				fname = strtok(tmp, " \n\t:@");

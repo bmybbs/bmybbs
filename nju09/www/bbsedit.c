@@ -168,6 +168,10 @@ bbsedit_main()
 			char filelog[256];
 			sprintf(filelog, "bbstmpfs/tmp/filelog-%s-%s", board, file);
 			FILE *fp_log = fopen(filelog, "w");
+			if (!fp_log) {
+				fclose(fp);
+				http_fatal("ÏµÍ³´íÎó");
+			}
 			fprintf(fp_log, "\n%s", buf);
 			while(1) {
 				if(fgets(buf, 500, fp) == 0)

@@ -1044,7 +1044,7 @@ static int money_bank() {
 					sprintf(genbuf,
 							"您贷款 %d 兵马俑币，当前本息共计 %d 兵马俑币，距到期 %ld 小时。",
 							lendMoney, total_num,
-							(loadValue(currentuser.userid, "back_time", 2000000000) - (int) time(0)) / 3600);
+							(loadValue(currentuser.userid, "back_time", 2000000000) - time(0)) / 3600);
 				} else {
 					sprintf(genbuf, "您目前没有贷款。");
 				}
@@ -1105,7 +1105,7 @@ static int money_bank() {
 					case '2':
 						move(6, 4);
 						backTime = loadValue(currentuser.userid, "back_time", 2000000000);
-						if((backTime - (int) time(0)) / 3600>5000||(backTime - (int) time(0)) / 3600<-30)
+						if((backTime - time(0)) / 3600>5000||(backTime - time(0)) / 3600<-30)
 							saveValue(currentuser.userid, "back_time", time(0) + 1* 86400, 2000000000);
 						lendTime = loadValue(currentuser.userid, "lend_time", 2000000000);
 						if (lendTime == 0) {
@@ -2532,12 +2532,14 @@ static int money_admin() {
 			case 'P':
 				clear();
 				fp1 = fopen(MC_STOCK_BOARDS, "r" );
-				count = listfilecontent(MC_STOCK_BOARDS);
-				clear();
-				for (j = 0; j < count; j++) {
-					fscanf(fp1, "%s", stockboard[j]);
+				if (fp1) {
+					count = listfilecontent(MC_STOCK_BOARDS);
+					clear();
+					for (j = 0; j < count; j++) {
+						fscanf(fp1, "%s", stockboard[j]);
+					}
+					fclose(fp1);
 				}
-				fclose(fp1);
 
 				move(12, 4);
 				if (askyn("确定要初始化股市吗？", NA, NA) == YEA) {
@@ -3474,7 +3476,7 @@ static int money_robber() {
 	int num, money, r, ra, id, count = 0, rob,credit;
 	int freeTime;
 	int zhuannum=20;
-	int currentTime = time(0);
+	time_t currentTime = time(0);
 	char uident[IDLEN + 1], buf[200], title[40];
 	double mathtmp;
 	srandom(time(0));
@@ -4736,14 +4738,16 @@ static int money_killer() {
 						char *ptr;
 						int count2=0;
 						fp = fopen(DIR_MC "killerlist","r");
-						while (fgets(buf,sizeof(buf),fp)) {
-							ptr= strstr(buf,uident);
-							if(ptr){
-								count2 = atoi(ptr+strlen(uident)+1);
-								break;
+						if (fp) {
+							while (fgets(buf,sizeof(buf),fp)) {
+								ptr= strstr(buf,uident);
+								if(ptr){
+									count2 = atoi(ptr+strlen(uident)+1);
+									break;
+								}
 							}
+							fclose(fp);
 						}
-						fclose(fp);
 						if (count2+count>3)
 							count2 = 3;
 						else
@@ -5352,10 +5356,11 @@ static int money_stock_board() {
 		return 0;
 	}
 
-	fp1 = fopen( MC_STOCK_BOARDS, "r" );
-	for (j = 0; j < count; j++)
-		fscanf(fp1, "%s", stockboard[j]);
-	fclose(fp1);
+	if ((fp1 = fopen( MC_STOCK_BOARDS, "r" )) != NULL) {
+		for (j = 0; j < count; j++)
+			fscanf(fp1, "%s", stockboard[j]);
+		fclose(fp1);
+	}
 	for (j = 0; j < count; j++)
 		sprintf(stockname[j], "St_%s", stockboard[j]);
 
@@ -6575,11 +6580,14 @@ static int buy_present(int order, char *kind, char *cardname, char *filepath, in
 	copyfile(filepath, tmpname);
 	if (i > 0) {
 		int j;
-		FILE *fp = fopen(tmpname, "a");
-		fprintf(fp, "\n以下是 %s 的附言:\n", currentuser.userid);
-		for (j = 0; j < i; j++)
-			fprintf(fp, "%s", note[j]);
-		fclose(fp);
+		FILE *fp;
+		
+		if ((fp = fopen(tmpname, "a")) != NULL) {
+			fprintf(fp, "\n以下是 %s 的附言:\n", currentuser.userid);
+			for (j = 0; j < i; j++)
+				fprintf(fp, "%s", note[j]);
+			fclose(fp);
+		}
 	}
 	char local_buf[STRLEN * 4];
 	sprintf(local_buf,"送你%d%s%s，喜欢吗？",inputNum,unit,cardname);

@@ -224,15 +224,14 @@ _topn(void *bh_void, void * fargs)
 				real_title = ptr->title;
 				if (!strncmp(real_title, "Re: ", 4))
 					real_title += 4;
-				strncpy(data->bt.title, real_title, 60);
+				ytht_strsncpy(data->bt.title, real_title, sizeof data->bt.title);
 				data->user_hash = NULL;
 				data->bt.unum = 1;
 				(data->bt.lasttime) = ptr->filetime;
 				data->bt.thread = ptr->thread;
-				strncpy(data->bt.board, bh->filename, 24);
-				strncpy(owner, fh2realauthor(ptr), 14);
-				owner[sizeof(owner) - 1] = 0;
-				strncpy(data->bt.firstowner, fh2owner(ptr), 14);
+				ytht_strsncpy(data->bt.board, bh->filename, sizeof data->bt.board);
+				ytht_strsncpy(owner, fh2realauthor(ptr), sizeof owner);
+				ytht_strsncpy(data->bt.firstowner, fh2owner(ptr), sizeof data->bt.firstowner);
 				{
 					struct user_kv *uk = malloc(sizeof(*uk));
 					if (!uk) {
@@ -256,7 +255,7 @@ _topn(void *bh_void, void * fargs)
 				tk->data = data;
 				HASH_ADD(hh, p_table, thread, sizeof(tk->thread), tk);
 			} else {
-				strncpy(owner, fh2realauthor(ptr), 14);
+				ytht_strsncpy(owner, fh2realauthor(ptr), sizeof owner);
 				struct user_kv *uk = NULL;
 				HASH_FIND(hh, data->user_hash, owner, strlen(owner), uk);
 				if (uk == NULL) {
@@ -382,15 +381,16 @@ html_topten(int mode, char *file)
 		bt = bt_area[i];
 		char path[256];
 		snprintf(path, sizeof path, AREA_DIR "/%c", area[i]);
-		fp = fopen(path, "w");
-		fprintf(fp, "%s<table width='90%%'>", BDSTYLE);
-		for (j = 0; j < AREA_TOP_CNT && bt->unum != 0; j++, bt++)
-		{
-			fprintf(fp, "<tr><td width='120px'>[<a href='tdoc?board=%s'>%s</a>]</td><td><div class='bd-overflow'><a href='tfind?board=%s&amp;th=%ld' title='%s'>%s</a></div></td><td width='20px'>(%d)</td></tr>",
-				bt->board, bt->board, bt->board, bt->thread, void1(nohtml(bt->title)), void1(nohtml(bt->title)),bt->unum);
+		if ((fp = fopen(path, "w")) != NULL) {
+			fprintf(fp, "%s<table width='90%%'>", BDSTYLE);
+			for (j = 0; j < AREA_TOP_CNT && bt->unum != 0; j++, bt++)
+			{
+				fprintf(fp, "<tr><td width='120px'>[<a href='tdoc?board=%s'>%s</a>]</td><td><div class='bd-overflow'><a href='tfind?board=%s&amp;th=%ld' title='%s'>%s</a></div></td><td width='20px'>(%d)</td></tr>",
+						bt->board, bt->board, bt->board, bt->thread, void1(nohtml(bt->title)), void1(nohtml(bt->title)),bt->unum);
+			}
+			fprintf(fp, "</table>");
+			fclose(fp);
 		}
-		fprintf(fp, "</table>");
-		fclose(fp);
 	}
 
 	return 0;
@@ -433,10 +433,15 @@ telnet_topten(int mode, char *file)
 	else
 		bt = topten;
 	fp = fopen("etc/topten.tmp", "w");
-	fp2 = fopen("etc/dayf_index", "w");	// 建立这个文件是为了实现telnet下边直接看10大，modified by interma@BMY 2005.6.25
-
 	if (!fp) {
 		errlog("topten write error");
+		exit(1);
+	}
+
+	fp2 = fopen("etc/dayf_index", "w");	// 建立这个文件是为了实现telnet下边直接看10大，modified by interma@BMY 2005.6.25
+	if (!fp2) {
+		errlog("dayf_index write error");
+		fclose(fp);
 		exit(1);
 	}
 

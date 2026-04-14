@@ -69,11 +69,14 @@ bbsmnote_main()
 static void save_note(char *path) {
 	FILE *fp;
 	char buf[10000];
-	fp = fopen(path, "w");
-	ytht_strsncpy(buf, getparm("text"), 9999);
-	fprintf(fp, "%s", buf);
-	fclose(fp);
-	printf("备忘录修改成功。<br>\n");
+	if ((fp = fopen(path, "w")) != NULL) {
+		ytht_strsncpy(buf, getparm("text"), sizeof buf);
+		fprintf(fp, "%s", buf);
+		fclose(fp);
+		printf("备忘录修改成功。<br>\n");
+	} else {
+		printf("备忘录打开失败。<br>\n");
+	}
 	printf("<a href='javascript:history.go(-2)'>返回</a>");
 	http_quit();
 }

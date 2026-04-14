@@ -222,6 +222,7 @@ main()
 	while (read(b_fd, &bh, size) == size) {
 		if (!bh.filename[0])
 			continue;
+		bh.filename[sizeof bh.filename - 1] = 0;
 		printf("processing %s\n", bh.filename);
 		fflush(stdout);
 		if (find_rm_lost(&bh) < 0) {
