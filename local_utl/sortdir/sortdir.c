@@ -10,9 +10,12 @@
 struct fileheader *data;
 
 int
-cmpfile(f1, f2)
-struct fileheader *f1, *f2;
+cmpfile(const void *p1, const void *p2)
 {
+	const struct fileheader *f1, *f2;
+
+	f1 = p1;
+	f2 = p2;
 	return f1->filetime - f2->filetime;
 }
 
