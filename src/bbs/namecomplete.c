@@ -398,7 +398,7 @@ int cwnum, key, pos;
 	return num;
 }
 
-int usercomplete(char *prompt, char *data) {
+int usercomplete(const char *prompt, char *data, size_t data_len) {
 	char *cwbuf, *cwlist, *temp;
 	int cwnum, x, y, origx, origy;
 	int clearbot = NA, count = 0, morenum = 0;
@@ -424,7 +424,7 @@ int usercomplete(char *prompt, char *data) {
 			ptr = cwlist;
 			for (i = 0; i < cwnum; i++) {
 				if (strncasecmp(data, ptr, IDLEN + 1) == 0)
-					strcpy(data, ptr);
+					ytht_strsncpy(data, ptr, data_len);
 				ptr += IDLEN + 1;
 			}
 /*
@@ -438,7 +438,7 @@ int usercomplete(char *prompt, char *data) {
 			if (count < 3)
 				continue;
 			if (cwnum == 1) {
-				strcpy(data, cwlist);
+				ytht_strsncpy(data, cwlist, data_len);
 				move(y, x);
 				prints("%s", data + count);
 				count = strlen(data);

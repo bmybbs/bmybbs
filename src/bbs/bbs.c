@@ -3432,7 +3432,7 @@ select_Personal(int ent, void *record, char *direct)
 	char uident[STRLEN], cmd[STRLEN];
 	move(0, 0);
 	clrtoeol();
-	usercomplete("您要看谁的文集？", uident);
+	usercomplete("您要看谁的文集？", uident, sizeof uident);
 	sprintf(cmd, "$%.15s", uident);
 	Personal(cmd);
 	return FULLUPDATE;

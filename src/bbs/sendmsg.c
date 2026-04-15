@@ -132,7 +132,7 @@ int do_sendmsg(const char *uid, const struct user_info *uentp, char *msgstr, int
 		move(1, 0);
 		clrtoeol();
 		prints("ËÍÑ¶Ï¢¸ø: ");
-		usercomplete(NULL, uident);
+		usercomplete(NULL, uident, sizeof uident);
 		if (uident[0] == '\0') {
 			clear();
 			return 0;

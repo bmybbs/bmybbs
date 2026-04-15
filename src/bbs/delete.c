@@ -176,7 +176,7 @@ kick_user(const struct user_info *userinfo, int mode)
 		modify_user_mode(ADMIN);
 		stand_title("Kick User");
 		move(1, 0);
-		usercomplete("Enter userid to be kicked: ", kickuser);
+		usercomplete("Enter userid to be kicked: ", kickuser, sizeof kickuser);
 		if (*kickuser == '\0') {
 			clear();
 			return 0;

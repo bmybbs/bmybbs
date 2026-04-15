@@ -238,7 +238,7 @@ int t_query(const char *q_id) {
 		clrtobot();
 		prints("查询谁:\n<输入使用者代号, 按空白键可列出符合字串>\n");
 		move(1, 8);
-		usercomplete(NULL, uident);
+		usercomplete(NULL, uident, sizeof uident);
 		if (uident[0] == '\0') {
 			return 0;
 		}
@@ -1555,7 +1555,7 @@ override_add()
 
 	clear();
 	move(1, 0);
-	usercomplete("请输入要增加的代号: ", uident);
+	usercomplete("请输入要增加的代号: ", uident, sizeof uident);
 	if (uident[0] != '\0') {
 		if (ythtbbs_cache_UserTable_search_usernum(uident) <= 0) {
 			move(2, 0);
@@ -1865,7 +1865,7 @@ int wait_friend(const char *s) {
 	modify_user_mode(WFRIEND);
 	clear();
 	move(1, 0);
-	usercomplete("请输入使用者代号以加入系统的寻人名册: ", uid);
+	usercomplete("请输入使用者代号以加入系统的寻人名册: ", uid, sizeof uid);
 	if (uid[0] == '\0') {
 		clear();
 		return 0;
