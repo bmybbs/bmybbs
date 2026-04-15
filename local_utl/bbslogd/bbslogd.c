@@ -354,7 +354,9 @@ main()
 			}
 			l = strlen(str);
 			if (l > sizeof (buf) - n) {
-				write(fd, buf, n);
+				if (fd >= 0) {
+					write(fd, buf, n);
+				}
 				sync_flag = 0;
 				n = 0;
 				i = 0;
