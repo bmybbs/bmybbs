@@ -33,7 +33,7 @@ static void mail_msg(struct userec *user) {
 	count = get_msgcount(0, user->userid);
 	for (i = 0; i < count; i++) {
 		load_msghead(0, user->userid, &head, i);
-		load_msgtext(user->userid, &head, buf);
+		load_msgtext(user->userid, &head, buf, sizeof buf);
 		translate_msg(buf, &head, showmsg, sizeof showmsg, 0);
 		fprintf(fn, "%s", showmsg);
 	}

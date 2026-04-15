@@ -308,10 +308,25 @@ load_msghead(int id, char *uident, struct msghead *head, int index)
 }
 
 int
-load_msgtext(char *uident, struct msghead *head, char *msgbuf)
+load_msgtext(const char *uident, struct msghead *head, char *msgbuf, size_t msgbuf_len)
 {
 	char fname2[STRLEN];
-	int fd2, i;
+	int fd2;
+	ssize_t n;
+	size_t want;
+
+	if (msgbuf == NULL || msgbuf_len == 0) {
+		return -1;
+	}
+
+	if (head->len < 0) {
+		return -1;
+	}
+
+	want = (size_t) head->len;
+	if (want >= msgbuf_len) {
+		want = msgbuf_len - 1;
+	}
 
 	sethomefile_s(fname2, sizeof(fname2), uident, "msgcontent");
 
@@ -322,11 +337,12 @@ load_msgtext(char *uident, struct msghead *head, char *msgbuf)
 		return -1;	/* 创建文件发生错误 */
 	}
 	lseek(fd2, head->pos, SEEK_SET);
-	i = head->len;
-	if (i >= MAX_MSG_SIZE)
-		i = MAX_MSG_SIZE - 1;
-	read(fd2, msgbuf, i);
-	msgbuf[i] = 0;
+	n = read(fd2, msgbuf, want);
+	if (n < 0) {
+		close(fd2);
+		return -1;
+	}
+	msgbuf[n] = 0;
 
 	close(fd2);
 	return 0;

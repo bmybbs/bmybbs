@@ -20,7 +20,7 @@ bbsmsg_main()
 		http_fatal("没有任何讯息");
 	for (i=0; i<count; i++) {
 		load_msghead(0, currentuser.userid, &head, i);
-		load_msgtext(currentuser.userid, &head, buf);
+		load_msgtext(currentuser.userid, &head, buf, sizeof buf);
 		translate_msg(buf, &head, msgbuf, sizeof msgbuf, 0);
 		hprintf("%s", msgbuf);
 	}

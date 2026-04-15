@@ -20,7 +20,7 @@ int translate_msg(char *src, struct msghead *head, char *dest, size_t dest_len, 
 int get_unreadcount(char *uident);
 int get_msgcount(int id, char *uident);
 int load_msghead(int id, char *uident, struct msghead *head, int index);
-int load_msgtext(char *uident, struct msghead *head, char *msgbuf);
+int load_msgtext(const char *uident, struct msghead *head, char *msgbuf, size_t msgbuf_len);
 int get_unreadmsg(char *uident);
 int clear_msg(char *uident);
 #endif

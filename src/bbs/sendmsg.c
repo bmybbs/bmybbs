@@ -386,7 +386,7 @@ r_msg2()
 			saveline(i, 1, savebuffer[i]);
 		MsgNum = (MsgNum % count);
 		load_msghead(1, currentuser.userid, &head, MsgNum);
-		load_msgtext(currentuser.userid, &head, buf);
+		load_msgtext(currentuser.userid, &head, buf, sizeof buf);
 		line = translate_msg(buf, &head, outmsg, sizeof outmsg, inBBSNET);
 		for (i = 0; i <= line; i++) {
 			move(i, 0);
@@ -516,7 +516,7 @@ r_msg()
 		}
 		count = get_unreadmsg(currentuser.userid);
 		load_msghead(1, currentuser.userid, &head, count);
-		load_msgtext(currentuser.userid, &head, buf);
+		load_msgtext(currentuser.userid, &head, buf, sizeof buf);
 		line = translate_msg(buf, &head, outmsg, sizeof outmsg, inBBSNET);
 		for (i = 0; i < line; i++) {
 			move(i, 0);
@@ -761,7 +761,7 @@ int show_allmsgs(int ent, void *record, char *direct) {
 			y = 0;
 			i = page;
 			load_msghead(all ? 2 : 0, currentuser.userid, &head, i);
-			load_msgtext(currentuser.userid, &head, buf);
+			load_msgtext(currentuser.userid, &head, buf, sizeof buf);
 			j = translate_msg(buf, &head, showmsg, sizeof showmsg, inBBSNET);
 			while (y + j <= t_lines - 1) {
 				y += j;
@@ -771,7 +771,7 @@ int show_allmsgs(int ent, void *record, char *direct) {
 				if (i >= count)
 					break;
 				load_msghead(all ? 2 : 0, currentuser.userid, &head, i);
-				load_msgtext(currentuser.userid, &head, buf);
+				load_msgtext(currentuser.userid, &head, buf, sizeof buf);
 				j = translate_msg(buf, &head, showmsg, sizeof showmsg, inBBSNET);
 			}
 		}
@@ -850,7 +850,7 @@ reenter:
 				for (i = 0; i < count; i++) {
 					read(fd, &head, sizeof (struct msghead));
 					if (toupper(ch) == 'S')
-						load_msgtext(currentuser.userid, &head, buf);
+						load_msgtext(currentuser.userid, &head, buf, sizeof buf);
 					if ((toupper(ch) == 'I' && !strncasecmp(chk, head.id, IDLEN)) || (toupper(ch) == 'S' && strcasestr(buf, chk) != NULL))
 						write(fd2, &head, sizeof (struct msghead));
 				}
@@ -910,7 +910,7 @@ mail_msg(struct userec *user)
 		count = get_msgcount(0, user->userid);
 		for (i = 0; i < count; i++) {
 			load_msghead(0, user->userid, &head, i);
-			load_msgtext(user->userid, &head, buf);
+			load_msgtext(user->userid, &head, buf, sizeof buf);
 			translate_msg(buf, &head, showmsg, sizeof showmsg, inBBSNET);
 			fprintf(fn, "%s", showmsg);
 		}
