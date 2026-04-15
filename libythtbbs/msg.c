@@ -336,7 +336,10 @@ load_msgtext(const char *uident, struct msghead *head, char *msgbuf, size_t msgb
 		errlog("msgopen err, %s", uident);
 		return -1;	/* 创建文件发生错误 */
 	}
-	lseek(fd2, head->pos, SEEK_SET);
+	if (lseek(fd2, head->pos, SEEK_SET) == (off_t) -1) {
+		close(fd2);
+		return -1;
+	}
 	n = read(fd2, msgbuf, want);
 	if (n < 0) {
 		close(fd2);
