@@ -35,7 +35,7 @@ void make_blist_full(void);
 int junkboard(void);
 int Select(const char *s);
 time_t postfile(char *filename, char *nboard, char *posttitle, int mode);
-int get_a_boardname(char *bname, size_t bname_len, char *prompt);
+int get_a_boardname(char *bname, size_t bname_len, const char *prompt);
 int do_cross(int, void *, char *);
 int cmpfilename(struct fileheader *fhdr);
 int super_select_board(char *bname);

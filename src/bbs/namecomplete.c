@@ -196,7 +196,7 @@ MaxCommonStr(char *str, size_t str_len, struct word *list, size_t n)
 #define NUMLINES (t_lines - 4)
 
 int
-namecomplete(char *prompt, char *data, size_t data_len)
+namecomplete(const char *prompt, char *data, size_t data_len)
 {
 	char *temp;
 	int ch;

@@ -513,7 +513,7 @@ time_t postfile(char *filename, char *nboard, char *posttitle, int mode) {
 }
 
 int
-get_a_boardname(char *bname, size_t bname_len, char *prompt)
+get_a_boardname(char *bname, size_t bname_len, const char *prompt)
 {
 	struct boardheader fh;
 
