@@ -26,7 +26,7 @@ delete_old_junk(char *filename)
 	time(&now);
 	mday = now / (3600 * 24) % 100;
 
-	tmpfilename(filename, tmpfile, deleted);
+	tmpfilename(filename, tmpfile, sizeof tmpfile, deleted, sizeof deleted);
 	if (digestmode == 4 || digestmode == 5) {
 		tmpfile[strlen(tmpfile) - 1] = (digestmode == 4) ? 'D' : 'J';
 		deleted[strlen(deleted) - 1] = (digestmode == 4) ? 'D' : 'J';

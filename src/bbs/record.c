@@ -236,7 +236,7 @@ delete_range(char *filename, int id1, int id2)
 	char tmpfile[STRLEN], deleted[STRLEN];
 	int fdr, fdw;
 	int count;
-	tmpfilename(filename, tmpfile, deleted);
+	tmpfilename(filename, tmpfile, sizeof tmpfile, deleted, sizeof deleted);
 	if (digestmode == 4 || digestmode == 5) {
 		tmpfile[strlen(tmpfile) - 1] = (digestmode == 4) ? 'D' : 'J';
 		deleted[strlen(deleted) - 1] = (digestmode == 4) ? 'D' : 'J';

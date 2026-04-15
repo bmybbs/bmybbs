@@ -398,7 +398,7 @@ time_t t;
 	if (!dashd(bnpath))
 		return -1;
 
-	tmpfilename(filename, tmpfile, deleted);
+	tmpfilename(filename, tmpfile, sizeof tmpfile, deleted, sizeof deleted);
 	if ((fdr = open(filename, O_RDONLY, 0)) == -1) {
 		return -2;
 	}

@@ -9,7 +9,7 @@
  */
 typedef int (*ythtbbs_record_callback_v)(void *, va_list);
 
-void tmpfilename(char *filename, char *tmpfile, char *deleted);
+void tmpfilename(const char *filename, char *tmpfile, size_t tmpfile_len, char *deleted, size_t deleted_len);
 int safewrite(int fd, void *buf, int size);
 int delete_record(char *filename, int size, int id);
 int append_record(const char *filename, const void *record, const size_t size);

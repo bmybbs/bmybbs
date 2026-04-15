@@ -18,20 +18,26 @@
 #define PATHLEN 256
 
 void
-tmpfilename(char *filename, char *tmpfile, char *deleted)
+tmpfilename(const char *filename, char *tmpfile, size_t tmpfile_len, char *deleted, size_t deleted_len)
 {
-	char *ptr, *delfname, *tmpfname;
+	const char *ptr, *delfname, *tmpfname;
+	size_t prefix_len;
 
-	strcpy(tmpfile, filename);
 	delfname = ".deleted";
 	tmpfname = ".tmpfile";
-	if ((ptr = strrchr(tmpfile, '/')) != NULL) {
-		strcpy(ptr + 1, delfname);
-		strcpy(deleted, tmpfile);
-		strcpy(ptr + 1, tmpfname);
+
+	if ((ptr = strrchr(filename, '/')) != NULL) {
+		// FIXME: not perfect
+		prefix_len = (size_t) (ptr - filename + 1);
+
+		memcpy(tmpfile, filename, prefix_len);
+		ytht_strsncpy(tmpfile + prefix_len, tmpfname, tmpfile_len - prefix_len);
+
+		memcpy(deleted, filename, prefix_len);
+		ytht_strsncpy(deleted + prefix_len, delfname, deleted_len - prefix_len);
 	} else {
-		strcpy(deleted, delfname);
-		strcpy(tmpfile, tmpfname);
+		ytht_strsncpy(deleted, delfname, deleted_len);
+		ytht_strsncpy(tmpfile, tmpfname, tmpfile_len);
 	}
 }
 
@@ -68,7 +74,7 @@ delete_record(char *filename, int size, int id)
 		return -1;
 	if (strlen(filename) - 8 > sizeof (tmpfile))
 		return -1;
-	tmpfilename(filename, tmpfile, deleted);
+	tmpfilename(filename, tmpfile, sizeof tmpfile, deleted, sizeof deleted);
 
 	if ((fdr = open(filename, O_RDONLY, 0)) == -1) {
 		errlog("delrec open err %d", errno);
