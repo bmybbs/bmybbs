@@ -79,7 +79,11 @@ save_msgtext(char *uident, struct msghead *head, const char *msgbuf)
 			write(fd, &i, 4);
 			count = 0;
 		}
-		lseek(fd, count * sizeof (struct msghead) + 4, SEEK_SET);
+		if (lseek(fd, count * sizeof (struct msghead) + 4, SEEK_SET) == (off_t) -1) {
+			errlog("lseek error");
+			close(fd);
+			return -1;
+		}
 		write(fd, head, sizeof (struct msghead));
 		ldata.l_type = F_UNLCK;
 		fcntl(fd, F_SETLKW, &ldata);
@@ -298,7 +302,10 @@ load_msghead(int id, char *uident, struct msghead *head, int index)
 		return -1;
 	}
 
-	lseek(fd, index * sizeof (struct msghead) + 4, SEEK_SET);
+	if (lseek(fd, index * sizeof (struct msghead) + 4, SEEK_SET) == (off_t) -1) {
+		close(fd);
+		return -1;
+	}
 	read(fd, head, sizeof (struct msghead));
 
 	ldata.l_type = F_UNLCK;
