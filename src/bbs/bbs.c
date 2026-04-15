@@ -154,7 +154,7 @@ show_cake(char *filename, time_t num)
 	fp = fopen(filename, "r");
 	if (fp == NULL)
 		goto CAKEERROR0;
-	if (NULL == fgets(line, 200, fp) || sscanf(line, "%d", &count) != 1)
+	if (NULL == fgets(line, 200, fp) || sscanf(line, "%d", &count) != 1 || count == 0)
 		goto CAKEERROR1;
 
 	num0 += num;
