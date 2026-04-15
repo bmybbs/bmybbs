@@ -1,5 +1,6 @@
 #ifndef BMYBBS_XYZ_H
 #define BMYBBS_XYZ_H
+#include <stddef.h>
 void loaduserkeys(void);
 int modify_user_mode(int mode);
 int showperminfo(unsigned int pbits, int i, int use_define);
@@ -22,6 +23,6 @@ int sendgoodwish(const char *uid);
 int ent_bnet(const char *cmd);
 int x_denylevel(const char *s);
 int s_checkid(const char *s);
-char *directfile(char *fpath, char *direct, char *filename);
+char *directfile(char *fpath, size_t fpath_len, const char *direct, const char *filename);
 int zsend_file(char *from, char *title);
 #endif //BMYBBS_XYZ_H

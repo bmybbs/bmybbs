@@ -527,7 +527,7 @@ a_Import(char *direct, struct fileheader *fileinfo, int nomsg)
 	else
 		sprintf( genbuf, "/bin/cp -r boards/%s/%s %s 1>/dev/null 2>/dev/null", key , fileinfo->filename , bname );
 	*/
-	directfile(filepath, direct, fh2fname(fileinfo));
+	directfile(filepath, sizeof filepath, direct, fh2fname(fileinfo));
 	copyfile(filepath, bname);
 	if (0)
 		if (!nomsg) {
@@ -1913,7 +1913,7 @@ static int a_rjunk(MENU *pm)
 	time_t now;
 	if (realpath(pm->path, rpath) == NULL)
 		return -1;
-	strcpy(buf, rpath + sizeof (MY_BBS_HOME "/0Announce"));
+	ytht_strsncpy(buf, rpath + sizeof (MY_BBS_HOME "/0Announce"), sizeof buf);
 	ytht_normalize(buf);
 	len = strlen(buf);
 	dirp = opendir(MY_BBS_HOME "/0Announce/.junk");

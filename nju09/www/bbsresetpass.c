@@ -119,7 +119,7 @@ void api_do_bbsresetpass(void) {
 	}
 
 	ytht_get_salt(salt);
-	strcpy(x->passwd, ytht_crypt_crypt1(pass2, salt));
+	ytht_strsncpy(x->passwd, ytht_crypt_crypt1(pass2, salt), sizeof x->passwd);
 	save_user_data(x);
 	rc = 0;
 OUTPUT:

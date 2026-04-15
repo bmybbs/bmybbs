@@ -86,7 +86,7 @@ get_num_records(char *filename, int size)
 	//add by hace 2003.05.05
 	char *s,buf[64];
 	int num=st.st_size;
-	strcpy(buf,filename);
+	ytht_strsncpy(buf, filename, sizeof buf);
 	s=strrchr(buf,'/')+1;
 	strcpy(s,".TOPFILE");
 	if(stat(buf,&st)==-1)
@@ -167,7 +167,7 @@ get_records(char *filename, void *rptr, int size, int id, int number)
 	if (n < number*size) {//hace
 		char *s, buf[64];
 		struct stat st;
-		strcpy(buf, filename);
+		ytht_strsncpy(buf, filename, sizeof buf);
 		s = strrchr(buf, '/') + 1;
 		strcpy(s, ".TOPFILE");
 		if ((stat(buf, &st) != -1) && st.st_size > 0) {
@@ -236,7 +236,7 @@ delete_range(char *filename, int id1, int id2)
 	char tmpfile[STRLEN], deleted[STRLEN];
 	int fdr, fdw;
 	int count;
-	tmpfilename(filename, tmpfile, deleted);
+	tmpfilename(filename, tmpfile, sizeof tmpfile, deleted, sizeof deleted);
 	if (digestmode == 4 || digestmode == 5) {
 		tmpfile[strlen(tmpfile) - 1] = (digestmode == 4) ? 'D' : 'J';
 		deleted[strlen(deleted) - 1] = (digestmode == 4) ? 'D' : 'J';

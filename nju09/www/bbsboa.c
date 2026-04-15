@@ -681,7 +681,7 @@ int show_content()
 			continue;
 		*p = '\0';
 
-		strcpy(buf2, p+1);
+		ytht_strsncpy(buf2, p+1, sizeof buf2);
 		ytht_strtrim(buf2);
 		if (strlen(buf2) <= 1)
 			continue;

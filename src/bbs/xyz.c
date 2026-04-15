@@ -1540,7 +1540,7 @@ sendGoodWish(char *userid)
 			return 0;
 		}
 	} else
-		strcpy(uid, userid);
+		ytht_strsncpy(uid, userid, sizeof uid);
 	if (!(tuid = getuser(uid))) {
 		move(7, 0);
 		// \033[1m您输入的使用者代号( ID )不存在！\033[m\n
@@ -1919,13 +1919,16 @@ s_checkid(const char *s)
 	return 1;
 }
 
-char *directfile(char *fpath, char *direct, char *filename) {
-	char *t;
-	strcpy(fpath, direct);
-	if ((t = strrchr(fpath, '/')) == NULL)
+char *directfile(char *fpath, size_t fpath_len, const char *direct, const char *filename) {
+	const char *t;
+	size_t prefix_len;
+
+	ytht_strsncpy(fpath, direct, fpath_len);
+	if ((t = strrchr(direct, '/')) == NULL)
 		exit(0);
-	t++;
-	strcpy(t, filename);
+
+	prefix_len = (size_t) (t - direct + 1);
+	ytht_strsncpy(fpath + prefix_len, filename, fpath_len - prefix_len);
 	return fpath;
 }
 

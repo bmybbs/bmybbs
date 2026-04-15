@@ -363,7 +363,7 @@ edit_mail_file:
 		strcpy(header.title, "没主题");
 	} else {
 		header.reply_mode = YEA;
-		strcpy(header.title, title);
+		ytht_strsncpy(header.title, title, sizeof header.title);
 	}
 	header.postboard = NA;
 	save_in_mail = in_mail;
@@ -693,7 +693,7 @@ mail_read(int ent, void *record, char *direct)
 	clear();
 	readnext = NA;
 	setqtitle(fileinfo->title);
-	directfile(notgenbuf, direct, fh2fname(fileinfo));
+	directfile(notgenbuf, sizeof notgenbuf, direct, fh2fname(fileinfo));
 	delete_it = replied = NA;
 	while (!done) {
 		ansimore(notgenbuf, NA);
@@ -760,7 +760,7 @@ mail_reply(int ent, void *record, char *direct)
 	ytht_strsncpy(uid, fh2owner(fileinfo), sizeof(uid));
 	if (strchr(uid, '.')) {
 		char filename[STRLEN];
-		directfile(filename, direct, fh2fname(fileinfo));
+		directfile(filename, sizeof filename, direct, fh2fname(fileinfo));
 		if (!getdocauthor(filename, uid, sizeof (uid))) {
 			prints("无法投递\n");
 			pressreturn();
@@ -821,7 +821,7 @@ mail_del(int ent, void *record, char *direct)
 	}
 	currfiletime = fileinfo->filetime;
 	if (!delete_file(direct, sizeof (*fileinfo), ent, (void *) cmpfilename)) {
-		directfile(buf, direct, fh2fname(fileinfo));
+		directfile(buf, sizeof buf, direct, fh2fname(fileinfo));
 		deltree(buf);
 		return DIRCHANGED;
 	}
@@ -841,7 +841,7 @@ int mail_forward(int ent, void *record, char *direct) {
 	if (!HAS_PERM(PERM_FORWARD, currentuser)) {
 		return DONOTHING;
 	}
-	directfile(buf, direct, fh2fname(fileinfo));
+	directfile(buf, sizeof buf, direct, fh2fname(fileinfo));
 	switch (doforward(buf, fileinfo->title, 0)) {
 	case 0:
 		prints("文章转寄完成!\n");
@@ -868,7 +868,7 @@ int mail_u_forward(int ent, void *record, char *direct) {
 	if (!HAS_PERM(PERM_FORWARD, currentuser)) {
 		return DONOTHING;
 	}
-	directfile(buf, direct, fh2fname(fileinfo));
+	directfile(buf, sizeof buf, direct, fh2fname(fileinfo));
 	switch (doforward(buf, fileinfo->title, 1)) {
 	case 0:
 		prints("文章转寄完成!\n");

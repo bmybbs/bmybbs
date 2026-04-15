@@ -14,6 +14,7 @@
 #include "ytht/common.h"
 #include "ytht/strlib.h"
 #include "ytht/msg.h"
+#include "ytht/random.h"
 #include "bmy/user.h"
 #include "ythtbbs/cache.h"
 #include "ythtbbs/permissions.h"
@@ -784,7 +785,7 @@ int ythtbbs_user_login(const char *userid, const char *passwd, const char *fromh
 
 	if (local_uinfo.invisible) {
 		srand((unsigned)time(NULL));
-		local_lookup_user.lastlogout = local_lookup_user.lastlogin + 1 + (int) (10000.0 * rand() / (RAND_MAX + 1.0)); //add by bjgyt
+		local_lookup_user.lastlogout = local_lookup_user.lastlogin + 1 + (int) (10000.0 * ytht_random() / (RAND_MAX + 1.0)); //add by bjgyt
 	} else {
 		local_lookup_user.lastlogout = 0;
 	}

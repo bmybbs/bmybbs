@@ -271,9 +271,9 @@ int t_query(const char *q_id) {
 			lookupuser.numposts);
 	show_special(lookupuser.userid); //add by wjbta@bmy
 	strcpy(planid, lookupuser.userid);
-	strcpy(genbuf, lookupuser.dietime ? ytht_ctime(lookupuser.dietime) : ytht_ctime(lookupuser.lastlogin));
+	ytht_strsncpy(genbuf, lookupuser.dietime ? ytht_ctime(lookupuser.dietime) : ytht_ctime(lookupuser.lastlogin), sizeof genbuf);
 	if (ifinprison(lookupuser.userid)) {
-		strcpy(genbuf, ytht_ctime(lookupuser.lastlogin));
+		ytht_strsncpy(genbuf, ytht_ctime(lookupuser.lastlogin), sizeof genbuf);
 		prints("\n在监狱服刑，上次放风时间[\033[1m%s\033[m]\n", genbuf);
 		if (uinfo.mode != LUSERS && uinfo.mode != LAUSERS
 				&& uinfo.mode != FRIEND && uinfo.mode != GMENU)
@@ -294,12 +294,12 @@ int t_query(const char *q_id) {
 	// show_special(lookupuser.userid); //add by wjbta@bmy
 	if(HAS_PERM(PERM_SYSOP | PERM_SEECLOAK, currentuser)){		//add by mintbaggio@BMY
 		if(lookupuser.userlevel&PERM_CLOAK)
-			strcpy(genbuf, (lookupuser.lastlogout>=lookupuser.lastlogin) ? (user_isonline(lookupuser.userid) ? "因在线上或不正常断线不详" : ytht_ctime(lookupuser.lastlogout)) : "因在线上或不正常断线不详");
+			ytht_strsncpy(genbuf, (lookupuser.lastlogout>=lookupuser.lastlogin) ? (user_isonline(lookupuser.userid) ? "因在线上或不正常断线不详" : ytht_ctime(lookupuser.lastlogout)) : "因在线上或不正常断线不详", sizeof genbuf);
 		else
-			strcpy(genbuf, (lookupuser.lastlogout>=lookupuser.lastlogin) ? ytht_ctime(lookupuser.lastlogout) : "因在线上或不正常断线不详");
+			ytht_strsncpy(genbuf, (lookupuser.lastlogout>=lookupuser.lastlogin) ? ytht_ctime(lookupuser.lastlogout) : "因在线上或不正常断线不详", sizeof genbuf);
 	}
 	else
-		strcpy(genbuf, (lookupuser.lastlogout>=lookupuser.lastlogin) ? ytht_ctime(lookupuser.lastlogout) : "因在线上或不正常断线不详");
+		ytht_strsncpy(genbuf, (lookupuser.lastlogout>=lookupuser.lastlogin) ? ytht_ctime(lookupuser.lastlogout) : "因在线上或不正常断线不详", sizeof genbuf);
 
 	prints("离站时间：[\033[1;36m%s\033[m] 信箱：[\033[1;5m%2s\033[m]，生命力：[\033[1;32m%d\033[m] 网龄：[\033[1;32m%d\033[m]天。\n",
 			genbuf, (check_query_mail(qry_mail_dir) == 1) ? "⊙" : "  ",
@@ -424,9 +424,9 @@ int t_query(const char *q_id) {
 					lookupuser.numposts);
 			show_special(lookupuser.userid); //add by wjbta@bmy
 			strcpy(planid, lookupuser.userid);
-			strcpy(genbuf, lookupuser.dietime ? ytht_ctime(lookupuser.dietime) : ytht_ctime(lookupuser.lastlogin));
+			ytht_strsncpy(genbuf, lookupuser.dietime ? ytht_ctime(lookupuser.dietime) : ytht_ctime(lookupuser.lastlogin), sizeof genbuf);
 			if (ifinprison(lookupuser.userid)) {
-				strcpy(genbuf, ytht_ctime(lookupuser.lastlogin));
+				ytht_strsncpy(genbuf, ytht_ctime(lookupuser.lastlogin), sizeof genbuf);
 				prints("\n在监狱服刑，上次放风时间[\033[1m%s\033[m]\n", genbuf);
 				if (uinfo.mode != LUSERS && uinfo.mode != LAUSERS && uinfo.mode != FRIEND && uinfo.mode != GMENU)
 					pressanykey();
@@ -444,13 +444,13 @@ int t_query(const char *q_id) {
 				genbuf, (lookupuser.lasthost[0] =='\0' ? "(不详)" : lookupuser.lasthost));//add for displaying exp type rbb@bmy
 			if(HAS_PERM(PERM_SYSOP | PERM_SEECLOAK, currentuser)){		//add by mintbaggio@BMY
 				if(lookupuser.userlevel&PERM_CLOAK)
-					strcpy(genbuf, (lookupuser.lastlogout>=lookupuser.lastlogin) ? (user_isonline(lookupuser.userid)? "因在线上或不正常断线不详": ytht_ctime(
-							lookupuser.lastlogout)) : "因在线上或不正常断线不详");
+					ytht_strsncpy(genbuf, (lookupuser.lastlogout>=lookupuser.lastlogin) ? (user_isonline(lookupuser.userid)? "因在线上或不正常断线不详": ytht_ctime(
+							lookupuser.lastlogout)) : "因在线上或不正常断线不详", sizeof genbuf);
 				else
-					strcpy(genbuf, (lookupuser.lastlogout>=lookupuser.lastlogin) ? ytht_ctime(lookupuser.lastlogout) : "因在线上或不正常断线不详");
+					ytht_strsncpy(genbuf, (lookupuser.lastlogout>=lookupuser.lastlogin) ? ytht_ctime(lookupuser.lastlogout) : "因在线上或不正常断线不详", sizeof genbuf);
 			}
 			else
-				strcpy(genbuf, (lookupuser.lastlogout>=lookupuser.lastlogin) ? ytht_ctime(lookupuser.lastlogout) : "因在线上或不正常断线不详");
+				ytht_strsncpy(genbuf, (lookupuser.lastlogout>=lookupuser.lastlogin) ? ytht_ctime(lookupuser.lastlogout) : "因在线上或不正常断线不详", sizeof genbuf);
 			prints ("离站时间：[\033[1;36m%s\033[m] 信箱：[\033[1;5m%2s\033[m]，生命力：[\033[1;32m%d\033[m] 网龄：[\033[1;32m%d\033[m]天。\n",
 					genbuf, (check_query_mail(qry_mail_dir) == 1) ? "⊙" : "  ",
 					countlife(&lookupuser),
@@ -1468,7 +1468,7 @@ int addtooverride(const char *uident) {
 	else
 		n = t_lines - 2;
 
-	strcpy(tmp.id, uident);
+	ytht_strsncpy(tmp.id, uident, sizeof tmp.id);
 	move(n, 0);
 	clrtoeol();
 	sprintf(genbuf, "请输入给%s【%s】的说明: ", desc, tmp.id);
@@ -1506,9 +1506,9 @@ override_title()
 	char desc[5];
 
 	if (chkmail())
-		strcpy(genbuf, "[您有信件]");
+		ytht_strsncpy(genbuf, "[您有信件]", sizeof genbuf);
 	else
-		strcpy(genbuf, MY_BBS_NAME);
+		ytht_strsncpy(genbuf, MY_BBS_NAME, sizeof genbuf);
 	if (friendflag) {
 		showtitle("[编辑好友名单]", genbuf);
 		snprintf(desc, sizeof desc, "好友");

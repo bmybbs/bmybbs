@@ -109,7 +109,7 @@ backnumber_read(int ent, void *record, char *direct)
 
 	clear();
 	setqtitle(fileinfo->title);
-	directfile(notgenbuf, direct, fh2fname(fileinfo));
+	directfile(notgenbuf, sizeof notgenbuf, direct, fh2fname(fileinfo));
 	if ((fileinfo->accessed & FH_HIDE) && !IScurrBM) {
 		move(10, 30);
 		prints("对不起，本文被内容不可读！");
@@ -398,7 +398,7 @@ time_t t;
 	if (!dashd(bnpath))
 		return -1;
 
-	tmpfilename(filename, tmpfile, deleted);
+	tmpfilename(filename, tmpfile, sizeof tmpfile, deleted, sizeof deleted);
 	if ((fdr = open(filename, O_RDONLY, 0)) == -1) {
 		return -2;
 	}

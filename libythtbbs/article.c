@@ -357,7 +357,7 @@ cancelpost(char *board, char *userid, struct fileheader *fh, int owned)
 				if ((ptr = strrchr(buf, ')')) != NULL) {
 					*ptr = '\0';
 					if ((ptr = strrchr(buf, '(')) != NULL) {
-						strcpy(from, ptr + 1);
+						ytht_strsncpy(from, ptr + 1, sizeof from);
 						break;
 					}
 				}

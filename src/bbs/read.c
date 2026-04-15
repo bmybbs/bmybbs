@@ -439,7 +439,7 @@ void i_read(int cmdmode, char *direct, int (*dotitle) (), char *(*doentry) (int,
 				if (uinfo.mode == SELBACKNUMBER
 						|| uinfo.mode == BACKNUMBER
 						|| uinfo.mode == DO1984 || cmdmode == GMENU)
-					strcpy(currdirect, direct);
+					ytht_strsncpy(currdirect, direct, sizeof currdirect);
 				//sprintf(currdirect, "backnumbers/%s/%s", currboard, DOT_DIR);
 				else {
 					digestmode = 0;

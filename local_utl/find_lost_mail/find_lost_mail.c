@@ -36,7 +36,7 @@ fixabnormalfn(char *path, char *file)
 		return 0;
 	t = atoi(file + 2) + 1;
 	sprintf(oldfilepath, "%s/%s", path, file);
-	strcpy(newfilepath, path);
+	ytht_strsncpy(newfilepath, path, sizeof newfilepath);
 	t = trycreatefile(newfilepath, "M.%ld.A", t, 100);
 	if (t <= 0)
 		return -1;

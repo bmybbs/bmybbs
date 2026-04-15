@@ -415,7 +415,7 @@ static void parse_sysconf(char *fname)
 					sysconf_addkey(key, str, val);
 				} else {
 					val = 0;
-					strcpy(tmp, str);
+					ytht_strsncpy(tmp, str, sizeof tmp);
 					ptr = strtok(tmp, ", \t");
 					while (ptr != NULL) {
 						val |= sysconf_eval(ptr);

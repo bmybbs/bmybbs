@@ -3,6 +3,8 @@
 #include <unistd.h>
 #include <time.h>
 #include <sys/time.h>
+#include "ytht/random.h"
+#include "ytht/strlib.h"
 
 // add by scaner
 //
@@ -561,11 +563,11 @@ ytht_crypt_genpasswd(char *pw)
 	to64(&salt[6], tv.tv_usec, 3);
 	salt[8] = '\0';
 #elif __OPT_CRYPT_DES__
-	to64(&salt[0], random(), 3);
+	to64(&salt[0], ytht_random(), 3);
 	to64(&salt[3], tv.tv_usec, 3);
 	to64(&salt[6], tv.tv_sec, 2);
 	salt[8] = '\0';
 #endif				// __OPT_CRYPT_MD5__
-	strcpy(pwbuf, pw);
+	ytht_strsncpy(pwbuf, pw, sizeof pwbuf);
 	return crypt_f(pwbuf, salt);
 }

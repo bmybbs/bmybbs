@@ -25,6 +25,7 @@
 #include "ythtbbs/binaryattach.h"
 #include "ythtbbs/docutil.h"
 #include "ythtbbs/session.h"
+#include "ytht/random.h"
 
 typedef struct selem *pelem;
 typedef struct selem {
@@ -852,7 +853,7 @@ time_t do_article_post(const char *board, const char *title_gbk, const char *con
 			id, nickname_gbk, board, title_gbk, MY_BBS_NAME, timestr_buf,
 			outgoing ? "\xD7\xAA\xD0\xC5(" MY_BBS_DOMAIN : "\xB1\xBE\xD5\xBE(" MY_BBS_DOMAIN,
 			content_gbk);
-	snprintf(QMD_gbk, sizeof(QMD_gbk), "\n--\n\033[1;%dm\xA1\xF9 \xC0\xB4\xD4\xB4:\xA3\xAE" MY_BBS_NAME " " MY_BBS_DOMAIN " API [FROM: %.40s]\033[0m\n", 31 + rand() % 7, ip); // 来源
+	snprintf(QMD_gbk, sizeof(QMD_gbk), "\n--\n\033[1;%dm\xA1\xF9 \xC0\xB4\xD4\xB4:\xA3\xAE" MY_BBS_NAME " " MY_BBS_DOMAIN " API [FROM: %.40s]\033[0m\n", 31 + ytht_random() % 7, ip); // 来源
 
 	if (hasbinaryattach(realauthor)) {
 		if (insertattachments(buf3, content_gbk_buf, realauthor))
@@ -947,7 +948,7 @@ int do_mail_post(const char *to_userid, const char *title, const char *filename,
 	// sig_append();
 
 	snprintf(tmp_utf_buf, sizeof tmp_utf_buf, "\033[1;%dm※ 来源:．兵马俑BBS %s [FROM: %.20s]\033[0m\n",
-			31+rand()%7, MY_BBS_DOMAIN " API", ip);
+			31+ytht_random()%7, MY_BBS_DOMAIN " API", ip);
 	tmp_utf_buf[sizeof tmp_utf_buf - 1] = '\0';
 	u2g(tmp_utf_buf, strlen(tmp_utf_buf), tmp_gbk_buf, sizeof tmp_gbk_buf);
 	fwrite(tmp_gbk_buf, 1, strlen(tmp_gbk_buf), fp);
@@ -1011,7 +1012,7 @@ int do_mail_post_to_sent_box(const char *userid, const char *title, const char *
 	// sig_append();
 
 	snprintf(tmp_utf_buf, sizeof tmp_utf_buf, "\033[1;%dm※ 来源:．兵马俑BBS %s [FROM: %.20s]\033[0m\n",
-			31+rand()%7, MY_BBS_DOMAIN " API", ip);
+			31+ytht_random()%7, MY_BBS_DOMAIN " API", ip);
 	tmp_utf_buf[sizeof tmp_utf_buf - 1] = '\0';
 	u2g(tmp_utf_buf, strlen(tmp_utf_buf), tmp_gbk_buf, sizeof tmp_gbk_buf);
 	fwrite(tmp_gbk_buf, 1, strlen(tmp_gbk_buf), fp);

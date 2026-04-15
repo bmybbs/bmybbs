@@ -147,7 +147,7 @@ bbsmybrd_main()
 bool nju09_mybrd_has_read_perm(const char *userid, const char *boardname) {
 	char buf[32]; // boardheader.filename char[24];
 	(void) userid;
-	strcpy(buf, boardname);
+	ytht_strsncpy(buf, boardname, sizeof buf);
 	return (getboard(buf) != NULL);
 }
 
