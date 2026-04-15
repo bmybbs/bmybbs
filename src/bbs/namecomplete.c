@@ -196,8 +196,7 @@ MaxCommonStr(char *str, size_t str_len, struct word *list, size_t n)
 #define NUMLINES (t_lines - 4)
 
 int
-namecomplete(prompt, data)
-char *prompt, *data;
+namecomplete(char *prompt, char *data, size_t data_len)
 {
 	char *temp;
 	int ch;
@@ -229,14 +228,14 @@ char *prompt, *data;
 			*temp = '\0';
 			prints("\n");
 			if (NumInList(cwlist) == 1) {
-				strcpy(data, cwlist->word);
+				ytht_strsncpy(data, cwlist->word, data_len);
 				break;
 			}
 			//if(!strcasecmp(data,cwlist->word))
 			//    strcpy(data,cwlist->word) ;
 			while (wordptr != NULL) {
-				if (strcasecmp(data, wordptr->word) == 0) {
-					strcpy(data, wordptr->word);
+				if (strncasecmp(data, wordptr->word, data_len) == 0) {
+					ytht_strsncpy(data, wordptr->word, data_len);
 					break;
 				}
 				wordptr = wordptr->next;
@@ -253,7 +252,7 @@ char *prompt, *data;
 			if (count < 2)
 				continue;
 			if (NumInList(cwlist) == 1) {
-				strcpy(data, cwlist->word);
+				ytht_strsncpy(data, cwlist->word, data_len);
 				move(y, x);
 				prints("%s", data + count);
 				count = strlen(data);
@@ -264,7 +263,7 @@ char *prompt, *data;
 			//自动补齐, 代码添加开始, by ecnegrevid
 			if (MaxCommonStr(str, sizeof str, cwlist, strlen(data)) > strlen(data)) {
 				struct word *node;
-				strcpy(data, str);
+				ytht_strsncpy(data, str, data_len);
 				node = GetSubList(data, cwlist);
 				ClearSubList(cwlist);
 				cwlist = node;

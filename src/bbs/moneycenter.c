@@ -8251,7 +8251,7 @@ static int marry_admin(struct MC_Marry *marryMem, int n) {
 						}
 					} else if ((*ans == 'D' || *ans == 'd') && count) {
 						move(1, 0);
-						namecomplete("删除人员: ", uident);
+						namecomplete("删除人员: ", uident, sizeof uident);
 						move(1, 0);
 						clrtoeol();
 						if (uident[0] != '\0') {
@@ -9696,7 +9696,7 @@ static int money_deny() {
 					mc_denynotice(3, uident, msgbuf);
 		} else if ((*ans == 'D' || *ans == 'd') && count) {
 			move(1, 0);
-			namecomplete("从黑名单中删除谁: ", uident);
+			namecomplete("从黑名单中删除谁: ", uident, sizeof uident);
 			move(1, 0);
 			clrtoeol();
 			if (uident[0] != '\0')
@@ -9910,7 +9910,7 @@ static int stockboards() {
 					if (*ans == 'A' || *ans == 'a') {
 						move(1, 0);
 						make_blist();
-						namecomplete("增加版面: ", bname);
+						namecomplete("增加版面: ", bname, sizeof bname);
 						setbpath(bpath, sizeof(bpath), bname);
 						if ((*bname == '\0') || (stat(bpath, &st) == -1)) {
 							move(2, 0);
@@ -9942,7 +9942,7 @@ static int stockboards() {
 						}
 					} else if ((*ans == 'D' || *ans == 'd') && count) {
 						move(1, 0);
-						namecomplete("删除版面: ", bname);
+						namecomplete("删除版面: ", bname, sizeof bname);
 						move(1, 0);
 						clrtoeol();
 						if (bname[0] != '\0' && bname[0] != '\n' && bname[0] != '\r') {
@@ -9974,7 +9974,7 @@ static int stockboards() {
 					if (*ans == 'A' || *ans == 'a') {
 						move(1, 0);
 						make_blist();
-						namecomplete("暂停哪版交易: ", bname);
+						namecomplete("暂停哪版交易: ", bname, sizeof bname);
 						setbpath(bpath, sizeof(bpath), bname);
 						if ((*bname == '\0') || (stat(bpath, &st) == -1)) {
 							move(2, 0);
@@ -10013,7 +10013,7 @@ static int stockboards() {
 						}
 					} else if ((*ans == 'D' || *ans == 'd') && count) {
 						move(1, 0);
-						namecomplete("要恢复交易的版面: ", bname);
+						namecomplete("要恢复交易的版面: ", bname, sizeof bname);
 						move(1, 0);
 						clrtoeol();
 						if (bname[0] != '\0' && bname[0] != '\n' && bname[0] != '\r') {

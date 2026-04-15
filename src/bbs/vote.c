@@ -1399,7 +1399,7 @@ voter(int listnum)
 			}
 		} else if ((*ans == 'D' || *ans == 'd') && count) {
 			move(1, 0);
-			namecomplete("删除投票人员: ", uident);
+			namecomplete("删除投票人员: ", uident, sizeof uident);
 			move(1, 0);
 			clrtoeol();
 			if (uident[0] != '\0') {

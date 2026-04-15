@@ -611,7 +611,7 @@ int ttt_talk(const struct user_info *userinfo) {
 		clrtoeol();
 		prints("¸úË­ÁÄÌì: ");
 		creat_list();
-		namecomplete(NULL, uident);
+		namecomplete(NULL, uident, sizeof uident);
 		if (uident[0] == '\0') {
 			clear();
 			return 0;

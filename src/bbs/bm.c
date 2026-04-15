@@ -301,7 +301,7 @@ deny_user()
 		} else if ((*ans == 'D' || *ans == 'd') && count) {
 			move(1, 0);
 			// 删除无法 POST 的使用者:
-			namecomplete("\xC9\xBE\xB3\xFD\xCE\xDE\xB7\xA8" " POST " "\xB5\xC4\xCA\xB9\xD3\xC3\xD5\xDF" ": ", uident);
+			namecomplete("\xC9\xBE\xB3\xFD\xCE\xDE\xB7\xA8" " POST " "\xB5\xC4\xCA\xB9\xD3\xC3\xD5\xDF" ": ", uident, sizeof uident);
 			move(1, 0);
 			clrtoeol();
 			if (uident[0] != '\0') {
@@ -458,7 +458,7 @@ clubmember(int ent, void *record, char *direct)
 		} else if ((*ans == 'D' || *ans == 'd') && count) {
 			move(1, 0);
 			// 删除俱乐部使用者:
-			namecomplete("\xC9\xBE\xB3\xFD\xBE\xE3\xC0\xD6\xB2\xBF\xCA\xB9\xD3\xC3\xD5\xDF" ": ", uident);
+			namecomplete("\xC9\xBE\xB3\xFD\xBE\xE3\xC0\xD6\xB2\xBF\xCA\xB9\xD3\xC3\xD5\xDF" ": ", uident, sizeof uident);
 			move(1, 0);
 			clrtoeol();
 			if (uident[0] != '\0') {

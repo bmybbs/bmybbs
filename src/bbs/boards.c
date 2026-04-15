@@ -1071,7 +1071,7 @@ static int choose_board(int newflag, const struct sectree *sec)
 					prints("\xCA\xE4\xC8\xEB\xCC\xD6\xC2\xDB\xC7\xF8\xC3\xFB" " (" "\xD3\xA2\xCE\xC4\xD7\xD6\xC4\xB8\xB4\xF3\xD0\xA1\xD0\xB4\xBD\xD4\xBF\xC9" "): ");
 					clrtoeol();
 					make_blist();
-					if((namecomplete((char *) NULL, bname))=='#')
+					if((namecomplete((char *) NULL, bname, sizeof bname))=='#')
 						super_select_board(bname);
 					setbpath(bpath, sizeof(bpath), bname);
 					//if (*bname == '\0');

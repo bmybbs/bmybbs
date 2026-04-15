@@ -513,12 +513,12 @@ time_t postfile(char *filename, char *nboard, char *posttitle, int mode) {
 }
 
 int
-get_a_boardname(char *bname, char *prompt)
+get_a_boardname(char *bname, size_t bname_len, char *prompt)
 {
 	struct boardheader fh;
 
 	make_blist();
-	namecomplete(prompt, bname);
+	namecomplete(prompt, bname, bname_len);
 	if (*bname == '\0') {
 		return 0;
 	}
@@ -679,7 +679,7 @@ int do_cross(int ent, void *record, char *direct) {
 	prints_nofmt("\033[1m转贴超过3个讨论区者除所贴文章会被全部删除之外，还将被剥夺全站发表文章的权利。\n");
 	prints_nofmt("\033[1m             请大家共同维护 BBS 的环境，节省系统资源。谢谢合作。\n\033[0m");
 	move(4, 0);
-	if (!get_a_boardname(bname, "请输入要转贴的讨论区名称: ")) {
+	if (!get_a_boardname(bname, sizeof bname, "请输入要转贴的讨论区名称: ")) {
 		return FULLUPDATE;
 	}
 	hide1 = ythtbbs_board_is_hidden(currboard);
@@ -1249,7 +1249,7 @@ static int do_select(int ent, void *record, char *direct) {
 	clrtoeol();
 
 	make_blist();
-	if((ret=namecomplete((char *) NULL, bname))=='#') //super_select_board
+	if((ret=namecomplete((char *) NULL, bname, sizeof bname))=='#') //super_select_board
 		super_select_board(bname);
 	setbpath(bpath, sizeof(bpath), bname);
 	if (*bname == '\0')

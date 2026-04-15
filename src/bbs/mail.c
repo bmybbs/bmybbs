@@ -1339,7 +1339,7 @@ int g_send(const char *s) {
 			if (tmp[0] == 'a' || tmp[0] == 'A')
 				usercomplete("请依次输入使用者代号(只按 ENTER 结束输入): ", uident);
 			else
-				namecomplete("请依次输入使用者代号(只按 ENTER 结束输入): ", uident);
+				namecomplete("请依次输入使用者代号(只按 ENTER 结束输入): ", uident, sizeof uident);
 			move(1, 0);
 			clrtoeol();
 			if (uident[0] == '\0') {
