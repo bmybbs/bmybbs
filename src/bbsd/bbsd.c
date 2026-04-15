@@ -198,6 +198,9 @@ int port;
 
 	//ipv6
 	n = socket(AF_INET6, SOCK_STREAM, IPPROTO_TCP);
+	if (n < 0) {
+		exit(1);
+	}
 
 	val = 1;
 	setsockopt(n, SOL_SOCKET, SO_REUSEADDR, (char *) &val, sizeof (val));
