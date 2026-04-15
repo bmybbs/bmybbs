@@ -1398,7 +1398,7 @@ EXPRESS:		/* add by djq,990725 */
 				prints_nofmt("\033[1m转贴超过3个讨论区者除所贴文章会被全部删除之外，还将被剥夺全站发表文章的权利。\n");
 				prints_nofmt("\033[1m             请大家共同维护 BBS 的环境，节省系统资源。谢谢合作。\n\033[0m");
 				move(4, 0);
-				if (!get_a_boardname(bname, "请输入要转贴的讨论区名称: ")) {
+				if (!get_a_boardname(bname, sizeof bname, "请输入要转贴的讨论区名称: ")) {
 					me.page = 999;
 					break;
 				}

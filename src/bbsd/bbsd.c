@@ -122,7 +122,7 @@ int port;
 	struct sockaddr_in6 sin;	//ipv6
 	struct rlimit rl;
 	char buf[80], data[80];
-	time_t val;
+	int val;
 	int portcount, big5portcount;
 	time_t now;
 
@@ -198,6 +198,9 @@ int port;
 
 	//ipv6
 	n = socket(AF_INET6, SOCK_STREAM, IPPROTO_TCP);
+	if (n < 0) {
+		exit(1);
+	}
 
 	val = 1;
 	setsockopt(n, SOL_SOCKET, SO_REUSEADDR, (char *) &val, sizeof (val));
@@ -550,7 +553,9 @@ checkaddr(struct in6_addr addr, int csock)
 				//ipv6
 				if(inet_ntop(PF_INET6,(const void *)&addrcheck[i].addr, str_addr, INET6_ADDRSTRLEN) != NULL) {
 					sprintf(str, "remove\t%s\t%d\t%s", str_addr, addrcheck[i].n, ctime(&timenow));
-					write(fd, str, strlen(str));
+					if (fd > 0) {
+						write(fd, str, strlen(str));
+					}
 				}
 			}
 			addrcheck[i].t = 0;

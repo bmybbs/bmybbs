@@ -1384,7 +1384,7 @@ voter(int listnum)
 			getdata(1, 0, "(A)增加 or (E)离开 [E]: ", ans, 7, DOECHO, YEA);
 		if (*ans == 'A' || *ans == 'a') {
 			move(1, 0);
-			usercomplete("增加投票人员: ", uident);
+			usercomplete("增加投票人员: ", uident, sizeof uident);
 			if (*uident != '\0') {
 				if (addvoter(uident) == 1) {
 					sprintf(titlebuf,
@@ -1399,7 +1399,7 @@ voter(int listnum)
 			}
 		} else if ((*ans == 'D' || *ans == 'd') && count) {
 			move(1, 0);
-			namecomplete("删除投票人员: ", uident);
+			namecomplete("删除投票人员: ", uident, sizeof uident);
 			move(1, 0);
 			clrtoeol();
 			if (uident[0] != '\0') {

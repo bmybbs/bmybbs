@@ -339,7 +339,6 @@ char *parse_article(const char *bname, const char *fname, int mode, struct attac
 	int attach_no = 0;
 
 	mem_stream = open_memstream(&mem_buf, &mem_buf_len);
-	fseek(article_stream, 0, SEEK_SET);
 	keepoldheader(article_stream, SKIPHEADER);
 
 	while(1) {
@@ -367,7 +366,12 @@ char *parse_article(const char *bname, const char *fname, int mode, struct attac
 			snprintf(attach_link, 256, "http://%s:8080/%s/%s/%d/%s", MY_BBS_DOMAIN,
 					bname, fname, -4+(int)ftell(article_stream), attach_filename);
 			add_attach_link(attach_link_list, attach_link, attach_file_size);
-			fseek(article_stream, attach_file_size, SEEK_CUR);
+			if (fseek(article_stream, attach_file_size, SEEK_CUR) != 0) {
+				fclose(mem_stream);
+				fclose(article_stream);
+				free(mem_buf);
+				return NULL;
+			}
 			continue;
 		}
 

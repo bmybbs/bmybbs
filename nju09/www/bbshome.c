@@ -15,13 +15,13 @@ userid_str2(char *s)
 	while (ptr && strlen(buf) < 400) {
 		if ((ptr2 = strchr(ptr, '.'))) {
 			ptr2[1] = 0;
-			strcat(buf, ptr);
+			ytht_strncat(buf, sizeof buf, ptr, strlen(ptr));
 		} else {
 			ptr = nohtml(ptr);
 			sprintf(buf2,
 				"<a href=qry?U=%s target=boardpage>%s</a>",
 				ptr, ptr);
-			strcat(buf, buf2);
+			ytht_strncat(buf, sizeof buf, buf2, strlen(ptr));
 		}
 		ptr = strtok(0, " ,();\r\n\t");
 		if (ptr != NULL)

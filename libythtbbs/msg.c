@@ -79,7 +79,11 @@ save_msgtext(char *uident, struct msghead *head, const char *msgbuf)
 			write(fd, &i, 4);
 			count = 0;
 		}
-		lseek(fd, count * sizeof (struct msghead) + 4, SEEK_SET);
+		if (lseek(fd, count * sizeof (struct msghead) + 4, SEEK_SET) == (off_t) -1) {
+			errlog("lseek error");
+			close(fd);
+			return -1;
+		}
 		write(fd, head, sizeof (struct msghead));
 		ldata.l_type = F_UNLCK;
 		fcntl(fd, F_SETLKW, &ldata);
@@ -298,7 +302,10 @@ load_msghead(int id, char *uident, struct msghead *head, int index)
 		return -1;
 	}
 
-	lseek(fd, index * sizeof (struct msghead) + 4, SEEK_SET);
+	if (lseek(fd, index * sizeof (struct msghead) + 4, SEEK_SET) == (off_t) -1) {
+		close(fd);
+		return -1;
+	}
 	read(fd, head, sizeof (struct msghead));
 
 	ldata.l_type = F_UNLCK;
@@ -308,10 +315,25 @@ load_msghead(int id, char *uident, struct msghead *head, int index)
 }
 
 int
-load_msgtext(char *uident, struct msghead *head, char *msgbuf)
+load_msgtext(const char *uident, struct msghead *head, char *msgbuf, size_t msgbuf_len)
 {
 	char fname2[STRLEN];
-	int fd2, i;
+	int fd2;
+	ssize_t n;
+	size_t want;
+
+	if (msgbuf == NULL || msgbuf_len == 0) {
+		return -1;
+	}
+
+	if (head->len < 0) {
+		return -1;
+	}
+
+	want = (size_t) head->len;
+	if (want >= msgbuf_len) {
+		want = msgbuf_len - 1;
+	}
 
 	sethomefile_s(fname2, sizeof(fname2), uident, "msgcontent");
 
@@ -321,12 +343,16 @@ load_msgtext(char *uident, struct msghead *head, char *msgbuf)
 		errlog("msgopen err, %s", uident);
 		return -1;	/* 创建文件发生错误 */
 	}
-	lseek(fd2, head->pos, SEEK_SET);
-	i = head->len;
-	if (i >= MAX_MSG_SIZE)
-		i = MAX_MSG_SIZE - 1;
-	read(fd2, msgbuf, i);
-	msgbuf[i] = 0;
+	if (lseek(fd2, head->pos, SEEK_SET) == (off_t) -1) {
+		close(fd2);
+		return -1;
+	}
+	n = read(fd2, msgbuf, want);
+	if (n < 0) {
+		close(fd2);
+		return -1;
+	}
+	msgbuf[n] = 0;
 
 	close(fd2);
 	return 0;

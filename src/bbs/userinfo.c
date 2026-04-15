@@ -684,9 +684,7 @@ int x_fillform(const char *s) {
 		move(11, 0);
 		clrtobot();
 		move(12, 0);
-		strcpy(email, ytht_str_to_lowercase(user));
-		strcat(email, "@");
-		strcat(email, MAIL_DOMAINS[n]);
+		snprintf(email, sizeof email, "%s@%s", ytht_str_to_lowercase(user), MAIL_DOMAINS[n]);
 
 		if (strcasecmp(email, currentuser.email) != 0) {
 			unlink_captcha(currentuser.userid, CAPTCHA_FILE_REGISTER);

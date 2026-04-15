@@ -52,7 +52,7 @@ int addressbook(const char *s) {
 		case 'A':
 		case 'a':
 			// 请输入使用者代号:
-			usercomplete("\xC7\xEB\xCA\xE4\xC8\xEB\xCA\xB9\xD3\xC3\xD5\xDF\xB4\xFA\xBA\xC5: ", buf);
+			usercomplete("\xC7\xEB\xCA\xE4\xC8\xEB\xCA\xB9\xD3\xC3\xD5\xDF\xB4\xFA\xBA\xC5: ", buf, sizeof buf);
 			if (!buf[0])
 				continue;
 			// %s的通讯录内容如下\n

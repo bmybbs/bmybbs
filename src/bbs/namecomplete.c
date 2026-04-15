@@ -43,7 +43,7 @@ static int NumInList(register struct word *list);
 static struct word *GetSubList(register char *tag, register struct word *list);
 static void ClearSubList(struct word *list);
 static int MaxLen(struct word *list, int count);
-static size_t MaxCommonStr(char str[STRLEN], struct word *list, size_t n);
+static size_t MaxCommonStr(char *str, size_t str_len, struct word *list, size_t n);
 static int UserMaxLen(char cwlist[][IDLEN + 1], int cwnum, int morenum, int count);
 static int UserSubArray(char cwbuf[][IDLEN + 1], char cwlist[][IDLEN + 1], int cwnum, int key, int pos);
 static int chkstr(char *otag, char *tag, char *name);
@@ -176,13 +176,10 @@ int count;
 }
 
 static size_t
-MaxCommonStr(str, list, n)
-char str[STRLEN];
-struct word *list;
-size_t n;
+MaxCommonStr(char *str, size_t str_len, struct word *list, size_t n)
 {
 	size_t len;
-	strcpy(str, list->word);
+	ytht_strsncpy(str, list->word, str_len);
 	len = strlen(str);
 	list = list->next;
 	while (list != NULL && len > n) {
@@ -190,7 +187,7 @@ size_t n;
 			len--;
 		str[len] = '\0';
 		if (strlen(list->word) == len)
-			strcpy(str, list->word);
+			ytht_strsncpy(str, list->word, str_len);
 		list = list->next;
 	}
 	return len;
@@ -199,8 +196,7 @@ size_t n;
 #define NUMLINES (t_lines - 4)
 
 int
-namecomplete(prompt, data)
-char *prompt, *data;
+namecomplete(const char *prompt, char *data, size_t data_len)
 {
 	char *temp;
 	int ch;
@@ -232,14 +228,14 @@ char *prompt, *data;
 			*temp = '\0';
 			prints("\n");
 			if (NumInList(cwlist) == 1) {
-				strcpy(data, cwlist->word);
+				ytht_strsncpy(data, cwlist->word, data_len);
 				break;
 			}
 			//if(!strcasecmp(data,cwlist->word))
 			//    strcpy(data,cwlist->word) ;
 			while (wordptr != NULL) {
-				if (strcasecmp(data, wordptr->word) == 0) {
-					strcpy(data, wordptr->word);
+				if (strncasecmp(data, wordptr->word, data_len) == 0) {
+					ytht_strsncpy(data, wordptr->word, data_len);
 					break;
 				}
 				wordptr = wordptr->next;
@@ -256,7 +252,7 @@ char *prompt, *data;
 			if (count < 2)
 				continue;
 			if (NumInList(cwlist) == 1) {
-				strcpy(data, cwlist->word);
+				ytht_strsncpy(data, cwlist->word, data_len);
 				move(y, x);
 				prints("%s", data + count);
 				count = strlen(data);
@@ -265,9 +261,9 @@ char *prompt, *data;
 				continue;
 			}
 			//自动补齐, 代码添加开始, by ecnegrevid
-			if (MaxCommonStr(str, cwlist, strlen(data)) > strlen(data)) {
+			if (MaxCommonStr(str, sizeof str, cwlist, strlen(data)) > strlen(data)) {
 				struct word *node;
-				strcpy(data, str);
+				ytht_strsncpy(data, str, data_len);
 				node = GetSubList(data, cwlist);
 				ClearSubList(cwlist);
 				cwlist = node;
@@ -402,7 +398,7 @@ int cwnum, key, pos;
 	return num;
 }
 
-int usercomplete(char *prompt, char *data) {
+int usercomplete(const char *prompt, char *data, size_t data_len) {
 	char *cwbuf, *cwlist, *temp;
 	int cwnum, x, y, origx, origy;
 	int clearbot = NA, count = 0, morenum = 0;
@@ -428,7 +424,7 @@ int usercomplete(char *prompt, char *data) {
 			ptr = cwlist;
 			for (i = 0; i < cwnum; i++) {
 				if (strncasecmp(data, ptr, IDLEN + 1) == 0)
-					strcpy(data, ptr);
+					ytht_strsncpy(data, ptr, data_len);
 				ptr += IDLEN + 1;
 			}
 /*
@@ -442,7 +438,7 @@ int usercomplete(char *prompt, char *data) {
 			if (count < 3)
 				continue;
 			if (cwnum == 1) {
-				strcpy(data, cwlist);
+				ytht_strsncpy(data, cwlist, data_len);
 				move(y, x);
 				prints("%s", data + count);
 				count = strlen(data);

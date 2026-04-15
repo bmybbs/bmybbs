@@ -23,6 +23,7 @@
 */
 #include "bbs.h"
 #include "chat.h"
+#include <string.h>
 
 #ifdef LINUX
 #include <unistd.h>
@@ -1777,7 +1778,7 @@ view_action_verb(int unum)
 		chatbuf[0] = '\0';
 		j = 0;
 		while ((p = verbs[i][j++].verb) != NULL) {
-			strcat(chatbuf, p);
+			ytht_strncat(chatbuf, sizeof chatbuf, p, strlen(p));
 			if ((j % VERB_NO) == 0) {
 				send_to_unum(unum, chatbuf);
 				chatbuf[0] = '\0';

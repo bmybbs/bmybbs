@@ -36,6 +36,10 @@ draw_pic()
 		while (fgets(buf, 50, fp) != NULL) {
 			cr = atoi(index(buf, ':') + 1);
 			tm = atoi(buf);
+			if (tm < 0 || (unsigned) tm > sizeof pic) {
+				continue;
+			}
+
 			pic[tm] = cr;
 			aver += cr;
 			i++;

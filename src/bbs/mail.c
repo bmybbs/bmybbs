@@ -467,7 +467,7 @@ int m_send(const char *userid) {
 				|| */ userid == NULL) {
 		move(1, 0);
 		clrtoeol();
-		usercomplete("收信人： ", uident);
+		usercomplete("收信人： ", uident, sizeof uident);
 		if (uident[0] == '\0') {
 			return FULLUPDATE;
 		}
@@ -1337,9 +1337,9 @@ int g_send(const char *s) {
 		if (tmp[0] == 'a' || tmp[0] == 'd' || tmp[0] == 'A' || tmp[0] == 'D') {
 			move(1, 0);
 			if (tmp[0] == 'a' || tmp[0] == 'A')
-				usercomplete("请依次输入使用者代号(只按 ENTER 结束输入): ", uident);
+				usercomplete("请依次输入使用者代号(只按 ENTER 结束输入): ", uident, sizeof uident);
 			else
-				namecomplete("请依次输入使用者代号(只按 ENTER 结束输入): ", uident);
+				namecomplete("请依次输入使用者代号(只按 ENTER 结束输入): ", uident, sizeof uident);
 			move(1, 0);
 			clrtoeol();
 			if (uident[0] == '\0') {
@@ -1903,7 +1903,7 @@ doforward(char *filepath, char *oldtitle, int mode)
 		prints("请直接按 Enter 接受括号内提示的地址, 或者输入其他地址\n");
 		prints("把信件转寄给 [%s]\n", address);
 		move(2,0);
-		usercomplete("==>", receiver);
+		usercomplete("==>", receiver, sizeof receiver);
 		if (receiver[0] != '\0') {
 			ytht_strsncpy(address, receiver, STRLEN);
 		}
@@ -2165,7 +2165,7 @@ int m_cancel(const char *userid) {
 		move(1, 0);
 		clrtoeol();
 		modify_user_mode(SMAIL);
-		usercomplete("撤回给谁的信件： ", uident);
+		usercomplete("撤回给谁的信件： ", uident, sizeof uident);
 		if (uident[0] == '\0') {
 			return FULLUPDATE;
 		} else if (!strcmp(currentuser.userid, uident)) {

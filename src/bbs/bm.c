@@ -266,14 +266,14 @@ deny_user()
 			move(1, 0);
 			if (isglobal)
 				// 增加无法 POST 的使用者:
-				usercomplete("\xD4\xF6\xBC\xD3\xCE\xDE\xB7\xA8" " POST " "\xB5\xC4\xCA\xB9\xD3\xC3\xD5\xDF" ": ", uident);
+				usercomplete("\xD4\xF6\xBC\xD3\xCE\xDE\xB7\xA8" " POST " "\xB5\xC4\xCA\xB9\xD3\xC3\xD5\xDF" ": ", uident, sizeof uident);
 			else {
 				int canpost = 0;
 				while (!canpost) {
 					move(1, 0);
 					clrtoeol();
 					// 增加无法 POST 的使用者：
-					usercomplete("\xD4\xF6\xBC\xD3\xCE\xDE\xB7\xA8" " POST " "\xB5\xC4\xCA\xB9\xD3\xC3\xD5\xDF\xA3\xBA", uident);
+					usercomplete("\xD4\xF6\xBC\xD3\xCE\xDE\xB7\xA8" " POST " "\xB5\xC4\xCA\xB9\xD3\xC3\xD5\xDF\xA3\xBA", uident, sizeof uident);
 					if (*uident == '\0')
 						break;
 					canpost = posttest(uident, currboard);
@@ -292,7 +292,7 @@ deny_user()
 		} else if ((*ans == 'C' || *ans == 'c')) {
 			move(1, 0);
 			// 改变谁的封禁时间或说明:
-			usercomplete("\xB8\xC4\xB1\xE4\xCB\xAD\xB5\xC4\xB7\xE2\xBD\xFB\xCA\xB1\xBC\xE4\xBB\xF2\xCB\xB5\xC3\xF7" ": ", uident);
+			usercomplete("\xB8\xC4\xB1\xE4\xCB\xAD\xB5\xC4\xB7\xE2\xBD\xFB\xCA\xB1\xBC\xE4\xBB\xF2\xCB\xB5\xC3\xF7" ": ", uident, sizeof uident);
 			if (*uident != '\0') {
 				if (addtodeny(uident, msgbuf, 1, isglobal, 0) == 1) {
 					deny_notice(CHANGEDENY, uident, isglobal, 0, msgbuf);
@@ -301,7 +301,7 @@ deny_user()
 		} else if ((*ans == 'D' || *ans == 'd') && count) {
 			move(1, 0);
 			// 删除无法 POST 的使用者:
-			namecomplete("\xC9\xBE\xB3\xFD\xCE\xDE\xB7\xA8" " POST " "\xB5\xC4\xCA\xB9\xD3\xC3\xD5\xDF" ": ", uident);
+			namecomplete("\xC9\xBE\xB3\xFD\xCE\xDE\xB7\xA8" " POST " "\xB5\xC4\xCA\xB9\xD3\xC3\xD5\xDF" ": ", uident, sizeof uident);
 			move(1, 0);
 			clrtoeol();
 			if (uident[0] != '\0') {
@@ -428,7 +428,7 @@ clubmember(int ent, void *record, char *direct)
 		if (*ans == 'A' || *ans == 'a') {
 			move(1, 0);
 			// 增加俱乐部成员:
-			usercomplete("\xD4\xF6\xBC\xD3\xBE\xE3\xC0\xD6\xB2\xBF\xB3\xC9\xD4\xB1" ": ", uident);
+			usercomplete("\xD4\xF6\xBC\xD3\xBE\xE3\xC0\xD6\xB2\xBF\xB3\xC9\xD4\xB1" ": ", uident, sizeof uident);
 			if (*uident != '\0') {
 				if (addclubmember(uident, 0) == 1) {
 					// 加入原因：
@@ -458,7 +458,7 @@ clubmember(int ent, void *record, char *direct)
 		} else if ((*ans == 'D' || *ans == 'd') && count) {
 			move(1, 0);
 			// 删除俱乐部使用者:
-			namecomplete("\xC9\xBE\xB3\xFD\xBE\xE3\xC0\xD6\xB2\xBF\xCA\xB9\xD3\xC3\xD5\xDF" ": ", uident);
+			namecomplete("\xC9\xBE\xB3\xFD\xBE\xE3\xC0\xD6\xB2\xBF\xCA\xB9\xD3\xC3\xD5\xDF" ": ", uident, sizeof uident);
 			move(1, 0);
 			clrtoeol();
 			if (uident[0] != '\0') {

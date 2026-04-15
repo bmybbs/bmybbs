@@ -17,15 +17,15 @@ char* userid_str_class(char *s, char* class)
 	while (ptr && strlen(buf) < 400) {
 		if ((ptr2 = strchr(ptr, '.'))) {
 			ptr2[1] = 0;
-			strcat(buf, ptr);
+			ytht_strncat(buf, sizeof buf, ptr, strlen(ptr));
 		} else {
 			ptr = nohtml(ptr);
 			sprintf(buf2, "<a href=qry?U=%s class=%s>%s</a>", ptr, class, ptr);
-			strcat(buf, buf2);
+			ytht_strncat(buf, sizeof buf, buf2, strlen(buf2));
 		}
 		ptr = strtok(0, " ,();\r\n\t");
 		if (ptr)
-			strcat(buf, " ");
+			ytht_strncat(buf, sizeof buf, " ", strlen(" "));
 	}
 	return buf;
 }

@@ -48,7 +48,7 @@ INPUT:
 		clear();
 		move(2, 0);
 		prints("输入要激活的id: ");
-		usercomplete(" ", userid);
+		usercomplete(" ", userid, sizeof userid);
 		if (*userid)
 			force_comfirm(userid);
 		goto INPUT;
@@ -56,7 +56,7 @@ INPUT:
 		clear();
 		move(1, 0);
 		prints("输入要查询的id: ");
-		usercomplete(" ", userid);
+		usercomplete(" ", userid, sizeof userid);
 		if (*userid)
 			query_active(userid);
 		goto INPUT;
@@ -64,7 +64,7 @@ INPUT:
 		clear();
 		move(1, 0);
 		prints("输入要修改的id: ");
-		usercomplete(" ", userid);
+		usercomplete(" ", userid, sizeof userid);
 		if (*userid)
 			update_active(userid);
 		goto INPUT;

@@ -551,7 +551,14 @@ static int api_article_list_board(ONION_FUNC_PROTO_STR)
 				break;
 
 			flock(fd, LOCK_EX);
-			lseek(fd, (startnum - 1 + i) * sizeof (struct fileheader),SEEK_SET);
+			if (lseek(fd, (startnum - 1 + i) * sizeof (struct fileheader),SEEK_SET) == (off_t) -1) {
+				snprintf(logbuf, sizeof logbuf, "lseek error on %s, at No. %d record. Errno %d: %s.", dir, (startnum - 1 + i), errno, strerror(errno));
+				newtrace(logbuf);
+				flock(fd, LOCK_UN);
+				close(fd);
+				break;
+			}
+
 			if (read(fd, &x2, sizeof (x2)) == sizeof (x2) && data[i].filetime == x2.filetime) {
 				x2.sizebyte = c;
 				if (lseek(fd, -1 * sizeof (x2), SEEK_CUR) != (off_t) -1) {

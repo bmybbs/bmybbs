@@ -10,9 +10,12 @@
 struct fileheader *data;
 
 int
-cmpfile(f1, f2)
-struct fileheader *f1, *f2;
+cmpfile(const void *p1, const void *p2)
 {
+	const struct fileheader *f1, *f2;
+
+	f1 = p1;
+	f2 = p2;
 	return f1->filetime - f2->filetime;
 }
 
@@ -20,7 +23,8 @@ int
 main(int argc, char *argv[])
 {
 	FILE *dr;
-	int file, n;
+	int file;
+	size_t n;
 
 	if (argc < 2) {
 		printf("no input file!\n");
@@ -41,9 +45,17 @@ main(int argc, char *argv[])
 		printf("can't open file to read\n");
 		exit(4);
 	}
-	fread(data, sizeof (struct fileheader), n, dr);
+	if (fread(data, sizeof (struct fileheader), n, dr) != n) {
+		if (ferror(dr)) {
+			perror("read error");
+		} else {
+			printf("unexpected EOF\n");
+		}
+		fclose(dr);
+		exit(4);
+	}
 	qsort(data, n, sizeof (struct fileheader), cmpfile);
-	printf("end.len=%d %ld", n, n * sizeof (struct fileheader));
+	printf("end.len=%ld %ld", n, n * sizeof (struct fileheader));
 	file = open("tmpfile", O_CREAT | O_TRUNC | O_WRONLY, 0770);
 	if (file < 0) {
 		printf("can't open file to write\n");

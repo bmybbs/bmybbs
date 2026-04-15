@@ -564,7 +564,7 @@ int x_level(const char *s) {
 	prints("Change User Priority\n");
 	clrtoeol();
 	move(1, 0);
-	usercomplete("Enter userid to be changed: ", genbuf);
+	usercomplete("Enter userid to be changed: ", genbuf, sizeof genbuf);
 	if (genbuf[0] == '\0') {
 		clear();
 		return 0;
@@ -1349,7 +1349,7 @@ sendGoodWish(char *userid)
 		}
 		if (ans[0] != '2') {
 			// 请输入他的 ID:
-			usercomplete("\xC7\xEB\xCA\xE4\xC8\xEB\xCB\xFB\xB5\xC4 ID: ", uid);
+			usercomplete("\xC7\xEB\xCA\xE4\xC8\xEB\xCB\xFB\xB5\xC4 ID: ", uid, sizeof uid);
 			if (uid[0] == '\0') {
 				clear();
 				return 0;
@@ -1371,10 +1371,10 @@ sendGoodWish(char *userid)
 					move(1, 0);
 					if (tmp[0] == 'a' || tmp[0] == 'A')
 						// 请依次输入使用者代号(只按 ENTER 结束输入):
-						usercomplete("\xC7\xEB\xD2\xC0\xB4\xCE\xCA\xE4\xC8\xEB\xCA\xB9\xD3\xC3\xD5\xDF\xB4\xFA\xBA\xC5(\xD6\xBB\xB0\xB4 ENTER \xBD\xE1\xCA\xF8\xCA\xE4\xC8\xEB): ", uident);
+						usercomplete("\xC7\xEB\xD2\xC0\xB4\xCE\xCA\xE4\xC8\xEB\xCA\xB9\xD3\xC3\xD5\xDF\xB4\xFA\xBA\xC5(\xD6\xBB\xB0\xB4 ENTER \xBD\xE1\xCA\xF8\xCA\xE4\xC8\xEB): ", uident, sizeof uident);
 					else
 						// 请依次输入使用者代号(只按 ENTER 结束输入):
-						namecomplete("\xC7\xEB\xD2\xC0\xB4\xCE\xCA\xE4\xC8\xEB\xCA\xB9\xD3\xC3\xD5\xDF\xB4\xFA\xBA\xC5(\xD6\xBB\xB0\xB4 ENTER \xBD\xE1\xCA\xF8\xCA\xE4\xC8\xEB): ", uident);
+						namecomplete("\xC7\xEB\xD2\xC0\xB4\xCE\xCA\xE4\xC8\xEB\xCA\xB9\xD3\xC3\xD5\xDF\xB4\xFA\xBA\xC5(\xD6\xBB\xB0\xB4 ENTER \xBD\xE1\xCA\xF8\xCA\xE4\xC8\xEB): ", uident, sizeof uident);
 					move(1, 0);
 					clrtoeol();
 					if (uident[0] == '\0')
@@ -1713,7 +1713,7 @@ int x_denylevel(const char *s) {
 	clrtoeol();
 	move(1, 0);
 	// 输入欲更改的使用者帐号:
-	usercomplete("\xCA\xE4\xC8\xEB\xD3\xFB\xB8\xFC\xB8\xC4\xB5\xC4\xCA\xB9\xD3\xC3\xD5\xDF\xD5\xCA\xBA\xC5: ", genbuf);
+	usercomplete("\xCA\xE4\xC8\xEB\xD3\xFB\xB8\xFC\xB8\xC4\xB5\xC4\xCA\xB9\xD3\xC3\xD5\xDF\xD5\xCA\xBA\xC5: ", genbuf, sizeof genbuf);
 	if (genbuf[0] == '\0') {
 		clear();
 		return 0;
@@ -1876,7 +1876,7 @@ s_checkid(const char *s)
 	clrtoeol();
 	move(2, 0);
 	// 输入欲调查的使用者帐号:
-	usercomplete("\xCA\xE4\xC8\xEB\xD3\xFB\xB5\xF7\xB2\xE9\xB5\xC4\xCA\xB9\xD3\xC3\xD5\xDF\xD5\xCA\xBA\xC5: ", genbuf);
+	usercomplete("\xCA\xE4\xC8\xEB\xD3\xFB\xB5\xF7\xB2\xE9\xB5\xC4\xCA\xB9\xD3\xC3\xD5\xDF\xD5\xCA\xBA\xC5: ", genbuf, sizeof genbuf);
 	if (genbuf[0] == '\0') {
 	clear();
 		return 0;

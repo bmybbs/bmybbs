@@ -802,7 +802,7 @@ static int money_bank() {
 				sprintf(genbuf, "最小转账金额 1000 兵马俑币。手续费 %.2f％（最高收取 100000 兵马俑币）", transfer_rate * 100);
 				prints_nofmt(genbuf);
 				move(5, 4);
-				usercomplete("转账给谁？", uident);
+				usercomplete("转账给谁？", uident, sizeof uident);
 				if (uident[0] == '\0')
 					break;
 				if (!getuser(uident)) {
@@ -1270,7 +1270,7 @@ static int money_bank() {
 							break;
 						case '4':
 							move(12, 4);
-							usercomplete("向谁提供特别贷款？", uident);
+							usercomplete("向谁提供特别贷款？", uident, sizeof uident);
 							if (uident[0] == '\0')
 								break;
 							if (!getuser(uident)) {
@@ -1333,7 +1333,7 @@ static int money_bank() {
 							break;
 						case '5':
 							move(12, 4);
-							usercomplete("调查谁的帐户：", uident);
+							usercomplete("调查谁的帐户：", uident, sizeof uident);
 							if (uident[0] == '\0')
 								break;
 							if (!getuser(uident)) {
@@ -1389,7 +1389,7 @@ static int money_bank() {
 							break;
 						case '8':
 							move(12, 4);
-							usercomplete("向谁提供特别拨款？", uident);
+							usercomplete("向谁提供特别拨款？", uident, sizeof uident);
 							if (uident[0] == '\0')
 								break;
 							if (!getuser(uident)) {
@@ -1892,7 +1892,7 @@ static int addOrDel_contrb() {
 			while (1){
 				move(1, 0);
 				clrtoeol();
-				usercomplete("增加id：", uident);
+				usercomplete("增加id：", uident, sizeof uident);
 				if (*uident == '\0')
 					break;
 				if (!getuser(uident)) {
@@ -1930,7 +1930,7 @@ static int addOrDel_contrb() {
 			}
 		} else if ((*ans == 'C' || *ans == 'c')) {
 			move(1, 0);
-			usercomplete("改变哪个id: ", uident);
+			usercomplete("改变哪个id: ", uident, sizeof uident);
 			if (*uident != '\0') {
 				for(i = 0; i<count ;i++)
 					if (!strcmp(JijinMem[i].userid, uident)){
@@ -1951,7 +1951,7 @@ static int addOrDel_contrb() {
 				showAt(2, 0, "您输入的id不在列表中", 1);
 		} else if ((*ans == 'D' || *ans == 'd') && count) {
 			move(1, 0);
-			usercomplete("删除id: ", uident);
+			usercomplete("删除id: ", uident, sizeof uident);
 			if (uident[0] != '\0') {
 				for(i = 0; i < count ;i++)
 					if (!strcmp(JijinMem[i].userid, uident)){
@@ -2036,7 +2036,7 @@ static int money_sackOrAppoint(int type) {
 			return 0;
 		}
 		move(16, 4);
-		usercomplete("任命谁？", uident);
+		usercomplete("任命谁？", uident, sizeof uident);
 		move(17, 4);
 		if (uident[0] == '\0')
 			return 0;
@@ -2173,7 +2173,7 @@ static int money_admin() {
 			case 'A':
 				clear();
 				move(15, 4);
-				usercomplete("授予谁金融中心总管权限？", uident);
+				usercomplete("授予谁金融中心总管权限？", uident, sizeof uident);
 				move(16, 4);
 				if (uident[0] == '\0')
 					break;
@@ -2214,7 +2214,7 @@ static int money_admin() {
 			case 'B':
 				clear();
 				move(15, 4);
-				usercomplete("取消谁的金融中心总管权限？", uident);
+				usercomplete("取消谁的金融中心总管权限？", uident, sizeof uident);
 				move(16, 4);
 				if (uident[0] == '\0')
 					break;
@@ -2272,7 +2272,7 @@ static int money_admin() {
 			case 'J':
 				clear();
 				move(15, 4);
-				usercomplete("任命谁进名人堂？", uident);
+				usercomplete("任命谁进名人堂？", uident, sizeof uident);
 				move(16, 4);
 				if (uident[0] == '\0')
 					break;
@@ -2304,7 +2304,7 @@ static int money_admin() {
 			case 'K':
 				clear();
 				move(12, 4);
-				usercomplete("解除哪位？", uident);
+				usercomplete("解除哪位？", uident, sizeof uident);
 				move(13, 4);
 				if (uident[0] == '\0')
 					break;
@@ -2334,7 +2334,7 @@ static int money_admin() {
 			case 'L':
 				clear();
 				move(15, 4);
-				usercomplete("任命谁为兵马俑金融中心茶友？", uident);
+				usercomplete("任命谁为兵马俑金融中心茶友？", uident, sizeof uident);
 				move(16, 4);
 				if (uident[0] == '\0')
 					break;
@@ -2366,7 +2366,7 @@ static int money_admin() {
 			case 'M':
 				clear();
 				move(12, 4);
-				usercomplete("解除哪位？", uident);
+				usercomplete("解除哪位？", uident, sizeof uident);
 				move(13, 4);
 				if (uident[0] == '\0')
 					break;
@@ -2396,7 +2396,7 @@ static int money_admin() {
 			case 'N':
 				clear();
 				move(15, 4);
-				usercomplete("任命谁为铁公鸡？", uident);
+				usercomplete("任命谁为铁公鸡？", uident, sizeof uident);
 				move(16, 4);
 				if (uident[0] == '\0')
 					break;
@@ -2430,7 +2430,7 @@ static int money_admin() {
 			case 'O':
 				clear();
 				move(12, 4);
-				usercomplete("解除哪位？", uident);
+				usercomplete("解除哪位？", uident, sizeof uident);
 				move(13, 4);
 				if (uident[0] == '\0')
 					break;
@@ -2461,7 +2461,7 @@ static int money_admin() {
 			case 'Y':
 				clear();
 				move(13, 4);
-				usercomplete("任命谁为基金id？", uident);
+				usercomplete("任命谁为基金id？", uident, sizeof uident);
 				move(14, 4);
 				if (uident[0] == '\0')
 					break;
@@ -2501,7 +2501,7 @@ static int money_admin() {
 			case 'Z':
 				clear();
 				move(12, 4);
-				usercomplete("解除哪位？", uident);
+				usercomplete("解除哪位？", uident, sizeof uident);
 				move(13, 4);
 				if (uident[0] == '\0')
 					break;
@@ -2606,7 +2606,7 @@ static int money_admin() {
 			case '1':
 				clear();
 				move(12, 4);
-				usercomplete("更改谁的现金数额？", uident);
+				usercomplete("更改谁的现金数额？", uident, sizeof uident);
 				move(13, 4);
 				if (uident[0] == '\0')
 					break;
@@ -2634,7 +2634,7 @@ static int money_admin() {
 			case '2':
 				clear();
 				move(12, 4);
-				usercomplete("更改谁的存款数额？", uident);
+				usercomplete("更改谁的存款数额？", uident, sizeof uident);
 				move(13, 4);
 				if (uident[0] == '\0')
 					break;
@@ -3534,7 +3534,7 @@ static int money_robber() {
 					Q_Goodbye(0, NULL, NULL);
 					break;
 				}
-				usercomplete("你要拍谁:", uident);
+				usercomplete("你要拍谁:", uident, sizeof uident);
 				if (uident[0] == '\0')
 					break;
 				freeTime = loadValue(currentuser.userid, "freeTime", 2000000000);
@@ -3753,7 +3753,7 @@ static int money_robber() {
 					break;
 				}
 				move(6, 4);
-				usercomplete("偷谁？", uident);
+				usercomplete("偷谁？", uident, sizeof uident);
 				if (uident[0] == '\0')
 					break;
 				freeTime = loadValue(currentuser.userid, "freeTime", 2000000000);
@@ -3997,7 +3997,7 @@ static int money_robber() {
 					showAt(5, 4, "    \033[1;32m  不要惹事\033[m", 1);
 					break;
 				}
-				usercomplete("你要勒索谁:", uident);
+				usercomplete("你要勒索谁:", uident, sizeof uident);
 				if (uident[0] == '\0')
 					break;
 				if (!(id = getuser(uident))) {
@@ -4047,7 +4047,7 @@ static int money_robber() {
 					break;
 				}
 				move(6, 4);
-				usercomplete("抢谁？", uident);
+				usercomplete("抢谁？", uident, sizeof uident);
 				if (uident[0] == '\0')
 					break;
 				freeTime = loadValue(currentuser.userid, "freeTime", 2000000000);
@@ -4326,7 +4326,7 @@ static int money_beggar() {
 		switch (ch) {
 			case '1':
 				move(6, 4);
-				usercomplete("查谁的家底？", uident);
+				usercomplete("查谁的家底？", uident, sizeof uident);
 				if (uident[0] == '\0')
 					break;
 				if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
@@ -4363,7 +4363,7 @@ static int money_beggar() {
 				move(4, 4);
 				prints_nofmt("烧钱最小金额 1000 兵马俑币。可买通冥间管事，让死者复活。");
 				move(5, 4);
-				usercomplete("给谁烧？", uident);
+				usercomplete("给谁烧？", uident, sizeof uident);
 				if (uident[0] == '\0')
 					break;
 				if (!(id = getuser(uident))) {
@@ -4422,7 +4422,7 @@ static int money_beggar() {
 				break;
 			case '3':
 				move(6, 4);
-				usercomplete("要跟踪谁？", uident);
+				usercomplete("要跟踪谁？", uident, sizeof uident);
 				if (uident[0] == '\0')
 					break;
 				if (!getuser(uident)) {
@@ -4458,7 +4458,7 @@ static int money_beggar() {
 				money_show_stat("兵马俑小区");
 				showAt(4, 4, "这里是兵马俑的富人区，乞讨的好地方。", 0);
 				move(6, 4);
-				usercomplete("向谁乞讨？", uident);
+				usercomplete("向谁乞讨？", uident, sizeof uident);
 				if (uident[0] == '\0')
 					break;
 				if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
@@ -4688,7 +4688,7 @@ static int money_killer() {
 					break;
 				}
 				move(6, 4);
-				usercomplete("你要杀谁:", uident);
+				usercomplete("你要杀谁:", uident, sizeof uident);
 				if (uident[0] == '\0')
 					break;
 				if (!(id = getuser(uident))) {
@@ -4804,7 +4804,7 @@ static int money_killer() {
 								Q_Goodbye(0, NULL, NULL);
 								break;
 							}
-							usercomplete("你要炸谁:", uident);
+							usercomplete("你要炸谁:", uident, sizeof uident);
 							if (uident[0] == '\0')
 								break;
 							if (!(id = getuser(uident))) {
@@ -4915,7 +4915,7 @@ static int money_killer() {
 					switch (ch2) {
 						case '1':
 							move(12, 4);
-							usercomplete("任命谁为杀手？", uident);
+							usercomplete("任命谁为杀手？", uident, sizeof uident);
 							move(13, 4);
 							if (uident[0] == '\0')
 								break;
@@ -4943,7 +4943,7 @@ static int money_killer() {
 							break;
 						case '2':
 							move(12, 4);
-							usercomplete("解职哪位杀手？", uident);
+							usercomplete("解职哪位杀手？", uident, sizeof uident);
 							move(13, 4);
 							if (uident[0] == '\0')
 								break;
@@ -5570,7 +5570,7 @@ static int money_stock_board() {
 			case 'c':
 			case 'C':
 				move(t_lines - 1, 0);
-				usercomplete("转让股票给谁？", uident);
+				usercomplete("转让股票给谁？", uident, sizeof uident);
 				if (uident[0] == '\0')
 					return 0;
 				if (!getuser(uident)) {
@@ -5739,7 +5739,7 @@ static int money_gamble() {
 					switch (ch) {
 						case '1':
 							move(12, 4);
-							usercomplete("向谁发放VIP卡？", uident);
+							usercomplete("向谁发放VIP卡？", uident, sizeof uident);
 							move(13, 4);
 							if (uident[0] == '\0')
 								break;
@@ -5767,7 +5767,7 @@ static int money_gamble() {
 							break;
 						case '2':
 							move(12, 4);
-							usercomplete("收回谁的VIP卡？", uident);
+							usercomplete("收回谁的VIP卡？", uident, sizeof uident);
 							move(13, 4);
 							if (uident[0] == '\0')
 								break;
@@ -5802,7 +5802,7 @@ static int money_gamble() {
 							break;
 						case '4':
 							move(12, 4);
-							usercomplete("给谁发邀请函？", uident);
+							usercomplete("给谁发邀请函？", uident, sizeof uident);
 							move(13, 4);
 							if (uident[0] == '\0')
 								break;
@@ -6558,7 +6558,7 @@ static int buy_present(int order, char *kind, char *cardname, char *filepath, in
 	}else{
 		move(0, 0);
 		sprintf(buf, "要把%s送给谁? ", kind);
-		usercomplete(buf, uident);
+		usercomplete(buf, uident, sizeof uident);
 		if (uident[0] == '\0') {
 			move(t_lines - 2, 4);
 			clrtobot();
@@ -7344,7 +7344,7 @@ static int money_cop() {
 				move(6, 4);
 				prints_nofmt("警民合作，共创安定大好局面！");
 				move(7, 4);
-				usercomplete("举报谁？", uident);
+				usercomplete("举报谁？", uident, sizeof uident);
 				move(8, 4);
 				if (uident[0] == '\0')
 					break;
@@ -7460,7 +7460,7 @@ static int money_cop() {
 					pressanykey();
 					break;
 				}
-				usercomplete("今次行动的目标犯罪嫌疑人是:", uident);
+				usercomplete("今次行动的目标犯罪嫌疑人是:", uident, sizeof uident);
 				move(7, 4);
 				if (uident[0] == '\0')
 					break;
@@ -7714,7 +7714,7 @@ static int money_cop() {
 					switch (ch) {
 						case '1':
 							move(12, 4);
-							usercomplete("任命谁为警员？", uident);
+							usercomplete("任命谁为警员？", uident, sizeof uident);
 							move(13, 4);
 							if (uident[0] == '\0')
 								break;
@@ -7742,7 +7742,7 @@ static int money_cop() {
 							break;
 						case '2':
 							move(12, 4);
-							usercomplete("解职哪位警员？", uident);
+							usercomplete("解职哪位警员？", uident, sizeof uident);
 							move(13, 4);
 							if (uident[0] == '\0')
 								break;
@@ -8062,7 +8062,7 @@ static int marry_admin(struct MC_Marry *marryMem, int n) {
 			case '1':
 				clear();
 				move(6, 4);
-				usercomplete("查谁的情况？", uident);
+				usercomplete("查谁的情况？", uident, sizeof uident);
 				if (uident[0] == '\0')
 					break;
 				if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
@@ -8231,7 +8231,7 @@ static int marry_admin(struct MC_Marry *marryMem, int n) {
 						getdata(1, 0, "(A)增加  (E)离开[E]: ", ans, 7, DOECHO, YEA);
 					if (*ans == 'A' || *ans == 'a') {
 						move(1, 0);
-						usercomplete("增加人员: ", uident);
+						usercomplete("增加人员: ", uident, sizeof uident);
 						if (*uident != '\0') {
 							if (seek_in_file(MC_MARRYADMIN_FILE, uident)) {
 								move(2, 0);
@@ -8251,7 +8251,7 @@ static int marry_admin(struct MC_Marry *marryMem, int n) {
 						}
 					} else if ((*ans == 'D' || *ans == 'd') && count) {
 						move(1, 0);
-						namecomplete("删除人员: ", uident);
+						namecomplete("删除人员: ", uident, sizeof uident);
 						move(1, 0);
 						clrtoeol();
 						if (uident[0] != '\0') {
@@ -8280,7 +8280,7 @@ static int marry_admin(struct MC_Marry *marryMem, int n) {
 			case '4':
 				clear();
 				move(6, 4);
-				usercomplete("请输入收信方ID: ", uident);
+				usercomplete("请输入收信方ID: ", uident, sizeof uident);
 				if (uident[0] == '\0')
 					break;
 				if (!ythtbbs_cache_UserTable_search_usernum(uident)) {
@@ -8290,7 +8290,7 @@ static int marry_admin(struct MC_Marry *marryMem, int n) {
 					break;
 				}
 				move(7, 4);
-				usercomplete("请输入提出方ID: ", uident2);
+				usercomplete("请输入提出方ID: ", uident2, sizeof uident);
 				if (uident2[0] == '\0')
 					break;
 				if (!ythtbbs_cache_UserTable_search_usernum(uident2)) {
@@ -9172,7 +9172,7 @@ static int marry_court(struct MC_Marry *marryMem, int n) {
 
 	money_show_stat("教堂登记处");
 	move(5, 4);
-	usercomplete("哪位mm这么幸福？", uident);
+	usercomplete("哪位mm这么幸福？", uident, sizeof uident);
 	if (uident[0] == '\0')
 		return 0;
 	if(!getuser(uident)) {
@@ -9562,7 +9562,7 @@ static int marry_perpare(struct MC_Marry *marryMem, int n) {
 				move(5, 4);
 				if (askyn("要发请柬给所有好友吗？", YEA, NA) == NA) {
 					move(6, 4);
-					usercomplete("发请柬给哪位？", uident);
+					usercomplete("发请柬给哪位？", uident, sizeof uident);
 					if (uident[0] == '\0')
 						break;
 					if(!ythtbbs_cache_UserTable_search_usernum(uident)) {
@@ -9684,19 +9684,19 @@ static int money_deny() {
 			getdata(1, 0, "(A)增加 or (E)离开 [E]: ", ans, 7, DOECHO, YEA);
 		if (*ans == 'A' || *ans == 'a') {
 			move(1, 0);
-			usercomplete("把谁加入黑名单: ", uident);
+			usercomplete("把谁加入黑名单: ", uident, sizeof uident);
 			if (*uident != '\0')
 				if (mc_addtodeny(uident, msgbuf, 0 ) == 1)
 					mc_denynotice(1, uident, msgbuf);
 		} else if ((*ans == 'C' || *ans == 'c')) {
 			move(1, 0);
-			usercomplete("改变谁的封禁时间或说明: ", uident);
+			usercomplete("改变谁的封禁时间或说明: ", uident, sizeof uident);
 			if (*uident != '\0')
 				if (mc_addtodeny(uident, msgbuf, 1) == 1)
 					mc_denynotice(3, uident, msgbuf);
 		} else if ((*ans == 'D' || *ans == 'd') && count) {
 			move(1, 0);
-			namecomplete("从黑名单中删除谁: ", uident);
+			namecomplete("从黑名单中删除谁: ", uident, sizeof uident);
 			move(1, 0);
 			clrtoeol();
 			if (uident[0] != '\0')
@@ -9910,7 +9910,7 @@ static int stockboards() {
 					if (*ans == 'A' || *ans == 'a') {
 						move(1, 0);
 						make_blist();
-						namecomplete("增加版面: ", bname);
+						namecomplete("增加版面: ", bname, sizeof bname);
 						setbpath(bpath, sizeof(bpath), bname);
 						if ((*bname == '\0') || (stat(bpath, &st) == -1)) {
 							move(2, 0);
@@ -9942,7 +9942,7 @@ static int stockboards() {
 						}
 					} else if ((*ans == 'D' || *ans == 'd') && count) {
 						move(1, 0);
-						namecomplete("删除版面: ", bname);
+						namecomplete("删除版面: ", bname, sizeof bname);
 						move(1, 0);
 						clrtoeol();
 						if (bname[0] != '\0' && bname[0] != '\n' && bname[0] != '\r') {
@@ -9974,7 +9974,7 @@ static int stockboards() {
 					if (*ans == 'A' || *ans == 'a') {
 						move(1, 0);
 						make_blist();
-						namecomplete("暂停哪版交易: ", bname);
+						namecomplete("暂停哪版交易: ", bname, sizeof bname);
 						setbpath(bpath, sizeof(bpath), bname);
 						if ((*bname == '\0') || (stat(bpath, &st) == -1)) {
 							move(2, 0);
@@ -10013,7 +10013,7 @@ static int stockboards() {
 						}
 					} else if ((*ans == 'D' || *ans == 'd') && count) {
 						move(1, 0);
-						namecomplete("要恢复交易的版面: ", bname);
+						namecomplete("要恢复交易的版面: ", bname, sizeof bname);
 						move(1, 0);
 						clrtoeol();
 						if (bname[0] != '\0' && bname[0] != '\n' && bname[0] != '\r') {

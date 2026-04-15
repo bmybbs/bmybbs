@@ -212,7 +212,9 @@ comdecode(FILE * fp, char *filename, int base64, int len)
 		void *target;
 		if ((output = open(filename, O_RDWR | O_CREAT | O_TRUNC, 0666)) == -1)
 			goto ERROR1;
-		lseek(output, len - 1, SEEK_SET);
+		if (lseek(output, len - 1, SEEK_SET) == (off_t) -1) {
+			goto ERROR1;
+		}
 		write(output, &endchar, 1);
 		if ((target = mmap(0, len, PROT_WRITE, MAP_SHARED, output, 0)) == (void *) -1)
 			goto ERROR2;
