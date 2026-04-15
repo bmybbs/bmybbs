@@ -288,7 +288,7 @@ output_c(char *file, int mode)
 		return;
 	snprintf(fn, sizeof fn, MY_BBS_HOME "/%s", file);
 	fd = open(fn, O_WRONLY | O_CREAT, 0660);
-	if (fd) {
+	if (fd >= 0) {
 		qsort(ms, count, sizeof(struct mystat), cmpstat);
 		for (i=1; i<count;i++) {
 			(ms+i)->num += (ms+i-1)->num;
