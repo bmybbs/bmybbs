@@ -8,7 +8,7 @@
 extern int errno;
 
 struct fileheader data[20000];
-int len = 0;
+size_t len = 0;
 
 int
 cmpfile(const void *p1, const void *p2)
@@ -102,7 +102,7 @@ int main(int argc, char **argv)
 		}
 	}
 	qsort(data, len, sizeof (struct fileheader), cmpfile);
-	printf("end.len=%d %ld", len, len * sizeof (struct fileheader));
+	printf("end.len=%ld %ld", len, len * sizeof (struct fileheader));
 	if (write(file, data, len * sizeof (struct fileheader)) == 0)
 		perror("write error");
 	if (close(file))
