@@ -553,7 +553,9 @@ checkaddr(struct in6_addr addr, int csock)
 				//ipv6
 				if(inet_ntop(PF_INET6,(const void *)&addrcheck[i].addr, str_addr, INET6_ADDRSTRLEN) != NULL) {
 					sprintf(str, "remove\t%s\t%d\t%s", str_addr, addrcheck[i].n, ctime(&timenow));
-					write(fd, str, strlen(str));
+					if (fd > 0) {
+						write(fd, str, strlen(str));
+					}
 				}
 			}
 			addrcheck[i].t = 0;
