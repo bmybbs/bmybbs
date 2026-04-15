@@ -668,7 +668,7 @@ int do_cross(int ent, void *record, char *direct) {
 	if (uinfo.mode == RMAIL || in_mail)
 		setmailfile_s(genbuf, sizeof(genbuf), currentuser.userid, fh2fname(fileinfo));
 	else if (uinfo.mode == BACKNUMBER)
-		directfile(genbuf, direct, fh2fname(fileinfo));
+		directfile(genbuf, sizeof genbuf, direct, fh2fname(fileinfo));
 	else
 		sprintf(genbuf, "boards/%s/%s", currboard, fh2fname(fileinfo));;
 	ytht_strsncpy(quote_file, genbuf, sizeof(quote_file));
@@ -846,7 +846,7 @@ dele_digest_top(time_t filetime, char *direc)
 	struct fileheader fh;
 	int pos;
 	snprintf(digest_name, sizeof digest_name, "T.%ld.A", filetime);
-	directfile(new_dir, direc, TOPFILE_DIR);
+	directfile(new_dir, sizeof new_dir, direc, TOPFILE_DIR);
 	tmpcurrfiletime = currfiletime;
 	currfiletime = filetime;
 	pos = new_search_record(new_dir, &fh, sizeof (fh),(void *) cmpfilename, NULL);
@@ -854,7 +854,7 @@ dele_digest_top(time_t filetime, char *direc)
 		return 0;
 	delete_file(new_dir, sizeof (struct fileheader),pos, (void *) cmpfilename);
 	currfiletime = tmpcurrfiletime;
-	directfile(new_dir, direc, digest_name);
+	directfile(new_dir, sizeof new_dir, direc, digest_name);
 	unlink(new_dir);
 	return 0;
 }
@@ -873,7 +873,7 @@ static int topfile_post(int ent, void *record, char *direct) //slowaction
 	} else {
 		struct fileheader digest;
 		char digestdir[STRLEN], digestfile[STRLEN], oldfile[STRLEN];
-		directfile(digestdir, direct, TOPFILE_DIR);
+		directfile(digestdir, sizeof digestdir, direct, TOPFILE_DIR);
 		if (get_num_records(digestdir, sizeof (digest)) > 8 && strcmp(currentuser.userid, "SYSOP")!=0) {
 			move(3, 0);
 			clrtobot();
@@ -884,8 +884,8 @@ static int topfile_post(int ent, void *record, char *direct) //slowaction
 		}
 		digest = *fhdr;
 		digest.accessed |= FILE_ISTOP1;
-		directfile(digestfile, direct, fh2fname(&digest));
-		directfile(oldfile, direct, fh2fname(fhdr));
+		directfile(digestfile, sizeof digestfile, direct, fh2fname(&digest));
+		directfile(oldfile, sizeof oldfile, direct, fh2fname(fhdr));
 
 		if (!dashf(digestfile)) {
 			digest.accessed |= FILE_ISTOP1;
@@ -918,7 +918,7 @@ read_post(int ent, void *record, char *direct)
 	starttime = time(NULL);
 #endif
 	clear();
-	directfile(genbuf, direct, fh2fname(fileinfo));
+	directfile(genbuf, sizeof genbuf, direct, fh2fname(fileinfo));
 	SETREAD(fileinfo, &brc);
 	ytht_strsncpy(quote_file, genbuf, sizeof(quote_file));
 	ytht_strsncpy(quote_board, currboard, 24);
@@ -1313,7 +1313,7 @@ dele_digest(time_t filetime, char *direc)
 	struct fileheader fh;
 	int pos;
 	sprintf(digest_name, "G.%ld.A", filetime);
-	directfile(new_dir, direc, DIGEST_DIR);
+	directfile(new_dir, sizeof new_dir, direc, DIGEST_DIR);
 	tmpcurrfiletime = currfiletime;
 	currfiletime = filetime;
 	pos = new_search_record(new_dir, &fh, sizeof (fh), (void *) cmpfilename, NULL);
@@ -1321,7 +1321,7 @@ dele_digest(time_t filetime, char *direc)
 		return 0;
 	delete_file(new_dir, sizeof (struct fileheader), pos, (void *) cmpfilename);
 	currfiletime = tmpcurrfiletime;
-	directfile(new_dir, direc, digest_name);
+	directfile(new_dir, sizeof new_dir, direc, digest_name);
 	unlink(new_dir);
 	return 0;
 }
@@ -1371,7 +1371,7 @@ digest_post(int ent, void *record, char *direct)
 	} else {
 		struct fileheader digest;
 		char digestdir[STRLEN], digestfile[STRLEN], oldfile[STRLEN];
-		directfile(digestdir, direct, DIGEST_DIR);
+		directfile(digestdir, sizeof digestdir, direct, DIGEST_DIR);
 		if (get_num_records(digestdir, sizeof (digest)) > MAX_DIGEST) {
 			move(3, 0);
 			clrtobot();
@@ -1382,8 +1382,8 @@ digest_post(int ent, void *record, char *direct)
 		}
 		digest = *fhdr;
 		digest.accessed |= FH_ISDIGEST;
-		directfile(digestfile, direct, fh2fname(&digest));
-		directfile(oldfile, direct, fh2fname(fhdr));
+		directfile(digestfile, sizeof digestfile, direct, fh2fname(&digest));
+		directfile(oldfile, sizeof oldfile, direct, fh2fname(fhdr));
 		if (!dashf(digestfile)) {
 			digest.accessed = FH_ISDIGEST;
 			link(oldfile, digestfile);
@@ -2363,11 +2363,11 @@ int edit_post(int ent, void *record, char *direct)
 	}
 
 	if (in_mail){
-		directfile(filepath, currmaildir, fh2fname(fileinfo));
+		directfile(filepath, sizeof filepath, currmaildir, fh2fname(fileinfo));
 		if (dashl(filepath))
 			return DONOTHING;//信箱中ln过来的文件禁止编辑
 	}else
-		directfile(filepath, direct, fh2fname(fileinfo));
+		directfile(filepath, sizeof filepath, direct, fh2fname(fileinfo));
 	modify_user_mode(EDIT);
 	clear();
 	if (!dashf(filepath)) {
@@ -2478,7 +2478,7 @@ edit_title(int ent, void *record, char *direct)
 				return DONOTHING;
 		}
 	} else{
-		directfile(filepath, currmaildir, fh2fname(fileinfo));
+		directfile(filepath, sizeof filepath, currmaildir, fh2fname(fileinfo));
 		if (dashl(filepath))
 			return DONOTHING;//信箱中ln过来的文件禁止编辑
 	}
@@ -2499,7 +2499,7 @@ edit_title(int ent, void *record, char *direct)
 		}
 
 		ytht_strsncpy(fileinfo->title, buf, sizeof(fileinfo->title));
-		directfile(genbuf, direct, fh2fname(fileinfo));
+		directfile(genbuf, sizeof genbuf, direct, fh2fname(fileinfo));
 		change_content_title(genbuf, buf);
 		now = time(NULL);
 		add_edit_mark(genbuf, currentuser.userid, now, fromhost);
@@ -3117,7 +3117,7 @@ static void quickviewpost(int ent, struct fileheader *fileinfo, char *direct) {
 	int attach = 0, has_attach;
 	FILE *fp;
 	getyx(&y, &x);
-	directfile(buf, direct, fh2fname(fileinfo));
+	directfile(buf, sizeof buf, direct, fh2fname(fileinfo));
 	move(t_lines - 8, 0);
 	clrtobot();
 	fp = fopen(buf, "r");

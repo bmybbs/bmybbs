@@ -107,7 +107,7 @@ static int do1984_read(int ent, void *record, char *direct)
 
 	clear();
 	setqtitle(fileinfo->title);
-	directfile(notgenbuf, direct, fh2fname(fileinfo));
+	directfile(notgenbuf, sizeof notgenbuf, direct, fh2fname(fileinfo));
 /*	if (fileinfo->accessed[1] & FILE1_1984) {
 		move(10, 30);
 		// 本文已经通过审查!

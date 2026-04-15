@@ -109,7 +109,7 @@ backnumber_read(int ent, void *record, char *direct)
 
 	clear();
 	setqtitle(fileinfo->title);
-	directfile(notgenbuf, direct, fh2fname(fileinfo));
+	directfile(notgenbuf, sizeof notgenbuf, direct, fh2fname(fileinfo));
 	if ((fileinfo->accessed & FH_HIDE) && !IScurrBM) {
 		move(10, 30);
 		prints("对不起，本文被内容不可读！");
