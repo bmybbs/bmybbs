@@ -43,13 +43,17 @@ int main(int argc, char **argv)
 		flag = 1;
 	flag = 1;
 	pdir = opendir(name);
+	if (pdir == NULL) {
+		perror("open folder error!\n");
+		return -1;
+	}
 	chdir(name);
 	if (!flag) {
 		sprintf(buf1, "chmod 744 %s", name);
 		system(buf1);
 	}
 	file = open(".tmpfile", O_CREAT | O_TRUNC | O_WRONLY, 0600);
-	if (file == 0) {
+	if (file < 0) {
 		perror("open .tmpfile error!\n");
 		closedir(pdir);
 		return -1;
