@@ -16,6 +16,7 @@ struct fileheader {
 	unsigned char staravg50;	//staravg 最大为5, staravg50 = staravg * 50
 								//i.e. staravg50 = totalstar * 50 / hasvoted
 	unsigned char hasvoted;
+	// TODO 更新为 time_t
 	char deltime;				//记录回收站和纸篓里面的文章时什么时间删除的
 								//now_t / (3600 * 24) % 100
 								//用于自动清除垃圾
