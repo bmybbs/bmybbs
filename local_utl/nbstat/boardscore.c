@@ -120,15 +120,17 @@ static int bs_update_score_callback(struct boardmem *board, int curr_idx, va_lis
 void
 bs_exit()
 {
-	int buc, i, count;
+	size_t buc, i;
+	int buc_i, count;
 	int boards;
 	struct bscore *data;
 	FILE *fp;
-	buc = getdic(bsstat, sizeof (struct bscore), (void **) &data);
-	if (buc < 0) {
+	buc_i = getdic(bsstat, sizeof (struct bscore), (void **) &data);
+	if (buc_i < 0) {
 		errlog("Can't malloc bu result!");
 		exit(-1);
 	}
+	buc = (size_t) buc_i;
 	ythtbbs_cache_Board_foreach_v(bs_update_score_callback);
 	fp = fopen(BSSTAT, "w");
 	if (fp == NULL) {
@@ -144,7 +146,7 @@ bs_exit()
 	for (i = 0; i < buc; i++) {
 		if (!data->noread) {
 			fprintf(fp,
-				"\033[1m%4d\033[m %-15.15s%-38.38s %5d\n",
+				"\033[1m%4ld\033[m %-15.15s%-38.38s %5d\n",
 				i + 1, data->board, data->expname, data->score);
 			count += data->score;
 			boards++;
