@@ -122,7 +122,7 @@ int port;
 	struct sockaddr_in6 sin;	//ipv6
 	struct rlimit rl;
 	char buf[80], data[80];
-	time_t val;
+	int val;
 	int portcount, big5portcount;
 	time_t now;
 
