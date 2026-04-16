@@ -130,7 +130,6 @@ bs_exit()
 		errlog("Can't malloc bu result!");
 		exit(-1);
 	}
-	buc = (size_t) buc_i;
 	ythtbbs_cache_Board_foreach_v(bs_update_score_callback);
 	fp = fopen(BSSTAT, "w");
 	if (fp == NULL) {
@@ -139,7 +138,13 @@ bs_exit()
 	}
 	fprintf(fp, "\033[1;37m名次 %-15.15s%-38.38s %s  \033[m\n",
 		"讨论区名称", "中文叙述", "人气值");
-	buc = getdic(bsstat, sizeof (struct bscore), (void **) &data);
+	buc_i = getdic(bsstat, sizeof (struct bscore), (void **) &data);
+	if (buc_i < 0) {
+		errlog("failed"); // TODO FIX log
+		fclose(fp);
+		exit(-1);
+	}
+	buc = (size_t) buc_i;
 	qsort(data, buc, sizeof (struct bscore), (void *) bs_cmp);
 	count = 0;
 	boards = 0;

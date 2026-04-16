@@ -203,9 +203,15 @@ int port;
 	}
 
 	val = 1;
-	setsockopt(n, SOL_SOCKET, SO_REUSEADDR, (char *) &val, sizeof (val));
+	if (setsockopt(n, SOL_SOCKET, SO_REUSEADDR, (char *) &val, sizeof (val)) == -1) {
+		close(n);
+		exit(1);
+	}
 	ld.l_onoff = ld.l_linger = 0;
-	setsockopt(n, SOL_SOCKET, SO_LINGER, (char *) &ld, sizeof (ld));
+	if (setsockopt(n, SOL_SOCKET, SO_LINGER, (char *) &ld, sizeof (ld)) == -1) {
+		close(n);
+		exit(1);
+	}
 
 	mport = port;
 	sin.sin6_port = htons(port);

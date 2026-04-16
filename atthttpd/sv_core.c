@@ -30,9 +30,15 @@ bindport(int port)
 		return -1;
 
 	val = 1;
-	setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (char *) &val, sizeof (val));
+	if (setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (char *) &val, sizeof (val)) == -1) {
+		close(s);
+		return -1;
+	}
 	ld.l_onoff = ld.l_linger = 0;
-	setsockopt(s, SOL_SOCKET, SO_LINGER, (char *) &ld, sizeof (ld));
+	if (setsockopt(s, SOL_SOCKET, SO_LINGER, (char *) &ld, sizeof (ld)) == -1) {
+		close(s);
+		return -1;
+	}
 
 	sin.sin6_family = AF_INET6;
 	sin.sin6_addr = in6addr_any;
