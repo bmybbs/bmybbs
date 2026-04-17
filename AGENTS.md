@@ -2,26 +2,33 @@
 
 ## Project Structure
 
-This project contains multiple subprojects.
+This project contains multiple subprojects. In this file they are listed, not explained.
 
 ### C related
 
-* `CMakeLists.txt` the root configuration for C related subprojects. `Makefile`s are saved for references.
-* `/include` header files that shared across the project.
-* `/libytht` contains helper functions from the project YTHTBBS, for example string operations.
-* `/libbmy` also contains helper functions, but not part of the YTHTBBS.
-* `/libythtbbs` implements many BBS related logic.
-* `/src/bbsd` the telnet daemon.
-* `/src/bbs` started by `bbsd`, implements the terminal user interface.
-* `/smth_sshbbsd` the ssh daemon combining SSH 1.x and `/src/bbs`.
-* `/nju09/www` a CGI implementation provide the web-based user interface for the BBS system.
-* `/local_utl` contains utilities.
-* `/api` an API layer which mirrors functionalities from `/src/bbs` and `/nju09/www`. Encoded in UTF-8, uses JSON.
+* `CMakeLists.txt`
+* `include`
+* `libytht`
+* `libbmy`
+* `libythtbbs`
+* `src/bbsd`
+* `src/bbs`
+* `smth_sshbbsd`
+* `nju09/www`
+* `local_utl`
+* `api`
 
 ### Other Subprojects
 
-* `/randpics` written in Perl, provides a bacic UI to manage images displayed in sign-in page in `/nju09/www`.
-* `/web` written in JavaScript, using Vue 3 as the framework for a modern looking, web-based user interface.
+* `randpics`
+* `web`
+
+### Other Project Files
+
+* `db`
+* `doc`
+  * `doc/wiki` is the active working wiki.
+  * Other files or folders under `/doc` are legacy documents, do NOT read or rely on them unless the user explicitly asks.
 
 ## Build and Testing
 
@@ -29,5 +36,11 @@ There is no need to run build commands or test commands. Human developers shall 
 
 ## Important Notes
 
-* Follow the indention and encoding if a file exists.
-* When creating a new file, using UTF-8 and tab instead.
+* Read `doc/wiki/index.md` before substantial analysis.
+* Treat `doc/wiki` as working memory; do not treat source code as the sole truth.
+* Prefer updating existing wiki pages over repeating conclusions in chat.
+* Use the wiki for accumulated understanding, but mark conflicts between wiki, code, and user statements explicitly.
+* Record uncertainty explicitly.
+* Follow the relevant skill when creating or revising wiki pages.
+* Follow the indentation and encoding when editing an existing file.
+* Use UTF-8 and tab indentation when creating a new file.
