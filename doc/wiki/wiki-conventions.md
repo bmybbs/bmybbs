@@ -77,6 +77,20 @@ The wiki is shared working memory, not a perfect source of truth.
 - conflicts between wiki pages, code, and user statements should be marked explicitly
 - uncertainty should be recorded instead of hidden
 
+## Special Files
+
+The wiki relies on two operational files that the LLM must maintain alongside content pages:
+
+- `index.md`
+  - Content-oriented catalog of all wiki pages.
+  - Each entry includes a link, a one-line summary, and optional metadata (date, source count, status).
+  - Organized by category (entities, concepts, sources, skills, etc.).
+  - Updated on every ingest, query, or lint pass. The LLM reads this first during queries to locate relevant pages.
+- `logs.md`
+  - Chronological, append-only record of wiki operations (ingests, queries, lint passes, status changes).
+  - Entries should use a consistent prefix for parseability, e.g., `## [YYYY-MM-DD] ingest | Article Title`.
+  - Provides a timeline of the wiki's evolution and helps the LLM understand recent activity.
+
 ## Scope
 
 This conventions page describes how the wiki is maintained.
