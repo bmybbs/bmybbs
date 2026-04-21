@@ -21,11 +21,12 @@
 - [项目总览](./project-overview.zh.md)
   - 状态：`初稿`
   - 对当前系统及其维护问题以及目标迁移方向的概要描述。
+- [目标架构](./target-architecture.zh.md)
+  - 状态：`初稿`
+  - 未来系统形态、各层职责、退役计划和迁移方向的初步架构页面。
 
 ## 计划页面
 
-- `target-architecture.md`
-  - 计划中：未来系统形态和主要设计方向的概述。
 - `legacy-subsystems.md`
   - 计划中：主要遗留组件及其当前角色的图谱。
 - `open-questions.md`
