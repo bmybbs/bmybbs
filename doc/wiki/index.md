@@ -21,11 +21,12 @@ Use this index as the entry point to canonical wiki pages. Sidecar draft pages s
 - [project-overview.md](./project-overview.md)
   - Status: `seeded`
   - High-level description of the current system, its maintenance problems, and the target migration direction.
+- [target-architecture.md](./target-architecture.md)
+  - Status: `seeded`
+  - Seed architecture page for the future system shape, layer responsibilities, retirements, and migration direction.
 
 ## Planned Pages
 
-- `target-architecture.md`
-  - Planned overview of the future system shape and major design direction.
 - `legacy-subsystems.md`
   - Planned map of the major legacy components and their current roles.
 - `open-questions.md`
