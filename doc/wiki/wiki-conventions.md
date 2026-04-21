@@ -9,11 +9,20 @@ This page defines how `doc/wiki` is maintained as a shared working wiki between 
 In the examples below, `foo` is a placeholder for a page topic name such as `project-overview`, `target-architecture`, or `article-storage`.
 
 - `foo.md` is the canonical wiki page.
+- `foo.zh.md` is a Chinese translation page.
 - `foo.human.md` is a human draft for discussion.
 - `foo.codex.md` is a Codex draft for discussion.
 - `foo.<agent>.md` may be used by other agents in the same way.
 
 Only `foo.md` should be treated as canonical wiki content.
+
+Translation pages require explicit status handling:
+
+- `foo.zh.md` may exist as a Chinese translation for contributors or readers who prefer Chinese.
+- the English page remains the working source by default
+- a translation page may be stale
+- a translation page should not be treated as a reference unless a human contributor explicitly marks it as a canonical page with its own status such as `seeded`, `grounded`, or `actionable`
+- if no such explicit status is present, treat the translation as informational only
 
 Draft pages are discussion artifacts:
 
@@ -88,7 +97,12 @@ The wiki relies on two operational files that the LLM must maintain alongside co
   - Updated on every ingest, query, or lint pass. The LLM reads this first during queries to locate relevant pages.
 - `logs.md`
   - Chronological, append-only record of wiki operations (ingests, queries, lint passes, status changes).
-  - Entries should use a consistent prefix for parseability, e.g., `## [YYYY-MM-DD] ingest | Article Title`.
+  - Each entry must be a single bullet line.
+  - Format: `- YYYY-MM-DD HH:MM | operation | page | description`
+  - If the current time is not available, `- YYYY-MM-DD | operation | page | description` is acceptable.
+  - Add new entries at the end of the file.
+  - Do not use tables.
+  - Use `doc/wiki/tools/wiki-now.sh` to get the local timestamp when possible.
   - Provides a timeline of the wiki's evolution and helps the LLM understand recent activity.
 
 ## Scope
