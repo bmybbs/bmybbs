@@ -30,8 +30,8 @@ Use this index as the entry point to canonical wiki pages. Sidecar draft pages s
 - [logs.md](./logs.md)
   - Status: `seeded`
   - Chronological record of important wiki operations and major status changes.
+- [open-questions.md](./open-questions.md)
+  - Status: `seeded`
+  - Curated backlog of genuinely open strategic questions that may affect architecture, migration, or planning.
 
 ## Planned Pages
-
-- `open-questions.md`
-  - Planned list of unresolved questions, disputed assumptions, and follow-up topics.
