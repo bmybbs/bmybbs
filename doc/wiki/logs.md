@@ -13,3 +13,5 @@
 - 2026-04-22 11:33 | update | index.md | Moved `logs.md` from planned pages to canonical seeded pages.
 - 2026-04-22 11:34 | update | index.zh.md | Moved logs.md to canonical section to match latest English version.
 - 2026-04-22 13:12 | create | open-questions.md | Published the canonical seeded open questions page and added it to `index.md`.
+- 2026-04-22 13:26 | translate | open-questions.md | Translated to Simplified Chinese (open-questions.zh.md)
+- 2026-04-22 13:26 | update | index.zh.md | Synced canonical status for open-questions.md while preserving manual wording.
