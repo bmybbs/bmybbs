@@ -10,3 +10,5 @@
 - 2026-04-22 11:06 | create | legacy-subsystems.md | Published the canonical seeded legacy subsystem map and added it to `index.md`.
 - 2026-04-22 11:16 | translate | legacy-subsystems.md | Translated to Simplified Chinese (legacy-subsystems.zh.md)
 - 2026-04-22 11:16 | update | index.zh.md | Synced canonical status for legacy-subsystems.md while preserving manual wording.
+- 2026-04-22 11:33 | update | index.md | Moved `logs.md` from planned pages to canonical seeded pages.
+- 2026-04-22 11:34 | update | index.zh.md | Moved logs.md to canonical section to match latest English version.

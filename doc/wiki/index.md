@@ -27,10 +27,11 @@ Use this index as the entry point to canonical wiki pages. Sidecar draft pages s
 - [legacy-subsystems.md](./legacy-subsystems.md)
   - Status: `seeded`
   - High-level map of major legacy access layers, service daemons, shared libraries, and their likely migration fate.
+- [logs.md](./logs.md)
+  - Status: `seeded`
+  - Chronological record of important wiki operations and major status changes.
 
 ## Planned Pages
 
 - `open-questions.md`
   - Planned list of unresolved questions, disputed assumptions, and follow-up topics.
-- `logs.md`
-  - Planned chronological record of important wiki operations and major status changes.
