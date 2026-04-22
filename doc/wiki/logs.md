@@ -8,3 +8,5 @@
 - 2026-04-21 22:06 | translate | target-architecture.md | Translated to Simplified Chinese (target-architecture.zh.md)
 - 2026-04-21 22:25 | update | index.zh.md | Synced canonical status for target-architecture.md while preserving manual wording.
 - 2026-04-22 11:06 | create | legacy-subsystems.md | Published the canonical seeded legacy subsystem map and added it to `index.md`.
+- 2026-04-22 11:16 | translate | legacy-subsystems.md | Translated to Simplified Chinese (legacy-subsystems.zh.md)
+- 2026-04-22 11:16 | update | index.zh.md | Synced canonical status for legacy-subsystems.md while preserving manual wording.
