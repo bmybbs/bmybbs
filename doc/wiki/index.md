@@ -33,5 +33,8 @@ Use this index as the entry point to canonical wiki pages. Sidecar draft pages s
 - [open-questions.md](./open-questions.md)
   - Status: `seeded`
   - Curated backlog of genuinely open strategic questions that may affect architecture, migration, or planning.
+- [migration-stages.md](./migration/migration-stages.md)
+  - Status: `seeded`
+  - Staged migration strategy from low-risk PostgreSQL validation through data migration, API migration, and legacy retirement.
 
 ## Planned Pages
