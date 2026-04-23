@@ -15,3 +15,4 @@
 - 2026-04-22 13:12 | create | open-questions.md | Published the canonical seeded open questions page and added it to `index.md`.
 - 2026-04-22 13:26 | translate | open-questions.md | Translated to Simplified Chinese (open-questions.zh.md)
 - 2026-04-22 13:26 | update | index.zh.md | Synced canonical status for open-questions.md while preserving manual wording.
+- 2026-04-23 15:51 | update | project-overview.md, target-architecture.md, legacy-subsystems.md | Clarified that the legacy system uses mixed storage, including MySQL-backed pieces as well as filesystem-backed data.

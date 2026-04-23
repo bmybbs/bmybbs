@@ -30,9 +30,12 @@ Some experimental or less important clients exist, but they are not central to t
 Several different kinds of maintenance burden have accumulated in the legacy system.
 
 - Architecture and storage
-  - The filesystem is used as the primary data store.
+  - The legacy system uses a mixed storage model rather than one clean data layer.
+  - The filesystem is still the primary data store for much of the system.
+  - Some newer or auxiliary data domains also use MySQL.
   - Many records are stored as binary data mapped directly from C structs.
   - The system depends heavily on operating system facilities and low-level file management instead of a database handling those concerns.
+  - The coexistence of filesystem-backed data and MySQL-backed data also increases migration complexity.
 - Coupling and duplication
   - Similar business logic is implemented multiple times across different access layers.
   - Many functions are tied too closely to specific interfaces instead of being organized as reusable domain logic.
@@ -50,7 +53,7 @@ The long-term goal is to retire the legacy access architecture and replace it wi
 The current planning direction is:
 
 - preserve the core community workflows, especially user management, board view, and article view
-- move primary data storage to PostgreSQL
+- move primary data storage to PostgreSQL and retire remaining MySQL-backed pieces over time
 - continue using Redis for caching
 - likely move binary attachments to an object-storage-based design
 - replace multiple legacy access layers with one API-oriented backend

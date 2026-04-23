@@ -24,7 +24,7 @@ The future system is expected to consist of several major parts with clearer bou
   - It does not need to mirror every legacy feature in the first release.
 - Data storage:
   - Primary structured data should move into PostgreSQL.
-  - The storage design should support a transition period in which legacy data and new data handling may coexist.
+  - The storage design should support a transition period in which legacy filesystem-backed data, MySQL-backed data, and new PostgreSQL-backed data may coexist.
 - Cache layer:
   - Cache and shared state should move away from the current shared-memory-oriented model.
   - Redis remains a likely choice because it is already used and fits the intended direction.
@@ -108,6 +108,7 @@ The legacy codebase may still remain as a reference and may still receive critic
 Things that are likely:
 
 - PostgreSQL as the main structured data store
+- gradual retirement of legacy MySQL-backed pieces as PostgreSQL-backed replacements become available
 - Redis as the main caching layer
 - an object-storage-oriented design for binary attachments
 - Rust as a strong candidate for at least part of the new implementation stack, especially where safer low-level systems work or reusable core libraries are valuable

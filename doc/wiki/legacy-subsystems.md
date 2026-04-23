@@ -103,6 +103,7 @@ At a high level, the current subsystem relationships are:
 - `smth_sshbbsd` embeds or transitions into `bbs` logic for SSH-based access.
 - `nju09/www` provides a separate CGI-based web path into similar or overlapping system behavior.
 - `api` provides a newer HTTP-based access path and currently works mainly with `web`.
+- the legacy system is not purely filesystem-backed; some newer or auxiliary pieces also depend on MySQL-backed storage paths.
 - `web` depends on `api` rather than on the legacy CGI layer.
 - shared libraries such as `libythtbbs`, `libytht`, and `libbmy` support multiple executables and utilities across the repository.
 
