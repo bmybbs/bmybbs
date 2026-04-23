@@ -16,3 +16,6 @@
 - 2026-04-22 13:26 | translate | open-questions.md | Translated to Simplified Chinese (open-questions.zh.md)
 - 2026-04-22 13:26 | update | index.zh.md | Synced canonical status for open-questions.md while preserving manual wording.
 - 2026-04-23 15:51 | update | project-overview.md, target-architecture.md, legacy-subsystems.md | Clarified that the legacy system uses mixed storage, including MySQL-backed pieces as well as filesystem-backed data.
+- 2026-04-23 16:35 | translate | project-overview.md | Created Simplified Chinese translation (project-overview.zh.md) including mixed storage updates.
+- 2026-04-23 16:35 | update | legacy-subsystems.zh.md | Synced updates regarding MySQL-backed storage paths.
+- 2026-04-23 16:35 | update | target-architecture.zh.md | Synced updates regarding mixed storage coexistence and MySQL retirement.
