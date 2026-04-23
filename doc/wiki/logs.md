@@ -20,3 +20,5 @@
 - 2026-04-23 16:35 | update | legacy-subsystems.zh.md | Synced updates regarding MySQL-backed storage paths.
 - 2026-04-23 16:35 | update | target-architecture.zh.md | Synced updates regarding mixed storage coexistence and MySQL retirement.
 - 2026-04-23 18:23 | create | migration/migration-stages.md | Published the canonical seeded migration stages page and added it to `index.md`.
+- 2026-04-23 18:51 | translate | migration/migration-stages.md | Translated to Simplified Chinese (migration/migration-stages.zh.md)
+- 2026-04-23 18:51 | update | index.zh.md | Added migration/migration-stages.zh.md to the index.

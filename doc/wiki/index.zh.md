@@ -33,5 +33,8 @@
 - [开放性问题](./open-questions.zh.md)
   - 状态：`初稿`
   - 真正开放的、可能影响架构、迁移或规划的战略性问题清单。
+- [迁移阶段](./migration/migration-stages.zh.md)
+  - 状态：`初稿`
+  - 从低风险 PostgreSQL 验证到数据迁移、API 迁移和遗留退役的分阶段迁移策略。
 
 ## 计划页面
