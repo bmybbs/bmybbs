@@ -22,3 +22,4 @@
 - 2026-04-23 18:23 | create | migration/migration-stages.md | Published the canonical seeded migration stages page and added it to `index.md`.
 - 2026-04-23 18:51 | translate | migration/migration-stages.md | Translated to Simplified Chinese (migration/migration-stages.zh.md)
 - 2026-04-23 18:51 | update | index.zh.md | Added migration/migration-stages.zh.md to the index.
+- 2026-04-27 | create | cross-cutting/logging-system.md | Published the canonical seeded logging-system page and added it to `index.md`.

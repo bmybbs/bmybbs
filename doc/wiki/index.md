@@ -36,5 +36,8 @@ Use this index as the entry point to canonical wiki pages. Sidecar draft pages s
 - [migration-stages.md](./migration/migration-stages.md)
   - Status: `seeded`
   - Staged migration strategy from low-risk PostgreSQL validation through data migration, API migration, and legacy retirement.
+- [cross-cutting/logging-system.md](./cross-cutting/logging-system.md)
+  - Status: `seeded`
+  - Current-state map of the legacy `newtrace` and `bbslogd` logging pipeline, its event families, encoding risks, and migration relevance.
 
 ## Planned Pages
