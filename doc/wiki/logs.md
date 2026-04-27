@@ -25,3 +25,4 @@
 - 2026-04-27 | create | cross-cutting/logging-system.md | Published the canonical seeded logging-system page and added it to `index.md`.
 - 2026-04-27 11:34 | translate | cross-cutting/logging-system.md | Translated to Simplified Chinese (cross-cutting/logging-system.zh.md)
 - 2026-04-27 11:34 | update | index.zh.md | Added cross-cutting/logging-system.zh.md to the index.
+- 2026-04-27 17:52 | create | migration/logging-system-migration.md | Published the canonical seeded logging-system migration page and added it to `index.md`.

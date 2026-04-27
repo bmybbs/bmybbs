@@ -39,5 +39,8 @@ Use this index as the entry point to canonical wiki pages. Sidecar draft pages s
 - [cross-cutting/logging-system.md](./cross-cutting/logging-system.md)
   - Status: `seeded`
   - Current-state map of the legacy `newtrace` and `bbslogd` logging pipeline, its event families, encoding risks, and migration relevance.
+- [migration/logging-system-migration.md](./migration/logging-system-migration.md)
+  - Status: `seeded`
+  - Phase-oriented plan for refactoring the logging write path first, then designing database import and direct-write phases later.
 
 ## Planned Pages
