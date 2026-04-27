@@ -36,5 +36,8 @@
 - [迁移阶段](./migration/migration-stages.zh.md)
   - 状态：`初稿`
   - 从低风险 PostgreSQL 验证到数据迁移、API 迁移和遗留退役的分阶段迁移策略。
+- [日志系统](./cross-cutting/logging-system.zh.md)
+  - 状态：`初稿`
+  - 遗留 `newtrace` 和 `bbslogd` 日志管道的现状图谱、事件家族、编码风险及迁移相关性。
 
 ## 计划页面
