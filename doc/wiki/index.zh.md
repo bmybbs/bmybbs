@@ -39,5 +39,8 @@
 - [日志系统](./cross-cutting/logging-system.zh.md)
   - 状态：`初稿`
   - 遗留 `newtrace` 和 `bbslogd` 日志管道的现状图谱、事件家族、编码风险及迁移相关性。
+- [日志系统迁移](./migration/logging-system-migration.zh.md)
+  - 状态：`初稿`
+  - 分阶段的迁移计划，重点是首先重构日志写入路径，然后设计数据库导入和直接写入阶段。
 
 ## 计划页面
