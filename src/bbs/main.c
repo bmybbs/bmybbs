@@ -25,6 +25,7 @@
 #include <time.h>
 #include <stdio.h>
 #include "ytht/random.h"
+#include "bmy/user.h"
 #include "bbs.h"
 #include "bbs_global_vars.h"
 #include "bcache.h"

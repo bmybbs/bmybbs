@@ -593,17 +593,6 @@ fillmboard(struct boardheader *bh, struct myparam1 *mp)
 	return 0;
 }
 
-const char *ythtbbs_user_get_login_type_str(enum ythtbbs_user_login_type type) {
-	switch(type) {
-	case YTHTBBS_LOGIN_TELNET: return "TELNET";
-	case YTHTBBS_LOGIN_SSH   : return "SSH";
-	case YTHTBBS_LOGIN_NJU09 : return "NJU09";
-	case YTHTBBS_LOGIN_API   : return "API";
-	case YTHTBBS_LOGIN_OAUTH : return "OAUTH";
-	default                  : return "unknown";
-	}
-}
-
 int ythtbbs_user_login(const char *userid, const char *passwd, const char *fromhost, const enum ythtbbs_user_login_type login_type, struct user_info *out_info, struct userec *out_userec, int *out_utmp_idx) {
 	int              user_idx;
 	long             login_interval;

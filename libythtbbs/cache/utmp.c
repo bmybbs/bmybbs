@@ -8,7 +8,7 @@
 #include "bmy/iphash.h"
 #include "ythtbbs/cache.h"
 #include "ythtbbs/session.h"
-#include "ythtbbs/user.h"
+#include "bmy/user.h"
 #include "cache-internal.h"
 
 // 用于 iphash

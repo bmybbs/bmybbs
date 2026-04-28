@@ -5,6 +5,7 @@
 #include "config.h"
 #include "board.h"
 #include "cache.h"
+#include "bmy/user.h"
 
 /* these are flags in userec.flags[0] */
 #define PAGER_FLAG     0x1   /* true if pager was OFF last session */
@@ -128,14 +129,6 @@ int chk_BM(struct userec *, struct boardheader *bh, int isbig);
 int chk_BM_id(char *, struct boardheader *);
 int bmfilesync(struct userec *);
 
-enum ythtbbs_user_login_type {
-	YTHTBBS_LOGIN_TELNET,
-	YTHTBBS_LOGIN_SSH,
-	YTHTBBS_LOGIN_NJU09,
-	YTHTBBS_LOGIN_API,
-	YTHTBBS_LOGIN_OAUTH,
-};
-
 enum ythtbbs_user_login_status {
 	YTHTBBS_USER_LOGIN_OK       = 0,
 	YTHTBBS_USER_NOT_EXIST      = 1,
@@ -172,6 +165,4 @@ int ythtbbs_user_logout(const char *userid, const int utmp_idx);
 void ythtbbs_user_clean(void);
 
 enum ythtbbs_register_status ythtbbs_user_create(const struct userec *user, int *usernum, int *time_interval);
-
-const char *ythtbbs_user_get_login_type_str(enum ythtbbs_user_login_type type);
 #endif

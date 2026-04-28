@@ -6,6 +6,7 @@
 #include <onion/dict.h>
 #include <onion/block.h>
 
+#include "bmy/user.h"
 #include "bbs.h"
 #include "ytht/crypt.h"
 #include "ytht/strlib.h"

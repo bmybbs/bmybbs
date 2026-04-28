@@ -13,6 +13,7 @@
 #include "cache-internal.h"
 #include "ythtbbs/override.h"
 #include "ythtbbs/goodgbid.h"
+#include "bmy/user.h"
 
 /**
  * 对应与原 UCACHE / UINDEX 两个表
