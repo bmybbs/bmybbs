@@ -7,6 +7,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
+#include "bmy/logging.h"
 #include "config.h"
 #include "ytht/crypt.h"
 #include "ytht/timeop.h"
@@ -354,8 +355,7 @@ logattempt(const char *user, const char *from, const char *zone, time_t time)
 	char time_buf[30];
 	int fd, len;
 
-	sprintf(buf, "system passerr %s", from);
-	newtrace(buf);
+	bmy_log_login_failure(from);
 	ytht_ctime_r(time, time_buf);
 	snprintf(buf, 256, "%-12.12s  %-30s %-16s %-6s\n", user, time_buf, from, zone);
 	len = strlen(buf);
@@ -790,8 +790,7 @@ int ythtbbs_user_login(const char *userid, const char *passwd, const char *fromh
 
 	substitute_record(PASSFILE, &local_lookup_user, sizeof(struct userec), user_idx + 1);
 
-	sprintf(local_buf, "%s enter %s using %s", local_lookup_user.userid, fromhost, ythtbbs_user_get_login_type_str(login_type));
-	newtrace(local_buf);
+	bmy_log_login_success(local_lookup_user.userid, fromhost, login_type);
 
 	if (out_info)
 		memcpy(out_info, &local_uinfo, sizeof(struct user_info));
@@ -807,7 +806,6 @@ int ythtbbs_user_logout(const char *userid, const int utmp_idx) {
 	int              user_idx;
 	struct userec    local_lookup_user;
 	struct user_info *ptr_info;
-	char             local_buf[128];
 
 	ythtbbs_cache_UserTable_resolve();
 	user_idx = ythtbbs_cache_UserIDHashTable_find_idx(userid);
@@ -822,8 +820,7 @@ int ythtbbs_user_logout(const char *userid, const int utmp_idx) {
 	get_record(PASSFILE, &local_lookup_user, sizeof(struct userec), user_idx + 1);
 	local_lookup_user.stay += time(NULL) - ptr_info->lasttime; // TODO
 	local_lookup_user.userid[IDLEN + 1] = '\0';
-	snprintf(local_buf, sizeof(local_buf), "%s exitbbs %ld", local_lookup_user.userid, local_lookup_user.stay);
-	newtrace(local_buf);
+	bmy_log_logout(local_lookup_user.userid, local_lookup_user.stay);
 	ythtbbs_cache_utmp_remove(utmp_idx);
 
 	// 更新 PASSFILE 中的在线时间
