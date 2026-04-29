@@ -53,3 +53,22 @@ void bmy_log_user_kick(const char *operator_userid, const char *target_userid) {
 	snprintf(buf, sizeof buf, "%s kick %s", operator_userid, target_userid);
 	newtrace(buf);
 }
+
+void bmy_log_account_create(const char *userid, int usernum, const char *fromhost, enum ythtbbs_user_login_type session_type) {
+	char buf[80];
+
+	if (session_type == YTHTBBS_LOGIN_NJU09) {
+		snprintf(buf, sizeof buf, "%s newaccount %d %s www", userid, usernum, fromhost);
+	} else {
+		snprintf(buf, sizeof buf, "%s newaccount %d %s", userid, usernum, fromhost);
+	}
+
+	newtrace(buf);
+}
+
+void bmy_log_account_expire_cleanup(const char *userid, int usernum) {
+	char buf[80];
+
+	snprintf(buf, sizeof buf, "system kill %s %d", userid, usernum);
+	newtrace(buf);
+}

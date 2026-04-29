@@ -1,4 +1,5 @@
 #include "bbslib.h"
+#include "bmy/logging.h"
 #include "ythtbbs/identify.h"
 #include "ytht/random.h"
 #include "bmy/user.h"
@@ -318,8 +319,7 @@ bbsdoreg_main()
 
 //      sprintf(buf, "%s %-12s %d\n", ytht_ctime(now_t)+4, x.userid, getusernum(x.userid));
 //      f_append("wwwreg.log", buf);
-	sprintf(buf, "%s newaccount %d %s www", x.userid, getusernum(x.userid), fromhost);
-	newtrace(buf);
+	bmy_log_account_create(x.userid, getusernum(x.userid), fromhost, YTHTBBS_LOGIN_NJU09);
 	bmy_user_create(getusernum(x.userid), x.userid);
 	//wwwstylenum = 1;
 

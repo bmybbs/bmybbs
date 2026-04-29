@@ -82,4 +82,25 @@ void bmy_log_multi_login_kick(const char *userid);
  * @param target_userid 被踢用户 id
  */
 void bmy_log_user_kick(const char *operator_userid, const char *target_userid);
+
+/**
+ * @brief 记录用户注册
+ * @details 来源
+ * - src/bbs/register.c: terminal registration -> "%s newaccount %d %s"
+ * - nju09/www/bbsdoreg.c: web registration -> "%s newaccount %d %s www"
+ * @param userid 用户 id
+ * @param usernum 索引
+ * @param fromhost IP
+ * @param session_type 会话类型
+ */
+void bmy_log_account_create(const char *userid, int usernum, const char *fromhost, enum ythtbbs_user_login_type session_type);
+
+/**
+ * @brief 记录清理生命力为负的用户
+ * @details 来源
+ * - libythtbbs/user.c: ythtbbs_user_clean -> "system kill %s %d"
+ * @param userid 用户 id
+ * @param usernum 索引
+ */
+void bmy_log_account_expire_cleanup(const char *userid, int usernum);
 #endif

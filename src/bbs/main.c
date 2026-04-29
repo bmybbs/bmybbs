@@ -24,6 +24,7 @@
 
 #include <time.h>
 #include <stdio.h>
+#include "bmy/logging.h"
 #include "ytht/random.h"
 #include "bmy/user.h"
 #include "bbs.h"
@@ -260,8 +261,7 @@ void do_abort_bbs() {
 			|| uinfo.mode == EDITANN)
 		keep_fail_post();
 	stay = time(0) - login_start_time;
-	sprintf(genbuf, "%s drop %ld", currentuser.userid, stay);
-	newtrace(genbuf);
+	bmy_log_disconnect(currentuser.userid, stay);
 	if ((currentuser.userlevel & PERM_BOARDS) && (ythtbbs_cache_UserTable_count(usernum) == 1))
 		setbmstatus(0);
 	u_exit();
@@ -330,8 +330,7 @@ multi_user_check()
 		return;
 
 	kill(uin.pid, 9);
-	snprintf(buffer, sizeof (buffer), "%s kick %s multi-login", currentuser.userid, currentuser.userid);
-	newtrace(buffer);
+	bmy_log_multi_login_kick(currentuser.userid);
 }
 
 static int
@@ -742,8 +741,11 @@ user_login()
 	int randnum;
 	struct tm *local1,*local2;
 	int mon1,mon2,day1,day2,year1,year2;
-	sprintf(genbuf, "%s enter %s", currentuser.userid, fromhost);
-	newtrace(genbuf);
+#ifdef SSHBBS
+	bmy_log_login_success(currentuser.userid, fromhost, YTHTBBS_LOGIN_SSH);
+#else
+	bmy_log_login_success(currentuser.userid, fromhost, YTHTBBS_LOGIN_TELNET);
+#endif
 	u_enter();
 	started = 1;
 
