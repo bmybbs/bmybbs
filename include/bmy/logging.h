@@ -103,4 +103,23 @@ void bmy_log_account_create(const char *userid, int usernum, const char *fromhos
  * @param usernum 索引
  */
 void bmy_log_account_expire_cleanup(const char *userid, int usernum);
+
+// board usage and statistics
+
+/**
+ * @brief 记录版面停留时间
+ * @details 来源
+ * - src/bbs/boards.c: board timing -> "%s use %s %ld"
+ * - nju09/www/BBSLIB.c: updatelastboard -> "%s use %s %ld"
+ */
+void bmy_log_board_use(const char *userid, const char *board, long stay);
+
+/**
+ * @brief 记录版面搜索
+ * @details 来源
+ * - nju09/www/bbsfind.c: search result count -> "%s bbsfind %d"
+ * @param userid 用户 id
+ * @param result_count 搜索结果计数
+ */
+void bmy_log_search_result_count(const char *userid, int result_count);
 #endif

@@ -72,3 +72,17 @@ void bmy_log_account_expire_cleanup(const char *userid, int usernum) {
 	snprintf(buf, sizeof buf, "system kill %s %d", userid, usernum);
 	newtrace(buf);
 }
+
+void bmy_log_board_use(const char *userid, const char *board, long stay) {
+	char buf[80];
+
+	snprintf(buf, sizeof buf, "%s use %s %ld", userid, board, stay);
+	newtrace(buf);
+}
+
+void bmy_log_search_result_count(const char *userid, int result_count) {
+	char buf[80];
+
+	snprintf(buf, sizeof buf, "%s bbsfind %d", userid, result_count);
+	newtrace(buf);
+}
