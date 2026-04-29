@@ -1,4 +1,5 @@
 #include "bbslib.h"
+#include "bmy/logging.h"
 
 static int show_form(char *board);
 static int inform(char *board, char *user, char *exp, int dt);
@@ -48,8 +49,7 @@ bbsdenyadd_main()
 	denynum++;
 	savedenyuser(x1->header.filename);
 	printf("封禁 %s 成功<br>\n", x->userid);
-	snprintf(buf, 256, "%s deny %s %s", currentuser.userid, x1->header.filename, x->userid);
-	newtrace(buf);
+	bmy_log_board_deny(currentuser.userid, x1->header.filename, x->userid);
 	inform(x1->header.filename, x->userid, expbuf, dt);
 	printf("[<a href=bbsdenyall?board=%s>返回被封帐号名单</a>]", x1->header.filename);
 	http_quit();

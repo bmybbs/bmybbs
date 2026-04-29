@@ -237,4 +237,160 @@ void bmy_log_netmail_send(const char *userid, const char *target_userid);
  * @param target_userid 收信人 id
  */
 void bmy_log_utility_mail_send(const char *sender, const char *target_userid);
+
+// moderation and content state
+
+/**
+ * @brief 记录封禁
+ * @details 来源
+ * - src/bbs/bm.c: terminal deny -> "%s deny %s %s"
+ * - nju09/www/bbsdenyadd.c: web deny -> "%s deny %s %s"
+ * @param operator_userid 操作者 id
+ * @param board 版面
+ * @param target_userid 被封禁 id
+ */
+void bmy_log_board_deny(const char *operator_userid, const char *board, const char *target_userid);
+
+/**
+ * @brief 记录m标记
+ * @details 来源
+ * - src/bbs/bbs.c and nju09/www/bbsman.c: "%s mark %s %s %s"
+ * @param userid 操作者 id
+ * @param board 版面
+ * @param owner 帖子所有者 id
+ * @param title 标题 (gbk 编码)
+ */
+void bmy_log_post_mark(const char *userid, const char *board, const char *owner, const char *title);
+
+/**
+ * @brief 记录解除m标记
+ * @details 来源
+ * - src/bbs/bbs.c and nju09/www/bbsman.c: "%s unmark %s %s %s"
+ * @param userid 操作者 id
+ * @param board 版面
+ * @param owner 帖子所有者 id
+ * @param title 标题 (gbk 编码)
+ */
+void bmy_log_post_unmark(const char *userid, const char *board, const char *owner, const char *title);
+
+/**
+ * @brief 记录g标记
+ * @details 来源
+ * - src/bbs/bbs.c and nju09/www/bbsman.c: "%s digest %s %s %s"
+ * @param userid 操作者 id
+ * @param board 版面
+ * @param owner 帖子所有者 id
+ * @param title 标题 (gbk 编码)
+ */
+void bmy_log_post_digest(const char *userid, const char *board, const char *owner, const char *title);
+
+/**
+ * @brief 记录解除g标记
+ * @details 来源
+ * - src/bbs/bbs.c and nju09/www/bbsman.c: "%s undigest %s %s %s"
+ * @param userid 操作者 id
+ * @param board 版面
+ * @param owner 帖子所有者 id
+ * @param title 标题 (gbk 编码)
+ */
+void bmy_log_post_undigest(const char *userid, const char *board, const char *owner, const char *title);
+
+/**
+ * @brief 记录水文标记
+ * @details 来源
+ * - src/bbs/bbs.c: "%s water %s %s %s"
+ * @param userid 操作者 id
+ * @param board 版面
+ * @param owner 帖子所有者 id
+ * @param title 标题 (gbk 编码)
+ */
+void bmy_log_post_water(const char *userid, const char *board, const char *owner, const char *title);
+
+/**
+ * @brief 记录解除水文标记
+ * @details 来源
+ * - src/bbs/bbs.c: "%s unwater %s %s %s"
+ * @param userid 操作者 id
+ * @param board 版面
+ * @param owner 帖子所有者 id
+ * @param title 标题 (gbk 编码)
+ */
+void bmy_log_post_unwater(const char *userid, const char *board, const char *owner, const char *title);
+
+/**
+ * @brief 记录标题更新
+ * @details 来源
+ * src/bbs/bbs.c: "%s changetitle %s %s oldtitle:%s newtitle:%s"
+ * @param userid 操作者 id
+ * @param board 版面
+ * @param owner 帖子所有者 id
+ * @param old_title 旧标题 (gbk 编码)
+ * @param new_title 新标题 (gbk 编码)
+ */
+void bmy_log_post_title_change(const char *userid, const char *board, const char *owner, const char *old_title, const char *new_title);
+
+/**
+ * @brief 记录区段删除
+ * @details 来源
+ * - src/bbs/bbs.c: "%s ranged %s %d %d"
+ * @param userid 操作者 id
+ * @param board 版面
+ * @param from_id 起始编号
+ * @param to_id 结束编号
+ */
+void bmy_log_post_range_delete(const char *userid, const char *board, int from_id, int to_id);
+
+/**
+ * @brief 记录站内信区段删除
+ * @details 来源
+ * - src/bbs/bbs.c: "%s rangedmail %d %d"
+ * @param userid 操作者 id
+ * @param from_id 起始编号
+ * @param to_id 结束编号
+ */
+void bmy_log_mail_range_delete(const char *userid, int from_id, int to_id);
+
+/**
+ * @brief 记录置顶
+ * @details 来源
+ * - src/bbs/bbs.c: top action with title-bearing payload
+ * @param userid 操作者 id
+ * @param board 版面
+ * @param owner 作者
+ * @param title 标题
+ */
+void bmy_log_post_top(const char *userid, const char *board, const char *owner, const char *title);
+
+/**
+ * @brief 记录取消置顶
+ * @details 来源
+ * - src/bbs/bbs.c: un-top action with title-bearing payload
+ * @param userid 操作者 id
+ * @param board 版面
+ * @param owner 作者
+ * @param title 标题
+ */
+void bmy_log_post_untop(const char *userid, const char *board, const char *owner, const char *title);
+
+/**
+ * @brief 记录精华区操作
+ * @details 来源
+ * - src/bbs/announce.c: an_log -> "%s %s %s %s"
+ * @param userid 操作者 id
+ * @param action 操作
+ * @param board 版面
+ * @param path 路径
+ */
+void bmy_log_announce_action(const char *userid, const char *action, const char *board, const char *path);
+
+/**
+ * @brief 记录精华区操作
+ * @details 来源
+ * - src/bbs/announce.c: a_Import -> "%s import %s %s %s"
+ * @param userid 操作者 id
+ * @param board 版面
+ * @param owner 所有者
+ * @param title 标题
+ */
+void bmy_log_announce_import(const char *userid, const char *board, const char *owner, const char *title);
 #endif

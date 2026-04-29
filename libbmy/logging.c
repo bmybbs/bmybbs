@@ -160,3 +160,106 @@ void bmy_log_netmail_send(const char *userid, const char *target_userid) {
 void bmy_log_utility_mail_send(const char *sender, const char *target_userid) {
 	bmy_log_mail_send(sender, target_userid);
 }
+
+void bmy_log_board_deny(const char *operator_userid, const char *board, const char *target_userid) {
+	char buf[80];
+
+	snprintf(buf, sizeof buf, "%s deny %s %s", operator_userid, board, target_userid);
+	newtrace(buf);
+}
+
+void bmy_log_post_mark(const char *userid, const char *board, const char *owner, const char *title) {
+	char buf[256];
+
+	snprintf(buf, sizeof buf, "%s mark %s %s %s", userid, board, owner, title);
+	newtrace(buf);
+}
+
+void bmy_log_post_unmark(const char *userid, const char *board, const char *owner, const char *title) {
+	char buf[256];
+
+	snprintf(buf, sizeof buf, "%s unmark %s %s %s", userid, board, owner, title);
+	newtrace(buf);
+}
+
+void bmy_log_post_digest(const char *userid, const char *board, const char *owner, const char *title) {
+	char buf[256];
+
+	snprintf(buf, sizeof buf, "%s digest %s %s %s", userid, board, owner, title);
+	newtrace(buf);
+}
+
+void bmy_log_post_undigest(const char *userid, const char *board, const char *owner, const char *title) {
+	char buf[256];
+
+	snprintf(buf, sizeof buf, "%s undigest %s %s %s", userid, board, owner, title);
+	newtrace(buf);
+}
+
+void bmy_log_post_water(const char *userid, const char *board, const char *owner, const char *title) {
+	char buf[256];
+
+	snprintf(buf, sizeof buf, "%s water %s %s %s", userid, board, owner, title);
+	newtrace(buf);
+}
+
+void bmy_log_post_unwater(const char *userid, const char *board, const char *owner, const char *title) {
+	char buf[256];
+
+	snprintf(buf, sizeof buf, "%s unwater %s %s %s", userid, board, owner, title);
+	newtrace(buf);
+}
+
+void bmy_log_post_title_change(const char *userid, const char *board, const char *owner, const char *old_title, const char *new_title) {
+	char buf[300];
+
+	snprintf(buf, sizeof buf,
+		"%s changetitle %s %s oldtitle:%s newtitle:%s",
+		userid, board,
+		owner, old_title, new_title);
+	newtrace(buf);
+}
+
+void bmy_log_post_range_delete(const char *userid, const char *board, int from_id, int to_id) {
+	char buf[256];
+
+	snprintf(buf, sizeof buf, "%s ranged %s %d %d", userid, board, from_id, to_id);
+	newtrace(buf);
+}
+
+void bmy_log_mail_range_delete(const char *userid, int from_id, int to_id) {
+	char buf[256];
+
+	snprintf(buf, sizeof buf, "%s rangedmail %d %d", userid, from_id, to_id);
+	newtrace(buf);
+}
+
+void bmy_log_post_top(const char *userid, const char *board, const char *owner, const char *title) {
+	char buf[256];
+
+	// 置顶
+	snprintf(buf, sizeof buf, "%s \xD6\xC3\xB6\xA5 %s %s %s", userid, board, owner, title);
+	newtrace(buf);
+}
+
+void bmy_log_post_untop(const char *userid, const char *board, const char *owner, const char *title) {
+	char buf[256];
+
+	// 去掉置顶
+	snprintf(buf, sizeof buf, "%s \xC8\xA5\xB5\xF4\xD6\xC3\xB6\xA5 %s %s %s", userid, board, owner, title);
+	newtrace(buf);
+}
+
+void bmy_log_announce_action(const char *userid, const char *action, const char *board, const char *path) {
+	char buf[256];
+
+	snprintf(buf, 256, "%s %s %s %s", userid, action, board, path);
+	newtrace(buf);
+}
+
+void bmy_log_announce_import(const char *userid, const char *board, const char *owner, const char *title) {
+	char buf[256];
+
+	snprintf(buf, sizeof buf, "%s import %s %s %s", userid, board, owner, title);
+	newtrace(buf);
+}

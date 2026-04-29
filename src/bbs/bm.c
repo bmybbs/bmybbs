@@ -24,6 +24,7 @@
 */
 
 #include "bbs.h"
+#include "bmy/logging.h"
 #include "smth_screen.h"
 #include "io.h"
 #include "stuff.h"
@@ -282,11 +283,7 @@ deny_user()
 			if (*uident != '\0') {
 				if (addtodeny(uident, msgbuf, 0, isglobal, 0) == 1) {
 					deny_notice(DENY, uident, isglobal, 0, msgbuf);
-					sprintf(genbuf, "%s deny %s %s",
-						currentuser.userid, currboard,
-						uident);
-					newtrace(genbuf);
-
+					bmy_log_board_deny(currentuser.userid, currboard, uident);
 				}
 			}
 		} else if ((*ans == 'C' || *ans == 'c')) {

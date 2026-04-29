@@ -24,6 +24,7 @@
 
 #include "bbs.h"
 #include "bbsgopher.h"
+#include "bmy/logging.h"
 #include "smth_screen.h"
 #include "main.h"
 #include "stuff.h"
@@ -447,7 +448,7 @@ check_import(char *anboard)
 }
 
 static int an_log(const char *action, const char *path) {
-	char anboard[STRLEN], *ptr, buf[256];
+	char anboard[STRLEN], *ptr;
 	if (!strncmp(path, "0Announce/groups/GROUP_", 23)) {
 		strncpy(anboard, &(path[25]), STRLEN);
 		anboard[STRLEN - 1] = 0;
@@ -456,8 +457,7 @@ static int an_log(const char *action, const char *path) {
 			*ptr = 0;
 	} else
 		strcpy(anboard, "noboard");
-	snprintf(buf, 256, "%s %s %s %s", currentuser.userid, action, anboard, path);
-	newtrace(buf);
+	bmy_log_announce_action(currentuser.userid, action, anboard, path);
 	return 0;
 }
 
@@ -537,9 +537,7 @@ a_Import(char *direct, struct fileheader *fileinfo, int nomsg)
 		ytht_strsncpy(tmpboard, currboard, sizeof(tmpboard));
 		ytht_strsncpy(currboard, anboard, sizeof(currboard));
 	}
-	snprintf(genbuf, 256, "%s import %s %s %s", currentuser.userid,
-		currboard, fileinfo->owner, fileinfo->title);
-	newtrace(genbuf);
+	bmy_log_announce_import(currentuser.userid, currboard, fileinfo->owner, fileinfo->title);
 	if (!nomsg)
 		ytht_strsncpy(currboard, tmpboard, sizeof(currboard));
 	freeitem(&pm);

@@ -867,8 +867,7 @@ static int topfile_post(int ent, void *record, char *direct) //slowaction
 		fhdr->accessed &= ~FILE_TOP1;
 		//dele_digest(fhdr->filetime, direct);
 		dele_digest_top(fhdr->filetime, direct); //add by hace
-		snprintf(genbuf, 256, "%s 去掉置顶 %s %s %s",currentuser.userid, currboard, fhdr->owner,fhdr->title);
-		newtrace(genbuf);
+		bmy_log_post_untop(currentuser.userid, currboard, fhdr->owner, fhdr->title);
 	} else {
 		struct fileheader digest;
 		char digestdir[STRLEN], digestfile[STRLEN], oldfile[STRLEN];
@@ -892,8 +891,7 @@ static int topfile_post(int ent, void *record, char *direct) //slowaction
 			append_record(digestdir, &digest, sizeof (digest));
 			//topfile_record(direct,fhdr->filename,ent);
 			//add by hace
-			snprintf(genbuf, 256, "%s 置顶 %s %s %s",currentuser.userid, currboard, fhdr->owner,fhdr->title);
-			newtrace(genbuf);
+			bmy_log_post_top(currentuser.userid, currboard, fhdr->owner, fhdr->title);
 		}
 	}
 	change_dir(direct, fhdr, (void *) DIR_do_top, ent, 0, 0);
@@ -1333,16 +1331,11 @@ int water_post(int ent, void *record, char *dirent)
 	}
 
 	if (fileinfo->accessed & FH_ISWATER) {
-		snprintf(genbuf, 256, "%s unwater %s %s %s",
-			currentuser.userid, currboard,
-			fh2owner(fileinfo), fileinfo->title);
+		bmy_log_post_unwater(currentuser.userid, currboard, fh2owner(fileinfo), fileinfo->title);
 	} else {
-		snprintf(genbuf, 256, "%s water %s %s %s",
-			currentuser.userid, currboard,
-			fh2owner(fileinfo), fileinfo->title);
+		bmy_log_post_water(currentuser.userid, currboard, fh2owner(fileinfo), fileinfo->title);
 	}
 
-	newtrace(genbuf);
 	change_dir(dirent, fileinfo, (void *) DIR_do_water, ent, digestmode, 0);
 	if (!bmy_board_is_system_board(currboard) && fileinfo->thread == fileinfo->filetime) {
 		bmy_article_update_thread_accessed(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fileinfo->thread, fileinfo->accessed);
@@ -1363,10 +1356,7 @@ digest_post(int ent, void *record, char *direct)
 
 	if (fhdr->accessed & FH_DIGEST) {
 		dele_digest(fhdr->filetime, direct);
-		snprintf(genbuf, 256, "%s undigest %s %s %s",
-			currentuser.userid, currboard, fhdr->owner,
-			fhdr->title);
-		newtrace(genbuf);
+		bmy_log_post_undigest(currentuser.userid, currboard, fhdr->owner, fhdr->title);
 	} else {
 		struct fileheader digest;
 		char digestdir[STRLEN], digestfile[STRLEN], oldfile[STRLEN];
@@ -1387,10 +1377,7 @@ digest_post(int ent, void *record, char *direct)
 			digest.accessed = FH_ISDIGEST;
 			link(oldfile, digestfile);
 			append_record(digestdir, &digest, sizeof (digest));
-			snprintf(genbuf, 256, "%s digest %s %s %s",
-				currentuser.userid, currboard, fhdr->owner,
-				fhdr->title);
-			newtrace(genbuf);
+			bmy_log_post_digest(currentuser.userid, currboard, fhdr->owner, fhdr->title);
 		}
 	}
 	change_dir(direct, fhdr, (void *) DIR_do_digest, ent, digestmode, 0);
@@ -2479,12 +2466,7 @@ edit_title(int ent, void *record, char *direct)
 	getdata(t_lines - 1, 0, "新文章标题: ", buf, 50, DOECHO, NA);
 
 	if (buf[0] != '\0' && strcmp(fileinfo->title, buf) && stringfilter(buf, ythtbbs_board_is_political(currboard) == YTHT_SMTH_FILTER_RESULT_SAFE)) {
-		char str[300];
-		sprintf(str,
-			"%s changetitle %s %s oldtitle:%s newtitle:%s",
-			currentuser.userid, currboard,
-			fh2owner(fileinfo), fileinfo->title, buf);
-		newtrace(str);
+		bmy_log_post_title_change(currentuser.userid, currboard, fh2owner(fileinfo), fileinfo->title, buf);
 
 		if (!bmy_board_is_system_board(currboard) && fileinfo->filetime == fileinfo->thread && strcmp(fileinfo->title, buf) != 0) {
 			bmy_article_update_thread_title(ythtbbs_cache_Board_get_idx_by_name(currboard) + 1, fileinfo->thread, buf);
@@ -2510,15 +2492,10 @@ mark_post(int ent, void *record, char *direct)
 	}
 
 	if (fileinfo->accessed & FH_MARKED) {
-		snprintf(genbuf, 256, "%s unmark %s %s %s",
-			currentuser.userid, currboard,
-			fh2owner(fileinfo), fileinfo->title);
+		bmy_log_post_unmark(currentuser.userid, currboard, fh2owner(fileinfo), fileinfo->title);
 	} else {
-		snprintf(genbuf, 256, "%s mark %s %s %s",
-			currentuser.userid, currboard,
-			fh2owner(fileinfo), fileinfo->title);
+		bmy_log_post_mark(currentuser.userid, currboard, fh2owner(fileinfo), fileinfo->title);
 	}
-	newtrace(genbuf);
 //	if(HAS_PERM(PERM_COMMEND))
 //		commend_article(currboard, fileinfo);
 //	else
@@ -2790,13 +2767,9 @@ THERE:
 			sprintf(content, "%s 区段删除 %s 版 %d-%d篇",
 				currentuser.userid, currboard, inum1, inum2);
 			securityreport(genbuf, content);
-			sprintf(genbuf, "%s ranged %s %d %d",
-				currentuser.userid, currboard, inum1, inum2);
-			newtrace(genbuf);
+			bmy_log_post_range_delete(currentuser.userid, currboard, inum1, inum2);
 		} else {
-			sprintf(genbuf, "%s rangedmail %d %d",
-				currentuser.userid, inum1, inum2);
-			newtrace(genbuf);
+			bmy_log_mail_range_delete(currentuser.userid, inum1, inum2);
 		}
 		prints_nofmt("删除完成\n");
 		pressreturn();
