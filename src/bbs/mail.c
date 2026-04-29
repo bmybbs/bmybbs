@@ -24,6 +24,7 @@
 
 #include <stddef.h>
 #include "bbs.h"
+#include "bmy/logging.h"
 #include "ythtbbs/override.h"
 #include "bbs_global_vars.h"
 #include "smth_screen.h"
@@ -413,8 +414,7 @@ edit_mail_file:
 #endif
 		}
 		unlink(tmp_fname);
-		sprintf(genbuf, "%s netmail %s", currentuser.userid, uid);
-		newtrace(genbuf);
+		bmy_log_netmail_send(currentuser.userid, uid);
 		in_mail = save_in_mail;
 		return res;
 	} else {
@@ -1681,8 +1681,7 @@ mail_file(const char *tmpfile, const char *userid, const char *title)
 	setmailfile_s(genbuf, sizeof(genbuf), userid, DOT_DIR);
 	if (append_record(genbuf, &newmessage, sizeof (newmessage)) == -1)
 		return -1;
-	sprintf(genbuf, "%s mail %s", currentuser.userid, userid);
-	newtrace(genbuf);
+	bmy_log_mail_send(currentuser.userid, userid);
 //      return 0;
 	return now;
 }

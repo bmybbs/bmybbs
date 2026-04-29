@@ -26,6 +26,7 @@
 #include <sys/msg.h>
 #include <sys/mman.h>
 #include <limits.h>
+#include "bmy/logging.h"
 #include "ythtbbs/article.h"
 #include "ythtbbs/commend.h"
 #include "ythtbbs/override.h"
@@ -623,9 +624,7 @@ UndeleteArticle(int ent, void *record, char *direct)
 	ythtbbs_cache_Board_updatelastpost(currboard);
 	fileinfo->filetime = 0;
 	substitute_record(direct, fileinfo, sizeof (*fileinfo), ent);
-	sprintf(buf, "%s undel %s %s %s", currentuser.userid, currboard,
-		UFile.owner, UFile.title);
-	newtrace(buf);
+	bmy_log_post_restore(currentuser.userid, currboard, UFile.owner, UFile.title);
 
 	clear();
 	move(2, 0);
@@ -1827,8 +1826,7 @@ post_cross(char *bname, int mode, int islocal, int hascheck, int dangerous)
 	ythtbbs_cache_Board_updatelastpost(bname);
 	if (!mode) {
 		add_crossinfo(filepath, 1);
-		sprintf(buf, "%s crosspost %s %s", currentuser.userid, bname, postfile.title);
-		newtrace(buf);
+		bmy_log_post_crosspost(currentuser.userid, bname, postfile.title);
 
 		bmy_article_add_thread(ythtbbs_cache_Board_get_idx_by_name(bname) + 1, postfile.thread, postfile.title, currentuser.username, postfile.accessed);
 	}
@@ -2128,10 +2126,7 @@ post_article(struct fileheader *sfh)
 	SETREAD(&postfile, &brc);
 	//    if(strcmp(currboard,"triangle")==0) checksomewords();
 	ythtbbs_cache_Board_updatelastpost(currboard);
-	snprintf(genbuf, 256, "%s post %s %s",
-			currentuser.userid, currboard, postfile.title);
-	genbuf[256] = 0;
-	newtrace(genbuf);
+	bmy_log_post_create(currentuser.userid, currboard, postfile.title);
 	if (!junkboard())
 	{
 		set_safe_record();
@@ -2412,10 +2407,7 @@ int edit_post(int ent, void *record, char *direct)
 	if (!in_mail) {
 		// outgo_post(fileinfo, currboard, currentuser.userid, currentuser.username);
 		ythtbbs_cache_Board_updatelastpost(currboard);
-		sprintf(genbuf, "%s edit %s %s %s",
-			currentuser.userid, currboard,
-			fh2owner(fileinfo), fileinfo->title);
-		newtrace(genbuf);
+		bmy_log_post_edit(currentuser.userid, currboard, fh2owner(fileinfo), fileinfo->title);
 		SETREAD(fileinfo, &brc);
 	}
 	if (ADD_EDITMARK)
@@ -4044,8 +4036,7 @@ static int
 do_thread()
 {
 	char buf[STRLEN * 2];
-	snprintf(buf, sizeof(buf), "%s thread %s", currentuser.userid, currboard);
-	newtrace(buf);
+	bmy_log_thread_view(currentuser.userid, currboard);
 	move(t_lines - 1, 0);
 	clrtoeol();
 	prints_nofmt("\x1b[1;5m系统处理标题中, 请稍候...\x1b[m\n");

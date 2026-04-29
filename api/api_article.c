@@ -17,6 +17,7 @@
 #include "ytht/random.h"
 #include "bmy/convcode.h"
 #include "bmy/article.h"
+#include "bmy/logging.h"
 #include "ythtbbs/cache.h"
 #include "ythtbbs/commend.h"
 #include "ythtbbs/docutil.h"
@@ -1268,8 +1269,7 @@ static int api_article_do_post(ONION_FUNC_PROTO_STR, int mode)
 		return api_error(p, req, res, API_RT_ATCLINNERR);
 	}
 
-	snprintf(buf, sizeof(buf), "%s post %s %s", ptr_info->userid, bmem->header.filename, title_gbk);
-	newtrace(buf);
+	bmy_log_post_create(ptr_info->userid, bmem->header.filename, title_gbk);
 
 	ythtbbs_cache_Board_updatelastpost_x(bmem);
 

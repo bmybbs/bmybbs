@@ -1133,8 +1133,7 @@ static int post_imail(char *userid, char *title, char *file, char *id, char *ip,
 	fprintf(fp2, ".\n");
 	fclose(fp1);
 	pclose(fp2);
-	snprintf(buf, sizeof (buf), "%s mail %s", currentuser.userid, userid);
-	newtrace(buf);
+	bmy_log_mail_send(currentuser.userid, userid);
 	return 0;
 }
 

@@ -122,4 +122,119 @@ void bmy_log_board_use(const char *userid, const char *board, long stay);
  * @param result_count 搜索结果计数
  */
 void bmy_log_search_result_count(const char *userid, int result_count);
+
+// post, mail, and content lifecycle
+
+/**
+ * @brief 记录发帖
+ * @details 来源
+ * - src/bbs/bbs.c: normal post -> "%s post %s %s"
+ * - src/bbs/1984.c: special post/check path -> "%s post %s %s"
+ * - nju09/www/bbssnd.c: web post -> "%s post %s %s"
+ * - api/api_article.c: api post -> "%s post %s %s"
+ * @param userid 用户 id
+ * @param board 版面
+ * @param title 标题 (gbk 编码)
+ */
+void bmy_log_post_create(const char *userid, const char *board, const char *title);
+
+/**
+ * @brief 记录检查1984
+ * @details 来源
+ * - src/bbs/1984.c: moderation queue -> "%s check1984 %s %s"
+ * @param userid 用户 id
+ * @param board 版面
+ * @param title 标题 (gbk 编码)
+ */
+void bmy_log_post_check_1984(const char *userid, const char *board, const char *title);
+
+/**
+ * @brief 记录编辑帖子
+ * @details 来源
+ * - src/bbs/bbs.c: edit existing post -> "%s edit %s %s %s"
+ * @param userid 操作者 id
+ * @param board 版面
+ * @param owner 所有者 id
+ * @param title 标题 (gbk 编码)
+ */
+void bmy_log_post_edit(const char *userid, const char *board, const char *owner, const char *title);
+
+/**
+ * @brief 记录删除帖子
+ * @details 来源
+ * - src/bbs/bbs.c: delete post -> "%s del %s %s %s"
+ * @param userid 操作者 id
+ * @param board 版面
+ * @param owner 所有者 id
+ * @param title 标题 (gbk 编码)
+ */
+void bmy_log_post_delete(const char *userid, const char *board, const char *owner, const char *title);
+
+/**
+ * @brief 记录复原帖子
+ * @details 来源
+ * - src/bbs/bbs.c: restore post -> "%s undel %s %s %s"
+ * @param userid 操作者 id
+ * @param board 版面
+ * @param owner 所有者 id
+ * @param title 标题 (gbk 编码)
+ */
+void bmy_log_post_restore(const char *userid, const char *board, const char *owner, const char *title);
+
+/**
+ * @brief 记录转贴
+ * @details 来源
+ * - src/bbs/bbs.c: crosspost -> "%s crosspost %s %s"
+ * @param userid 操作者 id
+ * @param board 版面
+ * @param title 标题 (gbk 编码)
+ */
+void bmy_log_post_crosspost(const char *userid, const char *board, const char *title);
+
+/**
+ * @brief 记录同标题
+ * @details 来源
+ * - src/bbs/read.c: same-title flow -> "%s sametitle %s %s"
+ * @param userid 操作者 id
+ * @param board 版面
+ * @param title 标题 (gbk 编码)
+ */
+void bmy_log_post_same_title(const char *userid, const char *board, const char *title);
+
+/**
+ * @brief 记录同主题
+ * @details 来源
+ * - src/bbs/bbs.c: do_thread -> "%s thread %s"
+ * @param userid 操作者 id
+ * @param board 版面
+ */
+void bmy_log_thread_view(const char *userid, const char *board);
+
+/**
+ * @brief 记录站内信
+ * @details 来源
+ * - src/bbs/mail.c: station mail -> "%s mail %s"
+ * - nju09/www/BBSLIB.c: web mail -> "%s mail %s"
+ * @param userid 操作者 id
+ * @param target_userid 收信人 id
+ */
+void bmy_log_mail_send(const char *userid, const char *target_userid);
+
+/**
+ * @brief 记录站外信
+ * @details 来源
+ * - src/bbs/mail.c: outbound netmail -> "%s netmail %s"
+ * @param userid 操作者 id
+ * @param target_userid 收信人 id
+ */
+void bmy_log_netmail_send(const char *userid, const char *target_userid);
+
+/**
+ * @brief 记录解封站内信
+ * @details 来源
+ * - local_utl/autoundeny/autoundeny.c: utility mail -> "XJTU-XANET mail %s"
+ * @param sender 发信人 id
+ * @param target_userid 收信人 id
+ */
+void bmy_log_utility_mail_send(const char *sender, const char *target_userid);
 #endif

@@ -1,5 +1,6 @@
 #include "bbslib.h"
 #include "bmy/article.h"
+#include "bmy/logging.h"
 
 int
 bbssnd_main()
@@ -152,8 +153,7 @@ bbssnd_main()
 		brc_update(currentuser.userid);
 	}
 	unlink(filename);
-	sprintf(buf, "%s post %s %s", currentuser.userid, board, title);
-	newtrace(buf);
+	bmy_log_post_create(currentuser.userid, board, title);
 	if (brd->header.clubnum ==0 && !junkboard(board)) {
 		currentuser.numposts++;
 		save_user_data(&currentuser);
