@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "bbs.h"
+#include "bmy/logging.h"
 #include "regular.h"
 #include "smth_screen.h"
 #include "bbsinc.h"
@@ -146,8 +147,7 @@ int full_search_action(char *whattosearch)
 	digestmode = 3;
 	setbdir(currdirect, currboard, digestmode);
 	unlink(currdirect);
-	sprintf(genbuf, "%s full_search %s %s",currentuser.userid, currboard, whattosearch);
-	newtrace(genbuf);
+	bmy_log_search_trace(currentuser.userid, currboard, whattosearch);
 
 	size_t search_size, i;
 	struct fileheader_utf *articles = bmy_search_board_gbk(currboard, whattosearch, &search_size);
@@ -228,9 +228,7 @@ power_action(char *filename, unsigned int id1, int id2, char *select, int action
 		return FULLUPDATE;
 	}
 	ret = power_range(filename, id1, id2, select, function, &shoot);
-	sprintf(genbuf, "%s select %s %d %d",
-		currentuser.userid, currboard, id1, id2);
-	newtrace(genbuf);
+	bmy_log_selection_trace(currentuser.userid, currboard, id1, id2);
 	if (ret < 0) {
 		// 无法执行超级操作:%d,请联系系统维护.\n
 		prints("\xCE\xDE\xB7\xA8\xD6\xB4\xD0\xD0\xB3\xAC\xBC\xB6\xB2\xD9\xD7\xF7" ":%d," "\xC7\xEB\xC1\xAA\xCF\xB5\xCF\xB5\xCD\xB3\xCE\xAC\xBB\xA4" ".\n", ret);

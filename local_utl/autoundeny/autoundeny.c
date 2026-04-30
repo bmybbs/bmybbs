@@ -2,6 +2,7 @@
 
 #include "bbs.h"
 
+#include "bmy/logging.h"
 #include "ythtbbs/article.h"
 /* 以下这段发送邮件的函数，参考src/mail.c中的那个mail_buf函数做成的。interma@BMY 2005.4.24 */
 
@@ -66,8 +67,7 @@ mail_buf(char *buf, char *userid, char *title)
 	setmailfile_s(genbuf, sizeof genbuf, userid, DOT_DIR);
 	if (append_record(genbuf, &newmessage, sizeof (newmessage)) == -1)
 		return -1;
-	sprintf(genbuf, "%s mail %s", "XJTU-XANET", userid);
-	newtrace(genbuf);
+	bmy_log_utility_mail_send("XJTU-XANET", userid);
 	return 0;
 }
 

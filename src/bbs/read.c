@@ -23,6 +23,7 @@
 */
 
 #include "bbs.h"
+#include "bmy/logging.h"
 #include "smth_screen.h"
 #include "stuff.h"
 #include "backnumber.h"
@@ -872,8 +873,7 @@ int SR_BMfunc(int ent, void *record, char *direct) {
 		if(is_article_site_top(currboard, fileinfo->thread))
 			update_article_site_top_link(currboard, fileinfo->thread, newFiletime, title_combine);
 	}
-	snprintf(genbuf, 256, "%s sametitle %s %s", currentuser.userid, currboard, fileinfo->title);
-	newtrace(genbuf);
+	bmy_log_post_same_title(currentuser.userid, currboard, fileinfo->title);
 	return DIRCHANGED;
 }
 

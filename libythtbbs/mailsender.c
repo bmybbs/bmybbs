@@ -1,9 +1,9 @@
 #include <string.h>
 #include <sys/file.h>
+#include "bmy/logging.h"
 #include "bmy/smtp.h"
 #include "config.h"
 #include "ytht/fileop.h"
-#include "ytht/msg.h"
 #include "ythtbbs/mailsender.h"
 #include "ythtbbs/misc.h"
 
@@ -118,7 +118,7 @@ send_mail(const char *mail_to, const char *mail_to_name, const char *mail_subjec
 
 	snprintf(log, sizeof(log), "[mail] %s send to %s smtp-status %d-%d-%d-%d-%d-%d-%d",
 		mail_to_name, mail_to, rc1, rc2, rc3, rc4, rc5, rc6, rc7);
-	newtrace(log);
+	bmy_log_runtime_error(log);
 
 	return rc7;
 }

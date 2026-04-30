@@ -1,4 +1,5 @@
 #include "bbslib.h"
+#include "bmy/logging.h"
 
 static int search(char *id, char *pat, char *pat2, char *pat3, int dt);
 char day[20], user[20], title[80];
@@ -118,7 +119,6 @@ static int search_callback(struct boardmem *board, int curr_idx, va_list ap) {
 }
 
 static int search(char *id, char *pat, char *pat2, char *pat3, int dt) {
-	char dir[256];
 	int sum = 0;
 	time_t starttime;
 	printf("%s -- 站内文章查询结果 <br>\n", BBSNAME);
@@ -136,8 +136,7 @@ static int search(char *id, char *pat, char *pat2, char *pat3, int dt) {
 		ythtbbs_cache_Board_foreach_v(search_callback, id, pat, pat2, pat3, dt, starttime, &sum);
 	}
 	printf("一共找到%d篇文章符合查找条件<br>\n", sum);
-	sprintf(dir, "%s bbsfind %d", currentuser.userid, sum);
-	newtrace(dir);
+	bmy_log_search_result_count(currentuser.userid, sum);
 	return sum;
 }
 

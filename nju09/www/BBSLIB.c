@@ -1,4 +1,5 @@
 #include "bbslib.h"
+#include "bmy/logging.h"
 #include "ythtbbs/cache.h"
 #if defined(ENABLE_GHTHASH) && defined(ENABLE_FASTCGI)
 #include <ght_hash_table.h>
@@ -1132,8 +1133,7 @@ static int post_imail(char *userid, char *title, char *file, char *id, char *ip,
 	fprintf(fp2, ".\n");
 	fclose(fp1);
 	pclose(fp2);
-	snprintf(buf, sizeof (buf), "%s mail %s", currentuser.userid, userid);
-	newtrace(buf);
+	bmy_log_mail_send(currentuser.userid, userid);
 	return 0;
 }
 
@@ -2014,16 +2014,17 @@ printhr()
 
 static void updatelastboard(void) {
 	struct boardmem *last;
-	char buf[80];
 	if (u_info->curboard) {
 		last = ythtbbs_cache_Board_get_board_by_idx(u_info->curboard - 1);
 		if (last->inboard > 0)
 			last->inboard--;
-		if (now_t > w_info->lastinboardtime && w_info->lastinboardtime != 0)
-			snprintf(buf, sizeof buf, "%s use %s %ld", currentuser.userid, last->header.filename, now_t - w_info->lastinboardtime);
-		else
-			snprintf(buf, sizeof buf, "%s use %s 1", currentuser.userid, last->header.filename);
-		newtrace(buf);
+
+		bmy_log_board_use(
+			currentuser.userid,
+			last->header.filename, (now_t > w_info->lastinboardtime && w_info->lastinboardtime != 0)
+				? (now_t - w_info->lastinboardtime)
+				: 1
+		);
 	}
 	u_info->curboard = 0;
 }

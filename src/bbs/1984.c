@@ -1,6 +1,7 @@
 //copy by lepton from backnumber.c writen by ecnegrevid, 2002.9.30
 #include "bbs.h"
 
+#include "bmy/logging.h"
 #include "config.h"
 #include "main.h"
 #include "smth_screen.h"
@@ -287,10 +288,7 @@ post_1984_to_board(char *dir, struct fileheader *fileinfo)
 	// if (postfile.accessed & FH_INND)
 	// 	outgo_post(&postfile, targetboard, currentuser.userid, currentuser.username);
 	ythtbbs_cache_Board_updatelastpost(targetboard);
-	snprintf(genbuf, 256, "%s check1984 %s %s", currentuser.userid, currboard, postfile.title);
-	genbuf[256] = 0;
-	newtrace(genbuf);
-
+	bmy_log_post_check_1984(currentuser.userid, currboard, postfile.title);
 }
 
 void
@@ -349,9 +347,7 @@ post_to_1984(char *file, struct fileheader *fileinfo, int mode)
 	default:
 		break;
 	}
-	snprintf(genbuf, 256, "%s post %s %s", currentuser.userid, currboard, postfile.title);
-	genbuf[256] = 0;
-	newtrace(genbuf);
+	bmy_log_post_create(currentuser.userid, currboard, postfile.title);
 	return;
 }
 

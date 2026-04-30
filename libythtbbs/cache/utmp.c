@@ -8,7 +8,8 @@
 #include "bmy/iphash.h"
 #include "ythtbbs/cache.h"
 #include "ythtbbs/session.h"
-#include "ythtbbs/user.h"
+#include "bmy/user.h"
+#include "bmy/logging.h"
 #include "cache-internal.h"
 
 // 用于 iphash
@@ -86,7 +87,7 @@ int ythtbbs_cache_utmp_insert(struct user_info *ptr_user_info) {
 		// 如果插入失败，则撤销上一步的 memcpy
 		memset(ptr_utmp_entry, 0, sizeof(struct user_info));
 		snprintf(local_buf, sizeof(local_buf), "failed to insert UT for %s", ptr_user_info->userid);
-		newtrace(local_buf);
+		bmy_log_runtime_error(local_buf);
 		flock(utmpfd, LOCK_UN);
 		close(utmpfd);
 		return -1;
@@ -103,8 +104,7 @@ int ythtbbs_cache_utmp_insert(struct user_info *ptr_user_info) {
 			if (ptr_utmp_entry->pid == 1) {
 				// 对于来自 nju09 和 api 的会话清理
 				if (ptr_utmp_entry->active && (local_now - ptr_utmp_entry->lasttime > MAX_IDEL_TIME || local_now - ptr_utmp_entry->wwwinfo.login_start_time > MAX_SESS_TIME || ptr_utmp_entry->wwwinfo.iskicked)) {
-					snprintf(local_buf, sizeof(local_buf), "%s drop www/api", ptr_utmp_entry->userid);
-					newtrace(local_buf);
+					bmy_log_session_cleanup(ptr_utmp_entry->userid);
 					ythtbbs_cache_UserTable_remove_utmp_idx(ptr_utmp_entry->uid, n);
 					ythtbbs_session_del(ptr_utmp_entry->sessionid);
 					memset(ptr_utmp_entry, 0, sizeof(struct user_info));

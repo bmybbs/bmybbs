@@ -17,6 +17,7 @@
 #include "ytht/random.h"
 #include "bmy/convcode.h"
 #include "bmy/article.h"
+#include "bmy/logging.h"
 #include "ythtbbs/cache.h"
 #include "ythtbbs/commend.h"
 #include "ythtbbs/docutil.h"
@@ -553,7 +554,7 @@ static int api_article_list_board(ONION_FUNC_PROTO_STR)
 			flock(fd, LOCK_EX);
 			if (lseek(fd, (startnum - 1 + i) * sizeof (struct fileheader),SEEK_SET) == (off_t) -1) {
 				snprintf(logbuf, sizeof logbuf, "lseek error on %s, at No. %d record. Errno %d: %s.", dir, (startnum - 1 + i), errno, strerror(errno));
-				newtrace(logbuf);
+				bmy_log_runtime_error(logbuf);
 				flock(fd, LOCK_UN);
 				close(fd);
 				break;
@@ -564,7 +565,7 @@ static int api_article_list_board(ONION_FUNC_PROTO_STR)
 				if (lseek(fd, -1 * sizeof (x2), SEEK_CUR) != (off_t) -1) {
 					if (write(fd, &x2, sizeof (x2)) == -1) {
 						snprintf(logbuf, sizeof(logbuf), "write error to fileheader %s, at No. %d record, from file %s. Errno %d: %s.", dir, (startnum-1+i), filename, errno, strerror(errno));
-						newtrace(logbuf);
+						bmy_log_runtime_error(logbuf);
 					}
 				}
 			}
@@ -735,7 +736,7 @@ static int api_article_list_thread(ONION_FUNC_PROTO_STR)
 						lseek(fd, -1 * sizeof (x2), SEEK_CUR);
 						if (write(fd, &x2, sizeof (x2)) == -1) {
 							snprintf(logbuf, sizeof(logbuf), "write error to fileheader %s, at No. %d record, from file %s. Errno %d: %s.", dir, (startnum-1+i), filename, errno, strerror(errno));
-							newtrace(logbuf);
+							bmy_log_runtime_error(logbuf);
 						}
 					}
 					flock(fd, LOCK_UN);
@@ -1017,7 +1018,6 @@ static int api_article_do_post(ONION_FUNC_PROTO_STR, int mode)
 	char session_token[TOKENLENGTH + 1],
 		cookie_buf2[512],
 		dir[80],
-		buf[256],
 		noti_userid[IDLEN + 1] = { '\0' },
 		*title_gbk = NULL,
 		*data_gbk = NULL;
@@ -1268,8 +1268,7 @@ static int api_article_do_post(ONION_FUNC_PROTO_STR, int mode)
 		return api_error(p, req, res, API_RT_ATCLINNERR);
 	}
 
-	snprintf(buf, sizeof(buf), "%s post %s %s", ptr_info->userid, bmem->header.filename, title_gbk);
-	newtrace(buf);
+	bmy_log_post_create(ptr_info->userid, bmem->header.filename, title_gbk);
 
 	ythtbbs_cache_Board_updatelastpost_x(bmem);
 

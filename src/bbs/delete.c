@@ -23,6 +23,7 @@
 */
 
 #include "bbs.h"
+#include "bmy/logging.h"
 #include "xyz.h"
 #include "smth_screen.h"
 #include "stuff.h"
@@ -249,8 +250,7 @@ kick_user(const struct user_info *userinfo, int mode)
 	// 理由:%s\n
 	snprintf(msgbuf, sizeof(msgbuf), "\xC0\xED\xD3\xC9:%s\n",kickreason);
 	mail_buf(msgbuf,kickuser, repbuf);
-	sprintf(genbuf, "%s kick %s", currentuser.userid, kickuser);
-	newtrace(genbuf);
+	bmy_log_user_kick(currentuser.userid, kickuser);
 	move(2, 0);
 	if (uinfo.mode != LUSERS && uinfo.mode != OFFLINE && uinfo.mode != FRIEND) {
 		prints("User has been Kicked\n");

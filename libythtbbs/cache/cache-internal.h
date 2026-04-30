@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/types.h>
-#include "ytht/msg.h"
+#include "bmy/logging.h"
 
 /**
  * @brief 向 UserTable 中添加 utmp 记录
@@ -29,7 +29,7 @@ static inline void shm_err(key_t key) {
 	char buf[64];
 
 	sprintf(buf, "SHM Error! key = 0x%X.", key & 0xffff);
-	newtrace(buf);
+	bmy_log_runtime_error(buf);
 	exit(1);
 }
 

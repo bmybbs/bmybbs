@@ -1,6 +1,7 @@
 #include "bbslib.h"
 #include "bmy/article.h"
 #include "bmy/board.h"
+#include "bmy/logging.h"
 
 //static int do_del(char *board, char *file);
 static int do_set(char *dirptr, int size, char *file, int flag, char *board);
@@ -147,23 +148,13 @@ static int do_set(char *dirptr, int size, char *file, int flag, char *board) {
 		}
 		buf[0] = 0;
 		if ((!om) && (nm))
-			snprintf(buf, sizeof buf, "%s mark %s %s %s",
-				currentuser.userid, board,
-				fh2owner(f), f->title);
+			bmy_log_post_mark(currentuser.userid, board, fh2owner(f), f->title);
 		if ((om) && (!nm))
-			snprintf(buf, sizeof buf, "%s unmark %s %s %s",
-				currentuser.userid, board,
-				fh2owner(f), f->title);
+			bmy_log_post_unmark(currentuser.userid, board, fh2owner(f), f->title);
 		if ((!og) && (ng))
-			snprintf(buf, sizeof buf, "%s digest %s %s %s",
-				currentuser.userid, board,
-				fh2owner(f), f->title);
+			bmy_log_post_digest(currentuser.userid, board, fh2owner(f), f->title);
 		if ((og) && (!ng))
-			snprintf(buf, sizeof buf, "%s undigest %s %s %s",
-				currentuser.userid, board,
-				fh2owner(f), f->title);
-		if (buf[0] != 0)
-			newtrace(buf);
+			bmy_log_post_undigest(currentuser.userid, board, fh2owner(f), f->title);
 		return 0;
 	}
 	printf("<td><td><td>%s<td>文件不存在.\n", file);

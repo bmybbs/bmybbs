@@ -5,8 +5,8 @@
 #include <sys/file.h>
 #include <curl/curl.h>
 #include <json-c/json.h>
+#include "bmy/logging.h"
 #include "config.h"
-#include "ytht/msg.h"
 #include "ytht/fileop.h"
 #include "bmy/wechat.h"
 #include "memorystruct.h"
@@ -21,7 +21,7 @@ static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, voi
 
 	char *ptr = realloc(mem->memory, mem->size + realsize + 1);
 	if (ptr == NULL) {
-		newtrace("[bmy/wechat] WriteMemoryCallback failed to realloc");
+		bmy_log_runtime_error("[bmy/wechat] WriteMemoryCallback failed to realloc");
 		return 0;
 	}
 
@@ -72,7 +72,7 @@ int bmy_wechat_session_get(const char *code, struct bmy_wechat_session *s) {
 	res = curl_easy_perform(curl_handle);
 	if (res != CURLE_OK) {
 		snprintf(log_buf, sizeof(log_buf), "[bmy/wechat] request session with curl result: %d", res);
-		newtrace(log_buf);
+		bmy_log_runtime_error(log_buf);
 		rc = BMY_WECHAT_REQUEST_ERROR;
 	} else {
 		jobj = json_tokener_parse(chunk.memory);
@@ -90,7 +90,7 @@ int bmy_wechat_session_get(const char *code, struct bmy_wechat_session *s) {
 				}
 
 				snprintf(log_buf, sizeof(log_buf), "[bmy/wechat] request session errcode[%d] errmsg: %s", rc, json_object_get_string(o));
-				newtrace(log_buf);
+				bmy_log_runtime_error(log_buf);
 				goto END;
 			}
 
@@ -109,7 +109,7 @@ int bmy_wechat_session_get(const char *code, struct bmy_wechat_session *s) {
 			s->session_key = strdup(json_object_get_string(o));
 		} else {
 			snprintf(log_buf, sizeof(log_buf), "[bmy/wechat] cannot parse response as JSON");
-			newtrace(log_buf);
+			bmy_log_runtime_error(log_buf);
 			rc = BMY_WECHAT_REQUEST_ERROR;
 		}
 	}

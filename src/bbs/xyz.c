@@ -23,6 +23,7 @@
 #include <sys/mman.h>
 #include "bbs.h"
 #include "bbs_global_vars.h"
+#include "bmy/logging.h"
 #include "smth_screen.h"
 #include "maintain.h"
 #include "bcache.h"
@@ -1239,13 +1240,13 @@ myexec_cmd(int umode, int pager, const char *cmdfile, const char *param)
 				"%s exec %s \"%s\" %s %s %d",
 				currentuser.userid, cmdfile, param1,
 				currentuser.userid, uinfo.from, getppid());
-			newtrace(buf);
+			bmy_log_runtime_error(buf);
 			execl(cmdfile, cmdfile, param1, currentuser.userid, uinfo.from, pidstr, NULL);
 		} else {
 			snprintf(buf, sizeof (buf), "%s exec %s %s %s %d",
 				currentuser.userid, cmdfile,
 				currentuser.userid, uinfo.from, getppid());
-			newtrace(buf);
+			bmy_log_runtime_error(buf);
 			execl(cmdfile, cmdfile, currentuser.userid, uinfo.from, pidstr, NULL);
 		}
 		exit(0);
@@ -1532,9 +1533,7 @@ sendGoodWish(char *userid)
 				move(11 + count, 0);
 				// 已经帮您送出您的留言了。\n
 				//prints("\xD2\xD1\xBE\xAD\xB0\xEF\xC4\xFA\xCB\xCD\xB3\xF6\xC4\xFA\xB5\xC4\xC1\xF4\xD1\xD4\xC1\xCB\xA1\xA3\n");
-				sprintf(genbuf, "%s sendgoodwish %s",
-					currentuser.userid, uid);
-				newtrace(genbuf);
+				bmy_log_send_goodwish(currentuser.userid, uid);
 			}	//for loop
 			fclose(mp);
 			return 0;
@@ -1598,8 +1597,7 @@ sendGoodWish(char *userid)
 	move(11 + count, 0);
 	// 已经帮您送出您的留言了。\n
 	prints("\xD2\xD1\xBE\xAD\xB0\xEF\xC4\xFA\xCB\xCD\xB3\xF6\xC4\xFA\xB5\xC4\xC1\xF4\xD1\xD4\xC1\xCB\xA1\xA3\n");
-	sprintf(genbuf, "%s sendgoodwish %s", currentuser.userid, uid);
-	newtrace(genbuf);
+	bmy_log_send_goodwish(currentuser.userid, uid);
 	// 把这条祝福发送给其他人么?
 	/*sprintf(genbuf,"\xB0\xD1\xD5\xE2\xCC\xF5\xD7\xA3\xB8\xA3\xB7\xA2\xCB\xCD\xB8\xF8\xC6\xE4\xCB\xFB\xC8\xCB\xC3\xB4?");
 	if(askyn(genbuf,YEA,NA)==YEA){
@@ -1906,8 +1904,7 @@ s_checkid(const char *s)
 		return 1;
 	}
 	system(buf);
-	sprintf(buf, "%s finddf %s %d", currentuser.userid, checkuser, day);
-	newtrace(buf);
+	bmy_log_finddf(currentuser.userid, checkuser, day);
 	sprintf(buf, MY_BBS_HOME "/bbstmpfs/tmp/checkid.%s",
 		 currentuser.userid);
 	mail_file(buf, currentuser.userid, "\"System Report\"");
