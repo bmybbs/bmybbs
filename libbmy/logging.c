@@ -9,7 +9,11 @@ extern void newtrace(const char *s);
 void bmy_log_login_success(const char *userid, const char *fromhost, enum ythtbbs_user_login_type login_type) {
 	char buf[80];
 
-	snprintf(buf, sizeof buf, "%s enter %s using %s", userid, fromhost, ythtbbs_user_get_login_type_str(login_type));
+	if (login_type == YTHTBBS_LOGIN_TELNET || login_type == YTHTBBS_LOGIN_SSH) {
+		snprintf(buf, sizeof buf, "%s enter %s", userid, fromhost);
+	} else {
+		snprintf(buf, sizeof buf, "%s enter %s using %s", userid, fromhost, ythtbbs_user_get_login_type_str(login_type));
+	}
 	newtrace(buf);
 }
 
