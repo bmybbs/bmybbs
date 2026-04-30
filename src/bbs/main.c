@@ -716,8 +716,7 @@ notepad_init()
 					sprintf(notetitle, "[%.10s] %s", ctime(&now), ntitle);
 					if (dashf(fname)) {
 						postfile(fname, bname, notetitle, 1);
-						sprintf(tmp, "system post %s %s", bname, ntitle);
-						newtrace(tmp);
+						bmy_log_post_create("system", bname, ntitle);
 					}
 				}
 			}
@@ -1342,8 +1341,7 @@ Q_Goodbye(int ent, struct fileheader *fileinfo, char *direct)
 
 	stay = time(NULL) - login_start_time;
 	if (started) {
-		sprintf(genbuf, "%s exitbbs %ld", currentuser.userid, stay);
-		newtrace(genbuf);
+		bmy_log_logout(currentuser.userid, stay);
 		if ((currentuser.userlevel & PERM_BOARDS) && (ythtbbs_cache_UserTable_count(usernum) == 1))
 			setbmstatus(0);
 		u_exit();

@@ -23,6 +23,7 @@
 */
 
 #include "bbs.h"
+#include "bmy/logging.h"
 #include "stuff.h"
 #include "xyz.h"
 #include "comm_list.h"
@@ -533,7 +534,7 @@ void
 load_sysconf()
 {
 	if (dashf("etc/rebuild.sysconf") || !dashf("sysconf.img2")) {
-		newtrace("system reload sysconf.img2");
+		bmy_log_system_reload("sysconf.img2", -1);
 		build_sysconf("etc/sysconf.ini", "sysconf.img2");
 	}
 	load_sysconf_image("sysconf.img2");
@@ -727,7 +728,7 @@ int domenu(const char *menu_name) {
 			if (!HAS_PERM(PERM_SYSOP, currentuser)) {
 				break;
 			}
-			newtrace("system reload sysconf.img2");
+			bmy_log_system_reload("sysconf.img2", -1);
 			build_sysconf("etc/sysconf.ini", "sysconf.img2");
 			load_sysconf_image("sysconf.img2");
 			pm = &menuitem[sysconf_eval(menu_name)];

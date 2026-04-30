@@ -433,8 +433,7 @@ edit_mail_file:
 			in_mail = save_in_mail;
 			return -1;
 		}
-		sprintf(genbuf, "%s mail %s", currentuser.userid, uid);
-		newtrace(genbuf);
+		bmy_log_mail_send(currentuser.userid, uid);
 		in_mail = save_in_mail;
 		return 0;
 	}
@@ -1736,8 +1735,7 @@ mail_buf(char *buf, char *userid, char *title)
 	setmailfile_s(genbuf, sizeof(genbuf), userid, DOT_DIR);
 	if (append_record(genbuf, &newmessage, sizeof (newmessage)) == -1)
 		return -1;
-	sprintf(genbuf, "%s mail %s", currentuser.userid, userid);
-	newtrace(genbuf);
+	bmy_log_mail_send(currentuser.userid, userid);
 	return 0;
 }
 

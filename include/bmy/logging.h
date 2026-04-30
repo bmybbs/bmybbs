@@ -393,4 +393,80 @@ void bmy_log_announce_action(const char *userid, const char *action, const char 
  * @param title 标题
  */
 void bmy_log_announce_import(const char *userid, const char *board, const char *owner, const char *title);
+
+// lower-priority social and query events
+
+/**
+ * @brief 记录聊天请求
+ * @details 来源
+ * - src/bbs/talk.c: "%s five %s" and "%s talk %s"
+ * @param userid 操作者 id
+ * @param target_userid 接收者 id
+ * @param kind 聊天类型 NOTE 实际中仅仅为 "talk"
+ */
+void bmy_log_talk_request(const char *userid, const char *target_userid, const char *kind);
+
+/**
+ * @brief 记录发送祝福
+ * @details 来源
+ * - src/bbs/xyz.c: "%s sendgoodwish %s"
+ * @param userid 操作者 id
+ * @param target_userid 接收者 id
+ */
+void bmy_log_send_goodwish(const char *userid, const char *target_userid);
+
+/**
+ * @brief 记录查找某用户最近 n 天的发帖
+ * @details 来源
+ * - src/bbs/xyz.c: "%s finddf %s %d"
+ * @param userid 操作者 id
+ * @param target 被调查者 id
+ * @param count 检查天数
+ */
+void bmy_log_finddf(const char *userid, const char *target, int count);
+
+// operational and integration diagnostics
+
+/**
+ * @brief 记录系统缓存重载
+ * @details 相关模块 libythtbbs/cache/board.c and cache/user.c:
+ * "system reload bcache %d", "system reload ucache %d", similar cache reloads
+ * @param cache_name 缓存名
+ * @param count 缓存对应的计数（不适用于 bmonline）
+ */
+void bmy_log_cache_reload(const char *cache_name, int count);
+
+/**
+ * @brief 记录系统配置重载
+ * @details 相关模块 src/bbs/comm_lists.c and src/bbs/more.c:
+ * "system reload sysconf.img2", "system reload movie %d", similar system reloads
+ * @param resource_name 资源名
+ * @param count 计数，仅适用于 movie
+ */
+void bmy_log_system_reload(const char *resource_name, int count);
+
+/**
+ * @brief 记录运行时错误（包括日志级别）
+ * @details 目前仅仅是 `newtrace` 的封装 libythtbbs/cache/cache-internal.h, api/api_article.c, and similar runtime failures
+ */
+void bmy_log_runtime_error(const char *message);
+
+/**
+ * @brief 记录超级选择
+ * src/bbs/power_select.c: "%s full_search %s %s"
+ * @param userid 操作者 id
+ * @param board 版面
+ * @param query 查询
+ */
+void bmy_log_search_trace(const char *userid, const char *board, const char *query);
+
+/**
+ * @brief 记录范围选择
+ * src/bbs/power_select.c: "%s select %s %d %d"
+ * @param userid 操作者 id
+ * @param board 版面
+ * @param int id1 开始
+ * @param int id2 结束
+ */
+void bmy_log_selection_trace(const char *userid, const char *board, int id1, int id2);
 #endif

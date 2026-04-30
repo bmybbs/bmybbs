@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include "bmy/logging.h"
 #include "bmy/user.h"
 
@@ -261,5 +262,67 @@ void bmy_log_announce_import(const char *userid, const char *board, const char *
 	char buf[256];
 
 	snprintf(buf, sizeof buf, "%s import %s %s %s", userid, board, owner, title);
+	newtrace(buf);
+}
+
+void bmy_log_talk_request(const char *userid, const char *target_userid, const char *kind) {
+	// NOTE: 事实上 kind 只会为 "talk"
+	char buf[80];
+
+	snprintf(buf, sizeof buf, "%s %s %s", userid, kind, target_userid);
+	newtrace(buf);
+}
+
+void bmy_log_send_goodwish(const char *userid, const char *target_userid) {
+	char buf[80];
+
+	snprintf(buf, sizeof buf, "%s sendgoodwish %s", userid, target_userid);
+	newtrace(buf);
+}
+
+void bmy_log_finddf(const char *userid, const char *target, int count) {
+	char buf[256];
+
+	snprintf(buf, sizeof buf, "%s finddf %s %d", userid, target, count);
+	newtrace(buf);
+}
+
+void bmy_log_cache_reload(const char *cache_name, int count) {
+	char buf[80];
+
+	if (strcmp(cache_name, "bmonline") == 0) {
+		newtrace("system reload bmonline");
+	} else {
+		snprintf(buf, sizeof buf, "system reload %s %d", cache_name, count);
+		newtrace(buf);
+	}
+}
+
+void bmy_log_system_reload(const char *resource_name, int count) {
+	char buf[80];
+
+	if (strcmp(resource_name, "movie") == 0) {
+		snprintf(buf, sizeof buf, "system reload movie %d", count);
+	} else {
+		snprintf(buf, sizeof buf, "system reload %s", resource_name);
+	}
+	newtrace(buf);
+}
+
+void bmy_log_runtime_error(const char *message) {
+	newtrace(message);
+}
+
+void bmy_log_search_trace(const char *userid, const char *board, const char *query) {
+	char buf[80];
+
+	snprintf(buf, sizeof buf, "%s full_search %s %s", userid, board, query);
+	newtrace(buf);
+}
+
+void bmy_log_selection_trace(const char *userid, const char *board, int id1, int id2) {
+	char buf[80];
+
+	snprintf(buf, sizeof buf, "%s select %s %d %d", userid, board, id1, id2);
 	newtrace(buf);
 }

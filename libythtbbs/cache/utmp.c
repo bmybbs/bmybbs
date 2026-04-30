@@ -87,7 +87,7 @@ int ythtbbs_cache_utmp_insert(struct user_info *ptr_user_info) {
 		// 如果插入失败，则撤销上一步的 memcpy
 		memset(ptr_utmp_entry, 0, sizeof(struct user_info));
 		snprintf(local_buf, sizeof(local_buf), "failed to insert UT for %s", ptr_user_info->userid);
-		newtrace(local_buf);
+		bmy_log_runtime_error(local_buf);
 		flock(utmpfd, LOCK_UN);
 		close(utmpfd);
 		return -1;

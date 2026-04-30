@@ -23,6 +23,7 @@
 
 #include "bbs.h"
 #include "bbs_global_vars.h"
+#include "bmy/logging.h"
 #include "list.h"
 #include "io.h"
 #include "smth_screen.h"
@@ -700,7 +701,6 @@ list:
 		socklen_t length;
 		struct sockaddr_in server;
 		char c, answer[2] = "";
-		char buf[512];
 
 		move(3, 0);
 		clrtobot();
@@ -711,12 +711,7 @@ list:
 			return 0;
 		}
 		five = 0;
-		if (five == 1)
-			sprintf(buf, "%s five %s", currentuser.userid, uident);
-		else
-			sprintf(buf, "%s talk %s", currentuser.userid, uident);
-
-		newtrace(buf);
+		bmy_log_talk_request(currentuser.userid, uident, five == 1 ? "five" : "talk");
 		sock = socket(AF_INET, SOCK_STREAM, 0);
 		if (sock < 0) {
 			perror("socket err\n");

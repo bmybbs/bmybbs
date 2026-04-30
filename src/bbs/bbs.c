@@ -2828,10 +2828,7 @@ del_post_backup(int ent, void *record, char *direct)
 		clear();
 		return FULLUPDATE;
 	}
-	snprintf(genbuf, 256, "%s del %s %s %s",
-		currentuser.userid, currboard, fh2owner(fileinfo),
-		fileinfo->title);
-	newtrace(genbuf);
+	bmy_log_post_delete(currentuser.userid, currboard, fh2owner(fileinfo), fileinfo->title);
 	currfiletime = fileinfo->filetime;
 	setbfile(filepath, sizeof(filepath), currboard, fh2fname(fileinfo));
 	char tmp_buf[sizeof(fileinfo->title)];
@@ -2894,10 +2891,7 @@ del_post(int ent, void *record, char *direct)
 			return FULLUPDATE;
 		}
 	}
-	snprintf(genbuf, 256, "%s del %s %s %s",
-		currentuser.userid, currboard, fh2owner(fileinfo),
-		fileinfo->title);
-	newtrace(genbuf);
+	bmy_log_post_delete(currentuser.userid, currboard, fh2owner(fileinfo), fileinfo->title);
 	currfiletime = fileinfo->filetime;
 	if (keep <= 0) {
 		fail = delete_file(direct, sizeof (struct fileheader), ent, (void *) cmpfilename);

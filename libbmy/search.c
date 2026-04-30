@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <json-c/json.h>
+#include "bmy/logging.h"
 #include "config.h"
 #include "ytht/strlib.h"
 #include "ytht/msg.h"
@@ -56,13 +57,13 @@ struct fileheader_utf *bmy_search_board(const char *board, const char *whattosea
 						chunk.size += bufread;
 						chunk.memory[chunk.size] = 0;
 					} else {
-						newtrace("[bmy/search] cannot realloc");
+						bmy_log_runtime_error("[bmy/search] cannot realloc");
 					}
 					if (bufread < sizeof(buf)) {
 						if (feof(fp)) {
 							break;
 						} else if (ferror(fp)) {
-							newtrace("[bmy/search] has problem of reading stdout");
+							bmy_log_runtime_error("[bmy/search] has problem of reading stdout");
 							break;
 						}
 					}
