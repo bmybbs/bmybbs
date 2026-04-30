@@ -318,7 +318,7 @@ void bmy_log_runtime_error(const char *message) {
 }
 
 void bmy_log_search_trace(const char *userid, const char *board, const char *query) {
-	char buf[80];
+	char buf[80 * 4];
 
 	snprintf(buf, sizeof buf, "%s full_search %s %s", userid, board, query);
 	newtrace(buf);
