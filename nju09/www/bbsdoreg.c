@@ -115,7 +115,7 @@ bbsdoreg_main()
 {
 	struct userec x;
 	int time_interval, rc;
-	char buf[256], filename[80], pass1[80], pass2[80], dept[80], phone[80],
+	char filename[80], pass1[80], pass2[80], dept[80], phone[80],
 		assoc[80], salt[3], words[1024];
 #ifndef POP_CHECK
 	int lockfd;

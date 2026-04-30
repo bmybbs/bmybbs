@@ -4,7 +4,6 @@
 #include "bmy/smtp.h"
 #include "config.h"
 #include "ytht/fileop.h"
-#include "ytht/msg.h"
 #include "ythtbbs/mailsender.h"
 #include "ythtbbs/misc.h"
 

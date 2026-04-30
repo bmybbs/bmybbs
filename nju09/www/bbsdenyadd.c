@@ -8,7 +8,7 @@ int
 bbsdenyadd_main()
 {
 	int i;
-	char buf[256], expbuf[80], board[80], *userid;
+	char expbuf[80], board[80], *userid;
 	int dt;
 	struct userec *x;
 	struct boardmem *x1;

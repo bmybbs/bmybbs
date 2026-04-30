@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include "bmy/logging.h"
-#include "ytht/msg.h"
 
 /**
  * @brief 向 UserTable 中添加 utmp 记录

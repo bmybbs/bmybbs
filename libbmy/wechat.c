@@ -7,7 +7,6 @@
 #include <json-c/json.h>
 #include "bmy/logging.h"
 #include "config.h"
-#include "ytht/msg.h"
 #include "ytht/fileop.h"
 #include "bmy/wechat.h"
 #include "memorystruct.h"

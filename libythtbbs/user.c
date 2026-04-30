@@ -14,7 +14,6 @@
 #include "ytht/fileop.h"
 #include "ytht/common.h"
 #include "ytht/strlib.h"
-#include "ytht/msg.h"
 #include "ytht/random.h"
 #include "bmy/user.h"
 #include "ythtbbs/cache.h"

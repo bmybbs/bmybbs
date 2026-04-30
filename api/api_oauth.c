@@ -2,7 +2,6 @@
 #include <onion/request.h>
 #include <onion/response.h>
 #include "bmy/logging.h"
-#include "ytht/msg.h"
 #include "bmy/2fa.h"
 #include "bmy/wechat.h"
 #include "bmy/user.h"

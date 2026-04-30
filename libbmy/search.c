@@ -5,7 +5,6 @@
 #include "bmy/logging.h"
 #include "config.h"
 #include "ytht/strlib.h"
-#include "ytht/msg.h"
 #include "memorystruct.h"
 #include "bmy/search.h"
 #include "bmy/convcode.h"
