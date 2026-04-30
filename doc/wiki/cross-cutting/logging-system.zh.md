@@ -57,6 +57,30 @@
 - `bbslogd` 不仅仅是一个被动的接收器。
 - 至少 `system passerr` 还会驱动 `bbslogd` 内部的站点封禁/重复失败逻辑。
 
+## 第一阶段重构状态
+
+当前代码已为第一阶段引入了一个语义化日志层：
+
+- 公共接口位于 [include/bmy/logging.h](../../../include/bmy/logging.h)
+- 当前实现位于 [libbmy/logging.c](../../../libbmy/logging.c)
+- 子系统代码应调用 `bmy_log_*` 接口，而非直接调用 `newtrace`
+
+这仍然是一个保持存储方式不变的重构。新的 `bmy_log_*` 函数会格式化兼容遗留系统的文本，然后调用私有的 `newtrace` 后端。运行时路径保持不变：
+
+- 子系统代码
+- `bmy_log_*`
+- `newtrace`
+- SysV 消息队列
+- `bbslogd`
+- `newtrace/` 下的每日文件
+
+在本次重构之后，直接对 `newtrace` 的引用应仅限于：
+
+- [libbmy/logging.c](../../../libbmy/logging.c)，作为 `bmy_log_*` 背后的兼容性实现
+- [libytht/newtrace.c](../../../libytht/newtrace.c)，作为底层后端
+- 已失效或被注释的遗留代码
+- 文档和本地实验
+
 ## 当前事件家族
 
 ### 账号与会话事件

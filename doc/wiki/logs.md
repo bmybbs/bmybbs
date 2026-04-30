@@ -29,3 +29,4 @@
 - 2026-04-27 17:56 | translate | migration/logging-system-migration.md | Translated to Simplified Chinese (migration/logging-system-migration.zh.md)
 - 2026-04-27 17:56 | update | index.zh.md | Added migration/logging-system-migration.zh.md to the index.
 - 2026-04-30 13:38 | update | cross-cutting/logging-system.md | Added Phase 1 semantic logging layer state after `libbmy/logging.c` was introduced.
+- 2026-04-30 15:05 | update | cross-cutting/logging-system.zh.md | Synced 'Phase 1 Refactoring State' section with the English version.
