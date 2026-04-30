@@ -57,6 +57,30 @@ That mixed usage is the main design fact for migration. The future system should
 - `bbslogd` is not only a passive sink.
 - At least `system passerr` also feeds site-ban / repeated-failure logic inside `bbslogd`.
 
+## Phase 1 Refactoring State
+
+The current code has introduced a semantic logging layer for Phase 1:
+
+- public interfaces live in [include/bmy/logging.h](../../../include/bmy/logging.h)
+- the current implementation lives in [libbmy/logging.c](../../../libbmy/logging.c)
+- subsystem code should call `bmy_log_*` interfaces instead of calling `newtrace` directly
+
+This is still a storage-preserving refactor. The new `bmy_log_*` functions format legacy-compatible text and then call the private `newtrace` backend. The runtime path remains:
+
+- subsystem code
+- `bmy_log_*`
+- `newtrace`
+- SysV message queue
+- `bbslogd`
+- daily files under `newtrace/`
+
+After this refactor, direct `newtrace` references should be limited to:
+
+- [libbmy/logging.c](../../../libbmy/logging.c), as the compatibility implementation behind `bmy_log_*`
+- [libytht/newtrace.c](../../../libytht/newtrace.c), as the low-level backend
+- dead or commented legacy code
+- documentation and local experiments
+
 ## Current Event Families
 
 ### Account And Session Events
