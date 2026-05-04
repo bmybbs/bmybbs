@@ -39,3 +39,4 @@
 - 2026-05-04 14:47 | translate | migration/logging-system/phase-2-import.md | Created Simplified Chinese translation (phase-2-import.zh.md).
 - 2026-05-04 14:47 | translate | migration/logging-system/phase-3-direct-write.md | Created Simplified Chinese translation (phase-3-direct-write.zh.md).
 - 2026-05-04 16:02 | update | migration/logging-system-migration.md | Added the Phase 2 category-first schema design approach to the overview.
+- 2026-05-04 16:09 | update | migration/logging-system-migration.zh.md | Synced Phase 2 preview and incremental schema design assessment with the English version.
