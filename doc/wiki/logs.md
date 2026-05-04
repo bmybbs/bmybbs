@@ -34,3 +34,7 @@
 - 2026-05-04 14:18 | create | migration/logging-system/phase-2-import.md | Published the canonical seeded logging-system Phase 2 import placeholder page.
 - 2026-05-04 14:21 | create | migration/logging-system/phase-3-direct-write.md | Published the canonical seeded logging-system Phase 3 direct-write placeholder page.
 - 2026-05-04 14:31 | update | migration/logging-system-migration.md | Refactored the canonical logging-system migration page into an overview linking to phase pages.
+- 2026-05-04 14:47 | translate | migration/logging-system-migration.md | Updated Chinese translation to reflect the page split into detailed phases.
+- 2026-05-04 14:47 | translate | migration/logging-system/phase-1-refactor.md | Created Simplified Chinese translation (phase-1-refactor.zh.md).
+- 2026-05-04 14:47 | translate | migration/logging-system/phase-2-import.md | Created Simplified Chinese translation (phase-2-import.zh.md).
+- 2026-05-04 14:47 | translate | migration/logging-system/phase-3-direct-write.md | Created Simplified Chinese translation (phase-3-direct-write.zh.md).
