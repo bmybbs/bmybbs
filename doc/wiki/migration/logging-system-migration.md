@@ -30,6 +30,10 @@ Phase 2 designs the database structure after Phase 1 has clarified the logging c
 
 Current preview:
 
+- design schemas category by category
+- give stable event groups dedicated tables
+- keep unmodeled events out of import scope until their category is designed
+- keep import tracking separate from category tables
 - introduce a log importer for existing file-based logs
 - accept one log-file path per invocation and handle only that file
 - support script-driven batch import later instead of one monolithic import pass
@@ -50,7 +54,7 @@ Phase 3 will move the production write path from file-only logging toward direct
 ## Current Assessment
 
 - Phase 1 has produced the semantic logging boundary needed for later schema design.
-- Phase 2 remains a database design and historical import phase.
+- Phase 2 remains a database design and historical import phase, with schemas designed incrementally by event category.
 - Runtime diagnostics may eventually use a separate service logging approach instead of the business-log schema.
 
 ## Open Questions
