@@ -30,3 +30,7 @@
 - 2026-04-27 17:56 | update | index.zh.md | Added migration/logging-system-migration.zh.md to the index.
 - 2026-04-30 13:38 | update | cross-cutting/logging-system.md | Added Phase 1 semantic logging layer state after `libbmy/logging.c` was introduced.
 - 2026-04-30 15:05 | update | cross-cutting/logging-system.zh.md | Synced 'Phase 1 Refactoring State' section with the English version.
+- 2026-05-04 13:58 | create | migration/logging-system/phase-1-refactor.md | Published the canonical seeded logging-system Phase 1 refactor page.
+- 2026-05-04 14:18 | create | migration/logging-system/phase-2-import.md | Published the canonical seeded logging-system Phase 2 import placeholder page.
+- 2026-05-04 14:21 | create | migration/logging-system/phase-3-direct-write.md | Published the canonical seeded logging-system Phase 3 direct-write placeholder page.
+- 2026-05-04 14:31 | update | migration/logging-system-migration.md | Refactored the canonical logging-system migration page into an overview linking to phase pages.
