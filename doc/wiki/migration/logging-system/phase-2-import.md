@@ -4,19 +4,39 @@
 
 ## Summary
 
-Phase 2 will design the database structure after Phase 1 has clarified the logging categories. It will also introduce historical import for existing file-based `newtrace` logs.
+Phase 2 proves that legacy file-based `newtrace` logs can become queryable PostgreSQL data.
 
-This page is currently a phase placeholder created during the logging-system migration page split. Detailed schema design should be added in a separate follow-up draft after the split is reviewed.
+This phase has two work tracks:
 
-## Preview
+- database design: classify semantic log APIs and define stable PostgreSQL tables
+- historical import: build an importer that reads existing daily log files and writes categorized rows
 
-- Design the database structure after Phase 1 has clarified the logging categories.
-- Introduce a log importer for existing file-based logs.
-- The importer should accept one log-file path per invocation and handle only that file.
-- Batch import should be done later by scripts calling the importer repeatedly, rather than by one monolithic import pass.
-- The importer should remain useful during the transition period until direct database writes are deployed in production.
+Phase 2 should still avoid direct production database writes from live code. Direct live writes belong to Phase 3.
 
-## Notes
+## Detailed Pages
 
-- Keep this page focused on Phase 2.
-- Keep category and schema design changes reviewable as separate amendments.
+- Database design: [phase-2-database-design.md](./phase-2-database-design.md)
+  - Canonical database design for category tables, discarded APIs, import tracking, and indexes.
+  - The executable SQL asset is [db/bmy.pg.sql](../../../../db/bmy.pg.sql).
+- Importer design
+  - Draft in progress, not canonical yet.
+
+## Current State
+
+- The database design is stable enough for initial implementation work.
+- The initial PostgreSQL schema has been drafted in [db/bmy.pg.sql](../../../../db/bmy.pg.sql).
+- Importer design has not been published yet.
+
+## Boundaries
+
+- Keep `bbslogd` and existing disk logs as the active production path during Phase 2.
+- Preserve original log files as the raw backup source.
+- Import only categorized business/event logs.
+- Do not import discarded runtime diagnostics into business-event tables.
+- Do not add foreign keys to logging tables.
+
+## Open Work
+
+- Draft and review the importer design.
+- Implement the importer after the importer design is stable.
+- Validate import idempotency and selected event-family mappings.

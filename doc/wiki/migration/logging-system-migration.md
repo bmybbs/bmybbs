@@ -35,7 +35,7 @@ Current preview:
 - keep unmodeled events out of import scope until their category is designed
 - keep import tracking separate from category tables
 - introduce a log importer for existing file-based logs
-- accept one log-file path per invocation and handle only that file
+- accept one log date per invocation and resolve the matching daily log file
 - support script-driven batch import later instead of one monolithic import pass
 - keep the importer useful during the transition period until direct database writes are deployed in production
 
