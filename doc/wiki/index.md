@@ -18,6 +18,15 @@ Use this index as the entry point to canonical wiki pages. Sidecar draft pages s
 - [wiki-conventions.md](./wiki-conventions.md)
   - Status: `seeded`
   - Defines wiki workflow, page status terms, draft handling, and evidence rules.
+- [module-ids.md](./module-ids.md)
+  - Status: `seeded`
+  - Shared module/domain id registry for structured wiki documents such as use cases and implementation plans.
+- [use-cases/README.md](./use-cases/README.md)
+  - Status: `seeded`
+  - Defines use-case document naming, template, and writing rules.
+- [implementation-plans/README.md](./implementation-plans/README.md)
+  - Status: `seeded`
+  - Defines implementation-plan document naming, template, and writing rules.
 - [project-overview.md](./project-overview.md)
   - Status: `seeded`
   - High-level description of the current system, its maintenance problems, and the target migration direction.

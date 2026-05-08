@@ -41,3 +41,4 @@
 - 2026-05-04 16:02 | update | migration/logging-system-migration.md | Added the Phase 2 category-first schema design approach to the overview.
 - 2026-05-04 16:09 | update | migration/logging-system-migration.zh.md | Synced Phase 2 preview and incremental schema design assessment with the English version.
 - 2026-05-07 19:20 | update | migration/logging-system/phase-2-import.md, migration/logging-system/phase-2-database-design.md, migration/logging-system-migration.md | Published the canonical seeded Phase 2 overview and database design pages for logging migration, and aligned the parent overview with date-based import.
+- 2026-05-08 12:32 | create | module-ids.md, use-cases/README.md, implementation-plans/README.md, index.md | Published structured document conventions for module ids, use cases, and implementation plans, and added them to the wiki index.
