@@ -18,14 +18,14 @@ Phase 2 should still avoid direct production database writes from live code. Dir
 - Database design: [phase-2-database-design.md](./phase-2-database-design.md)
   - Canonical database design for category tables, discarded APIs, import tracking, and indexes.
   - The executable SQL asset is [db/bmy.pg.sql](../../../../db/bmy.pg.sql).
-- Importer design
-  - Draft in progress, not canonical yet.
+- Importer design: [phase-2-importer.md](./phase-2-importer.md)
+  - Canonical importer design for command shape, parsing boundary, transactions, encoding, and validation.
 
 ## Current State
 
 - The database design is stable enough for initial implementation work.
 - The initial PostgreSQL schema has been drafted in [db/bmy.pg.sql](../../../../db/bmy.pg.sql).
-- Importer design has not been published yet.
+- The importer design has been published as a seeded canonical page.
 
 ## Boundaries
 
@@ -37,6 +37,5 @@ Phase 2 should still avoid direct production database writes from live code. Dir
 
 ## Open Work
 
-- Draft and review the importer design.
 - Implement the importer after the importer design is stable.
 - Validate import idempotency and selected event-family mappings.

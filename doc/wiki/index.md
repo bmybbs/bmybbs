@@ -24,9 +24,15 @@ Use this index as the entry point to canonical wiki pages. Sidecar draft pages s
 - [use-cases/README.md](./use-cases/README.md)
   - Status: `seeded`
   - Defines use-case document naming, template, and writing rules.
+- [use-cases/index.md](./use-cases/index.md)
+  - Status: `seeded`
+  - Index of canonical use cases.
 - [implementation-plans/README.md](./implementation-plans/README.md)
   - Status: `seeded`
   - Defines implementation-plan document naming, template, and writing rules.
+- [implementation-plans/index.md](./implementation-plans/index.md)
+  - Status: `seeded`
+  - Index of canonical implementation plans.
 - [project-overview.md](./project-overview.md)
   - Status: `seeded`
   - High-level description of the current system, its maintenance problems, and the target migration direction.
