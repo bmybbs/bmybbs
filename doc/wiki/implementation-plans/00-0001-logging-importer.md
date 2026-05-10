@@ -12,6 +12,7 @@ Implement a single-day historical log importer that reads one legacy `newtrace` 
 ## Scope
 
 - Provide one command-line utility for importing one daily log file.
+- Support dry-run parsing without database writes.
 - Resolve the source file from a date argument.
 - Read the source file line by line with `getline(3)`.
 - Check `log_imported_lines(source_file, source_line)` before parsing each line.
@@ -45,6 +46,13 @@ Outputs:
 - Rows in `log_imported_lines`
 - Human-readable summary printed to stdout or stderr
 - Process exit code
+
+Dry-run output:
+
+- Human-readable summary only.
+- No PostgreSQL connection is required.
+- No `log_imported_lines` lookup is performed.
+- No category-table rows or import-tracking rows are inserted.
 
 ## Files And Modules
 
@@ -80,12 +88,13 @@ Implementation language:
 Initial command:
 
 ```text
-log_importer YYYY-MM-DD
+log_importer [--dry-run] YYYY-MM-DD
 ```
 
 Rules:
 
 - `YYYY-MM-DD` is required.
+- `--dry-run` is optional.
 - Legacy log timestamps are interpreted as UTC+8.
 - The resolved log file is `$HOME/newtrace/YYYY-MM-DD.log`.
 - Store only `YYYY-MM-DD.log` in `log_imported_lines.source_file`.
@@ -126,6 +135,7 @@ struct bmy_log_importer_config {
 	const char *home_dir;
 	const char *source_file;     /* YYYY-MM-DD.log */
 	const char *source_path;     /* $HOME/newtrace/YYYY-MM-DD.log */
+	bool dry_run;
 };
 ```
 
@@ -175,12 +185,14 @@ Interface rule:
 - `bmy_log_importer_insert_event` owns the transaction that inserts both the category-table row and the `log_imported_lines` row.
 - The importer shell should not inspect parser internals beyond status, line time, target table, and typed payload fields.
 - The parser should not know about PostgreSQL or `log_imported_lines`.
+- Dry-run mode should call the parser and update counters, but must not call database helpers.
 
 ## Transaction Strategy
 
 - The category-table insert and `log_imported_lines` insert must be atomic.
 - If either insert fails, neither row should remain committed.
 - Already-imported, discarded, unrecognized, and parse-failed lines do not need database writes.
+- Dry-run mode does not open a database transaction.
 
 Initial recommendation:
 
@@ -198,6 +210,7 @@ The importer should report at least:
 - `discarded`
 - `unrecognized`
 - `failed`
+- `dry_run`
 
 Optional counters:
 
@@ -215,6 +228,7 @@ Summary format:
 - Missing source file: report and exit non-zero without inserting rows.
 - Invalid date argument: report and exit non-zero without reading a file.
 - Database connection failure: report and exit non-zero.
+- Dry-run mode: do not connect to PostgreSQL and do not check import state.
 - Already imported line: count and continue.
 - Discarded line: count and continue.
 - Unrecognized line: count and continue.
@@ -231,6 +245,8 @@ Summary format:
 - Run the importer twice for the same date and confirm no duplicate rows.
 - Import a sample file containing discarded and unrecognized lines and confirm they are counted but not inserted.
 - Run with a missing date file and confirm non-zero exit without inserts.
+- Run with `--dry-run` and confirm no PostgreSQL rows are inserted.
+- Run dry-run against old historical logs and collect unrecognized/failed examples for parser tests.
 
 ## Work Breakdown
 
@@ -238,6 +254,7 @@ Summary format:
 - Add local `libcheck` based parser test target under `local_utl/log_importer`.
 - Implement command-line parsing.
 - Implement date, fixed UTC+8, and source-path resolution.
+- Implement dry-run branch before database connection setup.
 - Implement PostgreSQL connection setup.
 - Implement `getline(3)` based source file reading and physical line numbering.
 - Implement idempotency lookup by `(source_file, source_line)`.
@@ -251,3 +268,4 @@ Summary format:
 ## Backlog
 
 - Add configurable timezone handling if logs from another timezone need to be imported later.
+- Add parser test cases from dry-run discoveries in older historical logs.

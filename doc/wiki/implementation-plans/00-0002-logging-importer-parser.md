@@ -9,6 +9,8 @@
 
 Implement the parser component that classifies one legacy `newtrace` line and converts accepted lines into typed event records for the logging importer.
 
+The first parser version is based on current logging wrappers and current-state documentation. Older historical logs may use earlier formats and should be discovered through dry-run import passes.
+
 ## Scope
 
 - Parse one physical log line at a time.
@@ -257,6 +259,7 @@ Discarded lines are not errors and should not produce database events.
 - Match longer or more specific patterns before shorter patterns that could also match.
 - Classify known discarded patterns before falling back to unrecognized.
 - Treat malformed accepted-looking lines as failed, not unrecognized.
+- Treat old unsupported formats as unrecognized unless they clearly match a known accepted family with malformed fields.
 
 Examples of ambiguity to handle carefully:
 
@@ -302,6 +305,7 @@ Examples of ambiguity to handle carefully:
 - Provide malformed accepted-looking lines.
 - Provide unrecognized lines.
 - Treat parser tests as the source of concrete sample coverage.
+- Use dry-run discoveries from older historical logs to add parser regression tests.
 - Confirm parser output maps to the expected target table and field values.
 - Confirm typed numeric payload fields are already integers.
 - Confirm `*` stays ordinary content in parsed text fields.

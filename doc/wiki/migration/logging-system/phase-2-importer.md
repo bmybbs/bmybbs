@@ -8,9 +8,12 @@ This page records the design for the historical log importer.
 
 The importer reads existing daily `newtrace` files, parses supported event families, and inserts categorized rows into PostgreSQL tables defined by [phase-2-database-design.md](./phase-2-database-design.md).
 
+The parser design is based on the current semantic logging wrappers and current-state documentation. Older historical logs may use earlier formats and may become unrecognized or failed lines during import.
+
 ## Initial Importer Shape
 
 - Accept one log date per invocation, for example `importer YYYY-MM-DD`.
+- Support `--dry-run` to parse and summarize a log file without checking import state or writing to PostgreSQL.
 - Locate the legacy log file using the canonical `$HOME/newtrace/YYYY-MM-DD.log` pattern.
 - Store `YYYY-MM-DD.log`, not the full path, in `log_imported_lines.source_file`.
 - Parse the event date from the invocation argument and the event time from each log line.
@@ -22,6 +25,7 @@ The importer reads existing daily `newtrace` files, parses supported event famil
 - Insert the category-table row and the matching `log_imported_lines` row in the same transaction.
 - Use `log_imported_lines(source_file, source_line)` as the idempotency boundary.
 - Treat discarded APIs and unrecognized lines as skipped input, and report them in the importer summary.
+- Use dry-run output to find old or unexpected log formats and turn them into parser test cases when needed.
 - Support script-driven batch import later by keeping the single-file importer small and predictable.
 
 ## Encoding Rules
@@ -69,6 +73,7 @@ Discarded APIs should not be imported into business-event tables.
 - Board deny rows should preserve operator, board, and target user.
 - Imported text fields should be valid UTF-8.
 - Discarded and unrecognized lines should be counted in importer output and remain available in the original files.
+- Dry-run should parse and count accepted, discarded, unrecognized, and failed lines without inserting rows.
 
 ## Backlog
 

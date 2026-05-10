@@ -36,6 +36,8 @@ Import one legacy daily `newtrace` log file into PostgreSQL, preserving accepted
 - If a line is unrecognized, the importer skips it and counts it as unrecognized.
 - If a legacy free-text field cannot be converted with `g2u`, the importer skips that line and counts it as failed.
 - If an accepted event line cannot be inserted, the importer reports the failure and does not record that line as imported.
+- If the operator runs with `--dry-run`, the importer parses and summarizes the file without checking `log_imported_lines` or inserting rows.
+- If older historical log formats are unrecognized or fail parsing, the importer reports counts so those lines can be reviewed and added to parser tests later.
 
 ## Postconditions
 
@@ -53,8 +55,10 @@ Import one legacy daily `newtrace` log file into PostgreSQL, preserving accepted
 - Import a sample log containing accepted, discarded, and unrecognized lines.
 - Confirm discarded and unrecognized lines do not create category-table rows.
 - Confirm the importer summary reports inserted, already-imported, discarded, unrecognized, and failed line counts.
+- Run with `--dry-run` and confirm no category-table or `log_imported_lines` rows are inserted.
 
 ## Notes
 
 - This use case does not define parser structure, implementation language, or transaction granularity.
 - If a developer deletes a `log_imported_lines` row during development, that source line becomes eligible for re-import.
+- Historical format drift is expected because old logs may predate the current semantic logging wrappers.
