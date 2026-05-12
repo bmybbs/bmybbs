@@ -74,6 +74,20 @@ bool bmy_log_token_eq(const struct bmy_log_token *token, const char *text) {
 	return strncmp(token->ptr, text, len) == 0;
 }
 
+bool bmy_log_token_eq_any(const struct bmy_log_token *token, const char *const texts[]) {
+	size_t i;
+
+	if (texts == NULL)
+		return false;
+
+	for (i = 0; texts[i] != NULL; i++) {
+		if (bmy_log_token_eq(token, texts[i]))
+			return true;
+	}
+
+	return false;
+}
+
 bool bmy_log_token_empty(const struct bmy_log_token *token) {
 	return token == NULL || token->ptr == NULL || token->len == 0;
 }

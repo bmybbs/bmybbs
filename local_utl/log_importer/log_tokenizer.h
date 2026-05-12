@@ -32,6 +32,10 @@ bool bmy_log_tokenize(const char *line, struct bmy_log_tokens *tokens);
  */
 bool bmy_log_token_eq(const struct bmy_log_token *token, const char *text);
 /**
+ * @brief 比较 token 是否匹配 texts 中的任意一个字符串，texts 以 NULL 结尾
+ */
+bool bmy_log_token_eq_any(const struct bmy_log_token *token, const char *const texts[]);
+/**
  * @brief 判断 token 是否为空
  */
 bool bmy_log_token_empty(const struct bmy_log_token *token);
