@@ -3,4 +3,11 @@ add_executable(log_importer_tokenizer.test
 	log_tokenizer.c
 )
 
+add_executable(log_importer_parser.test
+	test_log_parser.c
+	log_parser.c
+	log_tokenizer.c
+)
+
 target_link_libraries(log_importer_tokenizer.test PRIVATE ${CHECK_LIBRARIES})
+target_link_libraries(log_importer_parser.test PRIVATE bmy ${CHECK_LIBRARIES})
