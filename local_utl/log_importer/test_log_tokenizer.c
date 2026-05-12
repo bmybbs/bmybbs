@@ -126,6 +126,20 @@ START_TEST(test_log_tokenizer_rest_after_with_trailing_spaces)
 }
 END_TEST
 
+START_TEST(test_log_tokenizer_rest_after_with_manual_token)
+{
+	struct bmy_log_token token;
+	const char *s = "0123";
+
+	token.ptr = s;
+	token.len = 1;
+
+	token = bmy_log_token_rest_after(&token);
+	ck_assert(bmy_log_token_eq(&token, "123"));
+	ck_assert_int_eq(token.len, 3);
+}
+END_TEST
+
 static Suite *log_tokenizer_suite(void) {
 	Suite *s = suite_create("log importer tokenizer");
 
@@ -136,6 +150,7 @@ static Suite *log_tokenizer_suite(void) {
 	tcase_add_test(tc_core, test_log_tokenizer_dup);
 	tcase_add_test(tc_core, test_log_tokenizer_rest_after);
 	tcase_add_test(tc_core, test_log_tokenizer_rest_after_with_trailing_spaces);
+	tcase_add_test(tc_core, test_log_tokenizer_rest_after_with_manual_token);
 	suite_add_tcase(s, tc_core);
 
 	return s;
