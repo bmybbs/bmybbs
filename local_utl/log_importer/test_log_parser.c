@@ -762,6 +762,65 @@ START_TEST(test_log_parser_user_kick)
 END_TEST
 #endif
 
+#if 1 // account
+START_TEST(test_log_parser_account_create)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo newaccount 1 1.2.3.4";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_ACCOUNT);
+
+	const struct bmy_log_account_event *data = &result.payload.account;
+	ck_assert_str_eq(data->action, "create");
+	ck_assert_str_eq(data->userid, "foo");
+	ck_assert_str_eq(data->from_host, "1.2.3.4");
+	ck_assert_int_eq(data->usernum, 1);
+	ck_assert_ptr_null(data->login_type);
+}
+END_TEST
+
+START_TEST(test_log_parser_account_create_www)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo newaccount 1 1.2.3.4 www";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_ACCOUNT);
+
+	const struct bmy_log_account_event *data = &result.payload.account;
+	ck_assert_str_eq(data->action, "create");
+	ck_assert_str_eq(data->userid, "foo");
+	ck_assert_str_eq(data->from_host, "1.2.3.4");
+	ck_assert_int_eq(data->usernum, 1);
+	// TODO: not parsed yet
+	ck_assert_ptr_null(data->login_type);
+}
+END_TEST
+
+START_TEST(test_log_parser_account_expire_cleanup)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 system kill foo 1";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_ACCOUNT);
+
+	const struct bmy_log_account_event *data = &result.payload.account;
+	ck_assert_str_eq(data->action, "expire_cleanup");
+	ck_assert_str_eq(data->userid, "foo");
+	ck_assert_int_eq(data->usernum, 1);
+	ck_assert_ptr_null(data->login_type);
+	ck_assert_ptr_null(data->from_host);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+#endif
+
 static Suite *log_parser_suite(void) {
 	Suite *s = suite_create("log importer parser");
 
@@ -773,6 +832,10 @@ static Suite *log_parser_suite(void) {
 	tcase_add_test(tc_core, test_log_parser_board_usage);
 	tcase_add_test(tc_core, test_log_parser_session_exitbbs);
 	tcase_add_test(tc_core, test_log_parser_session_drop);
+
+	tcase_add_test(tc_core, test_log_parser_account_create);
+	tcase_add_test(tc_core, test_log_parser_account_create_www);
+	tcase_add_test(tc_core, test_log_parser_account_expire_cleanup);
 	suite_add_tcase(s, tc_core);
 
 	TCase *tc_article = tcase_create("article");

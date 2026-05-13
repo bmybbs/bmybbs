@@ -81,6 +81,7 @@ static enum bmy_log_parse_status bmy_log_parse_login_failure(const struct bmy_lo
 static enum bmy_log_parse_status bmy_log_parse_session_login_success(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
 static enum bmy_log_parse_status bmy_log_parse_session_cleanup(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
 static enum bmy_log_parse_status bmy_log_parse_session_kick(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
+static enum bmy_log_parse_status bmy_log_parse_account(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
 
 static bool bmy_log_parser_is_ip_address(const char *text);
 static char *bmy_log_token_to_utf8(const struct bmy_log_token *token);
@@ -190,6 +191,16 @@ bool bmy_log_parse_line(const char *line, struct bmy_log_parse_result *result) {
 			goto FAILED_1;
 		}
 		result->payload.session.userid = userid;
+	} else if (bmy_log_token_eq(action_token, "newaccount") || (bmy_log_token_eq(action_token, "kill"))) {
+		if (bmy_log_parse_account(&tokens, result) != BMY_LOG_PARSE_ACCEPTED) {
+			goto FAILED_1;
+		}
+
+		if (bmy_log_token_eq(action_token, "kill")) {
+			free(userid);
+		} else {
+			result->payload.account.userid = userid;
+		}
 	}
 
 	return true;
@@ -233,6 +244,11 @@ void bmy_log_parse_result_cleanup(struct bmy_log_parse_result *result) {
 			bmy_log_parser_safe_ptr_cleanup(result->payload.session.login_type);
 			bmy_log_parser_safe_ptr_cleanup(result->payload.session.target_userid);
 		break;
+		case BMY_LOG_EVENT_ACCOUNT:
+			bmy_log_parser_safe_ptr_cleanup(result->payload.account.userid);
+			bmy_log_parser_safe_ptr_cleanup(result->payload.account.from_host);
+			bmy_log_parser_safe_ptr_cleanup(result->payload.account.login_type);
+			break;
 		default:
 			// TODO
 			(void) result;
@@ -617,6 +633,53 @@ static enum bmy_log_parse_status bmy_log_parse_session_kick(const struct bmy_log
 		return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
 	}
 }
+
+static enum bmy_log_parse_status bmy_log_parse_account(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result) {
+	char *from_host = NULL;
+	char *userid = NULL;
+	int usernum = 0;
+	const struct bmy_log_token *action_token = &raw_tokens->items[2];
+
+	if (bmy_log_token_eq(action_token, "newaccount")) {
+		if (raw_tokens->count != 6 && raw_tokens->count != 5) {
+			return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
+		}
+		if (!bmy_log_token_to_int(&raw_tokens->items[3], &usernum)) {
+			return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
+		}
+		if ((from_host = bmy_log_token_dup(&raw_tokens->items[4])) == NULL) {
+			return result->status = BMY_LOG_PARSE_FAILED;
+		}
+
+		if (!bmy_log_parser_is_ip_address(from_host)) {
+			free(from_host);
+			return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
+		}
+
+		result->table = BMY_LOG_EVENT_ACCOUNT;
+		// NOTE: 定义在表结构中
+		result->payload.account.action = "create";
+		result->payload.account.usernum = usernum;
+		result->payload.account.from_host = from_host;
+		return result->status = BMY_LOG_PARSE_ACCEPTED;
+	} else {
+		if (raw_tokens->count != 5) {
+			return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
+		}
+		if (!bmy_log_token_to_int(&raw_tokens->items[4], &usernum)) {
+			return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
+		}
+		if ((userid = bmy_log_token_dup(&raw_tokens->items[3])) == NULL) {
+			return result->status = BMY_LOG_PARSE_FAILED;
+		}
+		result->table = BMY_LOG_EVENT_ACCOUNT;
+		// NOTE: 定义在表结构中
+		result->payload.account.action = "expire_cleanup";
+		result->payload.account.userid = userid;
+		result->payload.account.usernum = usernum;
+		return result->status = BMY_LOG_PARSE_ACCEPTED;
+	}
+};
 
 static const char *get_action_str(const struct bmy_log_token *token, const char *const actions[]) {
 	size_t i;
