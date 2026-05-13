@@ -912,6 +912,27 @@ START_TEST(test_log_parser_goodwish)
 END_TEST
 #endif
 
+#if 1 // user query
+START_TEST(test_log_parser_finddf)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo finddf bar 1";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_USER_QUERY);
+
+	const struct bmy_log_user_query_event *data = &result.payload.user_query;
+	ck_assert_str_eq(data->userid, "foo");
+	ck_assert_str_eq(data->target, "bar");
+	ck_assert_str_eq(data->action, "finddf");
+	ck_assert_int_eq(data->day_count, 1);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+#endif
+
 static Suite *log_parser_suite(void) {
 	Suite *s = suite_create("log importer parser");
 
@@ -934,6 +955,8 @@ static Suite *log_parser_suite(void) {
 
 	tcase_add_test(tc_core, test_log_parser_talk);
 	tcase_add_test(tc_core, test_log_parser_goodwish);
+
+	tcase_add_test(tc_core, test_log_parser_finddf);
 	suite_add_tcase(s, tc_core);
 
 	TCase *tc_article = tcase_create("article");
