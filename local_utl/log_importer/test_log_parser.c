@@ -490,6 +490,58 @@ START_TEST(test_log_parser_article_changetitle_contain_gbk)
 END_TEST
 #endif
 
+#if 1 // login failure
+START_TEST(test_log_parser_login_failure)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 system passerr 1.2.3.4";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_LOGIN_FAILURE);
+
+	ck_assert_str_eq(result.payload.login_failure.from_host, "1.2.3.4");
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_login_failure_IPv6)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 system passerr 1:2:3::4";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_LOGIN_FAILURE);
+
+	ck_assert_str_eq(result.payload.login_failure.from_host, "1:2:3::4");
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_login_failure_wrong_username)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo passerr 1.2.3.4";
+
+	ck_assert(!bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_UNRECOGNIZED);
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_login_failure_wrong_IP)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 system passerr 1.2.3..4";
+
+	ck_assert(!bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_UNRECOGNIZED);
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+#endif
+
 #if 1
 START_TEST(test_log_parser_user_enter_with_using)
 {
@@ -646,6 +698,13 @@ static Suite *log_parser_suite(void) {
 	tcase_add_test(tc_article, test_log_parser_article_changetitle_contain_newtitle);
 	tcase_add_test(tc_article, test_log_parser_article_changetitle_contain_gbk);
 	suite_add_tcase(s, tc_article);
+
+	TCase *tc_login_failure = tcase_create("login failure");
+	tcase_add_test(tc_login_failure, test_log_parser_login_failure);
+	tcase_add_test(tc_login_failure, test_log_parser_login_failure_IPv6);
+	tcase_add_test(tc_login_failure, test_log_parser_login_failure_wrong_username);
+	tcase_add_test(tc_login_failure, test_log_parser_login_failure_wrong_IP);
+	suite_add_tcase(s, tc_login_failure);
 
 	TCase *tc_session = tcase_create("session");
 	tcase_add_test(tc_session, test_log_parser_user_enter_with_using);

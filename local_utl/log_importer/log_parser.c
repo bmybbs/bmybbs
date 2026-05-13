@@ -74,6 +74,7 @@ static enum bmy_log_parse_status bmy_log_parse_article_post_like_events(const st
  * @warning 这个解析并不完美，建立在原标题中并不包含 "newtitle:" 的情况
  */
 static enum bmy_log_parse_status bmy_log_parse_article_changetitle(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result, const char *raw_line);
+static enum bmy_log_parse_status bmy_log_parse_login_failure(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
 static enum bmy_log_parse_status bmy_log_parse_session_login_success(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
 static enum bmy_log_parse_status bmy_log_parse_session_cleanup(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
 static enum bmy_log_parse_status bmy_log_parse_session_kick(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
@@ -142,6 +143,12 @@ bool bmy_log_parse_line(const char *line, struct bmy_log_parse_result *result) {
 			goto FAILED_1;
 		}
 		result->payload.article.actor_userid = userid;
+	} else if (bmy_log_token_eq(action_token, "passerr")) {
+		if (bmy_log_parse_login_failure(&tokens, result) != BMY_LOG_PARSE_ACCEPTED) {
+			goto FAILED_1;
+		}
+
+		free(userid);
 	} else if (bmy_log_token_eq(action_token, "enter")) {
 		if (bmy_log_parse_session_login_success(&tokens, result) != BMY_LOG_PARSE_ACCEPTED) {
 			goto FAILED_1;
@@ -180,6 +187,9 @@ void bmy_log_parse_result_cleanup(struct bmy_log_parse_result *result) {
 			bmy_log_parser_safe_ptr_cleanup(result->payload.article.title);
 			bmy_log_parser_safe_ptr_cleanup(result->payload.article.old_title);
 		break;
+		case BMY_LOG_EVENT_LOGIN_FAILURE:
+			bmy_log_parser_safe_ptr_cleanup(result->payload.login_failure.from_host);
+			break;
 		case BMY_LOG_EVENT_SESSION:
 			bmy_log_parser_safe_ptr_cleanup(result->payload.session.userid);
 			bmy_log_parser_safe_ptr_cleanup(result->payload.session.from_host);
@@ -388,6 +398,25 @@ FAILED_1:
 	free(oldtitle_utf8);
 FAILED_0:
 	return result->status = BMY_LOG_PARSE_FAILED;
+}
+
+static enum bmy_log_parse_status bmy_log_parse_login_failure(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result) {
+	char *from_host = NULL;
+
+	if (raw_tokens->count != 4 || !bmy_log_token_eq(&raw_tokens->items[1], "system")) {
+		return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
+	}
+	if ((from_host = bmy_log_token_dup(&raw_tokens->items[3])) == NULL) {
+		return result->status = BMY_LOG_PARSE_FAILED;
+	}
+	if (!bmy_log_parser_is_ip_address(from_host)) {
+		free(from_host);
+		return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
+	}
+
+	result->table = BMY_LOG_EVENT_LOGIN_FAILURE;
+	result->payload.login_failure.from_host = from_host;
+	return result->status = BMY_LOG_PARSE_ACCEPTED;
 }
 
 static enum bmy_log_parse_status bmy_log_parse_session_login_success(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result) {
