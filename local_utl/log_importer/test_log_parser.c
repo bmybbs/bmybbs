@@ -551,6 +551,41 @@ START_TEST(test_log_parser_board_usage)
 END_TEST
 #endif
 
+#if 1 // session duration
+START_TEST(test_log_parser_session_exitbbs)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo exitbbs 111";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_SESSION_DURATION);
+
+	const struct bmy_log_session_duration_event *data = &result.payload.session_duration;
+
+	ck_assert_str_eq(data->userid, "foo");
+	ck_assert_int_eq(data->stay_seconds, 111);
+	ck_assert_str_eq(data->action, "logout");
+}
+
+START_TEST(test_log_parser_session_drop)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo drop 111";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_SESSION_DURATION);
+
+	const struct bmy_log_session_duration_event *data = &result.payload.session_duration;
+
+	ck_assert_str_eq(data->userid, "foo");
+	ck_assert_int_eq(data->stay_seconds, 111);
+	ck_assert_str_eq(data->action, "disconnect");
+}
+END_TEST
+#endif
+
 #if 1 // login failure
 START_TEST(test_log_parser_login_failure)
 {
@@ -736,6 +771,8 @@ static Suite *log_parser_suite(void) {
 	tcase_add_test(tc_core, test_log_parser_time);
 
 	tcase_add_test(tc_core, test_log_parser_board_usage);
+	tcase_add_test(tc_core, test_log_parser_session_exitbbs);
+	tcase_add_test(tc_core, test_log_parser_session_drop);
 	suite_add_tcase(s, tc_core);
 
 	TCase *tc_article = tcase_create("article");

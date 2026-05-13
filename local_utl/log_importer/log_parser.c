@@ -76,6 +76,7 @@ static enum bmy_log_parse_status bmy_log_parse_article_post_like_events(const st
 static enum bmy_log_parse_status bmy_log_parse_article_changetitle(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result, const char *raw_line);
 static enum bmy_log_parse_status bmy_log_parse_ranged(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
 static enum bmy_log_parse_status bmy_log_parse_board_usage(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
+static enum bmy_log_parse_status bmy_log_parse_session_duration(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
 static enum bmy_log_parse_status bmy_log_parse_login_failure(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
 static enum bmy_log_parse_status bmy_log_parse_session_login_success(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
 static enum bmy_log_parse_status bmy_log_parse_session_cleanup(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
@@ -159,6 +160,12 @@ bool bmy_log_parse_line(const char *line, struct bmy_log_parse_result *result) {
 		}
 
 		result->payload.board_usage.userid = userid;
+	} else if (bmy_log_token_eq(action_token, "exitbbs")) {
+		if (bmy_log_parse_session_duration(&tokens, result) != BMY_LOG_PARSE_ACCEPTED) {
+			goto FAILED_1;
+		}
+
+		result->payload.session_duration.userid = userid;
 	} else if (bmy_log_token_eq(action_token, "passerr")) {
 		if (bmy_log_parse_login_failure(&tokens, result) != BMY_LOG_PARSE_ACCEPTED) {
 			goto FAILED_1;
@@ -171,10 +178,13 @@ bool bmy_log_parse_line(const char *line, struct bmy_log_parse_result *result) {
 		}
 		result->payload.session.userid = userid;
 	} else if (bmy_log_token_eq(action_token, "drop")) {
-		if (bmy_log_parse_session_cleanup(&tokens, result) != BMY_LOG_PARSE_ACCEPTED) {
+		if (bmy_log_parse_session_cleanup(&tokens, result) == BMY_LOG_PARSE_ACCEPTED) {
+			result->payload.session.userid = userid;
+		} else if (bmy_log_parse_session_duration(&tokens, result) == BMY_LOG_PARSE_ACCEPTED) {
+			result->payload.session_duration.userid = userid;
+		} else {
 			goto FAILED_1;
 		}
-		result->payload.session.userid = userid;
 	} else if (bmy_log_token_eq(action_token, "kick")) {
 		if (bmy_log_parse_session_kick(&tokens, result) != BMY_LOG_PARSE_ACCEPTED) {
 			goto FAILED_1;
@@ -210,6 +220,9 @@ void bmy_log_parse_result_cleanup(struct bmy_log_parse_result *result) {
 		case BMY_LOG_EVENT_BOARD_USAGE:
 			bmy_log_parser_safe_ptr_cleanup(result->payload.board_usage.board);
 			bmy_log_parser_safe_ptr_cleanup(result->payload.board_usage.userid);
+			break;
+		case BMY_LOG_EVENT_SESSION_DURATION:
+			bmy_log_parser_safe_ptr_cleanup(result->payload.session_duration.userid);
 			break;
 		case BMY_LOG_EVENT_LOGIN_FAILURE:
 			bmy_log_parser_safe_ptr_cleanup(result->payload.login_failure.from_host);
@@ -488,6 +501,19 @@ static enum bmy_log_parse_status bmy_log_parse_board_usage(const struct bmy_log_
 	result->table = BMY_LOG_EVENT_BOARD_USAGE;
 	result->payload.board_usage.board = board;
 	result->payload.board_usage.stay_seconds = stay_seconds;
+	return result->status = BMY_LOG_PARSE_ACCEPTED;
+}
+
+static enum bmy_log_parse_status bmy_log_parse_session_duration(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result) {
+	long stay_seconds = 0;
+
+	if (raw_tokens->count != 4 || !bmy_log_token_to_long(&raw_tokens->items[3], &stay_seconds)) {
+		return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
+	}
+
+	result->table = BMY_LOG_EVENT_SESSION_DURATION;
+	result->payload.session_duration.action = bmy_log_token_eq(&raw_tokens->items[2], "exitbbs") ? "logout" : "disconnect";
+	result->payload.session_duration.stay_seconds = stay_seconds;
 	return result->status = BMY_LOG_PARSE_ACCEPTED;
 }
 
