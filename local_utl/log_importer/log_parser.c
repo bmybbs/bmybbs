@@ -83,6 +83,7 @@ static enum bmy_log_parse_status bmy_log_parse_session_cleanup(const struct bmy_
 static enum bmy_log_parse_status bmy_log_parse_session_kick(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
 static enum bmy_log_parse_status bmy_log_parse_account(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
 static enum bmy_log_parse_status bmy_log_parse_mail(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
+static enum bmy_log_parse_status bmy_log_parse_user_interaction(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
 
 static bool bmy_log_parser_is_ip_address(const char *text);
 static char *bmy_log_token_to_utf8(const struct bmy_log_token *token);
@@ -208,6 +209,12 @@ bool bmy_log_parse_line(const char *line, struct bmy_log_parse_result *result) {
 		}
 
 		result->payload.mail.sender = userid;
+	} else if (bmy_log_token_eq(action_token, "talk") || bmy_log_token_eq(action_token, "sendgoodwish")) {
+		if (bmy_log_parse_user_interaction(&tokens, result) != BMY_LOG_PARSE_ACCEPTED) {
+			goto FAILED_1;
+		}
+
+		result->payload.user_interaction.userid = userid;
 	}
 
 	return true;
@@ -259,6 +266,10 @@ void bmy_log_parse_result_cleanup(struct bmy_log_parse_result *result) {
 		case BMY_LOG_EVENT_MAIL:
 			bmy_log_parser_safe_ptr_cleanup(result->payload.mail.sender);
 			bmy_log_parser_safe_ptr_cleanup(result->payload.mail.target_userid);
+			break;
+		case BMY_LOG_EVENT_USER_INTERACTION:
+			bmy_log_parser_safe_ptr_cleanup(result->payload.user_interaction.userid);
+			bmy_log_parser_safe_ptr_cleanup(result->payload.user_interaction.target_userid);
 			break;
 		default:
 			// TODO
@@ -704,6 +715,22 @@ static enum bmy_log_parse_status bmy_log_parse_mail(const struct bmy_log_tokens 
 
 	result->table = BMY_LOG_EVENT_MAIL;
 	result->payload.mail.target_userid = target_userid;
+	return result->status = BMY_LOG_PARSE_ACCEPTED;
+}
+
+static enum bmy_log_parse_status bmy_log_parse_user_interaction(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result) {
+	char *target_user = NULL;
+
+	if (raw_tokens->count != 4) {
+		return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
+	}
+	if ((target_user = bmy_log_token_dup(&raw_tokens->items[3])) == NULL) {
+		return result->status = BMY_LOG_PARSE_FAILED;
+	}
+
+	result->table = BMY_LOG_EVENT_USER_INTERACTION;
+	result->payload.user_interaction.action = bmy_log_token_eq(&raw_tokens->items[2], "talk") ? "talk" : "goodwish";
+	result->payload.user_interaction.target_userid = target_user;
 	return result->status = BMY_LOG_PARSE_ACCEPTED;
 }
 

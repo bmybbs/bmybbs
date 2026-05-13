@@ -874,6 +874,44 @@ START_TEST(test_log_parser_mail_utility)
 END_TEST
 #endif
 
+#if 1 // user interaction
+START_TEST(test_log_parser_talk)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo talk bar";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_USER_INTERACTION);
+
+	const struct bmy_log_user_interaction_event *data = &result.payload.user_interaction;
+	ck_assert_str_eq(data->userid, "foo");
+	ck_assert_str_eq(data->target_userid, "bar");
+	ck_assert_str_eq(data->action, "talk");
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_goodwish)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo sendgoodwish bar";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_USER_INTERACTION);
+
+	const struct bmy_log_user_interaction_event *data = &result.payload.user_interaction;
+	ck_assert_str_eq(data->userid, "foo");
+	ck_assert_str_eq(data->target_userid, "bar");
+	ck_assert_str_eq(data->action, "goodwish");
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+#endif
+
 static Suite *log_parser_suite(void) {
 	Suite *s = suite_create("log importer parser");
 
@@ -893,6 +931,9 @@ static Suite *log_parser_suite(void) {
 	tcase_add_test(tc_core, test_log_parser_mail);
 	tcase_add_test(tc_core, test_log_parser_netmail);
 	tcase_add_test(tc_core, test_log_parser_mail_utility);
+
+	tcase_add_test(tc_core, test_log_parser_talk);
+	tcase_add_test(tc_core, test_log_parser_goodwish);
 	suite_add_tcase(s, tc_core);
 
 	TCase *tc_article = tcase_create("article");
