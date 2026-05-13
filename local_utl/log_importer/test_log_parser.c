@@ -29,6 +29,21 @@ START_TEST(test_log_parser_empty_string_should_fail)
 }
 END_TEST
 
+START_TEST(test_log_parser_time)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo enter 1.2.3.4";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.line_time.hour, 1);
+	ck_assert_int_eq(result.line_time.minute, 2);
+	ck_assert_int_eq(result.line_time.second, 3);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
 #if 1 // article events
 START_TEST(test_log_parser_article_mark_title_en)
 {
@@ -475,12 +490,137 @@ START_TEST(test_log_parser_article_changetitle_contain_gbk)
 END_TEST
 #endif
 
+#if 1
+START_TEST(test_log_parser_user_enter_with_using)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo enter 1.2.3.4 using TELNET";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_SESSION);
+
+	const struct bmy_log_session_event *data = &result.payload.session;
+
+	ck_assert_str_eq(data->action, "login_success");
+	ck_assert_str_eq(data->userid, "foo");
+	ck_assert_str_eq(data->from_host, "1.2.3.4");
+	ck_assert_str_eq(data->login_type, "TELNET");
+	ck_assert_ptr_null(data->target_userid);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_user_enter_without_using)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo enter 1.2.3.4";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_SESSION);
+
+	const struct bmy_log_session_event *data = &result.payload.session;
+
+	ck_assert_str_eq(data->action, "login_success");
+	ck_assert_str_eq(data->userid, "foo");
+	ck_assert_str_eq(data->from_host, "1.2.3.4");
+	ck_assert_ptr_null(data->login_type);
+	ck_assert_ptr_null(data->target_userid);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_user_session_cleanup)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo drop www/api";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_SESSION);
+
+	const struct bmy_log_session_event *data = &result.payload.session;
+	ck_assert_str_eq(data->action, "session_cleanup");
+	ck_assert_str_eq(data->userid, "foo");
+	ck_assert_ptr_null(data->target_userid);
+	ck_assert_ptr_null(data->from_host);
+	ck_assert_ptr_null(data->login_type);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_user_session_cleanup_legacy)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo drop www";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_SESSION);
+
+	const struct bmy_log_session_event *data = &result.payload.session;
+	ck_assert_str_eq(data->action, "session_cleanup");
+	ck_assert_str_eq(data->userid, "foo");
+	ck_assert_ptr_null(data->target_userid);
+	ck_assert_ptr_null(data->from_host);
+	ck_assert_ptr_null(data->login_type);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_user_multi_session_kick)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo kick foo multi-login";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_SESSION);
+
+	const struct bmy_log_session_event *data = &result.payload.session;
+	ck_assert_str_eq(data->action, "multi_login_kick");
+	ck_assert_str_eq(data->userid, "foo");
+	ck_assert_ptr_null(data->target_userid);
+	ck_assert_ptr_null(data->from_host);
+	ck_assert_ptr_null(data->login_type);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_user_kick)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo kick bar";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_SESSION);
+
+	const struct bmy_log_session_event *data = &result.payload.session;
+	ck_assert_str_eq(data->action, "user_kick");
+	ck_assert_str_eq(data->userid, "foo");
+	ck_assert_str_eq(data->target_userid, "bar");
+	ck_assert_ptr_null(data->from_host);
+	ck_assert_ptr_null(data->login_type);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+#endif
+
 static Suite *log_parser_suite(void) {
 	Suite *s = suite_create("log importer parser");
 
 	TCase *tc_core = tcase_create("core");
 	tcase_add_test(tc_core, test_log_parser_null_string_should_fail);
 	tcase_add_test(tc_core, test_log_parser_empty_string_should_fail);
+	tcase_add_test(tc_core, test_log_parser_time);
 	suite_add_tcase(s, tc_core);
 
 	TCase *tc_article = tcase_create("article");
@@ -506,6 +646,15 @@ static Suite *log_parser_suite(void) {
 	tcase_add_test(tc_article, test_log_parser_article_changetitle_contain_newtitle);
 	tcase_add_test(tc_article, test_log_parser_article_changetitle_contain_gbk);
 	suite_add_tcase(s, tc_article);
+
+	TCase *tc_session = tcase_create("session");
+	tcase_add_test(tc_session, test_log_parser_user_enter_with_using);
+	tcase_add_test(tc_session, test_log_parser_user_enter_without_using);
+	tcase_add_test(tc_session, test_log_parser_user_session_cleanup);
+	tcase_add_test(tc_session, test_log_parser_user_session_cleanup_legacy);
+	tcase_add_test(tc_session, test_log_parser_user_multi_session_kick);
+	tcase_add_test(tc_session, test_log_parser_user_kick);
+	suite_add_tcase(s, tc_session);
 
 	return s;
 }

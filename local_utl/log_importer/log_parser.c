@@ -74,7 +74,11 @@ static enum bmy_log_parse_status bmy_log_parse_article_post_like_events(const st
  * @warning 这个解析并不完美，建立在原标题中并不包含 "newtitle:" 的情况
  */
 static enum bmy_log_parse_status bmy_log_parse_article_changetitle(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result, const char *raw_line);
+static enum bmy_log_parse_status bmy_log_parse_session_login_success(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
+static enum bmy_log_parse_status bmy_log_parse_session_cleanup(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
+static enum bmy_log_parse_status bmy_log_parse_session_kick(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
 
+static bool bmy_log_parser_is_ip_address(const char *text);
 static char *bmy_log_token_to_utf8(const struct bmy_log_token *token);
 
 bool bmy_log_parse_line(const char *line, struct bmy_log_parse_result *result) {
@@ -138,6 +142,21 @@ bool bmy_log_parse_line(const char *line, struct bmy_log_parse_result *result) {
 			goto FAILED_1;
 		}
 		result->payload.article.actor_userid = userid;
+	} else if (bmy_log_token_eq(action_token, "enter")) {
+		if (bmy_log_parse_session_login_success(&tokens, result) != BMY_LOG_PARSE_ACCEPTED) {
+			goto FAILED_1;
+		}
+		result->payload.session.userid = userid;
+	} else if (bmy_log_token_eq(action_token, "drop")) {
+		if (bmy_log_parse_session_cleanup(&tokens, result) != BMY_LOG_PARSE_ACCEPTED) {
+			goto FAILED_1;
+		}
+		result->payload.session.userid = userid;
+	} else if (bmy_log_token_eq(action_token, "kick")) {
+		if (bmy_log_parse_session_kick(&tokens, result) != BMY_LOG_PARSE_ACCEPTED) {
+			goto FAILED_1;
+		}
+		result->payload.session.userid = userid;
 	}
 
 	return true;
@@ -160,6 +179,12 @@ void bmy_log_parse_result_cleanup(struct bmy_log_parse_result *result) {
 			bmy_log_parser_safe_ptr_cleanup(result->payload.article.owner_userid);
 			bmy_log_parser_safe_ptr_cleanup(result->payload.article.title);
 			bmy_log_parser_safe_ptr_cleanup(result->payload.article.old_title);
+		break;
+		case BMY_LOG_EVENT_SESSION:
+			bmy_log_parser_safe_ptr_cleanup(result->payload.session.userid);
+			bmy_log_parser_safe_ptr_cleanup(result->payload.session.from_host);
+			bmy_log_parser_safe_ptr_cleanup(result->payload.session.login_type);
+			bmy_log_parser_safe_ptr_cleanup(result->payload.session.target_userid);
 		break;
 		default:
 			// TODO
@@ -363,6 +388,88 @@ FAILED_1:
 	free(oldtitle_utf8);
 FAILED_0:
 	return result->status = BMY_LOG_PARSE_FAILED;
+}
+
+static enum bmy_log_parse_status bmy_log_parse_session_login_success(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result) {
+	char *from_host = NULL, *login_type = NULL;
+
+	if (raw_tokens->count != 4 /* w/o using */ && raw_tokens->count != 6 /* w/ using */) {
+		return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
+	}
+
+	if ((from_host = bmy_log_token_dup(&raw_tokens->items[3])) == NULL) {
+		goto FAILED_0;
+	}
+	if (!bmy_log_parser_is_ip_address(from_host)) {
+		goto FAILED_1;
+	}
+
+	if (raw_tokens->count == 6) {
+		if (!bmy_log_token_eq(&raw_tokens->items[4], "using")) {
+			free(from_host);
+			return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
+		}
+		if ((login_type = bmy_log_token_dup(&raw_tokens->items[5])) == NULL) {
+			goto FAILED_1;
+		}
+	}
+
+	result->table = BMY_LOG_EVENT_SESSION;
+	// NOTE: 常量，定义在表 `log_session_events` 中
+	result->payload.session.action = "login_success";
+	result->payload.session.from_host = from_host;
+	result->payload.session.login_type = login_type;
+
+	return result->status = BMY_LOG_PARSE_ACCEPTED;
+FAILED_1:
+	free(from_host);
+FAILED_0:
+	return result->status = BMY_LOG_PARSE_FAILED;
+}
+
+static bool bmy_log_parser_is_ip_address(const char *text) {
+	struct in_addr ipv4;
+	struct in6_addr ipv6;
+
+	return inet_pton(AF_INET, text, &ipv4) == 1 || inet_pton(AF_INET6, text, &ipv6) == 1;
+}
+
+static enum bmy_log_parse_status bmy_log_parse_session_cleanup(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result) {
+	const struct bmy_log_token *ending_token;
+
+	if (raw_tokens->count != 4) {
+		return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
+	}
+	ending_token = &raw_tokens->items[3];
+	if (!bmy_log_token_eq(ending_token, "www") && !bmy_log_token_eq(ending_token, "www/api")) {
+		return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
+	}
+
+	result->table = BMY_LOG_EVENT_SESSION;
+	// NOTE: 常量，定义在表 `log_session_events` 中
+	result->payload.session.action = "session_cleanup";
+	return result->status = BMY_LOG_PARSE_ACCEPTED;
+}
+
+static enum bmy_log_parse_status bmy_log_parse_session_kick(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result) {
+	if (raw_tokens->count == 5 && bmy_log_token_eq(&raw_tokens->items[4], "multi-login")) {
+		result->table = BMY_LOG_EVENT_SESSION;
+		// NOTE: 常量，定义在表 `log_session_events` 中
+		result->payload.session.action = "multi_login_kick";
+
+		return result->status = BMY_LOG_PARSE_ACCEPTED;
+	} else if (raw_tokens->count == 4) {
+		if ((result->payload.session.target_userid = bmy_log_token_dup(&raw_tokens->items[3])) == NULL) {
+			return result->status = BMY_LOG_PARSE_FAILED;
+		}
+
+		result->table = BMY_LOG_EVENT_SESSION;
+		// NOTE: 常量，定义在表 `log_session_events` 中
+		result->payload.session.action = "user_kick";
+		return result->status = BMY_LOG_PARSE_ACCEPTED;
+	} else {
+		return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
+	}
 }
 
 static const char *get_action_str(const struct bmy_log_token *token, const char *const actions[]) {
