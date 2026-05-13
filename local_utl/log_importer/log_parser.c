@@ -74,6 +74,7 @@ static enum bmy_log_parse_status bmy_log_parse_article_post_like_events(const st
  * @warning 这个解析并不完美，建立在原标题中并不包含 "newtitle:" 的情况
  */
 static enum bmy_log_parse_status bmy_log_parse_article_changetitle(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result, const char *raw_line);
+static enum bmy_log_parse_status bmy_log_parse_ranged(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
 static enum bmy_log_parse_status bmy_log_parse_login_failure(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
 static enum bmy_log_parse_status bmy_log_parse_session_login_success(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
 static enum bmy_log_parse_status bmy_log_parse_session_cleanup(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
@@ -81,6 +82,7 @@ static enum bmy_log_parse_status bmy_log_parse_session_kick(const struct bmy_log
 
 static bool bmy_log_parser_is_ip_address(const char *text);
 static char *bmy_log_token_to_utf8(const struct bmy_log_token *token);
+static bool bmy_log_token_to_int(const struct bmy_log_token *token, int *x);
 
 bool bmy_log_parse_line(const char *line, struct bmy_log_parse_result *result) {
 	struct bmy_log_tokens tokens;
@@ -143,6 +145,12 @@ bool bmy_log_parse_line(const char *line, struct bmy_log_parse_result *result) {
 			goto FAILED_1;
 		}
 		result->payload.article.actor_userid = userid;
+	} else if (bmy_log_token_eq(action_token, "ranged") || bmy_log_token_eq(action_token, "rangedmail")) {
+		if (bmy_log_parse_ranged(&tokens, result) != BMY_LOG_PARSE_ACCEPTED) {
+			goto FAILED_1;
+		}
+
+		result->payload.range_delete.userid = userid;
 	} else if (bmy_log_token_eq(action_token, "passerr")) {
 		if (bmy_log_parse_login_failure(&tokens, result) != BMY_LOG_PARSE_ACCEPTED) {
 			goto FAILED_1;
@@ -187,6 +195,10 @@ void bmy_log_parse_result_cleanup(struct bmy_log_parse_result *result) {
 			bmy_log_parser_safe_ptr_cleanup(result->payload.article.title);
 			bmy_log_parser_safe_ptr_cleanup(result->payload.article.old_title);
 		break;
+		case BMY_LOG_EVENT_RANGE_DELETE:
+			bmy_log_parser_safe_ptr_cleanup(result->payload.range_delete.userid);
+			bmy_log_parser_safe_ptr_cleanup(result->payload.range_delete.board);
+			break;
 		case BMY_LOG_EVENT_LOGIN_FAILURE:
 			bmy_log_parser_safe_ptr_cleanup(result->payload.login_failure.from_host);
 			break;
@@ -400,6 +412,56 @@ FAILED_0:
 	return result->status = BMY_LOG_PARSE_FAILED;
 }
 
+static enum bmy_log_parse_status bmy_log_parse_ranged(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result) {
+	int from_id = 0, to_id = 0;
+	char *board = NULL;
+	const struct bmy_log_token *action_token = &raw_tokens->items[2];
+
+	if (bmy_log_token_eq(action_token, "ranged")) {
+		if (raw_tokens->count != 6) {
+			goto FAILED_0;
+		}
+		if (!bmy_log_token_to_int(&raw_tokens->items[4], &from_id)) {
+			goto FAILED_0;
+		}
+		if (!bmy_log_token_to_int(&raw_tokens->items[5], &to_id)) {
+			goto FAILED_0;
+		}
+		if ((board = bmy_log_token_dup(&raw_tokens->items[3])) == NULL) {
+			return result->status = BMY_LOG_PARSE_FAILED;
+		}
+
+		result->table = BMY_LOG_EVENT_RANGE_DELETE;
+		// NOTE: 定义在表结构中
+		result->payload.range_delete.scope = "article";
+		result->payload.range_delete.board = board;
+		result->payload.range_delete.from_id = from_id;
+		result->payload.range_delete.to_id = to_id;
+	} else if (bmy_log_token_eq(action_token, "rangedmail")) {
+		if (raw_tokens->count != 5) {
+			goto FAILED_0;
+		}
+		if (!bmy_log_token_to_int(&raw_tokens->items[3], &from_id)) {
+			goto FAILED_0;
+		}
+		if (!bmy_log_token_to_int(&raw_tokens->items[4], &to_id)) {
+			goto FAILED_0;
+		}
+
+		result->table = BMY_LOG_EVENT_RANGE_DELETE;
+		// NOTE: 定义在表结构中
+		result->payload.range_delete.scope = "mail";
+		result->payload.range_delete.from_id = from_id;
+		result->payload.range_delete.to_id = to_id;
+	} else {
+		goto FAILED_0;
+	}
+
+	return result->status = BMY_LOG_PARSE_ACCEPTED;
+FAILED_0:
+	return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
+}
+
 static enum bmy_log_parse_status bmy_log_parse_login_failure(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result) {
 	char *from_host = NULL;
 
@@ -536,4 +598,21 @@ static char *bmy_log_token_to_utf8(const struct bmy_log_token *token) {
 	free(str_gbk);
 
 	return str_utf8;
+}
+
+static bool bmy_log_token_to_int(const struct bmy_log_token *token, int *x) {
+	size_t i;
+	*x = 0;
+
+	for (i = 0; i < token->len; i++) {
+		if (!bmy_char_in_range(token->ptr[i], '0', '9')) {
+			// invalid
+			return false;
+		}
+
+		*x *= 10;
+		*x += bmy_char_to_digit(token->ptr[i]);
+	}
+
+	return true;
 }

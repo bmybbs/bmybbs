@@ -490,6 +490,47 @@ START_TEST(test_log_parser_article_changetitle_contain_gbk)
 END_TEST
 #endif
 
+#if 1 // range delete
+START_TEST(test_log_parser_range_delete)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo ranged bar 1 2";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_RANGE_DELETE);
+
+	const struct bmy_log_range_delete_event *data = &result.payload.range_delete;
+	ck_assert_str_eq(data->scope, "article");
+	ck_assert_str_eq(data->userid, "foo");
+	ck_assert_str_eq(data->board, "bar");
+	ck_assert_int_eq(data->from_id, 1);
+	ck_assert_int_eq(data->to_id, 2);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+
+START_TEST(test_log_parser_range_delete_mail)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo rangedmail 1 2";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_RANGE_DELETE);
+
+	const struct bmy_log_range_delete_event *data = &result.payload.range_delete;
+	ck_assert_str_eq(data->scope, "mail");
+	ck_assert_str_eq(data->userid, "foo");
+	ck_assert_int_eq(data->from_id, 1);
+	ck_assert_int_eq(data->to_id, 2);
+	ck_assert_ptr_null(data->board);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+#endif
+
 #if 1 // login failure
 START_TEST(test_log_parser_login_failure)
 {
@@ -698,6 +739,11 @@ static Suite *log_parser_suite(void) {
 	tcase_add_test(tc_article, test_log_parser_article_changetitle_contain_newtitle);
 	tcase_add_test(tc_article, test_log_parser_article_changetitle_contain_gbk);
 	suite_add_tcase(s, tc_article);
+
+	TCase *tc_range_delete = tcase_create("range_delete");
+	tcase_add_test(tc_range_delete, test_log_parser_range_delete);
+	tcase_add_test(tc_range_delete, test_log_parser_range_delete_mail);
+	suite_add_tcase(s, tc_range_delete);
 
 	TCase *tc_login_failure = tcase_create("login failure");
 	tcase_add_test(tc_login_failure, test_log_parser_login_failure);
