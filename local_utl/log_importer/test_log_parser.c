@@ -531,6 +531,26 @@ START_TEST(test_log_parser_range_delete_mail)
 END_TEST
 #endif
 
+#if 1 // board usage
+START_TEST(test_log_parser_board_usage)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo use bar 1234";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_BOARD_USAGE);
+
+	const struct bmy_log_board_usage_event *data = &result.payload.board_usage;
+	ck_assert_str_eq(data->board, "bar");
+	ck_assert_str_eq(data->userid, "foo");
+	ck_assert_int_eq(data->stay_seconds, 1234);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+#endif
+
 #if 1 // login failure
 START_TEST(test_log_parser_login_failure)
 {
@@ -714,6 +734,8 @@ static Suite *log_parser_suite(void) {
 	tcase_add_test(tc_core, test_log_parser_null_string_should_fail);
 	tcase_add_test(tc_core, test_log_parser_empty_string_should_fail);
 	tcase_add_test(tc_core, test_log_parser_time);
+
+	tcase_add_test(tc_core, test_log_parser_board_usage);
 	suite_add_tcase(s, tc_core);
 
 	TCase *tc_article = tcase_create("article");
