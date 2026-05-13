@@ -821,6 +821,59 @@ START_TEST(test_log_parser_account_expire_cleanup)
 END_TEST
 #endif
 
+#if 1 // mail
+START_TEST(test_log_parser_mail)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo mail bar";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_MAIL);
+
+	const struct bmy_log_mail_event *data = &result.payload.mail;
+	ck_assert_str_eq(data->sender, "foo");
+	ck_assert_str_eq(data->target_userid, "bar");
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_netmail)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo netmail bar@example.com";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_MAIL);
+
+	const struct bmy_log_mail_event *data = &result.payload.mail;
+	ck_assert_str_eq(data->sender, "foo");
+	ck_assert_str_eq(data->target_userid, "bar@example.com");
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_mail_utility)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 XJTU-XANET mail bar";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_MAIL);
+
+	const struct bmy_log_mail_event *data = &result.payload.mail;
+	ck_assert_str_eq(data->sender, "XJTU-XANET");
+	ck_assert_str_eq(data->target_userid, "bar");
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+#endif
+
 static Suite *log_parser_suite(void) {
 	Suite *s = suite_create("log importer parser");
 
@@ -836,6 +889,10 @@ static Suite *log_parser_suite(void) {
 	tcase_add_test(tc_core, test_log_parser_account_create);
 	tcase_add_test(tc_core, test_log_parser_account_create_www);
 	tcase_add_test(tc_core, test_log_parser_account_expire_cleanup);
+
+	tcase_add_test(tc_core, test_log_parser_mail);
+	tcase_add_test(tc_core, test_log_parser_netmail);
+	tcase_add_test(tc_core, test_log_parser_mail_utility);
 	suite_add_tcase(s, tc_core);
 
 	TCase *tc_article = tcase_create("article");
