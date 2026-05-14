@@ -126,3 +126,26 @@ struct bmy_log_token bmy_log_token_rest_after(const struct bmy_log_token *token)
 	rest.len = len;
 	return rest;
 }
+
+bool bmy_log_token_starts_with(const struct bmy_log_token *token, const char *s) {
+	const char *ptr_t, *ptr_s;
+	size_t i = 0;
+
+	ptr_t = token->ptr;
+	ptr_s = s;
+
+	while (i++ < token->len) {
+		if (*ptr_s == '\0') {
+			return true;
+		}
+
+		if (*ptr_t != *ptr_s) {
+			return false;
+		}
+
+		ptr_t++;
+		ptr_s++;
+	}
+
+	return *ptr_s == '\0';
+}

@@ -50,4 +50,9 @@ char *bmy_log_token_dup(const struct bmy_log_token *token);
  */
 struct bmy_log_token bmy_log_token_rest_after(const struct bmy_log_token *token);
 
+/**
+ * @brief 判断 token 是否以字符串 s 开始
+ */
+bool bmy_log_token_starts_with(const struct bmy_log_token *token, const char *s);
+
 #endif
