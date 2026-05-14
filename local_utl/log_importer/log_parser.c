@@ -55,7 +55,7 @@ static const char *get_action_str(const struct bmy_log_token *token, const char 
 /**
  * @brief 安全移除分配的空间
  */
-static void bmy_log_parser_safe_ptr_cleanup(const void *ptr);
+static void bmy_log_parser_safe_ptr_cleanup(const char **ptr);
 /**
  * @brief 解析时间
  * @param token 时间 token
@@ -269,68 +269,69 @@ void bmy_log_parse_result_cleanup(struct bmy_log_parse_result *result) {
 
 	switch (result->table) {
 		case BMY_LOG_EVENT_ARTICLE:
-			bmy_log_parser_safe_ptr_cleanup(result->payload.article.actor_userid);
-			bmy_log_parser_safe_ptr_cleanup(result->payload.article.board);
-			bmy_log_parser_safe_ptr_cleanup(result->payload.article.owner_userid);
-			bmy_log_parser_safe_ptr_cleanup(result->payload.article.title);
-			bmy_log_parser_safe_ptr_cleanup(result->payload.article.old_title);
+			bmy_log_parser_safe_ptr_cleanup(&result->payload.article.actor_userid);
+			bmy_log_parser_safe_ptr_cleanup(&result->payload.article.board);
+			bmy_log_parser_safe_ptr_cleanup(&result->payload.article.owner_userid);
+			bmy_log_parser_safe_ptr_cleanup(&result->payload.article.title);
+			bmy_log_parser_safe_ptr_cleanup(&result->payload.article.old_title);
 		break;
 		case BMY_LOG_EVENT_RANGE_DELETE:
-			bmy_log_parser_safe_ptr_cleanup(result->payload.range_delete.userid);
-			bmy_log_parser_safe_ptr_cleanup(result->payload.range_delete.board);
+			bmy_log_parser_safe_ptr_cleanup(&result->payload.range_delete.userid);
+			bmy_log_parser_safe_ptr_cleanup(&result->payload.range_delete.board);
 			break;
 		case BMY_LOG_EVENT_BOARD_USAGE:
-			bmy_log_parser_safe_ptr_cleanup(result->payload.board_usage.board);
-			bmy_log_parser_safe_ptr_cleanup(result->payload.board_usage.userid);
+			bmy_log_parser_safe_ptr_cleanup(&result->payload.board_usage.board);
+			bmy_log_parser_safe_ptr_cleanup(&result->payload.board_usage.userid);
 			break;
 		case BMY_LOG_EVENT_SESSION_DURATION:
-			bmy_log_parser_safe_ptr_cleanup(result->payload.session_duration.userid);
+			bmy_log_parser_safe_ptr_cleanup(&result->payload.session_duration.userid);
 			break;
 		case BMY_LOG_EVENT_LOGIN_FAILURE:
-			bmy_log_parser_safe_ptr_cleanup(result->payload.login_failure.from_host);
+			bmy_log_parser_safe_ptr_cleanup(&result->payload.login_failure.from_host);
 			break;
 		case BMY_LOG_EVENT_SESSION:
-			bmy_log_parser_safe_ptr_cleanup(result->payload.session.userid);
-			bmy_log_parser_safe_ptr_cleanup(result->payload.session.from_host);
-			bmy_log_parser_safe_ptr_cleanup(result->payload.session.login_type);
-			bmy_log_parser_safe_ptr_cleanup(result->payload.session.target_userid);
+			bmy_log_parser_safe_ptr_cleanup(&result->payload.session.userid);
+			bmy_log_parser_safe_ptr_cleanup(&result->payload.session.from_host);
+			bmy_log_parser_safe_ptr_cleanup(&result->payload.session.login_type);
+			bmy_log_parser_safe_ptr_cleanup(&result->payload.session.target_userid);
 		break;
 		case BMY_LOG_EVENT_ACCOUNT:
-			bmy_log_parser_safe_ptr_cleanup(result->payload.account.userid);
-			bmy_log_parser_safe_ptr_cleanup(result->payload.account.from_host);
-			bmy_log_parser_safe_ptr_cleanup(result->payload.account.login_type);
+			bmy_log_parser_safe_ptr_cleanup(&result->payload.account.userid);
+			bmy_log_parser_safe_ptr_cleanup(&result->payload.account.from_host);
+			bmy_log_parser_safe_ptr_cleanup(&result->payload.account.login_type);
 			break;
 		case BMY_LOG_EVENT_MAIL:
-			bmy_log_parser_safe_ptr_cleanup(result->payload.mail.sender);
-			bmy_log_parser_safe_ptr_cleanup(result->payload.mail.target_userid);
+			bmy_log_parser_safe_ptr_cleanup(&result->payload.mail.sender);
+			bmy_log_parser_safe_ptr_cleanup(&result->payload.mail.target_userid);
 			break;
 		case BMY_LOG_EVENT_USER_INTERACTION:
-			bmy_log_parser_safe_ptr_cleanup(result->payload.user_interaction.userid);
-			bmy_log_parser_safe_ptr_cleanup(result->payload.user_interaction.target_userid);
+			bmy_log_parser_safe_ptr_cleanup(&result->payload.user_interaction.userid);
+			bmy_log_parser_safe_ptr_cleanup(&result->payload.user_interaction.target_userid);
 			break;
 		case BMY_LOG_EVENT_USER_QUERY:
-			bmy_log_parser_safe_ptr_cleanup(result->payload.user_query.userid);
-			bmy_log_parser_safe_ptr_cleanup(result->payload.user_query.target);
+			bmy_log_parser_safe_ptr_cleanup(&result->payload.user_query.userid);
+			bmy_log_parser_safe_ptr_cleanup(&result->payload.user_query.target);
 			break;
 		case BMY_LOG_EVENT_ANNOUNCEMENT:
-			bmy_log_parser_safe_ptr_cleanup(result->payload.announcement.userid);
-			bmy_log_parser_safe_ptr_cleanup(result->payload.announcement.board);
-			bmy_log_parser_safe_ptr_cleanup(result->payload.announcement.path);
-			bmy_log_parser_safe_ptr_cleanup(result->payload.announcement.title);
-			bmy_log_parser_safe_ptr_cleanup(result->payload.announcement.owner_userid);
+			bmy_log_parser_safe_ptr_cleanup(&result->payload.announcement.userid);
+			bmy_log_parser_safe_ptr_cleanup(&result->payload.announcement.board);
+			bmy_log_parser_safe_ptr_cleanup(&result->payload.announcement.path);
+			bmy_log_parser_safe_ptr_cleanup(&result->payload.announcement.title);
+			bmy_log_parser_safe_ptr_cleanup(&result->payload.announcement.owner_userid);
 			break;
 		case BMY_LOG_EVENT_BOARD_DENY:
-			bmy_log_parser_safe_ptr_cleanup(result->payload.board_deny.board);
-			bmy_log_parser_safe_ptr_cleanup(result->payload.board_deny.operator_userid);
-			bmy_log_parser_safe_ptr_cleanup(result->payload.board_deny.target_userid);
+			bmy_log_parser_safe_ptr_cleanup(&result->payload.board_deny.board);
+			bmy_log_parser_safe_ptr_cleanup(&result->payload.board_deny.operator_userid);
+			bmy_log_parser_safe_ptr_cleanup(&result->payload.board_deny.target_userid);
 			break;
 	}
 }
 
 // Internal helpers
-static void bmy_log_parser_safe_ptr_cleanup(const void *ptr) {
-	if (ptr) {
-		free((void *) ptr);
+static void bmy_log_parser_safe_ptr_cleanup(const char **ptr) {
+	if (ptr && *ptr) {
+		free((void *) *ptr);
+		*ptr = NULL;
 	}
 }
 
