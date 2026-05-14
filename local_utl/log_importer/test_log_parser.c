@@ -566,6 +566,8 @@ START_TEST(test_log_parser_session_exitbbs)
 	ck_assert_str_eq(data->userid, "foo");
 	ck_assert_int_eq(data->stay_seconds, 111);
 	ck_assert_str_eq(data->action, "logout");
+
+	bmy_log_parse_result_cleanup(&result);
 }
 
 START_TEST(test_log_parser_session_drop)
@@ -582,6 +584,8 @@ START_TEST(test_log_parser_session_drop)
 	ck_assert_str_eq(data->userid, "foo");
 	ck_assert_int_eq(data->stay_seconds, 111);
 	ck_assert_str_eq(data->action, "disconnect");
+
+	bmy_log_parse_result_cleanup(&result);
 }
 END_TEST
 #endif
@@ -778,6 +782,8 @@ START_TEST(test_log_parser_account_create)
 	ck_assert_str_eq(data->from_host, "1.2.3.4");
 	ck_assert_int_eq(data->usernum, 1);
 	ck_assert_ptr_null(data->login_type);
+
+	bmy_log_parse_result_cleanup(&result);
 }
 END_TEST
 
@@ -797,6 +803,8 @@ START_TEST(test_log_parser_account_create_www)
 	ck_assert_int_eq(data->usernum, 1);
 	// TODO: not parsed yet
 	ck_assert_ptr_null(data->login_type);
+
+	bmy_log_parse_result_cleanup(&result);
 }
 END_TEST
 
