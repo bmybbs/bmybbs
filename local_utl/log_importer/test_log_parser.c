@@ -933,6 +933,140 @@ START_TEST(test_log_parser_finddf)
 END_TEST
 #endif
 
+#if 1 // announcement
+START_TEST(test_log_parser_announcement_import)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo import board bar title";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_ANNOUNCEMENT);
+
+	const struct bmy_log_announcement_event *data = &result.payload.announcement;
+	ck_assert_str_eq(data->action, "import");
+	ck_assert_str_eq(data->userid, "foo");
+	ck_assert_str_eq(data->board, "board");
+	ck_assert_str_eq(data->owner_userid, "bar");
+	ck_assert_str_eq(data->title, "title");
+	ck_assert_ptr_null(data->path);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_announcement_import_title_zh)
+{
+	struct bmy_log_parse_result result;
+	// "中文"
+	const char *log_msg = "01:02:03 foo import board bar \xD6\xD0\xCE\xC4 1";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_ANNOUNCEMENT);
+
+	const struct bmy_log_announcement_event *data = &result.payload.announcement;
+	ck_assert_str_eq(data->action, "import");
+	ck_assert_str_eq(data->userid, "foo");
+	ck_assert_str_eq(data->board, "board");
+	ck_assert_str_eq(data->owner_userid, "bar");
+	ck_assert_str_eq(data->title, "中文 1");
+	ck_assert_ptr_null(data->path);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_announcement_paste)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo paste bar baz cat";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_ANNOUNCEMENT);
+
+
+	const struct bmy_log_announcement_event *data = &result.payload.announcement;
+	ck_assert_str_eq(data->action, "paste");
+	ck_assert_str_eq(data->userid, "foo");
+	ck_assert_str_eq(data->board, "bar");
+	ck_assert_str_eq(data->path, "baz cat");
+	ck_assert_ptr_null(data->owner_userid);
+	ck_assert_ptr_null(data->title);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_announcement_paste_path_zh)
+{
+	struct bmy_log_parse_result result;
+	// "中文"
+	const char *log_msg = "01:02:03 foo paste bar \xD6\xD0\xCE\xC4 cat";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_ANNOUNCEMENT);
+
+
+	const struct bmy_log_announcement_event *data = &result.payload.announcement;
+	ck_assert_str_eq(data->action, "paste");
+	ck_assert_str_eq(data->userid, "foo");
+	ck_assert_str_eq(data->board, "bar");
+	ck_assert_str_eq(data->path, "中文 cat");
+	ck_assert_ptr_null(data->owner_userid);
+	ck_assert_ptr_null(data->title);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_announcement_moveitem)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo moveitem bar baz";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_ANNOUNCEMENT);
+
+
+	const struct bmy_log_announcement_event *data = &result.payload.announcement;
+	ck_assert_str_eq(data->action, "moveitem");
+	ck_assert_str_eq(data->userid, "foo");
+	ck_assert_str_eq(data->board, "bar");
+	ck_assert_str_eq(data->path, "baz");
+	ck_assert_ptr_null(data->owner_userid);
+	ck_assert_ptr_null(data->title);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+
+START_TEST(test_log_parser_announcement_additem)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo additem bar baz";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_ANNOUNCEMENT);
+
+
+	const struct bmy_log_announcement_event *data = &result.payload.announcement;
+	ck_assert_str_eq(data->action, "additem");
+	ck_assert_str_eq(data->userid, "foo");
+	ck_assert_str_eq(data->board, "bar");
+	ck_assert_str_eq(data->path, "baz");
+	ck_assert_ptr_null(data->owner_userid);
+	ck_assert_ptr_null(data->title);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+#endif
+
 static Suite *log_parser_suite(void) {
 	Suite *s = suite_create("log importer parser");
 
@@ -1003,6 +1137,15 @@ static Suite *log_parser_suite(void) {
 	tcase_add_test(tc_session, test_log_parser_user_multi_session_kick);
 	tcase_add_test(tc_session, test_log_parser_user_kick);
 	suite_add_tcase(s, tc_session);
+
+	TCase *tc_announcement = tcase_create("announcement");
+	tcase_add_test(tc_announcement, test_log_parser_announcement_import);
+	tcase_add_test(tc_announcement, test_log_parser_announcement_import_title_zh);
+	tcase_add_test(tc_announcement, test_log_parser_announcement_paste);
+	tcase_add_test(tc_announcement, test_log_parser_announcement_paste_path_zh);
+	tcase_add_test(tc_announcement, test_log_parser_announcement_additem);
+	tcase_add_test(tc_announcement, test_log_parser_announcement_moveitem);
+	suite_add_tcase(s, tc_announcement);
 
 	return s;
 }

@@ -42,6 +42,14 @@ static const char *const STR_ACTIONS_POST_LIKE[] = {
 	NULL,
 };
 
+static const char *const STR_ACTIONS_ANNOUNCEMENT[] = {
+	"paste",
+	"moveitem",
+	"additem",
+	"import",
+	NULL,
+};
+
 static const char *get_action_str(const struct bmy_log_token *token, const char *const actions[]);
 
 /**
@@ -85,6 +93,7 @@ static enum bmy_log_parse_status bmy_log_parse_account(const struct bmy_log_toke
 static enum bmy_log_parse_status bmy_log_parse_mail(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
 static enum bmy_log_parse_status bmy_log_parse_user_interaction(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
 static enum bmy_log_parse_status bmy_log_parse_user_query(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
+static enum bmy_log_parse_status bmy_log_parse_announcement(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
 
 static bool bmy_log_parser_is_ip_address(const char *text);
 static char *bmy_log_token_to_utf8(const struct bmy_log_token *token);
@@ -222,6 +231,12 @@ bool bmy_log_parse_line(const char *line, struct bmy_log_parse_result *result) {
 		}
 
 		result->payload.user_query.userid = userid;
+	} else if (bmy_log_token_eq_any(action_token, STR_ACTIONS_ANNOUNCEMENT)) {
+		if (bmy_log_parse_announcement(&tokens, result) != BMY_LOG_PARSE_ACCEPTED) {
+			goto FAILED_1;
+		}
+
+		result->payload.announcement.userid = userid;
 	}
 
 	return true;
@@ -281,6 +296,13 @@ void bmy_log_parse_result_cleanup(struct bmy_log_parse_result *result) {
 		case BMY_LOG_EVENT_USER_QUERY:
 			bmy_log_parser_safe_ptr_cleanup(result->payload.user_query.userid);
 			bmy_log_parser_safe_ptr_cleanup(result->payload.user_query.target);
+			break;
+		case BMY_LOG_EVENT_ANNOUNCEMENT:
+			bmy_log_parser_safe_ptr_cleanup(result->payload.announcement.userid);
+			bmy_log_parser_safe_ptr_cleanup(result->payload.announcement.board);
+			bmy_log_parser_safe_ptr_cleanup(result->payload.announcement.path);
+			bmy_log_parser_safe_ptr_cleanup(result->payload.announcement.title);
+			bmy_log_parser_safe_ptr_cleanup(result->payload.announcement.owner_userid);
 			break;
 		default:
 			// TODO
@@ -765,6 +787,58 @@ static enum bmy_log_parse_status bmy_log_parse_user_query(const struct bmy_log_t
 	result->payload.user_query.day_count = count;
 
 	return result->status = BMY_LOG_PARSE_ACCEPTED;
+}
+
+static enum bmy_log_parse_status bmy_log_parse_announcement(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result) {
+	const char *action;
+	char *str1 = NULL, *str2 = NULL, *str3 = NULL;
+	struct bmy_log_token rest;
+
+	action = get_action_str(&raw_tokens->items[2], STR_ACTIONS_ANNOUNCEMENT);
+
+	if (!strcmp(action, "import")) {
+		if (raw_tokens->count < 6) {
+			return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
+		}
+		if ((str1 = bmy_log_token_dup(&raw_tokens->items[3])) == NULL) {
+			goto FAILED_0;
+		}
+		if ((str2 = bmy_log_token_dup(&raw_tokens->items[4])) == NULL) {
+			goto FAILED_1;
+		}
+		rest = bmy_log_token_rest_after(&raw_tokens->items[4]);
+		if ((str3 = bmy_log_token_to_utf8(&rest)) == NULL) {
+			goto FAILED_2;
+		}
+
+		result->payload.announcement.board = str1;
+		result->payload.announcement.owner_userid = str2;
+		result->payload.announcement.title = str3;
+	} else {
+		if (raw_tokens->count < 5) {
+			return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
+		}
+		if ((str1 = bmy_log_token_dup(&raw_tokens->items[3])) == NULL) {
+			goto FAILED_0;
+		}
+		rest = bmy_log_token_rest_after(&raw_tokens->items[3]);
+		if ((str2 = bmy_log_token_to_utf8(&rest)) == NULL) {
+			goto FAILED_2;
+		}
+		result->payload.announcement.board = str1;
+		result->payload.announcement.path = str2;
+	}
+
+	result->table = BMY_LOG_EVENT_ANNOUNCEMENT;
+	result->payload.announcement.action = action;
+
+	return result->status = BMY_LOG_PARSE_ACCEPTED;
+FAILED_2:
+	free(str2);
+FAILED_1:
+	free(str1);
+FAILED_0:
+	return result->status = BMY_LOG_PARSE_FAILED;
 }
 
 static const char *get_action_str(const struct bmy_log_token *token, const char *const actions[]) {
