@@ -324,9 +324,6 @@ void bmy_log_parse_result_cleanup(struct bmy_log_parse_result *result) {
 			bmy_log_parser_safe_ptr_cleanup(result->payload.board_deny.operator_userid);
 			bmy_log_parser_safe_ptr_cleanup(result->payload.board_deny.target_userid);
 			break;
-		default:
-			// TODO
-			(void) result;
 	}
 }
 
