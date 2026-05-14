@@ -95,11 +95,13 @@ static enum bmy_log_parse_status bmy_log_parse_user_interaction(const struct bmy
 static enum bmy_log_parse_status bmy_log_parse_user_query(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
 static enum bmy_log_parse_status bmy_log_parse_announcement(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
 static enum bmy_log_parse_status bmy_log_parse_board_deny(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
+static enum bmy_log_parse_status bmy_log_parse_rest(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
 
 static bool bmy_log_parser_is_ip_address(const char *text);
 static char *bmy_log_token_to_utf8(const struct bmy_log_token *token);
 static bool bmy_log_token_to_int(const struct bmy_log_token *token, int *x);
 static bool bmy_log_token_to_long(const struct bmy_log_token *token, long *x);
+static bool bmy_log_tokens_eq_at_idx(const struct bmy_log_tokens *tokens, size_t idx, const char *s);
 
 bool bmy_log_parse_line(const char *line, struct bmy_log_parse_result *result) {
 	struct bmy_log_tokens tokens;
@@ -244,6 +246,12 @@ bool bmy_log_parse_line(const char *line, struct bmy_log_parse_result *result) {
 		}
 
 		result->payload.board_deny.operator_userid = userid;
+	} else {
+		if (bmy_log_parse_rest(&tokens, result) != BMY_LOG_PARSE_DISCARDED) {
+			goto FAILED_1;
+		}
+
+		free(userid);
 	}
 
 	return true;
@@ -879,6 +887,104 @@ FAILED_0:
 	return result->status = BMY_LOG_PARSE_FAILED;
 }
 
+static enum bmy_log_parse_status bmy_log_parse_rest(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result) {
+	const struct bmy_log_token *action_token = &raw_tokens->items[2];
+	struct bmy_log_token full_msg;
+
+	// bmy_log_search_result_count
+	if (bmy_log_token_eq(action_token, "bbsfind") && raw_tokens->count == 4) {
+		return result->status = BMY_LOG_PARSE_DISCARDED;
+	}
+
+	// bmy_log_cache_reload
+	// bmy_log_system_reload
+	if (bmy_log_token_eq(action_token, "reload")) {
+		return result->status = BMY_LOG_PARSE_DISCARDED;
+	}
+
+	// bmy_log_thread_view
+	if (bmy_log_token_eq(action_token, "thread")) {
+		return result->status = BMY_LOG_PARSE_DISCARDED;
+	}
+
+	// bmy_log_search_trace
+	if (bmy_log_token_eq(action_token, "full_search")) {
+		return result->status = BMY_LOG_PARSE_DISCARDED;
+	}
+
+	// bmy_log_selection_trace
+	if (bmy_log_token_eq(action_token, "select")) {
+		return result->status = BMY_LOG_PARSE_DISCARDED;
+	}
+
+	// bmy_log_runtime_error
+	{
+		full_msg = bmy_log_token_rest_after(&raw_tokens->items[0]);
+
+		// exec zmodem
+		if (bmy_log_tokens_eq_at_idx(raw_tokens, 2, "exec")) {
+			return result->status = BMY_LOG_PARSE_DISCARDED;
+		}
+
+		// [mail] foo send ...
+		if (bmy_log_tokens_eq_at_idx(raw_tokens, 1, "[mail]")) {
+			return result->status = BMY_LOG_PARSE_DISCARDED;
+		}
+
+		// failed to insert UT for
+		if (bmy_log_tokens_eq_at_idx(raw_tokens, 1, "failed") && bmy_log_tokens_eq_at_idx(raw_tokens, 2, "to") && bmy_log_tokens_eq_at_idx(raw_tokens, 3, "insert")) {
+			return result->status = BMY_LOG_PARSE_DISCARDED;
+		}
+
+		// user_idx changed?
+		if (bmy_log_tokens_eq_at_idx(raw_tokens, 1, "user_idx")) {
+			return result->status = BMY_LOG_PARSE_DISCARDED;
+		}
+
+
+		// SHM Error!
+		if (bmy_log_tokens_eq_at_idx(raw_tokens, 1, "SHM") && bmy_log_tokens_eq_at_idx(raw_tokens, 2, "Error!")) {
+			return result->status = BMY_LOG_PARSE_DISCARDED;
+		}
+
+		// wechat
+		if (bmy_log_token_eq(&full_msg, "[bmy/wechat] cannot parse response as JSON")) {
+			return result->status = BMY_LOG_PARSE_DISCARDED;
+		}
+		if (bmy_log_token_starts_with(&full_msg, "[bmy/wechat] request session errcode[")) {
+			return result->status = BMY_LOG_PARSE_DISCARDED;
+		}
+		if (bmy_log_token_starts_with(&full_msg, "[bmy/wechat] request session with curl result: ")) {
+			return result->status = BMY_LOG_PARSE_DISCARDED;
+		}
+		if (bmy_log_token_eq(&full_msg, "[bmy/wechat] WriteMemoryCallback failed to realloc")) {
+			return result->status = BMY_LOG_PARSE_DISCARDED;
+		}
+
+		// search
+		if (bmy_log_token_eq(&full_msg, "[bmy/search] has problem of reading stdout") || bmy_log_token_eq(&full_msg, "[bmy/search] cannot realloc")) {
+			return result->status = BMY_LOG_PARSE_DISCARDED;
+		}
+
+		// redis
+		if (bmy_log_token_starts_with(&full_msg, "[redis] SET")) {
+			return result->status = BMY_LOG_PARSE_DISCARDED;
+		}
+
+		// 2fa
+		if (bmy_log_token_starts_with(&full_msg, "generate 2fa failed for ")) {
+			return result->status = BMY_LOG_PARSE_DISCARDED;
+		}
+
+		// api
+		if (bmy_log_token_starts_with(&full_msg, "write error to fileheader ") || bmy_log_token_starts_with(&full_msg, "lseek error on ")) {
+			return result->status = BMY_LOG_PARSE_DISCARDED;
+		}
+	}
+
+	return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
+}
+
 static const char *get_action_str(const struct bmy_log_token *token, const char *const actions[]) {
 	size_t i;
 
@@ -948,4 +1054,8 @@ static bool bmy_log_token_to_long(const struct bmy_log_token *token, long *x) {
 	}
 
 	return true;
+}
+
+static bool bmy_log_tokens_eq_at_idx(const struct bmy_log_tokens *tokens, size_t idx, const char *s) {
+	return tokens && s && idx < tokens->count && bmy_log_token_eq(&tokens->items[idx], s);
 }

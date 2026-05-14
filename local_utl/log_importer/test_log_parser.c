@@ -1087,6 +1087,272 @@ START_TEST(test_log_parser_board_deny)
 END_TEST
 #endif
 
+#if 1 // discarded
+START_TEST(test_log_parser_discarded_exec)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo exec 1 2 3 4";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_DISCARDED);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_discarded_mail_sender)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 [mail] foo send to bar smtp-status 1-2-3-4-5-6-7";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_DISCARDED);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_discarded_insert_ut)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 failed to insert UT for foo";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_DISCARDED);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_discarded_user_idx_changed)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 user_idx changed? foo: 1 --> 2";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_DISCARDED);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_discarded_shm_err)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 SHM Error! key = 0x1111.";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_DISCARDED);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_discarded_wechat_json_parse)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 [bmy/wechat] cannot parse response as JSON";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_DISCARDED);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_discarded_wechat_session_error)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 [bmy/wechat] request session errcode[1] errmsg: foo";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_DISCARDED);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_discarded_wechat_session_curl)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 [bmy/wechat] request session with curl result: 1";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_DISCARDED);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_discarded_wechat_session_write_memory)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 [bmy/wechat] WriteMemoryCallback failed to realloc";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_DISCARDED);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_discarded_search_stdout)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 [bmy/search] has problem of reading stdout";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_DISCARDED);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_discarded_search_realloc)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 [bmy/search] cannot realloc";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_DISCARDED);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_discarded_redis_set)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 [redis] SET foo and bar";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_DISCARDED);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_discarded_2fa)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 generate 2fa failed for foo, status: 1";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_DISCARDED);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_discarded_api_write_error)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 write error to fileheader foo, at No. 1 record, from file bar. Errno 1: baz.";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_DISCARDED);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_discarded_api_lseek_error)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 lseek error on foo, at No. 1 record. Errno 1: bar.";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_DISCARDED);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_discarded_search_result_count)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo bbsfind 10";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_DISCARDED);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_discarded_reload_bmonline)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 system reload bmonline";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_DISCARDED);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_discarded_reload_cache)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 system reload bcache 10";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_DISCARDED);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_discarded_reload_movie)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 system reload movie 10";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_DISCARDED);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_discarded_thread_view)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo thread bar";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_DISCARDED);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_discarded_full_search)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo full_search board query abc";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_DISCARDED);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_discarded_selection_trace)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo select board 12 23";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_DISCARDED);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+#endif
+
 static Suite *log_parser_suite(void) {
 	Suite *s = suite_create("log importer parser");
 
@@ -1168,6 +1434,34 @@ static Suite *log_parser_suite(void) {
 	tcase_add_test(tc_announcement, test_log_parser_announcement_additem);
 	tcase_add_test(tc_announcement, test_log_parser_announcement_moveitem);
 	suite_add_tcase(s, tc_announcement);
+
+	TCase *tc_discarded_runtime = tcase_create("discarded runtime");
+	tcase_add_test(tc_discarded_runtime, test_log_parser_discarded_exec);
+	tcase_add_test(tc_discarded_runtime, test_log_parser_discarded_mail_sender);
+	tcase_add_test(tc_discarded_runtime, test_log_parser_discarded_insert_ut);
+	tcase_add_test(tc_discarded_runtime, test_log_parser_discarded_user_idx_changed);
+	tcase_add_test(tc_discarded_runtime, test_log_parser_discarded_shm_err);
+	tcase_add_test(tc_discarded_runtime, test_log_parser_discarded_wechat_json_parse);
+	tcase_add_test(tc_discarded_runtime, test_log_parser_discarded_wechat_session_error);
+	tcase_add_test(tc_discarded_runtime, test_log_parser_discarded_wechat_session_curl);
+	tcase_add_test(tc_discarded_runtime, test_log_parser_discarded_wechat_session_write_memory);
+	tcase_add_test(tc_discarded_runtime, test_log_parser_discarded_search_stdout);
+	tcase_add_test(tc_discarded_runtime, test_log_parser_discarded_search_realloc);
+	tcase_add_test(tc_discarded_runtime, test_log_parser_discarded_redis_set);
+	tcase_add_test(tc_discarded_runtime, test_log_parser_discarded_2fa);
+	tcase_add_test(tc_discarded_runtime, test_log_parser_discarded_api_write_error);
+	tcase_add_test(tc_discarded_runtime, test_log_parser_discarded_api_lseek_error);
+	suite_add_tcase(s, tc_discarded_runtime);
+
+	TCase *tc_discarded_rest = tcase_create("rest");
+	tcase_add_test(tc_discarded_rest, test_log_parser_discarded_search_result_count);
+	tcase_add_test(tc_discarded_rest, test_log_parser_discarded_reload_bmonline);
+	tcase_add_test(tc_discarded_rest, test_log_parser_discarded_reload_cache);
+	tcase_add_test(tc_discarded_rest, test_log_parser_discarded_reload_movie);
+	tcase_add_test(tc_discarded_rest, test_log_parser_discarded_thread_view);
+	tcase_add_test(tc_discarded_rest, test_log_parser_discarded_full_search);
+	tcase_add_test(tc_discarded_rest, test_log_parser_discarded_selection_trace);
+	suite_add_tcase(s, tc_discarded_rest);
 
 	return s;
 }
