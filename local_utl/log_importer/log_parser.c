@@ -94,6 +94,7 @@ static enum bmy_log_parse_status bmy_log_parse_mail(const struct bmy_log_tokens 
 static enum bmy_log_parse_status bmy_log_parse_user_interaction(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
 static enum bmy_log_parse_status bmy_log_parse_user_query(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
 static enum bmy_log_parse_status bmy_log_parse_announcement(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
+static enum bmy_log_parse_status bmy_log_parse_board_deny(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
 
 static bool bmy_log_parser_is_ip_address(const char *text);
 static char *bmy_log_token_to_utf8(const struct bmy_log_token *token);
@@ -237,6 +238,12 @@ bool bmy_log_parse_line(const char *line, struct bmy_log_parse_result *result) {
 		}
 
 		result->payload.announcement.userid = userid;
+	} else if (bmy_log_token_eq(action_token, "deny")) {
+		if (bmy_log_parse_board_deny(&tokens, result) != BMY_LOG_PARSE_ACCEPTED) {
+			goto FAILED_1;
+		}
+
+		result->payload.board_deny.operator_userid = userid;
 	}
 
 	return true;
@@ -303,6 +310,11 @@ void bmy_log_parse_result_cleanup(struct bmy_log_parse_result *result) {
 			bmy_log_parser_safe_ptr_cleanup(result->payload.announcement.path);
 			bmy_log_parser_safe_ptr_cleanup(result->payload.announcement.title);
 			bmy_log_parser_safe_ptr_cleanup(result->payload.announcement.owner_userid);
+			break;
+		case BMY_LOG_EVENT_BOARD_DENY:
+			bmy_log_parser_safe_ptr_cleanup(result->payload.board_deny.board);
+			bmy_log_parser_safe_ptr_cleanup(result->payload.board_deny.operator_userid);
+			bmy_log_parser_safe_ptr_cleanup(result->payload.board_deny.target_userid);
 			break;
 		default:
 			// TODO
@@ -837,6 +849,32 @@ FAILED_2:
 	free(str2);
 FAILED_1:
 	free(str1);
+FAILED_0:
+	return result->status = BMY_LOG_PARSE_FAILED;
+}
+
+static enum bmy_log_parse_status bmy_log_parse_board_deny(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result) {
+	char *board = NULL;
+	char *target_userid = NULL;
+
+	if (raw_tokens->count != 5) {
+		return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
+	}
+
+	if ((board = bmy_log_token_dup(&raw_tokens->items[3])) == NULL) {
+		goto FAILED_0;
+	}
+	if ((target_userid = bmy_log_token_dup(&raw_tokens->items[4])) == NULL) {
+		goto FAILED_1;
+	}
+
+	result->table = BMY_LOG_EVENT_BOARD_DENY;
+	result->payload.board_deny.board = board;
+	result->payload.board_deny.target_userid = target_userid;
+	return result->status = BMY_LOG_PARSE_ACCEPTED;
+
+FAILED_1:
+	free(board);
 FAILED_0:
 	return result->status = BMY_LOG_PARSE_FAILED;
 }

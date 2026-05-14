@@ -1067,6 +1067,26 @@ END_TEST
 
 #endif
 
+#if 1 // board deny
+START_TEST(test_log_parser_board_deny)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo deny board bar";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_BOARD_DENY);
+
+	const struct bmy_log_board_deny_event *data = &result.payload.board_deny;
+	ck_assert_str_eq(data->board, "board");
+	ck_assert_str_eq(data->operator_userid, "foo");
+	ck_assert_str_eq(data->target_userid, "bar");
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+#endif
+
 static Suite *log_parser_suite(void) {
 	Suite *s = suite_create("log importer parser");
 
@@ -1091,6 +1111,8 @@ static Suite *log_parser_suite(void) {
 	tcase_add_test(tc_core, test_log_parser_goodwish);
 
 	tcase_add_test(tc_core, test_log_parser_finddf);
+
+	tcase_add_test(tc_core, test_log_parser_board_deny);
 	suite_add_tcase(s, tc_core);
 
 	TCase *tc_article = tcase_create("article");
