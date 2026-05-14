@@ -801,8 +801,7 @@ START_TEST(test_log_parser_account_create_www)
 	ck_assert_str_eq(data->userid, "foo");
 	ck_assert_str_eq(data->from_host, "1.2.3.4");
 	ck_assert_int_eq(data->usernum, 1);
-	// TODO: not parsed yet
-	ck_assert_ptr_null(data->login_type);
+	ck_assert_str_eq(data->login_type, "www");
 
 	bmy_log_parse_result_cleanup(&result);
 }
