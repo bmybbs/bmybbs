@@ -47,3 +47,16 @@
 - 2026-05-09 18:51 | create | migration/logging-system/phase-2-importer.md, use-cases/00-0001-import-one-daily-log.md, use-cases/index.md, index.md | Published the logging importer design and first importer use case, and updated implementation-plan links to canonical pages.
 - 2026-05-10 10:06 | update | migration/logging-system/phase-2-importer.md, use-cases/00-0001-import-one-daily-log.md, implementation-plans/00-0001-logging-importer.md, implementation-plans/00-0002-logging-importer-parser.md | Added historical log format drift risk and `--dry-run` importer behavior for parser discovery without database writes.
 - 2026-05-26 13:28 | update | migration/logging-system/phase-2-import.md, migration/logging-system/phase-2-importer.md, implementation-plans/00-0001-logging-importer.md, implementation-plans/00-0002-logging-importer-parser.md | Recorded implemented importer and parser progress, aligned interfaces and file lists, and left test-environment validation pending.
+- 2026-05-26 13:47 | translate | module-ids.md | Created Simplified Chinese translation (module-ids.zh.md).
+- 2026-05-26 13:47 | translate | migration/logging-system/phase-2-database-design.md | Created Simplified Chinese translation (phase-2-database-design.zh.md).
+- 2026-05-26 13:47 | translate | migration/logging-system/phase-2-importer.md | Created Simplified Chinese translation (phase-2-importer.zh.md).
+- 2026-05-26 13:47 | translate | use-cases/README.md | Created Simplified Chinese translation (use-cases/README.zh.md).
+- 2026-05-26 13:47 | translate | use-cases/index.md | Created Simplified Chinese translation (use-cases/index.zh.md).
+- 2026-05-26 13:47 | translate | use-cases/00-0001-import-one-daily-log.md | Created Simplified Chinese translation (use-cases/00-0001-import-one-daily-log.zh.md).
+- 2026-05-26 13:47 | translate | implementation-plans/README.md | Created Simplified Chinese translation (implementation-plans/README.zh.md).
+- 2026-05-26 13:47 | translate | implementation-plans/index.md | Created Simplified Chinese translation (implementation-plans/index.zh.md).
+- 2026-05-26 13:47 | translate | implementation-plans/00-0001-logging-importer.md | Created Simplified Chinese translation (implementation-plans/00-0001-logging-importer.zh.md).
+- 2026-05-26 13:47 | translate | implementation-plans/00-0002-logging-importer-parser.md | Created Simplified Chinese translation (implementation-plans/00-0002-logging-importer-parser.zh.md).
+- 2026-05-26 13:47 | update | index.zh.md | Synced with latest English index and added new structure/links.
+- 2026-05-26 13:47 | update | migration/logging-system-migration.zh.md | Synced with latest English version including date-based import updates.
+- 2026-05-26 13:47 | update | migration/logging-system/phase-2-import.zh.md | Synced with latest English version including implementation status.
