@@ -6,6 +6,8 @@
 #include <onion/dict.h>
 #include <onion/block.h>
 
+#include "bmy/logging.h"
+#include "bmy/user.h"
 #include "bbs.h"
 #include "ytht/crypt.h"
 #include "ytht/strlib.h"
@@ -342,7 +344,7 @@ int api_user_articlequery(ONION_FUNC_PROTO_STR)
 				ptr_info->userid, query_ue.userid, s);
 
 		asprintf(&tmp_buf, "[redis] SET %s and %s", rReplyTime->str, rReplyOut->str);
-		newtrace(tmp_buf);
+		bmy_log_runtime_error(tmp_buf);
 
 		freeReplyObject(rReplyTime);
 		freeReplyObject(rReplyOut);

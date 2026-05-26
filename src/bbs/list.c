@@ -25,6 +25,7 @@
 #include "bbs.h"
 #include "ythtbbs/cache.h"
 #include "ythtbbs/override.h"
+#include "bmy/user.h"
 #include "common.h"
 #include "smth_screen.h"
 #include "io.h"

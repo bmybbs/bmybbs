@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdbool.h>
+#include "bmy/user.h"
 #include "bmy/mysql_wrapper.h"
 #include "config.h"
 
@@ -108,5 +109,16 @@ int bmy_user_getusernum_by_openid(char *openid) {
 	execute_prep_stmt(sql, MYSQL_CHARSET_UTF8, params, results, NULL, bmy_user_mysql_simple_callback);
 
 	return usernum;
+}
+
+const char *ythtbbs_user_get_login_type_str(enum ythtbbs_user_login_type type) {
+	switch(type) {
+	case YTHTBBS_LOGIN_TELNET: return "TELNET";
+	case YTHTBBS_LOGIN_SSH   : return "SSH";
+	case YTHTBBS_LOGIN_NJU09 : return "NJU09";
+	case YTHTBBS_LOGIN_API   : return "API";
+	case YTHTBBS_LOGIN_OAUTH : return "OAUTH";
+	default                  : return "unknown";
+	}
 }
 

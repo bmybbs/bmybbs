@@ -22,6 +22,7 @@
 */
 
 #include "bbs.h"
+#include "bmy/logging.h"
 #include "ythtbbs/identify.h"
 #include "smth_screen.h"
 #include "io.h"
@@ -173,8 +174,8 @@ new_register()
 	}
 	sethomepath_s(genbuf, sizeof(genbuf), newuser.userid);
 	mkdir(genbuf, 0775);
-	sprintf(genbuf, "%s newaccount %d %s", newuser.userid, allocid, fromhost);
-	newtrace(genbuf);
+	// NOTE: 有意使用 `YTHTBBS_LOGIN_TELNET` 这里是否区分 SSH / TELNET 不重要
+	bmy_log_account_create(newuser.userid, allocid, fromhost, YTHTBBS_LOGIN_TELNET);
 	bmy_user_create(allocid, newuser.userid);
 }
 

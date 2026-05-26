@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <sys/file.h>
 #include <sys/stat.h>
+#include "bmy/logging.h"
 #include "ytht/common.h"
 #include "ytht/shmop.h"
 #include "ythtbbs/cache.h"
@@ -25,7 +26,6 @@ static int getlastpost(const char *board, time_t *lastpost, int *total);
 void ythtbbs_cache_Board_resolve() {
 	struct stat st;
 	time_t local_now, local_now2;
-	char local_buf[80];
 	int lockfd, countboard;
 
 	if (shm_board == NULL) {
@@ -54,8 +54,7 @@ void ythtbbs_cache_Board_resolve() {
 
 		shm_board->number = countboard;
 
-		snprintf(local_buf, sizeof(local_buf), "system reload bcache %d", shm_board->number);
-		newtrace(local_buf);
+		bmy_log_cache_reload("bcache", shm_board->number);
 
 		bmonlinesync();
 
@@ -245,7 +244,7 @@ static void bmonlinesync() {
 		}
 	}
 
-	newtrace("system reload bmonline");
+	bmy_log_cache_reload("bmonline", -1);
 }
 
 void ythtbbs_cache_Board_dump(FILE *fp) {

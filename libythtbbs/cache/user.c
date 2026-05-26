@@ -5,6 +5,7 @@
 #include <signal.h>
 #include <sys/file.h>
 #include <sys/stat.h>
+#include "bmy/logging.h"
 #include "ytht/shmop.h"
 #include "ytht/strlib.h"
 #include "ythtbbs/cache.h"
@@ -13,6 +14,7 @@
 #include "cache-internal.h"
 #include "ythtbbs/override.h"
 #include "ythtbbs/goodgbid.h"
+#include "bmy/user.h"
 
 /**
  * 对应与原 UCACHE / UINDEX 两个表
@@ -67,7 +69,6 @@ void ythtbbs_cache_UserTable_resolve() {
 	struct stat st;
 	static volatile time_t lasttime = -1;
 	time_t local_now;
-	char   local_buf[100];
 	int    local_usernumber;
 
 	fd = open(MY_BBS_HOME "/.CACHE.user.lock", O_RDWR | O_CREAT, 0660);
@@ -107,8 +108,7 @@ void ythtbbs_cache_UserTable_resolve() {
 		shm_user_table->update_time = st.st_mtime;
 		shm_user_table->usersum = 0; // TODO;
 
-		sprintf(local_buf, "system reload ucache %d", shm_user_table->usersum);
-		newtrace(local_buf);
+		bmy_log_cache_reload("ucache", shm_user_table->usersum);
 		// TODO detach shm and reattach?
 	}
 	close(fd);
@@ -593,7 +593,6 @@ static int ythtbbs_cache_UserTable_fill_v(void *user_ec, va_list ap) {
 
 static int ythtbbs_cache_UserIDHashTable_resolve() {
 	int fd, i;
-	char local_buf[64];
 
 	fd = open(MY_BBS_HOME "/.CACHE.hash.lock", O_RDWR | O_CREAT, 0660);
 	if (fd < 0) {
@@ -614,8 +613,7 @@ static int ythtbbs_cache_UserIDHashTable_resolve() {
 			ythtbbs_cache_UserIDHashTable_insert(shm_user_table->users[i].userid, i);
 		}
 
-		sprintf(local_buf, "system reload shm_userid_hashtable %d", shm_user_table->number);
-		newtrace(local_buf);
+		bmy_log_cache_reload("shm_userid_hashtable", shm_user_table->number);
 
 		// TODO detach and reattach?
 	}
@@ -638,7 +636,7 @@ static int ythtbbs_cache_UserIDHashTable_insert(char *userid, int idx) {
 		if (old_idx != idx) {
 			// 理应相等
 			snprintf(local_buf, sizeof(local_buf), "user_idx changed? %s: %d --> %d", userid, old_idx, idx);
-			newtrace(local_buf);
+			bmy_log_runtime_error(local_buf);
 		}
 
 		return 0;

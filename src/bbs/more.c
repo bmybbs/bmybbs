@@ -24,6 +24,7 @@
 
 #include <sys/mman.h>
 #include "bbs.h"
+#include "bmy/logging.h"
 #include "smth_screen.h"
 #include "io.h"
 #include "stuff.h"
@@ -125,8 +126,7 @@ NNread_init()
 	}
 	movieshm->movielines = xxxline;
 	movieshm->update = time(0);
-	sprintf(buf, "system reload movie %d", xxxline);
-	newtrace(buf);
+	bmy_log_system_reload("movie", xxxline);
 	fclose(fffd);
 	return 1;
 }

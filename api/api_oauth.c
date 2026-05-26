@@ -1,7 +1,7 @@
 #include <string.h>
 #include <onion/request.h>
 #include <onion/response.h>
-#include "ytht/msg.h"
+#include "bmy/logging.h"
 #include "bmy/2fa.h"
 #include "bmy/wechat.h"
 #include "bmy/user.h"
@@ -49,7 +49,7 @@ int api_oauth_2fa_get_key(ONION_FUNC_PROTO_STR) {
 	status = bmy_2fa_create(key, BMY_2FA_KEY_SIZE);
 	if (status != BMY_2FA_SUCCESS) {
 		snprintf(local_buf, sizeof(local_buf), "generate 2fa failed for %s, status: %d", ptr_info->userid, status);
-		newtrace(local_buf);
+		bmy_log_runtime_error(local_buf);
 		return api_error(p, req, res, API_RT_2FA_INTERNAL);
 	}
 

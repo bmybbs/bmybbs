@@ -23,6 +23,7 @@
 */
 #include "bbs.h"
 #include "bbs_global_vars.h"
+#include "bmy/logging.h"
 #include "editboard.h"
 #include "bbsinc.h"
 #include "io.h"
@@ -1316,10 +1317,7 @@ int Read(const char *s) {
 	i_read(READING, buf, readtitle, (void *) readdoent, read_comms, sizeof (struct fileheader));
 	now_t = time(NULL);
 	if (now_t - usetime > 1) {
-		snprintf(genbuf, 256, "%s use %s %ld",
-			currentuser.userid, currboard,
-			(long int) (now_t - usetime));
-		newtrace(genbuf);
+		bmy_log_board_use(currentuser.userid, currboard, now_t - usetime);
 	}
 	brc_update();
 

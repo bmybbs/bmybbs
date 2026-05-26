@@ -1,3 +1,4 @@
+#include "bmy/user.h"
 #include "bbslib.h"
 #include "ytht/random.h"
 #include "bmy/cookie.h"

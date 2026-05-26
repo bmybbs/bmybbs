@@ -5,6 +5,14 @@
 #define BMY_USER_H
 #include <stdbool.h>
 
+enum ythtbbs_user_login_type {
+	YTHTBBS_LOGIN_TELNET,
+	YTHTBBS_LOGIN_SSH,
+	YTHTBBS_LOGIN_NJU09,
+	YTHTBBS_LOGIN_API,
+	YTHTBBS_LOGIN_OAUTH,
+};
+
 /**
  * 创建用户、订阅元数据，以及用户订阅视图
  * 调用存储过程 procedure_insert_user
@@ -46,5 +54,7 @@ bool bmy_user_has_openid(int usernum);
  * @return 用户编号，如果不存在，返回 0
  */
 int bmy_user_getusernum_by_openid(char *openid);
+
+const char *ythtbbs_user_get_login_type_str(enum ythtbbs_user_login_type type);
 #endif
 

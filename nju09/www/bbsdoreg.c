@@ -1,4 +1,5 @@
 #include "bbslib.h"
+#include "bmy/logging.h"
 #include "ythtbbs/identify.h"
 #include "ytht/random.h"
 #include "bmy/user.h"
@@ -114,7 +115,7 @@ bbsdoreg_main()
 {
 	struct userec x;
 	int time_interval, rc;
-	char buf[256], filename[80], pass1[80], pass2[80], dept[80], phone[80],
+	char filename[80], pass1[80], pass2[80], dept[80], phone[80],
 		assoc[80], salt[3], words[1024];
 #ifndef POP_CHECK
 	int lockfd;
@@ -318,8 +319,7 @@ bbsdoreg_main()
 
 //      sprintf(buf, "%s %-12s %d\n", ytht_ctime(now_t)+4, x.userid, getusernum(x.userid));
 //      f_append("wwwreg.log", buf);
-	sprintf(buf, "%s newaccount %d %s www", x.userid, getusernum(x.userid), fromhost);
-	newtrace(buf);
+	bmy_log_account_create(x.userid, getusernum(x.userid), fromhost, YTHTBBS_LOGIN_NJU09);
 	bmy_user_create(getusernum(x.userid), x.userid);
 	//wwwstylenum = 1;
 
