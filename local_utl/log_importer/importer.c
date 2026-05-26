@@ -37,6 +37,14 @@ static void bmy_log_importer_make_occurred_at(
 	char *buf,
 	size_t buf_size);
 
+/**
+ * Report a parser result without writing legacy raw text to the terminal.
+ */
+static void bmy_log_importer_report_parse_issue(
+	const struct bmy_log_importer_config *config,
+	unsigned long source_line,
+	const char *status);
+
 int bmy_log_importer_parse_args(
 	int argc,
 	char **argv,
@@ -148,12 +156,17 @@ int bmy_log_importer_run(
 		}
 
 		if (!bmy_log_parse_line(line, &result)) {
-			if (result.status == BMY_LOG_PARSE_UNRECOGNIZED)
+			if (result.status == BMY_LOG_PARSE_UNRECOGNIZED) {
 				summary->unrecognized++;
-			else if (result.status == BMY_LOG_PARSE_DISCARDED)
+				bmy_log_importer_report_parse_issue(
+					config, summary->total_lines, "unrecognized");
+			} else if (result.status == BMY_LOG_PARSE_DISCARDED) {
 				summary->discarded++;
-			else
+			} else {
 				summary->failed++;
+				bmy_log_importer_report_parse_issue(
+					config, summary->total_lines, "failed");
+			}
 			bmy_log_parse_result_cleanup(&result);
 			continue;
 		}
@@ -181,10 +194,14 @@ int bmy_log_importer_run(
 				break;
 			case BMY_LOG_PARSE_UNRECOGNIZED:
 				summary->unrecognized++;
+				bmy_log_importer_report_parse_issue(
+					config, summary->total_lines, "unrecognized");
 				break;
 			case BMY_LOG_PARSE_FAILED:
 			case BMY_LOG_PARSE_UNSET:
 				summary->failed++;
+				bmy_log_importer_report_parse_issue(
+					config, summary->total_lines, "failed");
 				break;
 		}
 
@@ -264,4 +281,8 @@ static void bmy_log_importer_make_occurred_at(
 	size_t buf_size) {
 	snprintf(buf, buf_size, "%s %02d:%02d:%02d+08",
 		date, line_time->hour, line_time->minute, line_time->second);
+}
+
+static void bmy_log_importer_report_parse_issue(const struct bmy_log_importer_config *config, unsigned long source_line, const char *status) {
+	fprintf(stderr, "%s:%lu: %s\n", config->source_file, source_line, status);
 }

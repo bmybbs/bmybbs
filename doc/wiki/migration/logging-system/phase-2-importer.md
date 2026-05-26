@@ -25,6 +25,7 @@ The parser design is based on the current semantic logging wrappers and current-
 - Insert the category-table row and the matching `log_imported_lines` row in the same transaction.
 - Use `log_imported_lines(source_file, source_line)` as the idempotency boundary.
 - Treat discarded APIs and unrecognized lines as skipped input, and report them in the importer summary.
+- Report each unrecognized or failed line to standard error using its source filename, physical line number, and status only; do not print raw legacy log text by default.
 - Use dry-run output to find old or unexpected log formats and turn them into parser test cases when needed.
 - Support script-driven batch import later by keeping the single-file importer small and predictable.
 
@@ -61,6 +62,7 @@ Discarded APIs should not be imported into business-event tables.
 - The parser and tokenizer cover the designed accepted event families and recognized discarded log families.
 - Non-dry-run import performs categorized inserts and `log_imported_lines` tracking through per-event transactions.
 - Dry-run parsing is implemented for historical-format discovery without database writes.
+- Unrecognized and failed parser results are reported by filename, physical line number, and status for later inspection in an editor.
 - The implementation is awaiting build and runtime validation in the test environment, including historical dry-run passes and database idempotency checks.
 
 ## Validation Goals
@@ -81,6 +83,7 @@ Discarded APIs should not be imported into business-event tables.
 - Board deny rows should preserve operator, board, and target user.
 - Imported text fields should be valid UTF-8.
 - Discarded and unrecognized lines should be counted in importer output and remain available in the original files.
+- Unrecognized and failed lines should be locatable from standard-error diagnostics without writing raw legacy text to the terminal.
 - Dry-run should parse and count accepted, discarded, unrecognized, and failed lines without inserting rows.
 
 ## Backlog

@@ -49,7 +49,7 @@ Outputs:
 
 Dry-run output:
 
-- Human-readable summary only.
+- Human-readable summary and per-line location diagnostics for unrecognized or failed lines.
 - No PostgreSQL connection is required.
 - No `log_imported_lines` lookup is performed.
 - No category-table rows or import-tracking rows are inserted.
@@ -118,7 +118,7 @@ Database connection:
 7. Check `log_imported_lines(source_file, source_line)`.
 8. If already imported, increment `already_imported` and continue.
 9. Parse the line through the parser component.
-10. If parser result is discarded, unrecognized, or failed, increment the matching counter and continue.
+10. If parser result is discarded, unrecognized, or failed, increment the matching counter; for unrecognized or failed results, report filename, line number, and status without raw text; then continue.
 11. Reconstruct `occurred_at` from date, line time, and fixed UTC+8 timezone.
 12. Insert the event row into the matching category table.
 13. Insert the matching `log_imported_lines` row.
@@ -231,11 +231,14 @@ Optional counters:
 Summary format:
 
 - Human-readable text is enough.
+- Print final counters to standard output.
+- Print each unrecognized or failed parser result to standard error as `source_file:source_line: status`.
+- Do not print the raw legacy line by default because it may contain GBK text; use the reported location for editor inspection.
 - JSON output is not needed for the first implementation.
 
 ## Implementation State
 
-- CLI argument parsing, file resolution, dry-run behavior, source-file reading, counters, parser integration, idempotency lookup, category-table insertion, import tracking insertion, and per-event transactions are implemented.
+- CLI argument parsing, file resolution, dry-run behavior, source-file reading, counters, parser issue location reporting, idempotency lookup, category-table insertion, import tracking insertion, and per-event transactions are implemented.
 - PostgreSQL access uses thin shared wrappers in `libbmy`; importer-specific SQL and error reporting remain in `local_utl/log_importer`.
 - Build and runtime validation remain pending in the test environment.
 
