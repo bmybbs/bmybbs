@@ -532,6 +532,26 @@ START_TEST(test_log_parser_range_delete)
 	bmy_log_parse_result_cleanup(&result);
 }
 
+START_TEST(test_log_parser_range_delete_legacy_all)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo ranged bar 0 -1";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_RANGE_DELETE);
+
+	const struct bmy_log_range_delete_event *data = &result.payload.range_delete;
+	ck_assert_str_eq(data->scope, "article");
+	ck_assert_str_eq(data->userid, "foo");
+	ck_assert_str_eq(data->board, "bar");
+	ck_assert_int_eq(data->from_id, 0);
+	ck_assert_int_eq(data->to_id, -1);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
 START_TEST(test_log_parser_range_delete_mail)
 {
 	struct bmy_log_parse_result result;
@@ -546,6 +566,26 @@ START_TEST(test_log_parser_range_delete_mail)
 	ck_assert_str_eq(data->userid, "foo");
 	ck_assert_int_eq(data->from_id, 1);
 	ck_assert_int_eq(data->to_id, 2);
+	ck_assert_ptr_null(data->board);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_range_delete_mail_legacy_all)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo rangedmail 0 -1";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_RANGE_DELETE);
+
+	const struct bmy_log_range_delete_event *data = &result.payload.range_delete;
+	ck_assert_str_eq(data->scope, "mail");
+	ck_assert_str_eq(data->userid, "foo");
+	ck_assert_int_eq(data->from_id, 0);
+	ck_assert_int_eq(data->to_id, -1);
 	ck_assert_ptr_null(data->board);
 
 	bmy_log_parse_result_cleanup(&result);
@@ -1481,7 +1521,9 @@ static Suite *log_parser_suite(void) {
 
 	TCase *tc_range_delete = tcase_create("range_delete");
 	tcase_add_test(tc_range_delete, test_log_parser_range_delete);
+	tcase_add_test(tc_range_delete, test_log_parser_range_delete_legacy_all);
 	tcase_add_test(tc_range_delete, test_log_parser_range_delete_mail);
+	tcase_add_test(tc_range_delete, test_log_parser_range_delete_mail_legacy_all);
 	suite_add_tcase(s, tc_range_delete);
 
 	TCase *tc_login_failure = tcase_create("login failure");

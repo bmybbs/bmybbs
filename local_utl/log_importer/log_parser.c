@@ -540,7 +540,7 @@ static enum bmy_log_parse_status bmy_log_parse_ranged(const struct bmy_log_token
 		if (!bmy_log_token_to_int(&raw_tokens->items[4], &from_id)) {
 			goto FAILED_0;
 		}
-		if (!bmy_log_token_to_int(&raw_tokens->items[5], &to_id)) {
+		if (!bmy_log_token_to_signed_int(&raw_tokens->items[5], &to_id)) {
 			goto FAILED_0;
 		}
 		if ((board = bmy_log_token_dup(&raw_tokens->items[3])) == NULL) {
@@ -560,7 +560,7 @@ static enum bmy_log_parse_status bmy_log_parse_ranged(const struct bmy_log_token
 		if (!bmy_log_token_to_int(&raw_tokens->items[3], &from_id)) {
 			goto FAILED_0;
 		}
-		if (!bmy_log_token_to_int(&raw_tokens->items[4], &to_id)) {
+		if (!bmy_log_token_to_signed_int(&raw_tokens->items[4], &to_id)) {
 			goto FAILED_0;
 		}
 
