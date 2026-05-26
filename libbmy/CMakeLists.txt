@@ -18,5 +18,5 @@ add_library(bmy SHARED
 	pg_wrapper.c
 )
 
-target_link_libraries(bmy ytht mysqlclient ssl crypto curl json-c hiredis ${LIBPQ_LIBRARIES})
-
+target_include_directories(bmy PUBLIC ${LIBPQ_INCLUDE_DIRS})
+target_link_libraries(bmy PUBLIC ytht mysqlclient ssl crypto curl json-c hiredis ${LIBPQ_LIBRARIES})
