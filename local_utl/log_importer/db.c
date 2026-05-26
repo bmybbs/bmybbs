@@ -94,10 +94,12 @@ static bool bmy_log_importer_exec_params_returning_id(
 static const char *bmy_log_importer_table_name(enum bmy_log_event_table table);
 
 PGconn * bmy_log_importer_db_connect(void) {
-	PGconn *conn;
+	PGconn *conn = bmy_pg_connect_default();
 
-	if ((conn = bmy_pg_connect_default()) == NULL) {
-		fprintf(stderr, "PostgreSQL connection failed\n");
+	if (PQstatus(conn) != CONNECTION_OK) {
+		fprintf(stderr, "PostgreSQL connection failed: %s", PQerrorMessage(conn));
+		PQfinish(conn);
+		return NULL;
 	}
 
 	return conn;
