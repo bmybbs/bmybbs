@@ -28,6 +28,9 @@ static bool bmy_pg_exec_simple(PGconn *conn, const char *sql) {
 	bool ok;
 
 	res = PQexec(conn, sql);
+	if (!res) {
+		return false;
+	}
 	ok = PQresultStatus(res) == PGRES_COMMAND_OK;
 
 	PQclear(res);

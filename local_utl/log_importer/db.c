@@ -96,6 +96,11 @@ static const char *bmy_log_importer_table_name(enum bmy_log_event_table table);
 PGconn * bmy_log_importer_db_connect(void) {
 	PGconn *conn = bmy_pg_connect_default();
 
+	if (conn == NULL) {
+		fprintf(stderr, "PostgreSQL connection allocation failed\n");
+		return NULL;
+	}
+
 	if (PQstatus(conn) != CONNECTION_OK) {
 		fprintf(stderr, "PostgreSQL connection failed: %s", PQerrorMessage(conn));
 		PQfinish(conn);
@@ -116,6 +121,10 @@ int bmy_log_importer_is_line_imported(PGconn *conn, const char *source_file, uns
 	*imported = false;
 
 	res = bmy_pg_exec_params(conn, "SELECT 1 FROM log_imported_lines WHERE source_file = $1 AND source_line = $2 LIMIT 1", 2, params);
+	if (res == NULL) {
+		fprintf(stderr, "PostgreSQL query allocation failed\n");
+		return -1;
+	}
 	if (PQresultStatus(res) != PGRES_TUPLES_OK) {
 		fprintf(stderr, "import lookup failed: %s", PQerrorMessage(conn));
 		PQclear(res);
@@ -212,6 +221,10 @@ static bool bmy_log_importer_insert_imported_line( PGconn *conn, const char *sou
 	res = bmy_pg_exec_params(conn,
 		"INSERT INTO log_imported_lines (source_file, source_line, event_table, event_id) VALUES ($1, $2, $3, $4)",
 		4, params);
+	if (res == NULL) {
+		fprintf(stderr, "PostgreSQL query allocation failed\n");
+		return false;
+	}
 	ok = PQresultStatus(res) == PGRES_COMMAND_OK;
 	if (!ok) {
 		fprintf(stderr, "insert log_imported_lines failed: %s", PQerrorMessage(conn));
@@ -400,7 +413,14 @@ static bool bmy_log_importer_insert_board_deny(PGconn *conn, const char *occurre
 
 static bool bmy_log_importer_exec_params_returning_id(PGconn *conn, const char *sql, int n_params, const char *const *params, char **event_id) {
 	PGresult *res = bmy_pg_exec_params(conn, sql, n_params, params);
-	bool ok = PQresultStatus(res) == PGRES_TUPLES_OK && PQntuples(res) == 1;
+	bool ok;
+
+	if (res == NULL) {
+		fprintf(stderr, "PostgreSQL query allocation failed\n");
+		return false;
+	}
+
+	ok = PQresultStatus(res) == PGRES_TUPLES_OK && PQntuples(res) == 1;
 
 	if (!ok) {
 		fprintf(stderr, "insert event failed: %s", PQerrorMessage(conn));
