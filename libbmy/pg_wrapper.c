@@ -4,13 +4,7 @@
 static bool bmy_pg_exec_simple(PGconn *conn, const char *sql);
 
 PGconn *bmy_pg_connect_default(void) {
-	PGconn *conn = PQconnectdb("");
-	if (PQstatus(conn) != CONNECTION_OK) {
-		PQfinish(conn);
-		return NULL;
-	}
-
-	return conn;
+	return PQconnectdb("");
 }
 
 bool bmy_pg_begin(PGconn *conn) {
