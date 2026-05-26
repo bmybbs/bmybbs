@@ -71,10 +71,10 @@ void bmy_log_account_create(const char *userid, int usernum, const char *fromhos
 	newtrace(buf);
 }
 
-void bmy_log_account_expire_cleanup(const char *userid, int usernum) {
+void bmy_log_account_expire_cleanup(const char *userid, int life_value) {
 	char buf[80];
 
-	snprintf(buf, sizeof buf, "system kill %s %d", userid, usernum);
+	snprintf(buf, sizeof buf, "system kill %s %d", userid, life_value);
 	newtrace(buf);
 }
 

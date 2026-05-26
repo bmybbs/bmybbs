@@ -106,8 +106,15 @@ CREATE TABLE IF NOT EXISTS log_account_events (
 
 	userid VARCHAR(12) NOT NULL,
 	usernum INTEGER,
+	life_value INTEGER,
 	from_host VARCHAR(64),
-	login_type VARCHAR(16)
+	login_type VARCHAR(16),
+
+	CHECK (
+		(action = 'create' AND usernum IS NOT NULL AND life_value IS NULL)
+		OR
+		(action = 'expire_cleanup' AND usernum IS NULL AND life_value < 0)
+	)
 );
 
 CREATE TABLE IF NOT EXISTS log_mail_events (

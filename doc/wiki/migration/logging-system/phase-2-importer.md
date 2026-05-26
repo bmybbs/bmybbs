@@ -75,7 +75,8 @@ Discarded APIs should not be imported into business-event tables.
 - Session duration rows should preserve the legacy stay duration as non-negative seconds.
 - Login failure rows should preserve the historical source host.
 - Session rows should preserve available source host, target user, and login type information.
-- Account rows should preserve user number, source host, and login type information when present.
+- Account creation rows should preserve user number and source host, and normalize legacy `www` creation-path markers to login type `NJU09`.
+- Account expiration-cleanup rows should preserve the negative legacy `countlife()` value as `life_value`, not as a user number.
 - Mail rows should preserve sender and target.
 - User interaction rows should preserve initiator, target, and action.
 - User query rows should preserve query actor, target, and period.

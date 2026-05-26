@@ -78,6 +78,7 @@ struct bmy_log_account_event {
 	const char *action;
 	const char *userid;
 	int usernum;
+	int life_value;
 	const char *from_host;
 	const char *login_type;
 };

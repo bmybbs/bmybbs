@@ -101,6 +101,7 @@ static bool bmy_log_parser_is_ip_address(const char *text);
 static struct bmy_log_token bmy_log_parser_article_title_after(const struct bmy_log_token *token);
 static char *bmy_log_token_to_utf8(const struct bmy_log_token *token);
 static bool bmy_log_token_to_int(const struct bmy_log_token *token, int *x);
+static bool bmy_log_token_to_signed_int(const struct bmy_log_token *token, int *x);
 static bool bmy_log_token_to_long(const struct bmy_log_token *token, long *x);
 static bool bmy_log_tokens_eq_at_idx(const struct bmy_log_tokens *tokens, size_t idx, const char *s);
 
@@ -751,6 +752,7 @@ static enum bmy_log_parse_status bmy_log_parse_account(const struct bmy_log_toke
 	char *login_type = NULL;
 	char *userid = NULL;
 	int usernum = 0;
+	int life_value = 0;
 	const struct bmy_log_token *action_token = &raw_tokens->items[2];
 
 	if (bmy_log_token_eq(action_token, "newaccount")) {
@@ -773,7 +775,7 @@ static enum bmy_log_parse_status bmy_log_parse_account(const struct bmy_log_toke
 				free(from_host);
 				return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
 			}
-			if ((login_type = bmy_log_token_dup(&raw_tokens->items[5])) == NULL) {
+			if ((login_type = strdup("NJU09")) == NULL) {
 				free(from_host);
 				return result->status = BMY_LOG_PARSE_FAILED;
 			}
@@ -790,7 +792,7 @@ static enum bmy_log_parse_status bmy_log_parse_account(const struct bmy_log_toke
 		if (raw_tokens->count != 5) {
 			return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
 		}
-		if (!bmy_log_token_to_int(&raw_tokens->items[4], &usernum)) {
+		if (!bmy_log_token_to_signed_int(&raw_tokens->items[4], &life_value) || life_value >= 0) {
 			return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
 		}
 		if ((userid = bmy_log_token_dup(&raw_tokens->items[3])) == NULL) {
@@ -800,7 +802,7 @@ static enum bmy_log_parse_status bmy_log_parse_account(const struct bmy_log_toke
 		// NOTE: 定义在表结构中
 		result->payload.account.action = "expire_cleanup";
 		result->payload.account.userid = userid;
-		result->payload.account.usernum = usernum;
+		result->payload.account.life_value = life_value;
 		return result->status = BMY_LOG_PARSE_ACCEPTED;
 	}
 };
@@ -1075,6 +1077,10 @@ static bool bmy_log_token_to_int(const struct bmy_log_token *token, int *x) {
 	size_t i;
 	*x = 0;
 
+	if (bmy_log_token_empty(token)) {
+		return false;
+	}
+
 	for (i = 0; i < token->len; i++) {
 		if (!bmy_char_in_range(token->ptr[i], '0', '9')) {
 			// invalid
@@ -1085,6 +1091,27 @@ static bool bmy_log_token_to_int(const struct bmy_log_token *token, int *x) {
 		*x += bmy_char_to_digit(token->ptr[i]);
 	}
 
+	return true;
+}
+
+static bool bmy_log_token_to_signed_int(const struct bmy_log_token *token, int *x) {
+	struct bmy_log_token magnitude;
+
+	if (bmy_log_token_empty(token)) {
+		return false;
+	}
+
+	if (token->ptr[0] != '-') {
+		return bmy_log_token_to_int(token, x);
+	}
+
+	magnitude.ptr = token->ptr + 1;
+	magnitude.len = token->len - 1;
+	if (!bmy_log_token_to_int(&magnitude, x)) {
+		return false;
+	}
+
+	*x = -*x;
 	return true;
 }
 

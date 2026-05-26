@@ -61,3 +61,4 @@
 - 2026-05-26 13:47 | update | migration/logging-system-migration.zh.md | Synced with latest English version including date-based import updates.
 - 2026-05-26 13:47 | update | migration/logging-system/phase-2-import.zh.md | Synced with latest English version including implementation status.
 - 2026-05-26 18:06 | update | migration/logging-system/phase-2-importer.md, implementation-plans/00-0001-logging-importer.md | Recorded per-line location diagnostics for unrecognized and failed importer results without raw legacy log output.
+- 2026-05-26 22:45 | update | cross-cutting/logging-system.md, migration/logging-system/phase-2-database-design.md, migration/logging-system/phase-2-importer.md, implementation-plans/00-0002-logging-importer-parser.md | Corrected account-event semantics: cleanup records preserve negative `countlife()` as `life_value`, and legacy `www` creation markers normalize to `NJU09`.

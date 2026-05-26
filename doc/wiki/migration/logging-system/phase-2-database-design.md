@@ -168,9 +168,14 @@ Important fields:
 
 - `action`: `create` or `expire_cleanup`
 - `userid`: account user id
-- `usernum`: legacy user number when available
+- `usernum`: legacy user number for `create`; null for `expire_cleanup`
+- `life_value`: negative `countlife()` value for `expire_cleanup`; null for `create`
 - `from_host`: source host for account creation
-- `login_type`: creation path when known
+- `login_type`: creation path when known; legacy `www` records are normalized to `NJU09`
+
+Evidence note:
+
+- Legacy `system kill <userid> <value>` records are produced by `ythtbbs_user_clean()` after `value = countlife(&utmp)` and only when `value < 0`; the last field is not a user number.
 
 ### `log_mail_events`
 

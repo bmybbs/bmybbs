@@ -843,6 +843,7 @@ START_TEST(test_log_parser_account_create)
 	ck_assert_str_eq(data->userid, "foo");
 	ck_assert_str_eq(data->from_host, "1.2.3.4");
 	ck_assert_int_eq(data->usernum, 1);
+	ck_assert_int_eq(data->life_value, 0);
 	ck_assert_ptr_null(data->login_type);
 
 	bmy_log_parse_result_cleanup(&result);
@@ -863,7 +864,8 @@ START_TEST(test_log_parser_account_create_www)
 	ck_assert_str_eq(data->userid, "foo");
 	ck_assert_str_eq(data->from_host, "1.2.3.4");
 	ck_assert_int_eq(data->usernum, 1);
-	ck_assert_str_eq(data->login_type, "www");
+	ck_assert_int_eq(data->life_value, 0);
+	ck_assert_str_eq(data->login_type, "NJU09");
 
 	bmy_log_parse_result_cleanup(&result);
 }
@@ -872,7 +874,7 @@ END_TEST
 START_TEST(test_log_parser_account_expire_cleanup)
 {
 	struct bmy_log_parse_result result;
-	const char *log_msg = "01:02:03 system kill foo 1";
+	const char *log_msg = "01:02:03 system kill foo -1";
 
 	ck_assert(bmy_log_parse_line(log_msg, &result));
 	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
@@ -881,7 +883,8 @@ START_TEST(test_log_parser_account_expire_cleanup)
 	const struct bmy_log_account_event *data = &result.payload.account;
 	ck_assert_str_eq(data->action, "expire_cleanup");
 	ck_assert_str_eq(data->userid, "foo");
-	ck_assert_int_eq(data->usernum, 1);
+	ck_assert_int_eq(data->usernum, 0);
+	ck_assert_int_eq(data->life_value, -1);
 	ck_assert_ptr_null(data->login_type);
 	ck_assert_ptr_null(data->from_host);
 
