@@ -48,7 +48,10 @@ Expected parser files:
 
 - `local_utl/log_importer/log_parser.c`
 - `local_utl/log_importer/log_parser.h`
+- `local_utl/log_importer/log_tokenizer.c`
+- `local_utl/log_importer/log_tokenizer.h`
 - `local_utl/log_importer/test_log_parser.c`
+- `local_utl/log_importer/test_log_tokenizer.c`
 
 The importer shell in [00-0001-logging-importer.md](./00-0001-logging-importer.md) owns calling the parser and writing parser results to PostgreSQL.
 
@@ -103,6 +106,7 @@ Status enum:
 
 ```c
 enum bmy_log_parse_status {
+	BMY_LOG_PARSE_UNSET,
 	BMY_LOG_PARSE_ACCEPTED,
 	BMY_LOG_PARSE_DISCARDED,
 	BMY_LOG_PARSE_UNRECOGNIZED,
@@ -208,6 +212,9 @@ Parser entry point:
 bool bmy_log_parse_line(
 	const char *line,
 	struct bmy_log_parse_result *result);
+
+void bmy_log_parse_result_cleanup(
+	struct bmy_log_parse_result *result);
 ```
 
 Ownership rule:
@@ -278,6 +285,13 @@ Examples of ambiguity to handle carefully:
 - Do not add separate encoding detection in the first implementation.
 - If `g2u` fails, return failed line status.
 - Do not preserve raw bytes in parser output; original files remain the raw backup.
+
+## Implementation State
+
+- The parser and its tokenizer helper are implemented under `local_utl/log_importer`.
+- Accepted event payloads cover every designed category table.
+- Known discarded logging families are classified without database insertion.
+- Parser and tokenizer test sources exist; test-environment validation and historical dry-run discovery remain pending.
 
 ## Data Flow
 

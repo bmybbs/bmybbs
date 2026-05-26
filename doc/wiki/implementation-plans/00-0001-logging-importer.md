@@ -68,6 +68,8 @@ Expected files:
 - `local_utl/log_importer/importer.h`
 - `local_utl/log_importer/db.c`
 - `local_utl/log_importer/db.h`
+- `include/bmy/pg_wrapper.h`
+- `libbmy/pg_wrapper.c`
 - parser files owned by [00-0002-logging-importer-parser.md](./00-0002-logging-importer-parser.md)
 
 Ownership boundary:
@@ -160,6 +162,9 @@ int bmy_log_importer_parse_args(
 	char **argv,
 	struct bmy_log_importer_config *config);
 
+void bmy_log_importer_config_cleanup(
+	struct bmy_log_importer_config *config);
+
 int bmy_log_importer_run(
 	const struct bmy_log_importer_config *config,
 	struct bmy_log_import_summary *summary);
@@ -168,20 +173,25 @@ int bmy_log_importer_run(
 Database boundary:
 
 ```c
-bool bmy_log_importer_is_line_imported(
+PGconn *bmy_log_importer_db_connect(void);
+
+int bmy_log_importer_is_line_imported(
 	PGconn *conn,
 	const char *source_file,
-	unsigned long source_line);
+	unsigned long source_line,
+	bool *imported);
 
 bool bmy_log_importer_insert_event(
 	PGconn *conn,
 	const char *source_file,
 	unsigned long source_line,
+	const char *occurred_at,
 	const struct bmy_log_parse_result *result);
 ```
 
 Interface rule:
 
+- `bmy_log_importer_is_line_imported` separates lookup failure from an imported/not-imported result through its return value and output parameter.
 - `bmy_log_importer_insert_event` owns the transaction that inserts both the category-table row and the `log_imported_lines` row.
 - The importer shell should not inspect parser internals beyond status, line time, target table, and typed payload fields.
 - The parser should not know about PostgreSQL or `log_imported_lines`.
@@ -223,6 +233,12 @@ Summary format:
 - Human-readable text is enough.
 - JSON output is not needed for the first implementation.
 
+## Implementation State
+
+- CLI argument parsing, file resolution, dry-run behavior, source-file reading, counters, parser integration, idempotency lookup, category-table insertion, import tracking insertion, and per-event transactions are implemented.
+- PostgreSQL access uses thin shared wrappers in `libbmy`; importer-specific SQL and error reporting remain in `local_utl/log_importer`.
+- Build and runtime validation remain pending in the test environment.
+
 ## Error Handling
 
 - Missing source file: report and exit non-zero without inserting rows.
@@ -250,20 +266,8 @@ Summary format:
 
 ## Work Breakdown
 
-- Create utility directory and build integration.
-- Add local `libcheck` based parser test target under `local_utl/log_importer`.
-- Implement command-line parsing.
-- Implement date, fixed UTC+8, and source-path resolution.
-- Implement dry-run branch before database connection setup.
-- Implement PostgreSQL connection setup.
-- Implement `getline(3)` based source file reading and physical line numbering.
-- Implement idempotency lookup by `(source_file, source_line)`.
-- Integrate parser result handling.
-- Implement category-table insertion dispatch.
-- Implement `log_imported_lines` insertion.
-- Implement transaction handling.
-- Implement summary output and exit codes.
-- Validate with sample logs.
+- Implemented: utility structure, CMake integration, local parser test targets, command-line parsing, fixed UTC+8 source resolution, dry-run behavior, PostgreSQL connection setup, `getline(3)` file processing, idempotency lookup, parser integration, insertion dispatch, import tracking, transactions, summary output, and exit handling.
+- Pending: build validation, historical dry-run examination, sample database import, and idempotency validation in the test environment.
 
 ## Backlog
 

@@ -23,9 +23,10 @@ Phase 2 should still avoid direct production database writes from live code. Dir
 
 ## Current State
 
-- The database design is stable enough for initial implementation work.
-- The initial PostgreSQL schema has been drafted in [db/bmy.pg.sql](../../../../db/bmy.pg.sql).
-- The importer design has been published as a seeded canonical page.
+- The initial PostgreSQL schema has been implemented in [db/bmy.pg.sql](../../../../db/bmy.pg.sql).
+- A C importer under `local_utl/log_importer` implements single-day import, dry-run parsing, categorized insertion, import tracking, and summary counters.
+- The importer uses a thin PostgreSQL wrapper in `libbmy` and is integrated into the CMake build definition.
+- Runtime validation against the test environment and historical log files is still pending.
 
 ## Boundaries
 
@@ -37,5 +38,6 @@ Phase 2 should still avoid direct production database writes from live code. Dir
 
 ## Open Work
 
-- Implement the importer after the importer design is stable.
-- Validate import idempotency and selected event-family mappings.
+- Validate build and PostgreSQL execution in the test environment.
+- Run dry-run passes against historical logs to find older or unexpected formats.
+- Validate import idempotency and selected event-family mappings with test data.

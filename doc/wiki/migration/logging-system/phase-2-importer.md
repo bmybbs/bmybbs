@@ -55,6 +55,14 @@ The importer should support every accepted event family from the database design
 
 Discarded APIs should not be imported into business-event tables.
 
+## Implementation State
+
+- The importer is implemented in `local_utl/log_importer`.
+- The parser and tokenizer cover the designed accepted event families and recognized discarded log families.
+- Non-dry-run import performs categorized inserts and `log_imported_lines` tracking through per-event transactions.
+- Dry-run parsing is implemented for historical-format discovery without database writes.
+- The implementation is awaiting build and runtime validation in the test environment, including historical dry-run passes and database idempotency checks.
+
 ## Validation Goals
 
 - Importing the same file twice should not create duplicate rows.
