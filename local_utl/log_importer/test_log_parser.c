@@ -173,6 +173,28 @@ START_TEST(test_log_parser_article_digest_title_en)
 }
 END_TEST
 
+START_TEST(test_log_parser_article_digest_empty_owner)
+{
+	struct bmy_log_parse_result result;
+	// "中文测试"
+	const char *log_msg = "01:02:03 foo digest board  \xD6\xD0\xCE\xC4\xB2\xE2\xCA\xD4";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+
+	const struct bmy_log_article_event *data = &result.payload.article;
+
+	ck_assert_str_eq(data->action, "digest");
+	ck_assert_str_eq(data->actor_userid, "foo");
+	ck_assert_str_eq(data->board, "board");
+	ck_assert_ptr_null(data->owner_userid);
+	ck_assert_str_eq(data->title, "中文测试");
+	ck_assert_ptr_null(data->old_title);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
 START_TEST(test_log_parser_article_undigest_title_en)
 {
 	struct bmy_log_parse_result result;
@@ -447,6 +469,27 @@ START_TEST(test_log_parser_article_sametitle)
 }
 END_TEST
 
+START_TEST(test_log_parser_article_sametitle_empty_title)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo sametitle board ";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+
+	const struct bmy_log_article_event *data = &result.payload.article;
+
+	ck_assert_str_eq(data->action, "sametitle");
+	ck_assert_str_eq(data->actor_userid, "foo");
+	ck_assert_str_eq(data->board, "board");
+	ck_assert_ptr_null(data->title);
+	ck_assert_ptr_null(data->owner_userid);
+	ck_assert_ptr_null(data->old_title);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
 START_TEST(test_log_parser_article_changetitle_basic)
 {
 	struct bmy_log_parse_result result;
@@ -506,6 +549,27 @@ START_TEST(test_log_parser_article_changetitle_contain_gbk)
 	ck_assert_str_eq(data->owner_userid, "owner");
 	ck_assert_str_eq(data->title, "测试");
 	ck_assert_str_eq(data->old_title, "中文");
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_article_changetitle_empty_owner)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo changetitle board  oldtitle:en newtitle:zh";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+
+	const struct bmy_log_article_event *data = &result.payload.article;
+
+	ck_assert_str_eq(data->action, "changetitle");
+	ck_assert_str_eq(data->actor_userid, "foo");
+	ck_assert_str_eq(data->board, "board");
+	ck_assert_ptr_null(data->owner_userid);
+	ck_assert_str_eq(data->title, "zh");
+	ck_assert_str_eq(data->old_title, "en");
 
 	bmy_log_parse_result_cleanup(&result);
 }
@@ -1089,6 +1153,28 @@ START_TEST(test_log_parser_announcement_import_title_zh)
 }
 END_TEST
 
+START_TEST(test_log_parser_announcement_import_empty_owner)
+{
+	struct bmy_log_parse_result result;
+	// "中文"
+	const char *log_msg = "01:02:03 foo import board  \xD6\xD0\xCE\xC4";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_ANNOUNCEMENT);
+
+	const struct bmy_log_announcement_event *data = &result.payload.announcement;
+	ck_assert_str_eq(data->action, "import");
+	ck_assert_str_eq(data->userid, "foo");
+	ck_assert_str_eq(data->board, "board");
+	ck_assert_ptr_null(data->owner_userid);
+	ck_assert_str_eq(data->title, "中文");
+	ck_assert_ptr_null(data->path);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
 START_TEST(test_log_parser_announcement_paste)
 {
 	struct bmy_log_parse_result result;
@@ -1463,6 +1549,18 @@ START_TEST(test_log_parser_discarded_selection_trace)
 	bmy_log_parse_result_cleanup(&result);
 }
 END_TEST
+
+START_TEST(test_log_parser_discarded_enterboard)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo enterboard board";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_DISCARDED);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
 #endif
 
 static Suite *log_parser_suite(void) {
@@ -1501,6 +1599,7 @@ static Suite *log_parser_suite(void) {
 	tcase_add_test(tc_article, test_log_parser_article_mark_title_space);
 	tcase_add_test(tc_article, test_log_parser_article_unmark_title_en);
 	tcase_add_test(tc_article, test_log_parser_article_digest_title_en);
+	tcase_add_test(tc_article, test_log_parser_article_digest_empty_owner);
 	tcase_add_test(tc_article, test_log_parser_article_undigest_title_en);
 	tcase_add_test(tc_article, test_log_parser_article_water_title_en);
 	tcase_add_test(tc_article, test_log_parser_article_unwater_title_en);
@@ -1514,9 +1613,11 @@ static Suite *log_parser_suite(void) {
 	tcase_add_test(tc_article, test_log_parser_article_check1984);
 	tcase_add_test(tc_article, test_log_parser_article_crosspost);
 	tcase_add_test(tc_article, test_log_parser_article_sametitle);
+	tcase_add_test(tc_article, test_log_parser_article_sametitle_empty_title);
 	tcase_add_test(tc_article, test_log_parser_article_changetitle_basic);
 	tcase_add_test(tc_article, test_log_parser_article_changetitle_contain_newtitle);
 	tcase_add_test(tc_article, test_log_parser_article_changetitle_contain_gbk);
+	tcase_add_test(tc_article, test_log_parser_article_changetitle_empty_owner);
 	suite_add_tcase(s, tc_article);
 
 	TCase *tc_range_delete = tcase_create("range_delete");
@@ -1546,6 +1647,7 @@ static Suite *log_parser_suite(void) {
 	TCase *tc_announcement = tcase_create("announcement");
 	tcase_add_test(tc_announcement, test_log_parser_announcement_import);
 	tcase_add_test(tc_announcement, test_log_parser_announcement_import_title_zh);
+	tcase_add_test(tc_announcement, test_log_parser_announcement_import_empty_owner);
 	tcase_add_test(tc_announcement, test_log_parser_announcement_paste);
 	tcase_add_test(tc_announcement, test_log_parser_announcement_paste_path_zh);
 	tcase_add_test(tc_announcement, test_log_parser_announcement_additem);
@@ -1578,6 +1680,7 @@ static Suite *log_parser_suite(void) {
 	tcase_add_test(tc_discarded_rest, test_log_parser_discarded_thread_view);
 	tcase_add_test(tc_discarded_rest, test_log_parser_discarded_full_search);
 	tcase_add_test(tc_discarded_rest, test_log_parser_discarded_selection_trace);
+	tcase_add_test(tc_discarded_rest, test_log_parser_discarded_enterboard);
 	suite_add_tcase(s, tc_discarded_rest);
 
 	return s;

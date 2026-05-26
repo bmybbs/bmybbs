@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS log_article_events (
 	actor_userid VARCHAR(12) NOT NULL,
 	board VARCHAR(32) NOT NULL,
 	owner_userid VARCHAR(12),
-	title TEXT NOT NULL,
+	title TEXT,
 	old_title TEXT,
 
 	action VARCHAR(32) NOT NULL
@@ -32,7 +32,9 @@ CREATE TABLE IF NOT EXISTS log_article_events (
 			'unwater',
 			'top',
 			'untop'
-		))
+		)),
+
+	CHECK (title IS NOT NULL OR action = 'sametitle')
 );
 
 CREATE TABLE IF NOT EXISTS log_range_delete_events (
