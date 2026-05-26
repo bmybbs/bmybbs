@@ -109,6 +109,28 @@ START_TEST(test_log_parser_article_mark_title_zh)
 }
 END_TEST
 
+START_TEST(test_log_parser_article_mark_title_space)
+{
+	struct bmy_log_parse_result result;
+	/* One separator before a one-space article title. */
+	const char *log_msg = "01:02:03 foo mark board owner  ";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+
+	const struct bmy_log_article_event *data = &result.payload.article;
+
+	ck_assert_str_eq(data->action, "mark");
+	ck_assert_str_eq(data->actor_userid, "foo");
+	ck_assert_str_eq(data->board, "board");
+	ck_assert_str_eq(data->owner_userid, "owner");
+	ck_assert_str_eq(data->title, " ");
+	ck_assert_ptr_null(data->old_title);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
 START_TEST(test_log_parser_article_unmark_title_en)
 {
 	struct bmy_log_parse_result result;
@@ -588,6 +610,25 @@ START_TEST(test_log_parser_session_drop)
 	bmy_log_parse_result_cleanup(&result);
 }
 END_TEST
+
+START_TEST(test_log_parser_session_drop_legacy_www)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo drop 111 www";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_SESSION_DURATION);
+
+	const struct bmy_log_session_duration_event *data = &result.payload.session_duration;
+
+	ck_assert_str_eq(data->userid, "foo");
+	ck_assert_int_eq(data->stay_seconds, 111);
+	ck_assert_str_eq(data->action, "disconnect");
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
 #endif
 
 #if 1 // login failure
@@ -679,6 +720,27 @@ START_TEST(test_log_parser_user_enter_without_using)
 	ck_assert_str_eq(data->userid, "foo");
 	ck_assert_str_eq(data->from_host, "1.2.3.4");
 	ck_assert_ptr_null(data->login_type);
+	ck_assert_ptr_null(data->target_userid);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_user_enter_legacy_www)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo enter 1.2.3.4 www";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_SESSION);
+
+	const struct bmy_log_session_event *data = &result.payload.session;
+
+	ck_assert_str_eq(data->action, "login_success");
+	ck_assert_str_eq(data->userid, "foo");
+	ck_assert_str_eq(data->from_host, "1.2.3.4");
+	ck_assert_str_eq(data->login_type, "NJU09");
 	ck_assert_ptr_null(data->target_userid);
 
 	bmy_log_parse_result_cleanup(&result);
@@ -1371,6 +1433,7 @@ static Suite *log_parser_suite(void) {
 	tcase_add_test(tc_core, test_log_parser_board_usage);
 	tcase_add_test(tc_core, test_log_parser_session_exitbbs);
 	tcase_add_test(tc_core, test_log_parser_session_drop);
+	tcase_add_test(tc_core, test_log_parser_session_drop_legacy_www);
 
 	tcase_add_test(tc_core, test_log_parser_account_create);
 	tcase_add_test(tc_core, test_log_parser_account_create_www);
@@ -1392,6 +1455,7 @@ static Suite *log_parser_suite(void) {
 	tcase_add_test(tc_article, test_log_parser_article_mark_title_en);
 	tcase_add_test(tc_article, test_log_parser_article_mark_title_en_multi_tokens);
 	tcase_add_test(tc_article, test_log_parser_article_mark_title_zh);
+	tcase_add_test(tc_article, test_log_parser_article_mark_title_space);
 	tcase_add_test(tc_article, test_log_parser_article_unmark_title_en);
 	tcase_add_test(tc_article, test_log_parser_article_digest_title_en);
 	tcase_add_test(tc_article, test_log_parser_article_undigest_title_en);
@@ -1427,6 +1491,7 @@ static Suite *log_parser_suite(void) {
 	TCase *tc_session = tcase_create("session");
 	tcase_add_test(tc_session, test_log_parser_user_enter_with_using);
 	tcase_add_test(tc_session, test_log_parser_user_enter_without_using);
+	tcase_add_test(tc_session, test_log_parser_user_enter_legacy_www);
 	tcase_add_test(tc_session, test_log_parser_user_session_cleanup);
 	tcase_add_test(tc_session, test_log_parser_user_session_cleanup_legacy);
 	tcase_add_test(tc_session, test_log_parser_user_multi_session_kick);

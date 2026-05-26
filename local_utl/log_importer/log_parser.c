@@ -98,6 +98,7 @@ static enum bmy_log_parse_status bmy_log_parse_board_deny(const struct bmy_log_t
 static enum bmy_log_parse_status bmy_log_parse_rest(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
 
 static bool bmy_log_parser_is_ip_address(const char *text);
+static struct bmy_log_token bmy_log_parser_article_title_after(const struct bmy_log_token *token);
 static char *bmy_log_token_to_utf8(const struct bmy_log_token *token);
 static bool bmy_log_token_to_int(const struct bmy_log_token *token, int *x);
 static bool bmy_log_token_to_long(const struct bmy_log_token *token, long *x);
@@ -390,7 +391,7 @@ static enum bmy_log_parse_status bmy_log_parse_article_mark_like_events(const st
 		goto FAILED_1;
 	}
 
-	title_token = bmy_log_token_rest_after(&raw_tokens->items[4]);
+	title_token = bmy_log_parser_article_title_after(&raw_tokens->items[4]);
 	if (bmy_log_token_empty(&title_token)) {
 		goto FAILED_1;
 	}
@@ -440,7 +441,7 @@ static enum bmy_log_parse_status bmy_log_parse_article_post_like_events(const st
 	if ((board = bmy_log_token_dup(&raw_tokens->items[3])) == NULL) {
 		goto FAILED_0;
 	}
-	title_token = bmy_log_token_rest_after(&raw_tokens->items[3]);
+	title_token = bmy_log_parser_article_title_after(&raw_tokens->items[3]);
 	if (bmy_log_token_empty(&title_token)) {
 		goto FAILED_0;
 	}
@@ -595,8 +596,15 @@ static enum bmy_log_parse_status bmy_log_parse_board_usage(const struct bmy_log_
 
 static enum bmy_log_parse_status bmy_log_parse_session_duration(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result) {
 	long stay_seconds = 0;
+	bool legacy_www_disconnect;
 
-	if (raw_tokens->count != 4 || !bmy_log_token_to_long(&raw_tokens->items[3], &stay_seconds)) {
+	legacy_www_disconnect =
+		raw_tokens->count == 5 &&
+		bmy_log_token_eq(&raw_tokens->items[2], "drop") &&
+		bmy_log_token_eq(&raw_tokens->items[4], "www");
+
+	if ((raw_tokens->count != 4 && !legacy_www_disconnect) ||
+		!bmy_log_token_to_long(&raw_tokens->items[3], &stay_seconds)) {
 		return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
 	}
 
@@ -628,7 +636,9 @@ static enum bmy_log_parse_status bmy_log_parse_login_failure(const struct bmy_lo
 static enum bmy_log_parse_status bmy_log_parse_session_login_success(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result) {
 	char *from_host = NULL, *login_type = NULL;
 
-	if (raw_tokens->count != 4 /* w/o using */ && raw_tokens->count != 6 /* w/ using */) {
+	if (raw_tokens->count != 4 /* w/o using */ &&
+		raw_tokens->count != 5 /* legacy www */ &&
+		raw_tokens->count != 6 /* w/ using */) {
 		return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
 	}
 
@@ -639,7 +649,15 @@ static enum bmy_log_parse_status bmy_log_parse_session_login_success(const struc
 		goto FAILED_1;
 	}
 
-	if (raw_tokens->count == 6) {
+	if (raw_tokens->count == 5) {
+		if (!bmy_log_token_eq(&raw_tokens->items[4], "www")) {
+			free(from_host);
+			return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
+		}
+		if ((login_type = strdup("NJU09")) == NULL) {
+			goto FAILED_1;
+		}
+	} else if (raw_tokens->count == 6) {
 		if (!bmy_log_token_eq(&raw_tokens->items[4], "using")) {
 			free(from_host);
 			return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
@@ -667,6 +685,27 @@ static bool bmy_log_parser_is_ip_address(const char *text) {
 	struct in6_addr ipv6;
 
 	return inet_pton(AF_INET, text, &ipv4) == 1 || inet_pton(AF_INET6, text, &ipv6) == 1;
+}
+
+static struct bmy_log_token bmy_log_parser_article_title_after(const struct bmy_log_token *token) {
+	struct bmy_log_token title = {0};
+	const char *cursor;
+
+	if (token == NULL || token->ptr == NULL)
+		return title;
+
+	cursor = token->ptr + token->len;
+	if (*cursor != ' ')
+		return title;
+
+	title.ptr = cursor + 1;
+	title.len = strlen(title.ptr);
+	while (title.len > 0 &&
+		(title.ptr[title.len - 1] == '\n' || title.ptr[title.len - 1] == '\r')) {
+		title.len--;
+	}
+
+	return title;
 }
 
 static enum bmy_log_parse_status bmy_log_parse_session_cleanup(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result) {
