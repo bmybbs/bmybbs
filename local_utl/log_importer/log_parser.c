@@ -590,6 +590,11 @@ static enum bmy_log_parse_status bmy_log_parse_board_usage(const struct bmy_log_
 	char *board = NULL;
 	long stay_seconds = 0;
 
+	// A numeric fourth token means the board field was empty in "%s use %s %ld".
+	if (raw_tokens->count == 4 && bmy_log_token_to_long(&raw_tokens->items[3], &stay_seconds)) {
+		return result->status = BMY_LOG_PARSE_FAILED;
+	}
+
 	if (raw_tokens->count != 5 || !bmy_log_token_to_long(&raw_tokens->items[4], &stay_seconds)) {
 		return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
 	}
@@ -907,7 +912,7 @@ static enum bmy_log_parse_status bmy_log_parse_announcement(const struct bmy_log
 			if ((str2 = bmy_log_token_dup(&raw_tokens->items[4])) == NULL) {
 				goto FAILED_1;
 			}
-			rest = bmy_log_token_rest_after(&raw_tokens->items[4]);
+			rest = bmy_log_parser_article_title_after(&raw_tokens->items[4]);
 		}
 		if ((str3 = bmy_log_token_to_utf8(&rest)) == NULL) {
 			goto FAILED_2;
@@ -999,8 +1004,15 @@ static enum bmy_log_parse_status bmy_log_parse_rest(const struct bmy_log_tokens 
 		return result->status = BMY_LOG_PARSE_DISCARDED;
 	}
 
-	// Legacy board-entry trace.
-	if (bmy_log_token_eq(action_token, "enterboard")) {
+	// Legacy board-entry traces.
+	if (bmy_log_token_eq(action_token, "enterboard") ||
+		bmy_log_token_eq(action_token, "enterboard_t")) {
+		return result->status = BMY_LOG_PARSE_DISCARDED;
+	}
+
+	// Legacy content-reading trace.
+	if (bmy_log_token_eq(action_token, "readcon") ||
+		bmy_log_token_eq(action_token, "readcon_t")) {
 		return result->status = BMY_LOG_PARSE_DISCARDED;
 	}
 

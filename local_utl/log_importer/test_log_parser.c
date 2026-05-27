@@ -675,6 +675,18 @@ START_TEST(test_log_parser_board_usage)
 	bmy_log_parse_result_cleanup(&result);
 }
 END_TEST
+
+START_TEST(test_log_parser_board_usage_empty_board_should_fail)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 guest use  000";
+
+	ck_assert(!bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_FAILED);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
 #endif
 
 #if 1 // session duration
@@ -1175,6 +1187,27 @@ START_TEST(test_log_parser_announcement_import_empty_owner)
 }
 END_TEST
 
+START_TEST(test_log_parser_announcement_import_title_space)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo import board firm  ";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_ANNOUNCEMENT);
+
+	const struct bmy_log_announcement_event *data = &result.payload.announcement;
+	ck_assert_str_eq(data->action, "import");
+	ck_assert_str_eq(data->userid, "foo");
+	ck_assert_str_eq(data->board, "board");
+	ck_assert_str_eq(data->owner_userid, "firm");
+	ck_assert_str_eq(data->title, " ");
+	ck_assert_ptr_null(data->path);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
 START_TEST(test_log_parser_announcement_paste)
 {
 	struct bmy_log_parse_result result;
@@ -1561,6 +1594,42 @@ START_TEST(test_log_parser_discarded_enterboard)
 	bmy_log_parse_result_cleanup(&result);
 }
 END_TEST
+
+START_TEST(test_log_parser_discarded_enterboard_t)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo enterboard_t board from 1.2.3.4";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_DISCARDED);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_discarded_readcon_t)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo readcon_t ignored legacy payload";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_DISCARDED);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_discarded_readcon)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo readcon ignored legacy payload";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_DISCARDED);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
 #endif
 
 static Suite *log_parser_suite(void) {
@@ -1572,6 +1641,7 @@ static Suite *log_parser_suite(void) {
 	tcase_add_test(tc_core, test_log_parser_time);
 
 	tcase_add_test(tc_core, test_log_parser_board_usage);
+	tcase_add_test(tc_core, test_log_parser_board_usage_empty_board_should_fail);
 	tcase_add_test(tc_core, test_log_parser_session_exitbbs);
 	tcase_add_test(tc_core, test_log_parser_session_drop);
 	tcase_add_test(tc_core, test_log_parser_session_drop_legacy_www);
@@ -1648,6 +1718,7 @@ static Suite *log_parser_suite(void) {
 	tcase_add_test(tc_announcement, test_log_parser_announcement_import);
 	tcase_add_test(tc_announcement, test_log_parser_announcement_import_title_zh);
 	tcase_add_test(tc_announcement, test_log_parser_announcement_import_empty_owner);
+	tcase_add_test(tc_announcement, test_log_parser_announcement_import_title_space);
 	tcase_add_test(tc_announcement, test_log_parser_announcement_paste);
 	tcase_add_test(tc_announcement, test_log_parser_announcement_paste_path_zh);
 	tcase_add_test(tc_announcement, test_log_parser_announcement_additem);
@@ -1681,6 +1752,9 @@ static Suite *log_parser_suite(void) {
 	tcase_add_test(tc_discarded_rest, test_log_parser_discarded_full_search);
 	tcase_add_test(tc_discarded_rest, test_log_parser_discarded_selection_trace);
 	tcase_add_test(tc_discarded_rest, test_log_parser_discarded_enterboard);
+	tcase_add_test(tc_discarded_rest, test_log_parser_discarded_enterboard_t);
+	tcase_add_test(tc_discarded_rest, test_log_parser_discarded_readcon_t);
+	tcase_add_test(tc_discarded_rest, test_log_parser_discarded_readcon);
 	suite_add_tcase(s, tc_discarded_rest);
 
 	return s;
