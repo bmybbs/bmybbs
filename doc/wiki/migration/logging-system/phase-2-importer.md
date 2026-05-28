@@ -64,7 +64,8 @@ Discarded APIs should not be imported into business-event tables.
 - Non-dry-run import performs categorized inserts and `log_imported_lines` tracking through per-event transactions.
 - Dry-run parsing is implemented for historical-format discovery without database writes.
 - Unrecognized and failed parser results are reported by filename, physical line number, and status for later inspection in an editor.
-- The implementation is awaiting build and runtime validation in the test environment, including historical dry-run passes and database idempotency checks.
+- A broad historical dry-run pass has been completed on a test site. Only a small number of lines remained unrecognized or failed, so the parser is considered stable enough for database-import validation.
+- The implementation is still awaiting non-dry-run database validation in the test environment, including idempotency checks.
 
 ## Validation Goals
 
