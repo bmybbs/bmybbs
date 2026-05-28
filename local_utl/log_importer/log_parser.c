@@ -1140,6 +1140,12 @@ static enum bmy_log_parse_status bmy_log_parse_rest(const struct bmy_log_tokens 
 			return result->status = BMY_LOG_PARSE_DISCARDED;
 		}
 
+		// Legacy miscellaneous diagnostics.
+		if (bmy_log_tokens_eq_at_idx(raw_tokens, 1, "[wtf]") ||
+			bmy_log_tokens_eq_at_idx(raw_tokens, 1, "[WTF]")) {
+			return result->status = BMY_LOG_PARSE_DISCARDED;
+		}
+
 		// failed to insert UT for
 		if (bmy_log_tokens_eq_at_idx(raw_tokens, 1, "failed") && bmy_log_tokens_eq_at_idx(raw_tokens, 2, "to") && bmy_log_tokens_eq_at_idx(raw_tokens, 3, "insert")) {
 			return result->status = BMY_LOG_PARSE_DISCARDED;

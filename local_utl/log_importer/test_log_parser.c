@@ -1496,6 +1496,30 @@ START_TEST(test_log_parser_discarded_mail_sender)
 }
 END_TEST
 
+START_TEST(test_log_parser_discarded_wtf_lower)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 [wtf] ignored legacy payload";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_DISCARDED);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_discarded_wtf_upper)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 [WTF] ignored legacy payload";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_DISCARDED);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
 START_TEST(test_log_parser_discarded_insert_ut)
 {
 	struct bmy_log_parse_result result;
@@ -1892,6 +1916,8 @@ static Suite *log_parser_suite(void) {
 	TCase *tc_discarded_runtime = tcase_create("discarded runtime");
 	tcase_add_test(tc_discarded_runtime, test_log_parser_discarded_exec);
 	tcase_add_test(tc_discarded_runtime, test_log_parser_discarded_mail_sender);
+	tcase_add_test(tc_discarded_runtime, test_log_parser_discarded_wtf_lower);
+	tcase_add_test(tc_discarded_runtime, test_log_parser_discarded_wtf_upper);
 	tcase_add_test(tc_discarded_runtime, test_log_parser_discarded_insert_ut);
 	tcase_add_test(tc_discarded_runtime, test_log_parser_discarded_user_idx_changed);
 	tcase_add_test(tc_discarded_runtime, test_log_parser_discarded_shm_err);
