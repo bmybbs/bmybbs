@@ -102,6 +102,7 @@ static bool bmy_log_parser_is_ip_address(const char *text);
 static struct bmy_log_token bmy_log_parser_article_title_after(const struct bmy_log_token *token);
 static struct bmy_log_token bmy_log_parser_text_after_empty_field(const struct bmy_log_token *token);
 static bool bmy_log_parser_field_is_empty(const struct bmy_log_token *previous, const struct bmy_log_token *next);
+static struct bmy_log_token bmy_log_parser_text_between_tokens(const struct bmy_log_token *begin, const struct bmy_log_token *end);
 static char *bmy_log_token_to_utf8(const struct bmy_log_token *token);
 static bool bmy_log_token_to_int(const struct bmy_log_token *token, int *x);
 static bool bmy_log_token_to_signed_int(const struct bmy_log_token *token, int *x);
@@ -301,7 +302,7 @@ void bmy_log_parse_result_cleanup(struct bmy_log_parse_result *result) {
 			bmy_log_parser_safe_ptr_cleanup(&result->payload.login_failure.from_host);
 			break;
 		case BMY_LOG_EVENT_SECURITY:
-			bmy_log_parser_safe_ptr_cleanup(&result->payload.security.userid);
+			bmy_log_parser_safe_ptr_cleanup(&result->payload.security.input_value);
 			bmy_log_parser_safe_ptr_cleanup(&result->payload.security.from_host);
 			break;
 		case BMY_LOG_EVENT_SESSION:
@@ -656,16 +657,15 @@ static enum bmy_log_parse_status bmy_log_parse_login_failure(const struct bmy_lo
 static enum bmy_log_parse_status bmy_log_parse_security_event(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result) {
 	const struct bmy_log_token *action_token = NULL;
 	const struct bmy_log_token *sub_action_token = NULL;
+	const struct bmy_log_token *input_start_token = NULL;
 	const struct bmy_log_token *from_token = NULL;
 	const struct bmy_log_token *ip_colon_token = NULL;
 	const struct bmy_log_token *ip_token = NULL;
-	const struct bmy_log_token *userid_token = NULL;
+	struct bmy_log_token input_token = { 0 };
 	struct bmy_log_token from_host_token = { 0 };
-	char *userid = NULL;
+	char *input_value = NULL;
 	char *from_host = NULL;
 	const char *action = NULL;
-	unsigned userid_token_idx = 0;
-	bool carries_userid = false;
 
 	if (!bmy_log_token_eq(&raw_tokens->items[1], "bot") || raw_tokens->count < 7) {
 		return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
@@ -683,22 +683,16 @@ static enum bmy_log_parse_status bmy_log_parse_security_event(const struct bmy_l
 
 	// handle userid
 	if (bmy_log_token_eq(action_token, "login") || bmy_log_token_eq(action_token, "register")) {
-		if (raw_tokens->count != 7 && raw_tokens->count != 8) {
-			return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
-		}
-		userid_token_idx = 4;
+		input_start_token = &raw_tokens->items[4];
 	} else if ((bmy_log_token_eq(action_token, "reset") && bmy_log_token_eq(sub_action_token, "pass")) || (bmy_log_token_eq(action_token, "query") && bmy_log_token_eq(sub_action_token, "email"))) {
-		if (raw_tokens->count != 8 && raw_tokens->count != 9) {
-			return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
-		}
-		userid_token_idx = 5;
+		input_start_token = &raw_tokens->items[5];
 	} else {
 		return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
 	}
-	userid_token = &raw_tokens->items[userid_token_idx];
-	carries_userid = userid_token != from_token;
-	if (carries_userid) {
-		if ((userid = bmy_log_token_dup(userid_token)) == NULL) {
+
+	input_token = bmy_log_parser_text_between_tokens(input_start_token, from_token);
+	if (!bmy_log_token_empty(&input_token)) {
+		if ((input_value = bmy_log_token_dup(&input_token)) == NULL) {
 			goto FAILED_0;
 		}
 	}
@@ -728,16 +722,14 @@ static enum bmy_log_parse_status bmy_log_parse_security_event(const struct bmy_l
 	}
 	result->table = BMY_LOG_EVENT_SECURITY;
 	result->payload.security.action = action;
-	result->payload.security.userid = userid;
+	result->payload.security.input_value = input_value;
 	result->payload.security.from_host = from_host;
 	return result->status = BMY_LOG_PARSE_ACCEPTED;
 
 FAILED_2:
 	free(from_host);
 FAILED_1:
-	if (carries_userid) {
-		free(userid);
-	}
+	free(input_value);
 FAILED_0:
 	return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
 }
@@ -834,6 +826,29 @@ static bool bmy_log_parser_field_is_empty(const struct bmy_log_token *previous, 
 	}
 
 	return next->ptr > previous->ptr + previous->len + 1;
+}
+
+static struct bmy_log_token bmy_log_parser_text_between_tokens(const struct bmy_log_token *begin, const struct bmy_log_token *end) {
+	struct bmy_log_token text = {0};
+	const char *ptr;
+	const char *limit;
+
+	if (begin == NULL || begin->ptr == NULL || end == NULL || end->ptr == NULL || begin->ptr > end->ptr) {
+		return text;
+	}
+
+	ptr = begin->ptr;
+	limit = end->ptr;
+	while (ptr < limit && *ptr == ' ') {
+		ptr++;
+	}
+	while (limit > ptr && limit[-1] == ' ') {
+		limit--;
+	}
+
+	text.ptr = ptr;
+	text.len = (size_t)(limit - ptr);
+	return text;
 }
 
 static enum bmy_log_parse_status bmy_log_parse_session_cleanup(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result) {

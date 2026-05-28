@@ -208,7 +208,7 @@ struct bmy_log_login_failure_event {
 
 struct bmy_log_security_event {
 	const char *action;
-	const char *userid;
+	const char *input_value;
 	const char *from_host;
 };
 
@@ -309,7 +309,7 @@ Examples of ambiguity to handle carefully:
 - Accepted event payloads cover every designed category table.
 - Known discarded logging families are classified without database insertion.
 - Account cleanup records parse the final `system kill` field as the negative legacy `countlife()` value, separately from registration `usernum`.
-- Deployed-only `bot nju09 login/register/query/reset` security-trap records parse into `log_security_events`, with nullable attempted user ids.
+- Deployed-only `bot nju09 login/register/query/reset` security-trap records parse into `log_security_events`, with nullable attacker-controlled input values.
 - Parser and tokenizer test sources exist; test-environment validation and historical dry-run discovery remain pending.
 
 ## Data Flow

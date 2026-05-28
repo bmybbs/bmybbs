@@ -142,15 +142,15 @@ Security-trap events emitted by the deployed `nju09` web layer.
 
 Related historical formats:
 
-- `bot nju09 login <userid> from ip: <host>`
-- `bot nju09 register <userid> from ip: <host>`
-- `bot nju09 query <userid> from ip: <host>`
-- `bot nju09 reset <userid> from ip: <host>`
+- `bot nju09 login <input> from ip: <host>`
+- `bot nju09 register <input> from ip: <host>`
+- `bot nju09 query email <input> from ip: <host>`
+- `bot nju09 reset pass <input> from ip: <host>`
 
 Important fields:
 
 - `action`: `bot_login`, `bot_register`, `bot_query`, or `bot_reset`
-- `userid`: attempted user id when present; nullable because historical login records may omit it
+- `input_value`: attacker-controlled submitted value when present; nullable because historical records may omit it
 - `from_host`: IPv4 or IPv6 source string
 
 Evidence note:
@@ -158,6 +158,7 @@ Evidence note:
 - These formats were observed during historical dry-run validation.
 - Their producing code existed in deployed commit `1ae3e0c42f13994c05d79c8235f6a714053f754d`, but is not present in the current master branch.
 - These events are separate from authentication failures because they record a security trap trigger, including registration attempts.
+- The submitted value is arbitrary trap input, not necessarily a valid user id, so it is stored as nullable text.
 
 ### `log_session_events`
 

@@ -69,7 +69,7 @@ struct bmy_log_login_failure_event {
 
 struct bmy_log_security_event {
 	const char *action;
-	const char *userid;
+	const char *input_value;
 	const char *from_host;
 };
 

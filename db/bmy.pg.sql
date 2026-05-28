@@ -86,7 +86,7 @@ CREATE TABLE IF NOT EXISTS log_security_events (
 
 	action VARCHAR(32) NOT NULL
 		CHECK (action IN ('bot_login', 'bot_register', 'bot_query', 'bot_reset')),
-	userid VARCHAR(12),
+	input_value TEXT,
 	from_host VARCHAR(64) NOT NULL
 );
 

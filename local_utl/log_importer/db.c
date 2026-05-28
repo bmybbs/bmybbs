@@ -321,12 +321,12 @@ static bool bmy_log_importer_insert_security(PGconn *conn, const char *occurred_
 	const char *params[] = {
 		occurred_at,
 		event->action,
-		event->userid,
+		event->input_value,
 		event->from_host,
 	};
 
 	return bmy_log_importer_exec_params_returning_id(conn,
-		"INSERT INTO log_security_events (occurred_at, action, userid, from_host) VALUES ($1, $2, $3, $4) RETURNING id",
+		"INSERT INTO log_security_events (occurred_at, action, input_value, from_host) VALUES ($1, $2, $3, $4) RETURNING id",
 		4, params, event_id);
 }
 
