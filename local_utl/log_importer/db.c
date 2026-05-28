@@ -38,6 +38,11 @@ static bool bmy_log_importer_insert_login_failure(
 	const char *occurred_at,
 	const struct bmy_log_login_failure_event *event,
 	char **event_id);
+static bool bmy_log_importer_insert_security(
+	PGconn *conn,
+	const char *occurred_at,
+	const struct bmy_log_security_event *event,
+	char **event_id);
 static bool bmy_log_importer_insert_session(
 	PGconn *conn,
 	const char *occurred_at,
@@ -161,6 +166,9 @@ bool bmy_log_importer_insert_event(PGconn *conn, const char *source_file, unsign
 			break;
 		case BMY_LOG_EVENT_LOGIN_FAILURE:
 			ok = bmy_log_importer_insert_login_failure(conn, occurred_at, &result->payload.login_failure, &event_id);
+			break;
+		case BMY_LOG_EVENT_SECURITY:
+			ok = bmy_log_importer_insert_security(conn, occurred_at, &result->payload.security, &event_id);
 			break;
 		case BMY_LOG_EVENT_SESSION:
 			ok = bmy_log_importer_insert_session(conn, occurred_at, &result->payload.session, &event_id);
@@ -309,6 +317,19 @@ static bool bmy_log_importer_insert_login_failure(PGconn *conn, const char *occu
 		2, params, event_id);
 }
 
+static bool bmy_log_importer_insert_security(PGconn *conn, const char *occurred_at, const struct bmy_log_security_event *event, char **event_id) {
+	const char *params[] = {
+		occurred_at,
+		event->action,
+		event->userid,
+		event->from_host,
+	};
+
+	return bmy_log_importer_exec_params_returning_id(conn,
+		"INSERT INTO log_security_events (occurred_at, action, userid, from_host) VALUES ($1, $2, $3, $4) RETURNING id",
+		4, params, event_id);
+}
+
 static bool bmy_log_importer_insert_session(PGconn *conn, const char *occurred_at, const struct bmy_log_session_event *event, char **event_id) {
 	const char *params[] = {
 		occurred_at,
@@ -449,6 +470,8 @@ static const char * bmy_log_importer_table_name(enum bmy_log_event_table table) 
 			return "log_session_duration_events";
 		case BMY_LOG_EVENT_LOGIN_FAILURE:
 			return "log_login_failure_events";
+		case BMY_LOG_EVENT_SECURITY:
+			return "log_security_events";
 		case BMY_LOG_EVENT_SESSION:
 			return "log_session_events";
 		case BMY_LOG_EVENT_ACCOUNT:

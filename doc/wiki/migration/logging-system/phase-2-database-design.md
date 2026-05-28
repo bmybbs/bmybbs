@@ -136,6 +136,29 @@ Important fields:
 
 This table is important because site-ban checks rely on repeated login failures from a source host.
 
+### `log_security_events`
+
+Security-trap events emitted by the deployed `nju09` web layer.
+
+Related historical formats:
+
+- `bot nju09 login <userid> from ip: <host>`
+- `bot nju09 register <userid> from ip: <host>`
+- `bot nju09 query <userid> from ip: <host>`
+- `bot nju09 reset <userid> from ip: <host>`
+
+Important fields:
+
+- `action`: `bot_login`, `bot_register`, `bot_query`, or `bot_reset`
+- `userid`: attempted user id when present; nullable because historical login records may omit it
+- `from_host`: IPv4 or IPv6 source string
+
+Evidence note:
+
+- These formats were observed during historical dry-run validation.
+- Their producing code existed in deployed commit `1ae3e0c42f13994c05d79c8235f6a714053f754d`, but is not present in the current master branch.
+- These events are separate from authentication failures because they record a security trap trigger, including registration attempts.
+
 ### `log_session_events`
 
 Session-related events that do not carry a stay duration.
@@ -277,6 +300,7 @@ The initial SQL schema uses minimal secondary indexes.
 - Add one `occurred_at` index for each category table.
 - Reason: historical log inspection is expected to start from a time range.
 - Add `log_login_failure_events(from_host, occurred_at)` because site-ban checks have a known lookup by source host, often within a time range.
+- Add `log_security_events(from_host, occurred_at)` because security-trap investigation is expected to start from a source host and time range.
 - Defer other user, board, and host indexes until real query patterns appear.
 - `log_imported_lines(source_file, source_line)` already has a unique index from its unique constraint.
 

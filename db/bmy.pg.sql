@@ -79,6 +79,17 @@ CREATE TABLE IF NOT EXISTS log_login_failure_events (
 	from_host VARCHAR(64) NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS log_security_events (
+	id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+
+	occurred_at TIMESTAMPTZ NOT NULL,
+
+	action VARCHAR(32) NOT NULL
+		CHECK (action IN ('bot_login', 'bot_register', 'bot_query', 'bot_reset')),
+	userid VARCHAR(12),
+	from_host VARCHAR(64) NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS log_session_events (
 	id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 
@@ -203,6 +214,12 @@ CREATE INDEX IF NOT EXISTS idx_log_login_failure_events_occurred_at
 
 CREATE INDEX IF NOT EXISTS idx_log_login_failure_events_from_host_occurred_at
 	ON log_login_failure_events (from_host, occurred_at);
+
+CREATE INDEX IF NOT EXISTS idx_log_security_events_occurred_at
+	ON log_security_events (occurred_at);
+
+CREATE INDEX IF NOT EXISTS idx_log_security_events_from_host_occurred_at
+	ON log_security_events (from_host, occurred_at);
 
 CREATE INDEX IF NOT EXISTS idx_log_session_events_occurred_at
 	ON log_session_events (occurred_at);

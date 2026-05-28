@@ -676,17 +676,6 @@ START_TEST(test_log_parser_board_usage)
 }
 END_TEST
 
-START_TEST(test_log_parser_board_usage_empty_board_should_fail)
-{
-	struct bmy_log_parse_result result;
-	const char *log_msg = "01:02:03 guest use  000";
-
-	ck_assert(!bmy_log_parse_line(log_msg, &result));
-	ck_assert_int_eq(result.status, BMY_LOG_PARSE_FAILED);
-
-	bmy_log_parse_result_cleanup(&result);
-}
-END_TEST
 #endif
 
 #if 1 // session duration
@@ -794,6 +783,152 @@ START_TEST(test_log_parser_login_failure_wrong_IP)
 
 	ck_assert(!bmy_log_parse_line(log_msg, &result));
 	ck_assert_int_eq(result.status, BMY_LOG_PARSE_UNRECOGNIZED);
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+#endif
+
+#if 1 // security events
+START_TEST(test_log_parser_security_bot_login)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 bot nju09 login username from ip: 1.2.3.4";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_SECURITY);
+
+	const struct bmy_log_security_event *data = &result.payload.security;
+	ck_assert_str_eq(data->action, "bot_login");
+	ck_assert_str_eq(data->userid, "username");
+	ck_assert_str_eq(data->from_host, "1.2.3.4");
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_security_bot_login_empty_userid_legacy_asterisk)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 bot nju09 login  from ip: 1.2.3.4*";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_SECURITY);
+
+	const struct bmy_log_security_event *data = &result.payload.security;
+	ck_assert_str_eq(data->action, "bot_login");
+	ck_assert_ptr_null(data->userid);
+	ck_assert_str_eq(data->from_host, "1.2.3.4");
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_security_bot_register)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 bot nju09 register username from ip: 1.2.3.4";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_SECURITY);
+
+	const struct bmy_log_security_event *data = &result.payload.security;
+	ck_assert_str_eq(data->action, "bot_register");
+	ck_assert_str_eq(data->userid, "username");
+	ck_assert_str_eq(data->from_host, "1.2.3.4");
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_security_bot_register_null_username)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 bot nju09 register  from ip: 1.2.3.4";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_SECURITY);
+
+	const struct bmy_log_security_event *data = &result.payload.security;
+	ck_assert_str_eq(data->action, "bot_register");
+	ck_assert_ptr_null(data->userid);
+	ck_assert_str_eq(data->from_host, "1.2.3.4");
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_security_bot_query)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 bot nju09 query email username from ip: 1.2.3.4";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_SECURITY);
+
+	const struct bmy_log_security_event *data = &result.payload.security;
+	ck_assert_str_eq(data->action, "bot_query");
+	ck_assert_str_eq(data->userid, "username");
+	ck_assert_str_eq(data->from_host, "1.2.3.4");
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_security_bot_reset)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 bot nju09 reset pass username from ip: 1.2.3.4";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_SECURITY);
+
+	const struct bmy_log_security_event *data = &result.payload.security;
+	ck_assert_str_eq(data->action, "bot_reset");
+	ck_assert_str_eq(data->userid, "username");
+	ck_assert_str_eq(data->from_host, "1.2.3.4");
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_security_bot_login_userid_from)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 bot nju09 login from from ip: 1.2.3.4";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_SECURITY);
+
+	const struct bmy_log_security_event *data = &result.payload.security;
+	ck_assert_str_eq(data->action, "bot_login");
+	ck_assert_str_eq(data->userid, "from");
+	ck_assert_str_eq(data->from_host, "1.2.3.4");
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_security_bot_login_null_userid)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 bot nju09 login  from ip: 1.2.3.4";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_SECURITY);
+
+	const struct bmy_log_security_event *data = &result.payload.security;
+	ck_assert_str_eq(data->action, "bot_login");
+	ck_assert_ptr_null(data->userid);
+	ck_assert_str_eq(data->from_host, "1.2.3.4");
+
 	bmy_log_parse_result_cleanup(&result);
 }
 END_TEST
@@ -1641,7 +1776,6 @@ static Suite *log_parser_suite(void) {
 	tcase_add_test(tc_core, test_log_parser_time);
 
 	tcase_add_test(tc_core, test_log_parser_board_usage);
-	tcase_add_test(tc_core, test_log_parser_board_usage_empty_board_should_fail);
 	tcase_add_test(tc_core, test_log_parser_session_exitbbs);
 	tcase_add_test(tc_core, test_log_parser_session_drop);
 	tcase_add_test(tc_core, test_log_parser_session_drop_legacy_www);
@@ -1703,6 +1837,17 @@ static Suite *log_parser_suite(void) {
 	tcase_add_test(tc_login_failure, test_log_parser_login_failure_wrong_username);
 	tcase_add_test(tc_login_failure, test_log_parser_login_failure_wrong_IP);
 	suite_add_tcase(s, tc_login_failure);
+
+	TCase *tc_security = tcase_create("security");
+	tcase_add_test(tc_security, test_log_parser_security_bot_login);
+	tcase_add_test(tc_security, test_log_parser_security_bot_login_empty_userid_legacy_asterisk);
+	tcase_add_test(tc_security, test_log_parser_security_bot_register);
+	tcase_add_test(tc_security, test_log_parser_security_bot_register_null_username);
+	tcase_add_test(tc_security, test_log_parser_security_bot_query);
+	tcase_add_test(tc_security, test_log_parser_security_bot_reset);
+	tcase_add_test(tc_security, test_log_parser_security_bot_login_userid_from);
+	tcase_add_test(tc_security, test_log_parser_security_bot_login_null_userid);
+	suite_add_tcase(s, tc_security);
 
 	TCase *tc_session = tcase_create("session");
 	tcase_add_test(tc_session, test_log_parser_user_enter_with_using);

@@ -171,6 +171,7 @@ union bmy_log_event_payload {
 	struct bmy_log_board_usage_event board_usage;
 	struct bmy_log_session_duration_event session_duration;
 	struct bmy_log_login_failure_event login_failure;
+	struct bmy_log_security_event security;
 	struct bmy_log_session_event session;
 	struct bmy_log_account_event account;
 	struct bmy_log_mail_event mail;
@@ -202,6 +203,12 @@ struct bmy_log_range_delete_event {
 };
 
 struct bmy_log_login_failure_event {
+	const char *from_host;
+};
+
+struct bmy_log_security_event {
+	const char *action;
+	const char *userid;
 	const char *from_host;
 };
 
@@ -241,6 +248,7 @@ The parser should support all accepted event families from [../migration/logging
 - board usage events
 - session duration events
 - login failure events
+- security events
 - session events
 - account events
 - mail events
@@ -301,6 +309,7 @@ Examples of ambiguity to handle carefully:
 - Accepted event payloads cover every designed category table.
 - Known discarded logging families are classified without database insertion.
 - Account cleanup records parse the final `system kill` field as the negative legacy `countlife()` value, separately from registration `usernum`.
+- Deployed-only `bot nju09 login/register/query/reset` security-trap records parse into `log_security_events`, with nullable attempted user ids.
 - Parser and tokenizer test sources exist; test-environment validation and historical dry-run discovery remain pending.
 
 ## Data Flow

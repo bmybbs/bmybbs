@@ -46,6 +46,7 @@ The importer should support every accepted event family from the database design
 - board usage events
 - session duration events
 - login failure events
+- security events
 - session events
 - account events
 - mail events
@@ -74,6 +75,7 @@ Discarded APIs should not be imported into business-event tables.
 - Board usage rows should preserve the legacy stay duration as non-negative seconds.
 - Session duration rows should preserve the legacy stay duration as non-negative seconds.
 - Login failure rows should preserve the historical source host.
+- Security rows should preserve `bot_login`, `bot_register`, `bot_query`, or `bot_reset`, any available attempted user id, and the source host from deployed `nju09` trap records.
 - Session rows should preserve available source host, target user, and login type information.
 - Account creation rows should preserve user number and source host, and normalize legacy `www` creation-path markers to login type `NJU09`.
 - Account expiration-cleanup rows should preserve the negative legacy `countlife()` value as `life_value`, not as a user number.
