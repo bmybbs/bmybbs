@@ -136,6 +136,30 @@ Important fields:
 
 This table is important because site-ban checks rely on repeated login failures from a source host.
 
+### `log_security_events`
+
+Security-trap events emitted by the deployed `nju09` web layer.
+
+Related historical formats:
+
+- `bot nju09 login <input> from ip: <host>`
+- `bot nju09 register <input> from ip: <host>`
+- `bot nju09 query email <input> from ip: <host>`
+- `bot nju09 reset pass <input> from ip: <host>`
+
+Important fields:
+
+- `action`: `bot_login`, `bot_register`, `bot_query`, or `bot_reset`
+- `input_value`: attacker-controlled submitted value when present; nullable because historical records may omit it
+- `from_host`: IPv4 or IPv6 source string
+
+Evidence note:
+
+- These formats were observed during historical dry-run validation.
+- Their producing code existed in deployed commit `1ae3e0c42f13994c05d79c8235f6a714053f754d`, but is not present in the current master branch.
+- These events are separate from authentication failures because they record a security trap trigger, including registration attempts.
+- The submitted value is arbitrary trap input, not necessarily a valid user id, so it is stored as nullable text.
+
 ### `log_session_events`
 
 Session-related events that do not carry a stay duration.
@@ -168,9 +192,15 @@ Important fields:
 
 - `action`: `create` or `expire_cleanup`
 - `userid`: account user id
-- `usernum`: legacy user number when available
+- `user_index_value`: raw legacy numeric value for `create`; null for `expire_cleanup`
+- `life_value`: negative `countlife()` value for `expire_cleanup`; null for `create`
 - `from_host`: source host for account creation
-- `login_type`: creation path when known
+- `login_type`: creation path when known; legacy `www` records are normalized to `NJU09`
+
+Evidence note:
+
+- Legacy `system kill <userid> <value>` records are produced by `ythtbbs_user_clean()` after `value = countlife(&utmp)` and only when `value < 0`; the last field is not a user number.
+- Legacy `newaccount <userid> <value> <host>` records do not provide one consistent normalized user number. Terminal registration uses a 1-based allocated id, while the `nju09` web path logs the raw `getusernum()` result, which is zero-based and can be `-1` when lookup fails. The importer therefore stores this as `user_index_value`.
 
 ### `log_mail_events`
 
@@ -272,6 +302,7 @@ The initial SQL schema uses minimal secondary indexes.
 - Add one `occurred_at` index for each category table.
 - Reason: historical log inspection is expected to start from a time range.
 - Add `log_login_failure_events(from_host, occurred_at)` because site-ban checks have a known lookup by source host, often within a time range.
+- Add `log_security_events(from_host, occurred_at)` because security-trap investigation is expected to start from a source host and time range.
 - Defer other user, board, and host indexes until real query patterns appear.
 - `log_imported_lines(source_file, source_line)` already has a unique index from its unique constraint.
 

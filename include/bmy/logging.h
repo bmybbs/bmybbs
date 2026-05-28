@@ -100,9 +100,9 @@ void bmy_log_account_create(const char *userid, int usernum, const char *fromhos
  * @details 来源
  * - libythtbbs/user.c: ythtbbs_user_clean -> "system kill %s %d"
  * @param userid 用户 id
- * @param usernum 索引
+ * @param life_value 清理时由 countlife() 返回的负数生命力值
  */
-void bmy_log_account_expire_cleanup(const char *userid, int usernum);
+void bmy_log_account_expire_cleanup(const char *userid, int life_value);
 
 // board usage and statistics
 

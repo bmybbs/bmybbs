@@ -86,6 +86,7 @@ static enum bmy_log_parse_status bmy_log_parse_ranged(const struct bmy_log_token
 static enum bmy_log_parse_status bmy_log_parse_board_usage(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
 static enum bmy_log_parse_status bmy_log_parse_session_duration(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
 static enum bmy_log_parse_status bmy_log_parse_login_failure(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
+static enum bmy_log_parse_status bmy_log_parse_security_event(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
 static enum bmy_log_parse_status bmy_log_parse_session_login_success(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
 static enum bmy_log_parse_status bmy_log_parse_session_cleanup(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
 static enum bmy_log_parse_status bmy_log_parse_session_kick(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
@@ -98,8 +99,13 @@ static enum bmy_log_parse_status bmy_log_parse_board_deny(const struct bmy_log_t
 static enum bmy_log_parse_status bmy_log_parse_rest(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result);
 
 static bool bmy_log_parser_is_ip_address(const char *text);
+static struct bmy_log_token bmy_log_parser_article_title_after(const struct bmy_log_token *token);
+static struct bmy_log_token bmy_log_parser_text_after_empty_field(const struct bmy_log_token *token);
+static bool bmy_log_parser_field_is_empty(const struct bmy_log_token *previous, const struct bmy_log_token *next);
+static struct bmy_log_token bmy_log_parser_text_between_tokens(const struct bmy_log_token *begin, const struct bmy_log_token *end);
 static char *bmy_log_token_to_utf8(const struct bmy_log_token *token);
 static bool bmy_log_token_to_int(const struct bmy_log_token *token, int *x);
+static bool bmy_log_token_to_signed_int(const struct bmy_log_token *token, int *x);
 static bool bmy_log_token_to_long(const struct bmy_log_token *token, long *x);
 static bool bmy_log_tokens_eq_at_idx(const struct bmy_log_tokens *tokens, size_t idx, const char *s);
 
@@ -184,6 +190,12 @@ bool bmy_log_parse_line(const char *line, struct bmy_log_parse_result *result) {
 		result->payload.session_duration.userid = userid;
 	} else if (bmy_log_token_eq(action_token, "passerr")) {
 		if (bmy_log_parse_login_failure(&tokens, result) != BMY_LOG_PARSE_ACCEPTED) {
+			goto FAILED_1;
+		}
+
+		free(userid);
+	} else if (bmy_log_token_eq(action_token, "nju09")) {
+		if (bmy_log_parse_security_event(&tokens, result) != BMY_LOG_PARSE_ACCEPTED) {
 			goto FAILED_1;
 		}
 
@@ -289,6 +301,10 @@ void bmy_log_parse_result_cleanup(struct bmy_log_parse_result *result) {
 		case BMY_LOG_EVENT_LOGIN_FAILURE:
 			bmy_log_parser_safe_ptr_cleanup(&result->payload.login_failure.from_host);
 			break;
+		case BMY_LOG_EVENT_SECURITY:
+			bmy_log_parser_safe_ptr_cleanup(&result->payload.security.input_value);
+			bmy_log_parser_safe_ptr_cleanup(&result->payload.security.from_host);
+			break;
 		case BMY_LOG_EVENT_SESSION:
 			bmy_log_parser_safe_ptr_cleanup(&result->payload.session.userid);
 			bmy_log_parser_safe_ptr_cleanup(&result->payload.session.from_host);
@@ -386,11 +402,15 @@ static enum bmy_log_parse_status bmy_log_parse_article_mark_like_events(const st
 	if ((board = bmy_log_token_dup(&raw_tokens->items[3])) == NULL) {
 		goto FAILED_0;
 	}
-	if ((owner = bmy_log_token_dup(&raw_tokens->items[4])) == NULL) {
-		goto FAILED_1;
-	}
 
-	title_token = bmy_log_token_rest_after(&raw_tokens->items[4]);
+	if (bmy_log_parser_field_is_empty(&raw_tokens->items[3], &raw_tokens->items[4])) {
+		title_token = bmy_log_parser_text_after_empty_field(&raw_tokens->items[3]);
+	} else {
+		if ((owner = bmy_log_token_dup(&raw_tokens->items[4])) == NULL) {
+			goto FAILED_1;
+		}
+		title_token = bmy_log_parser_article_title_after(&raw_tokens->items[4]);
+	}
 	if (bmy_log_token_empty(&title_token)) {
 		goto FAILED_1;
 	}
@@ -440,17 +460,19 @@ static enum bmy_log_parse_status bmy_log_parse_article_post_like_events(const st
 	if ((board = bmy_log_token_dup(&raw_tokens->items[3])) == NULL) {
 		goto FAILED_0;
 	}
-	title_token = bmy_log_token_rest_after(&raw_tokens->items[3]);
-	if (bmy_log_token_empty(&title_token)) {
-		goto FAILED_0;
-	}
-	if ((title_utf8 = bmy_log_token_to_utf8(&title_token)) == NULL) {
-		goto FAILED_1;
-	}
 
 	action_token = &raw_tokens->items[2];
 	if ((result->payload.article.action = get_action_str(action_token, STR_ACTIONS_POST_LIKE)) == NULL) {
-		goto FAILED_2;
+		goto FAILED_1;
+	}
+
+	title_token = bmy_log_parser_article_title_after(&raw_tokens->items[3]);
+	if (bmy_log_token_empty(&title_token)) {
+		if (!bmy_log_token_eq(action_token, "sametitle")) {
+			goto FAILED_1;
+		}
+	} else if ((title_utf8 = bmy_log_token_to_utf8(&title_token)) == NULL) {
+		goto FAILED_1;
 	}
 
 	result->table = BMY_LOG_EVENT_ARTICLE;
@@ -458,8 +480,6 @@ static enum bmy_log_parse_status bmy_log_parse_article_post_like_events(const st
 	result->payload.article.title = title_utf8;
 	return result->status = BMY_LOG_PARSE_ACCEPTED;
 
-FAILED_2:
-	free(title_utf8);
 FAILED_1:
 	free(board);
 FAILED_0:
@@ -478,7 +498,7 @@ static enum bmy_log_parse_status bmy_log_parse_article_changetitle(const struct 
 	prefix_oldtitle = "oldtitle:";
 	prefix_newtitle = " newtitle:";
 
-	if (raw_tokens->count < 7) {
+	if (raw_tokens->count < 6) {
 		return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
 	}
 
@@ -502,8 +522,10 @@ static enum bmy_log_parse_status bmy_log_parse_article_changetitle(const struct 
 	if ((board = bmy_log_token_dup(&raw_tokens->items[3])) == NULL) {
 		goto FAILED_2;
 	}
-	if ((owner = bmy_log_token_dup(&raw_tokens->items[4])) == NULL) {
-		goto FAILED_3;
+	if (raw_tokens->items[4].ptr != ptr_oldtitle) {
+		if ((owner = bmy_log_token_dup(&raw_tokens->items[4])) == NULL) {
+			goto FAILED_3;
+		}
 	}
 
 	result->table = BMY_LOG_EVENT_ARTICLE;
@@ -538,7 +560,7 @@ static enum bmy_log_parse_status bmy_log_parse_ranged(const struct bmy_log_token
 		if (!bmy_log_token_to_int(&raw_tokens->items[4], &from_id)) {
 			goto FAILED_0;
 		}
-		if (!bmy_log_token_to_int(&raw_tokens->items[5], &to_id)) {
+		if (!bmy_log_token_to_signed_int(&raw_tokens->items[5], &to_id)) {
 			goto FAILED_0;
 		}
 		if ((board = bmy_log_token_dup(&raw_tokens->items[3])) == NULL) {
@@ -558,7 +580,7 @@ static enum bmy_log_parse_status bmy_log_parse_ranged(const struct bmy_log_token
 		if (!bmy_log_token_to_int(&raw_tokens->items[3], &from_id)) {
 			goto FAILED_0;
 		}
-		if (!bmy_log_token_to_int(&raw_tokens->items[4], &to_id)) {
+		if (!bmy_log_token_to_signed_int(&raw_tokens->items[4], &to_id)) {
 			goto FAILED_0;
 		}
 
@@ -595,8 +617,15 @@ static enum bmy_log_parse_status bmy_log_parse_board_usage(const struct bmy_log_
 
 static enum bmy_log_parse_status bmy_log_parse_session_duration(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result) {
 	long stay_seconds = 0;
+	bool legacy_www_disconnect;
 
-	if (raw_tokens->count != 4 || !bmy_log_token_to_long(&raw_tokens->items[3], &stay_seconds)) {
+	legacy_www_disconnect =
+		raw_tokens->count == 5 &&
+		bmy_log_token_eq(&raw_tokens->items[2], "drop") &&
+		bmy_log_token_eq(&raw_tokens->items[4], "www");
+
+	if ((raw_tokens->count != 4 && !legacy_www_disconnect) ||
+		!bmy_log_token_to_long(&raw_tokens->items[3], &stay_seconds)) {
 		return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
 	}
 
@@ -625,10 +654,92 @@ static enum bmy_log_parse_status bmy_log_parse_login_failure(const struct bmy_lo
 	return result->status = BMY_LOG_PARSE_ACCEPTED;
 }
 
+static enum bmy_log_parse_status bmy_log_parse_security_event(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result) {
+	const struct bmy_log_token *action_token = NULL;
+	const struct bmy_log_token *sub_action_token = NULL;
+	const struct bmy_log_token *input_start_token = NULL;
+	const struct bmy_log_token *from_token = NULL;
+	const struct bmy_log_token *ip_colon_token = NULL;
+	const struct bmy_log_token *ip_token = NULL;
+	struct bmy_log_token input_token = { 0 };
+	struct bmy_log_token from_host_token = { 0 };
+	char *input_value = NULL;
+	char *from_host = NULL;
+	const char *action = NULL;
+
+	if (!bmy_log_token_eq(&raw_tokens->items[1], "bot") || raw_tokens->count < 7) {
+		return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
+	}
+
+	action_token = &raw_tokens->items[3];
+	sub_action_token = &raw_tokens->items[4];
+	ip_token = &raw_tokens->items[raw_tokens->count - 1];
+	ip_colon_token = &raw_tokens->items[raw_tokens->count - 2];
+	from_token = &raw_tokens->items[raw_tokens->count - 3];
+
+	if (!bmy_log_token_eq(from_token, "from") || !bmy_log_token_eq(ip_colon_token, "ip:")) {
+		return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
+	}
+
+	// handle userid
+	if (bmy_log_token_eq(action_token, "login") || bmy_log_token_eq(action_token, "register")) {
+		input_start_token = &raw_tokens->items[4];
+	} else if ((bmy_log_token_eq(action_token, "reset") && bmy_log_token_eq(sub_action_token, "pass")) || (bmy_log_token_eq(action_token, "query") && bmy_log_token_eq(sub_action_token, "email"))) {
+		input_start_token = &raw_tokens->items[5];
+	} else {
+		return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
+	}
+
+	input_token = bmy_log_parser_text_between_tokens(input_start_token, from_token);
+	if (!bmy_log_token_empty(&input_token)) {
+		if ((input_value = bmy_log_token_dup(&input_token)) == NULL) {
+			goto FAILED_0;
+		}
+	}
+
+	// handle from_host
+	if (ip_token->ptr[ip_token->len - 1] == '*') {
+		from_host_token.ptr = ip_token->ptr;
+		from_host_token.len = ip_token->len - 1;
+	} else {
+		from_host_token = *ip_token;
+	}
+	if ((from_host = bmy_log_token_dup(&from_host_token)) == NULL) {
+		goto FAILED_1;
+	}
+	if (!bmy_log_parser_is_ip_address(from_host)) {
+		goto FAILED_2;
+	}
+
+	if (bmy_log_token_eq(&raw_tokens->items[3], "login")) {
+		action = "bot_login";
+	} else if (bmy_log_token_eq(&raw_tokens->items[3], "register")) {
+		action = "bot_register";
+	} else if (bmy_log_token_eq(&raw_tokens->items[3], "query")) {
+		action = "bot_query";
+	} else {
+		action = "bot_reset";
+	}
+	result->table = BMY_LOG_EVENT_SECURITY;
+	result->payload.security.action = action;
+	result->payload.security.input_value = input_value;
+	result->payload.security.from_host = from_host;
+	return result->status = BMY_LOG_PARSE_ACCEPTED;
+
+FAILED_2:
+	free(from_host);
+FAILED_1:
+	free(input_value);
+FAILED_0:
+	return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
+}
+
 static enum bmy_log_parse_status bmy_log_parse_session_login_success(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result) {
 	char *from_host = NULL, *login_type = NULL;
 
-	if (raw_tokens->count != 4 /* w/o using */ && raw_tokens->count != 6 /* w/ using */) {
+	if (raw_tokens->count != 4 /* w/o using */ &&
+		raw_tokens->count != 5 /* legacy www */ &&
+		raw_tokens->count != 6 /* w/ using */) {
 		return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
 	}
 
@@ -639,7 +750,15 @@ static enum bmy_log_parse_status bmy_log_parse_session_login_success(const struc
 		goto FAILED_1;
 	}
 
-	if (raw_tokens->count == 6) {
+	if (raw_tokens->count == 5) {
+		if (!bmy_log_token_eq(&raw_tokens->items[4], "www")) {
+			free(from_host);
+			return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
+		}
+		if ((login_type = strdup("NJU09")) == NULL) {
+			goto FAILED_1;
+		}
+	} else if (raw_tokens->count == 6) {
 		if (!bmy_log_token_eq(&raw_tokens->items[4], "using")) {
 			free(from_host);
 			return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
@@ -667,6 +786,69 @@ static bool bmy_log_parser_is_ip_address(const char *text) {
 	struct in6_addr ipv6;
 
 	return inet_pton(AF_INET, text, &ipv4) == 1 || inet_pton(AF_INET6, text, &ipv6) == 1;
+}
+
+static struct bmy_log_token bmy_log_parser_article_title_after(const struct bmy_log_token *token) {
+	struct bmy_log_token title = {0};
+	const char *cursor;
+
+	if (token == NULL || token->ptr == NULL)
+		return title;
+
+	cursor = token->ptr + token->len;
+	if (*cursor != ' ')
+		return title;
+
+	title.ptr = cursor + 1;
+	title.len = strlen(title.ptr);
+	while (title.len > 0 &&
+		(title.ptr[title.len - 1] == '\n' || title.ptr[title.len - 1] == '\r')) {
+		title.len--;
+	}
+
+	return title;
+}
+
+static struct bmy_log_token bmy_log_parser_text_after_empty_field(const struct bmy_log_token *token) {
+	struct bmy_log_token text = bmy_log_parser_article_title_after(token);
+
+	if (text.len > 0 && text.ptr[0] == ' ') {
+		text.ptr++;
+		text.len--;
+	}
+
+	return text;
+}
+
+static bool bmy_log_parser_field_is_empty(const struct bmy_log_token *previous, const struct bmy_log_token *next) {
+	if (previous == NULL || previous->ptr == NULL || next == NULL || next->ptr == NULL) {
+		return false;
+	}
+
+	return next->ptr > previous->ptr + previous->len + 1;
+}
+
+static struct bmy_log_token bmy_log_parser_text_between_tokens(const struct bmy_log_token *begin, const struct bmy_log_token *end) {
+	struct bmy_log_token text = {0};
+	const char *ptr;
+	const char *limit;
+
+	if (begin == NULL || begin->ptr == NULL || end == NULL || end->ptr == NULL || begin->ptr > end->ptr) {
+		return text;
+	}
+
+	ptr = begin->ptr;
+	limit = end->ptr;
+	while (ptr < limit && *ptr == ' ') {
+		ptr++;
+	}
+	while (limit > ptr && limit[-1] == ' ') {
+		limit--;
+	}
+
+	text.ptr = ptr;
+	text.len = (size_t)(limit - ptr);
+	return text;
 }
 
 static enum bmy_log_parse_status bmy_log_parse_session_cleanup(const struct bmy_log_tokens *raw_tokens, struct bmy_log_parse_result *result) {
@@ -711,14 +893,15 @@ static enum bmy_log_parse_status bmy_log_parse_account(const struct bmy_log_toke
 	char *from_host = NULL;
 	char *login_type = NULL;
 	char *userid = NULL;
-	int usernum = 0;
+	int user_index_value = 0;
+	int life_value = 0;
 	const struct bmy_log_token *action_token = &raw_tokens->items[2];
 
 	if (bmy_log_token_eq(action_token, "newaccount")) {
 		if (raw_tokens->count != 6 && raw_tokens->count != 5) {
 			return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
 		}
-		if (!bmy_log_token_to_int(&raw_tokens->items[3], &usernum)) {
+		if (!bmy_log_token_to_signed_int(&raw_tokens->items[3], &user_index_value)) {
 			return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
 		}
 		if ((from_host = bmy_log_token_dup(&raw_tokens->items[4])) == NULL) {
@@ -734,7 +917,7 @@ static enum bmy_log_parse_status bmy_log_parse_account(const struct bmy_log_toke
 				free(from_host);
 				return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
 			}
-			if ((login_type = bmy_log_token_dup(&raw_tokens->items[5])) == NULL) {
+			if ((login_type = strdup("NJU09")) == NULL) {
 				free(from_host);
 				return result->status = BMY_LOG_PARSE_FAILED;
 			}
@@ -743,7 +926,7 @@ static enum bmy_log_parse_status bmy_log_parse_account(const struct bmy_log_toke
 		result->table = BMY_LOG_EVENT_ACCOUNT;
 		// NOTE: 定义在表结构中
 		result->payload.account.action = "create";
-		result->payload.account.usernum = usernum;
+		result->payload.account.user_index_value = user_index_value;
 		result->payload.account.from_host = from_host;
 		result->payload.account.login_type = login_type;
 		return result->status = BMY_LOG_PARSE_ACCEPTED;
@@ -751,7 +934,7 @@ static enum bmy_log_parse_status bmy_log_parse_account(const struct bmy_log_toke
 		if (raw_tokens->count != 5) {
 			return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
 		}
-		if (!bmy_log_token_to_int(&raw_tokens->items[4], &usernum)) {
+		if (!bmy_log_token_to_signed_int(&raw_tokens->items[4], &life_value) || life_value >= 0) {
 			return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
 		}
 		if ((userid = bmy_log_token_dup(&raw_tokens->items[3])) == NULL) {
@@ -761,7 +944,7 @@ static enum bmy_log_parse_status bmy_log_parse_account(const struct bmy_log_toke
 		// NOTE: 定义在表结构中
 		result->payload.account.action = "expire_cleanup";
 		result->payload.account.userid = userid;
-		result->payload.account.usernum = usernum;
+		result->payload.account.life_value = life_value;
 		return result->status = BMY_LOG_PARSE_ACCEPTED;
 	}
 };
@@ -827,16 +1010,20 @@ static enum bmy_log_parse_status bmy_log_parse_announcement(const struct bmy_log
 	action = get_action_str(&raw_tokens->items[2], STR_ACTIONS_ANNOUNCEMENT);
 
 	if (!strcmp(action, "import")) {
-		if (raw_tokens->count < 6) {
+		if (raw_tokens->count < 5) {
 			return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
 		}
 		if ((str1 = bmy_log_token_dup(&raw_tokens->items[3])) == NULL) {
 			goto FAILED_0;
 		}
-		if ((str2 = bmy_log_token_dup(&raw_tokens->items[4])) == NULL) {
-			goto FAILED_1;
+		if (bmy_log_parser_field_is_empty(&raw_tokens->items[3], &raw_tokens->items[4])) {
+			rest = bmy_log_parser_text_after_empty_field(&raw_tokens->items[3]);
+		} else {
+			if ((str2 = bmy_log_token_dup(&raw_tokens->items[4])) == NULL) {
+				goto FAILED_1;
+			}
+			rest = bmy_log_parser_article_title_after(&raw_tokens->items[4]);
 		}
-		rest = bmy_log_token_rest_after(&raw_tokens->items[4]);
 		if ((str3 = bmy_log_token_to_utf8(&rest)) == NULL) {
 			goto FAILED_2;
 		}
@@ -927,6 +1114,18 @@ static enum bmy_log_parse_status bmy_log_parse_rest(const struct bmy_log_tokens 
 		return result->status = BMY_LOG_PARSE_DISCARDED;
 	}
 
+	// Legacy board-entry traces.
+	if (bmy_log_token_eq(action_token, "enterboard") ||
+		bmy_log_token_eq(action_token, "enterboard_t")) {
+		return result->status = BMY_LOG_PARSE_DISCARDED;
+	}
+
+	// Legacy content-reading trace.
+	if (bmy_log_token_eq(action_token, "readcon") ||
+		bmy_log_token_eq(action_token, "readcon_t")) {
+		return result->status = BMY_LOG_PARSE_DISCARDED;
+	}
+
 	// bmy_log_runtime_error
 	{
 		full_msg = bmy_log_token_rest_after(&raw_tokens->items[0]);
@@ -938,6 +1137,12 @@ static enum bmy_log_parse_status bmy_log_parse_rest(const struct bmy_log_tokens 
 
 		// [mail] foo send ...
 		if (bmy_log_tokens_eq_at_idx(raw_tokens, 1, "[mail]")) {
+			return result->status = BMY_LOG_PARSE_DISCARDED;
+		}
+
+		// Legacy miscellaneous diagnostics.
+		if (bmy_log_tokens_eq_at_idx(raw_tokens, 1, "[wtf]") ||
+			bmy_log_tokens_eq_at_idx(raw_tokens, 1, "[WTF]")) {
 			return result->status = BMY_LOG_PARSE_DISCARDED;
 		}
 
@@ -1036,6 +1241,10 @@ static bool bmy_log_token_to_int(const struct bmy_log_token *token, int *x) {
 	size_t i;
 	*x = 0;
 
+	if (bmy_log_token_empty(token)) {
+		return false;
+	}
+
 	for (i = 0; i < token->len; i++) {
 		if (!bmy_char_in_range(token->ptr[i], '0', '9')) {
 			// invalid
@@ -1046,6 +1255,27 @@ static bool bmy_log_token_to_int(const struct bmy_log_token *token, int *x) {
 		*x += bmy_char_to_digit(token->ptr[i]);
 	}
 
+	return true;
+}
+
+static bool bmy_log_token_to_signed_int(const struct bmy_log_token *token, int *x) {
+	struct bmy_log_token magnitude;
+
+	if (bmy_log_token_empty(token)) {
+		return false;
+	}
+
+	if (token->ptr[0] != '-') {
+		return bmy_log_token_to_int(token, x);
+	}
+
+	magnitude.ptr = token->ptr + 1;
+	magnitude.len = token->len - 1;
+	if (!bmy_log_token_to_int(&magnitude, x)) {
+		return false;
+	}
+
+	*x = -*x;
 	return true;
 }
 

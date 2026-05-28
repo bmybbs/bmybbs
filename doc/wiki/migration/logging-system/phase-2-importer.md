@@ -25,6 +25,7 @@ The parser design is based on the current semantic logging wrappers and current-
 - Insert the category-table row and the matching `log_imported_lines` row in the same transaction.
 - Use `log_imported_lines(source_file, source_line)` as the idempotency boundary.
 - Treat discarded APIs and unrecognized lines as skipped input, and report them in the importer summary.
+- Report each unrecognized or failed line to standard error using its source filename, physical line number, and status only; do not print raw legacy log text by default.
 - Use dry-run output to find old or unexpected log formats and turn them into parser test cases when needed.
 - Support script-driven batch import later by keeping the single-file importer small and predictable.
 
@@ -45,6 +46,7 @@ The importer should support every accepted event family from the database design
 - board usage events
 - session duration events
 - login failure events
+- security events
 - session events
 - account events
 - mail events
@@ -61,7 +63,9 @@ Discarded APIs should not be imported into business-event tables.
 - The parser and tokenizer cover the designed accepted event families and recognized discarded log families.
 - Non-dry-run import performs categorized inserts and `log_imported_lines` tracking through per-event transactions.
 - Dry-run parsing is implemented for historical-format discovery without database writes.
-- The implementation is awaiting build and runtime validation in the test environment, including historical dry-run passes and database idempotency checks.
+- Unrecognized and failed parser results are reported by filename, physical line number, and status for later inspection in an editor.
+- A broad historical dry-run pass has been completed on a test site. Only a small number of lines remained unrecognized or failed, so the parser is considered stable enough for database-import validation.
+- The implementation is still awaiting non-dry-run database validation in the test environment, including idempotency checks.
 
 ## Validation Goals
 
@@ -72,8 +76,10 @@ Discarded APIs should not be imported into business-event tables.
 - Board usage rows should preserve the legacy stay duration as non-negative seconds.
 - Session duration rows should preserve the legacy stay duration as non-negative seconds.
 - Login failure rows should preserve the historical source host.
+- Security rows should preserve `bot_login`, `bot_register`, `bot_query`, or `bot_reset`, any available submitted trap input, and the source host from deployed `nju09` trap records.
 - Session rows should preserve available source host, target user, and login type information.
-- Account rows should preserve user number, source host, and login type information when present.
+- Account creation rows should preserve the raw legacy numeric index value and source host, and normalize legacy `www` creation-path markers to login type `NJU09`.
+- Account expiration-cleanup rows should preserve the negative legacy `countlife()` value as `life_value`, not as a user number.
 - Mail rows should preserve sender and target.
 - User interaction rows should preserve initiator, target, and action.
 - User query rows should preserve query actor, target, and period.
@@ -81,6 +87,7 @@ Discarded APIs should not be imported into business-event tables.
 - Board deny rows should preserve operator, board, and target user.
 - Imported text fields should be valid UTF-8.
 - Discarded and unrecognized lines should be counted in importer output and remain available in the original files.
+- Unrecognized and failed lines should be locatable from standard-error diagnostics without writing raw legacy text to the terminal.
 - Dry-run should parse and count accepted, discarded, unrecognized, and failed lines without inserting rows.
 
 ## Backlog

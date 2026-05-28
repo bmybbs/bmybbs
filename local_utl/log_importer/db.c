@@ -38,6 +38,11 @@ static bool bmy_log_importer_insert_login_failure(
 	const char *occurred_at,
 	const struct bmy_log_login_failure_event *event,
 	char **event_id);
+static bool bmy_log_importer_insert_security(
+	PGconn *conn,
+	const char *occurred_at,
+	const struct bmy_log_security_event *event,
+	char **event_id);
 static bool bmy_log_importer_insert_session(
 	PGconn *conn,
 	const char *occurred_at,
@@ -161,6 +166,9 @@ bool bmy_log_importer_insert_event(PGconn *conn, const char *source_file, unsign
 			break;
 		case BMY_LOG_EVENT_LOGIN_FAILURE:
 			ok = bmy_log_importer_insert_login_failure(conn, occurred_at, &result->payload.login_failure, &event_id);
+			break;
+		case BMY_LOG_EVENT_SECURITY:
+			ok = bmy_log_importer_insert_security(conn, occurred_at, &result->payload.security, &event_id);
 			break;
 		case BMY_LOG_EVENT_SESSION:
 			ok = bmy_log_importer_insert_session(conn, occurred_at, &result->payload.session, &event_id);
@@ -309,6 +317,19 @@ static bool bmy_log_importer_insert_login_failure(PGconn *conn, const char *occu
 		2, params, event_id);
 }
 
+static bool bmy_log_importer_insert_security(PGconn *conn, const char *occurred_at, const struct bmy_log_security_event *event, char **event_id) {
+	const char *params[] = {
+		occurred_at,
+		event->action,
+		event->input_value,
+		event->from_host,
+	};
+
+	return bmy_log_importer_exec_params_returning_id(conn,
+		"INSERT INTO log_security_events (occurred_at, action, input_value, from_host) VALUES ($1, $2, $3, $4) RETURNING id",
+		4, params, event_id);
+}
+
 static bool bmy_log_importer_insert_session(PGconn *conn, const char *occurred_at, const struct bmy_log_session_event *event, char **event_id) {
 	const char *params[] = {
 		occurred_at,
@@ -325,20 +346,24 @@ static bool bmy_log_importer_insert_session(PGconn *conn, const char *occurred_a
 }
 
 static bool bmy_log_importer_insert_account(PGconn *conn, const char *occurred_at, const struct bmy_log_account_event *event, char **event_id) {
-	char usernum[32];
+	char user_index_value[32];
+	char life_value[32];
+	const bool is_create = strcmp(event->action, "create") == 0;
 	const char *params[] = {
 		occurred_at,
 		event->action,
 		event->userid,
-		usernum,
+		is_create ? user_index_value : NULL,
+		is_create ? NULL : life_value,
 		event->from_host,
 		event->login_type,
 	};
 
-	snprintf(usernum, sizeof(usernum), "%d", event->usernum);
+	snprintf(user_index_value, sizeof(user_index_value), "%d", event->user_index_value);
+	snprintf(life_value, sizeof(life_value), "%d", event->life_value);
 	return bmy_log_importer_exec_params_returning_id(conn,
-		"INSERT INTO log_account_events (occurred_at, action, userid, usernum, from_host, login_type) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
-		6, params, event_id);
+		"INSERT INTO log_account_events (occurred_at, action, userid, user_index_value, life_value, from_host, login_type) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id",
+		7, params, event_id);
 }
 
 static bool bmy_log_importer_insert_mail(PGconn *conn, const char *occurred_at, const struct bmy_log_mail_event *event, char **event_id) {
@@ -445,6 +470,8 @@ static const char * bmy_log_importer_table_name(enum bmy_log_event_table table) 
 			return "log_session_duration_events";
 		case BMY_LOG_EVENT_LOGIN_FAILURE:
 			return "log_login_failure_events";
+		case BMY_LOG_EVENT_SECURITY:
+			return "log_security_events";
 		case BMY_LOG_EVENT_SESSION:
 			return "log_session_events";
 		case BMY_LOG_EVENT_ACCOUNT:

@@ -97,6 +97,7 @@ These are the cleanest structured business logs found so far.
     - normal logout with stay duration
   - `system kill %s %d`
     - expired-account cleanup
+    - the numeric value is the negative result of `countlife()`, not a user number
 - [libythtbbs/cache/utmp.c](../../../libythtbbs/cache/utmp.c)
   - `%s drop www/api`
     - stale `www` / `api` session cleanup

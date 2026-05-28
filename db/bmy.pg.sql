@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS log_article_events (
 	actor_userid VARCHAR(12) NOT NULL,
 	board VARCHAR(32) NOT NULL,
 	owner_userid VARCHAR(12),
-	title TEXT NOT NULL,
+	title TEXT,
 	old_title TEXT,
 
 	action VARCHAR(32) NOT NULL
@@ -32,7 +32,9 @@ CREATE TABLE IF NOT EXISTS log_article_events (
 			'unwater',
 			'top',
 			'untop'
-		))
+		)),
+
+	CHECK (title IS NOT NULL OR action = 'sametitle')
 );
 
 CREATE TABLE IF NOT EXISTS log_range_delete_events (
@@ -77,6 +79,17 @@ CREATE TABLE IF NOT EXISTS log_login_failure_events (
 	from_host VARCHAR(64) NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS log_security_events (
+	id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+
+	occurred_at TIMESTAMPTZ NOT NULL,
+
+	action VARCHAR(32) NOT NULL
+		CHECK (action IN ('bot_login', 'bot_register', 'bot_query', 'bot_reset')),
+	input_value TEXT,
+	from_host VARCHAR(64) NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS log_session_events (
 	id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 
@@ -105,9 +118,16 @@ CREATE TABLE IF NOT EXISTS log_account_events (
 		CHECK (action IN ('create', 'expire_cleanup')),
 
 	userid VARCHAR(12) NOT NULL,
-	usernum INTEGER,
+	user_index_value INTEGER,
+	life_value INTEGER,
 	from_host VARCHAR(64),
-	login_type VARCHAR(16)
+	login_type VARCHAR(16),
+
+	CHECK (
+		(action = 'create' AND user_index_value IS NOT NULL AND life_value IS NULL)
+		OR
+		(action = 'expire_cleanup' AND user_index_value IS NULL AND life_value < 0)
+	)
 );
 
 CREATE TABLE IF NOT EXISTS log_mail_events (
@@ -194,6 +214,12 @@ CREATE INDEX IF NOT EXISTS idx_log_login_failure_events_occurred_at
 
 CREATE INDEX IF NOT EXISTS idx_log_login_failure_events_from_host_occurred_at
 	ON log_login_failure_events (from_host, occurred_at);
+
+CREATE INDEX IF NOT EXISTS idx_log_security_events_occurred_at
+	ON log_security_events (occurred_at);
+
+CREATE INDEX IF NOT EXISTS idx_log_security_events_from_host_occurred_at
+	ON log_security_events (from_host, occurred_at);
 
 CREATE INDEX IF NOT EXISTS idx_log_session_events_occurred_at
 	ON log_session_events (occurred_at);

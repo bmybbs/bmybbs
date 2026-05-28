@@ -18,6 +18,7 @@ enum bmy_log_event_table {
 	BMY_LOG_EVENT_BOARD_USAGE,
 	BMY_LOG_EVENT_SESSION_DURATION,
 	BMY_LOG_EVENT_LOGIN_FAILURE,
+	BMY_LOG_EVENT_SECURITY,
 	BMY_LOG_EVENT_SESSION,
 	BMY_LOG_EVENT_ACCOUNT,
 	BMY_LOG_EVENT_MAIL,
@@ -66,6 +67,12 @@ struct bmy_log_login_failure_event {
 	const char *from_host;
 };
 
+struct bmy_log_security_event {
+	const char *action;
+	const char *input_value;
+	const char *from_host;
+};
+
 struct bmy_log_session_event {
 	const char *action;
 	const char *userid;
@@ -77,7 +84,8 @@ struct bmy_log_session_event {
 struct bmy_log_account_event {
 	const char *action;
 	const char *userid;
-	int usernum;
+	int user_index_value;
+	int life_value;
 	const char *from_host;
 	const char *login_type;
 };
@@ -121,6 +129,7 @@ union bmy_log_event_payload {
 	struct bmy_log_board_usage_event board_usage;
 	struct bmy_log_session_duration_event session_duration;
 	struct bmy_log_login_failure_event login_failure;
+	struct bmy_log_security_event security;
 	struct bmy_log_session_event session;
 	struct bmy_log_account_event account;
 	struct bmy_log_mail_event mail;

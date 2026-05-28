@@ -109,6 +109,28 @@ START_TEST(test_log_parser_article_mark_title_zh)
 }
 END_TEST
 
+START_TEST(test_log_parser_article_mark_title_space)
+{
+	struct bmy_log_parse_result result;
+	/* One separator before a one-space article title. */
+	const char *log_msg = "01:02:03 foo mark board owner  ";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+
+	const struct bmy_log_article_event *data = &result.payload.article;
+
+	ck_assert_str_eq(data->action, "mark");
+	ck_assert_str_eq(data->actor_userid, "foo");
+	ck_assert_str_eq(data->board, "board");
+	ck_assert_str_eq(data->owner_userid, "owner");
+	ck_assert_str_eq(data->title, " ");
+	ck_assert_ptr_null(data->old_title);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
 START_TEST(test_log_parser_article_unmark_title_en)
 {
 	struct bmy_log_parse_result result;
@@ -145,6 +167,28 @@ START_TEST(test_log_parser_article_digest_title_en)
 	ck_assert_str_eq(data->board, "board");
 	ck_assert_str_eq(data->owner_userid, "owner");
 	ck_assert_str_eq(data->title, "title");
+	ck_assert_ptr_null(data->old_title);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_article_digest_empty_owner)
+{
+	struct bmy_log_parse_result result;
+	// "中文测试"
+	const char *log_msg = "01:02:03 foo digest board  \xD6\xD0\xCE\xC4\xB2\xE2\xCA\xD4";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+
+	const struct bmy_log_article_event *data = &result.payload.article;
+
+	ck_assert_str_eq(data->action, "digest");
+	ck_assert_str_eq(data->actor_userid, "foo");
+	ck_assert_str_eq(data->board, "board");
+	ck_assert_ptr_null(data->owner_userid);
+	ck_assert_str_eq(data->title, "中文测试");
 	ck_assert_ptr_null(data->old_title);
 
 	bmy_log_parse_result_cleanup(&result);
@@ -425,6 +469,27 @@ START_TEST(test_log_parser_article_sametitle)
 }
 END_TEST
 
+START_TEST(test_log_parser_article_sametitle_empty_title)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo sametitle board ";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+
+	const struct bmy_log_article_event *data = &result.payload.article;
+
+	ck_assert_str_eq(data->action, "sametitle");
+	ck_assert_str_eq(data->actor_userid, "foo");
+	ck_assert_str_eq(data->board, "board");
+	ck_assert_ptr_null(data->title);
+	ck_assert_ptr_null(data->owner_userid);
+	ck_assert_ptr_null(data->old_title);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
 START_TEST(test_log_parser_article_changetitle_basic)
 {
 	struct bmy_log_parse_result result;
@@ -488,6 +553,27 @@ START_TEST(test_log_parser_article_changetitle_contain_gbk)
 	bmy_log_parse_result_cleanup(&result);
 }
 END_TEST
+
+START_TEST(test_log_parser_article_changetitle_empty_owner)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo changetitle board  oldtitle:en newtitle:zh";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+
+	const struct bmy_log_article_event *data = &result.payload.article;
+
+	ck_assert_str_eq(data->action, "changetitle");
+	ck_assert_str_eq(data->actor_userid, "foo");
+	ck_assert_str_eq(data->board, "board");
+	ck_assert_ptr_null(data->owner_userid);
+	ck_assert_str_eq(data->title, "zh");
+	ck_assert_str_eq(data->old_title, "en");
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
 #endif
 
 #if 1 // range delete
@@ -510,6 +596,26 @@ START_TEST(test_log_parser_range_delete)
 	bmy_log_parse_result_cleanup(&result);
 }
 
+START_TEST(test_log_parser_range_delete_legacy_all)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo ranged bar 0 -1";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_RANGE_DELETE);
+
+	const struct bmy_log_range_delete_event *data = &result.payload.range_delete;
+	ck_assert_str_eq(data->scope, "article");
+	ck_assert_str_eq(data->userid, "foo");
+	ck_assert_str_eq(data->board, "bar");
+	ck_assert_int_eq(data->from_id, 0);
+	ck_assert_int_eq(data->to_id, -1);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
 START_TEST(test_log_parser_range_delete_mail)
 {
 	struct bmy_log_parse_result result;
@@ -524,6 +630,26 @@ START_TEST(test_log_parser_range_delete_mail)
 	ck_assert_str_eq(data->userid, "foo");
 	ck_assert_int_eq(data->from_id, 1);
 	ck_assert_int_eq(data->to_id, 2);
+	ck_assert_ptr_null(data->board);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_range_delete_mail_legacy_all)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo rangedmail 0 -1";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_RANGE_DELETE);
+
+	const struct bmy_log_range_delete_event *data = &result.payload.range_delete;
+	ck_assert_str_eq(data->scope, "mail");
+	ck_assert_str_eq(data->userid, "foo");
+	ck_assert_int_eq(data->from_id, 0);
+	ck_assert_int_eq(data->to_id, -1);
 	ck_assert_ptr_null(data->board);
 
 	bmy_log_parse_result_cleanup(&result);
@@ -549,6 +675,7 @@ START_TEST(test_log_parser_board_usage)
 	bmy_log_parse_result_cleanup(&result);
 }
 END_TEST
+
 #endif
 
 #if 1 // session duration
@@ -574,6 +701,25 @@ START_TEST(test_log_parser_session_drop)
 {
 	struct bmy_log_parse_result result;
 	const char *log_msg = "01:02:03 foo drop 111";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_SESSION_DURATION);
+
+	const struct bmy_log_session_duration_event *data = &result.payload.session_duration;
+
+	ck_assert_str_eq(data->userid, "foo");
+	ck_assert_int_eq(data->stay_seconds, 111);
+	ck_assert_str_eq(data->action, "disconnect");
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_session_drop_legacy_www)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo drop 111 www";
 
 	ck_assert(bmy_log_parse_line(log_msg, &result));
 	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
@@ -642,6 +788,170 @@ START_TEST(test_log_parser_login_failure_wrong_IP)
 END_TEST
 #endif
 
+#if 1 // security events
+START_TEST(test_log_parser_security_bot_login)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 bot nju09 login username from ip: 1.2.3.4";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_SECURITY);
+
+	const struct bmy_log_security_event *data = &result.payload.security;
+	ck_assert_str_eq(data->action, "bot_login");
+	ck_assert_str_eq(data->input_value, "username");
+	ck_assert_str_eq(data->from_host, "1.2.3.4");
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_security_bot_login_empty_userid_legacy_asterisk)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 bot nju09 login  from ip: 1.2.3.4*";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_SECURITY);
+
+	const struct bmy_log_security_event *data = &result.payload.security;
+	ck_assert_str_eq(data->action, "bot_login");
+	ck_assert_ptr_null(data->input_value);
+	ck_assert_str_eq(data->from_host, "1.2.3.4");
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_security_bot_register)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 bot nju09 register username from ip: 1.2.3.4";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_SECURITY);
+
+	const struct bmy_log_security_event *data = &result.payload.security;
+	ck_assert_str_eq(data->action, "bot_register");
+	ck_assert_str_eq(data->input_value, "username");
+	ck_assert_str_eq(data->from_host, "1.2.3.4");
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_security_bot_register_null_username)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 bot nju09 register  from ip: 1.2.3.4";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_SECURITY);
+
+	const struct bmy_log_security_event *data = &result.payload.security;
+	ck_assert_str_eq(data->action, "bot_register");
+	ck_assert_ptr_null(data->input_value);
+	ck_assert_str_eq(data->from_host, "1.2.3.4");
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_security_bot_query)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 bot nju09 query email username from ip: 1.2.3.4";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_SECURITY);
+
+	const struct bmy_log_security_event *data = &result.payload.security;
+	ck_assert_str_eq(data->action, "bot_query");
+	ck_assert_str_eq(data->input_value, "username");
+	ck_assert_str_eq(data->from_host, "1.2.3.4");
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_security_bot_reset)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 bot nju09 reset pass username from ip: 1.2.3.4";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_SECURITY);
+
+	const struct bmy_log_security_event *data = &result.payload.security;
+	ck_assert_str_eq(data->action, "bot_reset");
+	ck_assert_str_eq(data->input_value, "username");
+	ck_assert_str_eq(data->from_host, "1.2.3.4");
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_security_bot_login_userid_from)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 bot nju09 login from from ip: 1.2.3.4";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_SECURITY);
+
+	const struct bmy_log_security_event *data = &result.payload.security;
+	ck_assert_str_eq(data->action, "bot_login");
+	ck_assert_str_eq(data->input_value, "from");
+	ck_assert_str_eq(data->from_host, "1.2.3.4");
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_security_bot_login_null_userid)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 bot nju09 login  from ip: 1.2.3.4";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_SECURITY);
+
+	const struct bmy_log_security_event *data = &result.payload.security;
+	ck_assert_str_eq(data->action, "bot_login");
+	ck_assert_ptr_null(data->input_value);
+	ck_assert_str_eq(data->from_host, "1.2.3.4");
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_security_bot_login_sql_injection)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 bot nju09 login -1 OR 2+369- from ip: 1.2.3.4";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_SECURITY);
+
+	const struct bmy_log_security_event *data = &result.payload.security;
+	ck_assert_str_eq(data->action, "bot_login");
+	ck_assert_str_eq(data->input_value, "-1 OR 2+369-");
+	ck_assert_str_eq(data->from_host, "1.2.3.4");
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+#endif
+
 #if 1
 START_TEST(test_log_parser_user_enter_with_using)
 {
@@ -679,6 +989,27 @@ START_TEST(test_log_parser_user_enter_without_using)
 	ck_assert_str_eq(data->userid, "foo");
 	ck_assert_str_eq(data->from_host, "1.2.3.4");
 	ck_assert_ptr_null(data->login_type);
+	ck_assert_ptr_null(data->target_userid);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_user_enter_legacy_www)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo enter 1.2.3.4 www";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_SESSION);
+
+	const struct bmy_log_session_event *data = &result.payload.session;
+
+	ck_assert_str_eq(data->action, "login_success");
+	ck_assert_str_eq(data->userid, "foo");
+	ck_assert_str_eq(data->from_host, "1.2.3.4");
+	ck_assert_str_eq(data->login_type, "NJU09");
 	ck_assert_ptr_null(data->target_userid);
 
 	bmy_log_parse_result_cleanup(&result);
@@ -780,7 +1111,8 @@ START_TEST(test_log_parser_account_create)
 	ck_assert_str_eq(data->action, "create");
 	ck_assert_str_eq(data->userid, "foo");
 	ck_assert_str_eq(data->from_host, "1.2.3.4");
-	ck_assert_int_eq(data->usernum, 1);
+	ck_assert_int_eq(data->user_index_value, 1);
+	ck_assert_int_eq(data->life_value, 0);
 	ck_assert_ptr_null(data->login_type);
 
 	bmy_log_parse_result_cleanup(&result);
@@ -800,8 +1132,30 @@ START_TEST(test_log_parser_account_create_www)
 	ck_assert_str_eq(data->action, "create");
 	ck_assert_str_eq(data->userid, "foo");
 	ck_assert_str_eq(data->from_host, "1.2.3.4");
-	ck_assert_int_eq(data->usernum, 1);
-	ck_assert_str_eq(data->login_type, "www");
+	ck_assert_int_eq(data->user_index_value, 1);
+	ck_assert_int_eq(data->life_value, 0);
+	ck_assert_str_eq(data->login_type, "NJU09");
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_account_create_www_negative_index)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo newaccount -1 1.2.3.4 www";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_ACCOUNT);
+
+	const struct bmy_log_account_event *data = &result.payload.account;
+	ck_assert_str_eq(data->action, "create");
+	ck_assert_str_eq(data->userid, "foo");
+	ck_assert_str_eq(data->from_host, "1.2.3.4");
+	ck_assert_int_eq(data->user_index_value, -1);
+	ck_assert_int_eq(data->life_value, 0);
+	ck_assert_str_eq(data->login_type, "NJU09");
 
 	bmy_log_parse_result_cleanup(&result);
 }
@@ -810,7 +1164,7 @@ END_TEST
 START_TEST(test_log_parser_account_expire_cleanup)
 {
 	struct bmy_log_parse_result result;
-	const char *log_msg = "01:02:03 system kill foo 1";
+	const char *log_msg = "01:02:03 system kill foo -1";
 
 	ck_assert(bmy_log_parse_line(log_msg, &result));
 	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
@@ -819,7 +1173,8 @@ START_TEST(test_log_parser_account_expire_cleanup)
 	const struct bmy_log_account_event *data = &result.payload.account;
 	ck_assert_str_eq(data->action, "expire_cleanup");
 	ck_assert_str_eq(data->userid, "foo");
-	ck_assert_int_eq(data->usernum, 1);
+	ck_assert_int_eq(data->user_index_value, 0);
+	ck_assert_int_eq(data->life_value, -1);
 	ck_assert_ptr_null(data->login_type);
 	ck_assert_ptr_null(data->from_host);
 
@@ -984,6 +1339,49 @@ START_TEST(test_log_parser_announcement_import_title_zh)
 }
 END_TEST
 
+START_TEST(test_log_parser_announcement_import_empty_owner)
+{
+	struct bmy_log_parse_result result;
+	// "中文"
+	const char *log_msg = "01:02:03 foo import board  \xD6\xD0\xCE\xC4";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_ANNOUNCEMENT);
+
+	const struct bmy_log_announcement_event *data = &result.payload.announcement;
+	ck_assert_str_eq(data->action, "import");
+	ck_assert_str_eq(data->userid, "foo");
+	ck_assert_str_eq(data->board, "board");
+	ck_assert_ptr_null(data->owner_userid);
+	ck_assert_str_eq(data->title, "中文");
+	ck_assert_ptr_null(data->path);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_announcement_import_title_space)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo import board firm  ";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_ANNOUNCEMENT);
+
+	const struct bmy_log_announcement_event *data = &result.payload.announcement;
+	ck_assert_str_eq(data->action, "import");
+	ck_assert_str_eq(data->userid, "foo");
+	ck_assert_str_eq(data->board, "board");
+	ck_assert_str_eq(data->owner_userid, "firm");
+	ck_assert_str_eq(data->title, " ");
+	ck_assert_ptr_null(data->path);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
 START_TEST(test_log_parser_announcement_paste)
 {
 	struct bmy_log_parse_result result;
@@ -1111,6 +1509,30 @@ START_TEST(test_log_parser_discarded_mail_sender)
 {
 	struct bmy_log_parse_result result;
 	const char *log_msg = "01:02:03 [mail] foo send to bar smtp-status 1-2-3-4-5-6-7";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_DISCARDED);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_discarded_wtf_lower)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 [wtf] ignored legacy payload";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_DISCARDED);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_discarded_wtf_upper)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 [WTF] ignored legacy payload";
 
 	ck_assert(bmy_log_parse_line(log_msg, &result));
 	ck_assert_int_eq(result.status, BMY_LOG_PARSE_DISCARDED);
@@ -1358,6 +1780,54 @@ START_TEST(test_log_parser_discarded_selection_trace)
 	bmy_log_parse_result_cleanup(&result);
 }
 END_TEST
+
+START_TEST(test_log_parser_discarded_enterboard)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo enterboard board";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_DISCARDED);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_discarded_enterboard_t)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo enterboard_t board from 1.2.3.4";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_DISCARDED);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_discarded_readcon_t)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo readcon_t ignored legacy payload";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_DISCARDED);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_discarded_readcon)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo readcon ignored legacy payload";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_DISCARDED);
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
 #endif
 
 static Suite *log_parser_suite(void) {
@@ -1371,9 +1841,11 @@ static Suite *log_parser_suite(void) {
 	tcase_add_test(tc_core, test_log_parser_board_usage);
 	tcase_add_test(tc_core, test_log_parser_session_exitbbs);
 	tcase_add_test(tc_core, test_log_parser_session_drop);
+	tcase_add_test(tc_core, test_log_parser_session_drop_legacy_www);
 
 	tcase_add_test(tc_core, test_log_parser_account_create);
 	tcase_add_test(tc_core, test_log_parser_account_create_www);
+	tcase_add_test(tc_core, test_log_parser_account_create_www_negative_index);
 	tcase_add_test(tc_core, test_log_parser_account_expire_cleanup);
 
 	tcase_add_test(tc_core, test_log_parser_mail);
@@ -1392,8 +1864,10 @@ static Suite *log_parser_suite(void) {
 	tcase_add_test(tc_article, test_log_parser_article_mark_title_en);
 	tcase_add_test(tc_article, test_log_parser_article_mark_title_en_multi_tokens);
 	tcase_add_test(tc_article, test_log_parser_article_mark_title_zh);
+	tcase_add_test(tc_article, test_log_parser_article_mark_title_space);
 	tcase_add_test(tc_article, test_log_parser_article_unmark_title_en);
 	tcase_add_test(tc_article, test_log_parser_article_digest_title_en);
+	tcase_add_test(tc_article, test_log_parser_article_digest_empty_owner);
 	tcase_add_test(tc_article, test_log_parser_article_undigest_title_en);
 	tcase_add_test(tc_article, test_log_parser_article_water_title_en);
 	tcase_add_test(tc_article, test_log_parser_article_unwater_title_en);
@@ -1407,14 +1881,18 @@ static Suite *log_parser_suite(void) {
 	tcase_add_test(tc_article, test_log_parser_article_check1984);
 	tcase_add_test(tc_article, test_log_parser_article_crosspost);
 	tcase_add_test(tc_article, test_log_parser_article_sametitle);
+	tcase_add_test(tc_article, test_log_parser_article_sametitle_empty_title);
 	tcase_add_test(tc_article, test_log_parser_article_changetitle_basic);
 	tcase_add_test(tc_article, test_log_parser_article_changetitle_contain_newtitle);
 	tcase_add_test(tc_article, test_log_parser_article_changetitle_contain_gbk);
+	tcase_add_test(tc_article, test_log_parser_article_changetitle_empty_owner);
 	suite_add_tcase(s, tc_article);
 
 	TCase *tc_range_delete = tcase_create("range_delete");
 	tcase_add_test(tc_range_delete, test_log_parser_range_delete);
+	tcase_add_test(tc_range_delete, test_log_parser_range_delete_legacy_all);
 	tcase_add_test(tc_range_delete, test_log_parser_range_delete_mail);
+	tcase_add_test(tc_range_delete, test_log_parser_range_delete_mail_legacy_all);
 	suite_add_tcase(s, tc_range_delete);
 
 	TCase *tc_login_failure = tcase_create("login failure");
@@ -1424,9 +1902,22 @@ static Suite *log_parser_suite(void) {
 	tcase_add_test(tc_login_failure, test_log_parser_login_failure_wrong_IP);
 	suite_add_tcase(s, tc_login_failure);
 
+	TCase *tc_security = tcase_create("security");
+	tcase_add_test(tc_security, test_log_parser_security_bot_login);
+	tcase_add_test(tc_security, test_log_parser_security_bot_login_empty_userid_legacy_asterisk);
+	tcase_add_test(tc_security, test_log_parser_security_bot_register);
+	tcase_add_test(tc_security, test_log_parser_security_bot_register_null_username);
+	tcase_add_test(tc_security, test_log_parser_security_bot_query);
+	tcase_add_test(tc_security, test_log_parser_security_bot_reset);
+	tcase_add_test(tc_security, test_log_parser_security_bot_login_userid_from);
+	tcase_add_test(tc_security, test_log_parser_security_bot_login_null_userid);
+	tcase_add_test(tc_security, test_log_parser_security_bot_login_sql_injection);
+	suite_add_tcase(s, tc_security);
+
 	TCase *tc_session = tcase_create("session");
 	tcase_add_test(tc_session, test_log_parser_user_enter_with_using);
 	tcase_add_test(tc_session, test_log_parser_user_enter_without_using);
+	tcase_add_test(tc_session, test_log_parser_user_enter_legacy_www);
 	tcase_add_test(tc_session, test_log_parser_user_session_cleanup);
 	tcase_add_test(tc_session, test_log_parser_user_session_cleanup_legacy);
 	tcase_add_test(tc_session, test_log_parser_user_multi_session_kick);
@@ -1436,6 +1927,8 @@ static Suite *log_parser_suite(void) {
 	TCase *tc_announcement = tcase_create("announcement");
 	tcase_add_test(tc_announcement, test_log_parser_announcement_import);
 	tcase_add_test(tc_announcement, test_log_parser_announcement_import_title_zh);
+	tcase_add_test(tc_announcement, test_log_parser_announcement_import_empty_owner);
+	tcase_add_test(tc_announcement, test_log_parser_announcement_import_title_space);
 	tcase_add_test(tc_announcement, test_log_parser_announcement_paste);
 	tcase_add_test(tc_announcement, test_log_parser_announcement_paste_path_zh);
 	tcase_add_test(tc_announcement, test_log_parser_announcement_additem);
@@ -1445,6 +1938,8 @@ static Suite *log_parser_suite(void) {
 	TCase *tc_discarded_runtime = tcase_create("discarded runtime");
 	tcase_add_test(tc_discarded_runtime, test_log_parser_discarded_exec);
 	tcase_add_test(tc_discarded_runtime, test_log_parser_discarded_mail_sender);
+	tcase_add_test(tc_discarded_runtime, test_log_parser_discarded_wtf_lower);
+	tcase_add_test(tc_discarded_runtime, test_log_parser_discarded_wtf_upper);
 	tcase_add_test(tc_discarded_runtime, test_log_parser_discarded_insert_ut);
 	tcase_add_test(tc_discarded_runtime, test_log_parser_discarded_user_idx_changed);
 	tcase_add_test(tc_discarded_runtime, test_log_parser_discarded_shm_err);
@@ -1468,6 +1963,10 @@ static Suite *log_parser_suite(void) {
 	tcase_add_test(tc_discarded_rest, test_log_parser_discarded_thread_view);
 	tcase_add_test(tc_discarded_rest, test_log_parser_discarded_full_search);
 	tcase_add_test(tc_discarded_rest, test_log_parser_discarded_selection_trace);
+	tcase_add_test(tc_discarded_rest, test_log_parser_discarded_enterboard);
+	tcase_add_test(tc_discarded_rest, test_log_parser_discarded_enterboard_t);
+	tcase_add_test(tc_discarded_rest, test_log_parser_discarded_readcon_t);
+	tcase_add_test(tc_discarded_rest, test_log_parser_discarded_readcon);
 	suite_add_tcase(s, tc_discarded_rest);
 
 	return s;
