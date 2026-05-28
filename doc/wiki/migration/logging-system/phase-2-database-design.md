@@ -192,7 +192,7 @@ Important fields:
 
 - `action`: `create` or `expire_cleanup`
 - `userid`: account user id
-- `usernum`: legacy user number for `create`; null for `expire_cleanup`
+- `user_index_value`: raw legacy numeric value for `create`; null for `expire_cleanup`
 - `life_value`: negative `countlife()` value for `expire_cleanup`; null for `create`
 - `from_host`: source host for account creation
 - `login_type`: creation path when known; legacy `www` records are normalized to `NJU09`
@@ -200,6 +200,7 @@ Important fields:
 Evidence note:
 
 - Legacy `system kill <userid> <value>` records are produced by `ythtbbs_user_clean()` after `value = countlife(&utmp)` and only when `value < 0`; the last field is not a user number.
+- Legacy `newaccount <userid> <value> <host>` records do not provide one consistent normalized user number. Terminal registration uses a 1-based allocated id, while the `nju09` web path logs the raw `getusernum()` result, which is zero-based and can be `-1` when lookup fails. The importer therefore stores this as `user_index_value`.
 
 ### `log_mail_events`
 

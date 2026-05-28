@@ -1111,7 +1111,7 @@ START_TEST(test_log_parser_account_create)
 	ck_assert_str_eq(data->action, "create");
 	ck_assert_str_eq(data->userid, "foo");
 	ck_assert_str_eq(data->from_host, "1.2.3.4");
-	ck_assert_int_eq(data->usernum, 1);
+	ck_assert_int_eq(data->user_index_value, 1);
 	ck_assert_int_eq(data->life_value, 0);
 	ck_assert_ptr_null(data->login_type);
 
@@ -1132,7 +1132,28 @@ START_TEST(test_log_parser_account_create_www)
 	ck_assert_str_eq(data->action, "create");
 	ck_assert_str_eq(data->userid, "foo");
 	ck_assert_str_eq(data->from_host, "1.2.3.4");
-	ck_assert_int_eq(data->usernum, 1);
+	ck_assert_int_eq(data->user_index_value, 1);
+	ck_assert_int_eq(data->life_value, 0);
+	ck_assert_str_eq(data->login_type, "NJU09");
+
+	bmy_log_parse_result_cleanup(&result);
+}
+END_TEST
+
+START_TEST(test_log_parser_account_create_www_negative_index)
+{
+	struct bmy_log_parse_result result;
+	const char *log_msg = "01:02:03 foo newaccount -1 1.2.3.4 www";
+
+	ck_assert(bmy_log_parse_line(log_msg, &result));
+	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_ACCOUNT);
+
+	const struct bmy_log_account_event *data = &result.payload.account;
+	ck_assert_str_eq(data->action, "create");
+	ck_assert_str_eq(data->userid, "foo");
+	ck_assert_str_eq(data->from_host, "1.2.3.4");
+	ck_assert_int_eq(data->user_index_value, -1);
 	ck_assert_int_eq(data->life_value, 0);
 	ck_assert_str_eq(data->login_type, "NJU09");
 
@@ -1152,7 +1173,7 @@ START_TEST(test_log_parser_account_expire_cleanup)
 	const struct bmy_log_account_event *data = &result.payload.account;
 	ck_assert_str_eq(data->action, "expire_cleanup");
 	ck_assert_str_eq(data->userid, "foo");
-	ck_assert_int_eq(data->usernum, 0);
+	ck_assert_int_eq(data->user_index_value, 0);
 	ck_assert_int_eq(data->life_value, -1);
 	ck_assert_ptr_null(data->login_type);
 	ck_assert_ptr_null(data->from_host);
@@ -1824,6 +1845,7 @@ static Suite *log_parser_suite(void) {
 
 	tcase_add_test(tc_core, test_log_parser_account_create);
 	tcase_add_test(tc_core, test_log_parser_account_create_www);
+	tcase_add_test(tc_core, test_log_parser_account_create_www_negative_index);
 	tcase_add_test(tc_core, test_log_parser_account_expire_cleanup);
 
 	tcase_add_test(tc_core, test_log_parser_mail);

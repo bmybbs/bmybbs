@@ -346,23 +346,23 @@ static bool bmy_log_importer_insert_session(PGconn *conn, const char *occurred_a
 }
 
 static bool bmy_log_importer_insert_account(PGconn *conn, const char *occurred_at, const struct bmy_log_account_event *event, char **event_id) {
-	char usernum[32];
+	char user_index_value[32];
 	char life_value[32];
 	const bool is_create = strcmp(event->action, "create") == 0;
 	const char *params[] = {
 		occurred_at,
 		event->action,
 		event->userid,
-		is_create ? usernum : NULL,
+		is_create ? user_index_value : NULL,
 		is_create ? NULL : life_value,
 		event->from_host,
 		event->login_type,
 	};
 
-	snprintf(usernum, sizeof(usernum), "%d", event->usernum);
+	snprintf(user_index_value, sizeof(user_index_value), "%d", event->user_index_value);
 	snprintf(life_value, sizeof(life_value), "%d", event->life_value);
 	return bmy_log_importer_exec_params_returning_id(conn,
-		"INSERT INTO log_account_events (occurred_at, action, userid, usernum, life_value, from_host, login_type) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id",
+		"INSERT INTO log_account_events (occurred_at, action, userid, user_index_value, life_value, from_host, login_type) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id",
 		7, params, event_id);
 }
 

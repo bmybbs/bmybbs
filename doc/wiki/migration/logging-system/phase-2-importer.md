@@ -77,7 +77,7 @@ Discarded APIs should not be imported into business-event tables.
 - Login failure rows should preserve the historical source host.
 - Security rows should preserve `bot_login`, `bot_register`, `bot_query`, or `bot_reset`, any available submitted trap input, and the source host from deployed `nju09` trap records.
 - Session rows should preserve available source host, target user, and login type information.
-- Account creation rows should preserve user number and source host, and normalize legacy `www` creation-path markers to login type `NJU09`.
+- Account creation rows should preserve the raw legacy numeric index value and source host, and normalize legacy `www` creation-path markers to login type `NJU09`.
 - Account expiration-cleanup rows should preserve the negative legacy `countlife()` value as `life_value`, not as a user number.
 - Mail rows should preserve sender and target.
 - User interaction rows should preserve initiator, target, and action.

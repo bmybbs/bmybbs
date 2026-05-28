@@ -893,7 +893,7 @@ static enum bmy_log_parse_status bmy_log_parse_account(const struct bmy_log_toke
 	char *from_host = NULL;
 	char *login_type = NULL;
 	char *userid = NULL;
-	int usernum = 0;
+	int user_index_value = 0;
 	int life_value = 0;
 	const struct bmy_log_token *action_token = &raw_tokens->items[2];
 
@@ -901,7 +901,7 @@ static enum bmy_log_parse_status bmy_log_parse_account(const struct bmy_log_toke
 		if (raw_tokens->count != 6 && raw_tokens->count != 5) {
 			return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
 		}
-		if (!bmy_log_token_to_int(&raw_tokens->items[3], &usernum)) {
+		if (!bmy_log_token_to_signed_int(&raw_tokens->items[3], &user_index_value)) {
 			return result->status = BMY_LOG_PARSE_UNRECOGNIZED;
 		}
 		if ((from_host = bmy_log_token_dup(&raw_tokens->items[4])) == NULL) {
@@ -926,7 +926,7 @@ static enum bmy_log_parse_status bmy_log_parse_account(const struct bmy_log_toke
 		result->table = BMY_LOG_EVENT_ACCOUNT;
 		// NOTE: 定义在表结构中
 		result->payload.account.action = "create";
-		result->payload.account.usernum = usernum;
+		result->payload.account.user_index_value = user_index_value;
 		result->payload.account.from_host = from_host;
 		result->payload.account.login_type = login_type;
 		return result->status = BMY_LOG_PARSE_ACCEPTED;

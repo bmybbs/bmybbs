@@ -118,15 +118,15 @@ CREATE TABLE IF NOT EXISTS log_account_events (
 		CHECK (action IN ('create', 'expire_cleanup')),
 
 	userid VARCHAR(12) NOT NULL,
-	usernum INTEGER,
+	user_index_value INTEGER,
 	life_value INTEGER,
 	from_host VARCHAR(64),
 	login_type VARCHAR(16),
 
 	CHECK (
-		(action = 'create' AND usernum IS NOT NULL AND life_value IS NULL)
+		(action = 'create' AND user_index_value IS NOT NULL AND life_value IS NULL)
 		OR
-		(action = 'expire_cleanup' AND usernum IS NULL AND life_value < 0)
+		(action = 'expire_cleanup' AND user_index_value IS NULL AND life_value < 0)
 	)
 );
 

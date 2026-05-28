@@ -215,7 +215,7 @@ struct bmy_log_security_event {
 struct bmy_log_account_event {
 	const char *action;
 	const char *userid;
-	int usernum;       /* account creation only */
+	int user_index_value; /* account creation only */
 	int life_value;    /* expiration cleanup only */
 	const char *from_host;
 	const char *login_type;
@@ -308,7 +308,7 @@ Examples of ambiguity to handle carefully:
 - The parser and its tokenizer helper are implemented under `local_utl/log_importer`.
 - Accepted event payloads cover every designed category table.
 - Known discarded logging families are classified without database insertion.
-- Account cleanup records parse the final `system kill` field as the negative legacy `countlife()` value, separately from registration `usernum`.
+- Account cleanup records parse the final `system kill` field as the negative legacy `countlife()` value, separately from the raw registration index value.
 - Deployed-only `bot nju09 login/register/query/reset` security-trap records parse into `log_security_events`, with nullable attacker-controlled input values.
 - Parser and tokenizer test sources exist; test-environment validation and historical dry-run discovery remain pending.
 
