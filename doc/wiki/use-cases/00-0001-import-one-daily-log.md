@@ -20,12 +20,12 @@ Import one legacy daily `newtrace` log file into PostgreSQL, preserving accepted
 1. The operator runs the importer with a log date such as `2026-05-07`.
 2. The importer resolves the source file as `$HOME/newtrace/2026-05-07.log`.
 3. The importer reads the source file line by line.
-4. For each source line, the importer checks whether `(source_file, source_line)` already exists in `log_imported_lines`.
+4. For each source line, the importer checks whether the source filename and line number already exist in `log_source_files` and `log_imported_lines`.
 5. If the source line has already been imported, the importer skips it and counts it as already imported.
 6. For each accepted event line, the importer reconstructs `occurred_at` from the date argument, line time, and fixed UTC+8 timezone.
 7. The importer converts legacy free-text fields such as title/path from GBK to UTF-8.
 8. The importer inserts the event into the matching category table.
-9. The importer records the source filename and line number in `log_imported_lines`.
+9. The importer records the source filename in `log_source_files` when needed, then records the source-file id and line number in `log_imported_lines`.
 10. The importer prints a summary of inserted, already-imported, discarded, unrecognized, and failed lines.
 
 ## Alternative Flows
@@ -49,7 +49,7 @@ Import one legacy daily `newtrace` log file into PostgreSQL, preserving accepted
 ## Validation
 
 - Query at least one expected category table and confirm inserted rows exist for the imported date.
-- Query `log_imported_lines` and confirm inserted rows use `YYYY-MM-DD.log` as `source_file`.
+- Query `log_source_files` and confirm inserted rows use `YYYY-MM-DD.log` as `source_file`.
 - Confirm every inserted category row from this import has a matching `log_imported_lines` row.
 - Run the importer twice for the same date and confirm the second run does not duplicate rows.
 - Import a sample log containing accepted, discarded, and unrecognized lines.

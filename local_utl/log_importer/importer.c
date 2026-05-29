@@ -108,6 +108,7 @@ int bmy_log_importer_run(
 	struct bmy_log_import_summary *summary) {
 	FILE *fp;
 	PGconn *conn = NULL;
+	char *source_file_id = NULL;
 	char *line = NULL;
 	size_t line_cap = 0;
 	ssize_t line_len;
@@ -131,6 +132,11 @@ int bmy_log_importer_run(
 			fclose(fp);
 			return -1;
 		}
+		if (!bmy_log_importer_ensure_source_file(conn, config->source_file, &source_file_id)) {
+			PQfinish(conn);
+			fclose(fp);
+			return -1;
+		}
 	}
 
 	while ((line_len = getline(&line, &line_cap, fp)) != -1) {
@@ -143,7 +149,7 @@ int bmy_log_importer_run(
 
 		if (!config->dry_run) {
 			int lookup_rc = bmy_log_importer_is_line_imported(
-				conn, config->source_file, summary->total_lines, &imported);
+				conn, source_file_id, summary->total_lines, &imported);
 			if (lookup_rc != 0) {
 				summary->failed++;
 				rc = -1;
@@ -179,7 +185,7 @@ int bmy_log_importer_run(
 				if (config->dry_run) {
 					summary->inserted++;
 				} else if (bmy_log_importer_insert_event(
-					conn, config->source_file, summary->total_lines,
+					conn, source_file_id, summary->total_lines,
 					occurred_at, &result)) {
 					summary->inserted++;
 				} else {
@@ -211,6 +217,7 @@ int bmy_log_importer_run(
 	}
 
 	free(line);
+	free(source_file_id);
 	if (conn != NULL)
 		PQfinish(conn);
 
