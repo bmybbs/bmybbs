@@ -23,8 +23,8 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       '@xmldom/xmldom':
-        specifier: ^0.9.9
-        version: 0.9.9
+        specifier: ^0.9.10
+        version: 0.9.10
       dayjs:
         specifier: ^1.11.19
         version: 1.11.19
@@ -551,11 +551,6 @@ packages:
   '@xmldom/xmldom@0.9.10':
     resolution: {integrity: sha512-A9gOqLdi6cV4ibazAjcQufGj0B1y/vDqYrcuP6d/6x8P27gRS8643Dj9o1dEKtB6O7fwxb2FgBmJS2mX7gpvdw==}
     engines: {node: '>=14.6'}
-
-  '@xmldom/xmldom@0.9.9':
-    resolution: {integrity: sha512-qycIHAucxy/LXAYIjmLmtQ8q9GPnMbnjG1KXhWm9o5sCr6pOYDATkMPiTNa6/v8eELyqOQ2FsEqeoFYmgv/gJg==}
-    engines: {node: '>=14.6'}
-    deprecated: this version has critical issues, please update to the latest version
 
   acorn-jsx@5.3.2:
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
@@ -1914,8 +1909,6 @@ snapshots:
   '@vue/shared@3.5.32': {}
 
   '@xmldom/xmldom@0.9.10': {}
-
-  '@xmldom/xmldom@0.9.9': {}
 
   acorn-jsx@5.3.2(acorn@8.16.0):
     dependencies:
