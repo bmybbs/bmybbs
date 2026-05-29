@@ -13,7 +13,7 @@
 		"@miniprogram-component-plus/tabs": "^1.0.0",
 		"@xmldom/xmldom": "^0.9.10",
 		"dayjs": "^1.11.19",
-		"marked": "^17.0.5",
+		"marked": "^18.0.4",
 		"sanitize-html": "^2.17.4"
 	},
 	"devDependencies": {
