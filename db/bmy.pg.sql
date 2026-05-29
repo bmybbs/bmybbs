@@ -1,7 +1,7 @@
 -- BMYBBS PostgreSQL schema.
 --
 -- Tables and indexes for logging.
--- NOTE: Intentionally no foreign keys.
+-- NOTE: Intentionally no foreign keys to business tables.
 
 CREATE TABLE IF NOT EXISTS log_article_events (
 	id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -186,15 +186,21 @@ CREATE TABLE IF NOT EXISTS log_board_deny_events (
 	target_userid VARCHAR(12) NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS log_source_files (
+	id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+
+	source_file VARCHAR(32) NOT NULL UNIQUE
+);
+
 CREATE TABLE IF NOT EXISTS log_imported_lines (
 	id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 
-	source_file TEXT NOT NULL,
+	source_file_id BIGINT NOT NULL REFERENCES log_source_files(id),
 	source_line INTEGER NOT NULL CHECK (source_line > 0),
 	event_table VARCHAR(64) NOT NULL,
 	event_id BIGINT NOT NULL,
 
-	UNIQUE (source_file, source_line)
+	UNIQUE (source_file_id, source_line)
 );
 
 CREATE INDEX IF NOT EXISTS idx_log_article_events_occurred_at

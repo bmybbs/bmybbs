@@ -15,7 +15,7 @@ Implement a single-day historical log importer that reads one legacy `newtrace` 
 - Support dry-run parsing without database writes.
 - Resolve the source file from a date argument.
 - Read the source file line by line with `getline(3)`.
-- Check `log_imported_lines(source_file, source_line)` before parsing each line.
+- Check source filename and line number import state before parsing each line.
 - Use the parser component from [00-0002-logging-importer-parser.md](./00-0002-logging-importer-parser.md).
 - Insert accepted events and their import-tracking rows in one transaction.
 - Print a summary with stable counters.
@@ -99,7 +99,7 @@ Rules:
 - `--dry-run` is optional.
 - Legacy log timestamps are interpreted as UTC+8.
 - The resolved log file is `$HOME/newtrace/YYYY-MM-DD.log`.
-- Store only `YYYY-MM-DD.log` in `log_imported_lines.source_file`.
+- Store only `YYYY-MM-DD.log` in `log_source_files.source_file`.
 
 Database connection:
 
@@ -114,16 +114,17 @@ Database connection:
 3. Resolve the source filename and full source path.
 4. Open the source file.
 5. Initialize summary counters.
-6. Read each physical line with `getline(3)` and increment the source line number.
-7. Check `log_imported_lines(source_file, source_line)`.
-8. If already imported, increment `already_imported` and continue.
-9. Parse the line through the parser component.
-10. If parser result is discarded, unrecognized, or failed, increment the matching counter; for unrecognized or failed results, report filename, line number, and status without raw text; then continue.
-11. Reconstruct `occurred_at` from date, line time, and fixed UTC+8 timezone.
-12. Insert the event row into the matching category table.
-13. Insert the matching `log_imported_lines` row.
-14. Commit the transaction for that imported event.
-15. Print the final summary.
+6. In non-dry-run mode, create or load the `log_source_files` row once and keep its id.
+7. Read each physical line with `getline(3)` and increment the source line number.
+8. Check `log_imported_lines` for the source-file id and line number.
+9. If already imported, increment `already_imported` and continue.
+10. Parse the line through the parser component.
+11. If parser result is discarded, unrecognized, or failed, increment the matching counter; for unrecognized or failed results, report filename, line number, and status without raw text; then continue.
+12. Reconstruct `occurred_at` from date, line time, and fixed UTC+8 timezone.
+13. Insert the event row into the matching category table.
+14. Insert the matching `log_imported_lines` row.
+15. Commit the transaction for that imported event.
+16. Print the final summary.
 
 ## Internal Interfaces
 
@@ -175,15 +176,20 @@ Database boundary:
 ```c
 PGconn *bmy_log_importer_db_connect(void);
 
-int bmy_log_importer_is_line_imported(
+bool bmy_log_importer_ensure_source_file(
 	PGconn *conn,
 	const char *source_file,
+	char **source_file_id);
+
+int bmy_log_importer_is_line_imported(
+	PGconn *conn,
+	const char *source_file_id,
 	unsigned long source_line,
 	bool *imported);
 
 bool bmy_log_importer_insert_event(
 	PGconn *conn,
-	const char *source_file,
+	const char *source_file_id,
 	unsigned long source_line,
 	const char *occurred_at,
 	const struct bmy_log_parse_result *result);
@@ -192,6 +198,7 @@ bool bmy_log_importer_insert_event(
 Interface rule:
 
 - `bmy_log_importer_is_line_imported` separates lookup failure from an imported/not-imported result through its return value and output parameter.
+- `bmy_log_importer_ensure_source_file` should run once per non-dry-run import and return the reusable `log_source_files.id`.
 - `bmy_log_importer_insert_event` owns the transaction that inserts both the category-table row and the `log_imported_lines` row.
 - The importer shell should not inspect parser internals beyond status, line time, target table, and typed payload fields.
 - The parser should not know about PostgreSQL or `log_imported_lines`.
@@ -259,7 +266,7 @@ Summary format:
 - Parser behavior should be validated first through tests owned by [00-0002-logging-importer-parser.md](./00-0002-logging-importer-parser.md).
 - Import a small sample file containing at least one accepted line.
 - Confirm accepted events appear in category tables.
-- Confirm `log_imported_lines.source_file` stores `YYYY-MM-DD.log`, not a full path.
+- Confirm `log_source_files.source_file` stores `YYYY-MM-DD.log`, not a full path.
 - Confirm every inserted event has a matching `log_imported_lines` row.
 - Run the importer twice for the same date and confirm no duplicate rows.
 - Import a sample file containing discarded and unrecognized lines and confirm they are counted but not inserted.

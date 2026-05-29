@@ -280,7 +280,17 @@ Important fields:
 - `board`: board where the deny was applied
 - `target_userid`: denied user
 
-## Import Tracking Table
+## Import Tracking Tables
+
+### `log_source_files`
+
+This table stores one row per imported source log filename.
+
+Important fields:
+
+- `source_file`: canonical log filename, normally `YYYY-MM-DD.log`
+
+The table avoids repeating the same filename for every imported physical log line.
 
 ### `log_imported_lines`
 
@@ -288,12 +298,14 @@ This table records which physical source line has already produced an imported e
 
 Important fields:
 
-- `source_file`: canonical log filename, normally `YYYY-MM-DD.log`
+- `source_file_id`: reference to `log_source_files`
 - `source_line`: physical line number in the source file
 - `event_table`: target category table name
 - `event_id`: row id in the target category table
 
-The unique constraint on `(source_file, source_line)` is the import idempotency boundary.
+The unique constraint on `(source_file_id, source_line)` is the import idempotency boundary.
+
+This is an internal importer foreign key. It is acceptable because it does not constrain business data such as users, boards, or articles.
 
 ## Index Design
 
@@ -304,7 +316,8 @@ The initial SQL schema uses minimal secondary indexes.
 - Add `log_login_failure_events(from_host, occurred_at)` because site-ban checks have a known lookup by source host, often within a time range.
 - Add `log_security_events(from_host, occurred_at)` because security-trap investigation is expected to start from a source host and time range.
 - Defer other user, board, and host indexes until real query patterns appear.
-- `log_imported_lines(source_file, source_line)` already has a unique index from its unique constraint.
+- `log_source_files(source_file)` already has a unique index from its unique constraint.
+- `log_imported_lines(source_file_id, source_line)` already has a unique index from its unique constraint.
 
 Likely deferred indexes include user id plus time and board plus time.
 

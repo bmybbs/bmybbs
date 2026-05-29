@@ -15,15 +15,16 @@ The parser design is based on the current semantic logging wrappers and current-
 - Accept one log date per invocation, for example `importer YYYY-MM-DD`.
 - Support `--dry-run` to parse and summarize a log file without checking import state or writing to PostgreSQL.
 - Locate the legacy log file using the canonical `$HOME/newtrace/YYYY-MM-DD.log` pattern.
-- Store `YYYY-MM-DD.log`, not the full path, in `log_imported_lines.source_file`.
+- Store `YYYY-MM-DD.log`, not the full path, once in `log_source_files`.
 - Parse the event date from the invocation argument and the event time from each log line.
 - Convert the reconstructed legacy local time to `TIMESTAMPTZ`.
 - Use fixed UTC+8 for the first implementation.
 - Read the file line by line.
 - Treat `*` as ordinary content, not as a line-break marker.
 - Insert category-table rows for all accepted event families defined by the database design.
-- Insert the category-table row and the matching `log_imported_lines` row in the same transaction.
-- Use `log_imported_lines(source_file, source_line)` as the idempotency boundary.
+- In non-dry-run mode, create or load the `log_source_files` row once per source file.
+- Insert the category-table row and matching `log_imported_lines` row in the same transaction.
+- Use `log_imported_lines(source_file_id, source_line)` as the idempotency boundary.
 - Treat discarded APIs and unrecognized lines as skipped input, and report them in the importer summary.
 - Report each unrecognized or failed line to standard error using its source filename, physical line number, and status only; do not print raw legacy log text by default.
 - Use dry-run output to find old or unexpected log formats and turn them into parser test cases when needed.

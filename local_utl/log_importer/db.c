@@ -9,7 +9,7 @@ static void dump_sql_error(PGconn *conn);
 
 static bool bmy_log_importer_insert_imported_line(
 	PGconn *conn,
-	const char *source_file,
+	const char *source_file_id,
 	unsigned long source_line,
 	const char *event_table,
 	const char *event_id);
@@ -115,17 +115,52 @@ PGconn * bmy_log_importer_db_connect(void) {
 	return conn;
 }
 
-int bmy_log_importer_is_line_imported(PGconn *conn, const char *source_file, unsigned long source_line, bool *imported) {
+bool bmy_log_importer_ensure_source_file(PGconn *conn, const char *source_file, char **source_file_id) {
+	const char *params[] = { source_file };
+	PGresult *res;
+	bool ok;
+
+	res = bmy_pg_exec_params(conn,
+		"WITH inserted AS ("
+		"INSERT INTO log_source_files (source_file) VALUES ($1) "
+		"ON CONFLICT (source_file) DO NOTHING "
+		"RETURNING id"
+		") "
+		"SELECT id FROM inserted "
+		"UNION ALL "
+		"SELECT id FROM log_source_files WHERE source_file = $1 "
+		"LIMIT 1",
+		1, params);
+	if (res == NULL) {
+		fprintf(stderr, "PostgreSQL query allocation failed\n");
+		return false;
+	}
+
+	ok = PQresultStatus(res) == PGRES_TUPLES_OK && PQntuples(res) == 1;
+	if (!ok) {
+		fprintf(stderr, "source file lookup failed: %s", PQerrorMessage(conn));
+		PQclear(res);
+		return false;
+	}
+
+	*source_file_id = strdup(PQgetvalue(res, 0, 0));
+	PQclear(res);
+	return *source_file_id != NULL;
+}
+
+int bmy_log_importer_is_line_imported(PGconn *conn, const char *source_file_id, unsigned long source_line, bool *imported) {
 	char source_line_buf[32];
 	const char *params[2];
 	PGresult *res;
 
 	snprintf(source_line_buf, sizeof(source_line_buf), "%lu", source_line);
-	params[0] = source_file;
+	params[0] = source_file_id;
 	params[1] = source_line_buf;
 	*imported = false;
 
-	res = bmy_pg_exec_params(conn, "SELECT 1 FROM log_imported_lines WHERE source_file = $1 AND source_line = $2 LIMIT 1", 2, params);
+	res = bmy_pg_exec_params(conn,
+		"SELECT 1 FROM log_imported_lines WHERE source_file_id = $1 AND source_line = $2 LIMIT 1",
+		2, params);
 	if (res == NULL) {
 		fprintf(stderr, "PostgreSQL query allocation failed\n");
 		return -1;
@@ -141,7 +176,7 @@ int bmy_log_importer_is_line_imported(PGconn *conn, const char *source_file, uns
 	return 0;
 }
 
-bool bmy_log_importer_insert_event(PGconn *conn, const char *source_file, unsigned long source_line, const char *occurred_at, const struct bmy_log_parse_result *result) {
+bool bmy_log_importer_insert_event(PGconn *conn, const char *source_file_id, unsigned long source_line, const char *occurred_at, const struct bmy_log_parse_result *result) {
 	const char *event_table;
 	char *event_id = NULL;
 	bool ok = false;
@@ -195,7 +230,7 @@ bool bmy_log_importer_insert_event(PGconn *conn, const char *source_file, unsign
 
 	event_table = bmy_log_importer_table_name(result->table);
 	if (ok) {
-		ok = bmy_log_importer_insert_imported_line(conn, source_file, source_line, event_table, event_id);
+		ok = bmy_log_importer_insert_imported_line(conn, source_file_id, source_line, event_table, event_id);
 	}
 
 	free(event_id);
@@ -214,20 +249,20 @@ bool bmy_log_importer_insert_event(PGconn *conn, const char *source_file, unsign
 	return ok;
 }
 
-static bool bmy_log_importer_insert_imported_line( PGconn *conn, const char *source_file, unsigned long source_line, const char *event_table, const char *event_id) {
+static bool bmy_log_importer_insert_imported_line( PGconn *conn, const char *source_file_id, unsigned long source_line, const char *event_table, const char *event_id) {
 	char source_line_buf[32];
 	const char *params[4];
 	PGresult *res;
 	bool ok;
 
 	snprintf(source_line_buf, sizeof(source_line_buf), "%lu", source_line);
-	params[0] = source_file;
+	params[0] = source_file_id;
 	params[1] = source_line_buf;
 	params[2] = event_table;
 	params[3] = event_id;
 
 	res = bmy_pg_exec_params(conn,
-		"INSERT INTO log_imported_lines (source_file, source_line, event_table, event_id) VALUES ($1, $2, $3, $4)",
+		"INSERT INTO log_imported_lines (source_file_id, source_line, event_table, event_id) VALUES ($1, $2, $3, $4)",
 		4, params);
 	if (res == NULL) {
 		fprintf(stderr, "PostgreSQL query allocation failed\n");
