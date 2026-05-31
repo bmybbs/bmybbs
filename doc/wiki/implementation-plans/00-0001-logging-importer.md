@@ -158,6 +158,7 @@ struct bmy_log_import_summary {
 	unsigned long discarded;
 	unsigned long unrecognized;
 	unsigned long failed;
+	bool fast_import_used;
 };
 ```
 
@@ -249,6 +250,8 @@ The importer should report at least:
 - `unrecognized`
 - `failed`
 - `dry_run`
+- `fast_import`
+- `fast_import_used`
 
 Optional counters:
 

@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 static void bmy_log_importer_print_usage(const char *argv0) {
-	fprintf(stderr, "Usage: %s [--dry-run] YYYY-MM-DD\n", argv0);
+	fprintf(stderr, "Usage: %s [--dry-run|--fast-import] YYYY-MM-DD\n", argv0);
 }
 
 static void bmy_log_importer_print_summary(
@@ -12,6 +12,8 @@ static void bmy_log_importer_print_summary(
 	const struct bmy_log_import_summary *summary) {
 	printf("source_file: %s\n", config->source_file ? config->source_file : "(null)");
 	printf("dry_run: %s\n", config->dry_run ? "yes" : "no");
+	printf("fast_import: %s\n", config->fast_import ? "yes" : "no");
+	printf("fast_import_used: %s\n", summary->fast_import_used ? "yes" : "no");
 	printf("total_lines: %lu\n", summary->total_lines);
 	if (config->dry_run)
 		printf("accepted: %lu\n", summary->inserted);

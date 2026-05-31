@@ -9,6 +9,7 @@ struct bmy_log_importer_config {
 	const char *source_file;
 	const char *source_path;
 	bool dry_run;
+	bool fast_import;
 };
 
 struct bmy_log_import_summary {
@@ -18,6 +19,7 @@ struct bmy_log_import_summary {
 	unsigned long discarded;
 	unsigned long unrecognized;
 	unsigned long failed;
+	bool fast_import_used;
 };
 
 /**

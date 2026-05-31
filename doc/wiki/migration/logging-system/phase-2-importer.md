@@ -91,7 +91,7 @@ Discarded APIs should not be imported into business-event tables.
 - The importer is implemented in `local_utl/log_importer`.
 - The parser and tokenizer cover the designed accepted event families and recognized discarded log families.
 - Non-dry-run import performs categorized inserts and `log_imported_lines` tracking through per-event transactions.
-- `--fast-import` is planned to support one transaction per never-imported source file.
+- `--fast-import` supports one transaction per never-imported source file and falls back to default idempotent mode when the source file already exists.
 - Dry-run parsing is implemented for historical-format discovery without database writes.
 - Unrecognized and failed parser results are reported by filename, physical line number, and status for later inspection in an editor.
 - A broad historical dry-run pass has been completed on a test site. Only a small number of lines remained unrecognized or failed, so the parser is considered stable enough for database-import validation.
