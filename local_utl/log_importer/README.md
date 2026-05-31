@@ -42,7 +42,7 @@ bash ./dry-run-year.sh 2016
 
 ## 导入某一个月的日志
 
-实际的导入过程中涉及数据库写入，因此速度会慢很多。以下的脚本仅导入单个月的日志，并显示当前处理的文件。
+实际的导入过程中涉及数据库写入，因此速度会慢很多。以下的脚本仅导入单个月的日志，并显示当前处理的文件。`--fast-import` 会在日志文件尚未导入时使用整文件事务；如果文件已经导入过，会回退到逐行检查模式。
 
 ```bash
 #!/usr/bin/env bash
@@ -58,8 +58,8 @@ for file in "$HOME"/newtrace/"$month"-??.log; do
 	[[ -e "$file" ]] || continue
 	date=${file##*/}
 	date=${date%.log}
-	printf 'importing: %s\n' "$file"
-	"$importer" "$date" >/dev/null 2>>"$issues"
+	printf '[%s] importing: %s\n' "$(date '+%F %T')" "$file"
+	"$importer" --fast-import "$date" >/dev/null 2>>"$issues"
 done
 
 printf 'issues: %s\n' "$issues"

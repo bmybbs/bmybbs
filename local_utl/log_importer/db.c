@@ -115,6 +115,29 @@ PGconn * bmy_log_importer_db_connect(void) {
 	return conn;
 }
 
+int bmy_log_importer_source_file_exists(PGconn *conn, const char *source_file, bool *exists) {
+	const char *params[] = { source_file };
+	PGresult *res;
+
+	*exists = false;
+	res = bmy_pg_exec_params(conn,
+		"SELECT 1 FROM log_source_files WHERE source_file = $1 LIMIT 1",
+		1, params);
+	if (res == NULL) {
+		fprintf(stderr, "PostgreSQL query allocation failed\n");
+		return -1;
+	}
+	if (PQresultStatus(res) != PGRES_TUPLES_OK) {
+		fprintf(stderr, "source file lookup failed: %s", PQerrorMessage(conn));
+		PQclear(res);
+		return -1;
+	}
+
+	*exists = PQntuples(res) > 0;
+	PQclear(res);
+	return 0;
+}
+
 bool bmy_log_importer_ensure_source_file(PGconn *conn, const char *source_file, char **source_file_id) {
 	const char *params[] = { source_file };
 	PGresult *res;
@@ -177,14 +200,33 @@ int bmy_log_importer_is_line_imported(PGconn *conn, const char *source_file_id, 
 }
 
 bool bmy_log_importer_insert_event(PGconn *conn, const char *source_file_id, unsigned long source_line, const char *occurred_at, const struct bmy_log_parse_result *result) {
-	const char *event_table;
-	char *event_id = NULL;
-	bool ok = false;
+	bool ok;
 
 	if (!bmy_pg_begin(conn)) {
 		dump_sql_error(conn);
 		return false;
 	}
+
+	ok = bmy_log_importer_insert_event_in_transaction(conn, source_file_id, source_line, occurred_at, result);
+
+	if (!ok) {
+		if (!bmy_pg_rollback(conn)) {
+			dump_sql_error(conn);
+		}
+		return false;
+	}
+
+	if (!(ok = bmy_pg_commit(conn))) {
+		dump_sql_error(conn);
+		return false;
+	}
+	return ok;
+}
+
+bool bmy_log_importer_insert_event_in_transaction(PGconn *conn, const char *source_file_id, unsigned long source_line, const char *occurred_at, const struct bmy_log_parse_result *result) {
+	const char *event_table;
+	char *event_id = NULL;
+	bool ok = false;
 
 	switch (result->table) {
 		case BMY_LOG_EVENT_ARTICLE:
@@ -234,18 +276,6 @@ bool bmy_log_importer_insert_event(PGconn *conn, const char *source_file_id, uns
 	}
 
 	free(event_id);
-
-	if (!ok) {
-		if (!bmy_pg_rollback(conn)) {
-			dump_sql_error(conn);
-		}
-		return false;
-	}
-
-	if (!(ok = bmy_pg_commit(conn))) {
-		dump_sql_error(conn);
-		return false;
-	}
 	return ok;
 }
 

@@ -1,5 +1,6 @@
 #include "importer.h"
 
+#include "bmy/pg_wrapper.h"
 #include "db.h"
 #include "log_parser.h"
 
@@ -63,6 +64,10 @@ int bmy_log_importer_parse_args(
 			config->dry_run = true;
 			continue;
 		}
+		if (strcmp(argv[i], "--fast-import") == 0) {
+			config->fast_import = true;
+			continue;
+		}
 
 		// NOTE: 只接受一个 date_arg
 		if (date_arg != NULL)
@@ -71,6 +76,8 @@ int bmy_log_importer_parse_args(
 	}
 
 	if (!bmy_log_importer_validate_date(date_arg))
+		return -1;
+	if (config->dry_run && config->fast_import)
 		return -1;
 
 	home_dir = getenv("HOME");
@@ -112,6 +119,8 @@ int bmy_log_importer_run(
 	char *line = NULL;
 	size_t line_cap = 0;
 	ssize_t line_len;
+	bool fast_file_mode = false;
+	bool transaction_open = false;
 	int rc = 0;
 
 	if (config == NULL || summary == NULL)
@@ -127,12 +136,39 @@ int bmy_log_importer_run(
 
 	// NOTE: 当 dry_run 为 false 时建立数据库连接
 	if (!config->dry_run) {
+		bool source_file_exists = false;
+
 		conn = bmy_log_importer_db_connect();
 		if (conn == NULL) {
 			fclose(fp);
 			return -1;
 		}
+
+		if (config->fast_import) {
+			int exists_rc = bmy_log_importer_source_file_exists(conn, config->source_file, &source_file_exists);
+			if (exists_rc != 0) {
+				PQfinish(conn);
+				fclose(fp);
+				return -1;
+			}
+		}
+
+		fast_file_mode = config->fast_import && !source_file_exists;
+		summary->fast_import_used = fast_file_mode;
+		if (fast_file_mode) {
+			if (!bmy_pg_begin(conn)) {
+				fprintf(stderr, "failed to begin fast import transaction\n");
+				PQfinish(conn);
+				fclose(fp);
+				return -1;
+			}
+			transaction_open = true;
+		}
+
 		if (!bmy_log_importer_ensure_source_file(conn, config->source_file, &source_file_id)) {
+			if (transaction_open && !bmy_pg_rollback(conn)) {
+				fprintf(stderr, "failed to rollback fast import transaction\n");
+			}
 			PQfinish(conn);
 			fclose(fp);
 			return -1;
@@ -147,7 +183,7 @@ int bmy_log_importer_run(
 		(void)line_len;
 		summary->total_lines++;
 
-		if (!config->dry_run) {
+		if (!config->dry_run && !fast_file_mode) {
 			int lookup_rc = bmy_log_importer_is_line_imported(
 				conn, source_file_id, summary->total_lines, &imported);
 			if (lookup_rc != 0) {
@@ -184,15 +220,27 @@ int bmy_log_importer_run(
 					occurred_at, sizeof(occurred_at));
 				if (config->dry_run) {
 					summary->inserted++;
-				} else if (bmy_log_importer_insert_event(
-					conn, source_file_id, summary->total_lines,
-					occurred_at, &result)) {
-					summary->inserted++;
 				} else {
-					fprintf(stderr, "failed to insert %s:%lu\n",
-						config->source_file, summary->total_lines);
-					summary->failed++;
-					rc = -1;
+					bool insert_ok;
+
+					if (fast_file_mode) {
+						insert_ok = bmy_log_importer_insert_event_in_transaction(
+							conn, source_file_id, summary->total_lines,
+							occurred_at, &result);
+					} else {
+						insert_ok = bmy_log_importer_insert_event(
+							conn, source_file_id, summary->total_lines,
+							occurred_at, &result);
+					}
+
+					if (insert_ok) {
+						summary->inserted++;
+					} else {
+						fprintf(stderr, "failed to insert %s:%lu\n",
+							config->source_file, summary->total_lines);
+						summary->failed++;
+						rc = -1;
+					}
 				}
 				break;
 			case BMY_LOG_PARSE_DISCARDED:
@@ -217,15 +265,26 @@ int bmy_log_importer_run(
 	}
 
 	free(line);
-	free(source_file_id);
-	if (conn != NULL)
-		PQfinish(conn);
 
 	if (ferror(fp)) {
 		fprintf(stderr, "failed to read %s\n", config->source_path);
-		fclose(fp);
-		return -1;
+		rc = -1;
 	}
+
+	if (transaction_open) {
+		if (rc == 0) {
+			if (!bmy_pg_commit(conn)) {
+				fprintf(stderr, "failed to commit fast import transaction\n");
+				rc = -1;
+			}
+		} else if (!bmy_pg_rollback(conn)) {
+			fprintf(stderr, "failed to rollback fast import transaction\n");
+		}
+	}
+
+	free(source_file_id);
+	if (conn != NULL)
+		PQfinish(conn);
 	fclose(fp);
 
 	return rc;
