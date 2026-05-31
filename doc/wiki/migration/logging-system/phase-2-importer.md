@@ -14,6 +14,7 @@ The parser design is based on the current semantic logging wrappers and current-
 
 - Accept one log date per invocation, for example `importer YYYY-MM-DD`.
 - Support `--dry-run` to parse and summarize a log file without checking import state or writing to PostgreSQL.
+- Support `--fast-import` as an optimized non-dry-run mode only when the source file does not already exist in `log_source_files`.
 - Locate the legacy log file using the canonical `$HOME/newtrace/YYYY-MM-DD.log` pattern.
 - Store `YYYY-MM-DD.log`, not the full path, once in `log_source_files`.
 - Parse the event date from the invocation argument and the event time from each log line.
@@ -29,6 +30,33 @@ The parser design is based on the current semantic logging wrappers and current-
 - Report each unrecognized or failed line to standard error using its source filename, physical line number, and status only; do not print raw legacy log text by default.
 - Use dry-run output to find old or unexpected log formats and turn them into parser test cases when needed.
 - Support script-driven batch import later by keeping the single-file importer small and predictable.
+
+## Import Modes
+
+### Default Idempotent Mode
+
+Default non-dry-run import uses the conservative path.
+
+- Create or load the `log_source_files` row before processing lines.
+- Check `log_imported_lines(source_file_id, source_line)` before parsing each physical line.
+- Insert each accepted event row and matching `log_imported_lines` row in one per-event transaction.
+- Allow safe reruns of partially imported files.
+
+This mode is safer but slow for large historical imports because it performs database work per line.
+
+### Fast File Mode
+
+`--fast-import` is an optimized path for already dry-run-validated historical files.
+
+- Before importing, check whether `source_file` exists in `log_source_files`.
+- If the source file already exists, fall back to default idempotent mode.
+- If the source file does not exist, open one transaction for the whole file.
+- Create the `log_source_files` row inside that transaction.
+- Parse all lines and insert accepted event rows plus matching `log_imported_lines` rows inside the same transaction.
+- Commit once after the whole file succeeds.
+- Roll back the whole file if any database insert fails.
+
+This mode trades per-line resumability for import speed. It is suitable only after dry-run validation has made parser failures unlikely.
 
 ## Encoding Rules
 
@@ -63,6 +91,7 @@ Discarded APIs should not be imported into business-event tables.
 - The importer is implemented in `local_utl/log_importer`.
 - The parser and tokenizer cover the designed accepted event families and recognized discarded log families.
 - Non-dry-run import performs categorized inserts and `log_imported_lines` tracking through per-event transactions.
+- `--fast-import` is planned to support one transaction per never-imported source file.
 - Dry-run parsing is implemented for historical-format discovery without database writes.
 - Unrecognized and failed parser results are reported by filename, physical line number, and status for later inspection in an editor.
 - A broad historical dry-run pass has been completed on a test site. Only a small number of lines remained unrecognized or failed, so the parser is considered stable enough for database-import validation.
@@ -90,6 +119,8 @@ Discarded APIs should not be imported into business-event tables.
 - Discarded and unrecognized lines should be counted in importer output and remain available in the original files.
 - Unrecognized and failed lines should be locatable from standard-error diagnostics without writing raw legacy text to the terminal.
 - Dry-run should parse and count accepted, discarded, unrecognized, and failed lines without inserting rows.
+- Fast import should fall back to default idempotent mode when the source file already exists in `log_source_files`.
+- Fast import should roll back the whole source file if any database insert fails.
 
 ## Backlog
 

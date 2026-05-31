@@ -15,9 +15,10 @@ Implement a single-day historical log importer that reads one legacy `newtrace` 
 - Support dry-run parsing without database writes.
 - Resolve the source file from a date argument.
 - Read the source file line by line with `getline(3)`.
-- Check source filename and line number import state before parsing each line.
+- Check source filename and line number import state before parsing each line in default idempotent mode.
 - Use the parser component from [00-0002-logging-importer-parser.md](./00-0002-logging-importer-parser.md).
-- Insert accepted events and their import-tracking rows in one transaction.
+- Insert accepted events and their import-tracking rows atomically.
+- Support constrained `--fast-import` for never-imported source files.
 - Print a summary with stable counters.
 
 ## Non-Goals
@@ -87,16 +88,20 @@ Implementation language:
 
 ## Command Shape
 
-Initial command:
+Supported commands:
 
 ```text
-log_importer [--dry-run] YYYY-MM-DD
+log_importer YYYY-MM-DD
+log_importer --dry-run YYYY-MM-DD
+log_importer --fast-import YYYY-MM-DD
 ```
 
 Rules:
 
 - `YYYY-MM-DD` is required.
 - `--dry-run` is optional.
+- `--fast-import` is optional and only affects non-dry-run import.
+- `--dry-run` and `--fast-import` should not be combined.
 - Legacy log timestamps are interpreted as UTC+8.
 - The resolved log file is `$HOME/newtrace/YYYY-MM-DD.log`.
 - Store only `YYYY-MM-DD.log` in `log_source_files.source_file`.
@@ -139,6 +144,7 @@ struct bmy_log_importer_config {
 	const char *source_file;     /* YYYY-MM-DD.log */
 	const char *source_path;     /* $HOME/newtrace/YYYY-MM-DD.log */
 	bool dry_run;
+	bool fast_import;
 };
 ```
 
@@ -176,6 +182,11 @@ Database boundary:
 ```c
 PGconn *bmy_log_importer_db_connect(void);
 
+int bmy_log_importer_source_file_exists(
+	PGconn *conn,
+	const char *source_file,
+	bool *exists);
+
 bool bmy_log_importer_ensure_source_file(
 	PGconn *conn,
 	const char *source_file,
@@ -198,6 +209,7 @@ bool bmy_log_importer_insert_event(
 Interface rule:
 
 - `bmy_log_importer_is_line_imported` separates lookup failure from an imported/not-imported result through its return value and output parameter.
+- `bmy_log_importer_source_file_exists` is used by `--fast-import` to decide whether the optimized path is allowed.
 - `bmy_log_importer_ensure_source_file` should run once per non-dry-run import and return the reusable `log_source_files.id`.
 - `bmy_log_importer_insert_event` owns the transaction that inserts both the category-table row and the `log_imported_lines` row.
 - The importer shell should not inspect parser internals beyond status, line time, target table, and typed payload fields.
@@ -211,11 +223,20 @@ Interface rule:
 - Already-imported, discarded, unrecognized, and parse-failed lines do not need database writes.
 - Dry-run mode does not open a database transaction.
 
-Initial recommendation:
+Default idempotent mode:
 
 - Use one transaction per imported event line.
 - This keeps failure isolation simple for historical imports.
-- Batch optimization can be considered later if import speed becomes a real problem.
+- Use this mode when `--fast-import` is not set, or when the source file already exists in `log_source_files`.
+
+Fast file mode:
+
+- Use only when `--fast-import` is set and the source file does not exist in `log_source_files`.
+- Start one transaction before creating the `log_source_files` row.
+- Insert all accepted event rows and matching `log_imported_lines` rows inside that transaction.
+- Commit once after the whole file succeeds.
+- Roll back the whole file on the first database insertion failure.
+- Do not use per-line already-imported checks in this mode, because the file is known to be new.
 
 ## Summary Counters
 

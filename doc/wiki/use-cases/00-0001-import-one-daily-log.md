@@ -37,6 +37,9 @@ Import one legacy daily `newtrace` log file into PostgreSQL, preserving accepted
 - If a legacy free-text field cannot be converted with `g2u`, the importer skips that line and counts it as failed.
 - If an accepted event line cannot be inserted, the importer reports the failure and does not record that line as imported.
 - If the operator runs with `--dry-run`, the importer parses and summarizes the file without checking `log_imported_lines` or inserting rows.
+- If the operator runs with `--fast-import` and the source file is not already listed in `log_source_files`, the importer processes the whole file in one transaction.
+- If the operator runs with `--fast-import` and the source file is already listed in `log_source_files`, the importer falls back to normal idempotent import.
+- If fast import hits a database insertion failure, the importer rolls back the whole file and reports the failing source location.
 - If older historical log formats are unrecognized or fail parsing, the importer reports counts so those lines can be reviewed and added to parser tests later.
 
 ## Postconditions
@@ -52,6 +55,8 @@ Import one legacy daily `newtrace` log file into PostgreSQL, preserving accepted
 - Query `log_source_files` and confirm inserted rows use `YYYY-MM-DD.log` as `source_file`.
 - Confirm every inserted category row from this import has a matching `log_imported_lines` row.
 - Run the importer twice for the same date and confirm the second run does not duplicate rows.
+- Run `--fast-import` on a never-imported file and confirm the import commits only after the whole file succeeds.
+- Run `--fast-import` on an already imported file and confirm it falls back without creating duplicates.
 - Import a sample log containing accepted, discarded, and unrecognized lines.
 - Confirm discarded and unrecognized lines do not create category-table rows.
 - Confirm the importer summary reports inserted, already-imported, discarded, unrecognized, and failed line counts.

@@ -58,7 +58,7 @@ for file in "$HOME"/newtrace/"$month"-??.log; do
 	[[ -e "$file" ]] || continue
 	date=${file##*/}
 	date=${date%.log}
-	printf 'importing: %s\n' "$file"
+	printf '[%s] importing: %s\n' "$(date '+%F %T')" "$file"
 	"$importer" "$date" >/dev/null 2>>"$issues"
 done
 
