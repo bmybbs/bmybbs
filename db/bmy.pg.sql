@@ -90,6 +90,16 @@ CREATE TABLE IF NOT EXISTS log_security_events (
 	from_host VARCHAR(64) NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS log_login_success_events (
+	id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+
+	occurred_at TIMESTAMPTZ NOT NULL,
+
+	userid VARCHAR(12) NOT NULL,
+	from_host VARCHAR(64) NOT NULL,
+	login_type VARCHAR(16)
+);
+
 CREATE TABLE IF NOT EXISTS log_session_events (
 	id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 
@@ -97,16 +107,13 @@ CREATE TABLE IF NOT EXISTS log_session_events (
 
 	action VARCHAR(32) NOT NULL
 		CHECK (action IN (
-			'login_success',
 			'session_cleanup',
 			'multi_login_kick',
 			'user_kick'
 		)),
 
 	userid VARCHAR(12) NOT NULL,
-	target_userid VARCHAR(12),
-	from_host VARCHAR(64),
-	login_type VARCHAR(16)
+	target_userid VARCHAR(12)
 );
 
 CREATE TABLE IF NOT EXISTS log_account_events (
@@ -226,6 +233,9 @@ CREATE INDEX IF NOT EXISTS idx_log_security_events_occurred_at
 
 CREATE INDEX IF NOT EXISTS idx_log_security_events_from_host_occurred_at
 	ON log_security_events (from_host, occurred_at);
+
+CREATE INDEX IF NOT EXISTS idx_log_login_success_events_occurred_at
+	ON log_login_success_events (occurred_at);
 
 CREATE INDEX IF NOT EXISTS idx_log_session_events_occurred_at
 	ON log_session_events (occurred_at);

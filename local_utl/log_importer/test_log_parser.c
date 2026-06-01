@@ -960,15 +960,13 @@ START_TEST(test_log_parser_user_enter_with_using)
 
 	ck_assert(bmy_log_parse_line(log_msg, &result));
 	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
-	ck_assert_int_eq(result.table, BMY_LOG_EVENT_SESSION);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_LOGIN_SUCCESS);
 
-	const struct bmy_log_session_event *data = &result.payload.session;
+	const struct bmy_log_login_success_event *data = &result.payload.login_success;
 
-	ck_assert_str_eq(data->action, "login_success");
 	ck_assert_str_eq(data->userid, "foo");
 	ck_assert_str_eq(data->from_host, "1.2.3.4");
 	ck_assert_str_eq(data->login_type, "TELNET");
-	ck_assert_ptr_null(data->target_userid);
 
 	bmy_log_parse_result_cleanup(&result);
 }
@@ -981,15 +979,13 @@ START_TEST(test_log_parser_user_enter_without_using)
 
 	ck_assert(bmy_log_parse_line(log_msg, &result));
 	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
-	ck_assert_int_eq(result.table, BMY_LOG_EVENT_SESSION);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_LOGIN_SUCCESS);
 
-	const struct bmy_log_session_event *data = &result.payload.session;
+	const struct bmy_log_login_success_event *data = &result.payload.login_success;
 
-	ck_assert_str_eq(data->action, "login_success");
 	ck_assert_str_eq(data->userid, "foo");
 	ck_assert_str_eq(data->from_host, "1.2.3.4");
 	ck_assert_ptr_null(data->login_type);
-	ck_assert_ptr_null(data->target_userid);
 
 	bmy_log_parse_result_cleanup(&result);
 }
@@ -1002,15 +998,13 @@ START_TEST(test_log_parser_user_enter_legacy_www)
 
 	ck_assert(bmy_log_parse_line(log_msg, &result));
 	ck_assert_int_eq(result.status, BMY_LOG_PARSE_ACCEPTED);
-	ck_assert_int_eq(result.table, BMY_LOG_EVENT_SESSION);
+	ck_assert_int_eq(result.table, BMY_LOG_EVENT_LOGIN_SUCCESS);
 
-	const struct bmy_log_session_event *data = &result.payload.session;
+	const struct bmy_log_login_success_event *data = &result.payload.login_success;
 
-	ck_assert_str_eq(data->action, "login_success");
 	ck_assert_str_eq(data->userid, "foo");
 	ck_assert_str_eq(data->from_host, "1.2.3.4");
 	ck_assert_str_eq(data->login_type, "NJU09");
-	ck_assert_ptr_null(data->target_userid);
 
 	bmy_log_parse_result_cleanup(&result);
 }
@@ -1029,8 +1023,6 @@ START_TEST(test_log_parser_user_session_cleanup)
 	ck_assert_str_eq(data->action, "session_cleanup");
 	ck_assert_str_eq(data->userid, "foo");
 	ck_assert_ptr_null(data->target_userid);
-	ck_assert_ptr_null(data->from_host);
-	ck_assert_ptr_null(data->login_type);
 
 	bmy_log_parse_result_cleanup(&result);
 }
@@ -1049,8 +1041,6 @@ START_TEST(test_log_parser_user_session_cleanup_legacy)
 	ck_assert_str_eq(data->action, "session_cleanup");
 	ck_assert_str_eq(data->userid, "foo");
 	ck_assert_ptr_null(data->target_userid);
-	ck_assert_ptr_null(data->from_host);
-	ck_assert_ptr_null(data->login_type);
 
 	bmy_log_parse_result_cleanup(&result);
 }
@@ -1069,8 +1059,6 @@ START_TEST(test_log_parser_user_multi_session_kick)
 	ck_assert_str_eq(data->action, "multi_login_kick");
 	ck_assert_str_eq(data->userid, "foo");
 	ck_assert_ptr_null(data->target_userid);
-	ck_assert_ptr_null(data->from_host);
-	ck_assert_ptr_null(data->login_type);
 
 	bmy_log_parse_result_cleanup(&result);
 }
@@ -1089,8 +1077,6 @@ START_TEST(test_log_parser_user_kick)
 	ck_assert_str_eq(data->action, "user_kick");
 	ck_assert_str_eq(data->userid, "foo");
 	ck_assert_str_eq(data->target_userid, "bar");
-	ck_assert_ptr_null(data->from_host);
-	ck_assert_ptr_null(data->login_type);
 
 	bmy_log_parse_result_cleanup(&result);
 }

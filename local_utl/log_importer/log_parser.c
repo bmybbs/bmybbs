@@ -204,7 +204,7 @@ bool bmy_log_parse_line(const char *line, struct bmy_log_parse_result *result) {
 		if (bmy_log_parse_session_login_success(&tokens, result) != BMY_LOG_PARSE_ACCEPTED) {
 			goto FAILED_1;
 		}
-		result->payload.session.userid = userid;
+		result->payload.login_success.userid = userid;
 	} else if (bmy_log_token_eq(action_token, "drop")) {
 		if (bmy_log_parse_session_cleanup(&tokens, result) == BMY_LOG_PARSE_ACCEPTED) {
 			result->payload.session.userid = userid;
@@ -305,10 +305,13 @@ void bmy_log_parse_result_cleanup(struct bmy_log_parse_result *result) {
 			bmy_log_parser_safe_ptr_cleanup(&result->payload.security.input_value);
 			bmy_log_parser_safe_ptr_cleanup(&result->payload.security.from_host);
 			break;
+		case BMY_LOG_EVENT_LOGIN_SUCCESS:
+			bmy_log_parser_safe_ptr_cleanup(&result->payload.login_success.userid);
+			bmy_log_parser_safe_ptr_cleanup(&result->payload.login_success.from_host);
+			bmy_log_parser_safe_ptr_cleanup(&result->payload.login_success.login_type);
+			break;
 		case BMY_LOG_EVENT_SESSION:
 			bmy_log_parser_safe_ptr_cleanup(&result->payload.session.userid);
-			bmy_log_parser_safe_ptr_cleanup(&result->payload.session.from_host);
-			bmy_log_parser_safe_ptr_cleanup(&result->payload.session.login_type);
 			bmy_log_parser_safe_ptr_cleanup(&result->payload.session.target_userid);
 		break;
 		case BMY_LOG_EVENT_ACCOUNT:
@@ -768,11 +771,9 @@ static enum bmy_log_parse_status bmy_log_parse_session_login_success(const struc
 		}
 	}
 
-	result->table = BMY_LOG_EVENT_SESSION;
-	// NOTE: 常量，定义在表 `log_session_events` 中
-	result->payload.session.action = "login_success";
-	result->payload.session.from_host = from_host;
-	result->payload.session.login_type = login_type;
+	result->table = BMY_LOG_EVENT_LOGIN_SUCCESS;
+	result->payload.login_success.from_host = from_host;
+	result->payload.login_success.login_type = login_type;
 
 	return result->status = BMY_LOG_PARSE_ACCEPTED;
 FAILED_1:
