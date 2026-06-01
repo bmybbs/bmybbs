@@ -10,6 +10,7 @@ UNION ALL SELECT 'log_board_usage_events', count(*) FROM log_board_usage_events
 UNION ALL SELECT 'log_session_duration_events', count(*) FROM log_session_duration_events
 UNION ALL SELECT 'log_login_failure_events', count(*) FROM log_login_failure_events
 UNION ALL SELECT 'log_security_events', count(*) FROM log_security_events
+UNION ALL SELECT 'log_login_success_events', count(*) FROM log_login_success_events
 UNION ALL SELECT 'log_session_events', count(*) FROM log_session_events
 UNION ALL SELECT 'log_account_events', count(*) FROM log_account_events
 UNION ALL SELECT 'log_mail_events', count(*) FROM log_mail_events

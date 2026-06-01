@@ -43,6 +43,11 @@ static bool bmy_log_importer_insert_security(
 	const char *occurred_at,
 	const struct bmy_log_security_event *event,
 	char **event_id);
+static bool bmy_log_importer_insert_login_success(
+	PGconn *conn,
+	const char *occurred_at,
+	const struct bmy_log_login_success_event *event,
+	char **event_id);
 static bool bmy_log_importer_insert_session(
 	PGconn *conn,
 	const char *occurred_at,
@@ -247,6 +252,9 @@ bool bmy_log_importer_insert_event_in_transaction(PGconn *conn, const char *sour
 		case BMY_LOG_EVENT_SECURITY:
 			ok = bmy_log_importer_insert_security(conn, occurred_at, &result->payload.security, &event_id);
 			break;
+		case BMY_LOG_EVENT_LOGIN_SUCCESS:
+			ok = bmy_log_importer_insert_login_success(conn, occurred_at, &result->payload.login_success, &event_id);
+			break;
 		case BMY_LOG_EVENT_SESSION:
 			ok = bmy_log_importer_insert_session(conn, occurred_at, &result->payload.session, &event_id);
 			break;
@@ -395,19 +403,30 @@ static bool bmy_log_importer_insert_security(PGconn *conn, const char *occurred_
 		4, params, event_id);
 }
 
+static bool bmy_log_importer_insert_login_success(PGconn *conn, const char *occurred_at, const struct bmy_log_login_success_event *event, char **event_id) {
+	const char *params[] = {
+		occurred_at,
+		event->userid,
+		event->from_host,
+		event->login_type,
+	};
+
+	return bmy_log_importer_exec_params_returning_id(conn,
+		"INSERT INTO log_login_success_events (occurred_at, userid, from_host, login_type) VALUES ($1, $2, $3, $4) RETURNING id",
+		4, params, event_id);
+}
+
 static bool bmy_log_importer_insert_session(PGconn *conn, const char *occurred_at, const struct bmy_log_session_event *event, char **event_id) {
 	const char *params[] = {
 		occurred_at,
 		event->action,
 		event->userid,
 		event->target_userid,
-		event->from_host,
-		event->login_type,
 	};
 
 	return bmy_log_importer_exec_params_returning_id(conn,
-		"INSERT INTO log_session_events (occurred_at, action, userid, target_userid, from_host, login_type) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
-		6, params, event_id);
+		"INSERT INTO log_session_events (occurred_at, action, userid, target_userid) VALUES ($1, $2, $3, $4) RETURNING id",
+		4, params, event_id);
 }
 
 static bool bmy_log_importer_insert_account(PGconn *conn, const char *occurred_at, const struct bmy_log_account_event *event, char **event_id) {
@@ -537,6 +556,8 @@ static const char * bmy_log_importer_table_name(enum bmy_log_event_table table) 
 			return "log_login_failure_events";
 		case BMY_LOG_EVENT_SECURITY:
 			return "log_security_events";
+		case BMY_LOG_EVENT_LOGIN_SUCCESS:
+			return "log_login_success_events";
 		case BMY_LOG_EVENT_SESSION:
 			return "log_session_events";
 		case BMY_LOG_EVENT_ACCOUNT:
