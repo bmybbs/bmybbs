@@ -160,24 +160,40 @@ Evidence note:
 - These events are separate from authentication failures because they record a security trap trigger, including registration attempts.
 - The submitted value is arbitrary trap input, not necessarily a valid user id, so it is stored as nullable text.
 
+### `log_login_success_events`
+
+Successful login records.
+
+Related API:
+
+- `bmy_log_login_success`
+
+Important fields:
+
+- `occurred_at`: reconstructed event time
+- `userid`: logged-in user
+- `from_host`: IPv4 or IPv6 source string
+- `login_type`: access type when known
+
+Design note:
+
+- Successful login has a stable shape and a different query meaning from session-control events, so it uses a dedicated table for clearer schema boundaries and query tuning.
+
 ### `log_session_events`
 
 Session-related events that do not carry a stay duration.
 
 Related APIs:
 
-- `bmy_log_login_success`
 - `bmy_log_session_cleanup`
 - `bmy_log_multi_login_kick`
 - `bmy_log_user_kick`
 
 Important fields:
 
-- `action`: `login_success`, `session_cleanup`, `multi_login_kick`, or `user_kick`
+- `action`: `session_cleanup`, `multi_login_kick`, or `user_kick`
 - `userid`: main user id for the event
 - `target_userid`: target user when applicable
-- `from_host`: source host for login success
-- `login_type`: access type when known
 
 ### `log_account_events`
 
