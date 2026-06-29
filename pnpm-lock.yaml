@@ -63,8 +63,8 @@ importers:
         specifier: ^7
         version: 7.2.0
       '@fortawesome/vue-fontawesome':
-        specifier: ^3.1.2
-        version: 3.1.2(@fortawesome/fontawesome-svg-core@7.2.0)(vue@3.5.39)
+        specifier: ^3.3.0
+        version: 3.3.0(@fortawesome/fontawesome-svg-core@7.2.0)(vue@3.5.39)
       '@mathjax/src':
         specifier: 'catalog:'
         version: 4.1.2
@@ -231,8 +231,8 @@ packages:
     resolution: {integrity: sha512-YTVITFGN0/24PxzXrwqCgnyd7njDuzp5ZvaCx5nq/jg55kUYd94Nj8UTchBdBofi/L0nwRfjGOg0E41d2u9T1w==}
     engines: {node: '>=6'}
 
-  '@fortawesome/vue-fontawesome@3.1.2':
-    resolution: {integrity: sha512-mhYnBIuuW8OIMHf31kOjaBmyE7BMrwBorhrOHVud6vTTu+7IPQNWB+DWaHoE75v10dRF5s/dFtcrgE7vKSEWwQ==}
+  '@fortawesome/vue-fontawesome@3.3.0':
+    resolution: {integrity: sha512-xwHZ4fdm5rRefKTV+AfACE4piO2RTBGp6pASGdZOdRpA3+FgHje5VZD9i3dQeTejSClhAg9kodXybfs9K9d2jg==}
     peerDependencies:
       '@fortawesome/fontawesome-svg-core': ~1 || ~6 || ~7
       vue: '>= 3.0.0 < 4'
@@ -1633,7 +1633,7 @@ snapshots:
     dependencies:
       '@fortawesome/fontawesome-common-types': 7.2.0
 
-  '@fortawesome/vue-fontawesome@3.1.2(@fortawesome/fontawesome-svg-core@7.2.0)(vue@3.5.39)':
+  '@fortawesome/vue-fontawesome@3.3.0(@fortawesome/fontawesome-svg-core@7.2.0)(vue@3.5.39)':
     dependencies:
       '@fortawesome/fontawesome-svg-core': 7.2.0
       vue: 3.5.39
