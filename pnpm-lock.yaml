@@ -55,7 +55,7 @@ importers:
         version: 0.3.4
       '@fortawesome/fontawesome-svg-core':
         specifier: ^7
-        version: 7.2.0
+        version: 7.3.1
       '@fortawesome/free-regular-svg-icons':
         specifier: ^7
         version: 7.2.0
@@ -64,7 +64,7 @@ importers:
         version: 7.3.1
       '@fortawesome/vue-fontawesome':
         specifier: ^3.3.0
-        version: 3.3.0(@fortawesome/fontawesome-svg-core@7.2.0)(vue@3.5.39)
+        version: 3.3.0(@fortawesome/fontawesome-svg-core@7.3.1)(vue@3.5.39)
       '@mathjax/src':
         specifier: 'catalog:'
         version: 4.1.2
@@ -223,8 +223,8 @@ packages:
     resolution: {integrity: sha512-k0C0sdHmZtAo6dRDtd1Z/qcpyHbL0CKsjV8seMY/21xGhY5Wsv0XRmiI/xEEH4y2c9b1+jvgNs/3EqhV27yUEA==}
     engines: {node: '>=6'}
 
-  '@fortawesome/fontawesome-svg-core@7.2.0':
-    resolution: {integrity: sha512-6639htZMjEkwskf3J+e6/iar+4cTNM9qhoWuRfj9F3eJD6r7iCzV1SWnQr2Mdv0QT0suuqU8BoJCZUyCtP9R4Q==}
+  '@fortawesome/fontawesome-svg-core@7.3.1':
+    resolution: {integrity: sha512-BoxVN3PKnMbgStHhjoaky/oWdxHomDqmBVA24IA3KEmssFGeI7u9YT/BJceOjIum/t6TpPa/vcMKaVYQeIQ/3Q==}
     engines: {node: '>=6'}
 
   '@fortawesome/free-regular-svg-icons@7.2.0':
@@ -1678,9 +1678,9 @@ snapshots:
 
   '@fortawesome/fontawesome-common-types@7.3.1': {}
 
-  '@fortawesome/fontawesome-svg-core@7.2.0':
+  '@fortawesome/fontawesome-svg-core@7.3.1':
     dependencies:
-      '@fortawesome/fontawesome-common-types': 7.2.0
+      '@fortawesome/fontawesome-common-types': 7.3.1
 
   '@fortawesome/free-regular-svg-icons@7.2.0':
     dependencies:
@@ -1690,9 +1690,9 @@ snapshots:
     dependencies:
       '@fortawesome/fontawesome-common-types': 7.3.1
 
-  '@fortawesome/vue-fontawesome@3.3.0(@fortawesome/fontawesome-svg-core@7.2.0)(vue@3.5.39)':
+  '@fortawesome/vue-fontawesome@3.3.0(@fortawesome/fontawesome-svg-core@7.3.1)(vue@3.5.39)':
     dependencies:
-      '@fortawesome/fontawesome-svg-core': 7.2.0
+      '@fortawesome/fontawesome-svg-core': 7.3.1
       vue: 3.5.39
 
   '@humanfs/core@0.19.2':
