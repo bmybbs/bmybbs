@@ -11,7 +11,7 @@
 	"dependencies": {
 		"@bmybbs/bmybbs-content-parser": "^0.3.4",
 		"@miniprogram-component-plus/tabs": "^1.0.0",
-		"@xmldom/xmldom": "^0.9.10",
+		"@xmldom/xmldom": "^0.9.12",
 		"dayjs": "^1.11.21",
 		"marked": "^18.0.4",
 		"sanitize-html": "^2.17.4"
